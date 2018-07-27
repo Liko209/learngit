@@ -36,5 +36,10 @@ if (argv.length) {
   });
 }
 
+if (argv.includes('demo')) {
+  process.env.APP = path.resolve(__dirname, '../demo');
+} else {
+  process.env.APP = path.resolve(__dirname, '../application');
+}
 
 jest.run(argv);

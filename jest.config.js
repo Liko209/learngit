@@ -1,4 +1,3 @@
-
 module.exports = {
   roots: ['demo', 'application', 'packages'],
   collectCoverageFrom: ["src/**/*.{js,jsx,ts,tsx}"],
@@ -19,6 +18,7 @@ module.exports = {
   ],
   moduleNameMapper: {
     "^react-native$": "react-native-web",
+    '^@/(.*)$': `${process.env.APP}/src/$1`,
   },
   moduleFileExtensions: [
     "web.ts",

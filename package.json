@@ -20,6 +20,7 @@
     "lint": "tslint",
     "publish": "yarn clean:build && yarn build && lerna publish --silent",
     "watch": "yarn build && node ./scripts/watch.js",
+    "precommit": "lint-staged",
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",
     "commitmsg": "node scripts/validate-commit-msg.js && node scripts/check-npm-pkg.js",
@@ -62,5 +63,11 @@
     "tslint-config-airbnb": "5.9.2",
     "tslint-react": "3.6.0",
     "typescript": "2.9.2"
+  },
+  "lint-staged": {
+    "*.{ts, js, json}": [
+      "tslint --fix",
+      "git add"
+    ]
   }
 }

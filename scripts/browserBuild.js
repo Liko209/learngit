@@ -44,7 +44,7 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd') {
         includeDependencies: true,
       }),
       rollupTslint({
-        configuration: path.resolve(p, 'tsconfig.json')
+        tsConfigSearchPath: p,
       }),
       rollupJson(),
       rollupResolve(),
