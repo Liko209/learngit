@@ -1,0 +1,30 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# testing
+/coverage
+
+# production
+/packages/*/build/
+/packages/*/build-es5/
+/packages/*/coverage/
+/packages/*/node_modules/
+/demo/node_modules/
+/demo/build/
+
+# misc
+.DS_Store
+
+lerna-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# vscode
+.vscode/symbols.json
+
+# cache
+.rpt2_cache

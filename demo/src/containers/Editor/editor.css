@@ -1,0 +1,26 @@
+.cke_bottom {
+  display: none !important;
+}
+.cke_top {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+}
+.cke_inner {
+  height: 100% !important;
+}
+.cke_contents {
+  height: 100% !important;
+  margin: 60px 0 0;
+}
+#cke_editor {
+  width: 85%;
+  height: 90%;
+  margin: 50px auto 0;
+  border: 0;
+  box-shadow: rgba(0, 0, 0, 0.15) 0 0 10px;
+}
+.CKeditor {
+  height: 100%;
+}

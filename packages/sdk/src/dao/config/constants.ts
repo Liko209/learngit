@@ -1,0 +1,11 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-05-23 09:41:17
+ * Copyright © RingCentral. All rights reserved.
+ */
+export const LAST_INDEX_TIMESTAMP = 'LAST_INDEX_TIMESTAMP';
+export const SOCKET_SERVER_HOST = 'SOCKET_SERVER_HOST';
+export const CONFIG_KEYS = [LAST_INDEX_TIMESTAMP, SOCKET_SERVER_HOST];
+export const ENV = 'ENV';
+export const DB_SCHEMA_VERSION = 'DB_SCHEMA_VERSION';
+export const CLIENT_ID = 'CLIENT_ID';
