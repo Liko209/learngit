@@ -49,6 +49,12 @@ const adjustToTerminalWidth = str => {
     .join('\n');
 };
 
+const dependent = {
+  sdk: ['foundation']
+};
+
+const builded = [];
+
 function getPackageName(file) {
   return path.relative(PACKAGES_DIR, file).split(path.sep)[0];
 }
@@ -97,6 +103,28 @@ function buildBrowserPackage(p, format = 'umd') {
   });
 }
 
+function build(p, packages) {
+  const pName = path.basename(p);
+  if (!builded.includes(pName)) {
+    // const dep = dependent[pName];
+    // if (dep) {
+    //   packages.filter(p =>
+    //     dep.includes(path.basename(p))
+    //   ).forEach((p) => {
+    //     console.log(p)
+    //     const pkg = path.basename(p)
+    //     buildBrowserPackage(p, 'esm');
+    //     buildBrowserPackage(p);
+    //     builded.push(pkg);
+    //   });
+    // }
+    const pkg = path.basename(p);
+    buildBrowserPackage(p, 'esm');
+    buildBrowserPackage(p);
+    builded.push(pkg);
+  }
+}
+
 const files = process.argv.slice(2);
 
 const packages = getPackages();
@@ -106,12 +134,10 @@ if (files.length) {
   packages.filter(p =>
     files.includes(path.basename(p))
   ).forEach((p) => {
-    buildBrowserPackage(p, 'esm');
-    buildBrowserPackage(p);
+    build(p, packages);
   });
 } else {
   packages.forEach((p) => {
-    buildBrowserPackage(p, 'esm');
-    buildBrowserPackage(p);
+    build(p, packages);
   });
 }

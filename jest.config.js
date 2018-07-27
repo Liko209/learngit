@@ -1,8 +1,10 @@
+
 module.exports = {
+  roots: ['demo', 'application', 'packages'],
   collectCoverageFrom: ["src/**/*.{js,jsx,ts,tsx}"],
   setupFiles: ["<rootDir>/config/polyfills.js", '<rootDir>/config/enzymeTestAdapterSetup.js'],
   testMatch: [
-    "<rootDir>/**/__tests__/**/*.(j|t)s?(x)",
+    "<rootDir>/**/__tests__/**/*test.(j|t)s?(x)",
     "<rootDir>/**/?(*.)(spec|test).(j|t)s?(x)"
   ],
   testURL: "http://localhost",

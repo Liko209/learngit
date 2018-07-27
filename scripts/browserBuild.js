@@ -43,9 +43,9 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd') {
         packageJsonPath: path.resolve(p, 'package.json'),
         includeDependencies: true,
       }),
-      // rollupTslint({
-      //   configuration: path.resolve(p, 'tsconfig.json')
-      // }),
+      rollupTslint({
+        configuration: path.resolve(p, 'tsconfig.json')
+      }),
       rollupJson(),
       rollupResolve(),
       rollupCommonjs(),
@@ -53,7 +53,8 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd') {
       rollupBuiltins(),
       rollupTypescript2({
         clean: true,
-        rollupCommonJSResolveHack: true
+        rollupCommonJSResolveHack: true,
+        tsconfig: path.resolve(p, 'tsconfig.json'),
       })
       // ...(format === 'umd' ? [rollupUglify()] : [rollupUglifyEs()])
     ]

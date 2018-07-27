@@ -57,7 +57,8 @@
     "dolog",
     "nprogress",
     "polyfill",
-    "pathinfo"
+    "pathinfo",
+    "preinstall"
   ],
   "flagWords": []
 }
