@@ -7,7 +7,8 @@
     "npm": "~6.2.0"
   },
   "scripts": {
-    "preinstall": "node scripts/check-pm.js && yarn build:packages",
+    "preinstall": "node scripts/check-pm.js",
+    "postinstall": "yarn bt && yarn build:packages",
     "start:demo": "cd demo && yarn start",
     "start:app": "cd application && yarn start",
     "clean:build": "rm -rf ./packages/*/build ./packages/*/build-es",
