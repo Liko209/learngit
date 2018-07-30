@@ -49,10 +49,6 @@ const adjustToTerminalWidth = str => {
     .join('\n');
 };
 
-const dependent = {
-  sdk: ['foundation']
-};
-
 function getPackageName(file) {
   return path.relative(PACKAGES_DIR, file).split(path.sep)[0];
 }
@@ -86,7 +82,7 @@ function buildBrowserPackage(p, format = 'umd') {
     }
   }
 
-  browserBuild(
+  return browserBuild(
     p,
     p.split('/').pop(),
     path.resolve(srcDir, 'index.ts'),
@@ -101,38 +97,24 @@ function buildBrowserPackage(p, format = 'umd') {
   });
 }
 
-const files = process.argv.slice(2);
+async function build(packages) {
+  for (let i = 0; i < packages.length; i++) {
+    const p = packages[i];
+    await Promise.all([
+      buildBrowserPackage(p, 'esm'),
+      buildBrowserPackage(p),
+    ])
+  }
+}
 
 const packages = getPackages();
-process.stdout.write(chalk.inverse(' Building packages \n'));
+const files = process.argv.slice(2);
 
-if (files.length === 1) {
-  packages.filter(p =>
+if (files.length) {
+  build(packages.filter(p =>
     files.includes(path.basename(p))
-  ).forEach((p) => {
-    const pkg = path.basename(p);
-    const deps = dependent[pkg];
-    const buildDeps = [];
-    if (deps) {
-      packages.filter(p =>
-        deps.includes(path.basename(p))
-      ).forEach((p) => {
-        const builded = fs.existsSync(path.resolve(p, `${BUILD_DIR}/index.js`)) && fs.existsSync(path.resolve(p, `${BUILD_ES_DIR}/index.js`));
-        if (!builded) {
-          buildDeps.push(
-            buildBrowserPackage(p, 'esm'),
-            buildBrowserPackage(p),
-          )
-        }
-      })
-    }
-    Promise.all(buildDeps).then(() => {
-      buildBrowserPackage(p, 'esm');
-      buildBrowserPackage(p);
-    })
-  });
-} else if (files.length === 0) {
-  console.log(chalk.red(`No package specified. Type package name to build a package.`))
+  ))
 } else {
-  console.log(chalk.red(`Only one package can be built at a time`))
+  process.stdout.write(chalk.inverse(' Building packages \n'));
+  build(packages);
 }

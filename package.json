@@ -7,7 +7,7 @@
     "npm": "~6.2.0"
   },
   "scripts": {
-    "preinstall": "node scripts/check-pm.js",
+    "preinstall": "node scripts/check-pm.js && yarn build:packages",
     "start:demo": "cd demo && yarn start",
     "start:app": "cd application && yarn start",
     "clean:build": "rm -rf ./packages/*/build ./packages/*/build-es",
@@ -19,7 +19,7 @@
     "test:cover": "yarn test -- --coverage",
     "lint": "tslint",
     "publish": "yarn clean:build && yarn build && lerna publish --silent",
-    "watch": "yarn build && node ./scripts/watch.js",
+    "watch": "yarn build:packages --watch",
     "precommit": "lint-staged",
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",

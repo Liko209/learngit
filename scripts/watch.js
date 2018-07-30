@@ -17,7 +17,7 @@ const getPackages = require('./getPackages');
 
 const BUILD_CMD = `node ${path.resolve(__dirname, './build.js')}`;
 
-const filesToBuild = new Map();
+let filesToBuild = new Map();
 
 const exists = filename => {
   try {

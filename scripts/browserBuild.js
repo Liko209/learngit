@@ -36,6 +36,13 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd') {
       }
     });
   }
+
+  const argv = process.argv.slice(2);
+
+  if (argv.includes('--watch')) {
+
+  }
+
   return rollup({
     input: entryPath,
     plugins: [
@@ -57,7 +64,11 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd') {
         tsconfig: path.resolve(p, 'tsconfig.json'),
       })
       // ...(format === 'umd' ? [rollupUglify()] : [rollupUglifyEs()])
-    ]
+    ],
+    watch: {
+      exclude: ['node_modules/**'],
+      clearScreen: true,
+    }
   }).then(bundle =>
     bundle.write({
       format,
