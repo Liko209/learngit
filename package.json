@@ -76,7 +76,6 @@
   },
   "lint-staged": {
     "*.{ts, js, json}": [
-      "tslint --fix",
       "git add"
     ]
   }
