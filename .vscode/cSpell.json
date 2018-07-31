@@ -58,7 +58,24 @@
     "nprogress",
     "polyfill",
     "pathinfo",
-    "preinstall"
+    "preinstall",
+    "Docgen",
+    "workspaces",
+    "languagedetector",
+    "backend",
+    "flexbugs",
+    "sourcemap",
+    "flexbox",
+    "filepath",
+    "minification",
+    "webpack's",
+    "contenthash",
+    "chunkhash",
+    "subdomains",
+    "backends",
+    "sockjs",
+    "todos",
+    "React's"
   ],
   "flagWords": []
 }

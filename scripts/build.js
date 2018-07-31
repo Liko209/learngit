@@ -61,7 +61,7 @@ function getBuildPath(file, buildFolder) {
   return path.resolve(pkgBuildPath, relativeToSrcPath);
 }
 
-function buildBrowserPackage(p, format = 'umd') {
+function buildBrowserPackage(p, format = 'umd', multipleEntry = false) {
   const srcDir = path.resolve(p, SRC_DIR);
   const pkgJsonPath = path.resolve(p, 'package.json');
 
@@ -74,7 +74,7 @@ function buildBrowserPackage(p, format = 'umd') {
   const fieldName = format === 'esm' ? 'module' : 'main';
   const buildDir = format === 'esm' ? BUILD_ES_DIR : BUILD_DIR;
 
-  if (entry) {
+  if (entry && !multipleEntry) {
     if (entry.indexOf(buildDir) !== 0) {
       throw new Error(
         `${fieldName} field for ${pkgJsonPath} should start with "${buildDir}"`
@@ -87,7 +87,8 @@ function buildBrowserPackage(p, format = 'umd') {
     p.split('/').pop(),
     path.resolve(srcDir, 'index.ts'),
     path.resolve(p, entry),
-    format
+    format,
+    multipleEntry
   ).then(() => {
     process.stdout.write(adjustToTerminalWidth(`${path.basename(p)} - ${format}\n`));
     process.stdout.write(`${OK}\n`);
@@ -100,10 +101,17 @@ function buildBrowserPackage(p, format = 'umd') {
 async function build(packages) {
   for (let i = 0; i < packages.length; i++) {
     const p = packages[i];
-    await Promise.all([
-      buildBrowserPackage(p, 'esm'),
-      buildBrowserPackage(p),
-    ])
+    if (p.includes('ui-components')) {
+      return;
+    }
+    if (p.includes('ui')) {
+      buildBrowserPackage(p, 'esm', true)
+    } else {
+      await Promise.all([
+        buildBrowserPackage(p, 'esm'),
+        buildBrowserPackage(p),
+      ])
+    }
   }
 }
 

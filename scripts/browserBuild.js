@@ -7,6 +7,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const rollup = require('rollup').rollup;
 const rollupTypescript2 = require('rollup-plugin-typescript2');
@@ -21,15 +22,18 @@ const rollupUglifyEs = require('rollup-plugin-uglify-es');
 const rollupTslint = require('rollup-plugin-tslint');
 const dtsGenerator = require('dts-generator');
 
-function browserBuild(p, pkgName, entryPath, destination, format = 'umd') {
-  if (format === 'umd') {
+function browserBuild(p, pkgName, entryPath, destination, format = 'umd', multipleEntry = false) {
+  if (format === 'esm') {
     dtsGenerator.default({
-      name: pkgName,
-      main: `${pkgName}/index`,
+      name: multipleEntry ? destination.split('/').pop() : pkgName,
+      main: multipleEntry ? '' : `${pkgName}/index`,
       project: p,
-      out: path.resolve(p, 'build/index.d.ts'),
+      out: multipleEntry ? path.resolve(destination, 'index.d.ts') : path.resolve(destination, '../index.d.ts'),
       resolveModuleId: params => {
         const { currentModuleId } = params;
+        if (multipleEntry && currentModuleId.indexOf('/index') !== -1) {
+          return `${destination.split('/').pop()}/${currentModuleId.slice(0, currentModuleId.indexOf('/index'))}`;
+        }
         if (currentModuleId.indexOf('/index') !== -1) {
           return `${pkgName}/${currentModuleId.slice(0, currentModuleId.indexOf('/index'))}`;
         }
@@ -37,10 +41,12 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd') {
     });
   }
 
-  const argv = process.argv.slice(2);
-
-  if (argv.includes('--watch')) {
-
+  if (multipleEntry) {
+    return new Promise((resolve) => {
+      execSync(`tsc -m es2015 -p ${p} --outDir ${destination}`, { stdio: [0, 1, 2] });
+      execSync(`node ./scripts/create-package-file.js ${p} ${destination}`, { stdio: [0, 1, 2] });
+      resolve();
+    })
   }
 
   return rollup({

@@ -1,0 +1,17 @@
+{
+  "rc": {
+    "server": "https://api-up.lab.rcch.ringcentral.com"
+  },
+  "glip2": {
+    "server": "https://api-up.lab.rcch.ringcentral.com",
+    "clientId": "FVKGRbLRTxGxPempqg5f9g",
+    "clientSecret": "bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ",
+    "redirectUri": "http://localhost:3000/unified-login/"
+  },
+  "glip": {
+    "server": "https://xia01.asialab.glip.net"
+  },
+  "upload": {
+    "server": "https://xia01.asialab.glip.net:8443"
+  }
+}
