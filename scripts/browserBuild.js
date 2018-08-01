@@ -23,17 +23,14 @@ const rollupTslint = require('rollup-plugin-tslint');
 const dtsGenerator = require('dts-generator');
 
 function browserBuild(p, pkgName, entryPath, destination, format = 'umd', multipleEntry = false) {
-  if (format === 'esm') {
+  if (format === 'umd') {
     dtsGenerator.default({
-      name: multipleEntry ? destination.split('/').pop() : pkgName,
-      main: multipleEntry ? '' : `${pkgName}/index`,
+      name: pkgName,
+      main: `${pkgName}/index`,
       project: p,
-      out: multipleEntry ? path.resolve(destination, 'index.d.ts') : path.resolve(destination, '../index.d.ts'),
+      out: path.resolve(destination, '../index.d.ts'),
       resolveModuleId: params => {
         const { currentModuleId } = params;
-        if (multipleEntry && currentModuleId.indexOf('/index') !== -1) {
-          return `${destination.split('/').pop()}/${currentModuleId.slice(0, currentModuleId.indexOf('/index'))}`;
-        }
         if (currentModuleId.indexOf('/index') !== -1) {
           return `${pkgName}/${currentModuleId.slice(0, currentModuleId.indexOf('/index'))}`;
         }
@@ -43,7 +40,7 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd', multip
 
   if (multipleEntry) {
     return new Promise((resolve) => {
-      execSync(`tsc -m es2015 -p ${p} --outDir ${destination}`, { stdio: [0, 1, 2] });
+      execSync(`tsc -p ${p} --outDir ${destination} --allowJs false -d`, { stdio: [0, 1, 2] });
       execSync(`node ./scripts/create-package-file.js ${p} ${destination}`, { stdio: [0, 1, 2] });
       resolve();
     })

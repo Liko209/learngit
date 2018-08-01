@@ -2,14 +2,14 @@ import * as React from 'react';
 import { hot } from 'react-hot-loader';
 import I18n from '@/containers/I18n';
 import LanguageSwitcher from '@/containers/LanguageSwitcher';
-// import ThemeProvider from '@/containers/ThemeProvider';
+import ThemeProvider from '@/containers/ThemeProvider';
 import '@/App.css';
 // import logoSvg from '@/logo.svg';
 
 class App extends React.PureComponent {
   public render() {
     return (
-      // <ThemeProvider>
+      <ThemeProvider>
         <div className="App">
           <header className="App-header">
             <img className="App-logo" alt="logo" />
@@ -21,7 +21,7 @@ class App extends React.PureComponent {
           <LanguageSwitcher />
           <I18n />
         </div>
-      // </ThemeProvider>
+      </ThemeProvider>
     );
   }
 }

@@ -14,7 +14,7 @@ async function createPackageFile(p, destination) {
   const newPackageData = {
     ...packageDataOther,
     main: 'index.js',
-    module: 'index.es.js',
+    module: 'index.js',
     typings: "index.d.ts",
     name: destination.split('/').pop(),
   };

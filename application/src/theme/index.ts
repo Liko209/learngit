@@ -1,4 +1,4 @@
-// import { createTheme } from 'ui-components/theme';
+import { createTheme } from 'ui-components/theme';
 import config from '@/config';
 
 interface IThemeConfig {
@@ -8,24 +8,26 @@ interface IThemeConfig {
 
 function createThemes(config: IThemeConfig) {
   const requireContext = require.context('./', false, /.ts$/);
-  const keys = requireContext.keys();
+  const themePaths = requireContext.keys();
+  const themeNames = themePaths.map((path: string) =>
+    path.split('.')[1].split('/')[1],
+  );
   const { theme } = config;
-  console.log(keys);
 
   return theme
     .map((name: string) => {
-      const index = keys.indexOf(name);
+      const index = themeNames.indexOf(name);
       if (index !== -1) {
         return {
           name,
-          // theme: createTheme(requireContext(name)),
+          theme: createTheme(requireContext(themePaths[index])),
         };
       }
       return;
     })
     .reduce((allTheme, theme) => {
       if (theme) {
-        // allTheme[theme.name] = theme.theme;
+        allTheme[theme.name] = theme.theme;
       }
       return allTheme;
     },      {});
@@ -34,7 +36,7 @@ function createThemes(config: IThemeConfig) {
 const themeConfig: IThemeConfig = config.get('theme');
 const themes = createThemes(themeConfig);
 
-console.log(themeConfig, themes);
+console.log(themes);
 
 export const defaultTheme = themes[themeConfig.default];
 export default themes;
