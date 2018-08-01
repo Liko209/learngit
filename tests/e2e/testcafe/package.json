@@ -1,0 +1,22 @@
+{
+  "name": "jupiter-e2e-tests",
+  "version": "0.0.1",
+  "description": "E2E tests for Jupiter",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "env": "node environment/launch-env.js",
+    "test": "node index.js --env=true"
+  },
+  "engines": {
+    "npm": ">=5.x.x",
+    "node": ">=8.x.x <10.x.x"
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "dependencies": {
+    "testcafe": "0.20.5"
+  }
+}
