@@ -10,6 +10,10 @@ import GlipTypeUtil from './util';
 interface IMessage<V> {
   [key: number]: V;
 }
+interface SystemMessage {
+  type: string;
+  data: object[];
+}
 const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_STATE]: 'state',
   [TypeDictionary.TYPE_ID_GROUP]: 'group',
@@ -26,20 +30,26 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_EVENT]: 'item',
   [TypeDictionary.TYPE_ID_LINK]: 'item',
   [TypeDictionary.TYPE_ID_MEETING]: 'item',
-  [TypeDictionary.TYPE_ID_PAGE]: 'item'
+  [TypeDictionary.TYPE_ID_PAGE]: 'item',
 };
 
-function parseSocketMessage(message: string) {
+function parseSocketMessage(message: string | SystemMessage) {
+  if (typeof message === 'object') {
+    const { type, data } = message;
+    return { [type]: data };
+  }
+
   const {
-    body: { objects }
+    body: { objects },
   } = JSON.parse(message);
+
   const result = {};
   objects.forEach((arr: any[]) => {
-    arr.forEach(obj => {
+    arr.forEach((obj) => {
       if (obj.search_results) {
         result['search'] = obj.search_results;
       }
-      const objTypeId = GlipTypeUtil.extractTypeId(obj._id); // eslint-disable-line no-underscore-dangle
+      const objTypeId = GlipTypeUtil.extractTypeId(obj._id);
       if (socketMessageMap[objTypeId]) {
         const key = socketMessageMap[objTypeId];
         result[key] = result[key] || [];

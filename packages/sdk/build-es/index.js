@@ -41,6 +41,7 @@ var SOCKET;
     SOCKET["SEARCH"] = "SOCKET.SEARCH";
     SOCKET["SEARCH_SCROLL"] = "SOCKET.SEARCH_SCROLL";
     SOCKET["RECONNECT"] = "SOCKET.RECONNECT";
+    SOCKET["CLIENT_CONFIG"] = "SOCKET.CLIENT_CONFIG";
 })(SOCKET || (SOCKET = {}));
 var ENTITY = {
     COMPANY: 'ENTITY.COMPANY',
@@ -845,6 +846,11 @@ var socketMessageMap = (_a = {},
     _a[TypeDictionary.TYPE_ID_PAGE] = 'item',
     _a);
 function parseSocketMessage(message) {
+    var _a;
+    if (typeof message === 'object') {
+        var type = message.type, data = message.data;
+        return _a = {}, _a[type] = data, _a;
+    }
     var objects = JSON.parse(message).body.objects;
     var result = {};
     objects.forEach(function (arr) {
@@ -2319,11 +2325,9 @@ var DataDispatcher = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     DataDispatcher.prototype.register = function (key, dataHandler) {
-        console.info('Datadispatcher registing', key);
         this.on(key, dataHandler);
     };
     DataDispatcher.prototype.unregister = function (key, dataHandler) {
-        console.info('Datadispatcher unregistering', key);
         this.off(key, dataHandler);
     };
     DataDispatcher.prototype.onDataArrived = function (data) {
@@ -2332,8 +2336,9 @@ var DataDispatcher = /** @class */ (function (_super) {
             var _this = this;
             return __generator(this, function (_a) {
                 entries = parseSocketMessage(data);
-                console.info('Datadispatcher handling', Object.keys(entries));
-                return [2 /*return*/, Promise.all(Object.keys(entries).map(function (key) { return _this.emitAsync("SOCKET." + key.toUpperCase(), entries[key]); }))];
+                return [2 /*return*/, Promise.all(Object.keys(entries).map(function (key) {
+                        return _this.emitAsync("SOCKET." + key.toUpperCase(), entries[key]);
+                    }))];
             });
         });
     };
@@ -3647,13 +3652,13 @@ var GLIP_API = {
  */
 function loginGlip(authData) {
     var model = {
-        rc_access_token_data: btoa(JSON.stringify(authData))
+        rc_access_token_data: btoa(JSON.stringify(authData)),
     };
     var query = {
         path: GLIP_API.API_OAUTH_TOKEN,
         method: NETWORK_METHOD.PUT,
         data: model,
-        authFree: true
+        authFree: true,
     };
     return Api.glipNetworkClient.http(__assign({}, query, { via: NETWORK_VIA.HTTP }));
 }
@@ -7266,6 +7271,7 @@ var SocketFSM = /** @class */ (function (_super) {
             _this.info("socket-> typing. " + (data || ''));
         });
         this.socketClient.socket.on('system_message', function (data) {
+            dataDispatcher.onDataArrived(data);
             _this.info("socket-> system_message. " + (data || ''));
         });
         this.socketClient.socket.on('client_config', function (data) {
@@ -7778,9 +7784,217 @@ var accountHandleData = function (_a) {
     }
 };
 
+function strictDiff(subjects) {
+    return diff(null, subjects);
+}
+function diff(opts, subjects) {
+    var length = subjects.length;
+    var ref = subjects[0];
+    var diff = {};
+    var equal = (opts && opts.equal) || isStrictEqual;
+    for (var i = 1; i < length; i += 1) {
+        var c = subjects[i];
+        var keys = Object.keys(c);
+        var keysLength = keys.length;
+        for (var u = 0; u < keysLength; u += 1) {
+            var key = keys[u];
+            if (!equal(c[key], ref[key]))
+                diff[key] = c[key];
+        }
+    }
+    if (length === 2) {
+        diff = __assign({}, diff, Object.keys(ref)
+            .filter(function (key) { return !new Set(Object.keys(ref)).has(key); })
+            .map(function (i) {
+            var _a;
+            return (_a = {}, _a[i] = null, _a);
+        }));
+    }
+    return diff;
+}
+function isStrictEqual(a, b) {
+    return a === b;
+}
+
+var FeatureFlag = /** @class */ (function () {
+    function FeatureFlag(_notifier, _calculator) {
+        var _this = this;
+        this._notifier = _notifier;
+        this._calculator = _calculator;
+        this._notifier = _notifier;
+        this._calculator = _calculator;
+        dataDispatcher.register(SOCKET.CLIENT_CONFIG, function (data) {
+            return _this.handleData(data);
+        });
+        this._flags = this.dumpFlags();
+    }
+    FeatureFlag.prototype.isFeatureEnabled = function (featureName) {
+        return this._calculator.isFeatureEnabled(this._flags, featureName);
+    };
+    FeatureFlag.prototype.handleData = function (flags) {
+        var oldFlag = this.getFromStorage('Client_Config');
+        var touchedFlags = strictDiff([oldFlag, flags]);
+        Object.keys(touchedFlags).length && this.notify(touchedFlags);
+        this.saveToStorage('Client_Config', this.upInsert(oldFlag, flags));
+        this._flags = this.dumpFlags();
+    };
+    FeatureFlag.prototype.getFlagValue = function (key) {
+        return this._calculator.getFlagValue(this._flags, key);
+    };
+    FeatureFlag.prototype.upInsert = function (oldFlags, newFlags) {
+        return Object.assign(oldFlags, newFlags);
+    };
+    FeatureFlag.prototype.dumpFlags = function () {
+        var _this = this;
+        var defaultFlags = {};
+        return ['Client_Config', 'Split.io_Flag', 'RC_permission'].reduce(function (prev, curr) { return (__assign({}, prev, _this.getFromStorage(curr))); }, defaultFlags);
+    };
+    FeatureFlag.prototype.notify = function (touchedFlags) {
+        this._notifier.broadcast(touchedFlags);
+    };
+    FeatureFlag.prototype.saveToStorage = function (itemName, flags) {
+        localStorage.setItem(itemName, JSON.stringify(flags));
+        this._flags = this.dumpFlags();
+    };
+    FeatureFlag.prototype.getFromStorage = function (itemName) {
+        var flags = localStorage.getItem(itemName);
+        if (!flags) {
+            return {};
+        }
+        return JSON.parse(flags);
+    };
+    return FeatureFlag;
+}());
+
+var ConfigChangeNotifier = /** @class */ (function (_super) {
+    __extends(ConfigChangeNotifier, _super);
+    function ConfigChangeNotifier() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ConfigChangeNotifier.prototype.broadcast = function (touchedFlags) {
+        this.emit("Flag.Change", touchedFlags);
+    };
+    ConfigChangeNotifier.prototype.subscribe = function (handler) {
+        this.on("Flag.Change", handler);
+    };
+    ConfigChangeNotifier.prototype.unsubscribe = function (handler) {
+        this.off("Flag.Change", handler);
+    };
+    return ConfigChangeNotifier;
+}(EventEmitter2));
+
+var PERMISSION;
+(function (PERMISSION) {
+    PERMISSION["CALL"] = "call";
+})(PERMISSION || (PERMISSION = {}));
+var BETA_FEATURE;
+(function (BETA_FEATURE) {
+    BETA_FEATURE[BETA_FEATURE["LOG"] = 0] = "LOG";
+    BETA_FEATURE[BETA_FEATURE["SMS"] = 1] = "SMS";
+})(BETA_FEATURE || (BETA_FEATURE = {}));
+var FLAG_PREFIX;
+(function (FLAG_PREFIX) {
+    FLAG_PREFIX[FLAG_PREFIX["EMAIL"] = 0] = "EMAIL";
+    FLAG_PREFIX[FLAG_PREFIX["DOMAIN"] = 1] = "DOMAIN";
+    FLAG_PREFIX[FLAG_PREFIX["STATUS"] = 2] = "STATUS";
+})(FLAG_PREFIX || (FLAG_PREFIX = {}));
+
+var _a$2;
+var featureConfig = (_a$2 = {},
+    _a$2[BETA_FEATURE.LOG] = ['beta_enable_log'],
+    _a$2[BETA_FEATURE.SMS] = ['SMS_beta'],
+    _a$2);
+
+var FlagCalculator = /** @class */ (function () {
+    function FlagCalculator(featureConfig, accountInfo) {
+        this.accountInfo = accountInfo;
+        this.featureConfig = featureConfig;
+        this._flags = {};
+        this._permissionKeys = Object.values(PERMISSION);
+    }
+    FlagCalculator.prototype.isFeatureEnabled = function (flags, feature) {
+        var _this = this;
+        var flagsToCheck = this.featureConfig[feature];
+        if (!flagsToCheck) {
+            return false;
+        }
+        var permissionFlags = flagsToCheck.filter(function (flag) {
+            return _this._permissionKeys.includes(flag);
+        });
+        var hasPermission = permissionFlags.reduce(function (prev, curr) { return prev && _this.getFlagValue(flags, curr); }, true);
+        // without permission
+        if (!hasPermission) {
+            return false;
+        }
+        var isInBeta = true;
+        // if need to check with beta flag
+        if (permissionFlags.length !== flagsToCheck.length) {
+            isInBeta = flagsToCheck.reduce(function (prev, curr) { return prev || _this.getFlagValue(flags, curr); }, false);
+        }
+        return isInBeta && hasPermission;
+    };
+    FlagCalculator.prototype.getFlagValue = function (flags, flagName) {
+        this._flags = flags;
+        return this.pipeLiner(function (props) { return true; }, this.checkFeatureStatus.bind(this), this.isInBetaDomainList.bind(this), this.isInBetaEmailList.bind(this), this.hasPermission.bind(this))(flagName);
+    };
+    FlagCalculator.prototype.pipeLiner = function () {
+        var middleWares = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            middleWares[_i] = arguments[_i];
+        }
+        return middleWares.reduce(function (pre, curr) { return function (flagName) {
+            return curr(flagName, pre);
+        }; });
+    };
+    FlagCalculator.prototype.checkFeatureStatus = function (statusName, next) {
+        if (this._flags.hasOwnProperty(statusName)) {
+            return this._flags[statusName];
+        }
+        return next(statusName);
+    };
+    FlagCalculator.prototype.isInBetaEmailList = function (flagName, next) {
+        if (/email/gi.test(flagName)) {
+            var list = this._flags[flagName];
+            var userId = this.accountInfo.userId;
+            return this.isInList(list, userId);
+        }
+        return next(flagName);
+    };
+    FlagCalculator.prototype.isInBetaDomainList = function (flagName, next) {
+        if (/domain/gi.test(flagName)) {
+            var list = this._flags[flagName];
+            var userId = this.accountInfo.userId;
+            return this.isInList(list, userId);
+        }
+        return next(flagName);
+    };
+    FlagCalculator.prototype.isInList = function (listStr, valToCheck) {
+        if (listStr && valToCheck) {
+            var list = listStr.split(",").map(Number);
+            return list.includes(valToCheck);
+        }
+        return false;
+    };
+    FlagCalculator.prototype.hasPermission = function (permissionName, next) {
+        if (this._permissionKeys.includes(permissionName)) {
+            return !!this._flags[permissionName];
+        }
+        return next(permissionName);
+    };
+    return FlagCalculator;
+}());
+
+var dao = daoManager.getKVDao(AccountDao);
+var companyId = dao.get(ACCOUNT_COMPANY_ID);
+var userId = dao.get(ACCOUNT_USER_ID);
+var accountInfo = { companyId: companyId, userId: userId };
+var notifier = new ConfigChangeNotifier();
+var calculator = new FlagCalculator(featureConfig, accountInfo);
+var featureFlag = new FeatureFlag(notifier, calculator);
+
 var _this$8 = undefined;
 var dispatchIncomingData = function (data) {
-    var userId = data.user_id, companyId = data.company_id, profile = data.profile, _a = data.companies, companies = _a === void 0 ? [] : _a, _b = data.items, items = _b === void 0 ? [] : _b, _c = data.presences, presences = _c === void 0 ? [] : _c, state = data.state, _d = data.people, people = _d === void 0 ? [] : _d, _e = data.groups, groups = _e === void 0 ? [] : _e, _f = data.teams, teams = _f === void 0 ? [] : _f, _g = data.posts, posts = _g === void 0 ? [] : _g, _h = data.max_posts_exceeded, maxPostsExceeded = _h === void 0 ? false : _h, clientConfig = data.client_config;
+    var userId = data.user_id, companyId = data.company_id, profile = data.profile, _a = data.companies, companies = _a === void 0 ? [] : _a, _b = data.items, items = _b === void 0 ? [] : _b, _c = data.presences, presences = _c === void 0 ? [] : _c, state = data.state, _d = data.people, people = _d === void 0 ? [] : _d, _e = data.groups, groups = _e === void 0 ? [] : _e, _f = data.teams, teams = _f === void 0 ? [] : _f, _g = data.posts, posts = _g === void 0 ? [] : _g, _h = data.max_posts_exceeded, maxPostsExceeded = _h === void 0 ? false : _h, _j = data.client_config, clientConfig = _j === void 0 ? {} : _j;
     var arrState = [];
     if (state && Object.keys(state).length > 0) {
         arrState.push(state);
@@ -7790,11 +8004,16 @@ var dispatchIncomingData = function (data) {
         arrProfile.push(profile);
     }
     return Promise.all([
-        accountHandleData({ userId: userId, companyId: companyId, profileId: profile ? profile._id : undefined, clientConfig: clientConfig }),
+        accountHandleData({
+            userId: userId,
+            companyId: companyId,
+            profileId: profile ? profile._id : undefined
+        }),
         companyHandleData(companies),
         itemHandleData(items),
         presenceHandleData(presences),
-        stateHandleData(arrState)
+        stateHandleData(arrState),
+        featureFlag.handleData(clientConfig)
     ])
         .then(function () { return profileHandleData(arrProfile); })
         .then(function () { return personHandleData(people); })
@@ -7831,7 +8050,9 @@ var handleData$2 = function (result) { return __awaiter(_this$8, void 0, void 0,
             case 2:
                 error_1 = _d.sent();
                 mainLogger.error(error_1);
-                notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, { error: ErrorParser.parse(error_1) });
+                notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, {
+                    error: ErrorParser.parse(error_1)
+                });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }

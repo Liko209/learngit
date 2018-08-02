@@ -5,7 +5,10 @@
  */
 import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
-import { LAST_INDEX_TIMESTAMP, SOCKET_SERVER_HOST } from '../../dao/config/constants';
+import {
+  LAST_INDEX_TIMESTAMP,
+  SOCKET_SERVER_HOST,
+} from '../../dao/config/constants';
 import { ErrorParser } from '../../utils/error';
 import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
@@ -21,6 +24,7 @@ import stateHandleData from '../state/handleData';
 import { IndexDataModel } from '../../api/glip/user';
 import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
+import featureFlag from '../../component/featureFlag';
 
 const dispatchIncomingData = (data: IndexDataModel) => {
   const {
@@ -36,7 +40,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     teams = [],
     posts = [],
     max_posts_exceeded: maxPostsExceeded = false,
-    client_config: clientConfig
+    client_config: clientConfig = {},
   } = data;
 
   const arrState: any[] = [];
@@ -50,11 +54,16 @@ const dispatchIncomingData = (data: IndexDataModel) => {
   }
 
   return Promise.all([
-    accountHandleData({ userId, companyId, profileId: profile ? profile._id : undefined, clientConfig }), // eslint-disable-line no-underscore-dangle, no-undefined
+    accountHandleData({
+      userId,
+      companyId,
+      profileId: profile ? profile._id : undefined,
+    }), // eslint-disable-line no-underscore-dangle, no-undefined
     companyHandleData(companies),
     itemHandleData(items),
     presenceHandleData(presences),
-    stateHandleData(arrState)
+    stateHandleData(arrState),
+    featureFlag.handleData(clientConfig),
   ])
     .then(() => profileHandleData(arrProfile))
     .then(() => personHandleData(people))
@@ -87,7 +96,9 @@ const handleData = async (result: IResponse<IndexDataModel>) => {
     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_DONE);
   } catch (error) {
     mainLogger.error(error);
-    notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, { error: ErrorParser.parse(error) });
+    notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, {
+      error: ErrorParser.parse(error),
+    });
   }
 };
 

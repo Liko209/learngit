@@ -8,7 +8,18 @@ import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
 import { IResponse } from '../NetworkClient';
 import Api from '../api';
 import { GLIP_API } from './constants';
-import { Raw, Company, Item, Profile, Presence, State, Person, Group, Post } from '../../models';
+import {
+  Raw,
+  Company,
+  Item,
+  Profile,
+  Presence,
+  State,
+  Person,
+  Group,
+  Post,
+} from '../../models';
+import { IFlag } from '../../component/featureFlag/interface';
 
 export type IndexDataModel = {
   user_id: number;
@@ -25,7 +36,7 @@ export type IndexDataModel = {
   max_posts_exceeded?: boolean;
   timestamp?: number;
   scoreboard?: string;
-  client_config: object;
+  client_config: IFlag;
 };
 
 /**
@@ -37,13 +48,13 @@ export type IndexDataModel = {
  */
 export function loginGlip(authData: object): Promise<IResponse<Object>> {
   const model = {
-    rc_access_token_data: btoa(JSON.stringify(authData))
+    rc_access_token_data: btoa(JSON.stringify(authData)),
   };
   const query = {
     path: GLIP_API.API_OAUTH_TOKEN,
     method: NETWORK_METHOD.PUT,
     data: model,
-    authFree: true
+    authFree: true,
   };
   return Api.glipNetworkClient.http({ ...query, via: NETWORK_VIA.HTTP });
 }
@@ -54,6 +65,16 @@ export function loginGlip(authData: object): Promise<IResponse<Object>> {
  * @param {string} password
  * index data api
  */
-export function indexData(params: object, requestConfig = {}, headers = {}): Promise<IResponse<IndexDataModel>> {
-  return Api.glipNetworkClient.get('/index', params, NETWORK_VIA.HTTP, requestConfig, headers);
+export function indexData(
+  params: object,
+  requestConfig = {},
+  headers = {},
+): Promise<IResponse<IndexDataModel>> {
+  return Api.glipNetworkClient.get(
+    '/index',
+    params,
+    NETWORK_VIA.HTTP,
+    requestConfig,
+    headers,
+  );
 }

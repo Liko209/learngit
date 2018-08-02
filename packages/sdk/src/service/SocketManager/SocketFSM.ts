@@ -30,8 +30,11 @@ export class SocketFSM extends StateMachine {
         { name: 'stop', from: ['connecting', 'connected'], to: 'disconnecting' },
         { name: 'finishConnect', from: 'connecting', to: 'connected' },
         { name: 'failConnect', from: 'connecting', to: 'disconnected' },
-        { name: 'fireDisconnect', from: ['connecting', 'disconnecting', 'connected'], to: 'disconnected' },
-        { name: 'fireTryReconnect', from: 'disconnected', to: 'connecting' }
+        {
+          name: 'fireDisconnect',
+          from: ['connecting', 'disconnecting', 'connected'], to: 'disconnected',
+        },
+        { name: 'fireTryReconnect', from: 'disconnected', to: 'connecting' },
       ],
       methods: {
         onInvalidTransition(transition: any, from: any, to: any) {
@@ -49,9 +52,9 @@ export class SocketFSM extends StateMachine {
 
         onEnterState() {
           this.info(`onEnterState ${this.state}`);
-          //TO-DO: move out to manager?
+          // TO-DO: move out to manager?
           notificationCenter.emit(SOCKET.STATE_CHANGE, {
-            state: this.state
+            state: this.state,
           });
         },
 
@@ -72,8 +75,8 @@ export class SocketFSM extends StateMachine {
               this.socketClient.socket.reconnection = false;
               this.socketClient.socket.disconnect();
             }
-            //TO-DO: to be test
-            //for connecting state, will have a follow-up socket disconnect event?
+            // TO-DO: to be test
+            // for connecting state, will have a follow-up socket disconnect event?
             if (this.state === 'disconnected') {
               this.cleanup();
             }
@@ -88,11 +91,11 @@ export class SocketFSM extends StateMachine {
           if (this.isStopped) {
             this.cleanup();
           }
-        }
-      }
+        },
+      },
     });
 
-    ++SocketFSM.instanceID;
+    SocketFSM.instanceID += 1;
     this.name = `_FSM${SocketFSM.instanceID}`;
     this.logPrefix = `[${SOCKET_LOGGER} ${this.name}]`;
 
@@ -185,7 +188,7 @@ export class SocketFSM extends StateMachine {
 
     this.socketClient.socket.on('presense', (data: any) => {
       this.info(`socket-> presense. ${data || ''}`);
-      //TO-DO: move out
+      // TO-DO: move out
       notificationCenter.emit(SOCKET.PRESENCE, data);
     });
 
@@ -207,6 +210,7 @@ export class SocketFSM extends StateMachine {
     });
 
     this.socketClient.socket.on('system_message', (data: any) => {
+      dataDispatcher.onDataArrived(data);
       this.info(`socket-> system_message. ${data || ''}`);
     });
 
