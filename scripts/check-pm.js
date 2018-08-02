@@ -3,6 +3,7 @@
  * @Date: 2018-7-17 11:01:02
  * Copyright © RingCentral. All rights reserved.
  */
+const semver = require('semver');
 const spawn  = require('child_process').spawnSync
 
 const yarnVersion = '1.7.0';
@@ -20,7 +21,7 @@ function cyan(...msg) {
   console.log(chalk && chalk.cyan(...msg))
 }
 if (!isYarn) {
-  if(checkYarnInstalled()){
+  if(checkYarnInstalled()) {
     cyan('You have yarn installed, please use yarn to install all dependencies')
     log()
     log('To install dependencies:')
@@ -32,7 +33,7 @@ if (!isYarn) {
     cyan('For more help, see https://yarnpkg.com/en/docs/usage.')
 
     process.exit(1)
-  }else {
+  } else {
     cyan(`    To say goodbye to the "but it works on my machine" bugs, you should use yarn install dependencies,
     try ${chalk.underline.yellow.bold('brew install yarn')} to install yarn first`);
     log();
@@ -40,8 +41,8 @@ if (!isYarn) {
     log()
     process.exit(1)
   }
-}else if(checkYarnInstalled() !== yarnVersion) {
-    console.error(new Error(`To be continued, you should have the version yarn@${yarnVersion} installed`))
+} else if(semver.lt(checkYarnInstalled(), yarnVersion)) {
+    console.error(new Error(`To be continued, you should have the yarn version is greater than ${yarnVersion} installed`))
     log()
     process.exit(1)
 }

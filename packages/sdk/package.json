@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "main": "build/index.js",
-  "typings": "build-es/index.d.ts",
+  "typings": "build/index.d.ts",
   "module": "build-es/index.js",
   "dependencies": {
     "axios": "0.18.0",

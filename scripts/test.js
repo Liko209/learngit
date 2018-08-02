@@ -36,10 +36,22 @@ if (argv.length) {
   });
 }
 
-if (argv.includes('demo')) {
-  process.env.APP = path.resolve(__dirname, '../demo');
-} else {
-  process.env.APP = path.resolve(__dirname, '../application');
+switch(true) {
+  case argv.includes('demo'):
+    process.env.APP = '<rootDir>/demo';
+    break;
+  case argv.includes('application'):
+    process.env.APP = '<rootDir>/application';
+    break;
+  case argv.includes('sdk'):
+    process.env.APP = '<rootDir>/packages/sdk';
+    break;
+  case argv.includes('foundation'):
+    process.env.APP = '<rootDir>/packages/foundation';
+    break;
+  default:
+    process.env.APP = '<rootDir>/(demo|application|packages/sdk|packages/foundation)';
+    break;
 }
 
 jest.run(argv);
