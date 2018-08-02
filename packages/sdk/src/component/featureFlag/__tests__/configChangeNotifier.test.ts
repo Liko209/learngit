@@ -1,6 +1,6 @@
 import ConfigChangeNotifier from '../configChangeNotifier';
 import { EventEmitter2 } from 'eventemitter2';
-import { Flag } from '../utils';
+import { IFlag } from '../interface';
 
 describe('ConfigChangeNotifier', () => {
   let notifier: ConfigChangeNotifier;
@@ -9,7 +9,7 @@ describe('ConfigChangeNotifier', () => {
     notifier = new ConfigChangeNotifier();
   });
   it('subscribe', () => {
-    const noop = () => {};
+    const noop = () => { };
     EventEmitter2.prototype.on = jest.fn();
     notifier.subscribe(noop);
 
@@ -17,7 +17,7 @@ describe('ConfigChangeNotifier', () => {
     expect(EventEmitter2.prototype.on).toHaveBeenCalled();
   });
   it('unsubscribe', () => {
-    const noop = () => {};
+    const noop = () => { };
     EventEmitter2.prototype.off = jest.fn();
     notifier.unsubscribe(noop);
 
