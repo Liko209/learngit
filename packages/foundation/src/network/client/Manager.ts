@@ -6,7 +6,7 @@
 
 import { Http } from './http';
 import { Socket } from './socket';
-import { NETWORK_VIA } from '..';
+import { NETWORK_VIA } from '../network';
 class Manager {
   httpClient: Http;
   socketClient: Socket;
@@ -29,6 +29,13 @@ class Manager {
     }
 
     return client;
+  }
+
+  getAvailableClientType(): NETWORK_VIA {
+    if (this.socketClient.isNetworkReachable()) {
+      return NETWORK_VIA.SOCKET;
+    }
+    return NETWORK_VIA.HTTP;
   }
 }
 export default Manager;

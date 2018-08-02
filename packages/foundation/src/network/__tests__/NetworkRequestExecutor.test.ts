@@ -1,7 +1,7 @@
 import { NetworkRequestExecutor } from '../NetworkRequestExecutor';
 import { getFakeRequest, getFakeClient, getFakeResponse } from './utils';
 
-import { NETWORK_REQUEST_EXECUTOR_STATUS, NETWORK_FAIL_TYPE } from '..';
+import { NETWORK_REQUEST_EXECUTOR_STATUS, NETWORK_FAIL_TYPE } from '../network';
 const networkExecutor = new NetworkRequestExecutor(
   getFakeRequest(),
   getFakeClient()
@@ -11,7 +11,7 @@ describe('NetworkRequestExecutor', () => {
   describe('onSuccess', () => {
     it('should call callback', () => {
       const spy = jest.spyOn(networkExecutor, 'callXApiResponseCallback');
-      networkExecutor.onSuccess(getFakeRequest().id, getFakeResponse());
+      networkExecutor.onSuccess(getFakeResponse());
       expect(spy).toBeCalled();
       expect(networkExecutor.status).toEqual(
         NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION
@@ -23,7 +23,7 @@ describe('NetworkRequestExecutor', () => {
     it('should call callback', () => {
       networkExecutor.retryCount = 0;
       const spy = jest.spyOn(networkExecutor, 'callXApiResponseCallback');
-      networkExecutor.onFailure(getFakeRequest().id, getFakeResponse());
+      networkExecutor.onFailure(getFakeResponse());
       expect(spy).toBeCalled();
       expect(networkExecutor.status).toEqual(
         NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION
@@ -35,7 +35,7 @@ describe('NetworkRequestExecutor', () => {
       const response = getFakeResponse();
       response.statusText = NETWORK_FAIL_TYPE.TIME_OUT;
       const spy = jest.spyOn(networkExecutor, 'retry');
-      networkExecutor.onFailure(getFakeRequest().id, response);
+      networkExecutor.onFailure(response);
       expect(spy).toBeCalled();
     });
   });

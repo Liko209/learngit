@@ -1,22 +1,27 @@
 import {
-  NetworkRequestBuilder,
-  Token,
-  NetworkRequestHandler,
-  OAuthTokenManager,
   IRequestDecoration,
   IRequest,
   NETWORK_VIA,
   ITokenHandler,
-  IToken,
-  OAuthTokenHandler
-} from '..';
+  IToken
+} from '../network';
+// NetworkRequestBuilder,
+// Token,
+// NetworkRequestHandler,
+// OAuthTokenManager,
+// OAuthTokenHandler;
 import { NetworkRequestExecutor } from '../NetworkRequestExecutor';
 import RequestTask from '../RequestTask';
 import BaseClient from '../client/BaseClient';
-import NetworkResponseBuilder from '../client/http/NetworkResponseBuilder';
+import Response from '../client/http/Response';
 import NetworkRequestConsumer from '../NetworkRequestConsumer';
 import NetworkRequestSurvivalMode from '../NetworkRequestSurvivalMode';
 import AbstractHandleType from '../AbstractHandleType';
+import NetworkRequestBuilder from '../client/NetworkRequestBuilder';
+import Token from '../Token';
+import OAuthTokenManager from '../OAuthTokenManager';
+import NetworkRequestHandler from '../NetworkRequestHandler';
+import OAuthTokenHandler from '../OAuthTokenHandler';
 const fakeHandleType = new class extends AbstractHandleType {}();
 
 const getFakeRequest = () => {
@@ -27,7 +32,7 @@ const getFakeRequest = () => {
 };
 
 const getFakeResponse = () => {
-  const response = new NetworkResponseBuilder().build();
+  const response = Response.builder.build();
   return response;
 };
 

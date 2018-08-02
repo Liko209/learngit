@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IResponse, HTTP_STATUS_CODE, IRequest } from '..';
+import { IResponse, HTTP_STATUS_CODE, IRequest } from '../network';
 abstract class BaseResponse implements IResponse {
   request: IRequest;
   constructor(
@@ -13,7 +13,7 @@ abstract class BaseResponse implements IResponse {
     readonly statusText: string,
     readonly headers: object,
     readonly retryAfter: number,
-    request: IRequest
+    request: IRequest,
   ) {
     this.data = data;
     this.status = status;

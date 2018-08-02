@@ -6,7 +6,12 @@
 import _ from 'lodash';
 import { DEFAULT_BEFORE_EXPIRED } from './Constants';
 import Token from './Token';
-import { ITokenHandler, IHandleType, ITokenRefreshListener, IToken } from '..';
+import {
+  ITokenHandler,
+  IHandleType,
+  ITokenRefreshListener,
+  IToken,
+} from './network';
 class OAuthTokenHandler implements ITokenHandler {
   type: IHandleType;
   token?: Token;
@@ -20,7 +25,7 @@ class OAuthTokenHandler implements ITokenHandler {
     token?: Token,
     basic?: string,
     listener?: ITokenRefreshListener,
-    isOAuthTokenRefreshing: boolean = false
+    isOAuthTokenRefreshing: boolean = false,
   ) {
     this.type = type;
     this.token = token;
@@ -87,7 +92,8 @@ class OAuthTokenHandler implements ITokenHandler {
     const now = Date.now();
     if (now < timestamp) {
       return true;
-    } else if (now > timestamp + duration) {
+    }
+    if (now > timestamp + duration) {
       return true;
     }
     return false;
@@ -124,7 +130,7 @@ class OAuthTokenHandler implements ITokenHandler {
         }
         if (this.token) {
           this.doRefreshToken(this.token)
-            .then(token => {
+            .then((token) => {
               if (token) {
                 this.token = token;
                 this.notifyRefreshTokenSuccess(token);

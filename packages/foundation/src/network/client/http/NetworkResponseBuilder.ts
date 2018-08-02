@@ -3,10 +3,9 @@
  * @Date: 2018-06-04 15:44:05
  * Copyright © RingCentral. All rights reserved.
  */
-import Response from './Response';
-import { IRequest, HTTP_STATUS_CODE } from '../..';
+import { IRequest, IResponse, HTTP_STATUS_CODE } from '../../network';
 
-class NetworkResponseBuilder {
+abstract class NetworkResponseBuilder {
   data: any = {};
   statusText: string = '';
   headers: object = {};
@@ -68,8 +67,6 @@ class NetworkResponseBuilder {
     return this;
   }
 
-  build() {
-    return new Response(this);
-  }
+  abstract build(): IResponse;
 }
 export default NetworkResponseBuilder;

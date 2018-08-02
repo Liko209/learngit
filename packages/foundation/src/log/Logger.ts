@@ -3,6 +3,7 @@ import LoggingEvent from './LoggingEvent';
 import DateFormatter from './DateFormatter';
 
 import { LOG_LEVEL, DATE_FORMATTER } from './constants';
+import PersistentLogAppender from './appender/PersistentLogAppender';
 
 class Logger {
   private _appenders: Map<string, BaseAppender> = new Map();
@@ -114,10 +115,15 @@ class Logger {
     }
   }
 
-  doAppend() {
+  async doAppend() {
+    const doAppends: Promise<void>[] = [];
     this._appenders.forEach(appender => {
-      appender.doAppend();
+      if (appender instanceof PersistentLogAppender) {
+        doAppends.push(appender.doAppend());
+      }
     });
+
+    await Promise.all(doAppends);
   }
 
   private dolog(logLevel: LOG_LEVEL, message: string) {

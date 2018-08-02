@@ -7,7 +7,7 @@ import {
   getFakeTask,
   getFakeSurvivalMode
 } from './utils';
-import { NETWORK_VIA, REQUEST_PRIORITY, SURVIVAL_MODE } from '..';
+import { NETWORK_VIA, REQUEST_PRIORITY, SURVIVAL_MODE } from '../network';
 const handler = new NetworkRequestHandler(
   getFakeTokenManager(),
   fakeHandleType

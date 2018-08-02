@@ -7,7 +7,7 @@ import RequestTask from './RequestTask';
 import NetworkTokenManager from './OAuthTokenManager';
 import NetworkRequestConsumer from './NetworkRequestConsumer';
 import NetworkRequestSurvivalMode from './NetworkRequestSurvivalMode';
-import { Response } from './client';
+import Response from './client/http/Response';
 import {
   INetworkRequestProducer,
   INetworkRequestConsumerListener,
@@ -18,12 +18,12 @@ import {
   IRequest,
   NETWORK_VIA,
   REQUEST_WEIGHT,
-  SURVIVAL_MODE
-} from '.';
+  SURVIVAL_MODE,
+} from './network';
 
 class NetworkRequestHandler
 implements IResponseListener, INetworkRequestProducer {
-  pendingTasks: Map<REQUEST_PRIORITY, Array<RequestTask>>;
+  pendingTasks: Map<REQUEST_PRIORITY, RequestTask[]>;
   consumers: Map<NETWORK_VIA, INetworkRequestConsumerListener>;
   isPause: boolean;
   type: IHandleType;
@@ -31,7 +31,7 @@ implements IResponseListener, INetworkRequestProducer {
   networkRequestSurvivalMode?: NetworkRequestSurvivalMode;
 
   constructor(tokenManager: NetworkTokenManager, type: IHandleType) {
-    this.pendingTasks = new Map<REQUEST_PRIORITY, Array<RequestTask>>();
+    this.pendingTasks = new Map<REQUEST_PRIORITY, RequestTask[]>();
     this.consumers = new Map<NETWORK_VIA, INetworkRequestConsumerListener>();
     this.isPause = false;
     this.type = type;
@@ -93,14 +93,14 @@ implements IResponseListener, INetworkRequestProducer {
   }
 
   notifyTokenRefreshed() {
-    this.consumers.forEach(consumer => {
+    this.consumers.forEach((consumer) => {
       consumer.onTokenRefreshed();
     });
   }
 
   produceRequest(via: NETWORK_VIA): IRequest | undefined {
     let task;
-    Object.keys(REQUEST_PRIORITY).some(index => {
+    Object.keys(REQUEST_PRIORITY).some((index) => {
       const priority = REQUEST_PRIORITY[index];
       if (!this.canProduceRequest(priority)) {
         return false;
@@ -118,12 +118,12 @@ implements IResponseListener, INetworkRequestProducer {
       this.changeTaskWeight(
         REQUEST_WEIGHT.HIGH,
         this.pendingTasks.get(REQUEST_PRIORITY.NORMAL),
-        this.pendingTasks.get(REQUEST_PRIORITY.HIGH)
+        this.pendingTasks.get(REQUEST_PRIORITY.HIGH),
       );
       this.changeTaskWeight(
         REQUEST_WEIGHT.NORMAL,
         this.pendingTasks.get(REQUEST_PRIORITY.LOW),
-        this.pendingTasks.get(REQUEST_PRIORITY.NORMAL)
+        this.pendingTasks.get(REQUEST_PRIORITY.NORMAL),
       );
 
       return task.request;
@@ -150,7 +150,7 @@ implements IResponseListener, INetworkRequestProducer {
 
   notifyRequestArrived(handleVia: NETWORK_VIA) {
     if (handleVia === NETWORK_VIA.ALL) {
-      this.consumers.forEach(consumer => {
+      this.consumers.forEach((consumer) => {
         if (consumer) {
           consumer.onConsumeArrived();
         }
@@ -175,17 +175,17 @@ implements IResponseListener, INetworkRequestProducer {
   }
 
   cancelAllConsumers() {
-    this.consumers.forEach(consumer => {
+    this.consumers.forEach((consumer) => {
       consumer.onCancelAll();
     });
   }
 
   cancelAllPendingTasks() {
-    this.pendingTasks.forEach(queue => {
-      queue.forEach(task => {
+    this.pendingTasks.forEach((queue) => {
+      queue.forEach((task) => {
         this.callXApiResponseCallback(
           NETWORK_FAIL_TYPE.CANCELLED,
-          task.request
+          task.request,
         );
       });
     });
@@ -194,8 +194,8 @@ implements IResponseListener, INetworkRequestProducer {
 
   isRequestInPending(request: IRequest) {
     let exist = false;
-    this.pendingTasks.forEach(queue => {
-      queue.some(task => {
+    this.pendingTasks.forEach((queue) => {
+      queue.some((task) => {
         if (task.request.id === request.id) {
           exist = true;
           return true;
@@ -213,7 +213,7 @@ implements IResponseListener, INetworkRequestProducer {
 
   deletePendingRequest(request: IRequest) {
     let exist = false;
-    this.pendingTasks.forEach(queue => {
+    this.pendingTasks.forEach((queue) => {
       queue.some((task, index) => {
         if (task.request.id === request.id) {
           exist = true;
@@ -276,7 +276,7 @@ implements IResponseListener, INetworkRequestProducer {
 
   private nextTaskInQueue(
     via: NETWORK_VIA,
-    queue?: Array<RequestTask>
+    queue?: RequestTask[],
   ): RequestTask | undefined {
     let result;
     if (queue) {
@@ -294,8 +294,8 @@ implements IResponseListener, INetworkRequestProducer {
 
   private changeTaskWeight(
     weight: number,
-    source?: Array<RequestTask>,
-    target?: Array<RequestTask>
+    source?: RequestTask[],
+    target?: RequestTask[],
   ) {
     if (!source || !target) {
       return;

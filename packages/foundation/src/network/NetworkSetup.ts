@@ -4,21 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import {
-  NetworkManager,
-  OAuthTokenManager,
-  OAuthTokenHandler,
-  NetworkRequestHandler,
   IHandleType,
   IRequest,
   ITokenHandler,
   IToken,
   IRequestDecoration,
-  ITokenRefreshListener
-} from '.';
+  ITokenRefreshListener,
+} from './network';
 import _ from 'lodash';
+import OAuthTokenHandler from './OAuthTokenHandler';
+import NetworkManager from './NetworkManager';
+import OAuthTokenManager from './OAuthTokenManager';
+import NetworkRequestHandler from './NetworkRequestHandler';
 
 class NetworkSetup {
-  static setup(types: Array<IHandleType>) {
+  static setup(types: IHandleType[]) {
     types.forEach((type: IHandleType) => {
       const tokenHandler = new OAuthTokenHandler(
         type,
@@ -32,7 +32,7 @@ class NetworkSetup {
           willAccessTokenExpired() {
             return type.tokenExpirable;
           }
-        }()
+        }(),
       );
       const decoration = type.requestDecoration(tokenHandler);
       const handler = NetworkManager.Instance.initNetworkRequestBaseHandler(
@@ -42,7 +42,7 @@ class NetworkSetup {
           decorate(request: IRequest) {
             return decoration(request);
           }
-        }()
+        }(),
       );
       tokenHandler.listener = new TokenRefreshListener(tokenHandler, handler);
       tokenHandler.basic = type.basic();
@@ -54,7 +54,7 @@ class NetworkSetup {
 class TokenRefreshListener implements ITokenRefreshListener {
   constructor(
     private tokenHandler: OAuthTokenHandler,
-    private requestHandler: NetworkRequestHandler
+    private requestHandler: NetworkRequestHandler,
   ) {
     this.tokenHandler = tokenHandler;
     this.requestHandler = requestHandler;

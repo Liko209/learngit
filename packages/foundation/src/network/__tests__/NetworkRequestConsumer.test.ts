@@ -1,5 +1,5 @@
 import NetworkRequestConsumer from '../NetworkRequestConsumer';
-import { NETWORK_VIA } from '..';
+import { NETWORK_VIA } from '../network';
 import {
   getFakeRequest,
   getFakeExecutor,

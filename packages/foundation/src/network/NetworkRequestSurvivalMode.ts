@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SURVIVAL_MODE_URIS } from './Constants';
-import { SURVIVAL_MODE } from '..';
+import { SURVIVAL_MODE } from './network';
 
 class NetworkRequestSurvivalMode {
   private survivalModeURIs = SURVIVAL_MODE_URIS;
@@ -30,9 +30,11 @@ class NetworkRequestSurvivalMode {
   }
 
   setupTimer(interval: number) {
-    this.timer = setTimeout(() => {
-      this.backToNormal();
-    }, interval);
+    this.timer = setTimeout(
+      () => {
+        this.backToNormal();
+      },
+      interval);
   }
 
   clearTimer() {

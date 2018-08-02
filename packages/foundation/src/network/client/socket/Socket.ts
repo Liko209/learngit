@@ -4,11 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BaseClient from '../BaseClient';
-import SocketResponse from './SocketResponse';
-import { SocketClientGetter } from './SocketIOClient';
-import { IRequest, INetworkRequestExecutorListener } from '../..';
+import { SocketResponse } from './SocketResponse';
+import { SocketClient } from './SocketIOClient';
+import { IRequest, INetworkRequestExecutorListener } from '../../network';
 import SocketRequest from './SocketRequest';
-
 class Socket extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener) {
     super.request(request, listener);
@@ -17,12 +16,21 @@ class Socket extends BaseClient {
       socketRequest.parameters = request.params;
     }
 
-    const socket = SocketClientGetter.get();
+    const socket = SocketClient.get();
     if (socket) {
-      socket.request(socketRequest, (response: SocketResponse) =>
-        listener.onSuccess(request.id, response),
+      socket.request(socketRequest).then(
+        (response: SocketResponse) => {
+          listener.onSuccess(response);
+        },
+        (response: SocketResponse) => {
+          listener.onFailure(response);
+        },
       );
     }
+  }
+  isNetworkReachable(): boolean {
+    const socket = SocketClient.get && SocketClient.get();
+    return socket && socket.isClientAvailable();
   }
 }
 export default Socket;

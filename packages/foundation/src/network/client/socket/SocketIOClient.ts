@@ -3,17 +3,21 @@
  * @Date: 2018-02-08 14:50:12
  * Copyright © RingCentral. All rights reserved.
  */
-import { SocketResponseBuilder } from './SocketResponseBuilder';
 import SocketRequest from './SocketRequest';
 import io from './socket.io';
-class SocketClientGetter {
-  static get: () => any;
+import SocketRequestHelper from './SocketRequestHelper';
+import { SocketResponse } from './SocketResponse';
+interface ISocketRequestDelegate {
+  request: (request: SocketRequest) => Promise<SocketResponse>;
+  isClientAvailable: () => boolean;
 }
-
-class SocketClient {
-  socket: any;
+class SocketClient implements ISocketRequestDelegate {
+  static get: () => ISocketRequestDelegate;
+  socket: SocketIOClient.Socket;
+  socketRequestHelper: SocketRequestHelper;
 
   constructor(socketServer: string, token: string) {
+    this.socketRequestHelper = new SocketRequestHelper();
     this.socket = io(`https://${socketServer}`, {
       transports: ['polling', 'websocket'],
       autoConnect: false,
@@ -24,33 +28,24 @@ class SocketClient {
       query: { tk: token },
     });
 
-    this.socket.request = (request: SocketRequest, listener: any) => {
-      // const socketRequest = new SocketRequestBuilder(request).build();
-      request.setCallback(listener);
-      this.socket.emit('request', request);
-    };
-
     this.socket.on('response', (response: any) => {
-      const socketResponse = (new SocketResponseBuilder() as SocketResponseBuilder)
-        .options(response)
-        .build();
-      socketResponse.response();
+      this.socketRequestHelper.newResponse(response);
     });
 
-    this.socket.checkConnected = () => {
-      this.socket.emit('ping');
+    SocketClient.get = () => {
+      return this as ISocketRequestDelegate;
     };
+  }
 
-    this.socket.send = () => { };
+  request(request: SocketRequest) {
+    const socketRequestPromise = this.socketRequestHelper.newRequest(request);
+    this.socket.emit('request', request);
+    return socketRequestPromise;
+  }
 
-    this.socket.reset = () => { };
-
-    this.socket.cancelRequest = () => { };
-
-    this.socket.stopCheckConnected = () => { };
-
-    SocketClientGetter.get = () => this.socket;
+  isClientAvailable() {
+    return this.socket && this.socket.connected;
   }
 }
 
-export { SocketClient, SocketClientGetter };
+export { SocketClient };

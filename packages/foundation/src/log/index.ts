@@ -6,8 +6,8 @@ const logManager = LogManager.Instance;
 const mainLogger: Logger = logManager.getMainLogger();
 const networkLogger: Logger = logManager.getLogger('NETWORK');
 
-emitter.on('doAppend', () => {
-  logManager.doAppend();
+emitter.on('doAppend', overThreshold => {
+  logManager.doAppend(overThreshold);
 });
 
 export { LOG_LEVEL } from './constants';

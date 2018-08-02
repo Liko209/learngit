@@ -8,14 +8,16 @@ import SocketRequest from './socket/SocketRequest';
 
 import { generateUUID, generateIncrementId } from '../util';
 import config from '../../config';
+import NetworkManager from '../NetworkManager';
+import BaseRequest from '../BaseRequest';
 import {
   IRequestBuilderOption,
   IHandleType,
   REQUEST_PRIORITY,
   NETWORK_VIA,
   NETWORK_METHOD,
-  Header
-} from '..';
+  Header,
+} from '../network';
 
 class NetworkRequestBuilder implements IRequestBuilderOption {
   id: string = '';
@@ -43,7 +45,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
       data,
       headers,
       authFree,
-      requestConfig
+      requestConfig,
     } = options;
 
     this.headers = headers || {};
@@ -175,15 +177,18 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
     return this;
   }
 
-  build() {
+  build(): BaseRequest {
     switch (this.via) {
       case NETWORK_VIA.SOCKET:
         this.id = generateIncrementId.get();
         return new SocketRequest(this);
       case NETWORK_VIA.HTTP:
-      default:
         this.id = generateUUID();
         return new Request(this);
+      case NETWORK_VIA.ALL:
+      default:
+        this.via = NetworkManager.Instance.clientManager.getAvailableClientType();
+        return this.build();
     }
   }
 }

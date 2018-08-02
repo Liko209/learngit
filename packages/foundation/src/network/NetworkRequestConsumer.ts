@@ -12,8 +12,8 @@ import {
   NETWORK_VIA,
   INetworkRequestExecutor,
   IResponseListener,
-  IRequest
-} from '..';
+  IRequest,
+} from './network';
 
 class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   private _producer: INetworkRequestProducer;
@@ -30,7 +30,7 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
     maxQueueCount: number,
     via: NETWORK_VIA,
     responseListener: IResponseListener,
-    networkRequestDecorator: NetworkRequestDecorator
+    networkRequestDecorator: NetworkRequestDecorator,
   ) {
     this._producer = producer;
     this._client = client;
@@ -45,7 +45,7 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   }
 
   onCancelAll() {
-    this._executorQueue.forEach(executor => {
+    this._executorQueue.forEach((executor) => {
       executor.cancel();
     });
   }
@@ -58,7 +58,7 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   }
 
   onTokenRefreshed() {
-    this._executorQueue.forEach(executor => {
+    this._executorQueue.forEach((executor) => {
       if (executor.isPause()) {
         executor.execute();
       }
@@ -81,11 +81,11 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
       return;
     }
 
-    let executor = new NetworkRequestExecutor(request, this._client);
+    const executor = new NetworkRequestExecutor(request, this._client);
     executor.responseListener = this._responseListener;
     executor.listener = this;
     const decoratedExecutor = this._networkRequestDecorator.setExecutor(
-      executor
+      executor,
     );
     this.addExecutor(decoratedExecutor);
     decoratedExecutor.execute();

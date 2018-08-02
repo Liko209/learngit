@@ -8,6 +8,7 @@ class LogManager {
   private static _instance: LogManager;
   private _loggers: Map<string, Logger>;
   private _dateFormatter: DateFormatter = new DateFormatter();
+  private _overThresholdCallback: Function | null = null;
 
   private constructor() {
     this._loggers = new Map();
@@ -15,7 +16,6 @@ class LogManager {
 
     window.onerror = this.windowError;
     window.addEventListener('beforeunload', event => {
-      event.preventDefault();
       this.doAppend();
     });
   }
@@ -25,10 +25,18 @@ class LogManager {
     return this._instance;
   }
 
-  doAppend() {
+  async doAppend(overThreshold: boolean = false) {
+    const doAppends: Promise<void>[] = [];
     this._loggers.forEach(logger => {
-      logger.doAppend();
+      doAppends.push(logger.doAppend());
     });
+
+    await Promise.all(doAppends);
+
+    if (overThreshold && this._overThresholdCallback) {
+      //notifiy over threshold to do upload
+      this._overThresholdCallback();
+    }
   }
 
   getLogger(categoryName: string) {
@@ -54,6 +62,10 @@ class LogManager {
     defaultLogger.setLevel(LOG_LEVEL.ALL);
   }
 
+  setOverThresholdCallback(cb: Function) {
+    this._overThresholdCallback = cb;
+  }
+
   setAllLoggerLevel(level: LOG_LEVEL) {
     this._loggers.forEach(logger => {
       logger.setLevel(level);
@@ -73,7 +85,7 @@ class LogManager {
   }
 
   async getLogs(categorys?: string[]) {
-    const iterable: Promise<string[][]>[] = [];
+    const iterable: Promise<{}>[] = [];
 
     const handleCategorys = categorys || Array.from(this._loggers.keys());
 

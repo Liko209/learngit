@@ -6,8 +6,15 @@
 import BaseResponse from '../../BaseResponse';
 import NetworkResponseBuilder from './NetworkResponseBuilder';
 
+class HttpResponseBuilder extends NetworkResponseBuilder {
+  build(): Response {
+    return new Response(this);
+  }
+}
 class Response extends BaseResponse {
-  static builder = new NetworkResponseBuilder();
+  static get builder() {
+    return new HttpResponseBuilder();
+  }
   constructor(builder: NetworkResponseBuilder) {
     super(
       builder.data,
@@ -15,7 +22,7 @@ class Response extends BaseResponse {
       builder.statusText,
       builder.headers,
       builder.retryAfter,
-      builder.request
+      builder.request,
     );
   }
 }

@@ -17,8 +17,8 @@ import {
   IToken,
   NETWORK_VIA,
   CONSUMER_MAX_QUEUE_COUNT,
-  IRequestDecoration
-} from '.';
+  IRequestDecoration,
+} from './network';
 
 class NetworkManager {
   private static _instance: NetworkManager;
@@ -46,19 +46,19 @@ class NetworkManager {
   }
 
   pause() {
-    this.handlers.forEach(handler => {
+    this.handlers.forEach((handler) => {
       handler.pause();
     });
   }
 
   resume() {
-    this.handlers.forEach(handler => {
+    this.handlers.forEach((handler) => {
       handler.resume();
     });
   }
 
   cancelAll() {
-    this.handlers.forEach(handler => {
+    this.handlers.forEach((handler) => {
       handler.cancelAll();
     });
   }
@@ -96,17 +96,17 @@ class NetworkManager {
   networkRequestHandler(type: IHandleType) {
     return this.handlers.get(type);
   }
-  addRequestComsumer(
+  addRequestConsumer(
     handler: NetworkRequestHandler,
     via: NETWORK_VIA,
-    consumer: NetworkRequestConsumer
+    consumer: NetworkRequestConsumer,
   ) {
     handler.addRequestConsumer(via, consumer);
   }
   initNetworkRequestBaseHandler(
     handlerType: IHandleType,
     hasSurvivalMode = false,
-    decorator: IRequestDecoration
+    decorator: IRequestDecoration,
   ) {
     if (_.isEmpty(this.tokenManager) || !this.tokenManager) {
       throw new Error('token manager can not be null.');
@@ -121,9 +121,9 @@ class NetworkManager {
       CONSUMER_MAX_QUEUE_COUNT.HTTP,
       httpVia,
       handler,
-      finalDecorator
+      finalDecorator,
     );
-    this.addRequestComsumer(handler, httpVia, httpConsumer);
+    this.addRequestConsumer(handler, httpVia, httpConsumer);
     const socketVia = NETWORK_VIA.SOCKET;
     const socketConsumer = new NetworkRequestConsumer(
       handler,
@@ -131,9 +131,9 @@ class NetworkManager {
       CONSUMER_MAX_QUEUE_COUNT.SOCKET,
       socketVia,
       handler,
-      finalDecorator
+      finalDecorator,
     );
-    this.addRequestComsumer(handler, socketVia, socketConsumer);
+    this.addRequestConsumer(handler, socketVia, socketConsumer);
 
     if (hasSurvivalMode) {
       const survivalMode = new NetworkRequestSurvivalMode();

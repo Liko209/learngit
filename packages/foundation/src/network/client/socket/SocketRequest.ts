@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import Request from '../http/Request';
-import { SocketManager } from './SocketManager';
 import NetworkRequestBuilder from '../NetworkRequestBuilder';
-import { NETWORK_VIA } from '../../..';
+import { NETWORK_VIA } from '../../network';
 class SocketRequest extends Request {
   parameters: object = {};
   uri: string = '';
@@ -20,9 +19,6 @@ class SocketRequest extends Request {
     };
     this.uri = builder.path;
     this.via = NETWORK_VIA.SOCKET;
-  }
-  setCallback(listener: any) {
-    SocketManager.once(this.id, listener);
   }
 }
 type SocketRequestParamsType = { request_id: string };

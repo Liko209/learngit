@@ -7,12 +7,18 @@ import { LOG_LEVEL_STRING } from '../constants';
 class PersistentLogAppender extends BaseAppender {
   private LOG_SYNC_WEIGHT: number = 1000;
   private _loggingEvents: LoggingEvent[] = [];
-  private _getedKeys: string[] = [];
+  private _getedKeyName: string;
+  private _logSize: number = 0;
+  private LOG_SYNC_LENGTH: number = 1024 * 1024;
 
   doLog(loggingEvent: LoggingEvent) {
     this._loggingEvents.push(loggingEvent);
-    if (this._loggingEvents.length > this.LOG_SYNC_WEIGHT) {
-      emitter.emitAsync('doAppend');
+    this._logSize = this._logSize + loggingEvent.getMessage().length;
+    if (
+      this._logSize > this.LOG_SYNC_LENGTH ||
+      this._loggingEvents.length > this.LOG_SYNC_WEIGHT
+    ) {
+      emitter.emitAsync('doAppend', true);
     }
   }
 
@@ -34,21 +40,25 @@ class PersistentLogAppender extends BaseAppender {
   }
 
   async doClear() {
-    if (this._getedKeys.length) {
-      this.doRemove(this._getedKeys);
+    if (this._getedKeyName) {
+      this.doRemove(this._getedKeyName);
       return;
     }
     const category = this.logger.getCategory();
     return this._getStore(category).clear();
   }
 
-  async doRemove(keys: string[]) {
+  async doRemove(keys: string[] | string) {
     const category = this.logger.getCategory();
     const store = this._getStore(category);
     const storeHandlers: Promise<void>[] = [];
-    keys.forEach(key => {
-      storeHandlers.push(store.removeItem(key));
-    });
+    if (Array.isArray(keys)) {
+      keys.forEach(key => {
+        storeHandlers.push(store.removeItem(key));
+      });
+    } else {
+      storeHandlers.push(store.removeItem(keys));
+    }
 
     return Promise.all(storeHandlers);
   }
@@ -65,14 +75,8 @@ class PersistentLogAppender extends BaseAppender {
   async getLogs() {
     const category = this.logger.getCategory();
     const store = this._getStore(category);
-
-    const iterable: Promise<string[]>[] = [];
-    this._getedKeys = await store.keys();
-    this._getedKeys.forEach(key => {
-      iterable.push(store.getItem(key));
-    });
-
-    return Promise.all(iterable);
+    this._getedKeyName = await store.key(0);
+    return store.getItem(this._getedKeyName);
   }
 
   private _getStore(name: string): LocalForage {

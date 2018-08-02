@@ -22,7 +22,7 @@ const generateIncrementId = {
       this.latestId += 1;
     }
     return this.latestId.toString();
-  }
+  },
 };
 
 export { generateUUID, generateIncrementId };

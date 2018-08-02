@@ -19,8 +19,8 @@ import {
   IResponse,
   NETWORK_FAIL_TYPE,
   HTTP_STATUS_CODE,
-  SURVIVAL_MODE
-} from '.';
+  SURVIVAL_MODE,
+} from './network';
 
 export class NetworkRequestExecutor
 implements INetworkRequestExecutorListener, INetworkRequestExecutor {
@@ -43,7 +43,7 @@ implements INetworkRequestExecutorListener, INetworkRequestExecutor {
     this.client = client;
   }
 
-  onSuccess(requestId: string, response: IResponse): void {
+  onSuccess(response: IResponse): void {
     if (this.isCompletion()) {
       return;
     }
@@ -53,15 +53,12 @@ implements INetworkRequestExecutorListener, INetworkRequestExecutor {
     doLog(response);
   }
 
-  onFailure(requestId: string, response: IResponse): void {
+  onFailure(response: IResponse): void {
     if (this.isCompletion()) {
       return;
     }
 
-    if (
-      response.statusText !== NETWORK_FAIL_TYPE.TIME_OUT ||
-      this.retryCount === 0
-    ) {
+    if (response.statusText !== NETWORK_FAIL_TYPE.TIME_OUT) {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
       this.callXApiResponseCallback(response);
       doLog(response);
@@ -113,9 +110,9 @@ implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   }
 
   private retry() {
-    this.retryCount -= 1;
     if (this.retryCount > 0) {
       this.execute();
+      this.retryCount -= 1;
     } else {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
       this.cancelClientRequest();
@@ -181,7 +178,7 @@ implements INetworkRequestExecutorListener, INetworkRequestExecutor {
     const { retryAfter } = response;
     this.responseListener.onSurvivalModeDetected(
       SURVIVAL_MODE.SURVIVAL,
-      retryAfter
+      retryAfter,
     );
   }
 }

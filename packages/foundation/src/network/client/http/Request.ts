@@ -14,7 +14,7 @@ class Request extends BaseRequest {
       builder.method,
       builder.data,
       builder.headers,
-      builder.params
+      builder.params,
     );
     this.authFree = builder.authFree;
     this.host = builder.host;

@@ -1,6 +1,6 @@
 import NetworkManager from '../NetworkManager';
 import NetworkRequestSurvivalMode from '../NetworkRequestSurvivalMode';
-import { IRequestDecoration, IRequest } from '..';
+import { IRequestDecoration, IRequest } from '../network';
 jest.mock('../NetworkRequestSurvivalMode');
 
 import {
@@ -31,7 +31,7 @@ describe('NetworkManager', () => {
   });
   describe('initNetworkRequestBaseHandler', () => {
     it('should have initiated request handler', () => {
-      const spy = jest.spyOn(networkManager, 'addRequestComsumer');
+      const spy = jest.spyOn(networkManager, 'addRequestConsumer');
       initManagerWithHandlerType();
       expect(
         networkManager.networkRequestHandler(fakeHandleType)
