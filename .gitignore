@@ -11,6 +11,7 @@
 /packages/*/build-es/
 /packages/*/coverage/
 /packages/*/node_modules/
+/packages/ui-components/
 /demo/node_modules/
 /demo/build/
 /demo/build-es/

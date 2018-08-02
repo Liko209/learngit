@@ -14,10 +14,7 @@
       "allow-snake-case"
     ],
     "import-name": [
-      false,
-      {
-        "lodash": "_"
-      }
+      false
     ]
   },
   "jsRules": {}
