@@ -6,7 +6,7 @@
 import { Container } from './framework';
 
 const container = new Container({
-  singleton: true,
+  singleton: true
 });
 
 export { container };

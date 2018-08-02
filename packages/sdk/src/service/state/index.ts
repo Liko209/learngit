@@ -40,6 +40,16 @@ export default class StateService extends BaseService<GroupState> {
   //   const groupStateDao = daoManager.getDao(GroupStateDao);
   //   return groupStateDao.get(groupId);
   // }
+  async getById(id: number): Promise<GroupState> {
+    let result = await this.getByIdFromDao(id);// groupid
+    if (!result) {
+      const myState = await this.getMyState();
+      if (myState) {
+        result = await this.getByIdFromAPI(myState.id);// state id
+      }
+    }
+    return result;
+  }
 
   async markAsRead(groupId: number): Promise<void> {
     return this.updateState(groupId, StateService.buildMarkAsReadParam);

@@ -17,6 +17,7 @@ import { Post, Profile, Item, Raw } from '../../models';
 import { ESendStatus, PostSendStatusHandler } from '../../service/post/postSendStatusHandler';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
+import { ErrorParser } from '../../utils/error';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
 export interface IPostResult {
@@ -191,7 +192,8 @@ export default class PostService extends BaseService<Post> {
         }
       } catch (e) {
         mainLogger.warn('crash of innerSendPost()');
-        return this.handleSendPostFail(id, info.version);
+        this.handleSendPostFail(id, info.version);
+        throw ErrorParser.parse(e);
       }
     }
     return null;

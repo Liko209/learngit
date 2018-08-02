@@ -15,14 +15,13 @@ describe('ServiceManager', () => {
   let testService: TestService;
 
   beforeEach(() => {
-    const container = new Container();
-    container.registerAll([
-      {
-        name: TestService.name,
-        value: TestService,
-        singleton: true
-      }
-    ]);
+    const container = new Container({ singleton: true });
+
+    container.registerClass({
+      name: TestService.name,
+      value: TestService
+    });
+
     serviceManager = new ServiceManager(container);
     testService = container.get<TestService>(TestService.name);
   });
@@ -72,8 +71,7 @@ describe('ServiceManager', () => {
     it('should stop all service', () => {
       serviceManager.startService(TestService.name);
       serviceManager.stopAllServices();
-      const services = serviceManager.getAllServices();
-      expect(services[0].isStarted()).toBeFalsy();
+      expect(testService.stop).toHaveBeenCalled();
     });
   });
 
