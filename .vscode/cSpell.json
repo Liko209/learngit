@@ -75,7 +75,8 @@
     "backends",
     "sockjs",
     "todos",
-    "React's"
+    "React's",
+    "execpath"
   ],
   "flagWords": []
 }

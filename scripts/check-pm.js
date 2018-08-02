@@ -3,7 +3,6 @@
  * @Date: 2018-7-17 11:01:02
  * Copyright © RingCentral. All rights reserved.
  */
-const semver = require('semver');
 const spawn  = require('child_process').spawnSync
 
 const yarnVersion = '1.7.0';
@@ -41,8 +40,8 @@ if (!isYarn) {
     log()
     process.exit(1)
   }
-} else if(semver.lt(checkYarnInstalled(), yarnVersion)) {
-    console.error(new Error(`To be continued, you should have the yarn version is greater than ${yarnVersion} installed`))
+} else if(checkYarnInstalled() !== yarnVersion) {
+    console.error(new Error(`To be continued, you should have the yarn version ${yarnVersion} installed`))
     log()
     process.exit(1)
 }
