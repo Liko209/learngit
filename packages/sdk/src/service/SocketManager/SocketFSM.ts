@@ -84,7 +84,7 @@ export class SocketFSM extends StateMachine {
         },
 
         onFinishConnect() {
-          //
+
         },
 
         onFireDisconnect() {
