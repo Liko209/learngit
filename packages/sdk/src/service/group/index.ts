@@ -18,6 +18,7 @@ import GroupAPI from '../../api/glip/group';
 
 import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
+import { ErrorParser } from '../../utils/error';
 import handleData, { filterGroups, handleGroupMostRecentPostChanged, handleFavoriteGroupsChanged } from './handleData';
 import Permission from './permission';
 import { IResponse } from '../../api/NetworkClient';
@@ -215,39 +216,43 @@ export default class GroupService extends BaseService<Group> {
     description: string,
     options: CreateTeamOptions = {}
   ) {
-    const {
-      isPublic = false,
-      canAddMember = false,
-      canPost = false,
-      canAddIntegrations = false,
-      canPin = false
-    } = options;
-    const privacy = isPublic ? 'protected' : 'private';
-    const permissionFlags = {
-      TEAM_ADD_MEMBER: privacy === 'protected' ? true : canAddMember,
-      TEAM_POST: canPost,
-      TEAM_ADD_INTEGRATIONS: canPost ? canAddIntegrations : false,
-      TEAM_PIN_POST: canPost ? canPin : false,
-      TEAM_ADMIN: false
-    };
-    const userPermissionMask = Permission.createPermissionsMask(permissionFlags);
-    const team: Partial<Group> = {
-      set_abbreviation: name,
-      members: memberIds.concat(creator),
-      description,
-      privacy: privacy,
-      permissions: {
-        admin: {
-          uids: [creator]
-        },
-        user: {
-          uids: [],
-          level: userPermissionMask
+    try {
+      const {
+        isPublic = false,
+        canAddMember = false,
+        canPost = false,
+        canAddIntegrations = false,
+        canPin = false
+      } = options;
+      const privacy = isPublic ? 'protected' : 'private';
+      const permissionFlags = {
+        TEAM_ADD_MEMBER: privacy === 'protected' ? true : canAddMember,
+        TEAM_POST: canPost,
+        TEAM_ADD_INTEGRATIONS: canPost ? canAddIntegrations : false,
+        TEAM_PIN_POST: canPost ? canPin : false,
+        TEAM_ADMIN: false
+      };
+      const userPermissionMask = Permission.createPermissionsMask(permissionFlags);
+      const team: Partial<Group> = {
+        set_abbreviation: name,
+        members: memberIds.concat(creator),
+        description,
+        privacy: privacy,
+        permissions: {
+          admin: {
+            uids: [creator]
+          },
+          user: {
+            uids: [],
+            level: userPermissionMask
+          }
         }
-      }
-    };
-    const resp = await GroupAPI.createTeam(team);
-    return this.handleResponse(resp);
+      };
+      const resp = await GroupAPI.createTeam(team);
+      return this.handleResponse(resp);
+    } catch (error) {
+      throw ErrorParser.parse(error);
+    }
   }
 
   async handleResponse(resp: IResponse<Raw<Group>>) {

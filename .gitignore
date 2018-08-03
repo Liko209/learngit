@@ -11,6 +11,7 @@
 /packages/*/build-es/
 /packages/*/coverage/
 /packages/*/node_modules/
+/packages/ui-components/
 /demo/node_modules/
 /demo/build/
 /demo/build-es/
@@ -29,6 +30,8 @@ yarn-error.log*
 
 # vscode
 .vscode/symbols.json
+# vscode history extension
+.history
 
 # cache
 .rpt2_cache

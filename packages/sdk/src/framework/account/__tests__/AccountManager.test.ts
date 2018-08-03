@@ -30,12 +30,27 @@ MySyncAuthenticator.prototype.authenticate = mockSyncAuthenticate;
 
 function setup() {
   const container = new Container({ singleton: true });
-  container.registerAll([
-    { name: MyAccount.name, value: MyAccount },
-    { name: MyOtherAccount.name, value: MyOtherAccount },
-    { name: MyAuthenticator.name, value: MyAuthenticator },
-    { name: MySyncAuthenticator.name, value: MySyncAuthenticator }
-  ]);
+
+  container.registerClass({
+    name: MyAccount.name,
+    value: MyAccount
+  });
+
+  container.registerClass({
+    name: MyOtherAccount.name,
+    value: MyOtherAccount
+  });
+
+  container.registerClass({
+    name: MyAuthenticator.name,
+    value: MyAuthenticator
+  });
+
+  container.registerClass({
+    name: MySyncAuthenticator.name,
+    value: MySyncAuthenticator
+  });
+
   const accountManager = new AccountManager(container);
   return { accountManager, container };
 }

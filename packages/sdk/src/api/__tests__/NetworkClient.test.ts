@@ -130,7 +130,7 @@ describe('apiRequest', () => {
       const promise = rcNetworkClient.request(getRequest);
 
       mockRequest.callback({ status: 500, data: { a: 'fail' }});
-      await expect(promise).rejects.toEqual({ a: 'fail' });
+      await expect(promise).rejects.toEqual({ data: { a: 'fail' }, status: 500 });
     });
   });
 

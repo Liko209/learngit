@@ -27,10 +27,7 @@ class Api {
     // TODO httpConfig should be private. but for now, it is
     // directly accessed by the ui layer. That should be refactor.
     // Move logics that access httpConfig into Api in the future.
-    Aware(
-      ErrorTypes.HTTP,
-      'httpConfig should be private. but it is directly accessed by the ui layer.',
-    );
+    Aware(ErrorTypes.HTTP, 'httpConfig should be private. but it is directly accessed by the ui layer.');
     return this._httpConfig;
   }
 
@@ -42,7 +39,7 @@ class Api {
       const currentConfig = this._httpConfig[name];
       const networkRequests: INetworkRequests = {
         host: currentConfig.server,
-        handlerType: type,
+        handlerType: type
       };
       networkClient = new NetworkClient(networkRequests, currentConfig.apiPlatform);
       this.httpSet.set(name, networkClient);

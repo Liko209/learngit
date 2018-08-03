@@ -165,9 +165,11 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
         const resultGroups = await dao.queryGroupsByIds(moreNormals);
         notificationCenter.emitEntityDelete(ENTITY.FAVORITE_GROUPS, resultGroups);
         const teams = resultGroups.filter((item: Group) => item.is_team);
-        notificationCenter.emitEntityPut(ENTITY.FAVORITE_GROUPS, teams);
+        // notificationCenter.emitEntityPut(ENTITY.FAVORITE_GROUPS, teams);
 
         const groups = resultGroups.filter((item: Group) => !item.is_team);
+        notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, teams);
+
         notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, groups);
       }
     }

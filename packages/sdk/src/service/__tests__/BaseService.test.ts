@@ -22,7 +22,7 @@ class AService extends BaseService {
   }
 }
 
-container.register({
+container.registerClass({
   name: AService.name,
   value: AService,
   singleton: true

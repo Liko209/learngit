@@ -3,12 +3,13 @@
  * @Date: 2018-06-24 14:19:24
  * Copyright © RingCentral. All rights reserved
 */
-import _ from 'lodash';
-import { Container } from '../Container';
-import { IAccount } from './IAccount';
-import { IAuthenticator, ISyncAuthenticator, IAccountInfo, IAuthResponse } from './IAuthenticator';
 import { EventEmitter2 } from 'eventemitter2';
+import _ from 'lodash';
+
+import { Container } from '../Container';
 import { AbstractAccount } from './AbstractAccount';
+import { IAccount } from './IAccount';
+import { IAccountInfo, IAuthenticator, IAuthResponse, ISyncAuthenticator } from './IAuthenticator';
 
 const EVENT_LOGIN = 'ACCOUNT_MANAGER.EVENT_LOGIN';
 const EVENT_LOGOUT = 'ACCOUNT_MANAGER.EVENT_LOGOUT';

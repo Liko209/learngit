@@ -18,8 +18,8 @@ function versionHash(): number {
 //  collision rate is less than 1/2^^122
 function generateUUID(): string {
   let date = new Date().getTime();
-  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (date + Math.random() * 16) % 16 | 0;
+  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    let r = (date + Math.random() * 16) % 16 | 0;
     date = Math.floor(date / 16);
     return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
   });

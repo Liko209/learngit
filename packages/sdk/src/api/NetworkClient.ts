@@ -91,7 +91,10 @@ export default class NetworkClient {
           })
         );
       } else {
-        promiseResolvers.forEach(({ reject }) => reject(resp.data));
+        promiseResolvers.forEach(({ reject }) => {
+          console.log('Network reject', resp);
+          reject(resp);
+        });
       }
       this.apiMap.delete(apiMapKey);
     };
