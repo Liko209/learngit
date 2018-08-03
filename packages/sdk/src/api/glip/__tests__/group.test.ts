@@ -41,12 +41,12 @@ describe('GroupAPI', () => {
         privacy: 'protected',
         permissions: {
           admin: {
-            uids: [23776043011]
+            uids: [23776043011],
           },
           user: {
             uids: [],
-            level: 15
-          }
+            level: 15,
+          },
         },
         members: [22103719939, 23776043011],
         surrogates: [],
@@ -59,7 +59,7 @@ describe('GroupAPI', () => {
         email_friendly_abbreviation: 'new_team',
         new_version: 1670941910740196,
         request_id: 13,
-        _csrf: null
+        _csrf: null,
       };
       GroupAPI.createTeam(data);
       expect(GroupAPI.glipNetworkClient.post).toHaveBeenCalledWith('/team', data);

@@ -13,7 +13,7 @@ import SearchService from './index';
 
 export default ({ results, request_id: requestId, scroll_request_id }: SearchResultResponse) => {
   const searchService: SearchService = SearchService.getInstance();
-  //cancel the former non-active request
+  // cancel the former non-active request
   if (requestId !== searchService.activeServerRequestId) {
     searchService.cancelSearchRequest(requestId);
     return;

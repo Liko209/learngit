@@ -12,12 +12,12 @@ jest.mock('dao', () => {
   const dao = { get: jest.fn(), bulkPut: jest.fn() };
   return {
     daoManager: {
-      getDao: () => dao
-    }
+      getDao: () => dao,
+    },
   };
 });
 const mockAccountService = {
-  getCurrentUserProfileId: jest.fn()
+  getCurrentUserProfileId: jest.fn(),
 };
 
 jest.mock('service/account', () => {

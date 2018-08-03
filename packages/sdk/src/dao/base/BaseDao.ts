@@ -120,7 +120,7 @@ class BaseDao<T extends {}> {
     if (withPrimaryKey && !item[this.collection.primaryKeyName()]) {
       Throw(
         ErrorTypes.INVALIDTE_PARAMETERS,
-        `Lack of primary key ${this.collection.primaryKeyName()} in object ${JSON.stringify(item)}`
+        `Lack of primary key ${this.collection.primaryKeyName()} in object ${JSON.stringify(item)}`,
       );
     }
   }

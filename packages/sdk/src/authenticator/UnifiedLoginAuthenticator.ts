@@ -34,13 +34,13 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     }
     return {
       success: false,
-      error: new Error('invalid tokens')
+      error: new Error('invalid tokens'),
     };
   }
 
   private async glipAccountLogin(token: string): Promise<IAuthResponse> {
     return {
-      success: true
+      success: true,
     };
   }
 
@@ -49,7 +49,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
     const authData = await oauthTokenViaAuthCode({
       code,
-      redirect_uri: `${window.location.origin}/unified-login/`
+      redirect_uri: `${window.location.origin}/unified-login/`,
     });
 
     const authDao = daoManager.getKVDao(AuthDao);
@@ -62,8 +62,8 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     const newData = await oauthTokenViaAuthCode(
       { code: newCode, redirect_uri: 'glip://rclogin' },
       {
-        Authorization: `Basic ${btoa(`${rc.clientId}:${rc.clientSecret}`)}`
-      }
+        Authorization: `Basic ${btoa(`${rc.clientId}:${rc.clientSecret}`)}`,
+      },
     );
     const glipAuthData = await loginGlip(newData.data);
 
@@ -81,13 +81,13 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
       accountInfos: [
         {
           type: RCAccount.name,
-          data: authData.data
+          data: authData.data,
         },
         {
           type: GlipAccount.name,
-          data: glipToken
-        }
-      ]
+          data: glipToken,
+        },
+      ],
     };
   }
 }

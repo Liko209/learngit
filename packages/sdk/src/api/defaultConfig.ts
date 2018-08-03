@@ -7,11 +7,11 @@ const defaultConfig: ApiConfig = {
     apiPlatformVersion: '',
     clientId: '',
     clientSecret: '',
-    redirectUri: ''
+    redirectUri: '',
   },
   glip: {
     server: '',
-    apiPlatform: ''
+    apiPlatform: '',
   },
   glip2: {
     server: '',
@@ -20,12 +20,12 @@ const defaultConfig: ApiConfig = {
     clientId: '',
     clientSecret: '',
     redirectUri: '',
-    brandId: 0
+    brandId: 0,
   },
   upload: {
     server: '',
-    apiPlatform: ''
-  }
+    apiPlatform: '',
+  },
 };
 
 export { defaultConfig };

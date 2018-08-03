@@ -26,7 +26,7 @@ const fetchIndexData = async (): Promise<IResponse<IndexDataModel>> => {
   const requestConfig = {
     onDownloadProgress(e: any) {
       progressBar.update(e);
-    }
+    },
   };
   let result;
 

@@ -23,7 +23,7 @@ describe('ItemService', () => {
       sendFileItem.mockImplementation(() => '');
       const result = await itemService.sendFile({
         file: new FormData(),
-        groupId: '1'
+        groupId: '1',
       });
       expect(result).toBeNull();
     });
@@ -32,15 +32,15 @@ describe('ItemService', () => {
       handleData.mockImplementation(() => [{ name: 'mock' }]);
       sendFileItem.mockImplementation(() => ({
         id: 1,
-        name: 'xxx'
+        name: 'xxx',
       }));
       const result = await itemService.sendFile({
         file: new FormData(),
-        groupId: '1'
+        groupId: '1',
       });
       expect(result).toEqual({
         id: 1,
-        name: 'xxx'
+        name: 'xxx',
       });
     });
 
@@ -51,7 +51,7 @@ describe('ItemService', () => {
       try {
         await itemService.sendFile({
           file: new FormData(),
-          groupId: '1'
+          groupId: '1',
         });
       } catch (e) {
         expect(e).toEqual(new Error('error'));
@@ -61,14 +61,14 @@ describe('ItemService', () => {
 
   describe('getRightRailItemsOfGroup()', () => {
     const itemDao = {
-      getItemsByGroupId: jest.fn()
+      getItemsByGroupId: jest.fn(),
     };
     beforeAll(() => {
       handleData.mockClear();
       ItemAPI.requestRightRailItems = jest.fn().mockResolvedValue({
         data: {
-          items: []
-        }
+          items: [],
+        },
       });
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
     });
@@ -84,8 +84,8 @@ describe('ItemService', () => {
     it('should call handleData if api gets the data', done => {
       ItemAPI.requestRightRailItems.mockResolvedValue({
         data: {
-          items: [{ _id: 1 }, { _id: 2 }]
-        }
+          items: [{ _id: 1 }, { _id: 2 }],
+        },
       });
       itemService.getRightRailItemsOfGroup(123);
       setTimeout(() => {
@@ -102,23 +102,23 @@ describe('ItemService', () => {
 
   describe('getNoteById()', () => {
     const itemDao = {
-      get: jest.fn()
+      get: jest.fn(),
     };
     const rawData = {
       _id: 1,
       body: 'body',
-      title: 'title'
+      title: 'title',
     };
     const transformedData = {
       id: 1,
       body: 'body',
-      title: 'title'
+      title: 'title',
     };
     beforeAll(() => {
       handleData.mockClear();
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
       ItemAPI.getNote = jest.fn().mockResolvedValue({
-        data: rawData
+        data: rawData,
       });
     });
     afterAll(() => {

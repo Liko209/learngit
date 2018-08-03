@@ -15,7 +15,7 @@ import { SOCKET } from './eventKey';
 
 const throwError = (text: string): never => {
   throw new Error(
-    `${text} is undefined! ${text} must be passed to Service constructor like this super(DaoClass, ApiClass, handleData)`
+    `${text} is undefined! ${text} must be passed to Service constructor like this super(DaoClass, ApiClass, handleData)`,
   );
 };
 
@@ -26,7 +26,7 @@ class BaseService<SubModel extends BaseModel = BaseModel> extends AbstractServic
     public DaoClass?: any,
     public ApiClass?: any,
     public handleData?: any,
-    private _subscriptions: Object = {}
+    private _subscriptions: Object = {},
   ) {
     super();
     mainLogger.info('BaseService constructor');

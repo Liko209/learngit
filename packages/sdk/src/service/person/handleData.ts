@@ -18,7 +18,7 @@ const personHandleData = async (persons: Raw<Person>[]) => {
   await baseHandleData({
     data: transformedData,
     dao: personDao,
-    eventKey: ENTITY.PERSON
+    eventKey: ENTITY.PERSON,
   });
 };
 

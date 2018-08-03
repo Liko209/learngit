@@ -36,7 +36,7 @@ describe('utils', () => {
   describe('baseHandleData()', () => {
     const fakeDao = {
       bulkPut: jest.fn(),
-      bulkDelete: jest.fn()
+      bulkDelete: jest.fn(),
     };
 
     beforeEach(() => {
@@ -48,7 +48,7 @@ describe('utils', () => {
       const obj = {
         data: [{ id: 1 }, { id: 2 }, { id: 3 }],
         dao: fakeDao,
-        eventKey: ENTITY.POST
+        eventKey: ENTITY.POST,
       };
 
       await baseHandleData(obj);
@@ -61,10 +61,10 @@ describe('utils', () => {
       const obj = {
         data: [{ id: 1, deactivated: true }, { id: 2, deactivated: true }, { id: 3, deactivated: true }],
         dao: fakeDao,
-        eventKey: ENTITY.POST
+        eventKey: ENTITY.POST,
       };
       const deactivatedDao = {
-        bulkPut: jest.fn()
+        bulkPut: jest.fn(),
       };
       daoManager.getDao = jest.fn(() => deactivatedDao);
       await baseHandleData(obj);

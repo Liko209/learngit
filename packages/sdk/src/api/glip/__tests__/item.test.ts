@@ -11,8 +11,8 @@ jest.mock('../../api');
 describe('ItemAPI', () => {
   describe('sendFileItem()', () => {
     it('glipNetworkClient.post() should be called with specific path', () => {
-      ItemAPI.sendFileItem({ file: {}});
-      expect(ItemAPI.glipNetworkClient.post).toHaveBeenCalledWith('/file', { file: {}});
+      ItemAPI.sendFileItem({ file: {} });
+      expect(ItemAPI.glipNetworkClient.post).toHaveBeenCalledWith('/file', { file: {} });
     });
   });
   describe('uploadFileItem()', () => {

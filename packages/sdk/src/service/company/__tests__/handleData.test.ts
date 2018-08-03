@@ -11,7 +11,7 @@ import handleData from '../handleData';
 import { rawCompanyFactory } from '../../../__tests__/factories';
 
 jest.mock('service/notificationCenter', () => ({
-  emitEntityPut: jest.fn()
+  emitEntityPut: jest.fn(),
 }));
 
 // jest.mock('dao', () => ({
@@ -23,12 +23,12 @@ jest.mock('service/notificationCenter', () => ({
 // }));
 
 jest.mock('service/utils', () => ({
-  transform: jest.fn()
+  transform: jest.fn(),
 }));
 
 describe('Company Service handleData', () => {
   const dao = {
-    bulkPut: jest.fn()
+    bulkPut: jest.fn(),
   };
   beforeEach(() => {
     daoManager.getDao = jest.fn().mockReturnValue(dao);

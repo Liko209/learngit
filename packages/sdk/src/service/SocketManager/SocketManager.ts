@@ -99,7 +99,7 @@ export class SocketManager {
       this.onReconnect(data);
     });
 
-    //TO-DO: /can-connect API reponse.
+    // TO-DO: /can-connect API reponse.
   }
 
   private onLogin() {
@@ -185,10 +185,10 @@ export class SocketManager {
     if (!this.activeFSM) return;
 
     const state = this.activeFSM.state;
-    //TO-DO:
+    // TO-DO:
     if (state !== 'connected' && state !== 'connecting') {
       notificationCenter.emit(SOCKET.STATE_CHANGE, {
-        state: 'refresh'
+        state: 'refresh',
       });
     }
   }
@@ -208,7 +208,7 @@ export class SocketManager {
   }
 
   private startFSM() {
-    //TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
+    // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
     const authDao = daoManager.getKVDao(AuthDao);
     const configDao = daoManager.getKVDao(ConfigDao);
     const glipToken = authDao.get(AUTH_GLIP_TOKEN);
@@ -218,13 +218,13 @@ export class SocketManager {
       this.activeFSM.start();
     }
 
-    //TO-DO: should subscribe closed event to remove self from mananger?
+    // TO-DO: should subscribe closed event to remove self from mananger?
   }
 
   private stopActiveFSM() {
     if (this.activeFSM) {
       this.activeFSM.stop();
-      //this.closeingFSMs[this.activeFSM.name] = this.activeFSM;
+      // this.closeingFSMs[this.activeFSM.name] = this.activeFSM;
       this.activeFSM = null;
     }
   }

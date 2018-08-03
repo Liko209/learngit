@@ -52,7 +52,7 @@ describe('PersonService', () => {
 
   describe('getPersonsCountByPrefix()', () => {
     it('should return all matched person', async () => {
-      //personService.getById = jest.fn();
+      // personService.getById = jest.fn();
       const mock = 3;
       daoManager.getDao.mockReturnValue(personDao);
       personDao.getPersonsCountByPrefix.mockReturnValue(mock);

@@ -21,7 +21,7 @@ import {
   RawQuery,
   QueryByPageNum,
   InitialSearchResp,
-  SearchResultResponse
+  SearchResultResponse,
 } from './types.d';
 import { IResponse } from '../../api/NetworkClient';
 import { SOCKET } from '../eventKey';
@@ -36,7 +36,7 @@ export default class SearchService extends BaseService {
   constructor() {
     const subscriptions = {
       [SOCKET.SEARCH]: handleData,
-      [SOCKET.SEARCH_SCROLL]: handleData
+      [SOCKET.SEARCH_SCROLL]: handleData,
     };
     super(null, null, null, subscriptions);
   }
@@ -49,7 +49,7 @@ export default class SearchService extends BaseService {
       const people = await personDao.searchPeopleByKey(key);
       return {
         people,
-        teams
+        teams,
       };
     } catch (e) {
       mainLogger.info(`searchContact key ==> ${key}, error ===> ${e}`);
@@ -68,7 +68,7 @@ export default class SearchService extends BaseService {
     }
   }
   cleanQuery(queryString: QueryString = ''): QueryString {
-    const specialCharactersReg = /[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]/g; //eslint-disable-line
+    const specialCharactersReg = /[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]/g; // eslint-disable-line
     const queryStringCleaned = queryString.replace(specialCharactersReg, ' ').trim();
     const shortQueryWords = (word: QueryString): Boolean => {
       return word.length >= SearchService.MIN_QUERY_WORD_LENGTH;

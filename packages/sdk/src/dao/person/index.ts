@@ -28,7 +28,7 @@ class PersonDao extends BaseDao<Person> {
 
   async getPersonsByPrefix(
     prefix: string,
-    { offset = 0, limit = DEFAULT_LIMIT }: Partial<IPagination> = {}
+    { offset = 0, limit = DEFAULT_LIMIT }: Partial<IPagination> = {},
   ): Promise<Person[]> {
     if (prefix === '') return [];
     if (prefix === '#') return this.getPersonsNotStartsWithAlphabet({ limit });
@@ -46,7 +46,7 @@ class PersonDao extends BaseDao<Person> {
     // Find persons starts with a letter in a-Z
     ALPHABET.forEach(prefix => {
       const filteredPersons = persons.filter(person => {
-        let display_name = this.getNameOfPerson(person);
+        const display_name = this.getNameOfPerson(person);
         return display_name && display_name.toLowerCase().indexOf(prefix) === 0;
       });
       map.set(prefix.toUpperCase(), filteredPersons.slice(0, limit));
@@ -57,7 +57,7 @@ class PersonDao extends BaseDao<Person> {
       (async () => {
         const persons = await this.getPersonsNotStartsWithAlphabet({ limit });
         map.set('#', persons);
-      })()
+      })(),
     );
 
     await Promise.all(promises);

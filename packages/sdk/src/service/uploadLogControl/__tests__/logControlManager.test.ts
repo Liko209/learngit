@@ -18,14 +18,14 @@ describe('LogControlManager', () => {
     it('is empty', () => {
       const logs = {
         MAIN: [],
-        NETWORK: []
+        NETWORK: [],
       };
       expect(LogControlManager.Instance().logIsEmpty(logs)).toBeTruthy();
     });
     it('is not empty', () => {
       const logs = {
         MAIN: [],
-        NETWORK: ['1']
+        NETWORK: ['1'],
       };
       expect(LogControlManager.Instance().logIsEmpty(logs)).toBeFalsy();
     });

@@ -5,18 +5,18 @@ import handleData from '../handleData';
 import { rawPersonFactory } from '../../../__tests__/factories';
 
 jest.mock('service/notificationCenter', () => ({
-  emitEntityPut: jest.fn()
+  emitEntityPut: jest.fn(),
 }));
 
 jest.mock('dao', () => ({
   daoManager: {
-    getDao: jest.fn()
-  }
+    getDao: jest.fn(),
+  },
 }));
 
 jest.mock('service/utils', () => ({
   transform: jest.fn(),
-  baseHandleData: jest.fn()
+  baseHandleData: jest.fn(),
 }));
 
 describe('handleData()', () => {

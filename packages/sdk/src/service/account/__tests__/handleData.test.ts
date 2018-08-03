@@ -9,18 +9,18 @@ import notificationCenter from '../../../service/notificationCenter';
 import accountHandleData from '../handleData';
 
 jest.mock('service/notificationCenter', () => ({
-  emitConfigPut: jest.fn()
+  emitConfigPut: jest.fn(),
 }));
 
 jest.mock('dao', () => ({
   daoManager: {
     getDao: jest.fn(() => ({
-      put: jest.fn()
+      put: jest.fn(),
     })),
     getKVDao: jest.fn(() => ({
-      put: jest.fn()
-    }))
-  }
+      put: jest.fn(),
+    })),
+  },
 }));
 
 describe('Account Service handleData', () => {
@@ -31,7 +31,7 @@ describe('Account Service handleData', () => {
     accountHandleData({
       userId: 1,
       companyId: 2,
-      profileId: 3
+      profileId: 3,
     });
     // const userId = +dao.get(ACCOUNT_USER_ID);
     // const companyId = +dao.get(ACCOUNT_COMPANY_ID);
@@ -46,14 +46,14 @@ describe('Account Service handleData', () => {
   it('getCurrentUserId()', async () => {
     accountHandleData({
       companyId: 2,
-      profileId: 3
+      profileId: 3,
     });
     expect(notificationCenter.emitConfigPut).toHaveBeenCalledTimes(2);
   });
 
   it('getCurrentUserId()', async () => {
     accountHandleData({
-      profileId: 3
+      profileId: 3,
     });
     expect(notificationCenter.emitConfigPut).toHaveBeenCalledTimes(1);
   });
@@ -65,7 +65,7 @@ describe('Account Service handleData', () => {
 
   it('clientConfig()', async () => {
     accountHandleData({
-      clientConfig: { beta_enable_log_emails: [123] }
+      clientConfig: { beta_enable_log_emails: [123] },
     });
     expect(notificationCenter.emitConfigPut).toHaveBeenCalledTimes(1);
   });

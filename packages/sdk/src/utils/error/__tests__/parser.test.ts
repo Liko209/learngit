@@ -15,24 +15,24 @@ function createResponse(obj: any) {
 
 describe('ErrorParser', () => {
   it('ErrorParser parse/dexie/http', () => {
-    let dexieError: any = new Dexie.DexieError();
+    const dexieError: any = new Dexie.DexieError();
     expect(ErrorParser.parse(dexieError).code).toBe(DEXIE_ERROR_CODE);
 
-    let httpError: Response = createResponse({ status: 200, data: { error: { message: '' }}});
+    const httpError: Response = createResponse({ status: 200, data: { error: { message: '' } } });
     expect(ErrorParser.parse(httpError).code).toBe(HTTP_BASE_CODE + httpError.status);
 
-    let commonError: Response = createResponse({
+    const commonError: Response = createResponse({
       status: 400,
       data: {
         error: 'invalid_grant',
-        error_description: 'xxxx'
-      }
+        error_description: 'xxxx',
+      },
     });
 
     expect(ErrorParser.parse(commonError).code).toBe(4147);
 
-    let baseError = {
-      message: 'baseError'
+    const baseError = {
+      message: 'baseError',
     };
 
     expect(ErrorParser.parse(baseError).code).toBe(0);

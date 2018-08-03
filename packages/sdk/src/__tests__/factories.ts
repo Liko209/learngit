@@ -13,7 +13,7 @@ const base = {
   is_new: faker.random.boolean(),
   model_id: uniqueNumber().toString(),
   modified_at: uniqueNumber(),
-  deactivated: false
+  deactivated: false,
 };
 const rawBase = {
   _id: uniqueNumber(),
@@ -24,7 +24,7 @@ const rawBase = {
   is_new: faker.random.boolean(),
   model_id: uniqueNumber().toString(),
   modified_at: uniqueNumber(),
-  deactivated: false
+  deactivated: false,
 };
 export const baseModelFactory = Factory.makeFactory<BaseModel>(base);
 export const rawBaseModelFactory = Factory.makeFactory<Raw<BaseModel>>(rawBase);
@@ -33,15 +33,15 @@ export const rawBaseModelFactory = Factory.makeFactory<Raw<BaseModel>>(rawBase);
 const myState = {
   person_id: 3592527875,
   current_group_id: 4325408770,
-  current_plugin: 'events'
+  current_plugin: 'events',
 };
 export const myStateFactory = Factory.makeFactory<MyState>({
   ...base,
-  ...myState
+  ...myState,
 });
 export const rawMyStateFactory = Factory.makeFactory<Raw<MyState>>({
   ...rawBase,
-  ...myState
+  ...myState,
 });
 
 // Post
@@ -52,15 +52,15 @@ const post = {
   text: faker.lorem.lines(),
   company_id: faker.random.number(100000000),
   at_mention_item_ids: [],
-  at_mention_non_item_ids: []
+  at_mention_non_item_ids: [],
 };
 export const postFactory = Factory.makeFactory<Post>({
   ...base,
-  ...post
+  ...post,
 });
 export const rawPostFactory = Factory.makeFactory<Raw<Post>>({
   ...rawBase,
-  ...post
+  ...post,
 });
 
 // Item
@@ -68,30 +68,30 @@ const item = {
   post_ids: [faker.random.number(100000000)],
   group_ids: [faker.random.number(100000000)],
   company_id: faker.random.number(100000000),
-  type_id: faker.random.number(100)
+  type_id: faker.random.number(100),
 };
 export const itemFactory = Factory.makeFactory<Item>({
   ...base,
-  ...item
+  ...item,
 });
 export const rawItemFactory = Factory.makeFactory<Raw<Item>>({
   ...rawBase,
-  ...item
+  ...item,
 });
 
 // Company
 const company = {
   name: faker.company.companyName(),
   domain: faker.internet.domainName(),
-  admins: [faker.random.number(10000)]
+  admins: [faker.random.number(10000)],
 };
 export const companyFactory = Factory.makeFactory<Company>({
   ...base,
-  ...company
+  ...company,
 });
 export const rawCompanyFactory = Factory.makeFactory<Raw<Company>>({
   ...rawBase,
-  ...company
+  ...company,
 });
 
 // Group
@@ -106,15 +106,15 @@ const group = {
   most_recent_post_id: uniqueNumber(),
   most_recent_post_created_at: uniqueNumber(),
   post_cursor: faker.random.number(1000),
-  deactivated_post_cursor: faker.random.number(1000)
+  deactivated_post_cursor: faker.random.number(1000),
 };
 export const groupFactory = Factory.makeFactory<Group>({
   ...base,
-  ...group
+  ...group,
 });
 export const rawGroupFactory = Factory.makeFactory<Raw<Group>>({
   ...rawBase,
-  ...group
+  ...group,
 });
 
 // Person
@@ -128,32 +128,32 @@ const person = {
   sanitized_rc_extension: { extensionNumber: '2013', type: 'User' },
   rc_phone_numbers: [
     { id: 536322020, phoneNumber: '16504463168', usageType: 'DirectNumber' },
-    { id: 36525942, phoneNumber: '18885287464', usageType: 'MainCompanyNumber' }
+    { id: 36525942, phoneNumber: '18885287464', usageType: 'MainCompanyNumber' },
   ],
-  first_user: faker.random.boolean()
+  first_user: faker.random.boolean(),
 };
 export const personFactory = Factory.makeFactory<Person>({
   ...base,
-  ...person
+  ...person,
 });
 export const rawPersonFactory = Factory.makeFactory<Raw<Person>>({
   ...rawBase,
-  ...person
+  ...person,
 });
 
 // Profile
 const profile = {
   person_id: 21701566467,
   favorite_group_ids: [2586017798, 6037741574, 66441650178],
-  favorite_post_ids: [2586017798, 6037741574, 66441650178]
+  favorite_post_ids: [2586017798, 6037741574, 66441650178],
 };
 export const profileFactory = Factory.makeFactory<Profile>({
   ...base,
-  ...profile
+  ...profile,
 });
 export const rawProfileFactory = Factory.makeFactory<Raw<Profile>>({
   ...rawBase,
-  ...profile
+  ...profile,
 });
 
 export const storedFileFactory = Factory.makeFactory<StoredFile>({
@@ -162,5 +162,5 @@ export const storedFileFactory = Factory.makeFactory<StoredFile>({
   download_url: faker.internet.url(),
   storage_path: faker.internet.url(),
   last_modified: uniqueNumber(),
-  size: faker.random.number(10000)
+  size: faker.random.number(10000),
 });

@@ -15,7 +15,7 @@ export default class SyncService extends BaseService {
         if (state === 'connected' || state === 'refresh') {
           this.syncData();
         }
-      }
+      },
     };
     super(null, null, null, subscriptions);
   }

@@ -62,7 +62,7 @@ export default class AccountService extends BaseService {
     return {
       email: personInfo.email,
       display_name: personInfo.display_name,
-      company_id
+      company_id,
     } as UserInfo;
   }
 

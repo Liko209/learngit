@@ -37,10 +37,10 @@ const schema = {
     1: {
       mock: {
         unique: 'id',
-        indices: ['index', 'name', 'pet', '[index+name]', '[name+index]', '[id+index]', '[index+id]', '*teams']
-      }
-    }
-  }
+        indices: ['index', 'name', 'pet', '[index+name]', '[name+index]', '[id+index]', '[index+id]', '*teams'],
+      },
+    },
+  },
 };
 
 function isAscending(arr: Array<any>) {
@@ -99,14 +99,14 @@ describe('Query', () => {
         query
           .offset(10)
           .limit(10)
-          .count()
+          .count(),
       ).resolves.toBe(10);
       query.reset();
       await expect(
         query
           .offset(10)
           .limit(10)
-          .toArray()
+          .toArray(),
       ).resolves.toHaveLength(10);
     });
   });
@@ -117,8 +117,8 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
+        })),
       );
     });
 
@@ -164,8 +164,8 @@ describe('Query', () => {
         randomItems(10, () => ({
           id: faker.random.uuid(),
           index: faker.random.arrayElement(['one', 'two', 'three', 'three', 'three', 'three', 'four', 'five']),
-          name: faker.random.arrayElement(['David', 'Eve'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve']),
+        })),
       );
     });
 
@@ -221,8 +221,8 @@ describe('Query', () => {
           id: faker.random.uuid(),
           index: faker.random.arrayElement(['one', 'two', 'three', 'four', 'five']),
           name: faker.random.arrayElement(['David', 'Eve']),
-          pet: faker.random.arrayElement(['dog', 'cat'])
-        }))
+          pet: faker.random.arrayElement(['dog', 'cat']),
+        })),
       );
     });
 
@@ -263,8 +263,8 @@ describe('Query', () => {
         randomItems(100, () => ({
           id: faker.random.uuid(),
           index: faker.random.arrayElement([20, 50, faker.random.number(100)]),
-          name: faker.random.arrayElement(['David', 'Eve', 'Gary'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve', 'Gary']),
+        })),
       );
     });
 
@@ -329,8 +329,8 @@ describe('Query', () => {
           id: faker.random.uuid(),
           index: faker.random.arrayElement([20, 50, faker.random.number(100)]),
           name: faker.random.arrayElement(['David', 'Eve']),
-          birthday: faker.date.future()
-        }))
+          birthday: faker.date.future(),
+        })),
       );
     });
 
@@ -373,7 +373,7 @@ describe('Query', () => {
         .greaterThan('birthday', pastDay)
         .toArray();
       expect(
-        result.every(({ index, name, birthday }) => index > 20 && name < 'E' && name > 'D' && birthday > pastDay)
+        result.every(({ index, name, birthday }) => index > 20 && name < 'E' && name > 'D' && birthday > pastDay),
       ).toBe(true);
     });
   });
@@ -384,8 +384,8 @@ describe('Query', () => {
         randomItems(100, () => ({
           id: faker.random.uuid(),
           index: faker.random.arrayElement([20, 50, faker.random.number(100)]),
-          name: faker.random.arrayElement(['David', 'Eve'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve']),
+        })),
       );
     });
 
@@ -426,7 +426,7 @@ describe('Query', () => {
     const allData = randomItems(20, () => ({
       id: faker.random.uuid(),
       index: faker.random.number(100),
-      name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian'])
+      name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
     }));
     beforeEach(async () => {
       await dao.bulkPut(allData);
@@ -476,7 +476,7 @@ describe('Query', () => {
     const allData = randomItems(20, () => ({
       id: faker.random.uuid(),
       index: faker.random.number(100),
-      teams: randomItems(5, () => faker.random.arrayElement([1, 2, 3, 4, 5]))
+      teams: randomItems(5, () => faker.random.arrayElement([1, 2, 3, 4, 5])),
     }));
     beforeEach(async () => {
       await dao.bulkPut(allData);
@@ -494,21 +494,21 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
+        })),
       );
     });
 
     it('should be ascending by default', async () => {
       let result = await query.toArray({
-        sortBy: 'index'
+        sortBy: 'index',
       });
       expect(isAscending(result.map(item => item.index))).toBe(true);
 
       query.reset();
 
       result = await query.anyOf('name', ['David', 'Eve', 'Ryan', 'Steve', 'Ian']).toArray({
-        sortBy: 'index'
+        sortBy: 'index',
       });
       expect(isAscending(result.map(item => item.index))).toBe(true);
     });
@@ -516,7 +516,7 @@ describe('Query', () => {
     it('should be descending', async () => {
       let result = await query.toArray({
         sortBy: 'index',
-        desc: true
+        desc: true,
       });
       expect(isDescending(result.map(item => item.index))).toBe(true);
 
@@ -524,7 +524,7 @@ describe('Query', () => {
 
       result = await query.anyOf('name', ['David', 'Eve', 'Ryan', 'Steve', 'Ian']).toArray({
         sortBy: 'index',
-        desc: true
+        desc: true,
       });
 
       expect(isDescending(result.map(item => item.index))).toBe(true);
@@ -533,8 +533,8 @@ describe('Query', () => {
     it('descending without sortBy', async () => {
       await expect(
         query.greaterThan('index', 0).toArray({
-          desc: true
-        })
+          desc: true,
+        }),
       ).rejects.toBeInstanceOf(Error);
     });
   });
@@ -550,9 +550,9 @@ describe('Query', () => {
             { firstName: 'Eve' },
             { firstName: 'Ryan' },
             { firstName: 'Steve' },
-            { firstName: 'Ian' }
-          ])
-        }))
+            { firstName: 'Ian' },
+          ]),
+        })),
       );
     });
 
@@ -568,8 +568,8 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
+        })),
       );
     });
 
@@ -592,8 +592,8 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Devin', 'Ryan', 'Steve', 'Ian'])
-        }))
+          name: faker.random.arrayElement(['David', 'Devin', 'Ryan', 'Steve', 'Ian']),
+        })),
       );
     });
 
@@ -630,8 +630,8 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Devin', 'Ryan', 'Steve', 'Ian'])
-        }))
+          name: faker.random.arrayElement(['David', 'Devin', 'Ryan', 'Steve', 'Ian']),
+        })),
       );
     });
 

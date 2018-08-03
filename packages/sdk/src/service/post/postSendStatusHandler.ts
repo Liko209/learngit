@@ -8,7 +8,7 @@
 enum ESendStatus {
   SUCCESS,
   FAIL,
-  INPROGRESS
+  INPROGRESS,
 }
 import { daoManager, PostDao } from '../../dao';
 class PostSendStatusHandler {
@@ -21,7 +21,7 @@ class PostSendStatusHandler {
   }
 
   async init() {
-    let dao = daoManager.getDao(PostDao);
+    const dao = daoManager.getDao(PostDao);
     const posts = await dao.queryPreInsertPost();
     if (posts && posts.length) {
       posts.forEach(element => {
@@ -64,11 +64,11 @@ class PostSendStatusHandler {
     return id
       ? {
         existed: true,
-        id
+        id,
       }
       : {
         existed: false,
-        id: 0
+        id: 0,
       };
   }
 }

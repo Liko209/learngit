@@ -61,7 +61,7 @@ export async function handleDeactivedAndNormalPosts(posts: Post[]): Promise<Post
   const normalPosts = await utilsBaseHandleData({
     data: posts,
     dao: postDao,
-    eventKey: ENTITY.POST
+    eventKey: ENTITY.POST,
   });
 
   // check if post's owner group exist in local or not
@@ -78,7 +78,7 @@ export async function handleDataFromSexio(data: Raw<Post>[]): Promise<void> {
   const transformedData: Post[] = transformData(data);
   // handle edited posts not in local db
   const validPosts: Post[] = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
-    transformedData
+    transformedData,
   );
   await handlePreInstedPosts(validPosts);
   if (validPosts.length) {
@@ -94,17 +94,17 @@ export async function handleDataFromIndex(data: Raw<Post>[], maxPostsExceed: boo
   // handle max exceeded
   const exceedPostsHandled = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(
     transformedData,
-    maxPostsExceed
+    maxPostsExceed,
   );
   await handlePreInstedPosts(exceedPostsHandled);
   // handle discontinuous by modified
   const result = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
-    exceedPostsHandled
+    exceedPostsHandled,
   );
   handleDeactivedAndNormalPosts(result);
 }
 
-export default async function(data: Raw<Post>[], maxPostsExceed: boolean) {
+export default async function (data: Raw<Post>[], maxPostsExceed: boolean) {
   return handleDataFromIndex(data, maxPostsExceed);
 }
 
@@ -121,15 +121,15 @@ export async function handlePreInstedPosts(posts: Post[] = []) {
   if (!posts || !posts.length) {
     return [];
   }
-  let ids: number[] = [];
-  let postService = PostService.getInstance<PostService>();
+  const ids: number[] = [];
+  const postService = PostService.getInstance<PostService>();
   await Promise.all(
     posts.map(async (element: Post) => {
-      let obj = await postService.isVersionInPreInsert(element.version);
+      const obj = await postService.isVersionInPreInsert(element.version);
       if (obj && obj.existed) {
         ids.push(obj.id);
       }
-    })
+    }),
   );
 
   if (ids.length) {

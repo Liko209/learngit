@@ -37,13 +37,13 @@ export type IndexDataModel = {
  */
 export function loginGlip(authData: object): Promise<IResponse<Object>> {
   const model = {
-    rc_access_token_data: btoa(JSON.stringify(authData))
+    rc_access_token_data: btoa(JSON.stringify(authData)),
   };
   const query = {
     path: GLIP_API.API_OAUTH_TOKEN,
     method: NETWORK_METHOD.PUT,
     data: model,
-    authFree: true
+    authFree: true,
   };
   return Api.glipNetworkClient.http({ ...query, via: NETWORK_VIA.HTTP });
 }

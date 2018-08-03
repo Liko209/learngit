@@ -109,7 +109,7 @@ describe('StateService', () => {
         'marked_as_unread:1': false,
         'read_through:1': 1,
         'unread_count:1': 0,
-        'unread_mentions_count:1': 0
+        'unread_mentions_count:1': 0,
       });
     });
   });

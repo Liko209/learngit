@@ -93,7 +93,7 @@ class LogControlManager {
     return {
       email,
       userId,
-      clientId
+      clientId,
     };
   }
 

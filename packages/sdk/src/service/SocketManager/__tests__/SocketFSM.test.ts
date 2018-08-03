@@ -139,9 +139,9 @@ describe('Socket FSM', async () => {
             'message',
             JSON.stringify({
               body: {
-                objects: [[{ id: 1 }]]
-              }
-            })
+                objects: [[{ id: 1 }]],
+              },
+            }),
           );
           emit(fsm, 'partial');
           emit(fsm, 'response');
@@ -150,7 +150,7 @@ describe('Socket FSM', async () => {
           emit(fsm, 'client_config');
           emit(fsm, 'glip_ping');
           emit(fsm, 'glip_pong');
-        })()
+        })(),
       );
     });
 
@@ -189,7 +189,7 @@ describe('Socket FSM', async () => {
 
           spy.mockReset();
           spy.mockRestore();
-        })()
+        })(),
       );
     });
 
@@ -202,7 +202,7 @@ describe('Socket FSM', async () => {
           expect(fsm.state).toBe('connecting');
           fsm.stop();
           expect(fsm.state).toBe('disconnecting');
-        })()
+        })(),
       );
 
       fsm.socketClient.socket.disconnect.mockResolvedValue(
@@ -219,7 +219,7 @@ describe('Socket FSM', async () => {
           expect(fsm.socketClient).toBeNull();
           spy.mockReset();
           spy.mockRestore();
-        })()
+        })(),
       );
     });
 
@@ -236,7 +236,7 @@ describe('Socket FSM', async () => {
           expect(spy).toHaveBeenCalledTimes(0);
           spy.mockReset();
           spy.mockRestore();
-        })()
+        })(),
       );
     });
   });

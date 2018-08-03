@@ -96,7 +96,7 @@ describe('Container', () => {
       const myConstant = 'constant';
       container.registerConstantValue({
         name: 'my-constant',
-        value: myConstant
+        value: myConstant,
       });
 
       expect(container.get('my-constant')).toBe(myConstant);
@@ -119,7 +119,7 @@ describe('Container', () => {
           return async name => {
             return new Foo(name);
           };
-        }
+        },
       });
 
       const fooProvider = container.get<Function>('fooProvider');

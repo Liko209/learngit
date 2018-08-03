@@ -15,7 +15,7 @@ it('handleData()', async () => {
   await handleData({
     data: {},
     status: 200,
-    headers: {}
+    headers: {},
   });
 });
 
@@ -25,13 +25,13 @@ it('handleData()', async () => {
       timestamp: 123,
       scoreboard: 'HOST',
       state: {
-        a: 1
+        a: 1,
       },
       profile: {
-        b: 2
-      }
+        b: 2,
+      },
     },
     status: 200,
-    headers: {}
+    headers: {},
   });
 });

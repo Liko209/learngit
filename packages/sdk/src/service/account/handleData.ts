@@ -9,7 +9,7 @@ import {
   ACCOUNT_USER_ID,
   ACCOUNT_PROFILE_ID,
   ACCOUNT_COMPANY_ID,
-  ACCOUNT_CLIENT_CONFIG
+  ACCOUNT_CLIENT_CONFIG,
 } from '../../dao/account/constants';
 import notificationCenter from '../../service/notificationCenter';
 

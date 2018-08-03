@@ -31,7 +31,7 @@ describe('GroupDao', () => {
           is_team: true,
           set_abbreviation: 'Ringcentral',
           deactivated: false,
-          most_recent_post_created_at: 1
+          most_recent_post_created_at: 1,
         }),
         groupFactory.build({
           id: 2,
@@ -39,7 +39,7 @@ describe('GroupDao', () => {
           is_team: false,
           set_abbreviation: 'Nello Huang',
           deactivated: false,
-          most_recent_post_created_at: 2
+          most_recent_post_created_at: 2,
         }),
         groupFactory.build({
           id: 3,
@@ -47,15 +47,15 @@ describe('GroupDao', () => {
           is_team: true,
           set_abbreviation: 'XMN Teaching',
           deactivated: false,
-          most_recent_post_created_at: 3
+          most_recent_post_created_at: 3,
         }),
         groupFactory.build({
           id: 4,
           members: [123, 234],
           is_team: true,
           set_abbreviation: 'Ringcentral2',
-          most_recent_post_created_at: 4
-        })
+          most_recent_post_created_at: 4,
+        }),
       ];
       await groupDao.clear();
       await groupDao.bulkPut(groups);
@@ -105,7 +105,7 @@ describe('GroupDao', () => {
         members: [123, 234],
         is_team: true,
         set_abbreviation: 'Ringcentral2',
-        most_recent_post_created_at: 4
+        most_recent_post_created_at: 4,
       });
     });
 

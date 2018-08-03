@@ -22,7 +22,7 @@ class FeatureFlag {
     this._saveToStorage('Client_Config', flags);
     this._flags = this._dumpFlags();
   }
-  //socket
+  // socket
   handleData(flags: Flag) {
     const oldFlag = this._getFromStorage('Client_Config');
     const touchedFlags = this._diff(oldFlag, flags);
@@ -45,7 +45,7 @@ class FeatureFlag {
   private _dumpFlags() {
     return ['Client_Config', 'Split.io_Flag', 'RC_permission'].reduce(
       (prev, curr) => ({ ...prev, ...this._getFromStorage(curr) }),
-      {}
+      {},
     );
   }
   private _notify(touchedFlags: Flag) {

@@ -13,7 +13,7 @@ import {
   PresenceService,
   ProfileService,
   SearchService,
-  StateService
+  StateService,
 } from '../service';
 
 class GlipAccount extends AbstractAccount {
@@ -27,7 +27,7 @@ class GlipAccount extends AbstractAccount {
       PresenceService.name,
       ProfileService.name,
       SearchService.name,
-      StateService.name
+      StateService.name,
     ]);
   }
 

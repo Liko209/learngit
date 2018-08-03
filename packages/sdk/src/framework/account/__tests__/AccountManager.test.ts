@@ -33,22 +33,22 @@ function setup() {
 
   container.registerClass({
     name: MyAccount.name,
-    value: MyAccount
+    value: MyAccount,
   });
 
   container.registerClass({
     name: MyOtherAccount.name,
-    value: MyOtherAccount
+    value: MyOtherAccount,
   });
 
   container.registerClass({
     name: MyAuthenticator.name,
-    value: MyAuthenticator
+    value: MyAuthenticator,
   });
 
   container.registerClass({
     name: MySyncAuthenticator.name,
-    value: MySyncAuthenticator
+    value: MySyncAuthenticator,
   });
 
   const accountManager = new AccountManager(container);
@@ -59,7 +59,7 @@ function setupLoginSuccess() {
   const { container, accountManager } = setup();
   mockSyncAuthenticate.mockReturnValue({
     success: true,
-    accountInfos: [{ type: MyAccount.name, data: 'token' }, { type: MyOtherAccount.name, data: 'other token' }]
+    accountInfos: [{ type: MyAccount.name, data: 'token' }, { type: MyOtherAccount.name, data: 'other token' }],
   });
   accountManager.syncLogin(MySyncAuthenticator.name);
   const account = accountManager.getAccount(MyAccount.name);
@@ -80,7 +80,7 @@ describe('AccountManager', () => {
         ({ accountManager } = setup());
         mockSyncAuthenticate.mockReturnValue({
           success: true,
-          accountInfos: [{ type: MyAccount.name, data: 'token' }]
+          accountInfos: [{ type: MyAccount.name, data: 'token' }],
         });
       });
 

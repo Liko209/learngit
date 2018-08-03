@@ -7,13 +7,13 @@ const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')
     .setData({
-      username: 'test'
+      username: 'test',
     })
     .setParams({
-      password: 'aaa'
+      password: 'aaa',
     })
     .setHeaders({
-      tk: 'sdfsdfadfss'
+      tk: 'sdfsdfadfss',
     })
     .setMethod(NETWORK_METHOD.POST)
     .setAuthfree(true)

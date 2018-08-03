@@ -18,7 +18,7 @@ describe('groupState Dao', () => {
     it('should query', async () => {
       const expected = [];
       const query = {
-        toArray: jest.fn().mockReturnValue(expected)
+        toArray: jest.fn().mockReturnValue(expected),
       };
       jest.spyOn(groupStateDao, 'createQuery').mockReturnValue(query);
       const result = await groupStateDao.getAll();

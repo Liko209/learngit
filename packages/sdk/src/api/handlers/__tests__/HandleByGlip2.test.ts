@@ -9,13 +9,13 @@ const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')
     .setData({
-      username: 'test'
+      username: 'test',
     })
     .setParams({
-      password: 'aaa'
+      password: 'aaa',
     })
     .setHeaders({
-      tk: 'sdfsdfadfss'
+      tk: 'sdfsdfadfss',
     })
     .setMethod(NETWORK_METHOD.POST)
     .setAuthfree(true)
@@ -42,8 +42,8 @@ describe('HandleByGlip2', () => {
       expect(decoratedRequest.headers.Authorization).toEqual('Basic basic');
       expect(decoratedRequest.data).toEqual(
         stringify({
-          username: 'test'
-        })
+          username: 'test',
+        }),
       );
     });
 
@@ -58,8 +58,8 @@ describe('HandleByGlip2', () => {
       expect(decoratedRequest.headers.Authorization).toEqual('Basic basic');
       expect(decoratedRequest.data).toEqual(
         stringify({
-          username: 'test'
-        })
+          username: 'test',
+        }),
       );
     });
 
@@ -73,7 +73,7 @@ describe('HandleByGlip2', () => {
       const decoratedRequest = decoration(request);
       expect(decoratedRequest.headers.Authorization).toEqual('Bearer token');
       expect(decoratedRequest.data).toEqual({
-        username: 'test'
+        username: 'test',
       });
     });
 
@@ -88,8 +88,8 @@ describe('HandleByGlip2', () => {
       expect(decoratedRequest.headers.Authorization).toEqual('Basic basic');
       expect(decoratedRequest.data).toEqual(
         stringify({
-          username: 'test'
-        })
+          username: 'test',
+        }),
       );
     });
 
@@ -114,7 +114,7 @@ describe('HandleByGlip2', () => {
       const decoratedRequest = decoration(request);
       expect(decoratedRequest.headers.Authorization).toEqual('Authorization');
       expect(decoratedRequest.data).toEqual({
-        username: 'test'
+        username: 'test',
       });
     });
   });

@@ -26,12 +26,12 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_EVENT]: 'item',
   [TypeDictionary.TYPE_ID_LINK]: 'item',
   [TypeDictionary.TYPE_ID_MEETING]: 'item',
-  [TypeDictionary.TYPE_ID_PAGE]: 'item'
+  [TypeDictionary.TYPE_ID_PAGE]: 'item',
 };
 
 function parseSocketMessage(message: string) {
   const {
-    body: { objects }
+    body: { objects },
   } = JSON.parse(message);
   const result = {};
   objects.forEach((arr: any[]) => {

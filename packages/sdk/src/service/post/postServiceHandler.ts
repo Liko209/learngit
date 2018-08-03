@@ -26,33 +26,33 @@ class PostServiceHandler {
       }
       return {
         text: renderedText,
-        at_mention_non_item_ids: ids
+        at_mention_non_item_ids: ids,
       };
     }
     return {
       at_mention_non_item_ids: [],
-      text: params.text
+      text: params.text,
     };
   }
 
   static buildLinksInfo(params: RawPostInfo): LinksArray {
     const { text } = params;
     let res: any;
-    let links: LinksArray = [];
+    const links: LinksArray = [];
 
     res = text.match(Markdown.global_url_regex);
     res &&
       res.forEach((item: string) => {
         links.push({
-          url: item
+          url: item,
         });
       });
     return links;
   }
 
   static buildPostInfo(params: RawPostInfo): Post {
-    let userId: number = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-    let companyId: number = daoManager.getKVDao(AccountDao).get(ACCOUNT_COMPANY_ID);
+    const userId: number = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
+    const companyId: number = daoManager.getKVDao(AccountDao).get(ACCOUNT_COMPANY_ID);
     const vers = versionHash();
     const atMentionsPeopleInfo = PostServiceHandler.buildAtMentionsPeopleInfo(params);
     const links = PostServiceHandler.buildLinksInfo(params);
@@ -76,7 +76,7 @@ class PostServiceHandler {
       at_mention_non_item_ids: atMentionsPeopleInfo.at_mention_non_item_ids,
       links,
       company_id: companyId,
-      deactivated: false
+      deactivated: false,
     };
   }
 

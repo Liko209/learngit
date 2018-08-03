@@ -6,7 +6,7 @@ describe('mathUtils', () => {
   });
 
   it('versionHash()', () => {
-    let res = !/(^[1-9]\d*$)/.test(versionHash().toString());
+    const res = !/(^[1-9]\d*$)/.test(versionHash().toString());
     expect(res).toBe(false);
   });
 

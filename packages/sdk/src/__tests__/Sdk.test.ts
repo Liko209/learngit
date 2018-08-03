@@ -6,7 +6,11 @@
 /// <reference path="./types.d.ts" />
 import { Index as Foundation, NetworkManager, Token } from 'foundation';
 import Sdk from '../Sdk';
-import { Api, HandleByGlip, HandleByRingCentral, HandleByUpload, HandleByGlip2 } from '../api';
+import { Api, 
+  HandleByGlip,
+   HandleByRingCentral,
+   HandleByUpload,
+    HandleByGlip2 } from '../api';
 import { daoManager, AuthDao } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
 import SyncService from '../service/sync';
@@ -40,7 +44,7 @@ describe('Sdk', () => {
 
   describe('init()', () => {
     beforeEach(async () => {
-      await sdk.init({ api: {}, db: {}});
+      await sdk.init({ api: {}, db: {} });
     });
     it('should init Foundation', () => {
       expect(Foundation.init).toHaveBeenCalled();

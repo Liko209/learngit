@@ -34,7 +34,7 @@ export function transform(item: Raw<MyState>): TransformedState {
       'read_through',
       'marked_as_unread',
       'post_cursor',
-      'previous_post_cursor'
+      'previous_post_cursor',
     ];
     const m = key.match(new RegExp(`(${keys.join('|')}):(\\d+)`));
     if (m) {
@@ -43,7 +43,7 @@ export function transform(item: Raw<MyState>): TransformedState {
       const value = clone[key];
       if (!groupStates[groupId]) {
         groupStates[groupId] = {
-          id: Number(groupId)
+          id: Number(groupId),
         };
       }
       groupStates[groupId][groupState] = value;

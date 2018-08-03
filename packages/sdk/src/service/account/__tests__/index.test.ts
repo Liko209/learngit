@@ -81,7 +81,7 @@ describe('AccountService', () => {
     return expect(user).resolves.toEqual({
       email: 'a@gmail.com',
       display_name: 'display_name',
-      company_id: 222
+      company_id: 222,
     });
   });
 });

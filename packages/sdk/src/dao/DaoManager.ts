@@ -23,7 +23,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
 
   async initDatabase(): Promise<void> {
     const currentSchemaVersion = this.getKVDao(ConfigDao).get(DB_SCHEMA_VERSION);
-    let schemaIsCompatible = !!(typeof currentSchemaVersion === 'number' && currentSchemaVersion === schema.version);
+    const schemaIsCompatible = !!(typeof currentSchemaVersion === 'number' && currentSchemaVersion === schema.version);
     this.dbManager.initDatabase(schema);
     if (!schemaIsCompatible) {
       await this.dbManager.deleteDatabase();
@@ -65,7 +65,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   async getStorageQuotaOccupation(): Promise<number> {
-    let navigator: any = window.navigator;
+    const navigator: any = window.navigator;
     if (navigator && navigator.storage) {
       const estimate = await navigator.storage.estimate();
       return estimate.usage / estimate.quota;

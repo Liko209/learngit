@@ -19,16 +19,16 @@ interface FlagCalculator {
 
 export enum BETA_FEATURE {
   LOG,
-  SMS
+  SMS,
 }
 export enum FLAG_PREFIX {
   EMAIL,
   DOMAIN,
-  STATUS
+  STATUS,
 }
 
 export enum Permission {
-  CALL = 'call'
+  CALL = 'call',
 }
 
 export { Notifier, Flag, Handler, FeatureConfig, AccountInfo, FlagStrategies, FlagCalculator };

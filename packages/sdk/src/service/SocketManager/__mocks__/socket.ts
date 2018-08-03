@@ -12,7 +12,7 @@ export default class Socket {
   open = jest.fn();
   removeAllListeners = jest.fn();
   emit(event: string, props: object) {
-    for (let e in this._subs) {
+    for (const e in this._subs) {
       if (e === event) {
         this._subs[e].forEach((el: Function) => {
           el(props);

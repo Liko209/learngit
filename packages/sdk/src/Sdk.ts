@@ -22,7 +22,7 @@ import { ApiConfig, DBConfig, SdkConfig } from './types';
 const AM = AccountManager;
 
 const defaultDBConfig: DBConfig = {
-  adapter: 'dexie'
+  adapter: 'dexie',
 };
 
 class Sdk {
@@ -31,7 +31,7 @@ class Sdk {
     public accountManager: AccountManager,
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
-    public syncService: SyncService
+    public syncService: SyncService,
   ) {}
 
   async init(config: SdkConfig) {
@@ -47,9 +47,9 @@ class Sdk {
         glip2: apiConfig.glip2,
         server: apiConfig.rc.server,
         apiPlatform: apiConfig.rc.apiPlatform,
-        apiPlatformVersion: apiConfig.rc.apiPlatformVersion
+        apiPlatformVersion: apiConfig.rc.apiPlatformVersion,
       },
-      dbAdapter: dbConfig.adapter
+      dbAdapter: dbConfig.adapter,
     });
 
     Api.init(apiConfig);

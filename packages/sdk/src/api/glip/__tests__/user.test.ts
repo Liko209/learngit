@@ -17,7 +17,7 @@ describe('UserAPI', () => {
         data: { rc_access_token_data: 'eyJhdXRoIjoiYXNkZnNkIn0=' },
         method: 'put',
         path: '/login',
-        via: 0
+        via: 0,
       });
     });
   });

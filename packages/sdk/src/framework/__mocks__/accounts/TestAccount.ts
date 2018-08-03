@@ -32,14 +32,14 @@ class TestAuthenticator implements IAuthenticator {
         accountInfos: [
           {
             type: TestAccount.name,
-            data: 'demo_access_token'
-          }
-        ]
+            data: 'demo_access_token',
+          },
+        ],
       };
     } else {
       return {
         success: false,
-        error: new Error('invalid user!')
+        error: new Error('invalid user!'),
       };
     }
   }

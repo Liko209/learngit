@@ -83,7 +83,7 @@ class AccountManager extends EventEmitter2 {
       this._accounts.push(account);
 
       account.on(AbstractAccount.EVENT_SUPPORTED_SERVICE_CHANGE, (services: string[], isStart: boolean) =>
-        this.emit(EVENT_SUPPORTED_SERVICE_CHANGE, services, isStart)
+        this.emit(EVENT_SUPPORTED_SERVICE_CHANGE, services, isStart),
       );
       return account;
     });
@@ -97,7 +97,7 @@ class AccountManager extends EventEmitter2 {
     const accounts = this.createAccounts(resp.accountInfos);
     return {
       success: true,
-      accounts
+      accounts,
     };
   }
 }

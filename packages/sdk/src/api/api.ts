@@ -39,7 +39,7 @@ class Api {
       const currentConfig = this._httpConfig[name];
       const networkRequests: INetworkRequests = {
         host: currentConfig.server,
-        handlerType: type
+        handlerType: type,
       };
       networkClient = new NetworkClient(networkRequests, currentConfig.apiPlatform);
       this.httpSet.set(name, networkClient);

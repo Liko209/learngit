@@ -28,14 +28,14 @@ class Query<T> implements IQuery<T> {
     this.criteria.push({
       name: 'orderBy',
       key,
-      desc
+      desc,
     });
     return this;
   }
 
   reverse(): Query<T> {
     this.criteria.push({
-      name: 'reverse'
+      name: 'reverse',
     });
     return this;
   }
@@ -51,7 +51,7 @@ class Query<T> implements IQuery<T> {
       name: 'equal',
       key,
       value,
-      ignoreCase
+      ignoreCase,
     });
     return this;
   }
@@ -60,7 +60,7 @@ class Query<T> implements IQuery<T> {
     this.criteria.push({
       name: 'notEqual',
       key,
-      value
+      value,
     });
     return this;
   }
@@ -72,7 +72,7 @@ class Query<T> implements IQuery<T> {
       lowerBound,
       upperBound,
       includeLower,
-      includeUpper
+      includeUpper,
     });
     return this;
   }
@@ -81,7 +81,7 @@ class Query<T> implements IQuery<T> {
     this.criteria.push({
       name: 'greaterThan',
       key,
-      value
+      value,
     });
     return this;
   }
@@ -90,7 +90,7 @@ class Query<T> implements IQuery<T> {
     this.criteria.push({
       name: 'greaterThanOrEqual',
       key,
-      value
+      value,
     });
     return this;
   }
@@ -99,7 +99,7 @@ class Query<T> implements IQuery<T> {
     this.criteria.push({
       name: 'lessThan',
       key,
-      value
+      value,
     });
     return this;
   }
@@ -108,7 +108,7 @@ class Query<T> implements IQuery<T> {
     this.criteria.push({
       name: 'lessThanOrEqual',
       key,
-      value
+      value,
     });
     return this;
   }
@@ -118,7 +118,7 @@ class Query<T> implements IQuery<T> {
       name: 'anyOf',
       key,
       array,
-      ignoreCase
+      ignoreCase,
     });
     return this;
   }
@@ -128,7 +128,7 @@ class Query<T> implements IQuery<T> {
       name: 'startsWith',
       key,
       value,
-      ignoreCase
+      ignoreCase,
     });
     return this;
   }
@@ -137,7 +137,7 @@ class Query<T> implements IQuery<T> {
     this.criteria.push({
       name: 'contain',
       key,
-      value
+      value,
     });
     return this;
   }
@@ -145,7 +145,7 @@ class Query<T> implements IQuery<T> {
   filter(filter: IFilter<T>): Query<T> {
     this.criteria.push({
       name: 'filter',
-      filter
+      filter,
     });
     return this;
   }
@@ -153,7 +153,7 @@ class Query<T> implements IQuery<T> {
   offset(n: number): Query<T> {
     this.criteria.push({
       name: 'offset',
-      amount: n
+      amount: n,
     });
     return this;
   }
@@ -161,7 +161,7 @@ class Query<T> implements IQuery<T> {
   limit(n: number): Query<T> {
     this.criteria.push({
       name: 'limit',
-      amount: n
+      amount: n,
     });
     return this;
   }

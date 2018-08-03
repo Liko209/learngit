@@ -9,22 +9,22 @@ import { loginGlip } from '../../api/glip/user';
 import { RCPasswordAuthenticator } from '..';
 
 jest.mock('../../api/glip/user', () => ({
-  loginGlip: jest.fn()
+  loginGlip: jest.fn(),
 }));
 
 jest.mock('../../api/ringcentral/login', () => ({
-  loginRCByPassword: jest.fn()
+  loginRCByPassword: jest.fn(),
 }));
 
 describe('RCPasswordAuthenticator', () => {
   it('should login success', async () => {
     loginRCByPassword.mockResolvedValueOnce({
-      data: 'rc_token'
+      data: 'rc_token',
     });
     loginGlip.mockResolvedValueOnce({
       headers: {
-        'x-authorization': 'glip_token'
-      }
+        'x-authorization': 'glip_token',
+      },
     });
 
     const rc = new RCPasswordAuthenticator();

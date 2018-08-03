@@ -29,7 +29,7 @@ class AutoAuthenticator implements ISyncAuthenticator {
       return func();
     } else {
       return {
-        success: false
+        success: false,
       };
     }
   }
@@ -43,13 +43,13 @@ class AutoAuthenticator implements ISyncAuthenticator {
         accountInfos: [
           {
             type: GlipAccount.name,
-            data: glipToken
-          }
-        ]
+            data: glipToken,
+          },
+        ],
       };
     } else {
       return {
-        success: false
+        success: false,
       };
     }
   }
@@ -64,17 +64,17 @@ class AutoAuthenticator implements ISyncAuthenticator {
         accountInfos: [
           {
             type: RCAccount.name,
-            data: rcToken
+            data: rcToken,
           },
           {
             type: GlipAccount.name,
-            data: glipToken
-          }
-        ]
+            data: glipToken,
+          },
+        ],
       };
     } else {
       return {
-        success: false
+        success: false,
       };
     }
   }

@@ -86,16 +86,16 @@ const registerConfigs = {
     {
       name: Sdk.name,
       value: Sdk,
-      injects: [DaoManager.name, AccountManager.name, ServiceManager.name, NetworkManager.name, SyncService.name]
-    }
+      injects: [DaoManager.name, AccountManager.name, ServiceManager.name, NetworkManager.name, SyncService.name],
+    },
   ],
   asyncClasses: [],
   constants: [
     // TODO register as class instead
     { name: DaoManager.name, value: daoManager },
     { name: SocketManager.name, value: socketManager },
-    { name: NetworkManager.name, value: NetworkManager.Instance }
-  ]
+    { name: NetworkManager.name, value: NetworkManager.Instance },
+  ],
 };
 
 export { registerConfigs };

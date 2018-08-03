@@ -17,7 +17,7 @@ export interface AuthCodeModel {
 export function oauthTokenViaAuthCode(params: object, headers?: object): Promise<IResponse<AuthModel>> {
   const model = {
     ...params,
-    grant_type: 'authorization_code'
+    grant_type: 'authorization_code',
   };
 
   const query = {
@@ -26,7 +26,7 @@ export function oauthTokenViaAuthCode(params: object, headers?: object): Promise
     via: NETWORK_VIA.HTTP,
     data: model,
     authFree: true,
-    headers
+    headers,
   };
   return Api.glip2NetworkClient.http(query);
 }
@@ -34,12 +34,12 @@ export function oauthTokenViaAuthCode(params: object, headers?: object): Promise
 export function generateCode(clientId: string, redirectUri: string): Promise<IResponse<AuthCodeModel>> {
   const model = {
     clientId,
-    redirectUri
+    redirectUri,
   };
   return Api.glip2NetworkClient.http({
     path: `/${Api.httpConfig.rc.apiPlatformVersion}${RINGCENTRAL_API.API_GENERATE_CODE}`,
     method: NETWORK_METHOD.POST,
     via: NETWORK_VIA.HTTP,
-    data: model
+    data: model,
   });
 }

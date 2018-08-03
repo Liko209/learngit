@@ -11,7 +11,7 @@ import {
   IHandleType,
   IRequest,
   NETWORK_METHOD,
-  Response
+  Response,
 } from 'foundation';
 
 // import logger from './logger';
@@ -87,8 +87,8 @@ export default class NetworkClient {
           resolve({
             status: resp.status,
             headers: resp.headers,
-            data: resp.data as T
-          })
+            data: resp.data as T,
+          }),
         );
       } else {
         promiseResolvers.forEach(({ reject }) => {
@@ -137,7 +137,7 @@ export default class NetworkClient {
       params,
       via,
       requestConfig,
-      headers
+      headers,
     });
   }
 
@@ -153,7 +153,7 @@ export default class NetworkClient {
       path,
       method: NETWORK_METHOD.POST,
       data,
-      headers
+      headers,
     });
   }
 
@@ -169,7 +169,7 @@ export default class NetworkClient {
       path,
       method: NETWORK_METHOD.PUT,
       data,
-      headers
+      headers,
     });
   }
 
@@ -185,7 +185,7 @@ export default class NetworkClient {
       path,
       method: NETWORK_METHOD.DELETE,
       params,
-      headers
+      headers,
     });
   }
 }

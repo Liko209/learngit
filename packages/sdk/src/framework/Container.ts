@@ -17,7 +17,7 @@ enum RegisterType {
   Function = 'Function',
   Instance = 'Instance',
   Invalid = 'Invalid',
-  Provider = 'Provider'
+  Provider = 'Provider',
 }
 
 interface InjectableConfig {
@@ -70,7 +70,7 @@ class Container {
     this._containerConfig = containerConfig || {};
     this.registerConstantValue({
       name: Container.name,
-      value: this
+      value: this,
     });
   }
 
@@ -79,7 +79,7 @@ class Container {
       type: RegisterType.Instance,
       implementationType: config.value,
       singleton: config.singleton,
-      injects: config.injects
+      injects: config.injects,
     };
     this._registrationMap.set(config.name, registration);
   }
@@ -90,7 +90,7 @@ class Container {
       asyncImplementationType: config.value,
       singleton: config.singleton,
       injects: config.injects,
-      async: true
+      async: true,
     };
     this._registrationMap.set(config.name, registration);
   }
@@ -100,7 +100,7 @@ class Container {
       type: RegisterType.Provider,
       provider: config.value,
       async: config.async,
-      injects: config.injects
+      injects: config.injects,
     };
     this._registrationMap.set(config.name, registration);
   }
@@ -110,7 +110,7 @@ class Container {
       type: RegisterType.ConstantValue,
       cache: config.value,
       async: config.async,
-      injects: config.injects
+      injects: config.injects,
     };
     this._registrationMap.set(config.name, registration);
   }
@@ -120,7 +120,7 @@ class Container {
 
     if (registration.async) throw new Error(`${name} is async, use asyncGet() to get it.`);
 
-    let cache = this._getCache(registration);
+    const cache = this._getCache(registration);
     if (cache) return cache;
 
     const injections = this._getInjections(registration.injects);
@@ -132,7 +132,7 @@ class Container {
   async asyncGet<T>(name: InjectableName<T>): Promise<T> {
     const registration = this.getRegistration(name);
 
-    let cache = this._getCache(registration);
+    const cache = this._getCache(registration);
     if (cache) return cache;
 
     const injections = await this._asyncGetInjections(registration.injects);
@@ -216,7 +216,7 @@ class Container {
   private async _asyncResolveInstance(
     name: InjectableName<any>,
     getModule: (...args: any[]) => Promise<any>,
-    injections: any[]
+    injections: any[],
   ): Promise<any> {
     const module = await getModule();
     const creator = module[name.toString()] || module.default;

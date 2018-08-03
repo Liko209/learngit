@@ -21,7 +21,7 @@ describe('Socket Manager', () => {
   const test_url = 'test_url';
   const mock = {
     type: '',
-    payload: test_url
+    payload: test_url,
   };
 
   beforeAll(() => {
@@ -161,7 +161,7 @@ describe('Socket Manager', () => {
       it('reconnect event by attempt reconnection', () => {
         notificationCenter.emitService(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
-        //const fsmName1 = socketManager.activeFSM.name;
+        // const fsmName1 = socketManager.activeFSM.name;
 
         notificationCenter.emitService(SOCKET.RECONNECT, 123);
       });
@@ -169,9 +169,9 @@ describe('Socket Manager', () => {
       it('socket reconnect new url', () => {
         notificationCenter.emitService(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
-        //const fsmName1 = socketManager.activeFSM.name;
+        // const fsmName1 = socketManager.activeFSM.name;
 
-        notificationCenter.emitService(SOCKET.RECONNECT, { body: { server: 'reconnect_url_a' }});
+        notificationCenter.emitService(SOCKET.RECONNECT, { body: { server: 'reconnect_url_a' } });
       });
     });
   });

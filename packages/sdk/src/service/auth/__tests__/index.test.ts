@@ -33,8 +33,8 @@ describe('AuthService', () => {
     // mock Api.httpConfig
     Object.defineProperty(Api, 'httpConfig', {
       get() {
-        return { rc: {}, glip: {}, glip2: {}, upload: {}};
-      }
+        return { rc: {}, glip: {}, glip2: {}, upload: {} };
+      },
     });
 
     authDao = new AuthDao(null);
@@ -44,17 +44,17 @@ describe('AuthService', () => {
     jest.clearAllMocks();
     authDao.get.mockReturnValue('__token__');
     daoManager.getKVDao.mockReturnValue(authDao);
-    oauthTokenViaAuthCode.mockReturnValue({ data: {}});
-    generateCode.mockResolvedValue({ data: { code: 1 }});
+    oauthTokenViaAuthCode.mockReturnValue({ data: {} });
+    generateCode.mockResolvedValue({ data: { code: 1 } });
     loginGlip.mockResolvedValue({
       status: 1,
       data: {},
       headers: {
-        'x-authorization': 'auth-token'
-      }
+        'x-authorization': 'auth-token',
+      },
     });
-    loginRCByPassword.mockResolvedValue({ data: {}});
-    loginGlip2ByPassword.mockResolvedValue({ data: {}});
+    loginRCByPassword.mockResolvedValue({ data: {} });
+    loginGlip2ByPassword.mockResolvedValue({ data: {} });
   });
 
   describe('unifiedLogin()', () => {

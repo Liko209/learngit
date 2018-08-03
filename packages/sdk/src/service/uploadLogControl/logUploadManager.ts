@@ -18,16 +18,16 @@ class LogUploadLogManager {
 
   public doUpload(
     userInfo: {
-    email: string;
-    userId: string;
-    clientId: string;
+      email: string;
+      userId: string;
+      clientId: string;
     },
-    logInfo: object
+    logInfo: object,
   ) {
     return axios({
       method: 'POST',
       url: `/log/`,
-      data: { userInfo, logInfo }
+      data: { userInfo, logInfo },
     });
   }
 }

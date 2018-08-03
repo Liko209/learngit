@@ -18,7 +18,7 @@ describe('login', () => {
         data: { grant_type: 'password', password: '123', username: 'aaa' },
         method: 'post',
         path: '/oauth/token',
-        via: NETWORK_VIA.HTTP
+        via: NETWORK_VIA.HTTP,
       });
     });
   });
@@ -30,7 +30,7 @@ describe('login', () => {
         data: { grant_type: 'password', password: '123', username: 'aaa' },
         method: 'post',
         path: '/oauth/token',
-        via: NETWORK_VIA.HTTP
+        via: NETWORK_VIA.HTTP,
       });
     });
   });
@@ -42,7 +42,7 @@ describe('login', () => {
         data: { grant_type: 'password', password: '123', username: 'aaa' },
         method: 'post',
         via: NETWORK_VIA.HTTP,
-        path: '/oauth/token'
+        path: '/oauth/token',
       });
     });
   });

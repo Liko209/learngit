@@ -15,7 +15,7 @@ export default class PresenceService extends BaseService {
     const subscriptions = {
       [SOCKET.PRESENCE]: (presence: any) => {
         handleData([].concat(presence));
-      }
+      },
     };
     super(null, null, null, subscriptions);
     this.caches = {}; // when serviceManager's property "instances" is recycled, it will be destroyed.

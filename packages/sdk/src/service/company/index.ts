@@ -16,7 +16,7 @@ export default class CompanyService extends BaseService<Company> {
 
   constructor() {
     const subscriptions = {
-      [SOCKET.COMPANY]: handleData
+      [SOCKET.COMPANY]: handleData,
     };
     super(CompanyDao, CompanyAPI, handleData, subscriptions);
   }

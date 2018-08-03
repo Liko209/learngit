@@ -16,7 +16,7 @@ export interface ITransform {
 function transform(obj: ITransform) {
   return {
     id: obj.person_id,
-    presence: obj.presence
+    presence: obj.presence,
   };
 }
 

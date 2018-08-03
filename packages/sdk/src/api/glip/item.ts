@@ -22,7 +22,7 @@ const ITEMPATH = {
   [TypeDictionary.TYPE_ID_MEETING]: 'item',
   // [TypeDictionary.TYPE_ID_RC_VIDEO]: 'item',
   // [TypeDictionary.TYPE_ID_RC_SMS]: 'rc_sms',
-  [TypeDictionary.TYPE_ID_RC_VOICEMAIL]: 'rc_voicemail'
+  [TypeDictionary.TYPE_ID_RC_VOICEMAIL]: 'rc_voicemail',
 };
 
 function getItemServerUrl(id: number): string {
@@ -53,8 +53,8 @@ class ItemAPI extends Api {
           if (callback) {
             callback(event);
           }
-        }
-      }
+        },
+      },
     });
   }
   static requestById(id: number): Promise<IResponse<Raw<FileItem>>> {
@@ -62,7 +62,7 @@ class ItemAPI extends Api {
   }
   static requestRightRailItems(groupId: number): Promise<IResponse<RightRailItemModel>> {
     return this.glipNetworkClient.get('/web_client_right_rail_items', {
-      group_id: groupId
+      group_id: groupId,
     });
   }
   static getNote(id: number): Promise<IResponse<Raw<NoteItem>>> {

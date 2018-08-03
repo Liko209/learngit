@@ -15,7 +15,7 @@ export default class ProfileService extends BaseService<Profile> {
   static serviceName = 'ProfileService';
   constructor() {
     const subscriptions = {
-      [SOCKET.PROFILE]: handleData
+      [SOCKET.PROFILE]: handleData,
     };
     super(ProfileDao, ProfileAPI, handleData, subscriptions);
   }

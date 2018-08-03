@@ -15,10 +15,10 @@ class DataDispatcher extends EventEmitter2 {
   }
 
   async onDataArrived(data: string) {
-    let entries = parseSocketMessage(data);
+    const entries = parseSocketMessage(data);
     console.info('Datadispatcher handling', Object.keys(entries));
     return Promise.all(
-      Object.keys(entries).map((key: string) => this.emitAsync(`SOCKET.${key.toUpperCase()}`, entries[key]))
+      Object.keys(entries).map((key: string) => this.emitAsync(`SOCKET.${key.toUpperCase()}`, entries[key])),
     );
   }
 }

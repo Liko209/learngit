@@ -15,7 +15,7 @@ const ErrorTypes = {
   INVALIDTE_PARAMETERS: 3001,
   OAUTH: 4000,
   NETWORK: 5000,
-  INVALID_GRANT: 4147
+  INVALID_GRANT: 4147,
 };
 
 Object.keys(HttpStatus).forEach((key: string) => {

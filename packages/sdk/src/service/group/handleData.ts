@@ -29,7 +29,7 @@ async function checkIncompleteGroupsMembers(groups: Group[]) {
             return personService.getPersonsByIds(group.members);
           }
           return group;
-        })
+        }),
       );
     } catch (e) {
       mainLogger.warn(`checkIncompleteGroupsMembers error: ${e}`);
@@ -54,7 +54,7 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
       /* eslint-enable no-underscore-dangle */
       const transformed: Group = transform<Group>(finalItem);
       return transformed;
-    })
+    }),
   );
 
   return transformedData.filter((item: Group | null) => item !== null) as Group[];
@@ -78,7 +78,7 @@ async function doNotification(deactivatedData: Group[], normalData: Group[]) {
 
   let deactivatedFavGroups = deactivatedData.filter((item: Group) => favIds.indexOf(item.id) !== -1);
   deactivatedFavGroups = deactivatedFavGroups.concat(
-    archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1)
+    archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1),
   );
 
   const deactivatedGroups = deactivatedData.filter((item: Group) => !item.is_team && favIds.indexOf(item.id) === -1);
@@ -188,7 +188,7 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
         return group;
       }
       return null;
-    })
+    }),
   );
   await saveDataAndDoNotification(groups.filter(item => item !== null) as Group[]);
 }
@@ -203,7 +203,7 @@ async function filterGroups(groups: Group[], groupType = GROUP_QUERY_TYPE.TEAM, 
     return groups;
   }
   const stateService: StateService = StateService.getInstance();
-  let states = await stateService.getAllGroupStatesFromLocal();
+  const states = await stateService.getAllGroupStatesFromLocal();
   let result = groups;
   const statesIds = states
     ? states.filter(item => item.unread_count || item.unread_mentions_count).map(item => item.id)

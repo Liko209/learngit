@@ -23,7 +23,7 @@ const itemHandleData = async (items: Raw<Item>[]) => {
   return baseHandleData({
     data: transformedData,
     dao: itemDao,
-    eventKey: ENTITY.ITEM
+    eventKey: ENTITY.ITEM,
   });
 };
 
@@ -42,7 +42,7 @@ const uploadStorageFile = async (params: ISendFile): Promise<StoredFile> => {
 const extractFileNameAndType = (storagePath: string) => {
   const options = {
     name: '',
-    type: ''
+    type: '',
   };
   if (storagePath) {
     const arr = storagePath.split('/');
@@ -71,7 +71,7 @@ const sendFileItem = async (options: Options): Promise<Raw<FileItem>> => {
     download_url: options.storedFile.download_url,
     date: options.storedFile.last_modified,
     size: options.storedFile.size,
-    creator_id: Number(options.storedFile.creator_id)
+    creator_id: Number(options.storedFile.creator_id),
   };
   const fileItemOptions = {
     creator_id: Number(options.storedFile.creator_id),
@@ -85,7 +85,7 @@ const sendFileItem = async (options: Options): Promise<Raw<FileItem>> => {
     post_ids: [],
     versions: [fileVersion],
     created_at: Date.now(),
-    is_new: true
+    is_new: true,
   };
   const result = await ItemAPI.sendFileItem(fileItemOptions);
   return result.data;

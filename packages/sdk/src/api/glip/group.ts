@@ -28,7 +28,7 @@ class GroupAPI extends Api {
 
   static addTeamMembers(groupId: number, memberIds: number[]): Promise<IResponse<Raw<Group>>> {
     return this.glipNetworkClient.put(`/add_team_members/${groupId}`, {
-      members: memberIds
+      members: memberIds,
     });
   }
 

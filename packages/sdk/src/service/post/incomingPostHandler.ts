@@ -47,7 +47,7 @@ class IncomingPostHandler {
           postsShouldBeRemovedGroupIds.map(async id => {
             const posts = await dao.queryPostsByGroupId(id, 0, 9999);
             postsInDB = postsInDB.concat(posts);
-          })
+          }),
         );
         if (postsInDB.length) {
           const ids = postsInDB.map(item => item.id);
@@ -157,7 +157,7 @@ class IncomingPostHandler {
         const dao = daoManager.getDao(PostDao);
         const postsInDB: Post[] = await dao.queryManyPostsByIds(editedPostIds);
         const editedPostsNotInDBIds = editedPostIds.filter(
-          id => postsInDB.filter((item: Post) => item.id === id).length === 0
+          id => postsInDB.filter((item: Post) => item.id === id).length === 0,
         );
         if (editedPostsNotInDBIds.length !== 0) {
           return transformedData.filter(item => editedPostsNotInDBIds.indexOf(item.id) === -1);

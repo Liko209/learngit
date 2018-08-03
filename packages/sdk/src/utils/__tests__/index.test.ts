@@ -1,6 +1,6 @@
 import * as indexObj from '../index';
 
 it('uniqueArray', () => {
-  let res = !!indexObj.uniqueArray;
+  const res = !!indexObj.uniqueArray;
   expect(res).toBe(true);
 });

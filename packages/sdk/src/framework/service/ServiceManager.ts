@@ -15,7 +15,7 @@ class ServiceManager extends EventEmitter2 {
   }
 
   getServices(names: string[]): IService[] {
-    let services: IService[] = [];
+    const services: IService[] = [];
     this._serviceMap.forEach((service, name) => {
       if (names.includes(name)) {
         services.push(service);
@@ -25,7 +25,7 @@ class ServiceManager extends EventEmitter2 {
   }
 
   getAllServices() {
-    let services: IService[] = [];
+    const services: IService[] = [];
     this._serviceMap.forEach(value => services.push(value));
     return services;
   }
@@ -66,7 +66,7 @@ class ServiceManager extends EventEmitter2 {
   }
 
   stopService(name: string): void {
-    let service = this.getService(name);
+    const service = this.getService(name);
     if (service) {
       service.stop();
       this._serviceMap.delete(name);

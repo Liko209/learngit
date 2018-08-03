@@ -18,7 +18,7 @@ export default class PersonService extends BaseService<Person> {
   constructor() {
     const subscription = {
       [SOCKET.PERSON]: handleData,
-      [SOCKET.ITEM]: handleData
+      [SOCKET.ITEM]: handleData,
     };
     super(PersonDao, PersonAPI, handleData, subscription);
   }
@@ -34,7 +34,7 @@ export default class PersonService extends BaseService<Person> {
       ids.map(async id => {
         const person = await this.getById(id);
         return person;
-      })
+      }),
     );
 
     return persons.filter(person => person !== null);

@@ -10,7 +10,7 @@ import handleData from '../../profile/handleData';
 const profileService = new ProfileService();
 
 const mockAccountService = {
-  getCurrentUserProfileId: jest.fn()
+  getCurrentUserProfileId: jest.fn(),
 };
 jest.mock('../../../api/glip/profile');
 jest.mock('../../profile/handleData');
@@ -59,7 +59,7 @@ describe('ProfileService', () => {
     it('favarite post ids in local to like, and not in to un like', async () => {
       const profile = {
         id: 2,
-        favorite_post_ids: [100, 101, 102]
+        favorite_post_ids: [100, 101, 102],
       };
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
       profileService.getById = jest.fn().mockImplementation(id => profile);
@@ -73,21 +73,21 @@ describe('ProfileService', () => {
     it('favarite post ids not in local to like', async () => {
       const profile = {
         id: 2,
-        favorite_post_ids: [100, 101, 102]
+        favorite_post_ids: [100, 101, 102],
       };
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
       profileService.getById = jest.fn().mockImplementation(id => profile);
       ProfileAPI.putDataById.mockResolvedValueOnce({
         data: {
           _id: 2,
-          favorite_post_ids: [100, 101, 102, 103]
-        }
+          favorite_post_ids: [100, 101, 102, 103],
+        },
       });
       handleData.mockResolvedValueOnce([
         {
           id: 2,
-          favorite_post_ids: [100, 101, 102, 103]
-        }
+          favorite_post_ids: [100, 101, 102, 103],
+        },
       ]);
 
       const result = await profileService.putFavoritePost(103, true);
@@ -97,21 +97,21 @@ describe('ProfileService', () => {
     it('favarite post ids not in local to unlike', async () => {
       const profile = {
         id: 2,
-        favorite_post_ids: [100, 101, 102]
+        favorite_post_ids: [100, 101, 102],
       };
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
       profileService.getById = jest.fn().mockImplementation(id => profile);
       ProfileAPI.putDataById.mockResolvedValueOnce({
         data: {
           _id: 2,
-          favorite_post_ids: [100, 101, 102]
-        }
+          favorite_post_ids: [100, 101, 102],
+        },
       });
       handleData.mockResolvedValueOnce([
         {
           id: 2,
-          favorite_post_ids: [100, 101]
-        }
+          favorite_post_ids: [100, 101],
+        },
       ]);
 
       const result = await profileService.putFavoritePost(102, false);

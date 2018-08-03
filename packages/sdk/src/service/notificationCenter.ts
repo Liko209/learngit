@@ -40,41 +40,41 @@ class NotificationCenter extends EventEmitter2 {
   emitEntityPut(key: string, entities: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.PUT,
-      entities: transform2Map(entities)
+      entities: transform2Map(entities),
     });
   }
 
   emitEntityUpdate(key: string, entities: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.UPDATE,
-      entities: transform2Map(entities)
+      entities: transform2Map(entities),
     });
   }
 
   emitEntityReplace(key: string, entities: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.REPLACE,
-      entities: transform2Map(entities)
+      entities: transform2Map(entities),
     });
   }
 
   emitEntityDelete(key: string, entities: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.DELETE,
-      entities: transform2Map(entities)
+      entities: transform2Map(entities),
     });
   }
 
   emitConfigPut(key: string, payload: any): void {
     this.trigger(key, {
       type: EVENT_TYPES.PUT,
-      payload
+      payload,
     });
   }
 
   emitConfigDelete(key: string): void {
     this.trigger(key, {
-      type: EVENT_TYPES.DELETE
+      type: EVENT_TYPES.DELETE,
     });
   }
 

@@ -19,7 +19,7 @@ describe('ServiceManager', () => {
 
     container.registerClass({
       name: TestService.name,
-      value: TestService
+      value: TestService,
     });
 
     serviceManager = new ServiceManager(container);
