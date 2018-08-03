@@ -23,7 +23,7 @@ export class RingcentralSignInPage extends BasePage {
     }
 
     setCredential(credential: string): this {
-        this.t.typeText(credential, credential);
+        this.t.typeText(this.credentialField, credential);
         return this;
     }
 
