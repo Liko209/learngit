@@ -1,4 +1,4 @@
-abstract class BasePage {
+export abstract class BasePage {
 
     constructor(
         protected t: TestController
@@ -13,10 +13,4 @@ abstract class BasePage {
         page.onEnter();
         return page;
     }
-}
-
-
-class BlankPage extends BasePage {
-    onEnter() {}
-    onExit() {}
 }
