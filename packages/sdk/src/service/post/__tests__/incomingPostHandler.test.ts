@@ -1,10 +1,9 @@
+/// <reference path="../../../__tests__/types.d.ts" />
 import { daoManager, PostDao } from '../../../dao';
 import IncomingPostHandler from '../incomingPostHandler';
 import { postFactory } from '../../../__tests__/factories';
 
-/// <reference path="../../../__tests__/types.d.ts" />
-
-jest.mock('dao', () => {
+jest.mock('../../../dao', () => {
   const methods = {
     queryPostsByGroupId: jest.fn(),
     bulkDelete: jest.fn(),

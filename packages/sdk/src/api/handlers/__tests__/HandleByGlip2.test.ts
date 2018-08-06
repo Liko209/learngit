@@ -1,10 +1,11 @@
 import { OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
-jest.mock('foundation');
 import HandleByGlip2 from '../HandleByGlip2';
 import { stringify } from 'qs';
-const handler = new OAuthTokenHandler(HandleByGlip2, null);
 
 jest.mock('../../api');
+
+const handler = new OAuthTokenHandler(HandleByGlip2, null);
+
 const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')
@@ -22,14 +23,17 @@ const postRequest = () => {
     .setRequestConfig({})
     .build();
 };
+
 describe('HandleByGlip2', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
   it('tokenRefreshable is true and generate basic according to Api.httpConfig', () => {
     expect(HandleByGlip2.tokenRefreshable).toBeTruthy();
     expect(HandleByGlip2.basic()).toEqual(btoa('glip2_id:glip2_secret'));
   });
+
   describe('requestDecoration', () => {
     it('should add basic token to params if needAuth is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
