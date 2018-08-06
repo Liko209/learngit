@@ -20,7 +20,7 @@ const Content = ({ match }: IProps) => {
   return (
     <div>
       <strong>conversation content: </strong>
-      <span>home page (get recent id)</span>
+      <span>conversation home page (get recent conversation id, loading, redirect)</span>
     </div>
   );
 };
