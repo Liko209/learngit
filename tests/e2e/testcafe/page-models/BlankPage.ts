@@ -1,11 +1,11 @@
-import {BasePage} from './BasePage'
+import { BasePage } from './BasePage'
 
 export class BlankPage extends BasePage {
-    onEnter() {}
-    onExit() {}
+  onEnter() { }
+  onExit() { }
 
-    open(url: string): this {
-        this.t.navigateTo(url);
-        return this;
-    }
+  open(url: string): this {
+    this.t.navigateTo(url);
+    return this;
+  }
 }

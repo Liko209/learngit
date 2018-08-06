@@ -1,26 +1,26 @@
-import {BasePage} from './BasePage'
-import {Selector} from 'testcafe';
+import { BasePage } from './BasePage'
+import { Selector } from 'testcafe';
 
 
 export class RingcentralSignInNavigationPage extends BasePage {
-    onEnter() {}
-    onExit() {}
+  onEnter() { }
+  onExit() { }
 
-    get credentialField(): Selector {
-        return Selector("input[name='credential']");
-    }
+  get credentialField(): Selector {
+    return Selector("input[name='credential']");
+  }
 
-    get nextButton(): Selector {
-        return Selector("[data-test-automation-id='loginCredentialNext']");
-    }
+  get nextButton(): Selector {
+    return Selector("[data-test-automation-id='loginCredentialNext']");
+  }
 
-    setCredential(credential: string): this {
-        this.t.typeText(this.credentialField, credential);
-        return this;
-    }
+  setCredential(credential: string): this {
+    this.t.typeText(this.credentialField, credential);
+    return this;
+  }
 
-    toNextPage(): this {
-        this.t.click(this.nextButton);
-        return this;
-    }
+  toNextPage(): this {
+    this.t.click(this.nextButton);
+    return this;
+  }
 }
