@@ -35,12 +35,12 @@ class LogControlManager {
 
   public setDebugMode(isDebug: boolean) {
     this._isDebugMode = isDebug;
-    this.updateLogSystemLevel();
+    this._updateLogSystemLevel();
   }
 
   public enableLog(enable: boolean) {
     this._enabledLog = enable;
-    this.updateLogSystemLevel();
+    this._updateLogSystemLevel();
   }
 
   public async flush() {
@@ -61,7 +61,7 @@ class LogControlManager {
       return;
     }
     this._isUploading = true;
-    const userInfo = await this.getUserInfo();
+    const userInfo = await this._getUserInfo();
     try {
       await LogUploadManager.Instance().doUpload(userInfo, logs);
     } catch (err) {
@@ -84,7 +84,7 @@ class LogControlManager {
     return true;
   }
 
-  private async getUserInfo() {
+  private async _getUserInfo() {
     const accountService: AccountService = AccountService.getInstance();
     const email = (await accountService.getUserEmail()) || DEFAULT_EMAIL;
     const id = accountService.getCurrentUserId();
@@ -97,7 +97,7 @@ class LogControlManager {
     };
   }
 
-  private updateLogSystemLevel() {
+  private _updateLogSystemLevel() {
     // set log level to log system
     // TODO let it all level now, should reset to above code after implement service framework
     mainLogger.info(`_isDebugMode : ${this._isDebugMode} _enabledLog: ${this._enabledLog}`);
