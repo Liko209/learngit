@@ -15,6 +15,12 @@
     ],
     "import-name": [
       false
+    ],
+    "function-name": [
+      true,
+      {
+        "private-method-regex": "^_[a-zA-Z0-9]+$"
+      }
     ]
   },
   "jsRules": {}

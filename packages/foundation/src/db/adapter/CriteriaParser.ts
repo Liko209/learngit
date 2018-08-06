@@ -15,7 +15,7 @@ import {
   IStartsWith,
   IContain,
   IFilter,
-  IAnyOf
+  IAnyOf,
 } from '../db';
 export default class CriteriaParser<T> implements ICriteriaParser<T> {
   parallels: IQuery<T>[] = [];
@@ -46,7 +46,7 @@ export default class CriteriaParser<T> implements ICriteriaParser<T> {
       contains: [],
       filters: [],
       startsWiths: [],
-      parallels: []
+      parallels: [],
     };
 
     criterias.forEach(({ name, ...rest }) => {
@@ -79,14 +79,14 @@ export default class CriteriaParser<T> implements ICriteriaParser<T> {
     this.equals.push({
       key,
       value,
-      ignoreCase
+      ignoreCase,
     });
   }
 
   notEqual(key: string, value: any) {
     this.notEquals.push({
       key,
-      value
+      value,
     });
   }
 
@@ -95,14 +95,14 @@ export default class CriteriaParser<T> implements ICriteriaParser<T> {
     lower: string | number | void[][] = -Infinity,
     upper: string | number | void[][] = Infinity,
     includeLower = false,
-    includeUpper = false
+    includeUpper = false,
   ) {
     this.ranges.push({
       key,
       lower,
       upper,
       includeLower,
-      includeUpper
+      includeUpper,
     });
   }
 
@@ -112,7 +112,7 @@ export default class CriteriaParser<T> implements ICriteriaParser<T> {
       lower: value,
       upper: Infinity,
       includeLower: false,
-      includeUpper: false
+      includeUpper: false,
     });
   }
 
@@ -122,7 +122,7 @@ export default class CriteriaParser<T> implements ICriteriaParser<T> {
       lower: value,
       upper: Infinity,
       includeLower: true,
-      includeUpper: false
+      includeUpper: false,
     });
   }
 
@@ -132,7 +132,7 @@ export default class CriteriaParser<T> implements ICriteriaParser<T> {
       lower: -Infinity,
       upper: value,
       includeLower: false,
-      includeUpper: false
+      includeUpper: false,
     });
   }
 
@@ -142,7 +142,7 @@ export default class CriteriaParser<T> implements ICriteriaParser<T> {
       lower: -Infinity,
       upper: value,
       includeLower: false,
-      includeUpper: true
+      includeUpper: true,
     });
   }
 
@@ -150,7 +150,7 @@ export default class CriteriaParser<T> implements ICriteriaParser<T> {
     this.anyOfs.push({
       key,
       array,
-      ignoreCase
+      ignoreCase,
     });
   }
 
@@ -158,14 +158,14 @@ export default class CriteriaParser<T> implements ICriteriaParser<T> {
     this.startsWiths.push({
       key,
       value,
-      ignoreCase
+      ignoreCase,
     });
   }
 
   contain(key: string, value: any) {
     this.contains.push({
       key,
-      value
+      value,
     });
   }
 

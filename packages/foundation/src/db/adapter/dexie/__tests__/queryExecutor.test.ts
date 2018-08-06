@@ -5,7 +5,7 @@ import {
   extractCollectionsToFirstNames,
   setupDexie,
   extractCollections,
-  IPerson
+  IPerson,
 } from '../../__tests__/utils';
 
 describe('execQuery<IPerson>()', () => {
@@ -28,7 +28,7 @@ describe('execQuery<IPerson>()', () => {
   describe('reverse', () => {
     it('should reverse the collection', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ name: 'reverse' }]
+        criteria: [{ name: 'reverse' }],
       });
       const result = await extractCollectionsToIds(collections);
 
@@ -37,7 +37,7 @@ describe('execQuery<IPerson>()', () => {
 
     it('should not reverse the collection when applying two reverse', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ name: 'reverse' }, { name: 'reverse' }]
+        criteria: [{ name: 'reverse' }, { name: 'reverse' }],
       });
 
       const result = await extractCollectionsToIds(collections);
@@ -49,14 +49,14 @@ describe('execQuery<IPerson>()', () => {
   describe('orderBy', () => {
     it('should order by given key', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ name: 'orderBy', key: 'firstName' }]
+        criteria: [{ name: 'orderBy', key: 'firstName' }],
       });
       const result = await extractCollectionsToFirstNames(collections);
       expect(result).toEqual(['Alvin', 'Baby', 'Baby', 'Cooler']);
     });
     it('should order by given key desc', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ name: 'orderBy', key: 'firstName', desc: true }]
+        criteria: [{ name: 'orderBy', key: 'firstName', desc: true }],
       });
       const result = await extractCollectionsToFirstNames(collections);
       expect(result).toEqual(['Cooler', 'Baby', 'Baby', 'Alvin']);
@@ -71,9 +71,9 @@ describe('execQuery<IPerson>()', () => {
             key: 'firstName',
             name: 'anyOf',
             value: ['Alvin', 'cooler'],
-            ignoreCase: true
-          }
-        ]
+            ignoreCase: true,
+          },
+        ],
       });
       const result = await extractCollectionsToFirstNames(collections);
       expect(result).toEqual(['Alvin', 'Cooler']);
@@ -82,8 +82,8 @@ describe('execQuery<IPerson>()', () => {
     it('should return any of the data that matches given array (not ignore case)', async () => {
       const collections = await execQuery<IPerson>(table, {
         criteria: [
-          { key: 'firstName', name: 'anyOf', value: ['Alvin', 'cooler'] }
-        ]
+          { key: 'firstName', name: 'anyOf', value: ['Alvin', 'cooler'] },
+        ],
       });
       const result = await extractCollectionsToFirstNames(collections);
       expect(result).toEqual(['Alvin']);
@@ -94,8 +94,8 @@ describe('execQuery<IPerson>()', () => {
     it('should return strict matched data', async () => {
       const collections = await execQuery<IPerson>(table, {
         criteria: [
-          { key: 'firstName', name: 'equal', value: 'cooler', ignoreCase: true }
-        ]
+          { key: 'firstName', name: 'equal', value: 'cooler', ignoreCase: true },
+        ],
       });
       const result = await extractCollectionsToFirstNames(collections);
       expect(result).toEqual(['Cooler']);
@@ -103,7 +103,7 @@ describe('execQuery<IPerson>()', () => {
 
     it('should work with boolean', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ key: 'isVip', name: 'equal', value: true }]
+        criteria: [{ key: 'isVip', name: 'equal', value: true }],
       });
       const result = await extractCollectionsToIds(collections);
       expect(result).toEqual([1, 2, 3]);
@@ -113,7 +113,7 @@ describe('execQuery<IPerson>()', () => {
   describe('notEqual', () => {
     it('should return strict matched data', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ key: 'firstName', name: 'notEqual', value: 'Baby' }]
+        criteria: [{ key: 'firstName', name: 'notEqual', value: 'Baby' }],
       });
       const result = await extractCollectionsToFirstNames(collections);
       expect(result).toEqual(['Alvin', 'Cooler']);
@@ -124,8 +124,8 @@ describe('execQuery<IPerson>()', () => {
     it('should return strict matched data', async () => {
       const collections = await execQuery<IPerson>(table, {
         criteria: [
-          { key: 'firstName', name: 'startsWith', value: 'C', ignoreCase: true }
-        ]
+          { key: 'firstName', name: 'startsWith', value: 'C', ignoreCase: true },
+        ],
       });
       const result = await extractCollectionsToFirstNames(collections);
       expect(result).toEqual(['Cooler']);
@@ -133,7 +133,7 @@ describe('execQuery<IPerson>()', () => {
 
     it('should return strict matched data (not ignore case)', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ key: 'firstName', name: 'startsWith', value: 'C' }]
+        criteria: [{ key: 'firstName', name: 'startsWith', value: 'C' }],
       });
       const result = await extractCollectionsToFirstNames(collections);
       expect(result).toEqual(['Cooler']);
@@ -143,7 +143,7 @@ describe('execQuery<IPerson>()', () => {
   describe('contains', () => {
     it('should return strict matched data', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ key: 'groups', name: 'contain', value: 1 }]
+        criteria: [{ key: 'groups', name: 'contain', value: 1 }],
       });
       const result = await extractCollectionsToFirstNames(collections);
       expect(result).toEqual(['Baby', 'Cooler']);
@@ -153,7 +153,7 @@ describe('execQuery<IPerson>()', () => {
   describe('filter', () => {
     it('should filter data', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ name: 'filter', filter: obj => obj.id === 1 }]
+        criteria: [{ name: 'filter', filter: obj => obj.id === 1 }],
       });
       const result = await extractCollectionsToIds(collections);
       expect(result).toEqual([1]);
@@ -165,8 +165,8 @@ describe('execQuery<IPerson>()', () => {
       const collections = await execQuery<IPerson>(table, {
         criteria: [
           { name: 'orderBy', key: 'firstName' },
-          { name: 'filter', filter: obj => obj.id === 1 || obj.id === 2 }
-        ]
+          { name: 'filter', filter: obj => obj.id === 1 || obj.id === 2 },
+        ],
       });
       const result = await extractCollectionsToIds(collections);
       expect(result).toEqual([2, 1]);
@@ -176,12 +176,12 @@ describe('execQuery<IPerson>()', () => {
       const collections = await execQuery<IPerson>(table, {
         criteria: [
           { name: 'equal', key: 'firstName', value: 'Baby' },
-          { name: 'equal', key: 'lastName', value: 'Lin' }
-        ]
+          { name: 'equal', key: 'lastName', value: 'Lin' },
+        ],
       });
       const result = await extractCollections(collections);
       expect(result).toEqual([
-        { id: 1, firstName: 'Baby', lastName: 'Lin', isVip: true, groups: [1] }
+        { id: 1, firstName: 'Baby', lastName: 'Lin', isVip: true, groups: [1] },
       ]);
     });
   });
@@ -189,7 +189,7 @@ describe('execQuery<IPerson>()', () => {
   describe('offset/limit', () => {
     it('should the first two item', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ name: 'limit', value: 2 }]
+        criteria: [{ name: 'limit', value: 2 }],
       });
       const result = await extractCollectionsToIds(collections);
       expect(result).toEqual([1, 2]);
@@ -197,7 +197,7 @@ describe('execQuery<IPerson>()', () => {
 
     it('should the last two item', async () => {
       const collections = await execQuery<IPerson>(table, {
-        criteria: [{ name: 'offset', value: 2 }]
+        criteria: [{ name: 'offset', value: 2 }],
       });
       const result = await extractCollectionsToIds(collections);
       expect(result).toEqual([3, 4]);

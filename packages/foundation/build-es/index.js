@@ -2,8 +2,8 @@ import _ from 'lodash';
 import Dexie from 'dexie';
 import Loki from 'lokijs';
 import axios from 'axios';
-import { EventEmitter2 } from 'eventemitter2';
 import io from 'socket.io-client';
+import { EventEmitter2 } from 'eventemitter2';
 import localforage from 'localforage';
 
 /*! *****************************************************************************
@@ -147,7 +147,7 @@ var CriteriaParser = /** @class */ (function () {
             contains: [],
             filters: [],
             startsWiths: [],
-            parallels: []
+            parallels: [],
         };
         criterias.forEach(function (_a) {
             var name = _a.name, rest = __rest(_a, ["name"]);
@@ -176,13 +176,13 @@ var CriteriaParser = /** @class */ (function () {
         this.equals.push({
             key: key,
             value: value,
-            ignoreCase: ignoreCase
+            ignoreCase: ignoreCase,
         });
     };
     CriteriaParser.prototype.notEqual = function (key, value) {
         this.notEquals.push({
             key: key,
-            value: value
+            value: value,
         });
     };
     CriteriaParser.prototype.between = function (key, lower, upper, includeLower, includeUpper) {
@@ -195,7 +195,7 @@ var CriteriaParser = /** @class */ (function () {
             lower: lower,
             upper: upper,
             includeLower: includeLower,
-            includeUpper: includeUpper
+            includeUpper: includeUpper,
         });
     };
     CriteriaParser.prototype.greaterThan = function (key, value) {
@@ -204,7 +204,7 @@ var CriteriaParser = /** @class */ (function () {
             lower: value,
             upper: Infinity,
             includeLower: false,
-            includeUpper: false
+            includeUpper: false,
         });
     };
     CriteriaParser.prototype.greaterThanOrEqual = function (key, value) {
@@ -213,7 +213,7 @@ var CriteriaParser = /** @class */ (function () {
             lower: value,
             upper: Infinity,
             includeLower: true,
-            includeUpper: false
+            includeUpper: false,
         });
     };
     CriteriaParser.prototype.lessThan = function (key, value) {
@@ -222,7 +222,7 @@ var CriteriaParser = /** @class */ (function () {
             lower: -Infinity,
             upper: value,
             includeLower: false,
-            includeUpper: false
+            includeUpper: false,
         });
     };
     CriteriaParser.prototype.lessThanOrEqual = function (key, value) {
@@ -231,7 +231,7 @@ var CriteriaParser = /** @class */ (function () {
             lower: -Infinity,
             upper: value,
             includeLower: false,
-            includeUpper: true
+            includeUpper: true,
         });
     };
     CriteriaParser.prototype.anyOf = function (key, array, ignoreCase) {
@@ -239,7 +239,7 @@ var CriteriaParser = /** @class */ (function () {
         this.anyOfs.push({
             key: key,
             array: array,
-            ignoreCase: ignoreCase
+            ignoreCase: ignoreCase,
         });
     };
     CriteriaParser.prototype.startsWith = function (key, value, ignoreCase) {
@@ -247,13 +247,13 @@ var CriteriaParser = /** @class */ (function () {
         this.startsWiths.push({
             key: key,
             value: value,
-            ignoreCase: ignoreCase
+            ignoreCase: ignoreCase,
         });
     };
     CriteriaParser.prototype.contain = function (key, value) {
         this.contains.push({
             key: key,
-            value: value
+            value: value,
         });
     };
     CriteriaParser.prototype.filter = function (func) {
@@ -531,11 +531,11 @@ var DexieCollection = /** @class */ (function () {
                     case 0:
                         cols = execQuery(this.table, query);
                         sortBy = queryOption.sortBy, desc = queryOption.desc;
-                        if (!(cols.length === 0)) return [3 /*break*/, 1];
-                        // empty
-                        return [2 /*return*/, []];
-                    case 1:
-                        if (!(cols.length === 1)) return [3 /*break*/, 6];
+                        if (cols.length === 0) {
+                            // empty
+                            return [2 /*return*/, []];
+                        }
+                        if (!(cols.length === 1)) return [3 /*break*/, 5];
                         compute = function () { return __awaiter(_this, void 0, void 0, function () {
                             var result;
                             return __generator(this, function (_a) {
@@ -552,34 +552,34 @@ var DexieCollection = /** @class */ (function () {
                             });
                         }); };
                         col_1 = cols[0];
-                        if (!sortBy) return [3 /*break*/, 5];
-                        if (!(typeof sortBy === 'function')) return [3 /*break*/, 3];
+                        if (!sortBy) return [3 /*break*/, 4];
+                        if (!(typeof sortBy === 'function')) return [3 /*break*/, 2];
                         return [4 /*yield*/, compute()];
-                    case 2:
+                    case 1:
                         result_1 = _a.sent();
                         sorted_1 = result_1.sort(sortBy);
                         return [2 /*return*/, desc ? sorted_1.reverse() : sorted_1];
-                    case 3:
+                    case 2:
                         col_1 = desc ? col_1.reverse() : col_1;
                         return [4 /*yield*/, compute()];
-                    case 4:
+                    case 3:
                         result_2 = _a.sent();
                         sorted = result_2.sort(function (a, b) {
                             if (a[sortBy] < b[sortBy]) {
                                 return -1;
                             }
-                            else if (a[sortBy] > b[sortBy]) {
+                            if (a[sortBy] > b[sortBy]) {
                                 return 1;
                             }
                             return 0;
                         });
                         return [2 /*return*/, desc ? sorted.reverse() : sorted];
-                    case 5:
+                    case 4:
                         if (desc) {
                             col_1 = col_1.reverse();
                         }
                         return [2 /*return*/, compute()];
-                    case 6:
+                    case 5:
                         result = [];
                         ids = {};
                         primaryKey = this.primaryKeyName();
@@ -591,7 +591,7 @@ var DexieCollection = /** @class */ (function () {
                                     }
                                 });
                             }))];
-                    case 7:
+                    case 6:
                         _a.sent();
                         return [2 /*return*/, result];
                 }
@@ -648,7 +648,7 @@ var DexieDB = /** @class */ (function () {
     function DexieDB(schema) {
         var name = schema.name;
         this.db = new Dexie(name);
-        this.initSchema(schema);
+        this._initSchema(schema);
     }
     DexieDB.prototype.ensureDBOpened = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -732,7 +732,7 @@ var DexieDB = /** @class */ (function () {
             });
         });
     };
-    DexieDB.prototype.initSchema = function (schema) {
+    DexieDB.prototype._initSchema = function (schema) {
         var _this = this;
         var versions = schema.schema;
         Object.keys(versions).forEach(function (version) {
@@ -755,7 +755,7 @@ var DexieDB = /** @class */ (function () {
                         return tx
                             .table(tb)
                             .toCollection()
-                            .modify(function (item) { return onUpgrade(item); }); // eslint-disable-line max-nested-callbacks
+                            .modify(function (item) { return onUpgrade(item); });
                     }));
                 });
             }
@@ -773,9 +773,7 @@ var KVStorage = /** @class */ (function () {
         if (value) {
             return this.deserialize(value);
         }
-        else {
-            return null;
-        }
+        return null;
     };
     KVStorage.prototype.put = function (key, value) {
         var serialized = this.serialize(value);
@@ -808,7 +806,8 @@ var KVStorage = /** @class */ (function () {
  * @Date: 2018-05-30 18:31:06
  * Copyright © RingCentral. All rights reserved.
  */
-// In-memory implementation for when localStorage/sessionStorage is not supported, for example, in Safari private mode, and when Content Settings prevents from setting any data in Chrome
+// In-memory implementation for when localStorage/sessionStorage is not supported, for example
+// in Safari private mode, and when Content Settings prevents from setting any data in Chrome
 function storageFactory(storage) {
     var inMemoryStorage = {};
     // let length: number = 0;
@@ -862,13 +861,7 @@ function storageFactory(storage) {
                 inMemoryStorage = {};
                 // length = 0;
             }
-        }
-        // key(n: number): string | null {
-        //   if (isSupported()) {
-        //     return storage.key(n);
-        //   }
-        //   return Object.keys(inMemoryStorage)[n] || null;
-        // }
+        },
     };
 }
 
@@ -1060,7 +1053,7 @@ var LokiCollection = /** @class */ (function () {
                 result = [];
                 resultSets.forEach(function (resultSet) {
                     result.push.apply(result, __spread(resultSet.data({
-                        removeMeta: true
+                        removeMeta: true,
                     })));
                 });
                 if (queryOption) {
@@ -1088,7 +1081,7 @@ var LokiCollection = /** @class */ (function () {
                     return [2 /*return*/, cols[0].count()];
                 }
                 sum = 0;
-                for (i = 0; i < cols.length; i++) {
+                for (i = 0; i < cols.length; i = +1) {
                     sum += cols[i].count();
                 }
                 return [2 /*return*/, sum];
@@ -1146,10 +1139,10 @@ var parseSchema = function (versions, callback) {
             };
             var _a = versions[version][colName], unique = _a.unique, _b = _a.indices, indices = _b === void 0 ? [] : _b;
             callback({
+                version: version,
+                colName: colName,
                 unique: filter(unique),
                 indices: indices.map(function (indice) { return filter(indice); }),
-                version: version,
-                colName: colName
             });
         });
     });
@@ -1158,7 +1151,7 @@ var parseSchema = function (versions, callback) {
 var LokiDB = /** @class */ (function () {
     function LokiDB(schema) {
         this.db = new Loki('memory.db');
-        this.initSchema(schema);
+        this._initSchema(schema);
         this.opened = false;
     }
     LokiDB.prototype.ensureDBOpened = function () {
@@ -1217,14 +1210,14 @@ var LokiDB = /** @class */ (function () {
             });
         });
     };
-    LokiDB.prototype.initSchema = function (schema) {
+    LokiDB.prototype._initSchema = function (schema) {
         var _this = this;
         parseSchema(schema.schema, function (_a) {
             var unique = _a.unique, indices = _a.indices, colName = _a.colName;
             _this.db.addCollection(colName, {
+                indices: indices,
                 disableMeta: true,
                 unique: [unique],
-                indices: indices
             });
         });
     };
@@ -1375,11 +1368,6 @@ var BaseResponse = /** @class */ (function () {
     return BaseResponse;
 }());
 
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-04 15:44:05
- * Copyright © RingCentral. All rights reserved.
- */
 var NetworkResponseBuilder = /** @class */ (function () {
     function NetworkResponseBuilder() {
         this.data = {};
@@ -1435,48 +1423,130 @@ var NetworkResponseBuilder = /** @class */ (function () {
         this.request = value;
         return this;
     };
-    NetworkResponseBuilder.prototype.build = function () {
-        return new Response(this);
-    };
     return NetworkResponseBuilder;
 }());
 
+var HttpResponseBuilder = /** @class */ (function (_super) {
+    __extends(HttpResponseBuilder, _super);
+    function HttpResponseBuilder() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    HttpResponseBuilder.prototype.build = function () {
+        return new Response(this);
+    };
+    return HttpResponseBuilder;
+}(NetworkResponseBuilder));
 var Response = /** @class */ (function (_super) {
     __extends(Response, _super);
     function Response(builder) {
         return _super.call(this, builder.data, builder.status, builder.statusText, builder.headers, builder.retryAfter, builder.request) || this;
     }
-    Response.builder = new NetworkResponseBuilder();
+    Object.defineProperty(Response, "builder", {
+        get: function () {
+            return new HttpResponseBuilder();
+        },
+        enumerable: true,
+        configurable: true
+    });
     return Response;
 }(BaseResponse));
+
+/*
+ * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
+ * @Date: 2018-05-16 14:22:56
+ * Copyright © RingCentral. All rights reserved.
+ */
+var HTTP_STATUS_CODE;
+(function (HTTP_STATUS_CODE) {
+    HTTP_STATUS_CODE[HTTP_STATUS_CODE["DEFAULT"] = 0] = "DEFAULT";
+    HTTP_STATUS_CODE[HTTP_STATUS_CODE["UNAUTHORIZED"] = 401] = "UNAUTHORIZED";
+    HTTP_STATUS_CODE[HTTP_STATUS_CODE["FORBIDDEN"] = 403] = "FORBIDDEN";
+    HTTP_STATUS_CODE[HTTP_STATUS_CODE["BAD_GATEWAY"] = 502] = "BAD_GATEWAY";
+    HTTP_STATUS_CODE[HTTP_STATUS_CODE["SERVICE_UNAVAILABLE"] = 503] = "SERVICE_UNAVAILABLE";
+})(HTTP_STATUS_CODE || (HTTP_STATUS_CODE = {}));
+var NETWORK_METHOD;
+(function (NETWORK_METHOD) {
+    NETWORK_METHOD["GET"] = "get";
+    NETWORK_METHOD["DELETE"] = "delete";
+    NETWORK_METHOD["HEAD"] = "head";
+    NETWORK_METHOD["OPTIONS"] = "options";
+    NETWORK_METHOD["POST"] = "post";
+    NETWORK_METHOD["PUT"] = "put";
+    NETWORK_METHOD["PATCH"] = "patch";
+})(NETWORK_METHOD || (NETWORK_METHOD = {}));
+var REQUEST_PRIORITY;
+(function (REQUEST_PRIORITY) {
+    REQUEST_PRIORITY[REQUEST_PRIORITY["SPECIFIC"] = 0] = "SPECIFIC";
+    REQUEST_PRIORITY[REQUEST_PRIORITY["HIGH"] = 1] = "HIGH";
+    REQUEST_PRIORITY[REQUEST_PRIORITY["NORMAL"] = 2] = "NORMAL";
+    REQUEST_PRIORITY[REQUEST_PRIORITY["LOW"] = 3] = "LOW";
+})(REQUEST_PRIORITY || (REQUEST_PRIORITY = {}));
+var NETWORK_VIA;
+(function (NETWORK_VIA) {
+    NETWORK_VIA[NETWORK_VIA["HTTP"] = 0] = "HTTP";
+    NETWORK_VIA[NETWORK_VIA["SOCKET"] = 1] = "SOCKET";
+    NETWORK_VIA[NETWORK_VIA["ALL"] = 2] = "ALL";
+})(NETWORK_VIA || (NETWORK_VIA = {}));
+var CONSUMER_MAX_QUEUE_COUNT;
+(function (CONSUMER_MAX_QUEUE_COUNT) {
+    CONSUMER_MAX_QUEUE_COUNT[CONSUMER_MAX_QUEUE_COUNT["HTTP"] = 5] = "HTTP";
+    CONSUMER_MAX_QUEUE_COUNT[CONSUMER_MAX_QUEUE_COUNT["SOCKET"] = 5] = "SOCKET";
+})(CONSUMER_MAX_QUEUE_COUNT || (CONSUMER_MAX_QUEUE_COUNT = {}));
+var REQUEST_WEIGHT;
+(function (REQUEST_WEIGHT) {
+    REQUEST_WEIGHT[REQUEST_WEIGHT["HIGH"] = 20] = "HIGH";
+    REQUEST_WEIGHT[REQUEST_WEIGHT["NORMAL"] = 10] = "NORMAL";
+})(REQUEST_WEIGHT || (REQUEST_WEIGHT = {}));
+var NETWORK_FAIL_TYPE;
+(function (NETWORK_FAIL_TYPE) {
+    NETWORK_FAIL_TYPE["CANCELLED"] = "CANCELLED";
+    NETWORK_FAIL_TYPE["SERVER_ERROR"] = "SERVER ERROR";
+    NETWORK_FAIL_TYPE["TIME_OUT"] = "TIME OUT";
+    NETWORK_FAIL_TYPE["NOT_NETWORK_CONNECTION"] = "NOT NETWORK CONNECTION";
+    NETWORK_FAIL_TYPE["UNAUTHORIZED"] = "UNAUTHORIZED";
+    NETWORK_FAIL_TYPE["BAD_REQUEST"] = "BAD REQUEST";
+})(NETWORK_FAIL_TYPE || (NETWORK_FAIL_TYPE = {}));
+var SURVIVAL_MODE;
+(function (SURVIVAL_MODE) {
+    SURVIVAL_MODE["NORMAL"] = "normal";
+    SURVIVAL_MODE["SURVIVAL"] = "survival";
+    SURVIVAL_MODE["OFFLINE"] = "offline";
+})(SURVIVAL_MODE || (SURVIVAL_MODE = {}));
+var NETWORK_REQUEST_EXECUTOR_STATUS;
+(function (NETWORK_REQUEST_EXECUTOR_STATUS) {
+    NETWORK_REQUEST_EXECUTOR_STATUS["IDLE"] = "idle";
+    NETWORK_REQUEST_EXECUTOR_STATUS["EXECUTING"] = "executing";
+    NETWORK_REQUEST_EXECUTOR_STATUS["PAUSE"] = "pause";
+    NETWORK_REQUEST_EXECUTOR_STATUS["COMPLETION"] = "completion";
+})(NETWORK_REQUEST_EXECUTOR_STATUS || (NETWORK_REQUEST_EXECUTOR_STATUS = {}));
 
 /*
  * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
  * @Date: 2018-05-03 11:25:27
  * Copyright © RingCentral. All rights reserved.
  */
-var Http$$1 = /** @class */ (function (_super) {
-    __extends(Http$$1, _super);
-    function Http$$1() {
+var Http = /** @class */ (function (_super) {
+    __extends(Http, _super);
+    function Http() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Http$$1.prototype.request = function (request, listener) {
+    Http.prototype.request = function (request, listener) {
         var _this = this;
         _super.prototype.request.call(this, request, listener);
         this.tasks[request.id] = request;
         var CancelToken = axios.CancelToken;
         var method = request.method, headers = request.headers, host = request.host, path = request.path, timeout = request.timeout, _a = request.requestConfig, requestConfig = _a === void 0 ? {} : _a;
         var options = {
-            baseURL: host,
-            url: path,
             method: method,
             headers: headers,
             timeout: timeout,
+            baseURL: host,
+            url: path,
             data: {},
             params: {},
             cancelToken: new CancelToken(function (cancel) {
                 _this.tasks[request.id].cancel = cancel;
-            })
+            }),
         };
         if (request.data) {
             options.data = request.data;
@@ -1498,7 +1568,7 @@ var Http$$1 = /** @class */ (function (_super) {
                 .setRequest(request)
                 .setHeaders(res.headers)
                 .build();
-            listener.onSuccess(request.id, response);
+            listener.onSuccess(response);
         })
             .catch(function (err) {
             delete _this.tasks[request.id];
@@ -1520,10 +1590,10 @@ var Http$$1 = /** @class */ (function (_super) {
                 .setHeaders(response.headers)
                 .setRequest(request)
                 .build();
-            listener.onFailure(request.id, res);
+            listener.onFailure(res);
         });
     };
-    return Http$$1;
+    return Http;
 }(BaseClient));
 
 var BaseRequest = /** @class */ (function () {
@@ -1575,34 +1645,14 @@ var Request = /** @class */ (function (_super) {
 
 /*
  * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-04 15:43:44
+ * @Date: 2018-06-04 15:43:37
  * Copyright © RingCentral. All rights reserved.
  */
-var SocketManager = new EventEmitter2();
 
 var SocketResponse = /** @class */ (function (_super) {
     __extends(SocketResponse, _super);
     function SocketResponse() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        // constructor(builder: SocketResponseBuilder) {
-        //   super(
-        //     builder.data,
-        //     builder.status,
-        //     builder.statusText,
-        //     builder.headers,
-        //     builder.retryAfter,
-        //     builder.request
-        //   );
-        // }
-        _this.response = function () {
-            console.log('--------------- socket response');
-            if (_this.request && _this.request.params) {
-                var requestId = _this.request.params
-                    .request_id;
-                SocketManager.emit(requestId, _this);
-            }
-        };
-        return _this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     return SocketResponse;
 }(Response));
@@ -1613,14 +1663,18 @@ var SocketResponseBuilder = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     SocketResponseBuilder.prototype.options = function (options) {
-        this.data = options.body || {};
-        this.headers = _.pick(options, [
-            'Content-Type',
-            'X-Frame-Options',
-            'X-Request-Id',
-        ]);
-        this.status = 200;
-        this.request = __assign({}, options.request, { params: options.request.parameters });
+        if (options) {
+            this.data = options.body || {};
+            this.headers = _.pick(options, [
+                'Content-Type',
+                'X-Frame-Options',
+                'X-Request-Id',
+            ]);
+            this.status = 200;
+            if (options.request) {
+                this.request = __assign({}, options.request, { params: options.request.parameters });
+            }
+        }
         return this;
     };
     SocketResponseBuilder.prototype.build = function () {
@@ -1628,658 +1682,6 @@ var SocketResponseBuilder = /** @class */ (function (_super) {
     };
     return SocketResponseBuilder;
 }(NetworkResponseBuilder));
-
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-04 15:43:37
- * Copyright © RingCentral. All rights reserved.
- */
-
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-02-08 14:50:12
- * Copyright © RingCentral. All rights reserved.
- */
-var SocketClientGetter = /** @class */ (function () {
-    function SocketClientGetter() {
-    }
-    return SocketClientGetter;
-}());
-var SocketClient = /** @class */ (function () {
-    function SocketClient(socketServer, token) {
-        var _this = this;
-        this.socket = io("https://" + socketServer, {
-            transports: ['polling', 'websocket'],
-            autoConnect: false,
-            reconnection: true,
-            reconnectionDelay: 5000,
-            reconnectionDelayMax: 25000,
-            forceNew: true,
-            query: { tk: token },
-        });
-        this.socket.request = function (request, listener) {
-            // const socketRequest = new SocketRequestBuilder(request).build();
-            request.setCallback(listener);
-            _this.socket.emit('request', request);
-        };
-        this.socket.on('response', function (response) {
-            var socketResponse = new SocketResponseBuilder()
-                .options(response)
-                .build();
-            socketResponse.response();
-        });
-        this.socket.checkConnected = function () {
-            _this.socket.emit('ping');
-        };
-        this.socket.send = function () { };
-        this.socket.reset = function () { };
-        this.socket.cancelRequest = function () { };
-        this.socket.stopCheckConnected = function () { };
-        SocketClientGetter.get = function () { return _this.socket; };
-    }
-    return SocketClient;
-}());
-
-var Socket = /** @class */ (function (_super) {
-    __extends(Socket, _super);
-    function Socket() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Socket.prototype.request = function (request, listener) {
-        _super.prototype.request.call(this, request, listener);
-        var socketRequest = request;
-        if (request.params) {
-            socketRequest.parameters = request.params;
-        }
-        var socket = SocketClientGetter.get();
-        if (socket) {
-            socket.request(socketRequest, function (response) {
-                return listener.onSuccess(request.id, response);
-            });
-        }
-    };
-    return Socket;
-}(BaseClient));
-
-var SocketRequest$$1 = /** @class */ (function (_super) {
-    __extends(SocketRequest$$1, _super);
-    function SocketRequest$$1(builder) {
-        var _this = _super.call(this, builder) || this;
-        _this.parameters = {};
-        _this.uri = '';
-        _this.params = __assign({}, builder.params, builder.data, { request_id: builder.id });
-        _this.uri = builder.path;
-        _this.via = NETWORK_VIA.SOCKET;
-        return _this;
-    }
-    SocketRequest$$1.prototype.setCallback = function (listener) {
-        SocketManager.once(this.id, listener);
-    };
-    return SocketRequest$$1;
-}(Request));
-
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-04 15:43:35
- * Copyright © RingCentral. All rights reserved.
- */
-
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-05-03 15:19:18
- * Copyright © RingCentral. All rights reserved.
- */
-var Manager = /** @class */ (function () {
-    function Manager() {
-        this.httpClient = new Http$$1();
-        this.socketClient = new Socket();
-    }
-    Manager.prototype.getApiClient = function (via) {
-        var client = this.httpClient;
-        switch (via) {
-            case NETWORK_VIA.HTTP:
-                client = this.httpClient;
-                break;
-            case NETWORK_VIA.SOCKET:
-                client = this.socketClient;
-                break;
-            default:
-                break;
-        }
-        return client;
-    };
-    return Manager;
-}());
-
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-04 15:41:34
- * Copyright © RingCentral. All rights reserved.
- */
-var RequestTask = /** @class */ (function () {
-    function RequestTask(request) {
-        var _a;
-        var REQUEST_PRIORITY_WEIGHT = (_a = {},
-            _a[REQUEST_PRIORITY.NORMAL] = REQUEST_WEIGHT.NORMAL,
-            _a[REQUEST_PRIORITY.HIGH] = REQUEST_WEIGHT.HIGH,
-            _a[REQUEST_PRIORITY.SPECIFIC] = REQUEST_WEIGHT.HIGH,
-            _a);
-        this.request = request;
-        this.weight = REQUEST_PRIORITY_WEIGHT[this.request.priority];
-    }
-    RequestTask.prototype.priority = function () {
-        return this.request.priority;
-    };
-    RequestTask.prototype.setRequestPriority = function (priority) {
-        this.request.priority = priority;
-        switch (priority) {
-            case REQUEST_PRIORITY.NORMAL:
-                if (this.weight < REQUEST_WEIGHT.NORMAL) {
-                    this.weight = REQUEST_WEIGHT.NORMAL;
-                }
-                break;
-            case REQUEST_PRIORITY.HIGH:
-                if (this.weight < REQUEST_WEIGHT.HIGH) {
-                    this.weight = REQUEST_WEIGHT.HIGH;
-                }
-                break;
-            case REQUEST_PRIORITY.SPECIFIC:
-                if (this.weight < REQUEST_WEIGHT.HIGH) {
-                    this.weight = REQUEST_WEIGHT.HIGH;
-                }
-                break;
-            default:
-                this.weight = 0;
-        }
-    };
-    RequestTask.prototype.via = function () {
-        return this.request.via;
-    };
-    RequestTask.prototype.incrementTaskWeight = function () {
-        this.weight = this.weight + 1;
-    };
-    return RequestTask;
-}());
-
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-04 15:40:58
- * Copyright © RingCentral. All rights reserved.
- */
-function generateUUID() {
-    var d = new Date().getTime();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = ((d + Math.random() * 16) % 16) | 0; // eslint-disable-line
-        d = Math.floor(d / 16);
-        return (c === 'x' ? r : (r & 0x7) | 0x8).toString(16); // eslint-disable-line
-    });
-    return uuid;
-}
-var generateIncrementId = {
-    latestId: 1,
-    get: function () {
-        if (!this.latestId) {
-            this.latestId = 1;
-        }
-        else {
-            this.latestId += 1;
-        }
-        return this.latestId.toString();
-    }
-};
-
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-05-03 11:28:10
- * Copyright © RingCentral. All rights reserved.
- */
-var config = {
-    rcConfig: {
-        rc: { clientId: '', clientSecret: '' },
-        glip2: { clientId: '', clientSecret: '' },
-    },
-    beforeExpired: 5 * 60 * 1000,
-    timeout: 600 * 1000,
-    dbAdapter: 'dexie',
-    survivalModeUris: {},
-};
-
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-04 15:43:31
- * Copyright © RingCentral. All rights reserved.
- */
-var NetworkRequestBuilder$$1 = /** @class */ (function () {
-    function NetworkRequestBuilder$$1() {
-        this.id = '';
-        this.path = '';
-        this.requestConfig = {};
-        this.retryCount = 0;
-        this.timeout = config.timeout;
-        this.priority = REQUEST_PRIORITY.NORMAL;
-        this.via = NETWORK_VIA.HTTP;
-        this.method = NETWORK_METHOD.GET;
-    }
-    NetworkRequestBuilder$$1.prototype.options = function (options) {
-        var host = options.host, path = options.path, method = options.method, handlerType = options.handlerType, params = options.params, data = options.data, headers = options.headers, authFree = options.authFree, requestConfig = options.requestConfig;
-        this.headers = headers || {};
-        this.authFree = authFree || false;
-        this.method = method;
-        this.host = host || '';
-        this.path = path;
-        this.handlerType = handlerType;
-        this.params = params || {};
-        this.data = data || {};
-        this.requestConfig = requestConfig || {};
-        return this;
-    };
-    /**
-     * Setter handlerType
-     * @param {IHandleType} value
-     */
-    NetworkRequestBuilder$$1.prototype.setHandlerType = function (value) {
-        this.handlerType = value;
-        return this;
-    };
-    /**
-     * Setter path
-     * @param {string} value
-     */
-    NetworkRequestBuilder$$1.prototype.setPath = function (value) {
-        this.path = value;
-        return this;
-    };
-    /**
-     * Setter priority
-     * @param {REQUEST_PRIORITY} value
-     */
-    NetworkRequestBuilder$$1.prototype.setPriority = function (value) {
-        this.priority = value;
-        return this;
-    };
-    /**
-     * Setter via
-     * @param {NETWORK_VIA} value
-     */
-    NetworkRequestBuilder$$1.prototype.setVia = function (value) {
-        this.via = value;
-        return this;
-    };
-    /**
-     * Setter retryCount
-     * @param {number} value
-     */
-    NetworkRequestBuilder$$1.prototype.setRetryCount = function (value) {
-        this.retryCount = value;
-        return this;
-    };
-    /**
-     * Setter data
-     * @param {any} value
-     */
-    NetworkRequestBuilder$$1.prototype.setData = function (value) {
-        this.data = value;
-        return this;
-    };
-    /**
-     * Setter method
-     * @param {string } value
-     */
-    NetworkRequestBuilder$$1.prototype.setMethod = function (value) {
-        this.method = value;
-        return this;
-    };
-    /**
-     * Setter headers
-     * @param {string } value
-     */
-    NetworkRequestBuilder$$1.prototype.setHeaders = function (value) {
-        this.headers = value;
-        return this;
-    };
-    /**
-     * Setter host
-     * @param {string } value
-     */
-    NetworkRequestBuilder$$1.prototype.setHost = function (value) {
-        this.host = value;
-        return this;
-    };
-    /**
-     * Setter timeout
-     * @param {number } value
-     */
-    NetworkRequestBuilder$$1.prototype.setTimeout = function (value) {
-        this.timeout = value;
-        return this;
-    };
-    /**
-     * Setter requestConfig
-     * @param {object } value
-     */
-    NetworkRequestBuilder$$1.prototype.setRequestConfig = function (value) {
-        this.requestConfig = value;
-        return this;
-    };
-    /**
-     * Setter params
-     * @param {any} value
-     */
-    NetworkRequestBuilder$$1.prototype.setParams = function (value) {
-        this.params = value;
-        return this;
-    };
-    /**
-     * Setter authFree
-     * @param {boolean} value
-     */
-    NetworkRequestBuilder$$1.prototype.setAuthfree = function (value) {
-        this.authFree = value;
-        return this;
-    };
-    NetworkRequestBuilder$$1.prototype.build = function () {
-        switch (this.via) {
-            case NETWORK_VIA.SOCKET:
-                this.id = generateIncrementId.get();
-                return new SocketRequest$$1(this);
-            case NETWORK_VIA.HTTP:
-            default:
-                this.id = generateUUID();
-                return new Request(this);
-        }
-    };
-    return NetworkRequestBuilder$$1;
-}());
-
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-04 15:43:26
- * Copyright © RingCentral. All rights reserved.
- */
-
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-04 15:41:48
- * Copyright © RingCentral. All rights reserved.
- */
-var NetworkRequestHandler$$1 = /** @class */ (function () {
-    function NetworkRequestHandler$$1(tokenManager, type) {
-        this.pendingTasks = new Map();
-        this.consumers = new Map();
-        this.isPause = false;
-        this.type = type;
-        this.tokenManager = tokenManager;
-        this.init();
-    }
-    NetworkRequestHandler$$1.prototype.init = function () {
-        this.initPendingTasks();
-    };
-    NetworkRequestHandler$$1.prototype.initPendingTasks = function () {
-        this.pendingTasks.set(REQUEST_PRIORITY.SPECIFIC, []);
-        this.pendingTasks.set(REQUEST_PRIORITY.HIGH, []);
-        this.pendingTasks.set(REQUEST_PRIORITY.NORMAL, []);
-        this.pendingTasks.set(REQUEST_PRIORITY.LOW, []);
-    };
-    NetworkRequestHandler$$1.prototype.addApiRequest = function (request, isTail) {
-        if (this.isSurvivalModeEnabled()) {
-            if (this.isInSurvivalMode() &&
-                !this.canHandleSurvivalMode(request.path)) {
-                this.callXApiResponseCallback(NETWORK_FAIL_TYPE.SERVER_ERROR, request);
-                return;
-            }
-        }
-        var task = new RequestTask(request);
-        this.appendTask(task, isTail);
-        this.notifyRequestArrived(request.via);
-    };
-    NetworkRequestHandler$$1.prototype.pause = function () {
-        this.isPause = true;
-    };
-    NetworkRequestHandler$$1.prototype.resume = function () {
-        this.isPause = false;
-        this.notifyRequestArrived(NETWORK_VIA.ALL);
-    };
-    NetworkRequestHandler$$1.prototype.cancelAll = function () {
-        this.cancelAllPendingTasks();
-        this.cancelAllConsumers();
-    };
-    NetworkRequestHandler$$1.prototype.cancelRequest = function (request) {
-        if (this.isRequestInPending(request)) {
-            this.deletePendingRequest(request);
-            this.callXApiResponseCallback(NETWORK_FAIL_TYPE.CANCELLED, request);
-        }
-        else {
-            var consumer = this.consumers.get(request.via);
-            if (consumer) {
-                consumer.onCancelRequest(request);
-            }
-        }
-    };
-    NetworkRequestHandler$$1.prototype.notifyTokenRefreshed = function () {
-        this.consumers.forEach(function (consumer) {
-            consumer.onTokenRefreshed();
-        });
-    };
-    NetworkRequestHandler$$1.prototype.produceRequest = function (via) {
-        var _this = this;
-        var task;
-        Object.keys(REQUEST_PRIORITY).some(function (index) {
-            var priority = REQUEST_PRIORITY[index];
-            if (!_this.canProduceRequest(priority)) {
-                return false;
-            }
-            task = _this.nextTaskInQueue(via, _this.pendingTasks.get(priority));
-            if (task) {
-                return true;
-            }
-            return false;
-        });
-        if (task) {
-            task = task;
-            this.changeTaskWeight(REQUEST_WEIGHT.HIGH, this.pendingTasks.get(REQUEST_PRIORITY.NORMAL), this.pendingTasks.get(REQUEST_PRIORITY.HIGH));
-            this.changeTaskWeight(REQUEST_WEIGHT.NORMAL, this.pendingTasks.get(REQUEST_PRIORITY.LOW), this.pendingTasks.get(REQUEST_PRIORITY.NORMAL));
-            return task.request;
-        }
-        return undefined;
-    };
-    NetworkRequestHandler$$1.prototype.canProduceRequest = function (priority) {
-        return !this.isPause || priority === REQUEST_PRIORITY.SPECIFIC;
-    };
-    NetworkRequestHandler$$1.prototype.addRequestConsumer = function (via, consumer) {
-        this.consumers.set(via, consumer);
-    };
-    NetworkRequestHandler$$1.prototype.getRequestConsumer = function (via) {
-        return this.consumers.get(via);
-    };
-    NetworkRequestHandler$$1.prototype.getOAuthTokenManager = function () {
-        return this.tokenManager;
-    };
-    NetworkRequestHandler$$1.prototype.notifyRequestArrived = function (handleVia) {
-        if (handleVia === NETWORK_VIA.ALL) {
-            this.consumers.forEach(function (consumer) {
-                if (consumer) {
-                    consumer.onConsumeArrived();
-                }
-            });
-        }
-        else {
-            var consumer = this.consumers.get(handleVia);
-            if (consumer) {
-                consumer.onConsumeArrived();
-            }
-        }
-    };
-    NetworkRequestHandler$$1.prototype.appendTask = function (task, isTail) {
-        var queue = this.pendingTasks.get(task.priority());
-        if (queue) {
-            if (isTail) {
-                queue.push(task);
-            }
-            else {
-                queue.unshift(task);
-            }
-        }
-    };
-    NetworkRequestHandler$$1.prototype.cancelAllConsumers = function () {
-        this.consumers.forEach(function (consumer) {
-            consumer.onCancelAll();
-        });
-    };
-    NetworkRequestHandler$$1.prototype.cancelAllPendingTasks = function () {
-        var _this = this;
-        this.pendingTasks.forEach(function (queue) {
-            queue.forEach(function (task) {
-                _this.callXApiResponseCallback(NETWORK_FAIL_TYPE.CANCELLED, task.request);
-            });
-        });
-        this.initPendingTasks();
-    };
-    NetworkRequestHandler$$1.prototype.isRequestInPending = function (request) {
-        var exist = false;
-        this.pendingTasks.forEach(function (queue) {
-            queue.some(function (task) {
-                if (task.request.id === request.id) {
-                    exist = true;
-                    return true;
-                }
-                return false;
-            });
-            if (exist) {
-                return true;
-            }
-            return false;
-        });
-        return exist;
-    };
-    NetworkRequestHandler$$1.prototype.deletePendingRequest = function (request) {
-        var exist = false;
-        this.pendingTasks.forEach(function (queue) {
-            queue.some(function (task, index) {
-                if (task.request.id === request.id) {
-                    exist = true;
-                    queue.splice(index, 1);
-                    return true;
-                }
-                return false;
-            });
-            if (exist) {
-                return true;
-            }
-            return false;
-        });
-    };
-    NetworkRequestHandler$$1.prototype.setNetworkRequestSurvivalMode = function (mode) {
-        this.networkRequestSurvivalMode = mode;
-    };
-    NetworkRequestHandler$$1.prototype.isSurvivalModeEnabled = function () {
-        return !!this.networkRequestSurvivalMode;
-    };
-    NetworkRequestHandler$$1.prototype.isInSurvivalMode = function () {
-        return (this.networkRequestSurvivalMode &&
-            this.networkRequestSurvivalMode.isSurvivalMode());
-    };
-    NetworkRequestHandler$$1.prototype.canHandleSurvivalMode = function (uri) {
-        return (this.networkRequestSurvivalMode &&
-            this.networkRequestSurvivalMode.canSupportSurvivalMode(uri));
-    };
-    NetworkRequestHandler$$1.prototype.onAccessTokenInvalid = function (handlerType) {
-        this.tokenManager.refreshOAuthToken(handlerType);
-    };
-    NetworkRequestHandler$$1.prototype.onSurvivalModeDetected = function (mode, retryAfter) {
-        if (this.isSurvivalModeEnabled() && this.networkRequestSurvivalMode) {
-            var interval = retryAfter ? retryAfter * 1000 : 4000;
-            this.networkRequestSurvivalMode.setSurvivalMode(mode, interval);
-            this.cancelAllPendingTasks();
-        }
-    };
-    NetworkRequestHandler$$1.prototype.callXApiResponseCallback = function (type, request) {
-        var response = Response.builder
-            .setRequest(request)
-            .setStatusText(type)
-            .build();
-        if (request.callback) {
-            request.callback(response);
-        }
-    };
-    NetworkRequestHandler$$1.prototype.nextTaskInQueue = function (via, queue) {
-        var result;
-        if (queue) {
-            queue.some(function (task, index) {
-                if (task.via() === via) {
-                    result = task;
-                    queue.splice(index, 1);
-                    return true;
-                }
-                return false;
-            });
-        }
-        return result;
-    };
-    NetworkRequestHandler$$1.prototype.changeTaskWeight = function (weight, source, target) {
-        if (!source || !target) {
-            return;
-        }
-        var findTask = null;
-        var taskIndex = -1;
-        source.forEach(function (task, index) {
-            task.incrementTaskWeight();
-            if (task.weight >= weight && !findTask) {
-                findTask = task;
-                taskIndex = index;
-            }
-        });
-        if (findTask !== null) {
-            findTask = findTask;
-            if (weight === REQUEST_WEIGHT.HIGH) {
-                findTask.setRequestPriority(REQUEST_PRIORITY.HIGH);
-            }
-            else if (weight === REQUEST_WEIGHT.NORMAL) {
-                findTask.setRequestPriority(REQUEST_PRIORITY.NORMAL);
-            }
-            source.splice(taskIndex, 1);
-            target.push(findTask);
-        }
-    };
-    return NetworkRequestHandler$$1;
-}());
-
-var OAuthTokenManager = /** @class */ (function () {
-    function OAuthTokenManager() {
-        this.tokenHandlers = new Map();
-    }
-    Object.defineProperty(OAuthTokenManager, "Instance", {
-        get: function () {
-            this._instance = this._instance || (this._instance = new this());
-            return this._instance;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    OAuthTokenManager.prototype.addOAuthTokenHandler = function (handler) {
-        this.tokenHandlers.set(handler.type, handler);
-    };
-    OAuthTokenManager.prototype.getOAuthTokenHandler = function (type) {
-        return this.tokenHandlers.get(type);
-    };
-    OAuthTokenManager.prototype.setOAuthToken = function (token, type) {
-        var tokenHandler = this.getOAuthTokenHandler(type);
-        if (tokenHandler) {
-            tokenHandler.token = token;
-        }
-    };
-    OAuthTokenManager.prototype.clearOAuthToken = function () {
-        this.tokenHandlers.forEach(function (handler) {
-            handler.clearOAuthToken();
-        });
-    };
-    OAuthTokenManager.prototype.refreshOAuthToken = function (type) {
-        var tokenHandler = this.getOAuthTokenHandler(type);
-        if (tokenHandler) {
-            tokenHandler.refreshOAuthToken();
-        }
-    };
-    return OAuthTokenManager;
-}());
 
 var LoggingEvent = /** @class */ (function () {
     function LoggingEvent(level, message, logger) {
@@ -2292,9 +1694,7 @@ var LoggingEvent = /** @class */ (function () {
         if (this._logger) {
             return this._logger.getFormattedTimestamp(this._startTime);
         }
-        else {
-            return this._startTime.toISOString();
-        }
+        return this._startTime.toISOString();
     };
     LoggingEvent.prototype.getLevel = function () {
         return this._level;
@@ -2333,6 +1733,126 @@ var DATE_FORMATTER;
     DATE_FORMATTER["DEFAULT_DATE_FORMAT"] = "yyyy-MM-ddThh:mm:ssO";
 })(DATE_FORMATTER || (DATE_FORMATTER = {}));
 var LINE_SEP = '\n';
+
+var AppenderAbstract = /** @class */ (function () {
+    function AppenderAbstract() {
+    }
+    AppenderAbstract.prototype.setLogger = function (logger) {
+        this.logger = logger;
+    };
+    AppenderAbstract.prototype.clear = function () {
+        this.doClear();
+    };
+    AppenderAbstract.prototype.log = function (loggingEvent) {
+        this.doLog(loggingEvent);
+    };
+    return AppenderAbstract;
+}());
+
+var emitter = new EventEmitter2();
+
+var PersistentLogAppender = /** @class */ (function (_super) {
+    __extends(PersistentLogAppender, _super);
+    function PersistentLogAppender() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.LOG_SYNC_WEIGHT = 1000;
+        _this._loggingEvents = [];
+        _this._logSize = 0;
+        _this.LOG_SYNC_LENGTH = 1024 * 1024;
+        return _this;
+    }
+    PersistentLogAppender.prototype.doLog = function (loggingEvent) {
+        this._loggingEvents.push(loggingEvent);
+        this._logSize = this._logSize + loggingEvent.getMessage().length;
+        if (this._logSize > this.LOG_SYNC_LENGTH ||
+            this._loggingEvents.length > this.LOG_SYNC_WEIGHT) {
+            emitter.emitAsync('doAppend', true);
+        }
+    };
+    PersistentLogAppender.prototype.doAppend = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var logs, firstKey, lastKey, key, category, store;
+            return __generator(this, function (_a) {
+                if (!this._loggingEvents.length) {
+                    return [2 /*return*/];
+                }
+                logs = this._loggingEvents.map(this.format.bind(this));
+                firstKey = this._loggingEvents[0].getStartTimestamp();
+                lastKey = this._loggingEvents[this._loggingEvents.length - 1].getStartTimestamp();
+                key = firstKey + " - " + lastKey;
+                this._loggingEvents = [];
+                category = this.logger.getCategory();
+                store = this._getStore(category);
+                store.setItem(key, logs);
+                return [2 /*return*/];
+            });
+        });
+    };
+    PersistentLogAppender.prototype.doClear = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var category;
+            return __generator(this, function (_a) {
+                if (this._getedKeyName) {
+                    this.doRemove(this._getedKeyName);
+                    return [2 /*return*/];
+                }
+                category = this.logger.getCategory();
+                return [2 /*return*/, this._getStore(category).clear()];
+            });
+        });
+    };
+    PersistentLogAppender.prototype.doRemove = function (keys) {
+        return __awaiter(this, void 0, void 0, function () {
+            var category, store, storeHandlers;
+            return __generator(this, function (_a) {
+                category = this.logger.getCategory();
+                store = this._getStore(category);
+                storeHandlers = [];
+                if (Array.isArray(keys)) {
+                    keys.forEach(function (key) {
+                        storeHandlers.push(store.removeItem(key));
+                    });
+                }
+                else {
+                    storeHandlers.push(store.removeItem(keys));
+                }
+                return [2 /*return*/, Promise.all(storeHandlers)];
+            });
+        });
+    };
+    PersistentLogAppender.prototype.format = function (loggingEvent) {
+        var level = loggingEvent.getLevel();
+        var message = loggingEvent.getMessage();
+        var category = this.logger.getCategory();
+        var levelStr = LOG_LEVEL_STRING[level];
+        var formattedTimestamp = loggingEvent.getFormattedTimestamp();
+        return category + " [" + formattedTimestamp + "] [" + levelStr + "]: " + message;
+    };
+    PersistentLogAppender.prototype.getLogs = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var category, store, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        category = this.logger.getCategory();
+                        store = this._getStore(category);
+                        _a = this;
+                        return [4 /*yield*/, store.key(0)];
+                    case 1:
+                        _a._getedKeyName = _b.sent();
+                        return [2 /*return*/, store.getItem(this._getedKeyName)];
+                }
+            });
+        });
+    };
+    PersistentLogAppender.prototype._getStore = function (name) {
+        return localforage.createInstance({
+            name: name,
+            storeName: 'log',
+        });
+    };
+    return PersistentLogAppender;
+}(AppenderAbstract));
 
 var Logger = /** @class */ (function () {
     function Logger(name) {
@@ -2418,36 +1938,36 @@ var Logger = /** @class */ (function () {
     };
     Logger.prototype.log = function (logLevel, message) {
         if (this.canDoLog(logLevel)) {
-            this.dolog(logLevel, message);
+            this._dolog(logLevel, message);
         }
     };
     Logger.prototype.doAppend = function () {
-        this._appenders.forEach(function (appender) {
-            appender.doAppend();
+        return __awaiter(this, void 0, void 0, function () {
+            var doAppends;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        doAppends = [];
+                        this._appenders.forEach(function (appender) {
+                            if (appender instanceof PersistentLogAppender) {
+                                doAppends.push(appender.doAppend());
+                            }
+                        });
+                        return [4 /*yield*/, Promise.all(doAppends)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
         });
     };
-    Logger.prototype.dolog = function (logLevel, message) {
+    Logger.prototype._dolog = function (logLevel, message) {
         var loggingEvent = new LoggingEvent(logLevel, message, this);
         this._appenders.forEach(function (appender) {
             appender.log(loggingEvent);
         });
     };
     return Logger;
-}());
-
-var AppenderAbstract = /** @class */ (function () {
-    function AppenderAbstract() {
-    }
-    AppenderAbstract.prototype.setLogger = function (logger) {
-        this.logger = logger;
-    };
-    AppenderAbstract.prototype.clear = function () {
-        this.doClear();
-    };
-    AppenderAbstract.prototype.log = function (loggingEvent) {
-        this.doLog(loggingEvent);
-    };
-    return AppenderAbstract;
 }());
 
 var BrowserConsoleAppender = /** @class */ (function (_super) {
@@ -2499,107 +2019,6 @@ var BrowserConsoleAppender = /** @class */ (function (_super) {
         return category + " [" + formattedTimestamp + "] [" + levelStr + "]: " + message + LINE_SEP;
     };
     return BrowserConsoleAppender;
-}(AppenderAbstract));
-
-var emitter = new EventEmitter2();
-
-var PersistentLogAppender = /** @class */ (function (_super) {
-    __extends(PersistentLogAppender, _super);
-    function PersistentLogAppender() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.LOG_SYNC_WEIGHT = 1000;
-        _this._loggingEvents = [];
-        _this._getedKeys = [];
-        return _this;
-    }
-    PersistentLogAppender.prototype.doLog = function (loggingEvent) {
-        this._loggingEvents.push(loggingEvent);
-        if (this._loggingEvents.length > this.LOG_SYNC_WEIGHT) {
-            emitter.emitAsync('doAppend');
-        }
-    };
-    PersistentLogAppender.prototype.doAppend = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var logs, firstKey, lastKey, key, category, store;
-            return __generator(this, function (_a) {
-                if (!this._loggingEvents.length) {
-                    return [2 /*return*/];
-                }
-                logs = this._loggingEvents.map(this.format.bind(this));
-                firstKey = this._loggingEvents[0].getStartTimestamp();
-                lastKey = this._loggingEvents[this._loggingEvents.length - 1].getStartTimestamp();
-                key = firstKey + " - " + lastKey;
-                this._loggingEvents = [];
-                category = this.logger.getCategory();
-                store = this._getStore(category);
-                store.setItem(key, logs);
-                return [2 /*return*/];
-            });
-        });
-    };
-    PersistentLogAppender.prototype.doClear = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var category;
-            return __generator(this, function (_a) {
-                if (this._getedKeys.length) {
-                    this.doRemove(this._getedKeys);
-                    return [2 /*return*/];
-                }
-                category = this.logger.getCategory();
-                return [2 /*return*/, this._getStore(category).clear()];
-            });
-        });
-    };
-    PersistentLogAppender.prototype.doRemove = function (keys) {
-        return __awaiter(this, void 0, void 0, function () {
-            var category, store, storeHandlers;
-            return __generator(this, function (_a) {
-                category = this.logger.getCategory();
-                store = this._getStore(category);
-                storeHandlers = [];
-                keys.forEach(function (key) {
-                    storeHandlers.push(store.removeItem(key));
-                });
-                return [2 /*return*/, Promise.all(storeHandlers)];
-            });
-        });
-    };
-    PersistentLogAppender.prototype.format = function (loggingEvent) {
-        var level = loggingEvent.getLevel();
-        var message = loggingEvent.getMessage();
-        var category = this.logger.getCategory();
-        var levelStr = LOG_LEVEL_STRING[level];
-        var formattedTimestamp = loggingEvent.getFormattedTimestamp();
-        return category + " [" + formattedTimestamp + "] [" + levelStr + "]: " + message;
-    };
-    PersistentLogAppender.prototype.getLogs = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var category, store, iterable, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        category = this.logger.getCategory();
-                        store = this._getStore(category);
-                        iterable = [];
-                        _a = this;
-                        return [4 /*yield*/, store.keys()];
-                    case 1:
-                        _a._getedKeys = _b.sent();
-                        this._getedKeys.forEach(function (key) {
-                            iterable.push(store.getItem(key));
-                        });
-                        return [2 /*return*/, Promise.all(iterable)];
-                }
-            });
-        });
-    };
-    PersistentLogAppender.prototype._getStore = function (name) {
-        return localforage.createInstance({
-            name: name,
-            storeName: 'log'
-        });
-    };
-    return PersistentLogAppender;
 }(AppenderAbstract));
 
 var DateFormatter = /** @class */ (function () {
@@ -2654,6 +2073,7 @@ var DateFormatter = /** @class */ (function () {
     DateFormatter.prototype.addZero = function (vNumber) {
         return (vNumber < 10 ? '0' : '') + vNumber;
     };
+    // tslint:disable-next-line
     DateFormatter.prototype.O = function (date) {
         // Difference to Greenwich time (GMT) in hours
         var os = Math.abs(date.getTimezoneOffset());
@@ -2672,11 +2092,11 @@ var LogManager = /** @class */ (function () {
     function LogManager() {
         var _this = this;
         this._dateFormatter = new DateFormatter();
+        this._overThresholdCallback = null;
         this._loggers = new Map();
         this.initMainLogger();
         window.onerror = this.windowError;
         window.addEventListener('beforeunload', function (event) {
-            event.preventDefault();
             _this.doAppend();
         });
     }
@@ -2688,9 +2108,27 @@ var LogManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    LogManager.prototype.doAppend = function () {
-        this._loggers.forEach(function (logger) {
-            logger.doAppend();
+    LogManager.prototype.doAppend = function (overThreshold) {
+        if (overThreshold === void 0) { overThreshold = false; }
+        return __awaiter(this, void 0, void 0, function () {
+            var doAppends;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        doAppends = [];
+                        this._loggers.forEach(function (logger) {
+                            doAppends.push(logger.doAppend());
+                        });
+                        return [4 /*yield*/, Promise.all(doAppends)];
+                    case 1:
+                        _a.sent();
+                        if (overThreshold && this._overThresholdCallback) {
+                            // notifiy over threshold to do upload
+                            this._overThresholdCallback();
+                        }
+                        return [2 /*return*/];
+                }
+            });
         });
     };
     LogManager.prototype.getLogger = function (categoryName) {
@@ -2711,6 +2149,9 @@ var LogManager = /** @class */ (function () {
     LogManager.prototype.initMainLogger = function () {
         var defaultLogger = this.getMainLogger();
         defaultLogger.setLevel(LOG_LEVEL.ALL);
+    };
+    LogManager.prototype.setOverThresholdCallback = function (cb) {
+        this._overThresholdCallback = cb;
     };
     LogManager.prototype.setAllLoggerLevel = function (level) {
         this._loggers.forEach(function (logger) {
@@ -2779,9 +2220,503 @@ var LogManager = /** @class */ (function () {
 var logManager = LogManager.Instance;
 var mainLogger = logManager.getMainLogger();
 var networkLogger = logManager.getLogger('NETWORK');
-emitter.on('doAppend', function () {
-    logManager.doAppend();
+emitter.on('doAppend', function (overThreshold) {
+    logManager.doAppend(overThreshold);
 });
+
+var SocketRequestHelper = /** @class */ (function () {
+    function SocketRequestHelper() {
+        this.emitter = new EventEmitter2();
+        this.requestTimerMap = new Map();
+    }
+    SocketRequestHelper.prototype.newRequest = function (request) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this._registerRequestListener(request.id, resolve);
+            _this._setRequestTimer(request, reject);
+        });
+    };
+    SocketRequestHelper.prototype.newResponse = function (response) {
+        var socketResponse = new SocketResponseBuilder()
+            .options(response)
+            .build();
+        if (socketResponse.request && socketResponse.request.params) {
+            var requestId = socketResponse.request
+                .params.request_id;
+            this._removeRequestTimer(requestId);
+            this._handleRegisteredRequest(requestId, socketResponse);
+        }
+    };
+    SocketRequestHelper.prototype._registerRequestListener = function (requestId, resolve) {
+        this.emitter.once(requestId, resolve);
+    };
+    SocketRequestHelper.prototype._handleRegisteredRequest = function (requestId, response) {
+        mainLogger.info("[Socket]: Handle request:" + requestId);
+        this.emitter.emit(requestId, response);
+    };
+    SocketRequestHelper.prototype._setRequestTimer = function (request, reject) {
+        var timerId = window.setTimeout(this._onRequestTimeout, request.timeout, request.id, reject);
+        this.requestTimerMap.set(request.id, timerId);
+    };
+    SocketRequestHelper.prototype._removeRequestTimer = function (requestId) {
+        var timerId = this.requestTimerMap.get(requestId);
+        window.clearTimeout(timerId);
+    };
+    SocketRequestHelper.prototype._onRequestTimeout = function (requestId, reject) {
+        mainLogger.info('[Socket]: request timeout');
+        var response = new SocketResponseBuilder()
+            .setStatus(0)
+            .setStatusText(NETWORK_FAIL_TYPE.TIME_OUT)
+            .build();
+        reject(response);
+    };
+    return SocketRequestHelper;
+}());
+
+var SocketClient = /** @class */ (function () {
+    function SocketClient(socketServer, token) {
+        var _this = this;
+        this.socketRequestHelper = new SocketRequestHelper();
+        this.socket = io("https://" + socketServer, {
+            transports: ['polling', 'websocket'],
+            autoConnect: false,
+            reconnection: true,
+            reconnectionDelay: 5000,
+            reconnectionDelayMax: 25000,
+            forceNew: true,
+            query: { tk: token },
+        });
+        this.socket.on('response', function (response) {
+            _this.socketRequestHelper.newResponse(response);
+        });
+        SocketClient.get = function () {
+            return _this;
+        };
+    }
+    SocketClient.prototype.request = function (request) {
+        var socketRequestPromise = this.socketRequestHelper.newRequest(request);
+        this.socket.emit('request', request);
+        return socketRequestPromise;
+    };
+    SocketClient.prototype.isClientAvailable = function () {
+        return this.socket && this.socket.connected;
+    };
+    return SocketClient;
+}());
+
+var Socket = /** @class */ (function (_super) {
+    __extends(Socket, _super);
+    function Socket() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Socket.prototype.request = function (request, listener) {
+        _super.prototype.request.call(this, request, listener);
+        var socketRequest = request;
+        if (request.params) {
+            socketRequest.parameters = request.params;
+        }
+        var socket = SocketClient.get();
+        if (socket) {
+            socket.request(socketRequest).then(function (response) {
+                listener.onSuccess(response);
+            }, function (response) {
+                listener.onFailure(response);
+            });
+        }
+    };
+    Socket.prototype.isNetworkReachable = function () {
+        var socket = SocketClient.get && SocketClient.get();
+        return socket && socket.isClientAvailable();
+    };
+    return Socket;
+}(BaseClient));
+
+var SocketRequest = /** @class */ (function (_super) {
+    __extends(SocketRequest, _super);
+    function SocketRequest(builder) {
+        var _this = _super.call(this, builder) || this;
+        _this.parameters = {};
+        _this.uri = '';
+        _this.params = __assign({}, builder.params, builder.data, { request_id: builder.id });
+        _this.uri = builder.path;
+        _this.via = NETWORK_VIA.SOCKET;
+        return _this;
+    }
+    return SocketRequest;
+}(Request));
+
+/*
+ * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
+ * @Date: 2018-06-04 15:43:35
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+/*
+ * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
+ * @Date: 2018-05-03 15:19:18
+ * Copyright © RingCentral. All rights reserved.
+ */
+var Manager = /** @class */ (function () {
+    function Manager() {
+        this.httpClient = new Http();
+        this.socketClient = new Socket();
+    }
+    Manager.prototype.getApiClient = function (via) {
+        var client = this.httpClient;
+        switch (via) {
+            case NETWORK_VIA.HTTP:
+                client = this.httpClient;
+                break;
+            case NETWORK_VIA.SOCKET:
+                client = this.socketClient;
+                break;
+            default:
+                break;
+        }
+        return client;
+    };
+    Manager.prototype.getAvailableClientType = function () {
+        if (this.socketClient.isNetworkReachable()) {
+            return NETWORK_VIA.SOCKET;
+        }
+        return NETWORK_VIA.HTTP;
+    };
+    return Manager;
+}());
+
+/*
+ * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
+ * @Date: 2018-06-04 15:41:34
+ * Copyright © RingCentral. All rights reserved.
+ */
+var RequestTask = /** @class */ (function () {
+    function RequestTask(request) {
+        var _a;
+        var REQUEST_PRIORITY_WEIGHT = (_a = {},
+            _a[REQUEST_PRIORITY.NORMAL] = REQUEST_WEIGHT.NORMAL,
+            _a[REQUEST_PRIORITY.HIGH] = REQUEST_WEIGHT.HIGH,
+            _a[REQUEST_PRIORITY.SPECIFIC] = REQUEST_WEIGHT.HIGH,
+            _a);
+        this.request = request;
+        this.weight = REQUEST_PRIORITY_WEIGHT[this.request.priority];
+    }
+    RequestTask.prototype.priority = function () {
+        return this.request.priority;
+    };
+    RequestTask.prototype.setRequestPriority = function (priority) {
+        this.request.priority = priority;
+        switch (priority) {
+            case REQUEST_PRIORITY.NORMAL:
+                if (this.weight < REQUEST_WEIGHT.NORMAL) {
+                    this.weight = REQUEST_WEIGHT.NORMAL;
+                }
+                break;
+            case REQUEST_PRIORITY.HIGH:
+                if (this.weight < REQUEST_WEIGHT.HIGH) {
+                    this.weight = REQUEST_WEIGHT.HIGH;
+                }
+                break;
+            case REQUEST_PRIORITY.SPECIFIC:
+                if (this.weight < REQUEST_WEIGHT.HIGH) {
+                    this.weight = REQUEST_WEIGHT.HIGH;
+                }
+                break;
+            default:
+                this.weight = 0;
+        }
+    };
+    RequestTask.prototype.via = function () {
+        return this.request.via;
+    };
+    RequestTask.prototype.incrementTaskWeight = function () {
+        this.weight = this.weight + 1;
+    };
+    return RequestTask;
+}());
+
+/*
+ * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
+ * @Date: 2018-06-04 15:41:48
+ * Copyright © RingCentral. All rights reserved.
+ */
+var NetworkRequestHandler = /** @class */ (function () {
+    function NetworkRequestHandler(tokenManager, type) {
+        this.pendingTasks = new Map();
+        this.consumers = new Map();
+        this.isPause = false;
+        this.type = type;
+        this.tokenManager = tokenManager;
+        this.init();
+    }
+    NetworkRequestHandler.prototype.init = function () {
+        this.initPendingTasks();
+    };
+    NetworkRequestHandler.prototype.initPendingTasks = function () {
+        this.pendingTasks.set(REQUEST_PRIORITY.SPECIFIC, []);
+        this.pendingTasks.set(REQUEST_PRIORITY.HIGH, []);
+        this.pendingTasks.set(REQUEST_PRIORITY.NORMAL, []);
+        this.pendingTasks.set(REQUEST_PRIORITY.LOW, []);
+    };
+    NetworkRequestHandler.prototype.addApiRequest = function (request, isTail) {
+        if (this.isSurvivalModeEnabled()) {
+            if (this.isInSurvivalMode() &&
+                !this.canHandleSurvivalMode(request.path)) {
+                this._callXApiResponseCallback(NETWORK_FAIL_TYPE.SERVER_ERROR, request);
+                return;
+            }
+        }
+        var task = new RequestTask(request);
+        this.appendTask(task, isTail);
+        this.notifyRequestArrived(request.via);
+    };
+    NetworkRequestHandler.prototype.pause = function () {
+        this.isPause = true;
+    };
+    NetworkRequestHandler.prototype.resume = function () {
+        this.isPause = false;
+        this.notifyRequestArrived(NETWORK_VIA.ALL);
+    };
+    NetworkRequestHandler.prototype.cancelAll = function () {
+        this.cancelAllPendingTasks();
+        this.cancelAllConsumers();
+    };
+    NetworkRequestHandler.prototype.cancelRequest = function (request) {
+        if (this.isRequestInPending(request)) {
+            this.deletePendingRequest(request);
+            this._callXApiResponseCallback(NETWORK_FAIL_TYPE.CANCELLED, request);
+        }
+        else {
+            var consumer = this.consumers.get(request.via);
+            if (consumer) {
+                consumer.onCancelRequest(request);
+            }
+        }
+    };
+    NetworkRequestHandler.prototype.notifyTokenRefreshed = function () {
+        this.consumers.forEach(function (consumer) {
+            consumer.onTokenRefreshed();
+        });
+    };
+    NetworkRequestHandler.prototype.produceRequest = function (via) {
+        var _this = this;
+        var task;
+        Object.keys(REQUEST_PRIORITY).some(function (index) {
+            var priority = REQUEST_PRIORITY[index];
+            if (!_this.canProduceRequest(priority)) {
+                return false;
+            }
+            task = _this._nextTaskInQueue(via, _this.pendingTasks.get(priority));
+            if (task) {
+                return true;
+            }
+            return false;
+        });
+        if (task) {
+            task = task;
+            this._changeTaskWeight(REQUEST_WEIGHT.HIGH, this.pendingTasks.get(REQUEST_PRIORITY.NORMAL), this.pendingTasks.get(REQUEST_PRIORITY.HIGH));
+            this._changeTaskWeight(REQUEST_WEIGHT.NORMAL, this.pendingTasks.get(REQUEST_PRIORITY.LOW), this.pendingTasks.get(REQUEST_PRIORITY.NORMAL));
+            return task.request;
+        }
+        return undefined;
+    };
+    NetworkRequestHandler.prototype.canProduceRequest = function (priority) {
+        return !this.isPause || priority === REQUEST_PRIORITY.SPECIFIC;
+    };
+    NetworkRequestHandler.prototype.addRequestConsumer = function (via, consumer) {
+        this.consumers.set(via, consumer);
+    };
+    NetworkRequestHandler.prototype.getRequestConsumer = function (via) {
+        return this.consumers.get(via);
+    };
+    NetworkRequestHandler.prototype.getOAuthTokenManager = function () {
+        return this.tokenManager;
+    };
+    NetworkRequestHandler.prototype.notifyRequestArrived = function (handleVia) {
+        if (handleVia === NETWORK_VIA.ALL) {
+            this.consumers.forEach(function (consumer) {
+                if (consumer) {
+                    consumer.onConsumeArrived();
+                }
+            });
+        }
+        else {
+            var consumer = this.consumers.get(handleVia);
+            if (consumer) {
+                consumer.onConsumeArrived();
+            }
+        }
+    };
+    NetworkRequestHandler.prototype.appendTask = function (task, isTail) {
+        var queue = this.pendingTasks.get(task.priority());
+        if (queue) {
+            if (isTail) {
+                queue.push(task);
+            }
+            else {
+                queue.unshift(task);
+            }
+        }
+    };
+    NetworkRequestHandler.prototype.cancelAllConsumers = function () {
+        this.consumers.forEach(function (consumer) {
+            consumer.onCancelAll();
+        });
+    };
+    NetworkRequestHandler.prototype.cancelAllPendingTasks = function () {
+        var _this = this;
+        this.pendingTasks.forEach(function (queue) {
+            queue.forEach(function (task) {
+                _this._callXApiResponseCallback(NETWORK_FAIL_TYPE.CANCELLED, task.request);
+            });
+        });
+        this.initPendingTasks();
+    };
+    NetworkRequestHandler.prototype.isRequestInPending = function (request) {
+        var exist = false;
+        this.pendingTasks.forEach(function (queue) {
+            queue.some(function (task) {
+                if (task.request.id === request.id) {
+                    exist = true;
+                    return true;
+                }
+                return false;
+            });
+            if (exist) {
+                return true;
+            }
+            return false;
+        });
+        return exist;
+    };
+    NetworkRequestHandler.prototype.deletePendingRequest = function (request) {
+        var exist = false;
+        this.pendingTasks.forEach(function (queue) {
+            queue.some(function (task, index) {
+                if (task.request.id === request.id) {
+                    exist = true;
+                    queue.splice(index, 1);
+                    return true;
+                }
+                return false;
+            });
+            if (exist) {
+                return true;
+            }
+            return false;
+        });
+    };
+    NetworkRequestHandler.prototype.setNetworkRequestSurvivalMode = function (mode) {
+        this.networkRequestSurvivalMode = mode;
+    };
+    NetworkRequestHandler.prototype.isSurvivalModeEnabled = function () {
+        return !!this.networkRequestSurvivalMode;
+    };
+    NetworkRequestHandler.prototype.isInSurvivalMode = function () {
+        return (this.networkRequestSurvivalMode &&
+            this.networkRequestSurvivalMode.isSurvivalMode());
+    };
+    NetworkRequestHandler.prototype.canHandleSurvivalMode = function (uri) {
+        return (this.networkRequestSurvivalMode &&
+            this.networkRequestSurvivalMode.canSupportSurvivalMode(uri));
+    };
+    NetworkRequestHandler.prototype.onAccessTokenInvalid = function (handlerType) {
+        this.tokenManager.refreshOAuthToken(handlerType);
+    };
+    NetworkRequestHandler.prototype.onSurvivalModeDetected = function (mode, retryAfter) {
+        if (this.isSurvivalModeEnabled() && this.networkRequestSurvivalMode) {
+            var interval = retryAfter ? retryAfter * 1000 : 4000;
+            this.networkRequestSurvivalMode.setSurvivalMode(mode, interval);
+            this.cancelAllPendingTasks();
+        }
+    };
+    NetworkRequestHandler.prototype._callXApiResponseCallback = function (type, request) {
+        var response = Response.builder
+            .setRequest(request)
+            .setStatusText(type)
+            .build();
+        if (request.callback) {
+            request.callback(response);
+        }
+    };
+    NetworkRequestHandler.prototype._nextTaskInQueue = function (via, queue) {
+        var result;
+        if (queue) {
+            queue.some(function (task, index) {
+                if (task.via() === via) {
+                    result = task;
+                    queue.splice(index, 1);
+                    return true;
+                }
+                return false;
+            });
+        }
+        return result;
+    };
+    NetworkRequestHandler.prototype._changeTaskWeight = function (weight, source, target) {
+        if (!source || !target) {
+            return;
+        }
+        var findTask = null;
+        var taskIndex = -1;
+        source.forEach(function (task, index) {
+            task.incrementTaskWeight();
+            if (task.weight >= weight && !findTask) {
+                findTask = task;
+                taskIndex = index;
+            }
+        });
+        if (findTask !== null) {
+            findTask = findTask;
+            if (weight === REQUEST_WEIGHT.HIGH) {
+                findTask.setRequestPriority(REQUEST_PRIORITY.HIGH);
+            }
+            else if (weight === REQUEST_WEIGHT.NORMAL) {
+                findTask.setRequestPriority(REQUEST_PRIORITY.NORMAL);
+            }
+            source.splice(taskIndex, 1);
+            target.push(findTask);
+        }
+    };
+    return NetworkRequestHandler;
+}());
+
+var OAuthTokenManager = /** @class */ (function () {
+    function OAuthTokenManager() {
+        this.tokenHandlers = new Map();
+    }
+    Object.defineProperty(OAuthTokenManager, "Instance", {
+        get: function () {
+            this._instance = this._instance || (this._instance = new this());
+            return this._instance;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    OAuthTokenManager.prototype.addOAuthTokenHandler = function (handler) {
+        this.tokenHandlers.set(handler.type, handler);
+    };
+    OAuthTokenManager.prototype.getOAuthTokenHandler = function (type) {
+        return this.tokenHandlers.get(type);
+    };
+    OAuthTokenManager.prototype.setOAuthToken = function (token, type) {
+        var tokenHandler = this.getOAuthTokenHandler(type);
+        if (tokenHandler) {
+            tokenHandler.token = token;
+        }
+    };
+    OAuthTokenManager.prototype.clearOAuthToken = function () {
+        this.tokenHandlers.forEach(function (handler) {
+            handler.clearOAuthToken();
+        });
+    };
+    OAuthTokenManager.prototype.refreshOAuthToken = function (type) {
+        var tokenHandler = this.getOAuthTokenHandler(type);
+        if (tokenHandler) {
+            tokenHandler.refreshOAuthToken();
+        }
+    };
+    return OAuthTokenManager;
+}());
 
 function doLog(response) {
     var request = response.request;
@@ -2801,26 +2736,25 @@ var NetworkRequestExecutor = /** @class */ (function () {
         this.retryCount = request.retryCount;
         this.client = client;
     }
-    NetworkRequestExecutor.prototype.onSuccess = function (requestId, response) {
-        if (this.isCompletion()) {
+    NetworkRequestExecutor.prototype.onSuccess = function (response) {
+        if (this._isCompletion()) {
             return;
         }
         this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-        this.callXApiResponseCallback(response);
+        this._callXApiResponseCallback(response);
         doLog(response);
     };
-    NetworkRequestExecutor.prototype.onFailure = function (requestId, response) {
-        if (this.isCompletion()) {
+    NetworkRequestExecutor.prototype.onFailure = function (response) {
+        if (this._isCompletion()) {
             return;
         }
-        if (response.statusText !== NETWORK_FAIL_TYPE.TIME_OUT ||
-            this.retryCount === 0) {
+        if (response.statusText !== NETWORK_FAIL_TYPE.TIME_OUT) {
             this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-            this.callXApiResponseCallback(response);
+            this._callXApiResponseCallback(response);
             doLog(response);
         }
         else {
-            this.retry();
+            this._retry();
         }
     };
     NetworkRequestExecutor.prototype.getRequest = function () {
@@ -2829,94 +2763,94 @@ var NetworkRequestExecutor = /** @class */ (function () {
     NetworkRequestExecutor.prototype.execute = function () {
         if (this.client.isNetworkReachable()) {
             this.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
-            this.performNetworkRequest();
+            this._performNetworkRequest();
         }
         else {
             this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-            this.callXApiResponse(0, NETWORK_FAIL_TYPE.NOT_NETWORK_CONNECTION);
+            this._callXApiResponse(0, NETWORK_FAIL_TYPE.NOT_NETWORK_CONNECTION);
         }
     };
     NetworkRequestExecutor.prototype.cancel = function () {
-        if (this.isCompletion()) {
+        if (this._isCompletion()) {
             return;
         }
         this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-        this.cancelClientRequest();
-        this.callXApiResponse(0, NETWORK_FAIL_TYPE.CANCELLED);
+        this._cancelClientRequest();
+        this._callXApiResponse(0, NETWORK_FAIL_TYPE.CANCELLED);
     };
     NetworkRequestExecutor.prototype.isPause = function () {
         return this.status === NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
     };
-    NetworkRequestExecutor.prototype.isCompletion = function () {
+    NetworkRequestExecutor.prototype._isCompletion = function () {
         return this.status === NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
     };
-    NetworkRequestExecutor.prototype.performNetworkRequest = function () {
+    NetworkRequestExecutor.prototype._performNetworkRequest = function () {
         this.client.request(this.request, this);
     };
-    NetworkRequestExecutor.prototype.notifyCompletion = function () {
+    NetworkRequestExecutor.prototype._notifyCompletion = function () {
         if (this.listener) {
             this.listener.onConsumeFinished(this);
         }
     };
-    NetworkRequestExecutor.prototype.retry = function () {
-        this.retryCount -= 1;
+    NetworkRequestExecutor.prototype._retry = function () {
         if (this.retryCount > 0) {
             this.execute();
+            this.retryCount -= 1;
         }
         else {
             this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-            this.cancelClientRequest();
-            this.callXApiResponse(0, NETWORK_FAIL_TYPE.TIME_OUT);
+            this._cancelClientRequest();
+            this._callXApiResponse(0, NETWORK_FAIL_TYPE.TIME_OUT);
         }
     };
-    NetworkRequestExecutor.prototype.cancelClientRequest = function () {
+    NetworkRequestExecutor.prototype._cancelClientRequest = function () {
         this.client.cancelRequest(this.request);
     };
-    NetworkRequestExecutor.prototype.callXApiResponseCallback = function (response) {
+    NetworkRequestExecutor.prototype._callXApiResponseCallback = function (response) {
         switch (response.status) {
             case HTTP_STATUS_CODE.UNAUTHORIZED:
-                this.handle401XApiCompletionCallback(response);
+                this._handle401XApiCompletionCallback(response);
                 break;
             case HTTP_STATUS_CODE.FORBIDDEN:
-                this.handle403XApiCompletionCallback(response);
+                this._handle403XApiCompletionCallback(response);
                 break;
             case HTTP_STATUS_CODE.BAD_GATEWAY:
-                this.handle502XApiCompletionCallback(response);
+                this._handle502XApiCompletionCallback(response);
                 break;
             case HTTP_STATUS_CODE.SERVICE_UNAVAILABLE:
-                this.handle503XApiCompletionCallback(response);
+                this._handle503XApiCompletionCallback(response);
                 break;
             default:
-                this.callXApiCompletionCallback(response);
+                this._callXApiCompletionCallback(response);
         }
     };
-    NetworkRequestExecutor.prototype.callXApiResponse = function (status, statusText) {
+    NetworkRequestExecutor.prototype._callXApiResponse = function (status, statusText) {
         var response = Response.builder
             .setStatus(status)
             .setStatusText(statusText)
             .setRequest(this.request)
             .build();
-        this.callXApiResponseCallback(response);
+        this._callXApiResponseCallback(response);
     };
-    NetworkRequestExecutor.prototype.callXApiCompletionCallback = function (response) {
+    NetworkRequestExecutor.prototype._callXApiCompletionCallback = function (response) {
         var callback = this.request.callback;
         if (callback) {
-            this.notifyCompletion();
+            this._notifyCompletion();
             callback(response);
         }
     };
-    NetworkRequestExecutor.prototype.handle401XApiCompletionCallback = function (response) {
+    NetworkRequestExecutor.prototype._handle401XApiCompletionCallback = function (response) {
         this.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
         this.responseListener.onAccessTokenInvalid(this.handlerType);
     };
-    NetworkRequestExecutor.prototype.handle403XApiCompletionCallback = function (response) {
+    NetworkRequestExecutor.prototype._handle403XApiCompletionCallback = function (response) {
         this.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
         this.responseListener.onAccessTokenInvalid(this.handlerType);
     };
-    NetworkRequestExecutor.prototype.handle502XApiCompletionCallback = function (response) {
+    NetworkRequestExecutor.prototype._handle502XApiCompletionCallback = function (response) {
         this.responseListener.onSurvivalModeDetected(SURVIVAL_MODE.OFFLINE, 0);
     };
-    NetworkRequestExecutor.prototype.handle503XApiCompletionCallback = function (response) {
+    NetworkRequestExecutor.prototype._handle503XApiCompletionCallback = function (response) {
         var retryAfter = response.retryAfter;
         this.responseListener.onSurvivalModeDetected(SURVIVAL_MODE.SURVIVAL, retryAfter);
     };
@@ -2934,7 +2868,7 @@ var NetworkRequestConsumer = /** @class */ (function () {
         this._networkRequestDecorator = networkRequestDecorator;
     }
     NetworkRequestConsumer.prototype.onConsumeArrived = function () {
-        this.consume();
+        this._consume();
     };
     NetworkRequestConsumer.prototype.onCancelAll = function () {
         this._executorQueue.forEach(function (executor) {
@@ -2942,7 +2876,7 @@ var NetworkRequestConsumer = /** @class */ (function () {
         });
     };
     NetworkRequestConsumer.prototype.onCancelRequest = function (request) {
-        var executor = this.getExecutor(request.id);
+        var executor = this._getExecutor(request.id);
         if (executor) {
             executor.cancel();
         }
@@ -2955,11 +2889,11 @@ var NetworkRequestConsumer = /** @class */ (function () {
         });
     };
     NetworkRequestConsumer.prototype.onConsumeFinished = function (executor) {
-        this.removeExecutor(executor);
-        this.consume();
+        this._removeExecutor(executor);
+        this._consume();
     };
-    NetworkRequestConsumer.prototype.consume = function () {
-        if (!this.canHandleRequest()) {
+    NetworkRequestConsumer.prototype._consume = function () {
+        if (!this._canHandleRequest()) {
             return;
         }
         var request = this._producer.produceRequest(this._via);
@@ -2970,24 +2904,40 @@ var NetworkRequestConsumer = /** @class */ (function () {
         executor.responseListener = this._responseListener;
         executor.listener = this;
         var decoratedExecutor = this._networkRequestDecorator.setExecutor(executor);
-        this.addExecutor(decoratedExecutor);
+        this._addExecutor(decoratedExecutor);
         decoratedExecutor.execute();
     };
-    NetworkRequestConsumer.prototype.canHandleRequest = function () {
+    NetworkRequestConsumer.prototype._canHandleRequest = function () {
         return this._executorQueue.size < this._maxQueueCount;
     };
-    NetworkRequestConsumer.prototype.addExecutor = function (executor) {
+    NetworkRequestConsumer.prototype._addExecutor = function (executor) {
         this._executorQueue.set(executor.getRequest().id, executor);
     };
-    NetworkRequestConsumer.prototype.removeExecutor = function (executor) {
+    NetworkRequestConsumer.prototype._removeExecutor = function (executor) {
         var requestId = executor.getRequest().id;
         this._executorQueue.delete(requestId);
     };
-    NetworkRequestConsumer.prototype.getExecutor = function (requestId) {
+    NetworkRequestConsumer.prototype._getExecutor = function (requestId) {
         return this._executorQueue.get(requestId);
     };
     return NetworkRequestConsumer;
 }());
+
+/*
+ * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
+ * @Date: 2018-05-03 11:28:10
+ * Copyright © RingCentral. All rights reserved.
+ */
+var config = {
+    rcConfig: {
+        rc: { clientId: '', clientSecret: '' },
+        glip2: { clientId: '', clientSecret: '' },
+    },
+    beforeExpired: 5 * 60 * 1000,
+    timeout: 600 * 1000,
+    dbAdapter: 'dexie',
+    survivalModeUris: {},
+};
 
 /*
  * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
@@ -3070,13 +3020,13 @@ var NetworkRequestDecorator = /** @class */ (function () {
  * @Date: 2018-05-03 13:51:11
  * Copyright © RingCentral. All rights reserved.
  */
-var NetworkManager$$1 = /** @class */ (function () {
-    function NetworkManager$$1() {
+var NetworkManager = /** @class */ (function () {
+    function NetworkManager() {
         this.clientManager = new Manager();
         this.handlers = new Map();
         this.tokenManager = OAuthTokenManager.Instance;
     }
-    Object.defineProperty(NetworkManager$$1, "Instance", {
+    Object.defineProperty(NetworkManager, "Instance", {
         get: function () {
             this._instance = this._instance || (this._instance = new this());
             return this._instance;
@@ -3084,38 +3034,38 @@ var NetworkManager$$1 = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    NetworkManager$$1.prototype.addApiRequest = function (request, isTail) {
+    NetworkManager.prototype.addApiRequest = function (request, isTail) {
         if (isTail === void 0) { isTail = true; }
         var handler = this.networkRequestHandler(request.handlerType);
         if (handler) {
             handler.addApiRequest(request, isTail);
         }
     };
-    NetworkManager$$1.prototype.pause = function () {
+    NetworkManager.prototype.pause = function () {
         this.handlers.forEach(function (handler) {
             handler.pause();
         });
     };
-    NetworkManager$$1.prototype.resume = function () {
+    NetworkManager.prototype.resume = function () {
         this.handlers.forEach(function (handler) {
             handler.resume();
         });
     };
-    NetworkManager$$1.prototype.cancelAll = function () {
+    NetworkManager.prototype.cancelAll = function () {
         this.handlers.forEach(function (handler) {
             handler.cancelAll();
         });
     };
-    NetworkManager$$1.prototype.cancelRequest = function (request) {
+    NetworkManager.prototype.cancelRequest = function (request) {
         var handler = this.networkRequestHandler(request.handlerType);
         if (handler) {
             handler.cancelRequest(request);
         }
     };
-    NetworkManager$$1.prototype.getTokenManager = function () {
+    NetworkManager.prototype.getTokenManager = function () {
         return this.tokenManager;
     };
-    NetworkManager$$1.prototype.setOAuthToken = function (token, handlerType) {
+    NetworkManager.prototype.setOAuthToken = function (token, handlerType) {
         if (_.isEmpty(this.tokenManager)) {
             throw new Error('token manager can not be null.');
         }
@@ -3123,33 +3073,33 @@ var NetworkManager$$1 = /** @class */ (function () {
             this.tokenManager.setOAuthToken(token, handlerType);
         }
     };
-    NetworkManager$$1.prototype.clearToken = function () {
+    NetworkManager.prototype.clearToken = function () {
         if (this.tokenManager) {
             this.tokenManager.clearOAuthToken();
         }
     };
-    NetworkManager$$1.prototype.addNetworkRequestHandler = function (handler) {
+    NetworkManager.prototype.addNetworkRequestHandler = function (handler) {
         this.handlers.set(handler.type, handler);
     };
-    NetworkManager$$1.prototype.networkRequestHandler = function (type) {
+    NetworkManager.prototype.networkRequestHandler = function (type) {
         return this.handlers.get(type);
     };
-    NetworkManager$$1.prototype.addRequestComsumer = function (handler, via, consumer) {
+    NetworkManager.prototype.addRequestConsumer = function (handler, via, consumer) {
         handler.addRequestConsumer(via, consumer);
     };
-    NetworkManager$$1.prototype.initNetworkRequestBaseHandler = function (handlerType, hasSurvivalMode, decorator) {
+    NetworkManager.prototype.initNetworkRequestBaseHandler = function (handlerType, hasSurvivalMode, decorator) {
         if (hasSurvivalMode === void 0) { hasSurvivalMode = false; }
         if (_.isEmpty(this.tokenManager) || !this.tokenManager) {
             throw new Error('token manager can not be null.');
         }
         var finalDecorator = new NetworkRequestDecorator(decorator);
-        var handler = new NetworkRequestHandler$$1(this.tokenManager, handlerType);
+        var handler = new NetworkRequestHandler(this.tokenManager, handlerType);
         var httpVia = NETWORK_VIA.HTTP;
         var httpConsumer = new NetworkRequestConsumer(handler, this.clientManager.getApiClient(httpVia), CONSUMER_MAX_QUEUE_COUNT.HTTP, httpVia, handler, finalDecorator);
-        this.addRequestComsumer(handler, httpVia, httpConsumer);
+        this.addRequestConsumer(handler, httpVia, httpConsumer);
         var socketVia = NETWORK_VIA.SOCKET;
         var socketConsumer = new NetworkRequestConsumer(handler, this.clientManager.getApiClient(socketVia), CONSUMER_MAX_QUEUE_COUNT.SOCKET, socketVia, handler, finalDecorator);
-        this.addRequestComsumer(handler, socketVia, socketConsumer);
+        this.addRequestConsumer(handler, socketVia, socketConsumer);
         if (hasSurvivalMode) {
             var survivalMode = new NetworkRequestSurvivalMode();
             handler.setNetworkRequestSurvivalMode(survivalMode);
@@ -3157,7 +3107,7 @@ var NetworkManager$$1 = /** @class */ (function () {
         this.addNetworkRequestHandler(handler);
         return handler;
     };
-    return NetworkManager$$1;
+    return NetworkManager;
 }());
 
 /*
@@ -3223,7 +3173,7 @@ var OAuthTokenHandler = /** @class */ (function () {
         if (now < timestamp) {
             return true;
         }
-        else if (now > timestamp + duration) {
+        if (now > timestamp + duration) {
             return true;
         }
         return false;
@@ -3252,7 +3202,7 @@ var OAuthTokenHandler = /** @class */ (function () {
             this.isOAuthTokenRefreshing = true;
             if (this.isAccessTokenRefreshable()) {
                 if (this.isRefreshTokenExpired()) {
-                    this.notifyRefreshTokenFailure();
+                    this._notifyRefreshTokenFailure();
                     return;
                 }
                 if (this.token) {
@@ -3260,33 +3210,33 @@ var OAuthTokenHandler = /** @class */ (function () {
                         .then(function (token) {
                         if (token) {
                             _this.token = token;
-                            _this.notifyRefreshTokenSuccess(token);
+                            _this._notifyRefreshTokenSuccess(token);
                         }
                     })
                         .catch(function () {
-                        _this.notifyRefreshTokenFailure();
+                        _this._notifyRefreshTokenFailure();
                     });
                 }
             }
             else {
-                this.notifyRefreshTokenFailure();
+                this._notifyRefreshTokenFailure();
             }
         }
         else {
-            this.notifyRefreshTokenFailure();
+            this._notifyRefreshTokenFailure();
         }
     };
-    OAuthTokenHandler.prototype.resetOAuthTokenRefreshingFlag = function () {
+    OAuthTokenHandler.prototype._resetOAuthTokenRefreshingFlag = function () {
         this.isOAuthTokenRefreshing = false;
     };
-    OAuthTokenHandler.prototype.notifyRefreshTokenFailure = function () {
-        this.resetOAuthTokenRefreshingFlag();
+    OAuthTokenHandler.prototype._notifyRefreshTokenFailure = function () {
+        this._resetOAuthTokenRefreshingFlag();
         if (this.listener) {
             this.listener.onRefreshTokenFailure(this.type);
         }
     };
-    OAuthTokenHandler.prototype.notifyRefreshTokenSuccess = function (token) {
-        this.resetOAuthTokenRefreshingFlag();
+    OAuthTokenHandler.prototype._notifyRefreshTokenSuccess = function (token) {
+        this._resetOAuthTokenRefreshingFlag();
         if (this.listener) {
             this.listener.onRefreshTokenSuccess(this.type, token);
         }
@@ -3294,15 +3244,10 @@ var OAuthTokenHandler = /** @class */ (function () {
     return OAuthTokenHandler;
 }());
 
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-22 15:04:01
- * Copyright © RingCentral. All rights reserved.
- */
-var NetworkSetup$$1 = /** @class */ (function () {
-    function NetworkSetup$$1() {
+var NetworkSetup = /** @class */ (function () {
+    function NetworkSetup() {
     }
-    NetworkSetup$$1.setup = function (types) {
+    NetworkSetup.SETUP = function (types) {
         types.forEach(function (type) {
             var tokenHandler = new OAuthTokenHandler(type, new /** @class */ (function () {
                 function class_1() {
@@ -3319,7 +3264,7 @@ var NetworkSetup$$1 = /** @class */ (function () {
                 return class_1;
             }())());
             var decoration = type.requestDecoration(tokenHandler);
-            var handler = NetworkManager$$1.Instance.initNetworkRequestBaseHandler(type, type.survivalModeSupportable, new /** @class */ (function () {
+            var handler = NetworkManager.Instance.initNetworkRequestBaseHandler(type, type.survivalModeSupportable, new /** @class */ (function () {
                 function class_2() {
                 }
                 class_2.prototype.decorate = function (request) {
@@ -3332,7 +3277,7 @@ var NetworkSetup$$1 = /** @class */ (function () {
             OAuthTokenManager.Instance.addOAuthTokenHandler(tokenHandler);
         });
     };
-    return NetworkSetup$$1;
+    return NetworkSetup;
 }());
 var TokenRefreshListener = /** @class */ (function () {
     function TokenRefreshListener(tokenHandler, requestHandler) {
@@ -3392,72 +3337,186 @@ var AbstractHandleType = /** @class */ (function () {
 
 /*
  * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-05-16 14:22:56
+ * @Date: 2018-06-04 15:40:58
  * Copyright © RingCentral. All rights reserved.
  */
-var HTTP_STATUS_CODE;
-(function (HTTP_STATUS_CODE) {
-    HTTP_STATUS_CODE[HTTP_STATUS_CODE["DEFAULT"] = 0] = "DEFAULT";
-    HTTP_STATUS_CODE[HTTP_STATUS_CODE["UNAUTHORIZED"] = 401] = "UNAUTHORIZED";
-    HTTP_STATUS_CODE[HTTP_STATUS_CODE["FORBIDDEN"] = 403] = "FORBIDDEN";
-    HTTP_STATUS_CODE[HTTP_STATUS_CODE["BAD_GATEWAY"] = 502] = "BAD_GATEWAY";
-    HTTP_STATUS_CODE[HTTP_STATUS_CODE["SERVICE_UNAVAILABLE"] = 503] = "SERVICE_UNAVAILABLE";
-})(HTTP_STATUS_CODE || (HTTP_STATUS_CODE = {}));
-var NETWORK_METHOD;
-(function (NETWORK_METHOD) {
-    NETWORK_METHOD["GET"] = "get";
-    NETWORK_METHOD["DELETE"] = "delete";
-    NETWORK_METHOD["HEAD"] = "head";
-    NETWORK_METHOD["OPTIONS"] = "options";
-    NETWORK_METHOD["POST"] = "post";
-    NETWORK_METHOD["PUT"] = "put";
-    NETWORK_METHOD["PATCH"] = "patch";
-})(NETWORK_METHOD || (NETWORK_METHOD = {}));
-var REQUEST_PRIORITY;
-(function (REQUEST_PRIORITY) {
-    REQUEST_PRIORITY[REQUEST_PRIORITY["SPECIFIC"] = 0] = "SPECIFIC";
-    REQUEST_PRIORITY[REQUEST_PRIORITY["HIGH"] = 1] = "HIGH";
-    REQUEST_PRIORITY[REQUEST_PRIORITY["NORMAL"] = 2] = "NORMAL";
-    REQUEST_PRIORITY[REQUEST_PRIORITY["LOW"] = 3] = "LOW";
-})(REQUEST_PRIORITY || (REQUEST_PRIORITY = {}));
-var NETWORK_VIA;
-(function (NETWORK_VIA) {
-    NETWORK_VIA[NETWORK_VIA["HTTP"] = 0] = "HTTP";
-    NETWORK_VIA[NETWORK_VIA["SOCKET"] = 1] = "SOCKET";
-    NETWORK_VIA[NETWORK_VIA["ALL"] = 2] = "ALL";
-})(NETWORK_VIA || (NETWORK_VIA = {}));
-var CONSUMER_MAX_QUEUE_COUNT;
-(function (CONSUMER_MAX_QUEUE_COUNT) {
-    CONSUMER_MAX_QUEUE_COUNT[CONSUMER_MAX_QUEUE_COUNT["HTTP"] = 5] = "HTTP";
-    CONSUMER_MAX_QUEUE_COUNT[CONSUMER_MAX_QUEUE_COUNT["SOCKET"] = 5] = "SOCKET";
-})(CONSUMER_MAX_QUEUE_COUNT || (CONSUMER_MAX_QUEUE_COUNT = {}));
-var REQUEST_WEIGHT;
-(function (REQUEST_WEIGHT) {
-    REQUEST_WEIGHT[REQUEST_WEIGHT["HIGH"] = 20] = "HIGH";
-    REQUEST_WEIGHT[REQUEST_WEIGHT["NORMAL"] = 10] = "NORMAL";
-})(REQUEST_WEIGHT || (REQUEST_WEIGHT = {}));
-var NETWORK_FAIL_TYPE;
-(function (NETWORK_FAIL_TYPE) {
-    NETWORK_FAIL_TYPE["CANCELLED"] = "CANCELLED";
-    NETWORK_FAIL_TYPE["SERVER_ERROR"] = "SERVER ERROR";
-    NETWORK_FAIL_TYPE["TIME_OUT"] = "ECONNABORTED";
-    NETWORK_FAIL_TYPE["NOT_NETWORK_CONNECTION"] = "NOT NETWORK CONNECTION";
-    NETWORK_FAIL_TYPE["UNAUTHORIZED"] = "UNAUTHORIZED";
-    NETWORK_FAIL_TYPE["BAD_REQUEST"] = "BAD REQUEST";
-})(NETWORK_FAIL_TYPE || (NETWORK_FAIL_TYPE = {}));
-var SURVIVAL_MODE;
-(function (SURVIVAL_MODE) {
-    SURVIVAL_MODE["NORMAL"] = "normal";
-    SURVIVAL_MODE["SURVIVAL"] = "survival";
-    SURVIVAL_MODE["OFFLINE"] = "offline";
-})(SURVIVAL_MODE || (SURVIVAL_MODE = {}));
-var NETWORK_REQUEST_EXECUTOR_STATUS;
-(function (NETWORK_REQUEST_EXECUTOR_STATUS) {
-    NETWORK_REQUEST_EXECUTOR_STATUS["IDLE"] = "idle";
-    NETWORK_REQUEST_EXECUTOR_STATUS["EXECUTING"] = "executing";
-    NETWORK_REQUEST_EXECUTOR_STATUS["PAUSE"] = "pause";
-    NETWORK_REQUEST_EXECUTOR_STATUS["COMPLETION"] = "completion";
-})(NETWORK_REQUEST_EXECUTOR_STATUS || (NETWORK_REQUEST_EXECUTOR_STATUS = {}));
+function generateUUID() {
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = ((d + Math.random() * 16) % 16) | 0; // eslint-disable-line
+        d = Math.floor(d / 16);
+        return (c === 'x' ? r : (r & 0x7) | 0x8).toString(16); // eslint-disable-line
+    });
+    return uuid;
+}
+var generateIncrementId = {
+    latestId: 1,
+    get: function () {
+        if (!this.latestId) {
+            this.latestId = 1;
+        }
+        else {
+            this.latestId += 1;
+        }
+        return this.latestId.toString();
+    },
+};
+
+/*
+ * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
+ * @Date: 2018-06-04 15:43:31
+ * Copyright © RingCentral. All rights reserved.
+ */
+var NetworkRequestBuilder = /** @class */ (function () {
+    function NetworkRequestBuilder() {
+        this.id = '';
+        this.path = '';
+        this.requestConfig = {};
+        this.retryCount = 0;
+        this.timeout = config.timeout;
+        this.priority = REQUEST_PRIORITY.NORMAL;
+        this.via = NETWORK_VIA.HTTP;
+        this.method = NETWORK_METHOD.GET;
+    }
+    NetworkRequestBuilder.prototype.options = function (options) {
+        var host = options.host, path = options.path, method = options.method, handlerType = options.handlerType, params = options.params, data = options.data, headers = options.headers, authFree = options.authFree, requestConfig = options.requestConfig;
+        this.headers = headers || {};
+        this.authFree = authFree || false;
+        this.method = method;
+        this.host = host || '';
+        this.path = path;
+        this.handlerType = handlerType;
+        this.params = params || {};
+        this.data = data || {};
+        this.requestConfig = requestConfig || {};
+        return this;
+    };
+    /**
+     * Setter handlerType
+     * @param {IHandleType} value
+     */
+    NetworkRequestBuilder.prototype.setHandlerType = function (value) {
+        this.handlerType = value;
+        return this;
+    };
+    /**
+     * Setter path
+     * @param {string} value
+     */
+    NetworkRequestBuilder.prototype.setPath = function (value) {
+        this.path = value;
+        return this;
+    };
+    /**
+     * Setter priority
+     * @param {REQUEST_PRIORITY} value
+     */
+    NetworkRequestBuilder.prototype.setPriority = function (value) {
+        this.priority = value;
+        return this;
+    };
+    /**
+     * Setter via
+     * @param {NETWORK_VIA} value
+     */
+    NetworkRequestBuilder.prototype.setVia = function (value) {
+        this.via = value;
+        return this;
+    };
+    /**
+     * Setter retryCount
+     * @param {number} value
+     */
+    NetworkRequestBuilder.prototype.setRetryCount = function (value) {
+        this.retryCount = value;
+        return this;
+    };
+    /**
+     * Setter data
+     * @param {any} value
+     */
+    NetworkRequestBuilder.prototype.setData = function (value) {
+        this.data = value;
+        return this;
+    };
+    /**
+     * Setter method
+     * @param {string } value
+     */
+    NetworkRequestBuilder.prototype.setMethod = function (value) {
+        this.method = value;
+        return this;
+    };
+    /**
+     * Setter headers
+     * @param {string } value
+     */
+    NetworkRequestBuilder.prototype.setHeaders = function (value) {
+        this.headers = value;
+        return this;
+    };
+    /**
+     * Setter host
+     * @param {string } value
+     */
+    NetworkRequestBuilder.prototype.setHost = function (value) {
+        this.host = value;
+        return this;
+    };
+    /**
+     * Setter timeout
+     * @param {number } value
+     */
+    NetworkRequestBuilder.prototype.setTimeout = function (value) {
+        this.timeout = value;
+        return this;
+    };
+    /**
+     * Setter requestConfig
+     * @param {object } value
+     */
+    NetworkRequestBuilder.prototype.setRequestConfig = function (value) {
+        this.requestConfig = value;
+        return this;
+    };
+    /**
+     * Setter params
+     * @param {any} value
+     */
+    NetworkRequestBuilder.prototype.setParams = function (value) {
+        this.params = value;
+        return this;
+    };
+    /**
+     * Setter authFree
+     * @param {boolean} value
+     */
+    NetworkRequestBuilder.prototype.setAuthfree = function (value) {
+        this.authFree = value;
+        return this;
+    };
+    NetworkRequestBuilder.prototype.build = function () {
+        switch (this.via) {
+            case NETWORK_VIA.SOCKET:
+                this.id = generateIncrementId.get();
+                return new SocketRequest(this);
+            case NETWORK_VIA.HTTP:
+                this.id = generateUUID();
+                return new Request(this);
+            case NETWORK_VIA.ALL:
+            default:
+                this.via = NetworkManager.Instance.clientManager.getAvailableClientType();
+                return this.build();
+        }
+    };
+    return NetworkRequestBuilder;
+}());
+
+/*
+ * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
+ * @Date: 2018-06-04 15:43:26
+ * Copyright © RingCentral. All rights reserved.
+ */
 
 /*
  * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
@@ -3473,7 +3532,7 @@ var NETWORK_REQUEST_EXECUTOR_STATUS;
 var Foundation = /** @class */ (function () {
     function Foundation() {
     }
-    Foundation.init = function (newConfig) {
+    Foundation.INIT = function (newConfig) {
         // TODO refactor: foundation should not care about rcConfig,
         // and foundation should not contain biz logic.
         Object.assign(config.rcConfig, newConfig.rcConfig);
@@ -3498,4 +3557,4 @@ var Foundation = /** @class */ (function () {
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { Foundation as Index, Foundation, config, DBManager, KVStorageManager, CriteriaParser, DexieCollection, DexieDB, KVStorage, storageFactory, LokiCollection, LokiDB, DatabaseType, NetworkManager$$1 as NetworkManager, OAuthTokenHandler, OAuthTokenManager, NetworkRequestHandler$$1 as NetworkRequestHandler, NetworkSetup$$1 as NetworkSetup, Token, AbstractHandleType, NetworkRequestBuilder$$1 as NetworkRequestBuilder, Socket, SocketRequest$$1 as SocketRequest, SocketResponse, SocketClient, SocketClientGetter, Http$$1 as Http, Request, Response, DEFAULT_BEFORE_EXPIRED, DEFAULT_TIMEOUT_INTERVAL, SURVIVAL_MODE_URIS, NETWORK_REQUEST_EXECUTOR_STATUS, SURVIVAL_MODE, NETWORK_FAIL_TYPE, REQUEST_WEIGHT, CONSUMER_MAX_QUEUE_COUNT, NETWORK_VIA, REQUEST_PRIORITY, NETWORK_METHOD, HTTP_STATUS_CODE, logManager, mainLogger, networkLogger, LOG_LEVEL };
+export { Foundation as Index, Foundation, config, DBManager, KVStorageManager, CriteriaParser, DexieCollection, DexieDB, KVStorage, storageFactory, LokiCollection, LokiDB, DatabaseType, NetworkManager, OAuthTokenHandler, OAuthTokenManager, NetworkRequestHandler, NetworkSetup, Token, AbstractHandleType, NetworkRequestBuilder, Socket, SocketRequest, SocketResponse, SocketClient, Http, Request, Response, DEFAULT_BEFORE_EXPIRED, DEFAULT_TIMEOUT_INTERVAL, SURVIVAL_MODE_URIS, NETWORK_REQUEST_EXECUTOR_STATUS, SURVIVAL_MODE, NETWORK_FAIL_TYPE, REQUEST_WEIGHT, CONSUMER_MAX_QUEUE_COUNT, NETWORK_VIA, REQUEST_PRIORITY, NETWORK_METHOD, HTTP_STATUS_CODE, logManager, mainLogger, networkLogger, LOG_LEVEL };

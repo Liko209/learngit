@@ -6,7 +6,7 @@
 import {
   ISchemaVersions,
   TableSchemaDefinition,
-  IParseSchemeCallback
+  IParseSchemeCallback,
 } from './../db';
 
 /**
@@ -16,10 +16,10 @@ import {
  */
 export const parseSchema = (
   versions: ISchemaVersions,
-  callback: IParseSchemeCallback
+  callback: IParseSchemeCallback,
 ) => {
-  Object.keys(versions).forEach(version => {
-    Object.keys(versions[version]).forEach(colName => {
+  Object.keys(versions).forEach((version) => {
+    Object.keys(versions[version]).forEach((colName) => {
       // const fields = versions[version][colName].map((str: string) =>
       //   str
       //     .trim()
@@ -33,12 +33,12 @@ export const parseSchema = (
           .replace('*', '');
       const { unique, indices = [] }: TableSchemaDefinition = versions[version][
         colName
-      ];
+];
       callback({
+        version,
+        colName,
         unique: filter(unique),
         indices: indices.map(indice => filter(indice)),
-        version,
-        colName
       });
     });
   });

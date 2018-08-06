@@ -15,7 +15,7 @@ function isLokiCollection(collection: any): collection is Loki.Collection {
 
 export const execQuery = <T extends {}>(
   collection: Loki.Collection,
-  query: IQuery<T> = { criteria: [], parallel: [] }
+  query: IQuery<T> = { criteria: [], parallel: [] },
 ): Resultset<T>[] => {
   let resultSet = isLokiCollection(collection)
     ? collection.chain()
@@ -27,7 +27,7 @@ export const execQuery = <T extends {}>(
     ranges,
     orderBys,
     equals,
-    contains
+    contains,
   }: ICriteria<T> = new CriteriaParser<T>().parse(query.criteria);
 
   ranges.forEach(
@@ -36,21 +36,21 @@ export const execQuery = <T extends {}>(
       if (lower) {
         const condition = {
           [key]: {
-            [includeLower ? '$gte' : '$gt']: lower
-          }
+            [includeLower ? '$gte' : '$gt']: lower,
+          },
         };
         $and.push(condition);
       }
       if (upper) {
         const condition = {
           [key]: {
-            [includeUpper ? '$lte' : '$lt']: upper
-          }
+            [includeUpper ? '$lte' : '$lt']: upper,
+          },
         };
         $and.push(condition);
       }
       resultSet = resultSet.find({ $and });
-    }
+    },
   );
 
   equals.forEach(({ key, value, ignoreCase }: IEqual) => {
@@ -58,7 +58,7 @@ export const execQuery = <T extends {}>(
   });
 
   contains.forEach(({ key, value }: IContain) => {
-    resultSet = resultSet.find({ [key]: { $contains: value }});
+    resultSet = resultSet.find({ [key]: { $contains: value } });
   });
 
   // TODO multi orderBy
@@ -71,7 +71,7 @@ export const execQuery = <T extends {}>(
   resultSets.push(resultSet);
 
   // parallel
-  let parallel: IQuery<T>[] = query.parallel || [];
+  const parallel: IQuery<T>[] = query.parallel || [];
   if (parallel.length > 0) {
     const additions = parallel.map(query => execQuery(collection, query)[0]);
     resultSets.push(...additions);

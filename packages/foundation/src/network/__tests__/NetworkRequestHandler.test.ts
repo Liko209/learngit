@@ -5,12 +5,12 @@ import {
   getFakeRequest,
   getFakeConsumer,
   getFakeTask,
-  getFakeSurvivalMode
+  getFakeSurvivalMode,
 } from './utils';
 import { NETWORK_VIA, REQUEST_PRIORITY, SURVIVAL_MODE } from '../network';
 const handler = new NetworkRequestHandler(
   getFakeTokenManager(),
-  fakeHandleType
+  fakeHandleType,
 );
 const consumer = getFakeConsumer();
 describe('NetworkRequestHandler', () => {
@@ -83,7 +83,7 @@ describe('NetworkRequestHandler', () => {
       handler.isRequestInPending.mockReturnValueOnce(false);
       const spy = jest.spyOn(
         handler.consumers.get(getFakeRequest().via),
-        'onCancelRequest'
+        'onCancelRequest',
       );
       handler.cancelRequest(getFakeRequest());
       expect(spy).toBeCalled();
@@ -93,7 +93,7 @@ describe('NetworkRequestHandler', () => {
       handler.isRequestInPending = jest.fn();
       handler.isRequestInPending.mockReturnValueOnce(true);
       const spy = jest.spyOn(handler, 'deletePendingRequest');
-      const spy1 = jest.spyOn(handler, 'callXApiResponseCallback');
+      const spy1 = jest.spyOn(handler, '_callXApiResponseCallback');
       handler.cancelRequest(getFakeRequest());
       expect(spy1).toBeCalled();
       expect(spy).toBeCalled();
@@ -103,7 +103,7 @@ describe('NetworkRequestHandler', () => {
   describe('notifyTokenRefreshed', () => {
     it('should refresh token for consumers', () => {
       const spys = [];
-      handler.consumers.forEach(consumer => {
+      handler.consumers.forEach((consumer) => {
         const spy = jest.spyOn(consumer, 'onTokenRefreshed');
         spys.push(spy);
       });
@@ -117,9 +117,9 @@ describe('NetworkRequestHandler', () => {
   describe('produceRequest', () => {
     it('should changeTaskWeight twice', () => {
       const task = getFakeTask();
-      handler.nextTaskInQueue = jest.fn();
-      handler.nextTaskInQueue.mockReturnValueOnce(task);
-      const spy = jest.spyOn(handler, 'changeTaskWeight');
+      handler._nextTaskInQueue = jest.fn();
+      handler._nextTaskInQueue.mockReturnValueOnce(task);
+      const spy = jest.spyOn(handler, '_changeTaskWeight');
       const request = handler.produceRequest(getFakeRequest().via);
       expect(request).toEqual(task.request);
       expect(spy).toBeCalled();
@@ -154,7 +154,7 @@ describe('NetworkRequestHandler', () => {
     it('should should call onConsumeArrived', () => {
       const spy = jest.spyOn(
         handler.consumers.get(NETWORK_VIA.HTTP),
-        'onConsumeArrived'
+        'onConsumeArrived',
       );
       handler.notifyRequestArrived(NETWORK_VIA.HTTP);
       expect(spy).toBeCalled();
@@ -163,7 +163,7 @@ describe('NetworkRequestHandler', () => {
     it('should should call onConsumeArrived', () => {
       const spy = jest.spyOn(
         handler.consumers.get(NETWORK_VIA.HTTP),
-        'onConsumeArrived'
+        'onConsumeArrived',
       );
       handler.notifyRequestArrived(NETWORK_VIA.ALL);
       expect(spy).toBeCalled();
@@ -226,7 +226,7 @@ describe('NetworkRequestHandler', () => {
     it('should be InSurvivalMode', () => {
       handler.networkRequestSurvivalMode.isSurvivalMode = jest.fn();
       handler.networkRequestSurvivalMode.isSurvivalMode.mockReturnValueOnce(
-        true
+        true,
       );
       expect(handler.isInSurvivalMode()).toBeTruthy();
     });
@@ -234,7 +234,7 @@ describe('NetworkRequestHandler', () => {
     it('should can HandleSurvivalMode', () => {
       handler.networkRequestSurvivalMode.canSupportSurvivalMode = jest.fn();
       handler.networkRequestSurvivalMode.canSupportSurvivalMode.mockReturnValueOnce(
-        true
+        true,
       );
       expect(handler.canHandleSurvivalMode()).toBeTruthy();
     });
@@ -254,7 +254,7 @@ describe('NetworkRequestHandler', () => {
       handler.isInSurvivalMode.mockReturnValueOnce(true);
       const spy = jest.spyOn(
         handler.networkRequestSurvivalMode,
-        'setSurvivalMode'
+        'setSurvivalMode',
       );
       const spy1 = jest.spyOn(handler, 'cancelAllPendingTasks');
       handler.onSurvivalModeDetected(SURVIVAL_MODE.NORMAL, 1);
