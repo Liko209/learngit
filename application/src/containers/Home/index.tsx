@@ -29,11 +29,11 @@ class Home extends Component<IProps, IStates>  {
     return (
       <div>
         <div>
-          top bar (always):
+          <strong>top bar (always): </strong>
           <button onClick={this.onClick}>Logout</button>
         </div>
         <div>
-          left nav (always):
+          <strong>left nav (always): </strong>
           <NavLink to="/">Home </NavLink>
           <NavLink to="/messages">Messages </NavLink>
           <NavLink to="/calls">Calls </NavLink>
