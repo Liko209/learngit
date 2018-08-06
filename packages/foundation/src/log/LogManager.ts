@@ -34,7 +34,7 @@ class LogManager {
     await Promise.all(doAppends);
 
     if (overThreshold && this._overThresholdCallback) {
-      //notifiy over threshold to do upload
+      // notifiy over threshold to do upload
       this._overThresholdCallback();
     }
   }
