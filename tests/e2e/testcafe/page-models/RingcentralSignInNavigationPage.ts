@@ -3,8 +3,6 @@ import { Selector } from 'testcafe';
 
 
 export class RingcentralSignInNavigationPage extends BasePage {
-  onEnter() { }
-  onExit() { }
 
   get credentialField(): Selector {
     return Selector("input[name='credential']");
@@ -15,12 +13,14 @@ export class RingcentralSignInNavigationPage extends BasePage {
   }
 
   setCredential(credential: string): this {
-    this.t.typeText(this.credentialField, credential);
-    return this;
+    return this.chain(t =>
+      t.typeText(this.credentialField, credential)
+    );
   }
 
   toNextPage(): this {
-    this.t.click(this.nextButton);
-    return this;
+    return this.chain(t =>
+      t.click(this.nextButton)
+    )
   }
 }
