@@ -1,8 +1,8 @@
 /*
  * @Author: Lily.li (lily.li@ringcentral.com)
  * @Date: 2018-06-06 15:55:39
- * @Last Modified by: Lily.li (lily.li@ringcentral.com)
- * @Last Modified time: 2018-07-10 15:32:09
+ * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
+ * @Last Modified time: 2018-08-06 15:53:43
  */
 import _ from 'lodash';
 import { Group } from '../../models';
@@ -75,8 +75,16 @@ export default class Permission {
     const {
       permissions: { admin, user },
     } = this.group;
-    const level = admin && admin.uids.includes(this.userId) ? admin.level || MAX_LEVEL : user ? user.level : 0;
-    return level;
+
+    if (admin && admin.uids.includes(this.userId)) {
+      return admin.level || MAX_LEVEL;
+    }
+
+    if (user) {
+      return user.level;
+    }
+
+    return 0;
   }
 
   levelToArray(level: number): PERMISSION_ENUM[] {

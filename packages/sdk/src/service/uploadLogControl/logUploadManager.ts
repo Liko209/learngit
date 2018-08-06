@@ -8,7 +8,7 @@ import axios from 'axios';
 class LogUploadLogManager {
   private static _instance: LogUploadLogManager;
 
-  public static Instance(): LogUploadLogManager {
+  public static instance(): LogUploadLogManager {
     if (this._instance) {
       return this._instance;
     }

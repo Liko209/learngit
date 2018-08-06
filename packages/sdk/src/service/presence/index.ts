@@ -18,7 +18,8 @@ export default class PresenceService extends BaseService {
       },
     };
     super(null, null, null, subscriptions);
-    this.caches = {}; // when serviceManager's property "instances" is recycled, it will be destroyed.
+    // when serviceManager's property "instances" is recycled, it will be destroyed.
+    this.caches = {};
   }
 
   saveToMemory(presences: Ipresence[]): void {

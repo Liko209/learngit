@@ -10,17 +10,24 @@
 
 import { IResponse } from '../NetworkClient';
 import Api from '../api';
-import { InitialSearchParams, SearchResultResponse } from '../../service/search/types.d';
+import { InitialSearchParams, SearchResult } from '../../service/search/types.d';
 import { CancelRequestParam } from '../../service/search/types';
+
+type SearchParams = InitialSearchParams | CancelRequestParam;
+type SearchResponse = IResponse<SearchResult>;
 
 class SearchAPI extends Api {
   static basePath = '/search';
-  static async search(params: InitialSearchParams | CancelRequestParam): Promise<IResponse<SearchResultResponse>> {
-    return this.glipNetworkClient.get<SearchResultResponse>('/search', params);
+  static async search(params: SearchParams): Promise<SearchResponse> {
+    return this.glipNetworkClient.get<SearchResult>('/search', params);
   }
-  static async scrollSearch(params: object): Promise<IResponse<SearchResultResponse>> {
-    return this.glipNetworkClient.get<SearchResultResponse>('/search_scroll', params);
+  static async scrollSearch(params: object): Promise<IResponse<SearchResult>> {
+    return this.glipNetworkClient.get<SearchResult>('/search_scroll', params);
   }
 }
 
 export default SearchAPI;
+export {
+  SearchParams,
+  SearchResponse,
+};

@@ -38,7 +38,7 @@ class BrowserConsoleAppender extends BaseAppender {
     const loggingEvent = new LoggingEvent(
       LOG_LEVEL.INFO,
       'do append',
-      this.logger
+      this.logger,
     );
     this.doLog(loggingEvent);
   }

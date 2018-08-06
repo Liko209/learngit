@@ -63,6 +63,7 @@ describe('ItemService', () => {
     const itemDao = {
       getItemsByGroupId: jest.fn(),
     };
+
     beforeAll(() => {
       handleData.mockClear();
       ItemAPI.requestRightRailItems = jest.fn().mockResolvedValue({
@@ -72,16 +73,19 @@ describe('ItemService', () => {
       });
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
     });
+
     afterAll(() => {
       jest.clearAllMocks();
     });
+
     it('should call related api', () => {
       itemService.getRightRailItemsOfGroup(123, 1);
       expect(ItemAPI.requestRightRailItems).toHaveBeenCalledWith(123);
       expect(itemDao.getItemsByGroupId).toHaveBeenCalledWith(123, 1);
       expect(handleData).not.toHaveBeenCalled();
     });
-    it('should call handleData if api gets the data', done => {
+
+    it('should call handleData if api gets the data', (done) => {
       ItemAPI.requestRightRailItems.mockResolvedValue({
         data: {
           items: [{ _id: 1 }, { _id: 2 }],
@@ -93,6 +97,7 @@ describe('ItemService', () => {
         done();
       });
     });
+
     it('should return dao query result', async () => {
       const mockLocalData = [{ id: 1 }, { id: 2 }, { id: 3 }];
       itemDao.getItemsByGroupId.mockResolvedValue(mockLocalData);
@@ -114,6 +119,7 @@ describe('ItemService', () => {
       body: 'body',
       title: 'title',
     };
+
     beforeAll(() => {
       handleData.mockClear();
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
@@ -121,9 +127,11 @@ describe('ItemService', () => {
         data: rawData,
       });
     });
+
     afterAll(() => {
       jest.clearAllMocks();
     });
+
     it('should return local data if found', async () => {
       itemDao.get.mockResolvedValue(transformedData);
       const ret = await itemService.getNoteById(1);
@@ -131,6 +139,7 @@ describe('ItemService', () => {
       expect(handleData).not.toHaveBeenCalled();
       expect(ret).toEqual(transformedData);
     });
+
     it('should call related api if local not found', async () => {
       itemDao.get.mockResolvedValue(null);
       const ret = await itemService.getNoteById(1);
@@ -138,6 +147,7 @@ describe('ItemService', () => {
       expect(handleData).toHaveBeenCalled();
       expect(ret).toEqual(transformedData);
     });
+
     it('should return null if response data not exists', async () => {
       itemDao.get.mockResolvedValue(null);
       ItemAPI.getNote.mockResolvedValue({});

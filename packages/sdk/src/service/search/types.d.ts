@@ -43,7 +43,7 @@ export interface InitialSearchResp {
   request_id: RequestId;
 }
 
-export interface SearchResultResponse {
+export interface SearchResult {
   request_id: RequestId;
   query: QueryString;
   results?: (Raw<Post> | Raw<Item>)[];

@@ -12,23 +12,32 @@ import { RawPostInfo } from './types';
 export type LinksArray = { url: string }[];
 class PostServiceHandler {
   // <a class='at_mention_compose' rel='{"id":21952077827}'>@Jeffrey Huang</a>
-  static buildAtMentionsPeopleInfo(params: RawPostInfo): { text: string; at_mention_non_item_ids: number[] } {
+  static buildAtMentionsPeopleInfo(
+    params: RawPostInfo): {
+      text: string; at_mention_non_item_ids: number[]
+    } {
     const { atMentions, users = [], text } = params;
+
     if (atMentions) {
       let renderedText = text;
       const ids = [];
+
       for (let i = 0; i < users.length; i += 1) {
         const userDisplay: string = users[i].display.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
         const key = new RegExp(`@\\[${userDisplay}\\]:${users[i].id}:`, 'g');
+
+        // tslint:disable-next-line:max-line-length
         const replacedText = `<a class='at_mention_compose' rel='{"id":${users[i].id}}'>@${users[i].display}</a>`;
         renderedText = renderedText.replace(key, replacedText);
         ids.push(users[i].id);
       }
+
       return {
         text: renderedText,
         at_mention_non_item_ids: ids,
       };
     }
+
     return {
       at_mention_non_item_ids: [],
       text: params.text,
@@ -60,6 +69,7 @@ class PostServiceHandler {
     const id = -randomInt();
     return {
       id,
+      links,
       created_at: now,
       modified_at: now,
       creator_id: userId,
@@ -74,7 +84,6 @@ class PostServiceHandler {
       post_ids: [],
       at_mention_item_ids: [],
       at_mention_non_item_ids: atMentionsPeopleInfo.at_mention_non_item_ids,
-      links,
       company_id: companyId,
       deactivated: false,
     };

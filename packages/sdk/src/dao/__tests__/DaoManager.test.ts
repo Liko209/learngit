@@ -21,7 +21,10 @@ jest.mock('../schema', () => ({
     1: {
       mock: {
         unique: 'id',
-        indices: ['index', 'name', 'pet', '[index+name]', '[name+index]', '[id+index]', '[index+id]', '*teams'],
+        indices: [
+          'index', 'name', 'pet', '[index+name]',
+          '[name+index]', '[id+index]', '[index+id]', '*teams',
+        ],
       },
     },
   },

@@ -13,7 +13,11 @@ class PostDao extends BaseDao<Post> {
     super(PostDao.COLLECTION_NAME, db);
   }
 
-  async queryPostsByGroupId(groupId: number, offset: number = 0, limit: number = Infinity): Promise<Post[]> {
+  async queryPostsByGroupId(
+    groupId: number,
+    offset: number = 0,
+    limit: number = Infinity,
+  ): Promise<Post[]> {
     mainLogger.debug(`queryPostsByGroupId groupId:${groupId} offset:${offset} limit:${limit}`);
     const query = this.createQuery();
     // logger.time('queryPostsByGroupId');

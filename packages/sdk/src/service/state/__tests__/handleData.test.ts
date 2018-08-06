@@ -4,7 +4,11 @@
  */
 import { daoManager, StateDao } from '../../../dao';
 import notificationCenter from '../../../service/notificationCenter';
-import handleData, { transform, getStates, TransformedState } from '../../../service/state/handleData';
+import handleData, {
+  transform,
+  getStates,
+  TransformedState,
+} from '../../../service/state/handleData';
 import { sample, transformedGroupState, transformedMyState, sample2 } from './dummy';
 import { rawMyStateFactory } from '../../../__tests__/factories';
 

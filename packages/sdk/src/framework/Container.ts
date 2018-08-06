@@ -1,12 +1,12 @@
 interface Newable<T> {
-  new (...args: any[]): T;
+  new(...args: any[]): T;
 }
 
 interface AsyncNewable<T> {
   (...args: any[]): Promise<any>;
 }
 
-type InjectableName < T > = Newable<T> | string | Function;
+type InjectableName<T> = Newable<T> | string | Function;
 type Injectable = Newable<any> | Function | Object;
 
 enum RegisterType {
@@ -184,13 +184,21 @@ class Container {
     return result;
   }
 
-  private async _asyncResolve<T>(registration: RegisterConfig, injections: Injectable[]): Promise<T> {
+  private async _asyncResolve<T>(
+    registration: RegisterConfig,
+    injections: Injectable[],
+  ): Promise<T> {
+
     let result: any = null;
-    if (registration.type === RegisterType.Instance && registration.async && registration.asyncImplementationType) {
+
+    if (registration.type === RegisterType.Instance &&
+      registration.async &&
+      registration.asyncImplementationType) {
       result = this._asyncResolveInstance(name, registration.asyncImplementationType, injections);
     } else {
       result = this._resolve<T>(registration, injections);
     }
+
     return result;
   }
 

@@ -1,6 +1,6 @@
 import { Container } from '../Container';
 
-class AService {}
+class AService { }
 class BService {
   aService: AService;
   constructor(aService: AService) {
@@ -82,8 +82,14 @@ describe('Container', () => {
 
     it('should automatically inject dependency', async () => {
       const container = new Container();
-      container.registerAsyncClass({ name: AService.name, value: AsyncAService });
-      container.registerAsyncClass({ name: BService.name, value: AsyncBService, injects: [AService.name] });
+      container.registerAsyncClass({
+        name: AService.name,
+        value: AsyncAService,
+      });
+      container.registerAsyncClass({
+        name: BService.name,
+        value: AsyncBService, injects: [AService.name],
+      });
       const bService = await container.asyncGet<BService>(BService.name);
       expect(bService.aService).toBeInstanceOf(AService);
     });
@@ -116,7 +122,7 @@ describe('Container', () => {
       container.registerProvider({
         name: 'fooProvider',
         value: () => {
-          return async name => {
+          return async (name) => {
             return new Foo(name);
           };
         },

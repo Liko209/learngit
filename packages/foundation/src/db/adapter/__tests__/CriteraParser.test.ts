@@ -20,11 +20,11 @@ describe('CriteriaParser', () => {
       expect(criteriaParser.orderBys).toEqual([
         { key: 'id', desc: true },
         { key: 'date', desc: false },
-        { key: 'name', desc: false }
+        { key: 'name', desc: false },
       ]);
     });
 
-    it("should use desc's default value", () => {
+    it('should use desc\'s default value', () => {
       criteriaParser.orderBy('id');
       expect(criteriaParser.orderBys).toEqual([{ key: 'id', desc: false }]);
     });
@@ -64,8 +64,8 @@ describe('CriteriaParser', () => {
         {
           ignoreCase: true,
           key: 'id',
-          value: 1
-        }
+          value: 1,
+        },
       ]);
     });
     it('should not ignore case', () => {
@@ -74,8 +74,8 @@ describe('CriteriaParser', () => {
         {
           ignoreCase: false,
           key: 'id',
-          value: 1
-        }
+          value: 1,
+        },
       ]);
     });
   });
@@ -96,8 +96,8 @@ describe('CriteriaParser', () => {
           lower: -Infinity,
           upper: Infinity,
           includeLower: false,
-          includeUpper: false
-        }
+          includeUpper: false,
+        },
       ]);
     });
 
@@ -109,8 +109,8 @@ describe('CriteriaParser', () => {
           lower: 1,
           upper: 10,
           includeLower: false,
-          includeUpper: false
-        }
+          includeUpper: false,
+        },
       ]);
     });
 
@@ -122,8 +122,8 @@ describe('CriteriaParser', () => {
           lower: 1,
           upper: 10,
           includeLower: true,
-          includeUpper: false
-        }
+          includeUpper: false,
+        },
       ]);
     });
 
@@ -135,8 +135,8 @@ describe('CriteriaParser', () => {
           lower: 1,
           upper: 10,
           includeLower: false,
-          includeUpper: true
-        }
+          includeUpper: true,
+        },
       ]);
     });
   });
@@ -150,8 +150,8 @@ describe('CriteriaParser', () => {
           lower: 1,
           upper: Infinity,
           includeLower: false,
-          includeUpper: false
-        }
+          includeUpper: false,
+        },
       ]);
     });
   });
@@ -165,8 +165,8 @@ describe('CriteriaParser', () => {
           lower: 1,
           upper: Infinity,
           includeLower: true,
-          includeUpper: false
-        }
+          includeUpper: false,
+        },
       ]);
     });
   });
@@ -180,8 +180,8 @@ describe('CriteriaParser', () => {
           lower: -Infinity,
           upper: 10,
           includeLower: false,
-          includeUpper: false
-        }
+          includeUpper: false,
+        },
       ]);
     });
   });
@@ -195,8 +195,8 @@ describe('CriteriaParser', () => {
           lower: -Infinity,
           upper: 10,
           includeLower: false,
-          includeUpper: true
-        }
+          includeUpper: true,
+        },
       ]);
     });
   });
@@ -205,14 +205,14 @@ describe('CriteriaParser', () => {
     it('should add anyOfs', () => {
       criteriaParser.anyOf('id', [1, 2, 3], true);
       expect(criteriaParser.anyOfs).toEqual([
-        { key: 'id', array: [1, 2, 3], ignoreCase: true }
+        { key: 'id', array: [1, 2, 3], ignoreCase: true },
       ]);
     });
 
-    it("should use ignoreCase's default value", () => {
+    it('should use ignoreCase\'s default value', () => {
       criteriaParser.anyOf('id', [1, 2, 3]);
       expect(criteriaParser.anyOfs).toEqual([
-        { key: 'id', array: [1, 2, 3], ignoreCase: false }
+        { key: 'id', array: [1, 2, 3], ignoreCase: false },
       ]);
     });
   });
@@ -221,14 +221,14 @@ describe('CriteriaParser', () => {
     it('should add startsWith', () => {
       criteriaParser.startsWith('id', 1, true);
       expect(criteriaParser.startsWiths).toEqual([
-        { key: 'id', value: 1, ignoreCase: true }
+        { key: 'id', value: 1, ignoreCase: true },
       ]);
     });
 
-    it("should use ignoreCase's default value", () => {
+    it('should use ignoreCase\'s default value', () => {
       criteriaParser.startsWith('id', 1);
       expect(criteriaParser.startsWiths).toEqual([
-        { key: 'id', value: 1, ignoreCase: false }
+        { key: 'id', value: 1, ignoreCase: false },
       ]);
     });
   });
@@ -251,14 +251,14 @@ describe('CriteriaParser', () => {
   describe('or()', () => {
     it('should add parallels', () => {
       criteriaParser.or({
-        criteria: [{ key: 'id', name: 'lessThan', value: 5 }]
+        criteria: [{ key: 'id', name: 'lessThan', value: 5 }],
       });
       criteriaParser.or({
-        criteria: [{ key: 'id', name: 'greaterThan', value: 10 }]
+        criteria: [{ key: 'id', name: 'greaterThan', value: 10 }],
       });
       expect(criteriaParser.parallels).toEqual([
         { criteria: [{ key: 'id', name: 'lessThan', value: 5 }] },
-        { criteria: [{ key: 'id', name: 'greaterThan', value: 10 }] }
+        { criteria: [{ key: 'id', name: 'greaterThan', value: 10 }] },
       ]);
     });
   });
@@ -268,7 +268,7 @@ describe('CriteriaParser', () => {
       const result = criteriaParser.parse([
         { key: 'id', name: 'anyOf', value: [1, 2, 3] },
         { key: 'id', name: 'lessThan', value: 2 },
-        { key: 'id', name: 'greaterThan', value: 5 }
+        { key: 'id', name: 'greaterThan', value: 5 },
       ]);
       expect(result).toEqual({
         anyOfs: [{ array: [1, 2, 3], ignoreCase: false, key: 'id' }],
@@ -287,18 +287,18 @@ describe('CriteriaParser', () => {
             includeUpper: false,
             key: 'id',
             lower: -Infinity,
-            upper: 2
+            upper: 2,
           },
           {
             includeLower: false,
             includeUpper: false,
             key: 'id',
             lower: 5,
-            upper: Infinity
-          }
+            upper: Infinity,
+          },
         ],
         startsWiths: [],
-        contains: []
+        contains: [],
       });
     });
   });

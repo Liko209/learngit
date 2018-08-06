@@ -21,13 +21,13 @@ export class SocketManager {
   private logPrefix: string;
   // private activeFSM: any = null;
   private closeingFSMs: { [key: string]: SocketFSM } = {};
-  private successConnectedUrls: Array<string> = [];
+  private successConnectedUrls: string[] = [];
   private hasLoggedIn: boolean = false;
 
   private constructor() {
     this.logPrefix = `[${SOCKET_LOGGER} manager]`;
 
-    this.subscribeExternalEvent();
+    this._subscribeExternalEvent();
   }
 
   public static getInstance() {
@@ -56,39 +56,49 @@ export class SocketManager {
   }
 
   public ongoingFSMCount() {
-    return (this.activeFSM ? 1 : 0) + (this.closeingFSMs ? Object.keys(this.closeingFSMs).length : 0);
+    let count = 0;
+
+    if (this.activeFSM) {
+      count += 1;
+    }
+
+    if (this.closeingFSMs) {
+      count += Object.keys(this.closeingFSMs).length;
+    }
+
+    return count;
   }
 
-  private subscribeExternalEvent() {
+  private _subscribeExternalEvent() {
     //  TO-DO: to be test. Should get this event once
     // 1. get scoreboard event from IDL
     // 2. get socket reconnect event
     notificationCenter.on(SERVICE.LOGIN, () => {
-      this.onLogin();
+      this._onLogin();
     });
 
     notificationCenter.on(SERVICE.LOGOUT, () => {
-      this.onLogout();
+      this._onLogout();
     });
 
     notificationCenter.on(CONFIG.SOCKET_SERVER_HOST, () => {
-      this.onServerHostUpdated();
+      this._onServerHostUpdated();
     });
 
     notificationCenter.on(SOCKET.STATE_CHANGE, ({ state }: { state: any }) => {
-      this.onSocketStateChanged(state);
+      this._onSocketStateChanged(state);
     });
 
     notificationCenter.on(SOCKET.NETWORK_CHANGE, ({ state }: any) => {
       switch (state) {
         case 'offline':
-          this.onOffline();
+          this._onOffline();
           break;
         case 'online':
-          this.onOnline();
+          this._onOnline();
           break;
         case 'focus':
-          this.onFocus();
+          this._onFocus();
           break;
         default:
           break;
@@ -96,30 +106,31 @@ export class SocketManager {
     });
 
     notificationCenter.on(SOCKET.RECONNECT, (data: any) => {
-      this.onReconnect(data);
+      this._onReconnect(data);
     });
 
     // TO-DO: /can-connect API reponse.
   }
 
-  private onLogin() {
+  private _onLogin() {
     this.info('onLogin');
     this.hasLoggedIn = true;
     this.successConnectedUrls = [];
-    this.stopActiveFSM();
-    this.startFSM();
+    this._stopActiveFSM();
+    this._startFSM();
   }
 
-  private onLogout() {
+  private _onLogout() {
     this.info('onLogout');
     this.hasLoggedIn = false;
-    this.stopActiveFSM();
+    this._stopActiveFSM();
   }
 
-  private onServerHostUpdated() {
+  private _onServerHostUpdated() {
     const hasActive = this.hasActiveFSM();
     const configDao = daoManager.getKVDao(ConfigDao);
     const serverUrl = configDao.get(SOCKET_SERVER_HOST);
+    // tslint:disable-next-line:max-line-length
     this.info(`onServerHostUpdated: ${serverUrl}, hasLoggedIn: ${this.hasLoggedIn}, hasActiveFSM: ${hasActive}`);
     if (!this.hasLoggedIn) {
       this.info(`Ignore server updated event due to not logged-in`);
@@ -142,16 +153,17 @@ export class SocketManager {
       */
       const isNewUrl = this.successConnectedUrls.indexOf(serverUrl) === -1;
       if (!hasActive || isNewUrl) {
+        // tslint:disable-next-line:max-line-length
         this.info(`Restart due to serverUrl update. hasActive: ${hasActive}, isNewUrl: ${isNewUrl}`);
-        this.stopActiveFSM();
-        this.startFSM();
+        this._stopActiveFSM();
+        this._startFSM();
       } else if (!isNewUrl) {
         this.warn(`Server URL is changed, but it is used before.`);
       }
     }
   }
 
-  private onSocketStateChanged(state: string) {
+  private _onSocketStateChanged(state: string) {
     if (state === 'connected') {
       const activeState = this.activeFSM && this.activeFSM.state;
       if (state === activeState) {
@@ -165,23 +177,23 @@ export class SocketManager {
     }
   }
 
-  private onOffline() {
+  private _onOffline() {
     this.info('onOffline');
-    this.stopActiveFSM();
+    this._stopActiveFSM();
   }
 
-  private onOnline() {
+  private _onOnline() {
     this.info('onOnline');
     if (!this.hasLoggedIn) {
       this.info(`Ignore online event due to not logged-in`);
       return;
     }
 
-    this.stopActiveFSM();
-    this.startFSM();
+    this._stopActiveFSM();
+    this._startFSM();
   }
 
-  private onFocus() {
+  private _onFocus() {
     if (!this.activeFSM) return;
 
     const state = this.activeFSM.state;
@@ -193,7 +205,7 @@ export class SocketManager {
     }
   }
 
-  private onReconnect(data: any) {
+  private _onReconnect(data: any) {
     // socket emit reconnect
     if (typeof data === 'number') return;
 
@@ -207,7 +219,7 @@ export class SocketManager {
     }
   }
 
-  private startFSM() {
+  private _startFSM() {
     // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
     const authDao = daoManager.getKVDao(AuthDao);
     const configDao = daoManager.getKVDao(ConfigDao);
@@ -221,7 +233,7 @@ export class SocketManager {
     // TO-DO: should subscribe closed event to remove self from mananger?
   }
 
-  private stopActiveFSM() {
+  private _stopActiveFSM() {
     if (this.activeFSM) {
       this.activeFSM.stop();
       // this.closeingFSMs[this.activeFSM.name] = this.activeFSM;

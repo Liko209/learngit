@@ -12,6 +12,7 @@ import { rawPostFactory, rawItemFactory } from '../../../__tests__/factories';
 import notificationCenter from '../../notificationCenter';
 import { transformAll } from '../../../service/utils';
 import { SERVICE } from '../../eventKey';
+import { BaseModel } from '../../../models';
 
 jest.mock('../../notificationCenter');
 jest.mock('../../../service/utils');
@@ -31,7 +32,13 @@ describe('Service handleData', () => {
   it('Canceled previous request', () => {
     const post = rawPostFactory.build({ _id: 7160004 });
     const item = rawItemFactory.build();
-    handleData({ results: [post, item], request_id: 2, scroll_request_id: 1, query: '1', response_id: 1 });
+    handleData({
+      results: [post, item],
+      request_id: 2,
+      scroll_request_id: 1,
+      query: '1',
+      response_id: 1,
+    });
     expect(searchService.cancelSearchRequest).toHaveBeenLastCalledWith(2);
   });
   it('Search End with no result', () => {
@@ -42,17 +49,33 @@ describe('Service handleData', () => {
   it('Search Success', () => {
     const post = rawPostFactory.build({ _id: 71680004 });
     const item = rawItemFactory.build();
-    const transformedData = [];
+    const transformedData: BaseModel[] = [];
     transformAll.mockReturnValue(transformedData);
-    handleData({ results: [item, post], request_id: 1, scroll_request_id: 1, query: '2', response_id: 1 });
+
+    handleData({
+      results: [item, post],
+      request_id: 1,
+      scroll_request_id: 1,
+      query: '2', response_id: 1,
+    });
+
     expect(searchService.cancelSearchRequest).not.toHaveBeenLastCalledWith(1);
-    expect(notificationCenter.emitService).toHaveBeenCalledWith(SERVICE.SEARCH_SUCCESS, transformedData);
+    expect(notificationCenter.emitService)
+      .toHaveBeenCalledWith(SERVICE.SEARCH_SUCCESS, transformedData);
   });
+
   it('Search success with no post', () => {
     const item = rawItemFactory.build();
     const transformedData = [];
     transformAll.mockReturnValue(transformedData);
-    handleData({ results: [item], request_id: 1, scroll_request_id: 1, query: '2', response_id: 1 });
+
+    handleData({
+      results: [item],
+      request_id: 1,
+      scroll_request_id: 1,
+      query: '2',
+      response_id: 1,
+    });
     expect(notificationCenter.emitService).toHaveBeenCalledWith(SERVICE.SEARCH_SUCCESS, []);
   });
 });

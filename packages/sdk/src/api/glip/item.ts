@@ -9,9 +9,15 @@ import Api from '../api';
 import { FileItem, Item, BaseModel, StoredFile, Raw, NoteItem } from '../../models';
 import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
 
-export interface RightRailItemModel extends BaseModel {
+interface RightRailItemModel extends BaseModel {
   items: Raw<Item>[];
 }
+
+type ProgressCallback = (e: ProgressEventInit) => any;
+type UploadFileResponse = IResponse<StoredFile>;
+type FileResponse = IResponse<Raw<FileItem>>;
+type RightRailResponse = IResponse<RightRailItemModel>;
+type NoteResponse = IResponse<Raw<NoteItem>>;
 
 const ITEMPATH = {
   [TypeDictionary.TYPE_ID_TASK]: 'task',
@@ -42,7 +48,8 @@ class ItemAPI extends Api {
   static sendFileItem(data: object): Promise<IResponse<Raw<FileItem>>> {
     return this.glipNetworkClient.post('/file', data);
   }
-  static uploadFileItem(files: FormData, callback?: (e: ProgressEventInit) => any): Promise<IResponse<StoredFile>> {
+
+  static uploadFileItem(files: FormData, callback?: ProgressCallback): Promise<UploadFileResponse> {
     return this.uploadNetworkClient.http({
       path: '/upload',
       method: NETWORK_METHOD.POST,
@@ -57,17 +64,26 @@ class ItemAPI extends Api {
       },
     });
   }
-  static requestById(id: number): Promise<IResponse<Raw<FileItem>>> {
+
+  static requestById(id: number): Promise<FileResponse> {
     return this.glipNetworkClient.get(getItemServerUrl(id));
   }
-  static requestRightRailItems(groupId: number): Promise<IResponse<RightRailItemModel>> {
+
+  static requestRightRailItems(groupId: number): Promise<RightRailResponse> {
     return this.glipNetworkClient.get('/web_client_right_rail_items', {
       group_id: groupId,
     });
   }
-  static getNote(id: number): Promise<IResponse<Raw<NoteItem>>> {
+
+  static getNote(id: number): Promise<NoteResponse> {
     return this.glipNetworkClient.get(`/pages_body/${id}`);
   }
 }
 
 export default ItemAPI;
+export {
+  RightRailItemModel,
+  FileResponse,
+  ProgressCallback,
+  UploadFileResponse,
+};

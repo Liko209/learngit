@@ -75,7 +75,11 @@ describe('AccountService', () => {
     expect.assertions(1);
     accountDao.get.mockClear();
     accountDao.get.mockReturnValueOnce(1).mockReturnValueOnce(222);
-    personDao.get.mockReturnValueOnce({ id: 1, email: 'a@gmail.com', display_name: 'display_name' });
+    personDao.get.mockReturnValueOnce({
+      id: 1,
+      email: 'a@gmail.com',
+      display_name: 'display_name',
+    });
 
     const user = accountService.getCurrentUserInfo();
     return expect(user).resolves.toEqual({

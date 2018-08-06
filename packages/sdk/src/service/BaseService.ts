@@ -15,6 +15,7 @@ import { SOCKET } from './eventKey';
 
 const throwError = (text: string): never => {
   throw new Error(
+    // tslint:disable-next-line:max-line-length
     `${text} is undefined! ${text} must be passed to Service constructor like this super(DaoClass, ApiClass, handleData)`,
   );
 };
@@ -45,7 +46,7 @@ class BaseService<SubModel extends BaseModel = BaseModel> extends AbstractServic
   }
 
   async getByIdFromDao(id: number): Promise<SubModel> {
-    this.checkDaoClass();
+    this._checkDaoClass();
     const dao = daoManager.getDao(this.DaoClass);
     const result = await dao.get(id);
     return result || daoManager.getDao(DeactivatedDao).get(id);
@@ -68,7 +69,7 @@ class BaseService<SubModel extends BaseModel = BaseModel> extends AbstractServic
   }
 
   async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<SubModel[]> {
-    this.checkDaoClass();
+    this._checkDaoClass();
     const dao = daoManager.getDao(this.DaoClass);
 
     return dao
@@ -83,14 +84,14 @@ class BaseService<SubModel extends BaseModel = BaseModel> extends AbstractServic
   }
 
   protected onStarted(): void {
-    this.subscribe();
+    this._subscribe();
   }
 
   protected onStopped(): void {
-    this.unsubscribe();
+    this._unsubscribe();
   }
 
-  private subscribe() {
+  private _subscribe() {
     Object.entries(this._subscriptions).forEach(([eventName, fn]) => {
       if (eventName.startsWith('SOCKET')) {
         return dataDispatcher.register(eventName as SOCKET, fn);
@@ -99,7 +100,7 @@ class BaseService<SubModel extends BaseModel = BaseModel> extends AbstractServic
     });
   }
 
-  private unsubscribe() {
+  private _unsubscribe() {
     Object.entries(this._subscriptions).forEach(([eventName, fn]) => {
       if (eventName.startsWith('SOCKET')) {
         return dataDispatcher.unregister(eventName as SOCKET, fn);
@@ -108,7 +109,7 @@ class BaseService<SubModel extends BaseModel = BaseModel> extends AbstractServic
     });
   }
 
-  private checkDaoClass() {
+  private _checkDaoClass() {
     if (!this.DaoClass) {
       throwError('DaoClass');
     }

@@ -39,7 +39,7 @@ describe('StateService', () => {
 
   describe('updateState()', () => {
     beforeEach(() => {
-      daoManager.getDao.mockImplementation(arg => {
+      daoManager.getDao.mockImplementation((arg) => {
         if (arg === GroupStateDao) {
           return groupStateDao;
         }
@@ -133,7 +133,11 @@ describe('StateService', () => {
 
       await stateService.updateLastGroup(1);
 
-      expect(StateAPI.saveStatePartial).toHaveBeenCalledWith(1, { last_group_id: 1, 'last_read_through:1': 1 });
+      expect(StateAPI.saveStatePartial)
+        .toHaveBeenCalledWith(1, {
+          last_group_id: 1,
+          'last_read_through:1': 1,
+        });
     });
   });
 

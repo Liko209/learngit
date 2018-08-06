@@ -108,13 +108,16 @@ describe('Post Dao', () => {
     beforeEach(async () => {
       await postDao.clear();
       const processedPosts: Post[] = [];
-      posts.forEach(element => {
+
+      posts.forEach((element) => {
         const post = _.cloneDeep(element);
         post.id = -post.id;
         processedPosts.push(post);
       });
+
       await postDao.bulkPut(processedPosts);
     });
+
     it('local pre-inserted posts', async () => {
       const result = await postDao.queryPreInsertPost();
       expect(result.length).toBeGreaterThan(1);

@@ -10,7 +10,11 @@ import IncomingPostHandler from '../../../service/post/incomingPostHandler';
 import { baseHandleData as utilsBaseHandleData, transform } from '../../../service/utils';
 import PostService from '../../post';
 import GroupService from '../../group';
-import handleData, { baseHandleData, handleDataFromSexio, handlePreInstedPosts } from '../handleData';
+import handleData, {
+  baseHandleData,
+  handleDataFromSexio,
+  handlePreInstedPosts,
+} from '../handleData';
 
 jest.mock('../../post');
 jest.mock('../../group');
@@ -53,8 +57,10 @@ describe('Post service handleData', () => {
     jest.spyOn(require('../handleData'), 'handlePreInstedPosts').mockResolvedValueOnce([]);
 
     await handleData([rawPostFactory.build({ _id: 1 })], false);
-    expect(IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold).toHaveBeenCalled();
-    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange).toHaveBeenCalled();
+    expect(IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold)
+      .toHaveBeenCalled();
+    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange)
+      .toHaveBeenCalled();
   });
 
   it('maxPostsExceed = true', async () => {
@@ -70,26 +76,31 @@ describe('handleDataFromSexio', () => {
   it('empty array', async () => {
     const ret = await handleDataFromSexio([]);
     expect(ret).toBeUndefined();
-    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange).not.toHaveBeenCalled();
+    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange)
+      .not.toHaveBeenCalled();
   });
 
   it('default data', async () => {
     // jest.spyOn(service, 'isVersionInPreInsert').mockReturnValue();
-    IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange.mockReturnValue([{}, {}]);
+    IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange
+      .mockReturnValue([{}, {}]);
     await handleDataFromSexio([rawPostFactory.build({ _id: 1 })]);
-    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange).toHaveBeenCalled();
+    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange)
+      .toHaveBeenCalled();
     expect(utilsBaseHandleData).toHaveBeenCalled();
   });
   it('default data', async () => {
-    IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange.mockReturnValue([]);
+    IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange
+      .mockReturnValue([]);
     await handleDataFromSexio([rawPostFactory.build({ _id: 1 })]);
-    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange).toHaveBeenCalled();
+    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange)
+      .toHaveBeenCalled();
     expect(utilsBaseHandleData).not.toHaveBeenCalled();
   });
 });
 
 describe('baseHandleData', () => {
-  beforeEach(() => {});
+  beforeEach(() => { });
   it('false', async () => {
     const ret = await baseHandleData([], false);
     expect(ret).toEqual([]);
@@ -97,7 +108,10 @@ describe('baseHandleData', () => {
   });
 
   it('true', async () => {
-    const ret = await baseHandleData([rawPostFactory.build({ _id: 1 }), rawPostFactory.build({ _id: 2 })]);
+    const ret = await baseHandleData([
+      rawPostFactory.build({ _id: 1 }),
+      rawPostFactory.build({ _id: 2 }),
+    ]);
     expect(ret).toMatchObject([{ _id: 1 }, { _id: 2 }]);
     expect(transform).toHaveBeenCalledTimes(2);
   });
@@ -107,14 +121,17 @@ describe('handlePreInstedPosts', () => {
   const postDao = {
     bulkDelete: jest.fn(),
   };
+
   beforeAll(() => {
     jest.restoreAllMocks();
     jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
   });
+
   afterEach(() => {
     jest.clearAllMocks();
     daoManager.getDao.mockReturnValueOnce(postDao);
   });
+
   it('handlePreInstedPosts should be [] with invalid parameters', async () => {
     const result = await handlePreInstedPosts([]);
     expect(result.length).toBe(0);

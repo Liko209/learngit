@@ -41,7 +41,7 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   }
 
   onConsumeArrived() {
-    this.consume();
+    this._consume();
   }
 
   onCancelAll() {
@@ -51,7 +51,7 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   }
 
   onCancelRequest(request: IRequest) {
-    const executor = this.getExecutor(request.id);
+    const executor = this._getExecutor(request.id);
     if (executor) {
       executor.cancel();
     }
@@ -66,12 +66,12 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   }
 
   onConsumeFinished(executor: INetworkRequestExecutor) {
-    this.removeExecutor(executor);
-    this.consume();
+    this._removeExecutor(executor);
+    this._consume();
   }
 
-  private consume() {
-    if (!this.canHandleRequest()) {
+  private _consume() {
+    if (!this._canHandleRequest()) {
       return;
     }
 
@@ -87,24 +87,24 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
     const decoratedExecutor = this._networkRequestDecorator.setExecutor(
       executor,
     );
-    this.addExecutor(decoratedExecutor);
+    this._addExecutor(decoratedExecutor);
     decoratedExecutor.execute();
   }
 
-  private canHandleRequest() {
+  private _canHandleRequest() {
     return this._executorQueue.size < this._maxQueueCount;
   }
 
-  private addExecutor(executor: INetworkRequestExecutor) {
+  private _addExecutor(executor: INetworkRequestExecutor) {
     this._executorQueue.set(executor.getRequest().id, executor);
   }
 
-  private removeExecutor(executor: INetworkRequestExecutor) {
+  private _removeExecutor(executor: INetworkRequestExecutor) {
     const requestId = executor.getRequest().id;
     this._executorQueue.delete(requestId);
   }
 
-  private getExecutor(requestId: string) {
+  private _getExecutor(requestId: string) {
     return this._executorQueue.get(requestId);
   }
 }

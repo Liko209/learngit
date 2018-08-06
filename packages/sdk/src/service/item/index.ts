@@ -54,14 +54,15 @@ export default class ItemService extends BaseService<Item> {
     if (result) {
       return result;
     }
+
     const resp = await ItemAPI.getNote(id);
     if (resp.data) {
       const note = transform<NoteItem>(resp.data);
       await handleData([resp.data]);
       return note;
-    } else {
-      // should handle errors when error handling ready
-      return null;
     }
+
+    // should handle errors when error handling ready
+    return null;
   }
 }

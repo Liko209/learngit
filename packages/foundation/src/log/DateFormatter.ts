@@ -59,6 +59,7 @@ class DateFormatter {
     return (vNumber < 10 ? '0' : '') + vNumber;
   }
 
+  // tslint:disable-next-line
   O(date: Date) {
     // Difference to Greenwich time (GMT) in hours
     const os = Math.abs(date.getTimezoneOffset());

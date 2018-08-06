@@ -6,11 +6,13 @@
 /// <reference path="./types.d.ts" />
 import { Index as Foundation, NetworkManager, Token } from 'foundation';
 import Sdk from '../Sdk';
-import { Api, 
+import {
+  Api,
   HandleByGlip,
-   HandleByRingCentral,
-   HandleByUpload,
-    HandleByGlip2 } from '../api';
+  HandleByRingCentral,
+  HandleByUpload,
+  HandleByGlip2,
+} from '../api';
 import { daoManager, AuthDao } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
 import SyncService from '../service/sync';
@@ -61,7 +63,7 @@ describe('Sdk', () => {
 
   describe('onLogin()', () => {
     beforeEach(() => {
-      jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => {});
+      jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => { });
       sdk.onLogin();
     });
     afterEach(() => jest.restoreAllMocks());
@@ -103,8 +105,10 @@ describe('Sdk', () => {
 
       sdk.updateNetworkToken();
 
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(new Token('glip token'), HandleByGlip);
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(new Token('glip token'), HandleByUpload);
+      expect(networkManager.setOAuthToken)
+        .toHaveBeenCalledWith(new Token('glip token'), HandleByGlip);
+      expect(networkManager.setOAuthToken)
+        .toHaveBeenCalledWith(new Token('glip token'), HandleByUpload);
     });
 
     it('should init with rc token ', () => {

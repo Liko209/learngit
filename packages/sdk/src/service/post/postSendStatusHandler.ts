@@ -24,7 +24,7 @@ class PostSendStatusHandler {
     const dao = daoManager.getDao(PostDao);
     const posts = await dao.queryPreInsertPost();
     if (posts && posts.length) {
-      posts.forEach(element => {
+      posts.forEach((element) => {
         this.addIdAndVersion(element.id, element.version, ESendStatus.FAIL);
       });
     }
@@ -63,12 +63,12 @@ class PostSendStatusHandler {
     const id: number | undefined = this.sendStatusIdVersion.get(version);
     return id
       ? {
-        existed: true,
         id,
+        existed: true,
       }
       : {
-        existed: false,
         id: 0,
+        existed: false,
       };
   }
 }

@@ -125,7 +125,7 @@ class OAuthTokenHandler implements ITokenHandler {
       this.isOAuthTokenRefreshing = true;
       if (this.isAccessTokenRefreshable()) {
         if (this.isRefreshTokenExpired()) {
-          this.notifyRefreshTokenFailure();
+          this._notifyRefreshTokenFailure();
           return;
         }
         if (this.token) {
@@ -133,34 +133,34 @@ class OAuthTokenHandler implements ITokenHandler {
             .then((token) => {
               if (token) {
                 this.token = token;
-                this.notifyRefreshTokenSuccess(token);
+                this._notifyRefreshTokenSuccess(token);
               }
             })
             .catch(() => {
-              this.notifyRefreshTokenFailure();
+              this._notifyRefreshTokenFailure();
             });
         }
       } else {
-        this.notifyRefreshTokenFailure();
+        this._notifyRefreshTokenFailure();
       }
     } else {
-      this.notifyRefreshTokenFailure();
+      this._notifyRefreshTokenFailure();
     }
   }
 
-  private resetOAuthTokenRefreshingFlag() {
+  private _resetOAuthTokenRefreshingFlag() {
     this.isOAuthTokenRefreshing = false;
   }
 
-  private notifyRefreshTokenFailure() {
-    this.resetOAuthTokenRefreshingFlag();
+  private _notifyRefreshTokenFailure() {
+    this._resetOAuthTokenRefreshingFlag();
     if (this.listener) {
       this.listener.onRefreshTokenFailure(this.type);
     }
   }
 
-  private notifyRefreshTokenSuccess(token: Token) {
-    this.resetOAuthTokenRefreshingFlag();
+  private _notifyRefreshTokenSuccess(token: Token) {
+    this._resetOAuthTokenRefreshingFlag();
     if (this.listener) {
       this.listener.onRefreshTokenSuccess(this.type, token);
     }

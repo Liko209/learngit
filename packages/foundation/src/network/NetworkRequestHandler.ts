@@ -56,7 +56,7 @@ implements IResponseListener, INetworkRequestProducer {
         this.isInSurvivalMode() &&
         !this.canHandleSurvivalMode(request.path)
       ) {
-        this.callXApiResponseCallback(NETWORK_FAIL_TYPE.SERVER_ERROR, request);
+        this._callXApiResponseCallback(NETWORK_FAIL_TYPE.SERVER_ERROR, request);
         return;
       }
     }
@@ -83,7 +83,7 @@ implements IResponseListener, INetworkRequestProducer {
   cancelRequest(request: IRequest) {
     if (this.isRequestInPending(request)) {
       this.deletePendingRequest(request);
-      this.callXApiResponseCallback(NETWORK_FAIL_TYPE.CANCELLED, request);
+      this._callXApiResponseCallback(NETWORK_FAIL_TYPE.CANCELLED, request);
     } else {
       const consumer = this.consumers.get(request.via);
       if (consumer) {
@@ -105,7 +105,7 @@ implements IResponseListener, INetworkRequestProducer {
       if (!this.canProduceRequest(priority)) {
         return false;
       }
-      task = this.nextTaskInQueue(via, this.pendingTasks.get(priority));
+      task = this._nextTaskInQueue(via, this.pendingTasks.get(priority));
 
       if (task) {
         return true;
@@ -115,12 +115,12 @@ implements IResponseListener, INetworkRequestProducer {
 
     if (task) {
       task = task as RequestTask;
-      this.changeTaskWeight(
+      this._changeTaskWeight(
         REQUEST_WEIGHT.HIGH,
         this.pendingTasks.get(REQUEST_PRIORITY.NORMAL),
         this.pendingTasks.get(REQUEST_PRIORITY.HIGH),
       );
-      this.changeTaskWeight(
+      this._changeTaskWeight(
         REQUEST_WEIGHT.NORMAL,
         this.pendingTasks.get(REQUEST_PRIORITY.LOW),
         this.pendingTasks.get(REQUEST_PRIORITY.NORMAL),
@@ -183,7 +183,7 @@ implements IResponseListener, INetworkRequestProducer {
   cancelAllPendingTasks() {
     this.pendingTasks.forEach((queue) => {
       queue.forEach((task) => {
-        this.callXApiResponseCallback(
+        this._callXApiResponseCallback(
           NETWORK_FAIL_TYPE.CANCELLED,
           task.request,
         );
@@ -264,7 +264,7 @@ implements IResponseListener, INetworkRequestProducer {
     }
   }
 
-  private callXApiResponseCallback(type: NETWORK_FAIL_TYPE, request: IRequest) {
+  private _callXApiResponseCallback(type: NETWORK_FAIL_TYPE, request: IRequest) {
     const response = Response.builder
       .setRequest(request)
       .setStatusText(type)
@@ -274,7 +274,7 @@ implements IResponseListener, INetworkRequestProducer {
     }
   }
 
-  private nextTaskInQueue(
+  private _nextTaskInQueue(
     via: NETWORK_VIA,
     queue?: RequestTask[],
   ): RequestTask | undefined {
@@ -292,7 +292,7 @@ implements IResponseListener, INetworkRequestProducer {
     return result;
   }
 
-  private changeTaskWeight(
+  private _changeTaskWeight(
     weight: number,
     source?: RequestTask[],
     target?: RequestTask[],

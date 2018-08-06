@@ -12,7 +12,7 @@ import SearchAPI from '../../../api/glip/search';
 
 const searchService = new SearchService();
 
-jest.mock('dao', () => {
+jest.mock('../../../dao', () => {
   const search = { searchTeamByKey: jest.fn(), searchPeopleByKey: jest.fn() };
   return {
     daoManager: {

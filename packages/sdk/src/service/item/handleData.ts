@@ -74,8 +74,8 @@ const sendFileItem = async (options: Options): Promise<Raw<FileItem>> => {
     creator_id: Number(options.storedFile.creator_id),
   };
   const fileItemOptions = {
-    creator_id: Number(options.storedFile.creator_id),
     version,
+    creator_id: Number(options.storedFile.creator_id),
     new_version: version,
     name: nameType.name,
     type: nameType.type,

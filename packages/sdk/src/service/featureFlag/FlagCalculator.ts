@@ -1,4 +1,12 @@
-import { Flag, FeatureConfig, BETA_FEATURE, AccountInfo, FLAG_PREFIX, FlagStrategies, Permission } from './utils';
+import {
+  Flag,
+  FeatureConfig,
+  BETA_FEATURE,
+  AccountInfo,
+  FLAG_PREFIX,
+  FlagStrategies,
+  Permission,
+} from './utils';
 
 class FlagCalculator implements FlagCalculator {
   featureConfig: FeatureConfig;
@@ -23,7 +31,8 @@ class FlagCalculator implements FlagCalculator {
     if (!flagsToCheck) {
       return false;
     }
-    const permissionFlags = flagsToCheck.filter((flag: string) => this._permissionKeys.includes(flag));
+    const permissionFlags = flagsToCheck
+      .filter((flag: string) => this._permissionKeys.includes(flag));
     const hasPermission = permissionFlags.reduce(
       (prev: boolean, curr: string) => prev && this.getFlagValue(flags, curr),
       true,
@@ -35,7 +44,8 @@ class FlagCalculator implements FlagCalculator {
     let isInBeta = true;
     // if need to check with beta flag
     if (permissionFlags.length !== flagsToCheck.length) {
-      isInBeta = flagsToCheck.reduce((prev: boolean, curr: string) => prev || this.getFlagValue(flags, curr), false);
+      isInBeta = flagsToCheck
+        .reduce((prev: boolean, curr: string) => prev || this.getFlagValue(flags, curr), false);
     }
     return isInBeta && hasPermission;
   }
@@ -68,8 +78,10 @@ class FlagCalculator implements FlagCalculator {
   }
 
   private _isInBetaList(flagName: string): boolean {
-    return this._isInBetaEmailList(`${flagName}_emails`) || this._isInBetaDomainList(`${flagName}_domains`);
+    return this._isInBetaEmailList(`${flagName}_emails`)
+      || this._isInBetaDomainList(`${flagName}_domains`);
   }
+
   private _isInList(listStr: string, valToCheck: number) {
     if (listStr && valToCheck) {
       const list: number[] = listStr.split(',').map(Number);

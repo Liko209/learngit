@@ -14,12 +14,12 @@ import {
   INotEqual,
   IContain,
   IStartsWith,
-  IFilter
+  IFilter,
 } from '../../db';
 
 const execQuery = <T extends {}>(
   table: Dexie.Table,
-  query: IQuery<T> = { criteria: [], parallel: [] }
+  query: IQuery<T> = { criteria: [], parallel: [] },
 ): Dexie.Collection[] => {
   if (query.criteria.length === 0) {
     return [table.toCollection()];
@@ -38,7 +38,7 @@ const execQuery = <T extends {}>(
     contains,
     filters,
     startsWiths,
-    desc
+    desc,
   } = new CriteriaParser<T>().parse(query.criteria);
 
   // TODO multi orderBy
@@ -74,7 +74,7 @@ const execQuery = <T extends {}>(
   ranges.forEach(
     ({ key, upper, lower, includeLower, includeUpper }: IRange) => {
       coll = where(key).between(lower, upper, includeLower, includeUpper);
-    }
+    },
   );
 
   notEquals.forEach(({ key, value }: INotEqual) => {
@@ -124,7 +124,7 @@ const execQuery = <T extends {}>(
   }
 
   // parallel
-  let parallel: IQuery<T>[] = query.parallel || [];
+  const parallel: IQuery<T>[] = query.parallel || [];
   if (parallel.length > 0) {
     const additions = parallel.map(query => execQuery(table, query)[0]);
     collections.push(...additions);

@@ -67,8 +67,8 @@ class NotificationCenter extends EventEmitter2 {
 
   emitConfigPut(key: string, payload: any): void {
     this.trigger(key, {
-      type: EVENT_TYPES.PUT,
       payload,
+      type: EVENT_TYPES.PUT,
     });
   }
 

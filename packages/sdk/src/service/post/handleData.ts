@@ -77,30 +77,34 @@ export async function handleDataFromSexio(data: Raw<Post>[]): Promise<void> {
   }
   const transformedData: Post[] = transformData(data);
   // handle edited posts not in local db
-  const validPosts: Post[] = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
-    transformedData,
-  );
+  const validPosts: Post[] = await IncomingPostHandler
+    .handleGroupPostsDiscontinuousCausedByModificationTimeChange(transformedData);
   await handlePreInstedPosts(validPosts);
   if (validPosts.length) {
     handleDeactivedAndNormalPosts(validPosts);
   }
 }
 
-export async function handleDataFromIndex(data: Raw<Post>[], maxPostsExceed: boolean): Promise<void> {
+export async function handleDataFromIndex(
+  data: Raw<Post>[],
+  maxPostsExceed: boolean,
+): Promise<void> {
   if (data.length === 0) {
     return;
   }
   const transformedData = transformData(data);
+
   // handle max exceeded
-  const exceedPostsHandled = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(
-    transformedData,
-    maxPostsExceed,
+  const exceedPostsHandled = await IncomingPostHandler
+    .handelGroupPostsDiscontinuousCasuedByOverThreshold(
+      transformedData,
+      maxPostsExceed,
   );
   await handlePreInstedPosts(exceedPostsHandled);
+
   // handle discontinuous by modified
-  const result = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
-    exceedPostsHandled,
-  );
+  const result = await IncomingPostHandler
+    .handleGroupPostsDiscontinuousCausedByModificationTimeChange(exceedPostsHandled);
   handleDeactivedAndNormalPosts(result);
 }
 
@@ -108,7 +112,10 @@ export default async function (data: Raw<Post>[], maxPostsExceed: boolean) {
   return handleDataFromIndex(data, maxPostsExceed);
 }
 
-export function baseHandleData(data: Raw<Post>[] | Raw<Post> | Post[] | Post, needTransformed = true): Promise<Post[]> {
+export function baseHandleData(
+  data: Raw<Post>[] | Raw<Post> | Post[] | Post,
+  needTransformed = true,
+): Promise<Post[]> {
   const transformedData: Post[] = needTransformed
     ? transformData(data as Raw<Post>[] | Raw<Post>)
     : Array.isArray(data)

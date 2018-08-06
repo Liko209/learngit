@@ -3,33 +3,33 @@
  * @Date: 2018-03-06 10:00:30
  */
 
-import { daoManager } from "../../dao";
-import AccountDao from "../../dao/account";
-import GroupDao from "../../dao/group";
-import { Group, Raw } from "../../models";
+import { daoManager } from '../../dao';
+import AccountDao from '../../dao/account';
+import GroupDao from '../../dao/group';
+import { Group, Raw } from '../../models';
 import {
   ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID
-} from "../../dao/account/constants";
+  ACCOUNT_COMPANY_ID,
+} from '../../dao/account/constants';
 
-import BaseService from "../../service/BaseService";
-import GroupServiceHandler from "../../service/group/groupServiceHandler";
-import ProfileService from "../../service/profile";
-import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from "../constants";
+import BaseService from '../../service/BaseService';
+import GroupServiceHandler from '../../service/group/groupServiceHandler';
+import ProfileService from '../../service/profile';
+import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
-import GroupAPI from "../../api/glip/group";
+import GroupAPI from '../../api/glip/group';
 
-import { uniqueArray } from "../../utils";
-import { transform } from "../utils";
-import { ErrorParser } from "../../utils/error";
+import { uniqueArray } from '../../utils';
+import { transform } from '../utils';
+import { ErrorParser } from '../../utils/error';
 import handleData, {
   filterGroups,
   handleGroupMostRecentPostChanged,
-  handleFavoriteGroupsChanged
-} from "./handleData";
-import Permission from "./permission";
-import { IResponse } from "../../api/NetworkClient";
-import { mainLogger } from "foundation";
+  handleFavoriteGroupsChanged,
+} from './handleData';
+import Permission from './permission';
+import { IResponse } from '../../api/NetworkClient';
+import { mainLogger } from 'foundation';
 import { SOCKET, SERVICE } from '../eventKey';
 
 export type CreateTeamOptions = {
@@ -272,10 +272,10 @@ export default class GroupService extends BaseService<Group> {
         permissionFlags,
       );
       const team: Partial<Group> = {
+        privacy,
+        description,
         set_abbreviation: name,
         members: memberIds.concat(creator),
-        description,
-        privacy,
         permissions: {
           admin: {
             uids: [creator],
@@ -298,9 +298,9 @@ export default class GroupService extends BaseService<Group> {
       const group = transform<Group>(resp.data);
       await handleData([resp.data]);
       return group;
-    } else {
-      // should handle errors when error handling ready
-      return null;
     }
+
+    // should handle errors when error handling ready
+    return null;
   }
 }

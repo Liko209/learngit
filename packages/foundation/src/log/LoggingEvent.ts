@@ -17,9 +17,8 @@ class LoggingEvent {
   getFormattedTimestamp() {
     if (this._logger) {
       return this._logger.getFormattedTimestamp(this._startTime);
-    } else {
-      return this._startTime.toISOString();
     }
+    return this._startTime.toISOString();
   }
 
   getLevel() {

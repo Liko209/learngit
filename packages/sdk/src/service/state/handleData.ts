@@ -18,8 +18,8 @@ export function transform(item: Raw<MyState>): TransformedState {
   const clone = Object.assign({}, item);
   const groupIds = new Set();
   const groupStates = {};
-  /* eslint-disable no-underscore-dangle */
-  Object.keys(clone).forEach(key => {
+
+  Object.keys(clone).forEach((key) => {
     if (key === '_id') {
       clone.id = clone._id;
       delete clone[key];
@@ -62,7 +62,7 @@ export function getStates(state: Raw<MyState>[]) {
   const myState: MyState[] = [];
   let groupStates: GroupState[] = [];
 
-  state.forEach(item => {
+  state.forEach((item) => {
     const transformed: TransformedState = transform(item);
     transformedData.push(transformed);
     const { groupState, ...rest } = transformed;
@@ -83,7 +83,7 @@ export default async function stateHandleData(state: Raw<MyState>[]) {
   const groupStateDao = daoManager.getDao(GroupStateDao);
   // const state = [].concat(data);
   const savePromises: Promise<void>[] = [];
-  const { myState, groupStates }: { myState: MyState[]; groupStates: GroupState[] } = getStates(state);
+  const { myState, groupStates } = getStates(state);
 
   notificationCenter.emitEntityPut(ENTITY.MY_STATE, myState);
   savePromises.push(stateDao.bulkUpdate(myState));

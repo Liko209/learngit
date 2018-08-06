@@ -1,10 +1,10 @@
 import { OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
-jest.mock('foundation');
-import HandleByRingCentral from '../HandleByRingCentral';
 import { stringify } from 'qs';
+import HandleByRingCentral from '../HandleByRingCentral';
 const handler = new OAuthTokenHandler(HandleByRingCentral, null);
 
 jest.mock('../../api');
+
 const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')
@@ -22,6 +22,7 @@ const postRequest = () => {
     .setRequestConfig({})
     .build();
 };
+
 describe('HandleByRingCentral', () => {
   it('tokenRefreshable is true and generate basic according to Api.httpConfig', () => {
     expect(HandleByRingCentral.tokenRefreshable).toBeTruthy();
@@ -47,6 +48,7 @@ describe('HandleByRingCentral', () => {
       );
     });
 
+    // tslint:disable-next-line:max-line-length
     it('should add basic token to params if needAuth is false and isOAuthTokenAvailable is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');

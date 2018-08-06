@@ -82,7 +82,13 @@ describe('AuthService', () => {
           throw new Error('test error');
         });
         await authService.login({ username: '123', extension: '123', password: 'abc' });
-        expect(loginGlip2ByPassword).toHaveBeenCalledWith({ password: 'abc', extension: '123', username: '123' });
+
+        expect(loginGlip2ByPassword)
+          .toHaveBeenCalledWith({
+            password: 'abc',
+            extension: '123',
+            username: '123',
+          });
       });
     });
   });

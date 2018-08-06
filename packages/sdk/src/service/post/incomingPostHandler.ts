@@ -9,7 +9,8 @@ import PostDao from '../../dao/post';
 import { Post } from '../../models';
 import { mainLogger } from 'foundation';
 
-// greater than or equal to this indicate the local post should be dirty since they can not use anymore becasue
+// greater than or equal to this indicate the local post
+// should be dirty since they can not use anymore because
 // they are not continues with server pushed data;
 const ServerIndexPostMaxSize = 50;
 
@@ -18,8 +19,14 @@ export type GroupPosts = {
 };
 
 class IncomingPostHandler {
-  // categorize the posts based on group, if one group has greater than or equal 50 posts, mark the posts of this group
-  static async handelGroupPostsDiscontinuousCasuedByOverThreshold(transformedData: Post[], maxPostsExceed: boolean) {
+  // categorize the posts based on group, if one group has greater
+  // than or equal 50 posts, mark the posts of this group
+  static async handelGroupPostsDiscontinuousCasuedByOverThreshold(
+    transformedData: Post[],
+    maxPostsExceed: boolean,
+  ) {
+
+    // tslint:disable-next-line:max-line-length
     mainLogger.info(`maxPostsExceed: ${maxPostsExceed} transformedData.length: ${transformedData.length}`);
     if (!(maxPostsExceed && transformedData.length >= ServerIndexPostMaxSize)) {
       return transformedData;
@@ -44,7 +51,7 @@ class IncomingPostHandler {
         const dao = daoManager.getDao(PostDao);
         let postsInDB: Post[] = [];
         await Promise.all(
-          postsShouldBeRemovedGroupIds.map(async id => {
+          postsShouldBeRemovedGroupIds.map(async (id) => {
             const posts = await dao.queryPostsByGroupId(id, 0, 9999);
             postsInDB = postsInDB.concat(posts);
           }),
@@ -96,7 +103,8 @@ class IncomingPostHandler {
           shouldBeMovedPosts = shouldBeMovedPosts.concat(groupPosts[groupIds[i]]);
         } else {
           let tmpPosts = groupPosts[groupIds[i]];
-          tmpPosts = tmpPosts.sort((post1: Post, post2: Post) => post1.created_at - post2.created_at);
+          tmpPosts = tmpPosts
+            .sort((post1: Post, post2: Post) => post1.created_at - post2.created_at);
           // case b, post 6 in local db
           // incoming posts: 1,2,3,4,5,6; 5 is modified, should discard 1,2,3,4,5
           // that's why we need order
@@ -110,7 +118,8 @@ class IncomingPostHandler {
             }
           }
           if (lastModifiedIndex >= 0) {
-            shouldBeMovedPosts = shouldBeMovedPosts.concat(tmpPosts.slice(0, lastModifiedIndex + 1));
+            shouldBeMovedPosts = shouldBeMovedPosts
+              .concat(tmpPosts.slice(0, lastModifiedIndex + 1));
           }
         }
       }
@@ -147,7 +156,10 @@ class IncomingPostHandler {
   static async handleEditedPostNoInDB(transformedData: Post[]) {
     const editedPostIds = [];
     for (let i = 0; i < transformedData.length; i += 1) {
-      if (transformedData[i].modified_at && transformedData[i].created_at !== transformedData[i].modified_at) {
+      if (
+        transformedData[i].modified_at &&
+        transformedData[i].created_at !== transformedData[i].modified_at
+      ) {
         editedPostIds.push(transformedData[i].id);
       }
     }
@@ -180,7 +192,7 @@ class IncomingPostHandler {
   }
 
   static removeDeactivedPostFromValidPost(validPost: Post[], deactivedPosts: Post[]) {
-    return validPost.filter(item => {
+    return validPost.filter((item) => {
       for (let i = 0; i < deactivedPosts.length; i += 1) {
         if (item.id === deactivedPosts[i].id) {
           return false;

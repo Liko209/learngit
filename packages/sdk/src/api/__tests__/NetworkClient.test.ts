@@ -6,13 +6,13 @@
 
 /// <reference path="../../__tests__/types.d.ts" />
 import { NetworkManager, NetworkRequestBuilder, NETWORK_VIA, NETWORK_METHOD } from 'foundation';
-
 import NetworkClient from '../NetworkClient';
-
 import { HandleByRingCentral } from '../handlers';
+
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
-NetworkManager.Instance = new NetworkManager();
+
+// NetworkManager.Instance = new NetworkManager();
 const mockRequest: any = {};
 
 const setup = () => {
@@ -32,7 +32,10 @@ const setup = () => {
     };
   });
   const rcNetworkClient = new NetworkClient(
-    { host: 'https://platform.ringcentral.com', handlerType: HandleByRingCentral },
+    {
+      host: 'https://platform.ringcentral.com',
+      handlerType: HandleByRingCentral,
+    },
     '/restapi',
   );
 
@@ -82,7 +85,7 @@ const setup = () => {
 };
 
 describe('apiRequest', () => {
-  beforeAll(() => {});
+  beforeAll(() => { });
   beforeEach(() => {
     NetworkRequestBuilder.mockReset();
     jest.clearAllMocks();
@@ -125,6 +128,7 @@ describe('apiRequest', () => {
       mockRequest.callback({ status: 200, data: { a: 1 } });
       await expect(promise).resolves.toEqual({ status: 200, data: { a: 1 } });
     });
+
     it('promise should reject with response', async () => {
       const { rcNetworkClient, getRequest } = setup();
       const promise = rcNetworkClient.request(getRequest);
@@ -168,7 +172,8 @@ describe('apiRequest', () => {
       jest.spyOn(rcNetworkClient, 'request');
       rcNetworkClient.post('/');
 
-      expect(rcNetworkClient.request).toHaveBeenCalledWith({ data: {}, headers: {}, method: 'post', path: '/' });
+      expect(rcNetworkClient.request)
+        .toHaveBeenCalledWith({ data: {}, headers: {}, method: 'post', path: '/' });
     });
   });
   describe('put()', () => {
@@ -178,7 +183,8 @@ describe('apiRequest', () => {
       jest.spyOn(rcNetworkClient, 'http');
       rcNetworkClient.put('/');
 
-      expect(rcNetworkClient.http).toHaveBeenCalledWith({ data: {}, headers: {}, method: 'put', path: '/' });
+      expect(rcNetworkClient.http)
+        .toHaveBeenCalledWith({ data: {}, headers: {}, method: 'put', path: '/' });
     });
   });
 
@@ -189,7 +195,8 @@ describe('apiRequest', () => {
       jest.spyOn(rcNetworkClient, 'http');
       rcNetworkClient.delete('/');
 
-      expect(rcNetworkClient.http).toHaveBeenCalledWith({ params: {}, headers: {}, method: 'delete', path: '/' });
+      expect(rcNetworkClient.http)
+        .toHaveBeenCalledWith({ params: {}, headers: {}, method: 'delete', path: '/' });
     });
   });
 });

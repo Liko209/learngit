@@ -5,21 +5,28 @@ import { SOCKET } from '../../service';
 type Handler = (data: any) => any;
 class DataDispatcher extends EventEmitter2 {
   register(key: SOCKET, dataHandler: Handler) {
-    console.info('Datadispatcher registing', key);
+    console.info('DataDispatcher registing', key);
     this.on(key, dataHandler);
   }
 
   unregister(key: SOCKET, dataHandler: Handler) {
-    console.info('Datadispatcher unregistering', key);
+    console.info('DataDispatcher unregistering', key);
     this.off(key, dataHandler);
   }
 
   async onDataArrived(data: string) {
-    const entries = parseSocketMessage(data);
-    console.info('Datadispatcher handling', Object.keys(entries));
+    const messages = parseSocketMessage(data);
+    console.info('DataDispatcher handling', Object.keys(messages));
+
     return Promise.all(
-      Object.keys(entries).map((key: string) => this.emitAsync(`SOCKET.${key.toUpperCase()}`, entries[key])),
+      Object
+        .entries(messages)
+        .map(this._emitMessageAsync.bind(this)),
     );
+  }
+
+  private async _emitMessageAsync([key, message]: [string, any]) {
+    return this.emitAsync(`SOCKET.${key.toUpperCase()}`, message);
   }
 }
 export default new DataDispatcher();

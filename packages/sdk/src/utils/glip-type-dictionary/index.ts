@@ -35,11 +35,11 @@ function parseSocketMessage(message: string) {
   } = JSON.parse(message);
   const result = {};
   objects.forEach((arr: any[]) => {
-    arr.forEach(obj => {
+    arr.forEach((obj) => {
       if (obj.search_results) {
         result['search'] = obj.search_results;
       }
-      const objTypeId = GlipTypeUtil.extractTypeId(obj._id); // eslint-disable-line no-underscore-dangle
+      const objTypeId = GlipTypeUtil.extractTypeId(obj._id);
       if (socketMessageMap[objTypeId]) {
         const key = socketMessageMap[objTypeId];
         result[key] = result[key] || [];

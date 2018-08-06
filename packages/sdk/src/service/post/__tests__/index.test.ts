@@ -176,7 +176,8 @@ describe('PostService', () => {
       });
       const resultEmpty = await postService.getPostsByGroupId({ groupId: 1, offset: 0 });
 
-      expect(postService.getPostsFromLocal).toHaveBeenCalledWith({ groupId: 1, limit: 20, offset: 0 });
+      expect(postService.getPostsFromLocal)
+        .toHaveBeenCalledWith({ groupId: 1, limit: 20, offset: 0 });
       expect(resultEmpty).toEqual({ hasMore: true, items: [], posts: [{ id: 1 }, { id: 2 }] });
     });
 
@@ -263,7 +264,13 @@ describe('PostService', () => {
 
       const result = await postService.sendItemFile({ groupId: 1, file: new FormData(), text: '' });
 
-      expect(PostServiceHandler.buildPostInfo).toHaveBeenCalledWith({ groupId: 1, itemIds: [1], text: '' });
+      expect(PostServiceHandler.buildPostInfo)
+        .toHaveBeenCalledWith({
+          groupId: 1,
+          itemIds: [1],
+          text: '',
+        });
+
       expect(result).toEqual({ id: 1 });
     });
 

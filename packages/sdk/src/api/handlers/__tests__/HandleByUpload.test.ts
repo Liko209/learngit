@@ -1,5 +1,4 @@
 import { OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
-jest.mock('foundation');
 import HandleByUpload from '../HandleByUpload';
 const handler = new OAuthTokenHandler(HandleByUpload, null);
 

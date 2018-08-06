@@ -38,7 +38,7 @@ class CollectionWhereClause {
   }
   equalsIgnoreCase(val: string): Dexie.Collection {
     return this.coll.filter((item: any) =>
-      equalIgnoreCase(item[this.key], val)
+      equalIgnoreCase(item[this.key], val),
     );
   }
   notEqual(val: any): Dexie.Collection {
@@ -49,14 +49,14 @@ class CollectionWhereClause {
   }
   startsWithIgnoreCase(val: string): Dexie.Collection {
     return this.coll.filter((item: any) =>
-      startsWithIgnoreCase(item[this.key], val)
+      startsWithIgnoreCase(item[this.key], val),
     );
   }
   between(
     lower: any,
     upper: any,
     includeLower?: boolean,
-    includeUpper?: boolean
+    includeUpper?: boolean,
   ): Dexie.Collection {
     const key = this.key;
     return this.coll.filter((item: any) => {
@@ -70,7 +70,7 @@ class CollectionWhereClause {
   contains(val: any): Dexie.Collection {
     return this.coll.filter(
       (item: any) =>
-        Array.isArray(item[this.key]) && item[this.key].indexOf(val) >= 0
+        Array.isArray(item[this.key]) && item[this.key].indexOf(val) >= 0,
     );
   }
 }
@@ -84,5 +84,5 @@ export {
   isDexieCollection,
   isIEOrEdge,
   CollectionWhereClause,
-  collectionWhere
+  collectionWhere,
 };

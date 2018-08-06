@@ -5,7 +5,11 @@
 
 import { daoManager } from '../../dao';
 import AccountDao from '../../dao/account';
-import { ACCOUNT_CLIENT_CONFIG, ACCOUNT_USER_ID, ACCOUNT_COMPANY_ID } from '../../dao/account/constants';
+import {
+  ACCOUNT_CLIENT_CONFIG,
+  ACCOUNT_USER_ID,
+  ACCOUNT_COMPANY_ID,
+} from '../../dao/account/constants';
 
 enum EBETA_FLAG {
   BETA_LOG,

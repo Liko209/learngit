@@ -19,7 +19,7 @@ class PersonDao extends BaseDao<Person> {
 
   async getAll(): Promise<Person[]> {
     const persons: Person[] = await super.getAll();
-    return persons.sort(this.personCompare.bind(this));
+    return persons.sort(this._personCompare.bind(this));
   }
 
   async getAllCount(): Promise<number> {
@@ -31,22 +31,24 @@ class PersonDao extends BaseDao<Person> {
     { offset = 0, limit = DEFAULT_LIMIT }: Partial<IPagination> = {},
   ): Promise<Person[]> {
     if (prefix === '') return [];
-    if (prefix === '#') return this.getPersonsNotStartsWithAlphabet({ limit });
+    if (prefix === '#') return this._getPersonsNotStartsWithAlphabet({ limit });
 
-    const persons = await this.searchPersonsByPrefix(prefix);
+    const persons = await this._searchPersonsByPrefix(prefix);
     // Sort after query to get better performance
-    return persons.sort(this.personCompare.bind(this)).slice(offset, offset + limit);
+    return persons.sort(this._personCompare.bind(this)).slice(offset, offset + limit);
   }
 
-  async getPersonsOfEachPrefix({ limit = DEFAULT_LIMIT }: Partial<IPagination> = {}): Promise<Map<string, Person[]>> {
+  async getPersonsOfEachPrefix(
+    { limit = DEFAULT_LIMIT }: Partial<IPagination> = {},
+  ): Promise<Map<string, Person[]>> {
     const promises = [];
     const map: Map<string, Person[]> = new Map();
     const persons = await this.getAll(); // TODO improve performance
 
     // Find persons starts with a letter in a-Z
-    ALPHABET.forEach(prefix => {
-      const filteredPersons = persons.filter(person => {
-        const display_name = this.getNameOfPerson(person);
+    ALPHABET.forEach((prefix) => {
+      const filteredPersons = persons.filter((person) => {
+        const display_name = this._getNameOfPerson(person);
         return display_name && display_name.toLowerCase().indexOf(prefix) === 0;
       });
       map.set(prefix.toUpperCase(), filteredPersons.slice(0, limit));
@@ -55,7 +57,7 @@ class PersonDao extends BaseDao<Person> {
     // Find persons don't starts with a letter in a-Z
     promises.unshift(
       (async () => {
-        const persons = await this.getPersonsNotStartsWithAlphabet({ limit });
+        const persons = await this._getPersonsNotStartsWithAlphabet({ limit });
         map.set('#', persons);
       })(),
     );
@@ -68,9 +70,9 @@ class PersonDao extends BaseDao<Person> {
   async getPersonsCountByPrefix(prefix: string): Promise<number> {
     let length;
     if (prefix === '#') {
-      length = this.getPersonsCountNotStartsWithAlphabet();
+      length = this._getPersonsCountNotStartsWithAlphabet();
     } else {
-      length = (await this.searchPersonsByPrefix(prefix)).length;
+      length = (await this._searchPersonsByPrefix(prefix)).length;
     }
 
     return length;
@@ -99,49 +101,55 @@ class PersonDao extends BaseDao<Person> {
     // more than 1 part
     const q1 = this.createQuery()
       .startsWith('first_name', keywordParts[0], true)
-      .filter((item: Person) => (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false));
+      .filter(
+        (item: Person) =>
+          (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false));
+
     const q2 = this.createQuery()
       .startsWith('display_name', fullKeyword, true)
-      .filter((item: Person) => (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false));
+      .filter((item: Person) =>
+        (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false));
+
     return q1.or(q2).toArray();
   }
 
-  private async getPersonsNotStartsWithAlphabet({ limit }: { limit: number }): Promise<Person[]> {
+  private async _getPersonsNotStartsWithAlphabet({ limit }: { limit: number }): Promise<Person[]> {
     return this.createQuery()
       .orderBy('display_name')
       .filter((person: Person) => {
-        const display = this.getNameOfPerson(person);
+        const display = this._getNameOfPerson(person);
         return !!display && !ALPHABET.includes(display[0].toLowerCase());
       })
       .limit(limit)
       .toArray();
   }
 
-  private async getPersonsCountNotStartsWithAlphabet(): Promise<number> {
+  private async _getPersonsCountNotStartsWithAlphabet(): Promise<number> {
     return this.createQuery()
       .orderBy('display_name')
       .filter((person: Person) => {
-        const display = this.getNameOfPerson(person);
+        const display = this._getNameOfPerson(person);
         return !!display && !ALPHABET.includes(display[0].toLowerCase());
       })
       .count();
   }
 
-  private personCompare(a: Person, b: Person) {
-    const aName = this.getNameOfPerson(a);
-    const bName = this.getNameOfPerson(b);
+  private _personCompare(a: Person, b: Person) {
+    const aName = this._getNameOfPerson(a);
+    const bName = this._getNameOfPerson(b);
     return natureCompare(aName, bName);
   }
 
-  private getNameOfPerson(person: Person): undefined | string {
+  private _getNameOfPerson(person: Person): undefined | string {
     return person && (person.display_name || person.first_name || person.email);
   }
 
-  private async searchPersonsByPrefix(prefix: string) {
+  private async _searchPersonsByPrefix(prefix: string) {
     const q1 = this.createQuery().startsWith('first_name', prefix, true);
     const q2 = this.createQuery().startsWith('display_name', prefix, true);
     const q3 = this.createQuery().startsWith('email', prefix, true);
     const reg = new RegExp('^' + prefix + '.*', 'i');
+
     let persons = await q1
       .or(q2)
       .or(q3)
@@ -149,7 +157,10 @@ class PersonDao extends BaseDao<Person> {
 
     persons = persons.filter((person: Person) => {
       const { display_name, first_name } = person;
-      return !((display_name && !reg.test(display_name)) || (!display_name && first_name && !reg.test(first_name)));
+      return !((display_name &&
+        !reg.test(display_name)) ||
+        (!display_name && first_name && !reg.test(first_name))
+      );
     });
 
     return persons;

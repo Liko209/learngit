@@ -18,7 +18,7 @@ import OAuthTokenManager from './OAuthTokenManager';
 import NetworkRequestHandler from './NetworkRequestHandler';
 
 class NetworkSetup {
-  static setup(types: IHandleType[]) {
+  static  SETUP(types: IHandleType[]) {
     types.forEach((type: IHandleType) => {
       const tokenHandler = new OAuthTokenHandler(
         type,
