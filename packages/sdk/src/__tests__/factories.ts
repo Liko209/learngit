@@ -1,6 +1,9 @@
 import Factory from 'factory.ts';
 import faker from 'faker';
-import { MyState, Post, Item, Company, Group, Person, Profile, BaseModel, StoredFile, Raw } from '../models';
+import {
+  MyState, Post, Item, Company, Group, Person,
+  Profile, BaseModel, StoredFile, Raw,
+} from '../models';
 
 const uniqueNumber = () => Factory.each(i => faker.random.number(Date.now() + i));
 
@@ -124,7 +127,7 @@ const person = {
   last_name: faker.name.lastName(),
   company_id: faker.random.number(100000000),
   headshot:
-    'https://glip-prod.s3.amazonaws.com/web/customer_files/281313292/modified.jp…ccessKeyId=AKIAJROPQDFTIHBTLJJQ&Signature=RHlroxS9GZxP3%2F2Sqi1Ih49whAA%3D',
+    'https://glip-prod.s3.amazonaws.com/web/customer_files/281313292/modified.jp…ccessKeyId=AKIAJROPQDFTIHBTLJJQ&Signature=RHlroxS9GZxP3%2F2Sqi1Ih49whAA%3D', // tslint:disable-line
   sanitized_rc_extension: { extensionNumber: '2013', type: 'User' },
   rc_phone_numbers: [
     { id: 536322020, phoneNumber: '16504463168', usageType: 'DirectNumber' },

@@ -82,22 +82,28 @@ class AccountManager extends EventEmitter2 {
       this._accountMap.set(type, account);
       this._accounts.push(account);
 
-      account.on(AbstractAccount.EVENT_SUPPORTED_SERVICE_CHANGE, (services: string[], isStart: boolean) =>
-        this.emit(EVENT_SUPPORTED_SERVICE_CHANGE, services, isStart),
+      account.on(
+        AbstractAccount.EVENT_SUPPORTED_SERVICE_CHANGE,
+        (services: string[], isStart: boolean) =>
+          this.emit(EVENT_SUPPORTED_SERVICE_CHANGE, services, isStart),
       );
+
       return account;
     });
     return accounts;
   }
 
   private handleLoginResponse(resp: IAuthResponse) {
-    if (!resp.accountInfos || resp.accountInfos.length <= 0) return { success: false, error: new Error('Auth fail') };
+    if (!resp.accountInfos || resp.accountInfos.length <= 0) {
+      return { success: false, error: new Error('Auth fail') };
+    }
+
     this.emit(EVENT_LOGIN, resp.accountInfos);
     this._isLogin = true;
     const accounts = this.createAccounts(resp.accountInfos);
     return {
-      success: true,
       accounts,
+      success: true,
     };
   }
 }

@@ -27,7 +27,8 @@ describe('UserAPI', () => {
       const requestConfig = {};
       const header = {};
       indexData(mock);
-      expect(Api.glipNetworkClient.get).toHaveBeenCalledWith('/index', mock, 0, requestConfig, header);
+      expect(Api.glipNetworkClient.get)
+        .toHaveBeenCalledWith('/index', mock, 0, requestConfig, header);
     });
   });
 });

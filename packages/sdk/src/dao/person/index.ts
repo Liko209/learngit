@@ -38,14 +38,16 @@ class PersonDao extends BaseDao<Person> {
     return persons.sort(this.personCompare.bind(this)).slice(offset, offset + limit);
   }
 
-  async getPersonsOfEachPrefix({ limit = DEFAULT_LIMIT }: Partial<IPagination> = {}): Promise<Map<string, Person[]>> {
+  async getPersonsOfEachPrefix(
+    { limit = DEFAULT_LIMIT }: Partial<IPagination> = {},
+  ): Promise<Map<string, Person[]>> {
     const promises = [];
     const map: Map<string, Person[]> = new Map();
     const persons = await this.getAll(); // TODO improve performance
 
     // Find persons starts with a letter in a-Z
-    ALPHABET.forEach(prefix => {
-      const filteredPersons = persons.filter(person => {
+    ALPHABET.forEach((prefix) => {
+      const filteredPersons = persons.filter((person) => {
         const display_name = this.getNameOfPerson(person);
         return display_name && display_name.toLowerCase().indexOf(prefix) === 0;
       });
@@ -99,10 +101,15 @@ class PersonDao extends BaseDao<Person> {
     // more than 1 part
     const q1 = this.createQuery()
       .startsWith('first_name', keywordParts[0], true)
-      .filter((item: Person) => (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false));
+      .filter(
+        (item: Person) =>
+          (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false));
+
     const q2 = this.createQuery()
       .startsWith('display_name', fullKeyword, true)
-      .filter((item: Person) => (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false));
+      .filter((item: Person) =>
+        (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false));
+
     return q1.or(q2).toArray();
   }
 
@@ -142,6 +149,7 @@ class PersonDao extends BaseDao<Person> {
     const q2 = this.createQuery().startsWith('display_name', prefix, true);
     const q3 = this.createQuery().startsWith('email', prefix, true);
     const reg = new RegExp('^' + prefix + '.*', 'i');
+
     let persons = await q1
       .or(q2)
       .or(q3)
@@ -149,7 +157,10 @@ class PersonDao extends BaseDao<Person> {
 
     persons = persons.filter((person: Person) => {
       const { display_name, first_name } = person;
-      return !((display_name && !reg.test(display_name)) || (!display_name && first_name && !reg.test(first_name)));
+      return !((display_name &&
+        !reg.test(display_name)) ||
+        (!display_name && first_name && !reg.test(first_name))
+      );
     });
 
     return persons;

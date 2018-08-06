@@ -14,7 +14,12 @@ class GroupDao extends BaseDao<Group> {
     super(GroupDao.COLLECTION_NAME, db);
   }
 
-  async queryGroups(offset: number, limit: number, isTeam: boolean, excludeIds: number[] = []): Promise<Group[]> {
+  async queryGroups(
+    offset: number,
+    limit: number,
+    isTeam: boolean,
+    excludeIds: number[] = [],
+  ): Promise<Group[]> {
     mainLogger.debug(`queryGroup isTeam:${isTeam} excludeIds:${excludeIds}`);
     const query = this.createQuery()
       .orderBy('most_recent_post_created_at', true)
@@ -55,8 +60,9 @@ class GroupDao extends BaseDao<Group> {
         (item: Group) =>
           // !item.deactivated &&
           // !item.is_archived &&
-          typeof item.set_abbreviation === 'string' && new RegExp(`${key}`, 'i').test(item.set_abbreviation),
-      )
+          typeof item.set_abbreviation === 'string' &&
+          new RegExp(`${key}`, 'i').test(item.set_abbreviation),
+    )
       .toArray();
   }
 
@@ -66,8 +72,10 @@ class GroupDao extends BaseDao<Group> {
       .equal('is_team', false)
       .filter(
         (item: Group) =>
-          !item.is_archived && item.members && item.members.sort().toString() === members.sort().toString(),
-      )
+          !item.is_archived &&
+          item.members &&
+          item.members.sort().toString() === members.sort().toString(),
+    )
       .toArray();
   }
 

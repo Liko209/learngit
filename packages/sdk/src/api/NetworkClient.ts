@@ -17,6 +17,8 @@ import {
 // import logger from './logger';
 import { serializeUrlParams } from '../utils';
 
+const { GET, DELETE } = NETWORK_METHOD;
+
 export interface IQuery {
   via?: NETWORK_VIA;
   path: string;
@@ -62,14 +64,12 @@ export default class NetworkClient {
     const { via, path, method, params } = query;
     return new Promise((resolve, reject) => {
       const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
-      console.log('apiMapKey', this.apiMap.has(apiMapKey));
-      console.log('method', method);
-      const isDuplicate =
-        (method === NETWORK_METHOD.GET || method === NETWORK_METHOD.DELETE) && this.apiMap.has(apiMapKey);
+
       const promiseResolvers = this.apiMap.get(apiMapKey) || [];
       promiseResolvers.push({ resolve, reject });
       this.apiMap.set(apiMapKey, promiseResolvers);
-      if (!isDuplicate) {
+
+      if (!this.isDuplicate(method, apiMapKey)) {
         const request = this.getRequestByVia<T>(query, via);
         request.callback = this.buildCallback<T>(apiMapKey);
         NetworkManager.Instance.addApiRequest(request);
@@ -133,11 +133,11 @@ export default class NetworkClient {
   get<T>(path: string, params = {}, via?: NETWORK_VIA, requestConfig?: object, headers = {}) {
     return this.http<T>({
       path,
-      method: NETWORK_METHOD.GET,
       params,
+      headers,
       via,
       requestConfig,
-      headers,
+      method: NETWORK_METHOD.GET,
     });
   }
 
@@ -151,9 +151,9 @@ export default class NetworkClient {
   post<T>(path: string, data = {}, headers = {}) {
     return this.request<T>({
       path,
-      method: NETWORK_METHOD.POST,
       data,
       headers,
+      method: NETWORK_METHOD.POST,
     });
   }
 
@@ -167,9 +167,9 @@ export default class NetworkClient {
   put<T>(path: string, data = {}, headers = {}) {
     return this.http<T>({
       path,
-      method: NETWORK_METHOD.PUT,
       data,
       headers,
+      method: NETWORK_METHOD.PUT,
     });
   }
 
@@ -183,9 +183,17 @@ export default class NetworkClient {
   delete<T>(path: string, params = {}, headers = {}) {
     return this.http<T>({
       path,
-      method: NETWORK_METHOD.DELETE,
       params,
       headers,
+      method: NETWORK_METHOD.DELETE,
     });
+  }
+
+  private isDuplicate(method: NETWORK_METHOD, apiMapKey: string) {
+    if (method !== GET && method !== DELETE) {
+      return false;
+    }
+
+    return this.apiMap.has(apiMapKey);
   }
 }

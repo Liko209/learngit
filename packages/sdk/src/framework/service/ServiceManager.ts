@@ -74,7 +74,7 @@ class ServiceManager extends EventEmitter2 {
   }
 
   stopServices(services: string[]): void {
-    services.forEach(service => {
+    services.forEach((service) => {
       this.stopService(service);
     });
   }

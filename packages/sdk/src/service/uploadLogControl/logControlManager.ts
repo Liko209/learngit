@@ -11,7 +11,7 @@ import AccountService from '../account';
 const DEFAULT_EMAIL = 'service@glip.com';
 notificationCenter.on(DOCUMENT.VISIBILITYCHANGE, ({ isHidden }) => {
   if (isHidden) {
-    LogControlManager.Instance().doUpload();
+    LogControlManager.instance().doUpload();
   }
 });
 class LogControlManager {
@@ -25,7 +25,7 @@ class LogControlManager {
     this._isDebugMode = true;
   }
 
-  public static Instance(): LogControlManager {
+  public static instance(): LogControlManager {
     if (this._instance) {
       return this._instance;
     }

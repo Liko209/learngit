@@ -47,6 +47,7 @@ describe('HandleByGlip2', () => {
       );
     });
 
+    // tslint:disable-next-line:max-line-length
     it('should add basic token to params if needAuth is false and isOAuthTokenAvailable is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');

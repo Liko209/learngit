@@ -21,7 +21,7 @@ import {
   RawQuery,
   QueryByPageNum,
   InitialSearchResp,
-  SearchResultResponse,
+  SearchResult,
 } from './types.d';
 import { IResponse } from '../../api/NetworkClient';
 import { SOCKET } from '../eventKey';
@@ -79,7 +79,7 @@ export default class SearchService extends BaseService {
       .join(' ');
   }
 
-  async cancelSearchRequest(requestId: RequestId): Promise<IResponse<SearchResultResponse>> {
+  async cancelSearchRequest(requestId: RequestId): Promise<IResponse<SearchResult>> {
     const params: CancelRequestParam = { previous_server_request_id: requestId };
     return SearchAPI.search(params);
   }
@@ -104,7 +104,7 @@ export default class SearchService extends BaseService {
     return resp.data;
   }
 
-  fetchResultsByPage(query: QueryByPageNum): Promise<IResponse<SearchResultResponse>> {
+  fetchResultsByPage(query: QueryByPageNum): Promise<IResponse<SearchResult>> {
     const params = { scroll_request_id: query.pageNum, search_request_id: this.activeServerRequestId };
     return SearchAPI.scrollSearch(params);
   }

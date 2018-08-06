@@ -4,11 +4,11 @@ import { Container } from '../../Container';
 import { AbstractAccount } from '../AbstractAccount';
 
 class MyAccount extends AbstractAccount {
-  async updateSupportedServices(data: any): Promise<void> {}
+  async updateSupportedServices(data: any): Promise<void> { }
 }
 
 class MyOtherAccount extends AbstractAccount {
-  async updateSupportedServices(data: any): Promise<void> {}
+  async updateSupportedServices(data: any): Promise<void> { }
 }
 
 class MyAuthenticator implements IAuthenticator {
@@ -59,7 +59,10 @@ function setupLoginSuccess() {
   const { container, accountManager } = setup();
   mockSyncAuthenticate.mockReturnValue({
     success: true,
-    accountInfos: [{ type: MyAccount.name, data: 'token' }, { type: MyOtherAccount.name, data: 'other token' }],
+    accountInfos: [
+      { type: MyAccount.name, data: 'token' },
+      { type: MyOtherAccount.name, data: 'other token' },
+    ],
   });
   accountManager.syncLogin(MySyncAuthenticator.name);
   const account = accountManager.getAccount(MyAccount.name);
@@ -113,7 +116,10 @@ describe('AccountManager', () => {
 
   describe('login()', () => {
     it('should work', async () => {
-      mockAuthenticate.mockReturnValue({ success: true, accountInfos: [{ type: MyAccount.name, data: 'token' }] });
+      mockAuthenticate.mockReturnValue({
+        success: true,
+        accountInfos: [{ type: MyAccount.name, data: 'token' }],
+      });
       await accountManager.login(MyAuthenticator.name);
     });
   });

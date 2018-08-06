@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AccountManager, ServiceManager, Container } from './framework';
-import { RCPasswordAuthenticator, AutoAuthenticator, UnifiedLoginAuthenticator } from './authenticator';
+import {
+  RCPasswordAuthenticator,
+  AutoAuthenticator,
+  UnifiedLoginAuthenticator,
+} from './authenticator';
 import { RCAccount, GlipAccount } from './account';
 import DaoManager from './dao/DaoManager';
 import { daoManager } from './dao';
@@ -79,14 +83,28 @@ const registerConfigs = {
     { name: SyncService.name, value: SyncService },
 
     // Manager
-    { name: AccountManager.name, value: AccountManager, injects: [Container.name, ServiceManager.name] },
-    { name: ServiceManager.name, value: ServiceManager, injects: [Container.name] },
+    {
+      name: AccountManager.name,
+      value: AccountManager,
+      injects: [Container.name, ServiceManager.name],
+    },
+    {
+      name: ServiceManager.name,
+      value: ServiceManager,
+      injects: [Container.name],
+    },
 
     // Sdk
     {
       name: Sdk.name,
       value: Sdk,
-      injects: [DaoManager.name, AccountManager.name, ServiceManager.name, NetworkManager.name, SyncService.name],
+      injects: [
+        DaoManager.name,
+        AccountManager.name,
+        ServiceManager.name,
+        NetworkManager.name,
+        SyncService.name,
+      ],
     },
   ],
   asyncClasses: [],

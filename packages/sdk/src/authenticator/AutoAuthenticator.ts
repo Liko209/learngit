@@ -25,18 +25,18 @@ class AutoAuthenticator implements ISyncAuthenticator {
     const configDao = this._daoManager.getKVDao(ConfigDao);
     const type: string = configDao.get(ACCOUNT_TYPE);
     const func = this._accountTypeHandleMap.get(type);
+
     if (func) {
       return func();
-    } else {
-      return {
-        success: false,
-      };
     }
+
+    return { success: false };
   }
 
   private authGlipLogin(): IAuthResponse {
     const authDao = this._daoManager.getKVDao(AuthDao);
     const glipToken: string = authDao.get(AUTH_GLIP_TOKEN);
+
     if (glipToken) {
       return {
         success: true,
@@ -47,12 +47,11 @@ class AutoAuthenticator implements ISyncAuthenticator {
           },
         ],
       };
-    } else {
-      return {
-        success: false,
-      };
     }
+
+    return { success: false };
   }
+
   private authRCLogin(): IAuthResponse {
     const authDao = this._daoManager.getKVDao(AuthDao);
     const rcToken: string = authDao.get(AUTH_RC_TOKEN);
@@ -72,11 +71,9 @@ class AutoAuthenticator implements ISyncAuthenticator {
           },
         ],
       };
-    } else {
-      return {
-        success: false,
-      };
     }
+
+    return { success: false };
   }
 }
 

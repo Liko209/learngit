@@ -27,6 +27,7 @@ class Api {
     // TODO httpConfig should be private. but for now, it is
     // directly accessed by the ui layer. That should be refactor.
     // Move logics that access httpConfig into Api in the future.
+    // tslint:disable-next-line:max-line-length
     Aware(ErrorTypes.HTTP, 'httpConfig should be private. but it is directly accessed by the ui layer.');
     return this._httpConfig;
   }

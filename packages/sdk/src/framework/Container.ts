@@ -1,12 +1,12 @@
 interface Newable<T> {
-  new (...args: any[]): T;
+  new(...args: any[]): T;
 }
 
 interface AsyncNewable<T> {
   (...args: any[]): Promise<any>;
 }
 
-type InjectableName < T > = Newable<T> | string | Function;
+type InjectableName<T> = Newable<T> | string | Function;
 type Injectable = Newable<any> | Function | Object;
 
 enum RegisterType {
@@ -120,24 +120,24 @@ class Container {
 
     if (registration.async) throw new Error(`${name} is async, use asyncGet() to get it.`);
 
-    const cache = this._getCache(registration);
+    const cache = this.getCache(registration);
     if (cache) return cache;
 
-    const injections = this._getInjections(registration.injects);
-    const result = this._resolve<T>(registration, injections);
-    this._setCache(registration, result);
+    const injections = this.getInjections(registration.injects);
+    const result = this.resolve<T>(registration, injections);
+    this.setCache(registration, result);
     return result;
   }
 
   async asyncGet<T>(name: InjectableName<T>): Promise<T> {
     const registration = this.getRegistration(name);
 
-    const cache = this._getCache(registration);
+    const cache = this.getCache(registration);
     if (cache) return cache;
 
-    const injections = await this._asyncGetInjections(registration.injects);
-    const result = await this._asyncResolve<T>(registration, injections);
-    this._setCache(registration, result);
+    const injections = await this.asyncGetInjections(registration.injects);
+    const result = await this.asyncResolve<T>(registration, injections);
+    this.setCache(registration, result);
 
     return result;
   }
@@ -152,7 +152,7 @@ class Container {
     return config;
   }
 
-  private _getCache(registration: RegisterConfig) {
+  private getCache(registration: RegisterConfig) {
     const isSingleton = this._containerConfig.singleton || registration.singleton;
 
     if (isSingleton && registration.cache) {
@@ -160,7 +160,7 @@ class Container {
     }
   }
 
-  private _setCache(registration: RegisterConfig, result: any) {
+  private setCache(registration: RegisterConfig, result: any) {
     const isSingleton = this._containerConfig.singleton || registration.singleton;
 
     if (isSingleton) {
@@ -168,13 +168,13 @@ class Container {
     }
   }
 
-  private _resolve<T>(registration: RegisterConfig, injections: Injectable[]): T {
+  private resolve<T>(registration: RegisterConfig, injections: Injectable[]): T {
     let result: any = null;
 
     if (registration.type === RegisterType.ConstantValue) {
       result = registration.cache;
     } else if (registration.type === RegisterType.Instance && registration.implementationType) {
-      result = this._resolveInstance<T>(registration.implementationType, injections);
+      result = this.resolveInstance<T>(registration.implementationType, injections);
     } else if (registration.type === RegisterType.Provider && registration.provider) {
       result = registration.provider();
     } else {
@@ -184,27 +184,35 @@ class Container {
     return result;
   }
 
-  private async _asyncResolve<T>(registration: RegisterConfig, injections: Injectable[]): Promise<T> {
+  private async asyncResolve<T>(
+    registration: RegisterConfig,
+    injections: Injectable[],
+  ): Promise<T> {
+
     let result: any = null;
-    if (registration.type === RegisterType.Instance && registration.async && registration.asyncImplementationType) {
-      result = this._asyncResolveInstance(name, registration.asyncImplementationType, injections);
+
+    if (registration.type === RegisterType.Instance &&
+      registration.async &&
+      registration.asyncImplementationType) {
+      result = this.asyncResolveInstance(name, registration.asyncImplementationType, injections);
     } else {
-      result = this._resolve<T>(registration, injections);
+      result = this.resolve<T>(registration, injections);
     }
+
     return result;
   }
 
-  private _getInjections(names?: InjectableName<any>[]): any[] {
+  private getInjections(names?: InjectableName<any>[]): any[] {
     if (!names) return [];
     return names.map(name => this.get(name));
   }
 
-  private async _asyncGetInjections(names?: InjectableName<any>[]): Promise<any[]> {
+  private async asyncGetInjections(names?: InjectableName<any>[]): Promise<any[]> {
     if (!names) return [];
     return Promise.all(names.map(name => this.asyncGet(name)));
   }
 
-  private _resolveInstance<T>(creator: Newable<T>, injections: any[]): any {
+  private resolveInstance<T>(creator: Newable<T>, injections: any[]): any {
     let instance = null;
 
     const Class = creator as Newable<any>;
@@ -213,14 +221,14 @@ class Container {
     return instance;
   }
 
-  private async _asyncResolveInstance(
+  private async asyncResolveInstance(
     name: InjectableName<any>,
     getModule: (...args: any[]) => Promise<any>,
     injections: any[],
   ): Promise<any> {
     const module = await getModule();
     const creator = module[name.toString()] || module.default;
-    return this._resolveInstance(creator, injections);
+    return this.resolveInstance(creator, injections);
   }
 }
 

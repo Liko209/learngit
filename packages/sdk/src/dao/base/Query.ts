@@ -26,9 +26,9 @@ class Query<T> implements IQuery<T> {
    */
   orderBy(key: string, desc: boolean = false): Query<T> {
     this.criteria.push({
-      name: 'orderBy',
       key,
       desc,
+      name: 'orderBy',
     });
     return this;
   }
@@ -48,104 +48,110 @@ class Query<T> implements IQuery<T> {
 
   equal(key: string, value: any, ignoreCase: boolean = false): Query<T> {
     this.criteria.push({
-      name: 'equal',
       key,
       value,
       ignoreCase,
+      name: 'equal',
     });
     return this;
   }
 
   notEqual(key: string, value: any): Query<T> {
     this.criteria.push({
-      name: 'notEqual',
       key,
       value,
+      name: 'notEqual',
     });
     return this;
   }
 
-  between(key: string, lowerBound: any, upperBound: any, includeLower: any, includeUpper: any): Query<T> {
+  between(
+    key: string,
+    lowerBound: any,
+    upperBound: any,
+    includeLower: any,
+    includeUpper: any,
+  ): Query<T> {
     this.criteria.push({
-      name: 'between',
       key,
       lowerBound,
       upperBound,
       includeLower,
       includeUpper,
+      name: 'between',
     });
     return this;
   }
 
   greaterThan(key: string, value: any): Query<T> {
     this.criteria.push({
-      name: 'greaterThan',
       key,
       value,
+      name: 'greaterThan',
     });
     return this;
   }
 
   greaterThanOrEqual(key: string, value: any): Query<T> {
     this.criteria.push({
-      name: 'greaterThanOrEqual',
       key,
       value,
+      name: 'greaterThanOrEqual',
     });
     return this;
   }
 
   lessThan(key: string, value: any): Query<T> {
     this.criteria.push({
-      name: 'lessThan',
       key,
       value,
+      name: 'lessThan',
     });
     return this;
   }
 
   lessThanOrEqual(key: string, value: any): Query<T> {
     this.criteria.push({
-      name: 'lessThanOrEqual',
       key,
       value,
+      name: 'lessThanOrEqual',
     });
     return this;
   }
 
-  anyOf(key: string, array: Array<any>, ignoreCase: boolean = false): Query<T> {
+  anyOf(key: string, array: any[], ignoreCase: boolean = false): Query<T> {
     this.criteria.push({
-      name: 'anyOf',
       key,
       array,
       ignoreCase,
+      name: 'anyOf',
     });
     return this;
   }
 
   startsWith(key: string, value: string, ignoreCase: boolean = false): Query<T> {
     this.criteria.push({
-      name: 'startsWith',
       key,
       value,
       ignoreCase,
+      name: 'startsWith',
     });
     return this;
   }
 
   contain(key: string, value: any): Query<T> {
     this.criteria.push({
-      name: 'contain',
       key,
       value,
+      name: 'contain',
     });
     return this;
   }
 
   filter(filter: IFilter<T>): Query<T> {
     this.criteria.push({
-      name: 'filter',
       filter,
+      name: 'filter',
     });
     return this;
   }

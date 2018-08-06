@@ -18,9 +18,11 @@ const fetchIndexData = async (): Promise<IResponse<IndexDataModel>> => {
   const params: Params = {};
   const configDao = daoManager.getKVDao(ConfigDao);
   const lastIndexTimestamp = configDao.get(LAST_INDEX_TIMESTAMP);
+
   if (lastIndexTimestamp) {
     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_EXIST);
-    params.newer_than = String(lastIndexTimestamp - 300000); // index newer than api need move back 5 mins
+    // index newer than api need move back 5 mins
+    params.newer_than = String(lastIndexTimestamp - 300000);
   }
 
   const requestConfig = {

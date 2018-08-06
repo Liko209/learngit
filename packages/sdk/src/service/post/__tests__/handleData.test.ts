@@ -10,7 +10,11 @@ import IncomingPostHandler from '../../../service/post/incomingPostHandler';
 import { baseHandleData as utilsBaseHandleData, transform } from '../../../service/utils';
 import PostService from '../../post';
 import GroupService from '../../group';
-import handleData, { baseHandleData, handleDataFromSexio, handlePreInstedPosts } from '../handleData';
+import handleData, {
+  baseHandleData,
+  handleDataFromSexio,
+  handlePreInstedPosts,
+} from '../handleData';
 
 jest.mock('../../post');
 jest.mock('../../group');
@@ -89,7 +93,7 @@ describe('handleDataFromSexio', () => {
 });
 
 describe('baseHandleData', () => {
-  beforeEach(() => {});
+  beforeEach(() => { });
   it('false', async () => {
     const ret = await baseHandleData([], false);
     expect(ret).toEqual([]);

@@ -36,16 +36,20 @@ class TestAuthenticator implements IAuthenticator {
           },
         ],
       };
-    } else {
-      return {
-        success: false,
-        error: new Error('invalid user!'),
-      };
     }
+
+    return {
+      success: false,
+      error: new Error('invalid user!'),
+    };
   }
 }
 
 class TestAccount extends AbstractAccount {
+  updateSupportedServices(data: any): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
   constructor() {
     super();
   }

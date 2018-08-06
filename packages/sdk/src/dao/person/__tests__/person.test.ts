@@ -214,10 +214,17 @@ describe('PersonDao', () => {
   describe('getPersonsOfEachPrefix()', () => {
     it('should return persons of each prefix', async () => {
       const personsOfEachPrefix = await personDao.getPersonsOfEachPrefix();
+
       expect(personsOfEachPrefix.get('#').length).toBe(1);
-      expect(_.map(personsOfEachPrefix.get('A'), 'display_name')).toEqual(['Albert Chen', 'Alvin Mao']);
-      expect(_.map(personsOfEachPrefix.get('B'), 'display_name')).toEqual(['Bill Wang', 'boy lin']);
-      expect(_.map(personsOfEachPrefix.get('D'), 'display_name')).toEqual(['Devin Lin']);
+
+      expect(_.map(personsOfEachPrefix.get('A'), 'display_name'))
+        .toEqual(['Albert Chen', 'Alvin Mao']);
+
+      expect(_.map(personsOfEachPrefix.get('B'), 'display_name'))
+        .toEqual(['Bill Wang', 'boy lin']);
+
+      expect(_.map(personsOfEachPrefix.get('D'), 'display_name'))
+        .toEqual(['Devin Lin']);
     });
 
     it('should should work with limit', async () => {

@@ -24,13 +24,15 @@ describe('GroupAPI', () => {
   describe('pinPost()', () => {
     it('pinPost() has different api, because team and group have different path', () => {
       GroupAPI.pinPost('team/123', { is_team: true, pin_post_ids: [] });
-      expect(GroupAPI.glipNetworkClient.put).toHaveBeenCalledWith('team/123', { is_team: true, pin_post_ids: [] });
+      expect(GroupAPI.glipNetworkClient.put)
+        .toHaveBeenCalledWith('team/123', { is_team: true, pin_post_ids: [] });
     });
   });
   describe('addTeamMembers()', () => {
     it('glipNetworkClient addTeamMembers() should be called with specific data', () => {
       GroupAPI.addTeamMembers(2, [1, 2, 3]);
-      expect(GroupAPI.glipNetworkClient.put).toHaveBeenCalledWith('/add_team_members/2', { members: [1, 2, 3] });
+      expect(GroupAPI.glipNetworkClient.put)
+        .toHaveBeenCalledWith('/add_team_members/2', { members: [1, 2, 3] });
     });
   });
   describe('createTeam()', () => {
