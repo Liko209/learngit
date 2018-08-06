@@ -69,7 +69,7 @@ export default class NetworkClient {
       promiseResolvers.push({ resolve, reject });
       this.apiMap.set(apiMapKey, promiseResolvers);
 
-      if (!this.isDuplicate(method, apiMapKey)) {
+      if (!this._isDuplicate(method, apiMapKey)) {
         const request = this.getRequestByVia<T>(query, via);
         request.callback = this.buildCallback<T>(apiMapKey);
         NetworkManager.Instance.addApiRequest(request);
@@ -189,7 +189,7 @@ export default class NetworkClient {
     });
   }
 
-  private isDuplicate(method: NETWORK_METHOD, apiMapKey: string) {
+  private _isDuplicate(method: NETWORK_METHOD, apiMapKey: string) {
     if (method !== GET && method !== DELETE) {
       return false;
     }

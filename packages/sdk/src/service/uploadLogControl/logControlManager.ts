@@ -63,7 +63,7 @@ class LogControlManager {
     this._isUploading = true;
     const userInfo = await this._getUserInfo();
     try {
-      await LogUploadManager.Instance().doUpload(userInfo, logs);
+      await LogUploadManager.instance().doUpload(userInfo, logs);
     } catch (err) {
       mainLogger.error(err);
     } finally {
