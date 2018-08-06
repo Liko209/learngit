@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './base';
+export * from './constants';
 
-export { default as constants } from './constants';
 export { default as schema } from './schema';
 
 export { default as AccountDao } from './account';

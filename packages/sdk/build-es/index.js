@@ -1,8 +1,8 @@
 import { EventEmitter2 } from 'eventemitter2';
 import * as HttpStatus from 'http-status-codes';
 import Dexie from 'dexie';
+import { Response, DexieDB, LokiDB, mainLogger, DBManager, KVStorageManager, NetworkManager, NetworkRequestBuilder, NETWORK_VIA, NETWORK_METHOD, AbstractHandleType, NetworkSetup, SocketClient, logManager, LOG_LEVEL, Index, Token } from 'foundation';
 import _ from 'lodash';
-import { DexieDB, LokiDB, mainLogger, DBManager, KVStorageManager, NetworkManager, NetworkRequestBuilder, NETWORK_VIA, NETWORK_METHOD, AbstractHandleType, NetworkSetup, SocketClient, logManager, LOG_LEVEL, Index, Token } from 'foundation';
 import { caseInsensitive } from 'string-natural-compare';
 import merge from 'lodash/merge';
 import { Markdown } from 'glipdown';
@@ -10,72 +10,6 @@ import pick from 'lodash/pick';
 import StateMachine from 'ts-javascript-state-machine';
 import axios from 'axios';
 import NProgress from 'nprogress';
-
-/*
- * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-04-16 17:23:21
- * Copyright © RingCentral. All rights reserved.
- */
-// const EVENT_KEYS = {
-//   COMPANY: 'COMPANY',
-//   GROUP: 'GROUP',
-//   ITEM: 'ITEM',
-//   PERSON: 'PERSON',
-//   POST: 'POST',
-//   PRESENCE: 'PRESENCE',
-//   PROFILE: 'PROFILE',
-//   STATE: 'STATE',
-// };
-var SOCKET;
-(function (SOCKET) {
-    SOCKET["COMPANY"] = "SOCKET.COMPANY";
-    SOCKET["GROUP"] = "SOCKET.GROUP";
-    SOCKET["ITEM"] = "SOCKET.ITEM";
-    SOCKET["PERSON"] = "SOCKET.PERSON";
-    SOCKET["POST"] = "SOCKET.POST";
-    SOCKET["PRESENCE"] = "SOCKET.PRESENCE";
-    SOCKET["PROFILE"] = "SOCKET.PROFILE";
-    SOCKET["STATE"] = "SOCKET.STATE";
-    SOCKET["STATE_CHANGE"] = "SOCKET.STATE_CHANGE";
-    SOCKET["NETWORK_CHANGE"] = "SOCKET.NETWORK_CHANGE";
-    SOCKET["SEARCH"] = "SOCKET.SEARCH";
-    SOCKET["SEARCH_SCROLL"] = "SOCKET.SEARCH_SCROLL";
-    SOCKET["RECONNECT"] = "SOCKET.RECONNECT";
-})(SOCKET || (SOCKET = {}));
-var ENTITY = {
-    COMPANY: 'ENTITY.COMPANY',
-    GROUP: 'ENTITY.GROUP',
-    ITEM: 'ENTITY.ITEM',
-    PERSON: 'ENTITY.PERSON',
-    POST: 'ENTITY.POST',
-    POST_OLD_NEW: 'ENTITY.POST_OLD_NEW',
-    POST_SENT_STATUS: 'ENTITY.POST_SENT_STATUS',
-    PRESENCE: 'ENTITY.PRESENCE',
-    PROFILE: 'ENTITY.PROFILE',
-    // STATE: 'ENTITY.STATE',
-    MY_STATE: 'ENTITY.MY_STATE',
-    GROUP_STATE: 'ENTITY.GROUP_STATE',
-    FAVORITE_GROUPS: 'ENTITY.FAVORITE_GROUPS',
-    TEAM_GROUPS: 'ENTITY.TEAM_GROUPS',
-    PEOPLE_GROUPS: 'ENTITY.PEOPLE_GROUPS',
-};
-var CONFIG = {
-    LAST_INDEX_TIMESTAMP: 'CONFIG.LAST_INDEX_TIMESTAMP',
-    SOCKET_SERVER_HOST: 'CONFIG.SOCKET_SERVER_HOST',
-};
-var SERVICE = {
-    LOGIN: 'AUTH.LOGIN',
-    LOGOUT: 'AUTH.LOGOUT',
-    FETCH_INDEX_DATA_EXIST: 'SYNC.FETCH_INDEX_DATA_EXIST',
-    FETCH_INDEX_DATA_DONE: 'SYNC.FETCH_INDEX_DATA_DONE',
-    FETCH_INDEX_DATA_ERROR: 'SYNC.FETCH_INDEX_DATA_ERROR',
-    PROFILE_FAVORITE: 'PROFILE/FAVORITE',
-    SEARCH_SUCCESS: 'SEARCH_SUCCESS',
-    SEARCH_END: 'SEARCH_END',
-};
-var DOCUMENT = {
-    VISIBILITYCHANGE: 'DOCUMENT.VISIBILITY_STATE',
-};
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -196,18 +130,13 @@ var GROUP_QUERY_TYPE = {
     ALL: 'all',
     GROUP: 'group',
     TEAM: 'team',
-    FAVORITE: 'favorite'
+    FAVORITE: 'favorite',
 };
 var EVENT_TYPES = {
     REPLACE: 'replace',
     PUT: 'put',
     UPDATE: 'update',
-    DELETE: 'delete'
-    // LOGIN: 'login',
-    // LOGOUT: 'logout',
-    // INDEX_EXIST: 'fetchIndexDataExist',
-    // INDEX_DONE: 'fetchIndexDataDone',
-    // INDEX_ERROR: 'fetchIndexDataError',
+    DELETE: 'delete',
 };
 var PERMISSION_ENUM;
 (function (PERMISSION_ENUM) {
@@ -294,39 +223,6 @@ var NotificationCenter = /** @class */ (function (_super) {
 var notificationCenter = new NotificationCenter();
 
 /*
- * @Author: Lip Wang (lip.wangn@ringcentral.com)
- * @Date: 2018-06-20 10:48:13
- */
-window.addEventListener('online', function () { return notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'online' }); });
-window.addEventListener('offline', function () { return notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' }); });
-window.addEventListener('load', function () {
-    if (!navigator.onLine) {
-        notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' });
-    }
-});
-window.addEventListener('focus', function () {
-    if (navigator.onLine) {
-        notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'focus' });
-    }
-});
-document.addEventListener('visibilitychange', function () {
-    notificationCenter.emit(DOCUMENT.VISIBILITYCHANGE, { isHidden: document.visibilityState === 'hidden' });
-});
-
-/*
- * @Author: Steve Chen (steve.chen@ringcentral.com)
- * @Date: 2018-02-28 00:17:39
- */
-var STORAGE_TYPES = {
-    KV: 1,
-    DB: 2,
-};
-
-var constants = /*#__PURE__*/Object.freeze({
-  STORAGE_TYPES: STORAGE_TYPES
-});
-
-/*
 * @Author: Chris Zhan (chris.zhan@ringcentral.com)
 * @Date: 2018-03-05 11:25:49
 * Copyright © RingCentral. All rights reserved.
@@ -351,15 +247,15 @@ var Query = /** @class */ (function () {
     Query.prototype.orderBy = function (key, desc) {
         if (desc === void 0) { desc = false; }
         this.criteria.push({
-            name: 'orderBy',
             key: key,
-            desc: desc
+            desc: desc,
+            name: 'orderBy',
         });
         return this;
     };
     Query.prototype.reverse = function () {
         this.criteria.push({
-            name: 'reverse'
+            name: 'reverse',
         });
         return this;
     };
@@ -371,110 +267,110 @@ var Query = /** @class */ (function () {
     Query.prototype.equal = function (key, value, ignoreCase) {
         if (ignoreCase === void 0) { ignoreCase = false; }
         this.criteria.push({
-            name: 'equal',
             key: key,
             value: value,
-            ignoreCase: ignoreCase
+            ignoreCase: ignoreCase,
+            name: 'equal',
         });
         return this;
     };
     Query.prototype.notEqual = function (key, value) {
         this.criteria.push({
-            name: 'notEqual',
             key: key,
-            value: value
+            value: value,
+            name: 'notEqual',
         });
         return this;
     };
     Query.prototype.between = function (key, lowerBound, upperBound, includeLower, includeUpper) {
         this.criteria.push({
-            name: 'between',
             key: key,
             lowerBound: lowerBound,
             upperBound: upperBound,
             includeLower: includeLower,
-            includeUpper: includeUpper
+            includeUpper: includeUpper,
+            name: 'between',
         });
         return this;
     };
     Query.prototype.greaterThan = function (key, value) {
         this.criteria.push({
-            name: 'greaterThan',
             key: key,
-            value: value
+            value: value,
+            name: 'greaterThan',
         });
         return this;
     };
     Query.prototype.greaterThanOrEqual = function (key, value) {
         this.criteria.push({
-            name: 'greaterThanOrEqual',
             key: key,
-            value: value
+            value: value,
+            name: 'greaterThanOrEqual',
         });
         return this;
     };
     Query.prototype.lessThan = function (key, value) {
         this.criteria.push({
-            name: 'lessThan',
             key: key,
-            value: value
+            value: value,
+            name: 'lessThan',
         });
         return this;
     };
     Query.prototype.lessThanOrEqual = function (key, value) {
         this.criteria.push({
-            name: 'lessThanOrEqual',
             key: key,
-            value: value
+            value: value,
+            name: 'lessThanOrEqual',
         });
         return this;
     };
     Query.prototype.anyOf = function (key, array, ignoreCase) {
         if (ignoreCase === void 0) { ignoreCase = false; }
         this.criteria.push({
-            name: 'anyOf',
             key: key,
             array: array,
-            ignoreCase: ignoreCase
+            ignoreCase: ignoreCase,
+            name: 'anyOf',
         });
         return this;
     };
     Query.prototype.startsWith = function (key, value, ignoreCase) {
         if (ignoreCase === void 0) { ignoreCase = false; }
         this.criteria.push({
-            name: 'startsWith',
             key: key,
             value: value,
-            ignoreCase: ignoreCase
+            ignoreCase: ignoreCase,
+            name: 'startsWith',
         });
         return this;
     };
     Query.prototype.contain = function (key, value) {
         this.criteria.push({
-            name: 'contain',
             key: key,
-            value: value
+            value: value,
+            name: 'contain',
         });
         return this;
     };
     Query.prototype.filter = function (filter) {
         this.criteria.push({
+            filter: filter,
             name: 'filter',
-            filter: filter
         });
         return this;
     };
     Query.prototype.offset = function (n) {
         this.criteria.push({
             name: 'offset',
-            amount: n
+            amount: n,
         });
         return this;
     };
     Query.prototype.limit = function (n) {
         this.criteria.push({
             name: 'limit',
-            amount: n
+            amount: n,
         });
         return this;
     };
@@ -595,6 +491,7 @@ var BaseError = /** @class */ (function (_super) {
         var _this = _super.call(this, message) || this;
         _this.code = code;
         // fix instanceof
+        // tslint:disable-next-line:max-line-length
         // see: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-newtarget
         Object.setPrototypeOf(_this, _newTarget.prototype);
         return _this;
@@ -615,7 +512,8 @@ var ErrorTypes = {
     SERVICE: 3000,
     INVALIDTE_PARAMETERS: 3001,
     OAUTH: 4000,
-    INVALID_GRANT: 4147
+    NETWORK: 5000,
+    INVALID_GRANT: 4147,
 };
 Object.keys(HttpStatus).forEach(function (key) {
     ErrorTypes[key] = ErrorTypes.HTTP + HttpStatus[key];
@@ -626,26 +524,36 @@ Object.keys(HttpStatus).forEach(function (key) {
  * @Date: 2018-03-22 13:29:51
  * Copyright © RingCentral. All rights reserved.
  */
+// import BaseResponse from 'foundation/network/BaseResponse';
 var ErrorParser = /** @class */ (function () {
     function ErrorParser() {
     }
-    ErrorParser.parse = function (error) {
-        if (error instanceof Dexie.DexieError) {
-            return ErrorParser.dexie(error);
+    ErrorParser.parse = function (err) {
+        // need refactor
+        // if (!err) return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Server Crash');
+        if (err instanceof Dexie.DexieError) {
+            return ErrorParser.dexie(err);
         }
-        else if (error.response) {
-            return ErrorParser.http(error);
+        if (err instanceof Response) {
+            return ErrorParser.http(err);
         }
-        else if (error.error && Object.prototype.toString.call(error.error) === '[object String]') {
-            return new BaseError(ErrorTypes[error.error.toUpperCase()], error.error_description);
-        }
-        return new BaseError(ErrorTypes.UNDEFINED_ERROR, error.message);
+        return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Undefined error!');
     };
-    ErrorParser.dexie = function (error) {
-        return new BaseError(ErrorTypes.DB, error.message);
+    ErrorParser.dexie = function (err) {
+        return new BaseError(ErrorTypes.DB, err.message);
     };
-    ErrorParser.http = function (error) {
-        return new BaseError(error.response.status + ErrorTypes.HTTP, error.message);
+    ErrorParser.http = function (err) {
+        if (err.statusText === 'Network Error') {
+            return new BaseError(ErrorTypes.NETWORK, 'Network Error: Please check whether server crash');
+        }
+        if (err.statusText === 'NOT NETWORK CONNECTION') {
+            return new BaseError(ErrorTypes.NETWORK, 'Network Error: Please check network connection');
+        }
+        var data = err.data;
+        if (typeof data.error === 'string') {
+            return new BaseError(ErrorTypes[data.error.toUpperCase()], data.error_description);
+        }
+        return new BaseError(err.status + ErrorTypes.HTTP, data.error.message);
     };
     return ErrorParser;
 }());
@@ -852,7 +760,7 @@ function parseSocketMessage(message) {
             if (obj.search_results) {
                 result['search'] = obj.search_results;
             }
-            var objTypeId = GlipTypeUtil.extractTypeId(obj._id); // eslint-disable-line no-underscore-dangle
+            var objTypeId = GlipTypeUtil.extractTypeId(obj._id);
             if (socketMessageMap[objTypeId]) {
                 var key = socketMessageMap[objTypeId];
                 result[key] = result[key] || [];
@@ -882,19 +790,19 @@ function serializeUrlParams(params) {
 
 
 var index = /*#__PURE__*/Object.freeze({
-  uniqueArray: uniqueArray,
-  randomInt: randomInt,
-  versionHash: versionHash,
-  generateUUID: generateUUID,
-  BaseError: BaseError,
-  ErrorTypes: ErrorTypes,
-  ErrorParser: ErrorParser,
-  Throw: Throw,
-  Aware: Aware,
-  TypeDictionary: TypeDictionary,
-  GlipTypeUtil: GlipTypeUtil,
-  parseSocketMessage: parseSocketMessage,
-  serializeUrlParams: serializeUrlParams
+    uniqueArray: uniqueArray,
+    randomInt: randomInt,
+    versionHash: versionHash,
+    generateUUID: generateUUID,
+    BaseError: BaseError,
+    ErrorTypes: ErrorTypes,
+    ErrorParser: ErrorParser,
+    Throw: Throw,
+    Aware: Aware,
+    TypeDictionary: TypeDictionary,
+    GlipTypeUtil: GlipTypeUtil,
+    parseSocketMessage: parseSocketMessage,
+    serializeUrlParams: serializeUrlParams
 });
 
 var BaseDao = /** @class */ (function () {
@@ -918,7 +826,7 @@ var BaseDao = /** @class */ (function () {
                         _a.sent();
                         return [3 /*break*/, 5];
                     case 2:
-                        this.validateItem(item, true);
+                        this._validateItem(item, true);
                         return [4 /*yield*/, this.db.ensureDBOpened()];
                     case 3:
                         _a.sent();
@@ -937,7 +845,7 @@ var BaseDao = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        array.forEach(function (item) { return _this.validateItem(item, true); });
+                        array.forEach(function (item) { return _this._validateItem(item, true); });
                         return [4 /*yield*/, this.db.ensureDBOpened()];
                     case 1:
                         _a.sent();
@@ -959,7 +867,7 @@ var BaseDao = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this.validateKey(key);
+                        this._validateKey(key);
                         return [4 /*yield*/, this.db.ensureDBOpened()];
                     case 1:
                         _a.sent();
@@ -990,7 +898,7 @@ var BaseDao = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this.validateKey(key);
+                        this._validateKey(key);
                         return [4 /*yield*/, this.db.ensureDBOpened()];
                     case 1:
                         _a.sent();
@@ -1008,7 +916,7 @@ var BaseDao = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        keys.forEach(function (key) { return _this.validateKey(key); });
+                        keys.forEach(function (key) { return _this._validateKey(key); });
                         return [4 /*yield*/, this.db.ensureDBOpened()];
                     case 1:
                         _a.sent();
@@ -1103,7 +1011,7 @@ var BaseDao = /** @class */ (function () {
     BaseDao.prototype.createEmptyQuery = function () {
         return new Query(this.collection, this.db).limit(0);
     };
-    BaseDao.prototype.validateItem = function (item, withPrimaryKey) {
+    BaseDao.prototype._validateItem = function (item, withPrimaryKey) {
         if (!_.isObjectLike(item)) {
             Throw(ErrorTypes.INVALIDTE_PARAMETERS, "Item should be an object. Received " + item);
         }
@@ -1114,7 +1022,7 @@ var BaseDao = /** @class */ (function () {
             Throw(ErrorTypes.INVALIDTE_PARAMETERS, "Lack of primary key " + this.collection.primaryKeyName() + " in object " + JSON.stringify(item));
         }
     };
-    BaseDao.prototype.validateKey = function (key) {
+    BaseDao.prototype._validateKey = function (key) {
         if (!_.isInteger(key)) {
             Throw(ErrorTypes.INVALIDTE_PARAMETERS, 'Key for db get method should be an integer.');
         }
@@ -1154,6 +1062,15 @@ var BaseKVDao = /** @class */ (function () {
  * Copyright © RingCentral. All rights reserved.
  */
 
+/*
+ * @Author: Steve Chen (steve.chen@ringcentral.com)
+ * @Date: 2018-02-28 00:17:39
+ */
+var STORAGE_TYPES = {
+    KV: 1,
+    DB: 2,
+};
+
 /**
  * Generator unique and indices
  * @param {String} unique
@@ -1166,7 +1083,7 @@ var gen = function (unique, indices, onUpgrade) {
     return ({
         unique: unique,
         indices: indices,
-        onUpgrade: onUpgrade
+        onUpgrade: onUpgrade,
     });
 };
 // const refactorId = (item: any) => {
@@ -1184,52 +1101,46 @@ var schema = {
             item: gen(),
             company: gen(),
             profile: gen('id', ['favorite_group_ids']),
-            state: gen()
+            state: gen(),
         },
         2: {
-            state: gen('id', ['person_id'])
+            state: gen('id', ['person_id']),
         },
         3: {
-            person: gen('id', ['first_name', 'last_name', 'display_name', 'email'])
+            person: gen('id', ['first_name', 'last_name', 'display_name', 'email']),
         },
         4: {
             post: gen('id', ['group_id', 'created_at', '[group_id+created_at]']),
-            group: gen('id', ['most_recent_post_created_at'])
+            group: gen('id', ['most_recent_post_created_at']),
         },
         5: {
-            groupState: gen()
+            groupState: gen(),
         },
         6: {
-            deactivated: gen()
+            deactivated: gen(),
         },
         7: {
-            item: gen('id', ['*group_ids'])
-        }
-        // 1: {
-        //   person: gen('id', ['first_name', 'last_name', 'display_name', 'email']),
-        //   group: gen('id', ['most_recent_post_created_at']),
-        //   post: gen('id', ['group_id', 'created_at', '[group_id+created_at]']),
-        //   item: gen('id', ['*group_ids']),
-        //   company: gen('id', []),
-        //   profile: gen('id', ['favorite_group_ids']),
-        //   state: gen('id', ['person_id']),
-        //   groupState: gen('id', []),
-        //   deactivated: gen('id', [])
-        // }
-    }
+            item: gen('id', ['*group_ids']),
+        },
+    },
 };
 
 /*
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-03-01 13:42:43
- * @Last Modified by: Nello Huang (nello.huang@ringcentral.com)
- * @Last Modified time: 2018-03-22 15:52:32
+ * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
+ * @Last Modified time: 2018-08-06 14:16:43
  */
 var ACCOUNT_USER_ID = 'user_id';
 var ACCOUNT_PROFILE_ID = 'profile_id';
 var ACCOUNT_COMPANY_ID = 'company_id';
 var ACCOUNT_CLIENT_CONFIG = 'client_config';
-var ACCOUNT_KEYS = [ACCOUNT_USER_ID, ACCOUNT_PROFILE_ID, ACCOUNT_COMPANY_ID, ACCOUNT_CLIENT_CONFIG];
+var ACCOUNT_KEYS = [
+    ACCOUNT_USER_ID,
+    ACCOUNT_PROFILE_ID,
+    ACCOUNT_COMPANY_ID,
+    ACCOUNT_CLIENT_CONFIG,
+];
 
 /*
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
@@ -1337,7 +1248,7 @@ var GroupDao = /** @class */ (function (_super) {
                         .filter(function (item) { return !item.is_archived; })
                         .toArray({
                         sortBy: 'most_recent_post_created_at',
-                        desc: true
+                        desc: true,
                     })];
             });
         });
@@ -1366,7 +1277,8 @@ var GroupDao = /** @class */ (function (_super) {
                         .filter(function (item) {
                         // !item.deactivated &&
                         // !item.is_archived &&
-                        return typeof item.set_abbreviation === 'string' && new RegExp("" + key, 'i').test(item.set_abbreviation);
+                        return typeof item.set_abbreviation === 'string' &&
+                            new RegExp("" + key, 'i').test(item.set_abbreviation);
                     })
                         .toArray()];
             });
@@ -1379,7 +1291,9 @@ var GroupDao = /** @class */ (function (_super) {
                 return [2 /*return*/, this.createQuery()
                         .equal('is_team', false)
                         .filter(function (item) {
-                        return !item.is_archived && item.members && item.members.sort().toString() === members.sort().toString();
+                        return !item.is_archived &&
+                            item.members &&
+                            item.members.sort().toString() === members.sort().toString();
                     })
                         .toArray()];
             });
@@ -1472,7 +1386,7 @@ var PersonDao = /** @class */ (function (_super) {
                     case 0: return [4 /*yield*/, _super.prototype.getAll.call(this)];
                     case 1:
                         persons = _a.sent();
-                        return [2 /*return*/, persons.sort(this.personCompare.bind(this))];
+                        return [2 /*return*/, persons.sort(this._personCompare.bind(this))];
                 }
             });
         });
@@ -1494,12 +1408,12 @@ var PersonDao = /** @class */ (function (_super) {
                         if (prefix === '')
                             return [2 /*return*/, []];
                         if (prefix === '#')
-                            return [2 /*return*/, this.getPersonsNotStartsWithAlphabet({ limit: limit })];
-                        return [4 /*yield*/, this.searchPersonsByPrefix(prefix)];
+                            return [2 /*return*/, this._getPersonsNotStartsWithAlphabet({ limit: limit })];
+                        return [4 /*yield*/, this._searchPersonsByPrefix(prefix)];
                     case 1:
                         persons = _e.sent();
                         // Sort after query to get better performance
-                        return [2 /*return*/, persons.sort(this.personCompare.bind(this)).slice(offset, offset + limit)];
+                        return [2 /*return*/, persons.sort(this._personCompare.bind(this)).slice(offset, offset + limit)];
                 }
             });
         });
@@ -1520,7 +1434,7 @@ var PersonDao = /** @class */ (function (_super) {
                         // Find persons starts with a letter in a-Z
                         ALPHABET.forEach(function (prefix) {
                             var filteredPersons = persons.filter(function (person) {
-                                var display_name = _this.getNameOfPerson(person);
+                                var display_name = _this._getNameOfPerson(person);
                                 return display_name && display_name.toLowerCase().indexOf(prefix) === 0;
                             });
                             map.set(prefix.toUpperCase(), filteredPersons.slice(0, limit));
@@ -1530,7 +1444,7 @@ var PersonDao = /** @class */ (function (_super) {
                             var persons;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0: return [4 /*yield*/, this.getPersonsNotStartsWithAlphabet({ limit: limit })];
+                                    case 0: return [4 /*yield*/, this._getPersonsNotStartsWithAlphabet({ limit: limit })];
                                     case 1:
                                         persons = _a.sent();
                                         map.set('#', persons);
@@ -1553,9 +1467,9 @@ var PersonDao = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         if (!(prefix === '#')) return [3 /*break*/, 1];
-                        length = this.getPersonsCountNotStartsWithAlphabet();
+                        length = this._getPersonsCountNotStartsWithAlphabet();
                         return [3 /*break*/, 3];
-                    case 1: return [4 /*yield*/, this.searchPersonsByPrefix(prefix)];
+                    case 1: return [4 /*yield*/, this._searchPersonsByPrefix(prefix)];
                     case 2:
                         length = (_a.sent()).length;
                         _a.label = 3;
@@ -1587,15 +1501,19 @@ var PersonDao = /** @class */ (function (_super) {
                 }
                 q1 = this.createQuery()
                     .startsWith('first_name', keywordParts[0], true)
-                    .filter(function (item) { return (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false); });
+                    .filter(function (item) {
+                    return (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false);
+                });
                 q2 = this.createQuery()
                     .startsWith('display_name', fullKeyword, true)
-                    .filter(function (item) { return (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false); });
+                    .filter(function (item) {
+                    return (item.last_name ? item.last_name.toLowerCase().startsWith(keywordParts[1]) : false);
+                });
                 return [2 /*return*/, q1.or(q2).toArray()];
             });
         });
     };
-    PersonDao.prototype.getPersonsNotStartsWithAlphabet = function (_a) {
+    PersonDao.prototype._getPersonsNotStartsWithAlphabet = function (_a) {
         var limit = _a.limit;
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
@@ -1603,7 +1521,7 @@ var PersonDao = /** @class */ (function (_super) {
                 return [2 /*return*/, this.createQuery()
                         .orderBy('display_name')
                         .filter(function (person) {
-                        var display = _this.getNameOfPerson(person);
+                        var display = _this._getNameOfPerson(person);
                         return !!display && !ALPHABET.includes(display[0].toLowerCase());
                     })
                         .limit(limit)
@@ -1611,29 +1529,29 @@ var PersonDao = /** @class */ (function (_super) {
             });
         });
     };
-    PersonDao.prototype.getPersonsCountNotStartsWithAlphabet = function () {
+    PersonDao.prototype._getPersonsCountNotStartsWithAlphabet = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
                 return [2 /*return*/, this.createQuery()
                         .orderBy('display_name')
                         .filter(function (person) {
-                        var display = _this.getNameOfPerson(person);
+                        var display = _this._getNameOfPerson(person);
                         return !!display && !ALPHABET.includes(display[0].toLowerCase());
                     })
                         .count()];
             });
         });
     };
-    PersonDao.prototype.personCompare = function (a, b) {
-        var aName = this.getNameOfPerson(a);
-        var bName = this.getNameOfPerson(b);
+    PersonDao.prototype._personCompare = function (a, b) {
+        var aName = this._getNameOfPerson(a);
+        var bName = this._getNameOfPerson(b);
         return caseInsensitive(aName, bName);
     };
-    PersonDao.prototype.getNameOfPerson = function (person) {
+    PersonDao.prototype._getNameOfPerson = function (person) {
         return person && (person.display_name || person.first_name || person.email);
     };
-    PersonDao.prototype.searchPersonsByPrefix = function (prefix) {
+    PersonDao.prototype._searchPersonsByPrefix = function (prefix) {
         return __awaiter(this, void 0, void 0, function () {
             var q1, q2, q3, reg, persons;
             return __generator(this, function (_a) {
@@ -1651,7 +1569,9 @@ var PersonDao = /** @class */ (function (_super) {
                         persons = _a.sent();
                         persons = persons.filter(function (person) {
                             var display_name = person.display_name, first_name = person.first_name;
-                            return !((display_name && !reg.test(display_name)) || (!display_name && first_name && !reg.test(first_name)));
+                            return !((display_name &&
+                                !reg.test(display_name)) ||
+                                (!display_name && first_name && !reg.test(first_name)));
                         });
                         return [2 /*return*/, persons];
                 }
@@ -1829,15 +1749,13 @@ var DaoManager = /** @class */ (function (_super) {
     }
     DaoManager.prototype.initDatabase = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var currentSchemaVersion, schemaIsCompatible, db;
+            var db;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        currentSchemaVersion = this.getKVDao(ConfigDao).get(DB_SCHEMA_VERSION);
-                        schemaIsCompatible = !!(typeof currentSchemaVersion === 'number' && currentSchemaVersion === schema.version);
                         this.dbManager.initDatabase(schema);
-                        if (!!schemaIsCompatible) return [3 /*break*/, 2];
+                        if (!!this._isSchemaCompatible()) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.dbManager.deleteDatabase()];
                     case 1:
                         _a.sent();
@@ -1921,6 +1839,10 @@ var DaoManager = /** @class */ (function (_super) {
             });
         });
     };
+    DaoManager.prototype._isSchemaCompatible = function () {
+        var currentSchemaVersion = this.getKVDao(ConfigDao).get(DB_SCHEMA_VERSION);
+        return typeof currentSchemaVersion === 'number' && currentSchemaVersion === schema.version;
+    };
     return DaoManager;
 }(Manager));
 
@@ -1932,24 +1854,24 @@ var DaoManager = /** @class */ (function (_super) {
 var daoManager = new DaoManager();
 
 var index$1 = /*#__PURE__*/Object.freeze({
-  daoManager: daoManager,
-  constants: constants,
-  schema: schema,
-  AccountDao: AccountDao,
-  AuthDao: AuthDao,
-  CompanyDao: CompanyDao,
-  ConfigDao: ConfigDao,
-  GroupDao: GroupDao,
-  GroupStateDao: GroupStateDao,
-  ItemDao: ItemDao,
-  PersonDao: PersonDao,
-  PostDao: PostDao,
-  ProfileDao: ProfileDao,
-  StateDao: StateDao,
-  DeactivatedDao: DeactivatedDao,
-  BaseDao: BaseDao,
-  BaseKVDao: BaseKVDao,
-  Query: Query
+    daoManager: daoManager,
+    schema: schema,
+    AccountDao: AccountDao,
+    AuthDao: AuthDao,
+    CompanyDao: CompanyDao,
+    ConfigDao: ConfigDao,
+    GroupDao: GroupDao,
+    GroupStateDao: GroupStateDao,
+    ItemDao: ItemDao,
+    PersonDao: PersonDao,
+    PostDao: PostDao,
+    ProfileDao: ProfileDao,
+    StateDao: StateDao,
+    DeactivatedDao: DeactivatedDao,
+    BaseDao: BaseDao,
+    BaseKVDao: BaseKVDao,
+    Query: Query,
+    STORAGE_TYPES: STORAGE_TYPES
 });
 
 var _this = undefined;
@@ -1962,7 +1884,8 @@ var isObject = function (value) { return Object.prototype.toString.call(value) =
 // const isUndefined = value => Object.prototype.toString.call(value) === '[object Undefined]';
 var isFunction = function (value) { return Object.prototype.toString.call(value) === '[object Function]'; };
 // const isRegExp = value => Object.prototype.toString.call(value) === '[object RegExp]';
-var isIEOrEdge = typeof navigator !== 'undefined' && /(MSIE|Trident|Edge)/.test(navigator.userAgent);
+var isIEOrEdge = typeof navigator !== 'undefined'
+    && /(MSIE|Trident|Edge)/.test(navigator.userAgent);
 var transform = function (item) {
     if (isObject(item)) {
         /* eslint-disable no-underscore-dangle, no-param-reassign */
@@ -2055,7 +1978,7 @@ var AccountManager = /** @class */ (function (_super) {
     AccountManager.prototype.syncLogin = function (authType, params) {
         var authenticator = this._container.get(authType);
         var resp = authenticator.authenticate(params);
-        return this.handleLoginResponse(resp);
+        return this._handleLoginResponse(resp);
     };
     AccountManager.prototype.login = function (authType, params) {
         return __awaiter(this, void 0, void 0, function () {
@@ -2067,7 +1990,7 @@ var AccountManager = /** @class */ (function (_super) {
                         return [4 /*yield*/, authenticator.authenticate(params)];
                     case 1:
                         resp = _a.sent();
-                        return [2 /*return*/, this.handleLoginResponse(resp)];
+                        return [2 /*return*/, this._handleLoginResponse(resp)];
                 }
             });
         });
@@ -2110,7 +2033,7 @@ var AccountManager = /** @class */ (function (_super) {
         var services = this.getSupportedServices();
         return services.includes(type);
     };
-    AccountManager.prototype.createAccounts = function (accountInfos) {
+    AccountManager.prototype._createAccounts = function (accountInfos) {
         var _this = this;
         var accounts = accountInfos.map(function (_a) {
             var type = _a.type;
@@ -2124,15 +2047,16 @@ var AccountManager = /** @class */ (function (_super) {
         });
         return accounts;
     };
-    AccountManager.prototype.handleLoginResponse = function (resp) {
-        if (!resp.accountInfos || resp.accountInfos.length <= 0)
+    AccountManager.prototype._handleLoginResponse = function (resp) {
+        if (!resp.accountInfos || resp.accountInfos.length <= 0) {
             return { success: false, error: new Error('Auth fail') };
+        }
         this.emit(EVENT_LOGIN, resp.accountInfos);
         this._isLogin = true;
-        var accounts = this.createAccounts(resp.accountInfos);
+        var accounts = this._createAccounts(resp.accountInfos);
         return {
+            accounts: accounts,
             success: true,
-            accounts: accounts
         };
     };
     AccountManager.EVENT_LOGIN = EVENT_LOGIN;
@@ -2186,27 +2110,56 @@ var ServiceManager = /** @class */ (function (_super) {
         this._serviceMap.forEach(function (value) { return services.push(value); });
         return services;
     };
+    ServiceManager.prototype.getAllServiceNames = function () {
+        var names = [];
+        this._serviceMap.forEach(function (service, name) { return names.push(name); });
+        return names;
+    };
     ServiceManager.prototype.getService = function (name) {
         return this._serviceMap.get(name) || null;
+    };
+    ServiceManager.prototype.startService = function (name) {
+        return __awaiter(this, void 0, void 0, function () {
+            var service;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        service = this.getService(name);
+                        if (!!service) return [3 /*break*/, 3];
+                        if (!this._container.isAsync(name)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this._container.asyncGet(name)];
+                    case 1:
+                        service = _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        service = this._container.get(name);
+                        _a.label = 3;
+                    case 3:
+                        if (!service.isStarted()) {
+                            service.start();
+                        }
+                        this._serviceMap.set(name, service);
+                        return [2 /*return*/, service];
+                }
+            });
+        });
+    };
+    ServiceManager.prototype.startServices = function (services) {
+        return __awaiter(this, void 0, void 0, function () {
+            var promises;
+            var _this = this;
+            return __generator(this, function (_a) {
+                promises = services.map(function (service) { return _this.startService(service); });
+                return [2 /*return*/, Promise.all(promises)];
+            });
+        });
     };
     ServiceManager.prototype.stopService = function (name) {
         var service = this.getService(name);
         if (service) {
-            this._stopService(service);
+            service.stop();
+            this._serviceMap.delete(name);
         }
-    };
-    ServiceManager.prototype.startService = function (name) {
-        var service = this.getService(name) || this._container.get(name);
-        if (!service.isStarted()) {
-            service.start();
-        }
-        this._serviceMap.set(name, service);
-    };
-    ServiceManager.prototype.startServices = function (services) {
-        var _this = this;
-        services.forEach(function (service) {
-            _this.startService(service);
-        });
     };
     ServiceManager.prototype.stopServices = function (services) {
         var _this = this;
@@ -2216,90 +2169,191 @@ var ServiceManager = /** @class */ (function (_super) {
     };
     ServiceManager.prototype.stopAllServices = function () {
         var _this = this;
-        this.getAllServices().forEach(function (service) { return _this._stopService(service); });
-    };
-    ServiceManager.prototype._stopService = function (service) {
-        service.stop();
-        this._serviceMap.delete(name);
+        this.getAllServiceNames().forEach(function (service) { return _this.stopService(service); });
     };
     return ServiceManager;
 }(EventEmitter2));
 
-function isInjectableConfig(config) {
-    return !!config.value;
-}
-function normalizeConfig(config) {
-    if (isInjectableConfig(config)) {
-        if (!config.type)
-            config.type = 'class';
-        return config;
-    }
-    else {
-        return {
-            name: config,
-            value: config,
-            type: 'class'
-        };
-    }
-}
+var RegisterType;
+(function (RegisterType) {
+    RegisterType["ConstantValue"] = "ConstantValue";
+    RegisterType["Constructor"] = "Constructor";
+    RegisterType["DynamicValue"] = "DynamicValue";
+    RegisterType["Factory"] = "Factory";
+    RegisterType["Function"] = "Function";
+    RegisterType["Instance"] = "Instance";
+    RegisterType["Invalid"] = "Invalid";
+    RegisterType["Provider"] = "Provider";
+})(RegisterType || (RegisterType = {}));
 var Container = /** @class */ (function () {
     function Container(containerConfig) {
-        this._registerMap = new Map();
-        this._singletonMap = new Map();
+        this._registrationMap = new Map();
         this._containerConfig = containerConfig || {};
-        this.register({
+        this.registerConstantValue({
             name: Container.name,
-            type: 'object',
             value: this,
-            singleton: true
         });
     }
-    Container.prototype.registerAll = function (configs) {
-        var _this = this;
-        configs.forEach(function (config) { return _this.register(config); });
+    Container.prototype.registerClass = function (config) {
+        var registration = {
+            type: RegisterType.Instance,
+            implementationType: config.value,
+            singleton: config.singleton,
+            injects: config.injects,
+        };
+        this._registrationMap.set(config.name, registration);
     };
-    Container.prototype.register = function (config) {
-        var normalizedConfig = normalizeConfig(config);
-        this.validConfig(normalizedConfig);
-        this._registerMap.set(normalizedConfig.name, normalizedConfig);
+    Container.prototype.registerAsyncClass = function (config) {
+        var registration = {
+            type: RegisterType.Instance,
+            asyncImplementationType: config.value,
+            singleton: config.singleton,
+            injects: config.injects,
+            async: true,
+        };
+        this._registrationMap.set(config.name, registration);
     };
-    Container.prototype.validConfig = function (config) {
-        if (config.type === 'class' && !config.value.constructor) {
-            throw new Error(config.name + " can not be registered as a class. Please check if it is a real Class?");
-        }
+    Container.prototype.registerProvider = function (config) {
+        var registration = {
+            type: RegisterType.Provider,
+            provider: config.value,
+            async: config.async,
+            injects: config.injects,
+        };
+        this._registrationMap.set(config.name, registration);
+    };
+    Container.prototype.registerConstantValue = function (config) {
+        var registration = {
+            type: RegisterType.ConstantValue,
+            cache: config.value,
+            async: config.async,
+            injects: config.injects,
+        };
+        this._registrationMap.set(config.name, registration);
     };
     Container.prototype.get = function (name) {
-        var config = this._registerMap.get(name);
+        var registration = this.getRegistration(name);
+        if (registration.async)
+            throw new Error(name + " is async, use asyncGet() to get it.");
+        var cache = this._getCache(registration);
+        if (cache)
+            return cache;
+        var injections = this._getInjections(registration.injects);
+        var result = this._resolve(registration, injections);
+        this._setCache(registration, result);
+        return result;
+    };
+    Container.prototype.asyncGet = function (name) {
+        return __awaiter(this, void 0, void 0, function () {
+            var registration, cache, injections, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        registration = this.getRegistration(name);
+                        cache = this._getCache(registration);
+                        if (cache)
+                            return [2 /*return*/, cache];
+                        return [4 /*yield*/, this._asyncGetInjections(registration.injects)];
+                    case 1:
+                        injections = _a.sent();
+                        return [4 /*yield*/, this._asyncResolve(registration, injections)];
+                    case 2:
+                        result = _a.sent();
+                        this._setCache(registration, result);
+                        return [2 /*return*/, result];
+                }
+            });
+        });
+    };
+    Container.prototype.isAsync = function (name) {
+        return !!this.getRegistration(name).async;
+    };
+    Container.prototype.getRegistration = function (name) {
+        var config = this._registrationMap.get(name);
         if (!config)
             throw new Error(name + " not been registered.");
-        return this._createInstance(config);
+        return config;
     };
-    Container.prototype._createInstance = function (config) {
-        var _this = this;
-        var instance = null;
-        var injectables = [];
-        var isSingleton = this._containerConfig.singleton || config.singleton;
+    Container.prototype._getCache = function (registration) {
+        var isSingleton = this._containerConfig.singleton || registration.singleton;
+        if (isSingleton && registration.cache) {
+            return registration.cache;
+        }
+    };
+    Container.prototype._setCache = function (registration, result) {
+        var isSingleton = this._containerConfig.singleton || registration.singleton;
         if (isSingleton) {
-            instance = this._singletonMap.get(config.name);
-            if (instance)
-                return instance;
+            registration.cache = result;
         }
-        if (config.injects) {
-            injectables = config.injects.map(function (inject) { return _this.get(inject); });
+    };
+    Container.prototype._resolve = function (registration, injections) {
+        var result = null;
+        if (registration.type === RegisterType.ConstantValue) {
+            result = registration.cache;
         }
-        if (config.type === 'class') {
-            // register as class
-            var Class = config.value;
-            instance = new (Class.bind.apply(Class, __spread([void 0], injectables)))();
+        else if (registration.type === RegisterType.Instance && registration.implementationType) {
+            result = this._resolveInstance(registration.implementationType, injections);
+        }
+        else if (registration.type === RegisterType.Provider && registration.provider) {
+            result = registration.provider();
         }
         else {
-            // register as Function/object
-            instance = config.value;
+            throw new Error("Can not get " + name);
         }
-        if (isSingleton) {
-            this._singletonMap.set(config.name, instance);
-        }
+        return result;
+    };
+    Container.prototype._asyncResolve = function (registration, injections) {
+        return __awaiter(this, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                result = null;
+                if (registration.type === RegisterType.Instance &&
+                    registration.async &&
+                    registration.asyncImplementationType) {
+                    result = this._asyncResolveInstance(name, registration.asyncImplementationType, injections);
+                }
+                else {
+                    result = this._resolve(registration, injections);
+                }
+                return [2 /*return*/, result];
+            });
+        });
+    };
+    Container.prototype._getInjections = function (names) {
+        var _this = this;
+        if (!names)
+            return [];
+        return names.map(function (name) { return _this.get(name); });
+    };
+    Container.prototype._asyncGetInjections = function (names) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                if (!names)
+                    return [2 /*return*/, []];
+                return [2 /*return*/, Promise.all(names.map(function (name) { return _this.asyncGet(name); }))];
+            });
+        });
+    };
+    Container.prototype._resolveInstance = function (creator, injections) {
+        var instance = null;
+        var Class = creator;
+        instance = new (Class.bind.apply(Class, __spread([void 0], injections)))();
         return instance;
+    };
+    Container.prototype._asyncResolveInstance = function (name, getModule, injections) {
+        return __awaiter(this, void 0, void 0, function () {
+            var module, creator;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, getModule()];
+                    case 1:
+                        module = _a.sent();
+                        creator = module[name.toString()] || module.default;
+                        return [2 /*return*/, this._resolveInstance(creator, injections)];
+                }
+            });
+        });
     };
     return Container;
 }());
@@ -2319,21 +2373,30 @@ var DataDispatcher = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     DataDispatcher.prototype.register = function (key, dataHandler) {
-        console.info('Datadispatcher registing', key);
+        console.info('DataDispatcher registing', key);
         this.on(key, dataHandler);
     };
     DataDispatcher.prototype.unregister = function (key, dataHandler) {
-        console.info('Datadispatcher unregistering', key);
+        console.info('DataDispatcher unregistering', key);
         this.off(key, dataHandler);
     };
     DataDispatcher.prototype.onDataArrived = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var entries;
-            var _this = this;
+            var messages;
             return __generator(this, function (_a) {
-                entries = parseSocketMessage(data);
-                console.info('Datadispatcher handling', Object.keys(entries));
-                return [2 /*return*/, Promise.all(Object.keys(entries).map(function (key) { return _this.emitAsync("SOCKET." + key.toUpperCase(), entries[key]); }))];
+                messages = parseSocketMessage(data);
+                console.info('DataDispatcher handling', Object.keys(messages));
+                return [2 /*return*/, Promise.all(Object
+                        .entries(messages)
+                        .map(this._emitMessageAsync.bind(this)))];
+            });
+        });
+    };
+    DataDispatcher.prototype._emitMessageAsync = function (_a) {
+        var _b = __read(_a, 2), key = _b[0], message = _b[1];
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_c) {
+                return [2 /*return*/, this.emitAsync("SOCKET." + key.toUpperCase(), message)];
             });
         });
     };
@@ -2342,7 +2405,9 @@ var DataDispatcher = /** @class */ (function (_super) {
 var dataDispatcher = new DataDispatcher();
 
 var throwError = function (text) {
-    throw new Error(text + " is undefined! " + text + " must be passed to Service constructor like this super(DaoClass, ApiClass, handleData)");
+    throw new Error(
+    // tslint:disable-next-line:max-line-length
+    text + " is undefined! " + text + " must be passed to Service constructor like this super(DaoClass, ApiClass, handleData)");
 };
 var BaseService = /** @class */ (function (_super) {
     __extends(BaseService, _super);
@@ -2383,7 +2448,7 @@ var BaseService = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this.checkDaoClass();
+                        this._checkDaoClass();
                         dao = daoManager.getDao(this.DaoClass);
                         return [4 /*yield*/, dao.get(id)];
                     case 1:
@@ -2425,7 +2490,7 @@ var BaseService = /** @class */ (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             var dao;
             return __generator(this, function (_e) {
-                this.checkDaoClass();
+                this._checkDaoClass();
                 dao = daoManager.getDao(this.DaoClass);
                 return [2 /*return*/, dao
                         .createQuery()
@@ -2444,12 +2509,12 @@ var BaseService = /** @class */ (function (_super) {
         });
     };
     BaseService.prototype.onStarted = function () {
-        this.subscribe();
+        this._subscribe();
     };
     BaseService.prototype.onStopped = function () {
-        this.unsubscribe();
+        this._unsubscribe();
     };
-    BaseService.prototype.subscribe = function () {
+    BaseService.prototype._subscribe = function () {
         Object.entries(this._subscriptions).forEach(function (_a) {
             var _b = __read(_a, 2), eventName = _b[0], fn = _b[1];
             if (eventName.startsWith('SOCKET')) {
@@ -2458,7 +2523,7 @@ var BaseService = /** @class */ (function (_super) {
             notificationCenter.on(eventName, fn);
         });
     };
-    BaseService.prototype.unsubscribe = function () {
+    BaseService.prototype._unsubscribe = function () {
         Object.entries(this._subscriptions).forEach(function (_a) {
             var _b = __read(_a, 2), eventName = _b[0], fn = _b[1];
             if (eventName.startsWith('SOCKET')) {
@@ -2467,7 +2532,7 @@ var BaseService = /** @class */ (function (_super) {
             notificationCenter.off(eventName, fn);
         });
     };
-    BaseService.prototype.checkDaoClass = function () {
+    BaseService.prototype._checkDaoClass = function () {
         if (!this.DaoClass) {
             throwError('DaoClass');
         }
@@ -2531,9 +2596,9 @@ var AccountService = /** @class */ (function (_super) {
                             return [2 /*return*/, {}];
                         mainLogger.debug("getCurrentUserInfo: " + personInfo);
                         return [2 /*return*/, {
+                                company_id: company_id,
                                 email: personInfo.email,
                                 display_name: personInfo.display_name,
-                                company_id: company_id
                             }];
                 }
             });
@@ -2578,6 +2643,7 @@ var AccountService = /** @class */ (function (_super) {
  * @Date: 2018-02-05 15:07:23
  * Copyright © RingCentral. All rights reserved.
  */
+var GET = NETWORK_METHOD.GET, DELETE = NETWORK_METHOD.DELETE;
 var NetworkClient = /** @class */ (function () {
     // todo refactor config
     function NetworkClient(networkRequests, apiPlatform) {
@@ -2590,13 +2656,10 @@ var NetworkClient = /** @class */ (function () {
         var via = query.via, path = query.path, method = query.method, params = query.params;
         return new Promise(function (resolve, reject) {
             var apiMapKey = path + "_" + method + "_" + serializeUrlParams(params || {});
-            console.log('apiMapKey', _this.apiMap.has(apiMapKey));
-            console.log('method', method);
-            var isDuplicate = (method === NETWORK_METHOD.GET || method === NETWORK_METHOD.DELETE) && _this.apiMap.has(apiMapKey);
             var promiseResolvers = _this.apiMap.get(apiMapKey) || [];
             promiseResolvers.push({ resolve: resolve, reject: reject });
             _this.apiMap.set(apiMapKey, promiseResolvers);
-            if (!isDuplicate) {
+            if (!_this._isDuplicate(method, apiMapKey)) {
                 var request = _this.getRequestByVia(query, via);
                 request.callback = _this.buildCallback(apiMapKey);
                 NetworkManager.Instance.addApiRequest(request);
@@ -2615,14 +2678,15 @@ var NetworkClient = /** @class */ (function () {
                     return resolve({
                         status: resp.status,
                         headers: resp.headers,
-                        data: resp.data
+                        data: resp.data,
                     });
                 });
             }
             else {
                 promiseResolvers.forEach(function (_a) {
                     var reject = _a.reject;
-                    return reject(resp.data);
+                    console.log('Network reject', resp);
+                    reject(resp);
                 });
             }
             _this.apiMap.delete(apiMapKey);
@@ -2662,11 +2726,11 @@ var NetworkClient = /** @class */ (function () {
         if (headers === void 0) { headers = {}; }
         return this.http({
             path: path,
-            method: NETWORK_METHOD.GET,
             params: params,
+            headers: headers,
             via: via,
             requestConfig: requestConfig,
-            headers: headers
+            method: NETWORK_METHOD.GET,
         });
     };
     /**
@@ -2681,9 +2745,9 @@ var NetworkClient = /** @class */ (function () {
         if (headers === void 0) { headers = {}; }
         return this.request({
             path: path,
-            method: NETWORK_METHOD.POST,
             data: data,
-            headers: headers
+            headers: headers,
+            method: NETWORK_METHOD.POST,
         });
     };
     /**
@@ -2698,9 +2762,9 @@ var NetworkClient = /** @class */ (function () {
         if (headers === void 0) { headers = {}; }
         return this.http({
             path: path,
-            method: NETWORK_METHOD.PUT,
             data: data,
-            headers: headers
+            headers: headers,
+            method: NETWORK_METHOD.PUT,
         });
     };
     /**
@@ -2715,10 +2779,16 @@ var NetworkClient = /** @class */ (function () {
         if (headers === void 0) { headers = {}; }
         return this.http({
             path: path,
-            method: NETWORK_METHOD.DELETE,
             params: params,
-            headers: headers
+            headers: headers,
+            method: NETWORK_METHOD.DELETE,
         });
+    };
+    NetworkClient.prototype._isDuplicate = function (method, apiMapKey) {
+        if (method !== GET && method !== DELETE) {
+            return false;
+        }
+        return this.apiMap.has(apiMapKey);
     };
     return NetworkClient;
 }());
@@ -2730,11 +2800,11 @@ var defaultConfig = {
         apiPlatformVersion: '',
         clientId: '',
         clientSecret: '',
-        redirectUri: ''
+        redirectUri: '',
     },
     glip: {
         server: '',
-        apiPlatform: ''
+        apiPlatform: '',
     },
     glip2: {
         server: '',
@@ -2743,12 +2813,12 @@ var defaultConfig = {
         clientId: '',
         clientSecret: '',
         redirectUri: '',
-        brandId: 0
+        brandId: 0,
     },
     upload: {
         server: '',
-        apiPlatform: ''
-    }
+        apiPlatform: '',
+    },
 };
 
 var HandleByGlip = new /** @class */ (function (_super) {
@@ -3500,6 +3570,7 @@ var Api = /** @class */ (function () {
             // TODO httpConfig should be private. but for now, it is
             // directly accessed by the ui layer. That should be refactor.
             // Move logics that access httpConfig into Api in the future.
+            // tslint:disable-next-line:max-line-length
             Aware(ErrorTypes.HTTP, 'httpConfig should be private. but it is directly accessed by the ui layer.');
             return this._httpConfig;
         },
@@ -3573,7 +3644,7 @@ var RINGCENTRAL_API = {
     API_OAUTH_TOKEN: '/oauth/token',
     API_REFRESH_TOKEN: '/oauth/token',
     API_GENERATE_CODE: '/interop/generate-code',
-    API_PROFILE: '/glip/profile'
+    API_PROFILE: '/glip/profile',
 };
 
 /**
@@ -3589,7 +3660,7 @@ function loginRCByPassword(data) {
         method: NETWORK_METHOD.POST,
         data: model,
         authFree: true,
-        via: NETWORK_VIA.HTTP
+        via: NETWORK_VIA.HTTP,
     };
     return Api.rcNetworkClient.http(query);
 }
@@ -3606,7 +3677,7 @@ function loginGlip2ByPassword(data) {
         method: NETWORK_METHOD.POST,
         data: model,
         authFree: true,
-        via: NETWORK_VIA.HTTP
+        via: NETWORK_VIA.HTTP,
     };
     return Api.glip2NetworkClient.http(query);
 }
@@ -3621,7 +3692,7 @@ function refreshToken(data) {
         method: NETWORK_METHOD.POST,
         data: model,
         authFree: true,
-        via: NETWORK_VIA.HTTP
+        via: NETWORK_VIA.HTTP,
     };
     return Api.rcNetworkClient.http(query);
 }
@@ -3635,7 +3706,7 @@ function refreshToken(data) {
 var GLIP_API = {
     get API_OAUTH_TOKEN() {
         return '/login';
-    }
+    },
 };
 
 /**
@@ -3647,13 +3718,13 @@ var GLIP_API = {
  */
 function loginGlip(authData) {
     var model = {
-        rc_access_token_data: btoa(JSON.stringify(authData))
+        rc_access_token_data: btoa(JSON.stringify(authData)),
     };
     var query = {
         path: GLIP_API.API_OAUTH_TOKEN,
         method: NETWORK_METHOD.PUT,
         data: model,
-        authFree: true
+        authFree: true,
     };
     return Api.glipNetworkClient.http(__assign({}, query, { via: NETWORK_VIA.HTTP }));
 }
@@ -3676,16 +3747,16 @@ function indexData(params, requestConfig, headers) {
  */
 
 var index$2 = /*#__PURE__*/Object.freeze({
-  loginRCByPassword: loginRCByPassword,
-  loginGlip2ByPassword: loginGlip2ByPassword,
-  refreshToken: refreshToken,
-  loginGlip: loginGlip,
-  indexData: indexData,
-  Api: Api,
-  HandleByGlip: HandleByGlip,
-  HandleByGlip2: HandleByGlip2,
-  HandleByRingCentral: HandleByRingCentral,
-  HandleByUpload: HandleByUpload
+    loginRCByPassword: loginRCByPassword,
+    loginGlip2ByPassword: loginGlip2ByPassword,
+    refreshToken: refreshToken,
+    loginGlip: loginGlip,
+    indexData: indexData,
+    Api: Api,
+    HandleByGlip: HandleByGlip,
+    HandleByGlip2: HandleByGlip2,
+    HandleByRingCentral: HandleByRingCentral,
+    HandleByUpload: HandleByUpload
 });
 
 var GlipAccount = /** @class */ (function (_super) {
@@ -3705,7 +3776,7 @@ var GlipAccount = /** @class */ (function (_super) {
                     PresenceService.name,
                     ProfileService.name,
                     SearchService.name,
-                    StateService.name
+                    StateService.name,
                 ]);
                 return [2 /*return*/];
             });
@@ -3737,7 +3808,7 @@ var RCAccount = /** @class */ (function (_super) {
 */
 var ACCOUNT_TYPE_ENUM = {
     RC: 'RC',
-    GLIP: 'GLIP'
+    GLIP: 'GLIP',
 };
 var ACCOUNT_TYPE = 'ACCOUNT_TYPE';
 
@@ -3769,13 +3840,13 @@ var RCPasswordAuthenticator = /** @class */ (function () {
                                 accountInfos: [
                                     {
                                         type: RCAccount.name,
-                                        data: rcAuthData
+                                        data: rcAuthData,
                                     },
                                     {
                                         type: GlipAccount.name,
-                                        data: glipAuthData
-                                    }
-                                ]
+                                        data: glipAuthData,
+                                    },
+                                ],
                             }];
                 }
             });
@@ -3799,8 +3870,8 @@ var AutoAuthenticator = /** @class */ (function () {
     function AutoAuthenticator(daoManager$$1) {
         this._daoManager = daoManager$$1;
         this._accountTypeHandleMap = new Map();
-        this._accountTypeHandleMap.set(ACCOUNT_TYPE_ENUM.RC, this.authRCLogin.bind(this));
-        this._accountTypeHandleMap.set(ACCOUNT_TYPE_ENUM.GLIP, this.authGlipLogin.bind(this));
+        this._accountTypeHandleMap.set(ACCOUNT_TYPE_ENUM.RC, this._authRCLogin.bind(this));
+        this._accountTypeHandleMap.set(ACCOUNT_TYPE_ENUM.GLIP, this._authGlipLogin.bind(this));
     }
     AutoAuthenticator.prototype.authenticate = function () {
         var configDao = this._daoManager.getKVDao(ConfigDao);
@@ -3809,13 +3880,9 @@ var AutoAuthenticator = /** @class */ (function () {
         if (func) {
             return func();
         }
-        else {
-            return {
-                success: false
-            };
-        }
+        return { success: false };
     };
-    AutoAuthenticator.prototype.authGlipLogin = function () {
+    AutoAuthenticator.prototype._authGlipLogin = function () {
         var authDao = this._daoManager.getKVDao(AuthDao);
         var glipToken = authDao.get(AUTH_GLIP_TOKEN);
         if (glipToken) {
@@ -3824,18 +3891,14 @@ var AutoAuthenticator = /** @class */ (function () {
                 accountInfos: [
                     {
                         type: GlipAccount.name,
-                        data: glipToken
-                    }
-                ]
+                        data: glipToken,
+                    },
+                ],
             };
         }
-        else {
-            return {
-                success: false
-            };
-        }
+        return { success: false };
     };
-    AutoAuthenticator.prototype.authRCLogin = function () {
+    AutoAuthenticator.prototype._authRCLogin = function () {
         var authDao = this._daoManager.getKVDao(AuthDao);
         var rcToken = authDao.get(AUTH_RC_TOKEN);
         var glipToken = authDao.get(AUTH_GLIP_TOKEN);
@@ -3845,20 +3908,16 @@ var AutoAuthenticator = /** @class */ (function () {
                 accountInfos: [
                     {
                         type: RCAccount.name,
-                        data: rcToken
+                        data: rcToken,
                     },
                     {
                         type: GlipAccount.name,
-                        data: glipToken
-                    }
-                ]
+                        data: glipToken,
+                    },
+                ],
             };
         }
-        else {
-            return {
-                success: false
-            };
-        }
+        return { success: false };
     };
     return AutoAuthenticator;
 }());
@@ -3866,63 +3925,61 @@ var AutoAuthenticator = /** @class */ (function () {
 function oauthTokenViaAuthCode(params, headers) {
     var model = __assign({}, params, { grant_type: 'authorization_code' });
     var query = {
+        headers: headers,
         path: RINGCENTRAL_API.API_OAUTH_TOKEN,
         method: NETWORK_METHOD.POST,
         via: NETWORK_VIA.HTTP,
         data: model,
         authFree: true,
-        headers: headers
     };
     return Api.glip2NetworkClient.http(query);
 }
 function generateCode(clientId, redirectUri) {
     var model = {
         clientId: clientId,
-        redirectUri: redirectUri
+        redirectUri: redirectUri,
     };
     return Api.glip2NetworkClient.http({
         path: "/" + Api.httpConfig.rc.apiPlatformVersion + RINGCENTRAL_API.API_GENERATE_CODE,
         method: NETWORK_METHOD.POST,
         via: NETWORK_VIA.HTTP,
-        data: model
+        data: model,
     });
 }
 
 var UnifiedLoginAuthenticator = /** @class */ (function () {
     function UnifiedLoginAuthenticator() {
     }
+    /**
+     * should consider 2 cases
+     * 1. RC account
+     * 2. Glip account
+     * we only consider 1 now, will implement case 2 in the future
+     */
     UnifiedLoginAuthenticator.prototype.authenticate = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                /*
-                should consider 2 cases
-                1. RC account
-                2. Glip account
-                we only consider 1 now, will implement case 2 in the future
-                */
                 if (params.code) {
-                    return [2 /*return*/, this.RCAccountLogin(params.code)];
+                    return [2 /*return*/, this._authenticateRC(params.code)];
                 }
-                else if (params.token) {
-                    return [2 /*return*/, this.glipAccountLogin(params.token)];
+                if (params.token) {
+                    return [2 /*return*/, this._authenticateGlip(params.token)];
                 }
                 return [2 /*return*/, {
                         success: false,
-                        error: new Error('invalid tokens')
+                        error: new Error('invalid tokens'),
                     }];
             });
         });
     };
-    UnifiedLoginAuthenticator.prototype.glipAccountLogin = function (token) {
+    UnifiedLoginAuthenticator.prototype._authenticateGlip = function (token) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, {
-                        success: true
-                    }];
+                return [2 /*return*/, { success: true }];
             });
         });
     };
-    UnifiedLoginAuthenticator.prototype.RCAccountLogin = function (code) {
+    UnifiedLoginAuthenticator.prototype._authenticateRC = function (code) {
         return __awaiter(this, void 0, void 0, function () {
             var rc, authData, authDao, authCode, newCode, newData, glipAuthData, configDao, glipToken;
             return __generator(this, function (_a) {
@@ -3931,7 +3988,7 @@ var UnifiedLoginAuthenticator = /** @class */ (function () {
                         rc = Api.httpConfig.rc;
                         return [4 /*yield*/, oauthTokenViaAuthCode({
                                 code: code,
-                                redirect_uri: window.location.origin + "/unified-login/"
+                                redirect_uri: window.location.origin + "/unified-login/",
                             })];
                     case 1:
                         authData = _a.sent();
@@ -3943,7 +4000,7 @@ var UnifiedLoginAuthenticator = /** @class */ (function () {
                         authCode = _a.sent();
                         newCode = authCode.data.code;
                         return [4 /*yield*/, oauthTokenViaAuthCode({ code: newCode, redirect_uri: 'glip://rclogin' }, {
-                                Authorization: "Basic " + btoa(rc.clientId + ":" + rc.clientSecret)
+                                Authorization: "Basic " + btoa(rc.clientId + ":" + rc.clientSecret),
                             })];
                     case 3:
                         newData = _a.sent();
@@ -3961,13 +4018,13 @@ var UnifiedLoginAuthenticator = /** @class */ (function () {
                                 accountInfos: [
                                     {
                                         type: RCAccount.name,
-                                        data: authData.data
+                                        data: authData.data,
                                     },
                                     {
                                         type: GlipAccount.name,
-                                        data: glipToken
-                                    }
-                                ]
+                                        data: glipToken,
+                                    },
+                                ],
                             }];
                 }
             });
@@ -3975,6 +4032,72 @@ var UnifiedLoginAuthenticator = /** @class */ (function () {
     };
     return UnifiedLoginAuthenticator;
 }());
+
+/*
+ * @Author: Devin Lin (devin.lin@ringcentral.com)
+ * @Date: 2018-04-16 17:23:21
+ * Copyright © RingCentral. All rights reserved.
+ */
+// const EVENT_KEYS = {
+//   COMPANY: 'COMPANY',
+//   GROUP: 'GROUP',
+//   ITEM: 'ITEM',
+//   PERSON: 'PERSON',
+//   POST: 'POST',
+//   PRESENCE: 'PRESENCE',
+//   PROFILE: 'PROFILE',
+//   STATE: 'STATE',
+// };
+var SOCKET;
+(function (SOCKET) {
+    SOCKET["COMPANY"] = "SOCKET.COMPANY";
+    SOCKET["GROUP"] = "SOCKET.GROUP";
+    SOCKET["ITEM"] = "SOCKET.ITEM";
+    SOCKET["PERSON"] = "SOCKET.PERSON";
+    SOCKET["POST"] = "SOCKET.POST";
+    SOCKET["PRESENCE"] = "SOCKET.PRESENCE";
+    SOCKET["PROFILE"] = "SOCKET.PROFILE";
+    SOCKET["STATE"] = "SOCKET.STATE";
+    SOCKET["STATE_CHANGE"] = "SOCKET.STATE_CHANGE";
+    SOCKET["NETWORK_CHANGE"] = "SOCKET.NETWORK_CHANGE";
+    SOCKET["SEARCH"] = "SOCKET.SEARCH";
+    SOCKET["SEARCH_SCROLL"] = "SOCKET.SEARCH_SCROLL";
+    SOCKET["RECONNECT"] = "SOCKET.RECONNECT";
+})(SOCKET || (SOCKET = {}));
+var ENTITY = {
+    COMPANY: 'ENTITY.COMPANY',
+    GROUP: 'ENTITY.GROUP',
+    ITEM: 'ENTITY.ITEM',
+    PERSON: 'ENTITY.PERSON',
+    POST: 'ENTITY.POST',
+    POST_OLD_NEW: 'ENTITY.POST_OLD_NEW',
+    POST_SENT_STATUS: 'ENTITY.POST_SENT_STATUS',
+    PRESENCE: 'ENTITY.PRESENCE',
+    PROFILE: 'ENTITY.PROFILE',
+    // STATE: 'ENTITY.STATE',
+    MY_STATE: 'ENTITY.MY_STATE',
+    GROUP_STATE: 'ENTITY.GROUP_STATE',
+    FAVORITE_GROUPS: 'ENTITY.FAVORITE_GROUPS',
+    TEAM_GROUPS: 'ENTITY.TEAM_GROUPS',
+    PEOPLE_GROUPS: 'ENTITY.PEOPLE_GROUPS',
+};
+var CONFIG = {
+    LAST_INDEX_TIMESTAMP: 'CONFIG.LAST_INDEX_TIMESTAMP',
+    SOCKET_SERVER_HOST: 'CONFIG.SOCKET_SERVER_HOST',
+};
+var SERVICE = {
+    LOGIN: 'AUTH.LOGIN',
+    LOGOUT: 'AUTH.LOGOUT',
+    FETCH_INDEX_DATA_EXIST: 'SYNC.FETCH_INDEX_DATA_EXIST',
+    FETCH_INDEX_DATA_DONE: 'SYNC.FETCH_INDEX_DATA_DONE',
+    FETCH_INDEX_DATA_ERROR: 'SYNC.FETCH_INDEX_DATA_ERROR',
+    PROFILE_FAVORITE: 'PROFILE/FAVORITE',
+    SEARCH_SUCCESS: 'SEARCH_SUCCESS',
+    SEARCH_END: 'SEARCH_END',
+};
+var DOCUMENT = {
+    VISIBILITYCHANGE: 'DOCUMENT.VISIBILITY_STATE',
+};
 
 var AuthService = /** @class */ (function (_super) {
     __extends(AuthService, _super);
@@ -4219,7 +4342,7 @@ var GroupServiceHandler = /** @class */ (function () {
             members: members,
             creator_id: Number(userId),
             is_new: true,
-            new_version: versionHash()
+            new_version: versionHash(),
         };
     };
     return GroupServiceHandler;
@@ -4324,7 +4447,8 @@ var ProfileService = /** @class */ (function (_super) {
                         }
                         else {
                             if (profile.favorite_post_ids.indexOf(postId) !== -1) {
-                                profile.favorite_post_ids = profile.favorite_post_ids.filter(function (id) { return id !== postId; });
+                                profile.favorite_post_ids = profile.favorite_post_ids
+                                    .filter(function (id) { return id !== postId; });
                             }
                             else {
                                 return [2 /*return*/, profile];
@@ -4370,7 +4494,7 @@ var GroupAPI = /** @class */ (function (_super) {
     };
     GroupAPI.addTeamMembers = function (groupId, memberIds) {
         return this.glipNetworkClient.put("/add_team_members/" + groupId, {
-            members: memberIds
+            members: memberIds,
         });
     };
     GroupAPI.createTeam = function (data) {
@@ -4416,7 +4540,7 @@ var personHandleData = function (persons) { return __awaiter(_this$3, void 0, vo
                 return [4 /*yield*/, baseHandleData({
                         data: transformedData,
                         dao: personDao,
-                        eventKey: ENTITY.PERSON
+                        eventKey: ENTITY.PERSON,
                     })];
             case 1:
                 _a.sent();
@@ -4431,6 +4555,7 @@ var PersonService = /** @class */ (function (_super) {
         var _a;
         var _this = this;
         var subscription = (_a = {},
+            _a[SOCKET.PERSON] = personHandleData,
             _a[SOCKET.ITEM] = personHandleData,
             _a);
         _this = _super.call(this, PersonDao, PersonAPI, personHandleData, subscription) || this;
@@ -4570,18 +4695,19 @@ var PostServiceHandler = /** @class */ (function () {
             for (var i = 0; i < users.length; i += 1) {
                 var userDisplay = users[i].display.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
                 var key = new RegExp("@\\[" + userDisplay + "\\]:" + users[i].id + ":", 'g');
+                // tslint:disable-next-line:max-line-length
                 var replacedText = "<a class='at_mention_compose' rel='{\"id\":" + users[i].id + "}'>@" + users[i].display + "</a>";
                 renderedText = renderedText.replace(key, replacedText);
                 ids.push(users[i].id);
             }
             return {
                 text: renderedText,
-                at_mention_non_item_ids: ids
+                at_mention_non_item_ids: ids,
             };
         }
         return {
             at_mention_non_item_ids: [],
-            text: params.text
+            text: params.text,
         };
     };
     PostServiceHandler.buildLinksInfo = function (params) {
@@ -4592,7 +4718,7 @@ var PostServiceHandler = /** @class */ (function () {
         res &&
             res.forEach(function (item) {
                 links.push({
-                    url: item
+                    url: item,
                 });
             });
         return links;
@@ -4607,6 +4733,7 @@ var PostServiceHandler = /** @class */ (function () {
         var id = -randomInt();
         return {
             id: id,
+            links: links,
             created_at: now,
             modified_at: now,
             creator_id: userId,
@@ -4621,9 +4748,8 @@ var PostServiceHandler = /** @class */ (function () {
             post_ids: [],
             at_mention_item_ids: [],
             at_mention_non_item_ids: atMentionsPeopleInfo.at_mention_non_item_ids,
-            links: links,
             company_id: companyId,
-            deactivated: false
+            deactivated: false,
         };
     };
     PostServiceHandler.buildResendPostInfo = function (post) {
@@ -4714,8 +4840,8 @@ var ItemAPI = /** @class */ (function (_super) {
                     if (callback) {
                         callback(event);
                     }
-                }
-            }
+                },
+            },
         });
     };
     ItemAPI.requestById = function (id) {
@@ -4723,7 +4849,7 @@ var ItemAPI = /** @class */ (function (_super) {
     };
     ItemAPI.requestRightRailItems = function (groupId) {
         return this.glipNetworkClient.get('/web_client_right_rail_items', {
-            group_id: groupId
+            group_id: groupId,
         });
     };
     ItemAPI.getNote = function (id) {
@@ -4759,7 +4885,7 @@ var itemHandleData = function (items) { return __awaiter(_this$4, void 0, void 0
         return [2 /*return*/, baseHandleData({
                 data: transformedData,
                 dao: itemDao,
-                eventKey: ENTITY.ITEM
+                eventKey: ENTITY.ITEM,
             })];
     });
 }); };
@@ -4785,7 +4911,7 @@ var uploadStorageFile = function (params) { return __awaiter(_this$4, void 0, vo
 var extractFileNameAndType = function (storagePath) {
     var options = {
         name: '',
-        type: ''
+        type: '',
     };
     if (storagePath) {
         var arr = storagePath.split('/');
@@ -4811,11 +4937,11 @@ var sendFileItem = function (options) { return __awaiter(_this$4, void 0, void 0
                     download_url: options.storedFile.download_url,
                     date: options.storedFile.last_modified,
                     size: options.storedFile.size,
-                    creator_id: Number(options.storedFile.creator_id)
+                    creator_id: Number(options.storedFile.creator_id),
                 };
                 fileItemOptions = {
-                    creator_id: Number(options.storedFile.creator_id),
                     version: version,
+                    creator_id: Number(options.storedFile.creator_id),
                     new_version: version,
                     name: nameType.name,
                     type: nameType.type,
@@ -4825,7 +4951,7 @@ var sendFileItem = function (options) { return __awaiter(_this$4, void 0, void 0
                     post_ids: [],
                     versions: [fileVersion],
                     created_at: Date.now(),
-                    is_new: true
+                    is_new: true,
                 };
                 return [4 /*yield*/, ItemAPI.sendFileItem(fileItemOptions)];
             case 1:
@@ -4856,7 +4982,7 @@ var ItemService = /** @class */ (function (_super) {
                         options = _a.sent();
                         itemOptions = {
                             storedFile: options[0],
-                            groupId: params.groupId
+                            groupId: params.groupId,
                         };
                         return [4 /*yield*/, sendFileItem(itemOptions)];
                     case 2:
@@ -4917,13 +5043,15 @@ var ItemService = /** @class */ (function (_super) {
  * @Date: 2018-03-22 10:53:42
  * Copyright © RingCentral. All rights reserved.
  */
-// greater than or equal to this indicate the local post should be dirty since they can not use anymore becasue
+// greater than or equal to this indicate the local post
+// should be dirty since they can not use anymore because
 // they are not continues with server pushed data;
 var ServerIndexPostMaxSize = 50;
 var IncomingPostHandler = /** @class */ (function () {
     function IncomingPostHandler() {
     }
-    // categorize the posts based on group, if one group has greater than or equal 50 posts, mark the posts of this group
+    // categorize the posts based on group, if one group has greater
+    // than or equal 50 posts, mark the posts of this group
     IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold = function (transformedData, maxPostsExceed) {
         return __awaiter(this, void 0, void 0, function () {
             var groupPostsNumber, i, keys, postsShouldBeRemovedGroupIds, i, dao_1, postsInDB_1, ids_1, e_1;
@@ -4931,6 +5059,7 @@ var IncomingPostHandler = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        // tslint:disable-next-line:max-line-length
                         mainLogger.info("maxPostsExceed: " + maxPostsExceed + " transformedData.length: " + transformedData.length);
                         if (!(maxPostsExceed && transformedData.length >= ServerIndexPostMaxSize)) {
                             return [2 /*return*/, transformedData];
@@ -5027,7 +5156,8 @@ var IncomingPostHandler = /** @class */ (function () {
                             }
                             else {
                                 tmpPosts = groupPosts[groupIds[i]];
-                                tmpPosts = tmpPosts.sort(function (post1, post2) { return post1.created_at - post2.created_at; });
+                                tmpPosts = tmpPosts
+                                    .sort(function (post1, post2) { return post1.created_at - post2.created_at; });
                                 lastModifiedIndex = -1;
                                 for (j = 0; j < tmpPosts.length; j += 1) {
                                     if (tmpPosts[j].created_at !== tmpPosts[j].modified_at &&
@@ -5036,7 +5166,8 @@ var IncomingPostHandler = /** @class */ (function () {
                                     }
                                 }
                                 if (lastModifiedIndex >= 0) {
-                                    shouldBeMovedPosts = shouldBeMovedPosts.concat(tmpPosts.slice(0, lastModifiedIndex + 1));
+                                    shouldBeMovedPosts = shouldBeMovedPosts
+                                        .concat(tmpPosts.slice(0, lastModifiedIndex + 1));
                                 }
                             }
                         }
@@ -5090,7 +5221,8 @@ var IncomingPostHandler = /** @class */ (function () {
                     case 0:
                         editedPostIds = [];
                         for (i = 0; i < transformedData.length; i += 1) {
-                            if (transformedData[i].modified_at && transformedData[i].created_at !== transformedData[i].modified_at) {
+                            if (transformedData[i].modified_at &&
+                                transformedData[i].created_at !== transformedData[i].modified_at) {
                                 editedPostIds.push(transformedData[i].id);
                             }
                         }
@@ -5208,7 +5340,7 @@ function handleDeactivedAndNormalPosts(posts) {
                     return [4 /*yield*/, baseHandleData({
                             data: posts,
                             dao: postDao,
-                            eventKey: ENTITY.POST
+                            eventKey: ENTITY.POST,
                         })];
                 case 1:
                     normalPosts = _a.sent();
@@ -5235,7 +5367,8 @@ function handleDataFromSexio(data) {
                         return [2 /*return*/];
                     }
                     transformedData = transformData(data);
-                    return [4 /*yield*/, IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(transformedData)];
+                    return [4 /*yield*/, IncomingPostHandler
+                            .handleGroupPostsDiscontinuousCausedByModificationTimeChange(transformedData)];
                 case 1:
                     validPosts = _a.sent();
                     return [4 /*yield*/, handlePreInstedPosts(validPosts)];
@@ -5259,13 +5392,15 @@ function handleDataFromIndex(data, maxPostsExceed) {
                         return [2 /*return*/];
                     }
                     transformedData = transformData(data);
-                    return [4 /*yield*/, IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(transformedData, maxPostsExceed)];
+                    return [4 /*yield*/, IncomingPostHandler
+                            .handelGroupPostsDiscontinuousCasuedByOverThreshold(transformedData, maxPostsExceed)];
                 case 1:
                     exceedPostsHandled = _a.sent();
                     return [4 /*yield*/, handlePreInstedPosts(exceedPostsHandled)];
                 case 2:
                     _a.sent();
-                    return [4 /*yield*/, IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(exceedPostsHandled)];
+                    return [4 /*yield*/, IncomingPostHandler
+                            .handleGroupPostsDiscontinuousCausedByModificationTimeChange(exceedPostsHandled)];
                 case 3:
                     result = _a.sent();
                     handleDeactivedAndNormalPosts(result);
@@ -5417,12 +5552,12 @@ var PostSendStatusHandler = /** @class */ (function () {
                 id = this.sendStatusIdVersion.get(version);
                 return [2 /*return*/, id
                         ? {
+                            id: id,
                             existed: true,
-                            id: id
                         }
                         : {
+                            id: 0,
                             existed: false,
-                            id: 0
                         }];
             });
         });
@@ -5456,7 +5591,7 @@ var PostService = /** @class */ (function (_super) {
                         result = {
                             posts: [],
                             items: [],
-                            hasMore: true
+                            hasMore: true,
                         };
                         if (!(posts.length !== 0)) return [3 /*break*/, 3];
                         result.posts = posts;
@@ -5488,9 +5623,9 @@ var PostService = /** @class */ (function (_super) {
                 switch (_b.label) {
                     case 0:
                         params = {
-                            group_id: groupId,
                             limit: limit,
-                            direction: direction
+                            direction: direction,
+                            group_id: groupId,
                         };
                         if (postId) {
                             params.post_id = postId;
@@ -5501,7 +5636,7 @@ var PostService = /** @class */ (function (_super) {
                         result = {
                             posts: [],
                             items: [],
-                            hasMore: false
+                            hasMore: false,
                         };
                         if (requestResult && requestResult.data) {
                             result.posts = requestResult.data.posts;
@@ -5526,7 +5661,7 @@ var PostService = /** @class */ (function (_super) {
                         return [4 /*yield*/, this.getPostsFromLocal({
                                 groupId: groupId,
                                 offset: offset,
-                                limit: limit
+                                limit: limit,
                             })];
                     case 1:
                         result = _d.sent();
@@ -5534,8 +5669,15 @@ var PostService = /** @class */ (function (_super) {
                             return [2 /*return*/, result];
                         }
                         // should try to get more posts from server
-                        mainLogger.debug("getPostsByGroupId groupId:" + groupId + " postId:" + postId + " limit:" + limit + " offset:" + offset + "} no data in local DB, should do request");
-                        return [4 /*yield*/, this.getPostsFromRemote({ groupId: groupId, postId: postId, limit: limit, direction: 'older' })];
+                        mainLogger.debug(
+                        // tslint:disable-next-line:max-line-length
+                        "getPostsByGroupId groupId:" + groupId + " postId:" + postId + " limit:" + limit + " offset:" + offset + "} no data in local DB, should do request");
+                        return [4 /*yield*/, this.getPostsFromRemote({
+                                groupId: groupId,
+                                postId: postId,
+                                limit: limit,
+                                direction: 'older',
+                            })];
                     case 2:
                         remoteResult = _d.sent();
                         return [4 /*yield*/, baseHandleData$1(remoteResult.posts)];
@@ -5547,7 +5689,7 @@ var PostService = /** @class */ (function (_super) {
                         return [2 /*return*/, {
                                 posts: posts,
                                 items: items,
-                                hasMore: remoteResult.hasMore
+                                hasMore: remoteResult.hasMore,
                             }];
                     case 5:
                         e_1 = _d.sent();
@@ -5555,7 +5697,7 @@ var PostService = /** @class */ (function (_super) {
                         return [2 /*return*/, {
                                 posts: [],
                                 items: [],
-                                hasMore: true
+                                hasMore: true,
                             }];
                     case 6: return [2 /*return*/];
                 }
@@ -5640,15 +5782,13 @@ var PostService = /** @class */ (function (_super) {
                             return [2 /*return*/, this.handleSendPostSuccess(resp.data, info)];
                             // resp = await baseHandleData(resp.data);
                         }
-                        else {
-                            // error, notifiy, should add error handle after IResponse give back error info
-                            return [2 /*return*/, this.handleSendPostFail(id, info.version)];
-                        }
-                        return [3 /*break*/, 5];
+                        // error, notifiy, should add error handle after IResponse give back error info
+                        return [2 /*return*/, this.handleSendPostFail(id, info.version)];
                     case 4:
                         e_2 = _a.sent();
                         mainLogger.warn('crash of innerSendPost()');
-                        return [2 /*return*/, this.handleSendPostFail(id, info.version)];
+                        this.handleSendPostFail(id, info.version);
+                        throw ErrorParser.parse(e_2);
                     case 5: return [2 /*return*/, null];
                 }
             });
@@ -5665,8 +5805,8 @@ var PostService = /** @class */ (function (_super) {
                         notificationCenter.emitEntityPut(ENTITY.POST_SENT_STATUS, [
                             {
                                 id: postInfo.id,
-                                status: ESendStatus.INPROGRESS
-                            }
+                                status: ESendStatus.INPROGRESS,
+                            },
                         ]);
                         dao = daoManager.getDao(PostDao);
                         return [4 /*yield*/, dao.put(postInfo)];
@@ -5687,7 +5827,7 @@ var PostService = /** @class */ (function (_super) {
                         post = transform(data);
                         obj = {
                             id: oldPost.id,
-                            data: post
+                            data: post,
                         };
                         result = [obj];
                         notificationCenter.emitEntityReplace(ENTITY.POST, result);
@@ -5710,8 +5850,8 @@ var PostService = /** @class */ (function (_super) {
                 notificationCenter.emitEntityPut(ENTITY.POST_SENT_STATUS, [
                     {
                         id: id,
-                        status: ESendStatus.FAIL
-                    }
+                        status: ESendStatus.FAIL,
+                    },
                 ]);
                 return [2 /*return*/, []];
             });
@@ -5736,7 +5876,7 @@ var PostService = /** @class */ (function (_super) {
                         options = {
                             text: '',
                             itemIds: [Number(result.id)],
-                            groupId: Number(params.groupId)
+                            groupId: Number(params.groupId),
                         };
                         info = PostServiceHandler.buildPostInfo(options);
                         delete info.id; // should merge sendItemFile function into sendPost
@@ -5874,7 +6014,9 @@ var PostService = /** @class */ (function (_super) {
                     case 4: 
                     // error
                     return [2 /*return*/, null];
-                    case 5: return [2 /*return*/, null];
+                    case 5: 
+                    // error
+                    return [2 /*return*/, null];
                 }
             });
         });
@@ -5906,7 +6048,6 @@ function transform$1(item) {
     var clone = Object.assign({}, item);
     var groupIds = new Set();
     var groupStates = {};
-    /* eslint-disable no-underscore-dangle */
     Object.keys(clone).forEach(function (key) {
         if (key === '_id') {
             clone.id = clone._id;
@@ -5922,7 +6063,7 @@ function transform$1(item) {
             'read_through',
             'marked_as_unread',
             'post_cursor',
-            'previous_post_cursor'
+            'previous_post_cursor',
         ];
         var m = key.match(new RegExp("(" + keys.join('|') + "):(\\d+)"));
         if (m) {
@@ -5931,7 +6072,7 @@ function transform$1(item) {
             var value = clone[key];
             if (!groupStates[groupId]) {
                 groupStates[groupId] = {
-                    id: Number(groupId)
+                    id: Number(groupId),
                 };
             }
             groupStates[groupId][groupState] = value;
@@ -6021,6 +6162,28 @@ var StateService = /** @class */ (function (_super) {
     //   const groupStateDao = daoManager.getDao(GroupStateDao);
     //   return groupStateDao.get(groupId);
     // }
+    StateService.prototype.getById = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var result, myState;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getByIdFromDao(id)];
+                    case 1:
+                        result = _a.sent();
+                        if (!!result) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.getMyState()];
+                    case 2:
+                        myState = _a.sent();
+                        if (!myState) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.getByIdFromAPI(myState.id)];
+                    case 3:
+                        result = _a.sent(); // state id
+                        _a.label = 4;
+                    case 4: return [2 /*return*/, result];
+                }
+            });
+        });
+    };
     StateService.prototype.markAsRead = function (groupId) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -6180,19 +6343,31 @@ function doNotification$1(deactivatedData, normalData) {
                     profile = _a.sent();
                     favIds = (profile && profile.favorite_group_ids) || [];
                     archivedTeams = normalData.filter(function (item) { return item.is_archived; });
-                    deactivatedTeams = deactivatedData.filter(function (item) { return item.is_team && favIds.indexOf(item.id) === -1; });
-                    deactivatedTeams = deactivatedTeams.concat(archivedTeams.filter(function (item) { return favIds.indexOf(item.id) !== -1; }));
-                    deactivatedFavGroups = deactivatedData.filter(function (item) { return favIds.indexOf(item.id) !== -1; });
+                    deactivatedTeams = deactivatedData
+                        .filter(function (item) { return item.is_team && favIds.indexOf(item.id) === -1; });
+                    deactivatedTeams = deactivatedTeams
+                        .concat(archivedTeams.filter(function (item) { return favIds.indexOf(item.id) !== -1; }));
+                    deactivatedFavGroups = deactivatedData
+                        .filter(function (item) { return favIds.indexOf(item.id) !== -1; });
                     deactivatedFavGroups = deactivatedFavGroups.concat(archivedTeams.filter(function (item) { return favIds.indexOf(item.id) !== -1; }));
-                    deactivatedGroups = deactivatedData.filter(function (item) { return !item.is_team && favIds.indexOf(item.id) === -1; });
-                    deactivatedFavGroups.length > 0 && notificationCenter.emitEntityDelete(ENTITY.FAVORITE_GROUPS, deactivatedFavGroups);
-                    deactivatedTeams.length > 0 && notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, deactivatedTeams);
-                    deactivatedGroups.length > 0 && notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, deactivatedGroups);
-                    addedTeams = normalData.filter(function (item) { return item.is_team && favIds.indexOf(item.id) === -1; });
+                    deactivatedGroups = deactivatedData
+                        .filter(function (item) { return !item.is_team && favIds.indexOf(item.id) === -1; });
+                    if (deactivatedFavGroups.length > 0) {
+                        notificationCenter.emitEntityDelete(ENTITY.FAVORITE_GROUPS, deactivatedFavGroups);
+                    }
+                    if (deactivatedTeams.length > 0) {
+                        notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, deactivatedTeams);
+                    }
+                    if (deactivatedGroups.length > 0) {
+                        notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, deactivatedGroups);
+                    }
+                    addedTeams = normalData
+                        .filter(function (item) { return item.is_team && favIds.indexOf(item.id) === -1; });
                     return [4 /*yield*/, filterGroups(addedTeams, GROUP_QUERY_TYPE.TEAM, 20)];
                 case 2:
                     addedTeams = _a.sent();
-                    addedGroups = normalData.filter(function (item) { return !item.is_team && favIds.indexOf(item.id) === -1; });
+                    addedGroups = normalData
+                        .filter(function (item) { return !item.is_team && favIds.indexOf(item.id) === -1; });
                     return [4 /*yield*/, filterGroups(addedGroups, GROUP_QUERY_TYPE.GROUP, 10)];
                 case 3:
                     addedGroups = _a.sent();
@@ -6265,7 +6440,8 @@ function handleData(groups) {
                     return [4 /*yield*/, getTransformData(groups)];
                 case 1:
                     transformData = _a.sent();
-                    data = transformData.filter(function (item) { return item !== null && item.members && item.members.indexOf(userId) !== -1; });
+                    data = transformData
+                        .filter(function (item) { return item !== null && item.members && item.members.indexOf(userId) !== -1; });
                     return [4 /*yield*/, saveDataAndDoNotification(data)];
                 case 2:
                     normalGroups = _a.sent();
@@ -6311,8 +6487,8 @@ function handleFavoriteGroupsChanged(oldProfile, newProfile) {
                     resultGroups = _a.sent();
                     notificationCenter.emitEntityDelete(ENTITY.FAVORITE_GROUPS, resultGroups);
                     teams = resultGroups.filter(function (item) { return item.is_team; });
-                    notificationCenter.emitEntityPut(ENTITY.FAVORITE_GROUPS, teams);
                     groups = resultGroups.filter(function (item) { return !item.is_team; });
+                    notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, teams);
                     notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, groups);
                     _a.label = 4;
                 case 4: return [2 /*return*/];
@@ -6407,8 +6583,8 @@ function filterGroups(groups, groupType, defaultLength) {
 /*
  * @Author: Lily.li (lily.li@ringcentral.com)
  * @Date: 2018-06-06 15:55:39
- * @Last Modified by: Lily.li (lily.li@ringcentral.com)
- * @Last Modified time: 2018-07-10 15:32:09
+ * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
+ * @Last Modified time: 2018-08-06 15:53:43
  */
 var MAX_LEVEL = 31;
 var Permission = /** @class */ (function () {
@@ -6459,8 +6635,13 @@ var Permission = /** @class */ (function () {
             return MAX_LEVEL;
         }
         var _a = this.group.permissions, admin = _a.admin, user = _a.user;
-        var level = admin && admin.uids.includes(this.userId) ? admin.level || MAX_LEVEL : user ? user.level : 0;
-        return level;
+        if (admin && admin.uids.includes(this.userId)) {
+            return admin.level || MAX_LEVEL;
+        }
+        if (user) {
+            return user.level;
+        }
+        return 0;
     };
     Permission.prototype.levelToArray = function (level) {
         var res = [];
@@ -6521,7 +6702,9 @@ var GroupService = /** @class */ (function (_super) {
                         return [4 /*yield*/, profileService.getProfile()];
                     case 1:
                         profile = _a.sent();
-                        if (!(profile && profile.favorite_group_ids && profile.favorite_group_ids.length > 0)) return [3 /*break*/, 3];
+                        if (!(profile &&
+                            profile.favorite_group_ids &&
+                            profile.favorite_group_ids.length > 0)) return [3 /*break*/, 3];
                         return [4 /*yield*/, dao.queryGroupsByIds(profile.favorite_group_ids)];
                     case 2:
                         result = (_a.sent());
@@ -6693,8 +6876,9 @@ var GroupService = /** @class */ (function (_super) {
     };
     GroupService.prototype.canPinPost = function (postId, group) {
         if (postId > 0 && group && !group.deactivated) {
-            if (this.hasPermissionWithGroup(group, PERMISSION_ENUM.TEAM_PIN_POST))
+            if (this.hasPermissionWithGroup(group, PERMISSION_ENUM.TEAM_PIN_POST)) {
                 return true;
+            }
         }
         return false;
     };
@@ -6709,10 +6893,12 @@ var GroupService = /** @class */ (function (_super) {
                     case 1:
                         group = _a.sent();
                         if (!(group && this.canPinPost(postId, group))) return [3 /*break*/, 3];
-                        //pinned_post_ids
+                        // pinned_post_ids
                         if (toPin) {
                             if (!group.pinned_post_ids || !group.pinned_post_ids.includes(postId)) {
-                                group.pinned_post_ids = group.pinned_post_ids ? group.pinned_post_ids.concat(postId) : [postId];
+                                group.pinned_post_ids = group.pinned_post_ids
+                                    ? group.pinned_post_ids.concat(postId)
+                                    : [postId];
                             }
                             else {
                                 // do nothing
@@ -6781,10 +6967,11 @@ var GroupService = /** @class */ (function (_super) {
     GroupService.prototype.createTeam = function (name, creator, memberIds, description, options) {
         if (options === void 0) { options = {}; }
         return __awaiter(this, void 0, void 0, function () {
-            var _a, isPublic, _b, canAddMember, _c, canPost, _d, canAddIntegrations, _e, canPin, privacy, permissionFlags, userPermissionMask, team, resp;
+            var _a, isPublic, _b, canAddMember, _c, canPost, _d, canAddIntegrations, _e, canPin, privacy, permissionFlags, userPermissionMask, team, resp, error_1;
             return __generator(this, function (_f) {
                 switch (_f.label) {
                     case 0:
+                        _f.trys.push([0, 2, , 3]);
                         _a = options.isPublic, isPublic = _a === void 0 ? false : _a, _b = options.canAddMember, canAddMember = _b === void 0 ? false : _b, _c = options.canPost, canPost = _c === void 0 ? false : _c, _d = options.canAddIntegrations, canAddIntegrations = _d === void 0 ? false : _d, _e = options.canPin, canPin = _e === void 0 ? false : _e;
                         privacy = isPublic ? 'protected' : 'private';
                         permissionFlags = {
@@ -6792,28 +6979,32 @@ var GroupService = /** @class */ (function (_super) {
                             TEAM_POST: canPost,
                             TEAM_ADD_INTEGRATIONS: canPost ? canAddIntegrations : false,
                             TEAM_PIN_POST: canPost ? canPin : false,
-                            TEAM_ADMIN: false
+                            TEAM_ADMIN: false,
                         };
                         userPermissionMask = Permission.createPermissionsMask(permissionFlags);
                         team = {
+                            privacy: privacy,
+                            description: description,
                             set_abbreviation: name,
                             members: memberIds.concat(creator),
-                            description: description,
-                            privacy: privacy,
                             permissions: {
                                 admin: {
-                                    uids: [creator]
+                                    uids: [creator],
                                 },
                                 user: {
                                     uids: [],
-                                    level: userPermissionMask
-                                }
-                            }
+                                    level: userPermissionMask,
+                                },
+                            },
                         };
                         return [4 /*yield*/, GroupAPI.createTeam(team)];
                     case 1:
                         resp = _f.sent();
                         return [2 /*return*/, this.handleResponse(resp)];
+                    case 2:
+                        error_1 = _f.sent();
+                        throw ErrorParser.parse(error_1);
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -6857,7 +7048,7 @@ var _this$6 = undefined;
 function transform$2(obj) {
     return {
         id: obj.person_id,
-        presence: obj.presence
+        presence: obj.presence,
     };
 }
 var presenceHandleData = function (presences) { return __awaiter(_this$6, void 0, void 0, function () {
@@ -6885,7 +7076,8 @@ var PresenceService = /** @class */ (function (_super) {
             },
             _a);
         _this = _super.call(this, null, null, null, subscriptions) || this;
-        _this.caches = {}; // when serviceManager's property "instances" is recycled, it will be destroyed.
+        // when serviceManager's property "instances" is recycled, it will be destroyed.
+        _this.caches = {};
         return _this;
     }
     PresenceService.prototype.saveToMemory = function (presences) {
@@ -6941,7 +7133,7 @@ var SearchAPI = /** @class */ (function (_super) {
 var handleData$1 = (function (_a) {
     var results = _a.results, requestId = _a.request_id, scroll_request_id = _a.scroll_request_id;
     var searchService = SearchService.getInstance();
-    //cancel the former non-active request
+    // cancel the former non-active request
     if (requestId !== searchService.activeServerRequestId) {
         searchService.cancelSearchRequest(requestId);
         return;
@@ -6993,7 +7185,7 @@ var SearchService = /** @class */ (function (_super) {
                         people = _a.sent();
                         return [2 /*return*/, {
                                 people: people,
-                                teams: teams
+                                teams: teams,
                             }];
                     case 3:
                         e_1 = _a.sent();
@@ -7027,7 +7219,7 @@ var SearchService = /** @class */ (function (_super) {
     };
     SearchService.prototype.cleanQuery = function (queryString) {
         if (queryString === void 0) { queryString = ''; }
-        var specialCharactersReg = /[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]/g; //eslint-disable-line
+        var specialCharactersReg = /[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]/g; // eslint-disable-line
         var queryStringCleaned = queryString.replace(specialCharactersReg, ' ').trim();
         var shortQueryWords = function (word) {
             return word.length >= SearchService.MIN_QUERY_WORD_LENGTH;
@@ -7085,7 +7277,10 @@ var SearchService = /** @class */ (function (_super) {
         });
     };
     SearchService.prototype.fetchResultsByPage = function (query) {
-        var params = { scroll_request_id: query.pageNum, search_request_id: this.activeServerRequestId };
+        var params = {
+            scroll_request_id: query.pageNum,
+            search_request_id: this.activeServerRequestId,
+        };
         return SearchAPI.scrollSearch(params);
     };
     SearchService.prototype.cancel = function () {
@@ -7096,7 +7291,10 @@ var SearchService = /** @class */ (function (_super) {
     };
     SearchService.serviceName = 'SearchService';
     SearchService.MIN_QUERY_WORD_LENGTH = 1;
-    SearchService.filterKeys = ['group_id', 'begin_time', 'end_time', 'creator_id', 'type', 'clent_request_id'];
+    SearchService.filterKeys = [
+        'group_id', 'begin_time', 'end_time',
+        'creator_id', 'type', 'client_request_id',
+    ];
     return SearchService;
 }(BaseService));
 
@@ -7113,8 +7311,12 @@ var SocketFSM = /** @class */ (function (_super) {
                 { name: 'stop', from: ['connecting', 'connected'], to: 'disconnecting' },
                 { name: 'finishConnect', from: 'connecting', to: 'connected' },
                 { name: 'failConnect', from: 'connecting', to: 'disconnected' },
-                { name: 'fireDisconnect', from: ['connecting', 'disconnecting', 'connected'], to: 'disconnected' },
-                { name: 'fireTryReconnect', from: 'disconnected', to: 'connecting' }
+                {
+                    name: 'fireDisconnect',
+                    from: ['connecting', 'disconnecting', 'connected'],
+                    to: 'disconnected',
+                },
+                { name: 'fireTryReconnect', from: 'disconnected', to: 'connecting' },
             ],
             methods: {
                 onInvalidTransition: function (transition, from, to) {
@@ -7129,9 +7331,9 @@ var SocketFSM = /** @class */ (function (_super) {
                 },
                 onEnterState: function () {
                     this.info("onEnterState " + this.state);
-                    //TO-DO: move out to manager?
+                    // TO-DO: move out to manager?
                     notificationCenter.emit(SOCKET.STATE_CHANGE, {
-                        state: this.state
+                        state: this.state,
                     });
                 },
                 onInit: function () {
@@ -7150,8 +7352,8 @@ var SocketFSM = /** @class */ (function (_super) {
                             _this.socketClient.socket.reconnection = false;
                             _this.socketClient.socket.disconnect();
                         }
-                        //TO-DO: to be test
-                        //for connecting state, will have a follow-up socket disconnect event?
+                        // TO-DO: to be test
+                        // for connecting state, will have a follow-up socket disconnect event?
                         if (_this.state === 'disconnected') {
                             _this.cleanup();
                         }
@@ -7164,8 +7366,8 @@ var SocketFSM = /** @class */ (function (_super) {
                     if (this.isStopped) {
                         this.cleanup();
                     }
-                }
-            }
+                },
+            },
         }) || this;
         _this.serverUrl = serverUrl;
         _this.glipToken = glipToken;
@@ -7173,7 +7375,7 @@ var SocketFSM = /** @class */ (function (_super) {
         _this.isStopped = false;
         _this.latestPongTime = 0;
         _this.logPrefix = '';
-        ++SocketFSM.instanceID;
+        SocketFSM.instanceID += 1;
         _this.name = "_FSM" + SocketFSM.instanceID;
         _this.logPrefix = "[" + SOCKET_LOGGER + " " + _this.name + "]";
         _this.info("serverUrl: " + _this.serverUrl);
@@ -7249,7 +7451,7 @@ var SocketFSM = /** @class */ (function (_super) {
         });
         this.socketClient.socket.on('presense', function (data) {
             _this.info("socket-> presense. " + (data || ''));
-            //TO-DO: move out
+            // TO-DO: move out
             notificationCenter.emit(SOCKET.PRESENCE, data);
         });
         this.socketClient.socket.on('message', function (data) {
@@ -7296,7 +7498,7 @@ var SocketManager = /** @class */ (function () {
         this.successConnectedUrls = [];
         this.hasLoggedIn = false;
         this.logPrefix = "[" + SOCKET_LOGGER$1 + " manager]";
-        this.subscribeExternalEvent();
+        this._subscribeExternalEvent();
     }
     SocketManager.getInstance = function () {
         if (!SocketManager.instance) {
@@ -7318,63 +7520,71 @@ var SocketManager = /** @class */ (function () {
         return this.activeFSM !== null;
     };
     SocketManager.prototype.ongoingFSMCount = function () {
-        return (this.activeFSM ? 1 : 0) + (this.closeingFSMs ? Object.keys(this.closeingFSMs).length : 0);
+        var count = 0;
+        if (this.activeFSM) {
+            count += 1;
+        }
+        if (this.closeingFSMs) {
+            count += Object.keys(this.closeingFSMs).length;
+        }
+        return count;
     };
-    SocketManager.prototype.subscribeExternalEvent = function () {
+    SocketManager.prototype._subscribeExternalEvent = function () {
         var _this = this;
         //  TO-DO: to be test. Should get this event once
         // 1. get scoreboard event from IDL
         // 2. get socket reconnect event
         notificationCenter.on(SERVICE.LOGIN, function () {
-            _this.onLogin();
+            _this._onLogin();
         });
         notificationCenter.on(SERVICE.LOGOUT, function () {
-            _this.onLogout();
+            _this._onLogout();
         });
         notificationCenter.on(CONFIG.SOCKET_SERVER_HOST, function () {
-            _this.onServerHostUpdated();
+            _this._onServerHostUpdated();
         });
         notificationCenter.on(SOCKET.STATE_CHANGE, function (_a) {
             var state = _a.state;
-            _this.onSocketStateChanged(state);
+            _this._onSocketStateChanged(state);
         });
         notificationCenter.on(SOCKET.NETWORK_CHANGE, function (_a) {
             var state = _a.state;
             switch (state) {
                 case 'offline':
-                    _this.onOffline();
+                    _this._onOffline();
                     break;
                 case 'online':
-                    _this.onOnline();
+                    _this._onOnline();
                     break;
                 case 'focus':
-                    _this.onFocus();
+                    _this._onFocus();
                     break;
                 default:
                     break;
             }
         });
         notificationCenter.on(SOCKET.RECONNECT, function (data) {
-            _this.onReconnect(data);
+            _this._onReconnect(data);
         });
-        //TO-DO: /can-connect API reponse.
+        // TO-DO: /can-connect API reponse.
     };
-    SocketManager.prototype.onLogin = function () {
+    SocketManager.prototype._onLogin = function () {
         this.info('onLogin');
         this.hasLoggedIn = true;
         this.successConnectedUrls = [];
-        this.stopActiveFSM();
-        this.startFSM();
+        this._stopActiveFSM();
+        this._startFSM();
     };
-    SocketManager.prototype.onLogout = function () {
+    SocketManager.prototype._onLogout = function () {
         this.info('onLogout');
         this.hasLoggedIn = false;
-        this.stopActiveFSM();
+        this._stopActiveFSM();
     };
-    SocketManager.prototype.onServerHostUpdated = function () {
+    SocketManager.prototype._onServerHostUpdated = function () {
         var hasActive = this.hasActiveFSM();
         var configDao = daoManager.getKVDao(ConfigDao);
         var serverUrl = configDao.get(SOCKET_SERVER_HOST);
+        // tslint:disable-next-line:max-line-length
         this.info("onServerHostUpdated: " + serverUrl + ", hasLoggedIn: " + this.hasLoggedIn + ", hasActiveFSM: " + hasActive);
         if (!this.hasLoggedIn) {
             this.info("Ignore server updated event due to not logged-in");
@@ -7395,16 +7605,17 @@ var SocketManager = /** @class */ (function () {
             */
             var isNewUrl = this.successConnectedUrls.indexOf(serverUrl) === -1;
             if (!hasActive || isNewUrl) {
+                // tslint:disable-next-line:max-line-length
                 this.info("Restart due to serverUrl update. hasActive: " + hasActive + ", isNewUrl: " + isNewUrl);
-                this.stopActiveFSM();
-                this.startFSM();
+                this._stopActiveFSM();
+                this._startFSM();
             }
             else if (!isNewUrl) {
                 this.warn("Server URL is changed, but it is used before.");
             }
         }
     };
-    SocketManager.prototype.onSocketStateChanged = function (state) {
+    SocketManager.prototype._onSocketStateChanged = function (state) {
         if (state === 'connected') {
             var activeState = this.activeFSM && this.activeFSM.state;
             if (state === activeState) {
@@ -7418,31 +7629,31 @@ var SocketManager = /** @class */ (function () {
             }
         }
     };
-    SocketManager.prototype.onOffline = function () {
+    SocketManager.prototype._onOffline = function () {
         this.info('onOffline');
-        this.stopActiveFSM();
+        this._stopActiveFSM();
     };
-    SocketManager.prototype.onOnline = function () {
+    SocketManager.prototype._onOnline = function () {
         this.info('onOnline');
         if (!this.hasLoggedIn) {
             this.info("Ignore online event due to not logged-in");
             return;
         }
-        this.stopActiveFSM();
-        this.startFSM();
+        this._stopActiveFSM();
+        this._startFSM();
     };
-    SocketManager.prototype.onFocus = function () {
+    SocketManager.prototype._onFocus = function () {
         if (!this.activeFSM)
             return;
         var state = this.activeFSM.state;
-        //TO-DO:
+        // TO-DO:
         if (state !== 'connected' && state !== 'connecting') {
             notificationCenter.emit(SOCKET.STATE_CHANGE, {
-                state: 'refresh'
+                state: 'refresh',
             });
         }
     };
-    SocketManager.prototype.onReconnect = function (data) {
+    SocketManager.prototype._onReconnect = function (data) {
         // socket emit reconnect
         if (typeof data === 'number')
             return;
@@ -7456,8 +7667,8 @@ var SocketManager = /** @class */ (function () {
             this.warn("fail on socket reconnect: " + error);
         }
     };
-    SocketManager.prototype.startFSM = function () {
-        //TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
+    SocketManager.prototype._startFSM = function () {
+        // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
         var authDao = daoManager.getKVDao(AuthDao);
         var configDao = daoManager.getKVDao(ConfigDao);
         var glipToken = authDao.get(AUTH_GLIP_TOKEN);
@@ -7466,12 +7677,12 @@ var SocketManager = /** @class */ (function () {
             this.activeFSM = new SocketFSM(serverHost, glipToken);
             this.activeFSM.start();
         }
-        //TO-DO: should subscribe closed event to remove self from mananger?
+        // TO-DO: should subscribe closed event to remove self from mananger?
     };
-    SocketManager.prototype.stopActiveFSM = function () {
+    SocketManager.prototype._stopActiveFSM = function () {
         if (this.activeFSM) {
             this.activeFSM.stop();
-            //this.closeingFSMs[this.activeFSM.name] = this.activeFSM;
+            // this.closeingFSMs[this.activeFSM.name] = this.activeFSM;
             this.activeFSM = null;
         }
     };
@@ -7483,37 +7694,33 @@ var SocketManager = /** @class */ (function () {
  * @Date: 2018-06-22 16:59:56
  * Copyright © RingCentral. All rights reserved.
  */
-//TO-DO: when to load this manager?
+// TO-DO: when to load this manager?
 var socketManager = SocketManager.getInstance();
 
 // classes
 
 var index$3 = /*#__PURE__*/Object.freeze({
-  BaseService: BaseService,
-  AccountService: AccountService,
-  AuthService: AuthService,
-  ConfigService: ConfigService,
-  CompanyService: CompanyService$$1,
-  GroupService: GroupService,
-  ItemService: ItemService,
-  PersonService: PersonService,
-  PostService: PostService,
-  PresenceService: PresenceService,
-  ProfileService: ProfileService,
-  SearchService: SearchService,
-  StateService: StateService,
-  notificationCenter: notificationCenter,
-  uploadManager: uploadManager,
-  serviceManager: serviceManager,
-  GROUP_QUERY_TYPE: GROUP_QUERY_TYPE,
-  EVENT_TYPES: EVENT_TYPES,
-  get PERMISSION_ENUM () { return PERMISSION_ENUM; },
-  SHOULD_UPDATE_NETWORK_TOKEN: SHOULD_UPDATE_NETWORK_TOKEN,
-  get SOCKET () { return SOCKET; },
-  ENTITY: ENTITY,
-  CONFIG: CONFIG,
-  SERVICE: SERVICE,
-  DOCUMENT: DOCUMENT
+    BaseService: BaseService,
+    AccountService: AccountService,
+    AuthService: AuthService,
+    ConfigService: ConfigService,
+    CompanyService: CompanyService$$1,
+    GroupService: GroupService,
+    ItemService: ItemService,
+    PersonService: PersonService,
+    PostService: PostService,
+    PresenceService: PresenceService,
+    ProfileService: ProfileService,
+    SearchService: SearchService,
+    StateService: StateService,
+    notificationCenter: notificationCenter,
+    uploadManager: uploadManager,
+    serviceManager: serviceManager,
+    get SOCKET () { return SOCKET; },
+    ENTITY: ENTITY,
+    CONFIG: CONFIG,
+    SERVICE: SERVICE,
+    DOCUMENT: DOCUMENT
 });
 
 /*
@@ -7523,7 +7730,7 @@ var index$3 = /*#__PURE__*/Object.freeze({
 var LogUploadLogManager = /** @class */ (function () {
     function LogUploadLogManager() {
     }
-    LogUploadLogManager.Instance = function () {
+    LogUploadLogManager.instance = function () {
         if (this._instance) {
             return this._instance;
         }
@@ -7534,7 +7741,7 @@ var LogUploadLogManager = /** @class */ (function () {
         return axios({
             method: 'POST',
             url: "/log/",
-            data: { userInfo: userInfo, logInfo: logInfo }
+            data: { userInfo: userInfo, logInfo: logInfo },
         });
     };
     return LogUploadLogManager;
@@ -7544,7 +7751,7 @@ var DEFAULT_EMAIL = 'service@glip.com';
 notificationCenter.on(DOCUMENT.VISIBILITYCHANGE, function (_a) {
     var isHidden = _a.isHidden;
     if (isHidden) {
-        LogControlManager.Instance().doUpload();
+        LogControlManager.instance().doUpload();
     }
 });
 var LogControlManager = /** @class */ (function () {
@@ -7553,7 +7760,7 @@ var LogControlManager = /** @class */ (function () {
         this._enabledLog = true;
         this._isDebugMode = true;
     }
-    LogControlManager.Instance = function () {
+    LogControlManager.instance = function () {
         if (this._instance) {
             return this._instance;
         }
@@ -7562,11 +7769,11 @@ var LogControlManager = /** @class */ (function () {
     };
     LogControlManager.prototype.setDebugMode = function (isDebug) {
         this._isDebugMode = isDebug;
-        this.updateLogSystemLevel();
+        this._updateLogSystemLevel();
     };
     LogControlManager.prototype.enableLog = function (enable) {
         this._enabledLog = enable;
-        this.updateLogSystemLevel();
+        this._updateLogSystemLevel();
     };
     LogControlManager.prototype.flush = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -7596,13 +7803,13 @@ var LogControlManager = /** @class */ (function () {
                             return [2 /*return*/];
                         }
                         this._isUploading = true;
-                        return [4 /*yield*/, this.getUserInfo()];
+                        return [4 /*yield*/, this._getUserInfo()];
                     case 2:
                         userInfo = _a.sent();
                         _a.label = 3;
                     case 3:
                         _a.trys.push([3, 5, 6, 7]);
-                        return [4 /*yield*/, LogUploadLogManager.Instance().doUpload(userInfo, logs)];
+                        return [4 /*yield*/, LogUploadLogManager.instance().doUpload(userInfo, logs)];
                     case 4:
                         _a.sent();
                         return [3 /*break*/, 7];
@@ -7622,7 +7829,7 @@ var LogControlManager = /** @class */ (function () {
     LogControlManager.prototype.logIsEmpty = function (logs) {
         if (logs) {
             var keys = Object.keys(logs);
-            for (var i = 0; i < keys.length; i++) {
+            for (var i = 0; i < keys.length; i += 1) {
                 if (Array.isArray(logs[keys[i]]) && logs[keys[i]].length !== 0) {
                     return false;
                 }
@@ -7630,7 +7837,7 @@ var LogControlManager = /** @class */ (function () {
         }
         return true;
     };
-    LogControlManager.prototype.getUserInfo = function () {
+    LogControlManager.prototype._getUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
             var accountService, email, id, userId, clientId;
             return __generator(this, function (_a) {
@@ -7646,15 +7853,14 @@ var LogControlManager = /** @class */ (function () {
                         return [2 /*return*/, {
                                 email: email,
                                 userId: userId,
-                                clientId: clientId
+                                clientId: clientId,
                             }];
                 }
             });
         });
     };
-    LogControlManager.prototype.updateLogSystemLevel = function () {
+    LogControlManager.prototype._updateLogSystemLevel = function () {
         // set log level to log system
-        // const level: LOG_LEVEL = this._isDebugMode || this._enabledLog ? LOG_LEVEL.ALL : LOG_LEVEL.WARN;
         // TODO let it all level now, should reset to above code after implement service framework
         mainLogger.info("_isDebugMode : " + this._isDebugMode + " _enabledLog: " + this._enabledLog);
         var level = LOG_LEVEL.ALL;
@@ -7682,7 +7888,7 @@ var ProgressBar = /** @class */ (function () {
         configurable: true
     });
     ProgressBar.prototype.start = function () {
-        this._counter++;
+        this._counter += 1;
         NProgress.start();
     };
     ProgressBar.prototype.update = function (e) {
@@ -7706,7 +7912,8 @@ var ProgressBar = /** @class */ (function () {
         NProgress.inc(percentage);
     };
     ProgressBar.prototype.stop = function () {
-        if (--this._counter <= 0) {
+        this._counter -= 1;
+        if (this._counter <= 0) {
             this._isDone = true;
             NProgress.done();
         }
@@ -7727,12 +7934,13 @@ var fetchIndexData = function () { return __awaiter(_this$7, void 0, void 0, fun
                 lastIndexTimestamp = configDao.get(LAST_INDEX_TIMESTAMP);
                 if (lastIndexTimestamp) {
                     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_EXIST);
-                    params.newer_than = String(lastIndexTimestamp - 300000); // index newer than api need move back 5 mins
+                    // index newer than api need move back 5 mins
+                    params.newer_than = String(lastIndexTimestamp - 300000);
                 }
                 requestConfig = {
                     onDownloadProgress: function (e) {
                         progressBar.update(e);
-                    }
+                    },
                 };
                 _a.label = 1;
             case 1:
@@ -7790,11 +7998,16 @@ var dispatchIncomingData = function (data) {
         arrProfile.push(profile);
     }
     return Promise.all([
-        accountHandleData({ userId: userId, companyId: companyId, profileId: profile ? profile._id : undefined, clientConfig: clientConfig }),
+        accountHandleData({
+            userId: userId,
+            companyId: companyId,
+            clientConfig: clientConfig,
+            profileId: profile ? profile._id : undefined,
+        }),
         companyHandleData(companies),
         itemHandleData(items),
         presenceHandleData(presences),
-        stateHandleData(arrState)
+        stateHandleData(arrState),
     ])
         .then(function () { return profileHandleData(arrProfile); })
         .then(function () { return personHandleData(people); })
@@ -7831,7 +8044,8 @@ var handleData$2 = function (result) { return __awaiter(_this$8, void 0, void 0,
             case 2:
                 error_1 = _d.sent();
                 mainLogger.error(error_1);
-                notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, { error: ErrorParser.parse(error_1) });
+                notificationCenter
+                    .emitService(SERVICE.FETCH_INDEX_DATA_ERROR, { error: ErrorParser.parse(error_1) });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -7988,60 +8202,81 @@ var Sdk = /** @class */ (function () {
  * @Date: 2018-07-08 07:52:37
  * Copyright © RingCentral. All rights reserved.
  */
-var registerConfigs = [
-    // DAOs
-    // { name: AccountDao.name, value: AccountDao },
-    // { name: PostDao.name, value: PostDao },
-    // { name: GroupDao.name, value: GroupDao },
-    // { name: CompanyDao.name, value: CompanyDao },
-    // { name: ItemDao.name, value: ItemDao },
-    // { name: PersonDao.name, value: PersonDao },
-    // { name: ProfileDao.name, value: ProfileDao },
-    // { name: StateDao.name, value: StateDao },
-    // { name: ConfigDao.name, value: ConfigDao },
-    // { name: AuthDao.name, value: AuthDao },
-    // Authenticator
-    { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
-    { name: AutoAuthenticator.name, value: AutoAuthenticator, injects: [DaoManager.name] },
-    { name: UnifiedLoginAuthenticator.name, value: UnifiedLoginAuthenticator },
-    // Account
-    { name: RCAccount.name, value: RCAccount },
-    { name: GlipAccount.name, value: GlipAccount },
-    // Services
-    { name: PostService.name, value: PostService },
-    { name: GroupService.name, value: GroupService },
-    { name: CompanyService$$1.name, value: CompanyService$$1 },
-    { name: ItemService.name, value: ItemService },
-    { name: PersonService.name, value: PersonService },
-    { name: PresenceService.name, value: PresenceService },
-    { name: ProfileService.name, value: ProfileService },
-    { name: SearchService.name, value: SearchService },
-    { name: StateService.name, value: StateService },
-    { name: ConfigService.name, value: ConfigService, injects: [AuthService.name] },
-    { name: AuthService.name, value: AuthService, injects: [AccountManager.name] },
-    { name: AccountService.name, value: AccountService },
-    { name: SyncService.name, value: SyncService },
-    // Manager
-    { name: AccountManager.name, value: AccountManager, injects: [Container.name, ServiceManager.name] },
-    { name: ServiceManager.name, value: ServiceManager, injects: [Container.name] },
-    { name: DaoManager.name, value: daoManager, type: 'object' },
-    { name: SocketManager.name, value: socketManager, type: 'object' },
-    { name: NetworkManager.name, value: NetworkManager.Instance, type: 'object' },
-    // Sdk
-    {
-        name: Sdk.name,
-        value: Sdk,
-        injects: [DaoManager.name, AccountManager.name, ServiceManager.name, NetworkManager.name, SyncService.name]
-    }
-];
+var registerConfigs = {
+    classes: [
+        // DAOs
+        // { name: AccountDao.name, value: AccountDao },
+        // { name: PostDao.name, value: PostDao },
+        // { name: GroupDao.name, value: GroupDao },
+        // { name: CompanyDao.name, value: CompanyDao },
+        // { name: ItemDao.name, value: ItemDao },
+        // { name: PersonDao.name, value: PersonDao },
+        // { name: ProfileDao.name, value: ProfileDao },
+        // { name: StateDao.name, value: StateDao },
+        // { name: ConfigDao.name, value: ConfigDao },
+        // { name: AuthDao.name, value: AuthDao },
+        // Authenticator
+        { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
+        { name: AutoAuthenticator.name, value: AutoAuthenticator, injects: [DaoManager.name] },
+        { name: UnifiedLoginAuthenticator.name, value: UnifiedLoginAuthenticator },
+        // Account
+        { name: RCAccount.name, value: RCAccount },
+        { name: GlipAccount.name, value: GlipAccount },
+        // Services
+        { name: PostService.name, value: PostService },
+        { name: GroupService.name, value: GroupService },
+        { name: CompanyService$$1.name, value: CompanyService$$1 },
+        { name: ItemService.name, value: ItemService },
+        { name: PersonService.name, value: PersonService },
+        { name: PresenceService.name, value: PresenceService },
+        { name: ProfileService.name, value: ProfileService },
+        { name: SearchService.name, value: SearchService },
+        { name: StateService.name, value: StateService },
+        { name: ConfigService.name, value: ConfigService, injects: [AuthService.name] },
+        { name: AuthService.name, value: AuthService, injects: [AccountManager.name] },
+        { name: AccountService.name, value: AccountService },
+        { name: SyncService.name, value: SyncService },
+        // Manager
+        {
+            name: AccountManager.name,
+            value: AccountManager,
+            injects: [Container.name, ServiceManager.name],
+        },
+        {
+            name: ServiceManager.name,
+            value: ServiceManager,
+            injects: [Container.name],
+        },
+        // Sdk
+        {
+            name: Sdk.name,
+            value: Sdk,
+            injects: [
+                DaoManager.name,
+                AccountManager.name,
+                ServiceManager.name,
+                NetworkManager.name,
+                SyncService.name,
+            ],
+        },
+    ],
+    asyncClasses: [],
+    constants: [
+        // TODO register as class instead
+        { name: DaoManager.name, value: daoManager },
+        { name: SocketManager.name, value: socketManager },
+        { name: NetworkManager.name, value: NetworkManager.Instance },
+    ],
+};
 
 /*
  * @Author: Valor Lin (valor.lin@ringcentral.com)
  * @Date: 2018-05-23 09:41:54
  * Copyright © RingCentral. All rights reserved.
  */
-container.registerAll(registerConfigs);
+registerConfigs.classes.forEach(function (config) { return container.registerClass(config); });
+// registerConfigs.asyncClasses.forEach(config => container.registerAsyncClass(config));
+registerConfigs.constants.forEach(function (config) { return container.registerConstantValue(config); });
 var sdk = container.get(Sdk.name);
 
-export default sdk;
-export { sdk as Sdk, index$3 as service, index$1 as dao, index$2 as api, index as utils, TypeDictionary as GlipTypeDictionary, LogControlManager, AbstractAccount, AccountManager, AbstractService, ServiceManager, Container };
+export { sdk as Sdk, sdk, index$3 as service, index as utils, index$1 as dao, index$2 as api, TypeDictionary as GlipTypeDictionary, LogControlManager, AbstractAccount, AccountManager, AbstractService, ServiceManager, Container };

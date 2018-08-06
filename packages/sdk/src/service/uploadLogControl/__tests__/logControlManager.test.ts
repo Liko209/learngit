@@ -11,7 +11,7 @@ jest.mock('axios');
 describe('LogControlManager', () => {
   axios.mockResolvedValue({});
   it('instance', async () => {
-    expect(LogControlManager.Instance()).toBeInstanceOf(LogControlManager);
+    expect(LogControlManager.instance()).toBeInstanceOf(LogControlManager);
   });
 
   describe('logIsEmpty', () => {
@@ -20,23 +20,23 @@ describe('LogControlManager', () => {
         MAIN: [],
         NETWORK: [],
       };
-      expect(LogControlManager.Instance().logIsEmpty(logs)).toBeTruthy();
+      expect(LogControlManager.instance().logIsEmpty(logs)).toBeTruthy();
     });
     it('is not empty', () => {
       const logs = {
         MAIN: [],
         NETWORK: ['1'],
       };
-      expect(LogControlManager.Instance().logIsEmpty(logs)).toBeFalsy();
+      expect(LogControlManager.instance().logIsEmpty(logs)).toBeFalsy();
     });
   });
   describe('do upload', () => {
     it('do upload', async () => {
-      LogControlManager.Instance().doUpload = jest.fn();
-      LogControlManager.Instance().logIsEmpty = jest.fn();
-      LogControlManager.Instance().logIsEmpty.mockReturnValueOnce(false);
-      await LogControlManager.Instance().flush();
-      expect(LogControlManager.Instance().doUpload).toHaveBeenCalled();
+      LogControlManager.instance().doUpload = jest.fn();
+      LogControlManager.instance().logIsEmpty = jest.fn();
+      LogControlManager.instance().logIsEmpty.mockReturnValueOnce(false);
+      await LogControlManager.instance().flush();
+      expect(LogControlManager.instance().doUpload).toHaveBeenCalled();
     });
   });
 });

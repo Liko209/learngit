@@ -3,9 +3,12 @@
  * @Date: 2018-05-23 09:41:54
  * Copyright © RingCentral. All rights reserved.
  */
+import * as service from './service';
+import * as dao from './dao';
+import * as utils from './utils';
+import * as api from './api';
+
 export * from './framework';
-export * from './service';
-export * from './dao';
 export { default as GlipTypeDictionary } from './utils/glip-type-dictionary/types';
 export { default as LogControlManager } from './service/uploadLogControl/logControlManager';
 
@@ -19,4 +22,4 @@ registerConfigs.constants.forEach(config => container.registerConstantValue(conf
 
 const sdk = container.get(Sdk.name);
 export { sdk as Sdk };
-export { sdk };
+export { sdk, service, utils, dao, api };
