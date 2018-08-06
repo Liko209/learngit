@@ -15,18 +15,18 @@ const schema: ISchema = {
     1: {
       person: {
         unique: '++id',
-        indices: ['firstName']
+        indices: ['firstName'],
       },
-      group: { unique: '++id' }
+      group: { unique: '++id' },
     },
     2: {
       person: {
         unique: '++id',
         indices: ['firstName', 'lastName'],
-        onUpgrade: upgrader
-      }
-    }
-  }
+        onUpgrade: upgrader,
+      },
+    },
+  },
 };
 
 async function createOpenedDb() {
@@ -106,7 +106,7 @@ describe('DexieDb', () => {
     });
     it('should run callback anyway', async () => {
       const callback = jest.fn();
-      await dexieDb.getTransaction(null, null, callback);
+      await dexieDb.getTransaction(undefined, undefined, callback);
       expect(callback).toHaveBeenCalledTimes(1);
     });
   });

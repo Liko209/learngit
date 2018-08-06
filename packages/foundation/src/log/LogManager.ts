@@ -15,7 +15,7 @@ class LogManager {
     this.initMainLogger();
 
     window.onerror = this.windowError;
-    window.addEventListener('beforeunload', event => {
+    window.addEventListener('beforeunload', (event) => {
       this.doAppend();
     });
   }
@@ -27,14 +27,14 @@ class LogManager {
 
   async doAppend(overThreshold: boolean = false) {
     const doAppends: Promise<void>[] = [];
-    this._loggers.forEach(logger => {
+    this._loggers.forEach((logger) => {
       doAppends.push(logger.doAppend());
     });
 
     await Promise.all(doAppends);
 
     if (overThreshold && this._overThresholdCallback) {
-      //notifiy over threshold to do upload
+      // notifiy over threshold to do upload
       this._overThresholdCallback();
     }
   }
@@ -67,7 +67,7 @@ class LogManager {
   }
 
   setAllLoggerLevel(level: LOG_LEVEL) {
-    this._loggers.forEach(logger => {
+    this._loggers.forEach((logger) => {
       logger.setLevel(level);
     });
   }
@@ -89,9 +89,9 @@ class LogManager {
 
     const handleCategorys = categorys || Array.from(this._loggers.keys());
 
-    handleCategorys.map(name => this._loggers.get(name)).forEach(logger => {
+    handleCategorys.map(name => this._loggers.get(name)).forEach((logger) => {
       if (logger) {
-        logger.getAppenders().forEach(apppender => {
+        logger.getAppenders().forEach((apppender) => {
           if (apppender instanceof PersistentLogAppender) {
             iterable.push(apppender.getLogs());
           }
@@ -99,7 +99,7 @@ class LogManager {
       }
     });
 
-    return Promise.all(iterable).then(res => {
+    return Promise.all(iterable).then((res) => {
       const logs = {};
       res.forEach((value, index) => {
         logs[handleCategorys[index]] = [].concat.apply([], value);
@@ -113,9 +113,9 @@ class LogManager {
 
     const handleCategorys = categorys || Array.from(this._loggers.keys());
 
-    handleCategorys.map(name => this._loggers.get(name)).forEach(logger => {
+    handleCategorys.map(name => this._loggers.get(name)).forEach((logger) => {
       if (logger) {
-        logger.getAppenders().forEach(apppender => {
+        logger.getAppenders().forEach((apppender) => {
           if (apppender instanceof PersistentLogAppender) {
             iterable.push(apppender.doClear());
           }

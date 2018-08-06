@@ -7,14 +7,14 @@ describe('OAuthTokenHandler', () => {
   describe('refreshOAuthToken', () => {
     it('should notifyRefreshTokenFailure if isOAuthTokenRefreshing', () => {
       handler.isOAuthTokenRefreshing = true;
-      const spy = jest.spyOn(handler, 'notifyRefreshTokenFailure');
+      const spy = jest.spyOn(handler, '_notifyRefreshTokenFailure');
       handler.refreshOAuthToken();
       expect(spy).toBeCalled();
     });
     it('should notifyRefreshTokenFailure if is not AccessTokenRefreshable', () => {
       handler.isOAuthTokenRefreshing = false;
       handler.isAccessTokenRefreshable = jest.fn().mockReturnValueOnce(false);
-      const spy = jest.spyOn(handler, 'notifyRefreshTokenFailure');
+      const spy = jest.spyOn(handler, '_notifyRefreshTokenFailure');
       handler.refreshOAuthToken();
       expect(spy).toBeCalled();
     });
@@ -23,7 +23,7 @@ describe('OAuthTokenHandler', () => {
       handler.isOAuthTokenRefreshing = false;
       handler.isAccessTokenRefreshable = jest.fn().mockReturnValueOnce(true);
       handler.isRefreshTokenExpired = jest.fn().mockReturnValueOnce(true);
-      const spy = jest.spyOn(handler, 'notifyRefreshTokenFailure');
+      const spy = jest.spyOn(handler, '_notifyRefreshTokenFailure');
       handler.refreshOAuthToken();
       expect(spy).toBeCalled();
     });

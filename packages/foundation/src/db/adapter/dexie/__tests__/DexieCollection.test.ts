@@ -8,7 +8,7 @@ import DexieCollection from '../DexieCollection';
 import {
   setupDexie,
   extractIds,
-  extractFirstNames
+  extractFirstNames,
 } from '../../__tests__/utils';
 import DexieDB from '../DexieDB';
 
@@ -16,15 +16,15 @@ type Item = {};
 
 describe('before set up', () => {
   it('primaryKeyName should be empty string', () => {
-    let dexie = new DexieDB({
+    const dexie = new DexieDB({
       name: 'mock',
       schema: {
         1: {
           person: {
-            unique: ''
-          }
-        }
-      }
+            unique: '',
+          },
+        },
+      },
     });
     expect(dexie.getCollection('person').primaryKeyName()).toBe('');
   });
@@ -76,7 +76,7 @@ describe('DexieCollection', () => {
       await dexieCollection.update(1, { firstName: 'Weilao' });
       expect(await dexieCollection.get(1)).toHaveProperty(
         'firstName',
-        'Weilao'
+        'Weilao',
       );
     });
   });
@@ -86,7 +86,8 @@ describe('DexieCollection', () => {
     const sortByFirstName = (a: any, b: any) => {
       if (a.firstName > b.firstName) {
         return 1;
-      } else if (a.firstName === b.firstName) {
+      }
+      if (a.firstName === b.firstName) {
         return 0;
       }
       return -1;
@@ -98,64 +99,64 @@ describe('DexieCollection', () => {
 
     it('should return data between the bounds', async () => {
       const result = await dexieCollection.getAll({
-        criteria: [{ key: 'id', name: 'between', lowerBound: 1, upperBound: 3 }]
+        criteria: [{ key: 'id', name: 'between', lowerBound: 1, upperBound: 3 }],
       });
       expect(extractIds(result)).toEqual([2]);
     });
 
     it('should sort by given function', async () => {
       const result = await dexieCollection.getAll(emptyQuery, {
-        sortBy: sortByFirstName
+        sortBy: sortByFirstName,
       });
       expect(extractFirstNames(result)).toEqual([
         'Alvin',
         'Baby',
         'Baby',
-        'Cooler'
+        'Cooler',
       ]);
     });
 
     it('should sort by given function desc combine', async () => {
       const result = await dexieCollection.getAll(emptyQuery, {
         sortBy: sortByFirstName,
-        desc: true
+        desc: true,
       });
       expect(extractFirstNames(result)).toEqual([
         'Cooler',
         'Baby',
         'Baby',
-        'Alvin'
+        'Alvin',
       ]);
     });
 
     it('should sort by given property', async () => {
       const result = await dexieCollection.getAll(emptyQuery, {
-        sortBy: 'firstName'
+        sortBy: 'firstName',
       });
       expect(extractFirstNames(result)).toEqual([
         'Alvin',
         'Baby',
         'Baby',
-        'Cooler'
+        'Cooler',
       ]);
     });
 
     it('should sort by given property desc combine', async () => {
       const result = await dexieCollection.getAll(emptyQuery, {
         sortBy: 'firstName',
-        desc: true
+        desc: true,
       });
       expect(extractFirstNames(result)).toEqual([
         'Cooler',
         'Baby',
         'Baby',
-        'Alvin'
+        'Alvin',
       ]);
     });
 
     it('should sort by desc', async () => {
       const result = await dexieCollection.getAll(emptyQuery, {
-        desc: true
+        desc: true,
       });
       expect(extractIds(result)).toEqual([4, 3, 2, 1]);
     });
@@ -171,8 +172,8 @@ describe('DexieCollection', () => {
         criteria: [{ key: 'id', name: 'equal', value: 1 }],
         parallel: [
           { criteria: [{ key: 'id', name: 'equal', value: 2 }] },
-          { criteria: [{ key: 'id', name: 'equal', value: 3 }] }
-        ]
+          { criteria: [{ key: 'id', name: 'equal', value: 3 }] },
+        ],
       });
       expect(extractIds(result)).toEqual([1, 2, 3]);
     });
@@ -181,8 +182,8 @@ describe('DexieCollection', () => {
         criteria: [{ key: 'id', name: 'equal', value: 1 }],
         parallel: [
           { criteria: [{ key: 'id', name: 'equal', value: 1 }] },
-          { criteria: [{ key: 'id', name: 'equal', value: 3 }] }
-        ]
+          { criteria: [{ key: 'id', name: 'equal', value: 3 }] },
+        ],
       });
       expect(extractIds(result)).toEqual([1, 3]);
     });
@@ -196,8 +197,8 @@ describe('DexieCollection', () => {
       expect(
         await dexieCollection.count({
           criteria: [{ key: 'id', name: 'equal', value: 1 }],
-          parallel: [{ criteria: [{ key: 'id', name: 'equal', value: 2 }] }]
-        })
+          parallel: [{ criteria: [{ key: 'id', name: 'equal', value: 2 }] }],
+        }),
       ).toEqual(2);
     });
   });

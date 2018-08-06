@@ -18,7 +18,7 @@ const getFakeRequest = () => {
 };
 const getFakeResponse = () => {
   const response = new SocketResponseBuilder()
-    .options({ request: { parameters: { request_id: '1' }}})
+    .options({ request: { parameters: { request_id: '1' } } })
     .build() as SocketResponse;
   return response;
 };
@@ -26,8 +26,8 @@ const manager = new SocketRequestHelper();
 describe('SocketManager', () => {
   describe('newRequest', () => {
     it('should call registerRequestListener and setRequestTimer', () => {
-      const spy = jest.spyOn(manager, 'setRequestTimer');
-      const spy1 = jest.spyOn(manager, 'setRequestTimer');
+      const spy = jest.spyOn(manager, '_setRequestTimer');
+      const spy1 = jest.spyOn(manager, '_setRequestTimer');
       manager.newRequest(getFakeRequest());
       expect(spy).toBeCalled();
       expect(spy1).toBeCalled();
@@ -36,8 +36,8 @@ describe('SocketManager', () => {
 
   describe('newResponse', () => {
     it('should call removeRequestTimer and handleRegisteredRequest', () => {
-      const spy1 = jest.spyOn(manager, 'removeRequestTimer');
-      const spy2 = jest.spyOn(manager, 'handleRegisteredRequest');
+      const spy1 = jest.spyOn(manager, '_removeRequestTimer');
+      const spy2 = jest.spyOn(manager, '_handleRegisteredRequest');
       manager.newResponse(getFakeResponse());
       expect(spy2).toBeCalled();
       expect(spy1).toBeCalled();

@@ -28,9 +28,8 @@ class PersistentLogAppender extends BaseAppender {
     }
     const logs: string[] = this._loggingEvents.map(this.format.bind(this));
     const firstKey = this._loggingEvents[0].getStartTimestamp();
-    const lastKey = this._loggingEvents[
-      this._loggingEvents.length - 1
-    ].getStartTimestamp();
+    const lastKey = this._loggingEvents[this._loggingEvents.length - 1
+].getStartTimestamp();
     const key = `${firstKey} - ${lastKey}`;
     this._loggingEvents = [];
 
@@ -53,7 +52,7 @@ class PersistentLogAppender extends BaseAppender {
     const store = this._getStore(category);
     const storeHandlers: Promise<void>[] = [];
     if (Array.isArray(keys)) {
-      keys.forEach(key => {
+      keys.forEach((key) => {
         storeHandlers.push(store.removeItem(key));
       });
     } else {
@@ -82,7 +81,7 @@ class PersistentLogAppender extends BaseAppender {
   private _getStore(name: string): LocalForage {
     return localforage.createInstance({
       name,
-      storeName: 'log'
+      storeName: 'log',
     });
   }
 }

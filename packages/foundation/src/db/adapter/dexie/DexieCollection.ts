@@ -61,7 +61,7 @@ class DexieCollection<T> implements IDatabaseCollection<T> {
 
   async getAll(
     query?: IQuery<T>,
-    queryOption: IQueryOption = {}
+    queryOption: IQueryOption = {},
   ): Promise<T[]> {
     const cols: Dexie.Collection[] = execQuery(this.table, query);
     const { sortBy, desc } = queryOption;
@@ -69,7 +69,8 @@ class DexieCollection<T> implements IDatabaseCollection<T> {
     if (cols.length === 0) {
       // empty
       return [];
-    } else if (cols.length === 1) {
+    }
+    if (cols.length === 1) {
       // single query
       const compute = async () => {
         const result: T[] = [];
@@ -92,7 +93,8 @@ class DexieCollection<T> implements IDatabaseCollection<T> {
         const sorted = result.sort((a, b) => {
           if (a[sortBy] < b[sortBy]) {
             return -1;
-          } else if (a[sortBy] > b[sortBy]) {
+          }
+          if (a[sortBy] > b[sortBy]) {
             return 1;
           }
           return 0;
@@ -116,8 +118,8 @@ class DexieCollection<T> implements IDatabaseCollection<T> {
             ids[item[primaryKey]] = true;
             result.push(item);
           }
-        })
-      )
+        }),
+      ),
     );
     return result;
   }
