@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
-import { RouteComponentProps, NavLink, Switch, Route } from 'react-router-dom';
+import { RouteComponentProps, NavLink, Switch, Route, Redirect } from 'react-router-dom';
 
 import AuthRoute from '@/containers/AuthRoute';
-import Messages from '@/containers/Messages';
+import Conversations from '@/containers/Conversations';
 import Calls from '@/containers/Calls';
 import Meetings from '@/containers/Meetings';
 import NotFound from '@/containers/NotFound';
-
-// const Oneself = () => {
-//   return <h3>Please select a left nav.</h3>;
-// };
 
 interface IProps extends RouteComponentProps<any> { }
 
@@ -29,34 +25,25 @@ class Home extends Component<IProps, IStates>  {
   }
 
   render() {
-    const { match } = this.props;
+    // const { match } = this.props;
     return (
       <div>
-        <h2>
-          left nav
-          <NavLink to="/">Home</NavLink>
-          <NavLink to="/messages">Messages</NavLink>
-          <NavLink to="/calls">Calls</NavLink>
-          <NavLink to="/meetings">Meetings</NavLink>
-          <button onClick={this.onClick}>Logout</button></h2>
+        <div>
+          top bar (always):
+          <button onClick={this.onClick}>Logout</button>
+        </div>
+        <div>
+          left nav (always):
+          <NavLink to="/">Home </NavLink>
+          <NavLink to="/messages">Messages </NavLink>
+          <NavLink to="/calls">Calls </NavLink>
+          <NavLink to="/meetings">Meetings </NavLink>
+        </div>
         <Switch>
-          <AuthRoute
-            exact={true}
-            path={match.url}
-            component={Messages}
-          />
-          <AuthRoute
-            path={`${match.url}messages/:id?`}
-            component={Messages}
-          />
-          <AuthRoute
-            path={`${match.url}calls`}
-            component={Calls}
-          />
-          <AuthRoute
-            path={`${match.url}meetings`}
-            component={Meetings}
-          />
+          <Redirect exact={true} from="/" to="/messages" />
+          <AuthRoute path="/messages" component={Conversations} />
+          <AuthRoute path="/calls" component={Calls} />
+          <AuthRoute path="/meetings" component={Meetings} />
           <Route component={NotFound} />
         </Switch>
       </div>);
