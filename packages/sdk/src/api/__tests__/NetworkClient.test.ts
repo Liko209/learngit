@@ -32,7 +32,10 @@ const setup = () => {
     };
   });
   const rcNetworkClient = new NetworkClient(
-    { host: 'https://platform.ringcentral.com', handlerType: HandleByRingCentral },
+    {
+      host: 'https://platform.ringcentral.com',
+      handlerType: HandleByRingCentral,
+    },
     '/restapi',
   );
 

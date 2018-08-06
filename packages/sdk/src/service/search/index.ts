@@ -29,7 +29,10 @@ import { SOCKET } from '../eventKey';
 export default class SearchService extends BaseService {
   static serviceName = 'SearchService';
   static MIN_QUERY_WORD_LENGTH = 1;
-  static filterKeys = ['group_id', 'begin_time', 'end_time', 'creator_id', 'type', 'clent_request_id'];
+  static filterKeys = [
+    'group_id', 'begin_time', 'end_time',
+    'creator_id', 'type', 'client_request_id',
+  ];
   public activeServerRequestId?: RequestId;
   public lastQuery?: RawQuery;
 
@@ -105,7 +108,10 @@ export default class SearchService extends BaseService {
   }
 
   fetchResultsByPage(query: QueryByPageNum): Promise<IResponse<SearchResult>> {
-    const params = { scroll_request_id: query.pageNum, search_request_id: this.activeServerRequestId };
+    const params = {
+      scroll_request_id: query.pageNum,
+      search_request_id: this.activeServerRequestId,
+    };
     return SearchAPI.scrollSearch(params);
   }
 

@@ -32,7 +32,7 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-  ) {}
+  ) { }
 
   async init(config: SdkConfig) {
     // Use default config value

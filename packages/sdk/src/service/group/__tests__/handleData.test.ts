@@ -5,7 +5,11 @@ import GroupAPI from '../../../api/glip/group';
 import PersonService from '../../../service/person';
 import ProfileService from '../../../service/profile';
 import { Group, Post, Raw, Profile } from '../../../models';
-import handleData, { handleFavoriteGroupsChanged, handleGroupMostRecentPostChanged, filterGroups } from '../handleData';
+import handleData, {
+  handleFavoriteGroupsChanged,
+  handleGroupMostRecentPostChanged,
+  filterGroups,
+} from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
 import { GROUP_QUERY_TYPE } from '../../constants';
@@ -56,7 +60,8 @@ jest.mock('../../../api/glip/group', () => {
 
 function generateFakeGroups(count: number, is_team: boolean) {
   const groups: Group[] = [];
-  for (let i = 1; i <= count; i++) {
+
+  for (let i = 1; i <= count; i += 1) {
     groups.push({
       id: i,
       created_at: i,

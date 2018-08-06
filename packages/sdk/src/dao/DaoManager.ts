@@ -24,7 +24,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   async initDatabase(): Promise<void> {
     this.dbManager.initDatabase(schema);
 
-    if (!this.isSchemaCompatible()) {
+    if (!this._isSchemaCompatible()) {
       await this.dbManager.deleteDatabase();
       this.getKVDao(ConfigDao).remove(LAST_INDEX_TIMESTAMP);
     }
@@ -73,7 +73,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
     return 0;
   }
 
-  private isSchemaCompatible() {
+  private _isSchemaCompatible() {
     const currentSchemaVersion = this.getKVDao(ConfigDao).get(DB_SCHEMA_VERSION);
     return typeof currentSchemaVersion === 'number' && currentSchemaVersion === schema.version;
   }

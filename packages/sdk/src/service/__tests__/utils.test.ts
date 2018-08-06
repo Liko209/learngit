@@ -59,7 +59,11 @@ describe('utils', () => {
 
     it('should delete deactivated data', async () => {
       const obj = {
-        data: [{ id: 1, deactivated: true }, { id: 2, deactivated: true }, { id: 3, deactivated: true }],
+        data: [
+          { id: 1, deactivated: true },
+          { id: 2, deactivated: true },
+          { id: 3, deactivated: true },
+        ],
         dao: fakeDao,
         eventKey: ENTITY.POST,
       };

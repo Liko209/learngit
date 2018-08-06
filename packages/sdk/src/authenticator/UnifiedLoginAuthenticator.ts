@@ -30,11 +30,11 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
   async authenticate(params: UnifiedLoginAuthenticateParams): Promise<IAuthResponse> {
 
     if (params.code) {
-      return this.authenticateRC(params.code);
+      return this._authenticateRC(params.code);
     }
 
     if (params.token) {
-      return this.authenticateGlip(params.token);
+      return this._authenticateGlip(params.token);
     }
 
     return {
@@ -43,11 +43,11 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     };
   }
 
-  private async authenticateGlip(token: string): Promise<IAuthResponse> {
+  private async _authenticateGlip(token: string): Promise<IAuthResponse> {
     return { success: true };
   }
 
-  private async authenticateRC(code: string): Promise<IAuthResponse> {
+  private async _authenticateRC(code: string): Promise<IAuthResponse> {
     const { rc } = Api.httpConfig;
 
     const authData = await oauthTokenViaAuthCode({

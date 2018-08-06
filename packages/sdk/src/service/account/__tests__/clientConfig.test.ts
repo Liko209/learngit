@@ -4,7 +4,11 @@
  */
 
 import { daoManager, AccountDao } from '../../../dao';
-import { ACCOUNT_CLIENT_CONFIG, ACCOUNT_USER_ID, ACCOUNT_COMPANY_ID } from '../../../dao/account/constants';
+import {
+  ACCOUNT_CLIENT_CONFIG,
+  ACCOUNT_USER_ID,
+  ACCOUNT_COMPANY_ID,
+} from '../../../dao/account/constants';
 import { EBETA_FLAG, isInBeta } from '../clientConfig';
 
 describe('Client Config', () => {

@@ -31,13 +31,13 @@ class AccountManager extends EventEmitter2 {
   syncLogin(authType: string, params?: any) {
     const authenticator = this._container.get<ISyncAuthenticator>(authType);
     const resp = authenticator.authenticate(params);
-    return this.handleLoginResponse(resp);
+    return this._handleLoginResponse(resp);
   }
 
   async login(authType: string, params?: any) {
     const authenticator = this._container.get<IAuthenticator>(authType);
     const resp = await authenticator.authenticate(params);
-    return this.handleLoginResponse(resp);
+    return this._handleLoginResponse(resp);
   }
 
   async logout() {
@@ -76,7 +76,7 @@ class AccountManager extends EventEmitter2 {
     return services.includes(type);
   }
 
-  private createAccounts(accountInfos: IAccountInfo[]) {
+  private _createAccounts(accountInfos: IAccountInfo[]) {
     const accounts = accountInfos.map(({ type }) => {
       const account = this._container.get<IAccount>(type);
       this._accountMap.set(type, account);
@@ -93,14 +93,14 @@ class AccountManager extends EventEmitter2 {
     return accounts;
   }
 
-  private handleLoginResponse(resp: IAuthResponse) {
+  private _handleLoginResponse(resp: IAuthResponse) {
     if (!resp.accountInfos || resp.accountInfos.length <= 0) {
       return { success: false, error: new Error('Auth fail') };
     }
 
     this.emit(EVENT_LOGIN, resp.accountInfos);
     this._isLogin = true;
-    const accounts = this.createAccounts(resp.accountInfos);
+    const accounts = this._createAccounts(resp.accountInfos);
     return {
       accounts,
       success: true,

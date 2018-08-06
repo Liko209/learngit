@@ -96,7 +96,8 @@ export class SocketFSM extends StateMachine {
       },
     });
 
-    ++SocketFSM.instanceID;
+    SocketFSM.instanceID += 1;
+
     this.name = `_FSM${SocketFSM.instanceID}`;
     this.logPrefix = `[${SOCKET_LOGGER} ${this.name}]`;
 

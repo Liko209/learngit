@@ -87,11 +87,13 @@ export default class PostService extends BaseService<Post> {
     return result;
   }
 
-  async getPostsFromRemote({ groupId, postId, limit, direction }: IPostQuery): Promise<IRawPostResult> {
+  async getPostsFromRemote(
+    { groupId, postId, limit, direction }: IPostQuery,
+  ): Promise<IRawPostResult> {
     const params: any = {
-      group_id: groupId,
       limit,
       direction,
+      group_id: groupId,
     };
     if (postId) {
       params.post_id = postId;
@@ -113,7 +115,9 @@ export default class PostService extends BaseService<Post> {
     return result;
   }
 
-  async getPostsByGroupId({ groupId, offset, postId = 0, limit = 20 }: IPostQuery): Promise<IPostResult> {
+  async getPostsByGroupId(
+    { groupId, offset, postId = 0, limit = 20 }: IPostQuery,
+  ): Promise<IPostResult> {
     try {
       const result = await this.getPostsFromLocal({
         groupId,
@@ -123,11 +127,20 @@ export default class PostService extends BaseService<Post> {
       if (result.posts.length !== 0) {
         return result;
       }
+
       // should try to get more posts from server
       mainLogger.debug(
+        // tslint:disable-next-line:max-line-length
         `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`,
       );
-      const remoteResult = await this.getPostsFromRemote({ groupId, postId, limit, direction: 'older' });
+
+      const remoteResult = await this.getPostsFromRemote({
+        groupId,
+        postId,
+        limit,
+        direction: 'older',
+      });
+
       const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
       const items = (await itemHandleData(remoteResult.items)) || [];
       return {
@@ -135,6 +148,7 @@ export default class PostService extends BaseService<Post> {
         items,
         hasMore: remoteResult.hasMore,
       };
+
     } catch (e) {
       mainLogger.error(e);
       return {

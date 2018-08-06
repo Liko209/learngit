@@ -21,11 +21,11 @@ class DataDispatcher extends EventEmitter2 {
     return Promise.all(
       Object
         .entries(messages)
-        .map(this.emitMessageAsync.bind(this)),
+        .map(this._emitMessageAsync.bind(this)),
     );
   }
 
-  private async emitMessageAsync([key, message]: [string, any]) {
+  private async _emitMessageAsync([key, message]: [string, any]) {
     return this.emitAsync(`SOCKET.${key.toUpperCase()}`, message);
   }
 }
