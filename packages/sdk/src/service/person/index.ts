@@ -27,11 +27,13 @@ export default class PersonService extends BaseService<Person> {
     if (!Array.isArray(ids)) {
       throw new Error('ids must be an array.');
     }
+
     if (ids.length === 0) {
       return [];
     }
+
     const persons = await Promise.all(
-      ids.map(async id => {
+      ids.map(async (id) => {
         const person = await this.getById(id);
         return person;
       }),

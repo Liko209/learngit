@@ -62,7 +62,7 @@ export function getStates(state: Raw<MyState>[]) {
   const myState: MyState[] = [];
   let groupStates: GroupState[] = [];
 
-  state.forEach(item => {
+  state.forEach((item) => {
     const transformed: TransformedState = transform(item);
     transformedData.push(transformed);
     const { groupState, ...rest } = transformed;

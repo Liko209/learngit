@@ -264,7 +264,13 @@ describe('PostService', () => {
 
       const result = await postService.sendItemFile({ groupId: 1, file: new FormData(), text: '' });
 
-      expect(PostServiceHandler.buildPostInfo).toHaveBeenCalledWith({ groupId: 1, itemIds: [1], text: '' });
+      expect(PostServiceHandler.buildPostInfo)
+        .toHaveBeenCalledWith({
+          groupId: 1,
+          itemIds: [1],
+          text: '',
+        });
+
       expect(result).toEqual({ id: 1 });
     });
 

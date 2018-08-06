@@ -51,7 +51,7 @@ class IncomingPostHandler {
         const dao = daoManager.getDao(PostDao);
         let postsInDB: Post[] = [];
         await Promise.all(
-          postsShouldBeRemovedGroupIds.map(async id => {
+          postsShouldBeRemovedGroupIds.map(async (id) => {
             const posts = await dao.queryPostsByGroupId(id, 0, 9999);
             postsInDB = postsInDB.concat(posts);
           }),
@@ -192,7 +192,7 @@ class IncomingPostHandler {
   }
 
   static removeDeactivedPostFromValidPost(validPost: Post[], deactivedPosts: Post[]) {
-    return validPost.filter(item => {
+    return validPost.filter((item) => {
       for (let i = 0; i < deactivedPosts.length; i += 1) {
         if (item.id === deactivedPosts[i].id) {
           return false;

@@ -18,9 +18,12 @@ class ErrorParser {
 
     if (err instanceof Dexie.DexieError) {
       return ErrorParser.dexie(err);
-    } else if (err instanceof Response) {
+    }
+
+    if (err instanceof Response) {
       return ErrorParser.http(err);
     }
+
     return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Undefined error!');
   }
 

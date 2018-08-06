@@ -194,21 +194,25 @@ export default class PostService extends BaseService<Post> {
       await this.handlePreInsertProcess(info);
       const id = info.id;
       delete info.id;
+
       try {
         const resp = await PostAPI.sendPost(info);
+
         if (resp && resp.data) {
           info.id = id;
           return this.handleSendPostSuccess(resp.data, info);
           // resp = await baseHandleData(resp.data);
-        } else {
-          // error, notifiy, should add error handle after IResponse give back error info
-          return this.handleSendPostFail(id, info.version);
         }
+
+        // error, notifiy, should add error handle after IResponse give back error info
+        return this.handleSendPostFail(id, info.version);
+
       } catch (e) {
         mainLogger.warn('crash of innerSendPost()');
         this.handleSendPostFail(id, info.version);
         throw ErrorParser.parse(e);
       }
+
     }
     return null;
   }
@@ -318,10 +322,10 @@ export default class PostService extends BaseService<Post> {
       }
       // error
       return null;
-    } else {
-      // error
-      return null;
     }
+
+    // error
+    return null;
   }
 
   async likePost(postId: number, personId: number, toLike: boolean): Promise<Post | null> {
@@ -330,6 +334,7 @@ export default class PostService extends BaseService<Post> {
     }
     const postDao = daoManager.getDao(PostDao);
     const post = await postDao.get(postId);
+
     if (post) {
       post.likes = post.likes || [];
       if (toLike) {
@@ -356,10 +361,10 @@ export default class PostService extends BaseService<Post> {
       }
       // error
       return null;
-    } else {
-      return null;
-      // error
     }
+
+    // error
+    return null;
   }
 
   async bookmarkPost(postId: number, toBook: boolean): Promise<Profile | null> {

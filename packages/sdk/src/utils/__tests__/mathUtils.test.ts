@@ -12,7 +12,7 @@ describe('mathUtils', () => {
 
   it('generateUUID()', () => {
     const resp = generateUUID();
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 100; i += 1) {
       expect(resp !== generateUUID()).toBe(true);
     }
   });

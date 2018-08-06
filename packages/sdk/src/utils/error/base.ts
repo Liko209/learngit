@@ -9,6 +9,7 @@ class BaseError extends Error {
     super(message);
     this.code = code;
     // fix instanceof
+    // tslint:disable-next-line:max-line-length
     // see: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-newtarget
     Object.setPrototypeOf(this, new.target.prototype);
   }

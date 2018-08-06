@@ -75,7 +75,7 @@ class LogControlManager {
   logIsEmpty(logs: any): boolean {
     if (logs) {
       const keys = Object.keys(logs);
-      for (let i = 0; i < keys.length; i++) {
+      for (let i = 0; i < keys.length; i += 1) {
         if (Array.isArray(logs[keys[i]]) && logs[keys[i]].length !== 0) {
           return false;
         }
@@ -99,7 +99,6 @@ class LogControlManager {
 
   private updateLogSystemLevel() {
     // set log level to log system
-    // const level: LOG_LEVEL = this._isDebugMode || this._enabledLog ? LOG_LEVEL.ALL : LOG_LEVEL.WARN;
     // TODO let it all level now, should reset to above code after implement service framework
     mainLogger.info(`_isDebugMode : ${this._isDebugMode} _enabledLog: ${this._enabledLog}`);
     const level: LOG_LEVEL = LOG_LEVEL.ALL;

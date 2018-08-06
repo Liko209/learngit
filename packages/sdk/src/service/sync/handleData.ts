@@ -50,7 +50,12 @@ const dispatchIncomingData = (data: IndexDataModel) => {
   }
 
   return Promise.all([
-    accountHandleData({ userId, companyId, profileId: profile ? profile._id : undefined, clientConfig }), // eslint-disable-line no-underscore-dangle, no-undefined
+    accountHandleData({
+      userId,
+      companyId,
+      clientConfig,
+      profileId: profile ? profile._id : undefined,
+    }),
     companyHandleData(companies),
     itemHandleData(items),
     presenceHandleData(presences),
@@ -87,7 +92,8 @@ const handleData = async (result: IResponse<IndexDataModel>) => {
     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_DONE);
   } catch (error) {
     mainLogger.error(error);
-    notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, { error: ErrorParser.parse(error) });
+    notificationCenter
+      .emitService(SERVICE.FETCH_INDEX_DATA_ERROR, { error: ErrorParser.parse(error) });
   }
 };
 
