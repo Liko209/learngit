@@ -1,6 +1,6 @@
 /*
  * @Author: Alvin Huang (alvin.huang@ringcentral.com)
- * @Date: 2018-7-19 10:23:02
+ * @Date: 2018-7-19 10:23:03
  * Copyright © RingCentral. All rights reserved.
  */
 const exec = require('child_process').execSync;
