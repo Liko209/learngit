@@ -29,6 +29,7 @@
     "bt": "lerna bootstrap"
   },
   "devDependencies": {
+    "cz-customizable": "git+ssh://git@git.ringcentral.com:alvin.huang/cz-customizable.git#0.0.4",
     "@types/enzyme": "3.1.12",
     "@types/glob": "5.0.35",
     "@types/jest": "23.3.0",
