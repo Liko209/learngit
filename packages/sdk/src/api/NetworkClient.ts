@@ -64,12 +64,13 @@ export default class NetworkClient {
     const { via, path, method, params } = query;
     return new Promise((resolve, reject) => {
       const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
+      const duplicate = this._isDuplicate(method, apiMapKey);
 
       const promiseResolvers = this.apiMap.get(apiMapKey) || [];
       promiseResolvers.push({ resolve, reject });
       this.apiMap.set(apiMapKey, promiseResolvers);
 
-      if (!this._isDuplicate(method, apiMapKey)) {
+      if (!duplicate) {
         const request = this.getRequestByVia<T>(query, via);
         request.callback = this.buildCallback<T>(apiMapKey);
         NetworkManager.Instance.addApiRequest(request);

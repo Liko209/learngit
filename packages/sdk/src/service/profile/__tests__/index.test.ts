@@ -14,7 +14,7 @@ const mockAccountService = {
 };
 jest.mock('../../../api/glip/profile');
 jest.mock('../../profile/handleData');
-jest.mock('service/account', () => {
+jest.mock('../../../service/account', () => {
   class MockAccountService {
     static getInstance() {
       return mockAccountService;

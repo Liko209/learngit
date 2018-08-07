@@ -3532,7 +3532,7 @@ var NetworkRequestBuilder = /** @class */ (function () {
 var Foundation = /** @class */ (function () {
     function Foundation() {
     }
-    Foundation.INIT = function (newConfig) {
+    Foundation.init = function (newConfig) {
         // TODO refactor: foundation should not care about rcConfig,
         // and foundation should not contain biz logic.
         Object.assign(config.rcConfig, newConfig.rcConfig);
@@ -3557,4 +3557,4 @@ var Foundation = /** @class */ (function () {
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { Foundation as Index, Foundation, config, DBManager, KVStorageManager, CriteriaParser, DexieCollection, DexieDB, KVStorage, storageFactory, LokiCollection, LokiDB, DatabaseType, NetworkManager, OAuthTokenHandler, OAuthTokenManager, NetworkRequestHandler, NetworkSetup, Token, AbstractHandleType, NetworkRequestBuilder, Socket, SocketRequest, SocketResponse, SocketClient, Http, Request, Response, DEFAULT_BEFORE_EXPIRED, DEFAULT_TIMEOUT_INTERVAL, SURVIVAL_MODE_URIS, NETWORK_REQUEST_EXECUTOR_STATUS, SURVIVAL_MODE, NETWORK_FAIL_TYPE, REQUEST_WEIGHT, CONSUMER_MAX_QUEUE_COUNT, NETWORK_VIA, REQUEST_PRIORITY, NETWORK_METHOD, HTTP_STATUS_CODE, logManager, mainLogger, networkLogger, LOG_LEVEL };
+export { Foundation, config, DBManager, KVStorageManager, CriteriaParser, DexieCollection, DexieDB, KVStorage, storageFactory, LokiCollection, LokiDB, DatabaseType, NetworkManager, OAuthTokenHandler, OAuthTokenManager, NetworkRequestHandler, NetworkSetup, Token, AbstractHandleType, NetworkRequestBuilder, Socket, SocketRequest, SocketResponse, SocketClient, Http, Request, Response, DEFAULT_BEFORE_EXPIRED, DEFAULT_TIMEOUT_INTERVAL, SURVIVAL_MODE_URIS, NETWORK_REQUEST_EXECUTOR_STATUS, SURVIVAL_MODE, NETWORK_FAIL_TYPE, REQUEST_WEIGHT, CONSUMER_MAX_QUEUE_COUNT, NETWORK_VIA, REQUEST_PRIORITY, NETWORK_METHOD, HTTP_STATUS_CODE, logManager, mainLogger, networkLogger, LOG_LEVEL };

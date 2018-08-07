@@ -13,15 +13,15 @@ import {
   rawItemFactory,
 } from '../../../__tests__/factories';
 
-jest.mock('api/glip/item');
+jest.mock('../../../api/glip/item');
 // const itemDao = daoManager.getDao(ItemDao);
-jest.mock('dao', () => ({
+jest.mock('../../../dao', () => ({
   daoManager: {
     getDao: jest.fn(),
   },
 }));
 
-jest.mock('service/utils', () => ({
+jest.mock('../../../service/utils', () => ({
   baseHandleData: jest.fn(),
   transform: jest.fn(),
 }));

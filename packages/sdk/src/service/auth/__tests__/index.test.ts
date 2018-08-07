@@ -15,7 +15,7 @@ import serviceManager from '../../serviceManager';
 import AuthService from '..';
 import { AccountManager } from '../../../framework';
 
-jest.mock('foundation/network');
+jest.mock('foundation');
 jest.mock('../../../api');
 jest.mock('../../../api/ringcentral/auth');
 jest.mock('../../../dao');

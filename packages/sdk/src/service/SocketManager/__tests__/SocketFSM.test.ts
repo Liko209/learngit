@@ -7,7 +7,8 @@
 import { SocketFSM } from '../SocketFSM';
 import { mainLogger, SocketClient } from 'foundation';
 import SocketIO from '../__mocks__/socket';
-jest.mock('foundation/network');
+
+jest.mock('foundation');
 
 describe('Socket FSM', async () => {
   const serverUrl = 'aws13-g04-uds02.asialab.glip.net:11904';

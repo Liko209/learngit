@@ -1,9 +1,11 @@
 import ErrorParser from '../parser';
 import Dexie from 'dexie/dist/dexie';
 
-import { Response } from 'foundation';
-import NetworkResponseBuilder from 'foundation/network/client/http/NetworkResponseBuilder';
-
+import { Response, NetworkResponseBuilder } from 'foundation';
+console.log('NetworkResponseBuilder: ', NetworkResponseBuilder);
+it('should ', () => {
+  expect(NetworkResponseBuilder).toBe(1);
+});
 const DEXIE_ERROR_CODE = 2000;
 const HTTP_BASE_CODE = 1000;
 

@@ -7,8 +7,5 @@ export * from './db';
 export * from './network';
 export * from './log';
 
-// TODO remove export Index
-export { default as Index } from './Foundation';
-
 export { default as Foundation } from './Foundation';
 export { default as config } from './config';

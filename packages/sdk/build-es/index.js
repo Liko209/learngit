@@ -2656,10 +2656,11 @@ var NetworkClient = /** @class */ (function () {
         var via = query.via, path = query.path, method = query.method, params = query.params;
         return new Promise(function (resolve, reject) {
             var apiMapKey = path + "_" + method + "_" + serializeUrlParams(params || {});
+            var duplicate = _this._isDuplicate(method, apiMapKey);
             var promiseResolvers = _this.apiMap.get(apiMapKey) || [];
             promiseResolvers.push({ resolve: resolve, reject: reject });
             _this.apiMap.set(apiMapKey, promiseResolvers);
-            if (!_this._isDuplicate(method, apiMapKey)) {
+            if (!duplicate) {
                 var request = _this.getRequestByVia(query, via);
                 request.callback = _this.buildCallback(apiMapKey);
                 NetworkManager.Instance.addApiRequest(request);
@@ -8110,7 +8111,7 @@ var Sdk = /** @class */ (function () {
                         apiConfig = merge({}, defaultConfig, config.api);
                         dbConfig = merge({}, defaultDBConfig, config.db);
                         // Initialize foundation
-                        Foundation.INIT({
+                        Foundation.init({
                             // TODO refactor foundation, extract biz logic from `foundation` to `sdk`.
                             rcConfig: {
                                 rc: apiConfig.rc,

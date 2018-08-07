@@ -10,7 +10,7 @@ describe('NetworkSetup', () => {
         NetworkManager.Instance,
         'initNetworkRequestBaseHandler',
       );
-      NetworkSetup.SETUP([fakeHandleType]);
+      NetworkSetup.setup([fakeHandleType]);
       expect(spy).toBeCalled();
       expect(OAuthTokenHandler).toBeCalled();
     });

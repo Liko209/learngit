@@ -3,16 +3,16 @@
  * @Date: 2018-03-01 14:02:24
  */
 
-// import { daoManager } from 'dao';
+// import { daoManager } from '../../../dao';
 import notificationCenter from '../../../service/notificationCenter';
 // import AccountDao from 'dao/account';
 import accountHandleData from '../handleData';
 
-jest.mock('service/notificationCenter', () => ({
+jest.mock('../../../service/notificationCenter', () => ({
   emitConfigPut: jest.fn(),
 }));
 
-jest.mock('dao', () => ({
+jest.mock('../../../dao', () => ({
   daoManager: {
     getDao: jest.fn(() => ({
       put: jest.fn(),

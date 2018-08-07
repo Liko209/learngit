@@ -4,17 +4,17 @@ import { transform, baseHandleData } from '../../../service/utils';
 import handleData from '../handleData';
 import { rawPersonFactory } from '../../../__tests__/factories';
 
-jest.mock('service/notificationCenter', () => ({
+jest.mock('../../../service/notificationCenter', () => ({
   emitEntityPut: jest.fn(),
 }));
 
-jest.mock('dao', () => ({
+jest.mock('../../../dao', () => ({
   daoManager: {
     getDao: jest.fn(),
   },
 }));
 
-jest.mock('service/utils', () => ({
+jest.mock('../../../service/utils', () => ({
   transform: jest.fn(),
   baseHandleData: jest.fn(),
 }));

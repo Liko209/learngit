@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /// <reference path="./types.d.ts" />
-import { Index as Foundation, NetworkManager, Token } from 'foundation';
+import { Foundation, NetworkManager, Token } from 'foundation';
 import Sdk from '../Sdk';
 import {
   Api,

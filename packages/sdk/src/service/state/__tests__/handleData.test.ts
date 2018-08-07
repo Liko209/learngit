@@ -12,7 +12,7 @@ import handleData, {
 import { sample, transformedGroupState, transformedMyState, sample2 } from './dummy';
 import { rawMyStateFactory } from '../../../__tests__/factories';
 
-jest.mock('dao', () => {
+jest.mock('../../../dao', () => {
   const dao = {
     bulkUpdate: jest.fn(),
   };
@@ -23,7 +23,7 @@ jest.mock('dao', () => {
   };
 });
 
-jest.mock('service/notificationCenter', () => ({
+jest.mock('../../../service/notificationCenter', () => ({
   emitEntityUpdate: jest.fn(),
   emitEntityPut: jest.fn(),
 }));

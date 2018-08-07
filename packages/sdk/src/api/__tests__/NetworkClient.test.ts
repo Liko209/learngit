@@ -12,7 +12,7 @@ import { HandleByRingCentral } from '../handlers';
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
 
-// NetworkManager.Instance = new NetworkManager();
+NetworkManager.Instance = new NetworkManager();
 const mockRequest: any = {};
 
 const setup = () => {
@@ -111,9 +111,10 @@ describe('apiRequest', () => {
 
       const promise1 = rcNetworkClient.request(getRequest);
       const promise2 = rcNetworkClient.request(getRequest);
-      expect(NetworkManager.Instance.addApiRequest).toHaveBeenCalledTimes(1);
 
       mockRequest.callback({ status: 200, data: { a: 1 } });
+
+      expect(NetworkManager.Instance.addApiRequest).toHaveBeenCalledTimes(1);
       await expect(promise1).resolves.toEqual({ status: 200, data: { a: 1 } });
       await expect(promise2).resolves.toEqual({ status: 200, data: { a: 1 } });
     });

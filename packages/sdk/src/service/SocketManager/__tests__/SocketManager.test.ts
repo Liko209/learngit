@@ -11,7 +11,7 @@ import { daoManager, ConfigDao } from '../../../dao';
 import SocketIO from '../__mocks__/socket';
 import { SocketClient } from 'foundation';
 
-jest.mock('foundation/network');
+jest.mock('foundation');
 jest.mock('../../../dao');
 
 describe('Socket Manager', () => {
