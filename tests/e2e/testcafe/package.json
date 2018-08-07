@@ -17,6 +17,7 @@
     "linux"
   ],
   "dependencies": {
-    "testcafe": "0.20.5"
+    "testcafe": "0.20.5",
+    "testcafe-browser-provider-selenium": "^0.2.0"
   }
 }
