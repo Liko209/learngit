@@ -3247,7 +3247,7 @@ var OAuthTokenHandler = /** @class */ (function () {
 var NetworkSetup = /** @class */ (function () {
     function NetworkSetup() {
     }
-    NetworkSetup.SETUP = function (types) {
+    NetworkSetup.setup = function (types) {
         types.forEach(function (type) {
             var tokenHandler = new OAuthTokenHandler(type, new /** @class */ (function () {
                 function class_1() {

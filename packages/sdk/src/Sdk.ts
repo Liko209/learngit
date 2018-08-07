@@ -3,7 +3,7 @@
  * @Date:2018-03-07 19:20:43
  * Copyright © RingCentral. All rights reserved.
  */
-import { Index as Foundation, NetworkManager, Token } from 'foundation';
+import { Foundation, NetworkManager, Token } from 'foundation';
 import merge from 'lodash/merge';
 
 import { Api, HandleByGlip, HandleByGlip2, HandleByRingCentral, HandleByUpload } from './api';
@@ -40,7 +40,7 @@ class Sdk {
     const dbConfig: DBConfig = merge({}, defaultDBConfig, config.db);
 
     // Initialize foundation
-    Foundation.init({
+    Foundation.INIT({
       // TODO refactor foundation, extract biz logic from `foundation` to `sdk`.
       rcConfig: {
         rc: apiConfig.rc,

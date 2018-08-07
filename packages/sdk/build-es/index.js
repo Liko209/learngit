@@ -1,7 +1,7 @@
 import { EventEmitter2 } from 'eventemitter2';
 import * as HttpStatus from 'http-status-codes';
 import Dexie from 'dexie';
-import { Response, DexieDB, LokiDB, mainLogger, DBManager, KVStorageManager, NetworkManager, NetworkRequestBuilder, NETWORK_VIA, NETWORK_METHOD, AbstractHandleType, NetworkSetup, SocketClient, logManager, LOG_LEVEL, Index, Token } from 'foundation';
+import { Response, DexieDB, LokiDB, mainLogger, DBManager, KVStorageManager, NetworkManager, NetworkRequestBuilder, NETWORK_VIA, NETWORK_METHOD, AbstractHandleType, NetworkSetup, SocketClient, logManager, LOG_LEVEL, Foundation, Token } from 'foundation';
 import _ from 'lodash';
 import { caseInsensitive } from 'string-natural-compare';
 import merge from 'lodash/merge';
@@ -8106,7 +8106,7 @@ var Sdk = /** @class */ (function () {
                         apiConfig = merge({}, defaultConfig, config.api);
                         dbConfig = merge({}, defaultDBConfig, config.db);
                         // Initialize foundation
-                        Index.init({
+                        Foundation.INIT({
                             // TODO refactor foundation, extract biz logic from `foundation` to `sdk`.
                             rcConfig: {
                                 rc: apiConfig.rc,
