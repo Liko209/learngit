@@ -7,7 +7,7 @@
 import config, { FoundationConfig } from './config';
 
 class Foundation {
-  static INIT(newConfig: FoundationConfig) {
+  static init(newConfig: FoundationConfig) {
     // TODO refactor: foundation should not care about rcConfig,
     // and foundation should not contain biz logic.
     Object.assign(config.rcConfig, newConfig.rcConfig);

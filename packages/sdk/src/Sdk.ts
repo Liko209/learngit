@@ -6,11 +6,21 @@
 import { Foundation, NetworkManager, Token } from 'foundation';
 import merge from 'lodash/merge';
 
-import { Api, HandleByGlip, HandleByGlip2, HandleByRingCentral, HandleByUpload } from './api';
+import {
+  Api,
+  HandleByGlip,
+  HandleByGlip2,
+  HandleByRingCentral,
+  HandleByUpload,
+} from './api';
 import { defaultConfig as defaultApiConfig } from './api/defaultConfig';
 import { AutoAuthenticator } from './authenticator/AutoAuthenticator';
 import { AuthDao } from './dao';
-import { AUTH_GLIP2_TOKEN, AUTH_GLIP_TOKEN, AUTH_RC_TOKEN } from './dao/auth/constants';
+import {
+  AUTH_GLIP2_TOKEN,
+  AUTH_GLIP_TOKEN,
+  AUTH_RC_TOKEN,
+} from './dao/auth/constants';
 import DaoManager from './dao/DaoManager';
 import { AccountManager, ServiceManager } from './framework';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from './service/constants';
@@ -32,7 +42,7 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-  ) { }
+  ) {}
 
   async init(config: SdkConfig) {
     // Use default config value
@@ -40,7 +50,7 @@ class Sdk {
     const dbConfig: DBConfig = merge({}, defaultDBConfig, config.db);
 
     // Initialize foundation
-    Foundation.INIT({
+    Foundation.init({
       // TODO refactor foundation, extract biz logic from `foundation` to `sdk`.
       rcConfig: {
         rc: apiConfig.rc,
@@ -57,12 +67,18 @@ class Sdk {
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
 
-    notificationCenter.on(SHOULD_UPDATE_NETWORK_TOKEN, this.updateNetworkToken.bind(this));
+    notificationCenter.on(
+      SHOULD_UPDATE_NETWORK_TOKEN,
+      this.updateNetworkToken.bind(this),
+    );
 
     // Listen to account events to init network and service
     this.accountManager.on(AM.EVENT_LOGIN, this.onLogin.bind(this));
     this.accountManager.on(AM.EVENT_LOGOUT, this.onLogout.bind(this));
-    this.accountManager.on(AM.EVENT_SUPPORTED_SERVICE_CHANGE, this.updateServiceStatus.bind(this));
+    this.accountManager.on(
+      AM.EVENT_SUPPORTED_SERVICE_CHANGE,
+      this.updateServiceStatus.bind(this),
+    );
 
     // Check is already login
     const loginResp = this.accountManager.syncLogin(AutoAuthenticator.name);
