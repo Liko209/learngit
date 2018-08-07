@@ -1,7 +1,7 @@
 import { EventEmitter2 } from 'eventemitter2';
 import * as HttpStatus from 'http-status-codes';
 import Dexie from 'dexie';
-import { Response, DexieDB, LokiDB, mainLogger, DBManager, KVStorageManager, NetworkManager, NetworkRequestBuilder, NETWORK_VIA, NETWORK_METHOD, AbstractHandleType, NetworkSetup, SocketClient, logManager, LOG_LEVEL, Foundation, Token } from 'foundation';
+import { Response, DexieDB, LokiDB, mainLogger, DBManager, KVStorageManager, NetworkManager, NetworkRequestBuilder, NETWORK_METHOD, AbstractHandleType, NETWORK_VIA, NetworkSetup, SocketClient, logManager, LOG_LEVEL, Foundation, Token } from 'foundation';
 import _ from 'lodash';
 import { caseInsensitive } from 'string-natural-compare';
 import merge from 'lodash/merge';
@@ -2643,13 +2643,13 @@ var AccountService = /** @class */ (function (_super) {
  * @Date: 2018-02-05 15:07:23
  * Copyright © RingCentral. All rights reserved.
  */
-var GET = NETWORK_METHOD.GET, DELETE = NETWORK_METHOD.DELETE;
 var NetworkClient = /** @class */ (function () {
     // todo refactor config
-    function NetworkClient(networkRequests, apiPlatform) {
+    function NetworkClient(networkRequests, apiPlatform, defaultVia) {
         this.apiPlatform = apiPlatform;
         this.networkRequests = networkRequests;
         this.apiMap = new Map();
+        this.defaultVia = defaultVia;
     }
     NetworkClient.prototype.request = function (query) {
         var _this = this;
@@ -2694,7 +2694,7 @@ var NetworkClient = /** @class */ (function () {
         };
     };
     NetworkClient.prototype.getRequestByVia = function (query, via) {
-        if (via === void 0) { via = NETWORK_VIA.HTTP; }
+        if (via === void 0) { via = this.defaultVia; }
         var path = query.path, method = query.method, data = query.data, headers = query.headers, params = query.params, authFree = query.authFree, requestConfig = query.requestConfig;
         return new NetworkRequestBuilder()
             .setHost(this.networkRequests.host || '')
@@ -2786,7 +2786,7 @@ var NetworkClient = /** @class */ (function () {
         });
     };
     NetworkClient.prototype._isDuplicate = function (method, apiMapKey) {
-        if (method !== GET && method !== DELETE) {
+        if (method !== NETWORK_METHOD.GET && method !== NETWORK_METHOD.DELETE) {
             return false;
         }
         return this.apiMap.has(apiMapKey);
@@ -2825,7 +2825,9 @@ var defaultConfig = {
 var HandleByGlip = new /** @class */ (function (_super) {
     __extends(class_1, _super);
     function class_1() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.defaultVia = NETWORK_VIA.ALL;
+        return _this;
     }
     class_1.prototype.requestDecoration = function (tokenHandler) {
         var handler = tokenHandler;
@@ -3558,7 +3560,12 @@ var HandleByUpload = new /** @class */ (function (_super) {
  * @Date: 2018-05-02 16:47:08
  * Copyright © RingCentral. All rights reserved.
  */
-var types = [HandleByGlip, HandleByRingCentral, HandleByGlip2, HandleByUpload];
+var types = [
+    HandleByGlip,
+    HandleByRingCentral,
+    HandleByGlip2,
+    HandleByUpload,
+];
 var Api = /** @class */ (function () {
     function Api() {
     }
@@ -3588,7 +3595,7 @@ var Api = /** @class */ (function () {
                 host: currentConfig.server,
                 handlerType: type,
             };
-            networkClient = new NetworkClient(networkRequests, currentConfig.apiPlatform);
+            networkClient = new NetworkClient(networkRequests, currentConfig.apiPlatform, type.defaultVia);
             this.httpSet.set(name, networkClient);
         }
         return networkClient;
