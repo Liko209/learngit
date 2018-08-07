@@ -16,6 +16,7 @@ import { GLOBAL_STORE_DATA, ACTIONS_TYPE } from '@/constants';
 import { service } from 'sdk';
 
 import Toolbar from '@/components/PostEditor/EditorToolbar';
+import ErrorHandler from '@/containers/ErrorHandler';
 
 // import PostEditorComponent from '@/components/PostEditor';
 import { MentionsInput, Mention } from 'react-mentions';
@@ -164,7 +165,14 @@ class PostEditor extends Component {
   }
 
   onEnterPress(evt) {
-    if (evt.key === 'Enter' && !this.state.isOnComposition) {
+    if (evt.ctrlKey && evt.keyCode === 13) {
+      this.setState({
+        text: `${evt.target.value}\n`
+      });
+      return;
+    }
+
+    if (!evt.shiftKey && evt.keyCode === 13 && !this.state.isOnComposition) {
       evt.preventDefault();
       if (!isEmpty(this.state.text)) {
         const globalStore = storeManager.getGlobalStore();
@@ -200,24 +208,29 @@ class PostEditor extends Component {
     }
   }
 
-  sendPost(text) {
-    const { match } = this.props;
+  async sendPost(text) {
+    try {
+      const { match } = this.props;
 
-    const {
-      params: { id: groupId }
-    } = match;
-    const service = PostService.getInstance();
-    const { users } = this.state;
-    service.sendPost({
-      groupId,
-      text,
-      users,
-      atMentions: isAtMentions(text)
-    });
-    this.setState({
-      text: '',
-      users: []
-    });
+      const {
+        params: { id: groupId }
+      } = match;
+      const service = PostService.getInstance();
+      const { users } = this.state;
+      this.setState({
+        text: '',
+        users: []
+      });
+      await service.sendPost({
+        groupId,
+        text,
+        users,
+        atMentions: isAtMentions(text)
+      });
+    } catch (err) {
+      const handler = new ErrorHandler(err);
+      handler.handle().show();
+    }
   }
 
   modifyPost(text) {
