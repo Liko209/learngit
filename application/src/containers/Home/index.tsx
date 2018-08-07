@@ -33,7 +33,7 @@ class Home extends Component<IProps, IStates>  {
         </div>
         <div>
           <strong>left nav (always): </strong>
-          <NavLink to="/">Home </NavLink>
+          {/* <NavLink to="/">Home </NavLink> */}
           <NavLink to="/messages">Messages </NavLink>
           <NavLink to="/calls">Calls </NavLink>
           <NavLink to="/meetings">Meetings </NavLink>
