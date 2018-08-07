@@ -27,11 +27,11 @@ function checkDiff(){
       let matched = files.map((item) => {
         return item && item.match(/"(.*?)"\s*:/) ? item.match(/"(.*?)"\s*:/)[1] : null;
       })
-      const dep = JSON.parse(JSON.stringify(pkgFile.dependencies));
-      const devDep = JSON.parse(JSON.stringify(pkgFile.devDependencies));
+      const dep = pkgFile.dependencies;
+      const devDep = pkgFile.devDependencies;
       let deRepeatArray = Array.from(new Set(matched))
       let modified = deRepeatArray && deRepeatArray.map((item) => {
-        return (dep.hasOwnProperty(item) || devDep.hasOwnProperty(item))
+        return (dep && dep.hasOwnProperty(item) || devDep && devDep.hasOwnProperty(item))
       });
       let gitUser = checkGitUser()
       if(modified.indexOf(true) > -1 && adminEmail.indexOf(gitUser.email) === -1 && (modified.length === 2 ? !deRepeatArray.includes('sdk') : true)) {
