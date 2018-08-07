@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, Route } from 'react-router-dom';
 
-import AuthRoute from '@/containers/AuthRoute';
 import LeftRail from '@/containers/Conversations/LeftRail';
 import Content from '@/containers/Conversations/Content';
 
@@ -20,7 +19,7 @@ class Conversations extends Component<IProps, IStates>  {
     return (
       <div>
         <LeftRail />
-        <AuthRoute path={`${match.url}/:id?`} component={Content} />
+        <Route path={`${match.url}/:id?`} component={Content} />
       </div>);
   }
 }

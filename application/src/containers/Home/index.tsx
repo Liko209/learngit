@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { RouteComponentProps, NavLink, Switch, Route, Redirect } from 'react-router-dom';
 
-import AuthRoute from '@/containers/AuthRoute';
 import Conversations from '@/containers/Conversations';
 import Calls from '@/containers/Calls';
 import Meetings from '@/containers/Meetings';
@@ -41,9 +40,9 @@ class Home extends Component<IProps, IStates>  {
         </div>
         <Switch>
           <Redirect exact={true} from="/" to="/messages" />
-          <AuthRoute path="/messages" component={Conversations} />
-          <AuthRoute path="/calls" component={Calls} />
-          <AuthRoute path="/meetings" component={Meetings} />
+          <Route path="/messages" component={Conversations} />
+          <Route path="/calls" component={Calls} />
+          <Route path="/meetings" component={Meetings} />
           <Route component={NotFound} />
         </Switch>
       </div>);
