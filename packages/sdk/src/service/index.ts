@@ -20,3 +20,4 @@ export { default as serviceManager } from './serviceManager';
 
 export * from './SocketManager';
 export * from './eventKey';
+export * from './constants';
