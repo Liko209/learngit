@@ -78,7 +78,8 @@
   },
   "lint-staged": {
     "*.{ts, js, json}": [
-      "git add"
+      "git add",
+      "node ./scripts/check-yarn.js"
     ]
   }
 }
