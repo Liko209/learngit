@@ -132,6 +132,7 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
     if (cols.length === 1) {
       return cols[0].count();
     }
+
     let sum: number = 0;
     for (let i = 0; i < cols.length; i = +1) {
       sum += cols[i].count();
