@@ -6,7 +6,8 @@ interface IProps extends RouteComponentProps<any> { }
 const RightRail = ({ match }: IProps) => {
   return (
     <div>
-      <div>Conversation right rail</div>
+      <strong>Conversation right rail: </strong>
+      <span>id: {match.params.id}</span>
     </div>
   );
 };

@@ -6,7 +6,8 @@ interface IProps extends RouteComponentProps<any> { }
 const Thread = ({ match }: IProps) => {
   return (
     <div>
-      <div>Conversation thread id {match.params.id}</div>
+      <strong>Conversation thread: </strong>
+      <span>id: {match.params.id}</span>
     </div>
   );
 };
