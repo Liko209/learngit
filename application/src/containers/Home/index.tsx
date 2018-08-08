@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
-import { RouteComponentProps, NavLink, Switch, Route } from 'react-router-dom';
+import { RouteComponentProps, NavLink, Switch, Route, Redirect } from 'react-router-dom';
 
-// import Conversations from '@/containers/Conversations';
-// import Calls from '@/containers/Calls';
-// import Meetings from '@/containers/Meetings';
+import Wrapper from './Wrapper';
+import TopBar from './TopBar';
+import Bottom from './Bottom';
+import LeftNav from './LeftNav';
+import Main from './Main';
+
 import NotFound from '@/containers/NotFound';
-import TreeLayoutRoute from '@/containers/Layout/Three';
-import TwoLayoutRoute from '@/containers/Layout/Two';
+import LayoutRoute from '@/containers/LayoutRoute';
 
-import ConversationLeftRail from '@/containers/Conversations/LeftRail';
-import ConversationThread from '@/containers/Conversations/Thread';
-import ConversationRightRail from '@/containers/Conversations/RightRail';
-import CallLeft from '@/containers/Calls/Main';
+import ConversationLeft from '@/containers/Conversations/LeftRail';
+import ConversationMain from '@/containers/Conversations/Thread';
+import ConversationRight from '@/containers/Conversations/RightRail';
+import CallMain from '@/containers/Calls/Main';
 import CallRight from '@/containers/Calls/Right';
-import MeetingLeft from '@/containers/Meetings/Main';
+import MeetingMain from '@/containers/Meetings/Main';
 import MeetingRight from '@/containers/Meetings/Right';
 
 interface IProps extends RouteComponentProps<any> { }
@@ -36,42 +38,35 @@ class Home extends Component<IProps, IStates>  {
   render() {
     // const { match } = this.props;
     return (
-      <div>
-        <div>
-          <strong>top bar (always): </strong>
+      <Wrapper>
+        <TopBar>
           <button onClick={this.onClick}>Logout</button>
-        </div>
-        <div>
-          <strong>left nav (always): </strong>
-          {/* <NavLink to="/" exact={true}>Home </NavLink> */}
-          <NavLink to="/messages">Messages </NavLink>
-          <NavLink to="/calls">Calls </NavLink>
-          <NavLink to="/meetings">Meetings </NavLink>
-        </div>
-        <Switch>
-          {/* <Redirect exact={true} from="/" to="/messages" /> */}
-          {/* <Route path="/messages" component={Conversations} /> */}
-          {/* <Route path="/calls" component={Calls} /> */}
-          {/* <Route path="/meetings" component={Meetings} /> */}
-          <TreeLayoutRoute
-            path="/messages/:id?"
-            left={ConversationLeftRail}
-            middle={ConversationThread}
-            right={ConversationRightRail}
-          />
-          <TwoLayoutRoute
-            path="/calls"
-            left={CallLeft}
-            right={CallRight}
-          />
-          <TwoLayoutRoute
-            path="/meetings"
-            left={MeetingLeft}
-            right={MeetingRight}
-          />
-          <Route component={NotFound} />
-        </Switch>
-      </div>);
+        </TopBar>
+        <Bottom>
+          <LeftNav>
+            {/* <NavLink to="/" exact={true}>Home </NavLink> */}
+            <NavLink to="/messages">Messages </NavLink>
+            <NavLink to="/calls">Calls </NavLink>
+            <NavLink to="/meetings">Meetings </NavLink>
+          </LeftNav>
+          <Main>
+            <Switch>
+              <Redirect exact={true} from="/" to="/messages" />
+              <LayoutRoute
+                path="/messages/:id?"
+                left={ConversationLeft}
+                main={ConversationMain}
+                right={ConversationRight}
+              />
+              <LayoutRoute path="/calls" main={CallMain} right={CallRight} />
+              <LayoutRoute path="/meetings" main={MeetingMain} right={MeetingRight} />
+              <Route component={NotFound} />
+            </Switch>
+          </Main>
+
+        </Bottom>
+
+      </Wrapper>);
   }
 }
 

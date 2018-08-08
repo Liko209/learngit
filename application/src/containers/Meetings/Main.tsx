@@ -1,7 +1,15 @@
 import React from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-const Main = () => {
-  return <div>Meetings main page</div>;
+interface IProps extends RouteComponentProps<any> { }
+
+const Main = ({ match }: IProps) => {
+  return (
+    <div>
+      <strong>Meetings main page: </strong>
+      <span>url: {match.url}</span>
+    </div>
+  );
 };
 
-export default Main;
+export default withRouter(Main);

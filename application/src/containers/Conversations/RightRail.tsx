@@ -4,10 +4,11 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 interface IProps extends RouteComponentProps<any> { }
 
 const RightRail = ({ match }: IProps) => {
+  const id = parseInt(match.params.id, 10);
   return (
     <div>
       <strong>Conversation right rail: </strong>
-      <span>id: {match.params.id}</span>
+      {!isNaN(id) && <div>id: {id}</div>}
     </div>
   );
 };
