@@ -3,10 +3,10 @@
  * @Date: 2018-06-04 15:43:48
  * Copyright © RingCentral. All rights reserved.
  */
-import Request from '../http/Request';
+import HttpRequest from '../http/Request';
 import NetworkRequestBuilder from '../NetworkRequestBuilder';
 import { NETWORK_VIA } from '../../network';
-class SocketRequest extends Request {
+class SocketRequest extends HttpRequest {
   parameters: object = {};
   uri: string = '';
   params: SocketRequestParamsType;

@@ -4,5 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export { default as Http } from './Http';
-export { default as Request } from './Request';
+export { default as HttpRequest } from './Request';
 export { default as Response } from './Response';
+export { default as HttpResponseBuilder } from './HttpResponseBuilder';

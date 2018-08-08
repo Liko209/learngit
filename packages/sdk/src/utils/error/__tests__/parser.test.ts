@@ -1,16 +1,13 @@
 import ErrorParser from '../parser';
 import Dexie from 'dexie/dist/dexie';
 
-import { Response, NetworkResponseBuilder } from 'foundation';
-console.log('NetworkResponseBuilder: ', NetworkResponseBuilder);
-it('should ', () => {
-  expect(NetworkResponseBuilder).toBe(1);
-});
+import { Response, HttpResponseBuilder } from 'foundation';
+
 const DEXIE_ERROR_CODE = 2000;
 const HTTP_BASE_CODE = 1000;
 
 function createResponse(obj: any) {
-  const builder = new NetworkResponseBuilder();
+  const builder = new HttpResponseBuilder();
   Object.assign(builder, obj);
   return new Response(builder);
 }

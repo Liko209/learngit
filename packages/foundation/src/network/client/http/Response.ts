@@ -4,13 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BaseResponse from '../../BaseResponse';
-import NetworkResponseBuilder from './NetworkResponseBuilder';
+import NetworkResponseBuilder from '../NetworkResponseBuilder';
+import HttpResponseBuilder from './HttpResponseBuilder';
 
-class HttpResponseBuilder extends NetworkResponseBuilder {
-  build(): Response {
-    return new Response(this);
-  }
-}
 class Response extends BaseResponse {
   static get builder() {
     return new HttpResponseBuilder();

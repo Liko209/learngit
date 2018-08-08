@@ -3,7 +3,7 @@
  * @Date: 2018-06-04 15:43:31
  * Copyright © RingCentral. All rights reserved.
  */
-import Request from './http/Request';
+import HttpRequest from './http/Request';
 import SocketRequest from './socket/SocketRequest';
 
 import { generateUUID, generateIncrementId } from '../util';
@@ -184,7 +184,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
         return new SocketRequest(this);
       case NETWORK_VIA.HTTP:
         this.id = generateUUID();
-        return new Request(this);
+        return new HttpRequest(this);
       case NETWORK_VIA.ALL:
       default:
         this.via = NetworkManager.Instance.clientManager.getAvailableClientType();
