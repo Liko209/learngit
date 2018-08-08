@@ -22,18 +22,18 @@ export class EnvironmentSelectionPage extends BasePage {
   }
 
   selectEnvironment(environment: string): this {
-    return this.chain( t =>
+    return this.chain(t =>
       t
         .click(this.environmentSelector)
         .click(this.environmentOption.withText(environment))
         .expect(this.environmentSelector.value)
-        .eql(environment)
+        .eql(environment),
     );
   }
 
   toNextPage(): this {
-    return this.chain( t =>
-      t.click(this.loginButton)
+    return this.chain(t =>
+      t.click(this.loginButton),
     );
   }
 

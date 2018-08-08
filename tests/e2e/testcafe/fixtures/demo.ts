@@ -9,11 +9,10 @@ import { EnvironmentSelectionPage } from '../page-models/EnvironmentSelectionPag
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
 
+fixture('My fixture');
 
-fixture("My fixture")
-
-test('Sign In Success', async t => {
-    await new BlankPage(t)
+test('Sign In Success', async (t) => {
+  await new BlankPage(t)
       .open('https://develop.fiji.gliprc.com/unified-login')
       .shouldNavigateTo(EnvironmentSelectionPage)
       .selectEnvironment('XMN-UP')

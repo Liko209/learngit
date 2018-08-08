@@ -4,49 +4,48 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BasePage } from './BasePage'
+import { BasePage } from './BasePage';
 import { Selector } from 'testcafe';
-
 
 export class RingcentralSignInPage extends BasePage {
 
   get credentialField(): Selector {
-    return Selector("input[name='credential']");
+    return Selector('input[name="credential"]');
   }
 
   get extensionField(): Selector {
-    return Selector("input[name='PIN']");
+    return Selector('input[name="PIN"]');
   }
 
   get passwordField(): Selector {
-    return Selector("#password");
+    return Selector('#password');
   }
 
   get signInButton(): Selector {
-    return Selector("*[data-test-automation-id='signInBtn']");
+    return Selector('*[data-test-automation-id="signInBtn"]');
   }
 
   setCredential(credential: string): this {
-    return this.chain( t =>
-      t.typeText(this.credentialField, credential)
+    return this.chain(t =>
+      t.typeText(this.credentialField, credential),
     );
   }
 
   setExtension(extension: string): this {
-    return this.chain( t =>
-      t.typeText(this.extensionField, extension)
+    return this.chain(t =>
+      t.typeText(this.extensionField, extension),
     );
   }
 
   setPassword(password: string): this {
-    return this.chain( t =>
-      t.typeText(this.passwordField, password)
+    return this.chain(t =>
+      t.typeText(this.passwordField, password),
     );
   }
 
   signIn(): this {
-    return this.chain( t =>
-      t.click(this.signInButton)
-    )
+    return this.chain(t =>
+      t.click(this.signInButton),
+    );
   }
 }

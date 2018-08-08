@@ -4,14 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BasePage } from './BasePage'
-
+import { BasePage } from './BasePage';
 
 export class BlankPage extends BasePage {
 
   open(url: string): this {
     return this.chain(t =>
-      t.navigateTo(url)
-    )
+      t.navigateTo(url),
+    );
   }
 }
