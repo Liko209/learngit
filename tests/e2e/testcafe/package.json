@@ -7,10 +7,10 @@
   "scripts": {
     "env": "node environment/launch-env.js",
     "test": "node index.js --env=true",
-    "testcafe": "testcafe selenium:chrome fixtures/demo.ts"
+    "testcafe": "testcafe"
   },
   "engines": {
-    "npm": ">=5.x.x",
+    "npm": ">=6.x.x",
     "node": ">=8.x.x <10.x.x"
   },
   "os": [
