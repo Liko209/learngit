@@ -29,7 +29,6 @@
     "bt": "lerna bootstrap"
   },
   "devDependencies": {
-    "cz-customizable": "git+ssh://git@git.ringcentral.com:alvin.huang/cz-customizable.git#0.0.4",
     "@types/enzyme": "3.1.12",
     "@types/glob": "5.0.35",
     "@types/jest": "23.3.0",
@@ -41,6 +40,7 @@
     "babel-core": "6.26.3",
     "chalk": "2.4.1",
     "commitizen": "2.10.1",
+    "cz-customizable": "git+ssh://git@git.ringcentral.com:Fiji/cz-customizable.git#0.0.5",
     "dts-generator": "2.1.0",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "1.1.1",
