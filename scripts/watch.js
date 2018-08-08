@@ -23,7 +23,7 @@ if (!argv.length) {
   process.exit(1);
 }
 
-const { SRC_DIR } = require('./build');
+const SRC_DIR = 'src';
 
 const packages = getPackages();
 

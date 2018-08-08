@@ -118,7 +118,3 @@ if (files.length) {
   process.stdout.write(chalk.inverse(' Building packages \n'));
   build(packages);
 }
-
-module.exports = {
-  SRC_DIR
-}
