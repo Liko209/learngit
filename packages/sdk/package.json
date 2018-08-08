@@ -4,7 +4,7 @@
   "private": true,
   "main": "build/index.js",
   "typings": "build/index.d.ts",
-  "module": "build-es/index.js",
+  "module": "build/index.js",
   "dependencies": {
     "axios": "0.18.0",
     "dexie": "3.0.0-alpha.2",
