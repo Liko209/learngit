@@ -1,9 +1,9 @@
 import NetworkResponseBuilder from '../NetworkResponseBuilder';
-import Response from './Response';
+import HttpResponse from './HttpResponse';
 
 class HttpResponseBuilder extends NetworkResponseBuilder {
-  build(): Response {
-    return new Response(this);
+  build(): HttpResponse {
+    return new HttpResponse(this);
   }
 }
 

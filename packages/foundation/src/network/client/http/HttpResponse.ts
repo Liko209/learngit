@@ -7,7 +7,7 @@ import BaseResponse from '../../BaseResponse';
 import NetworkResponseBuilder from '../NetworkResponseBuilder';
 import HttpResponseBuilder from './HttpResponseBuilder';
 
-class Response extends BaseResponse {
+class HttpResponse extends BaseResponse {
   static get builder() {
     return new HttpResponseBuilder();
   }
@@ -22,4 +22,4 @@ class Response extends BaseResponse {
     );
   }
 }
-export default Response;
+export default HttpResponse;

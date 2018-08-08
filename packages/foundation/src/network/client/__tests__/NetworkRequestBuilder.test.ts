@@ -1,8 +1,9 @@
-import NetworkRequestBuilder from '../NetworkRequestBuilder';
 import { NETWORK_VIA } from '../../network';
-import SocketRequest from '../socket/SocketRequest';
-import Request from '../http/Request';
 import NetworkManager from '../../NetworkManager';
+import { HttpRequest } from '../http';
+import { SocketRequest } from '../socket';
+import NetworkRequestBuilder from '../NetworkRequestBuilder';
+
 const builder = new NetworkRequestBuilder();
 describe('NetworkRequestBuilder', () => {
   it('should return SocketRequest when via socket', () => {
@@ -12,7 +13,7 @@ describe('NetworkRequestBuilder', () => {
 
   it('should return SocketRequest when via http', () => {
     const request = builder.setVia(NETWORK_VIA.HTTP).build();
-    expect(request).toBeInstanceOf(Request);
+    expect(request).toBeInstanceOf(HttpRequest);
   });
   it('should return SocketRequest when via all and getAvailableClientType return socket', () => {
     NetworkManager.Instance.clientManager.getAvailableClientType = jest
@@ -26,6 +27,6 @@ describe('NetworkRequestBuilder', () => {
       .fn()
       .mockReturnValueOnce(NETWORK_VIA.HTTP);
     const request = builder.setVia(NETWORK_VIA.ALL).build();
-    expect(request).toBeInstanceOf(Request);
+    expect(request).toBeInstanceOf(HttpRequest);
   });
 });

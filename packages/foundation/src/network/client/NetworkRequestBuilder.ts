@@ -3,7 +3,7 @@
  * @Date: 2018-06-04 15:43:31
  * Copyright © RingCentral. All rights reserved.
  */
-import HttpRequest from './http/Request';
+import { HttpRequest } from './http';
 import SocketRequest from './socket/SocketRequest';
 
 import { generateUUID, generateIncrementId } from '../util';
