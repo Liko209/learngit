@@ -1,3 +1,9 @@
+/*
+ * @Author: Henry Xu(henry.xu@ringcentral.com)
+ * @Date: 2018-08-08 13:16:21
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 export abstract class BasePage {
 
   private _t: TestController;

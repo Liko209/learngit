@@ -1,3 +1,9 @@
+/*
+ * @Author: Henry Xu(henry.xu@ringcentral.com)
+ * @Date: 2018-08-08 13:15:48
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { BlankPage } from '../page-models/BlankPage';
 import { EnvironmentSelectionPage } from '../page-models/EnvironmentSelectionPage';
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
