@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "env": "node environment/launch-env.js",
-    "test": "node index.js --env=true"
+    "test": "node index.js --env=true",
+    "testcafe": "testcafe selenium:chrome fixtures/demo.ts"
   },
   "engines": {
     "npm": ">=5.x.x",
@@ -20,5 +21,8 @@
     "cross-env": "^5.2.0",
     "testcafe": "^0.20.5",
     "testcafe-browser-provider-selenium": "^0.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
   }
 }
