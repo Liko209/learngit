@@ -33,8 +33,11 @@ function checkDiff(){
       let modified = deRepeatArray && deRepeatArray.map((item) => {
         return (dep && dep.hasOwnProperty(item) || devDep && devDep.hasOwnProperty(item))
       });
+      let foundModified = modified.filter(item => {
+        return item === true;
+      });
       let gitUser = checkGitUser()
-      if(modified.indexOf(true) > -1 && adminEmail.indexOf(gitUser.email) === -1 && (modified.length === 2 ? !deRepeatArray.includes('sdk') : true)) {
+      if(modified.indexOf(true) > -1 && adminEmail.indexOf(gitUser.email) === -1 && !(deRepeatArray.includes('sdk') && foundModified.length === 1)) {
           const chalk = require('chalk');
           console.log()
           console.warn(chalk.bgRed.dim(' Warning ') + ' '+ chalk.blue('You seem to be adding or upgrading a npm package'))

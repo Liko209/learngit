@@ -1340,9 +1340,9 @@ cz-conventional-changelog@2.0.0:
     right-pad "^1.0.1"
     word-wrap "^1.0.3"
 
-"cz-customizable@git+ssh://git@git.ringcentral.com:alvin.huang/cz-customizable.git#0.0.4":
+"cz-customizable@git+ssh://git@git.ringcentral.com:Fiji/cz-customizable.git#0.0.5":
   version "0.0.4"
-  resolved "git+ssh://git@git.ringcentral.com:alvin.huang/cz-customizable.git#e0f407a20946113c7fd3b21b618b2a20c67d0690"
+  resolved "git+ssh://git@git.ringcentral.com:Fiji/cz-customizable.git#e0f407a20946113c7fd3b21b618b2a20c67d0690"
   dependencies:
     find-config "0.3.0"
     winston "2.1.0"
