@@ -18,6 +18,8 @@
     "linux"
   ],
   "dependencies": {
+    "@types/allure-js-commons": "0.0.0",
+    "allure-js-commons": "^1.3.2",
     "cross-env": "^5.2.0",
     "testcafe": "^0.20.5",
     "testcafe-browser-provider-selenium": "^0.2.0"
