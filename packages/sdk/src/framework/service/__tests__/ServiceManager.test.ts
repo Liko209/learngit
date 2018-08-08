@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved
 */
 /// <reference path="../../../__tests__/types.d.ts" />
+import { Container } from 'foundation';
 import TestService from '../../__mocks__/services/TestService';
 import { ServiceManager } from '..';
-import { Container } from '../../Container';
 
 jest.mock('../AbstractService');
 

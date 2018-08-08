@@ -3,7 +3,7 @@
  * @Date: 2018-07-06 17:27:18
  * Copyright © RingCentral. All rights reserved.
  */
-import { Container } from './framework';
+import { Container } from 'foundation';
 
 const container = new Container({
   singleton: true,
