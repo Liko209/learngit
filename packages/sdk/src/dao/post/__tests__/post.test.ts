@@ -13,23 +13,23 @@ const posts: Post[] = [
     id: 3752569593860,
     text: '2',
     group_id: 9163628546,
-    created_at: 1
+    created_at: 1,
   }),
   postFactory.build({
     id: 3752569536516,
     group_id: 9163628546,
-    created_at: 3
+    created_at: 3,
   }),
   postFactory.build({
     id: 1151236399108,
     group_id: 9163628546,
-    created_at: 4
+    created_at: 4,
   }),
   postFactory.build({
     id: 1151236554756,
     group_id: 9163628546,
-    created_at: 2
-  })
+    created_at: 2,
+  }),
 ];
 
 describe('Post Dao', () => {
@@ -74,8 +74,8 @@ describe('Post Dao', () => {
 
     it('Delete posts by keys', async () => {
       await postDao.bulkDelete([posts[0].id, posts[1].id]);
-      let result1 = await postDao.get(posts[0].id);
-      let result2 = await postDao.get(posts[1].id);
+      const result1 = await postDao.get(posts[0].id);
+      const result2 = await postDao.get(posts[1].id);
       expect(result1).toBeFalsy();
       expect(result2).toBeFalsy();
     });
@@ -100,7 +100,7 @@ describe('Post Dao', () => {
       expect(result).toHaveLength(1);
       expect(result[0]).toMatchObject({
         id: 1151236399108,
-        created_at: 4
+        created_at: 4,
       });
     });
   });
@@ -108,13 +108,16 @@ describe('Post Dao', () => {
     beforeEach(async () => {
       await postDao.clear();
       const processedPosts: Post[] = [];
-      posts.forEach(element => {
-        let post = _.cloneDeep(element);
+
+      posts.forEach((element) => {
+        const post = _.cloneDeep(element);
         post.id = -post.id;
         processedPosts.push(post);
       });
+
       await postDao.bulkPut(processedPosts);
     });
+
     it('local pre-inserted posts', async () => {
       const result = await postDao.queryPreInsertPost();
       expect(result.length).toBeGreaterThan(1);

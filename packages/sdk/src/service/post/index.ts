@@ -17,6 +17,7 @@ import { Post, Profile, Item, Raw } from '../../models';
 import { ESendStatus, PostSendStatusHandler } from '../../service/post/postSendStatusHandler';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
+import { ErrorParser } from '../../utils/error';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
 export interface IPostResult {
@@ -55,7 +56,7 @@ export default class PostService extends BaseService<Post> {
   private postSendStatusHandler: PostSendStatusHandler;
   constructor() {
     const subscriptions = {
-      [SOCKET.POST]: handleDataFromSexio
+      [SOCKET.POST]: handleDataFromSexio,
     };
     super(PostDao, PostAPI, baseHandleData, subscriptions);
     this.postSendStatusHandler = new PostSendStatusHandler();
@@ -67,7 +68,7 @@ export default class PostService extends BaseService<Post> {
     const result: IPostResult = {
       posts: [],
       items: [],
-      hasMore: true
+      hasMore: true,
     };
     if (posts.length !== 0) {
       result.posts = posts;
@@ -86,11 +87,13 @@ export default class PostService extends BaseService<Post> {
     return result;
   }
 
-  async getPostsFromRemote({ groupId, postId, limit, direction }: IPostQuery): Promise<IRawPostResult> {
+  async getPostsFromRemote(
+    { groupId, postId, limit, direction }: IPostQuery,
+  ): Promise<IRawPostResult> {
     const params: any = {
-      group_id: groupId,
       limit,
-      direction
+      direction,
+      group_id: groupId,
     };
     if (postId) {
       params.post_id = postId;
@@ -100,7 +103,7 @@ export default class PostService extends BaseService<Post> {
     const result: IRawPostResult = {
       posts: [],
       items: [],
-      hasMore: false
+      hasMore: false,
     };
     if (requestResult && requestResult.data) {
       result.posts = requestResult.data.posts;
@@ -112,34 +115,46 @@ export default class PostService extends BaseService<Post> {
     return result;
   }
 
-  async getPostsByGroupId({ groupId, offset, postId = 0, limit = 20 }: IPostQuery): Promise<IPostResult> {
+  async getPostsByGroupId(
+    { groupId, offset, postId = 0, limit = 20 }: IPostQuery,
+  ): Promise<IPostResult> {
     try {
       const result = await this.getPostsFromLocal({
         groupId,
         offset,
-        limit
+        limit,
       });
       if (result.posts.length !== 0) {
         return result;
       }
+
       // should try to get more posts from server
       mainLogger.debug(
-        `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`
+        // tslint:disable-next-line:max-line-length
+        `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`,
       );
-      const remoteResult = await this.getPostsFromRemote({ groupId, postId, limit, direction: 'older' });
+
+      const remoteResult = await this.getPostsFromRemote({
+        groupId,
+        postId,
+        limit,
+        direction: 'older',
+      });
+
       const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
       const items = (await itemHandleData(remoteResult.items)) || [];
       return {
         posts,
         items,
-        hasMore: remoteResult.hasMore
+        hasMore: remoteResult.hasMore,
       };
+
     } catch (e) {
       mainLogger.error(e);
       return {
         posts: [],
         items: [],
-        hasMore: true
+        hasMore: true,
       };
     }
   }
@@ -147,7 +162,7 @@ export default class PostService extends BaseService<Post> {
   async getPostSendStatus(id: number): Promise<PostSendData> {
     return {
       id,
-      status: await this.postSendStatusHandler.getStatus(id)
+      status: await this.postSendStatusHandler.getStatus(id),
     };
   }
 
@@ -179,20 +194,25 @@ export default class PostService extends BaseService<Post> {
       await this.handlePreInsertProcess(info);
       const id = info.id;
       delete info.id;
+
       try {
-        let resp = await PostAPI.sendPost(info);
+        const resp = await PostAPI.sendPost(info);
+
         if (resp && resp.data) {
           info.id = id;
           return this.handleSendPostSuccess(resp.data, info);
           // resp = await baseHandleData(resp.data);
-        } else {
-          // error, notifiy, should add error handle after IResponse give back error info
-          return this.handleSendPostFail(id, info.version);
         }
+
+        // error, notifiy, should add error handle after IResponse give back error info
+        return this.handleSendPostFail(id, info.version);
+
       } catch (e) {
         mainLogger.warn('crash of innerSendPost()');
-        return this.handleSendPostFail(id, info.version);
+        this.handleSendPostFail(id, info.version);
+        throw ErrorParser.parse(e);
       }
+
     }
     return null;
   }
@@ -203,8 +223,8 @@ export default class PostService extends BaseService<Post> {
     notificationCenter.emitEntityPut(ENTITY.POST_SENT_STATUS, [
       {
         id: postInfo.id,
-        status: ESendStatus.INPROGRESS
-      }
+        status: ESendStatus.INPROGRESS,
+      },
     ]);
     const dao = daoManager.getDao(PostDao);
     await dao.put(postInfo);
@@ -215,7 +235,7 @@ export default class PostService extends BaseService<Post> {
     const post = transform<Post>(data);
     const obj: PostData = {
       id: oldPost.id,
-      data: post
+      data: post,
     };
     const result = [obj];
     notificationCenter.emitEntityReplace(ENTITY.POST, result);
@@ -230,8 +250,8 @@ export default class PostService extends BaseService<Post> {
     notificationCenter.emitEntityPut(ENTITY.POST_SENT_STATUS, [
       {
         id,
-        status: ESendStatus.FAIL
-      }
+        status: ESendStatus.FAIL,
+      },
     ]);
     return [];
   }
@@ -242,14 +262,14 @@ export default class PostService extends BaseService<Post> {
       if (!params.groupId) {
         return null;
       }
-      let itemService: ItemService = ItemService.getInstance();
-      let result = await itemService.sendFile(params);
+      const itemService: ItemService = ItemService.getInstance();
+      const result = await itemService.sendFile(params);
       if (result) {
         // result is file item
         const options = {
           text: '',
           itemIds: [Number(result.id)],
-          groupId: Number(params.groupId)
+          groupId: Number(params.groupId),
         };
         const info = PostServiceHandler.buildPostInfo(options);
         delete info.id; // should merge sendItemFile function into sendPost
@@ -288,7 +308,7 @@ export default class PostService extends BaseService<Post> {
       return null;
     }
     const postDao = daoManager.getDao(PostDao);
-    let post = await postDao.get(id);
+    const post = await postDao.get(id);
     if (post) {
       post.deactivated = true;
       post._id = post.id;
@@ -302,10 +322,10 @@ export default class PostService extends BaseService<Post> {
       }
       // error
       return null;
-    } else {
-      // error
-      return null;
     }
+
+    // error
+    return null;
   }
 
   async likePost(postId: number, personId: number, toLike: boolean): Promise<Post | null> {
@@ -313,7 +333,8 @@ export default class PostService extends BaseService<Post> {
       return null;
     }
     const postDao = daoManager.getDao(PostDao);
-    let post = await postDao.get(postId);
+    const post = await postDao.get(postId);
+
     if (post) {
       post.likes = post.likes || [];
       if (toLike) {
@@ -340,10 +361,10 @@ export default class PostService extends BaseService<Post> {
       }
       // error
       return null;
-    } else {
-      return null;
-      // error
     }
+
+    // error
+    return null;
   }
 
   async bookmarkPost(postId: number, toBook: boolean): Promise<Profile | null> {

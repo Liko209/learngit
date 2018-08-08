@@ -21,35 +21,29 @@ function cyan(...msg) {
 }
 if (!isYarn) {
   if (checkYarnInstalled()) {
-    cyan(
-      "You have yarn installed, please use yarn to install all dependencies"
-    );
-    log();
-    log("To install dependencies:");
-    cyan("$ yarn");
-    log();
-    log("To install a new package:");
-    cyan("$ yarn add [packageName]");
-    log();
-    cyan("For more help, see https://yarnpkg.com/en/docs/usage.");
+    cyan('You have yarn installed, please use yarn to install all dependencies')
+    log()
+    log('To install dependencies:')
+    cyan('$ yarn')
+    log()
+    log('To install a new package:')
+    cyan('$ yarn add [packageName]')
+    log()
+    cyan('For more help, see https://yarnpkg.com/en/docs/usage.')
 
-    process.exit(1);
+    process.exit(1)
   } else {
     cyan(`    To say goodbye to the "but it works on my machine" bugs, you should use yarn install dependencies,
     try ${chalk.underline.yellow.bold(
-      "brew install yarn"
-    )} to install yarn first`);
+        "brew install yarn"
+      )} to install yarn first`);
     log();
     cyan("For more help, see https://yarnpkg.com/en/docs/usage.");
     log();
     process.exit(1);
   }
 } else if (checkYarnInstalled() !== yarnVersion) {
-  console.error(
-    new Error(
-      `To be continued, you should have the version yarn@${yarnVersion} installed`
-    )
-  );
-  log();
-  process.exit(1);
+  console.error(new Error(`To be continued, you should have the yarn version ${yarnVersion} installed`))
+  log()
+  process.exit(1)
 }

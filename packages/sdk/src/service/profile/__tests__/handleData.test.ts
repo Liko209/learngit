@@ -8,19 +8,19 @@ import { daoManager, ProfileDao } from '../../../dao';
 import handleData from '../handleData';
 import { profileFactory } from '../../../__tests__/factories';
 
-jest.mock('dao', () => {
+jest.mock('../../../dao', () => {
   const dao = { get: jest.fn(), bulkPut: jest.fn() };
   return {
     daoManager: {
-      getDao: () => dao
-    }
+      getDao: () => dao,
+    },
   };
 });
 const mockAccountService = {
-  getCurrentUserProfileId: jest.fn()
+  getCurrentUserProfileId: jest.fn(),
 };
 
-jest.mock('service/account', () => {
+jest.mock('../../account', () => {
   class MockAccountService {
     static getInstance() {
       return mockAccountService;

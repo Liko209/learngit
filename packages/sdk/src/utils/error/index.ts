@@ -27,5 +27,5 @@ export {
   ErrorTypes,
   ErrorParser,
   Throw,
-  Aware
+  Aware,
 };

@@ -13,7 +13,7 @@ jest.mock('../../dao/base/Query');
 
 class MyDao extends BaseDao<{}> {}
 const fakeApi = {
-  getDataById: jest.fn()
+  getDataById: jest.fn(),
 };
 const EVENT = 'EVENT';
 class AService extends BaseService {
@@ -22,10 +22,10 @@ class AService extends BaseService {
   }
 }
 
-container.register({
+container.registerClass({
   name: AService.name,
   value: AService,
-  singleton: true
+  singleton: true,
 });
 
 describe('BaseService', () => {
@@ -79,7 +79,7 @@ describe('BaseService', () => {
   describe('getByIdFromAPI()', () => {
     it('should return data from API', async () => {
       const service = new AService();
-      fakeApi.getDataById.mockResolvedValue({ data: { _id: 4 }});
+      fakeApi.getDataById.mockResolvedValue({ data: { _id: 4 } });
 
       const result = await service.getByIdFromAPI(4);
 

@@ -16,7 +16,8 @@ const isObject = (value: any) => Object.prototype.toString.call(value) === '[obj
 // const isUndefined = value => Object.prototype.toString.call(value) === '[object Undefined]';
 const isFunction = (value: any) => Object.prototype.toString.call(value) === '[object Function]';
 // const isRegExp = value => Object.prototype.toString.call(value) === '[object RegExp]';
-const isIEOrEdge = typeof navigator !== 'undefined' && /(MSIE|Trident|Edge)/.test(navigator.userAgent);
+const isIEOrEdge = typeof navigator !== 'undefined'
+  && /(MSIE|Trident|Edge)/.test(navigator.userAgent);
 
 const transform = <T extends { id: number }>(item: any): T => {
   if (isObject(item)) {

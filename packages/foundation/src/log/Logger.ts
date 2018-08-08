@@ -3,6 +3,7 @@ import LoggingEvent from './LoggingEvent';
 import DateFormatter from './DateFormatter';
 
 import { LOG_LEVEL, DATE_FORMATTER } from './constants';
+import PersistentLogAppender from './appender/PersistentLogAppender';
 
 class Logger {
   private _appenders: Map<string, BaseAppender> = new Map();
@@ -29,7 +30,7 @@ class Logger {
 
     this._appenders = appenders;
 
-    this._appenders.forEach(appender => {
+    this._appenders.forEach((appender) => {
       appender.setLogger(this);
     });
   }
@@ -43,7 +44,7 @@ class Logger {
   }
 
   clear() {
-    this._appenders.forEach(appender => {
+    this._appenders.forEach((appender) => {
       appender.clear();
     });
   }
@@ -110,19 +111,24 @@ class Logger {
 
   log(logLevel: LOG_LEVEL, message: string) {
     if (this.canDoLog(logLevel)) {
-      this.dolog(logLevel, message);
+      this._dolog(logLevel, message);
     }
   }
 
-  doAppend() {
-    this._appenders.forEach(appender => {
-      appender.doAppend();
+  async doAppend() {
+    const doAppends: Promise<void>[] = [];
+    this._appenders.forEach((appender) => {
+      if (appender instanceof PersistentLogAppender) {
+        doAppends.push(appender.doAppend());
+      }
     });
+
+    await Promise.all(doAppends);
   }
 
-  private dolog(logLevel: LOG_LEVEL, message: string) {
+  private _dolog(logLevel: LOG_LEVEL, message: string) {
     const loggingEvent = new LoggingEvent(logLevel, message, this);
-    this._appenders.forEach(appender => {
+    this._appenders.forEach((appender) => {
       appender.log(loggingEvent);
     });
   }

@@ -15,7 +15,7 @@ class ServiceManager extends EventEmitter2 {
   }
 
   getServices(names: string[]): IService[] {
-    let services: IService[] = [];
+    const services: IService[] = [];
     this._serviceMap.forEach((service, name) => {
       if (names.includes(name)) {
         services.push(service);
@@ -25,49 +25,62 @@ class ServiceManager extends EventEmitter2 {
   }
 
   getAllServices() {
-    let services: IService[] = [];
+    const services: IService[] = [];
     this._serviceMap.forEach(value => services.push(value));
     return services;
+  }
+
+  getAllServiceNames() {
+    const names: string[] = [];
+    this._serviceMap.forEach((service, name) => names.push(name));
+    return names;
   }
 
   getService(name: string): IService | null {
     return this._serviceMap.get(name) || null;
   }
 
-  stopService(name: string): void {
+  async startService(name: string): Promise<IService> {
     let service = this.getService(name);
-    if (service) {
-      this._stopService(service);
-    }
-  }
 
-  startService(name: string): void {
-    let service = this.getService(name) || this._container.get<IService>(name);
+    if (!service) {
+      if (this._container.isAsync(name)) {
+        service = await this._container.asyncGet<IService>(name);
+      } else {
+        service = this._container.get<IService>(name);
+      }
+    }
+
     if (!service.isStarted()) {
       service.start();
     }
+
     this._serviceMap.set(name, service);
+
+    return service;
   }
 
-  startServices(services: string[]): void {
-    services.forEach(service => {
-      this.startService(service);
-    });
+  async startServices(services: string[]): Promise<IService[]> {
+    const promises = services.map(service => this.startService(service));
+    return Promise.all(promises);
+  }
+
+  stopService(name: string): void {
+    const service = this.getService(name);
+    if (service) {
+      service.stop();
+      this._serviceMap.delete(name);
+    }
   }
 
   stopServices(services: string[]): void {
-    services.forEach(service => {
+    services.forEach((service) => {
       this.stopService(service);
     });
   }
 
   stopAllServices() {
-    this.getAllServices().forEach(service => this._stopService(service));
-  }
-
-  _stopService(service: IService) {
-    service.stop();
-    this._serviceMap.delete(name);
+    this.getAllServiceNames().forEach(service => this.stopService(service));
   }
 }
 

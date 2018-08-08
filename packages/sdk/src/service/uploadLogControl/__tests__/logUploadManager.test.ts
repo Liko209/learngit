@@ -8,6 +8,6 @@ import LogUploadLogManager from '../logUploadManager';
 
 describe('log upload manager', () => {
   it('log upload manager', () => {
-    LogUploadLogManager.Instance();
+    LogUploadLogManager.instance();
   });
 });

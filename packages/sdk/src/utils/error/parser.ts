@@ -8,25 +8,45 @@
 import Dexie from 'dexie';
 import BaseError from './base';
 import ErrorTypes from './types';
+import { Response } from 'foundation';
+// import BaseResponse from 'foundation/network/BaseResponse';
 
 class ErrorParser {
-  static parse(error: any) {
-    if (error instanceof Dexie.DexieError) {
-      return ErrorParser.dexie(error);
-    } else if (error.response) {
-      return ErrorParser.http(error);
-    } else if (error.error && Object.prototype.toString.call(error.error) === '[object String]') {
-      return new BaseError(ErrorTypes[error.error.toUpperCase()], error.error_description);
+  static parse(err: any) {
+    // need refactor
+    // if (!err) return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Server Crash');
+
+    if (err instanceof Dexie.DexieError) {
+      return ErrorParser.dexie(err);
     }
-    return new BaseError(ErrorTypes.UNDEFINED_ERROR, error.message);
+
+    if (err instanceof Response) {
+      return ErrorParser.http(err);
+    }
+
+    return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Undefined error!');
   }
 
-  static dexie(error: any) {
-    return new BaseError(ErrorTypes.DB, error.message);
+  static dexie(err: any) {
+    return new BaseError(ErrorTypes.DB, err.message);
   }
 
-  static http(error: any) {
-    return new BaseError(error.response.status + ErrorTypes.HTTP, error.message);
+  static http(err: any) {
+    if (err.statusText === 'Network Error') {
+      return new BaseError(ErrorTypes.NETWORK, 'Network Error: Please check whether server crash');
+    }
+
+    if (err.statusText === 'NOT NETWORK CONNECTION') {
+      return new BaseError(ErrorTypes.NETWORK, 'Network Error: Please check network connection');
+    }
+
+    const { data } = err;
+
+    if (typeof data.error === 'string') {
+      return new BaseError(ErrorTypes[data.error.toUpperCase()], data.error_description);
+    }
+
+    return new BaseError(err.status + ErrorTypes.HTTP, data.error.message);
   }
 }
 export default ErrorParser;

@@ -5,5 +5,5 @@
  */
 export { default as Socket } from './Socket';
 export { default as SocketRequest } from './SocketRequest';
-export { default as SocketResponse } from './SocketResponse';
-export { SocketClient, SocketClientGetter } from './SocketIOClient';
+export { SocketResponse } from './SocketResponse';
+export { SocketClient } from './SocketIOClient';

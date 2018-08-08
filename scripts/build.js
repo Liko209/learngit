@@ -31,8 +31,6 @@ const browserBuild = require('./browserBuild');
 const OK = chalk.reset.inverse.bold.green(' DONE ');
 const SRC_DIR = 'src';
 const BUILD_DIR = 'build';
-const BUILD_ES_DIR = 'build-es';
-const IGNORE_PATTERN = '**/__{tests,mocks}__/**';
 const PACKAGES_DIR = path.resolve(__dirname, '../packages');
 
 const adjustToTerminalWidth = str => {
@@ -61,7 +59,7 @@ function getBuildPath(file, buildFolder) {
   return path.resolve(pkgBuildPath, relativeToSrcPath);
 }
 
-function buildBrowserPackage(p, format = 'umd') {
+function buildBrowserPackage(p, multipleEntry = false) {
   const srcDir = path.resolve(p, SRC_DIR);
   const pkgJsonPath = path.resolve(p, 'package.json');
 
@@ -69,15 +67,12 @@ function buildBrowserPackage(p, format = 'umd') {
     return;
   }
 
-  const { main, module: moduleEntry } = require(pkgJsonPath);
-  const entry = format === 'esm' ? moduleEntry : main;
-  const fieldName = format === 'esm' ? 'module' : 'main';
-  const buildDir = format === 'esm' ? BUILD_ES_DIR : BUILD_DIR;
+  const { main } = require(pkgJsonPath);
 
-  if (entry) {
-    if (entry.indexOf(buildDir) !== 0) {
+  if (!multipleEntry) {
+    if (main.indexOf(BUILD_DIR) !== 0) {
       throw new Error(
-        `${fieldName} field for ${pkgJsonPath} should start with "${buildDir}"`
+        `main field for ${pkgJsonPath} should start with "${BUILD_DIR}"`
       );
     }
   }
@@ -86,10 +81,11 @@ function buildBrowserPackage(p, format = 'umd') {
     p,
     p.split('/').pop(),
     path.resolve(srcDir, 'index.ts'),
-    path.resolve(p, entry),
-    format
+    path.resolve(p, main),
+    'esm',
+    multipleEntry
   ).then(() => {
-    process.stdout.write(adjustToTerminalWidth(`${path.basename(p)} - ${format}\n`));
+    process.stdout.write(adjustToTerminalWidth(`${path.basename(p)}\n`));
     process.stdout.write(`${OK}\n`);
   }).catch(e => {
     console.error(e);
@@ -100,10 +96,14 @@ function buildBrowserPackage(p, format = 'umd') {
 async function build(packages) {
   for (let i = 0; i < packages.length; i++) {
     const p = packages[i];
-    await Promise.all([
-      buildBrowserPackage(p, 'esm'),
-      buildBrowserPackage(p),
-    ])
+    if (p.includes('ui-components')) {
+      return;
+    }
+    if (p.includes('ui')) {
+      buildBrowserPackage(p, true)
+    } else {
+     await buildBrowserPackage(p)
+    }
   }
 }
 
@@ -117,4 +117,8 @@ if (files.length) {
 } else {
   process.stdout.write(chalk.inverse(' Building packages \n'));
   build(packages);
+}
+
+module.exports = {
+  SRC_DIR
 }

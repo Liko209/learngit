@@ -10,7 +10,7 @@ function generateFakeItem() {
   return {
     id: faker.random.uuid(),
     name: faker.name.firstName(),
-    age: faker.random.number(100)
+    age: faker.random.number(100),
   };
 }
 

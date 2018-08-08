@@ -5,8 +5,8 @@
  */
 import * as service from './service';
 import * as dao from './dao';
-import * as api from './api';
 import * as utils from './utils';
+import * as api from './api';
 
 export * from './framework';
 export { default as GlipTypeDictionary } from './utils/glip-type-dictionary/types';
@@ -16,8 +16,10 @@ import Sdk from './Sdk';
 import { container } from './container';
 import { registerConfigs } from './registerConfigs';
 
-container.registerAll(registerConfigs);
-const sdk = container.get(Sdk.name);
+registerConfigs.classes.forEach(config => container.registerClass(config));
+// registerConfigs.asyncClasses.forEach(config => container.registerAsyncClass(config));
+registerConfigs.constants.forEach(config => container.registerConstantValue(config));
 
-export default sdk;
-export { sdk as Sdk, service, dao, api, utils };
+const sdk = container.get(Sdk.name);
+export { sdk as Sdk };
+export { sdk, service, utils, dao, api };

@@ -20,5 +20,9 @@ class DataDispatcher extends EventEmitter2 {
       ),
     );
   }
+
+  private async _emitMessageAsync([key, message]: [string, any]) {
+    return this.emitAsync(`SOCKET.${key.toUpperCase()}`, message);
+  }
 }
 export default new DataDispatcher();

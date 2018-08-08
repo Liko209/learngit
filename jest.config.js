@@ -1,10 +1,14 @@
 module.exports = {
   roots: ['demo', 'application', 'packages'],
-  collectCoverageFrom: ["src/**/*.{js,jsx,ts,tsx}"],
+  collectCoverageFrom: [
+    `${process.env.APP}/src/**/*.{js,jsx,ts,tsx}`,
+    `!${process.env.APP}/src/**/__tests__/*`,
+    `!${process.env.APP}/src/**/*.d.ts`
+  ],
   setupFiles: ["<rootDir>/config/polyfills.js", '<rootDir>/config/enzymeTestAdapterSetup.js'],
   testMatch: [
-    "<rootDir>/**/__tests__/**/*test.(j|t)s?(x)",
-    "<rootDir>/**/?(*.)(spec|test).(j|t)s?(x)"
+    `${process.env.APP}/src/**/__tests__/**/*test.(j|t)s?(x)`,
+    `${process.env.APP}/src/**/?(*.)(spec|test).(j|t)s?(x)`
   ],
   testURL: "http://localhost",
   testEnvironment: 'node',
@@ -18,7 +22,7 @@ module.exports = {
   ],
   moduleNameMapper: {
     "^react-native$": "react-native-web",
-    '^@/(.*)$': `${process.env.APP}/src/$1`,
+    '^@/(.*)$': `${process.env.APP}/src/$1`
   },
   moduleFileExtensions: [
     "web.ts",

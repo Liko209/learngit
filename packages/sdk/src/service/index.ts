@@ -1,6 +1,4 @@
 // classes
-import './windowEventListener';
-
 export { default as BaseService } from './BaseService';
 export { default as AccountService } from './account';
 export { default as AuthService } from './auth';
@@ -21,5 +19,5 @@ export { default as uploadManager } from './UploadManager';
 export { default as serviceManager } from './serviceManager';
 
 export * from './SocketManager';
-export * from './constants';
 export * from './eventKey';
+export * from './constants';

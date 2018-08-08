@@ -12,7 +12,7 @@ describe('Permission', () => {
     is_team: true,
     most_recent_content_modified_at: 4,
     most_recent_post_created_at: 5,
-    most_recent_post_id: 6
+    most_recent_post_id: 6,
   });
 
   const userId = 123456;
@@ -24,7 +24,7 @@ describe('Permission', () => {
 
   it('isPublic(): should return true when is_public=true', () => {
     const group = {
-      is_public: true
+      is_public: true,
     };
     const mock = { ...groupBase, ...group };
     const permission = createPermission(mock);
@@ -33,7 +33,7 @@ describe('Permission', () => {
 
   it('isGuest(): should return true when guest_user_company_ids contain userId', () => {
     const group = {
-      guest_user_company_ids: [companyId]
+      guest_user_company_ids: [companyId],
     };
     const mock = { ...groupBase, ...group };
     const permission = createPermission(mock);
@@ -44,7 +44,7 @@ describe('Permission', () => {
     const group = {
       is_team: false,
       members: [userId],
-      creator_id: userId
+      creator_id: userId,
     };
     const mock = { ...groupBase, ...group };
     const permission = createPermission(mock);
@@ -53,7 +53,7 @@ describe('Permission', () => {
 
   it('isTeamGroup(): should return true when is_team=true', () => {
     const group = {
-      is_team: true
+      is_team: true,
     };
     const mock = { ...groupBase, ...group };
     const permission = createPermission(mock);
@@ -63,7 +63,7 @@ describe('Permission', () => {
   it('isCommonGroup(): should return true', () => {
     const group = {
       is_team: false,
-      members: [1, 2]
+      members: [1, 2],
     };
     const mock = { ...groupBase, ...group };
     const permission = createPermission(mock);
@@ -71,18 +71,18 @@ describe('Permission', () => {
   });
 
   describe('getTeamGroupLevel()', () => {
-    let group = {
+    const group = {
       is_team: true,
       permissions: {
         admin: {
           level: 15,
-          uids: [userId]
+          uids: [userId],
         },
         user: {
           level: 15,
-          uids: []
-        }
-      }
+          uids: [],
+        },
+      },
     };
 
     it('should return permissions level', () => {
@@ -92,8 +92,8 @@ describe('Permission', () => {
     });
 
     it('should return default level 31', () => {
-      let group = {
-        is_team: true
+      const group = {
+        is_team: true,
       };
       const mock = { ...groupBase, ...group };
       const permission = createPermission(mock);
@@ -128,7 +128,7 @@ describe('Permission', () => {
         TEAM_ADD_MEMBER: true,
         TEAM_ADD_INTEGRATIONS: true,
         TEAM_PIN_POST: true,
-        TEAM_ADMIN: true
+        TEAM_ADMIN: true,
       };
       expect(Permission.createPermissionsMask(permissionFlags)).toBe(1 + 2 + 4 + 8 + 16);
     });
@@ -138,7 +138,7 @@ describe('Permission', () => {
         TEAM_ADD_MEMBER: false,
         TEAM_ADD_INTEGRATIONS: true,
         TEAM_PIN_POST: false,
-        TEAM_ADMIN: true
+        TEAM_ADMIN: true,
       };
       expect(Permission.createPermissionsMask(permissionFlags)).toBe(1 + 4 + 16);
     });
@@ -148,7 +148,7 @@ describe('Permission', () => {
         TEAM_ADD_MEMBER: true,
         TEAM_ADD_INTEGRATIONS: true,
         TEAM_PIN_POST: true,
-        TEAM_ADMIN: false
+        TEAM_ADMIN: false,
       };
       expect(Permission.createPermissionsMask(permissionFlags)).toBe(2 + 4 + 8);
     });

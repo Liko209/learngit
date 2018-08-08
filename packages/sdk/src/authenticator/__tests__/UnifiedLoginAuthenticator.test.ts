@@ -11,16 +11,16 @@ import { UnifiedLoginAuthenticator } from '..';
 import { generateCode, oauthTokenViaAuthCode } from '../../api/ringcentral/auth';
 
 jest.mock('../../api/glip/user', () => ({
-  loginGlip: jest.fn()
+  loginGlip: jest.fn(),
 }));
 
 jest.mock('../../api/ringcentral/auth', () => ({
   oauthTokenViaAuthCode: jest.fn(),
-  generateCode: jest.fn()
+  generateCode: jest.fn(),
 }));
 
 describe('UnifiedLoginAuthenticator', () => {
-  let unified = new UnifiedLoginAuthenticator();
+  const unified = new UnifiedLoginAuthenticator();
   it('UnifiedLoginAuthenticator invalid tokens', async () => {
     const resp = await unified.authenticate({});
     expect(resp.success).toBe(false);
@@ -29,13 +29,13 @@ describe('UnifiedLoginAuthenticator', () => {
     oauthTokenViaAuthCode.mockResolvedValue({ data: 'token' });
     generateCode.mockResolvedValueOnce({
       data: {
-        code: 'code'
-      }
+        code: 'code',
+      },
     });
     loginGlip.mockResolvedValueOnce({
       headers: {
-        'x-authorization': 'glip_token'
-      }
+        'x-authorization': 'glip_token',
+      },
     });
     Api.init({});
 

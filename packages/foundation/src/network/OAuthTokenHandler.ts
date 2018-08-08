@@ -6,7 +6,12 @@
 import _ from 'lodash';
 import { DEFAULT_BEFORE_EXPIRED } from './Constants';
 import Token from './Token';
-import { ITokenHandler, IHandleType, ITokenRefreshListener, IToken } from '..';
+import {
+  ITokenHandler,
+  IHandleType,
+  ITokenRefreshListener,
+  IToken,
+} from './network';
 class OAuthTokenHandler implements ITokenHandler {
   type: IHandleType;
   token?: Token;
@@ -20,7 +25,7 @@ class OAuthTokenHandler implements ITokenHandler {
     token?: Token,
     basic?: string,
     listener?: ITokenRefreshListener,
-    isOAuthTokenRefreshing: boolean = false
+    isOAuthTokenRefreshing: boolean = false,
   ) {
     this.type = type;
     this.token = token;
@@ -87,7 +92,8 @@ class OAuthTokenHandler implements ITokenHandler {
     const now = Date.now();
     if (now < timestamp) {
       return true;
-    } else if (now > timestamp + duration) {
+    }
+    if (now > timestamp + duration) {
       return true;
     }
     return false;
@@ -119,42 +125,42 @@ class OAuthTokenHandler implements ITokenHandler {
       this.isOAuthTokenRefreshing = true;
       if (this.isAccessTokenRefreshable()) {
         if (this.isRefreshTokenExpired()) {
-          this.notifyRefreshTokenFailure();
+          this._notifyRefreshTokenFailure();
           return;
         }
         if (this.token) {
           this.doRefreshToken(this.token)
-            .then(token => {
+            .then((token) => {
               if (token) {
                 this.token = token;
-                this.notifyRefreshTokenSuccess(token);
+                this._notifyRefreshTokenSuccess(token);
               }
             })
             .catch(() => {
-              this.notifyRefreshTokenFailure();
+              this._notifyRefreshTokenFailure();
             });
         }
       } else {
-        this.notifyRefreshTokenFailure();
+        this._notifyRefreshTokenFailure();
       }
     } else {
-      this.notifyRefreshTokenFailure();
+      this._notifyRefreshTokenFailure();
     }
   }
 
-  private resetOAuthTokenRefreshingFlag() {
+  private _resetOAuthTokenRefreshingFlag() {
     this.isOAuthTokenRefreshing = false;
   }
 
-  private notifyRefreshTokenFailure() {
-    this.resetOAuthTokenRefreshingFlag();
+  private _notifyRefreshTokenFailure() {
+    this._resetOAuthTokenRefreshingFlag();
     if (this.listener) {
       this.listener.onRefreshTokenFailure(this.type);
     }
   }
 
-  private notifyRefreshTokenSuccess(token: Token) {
-    this.resetOAuthTokenRefreshingFlag();
+  private _notifyRefreshTokenSuccess(token: Token) {
+    this._resetOAuthTokenRefreshingFlag();
     if (this.listener) {
       this.listener.onRefreshTokenSuccess(this.type, token);
     }

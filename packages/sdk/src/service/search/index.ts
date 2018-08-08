@@ -21,7 +21,7 @@ import {
   RawQuery,
   QueryByPageNum,
   InitialSearchResp,
-  SearchResultResponse
+  SearchResult,
 } from './types.d';
 import { IResponse } from '../../api/NetworkClient';
 import { SOCKET } from '../eventKey';
@@ -29,14 +29,17 @@ import { SOCKET } from '../eventKey';
 export default class SearchService extends BaseService {
   static serviceName = 'SearchService';
   static MIN_QUERY_WORD_LENGTH = 1;
-  static filterKeys = ['group_id', 'begin_time', 'end_time', 'creator_id', 'type', 'clent_request_id'];
+  static filterKeys = [
+    'group_id', 'begin_time', 'end_time',
+    'creator_id', 'type', 'client_request_id',
+  ];
   public activeServerRequestId?: RequestId;
   public lastQuery?: RawQuery;
 
   constructor() {
     const subscriptions = {
       [SOCKET.SEARCH]: handleData,
-      [SOCKET.SEARCH_SCROLL]: handleData
+      [SOCKET.SEARCH_SCROLL]: handleData,
     };
     super(null, null, null, subscriptions);
   }
@@ -49,7 +52,7 @@ export default class SearchService extends BaseService {
       const people = await personDao.searchPeopleByKey(key);
       return {
         people,
-        teams
+        teams,
       };
     } catch (e) {
       mainLogger.info(`searchContact key ==> ${key}, error ===> ${e}`);
@@ -68,7 +71,7 @@ export default class SearchService extends BaseService {
     }
   }
   cleanQuery(queryString: QueryString = ''): QueryString {
-    const specialCharactersReg = /[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]/g; //eslint-disable-line
+    const specialCharactersReg = /[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]/g; // eslint-disable-line
     const queryStringCleaned = queryString.replace(specialCharactersReg, ' ').trim();
     const shortQueryWords = (word: QueryString): Boolean => {
       return word.length >= SearchService.MIN_QUERY_WORD_LENGTH;
@@ -79,7 +82,7 @@ export default class SearchService extends BaseService {
       .join(' ');
   }
 
-  async cancelSearchRequest(requestId: RequestId): Promise<IResponse<SearchResultResponse>> {
+  async cancelSearchRequest(requestId: RequestId): Promise<IResponse<SearchResult>> {
     const params: CancelRequestParam = { previous_server_request_id: requestId };
     return SearchAPI.search(params);
   }
@@ -104,8 +107,11 @@ export default class SearchService extends BaseService {
     return resp.data;
   }
 
-  fetchResultsByPage(query: QueryByPageNum): Promise<IResponse<SearchResultResponse>> {
-    const params = { scroll_request_id: query.pageNum, search_request_id: this.activeServerRequestId };
+  fetchResultsByPage(query: QueryByPageNum): Promise<IResponse<SearchResult>> {
+    const params = {
+      scroll_request_id: query.pageNum,
+      search_request_id: this.activeServerRequestId,
+    };
     return SearchAPI.scrollSearch(params);
   }
 

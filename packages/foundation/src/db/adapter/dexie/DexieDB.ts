@@ -11,7 +11,7 @@ import {
   IDatabase,
   IDatabaseCollection,
   ISchema,
-  ISchemaVersions
+  ISchemaVersions,
 } from '../../db';
 
 class DexieDB implements IDatabase {
@@ -19,7 +19,7 @@ class DexieDB implements IDatabase {
   constructor(schema: ISchema) {
     const { name } = schema;
     this.db = new Dexie(name);
-    this.initSchema(schema);
+    this._initSchema(schema);
   }
 
   async ensureDBOpened(): Promise<void> {
@@ -53,11 +53,11 @@ class DexieDB implements IDatabase {
   async getTransaction(
     mode: string | void,
     collections: IDatabaseCollection<any>[] | void,
-    callback: () => {}
+    callback: () => {},
   ): Promise<void> {
     if (mode && collections && Array.isArray(collections)) {
       const tables = collections.map((c: IDatabaseCollection<any>) =>
-        (c as DexieCollection<any>).getTable()
+        (c as DexieCollection<any>).getTable(),
       );
       await this.db.transaction(mode as TransactionMode, tables, callback);
     } else {
@@ -65,16 +65,15 @@ class DexieDB implements IDatabase {
     }
   }
 
-  private initSchema(schema: ISchema) {
+  private _initSchema(schema: ISchema) {
     const versions: ISchemaVersions = schema.schema;
-    Object.keys(versions).forEach(version => {
+    Object.keys(versions).forEach((version) => {
       const sch: ISchemaDefinition = versions[version];
       const dexieSchema = {};
       const callbacks = {};
-      Object.keys(sch).forEach(tb => {
-        const { unique, indices = [], onUpgrade }: TableSchemaDefinition = sch[
-          tb
-        ];
+      Object.keys(sch).forEach((tb) => {
+        const { unique, indices = [], onUpgrade }: TableSchemaDefinition = sch[tb
+];
         const def = `${unique}${
           indices.length ? `, ${indices.join(', ')}` : ''
         }`;
@@ -85,16 +84,16 @@ class DexieDB implements IDatabase {
       });
       const v = this.db.version(Number(version)).stores(dexieSchema);
       if (Object.keys(callbacks).length) {
-        v.upgrade(tx => {
+        v.upgrade((tx) => {
           return Promise.all(
             Object.entries(callbacks).map(
               ([tb, onUpgrade]: [string, (item: any) => void]) => {
                 return tx
                   .table(tb)
                   .toCollection()
-                  .modify((item: any) => onUpgrade(item)); // eslint-disable-line max-nested-callbacks
-              }
-            )
+                  .modify((item: any) => onUpgrade(item));
+              },
+            ),
           );
         });
       }

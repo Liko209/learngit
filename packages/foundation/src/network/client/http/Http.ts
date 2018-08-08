@@ -11,8 +11,8 @@ import Response from './Response';
 import {
   IRequest,
   INetworkRequestExecutorListener,
-  NETWORK_FAIL_TYPE
-} from '../../..';
+  NETWORK_FAIL_TYPE,
+} from '../../network';
 class Http extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
     super.request(request, listener);
@@ -24,20 +24,20 @@ class Http extends BaseClient {
       host,
       path,
       timeout,
-      requestConfig = {}
+      requestConfig = {},
     } = request;
 
     const options = {
-      baseURL: host,
-      url: path,
       method,
       headers,
       timeout,
+      baseURL: host,
+      url: path,
       data: {},
       params: {},
-      cancelToken: new CancelToken(cancel => {
+      cancelToken: new CancelToken((cancel) => {
         this.tasks[request.id].cancel = cancel;
-      })
+      }),
     };
     if (request.data) {
       options.data = request.data;
@@ -51,7 +51,7 @@ class Http extends BaseClient {
     }
 
     axios(options)
-      .then(res => {
+      .then((res) => {
         delete this.tasks[request.id];
         const { data, status, statusText } = res;
         const response = Response.builder
@@ -61,9 +61,9 @@ class Http extends BaseClient {
           .setRequest(request)
           .setHeaders(res.headers)
           .build();
-        listener.onSuccess(request.id, response);
+        listener.onSuccess(response);
       })
-      .catch(err => {
+      .catch((err) => {
         delete this.tasks[request.id];
         const { response = {}, code, message } = err;
         const { data } = response;
@@ -83,7 +83,7 @@ class Http extends BaseClient {
           .setHeaders(response.headers)
           .setRequest(request)
           .build();
-        listener.onFailure(request.id, res);
+        listener.onFailure(res);
       });
   }
 }

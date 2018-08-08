@@ -110,7 +110,7 @@ describe('GroupService', () => {
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.get.mockResolvedValue(1); // userId
 
-    const mockNormal = { data: { _id: 1 }};
+    const mockNormal = { data: { _id: 1 } };
     GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
     const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
     expect(result1).toEqual([{ id: 1 }]);
@@ -147,8 +147,8 @@ describe('GroupService', () => {
   it('getPermissions(group_id)', async () => {
     const mock = [1, 2, 4, 8];
     const group = groupFactory.build({
-      permissions: { admin: { uids: [731217923], level: 31 }, user: { uids: [], level: 15 }},
-      id: 6037741574
+      permissions: { admin: { uids: [731217923], level: 31 }, user: { uids: [], level: 15 } },
+      id: 6037741574,
     });
     const result = await groupService.getPermissions(group);
     expect(result).toEqual(mock);
@@ -162,8 +162,8 @@ describe('GroupService', () => {
       created_at: 1511918848032,
       creator_id: 1394810883,
       description: 'Fiji Core',
-      permissions: { admin: { uids: [731217923], level: 31 }, user: { uids: [], level: 15 }},
-      id: 6037741574
+      permissions: { admin: { uids: [731217923], level: 31 }, user: { uids: [], level: 15 } },
+      id: 6037741574,
     });
     jest.spyOn(daoManager, 'get');
     daoManager.get.mockReturnValueOnce(1394810883);
@@ -182,9 +182,9 @@ describe('GroupService', () => {
       const mockGroup = groupFactory.build({
         id: 1,
         deactivated: false,
-        permissions: { admin: { uids: [731217923], level: 31 }, user: { uids: [], level: 15 }},
+        permissions: { admin: { uids: [731217923], level: 31 }, user: { uids: [], level: 15 } },
         guest_user_company_ids: [],
-        is_team: false
+        is_team: false,
       });
       daoManager.getDao.mockReturnValueOnce(groupDao);
       daoManager.getKVDao.mockReturnValueOnce(accountDao);
@@ -203,18 +203,18 @@ describe('GroupService', () => {
     it('pinPost() with successful path', async () => {
       jest.spyOn(groupService, 'canPinPost');
 
-      let mockGroup = { id: 1, pinned_post_ids: [10] };
+      const mockGroup = { id: 1, pinned_post_ids: [10] };
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.get.mockResolvedValueOnce(mockGroup);
       groupService.canPinPost.mockReturnValue(true);
       groupDao.get.mockResolvedValue(mockGroup);
 
-      GroupAPI.pinPost.mockResolvedValueOnce({ data: { _id: 1, pinned_post_ids: [10] }});
+      GroupAPI.pinPost.mockResolvedValueOnce({ data: { _id: 1, pinned_post_ids: [10] } });
       await handleData.mockResolvedValueOnce(null);
       let pinResult = await groupService.pinPost(10, 1, true);
       expect(pinResult.pinned_post_ids).toEqual([10]);
 
-      GroupAPI.pinPost.mockResolvedValueOnce({ data: { _id: 1, pinned_post_ids: [] }});
+      GroupAPI.pinPost.mockResolvedValueOnce({ data: { _id: 1, pinned_post_ids: [] } });
       await handleData.mockResolvedValueOnce(null);
       pinResult = await groupService.pinPost(10, 1, false);
       console.log(pinResult);
@@ -226,7 +226,7 @@ describe('GroupService', () => {
     it('pinPost() with fail path', async () => {
       jest.spyOn(groupService, 'canPinPost');
 
-      let mockGroup = { id: 1, pinned_post_ids: [10] };
+      const mockGroup = { id: 1, pinned_post_ids: [10] };
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.get.mockResolvedValue(mockGroup);
       groupService.canPinPost.mockReturnValueOnce(true);
@@ -249,13 +249,13 @@ describe('GroupService', () => {
     it('pinPost() with fail path', async () => {
       jest.spyOn(groupService, 'canPinPost');
 
-      let mockGroup = { id: 1, pinned_post_ids: [10] };
+      const mockGroup = { id: 1, pinned_post_ids: [10] };
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.get.mockResolvedValue(mockGroup);
       groupService.canPinPost.mockReturnValueOnce(true);
 
-      GroupAPI.pinPost.mockResolvedValueOnce({ error: {}});
-      let pinResult = await groupService.pinPost(11, 1, true);
+      GroupAPI.pinPost.mockResolvedValueOnce({ error: {} });
+      const pinResult = await groupService.pinPost(11, 1, true);
       expect(pinResult).toBe(null);
 
       jest.clearAllMocks();
@@ -291,13 +291,13 @@ describe('GroupService', () => {
       privacy: 'private',
       permissions: {
         admin: {
-          uids: [1323]
+          uids: [1323],
         },
         user: {
           uids: [],
-          level: 100
-        }
-      }
+          level: 100,
+        },
+      },
     };
     beforeEach(() => {
       jest.clearAllMocks();
@@ -305,21 +305,21 @@ describe('GroupService', () => {
 
     it('privacy should be protected if it is public', async () => {
       await groupService.createTeam('some team', 1323, [], 'abc', {
-        isPublic: true
+        isPublic: true,
       });
       expect(GroupAPI.createTeam).toHaveBeenCalledWith(
         Object.assign({}, data, {
           privacy: 'protected',
           permissions: {
             admin: {
-              uids: [1323]
+              uids: [1323],
             },
             user: {
               uids: [],
-              level: 2
-            }
-          }
-        })
+              level: 2,
+            },
+          },
+        }),
       );
     });
 
@@ -329,21 +329,21 @@ describe('GroupService', () => {
         canAddIntegrations: true,
         canAddMember: true,
         canPin: true,
-        canPost: true
+        canPost: true,
       });
       expect(GroupAPI.createTeam).toHaveBeenCalledWith(
         Object.assign({}, data, {
           privacy: 'protected',
           permissions: {
             admin: {
-              uids: [1323]
+              uids: [1323],
             },
             user: {
               uids: [],
-              level: 1 + 2 + 4 + 8
-            }
-          }
-        })
+              level: 1 + 2 + 4 + 8,
+            },
+          },
+        }),
       );
     });
 
@@ -358,7 +358,7 @@ describe('GroupService', () => {
         TEAM_ADD_MEMBER: false,
         TEAM_ADD_INTEGRATIONS: false,
         TEAM_PIN_POST: false,
-        TEAM_ADMIN: false
+        TEAM_ADMIN: false,
       });
     });
 

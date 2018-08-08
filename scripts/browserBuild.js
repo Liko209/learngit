@@ -7,6 +7,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const rollup = require('rollup').rollup;
 const rollupTypescript2 = require('rollup-plugin-typescript2');
@@ -21,13 +22,13 @@ const rollupUglifyEs = require('rollup-plugin-uglify-es');
 const rollupTslint = require('rollup-plugin-tslint');
 const dtsGenerator = require('dts-generator');
 
-function browserBuild(p, pkgName, entryPath, destination, format = 'umd') {
-  if (format === 'umd') {
+function browserBuild(p, pkgName, entryPath, destination, format = 'umd', multipleEntry = false) {
+  if (!multipleEntry) {
     dtsGenerator.default({
       name: pkgName,
       main: `${pkgName}/index`,
       project: p,
-      out: path.resolve(p, 'build/index.d.ts'),
+      out: path.resolve(destination, '../index.d.ts'),
       resolveModuleId: params => {
         const { currentModuleId } = params;
         if (currentModuleId.indexOf('/index') !== -1) {
@@ -37,10 +38,12 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd') {
     });
   }
 
-  const argv = process.argv.slice(2);
-
-  if (argv.includes('--watch')) {
-
+  if (multipleEntry) {
+    return new Promise((resolve) => {
+      execSync(`tsc -p ${p} --outDir ${destination} --allowJs false -d`, { stdio: [0, 1, 2] });
+      execSync(`node ./scripts/create-package-file.js ${p} ${destination}`, { stdio: [0, 1, 2] });
+      resolve();
+    })
   }
 
   return rollup({
@@ -64,11 +67,7 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd') {
         tsconfig: path.resolve(p, 'tsconfig.json'),
       })
       // ...(format === 'umd' ? [rollupUglify()] : [rollupUglifyEs()])
-    ],
-    watch: {
-      exclude: ['node_modules/**'],
-      clearScreen: true,
-    }
+    ]
   }).then(bundle =>
     bundle.write({
       format,

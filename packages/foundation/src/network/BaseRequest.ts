@@ -8,10 +8,9 @@ import {
   IHandleType,
   REQUEST_PRIORITY,
   NETWORK_VIA,
-  IResponse,
   NETWORK_METHOD,
-  Header
-} from '..';
+  Header,
+} from './network';
 
 abstract class BaseRequest implements IRequest {
   handlerType: IHandleType;
@@ -23,7 +22,6 @@ abstract class BaseRequest implements IRequest {
   requestConfig: object;
   authFree: boolean;
 
-  callback?: (response: IResponse) => void;
   needAuth(): boolean {
     throw new Error('Method not implemented.');
   }
@@ -33,7 +31,7 @@ abstract class BaseRequest implements IRequest {
     readonly method: NETWORK_METHOD,
     public data: object | string,
     public headers: Header,
-    public params: object
+    public params: object,
   ) {
     this.id = id;
     this.path = path;

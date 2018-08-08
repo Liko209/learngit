@@ -7,11 +7,13 @@
 import { SocketFSM } from '../SocketFSM';
 import { mainLogger, SocketClient } from 'foundation';
 import SocketIO from '../__mocks__/socket';
-jest.mock('foundation/network');
+
+jest.mock('foundation');
 
 describe('Socket FSM', async () => {
   const serverUrl = 'aws13-g04-uds02.asialab.glip.net:11904';
   const glipToken =
+    // tslint:disable-next-line:max-line-length
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9pZCI6MTUyOTI0OTk1OTAyNCwidHlwZSI6IndlYiIsInVpZCI6MTIyMDYxMSwiaWF0IjoxNTI5MjQ5OTU5LCJpc3MiOiJhd3MxMy1nMDQtdWRzMDIuYXNpYWxhYi5nbGlwLm5ldCIsInN1YiI6ImdsaXAifQ.0OHMMja3JnEskNxZLFw86CaV-Ph-SyZETQetLqDqLXRKBu0vI5u1_2l-dTP4eNxKHHq3nAeqUVB1IYwjCxXNzA';
 
   function fsmCreate() {
@@ -139,9 +141,9 @@ describe('Socket FSM', async () => {
             'message',
             JSON.stringify({
               body: {
-                objects: [[{ id: 1 }]]
-              }
-            })
+                objects: [[{ id: 1 }]],
+              },
+            }),
           );
           emit(fsm, 'partial');
           emit(fsm, 'response');
@@ -150,7 +152,7 @@ describe('Socket FSM', async () => {
           emit(fsm, 'client_config');
           emit(fsm, 'glip_ping');
           emit(fsm, 'glip_pong');
-        })()
+        })(),
       );
     });
 
@@ -189,7 +191,7 @@ describe('Socket FSM', async () => {
 
           spy.mockReset();
           spy.mockRestore();
-        })()
+        })(),
       );
     });
 
@@ -202,7 +204,7 @@ describe('Socket FSM', async () => {
           expect(fsm.state).toBe('connecting');
           fsm.stop();
           expect(fsm.state).toBe('disconnecting');
-        })()
+        })(),
       );
 
       fsm.socketClient.socket.disconnect.mockResolvedValue(
@@ -219,7 +221,7 @@ describe('Socket FSM', async () => {
           expect(fsm.socketClient).toBeNull();
           spy.mockReset();
           spy.mockRestore();
-        })()
+        })(),
       );
     });
 
@@ -236,7 +238,7 @@ describe('Socket FSM', async () => {
           expect(spy).toHaveBeenCalledTimes(0);
           spy.mockReset();
           spy.mockRestore();
-        })()
+        })(),
       );
     });
   });

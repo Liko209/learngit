@@ -22,13 +22,13 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   async initDatabase(): Promise<void> {
-    const currentSchemaVersion = this.getKVDao(ConfigDao).get(DB_SCHEMA_VERSION);
-    let schemaIsCompatible = !!(typeof currentSchemaVersion === 'number' && currentSchemaVersion === schema.version);
     this.dbManager.initDatabase(schema);
-    if (!schemaIsCompatible) {
+
+    if (!this._isSchemaCompatible()) {
       await this.dbManager.deleteDatabase();
       this.getKVDao(ConfigDao).remove(LAST_INDEX_TIMESTAMP);
     }
+
     const db = this.dbManager.getDatabase();
     if (db instanceof DexieDB) {
       db.db.on('ready', () => {
@@ -65,12 +65,17 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   async getStorageQuotaOccupation(): Promise<number> {
-    let navigator: any = window.navigator;
+    const navigator: any = window.navigator;
     if (navigator && navigator.storage) {
       const estimate = await navigator.storage.estimate();
       return estimate.usage / estimate.quota;
     }
     return 0;
+  }
+
+  private _isSchemaCompatible() {
+    const currentSchemaVersion = this.getKVDao(ConfigDao).get(DB_SCHEMA_VERSION);
+    return typeof currentSchemaVersion === 'number' && currentSchemaVersion === schema.version;
   }
 }
 

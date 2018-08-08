@@ -4,24 +4,28 @@
  */
 import { daoManager, StateDao } from '../../../dao';
 import notificationCenter from '../../../service/notificationCenter';
-import handleData, { transform, getStates, TransformedState } from '../../../service/state/handleData';
+import handleData, {
+  transform,
+  getStates,
+  TransformedState,
+} from '../../../service/state/handleData';
 import { sample, transformedGroupState, transformedMyState, sample2 } from './dummy';
 import { rawMyStateFactory } from '../../../__tests__/factories';
 
-jest.mock('dao', () => {
+jest.mock('../../../dao', () => {
   const dao = {
-    bulkUpdate: jest.fn()
+    bulkUpdate: jest.fn(),
   };
   return {
     daoManager: {
-      getDao: jest.fn(() => dao)
-    }
+      getDao: jest.fn(() => dao),
+    },
   };
 });
 
-jest.mock('service/notificationCenter', () => ({
+jest.mock('../../../service/notificationCenter', () => ({
   emitEntityUpdate: jest.fn(),
-  emitEntityPut: jest.fn()
+  emitEntityPut: jest.fn(),
 }));
 
 describe('transform()', () => {
@@ -29,7 +33,7 @@ describe('transform()', () => {
   it('should transform _id to id', () => {
     result = transform(sample);
     expect(result).toMatchObject({
-      id: sample._id
+      id: sample._id,
     });
     expect(result).not.toHaveProperty('_id');
   });
@@ -38,7 +42,7 @@ describe('transform()', () => {
     delete myState.away_status_history;
     result = transform(myState);
     expect(result).toMatchObject({
-      away_status_history: []
+      away_status_history: [],
     });
   });
   it('should extract groupStates', () => {

@@ -2,20 +2,28 @@ import ItemAPI from '../../../api/glip/item';
 import { daoManager } from '../../../dao';
 import UploadManager from '../../../service/UploadManager';
 import { transform, baseHandleData } from '../../../service/utils';
-import handleData, { uploadStorageFile, sendFileItem, extractFileNameAndType, Options } from '../handleData';
-import { storedFileFactory, rawItemFactory } from '../../../__tests__/factories';
+import handleData, {
+  uploadStorageFile,
+  sendFileItem,
+  extractFileNameAndType,
+  Options,
+} from '../handleData';
+import {
+  storedFileFactory,
+  rawItemFactory,
+} from '../../../__tests__/factories';
 
-jest.mock('api/glip/item');
+jest.mock('../../../api/glip/item');
 // const itemDao = daoManager.getDao(ItemDao);
-jest.mock('dao', () => ({
+jest.mock('../../../dao', () => ({
   daoManager: {
-    getDao: jest.fn()
-  }
+    getDao: jest.fn(),
+  },
 }));
 
-jest.mock('service/utils', () => ({
+jest.mock('../../../service/utils', () => ({
   baseHandleData: jest.fn(),
-  transform: jest.fn()
+  transform: jest.fn(),
 }));
 
 ItemAPI.uploadFileItem = jest.fn();
@@ -48,7 +56,7 @@ describe('uploadStorageFile()', () => {
     ItemAPI.uploadFileItem.mockReturnValue({ data: 'mock response data' });
     const result = await uploadStorageFile({
       file: new FormData(),
-      groupId: '1'
+      groupId: '1',
     });
     expect(result).toEqual('mock response data');
   });
@@ -64,7 +72,7 @@ describe('uploadStorageFile()', () => {
 
     await uploadStorageFile({
       file: new FormData(),
-      groupId: '1'
+      groupId: '1',
     });
   });
 });
@@ -75,9 +83,9 @@ describe('sendFileItem()', () => {
       id: 1243,
       created_at: 1234,
       creator_id: 12443,
-      storage_path: 'fake/path/file.txt'
+      storage_path: 'fake/path/file.txt',
     }),
-    groupId: '1'
+    groupId: '1',
   };
   it('should return the response of ItemAPI.sendFileItem()', async () => {
     ItemAPI.sendFileItem.mockReturnValue({ data: 'mock response data' });
@@ -112,7 +120,7 @@ describe('extractFileNameAndType()', () => {
   it('should throw error when file path is empty', () => {
     expect(extractFileNameAndType('')).toEqual({
       name: '',
-      type: ''
+      type: '',
     });
   });
 });

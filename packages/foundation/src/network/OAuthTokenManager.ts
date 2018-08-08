@@ -5,7 +5,7 @@
  */
 import OAuthTokenHandler from './OAuthTokenHandler';
 import Token from './Token';
-import { IHandleType } from '..';
+import { IHandleType } from './network';
 class OAuthTokenManager {
   private static _instance: OAuthTokenManager;
 
@@ -32,7 +32,7 @@ class OAuthTokenManager {
   }
 
   clearOAuthToken() {
-    this.tokenHandlers.forEach(handler => {
+    this.tokenHandlers.forEach((handler) => {
       handler.clearOAuthToken();
     });
   }

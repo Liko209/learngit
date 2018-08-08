@@ -40,7 +40,7 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
     const unique: string = this.primaryKeyName();
     const key = newItem[unique];
     const result = this.collection.find({
-      [unique]: key
+      [unique]: key,
     } as any)[0];
 
     if (result) {
@@ -53,16 +53,16 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
 
   async bulkPut(array: T[]): Promise<void> {
     await Promise.all(
-      array.map(async item => {
+      array.map(async (item) => {
         return this.put(item);
-      })
+      }),
     );
   }
 
   async get(key: number): Promise<T | null> {
     const unique = this.primaryKeyName();
     const result: (T & LokiObj) | void = this.collection.find({
-      [unique]: key
+      [unique]: key,
     } as any)[0];
     if (!result) {
       return null;
@@ -75,7 +75,7 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
   async delete(key: number): Promise<void> {
     const unique = this.primaryKeyName();
     this.collection.findAndRemove({
-      [unique]: key
+      [unique]: key,
     } as any);
   }
 
@@ -91,7 +91,7 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
       { [unique]: key } as any,
       (oldItem: object) => {
         Object.assign(oldItem, changes);
-      }
+      },
     );
   }
 
@@ -100,7 +100,7 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
   }
   async getAll(
     query?: IQuery<T>,
-    queryOption: IQueryOption = {}
+    queryOption: IQueryOption = {},
   ): Promise<T[]> {
     const resultSets = execQuery(this.collection, query);
 
@@ -108,8 +108,8 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
     resultSets.forEach((resultSet: Resultset<T>) => {
       result.push(
         ...resultSet.data({
-          removeMeta: true
-        })
+          removeMeta: true,
+        }),
       );
     });
 
@@ -132,8 +132,9 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
     if (cols.length === 1) {
       return cols[0].count();
     }
+
     let sum: number = 0;
-    for (let i = 0; i < cols.length; i++) {
+    for (let i = 0; i < cols.length; i = +1) {
       sum += cols[i].count();
     }
     return sum;

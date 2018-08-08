@@ -4,19 +4,26 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import NetworkResponseBuilder from '../http/NetworkResponseBuilder';
-import SocketResponse from './SocketResponse';
+import { SocketResponse } from './SocketResponse';
 import _ from 'lodash';
 
 class SocketResponseBuilder extends NetworkResponseBuilder {
   options(options: any) {
-    this.data = options.body || {};
-    this.headers = _.pick(options, [
-      'Content-Type',
-      'X-Frame-Options',
-      'X-Request-Id',
-    ]);
-    this.status = 200;
-    this.request = { ...options.request, params: options.request.parameters };
+    if (options) {
+      this.data = options.body || {};
+      this.headers = _.pick(options, [
+        'Content-Type',
+        'X-Frame-Options',
+        'X-Request-Id',
+      ]);
+      this.status = 200;
+      if (options.request) {
+        this.request = {
+          ...options.request,
+          params: options.request.parameters,
+        };
+      }
+    }
     return this;
   }
 

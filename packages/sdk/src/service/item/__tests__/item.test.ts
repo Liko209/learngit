@@ -23,7 +23,7 @@ describe('ItemService', () => {
       sendFileItem.mockImplementation(() => '');
       const result = await itemService.sendFile({
         file: new FormData(),
-        groupId: '1'
+        groupId: '1',
       });
       expect(result).toBeNull();
     });
@@ -32,15 +32,15 @@ describe('ItemService', () => {
       handleData.mockImplementation(() => [{ name: 'mock' }]);
       sendFileItem.mockImplementation(() => ({
         id: 1,
-        name: 'xxx'
+        name: 'xxx',
       }));
       const result = await itemService.sendFile({
         file: new FormData(),
-        groupId: '1'
+        groupId: '1',
       });
       expect(result).toEqual({
         id: 1,
-        name: 'xxx'
+        name: 'xxx',
       });
     });
 
@@ -51,7 +51,7 @@ describe('ItemService', () => {
       try {
         await itemService.sendFile({
           file: new FormData(),
-          groupId: '1'
+          groupId: '1',
         });
       } catch (e) {
         expect(e).toEqual(new Error('error'));
@@ -61,31 +61,35 @@ describe('ItemService', () => {
 
   describe('getRightRailItemsOfGroup()', () => {
     const itemDao = {
-      getItemsByGroupId: jest.fn()
+      getItemsByGroupId: jest.fn(),
     };
+
     beforeAll(() => {
       handleData.mockClear();
       ItemAPI.requestRightRailItems = jest.fn().mockResolvedValue({
         data: {
-          items: []
-        }
+          items: [],
+        },
       });
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
     });
+
     afterAll(() => {
       jest.clearAllMocks();
     });
+
     it('should call related api', () => {
       itemService.getRightRailItemsOfGroup(123, 1);
       expect(ItemAPI.requestRightRailItems).toHaveBeenCalledWith(123);
       expect(itemDao.getItemsByGroupId).toHaveBeenCalledWith(123, 1);
       expect(handleData).not.toHaveBeenCalled();
     });
-    it('should call handleData if api gets the data', done => {
+
+    it('should call handleData if api gets the data', (done) => {
       ItemAPI.requestRightRailItems.mockResolvedValue({
         data: {
-          items: [{ _id: 1 }, { _id: 2 }]
-        }
+          items: [{ _id: 1 }, { _id: 2 }],
+        },
       });
       itemService.getRightRailItemsOfGroup(123);
       setTimeout(() => {
@@ -93,6 +97,7 @@ describe('ItemService', () => {
         done();
       });
     });
+
     it('should return dao query result', async () => {
       const mockLocalData = [{ id: 1 }, { id: 2 }, { id: 3 }];
       itemDao.getItemsByGroupId.mockResolvedValue(mockLocalData);
@@ -102,28 +107,31 @@ describe('ItemService', () => {
 
   describe('getNoteById()', () => {
     const itemDao = {
-      get: jest.fn()
+      get: jest.fn(),
     };
     const rawData = {
       _id: 1,
       body: 'body',
-      title: 'title'
+      title: 'title',
     };
     const transformedData = {
       id: 1,
       body: 'body',
-      title: 'title'
+      title: 'title',
     };
+
     beforeAll(() => {
       handleData.mockClear();
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
       ItemAPI.getNote = jest.fn().mockResolvedValue({
-        data: rawData
+        data: rawData,
       });
     });
+
     afterAll(() => {
       jest.clearAllMocks();
     });
+
     it('should return local data if found', async () => {
       itemDao.get.mockResolvedValue(transformedData);
       const ret = await itemService.getNoteById(1);
@@ -131,6 +139,7 @@ describe('ItemService', () => {
       expect(handleData).not.toHaveBeenCalled();
       expect(ret).toEqual(transformedData);
     });
+
     it('should call related api if local not found', async () => {
       itemDao.get.mockResolvedValue(null);
       const ret = await itemService.getNoteById(1);
@@ -138,6 +147,7 @@ describe('ItemService', () => {
       expect(handleData).toHaveBeenCalled();
       expect(ret).toEqual(transformedData);
     });
+
     it('should return null if response data not exists', async () => {
       itemDao.get.mockResolvedValue(null);
       ItemAPI.getNote.mockResolvedValue({});

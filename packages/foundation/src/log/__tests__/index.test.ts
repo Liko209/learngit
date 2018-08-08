@@ -133,4 +133,12 @@ describe('Log', () => {
     const lastLogs = await logManager.getLogs();
     expect(lastLogs.NETWORK).toHaveLength(0);
   });
+  it('doAppend() with overThreshould, should callback', async () => {
+    let hasBeenCalled = false;
+    logManager.setOverThresholdCallback(() => {
+      hasBeenCalled = true;
+    });
+    await logManager.doAppend(true);
+    expect(hasBeenCalled).toBe(true);
+  });
 });

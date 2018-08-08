@@ -1,5 +1,5 @@
 import Manager from '../Manager';
-import { NETWORK_VIA } from '../..';
+import { NETWORK_VIA } from '../../network';
 const manager = new Manager();
 describe('Manager', () => {
   describe('getApiClient', () => {

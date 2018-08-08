@@ -18,7 +18,7 @@ interface IHandleType {
   doRefreshToken: (token: IToken) => Promise<IToken>;
   basic: () => string;
   requestDecoration: (
-    tokenHandler: ITokenHandler
+    tokenHandler: ITokenHandler,
   ) => (request: IRequest) => IRequest;
 }
 
@@ -60,8 +60,8 @@ interface IResponseListener {
   onSurvivalModeDetected: (mode: SURVIVAL_MODE, retryAfter: number) => void;
 }
 interface INetworkRequestExecutorListener {
-  onFailure: (requestId: string, response: IResponse) => void;
-  onSuccess: (requestId: string, response: IResponse) => void;
+  onFailure: (response: IResponse) => void;
+  onSuccess: (response: IResponse) => void;
 }
 
 interface IResponse {
@@ -120,7 +120,7 @@ enum HTTP_STATUS_CODE {
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
   BAD_GATEWAY = 502,
-  SERVICE_UNAVAILABLE = 503
+  SERVICE_UNAVAILABLE = 503,
 }
 
 enum NETWORK_METHOD {
@@ -130,52 +130,52 @@ enum NETWORK_METHOD {
   OPTIONS = 'options',
   POST = 'post',
   PUT = 'put',
-  PATCH = 'patch'
+  PATCH = 'patch',
 }
 
 enum REQUEST_PRIORITY {
   SPECIFIC,
   HIGH,
   NORMAL,
-  LOW
+  LOW,
 }
 
 enum NETWORK_VIA {
   HTTP,
   SOCKET,
-  ALL
+  ALL,
 }
 
 enum CONSUMER_MAX_QUEUE_COUNT {
   HTTP = 5,
-  SOCKET = 5
+  SOCKET = 5,
 }
 
 enum REQUEST_WEIGHT {
   HIGH = 20,
-  NORMAL = 10
+  NORMAL = 10,
 }
 
 enum NETWORK_FAIL_TYPE {
   CANCELLED = 'CANCELLED',
   SERVER_ERROR = 'SERVER ERROR',
-  TIME_OUT = 'ECONNABORTED',
+  TIME_OUT = 'TIME OUT',
   NOT_NETWORK_CONNECTION = 'NOT NETWORK CONNECTION',
   UNAUTHORIZED = 'UNAUTHORIZED',
-  BAD_REQUEST = 'BAD REQUEST'
+  BAD_REQUEST = 'BAD REQUEST',
 }
 
 enum SURVIVAL_MODE {
   NORMAL = 'normal',
   SURVIVAL = 'survival',
-  OFFLINE = 'offline'
+  OFFLINE = 'offline',
 }
 
 enum NETWORK_REQUEST_EXECUTOR_STATUS {
   IDLE = 'idle',
   EXECUTING = 'executing',
   PAUSE = 'pause',
-  COMPLETION = 'completion'
+  COMPLETION = 'completion',
 }
 
 export {
@@ -202,5 +202,5 @@ export {
   ITokenHandler,
   IRequestDecoration,
   ITokenRefreshListener,
-  IHandleType
+  IHandleType,
 };

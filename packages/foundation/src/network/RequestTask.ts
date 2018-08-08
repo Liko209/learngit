@@ -3,7 +3,12 @@
  * @Date: 2018-06-04 15:41:34
  * Copyright © RingCentral. All rights reserved.
  */
-import { IRequest, REQUEST_WEIGHT, REQUEST_PRIORITY, NETWORK_VIA } from '..';
+import {
+  IRequest,
+  REQUEST_WEIGHT,
+  REQUEST_PRIORITY,
+  NETWORK_VIA,
+} from './network';
 
 class RequestTask {
   request: IRequest;
@@ -12,7 +17,7 @@ class RequestTask {
     const REQUEST_PRIORITY_WEIGHT = {
       [REQUEST_PRIORITY.NORMAL]: REQUEST_WEIGHT.NORMAL,
       [REQUEST_PRIORITY.HIGH]: REQUEST_WEIGHT.HIGH,
-      [REQUEST_PRIORITY.SPECIFIC]: REQUEST_WEIGHT.HIGH
+      [REQUEST_PRIORITY.SPECIFIC]: REQUEST_WEIGHT.HIGH,
     };
     this.request = request;
     this.weight = REQUEST_PRIORITY_WEIGHT[this.request.priority];

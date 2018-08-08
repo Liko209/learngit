@@ -3,8 +3,8 @@
  * @Date: 2018-05-23 09:42:06
  * Copyright © RingCentral. All rights reserved.
  */
-import * as constants from './constants';
 export * from './base';
+export * from './constants';
 
 export { default as schema } from './schema';
 
@@ -23,4 +23,4 @@ export { default as DeactivatedDao } from './deactivated';
 
 import DaoManager from './DaoManager';
 const daoManager = new DaoManager();
-export { daoManager, constants };
+export { daoManager };

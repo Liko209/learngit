@@ -2,17 +2,17 @@ import serviceManager from '../../../service/serviceManager';
 import PresenceService from '../../../service/presence/index';
 import handleData from '../handleData';
 
-jest.mock('service/serviceManager', () => {
+jest.mock('../../../service/serviceManager', () => {
   const instance = { saveToMemory: jest.fn() };
   return {
-    getInstance: () => instance
+    getInstance: () => instance,
   };
 });
 
-jest.mock('service/presence/index', () => {
+jest.mock('../../../service/presence/index', () => {
   const instance = { saveToMemory: jest.fn() };
   return {
-    getInstance: () => instance
+    getInstance: () => instance,
   };
 });
 

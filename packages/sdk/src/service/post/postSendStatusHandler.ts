@@ -8,7 +8,7 @@
 enum ESendStatus {
   SUCCESS,
   FAIL,
-  INPROGRESS
+  INPROGRESS,
 }
 import { daoManager, PostDao } from '../../dao';
 class PostSendStatusHandler {
@@ -21,10 +21,10 @@ class PostSendStatusHandler {
   }
 
   async init() {
-    let dao = daoManager.getDao(PostDao);
+    const dao = daoManager.getDao(PostDao);
     const posts = await dao.queryPreInsertPost();
     if (posts && posts.length) {
-      posts.forEach(element => {
+      posts.forEach((element) => {
         this.addIdAndVersion(element.id, element.version, ESendStatus.FAIL);
       });
     }
@@ -63,12 +63,12 @@ class PostSendStatusHandler {
     const id: number | undefined = this.sendStatusIdVersion.get(version);
     return id
       ? {
+        id,
         existed: true,
-        id
       }
       : {
+        id: 0,
         existed: false,
-        id: 0
       };
   }
 }

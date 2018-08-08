@@ -1,0 +1,8 @@
+{
+  "heading": "标题",
+  "description": "详情",
+  "key1": "{{what}} 是 {{how}}",
+  "key2": "当前时间 {{date, MM/DD/YYYY}}",
+  "keyWithCount": "{{count}} 项",
+  "keyWithCount_plural": "{{count}} 项"
+}

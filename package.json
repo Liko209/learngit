@@ -8,7 +8,8 @@
   },
   "scripts": {
     "preinstall": "node scripts/check-pm.js",
-    "postinstall": "yarn bt && yarn build:packages",
+    "postinstall": "yarn build:packages && yarn bt",
+    "start:ui": "cd packages/ui && yarn storybook",
     "start:demo": "cd demo && yarn start",
     "start:app": "cd application && yarn start",
     "clean:build": "rm -rf ./packages/*/build ./packages/*/build-es",
@@ -17,10 +18,10 @@
     "build:demo": "cd demo && yarn build",
     "build:app": "cd application && yarn build",
     "test": "node ./scripts/test.js --env=jsdom",
-    "test:cover": "yarn test -- --coverage",
+    "test:cover": "yarn test --coverage",
     "lint": "tslint",
     "publish": "yarn clean:build && yarn build && lerna publish --silent",
-    "watch": "yarn build:packages --watch",
+    "watch": "node scripts/watch.js",
     "precommit": "lint-staged",
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",
@@ -28,8 +29,15 @@
     "bt": "lerna bootstrap"
   },
   "devDependencies": {
+    "@types/enzyme": "3.1.12",
+    "@types/glob": "5.0.35",
     "@types/jest": "23.3.0",
+    "@types/lodash": "4.14.115",
     "@types/node": "10.5.2",
+    "@types/react": "16.4.7",
+    "@types/react-dom": "16.0.6",
+    "@types/webpack-env": "1.13.6",
+    "babel-core": "6.26.3",
     "chalk": "2.4.1",
     "commitizen": "2.10.1",
     "dts-generator": "2.1.0",
@@ -58,6 +66,8 @@
     "rollup-plugin-typescript2": "0.16.1",
     "rollup-plugin-uglify": "4.0.0",
     "rollup-plugin-uglify-es": "0.0.1",
+    "semver": "5.5.0",
+    "shelljs": "0.8.2",
     "string-length": "2.0.0",
     "ts-jest": "23.0.1",
     "tslint": "5.11.0",
@@ -67,7 +77,6 @@
   },
   "lint-staged": {
     "*.{ts, js, json}": [
-      "tslint --fix",
       "git add"
     ]
   }

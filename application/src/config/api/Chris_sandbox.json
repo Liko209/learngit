@@ -1,0 +1,11 @@
+{
+  "rc": {
+    "server": "https://api-glpdevxmn.lab.nordigy.ru"
+  },
+  "glip2": {
+    "server": "https: //api-glpdevxmn.lab.nordigy.ru"
+  },
+  "glip": {
+    "server": "https: //aws13-g04-uds02.asialab.glip.net:11904"
+  }
+}

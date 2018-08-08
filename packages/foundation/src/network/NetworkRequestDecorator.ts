@@ -3,7 +3,11 @@
  * @Date: 2018-06-04 15:41:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { INetworkRequestExecutor, IRequestDecoration, IRequest } from '..';
+import {
+  INetworkRequestExecutor,
+  IRequestDecoration,
+  IRequest,
+} from './network';
 
 class NetworkRequestDecorator implements INetworkRequestExecutor {
   private executor: INetworkRequestExecutor;

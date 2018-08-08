@@ -21,10 +21,13 @@ jest.mock('../schema', () => ({
     1: {
       mock: {
         unique: 'id',
-        indices: ['index', 'name', 'pet', '[index+name]', '[name+index]', '[id+index]', '[index+id]', '*teams']
-      }
-    }
-  }
+        indices: [
+          'index', 'name', 'pet', '[index+name]',
+          '[name+index]', '[id+index]', '[index+id]', '*teams',
+        ],
+      },
+    },
+  },
 }));
 
 class TestKVDao extends BaseKVDao {
@@ -62,7 +65,7 @@ describe('DaoManager', () => {
       beforeEach(() => {
         mockConfigDao = {
           get: jest.fn().mockReturnValue(1),
-          remove: jest.fn()
+          remove: jest.fn(),
         };
         jest.spyOn(daoManager, 'getKVDao').mockReturnValue(mockConfigDao);
       });
@@ -91,7 +94,7 @@ describe('DaoManager', () => {
         const db = new DexieDB({
           name: 'db',
           version: 1,
-          schema: {}
+          schema: {},
         });
         db.db = new Dexie('');
         jest.spyOn(db.db, 'on');

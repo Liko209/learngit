@@ -18,7 +18,7 @@ describe('SearchAPI', () => {
         q: 'andy',
         request_id: 83,
         scroll_size: 10,
-        type: 'links'
+        type: 'links',
       };
       SearchAPI.search(params);
       expect(Api.glipNetworkClient.get).toHaveBeenCalledWith(SearchAPI.basePath, params);
@@ -32,7 +32,7 @@ describe('SearchAPI', () => {
         q: 'andy',
         request_id: 83,
         scroll_size: 10,
-        type: 'links'
+        type: 'links',
       };
       SearchAPI.scrollSearch(params);
       expect(Api.glipNetworkClient.get).toHaveBeenCalledWith(SearchAPI.basePath, params);

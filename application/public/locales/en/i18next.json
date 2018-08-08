@@ -1,0 +1,8 @@
+{
+  "heading": "heading",
+  "description": "description",
+  "key1": "{{what}} is {{how}}",
+  "key2": "The current date is {{date, MM/DD/YYYY}}",
+  "keyWithCount": "{{count}} item",
+  "keyWithCount_plural": "{{count}} items"
+}

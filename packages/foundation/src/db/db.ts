@@ -14,7 +14,7 @@ export interface IDatabase {
   getTransaction: (
     mode: string | void,
     collections: IDatabaseCollection<any>[] | void,
-    callback: () => {}
+    callback: () => {},
   ) => Promise<void>;
 }
 

@@ -1,8 +1,8 @@
 /*
  * @Author: Shining Miao (shining.miao@ringcentral.com)
  * @Date: 2018-02-05 17:54:13
- * @Last Modified by: Lily.li (lily.li@ringcentral.com)
- * @Last Modified time: 2018-06-21 12:15:37
+ * @Last Modified by: Andy Hu
+ * @Last Modified time: 2018-08-08 11:18:12
  */
 import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
 import { IResponse } from '../NetworkClient';
@@ -39,6 +39,8 @@ export type IndexDataModel = {
   client_config: IFlag;
 };
 
+type IndexResponse = IResponse<IndexDataModel>;
+
 /**
  * @param {string} rcAccessTokenData
  * @param {string} username
@@ -46,7 +48,7 @@ export type IndexDataModel = {
  * @param {boolean} mobile(option)
  * get glip 1.0 api's requset header (x-authorization) by authData
  */
-export function loginGlip(authData: object): Promise<IResponse<Object>> {
+function loginGlip(authData: object): Promise<IResponse<Object>> {
   const model = {
     rc_access_token_data: btoa(JSON.stringify(authData)),
   };
@@ -65,16 +67,11 @@ export function loginGlip(authData: object): Promise<IResponse<Object>> {
  * @param {string} password
  * index data api
  */
-export function indexData(
-  params: object,
-  requestConfig = {},
-  headers = {},
-): Promise<IResponse<IndexDataModel>> {
-  return Api.glipNetworkClient.get(
-    '/index',
-    params,
-    NETWORK_VIA.HTTP,
-    requestConfig,
-    headers,
-  );
+function indexData(params: object, requestConfig = {}, headers = {}): Promise<IndexResponse> {
+  return Api.glipNetworkClient.get('/index', params, NETWORK_VIA.HTTP, requestConfig, headers);
 }
+
+export {
+  loginGlip,
+  indexData,
+};

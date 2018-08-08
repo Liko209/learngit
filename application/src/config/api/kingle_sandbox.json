@@ -1,0 +1,11 @@
+{
+  "rc": {
+    "server": "http://service-xmnup.lab.nordigy.ru"
+  },
+  "glip2": {
+    "server": "http://service-xmnup.lab.nordigy.ru"
+  },
+  "glip": {
+    "server": "https://xmnup.asialab.glip.net"
+  }
+}

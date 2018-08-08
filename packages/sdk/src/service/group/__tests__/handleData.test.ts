@@ -5,7 +5,11 @@ import GroupAPI from '../../../api/glip/group';
 import PersonService from '../../../service/person';
 import ProfileService from '../../../service/profile';
 import { Group, Post, Raw, Profile } from '../../../models';
-import handleData, { handleFavoriteGroupsChanged, handleGroupMostRecentPostChanged, filterGroups } from '../handleData';
+import handleData, {
+  handleFavoriteGroupsChanged,
+  handleGroupMostRecentPostChanged,
+  filterGroups,
+} from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
 import { GROUP_QUERY_TYPE } from '../../constants';
@@ -22,23 +26,23 @@ jest.mock('../../../dao', () => {
     get: jest.fn().mockReturnValue(1),
     queryGroupsByIds: jest.fn(),
     bulkDelete: jest.fn(),
-    bulkPut: jest.fn()
+    bulkPut: jest.fn(),
   };
   return {
     daoManager: {
       getDao: () => dao,
-      getKVDao: () => dao
-    }
+      getKVDao: () => dao,
+    },
   };
 });
 
 jest.mock('../../serviceManager', () => {
   const instance = {
     getProfile: jest.fn().mockResolvedValue({ favorite_group_ids: [1, 2] }),
-    getPersonsByIds: jest.fn().mockResolvedValue({})
+    getPersonsByIds: jest.fn().mockResolvedValue({}),
   };
   return {
-    getInstance: () => instance
+    getInstance: () => instance,
   };
 });
 
@@ -48,15 +52,16 @@ jest.mock('../../../api/glip/group', () => {
       id: 1,
       members: [1],
       deactivated: true,
-      _delta: false
-    }
+      _delta: false,
+    },
   };
   return { requestGroupById: jest.fn().mockResolvedValue(response) };
 });
 
 function generateFakeGroups(count: number, is_team: boolean) {
-  let groups: Group[] = [];
-  for (let i = 1; i <= count; i++) {
+  const groups: Group[] = [];
+
+  for (let i = 1; i <= count; i += 1) {
     groups.push({
       id: i,
       created_at: i,
@@ -70,7 +75,7 @@ function generateFakeGroups(count: number, is_team: boolean) {
       set_abbreviation: '',
       email_friendly_abbreviation: '',
       most_recent_content_modified_at: i,
-      most_recent_post_created_at: i
+      most_recent_post_created_at: i,
     });
   }
   return groups;
@@ -91,7 +96,7 @@ describe('handleData', () => {
     const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
       { _id: 1, members: [1], deactivated: true, _delta: true },
       { _id: 2, members: [1, 2], deactivated: false },
-      { _id: 3, deactivated: false }
+      { _id: 3, deactivated: false },
     ]);
     await handleData(groups);
     // expect getTransformData function
@@ -117,12 +122,12 @@ describe('handleFavoriteGroupsChanged()', () => {
     const oldProfile: any = {
       person_id: 0,
       favorite_group_ids: [1, 2],
-      favorite_post_ids: 0
+      favorite_post_ids: 0,
     };
     const newProfile: any = {
       person_id: 0,
       favorite_group_ids: [2, 3],
-      favorite_post_ids: 0
+      favorite_post_ids: 0,
     };
     await handleFavoriteGroupsChanged(oldProfile as Profile, newProfile as Profile);
     expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(3);
@@ -133,12 +138,12 @@ describe('handleFavoriteGroupsChanged()', () => {
     const oldProfile: any = {
       person_id: 0,
       favorite_group_ids: [1, 2],
-      favorite_post_ids: 0
+      favorite_post_ids: 0,
     };
     const newProfile: any = {
       person_id: 0,
       favorite_group_ids: [1, 2],
-      favorite_post_ids: 0
+      favorite_post_ids: 0,
     };
     await handleFavoriteGroupsChanged(oldProfile, newProfile);
     expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(0);
@@ -165,8 +170,8 @@ describe('filterGroups()', () => {
     StateService.getInstance = jest.fn().mockReturnValue(stateService);
   });
   it('items with states without ids', async () => {
-    let teams = generateFakeGroups(5, true);
-    let result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
+    const teams = generateFakeGroups(5, true);
+    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
     expect(result.length).toBe(2);
   });
   it('items is less then limit', async () => {
@@ -178,10 +183,10 @@ describe('filterGroups()', () => {
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       {
         id: 2,
-        unread_count: 1
-      }
+        unread_count: 1,
+      },
     ]);
-    let teams = generateFakeGroups(5, true);
+    const teams = generateFakeGroups(5, true);
     let result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
     expect(result.length).toBe(4);
 
@@ -192,14 +197,14 @@ describe('filterGroups()', () => {
     stateService.getAllGroupStatesFromLocal.mockResolvedValue([
       {
         id: 4,
-        unread_count: 1
+        unread_count: 1,
       },
       {
         id: 3,
-        unread_count: 1
-      }
+        unread_count: 1,
+      },
     ]);
-    let teams = generateFakeGroups(5, true);
+    const teams = generateFakeGroups(5, true);
     let result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
     expect(result.length).toBe(3);
 

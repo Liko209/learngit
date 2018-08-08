@@ -25,4 +25,5 @@ function generateUUID(): string {
   });
   return uuid;
 }
+
 export { randomInt, versionHash, generateUUID };

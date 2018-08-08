@@ -20,18 +20,18 @@ export default class ItemService extends BaseService<Item> {
 
   constructor() {
     const subscription = {
-      [SOCKET.ITEM]: handleData
+      [SOCKET.ITEM]: handleData,
     };
     super(ItemDao, ItemAPI, handleData, subscription);
   }
 
   async sendFile(params: ISendFile): Promise<FileItem | null> {
-    let options: StoredFile = await uploadStorageFile(params);
+    const options: StoredFile = await uploadStorageFile(params);
     const itemOptions = {
       storedFile: options[0],
-      groupId: params.groupId
+      groupId: params.groupId,
     };
-    let result = await sendFileItem(itemOptions);
+    const result = await sendFileItem(itemOptions);
     if (result) {
       const fileItem = transform<FileItem>(result);
       await handleData([result]);
@@ -50,18 +50,19 @@ export default class ItemService extends BaseService<Item> {
   }
 
   async getNoteById(id: number): Promise<NoteItem | null> {
-    let result = (await this.getByIdFromDao(id)) as NoteItem;
+    const result = (await this.getByIdFromDao(id)) as NoteItem;
     if (result) {
       return result;
     }
+
     const resp = await ItemAPI.getNote(id);
     if (resp.data) {
       const note = transform<NoteItem>(resp.data);
       await handleData([resp.data]);
       return note;
-    } else {
-      // should handle errors when error handling ready
-      return null;
     }
+
+    // should handle errors when error handling ready
+    return null;
   }
 }

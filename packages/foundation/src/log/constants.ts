@@ -6,7 +6,7 @@ enum LOG_LEVEL {
   INFO = 20000,
   DEBUG = 10000,
   TRACE = 5000,
-  ALL = Number.MIN_VALUE
+  ALL = Number.MIN_VALUE,
 }
 
 const LOG_LEVEL_STRING = {
@@ -15,11 +15,11 @@ const LOG_LEVEL_STRING = {
   [LOG_LEVEL.WARN]: 'WARN',
   [LOG_LEVEL.INFO]: 'INFO',
   [LOG_LEVEL.DEBUG]: 'DEBUG',
-  [LOG_LEVEL.TRACE]: 'TRACE'
+  [LOG_LEVEL.TRACE]: 'TRACE',
 };
 
 enum DATE_FORMATTER {
-  DEFAULT_DATE_FORMAT = 'yyyy-MM-ddThh:mm:ssO'
+  DEFAULT_DATE_FORMAT = 'yyyy-MM-ddThh:mm:ssO',
 }
 
 const LINE_SEP = '\n';

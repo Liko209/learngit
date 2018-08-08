@@ -6,13 +6,13 @@ describe('mathUtils', () => {
   });
 
   it('versionHash()', () => {
-    let res = !/(^[1-9]\d*$)/.test(versionHash().toString());
+    const res = !/(^[1-9]\d*$)/.test(versionHash().toString());
     expect(res).toBe(false);
   });
 
   it('generateUUID()', () => {
     const resp = generateUUID();
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 100; i += 1) {
       expect(resp !== generateUUID()).toBe(true);
     }
   });

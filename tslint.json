@@ -14,9 +14,13 @@
       "allow-snake-case"
     ],
     "import-name": [
-      false,
+      false
+    ],
+    "function-name": [
+      true,
       {
-        "lodash": "_"
+        "private-method-regex": "^_[a-zA-Z0-9]+$",
+        "static-method-regex": "^[a-z][\\w\\d]+$"
       }
     ]
   },

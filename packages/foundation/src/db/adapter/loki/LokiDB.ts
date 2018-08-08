@@ -10,7 +10,7 @@ import {
   IDatabase,
   IDatabaseCollection,
   ISchema,
-  IParsedSchema
+  IParsedSchema,
 } from '../../db';
 
 class LokiDB implements IDatabase {
@@ -18,7 +18,7 @@ class LokiDB implements IDatabase {
   private opened: boolean;
   constructor(schema: ISchema) {
     this.db = new Loki('memory.db');
-    this.initSchema(schema);
+    this._initSchema(schema);
     this.opened = false;
   }
 
@@ -50,21 +50,21 @@ class LokiDB implements IDatabase {
   async getTransaction(
     mode: string | void,
     collections: IDatabaseCollection<any>[] | void,
-    callback: () => {}
+    callback: () => {},
   ): Promise<void> {
     callback();
   }
 
-  private initSchema(schema: ISchema) {
+  private _initSchema(schema: ISchema) {
     parseSchema(
       schema.schema,
       ({ unique, indices, colName }: IParsedSchema) => {
         this.db.addCollection(colName, {
+          indices,
           disableMeta: true,
           unique: [unique],
-          indices
         });
-      }
+      },
     );
   }
 }

@@ -3,12 +3,13 @@
  * @Date: 2018-06-24 14:19:24
  * Copyright © RingCentral. All rights reserved
 */
-import _ from 'lodash';
-import { Container } from '../Container';
-import { IAccount } from './IAccount';
-import { IAuthenticator, ISyncAuthenticator, IAccountInfo, IAuthResponse } from './IAuthenticator';
 import { EventEmitter2 } from 'eventemitter2';
+import _ from 'lodash';
+
+import { Container } from '../Container';
 import { AbstractAccount } from './AbstractAccount';
+import { IAccount } from './IAccount';
+import { IAccountInfo, IAuthenticator, IAuthResponse, ISyncAuthenticator } from './IAuthenticator';
 
 const EVENT_LOGIN = 'ACCOUNT_MANAGER.EVENT_LOGIN';
 const EVENT_LOGOUT = 'ACCOUNT_MANAGER.EVENT_LOGOUT';
@@ -30,13 +31,13 @@ class AccountManager extends EventEmitter2 {
   syncLogin(authType: string, params?: any) {
     const authenticator = this._container.get<ISyncAuthenticator>(authType);
     const resp = authenticator.authenticate(params);
-    return this.handleLoginResponse(resp);
+    return this._handleLoginResponse(resp);
   }
 
   async login(authType: string, params?: any) {
     const authenticator = this._container.get<IAuthenticator>(authType);
     const resp = await authenticator.authenticate(params);
-    return this.handleLoginResponse(resp);
+    return this._handleLoginResponse(resp);
   }
 
   async logout() {
@@ -75,28 +76,34 @@ class AccountManager extends EventEmitter2 {
     return services.includes(type);
   }
 
-  private createAccounts(accountInfos: IAccountInfo[]) {
+  private _createAccounts(accountInfos: IAccountInfo[]) {
     const accounts = accountInfos.map(({ type }) => {
       const account = this._container.get<IAccount>(type);
       this._accountMap.set(type, account);
       this._accounts.push(account);
 
-      account.on(AbstractAccount.EVENT_SUPPORTED_SERVICE_CHANGE, (services: string[], isStart: boolean) =>
-        this.emit(EVENT_SUPPORTED_SERVICE_CHANGE, services, isStart)
+      account.on(
+        AbstractAccount.EVENT_SUPPORTED_SERVICE_CHANGE,
+        (services: string[], isStart: boolean) =>
+          this.emit(EVENT_SUPPORTED_SERVICE_CHANGE, services, isStart),
       );
+
       return account;
     });
     return accounts;
   }
 
-  private handleLoginResponse(resp: IAuthResponse) {
-    if (!resp.accountInfos || resp.accountInfos.length <= 0) return { success: false, error: new Error('Auth fail') };
+  private _handleLoginResponse(resp: IAuthResponse) {
+    if (!resp.accountInfos || resp.accountInfos.length <= 0) {
+      return { success: false, error: new Error('Auth fail') };
+    }
+
     this.emit(EVENT_LOGIN, resp.accountInfos);
     this._isLogin = true;
-    const accounts = this.createAccounts(resp.accountInfos);
+    const accounts = this._createAccounts(resp.accountInfos);
     return {
+      accounts,
       success: true,
-      accounts
     };
   }
 }

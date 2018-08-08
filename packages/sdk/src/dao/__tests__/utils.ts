@@ -4,19 +4,19 @@ import schema from '../schema';
 const setup = () => {
   const dbManager = new DBManager();
   dbManager.initDatabase(schema);
-  let database = dbManager.getDatabase();
+  const database = dbManager.getDatabase();
   return {
     dbManager,
-    database
+    database,
   };
 };
 
 const setupKV = () => {
   const kvStorageManager = new KVStorageManager();
-  let kvStorage = kvStorageManager.getStorage();
+  const kvStorage = kvStorageManager.getStorage();
   return {
     kvStorageManager,
-    kvStorage
+    kvStorage,
   };
 };
 export { setup, setupKV };

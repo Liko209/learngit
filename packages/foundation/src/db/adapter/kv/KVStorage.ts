@@ -16,9 +16,8 @@ class KVStorage {
     const value = this.storage.getItem(String(key));
     if (value) {
       return this.deserialize(value);
-    } else {
-      return null;
     }
+    return null;
   }
 
   put(key: number | string, value: any): void {

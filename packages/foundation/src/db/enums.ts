@@ -5,7 +5,7 @@
  */
 enum DatabaseType {
   DexieDB = 'dexie',
-  LokiDB = 'loki'
+  LokiDB = 'loki',
 }
 
 export { DatabaseType };

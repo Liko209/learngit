@@ -5,6 +5,6 @@
  */
 import { SocketManager } from './SocketManager';
 
-//TO-DO: when to load this manager?
+// TO-DO: when to load this manager?
 const socketManager = SocketManager.getInstance();
 export default socketManager;

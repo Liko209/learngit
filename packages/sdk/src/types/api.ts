@@ -37,4 +37,7 @@ type PartialApiConfig = {
 
 type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload';
 
-export { BaseConfig, RcConfig, Glip2Config, GlipConfig, UploadConfig, ApiConfig, PartialApiConfig, HttpConfigType };
+export {
+  BaseConfig, RcConfig, Glip2Config, GlipConfig,
+  UploadConfig, ApiConfig, PartialApiConfig, HttpConfigType,
+};

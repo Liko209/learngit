@@ -1,0 +1,4 @@
+{
+  "timeout": 60000,
+  "tokenExpireInAdvance": 300000
+}

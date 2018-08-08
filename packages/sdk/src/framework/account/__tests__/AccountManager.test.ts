@@ -4,11 +4,11 @@ import { Container } from '../../Container';
 import { AbstractAccount } from '../AbstractAccount';
 
 class MyAccount extends AbstractAccount {
-  async updateSupportedServices(data: any): Promise<void> {}
+  async updateSupportedServices(data: any): Promise<void> { }
 }
 
 class MyOtherAccount extends AbstractAccount {
-  async updateSupportedServices(data: any): Promise<void> {}
+  async updateSupportedServices(data: any): Promise<void> { }
 }
 
 class MyAuthenticator implements IAuthenticator {
@@ -30,12 +30,27 @@ MySyncAuthenticator.prototype.authenticate = mockSyncAuthenticate;
 
 function setup() {
   const container = new Container({ singleton: true });
-  container.registerAll([
-    { name: MyAccount.name, value: MyAccount },
-    { name: MyOtherAccount.name, value: MyOtherAccount },
-    { name: MyAuthenticator.name, value: MyAuthenticator },
-    { name: MySyncAuthenticator.name, value: MySyncAuthenticator }
-  ]);
+
+  container.registerClass({
+    name: MyAccount.name,
+    value: MyAccount,
+  });
+
+  container.registerClass({
+    name: MyOtherAccount.name,
+    value: MyOtherAccount,
+  });
+
+  container.registerClass({
+    name: MyAuthenticator.name,
+    value: MyAuthenticator,
+  });
+
+  container.registerClass({
+    name: MySyncAuthenticator.name,
+    value: MySyncAuthenticator,
+  });
+
   const accountManager = new AccountManager(container);
   return { accountManager, container };
 }
@@ -44,7 +59,10 @@ function setupLoginSuccess() {
   const { container, accountManager } = setup();
   mockSyncAuthenticate.mockReturnValue({
     success: true,
-    accountInfos: [{ type: MyAccount.name, data: 'token' }, { type: MyOtherAccount.name, data: 'other token' }]
+    accountInfos: [
+      { type: MyAccount.name, data: 'token' },
+      { type: MyOtherAccount.name, data: 'other token' },
+    ],
   });
   accountManager.syncLogin(MySyncAuthenticator.name);
   const account = accountManager.getAccount(MyAccount.name);
@@ -65,7 +83,7 @@ describe('AccountManager', () => {
         ({ accountManager } = setup());
         mockSyncAuthenticate.mockReturnValue({
           success: true,
-          accountInfos: [{ type: MyAccount.name, data: 'token' }]
+          accountInfos: [{ type: MyAccount.name, data: 'token' }],
         });
       });
 
@@ -98,7 +116,10 @@ describe('AccountManager', () => {
 
   describe('login()', () => {
     it('should work', async () => {
-      mockAuthenticate.mockReturnValue({ success: true, accountInfos: [{ type: MyAccount.name, data: 'token' }] });
+      mockAuthenticate.mockReturnValue({
+        success: true,
+        accountInfos: [{ type: MyAccount.name, data: 'token' }],
+      });
       await accountManager.login(MyAuthenticator.name);
     });
   });

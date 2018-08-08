@@ -7,13 +7,13 @@ import notificationCenter from '../../service/notificationCenter';
 import { transformAll } from '../../service/utils';
 import { Post, Item, Raw } from '../../models';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
-import { SearchResultResponse } from './types.d';
+import { SearchResult } from './types.d';
 import { SERVICE } from '../../service/eventKey';
 import SearchService from './index';
 
-export default ({ results, request_id: requestId, scroll_request_id }: SearchResultResponse) => {
+export default ({ results, request_id: requestId, scroll_request_id }: SearchResult) => {
   const searchService: SearchService = SearchService.getInstance();
-  //cancel the former non-active request
+  // cancel the former non-active request
   if (requestId !== searchService.activeServerRequestId) {
     searchService.cancelSearchRequest(requestId);
     return;

@@ -15,7 +15,7 @@ class GroupServiceHandler {
       members,
       creator_id: Number(userId),
       is_new: true,
-      new_version: versionHash()
+      new_version: versionHash(),
     };
   }
 }

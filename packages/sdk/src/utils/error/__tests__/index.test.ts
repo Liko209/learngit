@@ -13,7 +13,7 @@ it('index Throw', () => {
 });
 
 it('index Aware', () => {
-  notificationCenter.on('Error', info => {
+  notificationCenter.on('Error', (info) => {
     expect(info.error).toBeInstanceOf(BaseError);
     expect(info.error.code).toBe(123456);
     expect(info.error.message).not.toBeNull();

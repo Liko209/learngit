@@ -19,7 +19,7 @@ describe('auth', () => {
         headers: { auth: 'xxxx' },
         method: 'post',
         via: NETWORK_VIA.HTTP,
-        path: '/oauth/token'
+        path: '/oauth/token',
       });
     });
   });
@@ -32,8 +32,8 @@ describe('auth', () => {
         via: NETWORK_VIA.HTTP,
         data: {
           clientId: '123123',
-          redirectUri: '456456'
-        }
+          redirectUri: '456456',
+        },
       });
     });
   });

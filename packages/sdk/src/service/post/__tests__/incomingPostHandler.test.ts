@@ -1,20 +1,19 @@
+/// <reference path="../../../__tests__/types.d.ts" />
 import { daoManager, PostDao } from '../../../dao';
 import IncomingPostHandler from '../incomingPostHandler';
 import { postFactory } from '../../../__tests__/factories';
 
-/// <reference path="../../../__tests__/types.d.ts" />
-
-jest.mock('dao', () => {
+jest.mock('../../../dao', () => {
   const methods = {
     queryPostsByGroupId: jest.fn(),
     bulkDelete: jest.fn(),
     queryOldestPostByGroupId: jest.fn(),
-    queryManyPostsByIds: jest.fn()
+    queryManyPostsByIds: jest.fn(),
   };
   return {
     daoManager: {
-      getDao: () => methods
-    }
+      getDao: () => methods,
+    },
   };
 });
 
@@ -24,7 +23,8 @@ beforeEach(() => {
 
 describe('handelGroupPostsDiscontinuousCasuedByOverThreshold()', () => {
   it('test empty an array', async () => {
-    const result1 = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold([], true);
+    const result1 = await IncomingPostHandler
+      .handelGroupPostsDiscontinuousCasuedByOverThreshold([], true);
     expect(result1).toEqual([]);
   });
 
@@ -33,8 +33,10 @@ describe('handelGroupPostsDiscontinuousCasuedByOverThreshold()', () => {
     for (let i = 1; i < 60; i += 1) {
       mock.push({ id: i, group_id: Math.random() > 0.5 ? 1 : 2 });
     }
-    daoManager.getDao<PostDao>(null).queryPostsByGroupId.mockResolvedValue([]);
-    const result = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(mock, true);
+    daoManager.getDao<PostDao>(null)
+      .queryPostsByGroupId.mockResolvedValue([]);
+    const result = await IncomingPostHandler
+      .handelGroupPostsDiscontinuousCasuedByOverThreshold(mock, true);
     expect(result).toEqual(mock);
   });
 
@@ -44,7 +46,8 @@ describe('handelGroupPostsDiscontinuousCasuedByOverThreshold()', () => {
       mock.push({ id: i, group_id: Math.random() > 0.5 ? 1 : 2 });
     }
     daoManager.getDao<PostDao>(null).queryPostsByGroupId.mockResolvedValue([{ id: 1 }]);
-    const result = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(mock, true);
+    const result = await IncomingPostHandler
+      .handelGroupPostsDiscontinuousCasuedByOverThreshold(mock, true);
     mock.shift();
     expect(result).toEqual(mock);
   });
@@ -57,7 +60,8 @@ describe('handelGroupPostsDiscontinuousCasuedByOverThreshold()', () => {
     daoManager.getDao<PostDao>(null).queryPostsByGroupId.mockImplementation(() => {
       throw new Error('error msg');
     });
-    const result = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(mock, true);
+    const result = await IncomingPostHandler
+      .handelGroupPostsDiscontinuousCasuedByOverThreshold(mock, true);
     expect(result).toEqual([]);
   });
 });
@@ -68,8 +72,8 @@ it('isGroupPostsDiscontinuous()', () => {
       id: 1,
       group_id: 1,
       created_at: 1,
-      modified_at: 1
-    })
+      modified_at: 1,
+    }),
   ]);
   expect(result1).toBe(false);
   const result2 = IncomingPostHandler.isGroupPostsDiscontinuous([
@@ -77,8 +81,8 @@ it('isGroupPostsDiscontinuous()', () => {
       id: 1,
       group_id: 1,
       created_at: 1,
-      modified_at: 2
-    })
+      modified_at: 2,
+    }),
   ]);
   expect(result2).toBe(true);
 });
@@ -90,35 +94,37 @@ it('removeDiscontinuousPosts()', async () => {
         id: 11,
         group_id: 1,
         created_at: 1,
-        modified_at: 1
+        modified_at: 1,
       }),
       postFactory.build({
         id: 12,
         group_id: 1,
         created_at: 1,
-        modified_at: 2
-      })
+        modified_at: 2,
+      }),
     ],
     2: [
       postFactory.build({
         id: 22,
         group_id: 1,
         created_at: 1,
-        modified_at: 2
-      })
-    ]
+        modified_at: 2,
+      }),
+    ],
   };
   daoManager.getDao<PostDao>(null).queryOldestPostByGroupId.mockResolvedValueOnce([
     postFactory.build({
       id: 11,
       group_id: 1,
       created_at: 1,
-      modified_at: 1
-    })
+      modified_at: 1,
+    }),
   ]);
   await IncomingPostHandler.removeDiscontinuousPosts(mock);
+  // TODO figure out why this test don't have any assert
   // expect(result1).toBe(false);
-  // const result2 = IncomingPostHandler.isGroupPostsDiscontinuous([{ created_at: 1, modified_at: 2 }]);
+  // const result2 = IncomingPostHandler
+  //    .isGroupPostsDiscontinuous([{ created_at: 1, modified_at: 2 }]);
   // expect(result2).toBe(true);
 });
 
@@ -128,17 +134,18 @@ it('handleGroupPostsDiscontinuousCausedByModificationTimeChange()', async () => 
       id: 11,
       group_id: 1,
       created_at: 1,
-      modified_at: 1
+      modified_at: 1,
     }),
     postFactory.build({
       id: 12,
       group_id: 1,
       created_at: 1,
-      modified_at: 2
-    })
+      modified_at: 2,
+    }),
   ];
 
-  const result = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(mock);
+  const result = await IncomingPostHandler
+    .handleGroupPostsDiscontinuousCausedByModificationTimeChange(mock);
   expect(result).toEqual([]);
 });
 
@@ -154,14 +161,14 @@ describe('handleEditedPostNoInDB()', () => {
         id: 11,
         group_id: 1,
         created_at: 1,
-        modified_at: 1
+        modified_at: 1,
       }),
       postFactory.build({
         id: 12,
         group_id: 1,
         created_at: 1,
-        modified_at: 2
-      })
+        modified_at: 2,
+      }),
     ];
     daoManager.getDao<PostDao>(null).queryManyPostsByIds.mockResolvedValueOnce(mock);
     const result = await IncomingPostHandler.handleEditedPostNoInDB(mock);
@@ -174,14 +181,14 @@ describe('handleEditedPostNoInDB()', () => {
         id: 11,
         group_id: 1,
         created_at: 1,
-        modified_at: 1
+        modified_at: 1,
       }),
       postFactory.build({
         id: 12,
         group_id: 1,
         created_at: 1,
-        modified_at: 2
-      })
+        modified_at: 2,
+      }),
     ];
     daoManager.getDao<PostDao>(null).queryManyPostsByIds.mockImplementation(() => {
       throw new Error('error msg');
@@ -198,15 +205,15 @@ it('getDeactivatedPosts()', async () => {
       group_id: 1,
       created_at: 1,
       modified_at: 1,
-      deactivated: true
+      deactivated: true,
     }),
     postFactory.build({
       id: 12,
       group_id: 1,
       created_at: 1,
       modified_at: 2,
-      deactivated: false
-    })
+      deactivated: false,
+    }),
   ];
   const result = await IncomingPostHandler.getDeactivatedPosts(mock);
   expect(result).toMatchObject([
@@ -215,8 +222,8 @@ it('getDeactivatedPosts()', async () => {
       group_id: 1,
       created_at: 1,
       modified_at: 1,
-      deactivated: true
-    }
+      deactivated: true,
+    },
   ]);
 });
 
@@ -227,15 +234,15 @@ it('removeDeactivedPostFromValidPost()', async () => {
       group_id: 1,
       created_at: 1,
       modified_at: 1,
-      deactivated: true
+      deactivated: true,
     }),
     postFactory.build({
       id: 12,
       group_id: 1,
       created_at: 1,
       modified_at: 2,
-      deactivated: false
-    })
+      deactivated: false,
+    }),
   ];
   const deactivedPosts = [
     postFactory.build({
@@ -243,17 +250,18 @@ it('removeDeactivedPostFromValidPost()', async () => {
       group_id: 1,
       created_at: 1,
       modified_at: 1,
-      deactivated: true
-    })
+      deactivated: true,
+    }),
   ];
-  const result = await IncomingPostHandler.removeDeactivedPostFromValidPost(validPost, deactivedPosts);
+  const result = await IncomingPostHandler
+    .removeDeactivedPostFromValidPost(validPost, deactivedPosts);
   expect(result).toMatchObject([
     {
       id: 12,
       group_id: 1,
       created_at: 1,
       modified_at: 2,
-      deactivated: false
-    }
+      deactivated: false,
+    },
   ]);
 });

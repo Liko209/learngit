@@ -20,36 +20,39 @@ interface UnifiedLoginAuthenticateParams extends IAuthParams {
 }
 
 class UnifiedLoginAuthenticator implements IAuthenticator {
+
+  /**
+   * should consider 2 cases
+   * 1. RC account
+   * 2. Glip account
+   * we only consider 1 now, will implement case 2 in the future
+   */
   async authenticate(params: UnifiedLoginAuthenticateParams): Promise<IAuthResponse> {
-    /*
-    should consider 2 cases
-    1. RC account
-    2. Glip account
-    we only consider 1 now, will implement case 2 in the future
-    */
+
     if (params.code) {
-      return this.RCAccountLogin(params.code);
-    } else if (params.token) {
-      return this.glipAccountLogin(params.token);
+      return this._authenticateRC(params.code);
     }
+
+    if (params.token) {
+      return this._authenticateGlip(params.token);
+    }
+
     return {
       success: false,
-      error: new Error('invalid tokens')
+      error: new Error('invalid tokens'),
     };
   }
 
-  private async glipAccountLogin(token: string): Promise<IAuthResponse> {
-    return {
-      success: true
-    };
+  private async _authenticateGlip(token: string): Promise<IAuthResponse> {
+    return { success: true };
   }
 
-  private async RCAccountLogin(code: string): Promise<IAuthResponse> {
+  private async _authenticateRC(code: string): Promise<IAuthResponse> {
     const { rc } = Api.httpConfig;
 
     const authData = await oauthTokenViaAuthCode({
       code,
-      redirect_uri: `${window.location.origin}/unified-login/`
+      redirect_uri: `${window.location.origin}/unified-login/`,
     });
 
     const authDao = daoManager.getKVDao(AuthDao);
@@ -62,8 +65,8 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     const newData = await oauthTokenViaAuthCode(
       { code: newCode, redirect_uri: 'glip://rclogin' },
       {
-        Authorization: `Basic ${btoa(`${rc.clientId}:${rc.clientSecret}`)}`
-      }
+        Authorization: `Basic ${btoa(`${rc.clientId}:${rc.clientSecret}`)}`,
+      },
     );
     const glipAuthData = await loginGlip(newData.data);
 
@@ -81,13 +84,13 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
       accountInfos: [
         {
           type: RCAccount.name,
-          data: authData.data
+          data: authData.data,
         },
         {
           type: GlipAccount.name,
-          data: glipToken
-        }
-      ]
+          data: glipToken,
+        },
+      ],
     };
   }
 }

@@ -18,7 +18,8 @@ describe('Api', () => {
     });
 
     it('should return the same  instance', () => {
-      expect(Api.getNetworkClient('glip', HandleByGlip)).toBe(Api.getNetworkClient('glip', HandleByGlip));
+      const networkClient = Api.getNetworkClient('glip', HandleByGlip);
+      expect(networkClient).toBe(Api.getNetworkClient('glip', HandleByGlip));
     });
 
     it('should throw error when Api not initialized', () => {
