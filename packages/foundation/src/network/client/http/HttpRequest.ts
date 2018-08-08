@@ -6,7 +6,7 @@
 import BaseRequest from '../../BaseRequest';
 import NetworkRequestBuilder from '../NetworkRequestBuilder';
 
-class Request extends BaseRequest {
+class HttpRequest extends BaseRequest {
   constructor(builder: NetworkRequestBuilder) {
     super(
       builder.id,
@@ -30,4 +30,4 @@ class Request extends BaseRequest {
   }
 }
 
-export default Request;
+export default HttpRequest;

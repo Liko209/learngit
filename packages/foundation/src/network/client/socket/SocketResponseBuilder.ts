@@ -3,7 +3,7 @@
  * @Date: 2018-06-04 15:43:54
  * Copyright © RingCentral. All rights reserved.
  */
-import NetworkResponseBuilder from '../http/NetworkResponseBuilder';
+import NetworkResponseBuilder from '../NetworkResponseBuilder';
 import { SocketResponse } from './SocketResponse';
 import _ from 'lodash';
 

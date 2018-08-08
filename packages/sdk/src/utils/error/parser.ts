@@ -8,7 +8,7 @@
 import Dexie from 'dexie';
 import BaseError from './base';
 import ErrorTypes from './types';
-import { Response } from 'foundation';
+import { BaseResponse } from 'foundation';
 // import BaseResponse from 'foundation/network/BaseResponse';
 
 class ErrorParser {
@@ -20,7 +20,7 @@ class ErrorParser {
       return ErrorParser.dexie(err);
     }
 
-    if (err instanceof Response) {
+    if (err instanceof BaseResponse) {
       return ErrorParser.http(err);
     }
 
