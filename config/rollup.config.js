@@ -39,7 +39,6 @@ const config = {
   },
 
   watch: {
-    include: ['src/**'],
     exclude: ['node_modules/**'],
     clearScreen: true,
   }
