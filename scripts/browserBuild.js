@@ -23,7 +23,7 @@ const rollupTslint = require('rollup-plugin-tslint');
 const dtsGenerator = require('dts-generator');
 
 function browserBuild(p, pkgName, entryPath, destination, format = 'umd', multipleEntry = false) {
-  if (format === 'umd') {
+  if (!multipleEntry) {
     dtsGenerator.default({
       name: pkgName,
       main: `${pkgName}/index`,
@@ -67,11 +67,7 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd', multip
         tsconfig: path.resolve(p, 'tsconfig.json'),
       })
       // ...(format === 'umd' ? [rollupUglify()] : [rollupUglifyEs()])
-    ],
-    watch: {
-      exclude: ['node_modules/**'],
-      clearScreen: true,
-    }
+    ]
   }).then(bundle =>
     bundle.write({
       format,

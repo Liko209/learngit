@@ -8,7 +8,7 @@
   },
   "scripts": {
     "preinstall": "node scripts/check-pm.js",
-    "postinstall": "yarn bt && yarn build:packages",
+    "postinstall": "yarn build:packages && yarn bt",
     "start:ui": "cd packages/ui && yarn storybook",
     "start:demo": "cd demo && yarn start",
     "start:app": "cd application && yarn start",
@@ -21,7 +21,7 @@
     "test:cover": "yarn test --coverage",
     "lint": "tslint",
     "publish": "yarn clean:build && yarn build && lerna publish --silent",
-    "watch": "yarn build:packages --watch",
+    "watch": "node scripts/watch.js",
     "precommit": "lint-staged",
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",
