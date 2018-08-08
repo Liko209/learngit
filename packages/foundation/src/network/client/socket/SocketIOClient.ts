@@ -16,7 +16,7 @@ class SocketClient implements ISocketRequestDelegate {
   socket: SocketIOClient.Socket;
   socketRequestHelper: SocketRequestHelper;
 
-  constructor(socketServer: string, token: string) {
+  constructor(socketServer: string) {
     this.socketRequestHelper = new SocketRequestHelper();
     this.socket = io(`https://${socketServer}`, {
       transports: ['polling', 'websocket'],
@@ -25,7 +25,6 @@ class SocketClient implements ISocketRequestDelegate {
       reconnectionDelay: 5000,
       reconnectionDelayMax: 25000,
       forceNew: true,
-      query: { tk: token },
     });
 
     this.socket.on('response', (response: any) => {

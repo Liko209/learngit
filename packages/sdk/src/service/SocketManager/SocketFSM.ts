@@ -20,7 +20,7 @@ export class SocketFSM extends StateMachine {
 
   private logPrefix: string = '';
 
-  constructor(public serverUrl: string, public glipToken: string) {
+  constructor(public serverUrl: string) {
     super({
       transitions: [
         { name: 'init', from: 'none', to: 'idle' },
@@ -61,7 +61,7 @@ export class SocketFSM extends StateMachine {
 
         onInit() {
           this.info(`onInit ${this.state}`);
-          this.socketClient = new SocketClient(this.serverUrl, this.glipToken);
+          this.socketClient = new SocketClient(this.serverUrl);
           this.registerSocketEvents();
         },
 

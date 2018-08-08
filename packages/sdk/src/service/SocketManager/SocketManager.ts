@@ -8,8 +8,6 @@ import notificationCenter from '../../service/notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
 import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
-import AuthDao from '../../dao/auth';
-import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
 import { SOCKET_SERVER_HOST } from '../../dao/config/constants';
 import { mainLogger } from 'foundation';
 
@@ -221,12 +219,10 @@ export class SocketManager {
 
   private _startFSM() {
     // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
-    const authDao = daoManager.getKVDao(AuthDao);
     const configDao = daoManager.getKVDao(ConfigDao);
-    const glipToken = authDao.get(AUTH_GLIP_TOKEN);
     const serverHost = configDao.get(SOCKET_SERVER_HOST);
     if (serverHost) {
-      this.activeFSM = new SocketFSM(serverHost, glipToken);
+      this.activeFSM = new SocketFSM(serverHost);
       this.activeFSM.start();
     }
 
