@@ -42,7 +42,7 @@ class Api {
         host: currentConfig.server,
         handlerType: type,
       };
-      networkClient = new NetworkClient(networkRequests, currentConfig.apiPlatform);
+      networkClient = new NetworkClient(networkRequests, currentConfig.apiPlatform, currentConfig.apiPlayformVersion);
       this.httpSet.set(name, networkClient);
     }
     return networkClient;
@@ -54,6 +54,10 @@ class Api {
 
   static get glip2NetworkClient() {
     return this.getNetworkClient('glip2', HandleByGlip2);
+  }
+
+  static get glipDesktopNetworkClient() {
+    return this.getNetworkClient('glip_desktop', HandleByGlip);
   }
 
   static get rcNetworkClient() {

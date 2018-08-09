@@ -1,8 +1,8 @@
 /*
  * @Author: Shining Miao (shining.miao@ringcentral.com)
  * @Date: 2018-02-05 17:54:13
- * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
- * @Last Modified time: 2018-08-06 13:53:32
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-08-09 09:52:58
  */
 import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
 import { IResponse } from '../NetworkClient';
@@ -60,7 +60,19 @@ function indexData(params: object, requestConfig = {}, headers = {}): Promise<In
   return Api.glipNetworkClient.get('/index', params, NETWORK_VIA.HTTP, requestConfig, headers);
 }
 
+function initialData(params: object, requestConfig = {}, headers = {}): Promise<IndexResponse> {
+  return Api.glipDesktopNetworkClient.get('/initial', params, NETWORK_VIA.HTTP, requestConfig, headers);
+}
+
+function remainingData(params: object, requestConfig = {}, headers = {}): Promise<IndexResponse> {
+  return Api.glipDesktopNetworkClient.get('/remaining', params, NETWORK_VIA.HTTP, requestConfig, headers);
+}
+
+//plugins data
+
 export {
   loginGlip,
   indexData,
+  initialData,
+  remainingData
 };

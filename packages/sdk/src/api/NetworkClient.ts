@@ -52,11 +52,13 @@ export interface IResponseRejectFn {
 export default class NetworkClient {
   networkRequests: INetworkRequests;
   apiPlatform: string;
+  apiPlatformVersion: string;
   apiMap: Map<string, { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]>;
   // todo refactor config
-  constructor(networkRequests: INetworkRequests, apiPlatform: string) {
+  constructor(networkRequests: INetworkRequests, apiPlatform: string, apiPlatformVersion = '') {
     this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;
+    this.apiPlatformVersion = apiPlatformVersion;
     this.apiMap = new Map();
   }
 
@@ -103,10 +105,12 @@ export default class NetworkClient {
 
   getRequestByVia<T>(query: IQuery, via: NETWORK_VIA = NETWORK_VIA.HTTP): IRequest {
     const { path, method, data, headers, params, authFree, requestConfig } = query;
+    const versionPath = this.apiPlatformVersion ? `/${this.apiPlatformVersion}` : '';
+    const finalPath = `${versionPath}${this.apiPlatform}${path}`
     return new NetworkRequestBuilder()
       .setHost(this.networkRequests.host || '')
       .setHandlerType(this.networkRequests.handlerType)
-      .setPath(`${this.apiPlatform}${path}`)
+      .setPath(finalPath)
       .setMethod(method)
       .setData(data)
       .setHeaders(headers || {})

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { loginRCByPassword, loginGlip2ByPassword, refreshToken } from './ringcentral/login';
-import { loginGlip, indexData } from './glip/user';
+import { loginGlip, indexData, initialData, remainingData } from './glip/user';
 export { default as Api } from './api';
-export { loginRCByPassword, loginGlip2ByPassword, refreshToken, loginGlip, indexData };
+export { loginRCByPassword, loginGlip2ByPassword, refreshToken, loginGlip, indexData, initialData, remainingData };
 export * from './handlers';
