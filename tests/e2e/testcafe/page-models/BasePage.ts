@@ -50,8 +50,8 @@ export abstract class BasePage {
       screenPath = uuid() + '.png';
       await this._t.takeScreenshot(screenPath);
       screenPath = this._t['testRun'].opts.screenshotPath + '/' + screenPath;
-      console.log(screenPath);
     }
+
     const step = new AllureStep(message, status, startTime, endTime, screenPath, [],);
     if (parent == undefined) {
       this._t.ctx.logs.push(step);

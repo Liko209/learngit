@@ -25,6 +25,10 @@ export class AllureStep {
   }
 
   toString() {
-    return `${this.startTime}\tduration=${this.endTime - this.startTime}\t${this.status} ${this.message}`;
+    let log: string = `${this.startTime}\tduration=${this.endTime - this.startTime}\t${this.status} ${this.message}`;
+    if (this.screenshotPath) {
+      log += '\tscreenshot:' + this.screenshotPath;
+    }
+    return log;
   }
 }
