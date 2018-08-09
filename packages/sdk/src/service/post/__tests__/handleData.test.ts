@@ -10,6 +10,7 @@ import IncomingPostHandler from '../../../service/post/incomingPostHandler';
 import { baseHandleData as utilsBaseHandleData, transform } from '../../../service/utils';
 import PostService from '../../post';
 import GroupService from '../../group';
+import PostDao from '../../../dao/post/index';
 import handleData, {
   baseHandleData,
   handleDataFromSexio,
@@ -38,7 +39,6 @@ const dao = {
   getAll: jest.fn().mockReturnValue([{ id: 1 }]),
   purgePostsByGroupId: jest.fn(),
   createQuery: jest.fn(),
-  isLokiDB: jest.fn().mockReturnValue(false),
 };
 beforeAll(() => {
   jest.spyOn(daoManager, 'getStorageQuotaOccupation').mockReturnValue(0.5);
@@ -51,7 +51,7 @@ beforeEach(() => {
 describe('Post service handleData', () => {
   it('maxPostsExceed = false', async () => {
     utilsBaseHandleData.mockReturnValue([]);
-    daoManager.getDao(null).createQuery.mockImplementation(() => ({
+    daoManager.getDao(PostDao).createQuery.mockImplementation(() => ({
       count: jest.fn().mockReturnValue(300001),
     }));
     jest.spyOn(require('../handleData'), 'handlePreInstedPosts').mockResolvedValueOnce([]);
@@ -64,7 +64,7 @@ describe('Post service handleData', () => {
   });
 
   it('maxPostsExceed = true', async () => {
-    daoManager.getDao(null).createQuery.mockImplementation(() => ({
+    daoManager.getDao(PostDao).createQuery.mockImplementation(() => ({
       count: jest.fn().mockReturnValue(299999),
     }));
     utilsBaseHandleData.mockReturnValue([{ group_id: 123 }]);
