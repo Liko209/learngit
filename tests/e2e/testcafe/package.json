@@ -22,8 +22,9 @@
     "@types/node": "^10.5.7",
     "allure-js-commons": "^1.3.2",
     "cross-env": "^5.2.0",
-    "testcafe": "^0.20.5",
-    "testcafe-browser-provider-selenium": "^0.2.0"
+    "testcafe": "https://git.ringcentral.com/TA/testcafe/testcafe/repository/master/archive.tar.gz",
+    "testcafe-browser-provider-selenium": "^0.2.0",
+    "testcafe-reporter-allure-lazy": "https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/repository/master/archive.tar.gz"
   },
   "devDependencies": {
     "nodemon": "^1.18.3"
