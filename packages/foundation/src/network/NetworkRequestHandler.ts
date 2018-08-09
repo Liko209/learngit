@@ -7,7 +7,7 @@ import RequestTask from './RequestTask';
 import NetworkTokenManager from './OAuthTokenManager';
 import NetworkRequestConsumer from './NetworkRequestConsumer';
 import NetworkRequestSurvivalMode from './NetworkRequestSurvivalMode';
-import Response from './client/http/Response';
+import { HttpResponse } from './client/http';
 import {
   INetworkRequestProducer,
   INetworkRequestConsumerListener,
@@ -22,7 +22,7 @@ import {
 } from './network';
 
 class NetworkRequestHandler
-implements IResponseListener, INetworkRequestProducer {
+  implements IResponseListener, INetworkRequestProducer {
   pendingTasks: Map<REQUEST_PRIORITY, RequestTask[]>;
   consumers: Map<NETWORK_VIA, INetworkRequestConsumerListener>;
   isPause: boolean;
@@ -265,7 +265,7 @@ implements IResponseListener, INetworkRequestProducer {
   }
 
   private _callXApiResponseCallback(type: NETWORK_FAIL_TYPE, request: IRequest) {
-    const response = Response.builder
+    const response = HttpResponse.builder
       .setRequest(request)
       .setStatusText(type)
       .build();

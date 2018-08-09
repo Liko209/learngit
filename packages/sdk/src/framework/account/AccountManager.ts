@@ -5,8 +5,8 @@
 */
 import { EventEmitter2 } from 'eventemitter2';
 import _ from 'lodash';
+import { Container } from 'foundation';
 
-import { Container } from '../Container';
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';
 import { IAccountInfo, IAuthenticator, IAuthResponse, ISyncAuthenticator } from './IAuthenticator';

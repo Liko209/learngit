@@ -3,8 +3,8 @@
  * @Date: 2018-06-04 15:43:52
  * Copyright © RingCentral. All rights reserved.
  */
-import Response from '../http/Response';
+import { HttpResponse } from '../http';
 
-class SocketResponse extends Response {}
+class SocketResponse extends HttpResponse { }
 
 export { SocketResponse };

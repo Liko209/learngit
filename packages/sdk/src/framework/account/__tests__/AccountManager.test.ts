@@ -1,6 +1,6 @@
+import { Container } from 'foundation';
 import { AccountManager } from '../AccountManager';
 import { IAuthenticator, ISyncAuthenticator, IAuthResponse, IAuthParams } from '../IAuthenticator';
-import { Container } from '../../Container';
 import { AbstractAccount } from '../AbstractAccount';
 
 class MyAccount extends AbstractAccount {

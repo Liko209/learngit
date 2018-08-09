@@ -11,7 +11,7 @@ import {
   IHandleType,
   IRequest,
   NETWORK_METHOD,
-  Response,
+  BaseResponse,
 } from 'foundation';
 
 // import logger from './logger';
@@ -79,7 +79,7 @@ export default class NetworkClient {
   }
 
   buildCallback<T>(apiMapKey: string) {
-    return (resp: Response) => {
+    return (resp: BaseResponse) => {
       const promiseResolvers = this.apiMap.get(apiMapKey);
       if (!promiseResolvers) return;
 

@@ -3,6 +3,7 @@
  * @Date: 2018-05-03 13:31:26
  * Copyright © RingCentral. All rights reserved.
  */
+export * from './ioc';
 export * from './db';
 export * from './network';
 export * from './log';
