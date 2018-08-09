@@ -4,14 +4,23 @@ import MuiToolbar, { ToolbarProps } from '@material-ui/core/Toolbar';
 import MuiAppBar, { AppBarProps } from '@material-ui/core/AppBar';
 import { WithTheme } from '@material-ui/core';
 
-export type PageHeaderProps = {} & ToolbarProps &
+export type PageHeaderProps = {
+  leftSlot?: React.ReactNode,
+  rightSlot?: React.ReactNode,
+} & ToolbarProps &
   AppBarProps &
   Partial<Pick<WithTheme, 'theme'>>;
+
+export const LeftSlotWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+`;
 
 export const CustomPageHeader: React.SFC<PageHeaderProps> = (
   props: PageHeaderProps,
 ) => {
-  const { children, variant, position, elevation, ...rest } = props;
+  const { children, leftSlot, rightSlot, variant, position, elevation, ...rest } = props;
   return (
     <MuiAppBar
       position={position || 'static'}
@@ -19,7 +28,14 @@ export const CustomPageHeader: React.SFC<PageHeaderProps> = (
       square={false}
       {...rest}
     >
-      <MuiToolbar variant="dense">{children}</MuiToolbar>
+      <MuiToolbar variant="dense">
+        <LeftSlotWrapper>
+          {leftSlot}
+        </LeftSlotWrapper>
+        <div>
+          {rightSlot}
+        </div>
+      </MuiToolbar>
     </MuiAppBar>
   );
 };

@@ -1,19 +1,13 @@
 /// <reference path="../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-// import { boolean, select } from '@storybook/addon-knobs/react';
 import { withInfo } from '@storybook/addon-info';
 import backgrounds from '@storybook/addon-backgrounds';
 import { NestedList, NestedListHeader } from '.';
 import { boolean } from '@storybook/addon-knobs/react';
-// import IconButton from '../IconButton/index';
-// import Icon from '@material-ui/core/Icon';
-// import Button from '../Button';
-// import IconButton from '../IconButton';
 import { ListItem, ListItemIcon, Icon, ListItemText, Avatar } from '@material-ui/core';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-// import IconButton from '../IconButton';
 
 storiesOf('NestedList', module)
   .addDecorator(
