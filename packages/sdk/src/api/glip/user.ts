@@ -1,9 +1,9 @@
 /*
- * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-02-05 17:54:13
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-08-09 09:52:58
+ * @Author: Lip Wang (lip.wangn@ringcentral.com)
+ * @Date: 2018-08-09 13:45:49
+ * Copyright © RingCentral. All rights reserved.
  */
+
 import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
 import { IResponse } from '../NetworkClient';
 import Api from '../api';

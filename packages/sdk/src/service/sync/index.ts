@@ -33,10 +33,10 @@ export default class SyncService extends BaseService {
     const configDao = daoManager.getKVDao(ConfigDao);
     const lastIndexTimestamp = configDao.get(LAST_INDEX_TIMESTAMP);
     if (lastIndexTimestamp) {
-      await this.firstLogin();
+      await this.sysnIndexData(lastIndexTimestamp);
     }
     else {
-      await this.sysnIndexData(lastIndexTimestamp);
+      await this.firstLogin();
     }
     this.isLoading = false;
   }
@@ -45,7 +45,7 @@ export default class SyncService extends BaseService {
     let result = await fetchInitialData();
     handleData(result);
     result = await fetchRemainingData();
-    handleData(result);
+    handleData(result, false);
   }
   private async sysnIndexData(timeStamp: number) {
     // 5 minutes ago to ensure data is correct

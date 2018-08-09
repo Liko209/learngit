@@ -30,7 +30,7 @@ const fetchRemainingData = async (): Promise<IResponse<IndexDataModel>> => {
   progressBar.start();
   let result;
   try {
-    result = remainingData({});
+    result = remainingData({ _: Date.now() });
   } finally {
     progressBar.stop();
   }

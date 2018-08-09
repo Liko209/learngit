@@ -68,7 +68,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     .then(() => postHandleData(posts, maxPostsExceeded));
 };
 
-const handleData = async (result: IResponse<IndexDataModel>) => {
+const handleData = async (result: IResponse<IndexDataModel>, shouldSaveScoreboard: boolean = true) => {
   try {
     if (!(result instanceof Object) || !(result.data instanceof Object)) {
       return; // sometimes indexData return false
@@ -84,7 +84,7 @@ const handleData = async (result: IResponse<IndexDataModel>) => {
       configDao.put(LAST_INDEX_TIMESTAMP, timestamp);
       notificationCenter.emitConfigPut(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
     }
-    if (scoreboard) {
+    if (scoreboard && shouldSaveScoreboard) {
       configDao.put(SOCKET_SERVER_HOST, scoreboard);
       notificationCenter.emitConfigPut(CONFIG.SOCKET_SERVER_HOST, scoreboard);
     }

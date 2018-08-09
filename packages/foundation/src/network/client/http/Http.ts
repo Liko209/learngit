@@ -29,6 +29,7 @@ class Http extends BaseClient {
       timeout,
       baseURL: host,
       url: path,
+      withCredentials: true,
       data: {},
       params: {},
       cancelToken: new CancelToken((cancel) => {
