@@ -26,26 +26,26 @@ export class RingcentralSignInPage extends BasePage {
   }
 
   setCredential(credential: string): this {
-    return this.chain(t =>
-      t.typeText(this.credentialField, credential),
+    return this.chain(async t =>
+      await t.typeText(this.credentialField, credential),
     );
   }
 
   setExtension(extension: string): this {
-    return this.chain(t =>
-      t.typeText(this.extensionField, extension),
+    return this.chain(async t =>
+      await t.typeText(this.extensionField, extension),
     );
   }
 
   setPassword(password: string): this {
-    return this.chain(t =>
-      t.typeText(this.passwordField, password),
+    return this.chain(async t =>
+      await t.typeText(this.passwordField, password),
     );
   }
 
   signIn(): this {
-    return this.chain(t =>
-      t.click(this.signInButton),
+    return this.chain(async t =>
+      await t.click(this.signInButton),
     );
   }
 }

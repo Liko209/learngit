@@ -23,5 +23,6 @@ test('Sign In Success', async (t) => {
       .shouldNavigateTo(RingcentralSignInPage)
       .setExtension('701')
       .setPassword('Test!123')
-      .signIn();
+      .signIn()
+      .execute();
 });

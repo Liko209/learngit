@@ -18,14 +18,14 @@ export class RingcentralSignInNavigationPage extends BasePage {
   }
 
   setCredential(credential: string): this {
-    return this.chain(t =>
-      t.typeText(this.credentialField, credential),
+    return this.chain(async t =>
+      await t.typeText(this.credentialField, credential),
     );
   }
 
   toNextPage(): this {
-    return this.chain(t =>
-      t.click(this.nextButton),
+    return this.chain(async t =>
+      await t.click(this.nextButton),
     );
   }
 }

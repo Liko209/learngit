@@ -22,8 +22,8 @@ export class EnvironmentSelectionPage extends BasePage {
   }
 
   selectEnvironment(environment: string): this {
-    return this.chain(t =>
-      t
+    return this.chain(async t =>
+      await t
         .click(this.environmentSelector)
         .click(this.environmentOption.withText(environment))
         .expect(this.environmentSelector.value)
@@ -32,8 +32,8 @@ export class EnvironmentSelectionPage extends BasePage {
   }
 
   toNextPage(): this {
-    return this.chain(t =>
-      t.click(this.loginButton),
+    return this.chain(async t =>
+      await t.click(this.loginButton),
     );
   }
 

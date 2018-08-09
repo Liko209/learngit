@@ -9,8 +9,10 @@ import { BasePage } from './BasePage';
 export class BlankPage extends BasePage {
 
   open(url: string): this {
-    return this.chain(t =>
-      t.navigateTo(url),
+    return this.chain(async t =>{
+      await t.navigateTo(url);
+      console.log('open url: ' + url);
+    }
     );
   }
 }
