@@ -29,6 +29,7 @@ export abstract class BasePage {
     let chain = this._chain;
     this._chain = Promise.resolve();
     await chain;
+    return this;
   }
 
   shouldNavigateTo<T extends BasePage>(
