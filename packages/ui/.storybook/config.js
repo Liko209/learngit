@@ -10,7 +10,9 @@ import { ThemeProvider, createTheme } from '../src/theme/index';
 const theme = createTheme();
 
 const ThemeDecorator = storyFn => (
-  <ThemeProvider theme={theme}>{storyFn()}</ThemeProvider>
+  <ThemeProvider theme={theme}>
+    <div style={{ paddingTop: '25px' }}>{storyFn()}</div>
+  </ThemeProvider>
 );
 
 function requireAll(requireContext) {
