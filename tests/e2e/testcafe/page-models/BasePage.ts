@@ -5,6 +5,7 @@
  */
 
 import { Status, AllureStep } from '../libs/report';
+import { v4 as uuid } from 'uuid';
 export abstract class BasePage {
 
   private _t: TestController;
@@ -26,13 +27,13 @@ export abstract class BasePage {
     return this;
   }
 
-  protected log(
+  protected async log(
     message: string,
     status: Status = Status.PASSED,
+    takeScreen: boolean = false,
     startTime?: number,
     endTime?: number,
-    screenPath?: string | undefined,
-    parent?: AllureStep): AllureStep {
+    parent?: AllureStep) {
 
     if (this._t.ctx.logs == undefined) {
       this._t.ctx.logs = [];
@@ -42,6 +43,14 @@ export abstract class BasePage {
     }
     if (endTime == undefined) {
       endTime = startTime;
+    }
+
+    let screenPath;
+    if (takeScreen) {
+      screenPath = uuid() + '.png';
+      await this._t.takeScreenshot(screenPath);
+      screenPath = this._t['testRun'].opts.screenshotPath + '/' + screenPath;
+      console.log(screenPath);
     }
     const step = new AllureStep(message, status, startTime, endTime, screenPath, [],);
     if (parent == undefined) {

@@ -5,14 +5,14 @@
  */
 
 import { BasePage } from './BasePage';
+import { Status } from '../libs/report';
 
 export class BlankPage extends BasePage {
 
   open(url: string): this {
     return this.chain(async t => {
       await t.navigateTo(url);
-      this.log(`open ${url}`);
-    }
-    );
+      await this.log(`open ${url}`, Status.PASSED, true);
+    });
   }
 }
