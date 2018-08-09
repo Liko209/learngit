@@ -3,8 +3,8 @@
  * @Date: 2018-06-24 15:41:55
  * Copyright © RingCentral. All rights reserved
 */
+import { Container } from 'foundation';
 import { IService } from './IService';
-import { Container } from '../Container';
 import { EventEmitter2 } from 'eventemitter2';
 
 class ServiceManager extends EventEmitter2 {

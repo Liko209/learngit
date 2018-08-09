@@ -3315,8 +3315,14 @@ var Token = /** @class */ (function () {
     return Token;
 }());
 
+/*
+ * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
+ * @Date: 2018-06-22 15:03:27
+ * Copyright © RingCentral. All rights reserved.
+ */
 var AbstractHandleType = /** @class */ (function () {
     function AbstractHandleType() {
+        this.defaultVia = NETWORK_VIA.HTTP;
         this.survivalModeSupportable = false;
         this.tokenExpirable = false;
         this.tokenRefreshable = false;

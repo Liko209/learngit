@@ -15,6 +15,7 @@ interface IHandleType {
   survivalModeSupportable: boolean;
   tokenExpirable: boolean;
   tokenRefreshable: boolean;
+  defaultVia: NETWORK_VIA;
   doRefreshToken: (token: IToken) => Promise<IToken>;
   basic: () => string;
   requestDecoration: (

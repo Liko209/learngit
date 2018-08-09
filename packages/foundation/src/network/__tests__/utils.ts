@@ -3,17 +3,12 @@ import {
   IRequest,
   NETWORK_VIA,
   ITokenHandler,
-  IToken
+  IToken,
 } from '../network';
-// NetworkRequestBuilder,
-// Token,
-// NetworkRequestHandler,
-// OAuthTokenManager,
-// OAuthTokenHandler;
 import { NetworkRequestExecutor } from '../NetworkRequestExecutor';
 import RequestTask from '../RequestTask';
 import BaseClient from '../client/BaseClient';
-import Response from '../client/http/Response';
+import { HttpResponse } from '../client/http';
 import NetworkRequestConsumer from '../NetworkRequestConsumer';
 import NetworkRequestSurvivalMode from '../NetworkRequestSurvivalMode';
 import AbstractHandleType from '../AbstractHandleType';
@@ -22,7 +17,7 @@ import Token from '../Token';
 import OAuthTokenManager from '../OAuthTokenManager';
 import NetworkRequestHandler from '../NetworkRequestHandler';
 import OAuthTokenHandler from '../OAuthTokenHandler';
-const fakeHandleType = new class extends AbstractHandleType {}();
+const fakeHandleType = new class extends AbstractHandleType { }();
 
 const getFakeRequest = () => {
   const request = new NetworkRequestBuilder()
@@ -32,7 +27,7 @@ const getFakeRequest = () => {
 };
 
 const getFakeResponse = () => {
-  const response = Response.builder.build();
+  const response = HttpResponse.builder.build();
   return response;
 };
 
@@ -49,7 +44,7 @@ const getFakeHandler = () => {
 };
 
 const getFakeClient = () => {
-  return new class extends BaseClient {}();
+  return new class extends BaseClient { }();
 };
 
 const getFakeExecutor = () => {
@@ -71,7 +66,7 @@ const getFakeConsumer = () => {
     10,
     NETWORK_VIA.HTTP,
     getFakeHandler(),
-    null
+    null,
   );
 };
 
@@ -115,5 +110,5 @@ export {
   getFakeTask,
   getFakeSurvivalMode,
   getFakeTokenHandler,
-  getFakeOAuthTokenHandler
+  getFakeOAuthTokenHandler,
 };

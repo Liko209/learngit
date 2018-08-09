@@ -1,0 +1,31 @@
+{
+  "name": "jupiter-e2e-tests",
+  "version": "0.0.1",
+  "description": "E2E tests for Jupiter",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "env": "node environment/launch-env.js",
+    "test": "node index.js --env=true",
+    "testcafe": "testcafe"
+  },
+  "engines": {
+    "npm": ">=6.x.x",
+    "node": ">=8.x.x <10.x.x"
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "dependencies": {
+    "@types/allure-js-commons": "0.0.0",
+    "@types/node": "^10.5.7",
+    "allure-js-commons": "^1.3.2",
+    "cross-env": "^5.2.0",
+    "testcafe": "^0.20.5",
+    "testcafe-browser-provider-selenium": "^0.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
+  }
+}

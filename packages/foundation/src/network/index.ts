@@ -10,6 +10,8 @@ export { default as NetworkRequestHandler } from './NetworkRequestHandler';
 export { default as NetworkSetup } from './NetworkSetup';
 export { default as Token } from './Token';
 export { default as AbstractHandleType } from './AbstractHandleType';
+export { default as BaseResponse } from './BaseResponse';
+export { default as BaseRequest } from './BaseRequest';
 export * from './client';
 export * from './Constants';
 export * from './network';

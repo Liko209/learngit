@@ -3,12 +3,11 @@
  * @Date: 2018-03-07 14:15:40
  */
 
-import { BaseService } from '../../service';
+import CompanyAPI from '../../api/glip/company';
 import { CompanyDao } from '../../dao';
 import { Company } from '../../models';
-import CompanyAPI from '../../api/glip/company';
-
-import { SOCKET } from '../../service/eventKey';
+import BaseService from '../BaseService';
+import { SOCKET } from '../eventKey';
 import handleData from './handleData';
 
 export default class CompanyService extends BaseService<Company> {
