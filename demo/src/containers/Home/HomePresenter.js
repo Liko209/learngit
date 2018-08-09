@@ -7,7 +7,7 @@ import { service } from 'sdk';
 import notificationHandler from './notificationHandler';
 import { env, betaUserIdList } from '@/globalConfig';
 
-const { AccountService, AuthService, ConfigService, ERVICE, SOCKET } = service;
+const { AccountService, AuthService, ConfigService, SERVICE, SOCKET } = service;
 
 export default class HomePresenter extends BasePresenter {
   @observable loading = false;

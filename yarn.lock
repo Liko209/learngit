@@ -16,6 +16,12 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
+"@dump247/storybook-state@1.5.0":
+  version "1.5.0"
+  resolved "http://registry.npm.taobao.org/@dump247/storybook-state/download/@dump247/storybook-state-1.5.0.tgz#ce69c937504f0e1abcf355b4822ab680a583be85"
+  dependencies:
+    react-json-view "^1.13.3"
+
 "@fimbul/bifrost@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@fimbul/bifrost/-/bifrost-0.11.0.tgz#83cacc21464198b12e3cc1c2204ae6c6d7afd158"
@@ -98,6 +104,10 @@
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.7.tgz#f33f6d759a7e1833befa15224d68942d178a5a3f"
   dependencies:
     csstype "^2.2.0"
+
+"@types/storybook__addon-backgrounds@3.2.1":
+  version "3.2.1"
+  resolved "http://registry.npm.taobao.org/@types/storybook__addon-backgrounds/download/@types/storybook__addon-backgrounds-3.2.1.tgz#07a5f97fe87068b95763a35d36f05fba413b7695"
 
 "@types/webpack-env@1.13.6":
   version "1.13.6"
@@ -512,6 +522,10 @@ babylon@^6.18.0:
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
+
+base16@^1.0.0:
+  version "1.0.0"
+  resolved "http://registry.npm.taobao.org/base16/download/base16-1.0.0.tgz#e297f60d7ec1014a7a971a39ebc8a98c0b681e70"
 
 base64-arraybuffer-es6@0.3.1:
   version "0.3.1"
@@ -1876,7 +1890,13 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "^2.0.0"
 
-fbjs@^0.8.16:
+fbemitter@^2.0.0:
+  version "2.1.1"
+  resolved "http://registry.npm.taobao.org/fbemitter/download/fbemitter-2.1.1.tgz#523e14fdaf5248805bb02f62efc33be703f51865"
+  dependencies:
+    fbjs "^0.8.4"
+
+fbjs@^0.8.0, fbjs@^0.8.16, fbjs@^0.8.4:
   version "0.8.17"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
   dependencies:
@@ -1977,6 +1997,13 @@ findup-sync@0.4.2:
     is-glob "^2.0.1"
     micromatch "^2.3.7"
     resolve-dir "^0.1.0"
+
+flux@^3.1.3:
+  version "3.1.3"
+  resolved "http://registry.npm.taobao.org/flux/download/flux-3.1.3.tgz#d23bed515a79a22d933ab53ab4ada19d05b2f08a"
+  dependencies:
+    fbemitter "^2.0.0"
+    fbjs "^0.8.0"
 
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
@@ -3618,9 +3645,17 @@ lodash._reinterpolate@~3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
 
+lodash.curry@^4.0.1:
+  version "4.1.1"
+  resolved "http://registry.npm.taobao.org/lodash.curry/download/lodash.curry-4.1.1.tgz#248e36072ede906501d75966200a86dab8b23170"
+
 lodash.flattendeep@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.flattendeep/-/lodash.flattendeep-4.4.0.tgz#fb030917f86a3134e5bc9bec0d69e0013ddfedb2"
+
+lodash.flow@^3.3.0:
+  version "3.5.0"
+  resolved "http://registry.npm.taobao.org/lodash.flow/download/lodash.flow-3.5.0.tgz#87bf40292b8cf83e4e8ce1a3ae4209e20071675a"
 
 lodash.map@^4.5.1:
   version "4.6.0"
@@ -4596,6 +4631,10 @@ punycode@^2.1.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
 
+pure-color@^1.2.0:
+  version "1.3.0"
+  resolved "http://registry.npm.taobao.org/pure-color/download/pure-color-1.3.0.tgz#1fe064fb0ac851f0de61320a8bf796836422f33e"
+
 q@^1.4.1, q@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
@@ -4655,6 +4694,15 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-base16-styling@^0.6.0:
+  version "0.6.0"
+  resolved "http://registry.npm.taobao.org/react-base16-styling/download/react-base16-styling-0.6.0.tgz#ef2156d66cf4139695c8a167886cb69ea660792c"
+  dependencies:
+    base16 "^1.0.0"
+    lodash.curry "^4.0.1"
+    lodash.flow "^3.3.0"
+    pure-color "^1.2.0"
+
 react-dom@16.4.1:
   version "16.4.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.4.1.tgz#7f8b0223b3a5fbe205116c56deb85de32685dad6"
@@ -4667,6 +4715,19 @@ react-dom@16.4.1:
 react-is@^16.4.1:
   version "16.4.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.4.1.tgz#d624c4650d2c65dbd52c72622bbf389435d9776e"
+
+react-json-view@^1.13.3:
+  version "1.19.1"
+  resolved "http://registry.npm.taobao.org/react-json-view/download/react-json-view-1.19.1.tgz#95d8e59e024f08a25e5dc8f076ae304eed97cf5c"
+  dependencies:
+    flux "^3.1.3"
+    react-base16-styling "^0.6.0"
+    react-lifecycles-compat "^3.0.4"
+    react-textarea-autosize "^6.1.0"
+
+react-lifecycles-compat@^3.0.4:
+  version "3.0.4"
+  resolved "http://registry.npm.taobao.org/react-lifecycles-compat/download/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
 
 react-reconciler@^0.7.0:
   version "0.7.0"
@@ -4685,6 +4746,12 @@ react-test-renderer@^16.0.0-0:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
     react-is "^16.4.1"
+
+react-textarea-autosize@^6.1.0:
+  version "6.1.0"
+  resolved "http://registry.npm.taobao.org/react-textarea-autosize/download/react-textarea-autosize-6.1.0.tgz#df91387f8a8f22020b77e3833c09829d706a09a5"
+  dependencies:
+    prop-types "^15.6.0"
 
 react@16.4.1:
   version "16.4.1"

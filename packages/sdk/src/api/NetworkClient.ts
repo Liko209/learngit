@@ -17,8 +17,6 @@ import {
 // import logger from './logger';
 import { serializeUrlParams } from '../utils';
 
-const { GET, DELETE } = NETWORK_METHOD;
-
 export interface IQuery {
   via?: NETWORK_VIA;
   path: string;
@@ -54,12 +52,19 @@ export default class NetworkClient {
   apiPlatform: string;
   apiPlatformVersion: string;
   apiMap: Map<string, { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]>;
+  defaultVia: NETWORK_VIA;
   // todo refactor config
-  constructor(networkRequests: INetworkRequests, apiPlatform: string, apiPlatformVersion = '') {
+  constructor(
+    networkRequests: INetworkRequests,
+    apiPlatform: string,
+    defaultVia: NETWORK_VIA,
+    apiPlatformVersion: string = '',
+  ) {
     this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;
     this.apiPlatformVersion = apiPlatformVersion;
     this.apiMap = new Map();
+    this.defaultVia = defaultVia;
   }
 
   request<T>(query: IQuery): Promise<IResponse<T>> {
@@ -119,9 +124,6 @@ export default class NetworkClient {
       .setRequestConfig(requestConfig || {})
       .setVia(via)
       .build();
-    // return via !== 'http' && this.type === 'glip'
-    //   ? new SocketRequestBuilder(requestQuery).build()
-    //   : new NetworkRequestBuilder(requestQuery);
   }
 
   http<T>(query: IQuery) {
@@ -135,7 +137,13 @@ export default class NetworkClient {
    * @param {Object} [data={}] request headers
    * @returns Promise
    */
-  get<T>(path: string, params = {}, via?: NETWORK_VIA, requestConfig?: object, headers = {}) {
+  get<T>(
+    path: string,
+    params = {},
+    via?: NETWORK_VIA,
+    requestConfig?: object,
+    headers = {},
+  ) {
     return this.http<T>({
       path,
       params,
@@ -195,7 +203,7 @@ export default class NetworkClient {
   }
 
   private _isDuplicate(method: NETWORK_METHOD, apiMapKey: string) {
-    if (method !== GET && method !== DELETE) {
+    if (method !== NETWORK_METHOD.GET && method !== NETWORK_METHOD.DELETE) {
       return false;
     }
 
