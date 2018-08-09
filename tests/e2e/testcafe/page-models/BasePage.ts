@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { Status, AllureStep } from '../libs/report';
+import { Step } from '../node_modules/@types/allure-js-commons';
 export abstract class BasePage {
 
   private _t: TestController;
@@ -21,8 +23,35 @@ export abstract class BasePage {
   protected onExit() { }
 
   protected chain(cb: (t: TestController) => Promise<any>) {
-    this._chain = this._chain.then(()=>cb(this._t));
+    this._chain = this._chain.then(() => cb(this._t));
     return this;
+  }
+
+  protected log(
+    message: string,
+    status: Status = Status.PASSED,
+    startTime?: number,
+    endTime?: number,
+    screenPath?: string | undefined,
+    parent?: AllureStep): AllureStep {
+
+    if (this._t.ctx.logs == undefined) {
+      this._t.ctx.logs = [];
+    }
+    if (startTime == undefined) {
+      startTime = Date.now();
+    }
+    if (endTime == undefined) {
+      endTime = startTime;
+    }
+    const step = new AllureStep(message, status, startTime, endTime, screenPath, [],);
+    if (parent == undefined) {
+      this._t.ctx.logs.push(step);
+    } else {
+      parent.children.push(step);
+    }
+    console.log(step.toString());
+    return step;
   }
 
   async execute() {
