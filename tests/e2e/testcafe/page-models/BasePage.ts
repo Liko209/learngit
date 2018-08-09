@@ -5,7 +5,6 @@
  */
 
 import { Status, AllureStep } from '../libs/report';
-import { Step } from '../node_modules/@types/allure-js-commons';
 export abstract class BasePage {
 
   private _t: TestController;
