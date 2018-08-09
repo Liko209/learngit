@@ -1,6 +1,9 @@
 import { AbstractAccount } from '../AbstractAccount';
 class MyAccount extends AbstractAccount {
-  init(data: any): Promise<void> {
+  updateSupportedServices(data: any): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  async init(data: any): Promise<void> {
     return;
   }
 }
