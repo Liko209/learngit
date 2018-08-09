@@ -8,7 +8,7 @@ import { SOCKET } from '../eventKey';
 import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
 import { LAST_INDEX_TIMESTAMP } from '../../dao/config/constants';
-import { fetchIndexData, fetchInitialData, fetchRemainingData } from './fetchIndexData';
+import { fetchIndexData, fetchInitialData } from './fetchIndexData';
 import handleData from './handleData';
 
 export default class SyncService extends BaseService {
@@ -44,8 +44,8 @@ export default class SyncService extends BaseService {
   private async firstLogin() {
     let result = await fetchInitialData();
     handleData(result);
-    result = await fetchRemainingData();
-    handleData(result, false);
+    // result = await fetchRemainingData();
+    // handleData(result, false);
   }
   private async sysnIndexData(timeStamp: number) {
     // 5 minutes ago to ensure data is correct

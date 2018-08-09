@@ -136,7 +136,7 @@ async function saveDataAndDoNotification(groups: Group[]) {
   return normalData;
 }
 
-export default async function handleData(groups: Raw<Group>[]) {
+export default async function handleData(groups: Raw<Group>[], shouldCheckIncompleteMembers: boolean = true) {
   if (groups.length === 0) {
     return;
   }
@@ -157,7 +157,9 @@ export default async function handleData(groups: Raw<Group>[]) {
   const normalGroups = await saveDataAndDoNotification(data);
   // check all group members exist in local or not if not, should get from remote
   // seems we only need check normal groups, don't need to check deactivated data
-  await checkIncompleteGroupsMembers(normalGroups);
+  if (shouldCheckIncompleteMembers) {
+    await checkIncompleteGroupsMembers(normalGroups);
+  }
 }
 
 async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Profile) {

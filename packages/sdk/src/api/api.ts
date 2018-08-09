@@ -42,7 +42,7 @@ class Api {
         host: currentConfig.server,
         handlerType: type,
       };
-      networkClient = new NetworkClient(networkRequests, currentConfig.apiPlatform, currentConfig.apiPlayformVersion);
+      networkClient = new NetworkClient(networkRequests, currentConfig.apiPlatform, currentConfig.apiPlatformVersion);
       this.httpSet.set(name, networkClient);
     }
     return networkClient;

@@ -19,7 +19,7 @@ const fetchInitialData = async (): Promise<IResponse<IndexDataModel>> => {
   progressBar.start();
   let result;
   try {
-    result = initialData({});
+    result = initialData({ _: Date.now() });
   } finally {
     progressBar.stop();
   }
@@ -27,13 +27,7 @@ const fetchInitialData = async (): Promise<IResponse<IndexDataModel>> => {
 }
 
 const fetchRemainingData = async (): Promise<IResponse<IndexDataModel>> => {
-  progressBar.start();
-  let result;
-  try {
-    result = remainingData({ _: Date.now() });
-  } finally {
-    progressBar.stop();
-  }
+  let result = remainingData({ _: Date.now() });
   return result;
 }
 
