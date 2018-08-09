@@ -26,6 +26,7 @@
     "@types/react-dom": "16.0.6",
     "@types/storybook-addon-jsx": "5.3.0",
     "@types/storybook__addon-actions": "3.4.0",
+    "@types/storybook__addon-backgrounds": "3.2.1",
     "@types/storybook__addon-info": "3.2.3",
     "@types/storybook__addon-knobs": "3.3.1",
     "@types/storybook__react": "3.0.8",

@@ -343,6 +343,10 @@
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/@types/storybook__addon-actions/-/storybook__addon-actions-3.4.0.tgz#9a8d9b3c7478e6557a6c50a06c8216d1bdca9fe4"
 
+"@types/storybook__addon-backgrounds@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@types/storybook__addon-backgrounds/-/storybook__addon-backgrounds-3.2.1.tgz#07a5f97fe87068b95763a35d36f05fba413b7695"
+
 "@types/storybook__addon-info@3.2.3":
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/@types/storybook__addon-info/-/storybook__addon-info-3.2.3.tgz#cfaa9b6511b0f336c11bd6c0b42726e804b55a5e"
