@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BaseClient from './client/BaseClient';
-import { Response } from './client/http';
+import { HttpResponse } from './client/http';
 import doLog from './log';
 
 import {
@@ -23,7 +23,7 @@ import {
 } from './network';
 
 export class NetworkRequestExecutor
-implements INetworkRequestExecutorListener, INetworkRequestExecutor {
+  implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
   via: NETWORK_VIA;
   handlerType: IHandleType;
@@ -144,7 +144,7 @@ implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   }
 
   private _callXApiResponse(status: HTTP_STATUS_CODE, statusText: string) {
-    const response = Response.builder
+    const response = HttpResponse.builder
       .setStatus(status)
       .setStatusText(statusText)
       .setRequest(this.request)

@@ -2,7 +2,7 @@ import OAuthTokenManager from '../OAuthTokenManager';
 import {
   getFakeOAuthTokenHandler,
   getFakeToken,
-  fakeHandleType
+  fakeHandleType,
 } from './utils';
 
 const manager = OAuthTokenManager.Instance;
