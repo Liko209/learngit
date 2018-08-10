@@ -14,6 +14,8 @@ process.on('unhandledRejection', err => {
 // Ensure environment variables are read.
 require('../config/env');
 
+const { execSync } = require('child_process');
+const path = require('path');
 const fs = require('fs');
 const chalk = require('chalk');
 const webpack = require('webpack');
@@ -38,6 +40,8 @@ const isInteractive = process.stdout.isTTY;
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
   process.exit(1);
 }
+
+execSync(`rm -rf ${path.resolve(process.cwd(), 'node_modules/ui-components/node_modules/@types/react')}`);
 
 // Tools like Cloud9 rely on this.
 const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3000;

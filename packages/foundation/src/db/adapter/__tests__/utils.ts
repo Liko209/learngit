@@ -24,6 +24,7 @@ const personGroupSchema = {
 
 const schema: ISchema = {
   name: 'Glip',
+  version: 1,
   schema: {
     1: personGroupSchema,
   },
@@ -125,7 +126,7 @@ const extractLokiResultSets = (resultSets: any[]) => {
   });
   return results;
 };
-const extractLokiResultSetToIds = (resultSets) => {
+const extractLokiResultSetToIds = (resultSets: any[]) => {
   const arr = extractLokiResultSets(resultSets);
   return extractIds(arr);
 };
