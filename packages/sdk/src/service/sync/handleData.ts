@@ -64,7 +64,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     .then(() => profileHandleData(arrProfile))
     .then(() => personHandleData(people))
     .then(() => groupHandleData(groups))
-    .then(() => groupHandleData(teams, false))
+    .then(() => groupHandleData(teams))
     .then(() => postHandleData(posts, maxPostsExceeded));
 };
 

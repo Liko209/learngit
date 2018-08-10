@@ -4,12 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BaseService from '../BaseService';
-import { SOCKET } from '../eventKey';
+import { SOCKET, SERVICE } from '../eventKey';
 import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
 import { LAST_INDEX_TIMESTAMP } from '../../dao/config/constants';
-import { fetchIndexData, fetchInitialData } from './fetchIndexData';
+import { fetchIndexData, fetchInitialData, fetchRemainingData } from './fetchIndexData';
 import handleData from './handleData';
+import { mainLogger } from 'foundation';
+import { notificationCenter } from '..';
 
 export default class SyncService extends BaseService {
   private isLoading: boolean;
@@ -42,10 +44,15 @@ export default class SyncService extends BaseService {
   }
 
   private async firstLogin() {
-    let result = await fetchInitialData();
-    handleData(result);
-    // result = await fetchRemainingData();
-    // handleData(result, false);
+    try {
+      let result = await fetchInitialData();
+      handleData(result);
+      result = await fetchRemainingData();
+      handleData(result);
+    } catch (e) {
+      mainLogger.error('fetch initial data or remining data error');
+      notificationCenter.emitService(SERVICE.DO_SIGN_OUT);
+    }
   }
   private async sysnIndexData(timeStamp: number) {
     // 5 minutes ago to ensure data is correct
