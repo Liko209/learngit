@@ -73,23 +73,23 @@ const handleData = async (result: IResponse<IndexDataModel>, shouldSaveScoreboar
     if (!(result instanceof Object) || !(result.data instanceof Object)) {
       return; // sometimes indexData return false
     }
-    // logger.time('handle index data');
-    await dispatchIncomingData(result.data);
-    // logger.timeEnd('handle index data');
-
     const { timestamp = null, scoreboard = null } = result.data;
     const configDao = daoManager.getKVDao(ConfigDao);
 
-    if (timestamp) {
-      configDao.put(LAST_INDEX_TIMESTAMP, timestamp);
-      notificationCenter.emitConfigPut(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
-    }
     if (scoreboard && shouldSaveScoreboard) {
       configDao.put(SOCKET_SERVER_HOST, scoreboard);
       notificationCenter.emitConfigPut(CONFIG.SOCKET_SERVER_HOST, scoreboard);
     }
+    // logger.time('handle index data');
+    await dispatchIncomingData(result.data);
+    // logger.timeEnd('handle index data');
+    if (timestamp) {
+      configDao.put(LAST_INDEX_TIMESTAMP, timestamp);
+      notificationCenter.emitConfigPut(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
+    }
 
     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_DONE);
+
   } catch (error) {
     mainLogger.error(error);
     notificationCenter
