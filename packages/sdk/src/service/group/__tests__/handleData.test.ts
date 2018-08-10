@@ -27,6 +27,7 @@ jest.mock('../../../dao', () => {
     queryGroupsByIds: jest.fn(),
     bulkDelete: jest.fn(),
     bulkPut: jest.fn(),
+    doInTransation: jest.fn()
   };
   return {
     daoManager: {
@@ -159,7 +160,7 @@ describe('handleGroupMostRecentPostChanged()', () => {
     daoManager.getDao(GroupDao).get.mockReturnValue([{ is_team: true }]);
     const posts: Post[] = toArrayOf<Post>([{ id: 1, modified_at: 1, created_at: 1 }]);
     await handleGroupMostRecentPostChanged(posts);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(0);
   });
 });
 

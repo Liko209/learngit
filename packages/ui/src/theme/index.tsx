@@ -7,6 +7,7 @@ export const createTheme = (options: ThemeOptions) =>
   createMuiTheme(options);
 
 export const ThemeProvider: React.SFC<MuiThemeProviderProps> = ({ theme, children }) => {
+  console.log('theme: ', theme);
   return (
     <StyledThemeProvider theme={theme}>
       <MuiThemeProvider theme={theme}>
