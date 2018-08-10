@@ -24,13 +24,12 @@ const fetchInitialData = async (): Promise<IResponse<IndexDataModel>> => {
     progressBar.stop();
   }
   return result;
-}
+};
 
 const fetchRemainingData = async (): Promise<IResponse<IndexDataModel>> => {
-  let result = remainingData({ _: Date.now() });
+  const result = remainingData({ _: Date.now() });
   return result;
-}
-
+};
 
 // fetch plugins
 

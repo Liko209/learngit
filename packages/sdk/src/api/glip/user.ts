@@ -61,18 +61,20 @@ function indexData(params: object, requestConfig = {}, headers = {}): Promise<In
 }
 
 function initialData(params: object, requestConfig = {}, headers = {}): Promise<IndexResponse> {
-  return Api.glipDesktopNetworkClient.get('/initial', params, NETWORK_VIA.HTTP, requestConfig, headers);
+  return Api.glipDesktopNetworkClient
+    .get('/initial', params, NETWORK_VIA.HTTP, requestConfig, headers);
 }
 
 function remainingData(params: object, requestConfig = {}, headers = {}): Promise<IndexResponse> {
-  return Api.glipDesktopNetworkClient.get('/remaining', params, NETWORK_VIA.HTTP, requestConfig, headers);
+  return Api.glipDesktopNetworkClient
+    .get('/remaining', params, NETWORK_VIA.HTTP, requestConfig, headers);
 }
 
-//plugins data
+// plugins data
 
 export {
   loginGlip,
   indexData,
   initialData,
-  remainingData
+  remainingData,
 };

@@ -111,7 +111,7 @@ export default class NetworkClient {
   getRequestByVia<T>(query: IQuery, via: NETWORK_VIA = NETWORK_VIA.HTTP): IRequest {
     const { path, method, data, headers, params, authFree, requestConfig } = query;
     const versionPath = this.apiPlatformVersion ? `/${this.apiPlatformVersion}` : '';
-    const finalPath = `${versionPath}${this.apiPlatform}${path}`
+    const finalPath = `${versionPath}${this.apiPlatform}${path}`;
     return new NetworkRequestBuilder()
       .setHost(this.networkRequests.host || '')
       .setHandlerType(this.networkRequests.handlerType)

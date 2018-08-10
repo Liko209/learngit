@@ -62,7 +62,7 @@ class Api {
         networkRequests,
         currentConfig.apiPlatform,
         type.defaultVia,
-        currentConfig.apiPlatformVersion
+        currentConfig.apiPlatformVersion,
       );
       this.httpSet.set(name, networkClient);
     }

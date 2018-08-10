@@ -196,7 +196,7 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
   let validGroups: Group[] = [];
   await groupDao.doInTransation(async () => {
     const groups: (null | Group)[] = await Promise.all(
-      posts.map(async post => {
+      posts.map(async (post) => {
         const group: null | Group = await groupDao.get(post.group_id);
         if (group) {
           group.most_recent_content_modified_at = post.modified_at;
@@ -205,7 +205,7 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
           return group;
         }
         return null;
-      })
+      }),
     );
     validGroups = groups.filter(item => item !== null) as Group[];
   });

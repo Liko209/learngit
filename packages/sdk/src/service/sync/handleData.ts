@@ -68,7 +68,10 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     .then(() => postHandleData(posts, maxPostsExceeded));
 };
 
-const handleData = async (result: IResponse<IndexDataModel>, shouldSaveScoreboard: boolean = true) => {
+const handleData = async (
+  result: IResponse<IndexDataModel>,
+  shouldSaveScoreboard: boolean = true,
+) => {
   try {
     if (!(result instanceof Object) || !(result.data instanceof Object)) {
       return; // sometimes indexData return false
