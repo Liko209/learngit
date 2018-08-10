@@ -15,19 +15,19 @@ interface Params {
   newer_than?: string;
 }
 
-const fetchInitialData = async (): Promise<IResponse<IndexDataModel>> => {
+const fetchInitialData = async (currentTime: number): Promise<IResponse<IndexDataModel>> => {
   progressBar.start();
   let result;
   try {
-    result = initialData({ _: Date.now() });
+    result = initialData({ _: currentTime });
   } finally {
     progressBar.stop();
   }
   return result;
 };
 
-const fetchRemainingData = async (): Promise<IResponse<IndexDataModel>> => {
-  const result = remainingData({ _: Date.now() });
+const fetchRemainingData = async (currentTime: number): Promise<IResponse<IndexDataModel>> => {
+  const result = remainingData({ _: currentTime });
   return result;
 };
 

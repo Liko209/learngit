@@ -108,7 +108,7 @@ export default class NetworkClient {
     };
   }
 
-  getRequestByVia<T>(query: IQuery, via: NETWORK_VIA = NETWORK_VIA.HTTP): IRequest {
+  getRequestByVia<T>(query: IQuery, via: NETWORK_VIA = this.defaultVia): IRequest {
     const { path, method, data, headers, params, authFree, requestConfig } = query;
     const versionPath = this.apiPlatformVersion ? `/${this.apiPlatformVersion}` : '';
     const finalPath = `${versionPath}${this.apiPlatform}${path}`;

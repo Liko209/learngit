@@ -44,9 +44,10 @@ export default class SyncService extends BaseService {
 
   private async _firstLogin() {
     try {
-      let result = await fetchInitialData();
+      const currentTime = Date.now();
+      let result = await fetchInitialData(currentTime);
       handleData(result);
-      result = await fetchRemainingData();
+      result = await fetchRemainingData(currentTime);
       handleData(result);
     } catch (e) {
       mainLogger.error('fetch initial data or remining data error');
