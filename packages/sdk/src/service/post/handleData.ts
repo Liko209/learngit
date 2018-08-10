@@ -17,7 +17,7 @@ import { mainLogger } from 'foundation';
 let totalPostCount: number | null = null;
 const handlePostsOverflow = async (newReceivedPosts: Post[]) => {
   const postDao = daoManager.getDao(PostDao);
-  if (postDao.isLokiDB()) return;
+  if (!postDao.isDexieDB()) return;
 
   if (typeof totalPostCount !== 'number') {
     totalPostCount = await postDao.createQuery().count();
