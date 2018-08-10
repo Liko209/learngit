@@ -17,8 +17,6 @@ import {
 // import logger from './logger';
 import { serializeUrlParams } from '../utils';
 
-const { GET, DELETE } = NETWORK_METHOD;
-
 export interface IQuery {
   via?: NETWORK_VIA;
   path: string;
@@ -52,12 +50,21 @@ export interface IResponseRejectFn {
 export default class NetworkClient {
   networkRequests: INetworkRequests;
   apiPlatform: string;
-  apiMap: Map<string, { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]>;
+  defaultVia: NETWORK_VIA;
+  apiMap: Map<
+    string,
+    { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]
+  >;
   // todo refactor config
-  constructor(networkRequests: INetworkRequests, apiPlatform: string) {
+  constructor(
+    networkRequests: INetworkRequests,
+    apiPlatform: string,
+    defaultVia: NETWORK_VIA,
+  ) {
     this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;
     this.apiMap = new Map();
+    this.defaultVia = defaultVia;
   }
 
   request<T>(query: IQuery): Promise<IResponse<T>> {
@@ -101,8 +108,19 @@ export default class NetworkClient {
     };
   }
 
-  getRequestByVia<T>(query: IQuery, via: NETWORK_VIA = NETWORK_VIA.HTTP): IRequest {
-    const { path, method, data, headers, params, authFree, requestConfig } = query;
+  getRequestByVia<T>(
+    query: IQuery,
+    via: NETWORK_VIA = this.defaultVia,
+  ): IRequest {
+    const {
+      path,
+      method,
+      data,
+      headers,
+      params,
+      authFree,
+      requestConfig,
+    } = query;
     return new NetworkRequestBuilder()
       .setHost(this.networkRequests.host || '')
       .setHandlerType(this.networkRequests.handlerType)
@@ -131,7 +149,13 @@ export default class NetworkClient {
    * @param {Object} [data={}] request headers
    * @returns Promise
    */
-  get<T>(path: string, params = {}, via?: NETWORK_VIA, requestConfig?: object, headers = {}) {
+  get<T>(
+    path: string,
+    params = {},
+    via?: NETWORK_VIA,
+    requestConfig?: object,
+    headers = {},
+  ) {
     return this.http<T>({
       path,
       params,
@@ -191,7 +215,7 @@ export default class NetworkClient {
   }
 
   private _isDuplicate(method: NETWORK_METHOD, apiMapKey: string) {
-    if (method !== GET && method !== DELETE) {
+    if (method !== NETWORK_METHOD.GET && method !== NETWORK_METHOD.DELETE) {
       return false;
     }
 
