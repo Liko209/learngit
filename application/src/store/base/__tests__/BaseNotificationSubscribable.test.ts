@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BaseNotificationSubscribable from '../BaseNotificationSubscribable';
-import { notificationCenter } from 'sdk';
+import { service } from 'sdk';
 
+const { notificationCenter } = service;
 // Using manual mock to improve mock priority.
 jest.mock('sdk', () => jest.genMockFromModule<any>('sdk'));
 
@@ -21,7 +22,7 @@ describe('BaseNotificationSubscribable', () => {
       const callback = () => {};
       baseNotificationSubscribable.subscribeNotificationOnce('group', callback);
       expect(
-        baseNotificationSubscribable.notificationObservers.has('group')
+        baseNotificationSubscribable.notificationObservers.has('group'),
       ).toBe(true);
       expect(notificationCenter.once).toHaveBeenCalledTimes(1);
     });
@@ -32,7 +33,7 @@ describe('BaseNotificationSubscribable', () => {
       const callback = () => {};
       baseNotificationSubscribable.subscribeNotification('post', callback);
       expect(
-        baseNotificationSubscribable.notificationObservers.has('post')
+        baseNotificationSubscribable.notificationObservers.has('post'),
       ).toBe(true);
       expect(notificationCenter.on).toHaveBeenCalledTimes(1);
     });

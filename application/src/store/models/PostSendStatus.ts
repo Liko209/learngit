@@ -3,5 +3,5 @@ export default class PostSendStatusModel {
     return data;
   }
 
-  dispose() {} // eslint-disable-line
+  dispose() {}
 }

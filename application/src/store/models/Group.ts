@@ -15,7 +15,7 @@ export default class GroupModel {
       members,
       isTeam,
       description,
-      pinnedPostIds
+      pinnedPostIds,
     } = model;
 
     this.id = id;
@@ -33,7 +33,7 @@ export default class GroupModel {
       id,
       members,
       description,
-      pinned_post_ids: pinnedPostIds
+      pinned_post_ids: pinnedPostIds,
     } = data;
     const model = {
       id,
@@ -41,11 +41,11 @@ export default class GroupModel {
       setAbbreviation,
       members,
       description,
-      pinnedPostIds
+      pinnedPostIds,
     };
 
     return new GroupModel(model);
   }
 
-  dispose() {} // eslint-disable-line
+  dispose() {}
 }

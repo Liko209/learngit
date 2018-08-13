@@ -15,5 +15,5 @@ export default class PresenceModel {
     return new PresenceModel(data);
   }
 
-  dispose() {} // eslint-disable-line
+  dispose() {}
 }

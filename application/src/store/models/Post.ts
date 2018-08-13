@@ -3,5 +3,5 @@ export default class PostModel {
     return data;
   }
 
-  dispose() {} // eslint-disable-line
+  dispose() {}
 }

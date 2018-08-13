@@ -17,5 +17,5 @@ export default class GroupStateModel {
     return new GroupStateModel(data);
   }
 
-  dispose() {} // eslint-disable-line
+  dispose() {}
 }

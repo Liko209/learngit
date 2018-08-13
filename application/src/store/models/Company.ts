@@ -15,5 +15,5 @@ export default class CompanyModel {
     return new CompanyModel(data);
   }
 
-  dispose() {} // eslint-disable-line
+  dispose() {}
 }

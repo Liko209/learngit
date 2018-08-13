@@ -3,5 +3,5 @@ export default class ItemModel {
     return data;
   }
 
-  dispose() {} // eslint-disable-line
+  dispose() {}
 }
