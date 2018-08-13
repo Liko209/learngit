@@ -8,6 +8,7 @@ import {
 } from 'foundation';
 
 const HandleByGlip = new class extends AbstractHandleType {
+  rcTokenProvider?: () => string;
   defaultVia = NETWORK_VIA.ALL;
   requestDecoration(tokenHandler: ITokenHandler) {
     const handler = tokenHandler as OAuthTokenHandler;
@@ -22,6 +23,12 @@ const HandleByGlip = new class extends AbstractHandleType {
             tk: handler.accessToken(),
           };
         }
+      }
+      if (this.rcTokenProvider) {
+        request.headers = {
+          ...request.headers,
+          'X-RC-Access-Token-Data': this.rcTokenProvider(),
+        };
       }
       return request;
     };

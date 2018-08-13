@@ -10,7 +10,7 @@ import { Throw, ErrorTypes, Aware } from '../utils';
 import { defaultConfig } from './defaultConfig';
 import { Raw } from '../models';
 
-import { IHandleType, NetworkSetup } from 'foundation';
+import { IHandleType, NetworkSetup, NetworkManager } from 'foundation';
 import {
   HandleByGlip,
   HandleByRingCentral,
@@ -30,7 +30,16 @@ class Api {
 
   static init(config: PartialApiConfig): void {
     this._httpConfig = merge({}, defaultConfig, config);
+    Api.setupHandlers();
+  }
+
+  static setupHandlers() {
     NetworkSetup.setup(types);
+    // This explicit set rc handler accessToken as the RC token provider for glip handler
+    const tokenManager = NetworkManager.Instance.getTokenManager();
+    const rcTokenHandler = tokenManager && tokenManager.getOAuthTokenHandler(HandleByRingCentral);
+    HandleByGlip.rcTokenProvider = rcTokenHandler
+      && rcTokenHandler.accessToken.bind(rcTokenHandler);
   }
 
   static get httpConfig() {

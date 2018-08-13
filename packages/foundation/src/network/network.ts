@@ -76,6 +76,7 @@ interface IResponse {
 
 type Header = {
   Authorization?: string;
+  'X-RC-Access-Token-Data'?: string
 };
 
 interface IRequest {

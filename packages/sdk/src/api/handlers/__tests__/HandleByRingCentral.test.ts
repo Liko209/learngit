@@ -1,10 +1,14 @@
 import { OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
 import { stringify } from 'qs';
 import HandleByRingCentral from '../HandleByRingCentral';
+import AuthService from '../../../service/auth';
+import { AccountManager } from '../../../framework';
 const handler = new OAuthTokenHandler(HandleByRingCentral, null);
 
 jest.mock('../../api');
-
+const accountManager: AccountManager = new AccountManager(null);
+const authService: AuthService = new AuthService(accountManager);
+AuthService.getInstance = jest.fn().mockReturnValue(authService);
 const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')
@@ -117,6 +121,38 @@ describe('HandleByRingCentral', () => {
       expect(decoratedRequest.headers.Authorization).toEqual('Authorization');
       expect(decoratedRequest.data).toEqual({
         username: 'test',
+      });
+    });
+  });
+
+  describe('refreshToken', () => {
+    it('should reject if refresh fail', async () => {
+      authService.refreshRCToken = jest.fn().mockRejectedValueOnce(null);
+      const originToken = { timestamp: 0, accessTokenExpireIn: 6000, refreshTokenExpireIn: 6000 };
+      HandleByRingCentral.doRefreshToken(
+        originToken,
+      ).catch((token) => {
+        expect(token).toEqual(originToken);
+      });
+    });
+    it('should resolve if refresh success', async () => {
+      const fakeToken = {
+        timestamp: 1,
+        accessTokenExpireIn: 6001,
+        refreshTokenExpireIn: 6001,
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      };
+      authService.refreshRCToken = jest.fn().mockResolvedValueOnce(fakeToken);
+      const originToken = { timestamp: 0, accessTokenExpireIn: 6000, refreshTokenExpireIn: 6000 };
+      HandleByRingCentral.doRefreshToken(
+        originToken,
+      ).then((token) => {
+        expect(token.timestamp).toEqual(fakeToken.timestamp);
+        expect(token.accessTokenExpireIn).toEqual(fakeToken.accessTokenExpireIn);
+        expect(token.refreshTokenExpireIn).toEqual(fakeToken.refreshTokenExpireIn);
+        expect(token.access_token).toEqual(fakeToken.accessToken);
+        expect(token.refreshToken).toEqual(fakeToken.refreshToken);
       });
     });
   });
