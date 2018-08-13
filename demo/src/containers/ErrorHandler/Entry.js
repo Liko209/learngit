@@ -13,7 +13,9 @@ import Wrapper from './Wrapper';
 const Entry = props => {
   const { error, hide } = props;
 
-  let msg = `${error.message} (unknown).`;
+  let msg = error.code
+    ? `${error.message} (unknown).`
+    : 'No server error message return, should check network status or server crash';
   // if (error.code === ErrorTypes.INVALID_GRANT) {
   //   msg = 'Invalid Phone number or password.';
   // }
