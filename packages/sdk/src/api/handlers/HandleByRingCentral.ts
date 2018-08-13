@@ -40,7 +40,6 @@ const HandleByRingCentral = new class extends AbstractHandleType {
   doRefreshToken(token: IToken) {
     return new Promise<IToken>(async (resolve, reject) => {
       try {
-        console.log('doRefreshToken token', token);
         const accountService: AccountService = AccountService.getInstance();
         const refreshedToken = await accountService.refreshRCToken();
         if (refreshedToken) {
