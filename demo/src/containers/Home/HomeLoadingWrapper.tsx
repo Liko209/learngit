@@ -8,7 +8,7 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 
 import HomeLoading from '@/components/HomeLoading';
-import ErrorHandle from '@/containers/ErrorHandle';
+import ErrorHandler from '@/containers/ErrorHandler';
 
 import HomePresenter from './HomePresenter';
 
@@ -23,10 +23,10 @@ class HomeLoadingWrapper extends React.Component {
   componentDidUpdate() {
     // TODO: error format is wrong
     const { error } = this.homePresenter;
-    const errorHandle = new ErrorHandle(error);
 
     if (Object.keys(error).length) {
-      errorHandle.show();
+      const handler = new ErrorHandler(error);
+      handler.handle();
     }
   }
 

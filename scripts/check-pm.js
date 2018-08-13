@@ -5,7 +5,6 @@
  */
 const spawn  = require('child_process').spawnSync
 
-const yarnVersion = '1.7.0';
 function checkYarnInstalled() {
   const command = spawn('yarn', ['--version'])
   return command && command.stdout && command.stdout.toString().trim()
@@ -40,8 +39,4 @@ if (!isYarn) {
     log()
     process.exit(1)
   }
-} else if(checkYarnInstalled() !== yarnVersion) {
-    console.error(new Error(`To be continued, you should have the yarn version ${yarnVersion} installed`))
-    log()
-    process.exit(1)
 }

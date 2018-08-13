@@ -1,16 +1,14 @@
 import React from 'react';
-import styled, { withTheme } from 'styled-components';
+import styled from 'styled-components';
 
-import { WithTheme } from '@material-ui/core';
-import MenuList from '@material-ui/core/MenuList';
-
-import ConversationListItem from './ConversationListItem';
+import { List } from '@material-ui/core';
 
 export type ConversationListProps = {
-  onChange?: Function;
-  onClick?: Function;
   value: any;
-} & Partial<Pick<WithTheme, 'theme'>>;
+  className?: string;
+  onClick?: Function;
+  onChange?: Function;
+};
 
 export class TConversationList extends React.PureComponent<ConversationListProps> {
 
@@ -22,9 +20,13 @@ export class TConversationList extends React.PureComponent<ConversationListProps
 
   render() {
     return (
-      <MenuList onClick={this._handleChange}>
+      <List
+        component="div"
+        className={this.props.className}
+        onClick={this._handleChange}
+      >
         {this.props.children}
-      </MenuList>
+      </List>
     );
   }
 
@@ -41,16 +43,16 @@ export class TConversationList extends React.PureComponent<ConversationListProps
   }
 
   private _findIndex(el: any) {
-    console.log('el: ', el);
     if (!el.parentElement) return -1;
     return Array.from(el.parentElement.children).indexOf(el);
   }
 }
-export const ConversationList = styled<ConversationListProps>(withTheme(TConversationList))
-  .attrs({})`
-    & ${ConversationListItem}.selected {
-
-    }
-  `;
+export const ConversationList = styled<ConversationListProps>(TConversationList)`
+  && {
+    background-color: white;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+`;
 
 export default ConversationList;

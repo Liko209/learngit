@@ -11,6 +11,8 @@ import { service } from 'sdk';
 
 import PropTypes from 'prop-types';
 import { envConfig } from '@/globalConfig';
+import ErrorHandler from '@/containers/ErrorHandler';
+
 import Download from '@/components/Download';
 import Form from '../Login/Form';
 // import messages from '../Login/messages';
@@ -50,7 +52,7 @@ class UnifiedLogin extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { location, history } = this.props;
     const code = extractUrlParameter('code');
     if (code) {
@@ -59,19 +61,19 @@ class UnifiedLogin extends React.Component {
         btnText: `Login...` // Login...
       });
 
-      AuthService.getInstance()
-        .unifiedLogin({ code })
-        .then(() => {
-          history.replace((location.state && location.state.from) || '/');
-        })
-        .catch(error => {
-          this.setState({
-            btnDisabled: false,
-            btnText: `Login` // Login
-          });
-          /* eslint no-console: "off" */
-          console.error(error);
+      try {
+        await AuthService.getInstance().unifiedLogin({ code });
+        history.replace((location.state && location.state.from) || '/');
+      } catch (error) {
+        const handler = new ErrorHandler(error);
+        handler.handle().show();
+      } finally {
+        this.setState({
+          btnDisabled: false,
+          btnText: `Login` // Login
         });
+      }
+
       // login({ code: this.getUrlParameter('code') })
       //   .then(() => {
       //     history.replace(
