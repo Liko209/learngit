@@ -3,19 +3,20 @@ import styled from 'styled-components';
 
 import {
   WithTheme,
-  ListItem as MuiMenuItem,
+  ListItem as MuiListItem,
 } from '@material-ui/core';
 import {
   MoreVert as MuiMoreVert,
 } from '@material-ui/icons';
 
-import { Presence } from './Presence';
-import { Umi } from './Umi';
+import { Presence, Umi } from '../../atoms';
 import { ItemText } from './ItemText';
 
-const MoreVert = styled(MuiMoreVert)``;
+const MoreVert = styled(MuiMoreVert)`
+color: #c7c7c7;
+`;
 
-const ListItem = styled(MuiMenuItem)`
+const ListItem = styled(MuiListItem)`
 && {
   white-space: nowrap;
   padding: 6px 16px 6px 12px;
@@ -62,7 +63,7 @@ const TItem = (props: ItemProps) => {
         {title}
       </ItemText>
       <Umi important={important} unreadCount={unreadCount} showCount={!showCount} />
-      <MoreVert style={{ color: '#c7c7c7' }} onClick={onMoreClick} />
+      <MoreVert onClick={onMoreClick} />
     </ListItem>
   );
 };
