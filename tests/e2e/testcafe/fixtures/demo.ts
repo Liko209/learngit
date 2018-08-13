@@ -8,21 +8,34 @@ import { BlankPage } from '../page-models/BlankPage';
 import { EnvironmentSelectionPage } from '../page-models/EnvironmentSelectionPage';
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
+import { AccountOperationsApi as AccountPool } from 'account-pool-ts-api';
+import { envName, siteUrl } from '../config';
 
-fixture('My fixture');
+fixture('My fixture')
+.beforeEach(async t=> {
+    const accountPoolClient = new AccountPool();
+    const data = (await accountPoolClient.snatchAccount(envName.toLowerCase(), 'rcBetaUserAccount', undefined, "false")).body;
+    t.ctx.data = data;
+  }
+)
+.afterEach(async t=> {
+    const accountPoolClient = new AccountPool();
+    await accountPoolClient.releaseAccount(envName, t.ctx.data.accountType, t.ctx.data.companyEmailDomain);
+  }
+)
 
 test('Sign In Success', async (t) => {
   await new BlankPage(t)
-      .open('https://develop.fiji.gliprc.com/unified-login')
+      .open(siteUrl)
       .shouldNavigateTo(EnvironmentSelectionPage)
-      .selectEnvironment('XMN-UP')
+      .selectEnvironment(envName)
       .toNextPage()
       .shouldNavigateTo(RingcentralSignInNavigationPage)
-      .setCredential('18662118607')
+      .setCredential(t.ctx.data.users.user701.rc_id)
       .toNextPage()
       .shouldNavigateTo(RingcentralSignInPage)
-      .setExtension('701')
-      .setPassword('Test!123')
+      .setExtension(t.ctx.data.users.user701.extension)
+      .setPassword(t.ctx.data.users.user701.password)
       .signIn()
       .execute();
 });
