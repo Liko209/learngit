@@ -8,7 +8,7 @@ import { BlankPage } from '../page-models/BlankPage';
 import { EnvironmentSelectionPage } from '../page-models/EnvironmentSelectionPage';
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
-import { SITE_URL, ENV_NAME, CONFIG} from '../config';
+import { SITE_URL, ENV_NAME, CONFIG } from '../config';
 import accountPoolHelper from '../libs/AccountPoolHelper';
 
 fixture('My fixture')
@@ -22,7 +22,7 @@ fixture('My fixture')
   }
 )
 
-test('Sign In Success', async (t) => {
+test('Sign In Success', async t => {
   await new BlankPage(t)
       .open(SITE_URL)
       .shouldNavigateTo(EnvironmentSelectionPage)
