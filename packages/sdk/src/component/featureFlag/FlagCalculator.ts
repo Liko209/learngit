@@ -8,17 +8,27 @@ import {
   Middleware,
   Next,
 } from './interface';
+import AccountDao from '../../dao/account';
+import {
+  ACCOUNT_USER_ID,
+  ACCOUNT_COMPANY_ID,
+} from '../../dao/account/constants';
+import { daoManager } from '../../dao';
 
 class FlagCalculator implements IFlagCalculator {
   featureConfig: IFeatureConfig;
-  accountInfo: AccountInfo;
   _flags: IFlag | {};
   _permissionKeys: string[];
-  constructor(featureConfig: IFeatureConfig, accountInfo: AccountInfo) {
-    this.accountInfo = accountInfo;
+  constructor(featureConfig: IFeatureConfig) {
     this.featureConfig = featureConfig;
     this._flags = {};
     this._permissionKeys = Object.values(PERMISSION);
+  }
+  get accountInfo(): AccountInfo {
+    const dao: AccountDao = daoManager.getKVDao(AccountDao);
+    const companyId: number = dao.get(ACCOUNT_COMPANY_ID);
+    const userId: number = dao.get(ACCOUNT_USER_ID);
+    return { companyId, userId };
   }
 
   isFeatureEnabled(flags: IFlag, feature: BETA_FEATURE) {
