@@ -8,27 +8,25 @@ import { BlankPage } from '../page-models/BlankPage';
 import { EnvironmentSelectionPage } from '../page-models/EnvironmentSelectionPage';
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
-import { AccountOperationsApi as AccountPool } from 'account-pool-ts-api';
-import { envName, siteUrl } from '../config';
+import { SITE_URL, ENV_NAME, CONFIG} from '../config';
+import accountPoolHelper from '../libs/AccountPoolHelper';
 
 fixture('My fixture')
-.beforeEach(async t=> {
-    const accountPoolClient = new AccountPool();
-    const data = (await accountPoolClient.snatchAccount(envName.toLowerCase(), 'rcBetaUserAccount', undefined, "false")).body;
+.beforeEach(async t => {
+    const data = await accountPoolHelper.checkOutAccounts(CONFIG.ACCOUNT_POOL_ENV, 'rcBetaUserAccount');
     t.ctx.data = data;
   }
 )
-.afterEach(async t=> {
-    const accountPoolClient = new AccountPool();
-    await accountPoolClient.releaseAccount(envName, t.ctx.data.accountType, t.ctx.data.companyEmailDomain);
+.afterEach(async t => {
+    await accountPoolHelper.checkInAccounts(CONFIG.ACCOUNT_POOL_ENV, t.ctx.data.accountType, t.ctx.data.companyEmailDomain);
   }
 )
 
 test('Sign In Success', async (t) => {
   await new BlankPage(t)
-      .open(siteUrl)
+      .open(SITE_URL)
       .shouldNavigateTo(EnvironmentSelectionPage)
-      .selectEnvironment(envName)
+      .selectEnvironment(ENV_NAME)
       .toNextPage()
       .shouldNavigateTo(RingcentralSignInNavigationPage)
       .setCredential(t.ctx.data.users.user701.rc_id)
