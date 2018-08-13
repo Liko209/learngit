@@ -6,7 +6,9 @@
 import AccountService from '..';
 import { daoManager, AccountDao, PersonDao } from '../../../dao';
 
+import { refreshToken } from '../../../api';
 jest.mock('../../../dao');
+jest.mock('../../../api');
 
 describe('AccountService', () => {
   let accountService: AccountService;
@@ -87,5 +89,55 @@ describe('AccountService', () => {
       display_name: 'display_name',
       company_id: 222,
     });
+  });
+
+  it('should refresh rc roken if api return data', () => {
+
+    refreshToken.mockResolvedValue({
+      data: {
+        timestamp: 1,
+        accessTokenExpireIn: 6001,
+        refreshTokenExpireIn: 6001,
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+    });
+    expect.assertions(1);
+    const token = accountService.refreshRCToken();
+    return expect(token).resolves.toEqual({
+      timestamp: 1,
+      accessTokenExpireIn: 6001,
+      refreshTokenExpireIn: 6001,
+      accessToken: 'accessToken',
+      refreshToken: 'refreshToken',
+    });
+  });
+
+  it('should refresh rc token if api return data', () => {
+    refreshToken.mockResolvedValueOnce({
+      data: {
+        timestamp: 1,
+        accessTokenExpireIn: 6001,
+        refreshTokenExpireIn: 6001,
+        accessToken: 'accessToken',
+        refreshToken: 'refreshToken',
+      },
+    });
+    expect.assertions(1);
+    const token = accountService.refreshRCToken();
+    return expect(token).resolves.toEqual({
+      timestamp: 1,
+      accessTokenExpireIn: 6001,
+      refreshTokenExpireIn: 6001,
+      accessToken: 'accessToken',
+      refreshToken: 'refreshToken',
+    });
+  });
+
+  it('should not refresh rc token if api return error', () => {
+    refreshToken.mockRejectedValueOnce('error');
+    expect.assertions(1);
+    const token = accountService.refreshRCToken();
+    return expect(token).resolves.toEqual(null);
   });
 });
