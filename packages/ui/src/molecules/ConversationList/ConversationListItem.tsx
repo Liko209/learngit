@@ -9,8 +9,7 @@ import {
   MoreVert as MuiMoreVert,
 } from '@material-ui/icons';
 
-import { Presence } from './Presence';
-import { Umi } from './Umi';
+import { Presence, Umi } from '../../atoms';
 import { ItemText } from './ItemText';
 
 const MoreVert = styled(MuiMoreVert)``;

@@ -10,7 +10,7 @@ import {
   KeyboardArrowDown as MuiKeyboardArrowDown,
 } from '@material-ui/icons';
 
-import { Umi } from './Umi';
+import { Umi } from '../../atoms';
 import { ItemText } from './ItemText';
 
 const KeyboardArrowUp = styled(MuiKeyboardArrowUp)`
