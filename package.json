@@ -25,7 +25,7 @@
     "precommit": "lint-staged",
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",
-    "commitmsg": "node scripts/validate-commit-msg.js",
+    "commitmsg": "node scripts/validate-commit-msg.js && node scripts/check-npm-pkg.js",
     "bt": "lerna bootstrap --hoist"
   },
   "devDependencies": {
