@@ -1,76 +1,73 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { WithTheme } from '@material-ui/core';
-import MuiMenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
-import MuiMoreVert from '@material-ui/icons/MoreVert';
+import {
+  WithTheme,
+  ListItem as MuiMenuItem,
+} from '@material-ui/core';
+import {
+  MoreVert as MuiMoreVert,
+} from '@material-ui/icons';
 
 import { Presence } from './Presence';
 import { Umi } from './Umi';
+import { ItemText } from './ItemText';
 
 const MoreVert = styled(MuiMoreVert)``;
 
-const ItemText = styled(Typography)`
-  flex: 1;
-  padding: 0 8px;
-  font-size: 14px;
-  line-height: 20px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+const ListItem = styled(MuiMenuItem)`
+&& {
+  white-space: nowrap;
+  padding: 6px 16px 6px 12px;
+  background: white;
+  color: #212121;
+}
+
+&&:hover {
+  background: #f8f8f8;
+}
+
+&&:focus {
+  background: #e0e0e0;
+}
+
+&& ${MoreVert} {
+  opacity: 0;
+  transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+&&:hover ${MoreVert} {
+  opacity: 1;
+}
 `;
 
-const MenuItem = styled(MuiMenuItem)`
-  && {
-    background: white;
-    padding: 6px 16px 6px 12px;
-  }
-
-  &&:hover {
-    background: #f8f8f8;
-  }
-
-  &&:focus {
-    background: #e0e0e0;
-  }
-
-  && ${MoreVert} {
-    opacity: 0;
-    transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  }
-
-  &&:hover ${MoreVert} {
-    opacity: 1;
-  }
-
-`;
-
-export type ConversationListItemProps = {
+export type ItemProps = {
   title: string;
   status?: string;
   unreadCount?: number;
-  team?: boolean;
+  showCount?: boolean;
   important?: boolean;
-  onClick?: () => any;
+  onClick?: (e: React.MouseEvent) => any;
+  onMoreClick?: (e: React.MouseEvent) => any;
 } & Partial<Pick<WithTheme, 'theme'>>;
 
-const TConversationListItem = (props: ConversationListItemProps) => {
-  const { title, status, unreadCount, important, team } = props;
+const TItem = (props: ItemProps) => {
+  const { title, status, unreadCount, important, showCount, onClick, onMoreClick } = props;
+  const fontWeight = unreadCount ? 'bold' : 'normal';
+
   return (
-    <MenuItem button={true} onClick={props.onClick}>
+    <ListItem button={true} onClick={onClick}>
       <Presence status={status} />
-      <ItemText style={{ fontWeight: !!unreadCount ? 'bold' : 'normal' }}>
+      <ItemText style={{ fontWeight }}>
         {title}
       </ItemText>
-      <Umi important={important} unreadCount={unreadCount} showNumber={!team} />
-      <MoreVert style={{ color: '#c7c7c7' }} />
-    </MenuItem>
+      <Umi important={important} unreadCount={unreadCount} showCount={!showCount} />
+      <MoreVert style={{ color: '#c7c7c7' }} onClick={onMoreClick} />
+    </ListItem>
   );
 };
 
-export const ConversationListItem = styled<ConversationListItemProps>(TConversationListItem)`
-    padding-left: 12px;
-    padding-right: 16px;
-  `;
+export const ConversationListItem = styled<ItemProps>(TItem)`
+`;
 
 export default ConversationListItem;

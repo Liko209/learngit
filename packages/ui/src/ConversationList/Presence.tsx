@@ -12,11 +12,11 @@ const PRESENCE_COLOR_MAP = {
   default: 'transparent',
 };
 
-const Presence = styled.div`
+const Presence = styled.div<PresenceProps>`
   width: 8px;
   height: 8px;
   margin: 6px 8px;
-  background: ${({ status }: PresenceProps) => PRESENCE_COLOR_MAP[status || 'default']};
+  background: ${props => PRESENCE_COLOR_MAP[props.status || 'default']};
   border-radius: 50%;
 `;
 

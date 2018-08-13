@@ -6,39 +6,60 @@ type UmiProps = {
   className?: string;
   unreadCount?: number;
   important?: boolean;
-  showNumber?: boolean;
+  showCount?: boolean;
   onChange?: Function;
 } & Partial<Pick<WithTheme, 'theme'>>;
 
-const TUmi = ({ className, unreadCount }: UmiProps) => {
-  let str;
-  if (unreadCount && unreadCount > 99) {
-    str = '99+';
-  } else {
-    str = String(unreadCount);
+const countToString = (unreadCount?: number) => {
+  if (!unreadCount) {
+    return '';
   }
-  return (<div className={className}><span>{str}</span></div>);
+
+  if (unreadCount > 99) {
+    return '99+';
+  }
+
+  return String(unreadCount);
 };
 
+const TUmi = ({ className, unreadCount }: UmiProps) => {
+  return (
+    <div className={className}>
+      <span>{countToString(unreadCount)}</span>
+    </div>
+  );
+};
+
+const styleWithNumber = `
+  font-size: 12px;
+  height: 16px;
+  line-height: 16px;
+  color: white;
+`;
+
+const styleWithoutNumber = `
+  font-size: 0;
+  height: 8px;
+  line-height: 8px;
+  color: transparent;
+`;
+
 const Umi = styled(TUmi)`
-  li:hover & span {
-    font-size: 12px;
-    line-height: 16px;
-    height: 16px;
+  div:hover > & > span {
+    ${styleWithNumber}
   }
 
   span {
     display: block;
-    font-size: ${({ showNumber }: UmiProps) => showNumber ? '12px' : 0};
-    line-height: ${({ showNumber }: UmiProps) => showNumber ? '16px' : '8px'};
-    height: ${({ showNumber }: UmiProps) => showNumber ? '16px' : '8px'};
     padding: 0 4px;
     border-radius: 8px;
     margin-right: 2px;
-    visibility: ${({ unreadCount }: UmiProps) => !!unreadCount ? 'visible' : 'hidden'};
-    background: ${ ({ important }: UmiProps) => important ? '#ff8800' : '#69a3eb'};
-    color: white;
-    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    transition-property: font-size, height, line-height, color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    visibility: ${({ unreadCount }) => unreadCount ? 'visible' : 'hidden'};
+    background: ${ ({ important }) => important ? '#ff8800' : '#69a3eb'};
+    ${({ showCount }) => showCount ? styleWithNumber : styleWithoutNumber}
   }
 `;
 
