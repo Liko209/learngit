@@ -2,10 +2,10 @@ import * as React from 'react';
 
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-// import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
 import { select, number, boolean } from '@storybook/addon-knobs/react';
 import backgrounds from '@storybook/addon-backgrounds';
 import { action } from '@storybook/addon-actions';
+
 import { People, Star } from '@material-ui/icons';
 import { Collapse } from '@material-ui/core';
 
