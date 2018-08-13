@@ -6,12 +6,14 @@ import { select, number, boolean } from '@storybook/addon-knobs/react';
 import backgrounds from '@storybook/addon-backgrounds';
 import { action } from '@storybook/addon-actions';
 
-import { People, Star } from '@material-ui/icons';
-import { Collapse } from '@material-ui/core';
+import Collapse from '@material-ui/core/Collapse';
+import { Icon } from '../../atoms';
 
-import List from './ConversationList';
-import Item from './ConversationListItem';
-import SectionHeader from './ConversationListSectionHeader';
+import {
+  ConversationList as List,
+  ConversationListItem as Item,
+  ConversationListSectionHeader as SectionHeader,
+} from '.';
 
 const transition = 'all ease 0.15s';
 
@@ -35,8 +37,8 @@ storiesOf('ConversationList', module)
       return (
         <div style={{ width, transition }}>
           <SectionHeader
-            icon={<Star />}
-            title="Favorites"
+            icon={<Icon>star</Icon>}
+            title="Favorites2 "
             unreadCount={32}
             important={true}
             showCount={true}
@@ -127,7 +129,7 @@ storiesOf('ConversationList', module)
       return (
         <div style={{ width, transition }}>
           <SectionHeader
-            icon={<People />}
+            icon={<Icon>people</Icon>}
             important={important}
             title="Teams"
             unreadCount={unreadCount}

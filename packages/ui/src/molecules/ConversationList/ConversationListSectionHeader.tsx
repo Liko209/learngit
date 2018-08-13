@@ -5,20 +5,9 @@ import {
   WithTheme,
   ListItem as MuiMenuItem,
 } from '@material-ui/core';
-import {
-  KeyboardArrowUp as MuiKeyboardArrowUp,
-  KeyboardArrowDown as MuiKeyboardArrowDown,
-} from '@material-ui/icons';
 
-import { Umi } from '../../atoms';
+import { Umi, Icon } from '../../atoms';
 import { ItemText } from './ItemText';
-
-const KeyboardArrowUp = styled(MuiKeyboardArrowUp)`
-color: #c7c7c7;
-`;
-const KeyboardArrowDown = styled(MuiKeyboardArrowDown)`
-color: #c7c7c7;
-`;
 
 export type SectionHeaderProps = {
   title: string;
@@ -37,8 +26,8 @@ const TSectionHeader = (props: SectionHeaderProps) => {
     showCount, className, onClick, onMoreClick } = props;
 
   const arrow = expanded ?
-    <KeyboardArrowUp onClick={onMoreClick} /> :
-    <KeyboardArrowDown onClick={onMoreClick} />;
+    <Icon onClick={onMoreClick}>keyboard_arrow_up</Icon> :
+    <Icon onClick={onMoreClick}>keyboard_arrow_down</Icon>;
 
   return (
     <MuiMenuItem className={className} button={true} onClick={onClick}>
