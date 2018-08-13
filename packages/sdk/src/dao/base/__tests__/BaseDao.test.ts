@@ -184,4 +184,12 @@ describe('BaseDao', () => {
     expect(dao.createQuery()).toBeInstanceOf(Query);
     expect(dao.createQuery().criteria).toEqual([]);
   });
+
+  it('do in transation', async () => {
+    dao.doInTransation(async () => {
+      await dao.put({ id: 1000, name: 'transation' });
+      const result = await dao.get(1000);
+      expect(result.name).toBe('transation');
+    });
+  });
 });

@@ -95,6 +95,13 @@ class BaseDao<T extends {}> {
     return this.collection.getAll();
   }
 
+  async doInTransation(func: any): Promise<void> {
+    await this.db.ensureDBOpened();
+    await this.db.getTransaction('rw', [this.collection], async () => {
+      await func();
+    });
+  }
+
   isDexieDB(): boolean {
     return this.db instanceof DexieDB;
   }
