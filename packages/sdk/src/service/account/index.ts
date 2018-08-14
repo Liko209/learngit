@@ -10,7 +10,7 @@ import {
   ACCOUNT_PROFILE_ID,
   ACCOUNT_COMPANY_ID,
 } from '../../dao/account/constants';
-import { daoManager } from '../../dao';
+import { daoManager, AuthDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import PersonDao from '../../dao/person';
 import ConfigDao from '../../dao/config';
@@ -18,7 +18,10 @@ import { CLIENT_ID } from '../../dao/config/constants';
 import { UserInfo } from '../../models';
 import { mainLogger } from 'foundation';
 import { generateUUID } from '../../utils/mathUtils';
-
+import { refreshToken } from '../../api';
+import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
+import { Aware, ErrorTypes } from '../../utils/error';
+import notificationCenter from '../notificationCenter';
 export default class AccountService extends BaseService {
   static serviceName = 'AccountService';
 
@@ -88,5 +91,20 @@ export default class AccountService extends BaseService {
     id = generateUUID();
     configDao.put(CLIENT_ID, id);
     return id;
+  }
+
+  async refreshRCToken() {
+    const authDao = daoManager.getKVDao(AuthDao);
+    try {
+      const rcToken = authDao.get(AUTH_RC_TOKEN);
+      const { refresh_token, endpoint_id } = rcToken;
+      const refreshedRCAuthData = await refreshToken({ refresh_token, endpoint_id });
+      authDao.put(AUTH_RC_TOKEN, refreshedRCAuthData.data);
+      notificationCenter.emitConfigPut(AUTH_RC_TOKEN, refreshedRCAuthData.data);
+      return refreshedRCAuthData.data;
+    } catch (err) {
+      Aware(ErrorTypes.OAUTH, err.message);
+      return null;
+    }
   }
 }
