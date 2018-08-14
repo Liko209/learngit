@@ -35,7 +35,7 @@ const TSectionHeader = (props: SectionHeaderProps) => {
       <ItemText>
         {title}
       </ItemText>
-      <Umi important={important} unreadCount={unreadCount} showCount={!showCount} />
+      <Umi important={important} unreadCount={unreadCount} showCount={showCount} />
       {arrow}
     </MuiMenuItem>
   );
