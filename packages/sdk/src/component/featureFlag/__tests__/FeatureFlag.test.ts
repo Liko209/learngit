@@ -1,13 +1,13 @@
 import ConfigChangeNotifier from '../configChangeNotifier';
 import FeatureFlag from '../FeatureFlag';
 import FlagCalculator from '../FlagCalculator';
-import { BETA_FEATURE, Flag } from '../interface';
+import { BETA_FEATURE, IFlag } from '../interface';
 jest.mock('../FlagCalculator');
 jest.mock('../configChangeNotifier');
 describe('FeatureFlag', () => {
   let featureFlag: FeatureFlag;
-  let mockedNotifier;
-  let mockedCalc: IFlagCalculator;
+  let mockedNotifier:ConfigChangeNotifier;
+  let mockedCalc: FlagCalculator;
   let oldFlags: IFlag;
   beforeEach(() => {
     oldFlags = { log: 'false', phone: '2,3,4' };
@@ -15,9 +15,10 @@ describe('FeatureFlag', () => {
       .spyOn(window.localStorage, 'getItem')
       .mockReturnValue(JSON.stringify(oldFlags));
     mockedNotifier = new ConfigChangeNotifier();
-    mockedCalc = new FlagCalculator(oldFlags, { userId: 1, companyId: 1 });
+    mockedCalc = new FlagCalculator(oldFlags);
     featureFlag = new FeatureFlag(mockedNotifier, mockedCalc);
   });
+
   it('isFeatureEnabled called once', () => {
     featureFlag.isFeatureEnabled(BETA_FEATURE.LOG);
     expect(mockedCalc.isFeatureEnabled).toHaveBeenCalledWith(
@@ -25,6 +26,7 @@ describe('FeatureFlag', () => {
       BETA_FEATURE.LOG,
     );
   });
+
   it('getFlagValue called once', () => {
     featureFlag.getFlagValue('beta_log');
     expect(mockedCalc.getFlagValue).toHaveBeenCalledWith(oldFlags, 'beta_log');
@@ -38,6 +40,7 @@ describe('FeatureFlag', () => {
       phone: '1,2,3',
     });
   });
+
   it('should save index config to db', () => {
     const indexData = { log: 'true' };
     localStorage.setItem = jest.fn();
@@ -47,6 +50,7 @@ describe('FeatureFlag', () => {
       JSON.stringify(indexData),
     );
   });
+
   it('get flag value', () => {
     featureFlag.getFlagValue('log');
     expect(mockedCalc.getFlagValue).toHaveBeenCalledTimes(1);
