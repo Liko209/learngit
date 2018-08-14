@@ -26,20 +26,20 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_EVENT]: 'item',
   [TypeDictionary.TYPE_ID_LINK]: 'item',
   [TypeDictionary.TYPE_ID_MEETING]: 'item',
-  [TypeDictionary.TYPE_ID_PAGE]: 'item'
+  [TypeDictionary.TYPE_ID_PAGE]: 'item',
 };
 
 function parseSocketMessage(message: string) {
   const {
-    body: { objects }
+    body: { objects },
   } = JSON.parse(message);
   const result = {};
   objects.forEach((arr: any[]) => {
-    arr.forEach(obj => {
+    arr.forEach((obj) => {
       if (obj.search_results) {
         result['search'] = obj.search_results;
       }
-      const objTypeId = GlipTypeUtil.extractTypeId(obj._id); // eslint-disable-line no-underscore-dangle
+      const objTypeId = GlipTypeUtil.extractTypeId(obj._id);
       if (socketMessageMap[objTypeId]) {
         const key = socketMessageMap[objTypeId];
         result[key] = result[key] || [];

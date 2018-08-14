@@ -1,35 +1,39 @@
 import { OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
-jest.mock('foundation');
 import HandleByGlip2 from '../HandleByGlip2';
 import { stringify } from 'qs';
-const handler = new OAuthTokenHandler(HandleByGlip2, null);
 
 jest.mock('../../api');
+
+const handler = new OAuthTokenHandler(HandleByGlip2, null);
+
 const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')
     .setData({
-      username: 'test'
+      username: 'test',
     })
     .setParams({
-      password: 'aaa'
+      password: 'aaa',
     })
     .setHeaders({
-      tk: 'sdfsdfadfss'
+      tk: 'sdfsdfadfss',
     })
     .setMethod(NETWORK_METHOD.POST)
     .setAuthfree(true)
     .setRequestConfig({})
     .build();
 };
+
 describe('HandleByGlip2', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
   it('tokenRefreshable is true and generate basic according to Api.httpConfig', () => {
     expect(HandleByGlip2.tokenRefreshable).toBeTruthy();
     expect(HandleByGlip2.basic()).toEqual(btoa('glip2_id:glip2_secret'));
   });
+
   describe('requestDecoration', () => {
     it('should add basic token to params if needAuth is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
@@ -42,11 +46,12 @@ describe('HandleByGlip2', () => {
       expect(decoratedRequest.headers.Authorization).toEqual('Basic basic');
       expect(decoratedRequest.data).toEqual(
         stringify({
-          username: 'test'
-        })
+          username: 'test',
+        }),
       );
     });
 
+    // tslint:disable-next-line:max-line-length
     it('should add basic token to params if needAuth is false and isOAuthTokenAvailable is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');
@@ -58,8 +63,8 @@ describe('HandleByGlip2', () => {
       expect(decoratedRequest.headers.Authorization).toEqual('Basic basic');
       expect(decoratedRequest.data).toEqual(
         stringify({
-          username: 'test'
-        })
+          username: 'test',
+        }),
       );
     });
 
@@ -73,7 +78,7 @@ describe('HandleByGlip2', () => {
       const decoratedRequest = decoration(request);
       expect(decoratedRequest.headers.Authorization).toEqual('Bearer token');
       expect(decoratedRequest.data).toEqual({
-        username: 'test'
+        username: 'test',
       });
     });
 
@@ -88,8 +93,8 @@ describe('HandleByGlip2', () => {
       expect(decoratedRequest.headers.Authorization).toEqual('Basic basic');
       expect(decoratedRequest.data).toEqual(
         stringify({
-          username: 'test'
-        })
+          username: 'test',
+        }),
       );
     });
 
@@ -114,7 +119,7 @@ describe('HandleByGlip2', () => {
       const decoratedRequest = decoration(request);
       expect(decoratedRequest.headers.Authorization).toEqual('Authorization');
       expect(decoratedRequest.data).toEqual({
-        username: 'test'
+        username: 'test',
       });
     });
   });

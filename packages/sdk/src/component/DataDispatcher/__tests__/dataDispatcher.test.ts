@@ -24,7 +24,7 @@ describe('dataDispatcher', () => {
   it('onDataArrived', async () => {
     jest.restoreAllMocks();
     const post = rawPostFactory.build({ _id: 4879476924420 });
-    const PUSHED_DATA = JSON.stringify({ body: { objects: [[post]] }});
+    const PUSHED_DATA = JSON.stringify({ body: { objects: [[post]] } });
     dataDispatcher.register(SOCKET.POST, postHandlers[0]);
     await dataDispatcher.onDataArrived(PUSHED_DATA);
     expect(postHandlers[0]).toBeCalledWith([post]);

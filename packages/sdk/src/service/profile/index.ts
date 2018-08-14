@@ -15,7 +15,7 @@ export default class ProfileService extends BaseService<Profile> {
   static serviceName = 'ProfileService';
   constructor() {
     const subscriptions = {
-      [SOCKET.PROFILE]: handleData
+      [SOCKET.PROFILE]: handleData,
     };
     super(ProfileDao, ProfileAPI, handleData, subscriptions);
   }
@@ -42,7 +42,8 @@ export default class ProfileService extends BaseService<Profile> {
         }
       } else {
         if (profile.favorite_post_ids.indexOf(postId) !== -1) {
-          profile.favorite_post_ids = profile.favorite_post_ids.filter((id: number) => id !== postId);
+          profile.favorite_post_ids = profile.favorite_post_ids
+            .filter((id: number) => id !== postId);
         } else {
           return profile;
         }

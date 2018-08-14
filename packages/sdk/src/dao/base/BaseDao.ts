@@ -3,7 +3,7 @@
  * @Date: 2018-02-23 23:29:52
  */
 import _ from 'lodash';
-import { DexieDB, LokiDB, IDatabaseCollection, IDatabase } from 'foundation';
+import { DexieDB, IDatabaseCollection, IDatabase } from 'foundation';
 import Query from './Query';
 import { ErrorTypes, Throw } from '../../utils';
 
@@ -25,14 +25,14 @@ class BaseDao<T extends {}> {
     if (Array.isArray(item)) {
       await this.bulkPut(item);
     } else {
-      this.validateItem(item, true);
+      this._validateItem(item, true);
       await this.db.ensureDBOpened();
       await this.collection.put(item);
     }
   }
 
   async bulkPut(array: T[]): Promise<void> {
-    array.forEach(item => this.validateItem(item, true));
+    array.forEach(item => this._validateItem(item, true));
     await this.db.ensureDBOpened();
     await this.db.getTransaction('rw', [this.collection], async () => {
       this.collection.bulkPut(array);
@@ -40,7 +40,7 @@ class BaseDao<T extends {}> {
   }
 
   async get(key: number): Promise<T | null> {
-    this.validateKey(key);
+    this._validateKey(key);
     await this.db.ensureDBOpened();
     return this.collection.get(key);
   }
@@ -55,13 +55,13 @@ class BaseDao<T extends {}> {
    * return undefined no matter if a record was deleted or not
    */
   async delete(key: number): Promise<void> {
-    this.validateKey(key);
+    this._validateKey(key);
     await this.db.ensureDBOpened();
     await this.collection.delete(key);
   }
 
   async bulkDelete(keys: number[]): Promise<void> {
-    keys.forEach(key => this.validateKey(key));
+    keys.forEach(key => this._validateKey(key));
     await this.db.ensureDBOpened();
     await this.collection.bulkDelete(keys);
   }
@@ -95,12 +95,15 @@ class BaseDao<T extends {}> {
     return this.collection.getAll();
   }
 
-  isDexieDB(): boolean {
-    return this.db instanceof DexieDB;
+  async doInTransation(func: any): Promise<void> {
+    await this.db.ensureDBOpened();
+    await this.db.getTransaction('rw', [this.collection], async () => {
+      await func();
+    });
   }
 
-  isLokiDB(): boolean {
-    return this.db instanceof LokiDB;
+  isDexieDB(): boolean {
+    return this.db instanceof DexieDB;
   }
 
   createQuery() {
@@ -110,7 +113,7 @@ class BaseDao<T extends {}> {
   createEmptyQuery() {
     return new Query(this.collection, this.db).limit(0);
   }
-  private validateItem(item: T, withPrimaryKey: boolean): void {
+  private _validateItem(item: T, withPrimaryKey: boolean): void {
     if (!_.isObjectLike(item)) {
       Throw(ErrorTypes.INVALIDTE_PARAMETERS, `Item should be an object. Received ${item}`);
     }
@@ -120,12 +123,12 @@ class BaseDao<T extends {}> {
     if (withPrimaryKey && !item[this.collection.primaryKeyName()]) {
       Throw(
         ErrorTypes.INVALIDTE_PARAMETERS,
-        `Lack of primary key ${this.collection.primaryKeyName()} in object ${JSON.stringify(item)}`
+        `Lack of primary key ${this.collection.primaryKeyName()} in object ${JSON.stringify(item)}`,
       );
     }
   }
 
-  private validateKey(key: number) {
+  private _validateKey(key: number) {
     if (!_.isInteger(key)) {
       Throw(ErrorTypes.INVALIDTE_PARAMETERS, 'Key for db get method should be an integer.');
     }

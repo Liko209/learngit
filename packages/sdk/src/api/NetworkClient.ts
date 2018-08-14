@@ -11,7 +11,7 @@ import {
   IHandleType,
   IRequest,
   NETWORK_METHOD,
-  Response
+  BaseResponse,
 } from 'foundation';
 
 // import logger from './logger';
@@ -50,26 +50,34 @@ export interface IResponseRejectFn {
 export default class NetworkClient {
   networkRequests: INetworkRequests;
   apiPlatform: string;
-  apiMap: Map<string, { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]>;
+  defaultVia: NETWORK_VIA;
+  apiMap: Map<
+    string,
+    { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]
+  >;
   // todo refactor config
-  constructor(networkRequests: INetworkRequests, apiPlatform: string) {
+  constructor(
+    networkRequests: INetworkRequests,
+    apiPlatform: string,
+    defaultVia: NETWORK_VIA,
+  ) {
     this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;
     this.apiMap = new Map();
+    this.defaultVia = defaultVia;
   }
 
   request<T>(query: IQuery): Promise<IResponse<T>> {
     const { via, path, method, params } = query;
     return new Promise((resolve, reject) => {
       const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
-      console.log('apiMapKey', this.apiMap.has(apiMapKey));
-      console.log('method', method);
-      const isDuplicate =
-        (method === NETWORK_METHOD.GET || method === NETWORK_METHOD.DELETE) && this.apiMap.has(apiMapKey);
+      const duplicate = this._isDuplicate(method, apiMapKey);
+
       const promiseResolvers = this.apiMap.get(apiMapKey) || [];
       promiseResolvers.push({ resolve, reject });
       this.apiMap.set(apiMapKey, promiseResolvers);
-      if (!isDuplicate) {
+
+      if (!duplicate) {
         const request = this.getRequestByVia<T>(query, via);
         request.callback = this.buildCallback<T>(apiMapKey);
         NetworkManager.Instance.addApiRequest(request);
@@ -78,7 +86,7 @@ export default class NetworkClient {
   }
 
   buildCallback<T>(apiMapKey: string) {
-    return (resp: Response) => {
+    return (resp: BaseResponse) => {
       const promiseResolvers = this.apiMap.get(apiMapKey);
       if (!promiseResolvers) return;
 
@@ -87,8 +95,8 @@ export default class NetworkClient {
           resolve({
             status: resp.status,
             headers: resp.headers,
-            data: resp.data as T
-          })
+            data: resp.data as T,
+          }),
         );
       } else {
         promiseResolvers.forEach(({ reject }) => {
@@ -100,8 +108,19 @@ export default class NetworkClient {
     };
   }
 
-  getRequestByVia<T>(query: IQuery, via: NETWORK_VIA = NETWORK_VIA.HTTP): IRequest {
-    const { path, method, data, headers, params, authFree, requestConfig } = query;
+  getRequestByVia<T>(
+    query: IQuery,
+    via: NETWORK_VIA = this.defaultVia,
+  ): IRequest {
+    const {
+      path,
+      method,
+      data,
+      headers,
+      params,
+      authFree,
+      requestConfig,
+    } = query;
     return new NetworkRequestBuilder()
       .setHost(this.networkRequests.host || '')
       .setHandlerType(this.networkRequests.handlerType)
@@ -130,14 +149,20 @@ export default class NetworkClient {
    * @param {Object} [data={}] request headers
    * @returns Promise
    */
-  get<T>(path: string, params = {}, via?: NETWORK_VIA, requestConfig?: object, headers = {}) {
+  get<T>(
+    path: string,
+    params = {},
+    via?: NETWORK_VIA,
+    requestConfig?: object,
+    headers = {},
+  ) {
     return this.http<T>({
       path,
-      method: NETWORK_METHOD.GET,
       params,
+      headers,
       via,
       requestConfig,
-      headers
+      method: NETWORK_METHOD.GET,
     });
   }
 
@@ -151,9 +176,9 @@ export default class NetworkClient {
   post<T>(path: string, data = {}, headers = {}) {
     return this.request<T>({
       path,
-      method: NETWORK_METHOD.POST,
       data,
-      headers
+      headers,
+      method: NETWORK_METHOD.POST,
     });
   }
 
@@ -167,9 +192,9 @@ export default class NetworkClient {
   put<T>(path: string, data = {}, headers = {}) {
     return this.http<T>({
       path,
-      method: NETWORK_METHOD.PUT,
       data,
-      headers
+      headers,
+      method: NETWORK_METHOD.PUT,
     });
   }
 
@@ -183,9 +208,17 @@ export default class NetworkClient {
   delete<T>(path: string, params = {}, headers = {}) {
     return this.http<T>({
       path,
-      method: NETWORK_METHOD.DELETE,
       params,
-      headers
+      headers,
+      method: NETWORK_METHOD.DELETE,
     });
+  }
+
+  private _isDuplicate(method: NETWORK_METHOD, apiMapKey: string) {
+    if (method !== NETWORK_METHOD.GET && method !== NETWORK_METHOD.DELETE) {
+      return false;
+    }
+
+    return this.apiMap.has(apiMapKey);
   }
 }

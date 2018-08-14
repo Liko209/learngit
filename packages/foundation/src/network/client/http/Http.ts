@@ -3,16 +3,12 @@
  * @Date: 2018-05-03 11:25:27
  * Copyright © RingCentral. All rights reserved.
  */
-
 import axios from 'axios';
 
+import { INetworkRequestExecutorListener, IRequest, NETWORK_FAIL_TYPE } from '../../network';
 import BaseClient from '../BaseClient';
-import Response from './Response';
-import {
-  IRequest,
-  INetworkRequestExecutorListener,
-  NETWORK_FAIL_TYPE,
-} from '../../network';
+import HttpResponse from './HttpResponse';
+
 class Http extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
     super.request(request, listener);
@@ -35,6 +31,7 @@ class Http extends BaseClient {
       url: path,
       data: {},
       params: {},
+      withCredentials: true,
       cancelToken: new CancelToken((cancel) => {
         this.tasks[request.id].cancel = cancel;
       }),
@@ -54,7 +51,7 @@ class Http extends BaseClient {
       .then((res) => {
         delete this.tasks[request.id];
         const { data, status, statusText } = res;
-        const response = Response.builder
+        const response = HttpResponse.builder
           .setData(data)
           .setStatus(status)
           .setStatusText(statusText)
@@ -76,7 +73,7 @@ class Http extends BaseClient {
           status = 0;
           statusText = NETWORK_FAIL_TYPE.CANCELLED;
         }
-        const res = Response.builder
+        const res = HttpResponse.builder
           .setData(data)
           .setStatus(status)
           .setStatusText(statusText || message)

@@ -24,7 +24,7 @@ describe('Save State', () => {
   it('Get first', async () => {
     const firstItem = await stateDao.getFirst();
     expect(firstItem).toMatchObject({
-      id: 3592486919
+      id: 3592486919,
     });
 
     stateDao.clear();

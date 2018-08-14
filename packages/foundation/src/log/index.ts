@@ -6,7 +6,7 @@ const logManager = LogManager.Instance;
 const mainLogger: Logger = logManager.getMainLogger();
 const networkLogger: Logger = logManager.getLogger('NETWORK');
 
-emitter.on('doAppend', overThreshold => {
+emitter.on('doAppend', (overThreshold) => {
   logManager.doAppend(overThreshold);
 });
 

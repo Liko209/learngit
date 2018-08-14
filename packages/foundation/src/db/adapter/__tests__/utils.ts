@@ -14,19 +14,20 @@ interface IPerson {
 
 const dexiePersonGroupSchema = {
   person: '++id, firstName, lastName, *groups',
-  group: '++id'
+  group: '++id',
 };
 
 const personGroupSchema = {
   person: { unique: '++id', indices: ['firstName', 'lastName'] },
-  group: { unique: '++id' }
+  group: { unique: '++id' },
 };
 
 const schema: ISchema = {
   name: 'Glip',
+  version: 1,
   schema: {
-    1: personGroupSchema
-  }
+    1: personGroupSchema,
+  },
 };
 
 const persons: IPerson[] = [
@@ -37,9 +38,9 @@ const persons: IPerson[] = [
     firstName: 'Cooler',
     lastName: 'Huang',
     isVip: true,
-    groups: [1, 2, 3]
+    groups: [1, 2, 3],
   },
-  { id: 4, firstName: 'Baby', lastName: 'Huang', isVip: false, groups: [2] }
+  { id: 4, firstName: 'Baby', lastName: 'Huang', isVip: false, groups: [2] },
 ];
 
 const extractId = (obj: any) => obj.id;
@@ -51,13 +52,13 @@ const extractFirstNames = (arr: any[]) => arr.map(extractFirstName);
 // Dexie
 //
 const setupDexie = async () => {
-  let dexie: Dexie = new Dexie('Fiji');
+  const dexie: Dexie = new Dexie('Fiji');
   dexie.version(1).stores(dexiePersonGroupSchema);
-  let table: Dexie.Table = dexie.table('person');
-  let collection = table.toCollection();
-  let dexieCollection: DexieCollection<IPerson> = new DexieCollection(
+  const table: Dexie.Table = dexie.table('person');
+  const collection = table.toCollection();
+  const dexieCollection: DexieCollection<IPerson> = new DexieCollection(
     dexie,
-    'person'
+    'person',
   );
   await dexieCollection.clear();
   await dexieCollection.bulkPut(persons);
@@ -68,11 +69,11 @@ const setupDexie = async () => {
     collection,
     dexieCollection,
     persons,
-    personGroupSchema
+    personGroupSchema,
   };
 };
 const extractCollection = async (col: any) => {
-  let result: object[] = [];
+  const result: object[] = [];
   if (isDexieCollection(col)) {
     await col.each((item: object) => {
       result.push(item);
@@ -83,27 +84,27 @@ const extractCollection = async (col: any) => {
 const extractCollections = async (collections: any[]) => {
   let result: any[] = [];
   await Promise.all(
-    collections.map(async col => {
+    collections.map(async (col) => {
       const arr = await extractCollection(col);
       result = result.concat(arr);
-    })
+    }),
   );
   return result;
 };
 const extractCollectionToIds = async (col: any) => {
-  let arr = await extractCollection(col);
+  const arr = await extractCollection(col);
   return extractIds(arr);
 };
 const extractCollectionsToIds = async (collections: any[]) => {
-  let arr = await extractCollections(collections);
+  const arr = await extractCollections(collections);
   return extractIds(arr);
 };
 const extractCollectionToFirstName = async (col: any) => {
-  let arr = await extractCollection(col);
+  const arr = await extractCollection(col);
   return extractFirstNames(arr);
 };
 const extractCollectionsToFirstNames = async (col: any) => {
-  let arr = await extractCollections(col);
+  const arr = await extractCollections(col);
   return extractFirstNames(arr);
 };
 
@@ -111,26 +112,26 @@ const extractCollectionsToFirstNames = async (col: any) => {
 // Loki
 //
 const setupLoki = async () => {
-  let lokiDB = new LokiDB(schema);
-  let lokiCollection = lokiDB.getCollection<IPerson>('person');
-  let collection = lokiCollection.getCollection();
+  const lokiDB = new LokiDB(schema);
+  const lokiCollection = lokiDB.getCollection<IPerson>('person');
+  const collection = lokiCollection.getCollection();
   await lokiCollection.clear();
   await lokiCollection.bulkPut(persons);
   return { lokiDB, lokiCollection, collection };
 };
 const extractLokiResultSets = (resultSets: any[]) => {
-  let results: any[] = [];
-  resultSets.forEach(resultSet => {
+  const results: any[] = [];
+  resultSets.forEach((resultSet) => {
     results.push(...resultSet.data({ removeMeta: true }));
   });
   return results;
 };
-const extractLokiResultSetToIds = resultSets => {
-  let arr = extractLokiResultSets(resultSets);
+const extractLokiResultSetToIds = (resultSets: any[]) => {
+  const arr = extractLokiResultSets(resultSets);
   return extractIds(arr);
 };
 const extractLokiResultSetToFirstNames = async (col: any) => {
-  let arr = await extractLokiResultSets(col);
+  const arr = await extractLokiResultSets(col);
   return extractFirstNames(arr);
 };
 
@@ -153,5 +154,5 @@ export {
   setupLoki,
   extractLokiResultSets,
   extractLokiResultSetToIds,
-  extractLokiResultSetToFirstNames
+  extractLokiResultSetToFirstNames,
 };

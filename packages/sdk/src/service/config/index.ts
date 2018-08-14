@@ -15,7 +15,7 @@ export default class ConfigService extends BaseService {
   private _authService: AuthService;
   constructor(authService: AuthService) {
     const subscriptions = {
-      [SERVICE.LOGOUT]: handleLogout
+      [SERVICE.LOGOUT]: handleLogout,
     };
     super(ConfigDao, null, null, subscriptions);
     this._authService = authService;

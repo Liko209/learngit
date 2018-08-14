@@ -29,7 +29,7 @@ async function checkIncompleteGroupsMembers(groups: Group[]) {
             return personService.getPersonsByIds(group.members);
           }
           return group;
-        })
+        }),
       );
     } catch (e) {
       mainLogger.warn(`checkIncompleteGroupsMembers error: ${e}`);
@@ -54,7 +54,7 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
       /* eslint-enable no-underscore-dangle */
       const transformed: Group = transform<Group>(finalItem);
       return transformed;
-    })
+    }),
   );
 
   return transformedData.filter((item: Group | null) => item !== null) as Group[];
@@ -73,24 +73,38 @@ async function doNotification(deactivatedData: Group[], normalData: Group[]) {
 
   const archivedTeams = normalData.filter((item: Group) => item.is_archived);
 
-  let deactivatedTeams = deactivatedData.filter((item: Group) => item.is_team && favIds.indexOf(item.id) === -1);
-  deactivatedTeams = deactivatedTeams.concat(archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1));
+  let deactivatedTeams = deactivatedData
+    .filter((item: Group) => item.is_team && favIds.indexOf(item.id) === -1);
+  deactivatedTeams = deactivatedTeams
+    .concat(archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1));
 
-  let deactivatedFavGroups = deactivatedData.filter((item: Group) => favIds.indexOf(item.id) !== -1);
+  let deactivatedFavGroups = deactivatedData
+    .filter((item: Group) => favIds.indexOf(item.id) !== -1);
   deactivatedFavGroups = deactivatedFavGroups.concat(
-    archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1)
+    archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1),
   );
 
-  const deactivatedGroups = deactivatedData.filter((item: Group) => !item.is_team && favIds.indexOf(item.id) === -1);
+  const deactivatedGroups = deactivatedData
+    .filter((item: Group) => !item.is_team && favIds.indexOf(item.id) === -1);
 
-  deactivatedFavGroups.length > 0 && notificationCenter.emitEntityDelete(ENTITY.FAVORITE_GROUPS, deactivatedFavGroups);
-  deactivatedTeams.length > 0 && notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, deactivatedTeams);
-  deactivatedGroups.length > 0 && notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, deactivatedGroups);
+  if (deactivatedFavGroups.length > 0) {
+    notificationCenter.emitEntityDelete(ENTITY.FAVORITE_GROUPS, deactivatedFavGroups);
+  }
 
-  let addedTeams = normalData.filter((item: Group) => item.is_team && favIds.indexOf(item.id) === -1);
+  if (deactivatedTeams.length > 0) {
+    notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, deactivatedTeams);
+  }
+
+  if (deactivatedGroups.length > 0) {
+    notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, deactivatedGroups);
+  }
+
+  let addedTeams = normalData
+    .filter((item: Group) => item.is_team && favIds.indexOf(item.id) === -1);
   addedTeams = await filterGroups(addedTeams, GROUP_QUERY_TYPE.TEAM, 20);
 
-  let addedGroups = normalData.filter((item: Group) => !item.is_team && favIds.indexOf(item.id) === -1);
+  let addedGroups = normalData
+    .filter((item: Group) => !item.is_team && favIds.indexOf(item.id) === -1);
   addedGroups = await filterGroups(addedGroups, GROUP_QUERY_TYPE.GROUP, 10);
 
   const addFavorites = normalData.filter((item: Group) => favIds.indexOf(item.id) !== -1);
@@ -130,7 +144,8 @@ export default async function handleData(groups: Raw<Group>[]) {
   const accountDao = daoManager.getKVDao(AccountDao);
   const userId = Number(accountDao.get(ACCOUNT_USER_ID));
   const transformData = await getTransformData(groups);
-  const data = transformData.filter(item => item !== null && item.members && item.members.indexOf(userId) !== -1);
+  const data = transformData
+    .filter(item => item !== null && item.members && item.members.indexOf(userId) !== -1);
   // handle deactivated data and normal data
   // const normalGroups =
   // const normalGroups = await baseHandleData({
@@ -178,19 +193,24 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
 
 async function handleGroupMostRecentPostChanged(posts: Post[]) {
   const groupDao = daoManager.getDao(GroupDao);
-  const groups: (null | Group)[] = await Promise.all(
-    posts.map(async post => {
-      const group: null | Group = await groupDao.get(post.group_id);
-      if (group) {
-        group.most_recent_content_modified_at = post.modified_at;
-        group.most_recent_post_created_at = post.created_at;
-        group.most_recent_post_id = post.id;
-        return group;
-      }
-      return null;
-    })
-  );
-  await saveDataAndDoNotification(groups.filter(item => item !== null) as Group[]);
+  let validGroups: Group[] = [];
+  await groupDao.doInTransation(async () => {
+    const groups: (null | Group)[] = await Promise.all(
+      posts.map(async post => {
+        const group: null | Group = await groupDao.get(post.group_id);
+        if (group) {
+          group.most_recent_content_modified_at = post.modified_at;
+          group.most_recent_post_created_at = post.created_at;
+          group.most_recent_post_id = post.id;
+          return group;
+        }
+        return null;
+      })
+    );
+    validGroups = groups.filter(item => item !== null) as Group[];
+  });
+
+  await doNotification([], validGroups);
 }
 
 /**
@@ -198,12 +218,16 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
  * or just use default limit length
  */
 
-async function filterGroups(groups: Group[], groupType = GROUP_QUERY_TYPE.TEAM, defaultLength: number) {
+async function filterGroups(
+  groups: Group[],
+  groupType = GROUP_QUERY_TYPE.TEAM,
+  defaultLength: number,
+) {
   if (groups.length <= defaultLength) {
     return groups;
   }
   const stateService: StateService = StateService.getInstance();
-  let states = await stateService.getAllGroupStatesFromLocal();
+  const states = await stateService.getAllGroupStatesFromLocal();
   let result = groups;
   const statesIds = states
     ? states.filter(item => item.unread_count || item.unread_mentions_count).map(item => item.id)
@@ -233,4 +257,9 @@ async function filterGroups(groups: Group[], groupType = GROUP_QUERY_TYPE.TEAM, 
   return result;
 }
 
-export { handleFavoriteGroupsChanged, handleGroupMostRecentPostChanged, saveDataAndDoNotification, filterGroups };
+export {
+  handleFavoriteGroupsChanged,
+  handleGroupMostRecentPostChanged,
+  saveDataAndDoNotification,
+  filterGroups,
+};

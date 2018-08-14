@@ -4,7 +4,7 @@ import {
   getFakeRequest,
   getFakeExecutor,
   getFakeHandler,
-  getFakeClient
+  getFakeClient,
 } from './utils';
 
 const consumer = new NetworkRequestConsumer(
@@ -13,12 +13,12 @@ const consumer = new NetworkRequestConsumer(
   10,
   NETWORK_VIA.ALL,
   getFakeHandler(),
-  null
+  null,
 );
 describe('NetworkRequestConsumer', () => {
   describe('onConsumeArrived', () => {
     it('should call consume', () => {
-      const spy = jest.spyOn(consumer, 'consume');
+      const spy = jest.spyOn(consumer, '_consume');
       consumer.onConsumeArrived();
       expect(spy).toBeCalled();
     });
@@ -40,7 +40,7 @@ describe('NetworkRequestConsumer', () => {
 
   describe('onCancelRequest', () => {
     it('should cancel executor for request', () => {
-      const spy = jest.spyOn(consumer, 'getExecutor');
+      const spy = jest.spyOn(consumer, '_getExecutor');
       consumer.onCancelRequest(getFakeRequest());
       expect(spy).toBeCalled();
     });
@@ -59,7 +59,7 @@ describe('NetworkRequestConsumer', () => {
   });
 
   describe('onConsumeFinished', () => {
-    const spy = jest.spyOn(consumer, 'removeExecutor');
+    const spy = jest.spyOn(consumer, '_removeExecutor');
     consumer.onConsumeFinished(getFakeExecutor());
     expect(spy).toBeCalled();
   });

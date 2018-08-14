@@ -15,7 +15,7 @@ export default class StateService extends BaseService<GroupState> {
 
   constructor() {
     const subscriptions = {
-      [SOCKET.STATE]: handleData
+      [SOCKET.STATE]: handleData,
     };
     super(GroupStateDao, StateAPI, handleData, subscriptions);
   }
@@ -25,14 +25,14 @@ export default class StateService extends BaseService<GroupState> {
       [`unread_count:${groupId}`]: 0,
       [`unread_mentions_count:${groupId}`]: 0,
       [`read_through:${groupId}`]: lastPostId,
-      [`marked_as_unread:${groupId}`]: false
+      [`marked_as_unread:${groupId}`]: false,
     };
   }
 
   static buildUpdateStateParam(groupId: number, lastPostId: number) {
     return {
       last_group_id: groupId,
-      [`last_read_through:${groupId}`]: lastPostId
+      [`last_read_through:${groupId}`]: lastPostId,
     };
   }
 
@@ -41,11 +41,11 @@ export default class StateService extends BaseService<GroupState> {
   //   return groupStateDao.get(groupId);
   // }
   async getById(id: number): Promise<GroupState> {
-    let result = await this.getByIdFromDao(id);// groupid
+    let result = await this.getByIdFromDao(id); // groupid
     if (!result) {
       const myState = await this.getMyState();
       if (myState) {
-        result = await this.getByIdFromAPI(myState.id);// state id
+        result = await this.getByIdFromAPI(myState.id); // state id
       }
     }
     return result;

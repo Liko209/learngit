@@ -10,7 +10,7 @@ import { ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM } from '../constants';
 import { AUTH_GLIP_TOKEN, AUTH_RC_TOKEN } from '../../dao/auth/constants';
 
 describe('AutoAuthenticator', () => {
-  let autoAuthenticator = new AutoAuthenticator(daoManager);
+  const autoAuthenticator = new AutoAuthenticator(daoManager);
   describe('user has not loggin', () => {
     const resp = autoAuthenticator.authenticate();
     expect(resp.success).toBe(false);

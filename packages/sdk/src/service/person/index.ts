@@ -18,7 +18,7 @@ export default class PersonService extends BaseService<Person> {
   constructor() {
     const subscription = {
       [SOCKET.PERSON]: handleData,
-      [SOCKET.ITEM]: handleData
+      [SOCKET.ITEM]: handleData,
     };
     super(PersonDao, PersonAPI, handleData, subscription);
   }
@@ -27,14 +27,16 @@ export default class PersonService extends BaseService<Person> {
     if (!Array.isArray(ids)) {
       throw new Error('ids must be an array.');
     }
+
     if (ids.length === 0) {
       return [];
     }
+
     const persons = await Promise.all(
-      ids.map(async id => {
+      ids.map(async (id) => {
         const person = await this.getById(id);
         return person;
-      })
+      }),
     );
 
     return persons.filter(person => person !== null);

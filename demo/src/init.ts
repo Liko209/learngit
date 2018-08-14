@@ -9,7 +9,7 @@ import { Sdk, LogControlManager } from 'sdk';
 
 // send configs to sdk
 export async function initAll() {
-  LogControlManager.Instance().setDebugMode(
+  LogControlManager.instance().setDebugMode(
     process.env.NODE_ENV === 'development',
   );
 

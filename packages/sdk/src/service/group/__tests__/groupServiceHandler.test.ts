@@ -10,13 +10,13 @@ jest.mock('../../../utils/mathUtils');
 jest.mock('../../../dao', () => {
   return {
     daoManager: {
-      getKVDao: jest.fn()
-    }
+      getKVDao: jest.fn(),
+    },
   };
 });
 
 jest.mock('../../../utils/mathUtils', () => ({
-  versionHash: jest.fn().mockReturnValue(123)
+  versionHash: jest.fn().mockReturnValue(123),
 }));
 
 describe('GroupServiceHandler()', () => {
@@ -30,7 +30,7 @@ describe('GroupServiceHandler()', () => {
       members: [],
       creator_id: 1,
       is_new: true,
-      new_version: 123
+      new_version: 123,
     });
   });
 });

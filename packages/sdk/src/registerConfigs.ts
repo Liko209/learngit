@@ -3,16 +3,17 @@
  * @Date: 2018-07-08 07:52:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { AccountManager, ServiceManager, Container } from './framework';
-import { RCPasswordAuthenticator, AutoAuthenticator, UnifiedLoginAuthenticator } from './authenticator';
-import { RCAccount, GlipAccount } from './account';
-import DaoManager from './dao/DaoManager';
+import { Container, NetworkManager } from 'foundation';
+import { GlipAccount, RCAccount } from './account';
+import {
+  AutoAuthenticator,
+  RCPasswordAuthenticator,
+  UnifiedLoginAuthenticator,
+} from './authenticator';
 import { daoManager } from './dao';
-import socketManager from './service/SocketManager';
-import { SocketManager } from './service/SocketManager/SocketManager';
-import { NetworkManager } from 'foundation';
+import DaoManager from './dao/DaoManager';
+import { AccountManager, ServiceManager } from './framework';
 import Sdk from './Sdk';
-
 // DAO
 // import AccountDao from './dao/account';
 // import PostDao from './dao/post';
@@ -24,20 +25,21 @@ import Sdk from './Sdk';
 // import StateDao from './dao/state';
 // import ConfigDao from './dao/config';
 // import AuthDao from './dao/auth';
-
 // Service
 import AccountService from './service/account';
-import PostService from './service/post';
-import GroupService from './service/group';
+import AuthService from './service/auth';
 import CompanyService from './service/company';
+import ConfigService from './service/config';
+import GroupService from './service/group';
 import ItemService from './service/item';
 import PersonService from './service/person';
+import PostService from './service/post';
 import PresenceService from './service/presence';
 import ProfileService from './service/profile';
 import SearchService from './service/search';
+import socketManager from './service/SocketManager';
+import { SocketManager } from './service/SocketManager/SocketManager';
 import StateService from './service/state';
-import ConfigService from './service/config';
-import AuthService from './service/auth';
 import SyncService from './service/sync';
 
 const registerConfigs = {
@@ -79,23 +81,37 @@ const registerConfigs = {
     { name: SyncService.name, value: SyncService },
 
     // Manager
-    { name: AccountManager.name, value: AccountManager, injects: [Container.name, ServiceManager.name] },
-    { name: ServiceManager.name, value: ServiceManager, injects: [Container.name] },
+    {
+      name: AccountManager.name,
+      value: AccountManager,
+      injects: [Container.name, ServiceManager.name],
+    },
+    {
+      name: ServiceManager.name,
+      value: ServiceManager,
+      injects: [Container.name],
+    },
 
     // Sdk
     {
       name: Sdk.name,
       value: Sdk,
-      injects: [DaoManager.name, AccountManager.name, ServiceManager.name, NetworkManager.name, SyncService.name]
-    }
+      injects: [
+        DaoManager.name,
+        AccountManager.name,
+        ServiceManager.name,
+        NetworkManager.name,
+        SyncService.name,
+      ],
+    },
   ],
   asyncClasses: [],
   constants: [
     // TODO register as class instead
     { name: DaoManager.name, value: daoManager },
     { name: SocketManager.name, value: socketManager },
-    { name: NetworkManager.name, value: NetworkManager.Instance }
-  ]
+    { name: NetworkManager.name, value: NetworkManager.Instance },
+  ],
 };
 
 export { registerConfigs };

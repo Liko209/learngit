@@ -5,11 +5,11 @@ import emitter from '../emitter';
 import { LOG_LEVEL_STRING } from '../constants';
 
 class PersistentLogAppender extends BaseAppender {
-  private LOG_SYNC_WEIGHT: number = 1000;
+  private LOG_SYNC_WEIGHT: number = 100;
   private _loggingEvents: LoggingEvent[] = [];
   private _getedKeyName: string;
   private _logSize: number = 0;
-  private LOG_SYNC_LENGTH: number = 1024 * 1024;
+  private LOG_SYNC_LENGTH: number = 256 * 1024;
 
   doLog(loggingEvent: LoggingEvent) {
     this._loggingEvents.push(loggingEvent);
@@ -19,6 +19,7 @@ class PersistentLogAppender extends BaseAppender {
       this._loggingEvents.length > this.LOG_SYNC_WEIGHT
     ) {
       emitter.emitAsync('doAppend', true);
+      this._logSize = 0;
     }
   }
 
@@ -28,8 +29,7 @@ class PersistentLogAppender extends BaseAppender {
     }
     const logs: string[] = this._loggingEvents.map(this.format.bind(this));
     const firstKey = this._loggingEvents[0].getStartTimestamp();
-    const lastKey = this._loggingEvents[
-      this._loggingEvents.length - 1
+    const lastKey = this._loggingEvents[this._loggingEvents.length - 1
     ].getStartTimestamp();
     const key = `${firstKey} - ${lastKey}`;
     this._loggingEvents = [];
@@ -53,7 +53,7 @@ class PersistentLogAppender extends BaseAppender {
     const store = this._getStore(category);
     const storeHandlers: Promise<void>[] = [];
     if (Array.isArray(keys)) {
-      keys.forEach(key => {
+      keys.forEach((key) => {
         storeHandlers.push(store.removeItem(key));
       });
     } else {
@@ -82,7 +82,7 @@ class PersistentLogAppender extends BaseAppender {
   private _getStore(name: string): LocalForage {
     return localforage.createInstance({
       name,
-      storeName: 'log'
+      storeName: 'log',
     });
   }
 }

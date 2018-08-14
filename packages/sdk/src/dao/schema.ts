@@ -13,7 +13,7 @@ import { ISchema } from 'foundation';
 const gen = (unique: string = 'id', indices: string[] = [], onUpgrade?: (item: any) => void) => ({
   unique,
   indices,
-  onUpgrade
+  onUpgrade,
 });
 
 // const refactorId = (item: any) => {
@@ -32,27 +32,27 @@ const schema: ISchema = {
       item: gen(),
       company: gen(),
       profile: gen('id', ['favorite_group_ids']),
-      state: gen()
+      state: gen(),
     },
     2: {
-      state: gen('id', ['person_id'])
+      state: gen('id', ['person_id']),
     },
     3: {
-      person: gen('id', ['first_name', 'last_name', 'display_name', 'email'])
+      person: gen('id', ['first_name', 'last_name', 'display_name', 'email']),
     },
     4: {
       post: gen('id', ['group_id', 'created_at', '[group_id+created_at]']),
-      group: gen('id', ['most_recent_post_created_at'])
+      group: gen('id', ['most_recent_post_created_at']),
     },
     5: {
-      groupState: gen()
+      groupState: gen(),
     },
     6: {
-      deactivated: gen()
+      deactivated: gen(),
     },
     7: {
-      item: gen('id', ['*group_ids'])
-    }
+      item: gen('id', ['*group_ids']),
+    },
     // 1: {
     //   person: gen('id', ['first_name', 'last_name', 'display_name', 'email']),
     //   group: gen('id', ['most_recent_post_created_at']),
@@ -64,7 +64,7 @@ const schema: ISchema = {
     //   groupState: gen('id', []),
     //   deactivated: gen('id', [])
     // }
-  }
+  },
 };
 
 export default schema;

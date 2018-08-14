@@ -7,7 +7,7 @@ import { indexData } from '../../../api';
 import fetchIndexData from '../fetchIndexData';
 
 jest.mock('../../../api', () => ({
-  indexData: jest.fn()
+  indexData: jest.fn(),
 }));
 
 const configDao = daoManager.getKVDao(ConfigDao);

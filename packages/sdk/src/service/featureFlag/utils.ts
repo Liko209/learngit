@@ -1,7 +1,7 @@
-type Handler < T > = (data: T[]) => any;
+type Handler<T> = (data: T[]) => any;
 type Flag = { [key: string]: string };
 
-type FeatureConfig = { [key in BETA_FEATURE]?: Array<string | Permission> };
+type FeatureConfig = { [key in BETA_FEATURE]?: string[] | Permission[] };
 type FlagStrategies = { [key in FLAG_PREFIX]: (flag: string) => boolean };
 interface Notifier<T> {
   subscribe: (handler: Handler<T>) => any;
@@ -19,16 +19,16 @@ interface FlagCalculator {
 
 export enum BETA_FEATURE {
   LOG,
-  SMS
+  SMS,
 }
 export enum FLAG_PREFIX {
   EMAIL,
   DOMAIN,
-  STATUS
+  STATUS,
 }
 
 export enum Permission {
-  CALL = 'call'
+  CALL = 'call',
 }
 
 export { Notifier, Flag, Handler, FeatureConfig, AccountInfo, FlagStrategies, FlagCalculator };

@@ -5,7 +5,8 @@ import { IStorage } from '../../db';
  * Copyright © RingCentral. All rights reserved.
  */
 
-// In-memory implementation for when localStorage/sessionStorage is not supported, for example, in Safari private mode, and when Content Settings prevents from setting any data in Chrome
+// In-memory implementation for when localStorage/sessionStorage is not supported, for example
+// in Safari private mode, and when Content Settings prevents from setting any data in Chrome
 
 function storageFactory(storage: IStorage) {
   let inMemoryStorage = {};
@@ -62,7 +63,7 @@ function storageFactory(storage: IStorage) {
         inMemoryStorage = {};
         // length = 0;
       }
-    }
+    },
 
     // key(n: number): string | null {
     //   if (isSupported()) {

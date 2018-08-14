@@ -36,7 +36,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     teams = [],
     posts = [],
     max_posts_exceeded: maxPostsExceeded = false,
-    client_config: clientConfig
+    client_config: clientConfig,
   } = data;
 
   const arrState: any[] = [];
@@ -50,11 +50,16 @@ const dispatchIncomingData = (data: IndexDataModel) => {
   }
 
   return Promise.all([
-    accountHandleData({ userId, companyId, profileId: profile ? profile._id : undefined, clientConfig }), // eslint-disable-line no-underscore-dangle, no-undefined
+    accountHandleData({
+      userId,
+      companyId,
+      clientConfig,
+      profileId: profile ? profile._id : undefined,
+    }),
     companyHandleData(companies),
     itemHandleData(items),
     presenceHandleData(presences),
-    stateHandleData(arrState)
+    stateHandleData(arrState),
   ])
     .then(() => profileHandleData(arrProfile))
     .then(() => personHandleData(people))
@@ -87,7 +92,8 @@ const handleData = async (result: IResponse<IndexDataModel>) => {
     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_DONE);
   } catch (error) {
     mainLogger.error(error);
-    notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, { error: ErrorParser.parse(error) });
+    notificationCenter
+      .emitService(SERVICE.FETCH_INDEX_DATA_ERROR, { error: ErrorParser.parse(error) });
   }
 };
 

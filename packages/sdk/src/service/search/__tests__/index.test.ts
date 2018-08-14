@@ -12,12 +12,12 @@ import SearchAPI from '../../../api/glip/search';
 
 const searchService = new SearchService();
 
-jest.mock('dao', () => {
+jest.mock('../../../dao', () => {
   const search = { searchTeamByKey: jest.fn(), searchPeopleByKey: jest.fn() };
   return {
     daoManager: {
-      getDao: () => search
-    }
+      getDao: () => search,
+    },
   };
 });
 
@@ -27,20 +27,20 @@ const personDao: PersonDao = daoManager.getDao(PersonDao);
 describe('searchContact()', () => {
   it('search by key', async () => {
     groupDao.searchTeamByKey.mockReturnValueOnce({
-      1: 'teams1'
+      1: 'teams1',
     });
     personDao.searchPeopleByKey.mockReturnValueOnce({
-      1: 'people1'
+      1: 'people1',
     });
 
     const ret = await searchService.searchContact('123');
     expect(ret).toEqual({
       people: {
-        1: 'people1'
+        1: 'people1',
       },
       teams: {
-        1: 'teams1'
-      }
+        1: 'teams1',
+      },
     });
   });
   it('search by key error', async () => {
@@ -56,12 +56,12 @@ describe('searchContact()', () => {
 describe('seachMembers()', () => {
   it('should return dao query result if success', async () => {
     personDao.searchPeopleByKey.mockReturnValueOnce({
-      1: 'people1'
+      1: 'people1',
     });
 
     const ret = await searchService.searchMembers('123');
     expect(ret).toEqual({
-      1: 'people1'
+      1: 'people1',
     });
   });
   it('should return empty array if query fail', async () => {
@@ -109,12 +109,12 @@ describe('SearchService', () => {
     searchService.remoteSearch({
       type: 'all',
       scroll_size: 50,
-      queryString: 'q'
+      queryString: 'q',
     });
     expect(SearchAPI.search).toHaveBeenCalledWith({
       type: 'all',
       scroll_size: 50,
-      q: 'q'
+      q: 'q',
     });
   });
 
@@ -123,7 +123,7 @@ describe('SearchService', () => {
     searchService.fetchResultsByPage({ pageNum: 1 });
     expect(SearchAPI.scrollSearch).toHaveBeenCalledWith({
       scroll_request_id: 1,
-      search_request_id: 1
+      search_request_id: 1,
     });
   });
 

@@ -17,7 +17,7 @@ describe('UserAPI', () => {
         data: { rc_access_token_data: 'eyJhdXRoIjoiYXNkZnNkIn0=' },
         method: 'put',
         path: '/login',
-        via: 0
+        via: 0,
       });
     });
   });
@@ -27,7 +27,8 @@ describe('UserAPI', () => {
       const requestConfig = {};
       const header = {};
       indexData(mock);
-      expect(Api.glipNetworkClient.get).toHaveBeenCalledWith('/index', mock, 0, requestConfig, header);
+      expect(Api.glipNetworkClient.get)
+        .toHaveBeenCalledWith('/index', mock, 0, requestConfig, header);
     });
   });
 });

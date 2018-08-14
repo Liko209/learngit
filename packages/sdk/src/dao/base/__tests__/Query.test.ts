@@ -37,17 +37,20 @@ const schema = {
     1: {
       mock: {
         unique: 'id',
-        indices: ['index', 'name', 'pet', '[index+name]', '[name+index]', '[id+index]', '[index+id]', '*teams']
-      }
-    }
-  }
+        indices: [
+          'index', 'name', 'pet', '[index+name]',
+          '[name+index]', '[id+index]', '[index+id]', '*teams',
+        ],
+      },
+    },
+  },
 };
 
-function isAscending(arr: Array<any>) {
+function isAscending(arr: any[]) {
   return arr.every((x, i) => i === 0 || x >= arr[i - 1]);
 }
 
-function isDescending(arr: Array<any>) {
+function isDescending(arr: any[]) {
   return arr.every((x, i) => i === 0 || x <= arr[i - 1]);
 }
 
@@ -99,14 +102,14 @@ describe('Query', () => {
         query
           .offset(10)
           .limit(10)
-          .count()
+          .count(),
       ).resolves.toBe(10);
       query.reset();
       await expect(
         query
           .offset(10)
           .limit(10)
-          .toArray()
+          .toArray(),
       ).resolves.toHaveLength(10);
     });
   });
@@ -117,8 +120,8 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
+        })),
       );
     });
 
@@ -159,13 +162,17 @@ describe('Query', () => {
   });
 
   describe('equals', () => {
+
     beforeEach(async () => {
       await dao.bulkPut(
         randomItems(10, () => ({
           id: faker.random.uuid(),
-          index: faker.random.arrayElement(['one', 'two', 'three', 'three', 'three', 'three', 'four', 'five']),
-          name: faker.random.arrayElement(['David', 'Eve'])
-        }))
+          index: faker.random.arrayElement([
+            'one', 'two', 'three', 'three',
+            'three', 'three', 'four', 'five',
+          ]),
+          name: faker.random.arrayElement(['David', 'Eve']),
+        })),
       );
     });
 
@@ -221,8 +228,8 @@ describe('Query', () => {
           id: faker.random.uuid(),
           index: faker.random.arrayElement(['one', 'two', 'three', 'four', 'five']),
           name: faker.random.arrayElement(['David', 'Eve']),
-          pet: faker.random.arrayElement(['dog', 'cat'])
-        }))
+          pet: faker.random.arrayElement(['dog', 'cat']),
+        })),
       );
     });
 
@@ -236,7 +243,14 @@ describe('Query', () => {
         .notEqual('index', 'three')
         .notEqual('name', 'Eve')
         .toArray();
-      expect(result.every(item => !(item.index === 'three' && item.name === 'Eve'))).toBe(true);
+
+      expect(
+        result
+          .every(item =>
+            item.index !== 'three' &&
+            item.name !== 'Eve',
+        ),
+      ).toBe(true);
     });
 
     it('chained not equal', async () => {
@@ -244,7 +258,14 @@ describe('Query', () => {
         .equal('index', 'three')
         .notEqual('name', 'David')
         .toArray();
-      expect(result.every(item => item.index === 'three' && item.name !== 'David')).toBe(true);
+
+      expect(
+        result.every(
+          item =>
+            item.index === 'three' &&
+            item.name !== 'David',
+        ),
+      ).toBe(true);
     });
 
     it('chained multiple not equal', async () => {
@@ -253,7 +274,15 @@ describe('Query', () => {
         .notEqual('index', 'one')
         .notEqual('name', 'David')
         .toArray();
-      expect(result.every(item => !(item.index === 'one' && item.name === 'David') && item.pet === 'dog')).toBe(true);
+
+      expect(
+        result.every(
+          item =>
+            item.pet === 'dog' &&
+            item.index !== 'one' &&
+            item.name !== 'David',
+        ),
+      ).toBe(true);
     });
   });
 
@@ -263,8 +292,8 @@ describe('Query', () => {
         randomItems(100, () => ({
           id: faker.random.uuid(),
           index: faker.random.arrayElement([20, 50, faker.random.number(100)]),
-          name: faker.random.arrayElement(['David', 'Eve', 'Gary'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve', 'Gary']),
+        })),
       );
     });
 
@@ -283,42 +312,83 @@ describe('Query', () => {
         .equal('name', 'David')
         .between('index', 20, 50, false, false)
         .toArray();
-      expect(result.every(item => item.index > 20 && item.index < 50)).toBe(true);
+      expect(
+        result.every(
+          item =>
+            item.index > 20 && item.index < 50,
+        ),
+      ).toBe(true);
 
       query.reset();
       result = await query
         .between('index', 20, 50, false, false)
         .equal('name', 'David')
         .toArray();
-      expect(result.every(item => item.index > 20 && item.index < 50 && item.name === 'David')).toBe(true);
+
+      expect(
+        result.every(
+          item =>
+            item.index > 20 && item.index < 50 &&
+            item.name === 'David',
+        ),
+      ).toBe(true);
 
       query.reset();
+
       result = await query
         .between('index', 20, 50, false, false)
         .between('name', 'D', 'E', false, false)
         .toArray();
-      expect(result.every(item => item.index > 20 && item.index < 50 && item.name === 'David')).toBe(true);
+
+      expect(
+        result.every(
+          item =>
+            item.index > 20 && item.index < 50 &&
+            item.name === 'David',
+        ),
+      ).toBe(true);
 
       query.reset();
       result = await query
         .between('index', 20, 50, false, false)
         .between('name', 'd', 'e', true, true)
         .toArray();
-      expect(result.every(item => item.index > 20 && item.index < 50 && item.name === 'David')).toBe(true);
+
+      expect(
+        result.every(
+          item =>
+            item.index > 20 && item.index < 50 &&
+            item.name === 'David',
+        ),
+      ).toBe(true);
 
       query.reset();
       result = await query
         .between('index', 20, 50, false, false)
         .between('name', 'd', 'e', true, false)
         .toArray();
-      expect(result.every(item => item.index > 20 && item.index < 50 && item.name === 'David')).toBe(true);
+
+      expect(
+        result.every(
+          item =>
+            item.index > 20 && item.index < 50
+            && item.name === 'David',
+        ),
+      ).toBe(true);
 
       query.reset();
       result = await query
         .between('index', 20, 50, false, false)
         .between('name', 'd', 'e', false, true)
         .toArray();
-      expect(result.every(item => item.index > 20 && item.index < 50 && item.name === 'David')).toBe(true);
+
+      expect(
+        result.every(
+          item =>
+            item.index > 20 && item.index < 50 &&
+            item.name === 'David',
+        ),
+      ).toBe(true);
     });
   });
 
@@ -329,8 +399,8 @@ describe('Query', () => {
           id: faker.random.uuid(),
           index: faker.random.arrayElement([20, 50, faker.random.number(100)]),
           name: faker.random.arrayElement(['David', 'Eve']),
-          birthday: faker.date.future()
-        }))
+          birthday: faker.date.future(),
+        })),
       );
     });
 
@@ -372,8 +442,14 @@ describe('Query', () => {
         .between('name', 'D', 'E', false, false)
         .greaterThan('birthday', pastDay)
         .toArray();
+
       expect(
-        result.every(({ index, name, birthday }) => index > 20 && name < 'E' && name > 'D' && birthday > pastDay)
+        result.every(
+          ({ index, name, birthday }) =>
+            index > 20 &&
+            name < 'E' && name > 'D' &&
+            birthday > pastDay,
+        ),
       ).toBe(true);
     });
   });
@@ -384,8 +460,8 @@ describe('Query', () => {
         randomItems(100, () => ({
           id: faker.random.uuid(),
           index: faker.random.arrayElement([20, 50, faker.random.number(100)]),
-          name: faker.random.arrayElement(['David', 'Eve'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve']),
+        })),
       );
     });
 
@@ -426,7 +502,7 @@ describe('Query', () => {
     const allData = randomItems(20, () => ({
       id: faker.random.uuid(),
       index: faker.random.number(100),
-      name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian'])
+      name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
     }));
     beforeEach(async () => {
       await dao.bulkPut(allData);
@@ -434,7 +510,13 @@ describe('Query', () => {
 
     it('anyOf', async () => {
       const result = await query.anyOf('name', ['David', 'Eve', 'Ryan']).toArray();
-      expect(result.length).toEqual(allData.filter(item => ['David', 'Eve', 'Ryan'].includes(item.name)).length);
+
+      expect(result.length).toEqual(
+        allData
+          .filter(item => ['David', 'Eve', 'Ryan']
+            .includes(item.name))
+          .length,
+      );
       expect(result.every(item => ['David', 'Eve', 'Ryan'].includes(item.name))).toBe(true);
     });
 
@@ -445,7 +527,14 @@ describe('Query', () => {
 
     it('anyOf ignore case', async () => {
       const result = await query.anyOf('name', ['david', 'eve', 'ryan'], true).toArray();
-      expect(result.length).toEqual(allData.filter(item => ['David', 'Eve', 'Ryan'].includes(item.name)).length);
+
+      expect(result.length).toEqual(
+        allData
+          .filter(item => ['David', 'Eve', 'Ryan']
+            .includes(item.name))
+          .length,
+      );
+
       expect(result.every(item => ['David', 'Eve', 'Ryan'].includes(item.name))).toBe(true);
     });
 
@@ -476,7 +565,7 @@ describe('Query', () => {
     const allData = randomItems(20, () => ({
       id: faker.random.uuid(),
       index: faker.random.number(100),
-      teams: randomItems(5, () => faker.random.arrayElement([1, 2, 3, 4, 5]))
+      teams: randomItems(5, () => faker.random.arrayElement([1, 2, 3, 4, 5])),
     }));
     beforeEach(async () => {
       await dao.bulkPut(allData);
@@ -494,21 +583,21 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
+        })),
       );
     });
 
     it('should be ascending by default', async () => {
       let result = await query.toArray({
-        sortBy: 'index'
+        sortBy: 'index',
       });
       expect(isAscending(result.map(item => item.index))).toBe(true);
 
       query.reset();
 
       result = await query.anyOf('name', ['David', 'Eve', 'Ryan', 'Steve', 'Ian']).toArray({
-        sortBy: 'index'
+        sortBy: 'index',
       });
       expect(isAscending(result.map(item => item.index))).toBe(true);
     });
@@ -516,7 +605,7 @@ describe('Query', () => {
     it('should be descending', async () => {
       let result = await query.toArray({
         sortBy: 'index',
-        desc: true
+        desc: true,
       });
       expect(isDescending(result.map(item => item.index))).toBe(true);
 
@@ -524,7 +613,7 @@ describe('Query', () => {
 
       result = await query.anyOf('name', ['David', 'Eve', 'Ryan', 'Steve', 'Ian']).toArray({
         sortBy: 'index',
-        desc: true
+        desc: true,
       });
 
       expect(isDescending(result.map(item => item.index))).toBe(true);
@@ -533,8 +622,8 @@ describe('Query', () => {
     it('descending without sortBy', async () => {
       await expect(
         query.greaterThan('index', 0).toArray({
-          desc: true
-        })
+          desc: true,
+        }),
       ).rejects.toBeInstanceOf(Error);
     });
   });
@@ -550,14 +639,17 @@ describe('Query', () => {
             { firstName: 'Eve' },
             { firstName: 'Ryan' },
             { firstName: 'Steve' },
-            { firstName: 'Ian' }
-          ])
-        }))
+            { firstName: 'Ian' },
+          ]),
+        })),
       );
     });
 
     it('filter out item where name.firstName equals David', async () => {
-      const result = await query.filter((item: RandomItem) => item.name2.firstName === 'David').toArray();
+      const result = await query
+        .filter((item: RandomItem) => item.name2.firstName === 'David')
+        .toArray();
+
       expect(result.every(item => item.name2.firstName === 'David')).toBe(true);
     });
   });
@@ -568,8 +660,8 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian'])
-        }))
+          name: faker.random.arrayElement(['David', 'Eve', 'Ryan', 'Steve', 'Ian']),
+        })),
       );
     });
 
@@ -592,8 +684,8 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Devin', 'Ryan', 'Steve', 'Ian'])
-        }))
+          name: faker.random.arrayElement(['David', 'Devin', 'Ryan', 'Steve', 'Ian']),
+        })),
       );
     });
 
@@ -620,6 +712,7 @@ describe('Query', () => {
         .greaterThan('index', 0)
         .startsWith('name', 'd', true)
         .toArray();
+
       expect(result.every(item => item.name.startsWith('D'))).toBe(true);
     });
   });
@@ -630,8 +723,8 @@ describe('Query', () => {
         randomItems(20, () => ({
           id: faker.random.uuid(),
           index: faker.random.number(100),
-          name: faker.random.arrayElement(['David', 'Devin', 'Ryan', 'Steve', 'Ian'])
-        }))
+          name: faker.random.arrayElement(['David', 'Devin', 'Ryan', 'Steve', 'Ian']),
+        })),
       );
     });
 
@@ -642,7 +735,14 @@ describe('Query', () => {
         .or(dao.createQuery().equal('name', 'Ryan'))
         .toArray();
 
-      expect(result.every(({ name }) => name === 'David' || name === 'Devin' || name === 'Ryan')).toBe(true);
+      expect(
+        result.every(
+          ({ name }) =>
+            name === 'David' ||
+            name === 'Devin' ||
+            name === 'Ryan',
+        ),
+      ).toBe(true);
     });
   });
 });

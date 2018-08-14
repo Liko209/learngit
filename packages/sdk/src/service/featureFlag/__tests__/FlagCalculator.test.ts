@@ -7,7 +7,7 @@ describe('FlagCalculator', () => {
     let calc;
     const accountInfo = {
       userId: 1,
-      companyId: 1
+      companyId: 1,
     };
     let flags = {};
     describe('should return true if unset', () => {

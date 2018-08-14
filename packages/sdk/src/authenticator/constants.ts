@@ -6,7 +6,7 @@
 
 const ACCOUNT_TYPE_ENUM = {
   RC: 'RC',
-  GLIP: 'GLIP'
+  GLIP: 'GLIP',
 };
 
 const ACCOUNT_TYPE = 'ACCOUNT_TYPE';

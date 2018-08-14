@@ -4,11 +4,11 @@ const rc: RcConfig = {
   apiPlatform: '',
   clientId: '',
   clientSecret: '',
-  redirectUri: '/'
+  redirectUri: '/',
 };
 
 const glip: GlipConfig = {
-  apiPlatform: ''
+  apiPlatform: '',
 };
 
 const glip2: Glip2Config = {
@@ -16,11 +16,11 @@ const glip2: Glip2Config = {
   clientSecret: '',
   redirectUri: '/',
   apiPlatform: '',
-  brandId: 0
+  brandId: 0,
 };
 
 const upload: UploadConfig = {
-  apiPlatform: '/restapi'
+  apiPlatform: '/restapi',
 };
 
 const apiConfig = { rc, glip, glip2, upload };

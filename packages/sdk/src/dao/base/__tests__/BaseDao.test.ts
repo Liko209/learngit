@@ -28,10 +28,10 @@ describe('BaseDao', () => {
         1: {
           mock: {
             unique: 'id',
-            indices: []
-          }
-        }
-      }
+            indices: [],
+          },
+        },
+      },
     });
 
     dao = new Dao(dbManager.getDatabase());
@@ -56,13 +56,13 @@ describe('BaseDao', () => {
     await dao.put({
       id: 1,
       name: 'name1',
-      boolean: true
+      boolean: true,
     });
 
     await expect(dao.get(1)).resolves.toMatchObject({
       id: 1,
       name: 'name1',
-      boolean: true
+      boolean: true,
     });
   });
 
@@ -79,46 +79,46 @@ describe('BaseDao', () => {
       {
         id: 1,
         name: 'name1',
-        boolean: false
+        boolean: false,
       },
       {
         id: 2,
         name: 'name2',
-        boolean: false
+        boolean: false,
       },
       {
         id: 3,
         name: 'name3',
-        boolean: false
-      }
+        boolean: false,
+      },
     ]);
 
     await expect(dao.get(1)).resolves.toMatchObject({
       id: 1,
       name: 'name1',
-      boolean: false
+      boolean: false,
     });
     await expect(dao.get(2)).resolves.toMatchObject({
       id: 2,
       name: 'name2',
-      boolean: false
+      boolean: false,
     });
     await expect(dao.get(3)).resolves.toMatchObject({
       id: 3,
       name: 'name3',
-      boolean: false
+      boolean: false,
     });
   });
 
   it('should update item', async () => {
     await dao.update({
       id: 1,
-      name: 'NAME1'
+      name: 'NAME1',
     });
     await expect(dao.get(1)).resolves.toMatchObject({
       id: 1,
       name: 'NAME1',
-      boolean: false
+      boolean: false,
     });
   });
 
@@ -126,22 +126,22 @@ describe('BaseDao', () => {
     await dao.update([
       {
         id: 1,
-        name: 'NAME1'
+        name: 'NAME1',
       },
       {
         id: 2,
-        name: 'NAME2'
-      }
+        name: 'NAME2',
+      },
     ]);
     await expect(dao.get(1)).resolves.toMatchObject({
       id: 1,
       name: 'NAME1',
-      boolean: false
+      boolean: false,
     });
     await expect(dao.get(2)).resolves.toMatchObject({
       id: 2,
       name: 'NAME2',
-      boolean: false
+      boolean: false,
     });
   });
 
@@ -149,12 +149,12 @@ describe('BaseDao', () => {
     await dao.update([
       {
         id: -1,
-        name: 'NAME1'
-      }
+        name: 'NAME1',
+      },
     ]);
     await expect(dao.get(-1)).resolves.toMatchObject({
       id: -1,
-      name: 'NAME1'
+      name: 'NAME1',
     });
   });
 
@@ -183,5 +183,13 @@ describe('BaseDao', () => {
   it('should get new query object', () => {
     expect(dao.createQuery()).toBeInstanceOf(Query);
     expect(dao.createQuery().criteria).toEqual([]);
+  });
+
+  it('do in transation', async () => {
+    dao.doInTransation(async () => {
+      await dao.put({ id: 1000, name: 'transation' });
+      const result = await dao.get(1000);
+      expect(result.name).toBe('transation');
+    });
   });
 });

@@ -1,8 +1,8 @@
 /*
  * @Author: Lily.li (lily.li@ringcentral.com)
  * @Date: 2018-06-06 15:55:39
- * @Last Modified by: Lily.li (lily.li@ringcentral.com)
- * @Last Modified time: 2018-07-10 15:32:09
+ * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
+ * @Last Modified time: 2018-08-06 15:53:43
  */
 import _ from 'lodash';
 import { Group } from '../../models';
@@ -32,7 +32,7 @@ export default class Permission {
         }
         return mask;
       },
-      0
+      0,
     );
     return permissions_mask;
   }
@@ -73,14 +73,22 @@ export default class Permission {
     }
 
     const {
-      permissions: { admin, user }
+      permissions: { admin, user },
     } = this.group;
-    const level = admin && admin.uids.includes(this.userId) ? admin.level || MAX_LEVEL : user ? user.level : 0;
-    return level;
+
+    if (admin && admin.uids.includes(this.userId)) {
+      return admin.level || MAX_LEVEL;
+    }
+
+    if (user) {
+      return user.level;
+    }
+
+    return 0;
   }
 
   levelToArray(level: number): PERMISSION_ENUM[] {
-    let res: PERMISSION_ENUM[] = [];
+    const res: PERMISSION_ENUM[] = [];
     let permission;
     for (permission in PERMISSION_ENUM) {
       if ((permission = Number(permission))) {
@@ -91,14 +99,14 @@ export default class Permission {
   }
 
   getPermissions() {
-    let permissions = this.levelToArray(this.level);
+    const permissions = this.levelToArray(this.level);
     return permissions.filter(this.hasPermission.bind(this));
   }
 
   hasPermission(permission: PERMISSION_ENUM) {
     const permissionMap = {
       [PERMISSION_ENUM.TEAM_ADD_MEMBER]: !this.isGuest() && !this.isSelfGroup(),
-      [PERMISSION_ENUM.TEAM_PIN_POST]: !this.isGuest()
+      [PERMISSION_ENUM.TEAM_PIN_POST]: !this.isGuest(),
     };
     return permissionMap[permission] !== false;
   }

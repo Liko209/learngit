@@ -4,7 +4,7 @@
   "private": true,
   "main": "build/index.js",
   "typings": "build/index.d.js",
-  "module": "build-es/index.js",
+  "module": "build/index.js",
   "dependencies": {
     "axios": "0.18.0",
     "dexie": "3.0.0-alpha.2",
@@ -17,8 +17,8 @@
     "socket.io-client": "2.1.1"
   },
   "devDependencies": {
-    "@types/lodash": "4.14.113",
-    "@types/lokijs": "1.5.2",
-    "@types/socket.io-client": "1.4.32"
+    "@types/lodash": "*",
+    "@types/lokijs": "*",
+    "@types/socket.io-client": "*"
   }
 }

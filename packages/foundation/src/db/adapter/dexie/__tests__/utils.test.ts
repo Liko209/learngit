@@ -3,7 +3,7 @@ import { CollectionWhereClause } from '../utils';
 import {
   setupDexie,
   extractCollectionToFirstName,
-  extractCollectionToIds
+  extractCollectionToIds,
 } from '../../__tests__/utils';
 
 describe('CollectionWhereClause', () => {
@@ -22,7 +22,7 @@ describe('CollectionWhereClause', () => {
       const collection = whereClause.anyOf(['Alvin', 'Cooler']);
       expect(await extractCollectionToFirstName(collection)).toEqual([
         'Alvin',
-        'Cooler'
+        'Cooler',
       ]);
     });
   });
@@ -32,7 +32,7 @@ describe('CollectionWhereClause', () => {
       const collection = whereClause.anyOfIgnoreCase(['alvin', 'cooler']);
       expect(await extractCollectionToFirstName(collection)).toEqual([
         'Alvin',
-        'Cooler'
+        'Cooler',
       ]);
     });
   });
@@ -56,7 +56,7 @@ describe('CollectionWhereClause', () => {
       const collection = whereClause.notEqual('Baby');
       expect(await extractCollectionToFirstName(collection)).toEqual([
         'Alvin',
-        'Cooler'
+        'Cooler',
       ]);
     });
   });
@@ -66,7 +66,7 @@ describe('CollectionWhereClause', () => {
       const collection = whereClause.startsWith('Ba');
       expect(await extractCollectionToFirstName(collection)).toEqual([
         'Baby',
-        'Baby'
+        'Baby',
       ]);
     });
   });
@@ -76,7 +76,7 @@ describe('CollectionWhereClause', () => {
       const collection = whereClause.startsWithIgnoreCase('bA');
       expect(await extractCollectionToFirstName(collection)).toEqual([
         'Baby',
-        'Baby'
+        'Baby',
       ]);
     });
   });
@@ -92,7 +92,7 @@ describe('CollectionWhereClause', () => {
         1, // upper
         3, // lower
         true, // includeLower
-        true // includeUpper
+        true, // includeUpper
       );
       expect(await extractCollectionToIds(collection)).toEqual([1, 2, 3]);
     });
@@ -103,7 +103,7 @@ describe('CollectionWhereClause', () => {
       const collection = new CollectionWhereClause(coll, 'groups').contains(1);
       expect(await extractCollectionToFirstName(collection)).toEqual([
         'Baby',
-        'Cooler'
+        'Cooler',
       ]);
     });
   });

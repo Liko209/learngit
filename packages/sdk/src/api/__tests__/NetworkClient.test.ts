@@ -6,14 +6,14 @@
 
 /// <reference path="../../__tests__/types.d.ts" />
 import { NetworkManager, NetworkRequestBuilder, NETWORK_VIA, NETWORK_METHOD } from 'foundation';
-
 import NetworkClient from '../NetworkClient';
-
 import { HandleByRingCentral } from '../handlers';
+
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
+
 NetworkManager.Instance = new NetworkManager();
-let mockRequest: any = {};
+const mockRequest: any = {};
 
 const setup = () => {
   NetworkRequestBuilder.mockImplementation(() => {
@@ -28,36 +28,39 @@ const setup = () => {
       setAuthfree: jest.fn().mockReturnThis(),
       setRequestConfig: jest.fn().mockReturnThis(),
       setVia: jest.fn().mockReturnThis(),
-      build: jest.fn().mockImplementation(() => mockRequest)
+      build: jest.fn().mockImplementation(() => mockRequest),
     };
   });
   const rcNetworkClient = new NetworkClient(
-    { host: 'https://platform.ringcentral.com', handlerType: HandleByRingCentral },
-    '/restapi'
+    {
+      host: 'https://platform.ringcentral.com',
+      handlerType: HandleByRingCentral,
+    },
+    '/restapi',
   );
 
   const postRequest = {
     path: '/',
     data: {
-      username: 'test'
+      username: 'test',
     },
     params: {
-      password: 'aaa'
+      password: 'aaa',
     },
     headers: {
-      tk: 'sdfsdfadfss'
+      tk: 'sdfsdfadfss',
     },
     method: NETWORK_METHOD.POST,
     authFree: true,
-    requestConfig: {}
+    requestConfig: {},
   };
   const getRequest = {
     method: NETWORK_METHOD.GET,
     path: '/',
     params: {
       page: 1,
-      perpage: 20
-    }
+      perpage: 20,
+    },
   };
   const mockQuery = {
     data: { username: 'test' },
@@ -68,7 +71,7 @@ const setup = () => {
     authFree: true,
     params: { password: 'aaa' },
     path: '/restapi/',
-    requestConfig: {}
+    requestConfig: {},
   };
   const config = {};
 
@@ -77,12 +80,12 @@ const setup = () => {
     postRequest,
     getRequest,
     config,
-    mockQuery
+    mockQuery,
   };
 };
 
 describe('apiRequest', () => {
-  beforeAll(() => {});
+  beforeAll(() => { });
   beforeEach(() => {
     NetworkRequestBuilder.mockReset();
     jest.clearAllMocks();
@@ -108,11 +111,12 @@ describe('apiRequest', () => {
 
       const promise1 = rcNetworkClient.request(getRequest);
       const promise2 = rcNetworkClient.request(getRequest);
-      expect(NetworkManager.Instance.addApiRequest).toHaveBeenCalledTimes(1);
 
-      mockRequest.callback({ status: 200, data: { a: 1 }});
-      await expect(promise1).resolves.toEqual({ status: 200, data: { a: 1 }});
-      await expect(promise2).resolves.toEqual({ status: 200, data: { a: 1 }});
+      mockRequest.callback({ status: 200, data: { a: 1 } });
+
+      expect(NetworkManager.Instance.addApiRequest).toHaveBeenCalledTimes(1);
+      await expect(promise1).resolves.toEqual({ status: 200, data: { a: 1 } });
+      await expect(promise2).resolves.toEqual({ status: 200, data: { a: 1 } });
     });
   });
 
@@ -122,14 +126,15 @@ describe('apiRequest', () => {
       const { rcNetworkClient, getRequest } = setup();
       const promise = rcNetworkClient.request(getRequest);
 
-      mockRequest.callback({ status: 200, data: { a: 1 }});
-      await expect(promise).resolves.toEqual({ status: 200, data: { a: 1 }});
+      mockRequest.callback({ status: 200, data: { a: 1 } });
+      await expect(promise).resolves.toEqual({ status: 200, data: { a: 1 } });
     });
+
     it('promise should reject with response', async () => {
       const { rcNetworkClient, getRequest } = setup();
       const promise = rcNetworkClient.request(getRequest);
 
-      mockRequest.callback({ status: 500, data: { a: 'fail' }});
+      mockRequest.callback({ status: 500, data: { a: 'fail' } });
       await expect(promise).rejects.toEqual({ data: { a: 'fail' }, status: 500 });
     });
   });
@@ -157,7 +162,7 @@ describe('apiRequest', () => {
         params: {},
         via: NETWORK_VIA.HTTP,
         requestConfig: {},
-        headers: {}
+        headers: {},
       });
     });
   });
@@ -168,7 +173,8 @@ describe('apiRequest', () => {
       jest.spyOn(rcNetworkClient, 'request');
       rcNetworkClient.post('/');
 
-      expect(rcNetworkClient.request).toHaveBeenCalledWith({ data: {}, headers: {}, method: 'post', path: '/' });
+      expect(rcNetworkClient.request)
+        .toHaveBeenCalledWith({ data: {}, headers: {}, method: 'post', path: '/' });
     });
   });
   describe('put()', () => {
@@ -178,7 +184,8 @@ describe('apiRequest', () => {
       jest.spyOn(rcNetworkClient, 'http');
       rcNetworkClient.put('/');
 
-      expect(rcNetworkClient.http).toHaveBeenCalledWith({ data: {}, headers: {}, method: 'put', path: '/' });
+      expect(rcNetworkClient.http)
+        .toHaveBeenCalledWith({ data: {}, headers: {}, method: 'put', path: '/' });
     });
   });
 
@@ -189,7 +196,8 @@ describe('apiRequest', () => {
       jest.spyOn(rcNetworkClient, 'http');
       rcNetworkClient.delete('/');
 
-      expect(rcNetworkClient.http).toHaveBeenCalledWith({ params: {}, headers: {}, method: 'delete', path: '/' });
+      expect(rcNetworkClient.http)
+        .toHaveBeenCalledWith({ params: {}, headers: {}, method: 'delete', path: '/' });
     });
   });
 });

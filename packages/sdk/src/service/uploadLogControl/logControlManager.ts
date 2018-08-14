@@ -3,29 +3,44 @@
  * @Date: 2018-06-08 11:05:46
  */
 import notificationCenter from '../notificationCenter';
-import { DOCUMENT } from '../../service/eventKey';
+import { SERVICE, WINDOW } from '../../service/eventKey';
 import { logManager, LOG_LEVEL, mainLogger } from 'foundation';
 import LogUploadManager from './logUploadManager';
 import AccountService from '../account';
 
 const DEFAULT_EMAIL = 'service@glip.com';
-notificationCenter.on(DOCUMENT.VISIBILITYCHANGE, ({ isHidden }) => {
-  if (isHidden) {
-    LogControlManager.Instance().doUpload();
-  }
+
+
+notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
+  LogControlManager.instance().setNetworkState(onLine);
 });
+
+notificationCenter.on(SERVICE.LOGOUT, () => {
+  LogControlManager.instance().doUpload();
+});
+
+notificationCenter.on(WINDOW.BLUR, () => {
+  LogControlManager.instance().doUpload();
+});
+
 class LogControlManager {
   private static _instance: LogControlManager;
   private _enabledLog: boolean;
   private _isDebugMode: boolean; // if in debug mode, should not upload log
   private _isUploading: boolean;
+  private _isOnline: boolean;
   private constructor() {
     this._isUploading = false;
     this._enabledLog = true;
     this._isDebugMode = true;
+    this._isOnline = true;
+    logManager.setOverThresholdCallback(() => {
+      this.doUpload();
+    });
+
   }
 
-  public static Instance(): LogControlManager {
+  public static instance(): LogControlManager {
     if (this._instance) {
       return this._instance;
     }
@@ -35,24 +50,24 @@ class LogControlManager {
 
   public setDebugMode(isDebug: boolean) {
     this._isDebugMode = isDebug;
-    this.updateLogSystemLevel();
+    this._updateLogSystemLevel();
   }
 
   public enableLog(enable: boolean) {
     this._enabledLog = enable;
-    this.updateLogSystemLevel();
+    this._updateLogSystemLevel();
   }
 
   public async flush() {
     this.doUpload();
   }
 
+  public setNetworkState(isOnline: boolean) {
+    this._isOnline = isOnline;
+  }
+
   public async doUpload() {
-    if (this._isUploading) {
-      return;
-    }
-    if (this._isDebugMode) {
-      // should not doupload in debug mode
+    if (!this._isOnline || this._isUploading || this._isDebugMode) {
       return;
     }
 
@@ -61,9 +76,9 @@ class LogControlManager {
       return;
     }
     this._isUploading = true;
-    const userInfo = await this.getUserInfo();
+    const userInfo = await this._getUserInfo();
     try {
-      await LogUploadManager.Instance().doUpload(userInfo, logs);
+      await LogUploadManager.instance().doUpload(userInfo, logs);
     } catch (err) {
       mainLogger.error(err);
     } finally {
@@ -75,7 +90,7 @@ class LogControlManager {
   logIsEmpty(logs: any): boolean {
     if (logs) {
       const keys = Object.keys(logs);
-      for (let i = 0; i < keys.length; i++) {
+      for (let i = 0; i < keys.length; i += 1) {
         if (Array.isArray(logs[keys[i]]) && logs[keys[i]].length !== 0) {
           return false;
         }
@@ -84,7 +99,7 @@ class LogControlManager {
     return true;
   }
 
-  private async getUserInfo() {
+  private async _getUserInfo() {
     const accountService: AccountService = AccountService.getInstance();
     const email = (await accountService.getUserEmail()) || DEFAULT_EMAIL;
     const id = accountService.getCurrentUserId();
@@ -93,13 +108,12 @@ class LogControlManager {
     return {
       email,
       userId,
-      clientId
+      clientId,
     };
   }
 
-  private updateLogSystemLevel() {
+  private _updateLogSystemLevel() {
     // set log level to log system
-    // const level: LOG_LEVEL = this._isDebugMode || this._enabledLog ? LOG_LEVEL.ALL : LOG_LEVEL.WARN;
     // TODO let it all level now, should reset to above code after implement service framework
     mainLogger.info(`_isDebugMode : ${this._isDebugMode} _enabledLog: ${this._enabledLog}`);
     const level: LOG_LEVEL = LOG_LEVEL.ALL;

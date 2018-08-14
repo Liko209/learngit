@@ -8,6 +8,6 @@ const RINGCENTRAL_API = {
   API_OAUTH_TOKEN: '/oauth/token',
   API_REFRESH_TOKEN: '/oauth/token',
   API_GENERATE_CODE: '/interop/generate-code',
-  API_PROFILE: '/glip/profile'
+  API_PROFILE: '/glip/profile',
 };
 export { RINGCENTRAL_API };

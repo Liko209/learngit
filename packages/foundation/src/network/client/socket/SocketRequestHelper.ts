@@ -27,8 +27,8 @@ class SocketRequestHelper implements ISocketRequestManager {
 
   public newRequest(request: SocketRequest): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
-      this.registerRequestListener(request.id, resolve);
-      this.setRequestTimer(request, reject);
+      this._registerRequestListener(request.id, resolve);
+      this._setRequestTimer(request, reject);
     });
   }
 
@@ -39,23 +39,23 @@ class SocketRequestHelper implements ISocketRequestManager {
     if (socketResponse.request && socketResponse.request.params) {
       const requestId = (socketResponse.request
         .params as SocketRequestParamsType).request_id;
-      this.removeRequestTimer(requestId);
-      this.handleRegisteredRequest(requestId, socketResponse);
+      this._removeRequestTimer(requestId);
+      this._handleRegisteredRequest(requestId, socketResponse);
     }
   }
 
-  private registerRequestListener(requestId: string, resolve: any) {
+  private _registerRequestListener(requestId: string, resolve: any) {
     this.emitter.once(requestId, resolve);
   }
 
-  private handleRegisteredRequest(requestId: string, response: any) {
+  private _handleRegisteredRequest(requestId: string, response: any) {
     mainLogger.info(`[Socket]: Handle request:${requestId}`);
     this.emitter.emit(requestId, response);
   }
 
-  private setRequestTimer(request: SocketRequest, reject: any) {
+  private _setRequestTimer(request: SocketRequest, reject: any) {
     const timerId = window.setTimeout(
-      this.onRequestTimeout,
+      this._onRequestTimeout,
       request.timeout,
       request.id,
       reject,
@@ -63,12 +63,12 @@ class SocketRequestHelper implements ISocketRequestManager {
     this.requestTimerMap.set(request.id, timerId);
   }
 
-  private removeRequestTimer(requestId: string) {
+  private _removeRequestTimer(requestId: string) {
     const timerId = this.requestTimerMap.get(requestId);
     window.clearTimeout(timerId);
   }
 
-  private onRequestTimeout(requestId: string, reject: any) {
+  private _onRequestTimeout(requestId: string, reject: any) {
     mainLogger.info('[Socket]: request timeout');
     const response = new SocketResponseBuilder()
       .setStatus(0)

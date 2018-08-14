@@ -27,7 +27,7 @@ describe('Item Dao', () => {
       itemFactory.build({ id: 1 }),
       itemFactory.build({ id: 2 }),
       itemFactory.build({ id: 3 }),
-      itemFactory.build({ id: 4 })
+      itemFactory.build({ id: 4 }),
     ];
     await itemDao.bulkPut(items);
     expect(itemDao.getItemsByIds([1, 2, 3, 4])).resolves.toEqual(items);
@@ -37,24 +37,24 @@ describe('Item Dao', () => {
     const items: Item[] = [
       itemFactory.build({
         id: 1,
-        group_ids: [123]
+        group_ids: [123],
       }),
       itemFactory.build({
         id: 2,
-        group_ids: [123, 444]
+        group_ids: [123, 444],
       }),
       itemFactory.build({
         id: 3,
-        group_ids: [321]
+        group_ids: [321],
       }),
       itemFactory.build({
         id: 4,
-        group_ids: [321]
+        group_ids: [321],
       }),
       itemFactory.build({
         id: 5,
-        group_ids: [123]
-      })
+        group_ids: [123],
+      }),
     ];
     beforeEach(async () => {
       await itemDao.bulkPut(items);
@@ -63,16 +63,16 @@ describe('Item Dao', () => {
       expect(itemDao.getItemsByGroupId(123)).resolves.toMatchObject([
         {
           id: 1,
-          group_ids: [123]
+          group_ids: [123],
         },
         {
           id: 2,
-          group_ids: [123, 444]
+          group_ids: [123, 444],
         },
         {
           id: 5,
-          group_ids: [123]
-        }
+          group_ids: [123],
+        },
       ]);
     });
 
@@ -80,8 +80,8 @@ describe('Item Dao', () => {
       expect(itemDao.getItemsByGroupId(123, 1)).resolves.toMatchObject([
         {
           id: 1,
-          group_ids: [123]
-        }
+          group_ids: [123],
+        },
       ]);
     });
   });

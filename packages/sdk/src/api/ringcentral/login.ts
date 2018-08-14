@@ -34,7 +34,7 @@ export function loginRCByPassword(data: object): Promise<IResponse<TokenModel>> 
     method: NETWORK_METHOD.POST,
     data: model,
     authFree: true,
-    via: NETWORK_VIA.HTTP
+    via: NETWORK_VIA.HTTP,
   };
   return Api.rcNetworkClient.http(query);
 }
@@ -52,7 +52,7 @@ export function loginGlip2ByPassword(data: object): Promise<IResponse<TokenModel
     method: NETWORK_METHOD.POST,
     data: model,
     authFree: true,
-    via: NETWORK_VIA.HTTP
+    via: NETWORK_VIA.HTTP,
   };
 
   return Api.glip2NetworkClient.http(query);
@@ -69,7 +69,7 @@ export function refreshToken(data: object): Promise<IResponse<TokenModel>> {
     method: NETWORK_METHOD.POST,
     data: model,
     authFree: true,
-    via: NETWORK_VIA.HTTP
+    via: NETWORK_VIA.HTTP,
   };
 
   return Api.rcNetworkClient.http(query);

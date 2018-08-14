@@ -8,7 +8,7 @@
 import Dexie from 'dexie';
 import BaseError from './base';
 import ErrorTypes from './types';
-import { Response } from 'foundation';
+import { BaseResponse } from 'foundation';
 // import BaseResponse from 'foundation/network/BaseResponse';
 
 class ErrorParser {
@@ -18,9 +18,12 @@ class ErrorParser {
 
     if (err instanceof Dexie.DexieError) {
       return ErrorParser.dexie(err);
-    } else if (err instanceof Response) {
+    }
+
+    if (err instanceof BaseResponse) {
       return ErrorParser.http(err);
     }
+
     return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Undefined error!');
   }
 

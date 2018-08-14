@@ -5,7 +5,11 @@
 */
 
 import BaseService from '../../service/BaseService';
-import { ACCOUNT_USER_ID, ACCOUNT_PROFILE_ID, ACCOUNT_COMPANY_ID } from '../../dao/account/constants';
+import {
+  ACCOUNT_USER_ID,
+  ACCOUNT_PROFILE_ID,
+  ACCOUNT_COMPANY_ID,
+} from '../../dao/account/constants';
 import { daoManager } from '../../dao';
 import AccountDao from '../../dao/account';
 import PersonDao from '../../dao/person';
@@ -60,9 +64,9 @@ export default class AccountService extends BaseService {
     if (!personInfo) return {};
     mainLogger.debug(`getCurrentUserInfo: ${personInfo}`);
     return {
+      company_id,
       email: personInfo.email,
       display_name: personInfo.display_name,
-      company_id
     } as UserInfo;
   }
 

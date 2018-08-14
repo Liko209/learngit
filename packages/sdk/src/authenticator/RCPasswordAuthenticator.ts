@@ -39,13 +39,13 @@ class RCPasswordAuthenticator implements IAuthenticator {
       accountInfos: [
         {
           type: RCAccount.name,
-          data: rcAuthData
+          data: rcAuthData,
         },
         {
           type: GlipAccount.name,
-          data: glipAuthData
-        }
-      ]
+          data: glipAuthData,
+        },
+      ],
     };
   }
 

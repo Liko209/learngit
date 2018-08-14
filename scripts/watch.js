@@ -15,54 +15,47 @@ const path = require('path');
 const chalk = require('chalk');
 const getPackages = require('./getPackages');
 
-const BUILD_CMD = `node ${path.resolve(__dirname, './build.js')}`;
+const argv = process.argv.slice(2);
+const BUILD_CMD = `npx rollup --config config/rollup.config.js --watch`;
 
-let filesToBuild = new Map();
+if (!argv.length) {
+  process.stdout.write(`${chalk.red('No Package specified.')}\n`);
+  process.exit(1);
+}
 
-const exists = filename => {
-  try {
-    return fs.statSync(filename).isFile();
-  } catch (e) { }
-  return false;
-};
-const rebuild = filename => filesToBuild.set(filename, true);
+const SRC_DIR = 'src';
 
-getPackages().forEach(p => {
-  const srcDir = path.resolve(p, 'src');
-  try {
-    fs.accessSync(srcDir, fs.F_OK);
-    fs.watch(path.resolve(p, 'src'), { recursive: true }, (event, filename) => {
-      const filePath = path.resolve(srcDir, filename);
+const packages = getPackages();
 
-      if ((event === 'change' || event === 'rename') && exists(filePath)) {
-        console.log(chalk.green('->'), `${event}: ${filename}`);
-        rebuild(filePath);
-      } else {
-        const buildFile = path.resolve(srcDir, '..', 'build', filename);
-        try {
-          fs.unlinkSync(buildFile);
-          process.stdout.write(
-            chalk.red('  \u2022 ') +
-            path.relative(path.resolve(srcDir, '..', '..'), buildFile) +
-            ' (deleted)' +
-            '\n'
-          );
-        } catch (e) { }
-      }
-    });
-  } catch (e) {
-    // doesn't exist
+let p;
+
+packages.some((pkg) => {
+  if (path.basename(pkg) === argv[0]) {
+    p = pkg;
+    return true;
   }
+  return false;
 });
 
-setInterval(() => {
-  const files = Array.from(filesToBuild.keys());
-  if (files.length) {
-    filesToBuild = new Map();
-    try {
-      execSync(`${BUILD_CMD} ${files.join(' ')}`, { stdio: [0, 1, 2] });
-    } catch (e) { }
-  }
-}, 100);
+const srcDir = path.resolve(p, SRC_DIR);
+const pkgJsonPath = path.resolve(p, 'package.json');
 
-console.log(chalk.red('->'), chalk.cyan('Watching for changes...'));
+if (!fs.existsSync(pkgJsonPath)) {
+  return;
+}
+
+const { main } = require(pkgJsonPath);
+
+if (p.indexOf('ui') !== -1) {
+  execSync(`tsc -p ${p} --outDir ${path.resolve(p, main)} --allowJs false -d --watch`, { stdio: [0, 1, 2] });
+  return;
+}
+
+process.env.rollup = JSON.stringify({
+  P: p,
+  PKG_NAME: p.split('/').pop(),
+  ENTRY_PATH: path.resolve(srcDir, 'index.ts'),
+  DESTINATION: path.resolve(p, main),
+  FORMAT: 'esm',
+})
+execSync(`${BUILD_CMD}`, { stdio: [0, 1, 2] });

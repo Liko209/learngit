@@ -3,7 +3,7 @@ import * as HttpStatus from 'http-status-codes';
 
 describe('ErrorTypes', () => {
 
-  let types: any = ErrorTypes;
+  const types: any = ErrorTypes;
 
   beforeEach(() => {
     Object.keys(HttpStatus).forEach((key: string) => {

@@ -300,12 +300,12 @@ module.exports = {
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     // Perform type checking and linting in a separate process to speed up compilation
-    new ForkTsCheckerWebpackPlugin({
-      async: false,
-      watch: paths.appSrc,
-      tsconfig: paths.appTsConfig,
-      tslint: paths.appTsLint
-    }),
+    // new ForkTsCheckerWebpackPlugin({
+    //   async: false,
+    //   watch: paths.appSrc,
+    //   tsconfig: paths.appTsConfig,
+    //   tslint: paths.appTsLint,
+    // }),
     // Detect circular dependencies
     new CircularDependencyPlugin({
       exclude: /node_modules/, // exclude node_modules
@@ -314,13 +314,13 @@ module.exports = {
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-          dllPath =>
-            new AddAssetHtmlPlugin({
-              filepath: dllPath,
-              includeSourcemap: false
-            })
-        )
-      : [() => {}])
+        dllPath =>
+          new AddAssetHtmlPlugin({
+            filepath: dllPath,
+            includeSourcemap: false
+          })
+      )
+      : [() => { }])
   ]),
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

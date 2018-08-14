@@ -19,7 +19,7 @@ export default class ProgressBar {
     return this._counter;
   }
   start() {
-    this._counter++;
+    this._counter += 1;
     NProgress.start();
   }
 
@@ -43,7 +43,9 @@ export default class ProgressBar {
   }
 
   stop() {
-    if (--this._counter <= 0) {
+    this._counter -= 1;
+
+    if (this._counter <= 0) {
       this._isDone = true;
       NProgress.done();
     }

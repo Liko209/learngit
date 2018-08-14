@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BaseClient from './client/BaseClient';
-import { Response } from './client/http';
+import { HttpResponse } from './client/http';
 import doLog from './log';
 
 import {
@@ -23,7 +23,7 @@ import {
 } from './network';
 
 export class NetworkRequestExecutor
-implements INetworkRequestExecutorListener, INetworkRequestExecutor {
+  implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
   via: NETWORK_VIA;
   handlerType: IHandleType;
@@ -44,26 +44,26 @@ implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   }
 
   onSuccess(response: IResponse): void {
-    if (this.isCompletion()) {
+    if (this._isCompletion()) {
       return;
     }
 
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-    this.callXApiResponseCallback(response);
+    this._callXApiResponseCallback(response);
     doLog(response);
   }
 
   onFailure(response: IResponse): void {
-    if (this.isCompletion()) {
+    if (this._isCompletion()) {
       return;
     }
 
     if (response.statusText !== NETWORK_FAIL_TYPE.TIME_OUT) {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-      this.callXApiResponseCallback(response);
+      this._callXApiResponseCallback(response);
       doLog(response);
     } else {
-      this.retry();
+      this._retry();
     }
   }
 
@@ -74,107 +74,107 @@ implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   execute() {
     if (this.client.isNetworkReachable()) {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
-      this.performNetworkRequest();
+      this._performNetworkRequest();
     } else {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-      this.callXApiResponse(0, NETWORK_FAIL_TYPE.NOT_NETWORK_CONNECTION);
+      this._callXApiResponse(0, NETWORK_FAIL_TYPE.NOT_NETWORK_CONNECTION);
     }
   }
 
   cancel() {
-    if (this.isCompletion()) {
+    if (this._isCompletion()) {
       return;
     }
 
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-    this.cancelClientRequest();
-    this.callXApiResponse(0, NETWORK_FAIL_TYPE.CANCELLED);
+    this._cancelClientRequest();
+    this._callXApiResponse(0, NETWORK_FAIL_TYPE.CANCELLED);
   }
 
   isPause() {
     return this.status === NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
   }
 
-  private isCompletion() {
+  private _isCompletion() {
     return this.status === NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
   }
 
-  private performNetworkRequest() {
+  private _performNetworkRequest() {
     this.client.request(this.request, this);
   }
 
-  private notifyCompletion() {
+  private _notifyCompletion() {
     if (this.listener) {
       this.listener.onConsumeFinished(this);
     }
   }
 
-  private retry() {
+  private _retry() {
     if (this.retryCount > 0) {
       this.execute();
       this.retryCount -= 1;
     } else {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-      this.cancelClientRequest();
-      this.callXApiResponse(0, NETWORK_FAIL_TYPE.TIME_OUT);
+      this._cancelClientRequest();
+      this._callXApiResponse(0, NETWORK_FAIL_TYPE.TIME_OUT);
     }
   }
 
-  private cancelClientRequest() {
+  private _cancelClientRequest() {
     this.client.cancelRequest(this.request);
   }
 
-  private callXApiResponseCallback(response: IResponse) {
+  private _callXApiResponseCallback(response: IResponse) {
     switch (response.status) {
       case HTTP_STATUS_CODE.UNAUTHORIZED:
-        this.handle401XApiCompletionCallback(response);
+        this._handle401XApiCompletionCallback(response);
         break;
       case HTTP_STATUS_CODE.FORBIDDEN:
-        this.handle403XApiCompletionCallback(response);
+        this._handle403XApiCompletionCallback(response);
         break;
       case HTTP_STATUS_CODE.BAD_GATEWAY:
-        this.handle502XApiCompletionCallback(response);
+        this._handle502XApiCompletionCallback(response);
         break;
       case HTTP_STATUS_CODE.SERVICE_UNAVAILABLE:
-        this.handle503XApiCompletionCallback(response);
+        this._handle503XApiCompletionCallback(response);
         break;
       default:
-        this.callXApiCompletionCallback(response);
+        this._callXApiCompletionCallback(response);
     }
   }
 
-  private callXApiResponse(status: HTTP_STATUS_CODE, statusText: string) {
-    const response = Response.builder
+  private _callXApiResponse(status: HTTP_STATUS_CODE, statusText: string) {
+    const response = HttpResponse.builder
       .setStatus(status)
       .setStatusText(statusText)
       .setRequest(this.request)
       .build();
-    this.callXApiResponseCallback(response);
+    this._callXApiResponseCallback(response);
   }
 
-  private callXApiCompletionCallback(response: IResponse) {
+  private _callXApiCompletionCallback(response: IResponse) {
     const { callback } = this.request;
     if (callback) {
-      this.notifyCompletion();
+      this._notifyCompletion();
       callback(response);
     }
   }
 
-  private handle401XApiCompletionCallback(response: IResponse) {
+  private _handle401XApiCompletionCallback(response: IResponse) {
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
     this.responseListener.onAccessTokenInvalid(this.handlerType);
   }
 
-  private handle403XApiCompletionCallback(response: IResponse) {
+  private _handle403XApiCompletionCallback(response: IResponse) {
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
     this.responseListener.onAccessTokenInvalid(this.handlerType);
   }
 
-  private handle502XApiCompletionCallback(response: IResponse) {
+  private _handle502XApiCompletionCallback(response: IResponse) {
     this.responseListener.onSurvivalModeDetected(SURVIVAL_MODE.OFFLINE, 0);
   }
 
-  private handle503XApiCompletionCallback(response: IResponse) {
+  private _handle503XApiCompletionCallback(response: IResponse) {
     const { retryAfter } = response;
     this.responseListener.onSurvivalModeDetected(
       SURVIVAL_MODE.SURVIVAL,

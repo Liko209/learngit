@@ -25,23 +25,23 @@ describe('PostServiceHandler', () => {
         users: [
           {
             display: 'display (xxx)',
-            id: 1
-          }
-        ]
+            id: 1,
+          },
+        ],
       });
       expect(ret).toEqual({
-        text: "<a class='at_mention_compose' rel='{\"id\":1}'>@display (xxx)</a>",
-        at_mention_non_item_ids: [1]
+        text: '<a class=\'at_mention_compose\' rel=\'{"id":1}\'>@display (xxx)</a>',
+        at_mention_non_item_ids: [1],
       });
     });
     it('atMentions = false', () => {
       const ret = PostServiceHandler.buildAtMentionsPeopleInfo({
         atMentions: false,
-        text: 'text'
+        text: 'text',
       });
       expect(ret).toEqual({
         text: 'text',
-        at_mention_non_item_ids: []
+        at_mention_non_item_ids: [],
       });
     });
   });
@@ -69,7 +69,7 @@ describe('PostServiceHandler', () => {
       at_mention_non_item_ids: [1],
       links: [],
       company_id: 123,
-      deactivated: false
+      deactivated: false,
     });
     beforeEach(() => {
       Date.now = jest.fn().mockReturnValue(123123);
@@ -85,9 +85,9 @@ describe('PostServiceHandler', () => {
         users: [
           {
             display: 'display',
-            id: 1
-          }
-        ]
+            id: 1,
+          },
+        ],
       });
       expect(ret).toEqual(expectData(true));
     });
@@ -99,9 +99,9 @@ describe('PostServiceHandler', () => {
         users: [
           {
             display: 'display',
-            id: 1
-          }
-        ]
+            id: 1,
+          },
+        ],
       });
       expect(retNotItemsIds).toMatchObject(expectData(false));
     });
@@ -111,7 +111,7 @@ describe('PostServiceHandler', () => {
     it('has oldpost & has users', async () => {
       mockPostDao.get.mockReturnValue({
         id: 1,
-        text: 'old text'
+        text: 'old text',
       });
       const ret = await PostServiceHandler.buildModifiedPostInfo({
         postId: 1,
@@ -120,41 +120,41 @@ describe('PostServiceHandler', () => {
         users: [
           {
             display: 'display',
-            id: 1
-          }
-        ]
+            id: 1,
+          },
+        ],
       });
       expect(ret).toEqual({
         _id: 1,
         text: 'new text',
         new_version: 'versionHash',
         is_new: false,
-        at_mention_non_item_ids: [1]
+        at_mention_non_item_ids: [1],
       });
     });
 
     it('has oldpost & not users', async () => {
       mockPostDao.get.mockReturnValue({
-        id: 1
+        id: 1,
       });
       const ret = await PostServiceHandler.buildModifiedPostInfo({
         postId: 1,
         text: 'text',
-        atMentions: true
+        atMentions: true,
       });
 
       expect(ret).toEqual({
         _id: 1,
         new_version: 'versionHash',
         is_new: false,
-        text: 'text'
+        text: 'text',
       });
     });
     it('not oldPost', async () => {
       mockPostDao.get.mockReturnValue(null);
       const ret = await PostServiceHandler.buildModifiedPostInfo({
         postId: 1,
-        text: 'text'
+        text: 'text',
       });
       expect(ret).toBeNull();
     });
@@ -168,9 +168,9 @@ describe('PostServiceHandler', () => {
           users: [
             {
               dispaly: 'dispaly',
-              id: 1
-            }
-          ]
+              id: 1,
+            },
+          ],
         });
       } catch (err) {
         expect(err).toBeInstanceOf(Error);
@@ -182,7 +182,7 @@ describe('PostServiceHandler', () => {
     it('buildResendPost', () => {
       let model = postFactory.build({
         created_at: 0,
-        version: 0
+        version: 0,
       });
 
       model = PostServiceHandler.buildResendPostInfo(model);

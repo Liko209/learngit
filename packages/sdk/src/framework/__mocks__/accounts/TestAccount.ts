@@ -32,20 +32,24 @@ class TestAuthenticator implements IAuthenticator {
         accountInfos: [
           {
             type: TestAccount.name,
-            data: 'demo_access_token'
-          }
-        ]
-      };
-    } else {
-      return {
-        success: false,
-        error: new Error('invalid user!')
+            data: 'demo_access_token',
+          },
+        ],
       };
     }
+
+    return {
+      success: false,
+      error: new Error('invalid user!'),
+    };
   }
 }
 
 class TestAccount extends AbstractAccount {
+  updateSupportedServices(data: any): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
   constructor() {
     super();
   }
