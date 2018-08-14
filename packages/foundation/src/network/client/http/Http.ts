@@ -32,6 +32,7 @@ class Http extends BaseClient {
       withCredentials: true,
       data: {},
       params: {},
+      withCredentials: true,
       cancelToken: new CancelToken((cancel) => {
         this.tasks[request.id].cancel = cancel;
       }),

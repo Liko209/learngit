@@ -1,4 +1,4 @@
-import { OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
+import { NETWORK_VIA, OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
 import HandleByGlip from '../HandleByGlip';
 
 const handler = new OAuthTokenHandler(HandleByGlip, null);
@@ -6,6 +6,7 @@ const handler = new OAuthTokenHandler(HandleByGlip, null);
 const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')
+    .setVia(NETWORK_VIA.SOCKET)
     .setData({
       username: 'test',
     })
@@ -66,6 +67,18 @@ describe('HandleByGlip', () => {
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
       expect(decoration).toThrowError();
+    });
+
+    it('should not add x_rc_access_token_data to headers', () => {
+      handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
+      handler.accessToken = jest.fn().mockImplementation(() => 'token');
+      HandleByGlip.rcTokenProvider = jest.fn().mockImplementationOnce(() => 'access_token');
+      const decoration = HandleByGlip.requestDecoration(handler);
+      const request = postRequest();
+      request.needAuth = jest.fn().mockImplementation(() => true);
+      const decoratedRequest = decoration(request);
+      expect(request.headers['X-RC-Access-Token-Data']).toEqual('access_token');
+      expect(decoratedRequest).toEqual(request);
     });
   });
 });

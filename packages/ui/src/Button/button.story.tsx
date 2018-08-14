@@ -4,7 +4,6 @@ import { storiesOf } from '@storybook/react';
 import { boolean, select } from '@storybook/addon-knobs/react';
 import { withInfo } from '@storybook/addon-info';
 
-
 import Button from './';
 
 storiesOf('Buttons', module)
