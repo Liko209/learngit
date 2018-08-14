@@ -14,11 +14,11 @@ import TeamDescription from '@/containers/TeamDescription';
 import Header from '@/containers/Conversation/Header';
 import PostEditor from '@/containers/PostEditor';
 import RightRailItems from '@/containers/RightRailItems/index';
-// import BottomRightVersionStatus from '@/containers/Status/bottomRight';
+import BottomRightVersionStatus from '@/containers/Status/bottomRight';
 import styled from 'styled-components';
 import SplitPane from '@/components/SplitPane';
 
-const ConversationWrap = styled(SplitPane) `
+const ConversationWrap = styled(SplitPane)`
   display: flex;
   width: 100%;
   flex-direction: row;
@@ -34,7 +34,7 @@ const SingleConversation = () => (
       <Members />
       <TeamDescription />
       <RightRailItems />
-      {/* <BottomRightVersionStatus /> */}
+      <BottomRightVersionStatus />
     </Right>
   </ConversationWrap>
 );

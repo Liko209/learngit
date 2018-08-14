@@ -15,7 +15,7 @@ import SplitPaneWrapper from './SplitPaneWrapper';
 import Left from './Left';
 import Right from './Right';
 import RightRailItems from '@/containers/RightRailItems/index';
-// import BottomRightVersionStatus from '@/containers/Status/bottomRight';
+import BottomRightVersionStatus from '@/containers/Status/bottomRight';
 
 const Conversation = () => (
   <SplitPaneWrapper
@@ -33,7 +33,7 @@ const Conversation = () => (
       <Members />
       <TeamDescription />
       <RightRailItems />
-      {/* <BottomRightVersionStatus /> */}
+      <BottomRightVersionStatus />
     </Right>
   </SplitPaneWrapper>
 );
