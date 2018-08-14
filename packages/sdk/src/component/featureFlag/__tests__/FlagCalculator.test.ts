@@ -1,6 +1,7 @@
 import FlagCalculator from '../FlagCalculator';
-import { FeatureConfig, BETA_FEATURE, FLAG_PREFIX, Permission } from '../utils';
-
+import { FeatureConfig, BETA_FEATURE, FLAG_PREFIX, PERMISSION } from '../interface';
+import { daoManager } from '../../../dao';
+jest.mock('../../../dao');
 describe('FlagCalculator', () => {
   describe('isFeatureEnabled', () => {
     let featureConfig: FeatureConfig = {};
@@ -9,12 +10,14 @@ describe('FlagCalculator', () => {
       userId: 1,
       companyId: 1,
     };
+    daoManager = jest.fn((() => jest.fn(() => accountInfo)));
+
     let flags = {};
     describe('should return true if unset', () => {
       it('should return false if user has permission', () => {
         featureConfig = { [BETA_FEATURE.SMS]: [] };
         flags = {};
-        calc = new FlagCalculator(featureConfig, accountInfo);
+        calc = new FlagCalculator(featureConfig);
         expect(calc.isFeatureEnabled(flags, BETA_FEATURE.SMS)).toBe(true);
       });
     });
@@ -22,13 +25,7 @@ describe('FlagCalculator', () => {
       it('when Flag has no prefix', () => {
         featureConfig = { [BETA_FEATURE.LOG]: ['beta_log'] };
         flags = { beta_log_emails: '1,' };
-        calc = new FlagCalculator(featureConfig, accountInfo);
-        expect(calc.isFeatureEnabled(flags, BETA_FEATURE.LOG)).toBe(true);
-      });
-      it('when Flag has prefix', () => {
-        featureConfig = { [BETA_FEATURE.LOG]: [`${FLAG_PREFIX.EMAIL}.beta_log`] };
-        flags = { beta_log: '1,' };
-        calc = new FlagCalculator(featureConfig, accountInfo);
+        calc = new FlagCalculator(featureConfig);
         expect(calc.isFeatureEnabled(flags, BETA_FEATURE.LOG)).toBe(true);
       });
     });
@@ -37,44 +34,38 @@ describe('FlagCalculator', () => {
       it('when Flag has no prefix', () => {
         featureConfig = { [BETA_FEATURE.LOG]: ['beta_log'] };
         flags = { beta_log_domains: '1,' };
-        calc = new FlagCalculator(featureConfig, accountInfo);
-        expect(calc.isFeatureEnabled(flags, BETA_FEATURE.LOG)).toBe(true);
-      });
-      it('when Flag has prefix', () => {
-        featureConfig = { [BETA_FEATURE.LOG]: [`${FLAG_PREFIX.DOMAIN}.beta_log`] };
-        flags = { beta_log: '1,' };
-        calc = new FlagCalculator(featureConfig, accountInfo);
+        calc = new FlagCalculator(featureConfig);
         expect(calc.isFeatureEnabled(flags, BETA_FEATURE.LOG)).toBe(true);
       });
     });
 
     describe('If beta_log is controlled by status beta flag', () => {
       it('should return True if call feature is on', () => {
-        featureConfig = { [BETA_FEATURE.LOG]: [`${FLAG_PREFIX.STATUS}.beta_log`] };
+        featureConfig = { [BETA_FEATURE.LOG]: ['beta_log'] };
         flags = { beta_log: 'true' };
-        calc = new FlagCalculator(featureConfig, accountInfo);
+        calc = new FlagCalculator(featureConfig);
         calc.isFeatureEnabled(flags, BETA_FEATURE.LOG);
         expect(calc.isFeatureEnabled(flags, BETA_FEATURE.LOG)).toBe(true);
       });
-      it('should return False if call feature is off or null', () => {
-        featureConfig = { [BETA_FEATURE.LOG]: [`${FLAG_PREFIX.STATUS}.beta_log`] };
-        flags = {};
-        calc = new FlagCalculator(featureConfig, accountInfo);
+      it('should return False if call feature is off', () => {
+        featureConfig = { [BETA_FEATURE.LOG]: [`beta_log`] };
+        flags = { beta_log:null };
+        calc = new FlagCalculator(featureConfig);
         expect(calc.isFeatureEnabled(flags, BETA_FEATURE.LOG)).toBe(false);
       });
     });
 
     describe('if SMS feature requires permission of call', () => {
       it('should return false if user has permission', () => {
-        featureConfig = { [BETA_FEATURE.SMS]: [Permission.CALL] };
-        flags = { call: 'true' };
-        calc = new FlagCalculator(featureConfig, accountInfo);
+        featureConfig = { [BETA_FEATURE.SMS]: [PERMISSION.CALL] };
+        flags = { call: true };
+        calc = new FlagCalculator(featureConfig);
         expect(calc.isFeatureEnabled(flags, BETA_FEATURE.SMS)).toBe(true);
       });
       it('should return true if user has no permission', () => {
-        featureConfig = { [BETA_FEATURE.SMS]: [Permission.CALL] };
+        featureConfig = { [BETA_FEATURE.SMS]: [PERMISSION.CALL] };
         flags = {};
-        calc = new FlagCalculator(featureConfig, accountInfo);
+        calc = new FlagCalculator(featureConfig);
         expect(calc.isFeatureEnabled(flags, BETA_FEATURE.SMS)).toBe(false);
       });
     });

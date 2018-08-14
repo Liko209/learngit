@@ -1,3 +1,4 @@
+
 /*
  * @Author: Devin Lin (devin.lin@ringcentral.com)
  * @Date: 2018-04-16 17:23:21
@@ -29,6 +30,7 @@ enum SOCKET {
   SEARCH = 'SOCKET.SEARCH',
   SEARCH_SCROLL = 'SOCKET.SEARCH_SCROLL',
   RECONNECT = 'SOCKET.RECONNECT',
+  CLIENT_CONFIG = 'SOCKET.CLIENT_CONFIG',
 }
 
 const ENTITY = {
