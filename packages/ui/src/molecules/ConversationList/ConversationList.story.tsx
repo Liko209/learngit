@@ -135,7 +135,7 @@ storiesOf('ConversationList', module)
             unreadCount={unreadCount}
             showCount={showCount}
             onClick={action('click')}
-            onMoreClick={action('more')}
+            onArrowClick={action('arrow')}
           />
         </div>
       );
