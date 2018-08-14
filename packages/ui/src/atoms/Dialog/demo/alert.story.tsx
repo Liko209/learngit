@@ -2,8 +2,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import { Dialog , DialogActions, DialogHeader, DialogTitle } from '../';
-import {    Button, Typography }
-  from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import { select, boolean  } from '@storybook/addon-knobs';
 
 storiesOf('Dialog', module)

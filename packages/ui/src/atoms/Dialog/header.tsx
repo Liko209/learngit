@@ -5,11 +5,12 @@ import styled from 'styled-components';
 interface Props extends DialogTitleProps {
   titleComp?: ReactElement<DialogTitleProps>|false;
 }
+
 const Title = (props:DialogTitleProps) => {
   return  <DialogTitle {...props} classes={{ root: 'root' }} />;
 };
 
-export default styled(({ children, titleComp, className, ...props   } :Props) => {
+const header =  styled(({ children, titleComp, className, ...props   } :Props) => {
   return (
   <div className={className}>
     {titleComp && titleComp.type === Title && titleComp}
@@ -27,4 +28,5 @@ export default styled(({ children, titleComp, className, ...props   } :Props) =>
   margin: 0;
 }
 `;
+export default header;
 export  { Title as DialogTitle };

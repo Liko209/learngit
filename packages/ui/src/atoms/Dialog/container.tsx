@@ -5,7 +5,8 @@ import styled from 'styled-components';
 interface Props extends DialogProps {
   size: 'sm'|'fullWidth'|'md'|'large'|'false';
 }
-export default styled(({ size= 'false', ...restProps  } :Props) => {
+
+const container = styled(({ size= 'false', ...restProps  } :Props) => {
   switch (size) {
     case 'sm':
       restProps.maxWidth = 'xs';
@@ -44,3 +45,5 @@ export default styled(({ size= 'false', ...restProps  } :Props) => {
   max-height: ${() => window.innerHeight % 8 * 8}px
 }
 `;
+
+export default container;

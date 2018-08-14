@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import DialogActions, { DialogActionsProps } from '@material-ui/core/DialogActions';
 
-export default styled(({  ...props }:DialogActionsProps) => {
+const actions = styled(({  ...props }:DialogActionsProps) => {
   return <DialogActions {...props} classes={{ root:'root' }} disableActionSpacing={true}/>  ;
 })`
 &.root {
@@ -10,3 +10,5 @@ export default styled(({  ...props }:DialogActionsProps) => {
   margin:0px;
 }
 `;
+
+export default actions;
