@@ -1,3 +1,4 @@
+import  featureFlag  from './component/featureFlag';
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date:2018-03-07 19:20:43
@@ -94,6 +95,7 @@ class Sdk {
   async onLogin() {
     this.updateNetworkToken();
     await this.syncService.syncData();
+    featureFlag.getServicePermission();
     this.accountManager.updateSupportedServices();
   }
 

@@ -39,12 +39,12 @@ class FlagCalculator implements IFlagCalculator {
     const permissionFlags = flagsToCheck.filter(flag =>
       this._permissionKeys.includes(flag),
     );
-    const hasPermission = permissionFlags.reduce(
+    const _hasPermission = permissionFlags.reduce(
       (prev: boolean, curr: string) => prev && this.getFlagValue(flags, curr),
       true,
     );
     // without permission
-    if (!hasPermission) {
+    if (!_hasPermission) {
       return false;
     }
     let isInBeta = true;
@@ -55,59 +55,60 @@ class FlagCalculator implements IFlagCalculator {
         false,
       );
     }
-    return isInBeta && hasPermission;
+    return isInBeta && _hasPermission;
   }
 
   getFlagValue(flags: IFlag, flagName: string): boolean {
     this._flags = flags;
-    return this.pipeLiner(
+    return !!this._pipeLiner(
       props => true,
-      this.checkFeatureStatus.bind(this),
-      this.isInBetaDomainList.bind(this),
-      this.isInBetaEmailList.bind(this),
-      this.hasPermission.bind(this),
+      this._checkFeatureStatus.bind(this),
+      this._isInBetaDomainList.bind(this),
+      this._isInBetaEmailList.bind(this),
+      this._hasPermission.bind(this),
     )(flagName);
   }
 
-  private pipeLiner(...middleWares: Middleware[]) {
+  private _pipeLiner(...middleWares: Middleware[]) {
     return middleWares.reduce((pre, curr) => (flagName: string) =>
       curr(flagName, pre),
     );
   }
 
-  private checkFeatureStatus(statusName: string, next: Next) {
+  private _checkFeatureStatus(statusName: string, next: Next) {
+    console.log('andy', statusName);
     if (this._flags.hasOwnProperty(statusName)) {
       return this._flags[statusName];
     }
     return next(statusName);
   }
 
-  private isInBetaEmailList(flagName: string, next: Next): boolean {
+  private _isInBetaEmailList(flagName: string, next: Next): boolean {
     if (/email/gi.test(flagName)) {
       const list = this._flags[flagName];
       const { userId } = this.accountInfo;
-      return this.isInList(list, userId);
+      return this._isInList(list, userId);
     }
     return next(flagName);
   }
 
-  private isInBetaDomainList(flagName: string, next: Next): boolean {
+  private _isInBetaDomainList(flagName: string, next: Next): boolean {
     if (/domain/gi.test(flagName)) {
       const list = this._flags[flagName];
       const { userId } = this.accountInfo;
-      return this.isInList(list, userId);
+      return this._isInList(list, userId);
     }
     return next(flagName);
   }
 
-  private isInList(listStr: string, valToCheck: number) {
+  private _isInList(listStr: string, valToCheck: number) {
     if (listStr && valToCheck) {
       const list: number[] = listStr.split(',').map(Number);
       return list.includes(valToCheck);
     }
     return false;
   }
-  private hasPermission(permissionName: string, next: Next): boolean {
+  private _hasPermission(permissionName: string, next: Next): boolean {
     if (this._permissionKeys.includes(permissionName)) {
       return !!this._flags[permissionName];
     }

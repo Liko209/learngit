@@ -1,7 +1,7 @@
 import ConfigChangeNotifier from '../configChangeNotifier';
 import FeatureFlag from '../FeatureFlag';
 import FlagCalculator from '../FlagCalculator';
-import { BETA_FEATURE, Flag } from '../utils';
+import { BETA_FEATURE, Flag } from '../interface';
 jest.mock('../FlagCalculator');
 jest.mock('../configChangeNotifier');
 describe('FeatureFlag', () => {
@@ -41,7 +41,7 @@ describe('FeatureFlag', () => {
   it('should save index config to db', () => {
     const indexData = { log: 'true' };
     localStorage.setItem = jest.fn();
-    featureFlag.handleInitConfig(indexData);
+    featureFlag.handleData(indexData);
     expect(localStorage.setItem).toBeCalledWith(
       'Client_Config',
       JSON.stringify(indexData),

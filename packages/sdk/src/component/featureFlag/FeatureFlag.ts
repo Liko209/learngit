@@ -4,7 +4,8 @@ import IFlagCalculator from './FlagCalculator';
 import { strictDiff } from './utils';
 import dataDispatcher from '../DataDispatcher';
 import { SOCKET } from '../../service';
-
+import { fetchServicePermission } from '../../api/ringcentral/extensionInfo';
+type IBETA_FLAG_SOURCE = 'Client_Config' | 'RC_PERMISSION' |'Split.io_Flag';
 class FeatureFlag {
   private _flags: IFlag;
   constructor(
@@ -16,40 +17,49 @@ class FeatureFlag {
     dataDispatcher.register(SOCKET.CLIENT_CONFIG, data =>
       this.handleData(data),
     );
-    this._flags = this.dumpFlags();
+    this._flags = this._dumpFlags();
   }
 
   isFeatureEnabled(featureName: BETA_FEATURE): boolean {
     return this._calculator.isFeatureEnabled(this._flags, featureName);
   }
 
-  handleData(flags: IFlag) {
-    const oldFlag = this.getFromStorage('Client_Config');
+  handleData(flags: IFlag, source:IBETA_FLAG_SOURCE = 'Client_Config') {
+    const oldFlag = this._getFromStorage(source);
     const touchedFlags = strictDiff([oldFlag, flags]);
-    Object.keys(touchedFlags).length && this.notify(touchedFlags);
-    this.saveToStorage('Client_Config', flags);
-    this._flags = this.dumpFlags();
+    Object.keys(touchedFlags).length && this._notify(touchedFlags);
+    this._saveToStorage(source, flags);
+    this._flags = this._dumpFlags();
+  }
+
+  async getServicePermission() {
+    const { data:{ serviceFeatures } } = await fetchServicePermission();
+    const permissions = {};
+    serviceFeatures.forEach((item) => {
+      permissions[item.featureName] = item.enabled;
+    });
+    this.handleData(permissions, 'RC_PERMISSION');
   }
 
   getFlagValue(key: string) {
     return this._calculator.getFlagValue(this._flags, key);
   }
 
-  private dumpFlags() {
+  private _dumpFlags() {
     const defaultFlags = {};
-    return ['Client_Config', 'Split.io_Flag', 'RC_permission'].reduce(
-      (prev, curr) => ({ ...prev, ...this.getFromStorage(curr) }),
+    return ['Client_Config', 'Split.io_Flag', 'RC_PERMISSION'].reduce(
+      (prev, curr) => ({ ...prev, ...this._getFromStorage(curr) }),
       defaultFlags,
     );
   }
-  private notify(touchedFlags: IFlag) {
+  private _notify(touchedFlags: IFlag) {
     this._notifier.broadcast(touchedFlags);
   }
-  private saveToStorage(itemName: string, flags: IFlag) {
+  private _saveToStorage(itemName: string, flags: IFlag) {
     localStorage.setItem(itemName, JSON.stringify(flags));
-    this._flags = this.dumpFlags();
+    this._flags = this._dumpFlags();
   }
-  private getFromStorage(itemName: string) {
+  private _getFromStorage(itemName: string) {
     const flags = localStorage.getItem(itemName);
     if (!flags) {
       return {};
