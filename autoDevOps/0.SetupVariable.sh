@@ -42,9 +42,7 @@ else
   # master: jupiter_master_ci@ringcentral.glip.com
 fi
 
-# Always build demo
-# demoHasUpdate="$(git diff HEAD^ HEAD  ${project}/demo)"
-demoHasUpdate=1
+demoHasUpdate="$(git diff HEAD^ HEAD  ${project}/demo)"
 if  [ "$demoHasUpdate" ]; then
   subDomain=demo-${subDomain}
   addEnv projectName='Fiji Demo'
