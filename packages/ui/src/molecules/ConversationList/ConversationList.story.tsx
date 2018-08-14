@@ -17,7 +17,7 @@ import {
 
 const transition = 'all ease 0.15s';
 
-storiesOf('ConversationList', module)
+storiesOf('Molecules/ConversationList', module)
   .addDecorator(
     backgrounds([{ name: 'slide-background', value: '#e3e3e3', default: true }]),
 )

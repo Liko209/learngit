@@ -17,7 +17,7 @@ const styleWithoutCount = css`
 `;
 
 const StyledUmi = styled<UmiProps, 'span'>('span')`
-  display: block;
+  display: inline-block;
   padding: 0 4px;
   border-radius: 8px;
   margin-right: 2px;
