@@ -58,6 +58,7 @@
         "Newable",
         "notifiy",
         "nprogress",
+        "Odeson",
         "pathinfo",
         "plopfile",
         "polyfill",
@@ -75,6 +76,7 @@
         "sockjs",
         "sourcemap",
         "subdomains",
+        "subheader",
         "todos",
         "transpiles",
         "transpiling",
@@ -88,7 +90,10 @@
         "Withs",
         "woff",
         "workspaces",
-        "Zhan"
+        "Zhan",
+        "lifecycles",
+        "testcafe",
+        "headshot"
     ],
     "flagWords": []
 }

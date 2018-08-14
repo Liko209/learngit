@@ -9,7 +9,7 @@ import 'react-select/dist/react-select.css';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router';
 import styled from 'styled-components';
-import ErrorHandle from '@/containers/ErrorHandle';
+import ErrorHandler from '@/containers/ErrorHandler';
 
 import Modal from '@/components/Modal';
 import Button from '@/components/Button';
@@ -160,9 +160,9 @@ class AddMemberModal extends Component<Props> {
           history.push(`/conversation/${result.id}`);
         }
       })
-      .catch(err => {
-        const errorHandle = new ErrorHandle(err.error);
-        errorHandle.show();
+      .catch(error => {
+        const handler = new ErrorHandler(error);
+        handler.handle().show();
       });
   }
 
@@ -174,29 +174,29 @@ class AddMemberModal extends Component<Props> {
       <Modal {...this.props}>
         <Wrapper>
           <TeamName
-              type="text"
-              value={model.name}
-              onChange={this.handleTeamNameChange}
+            type="text"
+            value={model.name}
+            onChange={this.handleTeamNameChange}
           />
           <Async
-              name="form-field-name"
-              value={selectedMembers}
-              onChange={this.handleSelectionChange}
-              loadOptions={this.getMembers}
-              multi={true}
+            name="form-field-name"
+            value={selectedMembers}
+            onChange={this.handleSelectionChange}
+            loadOptions={this.getMembers}
+            multi={true}
           />
           <TeamDescription
-              rows={4}
-              value={model.description}
-              onChange={this.handleDescriptionChange}
+            rows={4}
+            value={model.description}
+            onChange={this.handleDescriptionChange}
           />
           <SwitchContainerWrapper>
             <SwitchWrapper>
               <SwitchLabel>Public Team (any co-worker can join)</SwitchLabel>
               <SwitchValue
-                  type="checkbox"
-                  checked={model.options.isPublic}
-                  onChange={e => this.handleSwitchPermisson(e, 'isPublic')}
+                type="checkbox"
+                checked={model.options.isPublic}
+                onChange={e => this.handleSwitchPermisson(e, 'isPublic')}
               />
             </SwitchWrapper>
             <SwitchWrapper>
@@ -204,49 +204,49 @@ class AddMemberModal extends Component<Props> {
                 Members (except guests) may add other members
               </SwitchLabel>
               <SwitchValue
-                  type="checkbox"
-                  checked={model.options.canAddMember}
-                  onChange={e => this.handleSwitchPermisson(e, 'canAddMember')}
+                type="checkbox"
+                checked={model.options.canAddMember}
+                onChange={e => this.handleSwitchPermisson(e, 'canAddMember')}
               />
             </SwitchWrapper>
             <SwitchWrapper>
               <SwitchLabel>Members may post messages</SwitchLabel>
               <SwitchValue
-                  type="checkbox"
-                  checked={model.options.canPost}
-                  onChange={e => this.handleSwitchPermisson(e, 'canPost')}
+                type="checkbox"
+                checked={model.options.canPost}
+                onChange={e => this.handleSwitchPermisson(e, 'canPost')}
               />
             </SwitchWrapper>
             <SwitchWrapper>
               <SwitchLabel>Members may add integrations</SwitchLabel>
               <SwitchValue
-                  type="checkbox"
-                  checked={model.options.canAddIntegrations}
-                  onChange={e =>
-                    this.handleSwitchPermisson(e, 'canAddIntegrations')
+                type="checkbox"
+                checked={model.options.canAddIntegrations}
+                onChange={e =>
+                  this.handleSwitchPermisson(e, 'canAddIntegrations')
                 }
               />
             </SwitchWrapper>
             <SwitchWrapper>
               <SwitchLabel>Members may pin posts</SwitchLabel>
               <SwitchValue
-                  type="checkbox"
-                  checked={model.options.canPin}
-                  onChange={e => this.handleSwitchPermisson(e, 'canPin')}
+                type="checkbox"
+                checked={model.options.canPin}
+                onChange={e => this.handleSwitchPermisson(e, 'canPin')}
               />
             </SwitchWrapper>
           </SwitchContainerWrapper>
           <ButtonsWrapper>
             <Button
-                handleRoute={() => this.handleCreateTeam(selectedMembers)}
-                backgroundColor="#0584bd"
-                disabled={!model.name}
+              handleRoute={() => this.handleCreateTeam(selectedMembers)}
+              backgroundColor="#0584bd"
+              disabled={!model.name}
             >
               Create Team
             </Button>
             <Button
-                handleRoute={this.props.handleCloseModal}
-                backgroundColor="#0584bd"
+              handleRoute={this.props.handleCloseModal}
+              backgroundColor="#0584bd"
             >
               Close
             </Button>

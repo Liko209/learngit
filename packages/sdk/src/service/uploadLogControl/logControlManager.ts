@@ -3,26 +3,41 @@
  * @Date: 2018-06-08 11:05:46
  */
 import notificationCenter from '../notificationCenter';
-import { DOCUMENT } from '../../service/eventKey';
+import { SERVICE, WINDOW } from '../../service/eventKey';
 import { logManager, LOG_LEVEL, mainLogger } from 'foundation';
 import LogUploadManager from './logUploadManager';
 import AccountService from '../account';
 
 const DEFAULT_EMAIL = 'service@glip.com';
-notificationCenter.on(DOCUMENT.VISIBILITYCHANGE, ({ isHidden }) => {
-  if (isHidden) {
-    LogControlManager.instance().doUpload();
-  }
+
+
+notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
+  LogControlManager.instance().setNetworkState(onLine);
 });
+
+notificationCenter.on(SERVICE.LOGOUT, () => {
+  LogControlManager.instance().doUpload();
+});
+
+notificationCenter.on(WINDOW.BLUR, () => {
+  LogControlManager.instance().doUpload();
+});
+
 class LogControlManager {
   private static _instance: LogControlManager;
   private _enabledLog: boolean;
   private _isDebugMode: boolean; // if in debug mode, should not upload log
   private _isUploading: boolean;
+  private _isOnline: boolean;
   private constructor() {
     this._isUploading = false;
     this._enabledLog = true;
     this._isDebugMode = true;
+    this._isOnline = true;
+    logManager.setOverThresholdCallback(() => {
+      this.doUpload();
+    });
+
   }
 
   public static instance(): LogControlManager {
@@ -47,12 +62,12 @@ class LogControlManager {
     this.doUpload();
   }
 
+  public setNetworkState(isOnline: boolean) {
+    this._isOnline = isOnline;
+  }
+
   public async doUpload() {
-    if (this._isUploading) {
-      return;
-    }
-    if (this._isDebugMode) {
-      // should not doupload in debug mode
+    if (!this._isOnline || this._isUploading || this._isDebugMode) {
       return;
     }
 

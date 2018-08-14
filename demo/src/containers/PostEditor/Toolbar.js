@@ -21,7 +21,7 @@ const FileUpload = styled.input`
 
 class Toolbar extends Component {
   static propTypes = {
-    id: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired
   };
   constructor() {
     super();
@@ -38,13 +38,13 @@ class Toolbar extends Component {
     const service = PostService.getInstance();
     const { files } = event.target;
 
-    Object.keys(files).forEach((item) => {
+    Object.keys(files).forEach(item => {
       data.append('file', files[item]);
     });
 
     service.sendItemFile({
       groupId: Number(this.props.id),
-      file: data,
+      file: data
     });
   }
 

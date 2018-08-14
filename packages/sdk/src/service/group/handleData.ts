@@ -193,19 +193,24 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
 
 async function handleGroupMostRecentPostChanged(posts: Post[]) {
   const groupDao = daoManager.getDao(GroupDao);
-  const groups: (null | Group)[] = await Promise.all(
-    posts.map(async (post) => {
-      const group: null | Group = await groupDao.get(post.group_id);
-      if (group) {
-        group.most_recent_content_modified_at = post.modified_at;
-        group.most_recent_post_created_at = post.created_at;
-        group.most_recent_post_id = post.id;
-        return group;
-      }
-      return null;
-    }),
-  );
-  await saveDataAndDoNotification(groups.filter(item => item !== null) as Group[]);
+  let validGroups: Group[] = [];
+  await groupDao.doInTransation(async () => {
+    const groups: (null | Group)[] = await Promise.all(
+      posts.map(async post => {
+        const group: null | Group = await groupDao.get(post.group_id);
+        if (group) {
+          group.most_recent_content_modified_at = post.modified_at;
+          group.most_recent_post_created_at = post.created_at;
+          group.most_recent_post_id = post.id;
+          return group;
+        }
+        return null;
+      })
+    );
+    validGroups = groups.filter(item => item !== null) as Group[];
+  });
+
+  await doNotification([], validGroups);
 }
 
 /**

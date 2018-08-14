@@ -2,7 +2,7 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-27 23:22:15
  * @Last Modified by: Chris Zhan (chris.zhan@ringcentral.com)
- * @Last Modified time: 2018-05-31 13:56:59
+ * @Last Modified time: 2018-08-09 14:43:50
  */
 /// <reference path="../../__tests__/types.d.ts" />
 
@@ -10,20 +10,19 @@ import { ISchema } from '../db';
 import DBManager from '../DBManager';
 import DexieDB from '../adapter/dexie/DexieDB';
 import { DatabaseType } from '../enums';
-import LokiDB from '../adapter/loki/LokiDB';
 
 jest.mock('../adapter/dexie/DexieDB');
-jest.mock('../adapter/loki/LokiDB');
 
 const schema: ISchema = {
   name: 'Glip',
+  version: 1,
   schema: {
     1: {
       person: {
-        unique: 'id'
-      }
-    }
-  }
+        unique: 'id',
+      },
+    },
+  },
 };
 
 describe('DBManager', () => {
@@ -46,12 +45,6 @@ describe('DBManager', () => {
       const dbManager = new DBManager();
       dbManager.initDatabase(schema, DatabaseType.DexieDB);
       expect(dbManager.getDatabase()).toBeInstanceOf(DexieDB);
-    });
-
-    it('should init a loki database', () => {
-      const dbManager = new DBManager();
-      dbManager.initDatabase(schema, DatabaseType.LokiDB);
-      expect(dbManager.getDatabase()).toBeInstanceOf(LokiDB);
     });
   });
 

@@ -3,7 +3,7 @@
  * @Date: 2018-02-23 23:29:52
  */
 import _ from 'lodash';
-import { DexieDB, LokiDB, IDatabaseCollection, IDatabase } from 'foundation';
+import { DexieDB, IDatabaseCollection, IDatabase } from 'foundation';
 import Query from './Query';
 import { ErrorTypes, Throw } from '../../utils';
 
@@ -95,12 +95,15 @@ class BaseDao<T extends {}> {
     return this.collection.getAll();
   }
 
-  isDexieDB(): boolean {
-    return this.db instanceof DexieDB;
+  async doInTransation(func: any): Promise<void> {
+    await this.db.ensureDBOpened();
+    await this.db.getTransaction('rw', [this.collection], async () => {
+      await func();
+    });
   }
 
-  isLokiDB(): boolean {
-    return this.db instanceof LokiDB;
+  isDexieDB(): boolean {
+    return this.db instanceof DexieDB;
   }
 
   createQuery() {

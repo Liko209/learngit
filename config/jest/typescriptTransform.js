@@ -1,3 +1,3 @@
-const tsJestPreprocessor = require('ts-jest/preprocessor');
+const tsJestPreprocessor = require('ts-jest');
 
 module.exports = tsJestPreprocessor;
