@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import { stringify } from 'qs';
 
-import { IRequest, OAuthTokenHandler, ITokenHandler, AbstractHandleType } from 'foundation';
+import { IRequest, OAuthTokenHandler, ITokenHandler, AbstractHandleType, IToken } from 'foundation';
 import Api from '../api';
+import AccountService from '../../service/account';
 
 const HandleByRingCentral = new class extends AbstractHandleType {
   survivalModeSupportable = true;
@@ -34,6 +35,27 @@ const HandleByRingCentral = new class extends AbstractHandleType {
       }
       return request;
     };
+  }
+
+  doRefreshToken(token: IToken) {
+    return new Promise<IToken>(async (resolve, reject) => {
+      try {
+        const accountService: AccountService = AccountService.getInstance();
+        const refreshedToken = await accountService.refreshRCToken();
+        if (refreshedToken) {
+          token.access_token = refreshedToken.access_token;
+          token.accessTokenExpireIn = refreshedToken.accessTokenExpireIn;
+          token.refreshToken = refreshedToken.refreshToken;
+          token.refreshTokenExpireIn = refreshedToken.refreshTokenExpireIn;
+          token.timestamp = refreshedToken.timestamp;
+          resolve(token);
+        } else {
+          reject(token);
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
   }
 }();
 

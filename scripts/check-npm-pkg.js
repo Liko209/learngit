@@ -1,6 +1,6 @@
 /*
  * @Author: Alvin Huang (alvin.huang@ringcentral.com)
- * @Date: 2018-7-19 10:23:02
+ * @Date: 2018-7-19 10:23:03
  * Copyright © RingCentral. All rights reserved.
  */
 const exec = require('child_process').execSync;
@@ -27,14 +27,17 @@ function checkDiff(){
       let matched = files.map((item) => {
         return item && item.match(/"(.*?)"\s*:/) ? item.match(/"(.*?)"\s*:/)[1] : null;
       })
-      const dep = JSON.parse(JSON.stringify(pkgFile.dependencies));
-      const devDep = JSON.parse(JSON.stringify(pkgFile.devDependencies));
+      const dep = pkgFile.dependencies;
+      const devDep = pkgFile.devDependencies;
       let deRepeatArray = Array.from(new Set(matched))
       let modified = deRepeatArray && deRepeatArray.map((item) => {
-        return (dep.hasOwnProperty(item) || devDep.hasOwnProperty(item))
+        return (dep && dep.hasOwnProperty(item) || devDep && devDep.hasOwnProperty(item))
+      });
+      let foundModified = modified.filter(item => {
+        return item === true;
       });
       let gitUser = checkGitUser()
-      if(modified.indexOf(true) > -1 && adminEmail.indexOf(gitUser.email) === -1 && (modified.length === 2 ? !deRepeatArray.includes('sdk') : true)) {
+      if(modified.indexOf(true) > -1 && adminEmail.indexOf(gitUser.email) === -1 && !(deRepeatArray.includes('sdk') && foundModified.length === 1)) {
           const chalk = require('chalk');
           console.log()
           console.warn(chalk.bgRed.dim(' Warning ') + ' '+ chalk.blue('You seem to be adding or upgrading a npm package'))

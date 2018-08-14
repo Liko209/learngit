@@ -5,7 +5,6 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { service, utils } from 'sdk';
-import ErrorHandle from '@/containers/ErrorHandle';
 
 import Button from './Button';
 import Download from '../../components/Download';
@@ -15,6 +14,7 @@ import Input from './Input';
 import Info from './Info';
 import LoginVersionStatus from '../Status/LoginVersionStatus';
 import { env, betaUserList } from '@/globalConfig';
+import ErrorHandler from '@/containers/ErrorHandler';
 
 const { AuthService } = service;
 const { ErrorTypes } = utils;
@@ -38,7 +38,7 @@ class Login extends React.Component<Props, States> {
       username: '',
       extension: '',
       password: '',
-      errors: [],
+      errors: []
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -52,10 +52,10 @@ class Login extends React.Component<Props, States> {
       >);
   }
 
-  handleSubmit(event: React.FormEvent<HTMLButtonElement>) {
+  async handleSubmit(event: React.FormEvent<HTMLButtonElement>) {
     event.preventDefault();
     const { username, password, extension } = this.state;
-    const errors: string[] = [];
+    let errors: string[] = [];
     if (!username) {
       errors.push('Phone number can not be empty.');
     }
@@ -76,28 +76,31 @@ class Login extends React.Component<Props, States> {
     const { location, history } = this.props;
     this.setState({
       btnDisabled: true,
-      btnText: `Login...`,
+      btnText: `Login...`
     });
 
-    AuthService.getInstance<AuthService>()
-      .login({ username, password, extension })
-      .then(() => {
-        history.replace((location.state && location.state.from) || '/');
-        console.log('history: ', history);
-      })
-      .catch((error: any) => {
-        this.setState({
-          btnDisabled: false,
-          btnText: 'Login',
-        });
-        if (error.code === ErrorTypes.INVALID_GRANT) {
+    try {
+      const authService: AuthService = AuthService.getInstance();
+      await authService.login({ username, password, extension });
+      history.replace((location.state && location.state.from) || '/');
+      console.log('history: ', history);
+    } catch (error) {
+      const handler = new ErrorHandler(error);
+      handler.handle({
+        [ErrorTypes.INVALID_GRANT]: () => {
           errors.push('Invalid Phone number or password.');
           this.setState({ errors });
-        } else {
-          const errorHandle = new ErrorHandle(error);
-          errorHandle.show();
+        },
+        [ErrorTypes.NETWORK]: () => {
+          handler.show(error);
         }
       });
+    } finally {
+      this.setState({
+        btnDisabled: false,
+        btnText: 'Login'
+      });
+    }
   }
 
   render() {
@@ -107,7 +110,7 @@ class Login extends React.Component<Props, States> {
       extension,
       btnDisabled,
       btnText,
-      errors,
+      errors
     } = this.state;
     return (
       <div>
