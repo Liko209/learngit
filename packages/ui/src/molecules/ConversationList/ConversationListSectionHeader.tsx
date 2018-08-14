@@ -41,7 +41,7 @@ const TSectionHeader = (props: SectionHeaderProps) => {
   );
 };
 
-export const ConversationListSectionHeader = styled<SectionHeaderProps>(TSectionHeader)`
+const ConversationListSectionHeader = styled<SectionHeaderProps>(TSectionHeader)`
   && {
     padding: 8px 16px 8px 12px;
     background: white;
@@ -49,3 +49,4 @@ export const ConversationListSectionHeader = styled<SectionHeaderProps>(TSection
 `;
 
 export default ConversationListSectionHeader;
+export { TSectionHeader, ConversationListSectionHeader };

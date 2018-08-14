@@ -3,14 +3,14 @@ import styled from 'styled-components';
 
 import { List } from '@material-ui/core';
 
-export type ConversationListProps = {
+type ConversationListProps = {
   value: any;
   className?: string;
   onClick?: Function;
   onChange?: Function;
 };
 
-export class TConversationList extends React.PureComponent<ConversationListProps> {
+class TConversationList extends React.PureComponent<ConversationListProps> {
 
   constructor(props: ConversationListProps) {
     super(props);
@@ -47,7 +47,8 @@ export class TConversationList extends React.PureComponent<ConversationListProps
     return Array.from(el.parentElement.children).indexOf(el);
   }
 }
-export const ConversationList = styled<ConversationListProps>(TConversationList)`
+
+const ConversationList = styled<ConversationListProps>(TConversationList)`
   && {
     background-color: white;
     padding-top: 0;
@@ -56,3 +57,4 @@ export const ConversationList = styled<ConversationListProps>(TConversationList)
 `;
 
 export default ConversationList;
+export { ConversationListProps, ConversationList, TConversationList };

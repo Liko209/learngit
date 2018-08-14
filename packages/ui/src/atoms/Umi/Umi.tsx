@@ -2,14 +2,14 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { WithTheme } from '@material-ui/core';
 
-const styleWithNumber = css`
+const styleWithCount = css`
   font-size: 12px;
   height: 16px;
   line-height: 16px;
   color: white;
 `;
 
-const styleWithoutNumber = css`
+const styleWithoutCount = css`
   font-size: 0;
   height: 8px;
   line-height: 8px;
@@ -17,10 +17,6 @@ const styleWithoutNumber = css`
 `;
 
 const StyledUmi = styled<UmiProps, 'span'>('span')`
-  div:hover > & {
-    ${styleWithNumber}
-  }
-
   display: block;
   padding: 0 4px;
   border-radius: 8px;
@@ -30,7 +26,11 @@ const StyledUmi = styled<UmiProps, 'span'>('span')`
   transition-duration: 150ms;
   visibility: ${({ unreadCount }) => unreadCount ? 'visible' : 'hidden'};
   background: ${ ({ important }) => important ? '#ff8800' : '#69a3eb'};
-  ${({ showCount }) => showCount ? styleWithNumber : styleWithoutNumber}
+  ${({ showCount }) => showCount ? styleWithCount : styleWithoutCount}
+
+  div:hover > & {
+    ${styleWithCount}
+  }
 `;
 
 type UmiProps = {
@@ -53,6 +53,8 @@ const countToString = (unreadCount?: number) => {
 };
 
 const Umi = (props: UmiProps) => {
+  console.log(props);
+
   return (
     <StyledUmi {...props}>
       {countToString(props.unreadCount)}
