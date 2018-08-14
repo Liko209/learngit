@@ -1,20 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import {
-  WithTheme,
-  ListItem as MuiListItem,
-} from '@material-ui/core';
-import {
-  MoreVert as MuiMoreVert,
-} from '@material-ui/icons';
+import { WithTheme } from '@material-ui/core/styles/withTheme';
+import { ListItem as MuiListItem } from '@material-ui/core';
 
-import { Presence, Umi } from '../../atoms';
+import { Presence, Umi, Icon } from '../../atoms';
 import { ItemText } from './ItemText';
-
-const MoreVert = styled(MuiMoreVert)`
-color: #c7c7c7;
-`;
 
 const ListItem = styled(MuiListItem)`
 && {
@@ -32,12 +23,12 @@ const ListItem = styled(MuiListItem)`
   background: #e0e0e0;
 }
 
-&& ${MoreVert} {
+&& ${Icon} {
   opacity: 0;
   transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 }
 
-&&:hover ${MoreVert} {
+&&:hover ${Icon} {
   opacity: 1;
 }
 `;
@@ -63,12 +54,11 @@ const TItem = (props: ItemProps) => {
         {title}
       </ItemText>
       <Umi important={important} unreadCount={unreadCount} showCount={!showCount} />
-      <MoreVert onClick={onMoreClick} />
+      <Icon onClick={onMoreClick}>more_vert</Icon>
     </ListItem>
   );
 };
 
-export const ConversationListItem = styled<ItemProps>(TItem)`
-`;
+export const ConversationListItem = styled<ItemProps>(TItem)``;
 
 export default ConversationListItem;
