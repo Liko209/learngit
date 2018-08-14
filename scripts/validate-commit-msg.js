@@ -7,7 +7,7 @@ const chalk = require('chalk')
 const msgPath = process.env.GIT_PARAMS
 const msg = require('fs').readFileSync(msgPath, 'utf-8').trim()
 
-const commitRE = /^(revert: )?(feat|fix|docs|style|refactor|perf|test|chore|types|build|ci)(\(.+\))?: .{1,50}/
+const commitRE = /^(feat|fix|docs|style|refactor|test|chore|revert)(\(.+\))?: /
 
 if (!commitRE.test(msg)) {
   console.log()

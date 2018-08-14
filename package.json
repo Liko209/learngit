@@ -38,6 +38,7 @@
     "babel-core": "6.26.3",
     "chalk": "2.4.1",
     "commitizen": "2.10.1",
+    "cz-customizable": "git+ssh://git@git.ringcentral.com:Fiji/cz-customizable.git#v0.0.5",
     "dts-generator": "2.1.0",
     "enzyme": "3.4.1",
     "enzyme-adapter-react-16": "1.2.0",
