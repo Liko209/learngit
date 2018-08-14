@@ -17,28 +17,29 @@ import {
 
 const transition = 'all ease 0.15s';
 
+const selectWidth = () => select(
+  'Width',
+  {
+    '256px': '256px',
+    '320px': '320px',
+  },
+  '320px',
+);
+
 storiesOf('Molecules/ConversationList', module)
   .addDecorator(
     backgrounds([{ name: 'slide-background', value: '#e3e3e3', default: true }]),
 )
   .add('List', withInfo(``)(
     () => {
-      const width = select(
-        'Width',
-        {
-          '256px': '256px',
-          '320px': '320px',
-        },
-        '320px',
-      );
-
+      const width = selectWidth();
       const expanded = boolean('expanded', true);
 
       return (
         <div style={{ width, transition }}>
           <SectionHeader
             icon={<Icon>star</Icon>}
-            title="Favorites2 "
+            title="Favorites"
             unreadCount={32}
             important={true}
             showCount={true}
@@ -66,15 +67,7 @@ storiesOf('Molecules/ConversationList', module)
   .add('Item', withInfo(``)(
     () => {
 
-      const width = select(
-        'Width',
-        {
-          '256px': '256px',
-          '320px': '320px',
-        },
-        '320px',
-      );
-
+      const width = selectWidth();
       const status = select(
         'Status',
         {
@@ -84,7 +77,6 @@ storiesOf('Molecules/ConversationList', module)
         },
         'online',
       );
-
       const important = boolean('Important', false);
       const unreadCount = number('Unread count', 120);
       const isTeam = boolean('is Team', true);
@@ -113,15 +105,7 @@ storiesOf('Molecules/ConversationList', module)
   ))
   .add('SectionHeader', withInfo(``)(
     () => {
-      const width = select(
-        'Width',
-        {
-          '256px': '256px',
-          '320px': '320px',
-        },
-        '320px',
-      );
-
+      const width = selectWidth();
       const important = boolean('Important', false);
       const unreadCount = number('Unread count', 120);
       const showCount = boolean('Show count', true);
