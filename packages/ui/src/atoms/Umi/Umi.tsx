@@ -52,15 +52,11 @@ const countToString = (unreadCount?: number) => {
   return String(unreadCount);
 };
 
-const Umi = (props: UmiProps) => {
-  console.log(props);
+const Umi = (props: UmiProps) => (
+  <StyledUmi {...props}>
+    {countToString(props.unreadCount)}
+  </StyledUmi>
+);
 
-  return (
-    <StyledUmi {...props}>
-      {countToString(props.unreadCount)}
-    </StyledUmi>
-  );
-};
-
-export { UmiProps, Umi };
 export default Umi;
+export { UmiProps, Umi };
