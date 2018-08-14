@@ -24,7 +24,7 @@ const HandleByGlip = new class extends AbstractHandleType {
           };
         }
       }
-      if (this.rcTokenProvider) {
+      if (this.rcTokenProvider && request.via === NETWORK_VIA.SOCKET) {
         request.headers = {
           ...request.headers,
           'X-RC-Access-Token-Data': this.rcTokenProvider(),

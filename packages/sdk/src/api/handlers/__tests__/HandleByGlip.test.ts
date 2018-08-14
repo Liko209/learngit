@@ -1,4 +1,4 @@
-import { OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
+import { NETWORK_VIA, OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
 import HandleByGlip from '../HandleByGlip';
 
 const handler = new OAuthTokenHandler(HandleByGlip, null);
@@ -6,6 +6,7 @@ const handler = new OAuthTokenHandler(HandleByGlip, null);
 const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')
+    .setVia(NETWORK_VIA.SOCKET)
     .setData({
       username: 'test',
     })
