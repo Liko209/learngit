@@ -4,6 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string) => boolean
+
+export interface INameTags {
+  name: string;
+  tags: Array<string>;
+}
+
 function isValidTag(tag: string): boolean {
     return /^[a-zA-Z_$][a-zA-Z_$0-9 ]*$/.test(tag);
 }
@@ -36,7 +43,7 @@ export function formalName(name: string, tags?: Array<string>): string {
     return formalName;
 }
 
-export function parseFormalName(formalName: string): any {
+export function parseFormalName(formalName: string): INameTags {
     let tags: Array<string> = [];
     let rest = formalName;
     let match;
@@ -48,26 +55,18 @@ export function parseFormalName(formalName: string): any {
     return { name: rest.trim(), tags: tags };
 }
 
-type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string) => boolean
 export function filterByTags(
     includeTags?: Array<string>,
     excludeTags?: Array<string>): CaseFilter {
     return (caseName: string, fixtureName: string, fixturePath: string): boolean => {
-        if (includeTags){
-            for ( let tag of parseFormalName(caseName).tags){
-                if ( tag in includeTags){ 
-                    return true
-                } 
-            }
-            return false}
-        if (excludeTags){
-            for (let tag of parseFormalName(caseName).tags){
-                if (tag in excludeTags){
-                    return false
-                }
-            }
-            return true
-        }
-       return false 
+      let flag: boolean = true;
+      const nameTags = parseFormalName(caseName);
+      if (includeTags != undefined) {
+        flag = flag && nameTags.tags.some(tag => includeTags.some(includeTag => tag == includeTag));
+      }
+      if (excludeTags != undefined) {
+        flag = flag && !nameTags.tags.some(tag => excludeTags.some(excludeTag => tag == excludeTag));
+      }
+      return flag;
     }
 }
