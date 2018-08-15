@@ -7,9 +7,8 @@ export type TIconButtonProps = {
   tooltipTitle?: string;
   invisible?: boolean;
   awake?: boolean;
-  active?: boolean;
-  variant?: 'round' | 'plain';
-  size?: 'small' | 'medium' | 'large';
+  variant: 'round' | 'plain';
+  size: 'small' | 'medium' | 'large';
 } & IconButtonProps &
   Partial<Pick<WithTheme, 'theme'>>;
 
@@ -24,54 +23,67 @@ const IconWrapper = styled(Icon)``;
 export const CustomIconButton: React.SFC<TIconButtonProps> = (
   props: TIconButtonProps,
 ) => {
-  const { children, tooltipTitle, innerRef, awake, active, invisible, ...rest } = props;
+  const { children, tooltipTitle, innerRef, awake, invisible, variant, ...rest } = props;
   const classes = {
     root: 'muiIconButtonWrapper',
   };
   const main = (
-    <MuiIconButtonWrapper disableRipple={true} classes={classes} {...rest}>
+    <MuiIconButtonWrapper disableRipple={variant === 'plain'} classes={classes} {...rest}>
       <IconWrapper>{children}</IconWrapper>
     </MuiIconButtonWrapper>
   );
   return tooltipTitle ? (<Tooltip title={tooltipTitle}>{main}</Tooltip>) : main;
 };
 
-CustomIconButton.defaultProps = {
-  variant: 'round',
-};
-
 const sizes = {
-  'plain-large': '24px',
-  'plain-medium': '20px',
-  'plain-small': '16px',
-  'round-large': '48px',
-  'round-medium': '40px',
-  'round-small': '32px',
+  'plain-large': 24,
+  'plain-medium': 20,
+  'plain-small': 16,
+  'round-large': 48,
+  'round-medium': 40,
+  'round-small': 32,
 };
 
 export const IconButton = styled<TIconButtonProps>(CustomIconButton)`
   && {
-    width: ${props => sizes[`${props.variant}-${props.size}`]};
-    height: ${props => sizes[`${props.variant}-${props.size}`]};
+    width: ${(props: TIconButtonProps) => {
+      console.log(props);
+    }};
+    width: ${props => (sizes[`${props.variant}-${props.size}`] + 'px')};
+    height: ${props => (sizes[`${props.variant}-${props.size}`] + 'px')};
+    &:hover {
+      background-color: ${props => props.variant === 'plain' ?
+        'transparent' :
+        props.theme.palette.action.hover
+      };
+    }
     ${MuiIconButtonWrapper} {
-      width: ${props => sizes[`${props.variant}-${props.size}`]};
-      height: ${props => sizes[`${props.variant}-${props.size}`]};
+      width: ${props => (sizes[`${props.variant}-${props.size}`] + 'px')};
+      height: ${props => (sizes[`${props.variant}-${props.size}`] + 'px')};
       &:hover {
         background-color: ${props => props.variant === 'plain' ? 'transparent' : ''};
+      }
+    }
+    &:active {
+      ${IconWrapper} {
+        color: ${props => props.theme.palette[props.color].main}
       }
     }
     ${IconWrapper} {
       color: ${props =>
     props.disabled ? '#BFBFBF' :
-      props.active ? props.theme.palette.primary.main :
-        props.awake ? '#9e9e9e' :
-          props.invisible ? 'transparent' : '#BFBFBF'};
-      font-size: ${props => sizes[`${props.variant}-${props.size}`]};
-      :hover {
-        color: ${props => props.variant === 'plain' ? props.theme.palette.primary.main : ''}
-      }
+      props.awake ? '#9e9e9e' :
+        props.invisible ? 'transparent' : '#BFBFBF'};
+      font-size: ${props => (sizes[`${props.variant}-${props.size}`] /
+        (props.variant === 'round' ? 2 : 1) + 'px')};
     }
   }
 `;
+
+IconButton.defaultProps = {
+  variant: 'round',
+  color: 'primary',
+  size: 'medium',
+};
 
 export default IconButton;

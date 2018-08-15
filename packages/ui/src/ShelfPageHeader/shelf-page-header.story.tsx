@@ -12,7 +12,15 @@ storiesOf('Page Header (Shelf)', module)
     return <ShelfPageHeader title={getTitleKnob()} />;
   }))
   .addWithJSX('with right slot', withInfo(``)(() => {
-    const rightIcon = <IconButton awake={true} tooltipTitle="Close">close</IconButton>;
+    const rightIcon = (
+      <IconButton
+        variant="plain"
+        awake={true}
+        tooltipTitle="Close"
+      >
+      close
+      </IconButton>
+    );
     return (
       <ShelfPageHeader
         title={getTitleKnob()}
@@ -21,6 +29,6 @@ storiesOf('Page Header (Shelf)', module)
     );
   }))
   .addWithJSX('with left slot', withInfo(``)(() => {
-    const leftIcon = <IconButton awake={true}>keyboard_arrow_left</IconButton>;
+    const leftIcon = <IconButton variant="plain" awake={true}>keyboard_arrow_left</IconButton>;
     return <ShelfPageHeader title={getTitleKnob()} leftSlot={leftIcon} />;
   }));

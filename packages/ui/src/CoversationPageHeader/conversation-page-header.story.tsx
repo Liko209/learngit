@@ -32,9 +32,6 @@ storiesOf('Page Header (Conversation)', module)
     const RightButtonBar = styled.div`
       white-space: nowrap;
       flex-wrap: nowrap;
-      ${IconButton} + ${IconButton} {
-        margin-left: 12px;
-      }
     `;
     const rightIconBar = (
       <RightButtonBar>
@@ -55,9 +52,6 @@ storiesOf('Page Header (Conversation)', module)
     const RightButtonBar = styled.div`
       white-space: nowrap;
       flex-wrap: nowrap;
-      ${IconButton} + ${IconButton} {
-        margin-left: 12px;
-      }
     `;
     const iconBar = (
       <RightButtonBar>
