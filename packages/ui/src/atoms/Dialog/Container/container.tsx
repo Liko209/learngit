@@ -3,10 +3,10 @@ import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import styled from 'styled-components';
 
 interface Props extends DialogProps {
-  size: 'sm'|'fullWidth'|'md'|'large'|'false';
+  size: 'sm'|'fullWidth'|'md'|'lg'|'fullScreen';
 }
 
-const container = styled(({ size= 'false', ...restProps  } :Props) => {
+const container = styled(({ size = 'sm', ...restProps  } :Props) => {
   switch (size) {
     case 'sm':
       restProps.maxWidth = 'xs';
@@ -14,11 +14,12 @@ const container = styled(({ size= 'false', ...restProps  } :Props) => {
     case 'md':
       restProps.maxWidth = 'sm';
       break;
-    case 'large':
+    case 'lg':
       restProps.maxWidth = 'md';
       break;
-    case 'fullWidth':
-      restProps.fullWidth = true;
+    case 'fullScreen':
+      restProps.maxWidth = false;
+      restProps.fullScreen = true;
       break;
   }
   const classes = { root:'root', paperWidthXs:'sm', paperWidthSm:'md', paperWidthMd:'lg' };
@@ -31,6 +32,7 @@ const container = styled(({ size= 'false', ...restProps  } :Props) => {
 })`
 &.root{
   padding:0;
+  min-height: 120px;
 }
 & .sm{
   max-width:400px;
@@ -42,7 +44,10 @@ const container = styled(({ size= 'false', ...restProps  } :Props) => {
   max-width:800px;
 }
 & .paperScrollPaper{
-  max-height: ${() => window.innerHeight % 8 * 8}px
+  max-height: ${() => 0.72 * window.innerHeight % 8 * 8}px;
+}
+& .paperFullScreen{
+  max-width: 100%;
 }
 `;
 

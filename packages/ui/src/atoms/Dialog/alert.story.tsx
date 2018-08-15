@@ -25,7 +25,7 @@ storiesOf('Dialog', module)
       );
     const scroll = select(
         'scroll',
-        { body: 'body', paper: 'paper', false:'false' },
+        { body: 'body', paper: 'paper' },
         'body',
       );
     const withTitle = boolean('with Headline', true);
