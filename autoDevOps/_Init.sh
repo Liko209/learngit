@@ -15,3 +15,6 @@ cd $project
 . $autoDevOps/0.SetupVariable.sh
 
 echo "Generate subDomain: $subDomain"
+
+# Init blank parameters
+addEnv SAResult='' 
