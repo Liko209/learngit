@@ -10,7 +10,6 @@ import AccountService from '../account';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 
-
 notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
   LogControlManager.instance().setNetworkState(onLine);
 });

@@ -34,6 +34,9 @@ export default class HeaderPresenter extends BasePresenter {
     this.subscribeNotificationOnce(SERVICE.FETCH_INDEX_DATA_DONE, () =>
       this.init()
     );
+    this.subscribeNotification(SERVICE.DO_SIGN_OUT, () => {
+      this.signOutClickHandler();
+    });
   }
 
   @action

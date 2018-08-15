@@ -25,7 +25,9 @@ class PinList extends Component {
   render() {
     const { groupId, title, reverse } = this.props;
     const groupStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP);
-    const { pinnedPostIds: ids = [] } = groupStore.get(groupId);
+    const value = groupStore.get(groupId);
+    const { pinnedPostIds: ids = [] } = value;
+    ids = ids.filter(id => id);
     if (ids && ids.length) {
       if (reverse) {
         ids.reverse();

@@ -1,29 +1,43 @@
-import { daoManager } from '../../dao';
-import ConfigDao from '../../dao/config';
-import { LAST_INDEX_TIMESTAMP } from '../../dao/config/constants';
-import { indexData } from '../../api';
+/*
+ * @Author: Lip Wang (lip.wangn@ringcentral.com)
+ * @Date: 2018-08-09 09:44:56
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { indexData, initialData, remainingData } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
 import { IndexDataModel } from '../../api/glip/user';
 import { IResponse } from '../../api/NetworkClient';
-import { mainLogger } from 'foundation';
 import { progressBar } from '../../utils/progress';
 
 interface Params {
   newer_than?: string;
 }
 
-const fetchIndexData = async (): Promise<IResponse<IndexDataModel>> => {
+const fetchInitialData = async (currentTime: number): Promise<IResponse<IndexDataModel>> => {
   progressBar.start();
-  const params: Params = {};
-  const configDao = daoManager.getKVDao(ConfigDao);
-  const lastIndexTimestamp = configDao.get(LAST_INDEX_TIMESTAMP);
-
-  if (lastIndexTimestamp) {
-    notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_EXIST);
-    // index newer than api need move back 5 mins
-    params.newer_than = String(lastIndexTimestamp - 300000);
+  let result;
+  try {
+    result = initialData({ _: currentTime });
+  } finally {
+    progressBar.stop();
   }
+  return result;
+};
+
+const fetchRemainingData = async (currentTime: number): Promise<IResponse<IndexDataModel>> => {
+  const result = remainingData({ _: currentTime });
+  return result;
+};
+
+// fetch plugins
+
+const fetchIndexData = async (timeStamp: string): Promise<IResponse<IndexDataModel>> => {
+  progressBar.start();
+  const params: Params = { newer_than: timeStamp };
+
+  notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_EXIST);
 
   const requestConfig = {
     onDownloadProgress(e: any) {
@@ -40,8 +54,7 @@ const fetchIndexData = async (): Promise<IResponse<IndexDataModel>> => {
   }
 
   // logger.timeEnd('fetch index data');
-  mainLogger.debug(`fetch index data: , ${result}`);
   return result;
 };
 
-export default fetchIndexData;
+export { fetchIndexData, fetchInitialData, fetchRemainingData };
