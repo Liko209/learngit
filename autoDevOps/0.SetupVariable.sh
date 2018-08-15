@@ -47,6 +47,7 @@ else
     *)
       addEnv RECIPIENT_LIST=jupiter_push_ci@ringcentral.glip.com
     ;;
+  esac
 fi
 
 demoHasUpdate="$(git diff HEAD^ HEAD  ${project}/demo)"
