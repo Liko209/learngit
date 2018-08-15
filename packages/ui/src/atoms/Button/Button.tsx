@@ -3,13 +3,9 @@ import styled from 'styled-components';
 import MuiButton, { ButtonProps } from '@material-ui/core/Button';
 import { WithTheme } from '@material-ui/core';
 
-export type TButtonProps = {} & ButtonProps & Partial<Pick<WithTheme, 'theme'>>;
+type TButtonProps = {} & ButtonProps & Partial<Pick<WithTheme, 'theme'>>;
 
-export const CustomButton: React.SFC<TButtonProps> = (props) => {
-  return <MuiButton {...props} />;
-};
-
-export const Button = styled<TButtonProps>(CustomButton)`
+const StyledButton = styled<TButtonProps>(MuiButton)`
   && {
     min-width: 104px;
     min-height: ${props =>
@@ -23,4 +19,9 @@ export const Button = styled<TButtonProps>(CustomButton)`
   }
 `;
 
+export const Button: React.SFC<TButtonProps> = ({ innerRef, ...rest }) => {
+  return <StyledButton {...rest} />;
+};
+
+export { TButtonProps };
 export default Button;

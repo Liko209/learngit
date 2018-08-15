@@ -8,25 +8,7 @@ export type BasePageHeaderProps = {} & ToolbarProps &
   AppBarProps &
   Partial<Pick<WithTheme, 'theme'>>;
 
-export const CustomPageHeader: React.SFC<BasePageHeaderProps> = (
-  props: BasePageHeaderProps,
-) => {
-  const { children, position, elevation, ...rest } = props;
-  return (
-    <MuiAppBar
-      position={position || 'static'}
-      elevation={elevation || 0}
-      square={true}
-      {...rest}
-    >
-      <MuiToolbar variant="dense">
-        {children}
-      </MuiToolbar>
-    </MuiAppBar>
-  );
-};
-
-export const PageHeader = styled<BasePageHeaderProps>(CustomPageHeader).attrs({})`
+export const StyledPageHeader = styled<BasePageHeaderProps>(MuiAppBar).attrs({})`
   && {
     min-height: 56px;
     padding-left: 0;
@@ -37,5 +19,23 @@ export const PageHeader = styled<BasePageHeaderProps>(CustomPageHeader).attrs({}
     }
   }
 `;
+
+export const PageHeader: React.SFC<BasePageHeaderProps> = (
+  props: BasePageHeaderProps,
+) => {
+  const { children, position, elevation, innerRef, ...rest } = props;
+  return (
+    <StyledPageHeader
+      position={position || 'static'}
+      elevation={elevation || 0}
+      square={true}
+      {...rest}
+    >
+      <MuiToolbar variant="dense">
+        {children}
+      </MuiToolbar>
+    </StyledPageHeader>
+  );
+};
 
 export default PageHeader;

@@ -4,7 +4,7 @@ import { storiesOf } from '@storybook/react';
 import { boolean, select } from '@storybook/addon-knobs/react';
 import { withInfo } from '@storybook/addon-info';
 
-import IconButton from './';
+import IconButton from '.';
 
 const knobs = {
   size: () => select(

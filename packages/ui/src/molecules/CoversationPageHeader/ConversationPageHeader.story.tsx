@@ -6,11 +6,11 @@ import { withInfo } from '@storybook/addon-info';
 import backgrounds from '@storybook/addon-backgrounds';
 import { text } from '@storybook/addon-knobs/react';
 import ConversationPageHeader from '.';
-import { Button } from '../Button';
+import { Button } from '../../atoms/Button';
 import { IconButton } from '../IconButton/index';
 
 const getTitleKnob = () => text('title', 'Global UXD');
-storiesOf('Page Header (Conversation)', module)
+storiesOf('ConversationPageHeader', module)
   .addDecorator(
     backgrounds([{ name: 'slide-background', value: '#f3f3f3', default: true }]),
 )
@@ -43,8 +43,8 @@ storiesOf('Page Header (Conversation)', module)
     return (
       <ConversationPageHeader
         title={getTitleKnob()}
-        subTitleSlot={leftIconBar}
-        rightSlot={rightIconBar}
+        subTitle={leftIconBar}
+        rightSection={rightIconBar}
       />
     );
   }))
@@ -60,12 +60,12 @@ storiesOf('Page Header (Conversation)', module)
         <IconButton>favorite</IconButton>
       </RightButtonBar>
     );
-    return <ConversationPageHeader title={getTitleKnob()} rightSlot={iconBar} />;
+    return <ConversationPageHeader title={getTitleKnob()} rightSection={iconBar} />;
   }))
   .addWithJSX('title only', withInfo(``)(() => {
     return <ConversationPageHeader title={getTitleKnob()} />;
   }))
   .addWithJSX('with right text button', withInfo(``)(() => {
     const textButton = <Button variant="text" color="primary">Button</Button>;
-    return <ConversationPageHeader title={getTitleKnob()} rightSlot={textButton} />;
+    return <ConversationPageHeader title={getTitleKnob()} rightSection={textButton} />;
   }));

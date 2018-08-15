@@ -7,7 +7,7 @@ import ShelfPageHeader from '.';
 import { IconButton } from '../IconButton/index';
 
 const getTitleKnob = () => text('title', 'Global UXD');
-storiesOf('Page Header (Shelf)', module)
+storiesOf('ShelfPageHeader', module)
   .addWithJSX('title only', withInfo(``)(() => {
     return <ShelfPageHeader title={getTitleKnob()} />;
   }))
