@@ -82,7 +82,7 @@ class GroupDao extends BaseDao<Group> {
   async getLatestGroup(): Promise<Group | null> {
     return this.createQuery()
       .orderBy('most_recent_post_created_at', true)
-      .filter((item: Group) => !item.is_archived)
+      .filter((item: Group) => !item.is_archived && !item.is_team)
       .first();
   }
 

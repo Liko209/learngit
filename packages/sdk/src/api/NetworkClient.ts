@@ -50,19 +50,19 @@ export interface IResponseRejectFn {
 export default class NetworkClient {
   networkRequests: INetworkRequests;
   apiPlatform: string;
+  apiPlatformVersion: string;
+  apiMap: Map<string, { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]>;
   defaultVia: NETWORK_VIA;
-  apiMap: Map<
-    string,
-    { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]
-  >;
   // todo refactor config
   constructor(
     networkRequests: INetworkRequests,
     apiPlatform: string,
     defaultVia: NETWORK_VIA,
+    apiPlatformVersion: string = '',
   ) {
     this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;
+    this.apiPlatformVersion = apiPlatformVersion;
     this.apiMap = new Map();
     this.defaultVia = defaultVia;
   }
@@ -108,23 +108,14 @@ export default class NetworkClient {
     };
   }
 
-  getRequestByVia<T>(
-    query: IQuery,
-    via: NETWORK_VIA = this.defaultVia,
-  ): IRequest {
-    const {
-      path,
-      method,
-      data,
-      headers,
-      params,
-      authFree,
-      requestConfig,
-    } = query;
+  getRequestByVia<T>(query: IQuery, via: NETWORK_VIA = this.defaultVia): IRequest {
+    const { path, method, data, headers, params, authFree, requestConfig } = query;
+    const versionPath = this.apiPlatformVersion ? `/${this.apiPlatformVersion}` : '';
+    const finalPath = `${versionPath}${this.apiPlatform}${path}`;
     return new NetworkRequestBuilder()
       .setHost(this.networkRequests.host || '')
       .setHandlerType(this.networkRequests.handlerType)
-      .setPath(`${this.apiPlatform}${path}`)
+      .setPath(finalPath)
       .setMethod(method)
       .setData(data)
       .setHeaders(headers || {})
@@ -133,9 +124,6 @@ export default class NetworkClient {
       .setRequestConfig(requestConfig || {})
       .setVia(via)
       .build();
-    // return via !== 'http' && this.type === 'glip'
-    //   ? new SocketRequestBuilder(requestQuery).build()
-    //   : new NetworkRequestBuilder(requestQuery);
   }
 
   http<T>(query: IQuery) {

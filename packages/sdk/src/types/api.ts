@@ -1,3 +1,9 @@
+/*
+ * @Author: Lip Wang (lip.wangn@ringcentral.com)
+ * @Date: 2018-08-07 17:06:56
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 type BaseConfig = {
   server?: string;
   apiPlatform: string;
@@ -35,7 +41,7 @@ type PartialApiConfig = {
   upload?: Partial<UploadConfig>;
 };
 
-type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload';
+type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload' | 'glip_desktop';
 
 export {
   BaseConfig, RcConfig, Glip2Config, GlipConfig,
