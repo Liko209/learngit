@@ -16,22 +16,86 @@ const knobs = {
     },
     'medium',
   ),
+  color: () => select(
+    'color',
+    {
+      primary: 'primary',
+      secondary: 'secondary',
+    },
+    'primary',
+  ),
   invisible: () => boolean('invisible', false),
   awake: () => boolean('awake', false),
-  active: () => boolean('active', false),
   disabled: () => boolean('disabled', false),
 };
 storiesOf('IconButton', module)
   .addDecorator((storyFn) => {
     return <div style={{ textAlign: 'center' }}>{storyFn()}</div>;
   })
-  .addWithJSX('filled', withInfo(``)(() => {
+  .addWithJSX('plain', withInfo(``)(() => {
     return (
       <div>
         <IconButton
+          variant="plain"
+          color={knobs.color()}
           size={knobs.size()}
           awake={knobs.awake()}
-          active={knobs.active()}
+          disabled={knobs.disabled()}
+          invisible={knobs.invisible()}
+          tooltipTitle="I'm a star"
+        >
+          add_circle
+        </IconButton>
+        <br />
+        <br />
+        <IconButton
+          variant="plain"
+          color={knobs.color()}
+          size={knobs.size()}
+          awake={knobs.awake()}
+          disabled={knobs.disabled()}
+          invisible={knobs.invisible()}
+          tooltipTitle="like"
+        >
+          remove_circle
+        </IconButton>
+        <br/>
+        <br/>
+        <IconButton
+          variant="plain"
+          color={knobs.color()}
+          size={knobs.size()}
+          awake={knobs.awake()}
+          disabled={knobs.disabled()}
+          invisible={knobs.invisible()}
+          tooltipTitle="I'm a star"
+        >
+          add_circle_outlined
+        </IconButton>
+        <br />
+        <br />
+        <IconButton
+          variant="plain"
+          color={knobs.color()}
+          size={knobs.size()}
+          awake={knobs.awake()}
+          disabled={knobs.disabled()}
+          invisible={knobs.invisible()}
+          tooltipTitle="like"
+        >
+          remove_circle_outlined
+        </IconButton>
+      </div>
+    );
+  }))
+  .addWithJSX('round', withInfo(``)(() => {
+    return (
+      <div>
+        <IconButton
+          variant="round"
+          color={knobs.color()}
+          size={knobs.size()}
+          awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
           tooltipTitle="I'm a star"
@@ -41,42 +105,41 @@ storiesOf('IconButton', module)
         <br />
         <br />
         <IconButton
+          variant="round"
+          color={knobs.color()}
           size={knobs.size()}
           awake={knobs.awake()}
-          active={knobs.active()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
           tooltipTitle="like"
         >
           favorite
         </IconButton>
-      </div>
-    );
-  }))
-  .addWithJSX('outlined', withInfo(``)(() => {
-    return (
-      <div>
+        <br/>
+        <br/>
         <IconButton
+          variant="round"
+          color={knobs.color()}
           size={knobs.size()}
           awake={knobs.awake()}
-          active={knobs.active()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
           tooltipTitle="I'm a star"
         >
-          {knobs.active() ? 'star' : 'star_border'}
+          star_border
         </IconButton>
         <br />
         <br />
         <IconButton
+          variant="round"
+          color={knobs.color()}
           size={knobs.size()}
           awake={knobs.awake()}
-          active={knobs.active()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
           tooltipTitle="like"
         >
-          {knobs.active() ? 'favorite' : 'favorite_border'}
+          favorite_border
         </IconButton>
       </div>
     );

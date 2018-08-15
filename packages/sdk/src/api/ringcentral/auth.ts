@@ -36,8 +36,11 @@ function generateCode(clientId: string, redirectUri: string): Promise<IResponse<
     clientId,
     redirectUri,
   };
+  const path = Api.httpConfig.rc.apiPlatformVersion ?
+    `/${Api.httpConfig.rc.apiPlatformVersion}${RINGCENTRAL_API.API_GENERATE_CODE}`
+    : `${RINGCENTRAL_API.API_GENERATE_CODE}`;
   return Api.glip2NetworkClient.http({
-    path: `/${Api.httpConfig.rc.apiPlatformVersion}${RINGCENTRAL_API.API_GENERATE_CODE}`,
+    path,
     method: NETWORK_METHOD.POST,
     via: NETWORK_VIA.HTTP,
     data: model,

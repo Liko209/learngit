@@ -18,7 +18,7 @@ import ErrorHandler from '@/containers/ErrorHandler';
 
 const { AuthService } = service;
 const { ErrorTypes } = utils;
-interface Props extends RouteComponentProps<any> { }
+interface Props extends RouteComponentProps<any> {}
 
 interface States {
   btnDisabled: boolean;
@@ -38,7 +38,7 @@ class Login extends React.Component<Props, States> {
       username: '',
       extension: '',
       password: '',
-      errors: []
+      errors: [],
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -49,7 +49,7 @@ class Login extends React.Component<Props, States> {
     this.setState({ [name]: value } as Pick<
       States,
       'username' | 'extension' | 'password'
-      >);
+    >);
   }
 
   async handleSubmit(event: React.FormEvent<HTMLButtonElement>) {
@@ -76,7 +76,7 @@ class Login extends React.Component<Props, States> {
     const { location, history } = this.props;
     this.setState({
       btnDisabled: true,
-      btnText: `Login...`
+      btnText: `Login...`,
     });
 
     try {
@@ -93,12 +93,12 @@ class Login extends React.Component<Props, States> {
         },
         [ErrorTypes.NETWORK]: () => {
           handler.show(error);
-        }
+        },
       });
     } finally {
       this.setState({
         btnDisabled: false,
-        btnText: 'Login'
+        btnText: 'Login',
       });
     }
   }
@@ -110,7 +110,7 @@ class Login extends React.Component<Props, States> {
       extension,
       btnDisabled,
       btnText,
-      errors
+      errors,
     } = this.state;
     return (
       <div>
@@ -141,7 +141,11 @@ class Login extends React.Component<Props, States> {
             {btnText}
           </Button>
           <Info>
-            <ul>{errors.map(error => <li key={error}>{error}</li>)}</ul>
+            <ul>
+              {errors.map(error => (
+                <li key={error}>{error}</li>
+              ))}
+            </ul>
           </Info>
         </Form>
         <Download />
