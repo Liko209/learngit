@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { Dialog, DialogHeader, DialogTitle } from '..';
+import { Dialog, DialogHeader, DialogTitle } from '.';
 
 import { Typography, DialogActions, Button } from '@material-ui/core';
 

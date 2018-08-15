@@ -2,11 +2,11 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import Stepper from './stepper.js';
-import { Dialog , DialogActions, DialogHeader, DialogContent, DialogTitle } from '../index';
-import {    Button }
-  from '@material-ui/core';
+import { Dialog , DialogActions, DialogHeader, DialogContent, DialogTitle } from '.';
+import { Button } from '@material-ui/core';
 import {  boolean  } from '@storybook/addon-knobs';
 import styled from 'styled-components';
+import Form from './form';
 
 storiesOf('Dialog', module)
   .addWithJSX('Forms', withInfo(`
@@ -32,7 +32,7 @@ storiesOf('Dialog', module)
           scroll={'body'}
         >
           <DialogHeader titleComp={withTitle && title}><Stepper/></DialogHeader>
-          {content && <DialogContent/>}
+          {content && <DialogContent><Form/></DialogContent>}
           <DialogActions>
           <Leftwrapper > <Button color="primary">Cancel</Button></Leftwrapper>
             <Button color="primary">

@@ -1,10 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { Dialog , DialogHeader, DialogTitle } from '..';
-// import { Button, Typography } from '@material-ui/core';
+import { Dialog , DialogHeader, DialogTitle } from '.';
 import ContactList from './contact.list';
-// import { select, boolean  } from '@storybook/addon-knobs';
 
 storiesOf('Dialog', module)
   .addWithJSX('Simple Popup', withInfo(`
