@@ -30,10 +30,9 @@ export function formalName(name: string, tags?: Array<string>): string {
     if (tags) {
         formalName = tags
             .map(tag => tag.trim())
-            .map(tag => validateTag(tag) && `[${tag}]`)
+            .map(tag => validateTag(tag) || `[${tag}]`)
             .join("") + " " + formalName;
     }
-    console.log("name?:"+ formalName);
     return formalName;
 }
 
@@ -49,8 +48,26 @@ export function parseFormalName(formalName: string): any {
     return { name: rest.trim(), tags: tags };
 }
 
-function filterByTags(tag: string, tags: Array<string>, include: boolean) {
-    
+type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string) => boolean
+export function filterByTags(
+    includeTags?: Array<string>,
+    excludeTags?: Array<string>): CaseFilter {
+    return (caseName: string, fixtureName: string, fixturePath: string): boolean => {
+        if (includeTags){
+            for ( let tag of parseFormalName(caseName).tags){
+                if ( tag in includeTags){ 
+                    return true
+                } 
+            }
+            return false}
+        if (excludeTags){
+            for (let tag of parseFormalName(caseName).tags){
+                if (tag in excludeTags){
+                    return false
+                }
+            }
+            return true
+        }
+       return false 
+    }
 }
-
-
