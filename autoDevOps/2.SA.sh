@@ -36,5 +36,5 @@ if [ "$hasLintError" ]; then
   rm -rf $project/lint/index.txt
   syncFolderToServer $project/lint/ $lintFolder
   addEnv lintErrorUrl=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/index.html
-  # exit 1
+  exit 1
 fi
