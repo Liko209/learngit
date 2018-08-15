@@ -8,6 +8,7 @@ export type TIconButtonProps = {
   invisible?: boolean;
   awake?: boolean;
   active?: boolean;
+  variant?: 'round' | 'plain';
   size?: 'small' | 'medium' | 'large';
 } & IconButtonProps &
   Partial<Pick<WithTheme, 'theme'>>;
@@ -15,9 +16,6 @@ export type TIconButtonProps = {
 const MuiIconButtonWrapper = styled(MuiIconButton)`
   &.muiIconButtonWrapper {
     border-radius: 100%;
-    &:hover {
-      background-color: transparent;
-    }
   }
 `;
 
@@ -38,19 +36,29 @@ export const CustomIconButton: React.SFC<TIconButtonProps> = (
   return tooltipTitle ? (<Tooltip title={tooltipTitle}>{main}</Tooltip>) : main;
 };
 
+CustomIconButton.defaultProps = {
+  variant: 'round',
+};
+
 const sizes = {
-  large: '24px',
-  medium: '20px',
-  small: '16px',
+  'plain-large': '24px',
+  'plain-medium': '20px',
+  'plain-small': '16px',
+  'round-large': '48px',
+  'round-medium': '40px',
+  'round-small': '32px',
 };
 
 export const IconButton = styled<TIconButtonProps>(CustomIconButton)`
   && {
-    width: ${props => props.size ? sizes[props.size] : sizes['medium']};
-    height: ${props => props.size ? sizes[props.size] : sizes['medium']};
+    width: ${props => sizes[`${props.variant}-${props.size}`]};
+    height: ${props => sizes[`${props.variant}-${props.size}`]};
     ${MuiIconButtonWrapper} {
-      width: ${props => props.size ? sizes[props.size] : sizes['medium']};
-      height: ${props => props.size ? sizes[props.size] : sizes['medium']};
+      width: ${props => sizes[`${props.variant}-${props.size}`]};
+      height: ${props => sizes[`${props.variant}-${props.size}`]};
+      &:hover {
+        background-color: ${props => props.variant === 'plain' ? 'transparent' : ''};
+      }
     }
     ${IconWrapper} {
       color: ${props =>
@@ -58,9 +66,9 @@ export const IconButton = styled<TIconButtonProps>(CustomIconButton)`
       props.active ? props.theme.palette.primary.main :
         props.awake ? '#9e9e9e' :
           props.invisible ? 'transparent' : '#BFBFBF'};
-      font-size: ${props => props.size ? sizes[props.size] : sizes['medium']};
+      font-size: ${props => sizes[`${props.variant}-${props.size}`]};
       :hover {
-        color: ${props => props.theme.palette.primary.main}
+        color: ${props => props.variant === 'plain' ? props.theme.palette.primary.main : ''}
       }
     }
   }

@@ -16,6 +16,9 @@
     "import-name": [
       false
     ],
+    "jsx-no-multiline-js": [
+      false
+    ],
     "function-name": [
       true,
       {

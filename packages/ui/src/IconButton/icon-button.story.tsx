@@ -29,7 +29,6 @@ storiesOf('IconButton', module)
     return (
       <div>
         <IconButton
-          color="primary"
           size={knobs.size()}
           awake={knobs.awake()}
           active={knobs.active()}
@@ -42,7 +41,6 @@ storiesOf('IconButton', module)
         <br />
         <br />
         <IconButton
-          color="primary"
           size={knobs.size()}
           awake={knobs.awake()}
           active={knobs.active()}
@@ -59,7 +57,6 @@ storiesOf('IconButton', module)
     return (
       <div>
         <IconButton
-          color="primary"
           size={knobs.size()}
           awake={knobs.awake()}
           active={knobs.active()}
@@ -72,7 +69,6 @@ storiesOf('IconButton', module)
         <br />
         <br />
         <IconButton
-          color="primary"
           size={knobs.size()}
           awake={knobs.awake()}
           active={knobs.active()}
