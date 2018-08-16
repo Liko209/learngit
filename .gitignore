@@ -38,3 +38,5 @@ yarn-error.log*
 
 # lint report folder
 /lint
+# UT error
+/ut
