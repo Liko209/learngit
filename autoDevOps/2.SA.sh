@@ -1,10 +1,10 @@
 echo '====Start SA'
 rm -rf $project/lint
 mkdir -p $project/lint
-yarn run lint --project $project/application --out $project/lint/application.txt
-yarn run lint --project $project/demo --out $project/lint/demo.txt
-yarn run lint --project $project/packages/foundation --out $project/lint/foundation.txt
-yarn run lint --project $project/packages/sdk --out $project/lint/sdk.txt
+appLint=$(yarn run lint --project $project/application --out $project/lint/application.txt)
+demoLint=$(yarn run lint --project $project/demo --out $project/lint/demo.txt)
+foundationLint=$(yarn run lint --project $project/packages/foundation --out $project/lint/foundation.txt)
+sdkLint=$(yarn run lint --project $project/packages/sdk --out $project/lint/sdk.txt)
 
 hasLintError=0
 
