@@ -5,7 +5,8 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "testcafe": "testcafe"
+    "testcafe": "testcafe",
+    "e2e": "node js/run.js"
   },
   "engines": {
     "npm": ">=6.x.x",
