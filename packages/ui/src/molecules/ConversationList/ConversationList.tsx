@@ -11,16 +11,15 @@ const StyledList = styled(List)`
   }
 `;
 
-type ConversationListProps = {
-  value: any;
+type ListProps = {
   className?: string;
   onClick?: Function;
   onChange?: Function;
 };
 
-class ConversationList extends PureComponent<ConversationListProps> {
+class ConversationList extends PureComponent<ListProps> {
 
-  constructor(props: ConversationListProps) {
+  constructor(props: ListProps) {
     super(props);
 
     this._handleChange = this._handleChange.bind(this);
@@ -57,4 +56,4 @@ class ConversationList extends PureComponent<ConversationListProps> {
 }
 
 export default ConversationList;
-export { ConversationListProps, ConversationList };
+export { ListProps, ConversationList };
