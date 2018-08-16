@@ -4,19 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { indexData, initialData, remainingData } from "../../api";
-import notificationCenter from "../../service/notificationCenter";
-import { SERVICE } from "../../service/eventKey";
-import { IndexDataModel } from "../../api/glip/user";
-import { IResponse } from "../../api/NetworkClient";
-import { progressBar } from "../../utils/progress";
+import { indexData, initialData, remainingData } from '../../api';
+import notificationCenter from '../../service/notificationCenter';
+import { SERVICE } from '../../service/eventKey';
+import { IndexDataModel } from '../../api/glip/user';
+import { IResponse } from '../../api/NetworkClient';
+import { progressBar } from '../../utils/progress';
 
 interface Params {
   newer_than?: string;
 }
 
 const fetchInitialData = async (
-  currentTime: number
+  currentTime: number,
 ): Promise<IResponse<IndexDataModel>> => {
   progressBar.start();
   let result;
@@ -29,7 +29,7 @@ const fetchInitialData = async (
 };
 
 const fetchRemainingData = async (
-  currentTime: number
+  currentTime: number,
 ): Promise<IResponse<IndexDataModel>> => {
   const result = remainingData({ _: currentTime });
   return result;
@@ -38,7 +38,7 @@ const fetchRemainingData = async (
 // fetch plugins
 
 const fetchIndexData = async (
-  timeStamp: string
+  timeStamp: string,
 ): Promise<IResponse<IndexDataModel>> => {
   progressBar.start();
   const params: Params = { newer_than: timeStamp };
@@ -48,7 +48,7 @@ const fetchIndexData = async (
   const requestConfig = {
     onDownloadProgress(e: any) {
       progressBar.update(e);
-    }
+    },
   };
   let result;
 

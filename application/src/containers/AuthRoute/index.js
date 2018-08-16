@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from "react";
-import PropTypes from "prop-types";
-import { Route, Redirect } from "react-router-dom";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Route, Redirect } from 'react-router-dom';
 
 import { service } from "sdk";
 
@@ -21,13 +21,13 @@ const AuthRoute = ({ component: Component, ...rest }) => {
         isAuthenticated ? (
           <Component {...props} />
         ) : (
-          <Redirect
-            to={{
-              pathname: "/unified-login",
-              state: { from: props.location } // eslint-disable-line
-            }}
-          />
-        )
+            <Redirect
+              to={{
+                pathname: '/unified-login',
+                state: { from: props.location } // eslint-disable-line
+              }}
+            />
+          )
       }
     />
   );

@@ -3,19 +3,19 @@
  * @Date: 2018-08-15 08:54:29
  * Copyright © RingCentral. All rights reserved.
  */
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 // import { intlShape, injectIntl, FormattedMessage } from 'react-intl';
 
-import { service } from "sdk";
-import config from "@/config";
+import { service } from 'sdk';
+import config from '@/config';
 // import { envConfig } from '@/globalConfig';
 // import ErrorHandler from '@/containers/ErrorHandler/index.tsx';
 
 // import Download from '@/components/Download';
 // import LoginVersionStatus from '../Status/LoginVersionStatus';
 
-const { glip2 } = config.get("api");
+const { glip2 } = config.get('api');
 const { AuthService } = service;
 
 const Form = styled.form`
@@ -61,18 +61,18 @@ interface IRouter {
 }
 
 function extractUrlParameter(name: string) {
-  const nameTemp = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
+  const nameTemp = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]');
   const regex = new RegExp(`[\\?&]${nameTemp}=([^&#]*)`);
   const results = regex.exec(window.location.search);
   return results === null
-    ? ""
-    : decodeURIComponent(results[1].replace(/\+/g, " "));
+    ? ''
+    : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
 
 class UnifiedLogin extends React.Component<
   IRouter,
   { btnDisabled: boolean; btnText: string }
-> {
+  > {
   // static propTypes = {
   //   // intl: intlShape.isRequired,
   //   location: PropTypes.object,
@@ -81,37 +81,37 @@ class UnifiedLogin extends React.Component<
 
   static defaultProps = {
     location: {},
-    history: {}
+    history: {},
   };
 
   constructor(props: IRouter) {
     super(props);
     this.state = {
       btnDisabled: false,
-      btnText: "Login"
+      btnText: 'Login',
     };
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   async componentDidMount() {
     const { location, history } = this.props;
-    const code = extractUrlParameter("code");
+    const code = extractUrlParameter('code');
     if (code) {
       this.setState({
         btnDisabled: true,
-        btnText: `Login...` // Login...
+        btnText: `Login...`, // Login...
       });
 
       try {
         await AuthService.getInstance().unifiedLogin({ code });
-        history.replace((location.state && location.state.from) || "/");
+        history.replace((location.state && location.state.from) || '/');
       } catch (error) {
         // const handler = new ErrorHandler(error);
         // handler.handle().show();
         console.log(error);
         this.setState({
           btnDisabled: false,
-          btnText: `Login` // Login
+          btnText: `Login`, // Login
         });
       }
     }
@@ -122,18 +122,18 @@ class UnifiedLogin extends React.Component<
     // const { intl } = this.props;
     this.setState({
       btnDisabled: true,
-      btnText: `Login...` // Login...
+      btnText: `Login...`, // Login...
     });
 
     window.location.href = `${glip2.server}${
       glip2.apiPlatform
-    }/oauth/authorize?force=true&response_type=code&client_id=${
+      }/oauth/authorize?force=true&response_type=code&client_id=${
       glip2.clientId
-    }&state=%2Frc&redirect_uri=${
+      }&state=%2Frc&redirect_uri=${
       window.location.origin
-    }/unified-login/&brand_id=${
+      }/unified-login/&brand_id=${
       glip2.brandId
-    }&glip_auth=true&display=touch&title_bar=true`;
+      }&glip_auth=true&display=touch&title_bar=true`;
   }
 
   // eslint-disable-line react/prefer-stateless-function
