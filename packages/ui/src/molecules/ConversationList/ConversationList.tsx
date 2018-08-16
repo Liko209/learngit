@@ -3,6 +3,14 @@ import styled from 'styled-components';
 
 import { List } from '@material-ui/core';
 
+const StyledList = styled(List)`
+  && {
+    background-color: white;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+`;
+
 type ConversationListProps = {
   value: any;
   className?: string;
@@ -10,7 +18,7 @@ type ConversationListProps = {
   onChange?: Function;
 };
 
-class TConversationList extends React.PureComponent<ConversationListProps> {
+class ConversationList extends React.PureComponent<ConversationListProps> {
 
   constructor(props: ConversationListProps) {
     super(props);
@@ -20,13 +28,13 @@ class TConversationList extends React.PureComponent<ConversationListProps> {
 
   render() {
     return (
-      <List
+      <StyledList
         component="div"
         className={this.props.className}
         onClick={this._handleChange}
       >
         {this.props.children}
-      </List>
+      </StyledList>
     );
   }
 
@@ -48,13 +56,5 @@ class TConversationList extends React.PureComponent<ConversationListProps> {
   }
 }
 
-const ConversationList = styled<ConversationListProps>(TConversationList)`
-  && {
-    background-color: white;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-`;
-
 export default ConversationList;
-export { ConversationListProps, ConversationList, TConversationList };
+export { ConversationListProps, ConversationList };

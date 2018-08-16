@@ -6,10 +6,10 @@ import { WithTheme } from '@material-ui/core/styles/withTheme';
 import { ListItem as MuiListItem, Tooltip } from '@material-ui/core';
 
 import { Presence, Umi, Icon } from '../../atoms';
-import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { isTextOverflow } from '../../utils';
+import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
-const ListItem = styled(MuiListItem)`
+const StyledListItem = styled(MuiListItem)`
 && {
   white-space: nowrap;
   padding: 6px 16px 6px 12px;
@@ -66,7 +66,7 @@ class ConversationListItem extends React.Component<ItemProps, ItemStates> {
 
     const fontWeight = unreadCount ? 'bold' : 'normal';
     return (
-      <ListItem
+      <StyledListItem
         button={true}
         onClick={onClick}
         onMouseOver={this._handleMouseOver}
@@ -87,7 +87,7 @@ class ConversationListItem extends React.Component<ItemProps, ItemStates> {
         </Tooltip>
         <Umi important={important} unreadCount={unreadCount} showCount={showCount} />
         <Icon onClick={onMoreClick}>more_vert</Icon>
-      </ListItem>
+      </StyledListItem>
     );
   }
 
