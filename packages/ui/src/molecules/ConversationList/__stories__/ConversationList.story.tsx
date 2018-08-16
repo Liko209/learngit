@@ -5,33 +5,29 @@ import { withInfo } from '@storybook/addon-info';
 import { select, number, boolean } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
 
-import Collapse from '@material-ui/core/Collapse';
 import { Icon } from '../../../atoms';
 
 import {
   ConversationList as List,
   ConversationListItem as ListItem,
-  ConversationListSectionHeader as SectionHeader,
+  ConversationListSection as Section,
 } from '../';
 
 import StoryWrapper from './StoryWrapper';
 
 storiesOf('Molecules/ConversationList', module)
-  .add('List', withInfo({ inline: true })(
+  .add('Section', withInfo({ inline: true })(
     () => {
-      const expanded = boolean('expanded', true);
-
       return (
         <StoryWrapper>
-          <SectionHeader
+          <Section
             icon={<Icon>star</Icon>}
             title="Favorites"
             unreadCount={32}
             important={true}
             showCount={true}
-            expanded={expanded}
-          />
-          <Collapse in={expanded}>
+            expanded={true}
+          >
             <List value={0} onChange={action('change')}>
               <ListItem status="online" title="Matthew" unreadCount={10} />
               <ListItem
@@ -45,7 +41,28 @@ storiesOf('Molecules/ConversationList', module)
               <ListItem status="away" title="Michael" unreadCount={0} />
               <ListItem status="offline" title="Steve" />
             </List>
-          </Collapse>
+          </Section>
+        </StoryWrapper>
+      );
+    },
+  ))
+  .add('List', withInfo({ inline: true })(
+    () => {
+      return (
+        <StoryWrapper>
+          <List value={0} onChange={action('change')}>
+            <ListItem status="online" title="Matthew" unreadCount={10} />
+            <ListItem
+              showCount={true}
+              important={true}
+              title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
+              unreadCount={12}
+            />
+            <ListItem title="Maria" unreadCount={9} />
+            <ListItem title="Jupiter Team" unreadCount={0} />
+            <ListItem status="away" title="Michael" unreadCount={0} />
+            <ListItem status="offline" title="Steve" />
+          </List>
         </StoryWrapper>
       );
     },
@@ -83,27 +100,6 @@ storiesOf('Molecules/ConversationList', module)
             showCount={!isTeam}
             onClick={action('click')}
             onMoreClick={action('more')}
-          />
-        </StoryWrapper>
-      );
-    },
-  ))
-  .add('SectionHeader', withInfo({ inline: true })(
-    () => {
-      const important = boolean('Important', false);
-      const unreadCount = number('Unread count', 120);
-      const showCount = boolean('Show count', true);
-
-      return (
-        <StoryWrapper>
-          <SectionHeader
-            icon={<Icon>people</Icon>}
-            important={important}
-            title="Teams"
-            unreadCount={unreadCount}
-            showCount={showCount}
-            onClick={action('click')}
-            onArrowClick={action('arrow')}
           />
         </StoryWrapper>
       );
