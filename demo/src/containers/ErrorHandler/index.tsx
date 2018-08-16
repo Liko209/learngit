@@ -29,7 +29,7 @@ class ErrorHandler {
     }
   }
   handle(handlers?: Handlers) {
-    const { error } = this;
+    const error = this.error;
     console.log('service error:', error);
     if (!(error instanceof BaseError)) {
       console.error('Service Error: throw error format is wrong!');

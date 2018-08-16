@@ -1,8 +1,7 @@
 /*
  * @Author: Shining Miao (shining.miao@ringcentral.com)
  * @Date: 2018-02-27 14:17:58
- * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
- * @Last Modified time: 2018-05-11 10:55:40
+ * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
 import { observer } from 'mobx-react';
@@ -30,7 +29,7 @@ const AvatarContainer = (props: any) => {
             if (headshot.thumbs) {
               const regex = new RegExp(`^${headshot.stored_file_id}.+36`);
 
-              Object.keys(headshot.thumbs).forEach(key => {
+              Object.keys(headshot.thumbs).forEach((key) => {
                 if (regex.test(key)) {
                   avatarUrl = headshot.thumbs[key] || defaultPersonAvatar;
                 }

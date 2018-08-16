@@ -8,9 +8,8 @@ type SanitizeTextHelper = (raw: string) => string;
 
 type CombineChunks = (params: { chunks: MatchedChunk[] }) => MatchedChunk[];
 
-type FillInChunks = (
-  params: { chunksToHighlight: MatchedChunk[]; totalLength: number }
-) => AllChunks[];
+type FillInChunks = (params: { chunksToHighlight: MatchedChunk[]; totalLength: number })
+  => AllChunks[];
 
 interface AllChunks extends MatchedChunk {
   highlight: boolean;
@@ -21,22 +20,22 @@ interface MatchedChunk {
   end: number;
 }
 
-const removePunctuationForSearch: SanitizeTextHelper = function(text) {
+const removePunctuationForSearch: SanitizeTextHelper = (text) => {
   return text.replace(/[\x3a-\x40\x5b-\x60\x7b-\x7f]/g, ' ');
 };
 
-const removeHTMLForSearch: SanitizeTextHelper = function(text) {
-  return text.replace(/(<[^>]*>)/g, function(_, text) {
+const removeHTMLForSearch: SanitizeTextHelper = (text) => {
+  return text.replace(/(<[^>]*>)/g, (_, text) => {
     return new Array(text.length + 1).join(' ');
   });
 };
 
-const removeEmojiForSearch: SanitizeTextHelper = function(text) {
+const removeEmojiForSearch: SanitizeTextHelper = (text) => {
   // TODO:
   return text;
 };
 
-const sanitize_for_search_match: SanitizeTextHelper = function(text) {
+const sanitize_for_search_match: SanitizeTextHelper = (text) => {
   const removedUnderline = text.toLowerCase().replace(/__/g, '  ');
   const removedHtml = removeHTMLForSearch(removedUnderline);
   const removedEmoji = removeEmojiForSearch(removedHtml);
@@ -44,10 +43,10 @@ const sanitize_for_search_match: SanitizeTextHelper = function(text) {
 };
 const searchRegExpBuilder = (
   pattern: string,
-  caseSensitive?: Boolean
+  caseSensitive?: Boolean,
 ): RegExp => {
   const regexp = pattern
-    .replace(/[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]/g, '') //eslint-disable-line
+    .replace(/[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]/g, '') // eslint-disable-line
     .replace(/[\[\]\\{}()+*?.$^|]/g, '');
   return new RegExp(regexp, caseSensitive ? 'g' : 'gi');
 };
@@ -60,8 +59,8 @@ const findChunks = (text: string, queries: string[]) => {
       const regex = searchRegExpBuilder(searchWord);
       let match;
       while ((match = regex.exec(cleaned_text))) {
-        let start = match.index;
-        let end = regex.lastIndex;
+        const start = match.index;
+        const end = regex.lastIndex;
         if (end > start) {
           chunks.push({ start, end });
         }
@@ -70,7 +69,7 @@ const findChunks = (text: string, queries: string[]) => {
         }
       }
       return chunks;
-    }, []);
+    },      []);
 };
 
 const combineChunks: CombineChunks = ({ chunks }) => {
@@ -80,20 +79,19 @@ const combineChunks: CombineChunks = ({ chunks }) => {
       // First chunk just goes straight in the array...
       if (!isArrayPopable<MatchedChunk>(processedChunks)) {
         return [nextChunk];
-      } else {
-        // ... subsequent chunks get checked to see if they overlap...
-        const prevChunk: MatchedChunk = processedChunks.pop()!;
-        if (nextChunk.start <= prevChunk.end) {
+      }
+      // ... subsequent chunks get checked to see if they overlap...
+      const prevChunk: MatchedChunk = processedChunks.pop()!;
+      if (nextChunk.start <= prevChunk.end) {
           // It may be the case that prevChunk completely surrounds nextChunk, so take the
           // largest of the end indeces.
-          const endIndex = Math.max(prevChunk.end, nextChunk.end);
-          processedChunks.push({ start: prevChunk.start, end: endIndex });
-        } else {
-          processedChunks.push(prevChunk, nextChunk);
-        }
-        return processedChunks;
+        const endIndex = Math.max(prevChunk.end, nextChunk.end);
+        processedChunks.push({ start: prevChunk.start, end: endIndex });
+      } else {
+        processedChunks.push(prevChunk, nextChunk);
       }
-    }, []);
+      return processedChunks;
+    },      []);
 };
 const fillInChunks: FillInChunks = ({ chunksToHighlight, totalLength }) => {
   const allChunks: AllChunks[] = [];
@@ -102,7 +100,7 @@ const fillInChunks: FillInChunks = ({ chunksToHighlight, totalLength }) => {
       allChunks.push({
         start,
         end,
-        highlight
+        highlight,
       });
     }
   };
@@ -111,7 +109,7 @@ const fillInChunks: FillInChunks = ({ chunksToHighlight, totalLength }) => {
     append(0, totalLength, false);
   } else {
     let lastIndex = 0;
-    chunksToHighlight.forEach(chunk => {
+    chunksToHighlight.forEach((chunk) => {
       append(lastIndex, chunk.start, false);
       append(chunk.start, chunk.end, true);
       lastIndex = chunk.end;
@@ -126,7 +124,7 @@ const findAll = (textToHighLight: string, queries: string[]) => {
   const combinedChunks = combineChunks({ chunks });
   return fillInChunks({
     chunksToHighlight: combinedChunks,
-    totalLength: textToHighLight.length
+    totalLength: textToHighLight.length,
   });
 };
 
