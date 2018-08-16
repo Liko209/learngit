@@ -6,7 +6,6 @@ import registerServiceWorker from '@/registerServiceWorker';
 import '@/i18n';
 import { initAll } from '@/init';
 
-registerServiceWorker();
 (async function () {
   await initAll();
 
