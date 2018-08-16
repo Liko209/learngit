@@ -5,15 +5,10 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-// import { intlShape, injectIntl, FormattedMessage } from 'react-intl';
 
 import { service } from 'sdk';
 import config from '@/config';
-// import { envConfig } from '@/globalConfig';
 // import ErrorHandler from '@/containers/ErrorHandler/index.tsx';
-
-// import Download from '@/components/Download';
-// import LoginVersionStatus from '../Status/LoginVersionStatus';
 
 const { glip2 } = config.get('api');
 const { AuthService } = service;
@@ -73,11 +68,6 @@ class UnifiedLogin extends React.Component<
   IRouter,
   { btnDisabled: boolean; btnText: string }
   > {
-  // static propTypes = {
-  //   // intl: intlShape.isRequired,
-  //   location: PropTypes.object,
-  //   history: PropTypes.object
-  // };
 
   static defaultProps = {
     location: {},
@@ -119,7 +109,6 @@ class UnifiedLogin extends React.Component<
 
   handleSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
-    // const { intl } = this.props;
     this.setState({
       btnDisabled: true,
       btnText: `Login...`, // Login...
@@ -136,7 +125,6 @@ class UnifiedLogin extends React.Component<
       }&glip_auth=true&display=touch&title_bar=true`;
   }
 
-  // eslint-disable-line react/prefer-stateless-function
   render() {
     const { btnDisabled, btnText } = this.state;
     return (
