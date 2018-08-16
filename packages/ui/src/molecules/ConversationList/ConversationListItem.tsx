@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
 import { WithTheme } from '@material-ui/core/styles/withTheme';
-import { ListItem as MuiListItem, Tooltip } from '@material-ui/core';
+import { ListItem as MuiListItem } from '@material-ui/core';
 
 import { Presence, Umi, Icon } from '../../atoms';
-import { isTextOverflow } from '../../utils';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
 const StyledListItem = styled(MuiListItem)`
@@ -45,59 +43,24 @@ type ItemProps = {
   onMoreClick?: (e: React.MouseEvent) => any;
 } & Partial<Pick<WithTheme, 'theme'>>;
 
-type ItemStates = {
-  disableTooltip: boolean;
-};
-
-class ConversationListItem extends Component<ItemProps, ItemStates> {
-  textRef: React.RefObject<any>;
-
-  constructor(props: ItemProps) {
-    super(props);
-    this.state = { disableTooltip: true };
-    this.textRef = React.createRef();
-    this._handleMouseOver = this._handleMouseOver.bind(this);
-  }
+class ConversationListItem extends Component<ItemProps> {
 
   render() {
     const { title, status, unreadCount, important,
       showCount, onClick, onMoreClick } = this.props;
-    const { disableTooltip } = this.state;
 
     const fontWeight = unreadCount ? 'bold' : 'normal';
     return (
       <StyledListItem
         button={true}
         onClick={onClick}
-        onMouseOver={this._handleMouseOver}
       >
         <Presence status={status} />
-        <Tooltip
-          title={title}
-          disableFocusListener={disableTooltip}
-          disableHoverListener={disableTooltip}
-          disableTouchListener={disableTooltip}
-        >
-          <ItemText
-            ref={this.textRef}
-            style={{ fontWeight }}
-          >
-            {title}
-          </ItemText>
-        </Tooltip>
+        <ItemText style={{ fontWeight }}>{title}</ItemText>
         <Umi important={important} unreadCount={unreadCount} showCount={showCount} />
         <Icon onClick={onMoreClick}>more_vert</Icon>
       </StyledListItem>
     );
-  }
-
-  private _handleMouseOver() {
-    const textEl = ReactDOM.findDOMNode(this.textRef.current);
-    if (textEl && textEl instanceof HTMLElement) {
-      this.setState({
-        disableTooltip: !isTextOverflow(textEl),
-      });
-    }
   }
 }
 
