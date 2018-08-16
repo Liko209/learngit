@@ -98,6 +98,7 @@ class ConversationTab extends PureComponent {
           id={id}
           clickid={clickId}
       >
+      
         {showPresence ? (
           <Presence offlineHide id={presenceId} />
         ) : (

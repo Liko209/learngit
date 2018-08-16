@@ -1,13 +1,23 @@
 import _ from 'lodash';
 import { stringify } from 'qs';
 
-import { IRequest, OAuthTokenHandler, ITokenHandler, AbstractHandleType } from 'foundation';
+import {
+  IRequest,
+  OAuthTokenHandler,
+  ITokenHandler,
+  AbstractHandleType,
+  NETWORK_VIA,
+} from 'foundation';
+
 import Api from '../api';
 
 const HandleByGlip2 = new class extends AbstractHandleType {
+  defaultVia = NETWORK_VIA.HTTP;
   tokenRefreshable = true;
   basic() {
-    return btoa(`${Api.httpConfig.glip2.clientId}:${Api.httpConfig.glip2.clientSecret}`);
+    return btoa(
+      `${Api.httpConfig.glip2.clientId}:${Api.httpConfig.glip2.clientSecret}`,
+    );
   }
   requestDecoration(tokenHandler: ITokenHandler) {
     const handler = tokenHandler as OAuthTokenHandler;

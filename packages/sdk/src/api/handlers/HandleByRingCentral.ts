@@ -1,16 +1,25 @@
 import _ from 'lodash';
 import { stringify } from 'qs';
-
-import { IRequest, OAuthTokenHandler, ITokenHandler, AbstractHandleType, IToken } from 'foundation';
+import {
+  IRequest,
+  OAuthTokenHandler,
+  ITokenHandler,
+  AbstractHandleType,
+  IToken,
+  NETWORK_VIA,
+} from 'foundation';
 import Api from '../api';
 import AccountService from '../../service/account';
 
 const HandleByRingCentral = new class extends AbstractHandleType {
+  defaultVia = NETWORK_VIA.HTTP;
   survivalModeSupportable = true;
   tokenExpirable = true;
   tokenRefreshable = true;
   basic() {
-    return btoa(`${Api.httpConfig.rc.clientId}:${Api.httpConfig.rc.clientSecret}`);
+    return btoa(
+      `${Api.httpConfig.rc.clientId}:${Api.httpConfig.rc.clientSecret}`,
+    );
   }
   requestDecoration(tokenHandler: ITokenHandler) {
     const handler = tokenHandler as OAuthTokenHandler;

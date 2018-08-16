@@ -11,7 +11,7 @@ window.addEventListener(
   () => {
     notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'online' });
     notificationCenter.emit(WINDOW.ONLINE, { onLine: true });
-  }
+  },
 );
 
 window.addEventListener(
@@ -19,7 +19,7 @@ window.addEventListener(
   () => {
     notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' });
     notificationCenter.emit(WINDOW.ONLINE, { onLine: false });
-  }
+  },
 );
 
 window.addEventListener('load', () => {
