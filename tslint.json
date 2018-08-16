@@ -27,5 +27,7 @@
       }
     ]
   },
-  "jsRules": {}
+  "jsRules": {
+    "no-empty": true
+  }
 }
