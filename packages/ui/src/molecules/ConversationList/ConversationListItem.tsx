@@ -63,7 +63,6 @@ class ConversationListItem extends React.Component<ItemProps, ItemStates> {
     const { title, status, unreadCount, important,
       showCount, onClick, onMoreClick } = this.props;
     const { disableTooltip } = this.state;
-    console.log('showCount: ', showCount);
 
     const fontWeight = unreadCount ? 'bold' : 'normal';
     return (
