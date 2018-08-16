@@ -1,7 +1,15 @@
-const ENV_NAME = process.env.ENV_NAME || 'XMN-UP';
-const SITE_URL = process.env.SITE_URL || 'https://develop.fiji.gliprc.com/unified-login';
+function parseArgs(argsString: string) {
+  return argsString.split(',').filter(Boolean).map(s=>s.trim());
+}
 
-const CONFIGS = {
+const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
+const SITE_URL = process.env.SITE_URL || 'https://develop.fiji.gliprc.com/unified-login';
+const FIXTURES = parseArgs(process.env.FIXTURES || `${__dirname}/fixtures/*`);
+const BROWSERS = parseArgs(process.env.BROWSERS || 'chrome');
+const INCLUDE_TAGS = parseArgs(process.env.INCLUDE_TAGS || '');
+const EXCLUDE_TAGS = parseArgs(process.env.EXCLUDE_TAGS || '');
+
+const ENV = {
   'WEB-AQA-XIA': {
     ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-xta02.lab.rcch.ringcentral.com:3303',
     ACCOUNT_POOL_ENV: 'webaqaxia',
@@ -26,12 +34,16 @@ const CONFIGS = {
     RC_PLATFORM_BASE_URL: 'https://api-xmnup.lab.nordigy.ru',
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
   }
-};
+}[SITE_ENV];
 
-const CONFIG = CONFIGS[ENV_NAME];
 
 export {
-  CONFIG,
-  ENV_NAME,
-  SITE_URL
-}
+  SITE_ENV,
+  SITE_URL,
+  ENV,
+
+  FIXTURES,
+  BROWSERS,
+  INCLUDE_TAGS,
+  EXCLUDE_TAGS,
+};

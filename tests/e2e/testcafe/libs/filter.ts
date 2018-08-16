@@ -61,10 +61,10 @@ export function filterByTags(
     return (caseName: string, fixtureName: string, fixturePath: string): boolean => {
       let flag: boolean = true;
       const nameTags = parseFormalName(caseName);
-      if (includeTags != undefined) {
+      if (includeTags && includeTags.length > 0) {
         flag = flag && nameTags.tags.some(tag => includeTags.some(includeTag => tag == includeTag));
       }
-      if (excludeTags != undefined) {
+      if (excludeTags && excludeTags.length > 0) {
         flag = flag && !nameTags.tags.some(tag => excludeTags.some(excludeTag => tag == excludeTag));
       }
       return flag;
