@@ -25,9 +25,9 @@ class App extends React.PureComponent {
         <StoreContext.Provider value={storeManager}>
           <Router>
             <Switch>
-              <Route path='/login' component={Login} />
-              <Route path='/unified-login' component={UnifiedLogin} />
-              <AuthRoute path='/' component={Home} />
+              <Route path="/login" component={Login} />
+              <Route path="/unified-login" component={UnifiedLogin} />
+              <AuthRoute path="/" component={Home} />
             </Switch>
           </Router>
         </StoreContext.Provider>
