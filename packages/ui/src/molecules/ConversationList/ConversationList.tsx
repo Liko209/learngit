@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 
 import { List } from '@material-ui/core';
@@ -18,7 +18,7 @@ type ConversationListProps = {
   onChange?: Function;
 };
 
-class ConversationList extends React.PureComponent<ConversationListProps> {
+class ConversationList extends PureComponent<ConversationListProps> {
 
   constructor(props: ConversationListProps) {
     super(props);

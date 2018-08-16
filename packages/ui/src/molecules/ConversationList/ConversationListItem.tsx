@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
@@ -49,7 +49,7 @@ type ItemStates = {
   disableTooltip: boolean;
 };
 
-class ConversationListItem extends React.Component<ItemProps, ItemStates> {
+class ConversationListItem extends Component<ItemProps, ItemStates> {
   textRef: React.RefObject<any>;
 
   constructor(props: ItemProps) {
