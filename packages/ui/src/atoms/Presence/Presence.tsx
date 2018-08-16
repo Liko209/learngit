@@ -13,7 +13,7 @@ const PRESENCE_COLOR_MAP = {
   default: 'transparent',
 };
 
-const Presence = styled<PresenceProps, 'div'>('div')`
+const StyledPresence = styled<PresenceProps, 'div'>('div')`
   display: inline-block;
   width: 8px;
   height: 8px;
@@ -22,5 +22,7 @@ const Presence = styled<PresenceProps, 'div'>('div')`
   border-radius: 50%;
 `;
 
+const Presence = (props: PresenceProps) => <StyledPresence {...props} />;
+
 export { Presence };
-export default { Presence };
+export default Presence;

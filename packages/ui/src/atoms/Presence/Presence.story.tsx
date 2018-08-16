@@ -1,20 +1,21 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import { Presence } from '.';
 
-const Item = styled.div`
+const StyledWrapper = styled.div`
   display: flex;
 `;
+const Wrapper = (props: { children: any }) => <StyledWrapper>{props.children}</StyledWrapper>;
 
 storiesOf('Atoms/Presence', module)
-  .add('status', withInfo(``)(() => {
+  .add('status', withInfo({ inline: true })(() => {
     return (
-      <Fragment>
-        <Item><Presence status="online" /> online</Item>
-        <Item><Presence status="away" /> away</Item>
-        <Item><Presence status="offline" /> offline</Item>
-      </Fragment>
+      <div>
+        <Wrapper><Presence status="online" /> online</Wrapper>
+        <Wrapper><Presence status="away" /> away</Wrapper>
+        <Wrapper><Presence status="offline" /> offline</Wrapper>
+      </div>
     );
   }));
