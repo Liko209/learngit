@@ -3,23 +3,23 @@
  * @Date: 2018-7-17 11:01:02
  * Copyright © RingCentral. All rights reserved.
  */
-const spawn  = require('child_process').spawnSync
+const spawn = require("child_process").spawnSync;
 
 function checkYarnInstalled() {
-  const command = spawn('yarn', ['--version'])
-  return command && command.stdout && command.stdout.toString().trim()
+  const command = spawn("yarn", ["--version"]);
+  return command && command.stdout && command.stdout.toString().trim();
 }
 const execPath = process.env.npm_execpath;
-const isYarn = execPath && execPath.indexOf('yarn') > -1;
+const isYarn = execPath && execPath.indexOf("yarn") > -1;
 function log(...msg) {
-  console.log(...msg)
+  console.log(...msg);
 }
 function cyan(...msg) {
-  const chalk = require('chalk');
-  console.log(chalk && chalk.cyan(...msg))
+  const chalk = require("chalk");
+  console.log(chalk && chalk.cyan(...msg));
 }
 if (!isYarn) {
-  if(checkYarnInstalled()) {
+  if (checkYarnInstalled()) {
     cyan('You have yarn installed, please use yarn to install all dependencies')
     log()
     log('To install dependencies:')
@@ -33,10 +33,12 @@ if (!isYarn) {
     process.exit(1)
   } else {
     cyan(`    To say goodbye to the "but it works on my machine" bugs, you should use yarn install dependencies,
-    try ${chalk.underline.yellow.bold('brew install yarn')} to install yarn first`);
+    try ${chalk.underline.yellow.bold(
+        "brew install yarn"
+      )} to install yarn first`);
     log();
-    cyan('For more help, see https://yarnpkg.com/en/docs/usage.');
-    log()
-    process.exit(1)
+    cyan("For more help, see https://yarnpkg.com/en/docs/usage.");
+    log();
+    process.exit(1);
   }
 }

@@ -10,6 +10,10 @@ import GlipTypeUtil from './util';
 interface IMessage<V> {
   [key: number]: V;
 }
+interface SystemMessage {
+  type: string;
+  data: object[];
+}
 const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_STATE]: 'state',
   [TypeDictionary.TYPE_ID_GROUP]: 'group',
@@ -29,10 +33,16 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_PAGE]: 'item',
 };
 
-function parseSocketMessage(message: string) {
+function parseSocketMessage(message: string | SystemMessage) {
+  if (typeof message === 'object') {
+    const { type, data } = message;
+    return { [type]: data };
+  }
+
   const {
     body: { objects },
   } = JSON.parse(message);
+
   const result = {};
   objects.forEach((arr: any[]) => {
     arr.forEach((obj) => {

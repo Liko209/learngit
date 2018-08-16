@@ -37,14 +37,20 @@ if [ "$gitlabTargetBranch" != "$gitlabSourceBranch" ]; then
   subDomain=mr-${subDomain}
   addEnv RECIPIENT_LIST=jupiter_mr_ci@ringcentral.glip.com
 else
-  addEnv RECIPIENT_LIST=jupiter_push_ci@ringcentral.glip.com
-  # dev: jupiter_develop_ci@ringcentral.glip.com
-  # master: jupiter_master_ci@ringcentral.glip.com
+  case $gitlabSourceBranch in
+    develop)
+      addEnv RECIPIENT_LIST=jupiter_develop_ci@ringcentral.glip.com
+    ;;
+    master)
+      addEnv RECIPIENT_LIST=jupiter_master_ci@ringcentral.glip.com
+    ;;
+    *)
+      addEnv RECIPIENT_LIST=jupiter_push_ci@ringcentral.glip.com
+    ;;
+  esac
 fi
 
-# Always build demo
-# demoHasUpdate="$(git diff HEAD^ HEAD  ${project}/demo)"
-demoHasUpdate=1
+demoHasUpdate="$(git diff HEAD^ HEAD  ${project}/demo)"
 if  [ "$demoHasUpdate" ]; then
   subDomain=demo-${subDomain}
   addEnv projectName='Fiji Demo'
