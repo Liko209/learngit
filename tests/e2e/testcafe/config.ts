@@ -1,13 +1,11 @@
-function parseArgs(argsString: string) {
-  return argsString.split(',').filter(Boolean).map(s=>s.trim());
-}
+/*
+ * @Author: Henry Xu(henry.xu@ringcentral.com)
+ * @Date: 2018-08-16 11:29:42
+ * Copyright © RingCentral. All rights reserved.
+ */
 
 const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
 const SITE_URL = process.env.SITE_URL || 'https://develop.fiji.gliprc.com/unified-login';
-const FIXTURES = parseArgs(process.env.FIXTURES || `${__dirname}/fixtures/*`);
-const BROWSERS = parseArgs(process.env.BROWSERS || 'chrome');
-const INCLUDE_TAGS = parseArgs(process.env.INCLUDE_TAGS || '');
-const EXCLUDE_TAGS = parseArgs(process.env.EXCLUDE_TAGS || '');
 
 const ENV = {
   'WEB-AQA-XIA': {
@@ -41,9 +39,4 @@ export {
   SITE_ENV,
   SITE_URL,
   ENV,
-
-  FIXTURES,
-  BROWSERS,
-  INCLUDE_TAGS,
-  EXCLUDE_TAGS,
 };

@@ -4,27 +4,36 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-declare function require(name:string): any;
 const createTestCafe = require('testcafe');
+import * as _ from 'lodash';
+import * as G from 'glob';
+
+function parseArgs(argsString: string) {
+  return argsString.split(',').filter(Boolean).map(s => s.trim());
+}
+
+function flattenGlobs(globs: Array<string>): Array<string> {
+  return _(globs).flatMap(g => G.sync(g)).uniq().value();
+}
 
 
-import { filterByTags } from './libs/filter';
-import { FIXTURES, BROWSERS, INCLUDE_TAGS, EXCLUDE_TAGS } from './config';
+const FIXTURES = flattenGlobs(parseArgs(process.env.FIXTURES || `${__dirname}/../fixtures/**/*.ts`));
+const BROWSERS = parseArgs(process.env.BROWSERS || 'chrome');
+const INCLUDE_TAGS = parseArgs(process.env.INCLUDE_TAGS || '');
+const EXCLUDE_TAGS = parseArgs(process.env.EXCLUDE_TAGS || '');
 
-let testcafe: any         = null;
+let testcafe: any = null;
 
 createTestCafe()
-    .then((tc: any) => {
-        testcafe     = tc;
-        const runner = testcafe.createRunner();
-
-      return runner
-        .src(FIXTURES)
-        .browsers(BROWSERS)
-        .filter(filterByTags(INCLUDE_TAGS, EXCLUDE_TAGS))
-        .run();
-    })
-    .then((failedCount: any) => {
-        console.log('Tests failed: ' + failedCount);
-        testcafe.close();
-    });
+  .then((tc: any) => {
+    testcafe = tc;
+    const runner = testcafe.createRunner();
+    return runner
+      .src(FIXTURES)
+      .browsers(BROWSERS)
+      .run();
+  })
+  .then((failedCount: any) => {
+    console.log('Tests failed: ' + failedCount);
+    testcafe.close();
+  });
