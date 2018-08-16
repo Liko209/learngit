@@ -21,4 +21,4 @@ else
 fi
 
 # # 5. E2E
-. $autoDevOps/5.E2E.sh
+# . $autoDevOps/5.E2E.sh
