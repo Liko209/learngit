@@ -36,7 +36,7 @@ class Http extends BaseClient {
       withCredentials: true,
       data: {},
       params: {},
-      cancelToken: new CancelToken(cancel => {
+      cancelToken: new CancelToken((cancel) => {
         this.tasks[request.id].cancel = cancel;
       }),
     };
@@ -52,7 +52,7 @@ class Http extends BaseClient {
     }
 
     axios(options)
-      .then(res => {
+      .then((res) => {
         delete this.tasks[request.id];
         const { data, status, statusText } = res;
         const response = HttpResponse.builder
@@ -64,7 +64,7 @@ class Http extends BaseClient {
           .build();
         listener.onSuccess(response);
       })
-      .catch(err => {
+      .catch((err) => {
         delete this.tasks[request.id];
         const { response = {}, code, message } = err;
         const { data } = response;

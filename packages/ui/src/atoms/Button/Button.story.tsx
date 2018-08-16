@@ -7,7 +7,7 @@ import { withInfo } from '@storybook/addon-info';
 import Button from './';
 
 storiesOf('Buttons', module)
-  .addWithJSX('CustomButton', withInfo(`
+  .addWithJSX('Button', withInfo(`
       description or documentation about my component, supports markdown
 
       ~~~js

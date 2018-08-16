@@ -1,10 +1,10 @@
-/// <reference path="../../.storybook/storybook.d.ts" />
+/// <reference path="../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select } from '@storybook/addon-knobs/react';
 import { withInfo } from '@storybook/addon-info';
 
-import IconButton from './';
+import IconButton from '.';
 
 const knobs = {
   size: () => select(
@@ -59,8 +59,8 @@ storiesOf('IconButton', module)
         >
           remove_circle
         </IconButton>
-        <br/>
-        <br/>
+        <br />
+        <br />
         <IconButton
           variant="plain"
           color={knobs.color()}
@@ -115,8 +115,8 @@ storiesOf('IconButton', module)
         >
           favorite
         </IconButton>
-        <br/>
-        <br/>
+        <br />
+        <br />
         <IconButton
           variant="round"
           color={knobs.color()}
