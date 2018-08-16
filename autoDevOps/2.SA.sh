@@ -13,6 +13,7 @@ lintFolder=lint/$subDomain/$BUILD_NUMBER
 
 applicationLintError=$(<lint/application.txt)
 if [ "$applicationLintError" ]; then
+  echo 'Application Has Lint Error'
   echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/application.txt>Application Lint Result</a><br />" >> $project/lint/index.html
   cat $project/lint/application.txt >> $project/lint/index.txt
   hasLintError=1
@@ -20,6 +21,7 @@ fi
 
 demoLintError=$(<lint/demo.txt)
 if [ "$demoLintError" ]; then
+  echo 'Demo Has Lint Error'
   echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/demo.txt>demo Lint Result</a><br />" >> $project/lint/index.html
   cat $project/lint/demo.txt >> $project/lint/index.txt
   hasLintError=1
@@ -27,6 +29,7 @@ fi
 
 foundationLintError=$(<lint/foundation.txt)
 if [ "$foundationLintError" ]; then
+  echo 'Foundation Has Lint Error'
   echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/foundation.txt>Foundation Lint Result</a><br />" >> $project/lint/index.html
   cat $project/lint/foundation.txt >> $project/lint/index.txt
   hasLintError=1
@@ -34,6 +37,7 @@ fi
 
 sdkLintError=$(<lint/sdk.txt)
 if [ "$sdkLintError" ]; then
+  echo 'SDK Has Lint Error'
   echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/sdk.txt>SDK Lint Result</a><br />" >> $project/lint/index.html
   cat $project/lint/sdk.txt >> $project/lint/index.txt
   hasLintError=1
@@ -41,6 +45,7 @@ fi
 
 uiLintError=$(<lint/ui.txt)
 if [ "$uiLintError" ]; then
+  echo 'UI Has Lint Error'
   echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/ui.txt>UI Lint Result</a><br />" >> $project/lint/index.html
   cat $project/lint/ui.txt >> $project/lint/index.txt
   hasLintError=1
