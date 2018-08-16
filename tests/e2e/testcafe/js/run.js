@@ -11,7 +11,7 @@ var utils_1 = require("./libs/utils");
 var FIXTURES = utils_1.flattenGlobs(utils_1.parseArgs(process.env.FIXTURES || __dirname + "/../fixtures/**/*.ts"));
 var REPORTER = process.env.REPORTER || 'allure-lazy';
 var SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp/';
-var CONCURRENCY = process.env.CONCURRENCY || 1;
+var CONCURRENCY = process.env.CONCURRENCY || '1';
 var BROWSERS = utils_1.parseArgs(process.env.BROWSERS || 'chrome');
 var INCLUDE_TAGS = utils_1.parseArgs(process.env.INCLUDE_TAGS || '');
 var EXCLUDE_TAGS = utils_1.parseArgs(process.env.EXCLUDE_TAGS || '');
@@ -26,7 +26,7 @@ createTestCafe()
         .browsers(BROWSERS)
         .reporter(REPORTER)
         .screenshots(SCREENSHOTS_PATH)
-        .concurrency(CONCURRENCY)
+        .concurrency(parseInt(CONCURRENCY))
         .run();
 })
     .then(function (failedCount) {

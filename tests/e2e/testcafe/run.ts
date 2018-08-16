@@ -11,7 +11,7 @@ import { flattenGlobs, parseArgs } from './libs/utils';
 const FIXTURES = flattenGlobs(parseArgs(process.env.FIXTURES || `${__dirname}/../fixtures/**/*.ts`));
 const REPORTER = process.env.REPORTER || 'allure-lazy';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp/';
-const CONCURRENCY = process.env.CONCURRENCY || 1;
+const CONCURRENCY = process.env.CONCURRENCY || '1';
 const BROWSERS = parseArgs(process.env.BROWSERS || 'chrome');
 const INCLUDE_TAGS = parseArgs(process.env.INCLUDE_TAGS || '');
 const EXCLUDE_TAGS = parseArgs(process.env.EXCLUDE_TAGS || '');
@@ -28,7 +28,7 @@ createTestCafe()
       .browsers(BROWSERS)
       .reporter(REPORTER)
       .screenshots(SCREENSHOTS_PATH)
-      .concurrency(CONCURRENCY)
+      .concurrency(parseInt(CONCURRENCY))
       .run();
   })
   .then((failedCount: any) => {
