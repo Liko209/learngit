@@ -14,6 +14,7 @@ const PRESENCE_COLOR_MAP = {
 };
 
 const Presence = styled<PresenceProps, 'div'>('div')`
+  display: inline-block;
   width: 8px;
   height: 8px;
   margin: 6px 8px;

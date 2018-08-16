@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 
 import { Umi, Icon } from '../../atoms';
-import { ItemText } from './ItemText';
+import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
 export type SectionHeaderProps = {
   title: string;

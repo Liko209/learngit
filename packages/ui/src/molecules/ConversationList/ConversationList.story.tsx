@@ -95,7 +95,7 @@ storiesOf('Molecules/ConversationList', module)
             status={status}
             title={title}
             unreadCount={unreadCount}
-            showCount={isTeam}
+            showCount={!isTeam}
             onClick={action('click')}
             onMoreClick={action('more')}
           />

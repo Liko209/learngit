@@ -1,11 +1,13 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
 import { WithTheme } from '@material-ui/core/styles/withTheme';
-import { ListItem as MuiListItem } from '@material-ui/core';
+import { ListItem as MuiListItem, Tooltip } from '@material-ui/core';
 
 import { Presence, Umi, Icon } from '../../atoms';
-import { ItemText } from './ItemText';
+import { ConversationListItemText as ItemText } from './ConversationListItemText';
+import { isTextOverflow } from '../../utils';
 
 const ListItem = styled(MuiListItem)`
 && {
@@ -33,7 +35,7 @@ const ListItem = styled(MuiListItem)`
 }
 `;
 
-export type ItemProps = {
+type ItemProps = {
   title: string;
   status?: string;
   unreadCount?: number;
@@ -43,22 +45,62 @@ export type ItemProps = {
   onMoreClick?: (e: React.MouseEvent) => any;
 } & Partial<Pick<WithTheme, 'theme'>>;
 
-const TItem = (props: ItemProps) => {
-  const { title, status, unreadCount, important, showCount, onClick, onMoreClick } = props;
-  const fontWeight = unreadCount ? 'bold' : 'normal';
-
-  return (
-    <ListItem button={true} onClick={onClick}>
-      <Presence status={status} />
-      <ItemText style={{ fontWeight }}>
-        {title}
-      </ItemText>
-      <Umi important={important} unreadCount={unreadCount} showCount={!showCount} />
-      <Icon onClick={onMoreClick}>more_vert</Icon>
-    </ListItem>
-  );
+type ItemStates = {
+  disableTooltip: boolean;
 };
 
-export const ConversationListItem = styled<ItemProps>(TItem)``;
+class ConversationListItem extends React.Component<ItemProps, ItemStates> {
+  textRef: React.RefObject<any>;
+
+  constructor(props: ItemProps) {
+    super(props);
+    this.state = { disableTooltip: true };
+    this.textRef = React.createRef();
+    this._handleMouseOver = this._handleMouseOver.bind(this);
+  }
+
+  render() {
+    const { title, status, unreadCount, important,
+      showCount, onClick, onMoreClick } = this.props;
+    const { disableTooltip } = this.state;
+    console.log('showCount: ', showCount);
+
+    const fontWeight = unreadCount ? 'bold' : 'normal';
+    return (
+      <ListItem
+        button={true}
+        onClick={onClick}
+        onMouseOver={this._handleMouseOver}
+      >
+        <Presence status={status} />
+        <Tooltip
+          title={title}
+          disableFocusListener={disableTooltip}
+          disableHoverListener={disableTooltip}
+          disableTouchListener={disableTooltip}
+        >
+          <ItemText
+            ref={this.textRef}
+            style={{ fontWeight }}
+          >
+            {title}
+          </ItemText>
+        </Tooltip>
+        <Umi important={important} unreadCount={unreadCount} showCount={showCount} />
+        <Icon onClick={onMoreClick}>more_vert</Icon>
+      </ListItem>
+    );
+  }
+
+  private _handleMouseOver() {
+    const textEl = ReactDOM.findDOMNode(this.textRef.current);
+    if (textEl && textEl instanceof HTMLElement) {
+      this.setState({
+        disableTooltip: !isTextOverflow(textEl),
+      });
+    }
+  }
+}
 
 export default ConversationListItem;
+export { ItemProps, ConversationListItem };
