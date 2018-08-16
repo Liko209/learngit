@@ -9,6 +9,7 @@ import { EnvironmentSelectionPage } from '../page-models/EnvironmentSelectionPag
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
 import { SITE_URL, SITE_ENV, ENV} from '../config';
+import { formalName } from '../libs/filter';
 import accountPoolHelper from '../libs/AccountPoolHelper';
 
 fixture('My fixture')
@@ -21,7 +22,7 @@ fixture('My fixture')
   }
 )
 
-test('Sign In Success', async t => {
+test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
   await new BlankPage(t)
       .open(SITE_URL)
       .shouldNavigateTo(EnvironmentSelectionPage)

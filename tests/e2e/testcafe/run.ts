@@ -7,6 +7,7 @@
 const createTestCafe = require('testcafe');
 import * as _ from 'lodash';
 import * as G from 'glob';
+import { filterByTags } from './libs/filter';
 
 function parseArgs(argsString: string) {
   return argsString.split(',').filter(Boolean).map(s => s.trim());
@@ -31,6 +32,7 @@ createTestCafe()
     return runner
       .src(FIXTURES)
       .browsers(BROWSERS)
+      .filter(filterByTags(INCLUDE_TAGS, EXCLUDE_TAGS))
       .run();
   })
   .then((failedCount: any) => {

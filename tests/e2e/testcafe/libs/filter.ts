@@ -48,7 +48,6 @@ export function parseFormalName(formalName: string): INameTags {
     let rest = formalName;
     let match;
     while (match = /^\[([^\]]+?)\](.*)$/.exec(rest)) {
-        console.log(match);
         tags.push(match[1]);
         rest = match[2];
     }
