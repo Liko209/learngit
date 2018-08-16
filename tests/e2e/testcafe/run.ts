@@ -5,17 +5,8 @@
  */
 
 const createTestCafe = require('testcafe');
-import * as _ from 'lodash';
-import * as G from 'glob';
 import { filterByTags } from './libs/filter';
-
-function parseArgs(argsString: string) {
-  return argsString.split(',').filter(Boolean).map(s => s.trim());
-}
-
-function flattenGlobs(globs: Array<string>): Array<string> {
-  return _(globs).flatMap(g => G.sync(g)).uniq().value();
-}
+import { flattenGlobs, parseArgs } from './libs/utils';
 
 const FIXTURES = flattenGlobs(parseArgs(process.env.FIXTURES || `${__dirname}/../fixtures/**/*.ts`));
 const REPORTER = process.env.REPORTER || 'allure-lazy';
