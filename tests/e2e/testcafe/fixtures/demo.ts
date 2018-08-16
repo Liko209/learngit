@@ -8,32 +8,27 @@ import { BlankPage } from '../page-models/BlankPage';
 import { EnvironmentSelectionPage } from '../page-models/EnvironmentSelectionPage';
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
-import { SITE_URL, SITE_ENV, ENV} from '../config';
-import { formalName } from '../libs/filter';
-import accountPoolHelper from '../libs/AccountPoolHelper';
+import { SITE_URL, SITE_ENV } from '../config';
 
-fixture('My fixture')
-.beforeEach(async t => {
-    t.ctx.data = await accountPoolHelper.checkOutAccounts(ENV.ACCOUNT_POOL_ENV, 'rcBetaUserAccount');
-  }
-)
-.afterEach(async t => {
-    await accountPoolHelper.checkInAccounts(ENV.ACCOUNT_POOL_ENV, t.ctx.data.accountType, t.ctx.data.companyEmailDomain);
-  }
-)
+import { formalName } from '../libs/filter';
+import { setUp, tearDown } from '../libs/helpers';
+
+fixture('Demo')
+  .beforeEach(setUp('rcBetaUserAccount'))
+  .afterEach(tearDown())
 
 test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
   await new BlankPage(t)
-      .open(SITE_URL)
-      .shouldNavigateTo(EnvironmentSelectionPage)
-      .selectEnvironment(SITE_ENV)
-      .toNextPage()
-      .shouldNavigateTo(RingcentralSignInNavigationPage)
-      .setCredential(t.ctx.data.users.user701.rc_id)
-      .toNextPage()
-      .shouldNavigateTo(RingcentralSignInPage)
-      .setExtension(t.ctx.data.users.user701.extension)
-      .setPassword(t.ctx.data.users.user701.password)
-      .signIn()
-      .execute();
+    .open(SITE_URL)
+    .shouldNavigateTo(EnvironmentSelectionPage)
+    .selectEnvironment(SITE_ENV)
+    .toNextPage()
+    .shouldNavigateTo(RingcentralSignInNavigationPage)
+    .setCredential(`${t.ctx.data.mainCompanyNumber}`)
+    .toNextPage()
+    .shouldNavigateTo(RingcentralSignInPage)
+    .setExtension(t.ctx.data.users.user701.extension)
+    .setPassword(t.ctx.data.users.user701.password)
+    .signIn()
+    .execute();
 });
