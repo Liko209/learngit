@@ -27,10 +27,10 @@ storiesOf('Molecules/ConversationList', module)
           important={boolean('important', true)}
           showCount={boolean('showCount', true)}
           expanded={boolean('expanded', true)}
-          onExpand={action('expand')}
-          onCollapse={action('collapse')}
+          onExpand={action('onExpand')}
+          onCollapse={action('onCollapse')}
         >
-          <List onChange={action('change')}>
+          <List onChange={action('onChange')}>
             <ListItem title="Matthew" status="online" unreadCount={10} />
             <ListItem
               title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
@@ -50,7 +50,7 @@ storiesOf('Molecules/ConversationList', module)
   .add('List', withInfo({ inline: true })(
     () => (
       <StoryWrapper>
-        <List onChange={action('change')}>
+        <List onChange={action('onChange')}>
           <ListItem title="Matthew" status="online" unreadCount={10} />
           <ListItem
             title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
@@ -68,6 +68,8 @@ storiesOf('Molecules/ConversationList', module)
   ))
   .add('SortableList', withInfo({ inline: true })(
     () => {
+
+      // Make List and ListItem sortable
       const SortableList = SortableContainer(List);
       const SortableItem = SortableElement(ListItem);
 
@@ -123,6 +125,7 @@ storiesOf('Molecules/ConversationList', module)
           this.setState({
             items: arrayMove(items, oldIndex, newIndex),
           });
+          action('onSortEnd');
         }
       }
 
@@ -164,8 +167,8 @@ storiesOf('Molecules/ConversationList', module)
             title={title}
             unreadCount={unreadCount}
             showCount={!isTeam}
-            onClick={action('click')}
-            onMoreClick={action('more')}
+            onClick={action('onClick')}
+            onMoreClick={action('onMoreClick')}
           />
         </StoryWrapper>
       );
