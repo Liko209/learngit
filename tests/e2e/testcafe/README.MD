@@ -8,7 +8,7 @@ Write and run E2E tests with testcafe
 ### Environment Variables ###
 | Name             | Default                         | Usage                                                                                                            | Example                                         |
 |------------------|---------------------------------|------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
-| FIXTURES         | $TESTCAFE_ROOT/fixtures/**/*.ts | Fixtures to run.                                                                                                 |                                                 |
+| FIXTURES         | $TESTCAFE_ROOT/fixtures/****/**.ts | Fixtures to run.                                                                                                 |                                                 |
 | CONCURRENCY      | 1                               | Number of workers.                                                                                               |                                                 |
 | SCREENSHOTS_PATH | /tmp/                           | Where screenshots are stored.                                                                                    |                                                 |
 | BROWSERS         | chrome                          | Select browsers to run. To run on Selenium Grid, the name pattern of browsers should be selenium:{BROWSER_NAME}. | selenium:chrome                                 |
