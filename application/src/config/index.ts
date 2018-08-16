@@ -3,7 +3,7 @@ import merge from 'lodash/merge';
 
 const deployHost = `${window.location.protocol}//${window.location.hostname}${
   window.location.port ? `:${window.location.port}` : ''
-}`;
+  }`;
 
 function loadFileConfigs(env: string) {
   const config = {};
@@ -20,8 +20,13 @@ function loadFileConfigs(env: string) {
     .reduce((config, names: string[], currentIndex) => {
       const value = modules[currentIndex];
       const name = names[0];
-      if (names.length === 2 && ['default', env].includes(names[1])) {
-        config[name] = config[name] ? merge(config[name], value) : value;
+      if (names.length === 2) {
+        if (['default', env].includes(names[1])) {
+          config[name] =
+            names[1] === 'default'
+              ? merge(value, config[name])
+              : merge(config[name], value);
+        }
       } else {
         config[name] = value;
       }

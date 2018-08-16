@@ -16,16 +16,18 @@ import '@/App.css';
 import AuthRoute from '@/containers/AuthRoute';
 import Login from '@/containers/Login';
 import Home from '@/containers/Home';
+import UnifiedLogin from '@/containers/UnifiedLogin';
 
 class App extends React.PureComponent {
   public render() {
     return (
       <ThemeProvider>
-        <StoreContext.Provider value={storeManager} >
+        <StoreContext.Provider value={storeManager}>
           <Router>
             <Switch>
-              <Route path="/login" component={Login} />
-              <AuthRoute path="/" component={Home} />
+              <Route path='/login' component={Login} />
+              <Route path='/unified-login' component={UnifiedLogin} />
+              <AuthRoute path='/' component={Home} />
             </Switch>
           </Router>
         </StoreContext.Provider>
