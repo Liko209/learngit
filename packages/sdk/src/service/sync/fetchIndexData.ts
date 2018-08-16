@@ -4,18 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { indexData, initialData, remainingData } from '../../api';
-import notificationCenter from '../../service/notificationCenter';
-import { SERVICE } from '../../service/eventKey';
-import { IndexDataModel } from '../../api/glip/user';
-import { IResponse } from '../../api/NetworkClient';
-import { progressBar } from '../../utils/progress';
+import { indexData, initialData, remainingData } from "../../api";
+import notificationCenter from "../../service/notificationCenter";
+import { SERVICE } from "../../service/eventKey";
+import { IndexDataModel } from "../../api/glip/user";
+import { IResponse } from "../../api/NetworkClient";
+import { progressBar } from "../../utils/progress";
 
 interface Params {
   newer_than?: string;
 }
 
-const fetchInitialData = async (currentTime: number): Promise<IResponse<IndexDataModel>> => {
+const fetchInitialData = async (
+  currentTime: number
+): Promise<IResponse<IndexDataModel>> => {
   progressBar.start();
   let result;
   try {
@@ -26,14 +28,18 @@ const fetchInitialData = async (currentTime: number): Promise<IResponse<IndexDat
   return result;
 };
 
-const fetchRemainingData = async (currentTime: number): Promise<IResponse<IndexDataModel>> => {
+const fetchRemainingData = async (
+  currentTime: number
+): Promise<IResponse<IndexDataModel>> => {
   const result = remainingData({ _: currentTime });
   return result;
 };
 
 // fetch plugins
 
-const fetchIndexData = async (timeStamp: string): Promise<IResponse<IndexDataModel>> => {
+const fetchIndexData = async (
+  timeStamp: string
+): Promise<IResponse<IndexDataModel>> => {
   progressBar.start();
   const params: Params = { newer_than: timeStamp };
 
@@ -42,7 +48,7 @@ const fetchIndexData = async (timeStamp: string): Promise<IResponse<IndexDataMod
   const requestConfig = {
     onDownloadProgress(e: any) {
       progressBar.update(e);
-    },
+    }
   };
   let result;
 
