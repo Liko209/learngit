@@ -1,10 +1,11 @@
 echo '====Start SA'
 rm -rf $project/lint
 mkdir -p $project/lint
-appLint=$(yarn run lint --project $project/application --out $project/lint/application.txt)
-demoLint=$(yarn run lint --project $project/demo --out $project/lint/demo.txt)
-foundationLint=$(yarn run lint --project $project/packages/foundation --out $project/lint/foundation.txt)
-sdkLint=$(yarn run lint --project $project/packages/sdk --out $project/lint/sdk.txt)
+./node_modules/.bin/tslint --project $project/application --out $project/lint/application.txt
+./node_modules/.bin/tslint --project $project/demo --out $project/lint/demo.txt
+./node_modules/.bin/tslint --project $project/packages/foundation --out $project/lint/foundation.txt
+./node_modules/.bin/tslint --project $project/packages/sdk --out $project/lint/sdk.txt
+./node_modules/.bin/tslint --project $project/packages/ui --out $project/lint/ui.txt
 
 hasLintError=0
 
@@ -35,6 +36,13 @@ sdkLintError=$(<lint/sdk.txt)
 if [ "$sdkLintError" ]; then
   echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/sdk.txt>SDK Lint Result</a><br />" >> $project/lint/index.html
   cat $project/lint/sdk.txt >> $project/lint/index.txt
+  hasLintError=1
+fi
+
+uiLintError=$(<lint/ui.txt)
+if [ "$uiLintError" ]; then
+  echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/ui.txt>UI Lint Result</a><br />" >> $project/lint/index.html
+  cat $project/lint/ui.txt >> $project/lint/index.txt
   hasLintError=1
 fi
 
