@@ -44,6 +44,11 @@ type ItemProps = {
 } & Partial<Pick<WithTheme, 'theme'>>;
 
 class ConversationListItem extends Component<ItemProps> {
+  static defaultProps = {
+    unreadCount: 0,
+    showCount: true,
+    important: false,
+  };
 
   render() {
     const { title, status, unreadCount, important,

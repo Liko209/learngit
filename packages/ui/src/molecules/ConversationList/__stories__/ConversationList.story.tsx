@@ -2,7 +2,7 @@ import React from 'react';
 
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { select, number, boolean } from '@storybook/addon-knobs/react';
+import { select, number, boolean, text } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
 
 import { Icon } from '../../../atoms';
@@ -22,24 +22,26 @@ storiesOf('Molecules/ConversationList', module)
         <StoryWrapper>
           <Section
             icon={<Icon>star</Icon>}
-            title="Favorites"
-            unreadCount={32}
-            important={true}
-            showCount={true}
-            expanded={true}
+            title={text('title', 'Favorite')}
+            unreadCount={number('unreadCount', 12)}
+            important={boolean('important', true)}
+            showCount={boolean('showCount', true)}
+            expanded={boolean('expanded', true)}
+            onExpand={action('expand')}
+            onCollapse={action('collapse')}
           >
             <List value={0} onChange={action('change')}>
-              <ListItem status="online" title="Matthew" unreadCount={10} />
+              <ListItem title="Matthew" status="online" unreadCount={10} />
               <ListItem
-                showCount={true}
-                important={true}
                 title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
                 unreadCount={12}
+                showCount={false}
+                important={true}
               />
               <ListItem title="Maria" unreadCount={9} />
               <ListItem title="Jupiter Team" unreadCount={0} />
-              <ListItem status="away" title="Michael" unreadCount={0} />
-              <ListItem status="offline" title="Steve" />
+              <ListItem title="Michael" status="away" unreadCount={0} />
+              <ListItem title="Steve" status="offline" />
             </List>
           </Section>
         </StoryWrapper>
@@ -51,17 +53,17 @@ storiesOf('Molecules/ConversationList', module)
       return (
         <StoryWrapper>
           <List value={0} onChange={action('change')}>
-            <ListItem status="online" title="Matthew" unreadCount={10} />
+            <ListItem title="Matthew" status="online" unreadCount={10} />
             <ListItem
-              showCount={true}
-              important={true}
               title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
               unreadCount={12}
+              showCount={false}
+              important={true}
             />
             <ListItem title="Maria" unreadCount={9} />
             <ListItem title="Jupiter Team" unreadCount={0} />
-            <ListItem status="away" title="Michael" unreadCount={0} />
-            <ListItem status="offline" title="Steve" />
+            <ListItem title="Michael" status="away" unreadCount={0} />
+            <ListItem title="Steve" status="offline" />
           </List>
         </StoryWrapper>
       );

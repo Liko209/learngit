@@ -4,8 +4,8 @@ import SectionHeader, { SectionHeaderProps } from './ConversationListSectionHead
 
 type SectionProps = {
   expanded?: boolean;
-  onExpanded?: () => any;
-  onCollapsed?: () => any;
+  onExpand?: () => any;
+  onCollapse?: () => any;
 } & SectionHeaderProps;
 
 type SectionStates = {
@@ -38,7 +38,13 @@ class ConversationListSection extends Component<SectionProps, SectionStates> {
 
   private _handleClick() {
     const { expanded } = this.state;
-    this.setState({ expanded: !expanded });
+    const newExpanded = !expanded;
+    this.setState({ expanded: newExpanded });
+    if (newExpanded) {
+      this.props.onExpand!();
+    } else {
+      this.props.onCollapse!();
+    }
   }
 }
 export { ConversationListSection };
