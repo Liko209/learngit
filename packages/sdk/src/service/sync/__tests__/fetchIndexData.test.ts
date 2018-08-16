@@ -4,7 +4,7 @@ import ConfigDao from '../../../dao/config';
 import { LAST_INDEX_TIMESTAMP } from '../../../dao/config/constants';
 import { indexData } from '../../../api';
 
-import fetchIndexData from '../fetchIndexData';
+import { fetchIndexData } from '../fetchIndexData';
 
 jest.mock('../../../api', () => ({
   indexData: jest.fn(),
@@ -21,14 +21,7 @@ describe('sync fetchIndexData()', () => {
     const data = { a: 1 };
     configDao.put(LAST_INDEX_TIMESTAMP, 123);
     indexData.mockResolvedValue(data);
-    const res = await fetchIndexData();
+    const res = await fetchIndexData('123');
     expect(res).toEqual(data);
-  });
-
-  it('Should be called when get remote data has not newer_than args', async () => {
-    const mock = { a: 1 };
-    indexData.mockResolvedValue(mock);
-    const res = await fetchIndexData();
-    expect(res).toEqual(mock);
   });
 });
