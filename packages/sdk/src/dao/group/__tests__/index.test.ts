@@ -101,11 +101,12 @@ describe('GroupDao', () => {
 
     it('get latest group', async () => {
       await expect(groupDao.getLatestGroup()).resolves.toMatchObject({
-        id: 4,
+        id: 2,
         members: [123, 234],
-        is_team: true,
-        set_abbreviation: 'Ringcentral2',
-        most_recent_post_created_at: 4,
+        is_team: false,
+        set_abbreviation: 'Nello Huang',
+        deactivated: false,
+        most_recent_post_created_at: 2,
       });
     });
 
