@@ -1,42 +1,28 @@
-import * as React from 'react';
+import React from 'react';
 
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import { select, number, boolean } from '@storybook/addon-knobs/react';
-import backgrounds from '@storybook/addon-backgrounds';
 import { action } from '@storybook/addon-actions';
 
 import Collapse from '@material-ui/core/Collapse';
-import { Icon } from '../../atoms';
+import { Icon } from '../../../atoms';
 
 import {
   ConversationList as List,
-  ConversationListItem as Item,
+  ConversationListItem as ListItem,
   ConversationListSectionHeader as SectionHeader,
-} from '.';
+} from '../';
 
-const transition = 'all ease 0.15s';
-
-const selectWidth = () => select(
-  'Width',
-  {
-    '256px': '256px',
-    '320px': '320px',
-  },
-  '320px',
-);
+import StoryWrapper from './StoryWrapper';
 
 storiesOf('Molecules/ConversationList', module)
-  .addDecorator(
-    backgrounds([{ name: 'slide-background', value: '#e3e3e3', default: true }]),
-)
-  .add('List', withInfo(``)(
+  .add('List', withInfo({ inline: true })(
     () => {
-      const width = selectWidth();
       const expanded = boolean('expanded', true);
 
       return (
-        <div style={{ width, transition }}>
+        <StoryWrapper>
           <SectionHeader
             icon={<Icon>star</Icon>}
             title="Favorites"
@@ -47,27 +33,26 @@ storiesOf('Molecules/ConversationList', module)
           />
           <Collapse in={expanded}>
             <List value={0} onChange={action('change')}>
-              <Item status="online" title="Matthew" unreadCount={10} />
-              <Item
+              <ListItem status="online" title="Matthew" unreadCount={10} />
+              <ListItem
                 showCount={true}
                 important={true}
                 title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
                 unreadCount={12}
               />
-              <Item title="Maria" unreadCount={9} />
-              <Item title="Jupiter Team" unreadCount={0} />
-              <Item status="away" title="Michael" unreadCount={0} />
-              <Item status="offline" title="Steve" />
+              <ListItem title="Maria" unreadCount={9} />
+              <ListItem title="Jupiter Team" unreadCount={0} />
+              <ListItem status="away" title="Michael" unreadCount={0} />
+              <ListItem status="offline" title="Steve" />
             </List>
           </Collapse>
-        </div>
+        </StoryWrapper>
       );
     },
   ))
-  .add('Item', withInfo(``)(
+  .add('ListItem', withInfo({ inline: true })(
     () => {
 
-      const width = selectWidth();
       const status = select(
         'Status',
         {
@@ -89,8 +74,8 @@ storiesOf('Molecules/ConversationList', module)
       }
 
       return (
-        <div style={{ width, transition }}>
-          <Item
+        <StoryWrapper>
+          <ListItem
             important={important}
             status={status}
             title={title}
@@ -99,19 +84,18 @@ storiesOf('Molecules/ConversationList', module)
             onClick={action('click')}
             onMoreClick={action('more')}
           />
-        </div>
+        </StoryWrapper>
       );
     },
   ))
-  .add('SectionHeader', withInfo(``)(
+  .add('SectionHeader', withInfo({ inline: true })(
     () => {
-      const width = selectWidth();
       const important = boolean('Important', false);
       const unreadCount = number('Unread count', 120);
       const showCount = boolean('Show count', true);
 
       return (
-        <div style={{ width, transition }}>
+        <StoryWrapper>
           <SectionHeader
             icon={<Icon>people</Icon>}
             important={important}
@@ -121,7 +105,7 @@ storiesOf('Molecules/ConversationList', module)
             onClick={action('click')}
             onArrowClick={action('arrow')}
           />
-        </div>
+        </StoryWrapper>
       );
     },
   ));
