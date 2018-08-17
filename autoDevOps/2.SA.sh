@@ -52,7 +52,7 @@ if [ "$uiLintError" ]; then
 fi
 
 echo "hasLintError: $hasLintError"
-if [ "$hasLintError" = 0 ]; then
+if [ "$hasLintError" = 1 ]; then
   echo '<pre>' >> $project/lint/index.html
   cat $project/lint/index.txt >> $project/lint/index.html
   echo '</pre>' >> $project/lint/index.html
