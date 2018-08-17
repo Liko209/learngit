@@ -7,7 +7,6 @@ import { Umi } from '../../atoms';
 import NavIcon from './icon';
 
 type TListItem = {
-  // tabIndex: string,
   active: number,
   expand: boolean,
 } & ListItemProps & Partial<Pick<WithTheme, 'theme'>>;
@@ -97,6 +96,7 @@ const Item = ((props: TNavItemProps) => {
   return (
     <ListItem
       button={true}
+      tabIndex={-1}
       active={active}
       disableRipple={true}
       focusVisibleClassName={'left-item-focus'}

@@ -5,7 +5,7 @@ import {  NavLink } from 'react-router-dom';
 
 const MaxWidth = 200;
 const MinWidth = 72;
-const Left = styled.div`
+const LeftNav = styled.div`
   background-color: #fff;
   width: ${props => props.expand ? MaxWidth : MinWidth}px;;
   border-right: 1px solid rgba(0, 0, 0, 0.12);
@@ -49,7 +49,7 @@ const topIcons = ['Dashboard','Messages', 'Calls','Meetings']
 const bottomIcons = ['Calendar', 'Tasks', 'Notes','Files'];
 export default (props) => {
   const isExpand = props.isExpand;
-  return <Left expand={isExpand}>
+  return <LeftNav expand={isExpand}>
     {topIcons.map((item1, index) => {
       const navUrl = item1.toLocaleLowerCase();
       const isActive = window.location.pathname.slice(1) === navUrl;
@@ -59,8 +59,8 @@ export default (props) => {
           active={+isActive}
           icon={item1}
           title={item1}
-          showCount={true}
-          unreadCount={22}
+          showCount={false}
+          unreadCount={1}
         />
       </ListLink>
     })}
@@ -81,5 +81,5 @@ export default (props) => {
         </ListLink>
       })
     }
-  </Left>;
+  </LeftNav>;
 };
