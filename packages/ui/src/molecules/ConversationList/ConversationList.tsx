@@ -1,9 +1,14 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 10:34:45
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 
-import { List } from '@material-ui/core';
+import MuiMenuList from '@material-ui/core/MenuList';
 
-const StyledList = styled(List)`
+const StyledList = styled(MuiMenuList)`
   && {
     background-color: white;
     padding-top: 0;
@@ -11,16 +16,15 @@ const StyledList = styled(List)`
   }
 `;
 
-type ConversationListProps = {
-  value: any;
+type ListProps = {
   className?: string;
   onClick?: Function;
   onChange?: Function;
 };
 
-class ConversationList extends PureComponent<ConversationListProps> {
+class ConversationList extends PureComponent<ListProps> {
 
-  constructor(props: ConversationListProps) {
+  constructor(props: ListProps) {
     super(props);
 
     this._handleChange = this._handleChange.bind(this);
@@ -30,7 +34,6 @@ class ConversationList extends PureComponent<ConversationListProps> {
     return (
       <StyledList
         component="div"
-        className={this.props.className}
         onClick={this._handleChange}
       >
         {this.props.children}
@@ -38,6 +41,10 @@ class ConversationList extends PureComponent<ConversationListProps> {
     );
   }
 
+  /**
+   * TODO use the same way with <BottomNavigation/> to implement onChange event.
+   * See https://bit.ly/2Bf2sP0
+   */
   private _handleChange(event: React.MouseEvent) {
     const { onChange, onClick } = this.props;
 
@@ -57,4 +64,4 @@ class ConversationList extends PureComponent<ConversationListProps> {
 }
 
 export default ConversationList;
-export { ConversationListProps, ConversationList };
+export { ListProps, ConversationList };

@@ -42,7 +42,7 @@ export default class OrderListStore extends BaseStore {
 
   @action
   batchRemove(ids: number[]) {
-    ids.forEach(id => {
+    ids.forEach((id) => {
       this.remove(id);
     });
   }

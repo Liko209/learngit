@@ -1,13 +1,18 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 10:35:05
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { Component, CSSProperties } from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
-import Typography from '@material-ui/core/Typography';
+import MuiTypography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { isTextOverflow } from '../../utils';
 
-const StyledTypography = styled(Typography)`
+const StyledTypography = styled(MuiTypography)`
   && {
     flex: 1;
     padding: 0 8px;
@@ -23,33 +28,37 @@ type ItemTextProps = {
 };
 
 type ItemTextStates = {
-  disableTooltip: boolean;
+  tipOpen: boolean;
 };
 
 class ConversationListItemText extends Component<ItemTextProps, ItemTextStates> {
+  textEl?: HTMLElement;
   textRef: React.RefObject<any>;
 
   constructor(props: ItemTextProps) {
     super(props);
-    this.state = { disableTooltip: true };
+    this.state = { tipOpen: false };
     this.textRef = React.createRef();
-    this._handleMouseOver = this._handleMouseOver.bind(this);
+    this._handleMouseEnter = this._handleMouseEnter.bind(this);
+    this._handleMouseLeave = this._handleMouseLeave.bind(this);
   }
 
   render() {
-    const { disableTooltip } = this.state;
+    const { tipOpen } = this.state;
 
     return (
       <Tooltip
         title={this.props.children}
-        disableFocusListener={disableTooltip}
-        disableHoverListener={disableTooltip}
-        disableTouchListener={disableTooltip}
+        disableFocusListener={false}
+        disableHoverListener={false}
+        disableTouchListener={false}
+        open={tipOpen}
       >
         <StyledTypography
           {...this.props}
           ref={this.textRef}
-          onMouseOver={this._handleMouseOver}
+          onMouseEnter={this._handleMouseEnter}
+          onMouseLeave={this._handleMouseLeave}
         >
           {this.props.children}
         </StyledTypography>
@@ -57,13 +66,24 @@ class ConversationListItemText extends Component<ItemTextProps, ItemTextStates> 
     );
   }
 
-  private _handleMouseOver() {
+  componentDidMount() {
     const textEl = ReactDOM.findDOMNode(this.textRef.current);
+
     if (textEl && textEl instanceof HTMLElement) {
-      this.setState({
-        disableTooltip: !isTextOverflow(textEl),
-      });
+      this.textEl = textEl;
     }
+  }
+
+  private _handleMouseEnter() {
+    if (!this.textEl) return;
+
+    this.setState({
+      tipOpen: isTextOverflow(this.textEl),
+    });
+  }
+
+  private _handleMouseLeave() {
+    this.setState({ tipOpen: false });
   }
 }
 

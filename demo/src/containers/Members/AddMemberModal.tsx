@@ -40,7 +40,7 @@ const Wrapper = styled.div`
 class AddMemberModal extends Component<Props> {
   addMemberPresenter: AddMemberPresenter;
   state = {
-    selectedMembers: []
+    selectedMembers: [],
   };
 
   constructor(props: Props) {
@@ -57,7 +57,7 @@ class AddMemberModal extends Component<Props> {
 
   handleChange = (selectedMembers: { value: number; label: string }[]) => {
     this.setState({ selectedMembers });
-  };
+  }
 
   getMembers(input: string) {
     // const { fetchSearch } = this.addMemberPresenter;
@@ -66,10 +66,10 @@ class AddMemberModal extends Component<Props> {
       return Promise.resolve({ options: [] });
     }
 
-    return this.addMemberPresenter.fetchSearch(input).then(data => {
+    return this.addMemberPresenter.fetchSearch(input).then((data) => {
       const members = data.map(member => ({
         value: member.id,
-        label: getName(member)
+        label: getName(member),
       }));
       return { options: members };
     });

@@ -7,8 +7,7 @@
  * to warrant building them from scratch every time we use
  * the webpack process.
  */
-
-const { join } = require('path');
+const path = require('path');
 const webpack = require('webpack');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
@@ -30,6 +29,14 @@ module.exports = {
     path: outputPath,
     library: '[name]'
   },
+  resolve: {
+    alias: {
+      // Support React Native Web
+      // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
+      'react-native': 'react-native-web',
+      'react': path.resolve(__dirname, '../node_modules', 'react'),
+    }
+  },
   plugins: [
     // Add module names to factory functions so they appear in browser profiler.
     new webpack.NamedModulesPlugin(),
@@ -38,7 +45,7 @@ module.exports = {
     new webpack.DefinePlugin(env.stringified),
     new webpack.DllPlugin({
       name: '[name]',
-      path: join(outputPath, '[name].json')
+      path: path.join(outputPath, '[name].json')
     })
   ],
   target: 'web', // Make web variables accessible to webpack, e.g. window

@@ -20,7 +20,7 @@ ReactModal.setAppElement('#root');
 const ReactModalAdapter: React.SFC<Props> = ({
   className,
   modalClassName,
-  ...props
+  ...props,
 }: Props) => {
   return (
     <ReactModal
@@ -38,7 +38,7 @@ const ReactModalAdapter: React.SFC<Props> = ({
 
 const StyledModal = styled(ReactModalAdapter).attrs({
   modalClassName: 'Modal',
-  overlayClassName: 'Overlay'
+  overlayClassName: 'Overlay',
 } as any)`
   .Modal {
     position: absolute;

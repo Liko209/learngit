@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 10:36:01
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { WithTheme } from '@material-ui/core';
@@ -28,6 +33,7 @@ const StyledUmi = styled<UmiProps, 'span'>('span')`
   background: ${ ({ important }) => important ? '#ff8800' : '#69a3eb'};
   ${({ showCount }) => showCount ? styleWithCount : styleWithoutCount}
 
+  li:hover > &,
   div:hover > & {
     ${styleWithCount}
   }

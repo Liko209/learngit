@@ -1,4 +1,10 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 10:35:12
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
+import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
 
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
@@ -16,43 +22,21 @@ import {
 import StoryWrapper from './StoryWrapper';
 
 storiesOf('Molecules/ConversationList', module)
+
   .add('Section', withInfo({ inline: true })(
-    () => {
-      return (
-        <StoryWrapper>
-          <Section
-            icon={<Icon>star</Icon>}
-            title={text('title', 'Favorite')}
-            unreadCount={number('unreadCount', 12)}
-            important={boolean('important', true)}
-            showCount={boolean('showCount', true)}
-            expanded={boolean('expanded', true)}
-            onExpand={action('expand')}
-            onCollapse={action('collapse')}
-          >
-            <List value={0} onChange={action('change')}>
-              <ListItem title="Matthew" status="online" unreadCount={10} />
-              <ListItem
-                title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
-                unreadCount={12}
-                showCount={false}
-                important={true}
-              />
-              <ListItem title="Maria" unreadCount={9} />
-              <ListItem title="Jupiter Team" unreadCount={0} />
-              <ListItem title="Michael" status="away" unreadCount={0} />
-              <ListItem title="Steve" status="offline" />
-            </List>
-          </Section>
-        </StoryWrapper>
-      );
-    },
-  ))
-  .add('List', withInfo({ inline: true })(
-    () => {
-      return (
-        <StoryWrapper>
-          <List value={0} onChange={action('change')}>
+    () => (
+      <StoryWrapper>
+        <Section
+          icon={<Icon>star</Icon>}
+          title={text('title', 'Favorite')}
+          unreadCount={number('unreadCount', 12)}
+          important={boolean('important', true)}
+          showCount={boolean('showCount', true)}
+          expanded={boolean('expanded', true)}
+          onExpand={action('onExpand')}
+          onCollapse={action('onCollapse')}
+        >
+          <List onChange={action('onChange')}>
             <ListItem title="Matthew" status="online" unreadCount={10} />
             <ListItem
               title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
@@ -65,10 +49,116 @@ storiesOf('Molecules/ConversationList', module)
             <ListItem title="Michael" status="away" unreadCount={0} />
             <ListItem title="Steve" status="offline" />
           </List>
+        </Section>
+      </StoryWrapper>
+    ),
+  ))
+
+  .add('List', withInfo({ inline: true })(
+    () => (
+      <StoryWrapper>
+        <List onChange={action('onChange')}>
+          <ListItem title="Matthew" status="online" unreadCount={10} />
+          <ListItem
+            title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
+            unreadCount={12}
+            showCount={false}
+            important={true}
+          />
+          <ListItem title="Maria" unreadCount={9} />
+          <ListItem title="Jupiter Team" unreadCount={0} />
+          <ListItem title="Michael" status="away" unreadCount={0} />
+          <ListItem title="Steve" status="offline" />
+        </List>
+      </StoryWrapper>
+    ),
+  ))
+
+  .add('SortableList', withInfo({ inline: true })(
+    () => {
+      /**
+       * A demo that shows how to make ConversationList sortable
+       * using `react-sortable-hoc` component.
+       * More details: https://github.com/clauderic/react-sortable-hoc
+       */
+
+      // Make List and ListItem sortable
+      const SortableList = SortableContainer(List);
+      const SortableItem = SortableElement(ListItem);
+
+      type SortableDemoStates = {
+        items: any[],
+      };
+
+      class SortableDemo extends React.Component<{}, SortableDemoStates> {
+        constructor(props: {}) {
+          super(props);
+
+          this.state = {
+            items: [{
+              title: 'Matthew',
+              status: 'online',
+              unreadCount: 10,
+            }, {
+              title: 'Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello',
+              unreadCount: 12,
+              showCount: false,
+              important: true,
+            }, {
+              title: 'Maria',
+              unreadCount: 9,
+            }, {
+              title: 'Jupiter Team',
+              unreadCount: 0,
+            }, {
+              title: 'Michael',
+              status: 'away',
+              unreadCount: 0,
+            }, {
+              title: 'Steve',
+              status: 'offline',
+              unreadCount: 0,
+            }],
+          };
+          this._handleSortEnd = this._handleSortEnd.bind(this);
+        }
+
+        render() {
+          const { items } = this.state;
+
+          // Element become sortable after being dragged a certain
+          // number of pixels. So it wouldn't enter dragging mode
+          // when user just mean to click the item.
+          const distance = 1;
+
+          return (
+            <SortableList distance={distance} onSortEnd={this._handleSortEnd}>
+              {items.map((item, i) => <SortableItem key={'item' + i} index={i} {...item} />)}
+            </SortableList>
+          );
+        }
+
+        private _handleSortEnd({ oldIndex, newIndex }: { oldIndex: number; newIndex: number; }) {
+          const { items } = this.state;
+
+          // Update items order in state, here you can have some
+          // network/db action here to persist the new order.
+          this.setState({
+            items: arrayMove(items, oldIndex, newIndex),
+          });
+
+          action('onSortEnd');
+        }
+      }
+
+      return (
+        <StoryWrapper>
+          <SortableDemo />
         </StoryWrapper>
       );
     },
   ))
+
   .add('ListItem', withInfo({ inline: true })(
     () => {
 
@@ -100,8 +190,8 @@ storiesOf('Molecules/ConversationList', module)
             title={title}
             unreadCount={unreadCount}
             showCount={!isTeam}
-            onClick={action('click')}
-            onMoreClick={action('more')}
+            onClick={action('onClick')}
+            onMoreClick={action('onMoreClick')}
           />
         </StoryWrapper>
       );

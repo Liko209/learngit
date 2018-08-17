@@ -67,7 +67,6 @@ class UnifiedLogin extends React.Component {
       } catch (error) {
         const handler = new ErrorHandler(error);
         handler.handle().show();
-      } finally {
         this.setState({
           btnDisabled: false,
           btnText: `Login` // Login

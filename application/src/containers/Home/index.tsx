@@ -18,6 +18,10 @@ import CallRight from '@/containers/Calls/Right';
 import MeetingMain from '@/containers/Meetings/Main';
 import MeetingRight from '@/containers/Meetings/Right';
 
+import { service } from 'sdk';
+
+const { AuthService } = service;
+
 interface IProps extends RouteComponentProps<any> { }
 
 interface IStates { }
@@ -26,13 +30,13 @@ class Home extends Component<IProps, IStates>  {
   constructor(props: IProps) {
     super(props);
     this.state = {};
-    this.onClick = this.onClick.bind(this);
+    this.signOutClickHandler = this.signOutClickHandler.bind(this);
   }
 
-  onClick() {
-    const { history } = this.props;
-    localStorage.removeItem('login'); // todo
-    history.replace('/login');
+  async signOutClickHandler() {
+    const authService = AuthService.getInstance();
+    await authService.logout();
+    window.location.href = '/';
   }
 
   render() {
@@ -40,7 +44,7 @@ class Home extends Component<IProps, IStates>  {
     return (
       <Wrapper>
         <TopBar>
-          <button onClick={this.onClick}>Logout</button>
+          <button onClick={this.signOutClickHandler}>Logout</button>
         </TopBar>
         <Bottom>
           <LeftNav>

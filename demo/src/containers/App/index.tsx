@@ -6,7 +6,7 @@ import {
   Switch,
   Route,
   withRouter,
-  RouteComponentProps
+  RouteComponentProps,
 } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
 import AuthRoute from '@/components/AuthRoute';
@@ -37,7 +37,7 @@ class App extends React.Component<Props, States> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      mode: 'ordinary'
+      mode: 'ordinary',
     };
     this.presenter = new AppPresenter(this.props.history);
   }
