@@ -186,7 +186,7 @@ describe('BaseDao', () => {
   });
 
   it('do in transation', async () => {
-    dao.doInTransation(async () => {
+    dao.doInTransaction(async () => {
       await dao.put({ id: 1000, name: 'transation' });
       const result = await dao.get(1000);
       expect(result.name).toBe('transation');

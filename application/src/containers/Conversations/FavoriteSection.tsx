@@ -8,9 +8,10 @@ import React from 'react';
 import {
   ConversationList as List,
   ConversationListItem as ListItem,
-  ConversationListSectionHeader as SectionHeader,
+  ConversationListSection,
   Icon,
 } from 'ui-components';
+import FavoriteListPresenter from './FavoriteListPresenter';
 interface IProps {
 
 }
@@ -29,7 +30,7 @@ interface Group {
 class FavoriteSection extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-
+    this.favoritePresenter = new FavoriteListPresenter();
     this.state = {
       groups: [{
         id: 1,
@@ -47,7 +48,7 @@ class FavoriteSection extends React.Component<IProps, IState> {
 
   renderFavoriteGroups() {
     return (
-      <List>
+      <List value={0}>
         {this.state.groups.map((item: Group) => {
           return (
             <ListItem
@@ -66,10 +67,10 @@ class FavoriteSection extends React.Component<IProps, IState> {
 
     return (
       <div>
-        <SectionHeader
-          icon={<Icon>R</Icon>}
-          title="Favorites"
-          unreadCount={32}
+        <ConversationListSection
+          icon={<Icon>S</Icon>}
+          title={'Favorite'}
+          unreadCount={12}
           important={true}
           showCount={true}
           expanded={true}

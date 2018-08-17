@@ -55,8 +55,19 @@ export default class OrderListPresenter extends BasePresenter {
             const idSortKey = this.transformFunc(data);
             matchedIDSortKeyArray.push(idSortKey);
             matchedEntities.push(data);
-            notMatchedKeys.push(key);
           }
+          notMatchedKeys.push(key);
+        });
+      } else if (type === 'replaceAll') {
+        matchedKeys.forEach((key) => {
+          const model = entities.get(key) as IEntity;
+          const { data } = model;
+          if (this.isMatchedFunc(data)) {
+            const idSortKey = this.transformFunc(data);
+            matchedIDSortKeyArray.push(idSortKey);
+            matchedEntities.push(data);
+          }
+          notMatchedKeys.concat(this.store.getIds());
         });
       } else {
         matchedKeys.forEach((key) => {
@@ -117,8 +128,8 @@ export default class OrderListPresenter extends BasePresenter {
       return;
     }
     const handledData: IIDSortKey[] = [];
-    dataModels.forEach((item) => {
-      handledData.push(this.transformFunc(item));
+    dataModels.forEach((item, index) => {
+      handledData.push(this.transformFunc(item, index));
     });
 
     if (isBigger) {
