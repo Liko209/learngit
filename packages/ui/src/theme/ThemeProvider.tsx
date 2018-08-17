@@ -1,12 +1,17 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 12:13:16
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import createMuiTheme, { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
 import MuiThemeProvider, { MuiThemeProviderProps } from '@material-ui/core/styles/MuiThemeProvider';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
-export const createTheme = (options: ThemeOptions) =>
+const createTheme = (options: ThemeOptions) =>
   createMuiTheme(options);
 
-export const ThemeProvider: React.SFC<MuiThemeProviderProps> = ({ theme, children }) => {
+const ThemeProvider: React.SFC<MuiThemeProviderProps> = ({ theme, children }) => {
   return (
     <StyledThemeProvider theme={theme}>
       <MuiThemeProvider theme={theme}>
@@ -15,3 +20,6 @@ export const ThemeProvider: React.SFC<MuiThemeProviderProps> = ({ theme, childre
     </StyledThemeProvider>
   );
 };
+
+export { createTheme, ThemeOptions, ThemeProvider };
+export default ThemeProvider;
