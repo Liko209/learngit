@@ -19,13 +19,13 @@ if [ "$applicationLintError" ]; then
   hasLintError=1
 fi
 
-demoLintError=$(<lint/demo.txt)
-if [ "$demoLintError" ]; then
-  echo 'Demo Has Lint Error'
-  echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/demo.txt>demo Lint Result</a><br />" >> $project/lint/index.html
-  cat $project/lint/demo.txt >> $project/lint/index.txt
-  hasLintError=1
-fi
+# demoLintError=$(<lint/demo.txt)
+# if [ "$demoLintError" ]; then
+#   echo 'Demo Has Lint Error'
+#   echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/demo.txt>demo Lint Result</a><br />" >> $project/lint/index.html
+#   cat $project/lint/demo.txt >> $project/lint/index.txt
+#   hasLintError=1
+# fi
 
 foundationLintError=$(<lint/foundation.txt)
 if [ "$foundationLintError" ]; then
