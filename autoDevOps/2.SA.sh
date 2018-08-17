@@ -2,7 +2,7 @@ echo '====Start SA'
 rm -rf $project/lint
 mkdir -p $project/lint
 ./node_modules/.bin/tslint --project $project/application --out $project/lint/application.txt
-./node_modules/.bin/tslint --project $project/demo --out $project/lint/demo.txt
+# ./node_modules/.bin/tslint --project $project/demo --out $project/lint/demo.txt
 ./node_modules/.bin/tslint --project $project/packages/foundation --out $project/lint/foundation.txt
 ./node_modules/.bin/tslint --project $project/packages/sdk --out $project/lint/sdk.txt
 ./node_modules/.bin/tslint --project $project/packages/ui --out $project/lint/ui.txt
