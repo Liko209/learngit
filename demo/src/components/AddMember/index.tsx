@@ -36,7 +36,7 @@ const Wrapper = styled<Props, any>('i')`
 const AddMember: React.SFC<Props> = ({
   width,
   height,
-  handleOpenModal
+  handleOpenModal,
 }: Props) => (
   <Wrapper onClick={handleOpenModal} width={width} height={height}>
     +

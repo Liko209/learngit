@@ -22,34 +22,34 @@ const Icon = styled<TIconProps>(
 `;
 
 const IconComponent = {
-  get messages() {
+  get Messages() {
     return <Message />;
   },
-  get calls() {
+  get Calls() {
     return <Phone />;
   },
-  get meetings() {
+  get Meetings() {
     return <Videocam />;
   },
-  get dashboard() {
+  get Dashboard() {
     return <Dashboard />;
   },
-  get calendar() {
+  get Calendar() {
     return <DateRange />;
   },
-  get tasks() {
+  get Tasks() {
     return <AssignmentTurnedIn />;
   },
-  get files() {
+  get Files() {
     return <FileCopy />;
   },
-  get notes() {
+  get Notes() {
     return <LibraryBooks />;
   },
-  get links() {
+  get Links() {
     return <Link />;
   },
-  get integration() {
+  get Integration() {
     return <AddBox />;
   },
 };
@@ -59,6 +59,7 @@ const NavIcon = (props: TIconProps) => {
 };
 type TIconProps = {
   component: string,
-  active: boolean,
+  active: number,
+  className: string,
 };
 export default NavIcon;

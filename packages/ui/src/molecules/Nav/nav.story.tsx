@@ -10,28 +10,28 @@ storiesOf('NavItem', module)
       const iconType = select(
         'icon-type',
         {
-          messages: 'Messages',
-          links: 'Links',
-          calls: 'Calls',
-          meetings: 'Meetings',
-          dashboard: 'Dashboard',
-          calendar: 'Calendar',
-          tasks: 'Tasks',
-          files: 'Files',
-          notes: 'Notes',
-          integration: 'Integration',
+          Messages: 'Messages',
+          Links: 'Links',
+          Calls: 'Calls',
+          Meetings: 'Meetings',
+          Dashboard: 'Dashboard',
+          Calendar: 'Calendar',
+          Tasks: 'Tasks',
+          Files: 'Files',
+          Notes: 'Notes',
+          Integration: 'Integration',
         },
-        'messages',
+        'Messages',
       );
       const unreadCount = number('Unread-count', 120);
       const expand = boolean('expand', false);
       const isActive = boolean('isActive', false)
+      const activeNum = isActive ? 1 : 0;
       return (
         <div>
           <NavItem
             expand={expand}
-            url="sdsd"
-            active={isActive}
+            active={activeNum}
             icon={iconType}
             title={iconType}
             showCount={true}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { RouteComponentProps, NavLink, Switch, Route, Redirect } from 'react-router-dom';
+import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 
 import Wrapper from './Wrapper';
 import TopBar from './TopBar';
@@ -24,11 +24,15 @@ const { AuthService } = service;
 
 interface IProps extends RouteComponentProps<any> { }
 
-interface IStates { }
+interface IStates {
+  isExpand: boolean;
+}
 class Home extends Component<IProps, IStates>  {
   constructor(props: IProps) {
     super(props);
-    this.state = {};
+    this.state = {
+      isExpand: true,
+    };
     this.signOutClickHandler = this.signOutClickHandler.bind(this);
   }
 
@@ -37,16 +41,21 @@ class Home extends Component<IProps, IStates>  {
     await authService.logout();
     window.location.href = '/';
   }
-
+  handleExpand = () => {
+    this.setState({
+      isExpand: !this.state.isExpand,
+    });
+  }
   render() {
     // const { match } = this.props;
     return (
       <Wrapper>
         <TopBar>
           <button onClick={this.signOutClickHandler}>Logout</button>
+          <button onClick={this.handleExpand}>Expand</button>
         </TopBar>
         <Bottom>
-          <LeftNav />
+          <LeftNav isExpand={this.state.isExpand}/>
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />

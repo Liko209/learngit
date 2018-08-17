@@ -8,7 +8,8 @@ import NavIcon from './icon';
 
 type TListItem = {
   // tabIndex: string,
-  isExpand: boolean,
+  active: number,
+  expand: boolean,
 } & ListItemProps & Partial<Pick<WithTheme, 'theme'>>;
 const CustomListItem: React.SFC<TListItem> = (props) => {
   return <MuiListItem {...props} />;
@@ -20,7 +21,10 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({ className : 'left-lis
     padding-right: 20px;
     height: 48px;
     outline: none;
-    width: ${ props => props.isExpand ? '100%' : '70px'}
+    width: ${ props => props.expand ? '100%' : '70px'};
+    .nav-text span{
+      color: ${props => props.active ? '#0684BD' : '#bfbfbf'};;
+    }
   }
   // In order to make sure use tab switch nav
   &.left-item-focus {
@@ -29,14 +33,14 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({ className : 'left-lis
     }
   }
   &&:hover {
-      background-color: #f5f5f5;
+      background-color: ${props => props.active ? '#EBF6FA' : '#F5F5F5'};
      .left-icon {
         color: #9e9e9e; // 500
      }
   }
 `;
 type TListItemTextProps = {
-  isExpand: boolean,
+  expand: boolean,
 } & ListItemTextProps & Partial<Pick<WithTheme, 'theme'>>;
 
 const CustomListItemText: React.SFC<TListItemTextProps> = (props) => {
@@ -46,8 +50,8 @@ const ListItemText = styled<TListItemTextProps>(CustomListItemText)`
   && {
     font-size: 12px;
     color: #9e9e9e; // 500
-    transform: translate3d(${props => props.isExpand ? 12 : -10}px, 0, 0);
-    opacity: ${props => props.isExpand ? 1 : 0};
+    transform: translate3d(${props => props.expand ? 12 : -10}px, 0, 0);
+    opacity: ${props => props.expand ? 1 : 0};
     transition: transform .2s ease, opacity .2s ease;
     padding: 0;
     span {
@@ -57,29 +61,30 @@ const ListItemText = styled<TListItemTextProps>(CustomListItemText)`
   }
 `;
 type TUMIProps = {
-  isExpand: boolean,
+  expand: boolean,
   unreadCount: number,
   important: boolean,
   showCount: boolean,
 };
 const UMI = styled<TUMIProps>(Umi)`
   && {
-    margin-top: ${props => !props.isExpand ? '-18px' : '0'};
-    margin-left: ${props => !props.isExpand ? '-6px' : '0'};
+    margin-top: ${props => !props.expand ? '-18px' : '0'};
+    margin-left: ${props => !props.expand ? '-6px' : '0'};
     width: auto;
     height: auto;
     padding: 1px 5px;
     border-radius: 12px;
     transition: opacity .2s ease;
-    transform: scale(.85)
+    transform: scale(.85);
+    color: #fff !important;
   }
-`
+`;
+
 type TNavItemProps = {
   expand: boolean;
-  url?: string;
   type?: string;
   title?: string;
-  active: boolean;
+  active: number;
   icon: string;
   showCount: boolean;
   num?: number;
@@ -92,15 +97,16 @@ const Item = ((props: TNavItemProps) => {
   return (
     <ListItem
       button={true}
+      active={active}
       disableRipple={true}
       focusVisibleClassName={'left-item-focus'}
       disableGutters={true}
       color={bgColor}
-      isExpand={expand}
+      expand={expand}
     >
-      <NavIcon component={icon} active={active} />
-      <ListItemText isExpand={expand}>{title}</ListItemText>
-      <UMI unreadCount={unreadCount} important={true} isExpand={expand} showCount={showCount} />
+      <NavIcon component={icon} active={active} className={'nav-icon'} />
+      <ListItemText expand={expand} className={'nav-text'}>{title}</ListItemText>
+      <UMI unreadCount={unreadCount} important={true} expand={expand} showCount={showCount} />
     </ListItem>
   );
 });

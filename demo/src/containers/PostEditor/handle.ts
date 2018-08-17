@@ -15,8 +15,7 @@ function isAtMentions(value: string) {
 
 function compileAtMentionText(text: string) {
   const TextReg = new RegExp(
-    `<a class='at_mention_compose' rel='{"id":(.*?)}'>@(.*?)</a>`
-  );
+    `<a class='at_mention_compose' rel='{"id":(.*?)}'>@(.*?)</a>`);
   let renderedText = text;
   let res = TextReg.exec(renderedText);
   let users = [];
@@ -28,15 +27,14 @@ function compileAtMentionText(text: string) {
   }
 
   return {
+    users,
     text: renderedText,
-    users
   };
 }
 
 function compileQuoteText(
   atMentionText: string,
-  currentUser: { display: string; id: number }
-) {
+  currentUser: { display: string; id: number }) {
   const { text, users } = compileAtMentionText(atMentionText);
   const { display, id } = currentUser;
   const quoteHead = `@[${display}]:${id}: wrote:\n`;
@@ -50,62 +48,62 @@ function compileQuoteText(
       return `${qt}> ${t}\n`;
     }
     return `${qt}${t}`;
-  }, '');
-  let renderedText = `${quoteHead}${quoteText}\n`;
+  },                                        '');
+  const renderedText = `${quoteHead}${quoteText}\n`;
 
   users.push({
+    display,
     id: Number(id),
-    display
   });
 
   return {
+    users,
     text: renderedText,
-    users
   };
 }
 
 function fUser(res: string[], users: any[]) {
-  let [, id, display] = res;
+  const [, id, display] = res;
   users.push({
+    display,
     id: Number(id),
-    display
   });
   return users;
 }
 
 function fText(res: string[], text: string) {
   let renderedText = text;
-  let [match, id, display] = res;
+  const [match, id, display] = res;
   const replaceText = `@[${display}]:${id}:`;
   renderedText = renderedText.replace(match, replaceText);
   return renderedText;
 }
 
 function b64toFile(base64: string, fileName: string) {
-  let block = base64.split(';');
-  let contentType = block[0].split(':')[1];
-  let b64Data = block[1].split(',')[1];
+  const block = base64.split(';');
+  const contentType = block[0].split(':')[1];
+  const b64Data = block[1].split(',')[1];
 
   const type = contentType || '';
   const size = 512;
 
-  let byteCharacters = atob(b64Data);
-  let byteArrays = [];
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
 
   for (let offset = 0; offset < byteCharacters.length; offset += size) {
-    let slice = byteCharacters.slice(offset, offset + size);
+    const slice = byteCharacters.slice(offset, offset + size);
 
-    let byteNumbers = new Array(slice.length);
+    const byteNumbers = new Array(slice.length);
     for (let i = 0; i < slice.length; i++) {
       byteNumbers[i] = slice.charCodeAt(i);
     }
 
-    let byteArray = new Uint8Array(byteNumbers);
+    const byteArray = new Uint8Array(byteNumbers);
 
     byteArrays.push(byteArray);
   }
 
-  let blob = new File(byteArrays, fileName, { type: type });
+  const blob = new File(byteArrays, fileName, { type });
   return blob;
 }
 
@@ -114,5 +112,5 @@ export {
   isAtMentions,
   compileAtMentionText,
   compileQuoteText,
-  b64toFile
+  b64toFile,
 };
