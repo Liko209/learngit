@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import createMuiTheme, { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
+import createMuiTheme, { Theme, ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
 import MuiThemeProvider, { MuiThemeProviderProps } from '@material-ui/core/styles/MuiThemeProvider';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
@@ -21,5 +21,5 @@ const ThemeProvider: React.SFC<MuiThemeProviderProps> = ({ theme, children }) =>
   );
 };
 
-export { createTheme, ThemeOptions, ThemeProvider };
+export { createTheme, Theme, ThemeOptions, ThemeProvider };
 export default ThemeProvider;
