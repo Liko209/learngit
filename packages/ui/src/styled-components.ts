@@ -7,7 +7,7 @@
  * See: https://www.styled-components.com/docs/api#typescript
  */
 import * as styledComponents from 'styled-components';
-import { ThemeOptions } from './theme';
+import { Theme } from './theme';
 
 const {
   default: styled,
@@ -15,7 +15,7 @@ const {
   injectGlobal,
   keyframes,
   ThemeProvider,
-} = styledComponents as styledComponents.ThemedStyledComponentsModule<ThemeOptions>;
+} = styledComponents as styledComponents.ThemedStyledComponentsModule<Theme>;
 
 export { css, injectGlobal, keyframes, ThemeProvider };
 export default styled;
