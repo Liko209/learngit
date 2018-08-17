@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter, NavLink, RouteComponentProps } from 'react-router-dom';
 
-interface IProps extends RouteComponentProps<any> { }
+interface IProps extends RouteComponentProps<{}> { }
 
 const List = ({ match }: IProps) => {
   return (

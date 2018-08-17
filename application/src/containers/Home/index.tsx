@@ -54,12 +54,12 @@ class Home extends Component<IProps, IStates>  {
               <Redirect exact={true} from="/" to="/messages" />
               <LayoutRoute
                 path="/messages/:id?"
-                left={ConversationLeft}
-                main={ConversationMain}
-                right={ConversationRight}
+                Left={ConversationLeft}
+                Middle={ConversationMain}
+                Right={ConversationRight}
               />
-              <LayoutRoute path="/calls" main={CallMain} right={CallRight} />
-              <LayoutRoute path="/meetings" main={MeetingMain} right={MeetingRight} />
+              <LayoutRoute path="/calls" Left={CallMain} Right={CallRight} />
+              <LayoutRoute path="/meetings" Left={MeetingMain} Right={MeetingRight} />
               <Route component={NotFound} />
             </Switch>
           </Main>
