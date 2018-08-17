@@ -94,7 +94,8 @@
         "lifecycles",
         "testcafe",
         "headshot",
-        "happypack"
+        "happypack",
+        "cateye"
     ],
     "flagWords": []
 }
