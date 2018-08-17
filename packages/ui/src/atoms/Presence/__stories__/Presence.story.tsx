@@ -7,7 +7,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { Presence } from '.';
+import { Presence } from '..';
 
 const StyledWrapper = styled.div`
   display: flex;
