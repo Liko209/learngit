@@ -2,12 +2,12 @@ import React, { Component, CSSProperties } from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
-import Typography from '@material-ui/core/Typography';
+import MuiTypography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { isTextOverflow } from '../../utils';
 
-const StyledTypography = styled(Typography)`
+const StyledTypography = styled(MuiTypography)`
   && {
     flex: 1;
     padding: 0 8px;
