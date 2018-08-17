@@ -23,7 +23,7 @@ export default class FavoriteListPresenter extends OrderListPresenter {
       }),
     );
     this.groupType = GROUP_QUERY_TYPE.FAVORITE;
-    this.eventName = ENTITY.ENTITY.FAVORITE_GROUPS;
+    this.eventName = ENTITY.FAVORITE_GROUPS;
     this.init();
   }
   init() {
