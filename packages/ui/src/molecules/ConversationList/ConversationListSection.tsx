@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 10:35:07
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { Component } from 'react';
 import Collapse from '@material-ui/core/Collapse';
 import SectionHeader, { SectionHeaderProps } from './ConversationListSectionHeader';

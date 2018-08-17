@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 10:35:05
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { Component, CSSProperties } from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';

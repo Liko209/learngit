@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 10:36:36
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from 'styled-components';
 import { WithTheme } from '@material-ui/core';
