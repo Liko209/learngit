@@ -33,6 +33,7 @@ const StyledUmi = styled<UmiProps, 'span'>('span')`
   background: ${ ({ important }) => important ? '#ff8800' : '#69a3eb'};
   ${({ showCount }) => showCount ? styleWithCount : styleWithoutCount}
 
+  li:hover > &,
   div:hover > & {
     ${styleWithCount}
   }

@@ -7,12 +7,12 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 
 import { WithTheme } from '@material-ui/core/styles/withTheme';
-import { ListItem as MuiListItem } from '@material-ui/core';
+import MuiMenuItem, { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
 
 import { Presence, Umi, Icon } from '../../atoms';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
-const StyledListItem = styled(MuiListItem)`
+const StyledListItem = styled(MuiMenuItem)`
 && {
   white-space: nowrap;
   padding: 6px 16px 6px 12px;
@@ -51,7 +51,7 @@ type ListItemProps = {
   important?: boolean;
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
-} & Partial<Pick<WithTheme, 'theme'>>;
+} & MuiMenuItemProps & Partial<Pick<WithTheme, 'theme'>>;
 
 class ConversationListItem extends Component<ListItemProps> {
   static defaultProps = {

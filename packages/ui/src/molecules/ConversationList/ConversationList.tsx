@@ -6,9 +6,9 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 
-import MuiList from '@material-ui/core/List';
+import MuiMenuList from '@material-ui/core/MenuList';
 
-const StyledList = styled(MuiList)`
+const StyledList = styled(MuiMenuList)`
   && {
     background-color: white;
     padding-top: 0;
@@ -41,6 +41,10 @@ class ConversationList extends PureComponent<ListProps> {
     );
   }
 
+  /**
+   * TODO use the same way with <BottomNavigation/> to implement onChange event.
+   * See https://bit.ly/2Bf2sP0
+   */
   private _handleChange(event: React.MouseEvent) {
     const { onChange, onClick } = this.props;
 
