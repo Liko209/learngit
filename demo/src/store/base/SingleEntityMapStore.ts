@@ -20,7 +20,7 @@ export default class SingleEntityMapStore extends BaseStore {
     const callback = ({ type, entities }: IIncomingData) => {
       this.handleIncomingData({ type, entities });
     };
-    ENTITY_EVENT_NAME[entityName].forEach(eventName => {
+    ENTITY_EVENT_NAME[entityName].forEach((eventName) => {
       this.subscribeNotification(eventName, callback);
     });
   }
@@ -31,13 +31,13 @@ export default class SingleEntityMapStore extends BaseStore {
     }
     const existProperties = Array.from(this.data.keys());
     const entity = {};
-    Array.from(entities.values()).forEach(value => {
+    Array.from(entities.values()).forEach((value) => {
       _.merge(entity, value);
     });
 
     const matchedProperties = _.intersection(
       Object.keys(entity).map(property => _.camelCase(property)),
-      existProperties
+      existProperties,
     );
 
     if (!matchedProperties.length) {
@@ -65,7 +65,7 @@ export default class SingleEntityMapStore extends BaseStore {
       model = matchedProperties.reduce((matchedModel, property) => {
         matchedModel[property] = model[property]; // eslint-disable-line
         return matchedModel;
-      }, {});
+      },                               {});
     }
     this.data.merge(model);
   }
@@ -77,7 +77,7 @@ export default class SingleEntityMapStore extends BaseStore {
 
   @action
   batchRemove(properties: string[]) {
-    properties.forEach(property => {
+    properties.forEach((property) => {
       this.remove(property);
     });
   }

@@ -69,7 +69,7 @@ class SplitPane extends React.Component<Props, State> {
     onDragFinished: () => {},
     onChange: () => {},
     className: () => {},
-    resizerChildren: null
+    resizerChildren: null,
   };
   private pane1: any;
   private pane2: any;
@@ -84,7 +84,7 @@ class SplitPane extends React.Component<Props, State> {
       active: false,
       resized: false,
       position: 0,
-      draggedSize: 0
+      draggedSize: 0,
     };
   }
 
@@ -114,7 +114,7 @@ class SplitPane extends React.Component<Props, State> {
 
       this.setState({
         position,
-        active: true
+        active: true,
       });
     }
   }
@@ -127,7 +127,7 @@ class SplitPane extends React.Component<Props, State> {
       minSize = 0,
       maxSize = 0,
       split,
-      onChange
+      onChange,
     } = this.props;
     if (allowResize && !size) {
       if (this.state.active) {
@@ -156,7 +156,7 @@ class SplitPane extends React.Component<Props, State> {
             } else {
               this.setState({
                 position: current,
-                resized: true
+                resized: true,
               });
             }
 
@@ -165,11 +165,11 @@ class SplitPane extends React.Component<Props, State> {
             }
 
             this.setState({
-              draggedSize: newSize
+              draggedSize: newSize,
             });
 
             ref.setState({
-              size: newSize
+              size: newSize,
             });
           }
         }
@@ -185,7 +185,7 @@ class SplitPane extends React.Component<Props, State> {
         }
 
         this.setState({
-          active: false
+          active: false,
         });
       }
     }
@@ -201,7 +201,7 @@ class SplitPane extends React.Component<Props, State> {
         props.defaultSize ||
         props.minSize;
       ref.setState({
-        size: newSize
+        size: newSize,
       });
     }
   }
@@ -227,20 +227,20 @@ class SplitPane extends React.Component<Props, State> {
       MozUserSelect: 'text',
       WebkitUserSelect: 'text',
       msUserSelect: 'text',
-      userSelect: 'text'
+      userSelect: 'text',
     };
 
     if (split === 'vertical') {
       Object.assign(style, {
         flexDirection: 'row',
-        height: '100%'
+        height: '100%',
       });
     } else {
       Object.assign(style, {
         flexDirection: 'column',
         height: '100%',
         minHeight: '100%',
-        width: '100%'
+        width: '100%',
       });
     }
 
@@ -265,7 +265,7 @@ class SplitPane extends React.Component<Props, State> {
           style={style}
       >
         <Pane
-            ref={el => {
+            ref={(el) => {
               this.pane1 = el;
             }}
             key="pane1"
@@ -286,7 +286,7 @@ class SplitPane extends React.Component<Props, State> {
           {resizerChildren}
         </Resizer>
         <Pane
-            ref={el => {
+            ref={(el) => {
               this.pane2 = el;
             }}
             key="pane2"

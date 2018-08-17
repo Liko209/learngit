@@ -1,4 +1,4 @@
-/// <reference path="../../.storybook/storybook.d.ts" />
+/// <reference path="../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
@@ -18,7 +18,7 @@ storiesOf('ShelfPageHeader', module)
         awake={true}
         tooltipTitle="Close"
       >
-      close
+        close
       </IconButton>
     );
     return (

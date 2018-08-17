@@ -36,7 +36,7 @@ export default class EntityMapStore extends BaseStore {
       //   this.batchRemove(matchedKeys);
       // } else {
       const matchedEntities: IEntity[] = [];
-      matchedKeys.forEach(key => {
+      matchedKeys.forEach((key) => {
         matchedEntities.push(entities.get(key) as IEntity);
       });
       if (type === 'update') {
@@ -65,7 +65,7 @@ export default class EntityMapStore extends BaseStore {
       return;
     }
     const handledModels = new Map();
-    entities.forEach(value => {
+    entities.forEach((value) => {
       const model = this.createModel(value);
       const { id } = model;
       handledModels.set(id, model);
@@ -79,7 +79,7 @@ export default class EntityMapStore extends BaseStore {
       return;
     }
     const handledModels = new Map();
-    entities.forEach(entity => {
+    entities.forEach((entity) => {
       const { id } = entity;
       const obs = this.get(id);
       const model = this.createModel(obs ? _.merge(toJS(obs), entity) : entity);
@@ -94,7 +94,7 @@ export default class EntityMapStore extends BaseStore {
       return;
     }
     const handledModels = new Map();
-    entities.forEach(entity => {
+    entities.forEach((entity) => {
       const { id, data } = entity;
       this.remove(id);
       const model = this.createModel(data);
@@ -117,9 +117,9 @@ export default class EntityMapStore extends BaseStore {
   @action
   batchRemove(ids: number[]) {
     transaction(() =>
-      ids.forEach(id => {
+      ids.forEach((id) => {
         this.remove(id);
-      })
+      }),
     );
   }
 

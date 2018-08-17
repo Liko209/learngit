@@ -8,30 +8,33 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 
+import { service } from "sdk";
+
+const { AuthService } = service;
+
 const AuthRoute = ({ component: Component, ...rest }) => {
-  const login = localStorage.getItem('login'); // todo
-  const isAuthenticated = login === 'true';
+  const isAuthenticated = AuthService.getInstance().isLoggedIn();
   return (
     <Route
       {...rest}
       render={props =>
-        (isAuthenticated ? (
+        isAuthenticated ? (
           <Component {...props} />
         ) : (
             <Redirect
               to={{
-                pathname: '/login',
+                pathname: '/unified-login',
                 state: { from: props.location } // eslint-disable-line
               }}
             />
-          ))
+          )
       }
     />
-  )
-}
+  );
+};
 
 AuthRoute.propTypes = {
-  component: PropTypes.func.isRequired,
+  component: PropTypes.func.isRequired
 };
 
 export default AuthRoute;

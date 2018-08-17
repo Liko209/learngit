@@ -17,7 +17,7 @@ export default class PersonModel {
       lastName,
       headshot,
       email,
-      rcPhoneNumbers
+      rcPhoneNumbers,
     } = model;
     this.id = id;
     this.companyId = companyId;
@@ -36,7 +36,7 @@ export default class PersonModel {
       id,
       headshot,
       email,
-      rc_phone_numbers: rcPhoneNumbers
+      rc_phone_numbers: rcPhoneNumbers,
     } = data;
     const model = {
       id,
@@ -45,7 +45,7 @@ export default class PersonModel {
       lastName,
       headshot,
       email,
-      rcPhoneNumbers
+      rcPhoneNumbers,
     };
 
     return new PersonModel(model);
@@ -79,14 +79,14 @@ export default class PersonModel {
     lastName,
     headshot,
     email,
-    rcPhoneNumbers
+    rcPhoneNumbers,
   }: {
-  companyId?: number;
-  firstName?: string;
-  lastName?: string;
-  headshot?: string;
-  email?: string;
-  rcPhoneNumbers?: string[];
+    companyId?: number;
+    firstName?: string;
+    lastName?: string;
+    headshot?: string;
+    email?: string;
+    rcPhoneNumbers?: string[];
   }) {
     if (companyId) {
       this.companyId = companyId;

@@ -7,6 +7,6 @@ import { utils } from 'sdk';
 
 interface Handlers {
   [key: string]: (error: utils.BaseError) => void;
-};
+}
 
 export { Handlers };

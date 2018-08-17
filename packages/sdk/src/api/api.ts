@@ -37,9 +37,10 @@ class Api {
     NetworkSetup.setup(types);
     // This explicit set rc handler accessToken as the RC token provider for glip handler
     const tokenManager = NetworkManager.Instance.getTokenManager();
-    const rcTokenHandler = tokenManager && tokenManager.getOAuthTokenHandler(HandleByRingCentral);
-    HandleByGlip.rcTokenProvider = rcTokenHandler
-      && rcTokenHandler.accessToken.bind(rcTokenHandler);
+    const rcTokenHandler =
+      tokenManager && tokenManager.getOAuthTokenHandler(HandleByRingCentral);
+    HandleByGlip.rcTokenProvider =
+      rcTokenHandler && rcTokenHandler.accessToken.bind(rcTokenHandler);
   }
 
   static get httpConfig() {

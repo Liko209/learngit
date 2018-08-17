@@ -16,7 +16,7 @@ interface Props {
 class Resizer extends React.Component<Props> {
   static displayName = 'Resizer';
   static defaultProps = {
-    split: 'vertical'
+    split: 'vertical',
   };
 
   constructor(props: Props, context: any) {
@@ -35,7 +35,7 @@ class Resizer extends React.Component<Props> {
     const style: React.CSSProperties = {
       position: 'relative',
       outline: 'none',
-      zIndex: 2
+      zIndex: 2,
     };
 
     if (split === 'vertical') {

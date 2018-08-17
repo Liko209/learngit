@@ -9,7 +9,7 @@ import {
   ALPHABET,
   LIMIT,
   IPageParams,
-  IPage
+  IPage,
 } from './constants';
 import { PersonService } from 'sdk/service';
 
@@ -31,7 +31,7 @@ export default class Page {
     return {
       prefix: this.prefix,
       offset: this.offset,
-      limit: this.limit
+      limit: this.limit,
     };
   }
 

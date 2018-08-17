@@ -34,8 +34,8 @@ export default class QuoteActions extends Component<Props> {
     const { postId } = this.props;
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_STORE_DATA.MODIFY_POST, {
+      postId,
       type: ACTIONS_TYPE.QUOTE,
-      postId
     });
   }
   render() {

@@ -27,7 +27,7 @@ describe('auth', () => {
     it('glipNetworkClient get() should be called with specific path', () => {
       generateCode('123123', '456456');
       expect(Api.glip2NetworkClient.http).toHaveBeenCalledWith({
-        path: `/v1.x/interop/generate-code`,
+        path: `/v1.x/v1.0/interop/generate-code`,
         method: NETWORK_METHOD.POST,
         via: NETWORK_VIA.HTTP,
         data: {

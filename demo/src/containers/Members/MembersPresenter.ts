@@ -20,7 +20,7 @@ export default class MembersPresenter extends BasePresenter {
 
     groupService
       .hasPermissionWithGroupId(id, PERMISSION_ENUM.TEAM_ADD_MEMBER)
-      .then(res => {
+      .then((res) => {
         this.showAddMember = res;
       });
   }

@@ -15,7 +15,7 @@ export default class OrderListPresenter extends BasePresenter {
   constructor(
     store: OrderListStore,
     isMatchedFunc: Function,
-    transformFunc: Function
+    transformFunc: Function,
   ) {
     super();
     this.store = store;
@@ -48,7 +48,7 @@ export default class OrderListPresenter extends BasePresenter {
       const notMatchedKeys: number[] = [];
 
       if (type === 'replace') {
-        matchedKeys.forEach(key => {
+        matchedKeys.forEach((key) => {
           const model = entities.get(key) as IEntity;
           const { data } = model;
           if (this.isMatchedFunc(data)) {
@@ -59,7 +59,7 @@ export default class OrderListPresenter extends BasePresenter {
           }
         });
       } else {
-        matchedKeys.forEach(key => {
+        matchedKeys.forEach((key) => {
           const model = entities.get(key) as IEntity;
           if (this.isMatchedFunc(model)) {
             const idSortKey = this.transformFunc(model);
@@ -71,7 +71,7 @@ export default class OrderListPresenter extends BasePresenter {
         });
       }
 
-      differentKeys.forEach(key => {
+      differentKeys.forEach((key) => {
         const model = entities.get(key) as IEntity;
         if (this.isMatchedFunc(model)) {
           const idSortKey = this.transformFunc(model);
@@ -117,7 +117,7 @@ export default class OrderListPresenter extends BasePresenter {
       return;
     }
     const handledData: IIDSortKey[] = [];
-    dataModels.forEach(item => {
+    dataModels.forEach((item) => {
       handledData.push(this.transformFunc(item));
     });
 

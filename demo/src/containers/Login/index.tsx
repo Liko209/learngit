@@ -18,7 +18,7 @@ import ErrorHandler from '@/containers/ErrorHandler';
 
 const { AuthService } = service;
 const { ErrorTypes } = utils;
-interface Props extends RouteComponentProps<any> {}
+interface Props extends RouteComponentProps<any> { }
 
 interface States {
   btnDisabled: boolean;
@@ -49,13 +49,13 @@ class Login extends React.Component<Props, States> {
     this.setState({ [name]: value } as Pick<
       States,
       'username' | 'extension' | 'password'
-    >);
+      >);
   }
 
   async handleSubmit(event: React.FormEvent<HTMLButtonElement>) {
     event.preventDefault();
     const { username, password, extension } = this.state;
-    let errors: string[] = [];
+    const errors: string[] = [];
     if (!username) {
       errors.push('Phone number can not be empty.');
     }
@@ -95,7 +95,6 @@ class Login extends React.Component<Props, States> {
           handler.show(error);
         },
       });
-    } finally {
       this.setState({
         btnDisabled: false,
         btnText: 'Login',
