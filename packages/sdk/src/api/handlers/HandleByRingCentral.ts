@@ -66,7 +66,7 @@ const HandleByRingCentral = new class extends AbstractHandleType {
           reject(token);
         }
       } catch (err) {
-        reject(err);
+        reject(token);
       }
     });
   }
