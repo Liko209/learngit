@@ -22,8 +22,8 @@ export abstract class BasePage {
   protected onEnter() { }
   protected onExit() { }
 
-  protected chain(cb: (t: TestController) => Promise<any>) {
-    this._chain = this._chain.then(() => cb(this._t));
+  protected chain(cb: (t: TestController, value?: any) => Promise<any>) {
+    this._chain = this._chain.then((value) => cb(this._t, value));
     return this;
   }
 
@@ -65,8 +65,7 @@ export abstract class BasePage {
   async execute() {
     let chain = this._chain;
     this._chain = Promise.resolve();
-    await chain;
-    return this;
+    return await chain;
   }
 
   shouldNavigateTo<T extends BasePage>(
