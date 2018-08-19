@@ -10,6 +10,7 @@ import { v4 as uuid } from 'uuid';
 export abstract class BasePage {
   private _t: TestController;
   private _chain: Promise<any>;
+  public then: any;
 
   constructor(
     t: TestController,
@@ -17,6 +18,9 @@ export abstract class BasePage {
   ) {
     this._t = t;
     this._chain = chain || Promise.resolve();
+    if (chain != undefined) {
+      this.forwardThen();
+    }
   }
 
   protected onEnter() { }
@@ -24,7 +28,16 @@ export abstract class BasePage {
 
   protected chain(cb: (t: TestController, value?: any) => Promise<any>) {
     this._chain = this._chain.then((value) => cb(this._t, value));
+    this.forwardThen();
     return this;
+  }
+
+  private forwardThen() {
+    this.then = function () {
+      const promise = this._chain;
+      this._chain = Promise.resolve();
+      return promise.then.apply(promise, arguments);
+    }
   }
 
   protected async log(

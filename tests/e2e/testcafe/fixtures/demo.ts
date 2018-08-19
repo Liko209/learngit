@@ -29,6 +29,5 @@ test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
     .shouldNavigateTo(RingcentralSignInPage)
     .setExtension(t.ctx.data.users.user701.extension)
     .setPassword(t.ctx.data.users.user701.password)
-    .signIn()
-    .execute();
+    .signIn();
 });
