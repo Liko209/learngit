@@ -18,11 +18,15 @@ fixture('Demo')
   .afterEach(tearDown())
 
 test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
-  await new BlankPage(t)
+  let page;
+  await (page = new BlankPage(t)
     .open(SITE_URL)
     .shouldNavigateTo(EnvironmentSelectionPage)
     .selectEnvironment(SITE_ENV)
     .toNextPage()
+  );
+
+  await page
     .shouldNavigateTo(RingcentralSignInNavigationPage)
     .setCredential(`${t.ctx.data.mainCompanyNumber}`)
     .toNextPage()
