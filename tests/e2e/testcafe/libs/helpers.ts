@@ -32,8 +32,16 @@ export class TestHelper {
     await accountPoolHelper.checkInAccounts(env, this.t.ctx.data.accountType, this.t.ctx.data.companyEmailDomain);
   }
 
-  get testData() {
+  get data() {
     return this.t.ctx.data;
+  }
+
+  get users() {
+    return this.data.users;
+  }
+
+  get teams() {
+    return this.data.teams;
   }
 
   setupGlipApiManager(

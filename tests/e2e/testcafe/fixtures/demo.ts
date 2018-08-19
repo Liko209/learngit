@@ -11,13 +11,15 @@ import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
 import { SITE_URL, SITE_ENV } from '../config';
 
 import { formalName } from '../libs/filter';
-import { setUp, tearDown } from '../libs/helpers';
+import { setUp, tearDown, TestHelper} from '../libs/helpers';
 
 fixture('Demo')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown())
 
 test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
+  const testHelper = TestHelper.from(t);
+
   let page;
   await (page = new BlankPage(t)
     .open(SITE_URL)
@@ -28,10 +30,10 @@ test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
 
   await page
     .shouldNavigateTo(RingcentralSignInNavigationPage)
-    .setCredential(`${t.ctx.data.mainCompanyNumber}`)
+    .setCredential(testHelper.data.mainCompanyNumber)
     .toNextPage()
     .shouldNavigateTo(RingcentralSignInPage)
-    .setExtension(t.ctx.data.users.user701.extension)
-    .setPassword(t.ctx.data.users.user701.password)
+    .setExtension(testHelper.users.user701.extension)
+    .setPassword(testHelper.users.user701.password)
     .signIn();
 });
