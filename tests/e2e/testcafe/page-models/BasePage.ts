@@ -6,8 +6,8 @@
 
 import { Status, AllureStep } from '../libs/report';
 import { v4 as uuid } from 'uuid';
-export abstract class BasePage {
 
+export abstract class BasePage {
   private _t: TestController;
   private _chain: Promise<any>;
 

@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY;
-const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET;
+const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
+const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
 
 const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
 const SITE_URL = process.env.SITE_URL || 'https://develop.fiji.gliprc.com/unified-login';
