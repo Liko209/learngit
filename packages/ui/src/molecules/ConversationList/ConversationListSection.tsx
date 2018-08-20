@@ -44,7 +44,7 @@ class ConversationListSection extends Component<SectionProps, SectionStates> {
           onClick={this._handleClick}
         />
         <Collapse in={expanded}>
-          <Divider />
+          {this.props.children && <Divider />}
           {this.props.children}
         </Collapse>
       </div>
