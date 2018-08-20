@@ -18,7 +18,7 @@
     "build:demo": "cd demo && yarn build",
     "build:app": "cd application && yarn build",
     "test": "node ./scripts/test.js --env=jsdom",
-    "test:staged": "CI=true && yarn test --findRelatedTests",
+    "test:staged": "yarn test:cover --findRelatedTests",
     "test:cover": "yarn test --coverage",
     "lint": "tslint",
     "publish": "yarn clean:build && yarn build && lerna publish --silent",
