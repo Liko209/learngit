@@ -5,12 +5,13 @@
  */
 import React, { Component } from 'react';
 import Collapse from '@material-ui/core/Collapse';
+import { noop } from '../../utils';
 import SectionHeader, { SectionHeaderProps } from './ConversationListSectionHeader';
 
 type SectionProps = {
   expanded?: boolean;
-  onExpand?: () => any;
-  onCollapse?: () => any;
+  onExpand?: Function;
+  onCollapse?: Function;
 } & SectionHeaderProps;
 
 type SectionStates = {
@@ -18,6 +19,11 @@ type SectionStates = {
 };
 
 class ConversationListSection extends Component<SectionProps, SectionStates> {
+  static defaultProps = {
+    onExpand: noop,
+    onCollapse: noop,
+  };
+
   constructor(props: SectionProps) {
     super(props);
 

@@ -22,7 +22,6 @@ type SectionHeaderProps = {
   title: string;
   unreadCount?: number;
   icon: JSX.Element;
-  showCount?: boolean;
   important?: boolean;
   umiVariant?: 'count' | 'dot' | 'auto';
   expanded?: boolean;
