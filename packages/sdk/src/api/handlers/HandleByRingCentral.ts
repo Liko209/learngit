@@ -9,13 +9,14 @@ import {
   NETWORK_VIA,
 } from 'foundation';
 import Api from '../api';
-import AccountService from '../../service/account';
+import { ITokenRefreshDelegate } from '../ringcentral/ITokenRefreshDelegate';
 
 const HandleByRingCentral = new class extends AbstractHandleType {
   defaultVia = NETWORK_VIA.HTTP;
   survivalModeSupportable = true;
   tokenExpirable = true;
   tokenRefreshable = true;
+  tokenRefreshDelegate: ITokenRefreshDelegate;
   basic() {
     return btoa(
       `${Api.httpConfig.rc.clientId}:${Api.httpConfig.rc.clientSecret}`,
@@ -49,20 +50,23 @@ const HandleByRingCentral = new class extends AbstractHandleType {
   doRefreshToken(token: IToken) {
     return new Promise<IToken>(async (resolve, reject) => {
       try {
-        const accountService: AccountService = AccountService.getInstance();
-        const refreshedToken = await accountService.refreshRCToken();
-        if (refreshedToken) {
-          token.access_token = refreshedToken.access_token;
-          token.accessTokenExpireIn = refreshedToken.accessTokenExpireIn;
-          token.refreshToken = refreshedToken.refreshToken;
-          token.refreshTokenExpireIn = refreshedToken.refreshTokenExpireIn;
-          token.timestamp = refreshedToken.timestamp;
-          resolve(token);
+        if (this.tokenRefreshDelegate) {
+          const refreshedToken = await this.tokenRefreshDelegate.refreshRCToken();
+          if (refreshedToken) {
+            token.access_token = refreshedToken.access_token;
+            token.accessTokenExpireIn = refreshedToken.accessTokenExpireIn;
+            token.refreshToken = refreshedToken.refreshToken;
+            token.refreshTokenExpireIn = refreshedToken.refreshTokenExpireIn;
+            token.timestamp = refreshedToken.timestamp;
+            resolve(token);
+          } else {
+            reject(token);
+          }
         } else {
           reject(token);
         }
       } catch (err) {
-        reject(err);
+        reject(token);
       }
     });
   }

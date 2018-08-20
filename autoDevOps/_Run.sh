@@ -13,7 +13,6 @@ echo '====Start Run'
 . $autoDevOps/3.UT.sh
 
 # # # 4. Build And Deploy
-demoHasUpdate=1
 if [ "$demoHasUpdate" ]; then
   . $autoDevOps/4.BuildAndDeployDemo.sh
 else
@@ -21,4 +20,4 @@ else
 fi
 
 # # 5. E2E
-# . $autoDevOps/5.E2E.sh
+. $autoDevOps/5.E2E.sh

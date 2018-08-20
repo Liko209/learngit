@@ -18,11 +18,11 @@ import { CLIENT_ID } from '../../dao/config/constants';
 import { UserInfo } from '../../models';
 import { mainLogger } from 'foundation';
 import { generateUUID } from '../../utils/mathUtils';
-import { refreshToken } from '../../api';
+import { refreshToken, ITokenRefreshDelegate } from '../../api';
 import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware, ErrorTypes } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
-export default class AccountService extends BaseService {
+export default class AccountService extends BaseService implements ITokenRefreshDelegate {
   static serviceName = 'AccountService';
 
   private accountDao: AccountDao;
