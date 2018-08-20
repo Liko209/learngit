@@ -16,6 +16,7 @@ import { transform } from '../utils';
 import { Group, Post, Raw, Profile } from '../../models';
 import { GROUP_QUERY_TYPE } from '../constants';
 import StateService from '../state';
+import { mainLogger } from 'foundation';
 
 async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
   const transformedData: (Group | null)[] = await Promise.all(
@@ -136,6 +137,7 @@ export default async function handleData(groups: Raw<Group>[]) {
 }
 
 async function doFavoriteGroupsNotification(favIds: number[]) {
+  mainLogger.debug(`-------doFavoriteGroupsNotification--------`);
   if (favIds.length) {
     const dao = daoManager.getDao(GroupDao);
     let groups = await dao.queryGroupsByIds(favIds);
@@ -160,6 +162,7 @@ function sortFavoriteGroups(ids: number[], groups: Group[]): Group[] {
 }
 
 async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Profile) {
+  mainLogger.debug(`---------handleFavoriteGroupsChanged---------`);
   if (oldProfile && newProfile) {
     const oldIds = oldProfile.favorite_group_ids || [];
     const newIds = newProfile.favorite_group_ids || [];

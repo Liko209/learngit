@@ -15,6 +15,7 @@ import FavoriteListPresenter from './FavoriteListPresenter';
 import ConversationListItemCell from './ConversationListItemCell';
 import { ENTITY_NAME } from '@/store';
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
+import { observable, action, autorun } from 'mobx';
 interface IProps {
 
 }
@@ -34,23 +35,28 @@ const SortableItem = SortableElement(ConversationListItemCell);
 @observer
 class FavoriteSection extends React.Component<IProps, IState> {
   favoritePresenter: FavoriteListPresenter;
+  @observable
+  ids: number[] = [];
   constructor(props: IProps) {
     super(props);
     this.favoritePresenter = new FavoriteListPresenter();
     this._handleSortEnd = this._handleSortEnd.bind(this);
+    const store = this.favoritePresenter.getStore();
+
+    autorun(() => {
+      this.ids = store.getIds();
+    });
   }
 
-  componentDidMount() {
-    this.favoritePresenter.fetchData();
+  async componentDidMount() {
+    await this.favoritePresenter.fetchData();
   }
 
   renderFavoriteGroups() {
-    const store = this.favoritePresenter.getStore();
-    const ids = store.getIds();
     const distance = 1;
     return (
       <SortableList distance={distance} onSortEnd={this._handleSortEnd} lockAxis="y">
-        {ids.map((id, index) => (
+        {this.ids.map((id, index) => (
           <SortableItem id={id} key={id} index={index} entityName={ENTITY_NAME.GROUP} />
         ))}
       </SortableList>
@@ -58,6 +64,7 @@ class FavoriteSection extends React.Component<IProps, IState> {
   }
 
   private _handleSortEnd({ oldIndex, newIndex }: { oldIndex: number; newIndex: number; }) {
+    this.ids = arrayMove(this.ids, oldIndex, newIndex);
     this.favoritePresenter.reorderFavoriteGroups(oldIndex, newIndex);
   }
 

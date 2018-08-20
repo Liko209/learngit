@@ -50,23 +50,19 @@ export default class ProfileService extends BaseService<Profile> {
     const profile = await this.getProfile();
     if (profile) {
       const oldFavGroupIds = profile.favorite_group_ids || [];
-      console.log('old:', oldFavGroupIds);
       const newFavGroupIds = this._reorderFavoriteGroupIds(oldIndex, newIndex, oldFavGroupIds);
       profile.favorite_group_ids = newFavGroupIds;
 
       profile._id = profile.id;
       delete profile.id;
-      console.log(newFavGroupIds);
-      await handleData([profile as Raw<Profile>]); // pre-handle local data
-
-      // const response = await ProfileAPI.putDataById<Profile>(profile._id, profile);
-      // if (response.data) {
-      //   await handleData([response.data]);
-      // } else {
-      //   // roll back
-      //   profile.favorite_group_ids = oldFavGroupIds;
-      //   await handleData([profile as Raw<Profile>]);
-      // }
+      const response = await ProfileAPI.putDataById<Profile>(profile._id, profile);
+      if (response.data) {
+        await handleData([response.data]);
+      } else {
+        // roll back
+        profile.favorite_group_ids = oldFavGroupIds;
+        await handleData([profile as Raw<Profile>]);
+      }
     }
   }
 
