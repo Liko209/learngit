@@ -5,11 +5,11 @@ import ElementQueries from 'css-element-queries/src/ElementQueries';
 import qs from 'qs';
 import { service } from 'sdk';
 
-import '@/dev';
-import { initAll } from '@/init';
-import '@/styled/globalStyles';
+import '#/dev';
+import { initAll } from '#/init';
+import '#/styled/globalStyles';
 
-import App from '@/containers/App';
+import App from '#/containers/App';
 import registerServiceWorker from './registerServiceWorker';
 
 ElementQueries.listen();

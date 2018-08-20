@@ -7,9 +7,9 @@ import PropsTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 
-import Description from '@/components/Conversation/Description';
-import RightPanelTitle from '@/components/Conversation/RightTitle';
-import storeManager, { ENTITY_NAME } from '@/store';
+import Description from '#/components/Conversation/Description';
+import RightPanelTitle from '#/components/Conversation/RightTitle';
+import storeManager, { ENTITY_NAME } from '#/store';
 
 const TeamDescription = ({ group }) =>
   (group.description ? (

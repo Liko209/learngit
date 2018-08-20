@@ -59,12 +59,16 @@ type TUMIProps = {
   expand: boolean,
   unreadCount: number,
   important: boolean,
-  showCount: boolean,
+  variant: 'count' | 'dot' | 'auto',
 };
-const UMI = styled<TUMIProps>(Umi)`
+const CustomUMI: React.SFC<TUMIProps> = (props) => {
+  return <Umi {...props} />;
+};
+const UMI = styled<TUMIProps>(CustomUMI)`
   && {
-    margin-top: ${props => !props.expand ? '-18px' : '0'};
-    margin-left: ${props => !props.expand ? '-6px' : '0'};
+    position: ${props => !props.expand ? 'absolute' : 'static'};
+    top: ${props => !props.expand ? '6px' : ''};
+    left: ${props => !props.expand ? '34px' : ''};
     width: auto;
     height: auto;
     padding: 1px 5px;
@@ -75,6 +79,7 @@ const UMI = styled<TUMIProps>(Umi)`
   }
 `;
 const ListLink = styled(NavLink)`
+  position: relative;
   outline: none;
   display: flex;
   height: 100%;
@@ -104,14 +109,14 @@ type TNavItemProps = {
   title?: string;
   active: number;
   icon: string;
-  showCount: boolean;
+  variant: 'count' | 'dot' | 'auto',
   num?: number;
   url?: string;
   unreadCount: number;
 } & Partial<Pick<WithTheme, 'theme'>>;
 
 const Item = ((props: TNavItemProps) => {
-  const { expand, active, title, showCount, unreadCount, icon, url } = props;
+  const { expand, active, title, variant, unreadCount, icon, url } = props;
   const bgColor = active ? '#EBF6FA' : '#F5F5F5'; // Ice and 100
   return (
     <ListItem
@@ -127,7 +132,7 @@ const Item = ((props: TNavItemProps) => {
       <ListLink to={`/${url}`} className={'left-link'}>
         <NavIcon component={icon} active={active} className={'nav-icon'} />
         <ListItemText expand={expand} className={'nav-text'}>{title}</ListItemText>
-        <UMI unreadCount={unreadCount} important={true} expand={expand} showCount={showCount} />
+        <UMI unreadCount={unreadCount} important={true} expand={expand} variant={variant} />
       </ListLink>
     </ListItem>
   );

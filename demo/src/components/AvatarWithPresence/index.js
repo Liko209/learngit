@@ -4,8 +4,8 @@
  * @Last Modified by: Jeffrey Huang (jeffrey.huang@ringcentral.com)
  * @Last Modified time: 2018-04-02 18:09:50
  */
-import Avatar from '@/containers/Avatar';
-import Presence from '@/containers/Presence';
+import Avatar from '#/containers/Avatar';
+import Presence from '#/containers/Presence';
 
 import React from 'react';
 import PropTypes from 'prop-types';

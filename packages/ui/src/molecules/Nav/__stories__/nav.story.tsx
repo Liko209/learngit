@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { boolean, number, select} from '@storybook/addon-knobs/react';
+import { boolean, number, select } from '@storybook/addon-knobs/react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { NavItem } from '.';
+import { NavItem } from '..';
+import { BrowserRouter } from 'react-router-dom';
 
 storiesOf('NavItem', module)
   .add('NavItem', withInfo(``)(
@@ -28,16 +29,17 @@ storiesOf('NavItem', module)
       const isActive = boolean('isActive', false)
       const activeNum = isActive ? 1 : 0;
       return (
-        <div>
+        <BrowserRouter>
           <NavItem
             expand={expand}
             active={activeNum}
             icon={iconType}
+            url={iconType}
             title={iconType}
-            showCount={true}
+            variant="dot"
             unreadCount={unreadCount}
           />
-        </div>
+        </BrowserRouter>
       );
     },
   ));

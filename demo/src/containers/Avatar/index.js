@@ -5,8 +5,8 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import Avatar from '@/components/Avatar';
-import storeManager, { ENTITY_NAME } from '@/store';
+import Avatar from '#/components/Avatar';
+import storeManager, { ENTITY_NAME } from '#/store';
 
 import defaultPersonAvatar from './imgs/default-person.png';
 

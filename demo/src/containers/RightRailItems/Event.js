@@ -6,8 +6,8 @@
 
 import React from 'react';
 import { LinkItem } from './Link';
-import DateTimeUtil from '@/utils/dateTime';
-import colorMap from '@/utils/colors';
+import DateTimeUtil from '#/utils/dateTime';
+import colorMap from '#/utils/colors';
 
 const EventItem = LinkItem.extend`
   display: flex;

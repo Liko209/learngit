@@ -9,7 +9,6 @@ const MinWidth = 72;
 const LeftNav = styled(MuiDrawer)`
   && {
     display:flex;
-    border-right: 1px solid rgba(0, 0, 0, 0.12);
     width: ${props => props.expand ? MaxWidth : MinWidth}px;
     height: 100%;
     transition: all .25s ease;
@@ -56,7 +55,7 @@ export default (props) => {
                 active={+isActive}
                 icon={item}
                 title={item}
-                showCount={true}
+                variant='count'
                 unreadCount={10}
               />)
           })

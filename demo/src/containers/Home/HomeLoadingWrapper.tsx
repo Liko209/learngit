@@ -7,8 +7,8 @@ import * as React from 'react';
 
 import { observer } from 'mobx-react';
 
-import HomeLoading from '@/components/HomeLoading';
-import ErrorHandler from '@/containers/ErrorHandler';
+import HomeLoading from '#/components/HomeLoading';
+import ErrorHandler from '#/containers/ErrorHandler';
 
 import HomePresenter from './HomePresenter';
 

@@ -6,7 +6,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { TYPE } from '@/constants';
+import { TYPE } from '#/constants';
 import Note from './Note';
 import Event from './Event';
 import Task from './Task';
