@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d43a8fc2-d559-48e9-8f63-c620b3677f48" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/application/src/containers/Home/LeftNav.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/containers/Home/LeftNav.jsx" afterDir="false" />
-    </list>
+    <list default="true" id="d43a8fc2-d559-48e9-8f63-c620b3677f48" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -19,7 +17,7 @@
       <file leaf-file-name="LeftNav.jsx" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/application/src/containers/Home/LeftNav.jsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1051">
+            <state relative-caret-position="1113">
               <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
@@ -28,23 +26,29 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.tsx" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/application/src/containers/Home/index.tsx">
+      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/package.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="159">
-              <caret line="45" column="21" selection-start-line="45" selection-start-column="21" selection-end-line="45" selection-end-column="21" />
-              <folding>
-                <element signature="e#0#41#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="77">
+              <caret line="82" column="7" lean-forward="true" selection-start-line="82" selection-start-column="7" selection-end-line="82" selection-end-column="7" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Umi.tsx" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index.tsx" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/application/src/containers/Home/index.tsx">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-812">
+              <caret line="15" column="13" lean-forward="true" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Umi.tsx" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/packages/ui/src/atoms/Umi/Umi.tsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="968">
-              <caret line="82" column="1" lean-forward="true" selection-start-line="82" selection-start-column="1" selection-end-line="82" selection-end-column="1" />
+            <state relative-caret-position="296">
+              <caret line="50" column="21" lean-forward="true" selection-start-line="50" selection-start-column="21" selection-end-line="50" selection-end-column="21" />
               <folding>
                 <element signature="e#167#212#0" expanded="true" />
               </folding>
@@ -284,66 +288,6 @@
               <item name="containers" type="462c0819:PsiDirectoryNode" />
               <item name="Home" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="atoms" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="atoms" type="462c0819:PsiDirectoryNode" />
-              <item name="Umi" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="molecules" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="molecules" type="462c0819:PsiDirectoryNode" />
-              <item name="NavItem" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="theme" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -406,12 +350,12 @@
       <workItem from="1534381451476" duration="19242000" />
       <workItem from="1534468027141" duration="17303000" />
       <workItem from="1534726916723" duration="12043000" />
-      <workItem from="1534747294785" duration="8407000" />
+      <workItem from="1534747294785" duration="8714000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="162796000" />
+    <option name="totallyTimeSpent" value="163103000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="35" y="982" width="1440" height="877" extended-state="0" />
@@ -422,9 +366,9 @@
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32564104" />
       <window_info id="npm" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49964765" weight="0.47948718" />
+      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49964765" visible="true" weight="0.47948718" />
       <window_info anchor="bottom" id="TypeScript" order="7" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18463707" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18463707" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -803,13 +747,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1533">
-          <caret line="73" column="36" lean-forward="true" selection-start-line="73" selection-start-column="36" selection-end-line="73" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/packages/ui/src/theme/index.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -837,16 +774,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/application/src/containers/Home/LeftNav.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1051">
-          <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/packages/ui/src/molecules/NavItem/item.tsx">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="35">
@@ -857,23 +784,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/application/src/containers/Home/index.tsx">
+    <entry file="file://$PROJECT_DIR$/packages/ui/src/atoms/Umi/Umi.tsx">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="45" column="21" selection-start-line="45" selection-start-column="21" selection-end-line="45" selection-end-column="21" />
+        <state relative-caret-position="296">
+          <caret line="50" column="21" lean-forward="true" selection-start-line="50" selection-start-column="21" selection-end-line="50" selection-end-column="21" />
           <folding>
-            <element signature="e#0#41#0" expanded="true" />
+            <element signature="e#167#212#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/packages/ui/src/atoms/Umi/Umi.tsx">
+    <entry file="file://$PROJECT_DIR$/application/src/containers/Home/LeftNav.jsx">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="968">
-          <caret line="82" column="1" lean-forward="true" selection-start-line="82" selection-start-column="1" selection-end-line="82" selection-end-column="1" />
+        <state relative-caret-position="1113">
+          <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
           <folding>
-            <element signature="e#167#212#0" expanded="true" />
+            <element signature="e#0#39#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="77">
+          <caret line="82" column="7" lean-forward="true" selection-start-line="82" selection-start-column="7" selection-end-line="82" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/application/src/containers/Home/index.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-812">
+          <caret line="15" column="13" lean-forward="true" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
         </state>
       </provider>
     </entry>
