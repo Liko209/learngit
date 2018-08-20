@@ -13,13 +13,8 @@ class BaseDao<T extends {}> {
   private collection: IDatabaseCollection<T>;
   private db: IDatabase;
   constructor(collectionName: string, db: IDatabase) {
-    /**
-     * should remove this condition later
-     */
-    // if (db) {
     this.db = db;
     this.collection = db.getCollection<T>(collectionName);
-    // }
   }
 
   async put(item: T | T[]): Promise<void> {
@@ -39,8 +34,7 @@ class BaseDao<T extends {}> {
   async bulkPut(array: T[]): Promise<void> {
     try {
       array.forEach(item => this._validateItem(item, true));
-      await this.db.ensureDBOpened();
-      await this.db.getTransaction('rw', [this.collection], async () => {
+      await this.doInTransaction(async () => {
         this.collection.bulkPut(array);
       });
     } catch (err) {
@@ -116,7 +110,7 @@ class BaseDao<T extends {}> {
   async bulkUpdate(array: Partial<T>[]): Promise<void> {
     try {
       await this.db.ensureDBOpened();
-      await this.db.getTransaction('rw', [this.collection], async () => {
+      await this.doInTransaction(async () => {
         await Promise.all(array.map(item => this.update(item)));
       });
     } catch (err) {
@@ -134,7 +128,7 @@ class BaseDao<T extends {}> {
     }
   }
 
-  async doInTransation(func: any): Promise<void> {
+  async doInTransaction(func: () => {}): Promise<void> {
     await this.db.ensureDBOpened();
     await this.db.getTransaction('rw', [this.collection], async () => {
       await func();

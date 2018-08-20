@@ -194,7 +194,7 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
 async function handleGroupMostRecentPostChanged(posts: Post[]) {
   const groupDao = daoManager.getDao(GroupDao);
   let validGroups: Group[] = [];
-  await groupDao.doInTransation(async () => {
+  await groupDao.doInTransaction(async () => {
     const groups: (null | Group)[] = await Promise.all(
       posts.map(async (post) => {
         const group: null | Group = await groupDao.get(post.group_id);

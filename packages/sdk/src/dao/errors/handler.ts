@@ -17,8 +17,6 @@ class DBNeedRetryError extends Error {
   constructor(message?: string) {
     const trueProto = new.target.prototype;
     super(message);
-
-    // Alternatively use Object.setPrototypeOf if you have an ES6 environment.
     this.__proto__ = trueProto;
   }
 }
@@ -27,8 +25,6 @@ class DBUnsupportedError extends Error {
   constructor(message?: string) {
     const trueProto = new.target.prototype;
     super(message);
-
-    // Alternatively use Object.setPrototypeOf if you have an ES6 environment.
     this.__proto__ = trueProto;
   }
 }
@@ -37,8 +33,6 @@ class DBInvalidUsageError extends Error {
   constructor(message?: string) {
     const trueProto = new.target.prototype;
     super(message);
-
-    // Alternatively use Object.setPrototypeOf if you have an ES6 environment.
     this.__proto__ = trueProto;
   }
 }
