@@ -1,4 +1,7 @@
 {
   "fileheader.tpl": "/*\r\n * @Author: {author}\r\n * @Date: {createTime}\r\n * Copyright © RingCentral. All rights reserved.\r\n */\r\n",
-  "tslint.autoFixOnSave": true
+  "tslint.autoFixOnSave": true,
+  "cSpell.words": [
+    "textsms"
+  ]
 }

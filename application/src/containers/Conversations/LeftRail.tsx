@@ -1,17 +1,36 @@
 import React from 'react';
-import { withRouter, NavLink, RouteComponentProps } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import { Divider } from 'ui-components';
+import {
+  UnreadSection,
+  MentionSection,
+  BookmarkSection,
+  DirectMessageSection,
+  TeamSection,
+} from './sections';
+
 import FavoriteSection from './FavoriteSection';
 
-interface IProps extends RouteComponentProps<any> { }
+// interface IProps extends RouteComponentProps<any> { }
 
-const List = ({ match }: IProps) => {
+const List = () => {
   return (
     <div>
+      <UnreadSection />
+      <Divider />
+      <MentionSection />
+      <Divider />
+      <BookmarkSection />
+      <Divider />
       <FavoriteSection />
-      <strong>Conversation list: </strong>
+      <Divider />
+      <DirectMessageSection />
+      <Divider />
+      <TeamSection />
+      {/* <strong>Conversation list: </strong>
       <NavLink to="/messages/123">123 </NavLink>
       <NavLink to="/messages/456">456 </NavLink>
-      <NavLink to="/messages/789">789 </NavLink>
+      <NavLink to="/messages/789">789 </NavLink> */}
     </div>
   );
 };

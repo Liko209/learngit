@@ -10,6 +10,7 @@ import {
   ConversationList as List,
   ConversationListSection,
   Icon,
+  Divider,
 } from 'ui-components';
 import FavoriteListPresenter from './FavoriteListPresenter';
 import ConversationListItemCell from './ConversationListItemCell';
@@ -77,9 +78,10 @@ class FavoriteSection extends React.Component<IProps, IState> {
           unreadCount={12}
           important={true}
           showCount={true}
-          expanded={true}
-        />
-        {this.renderFavoriteGroups()}
+          expanded={false}
+        >
+          {this.renderFavoriteGroups()}
+        </ConversationListSection>
       </div >
     );
   }
