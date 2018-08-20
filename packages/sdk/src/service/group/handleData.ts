@@ -151,7 +151,7 @@ function sortFavoriteGroups(ids: number[], groups: Group[]): Group[] {
   for (let i = 0; i < ids.length; i += 1) {
     for (let j = 0; j < groups.length; j += 1) {
       if (ids[i] === groups[j].id) {
-        result.push(groups[i]);
+        result.push(groups[j]);
         break;
       }
     }
@@ -163,7 +163,7 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
   if (oldProfile && newProfile) {
     const oldIds = oldProfile.favorite_group_ids || [];
     const newIds = newProfile.favorite_group_ids || [];
-    if (oldIds.sort().toString() !== newIds.sort().toString()) {
+    if (oldIds.toString() !== newIds.toString()) {
       const moreFavorites: number[] = _.difference(newIds, oldIds);
       const moreNormals: number[] = _.difference(oldIds, newIds);
       const dao = daoManager.getDao(GroupDao);
@@ -257,4 +257,5 @@ export {
   handleGroupMostRecentPostChanged,
   saveDataAndDoNotification,
   filterGroups,
+  sortFavoriteGroups,
 };

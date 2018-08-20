@@ -22,6 +22,7 @@ export default class FavoriteListPresenter extends OrderListPresenter {
         sortKey: index,
       }),
     );
+
     this.groupType = GROUP_QUERY_TYPE.FAVORITE;
     this.eventName = ENTITY.FAVORITE_GROUPS;
     this.init();
@@ -31,6 +32,11 @@ export default class FavoriteListPresenter extends OrderListPresenter {
       this.handleIncomingData(ENTITY_NAME.GROUP, { type, entities });
     };
     this.subscribeNotification(this.eventName, groupCallback);
+  }
+
+  async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
+    const groupService = GroupService.getInstance();
+    groupService.reorderFavoriteGroups(oldIndex, newIndex);
   }
 
   async fetchData() {

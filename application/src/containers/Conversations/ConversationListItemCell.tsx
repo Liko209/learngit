@@ -8,7 +8,7 @@ import React from 'react';
 import {
   ConversationListItem,
 } from 'ui-components';
-import storeManager, { ENTITY_NAME } from '../../store';
+import storeManager from '../../store';
 import MultiEntityMapStore from '../../store/base/MultiEntityMapStore';
 import SingleEntityMapStore from '../../store/base/SingleEntityMapStore';
 import GroupModel from '@/store/models/Group';

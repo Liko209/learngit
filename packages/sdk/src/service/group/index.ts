@@ -26,6 +26,7 @@ import handleData, {
   filterGroups,
   handleGroupMostRecentPostChanged,
   handleFavoriteGroupsChanged,
+  sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
 import { IResponse } from '../../api/NetworkClient';
@@ -52,6 +53,20 @@ export default class GroupService extends BaseService<Group> {
     super(GroupDao, GroupAPI, handleData, subscriptions);
   }
 
+  private async _getFavoriteGroups(): Promise<Group[]> {
+    let result: Group[] = [];
+    const profileService: ProfileService = ProfileService.getInstance();
+    const profile = await profileService.getProfile();
+    if (profile &&
+      profile.favorite_group_ids &&
+      profile.favorite_group_ids.length > 0) {
+      const dao = daoManager.getDao(GroupDao);
+      result = (await dao.queryGroupsByIds(profile.favorite_group_ids)) as Group[];
+      result = sortFavoriteGroups(profile.favorite_group_ids, result);
+    }
+    return result;
+  }
+
   async getGroupsByType(
     groupType = GROUP_QUERY_TYPE.ALL,
     offset = 0,
@@ -61,17 +76,7 @@ export default class GroupService extends BaseService<Group> {
     let result: Group[] = [];
     const dao = daoManager.getDao(GroupDao);
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
-      const profileService: ProfileService = ProfileService.getInstance();
-      const profile = await profileService.getProfile();
-      if (
-        profile &&
-        profile.favorite_group_ids &&
-        profile.favorite_group_ids.length > 0
-      ) {
-        result = (await dao.queryGroupsByIds(
-          profile.favorite_group_ids,
-        )) as Group[];
-      }
+      result = await this._getFavoriteGroups();
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
       result = (await dao.queryAllGroups(offset, limit)) as Group[];
     } else {
@@ -291,6 +296,11 @@ export default class GroupService extends BaseService<Group> {
     } catch (error) {
       throw ErrorParser.parse(error);
     }
+  }
+
+  async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
+    const profileService: ProfileService = ProfileService.getInstance();
+    profileService.reorderFavoriteGroups(oldIndex, newIndex);
   }
 
   async handleResponse(resp: IResponse<Raw<Group>>) {
