@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { service } from 'sdk';
-import { ENTITY_NAME } from '@/store';
-import OrderListStore from '@/store/base/OrderListStore';
-import OrderListPresenter from '@/store/base/OrderListPresenter';
+import { ENTITY_NAME } from '#/store';
+import OrderListStore from '#/store/base/OrderListStore';
+import OrderListPresenter from '#/store/base/OrderListPresenter';
 
 const { GroupService } = service;
 

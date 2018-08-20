@@ -6,16 +6,16 @@ import React from 'react';
 
 import { withRouter } from 'react-router-dom';
 
-import Posts from '@/containers/Posts';
-import Members from '@/containers/Members';
-import TeamDescription from '@/containers/TeamDescription';
-import Header from '@/containers/Conversation/Header';
-import PostEditor from '@/containers/PostEditor';
+import Posts from '#/containers/Posts';
+import Members from '#/containers/Members';
+import TeamDescription from '#/containers/TeamDescription';
+import Header from '#/containers/Conversation/Header';
+import PostEditor from '#/containers/PostEditor';
 import SplitPaneWrapper from './SplitPaneWrapper';
 import Left from './Left';
 import Right from './Right';
-import RightRailItems from '@/containers/RightRailItems/index';
-import BottomRightVersionStatus from '@/containers/Status/bottomRight';
+import RightRailItems from '#/containers/RightRailItems/index';
+import BottomRightVersionStatus from '#/containers/Status/bottomRight';
 
 const Conversation = () => (
   <SplitPaneWrapper

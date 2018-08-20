@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { service } from 'sdk';
-import { globalConfig } from '@/globalConfig';
+import { globalConfig } from '#/globalConfig';
 
 type Props = {};
 type States = {

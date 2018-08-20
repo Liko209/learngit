@@ -22,7 +22,8 @@ module.exports = {
   ],
   moduleNameMapper: {
     "^react-native$": "react-native-web",
-    '^@/(.*)$': `${process.env.APP}/src/$1`
+    '^@/(.*)$': `<rootDir>/application/src/$1`,
+    '^#/(.*)$': '<rootDir>/demo/src/$1',
   },
   moduleFileExtensions: [
     "web.ts",

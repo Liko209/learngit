@@ -7,8 +7,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
-import storeManager, { ENTITY_NAME } from '@/store';
-import RightPanelTitle from '@/components/Conversation/RightTitle';
+import storeManager, { ENTITY_NAME } from '#/store';
+import RightPanelTitle from '#/components/Conversation/RightTitle';
 import RightRailItemsPresenter from './RightRailItemsPresenter';
 @observer
 class ItemList extends Component {

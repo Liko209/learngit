@@ -6,17 +6,17 @@
 import React from 'react';
 
 import { withRouter } from 'react-router-dom';
-import Left from '@/components/Conversation/Left';
-import Right from '@/components/Conversation/Right';
-import Posts from '@/containers/Posts';
-import Members from '@/containers/Members';
-import TeamDescription from '@/containers/TeamDescription';
-import Header from '@/containers/Conversation/Header';
-import PostEditor from '@/containers/PostEditor';
-import RightRailItems from '@/containers/RightRailItems/index';
-import BottomRightVersionStatus from '@/containers/Status/bottomRight';
+import Left from '#/components/Conversation/Left';
+import Right from '#/components/Conversation/Right';
+import Posts from '#/containers/Posts';
+import Members from '#/containers/Members';
+import TeamDescription from '#/containers/TeamDescription';
+import Header from '#/containers/Conversation/Header';
+import PostEditor from '#/containers/PostEditor';
+import RightRailItems from '#/containers/RightRailItems/index';
+import BottomRightVersionStatus from '#/containers/Status/bottomRight';
 import styled from 'styled-components';
-import SplitPane from '@/components/SplitPane';
+import SplitPane from '#/components/SplitPane';
 
 const ConversationWrap = styled(SplitPane)`
   display: flex;

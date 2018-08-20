@@ -8,14 +8,14 @@ import * as React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { VBox } from '@/components/Layout';
-import LeftRail from '@/containers/LeftRail';
-import Welcome from '@/containers/Welcome';
-import Conversation from '@/components/Conversation';
-import ContactList from '@/containers/ContactList';
-import SplitPane from '@/components/SplitPane';
-import Search from '@/containers/Search';
-import NotificationBanner from '@/containers/NotificationBanner';
+import { VBox } from '#/components/Layout';
+import LeftRail from '#/containers/LeftRail';
+import Welcome from '#/containers/Welcome';
+import Conversation from '#/components/Conversation';
+import ContactList from '#/containers/ContactList';
+import SplitPane from '#/components/SplitPane';
+import Search from '#/containers/Search';
+import NotificationBanner from '#/containers/NotificationBanner';
 
 import HomeLoadingWrapper from './HomeLoadingWrapper';
 

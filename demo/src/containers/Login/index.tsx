@@ -13,8 +13,8 @@ import Title from './Title';
 import Input from './Input';
 import Info from './Info';
 import LoginVersionStatus from '../Status/LoginVersionStatus';
-import { env, betaUserList } from '@/globalConfig';
-import ErrorHandler from '@/containers/ErrorHandler';
+import { env, betaUserList } from '#/globalConfig';
+import ErrorHandler from '#/containers/ErrorHandler';
 
 const { AuthService } = service;
 const { ErrorTypes } = utils;

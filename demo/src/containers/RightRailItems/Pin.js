@@ -6,7 +6,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '#/store';
 
 export const PinItem = styled.div`
   text-overflow: ellipsis;

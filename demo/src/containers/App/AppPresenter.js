@@ -1,4 +1,4 @@
-import BasePresenter from '@/store/base/BasePresenter';
+import BasePresenter from '#/store/base/BasePresenter';
 
 // import { getAccountService } from 'sdk/service/account';
 

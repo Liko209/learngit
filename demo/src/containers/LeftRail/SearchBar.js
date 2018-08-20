@@ -10,7 +10,7 @@ import debounce from 'lodash/debounce';
 import { service } from 'sdk';
 import { withRouter } from 'react-router';
 
-import SearchSection from '@/containers/LeftRail/SearchSection';
+import SearchSection from '#/containers/LeftRail/SearchSection';
 import { ListSection, ListItem, Left, Right } from './style';
 
 const { SearchService } = service

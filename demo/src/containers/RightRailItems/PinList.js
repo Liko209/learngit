@@ -7,9 +7,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '#/store';
 
-import RightPanelTitle from '@/components/Conversation/RightTitle';
+import RightPanelTitle from '#/components/Conversation/RightTitle';
 
 @observer
 class PinList extends Component {

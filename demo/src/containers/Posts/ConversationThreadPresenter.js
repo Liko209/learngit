@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import OrderListStore from '@/store/base/OrderListStore';
-import OrderListPresenter from '@/store/base/OrderListPresenter';
-import storeManager, { ENTITY_NAME } from '@/store';
+import OrderListStore from '#/store/base/OrderListStore';
+import OrderListPresenter from '#/store/base/OrderListPresenter';
+import storeManager, { ENTITY_NAME } from '#/store';
 
 import { service } from 'sdk';
 

@@ -10,7 +10,7 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { service } from 'sdk';
 
-import ConversationSection from '@/components/ConversationSection';
+import ConversationSection from '#/components/ConversationSection';
 import CreateTeamModal from './CreateTeamModal';
 
 import MainPresenter from './MainPresenter';

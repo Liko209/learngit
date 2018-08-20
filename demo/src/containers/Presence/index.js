@@ -8,8 +8,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 
-import Presence from '@/components/Presence';
-import storeManager, { ENTITY_NAME } from '@/store';
+import Presence from '#/components/Presence';
+import storeManager, { ENTITY_NAME } from '#/store';
 
 export default observer(props => {
   const { id, offlineHide } = props;

@@ -6,9 +6,9 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '#/store';
 import styled from 'styled-components';
-import colorMap from '@/utils/colors';
+import colorMap from '#/utils/colors';
 
 const TaskItem = styled.div`
   padding-top: 13px;

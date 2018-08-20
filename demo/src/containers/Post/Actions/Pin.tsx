@@ -7,8 +7,8 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
-import storeManager, { ENTITY_NAME } from '@/store';
-import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import storeManager, { ENTITY_NAME } from '#/store';
+import MultiEntityMapStore from '#/store/base/MultiEntityMapStore';
 import { service } from 'sdk';
 
 const { GroupService } = service;

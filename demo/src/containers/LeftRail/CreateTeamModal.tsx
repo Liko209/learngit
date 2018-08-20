@@ -9,10 +9,10 @@ import 'react-select/dist/react-select.css';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router';
 import styled from 'styled-components';
-import ErrorHandler from '@/containers/ErrorHandler';
+import ErrorHandler from '#/containers/ErrorHandler';
 
-import Modal from '@/components/Modal';
-import Button from '@/components/Button';
+import Modal from '#/components/Modal';
+import Button from '#/components/Button';
 
 import CreateTeamPresenter from './CreateTeamPresenter';
 import { getName } from '../../utils/getName';

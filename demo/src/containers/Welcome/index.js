@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Box from '@/components/Layout';
+import Box from '#/components/Layout';
 
 const Title = styled.h2`
   color: #2f2f2f;
