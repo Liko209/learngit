@@ -8,22 +8,27 @@ Write and run E2E tests with testcafe
 ### Environment Variables ###
 You can export following environment variables or put them in .env file to control the test runner.
 
-| Name                   | Default                            | Usage                                                                                                            | Example                                         |
-|------------------------|------------------------------------|------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
-| RC_PLATFORM_APP_KEY    |                                    | Ringcentral sdk credential                                                                                       |                                                 |
-| RC_PLATFORM_APP_SECRET |                                    | Ringcentral sdk credential                                                                                       |                                                 |
-| FIXTURES               | $TESTCAFE_ROOT/fixtures/\*\*/\*.ts | Fixtures to run.                                                                                                 |                                                 |
-| CONCURRENCY            | 1                                  | Number of workers.                                                                                               |                                                 |
-| SCREENSHOTS_PATH       | /tmp/                              | Where screenshots are stored.                                                                                    |                                                 |
-| BROWSERS               | chrome                             | Select browsers to run. To run on Selenium Grid, the name pattern of browsers should be selenium:{BRPWSER_NAME}. | selenium:chrome                                 |
-| SELENIUM_SERVER        |                                    | Selenium grid server to run cases on.                                                                            | http://hub.lab.rcch.ringcentral.com:5555/wd/hub |
-| INCLUDE_TAGS           |                                    | Select cases to run by tags.                                                                                     | P0,P1                                           |
-| EXCLUDE_TAGS           |                                    | Select cases not to run by tags.                                                                                 | P2,P3                                           |
+| Name                   | Default                                       | Usage                                                                                                            | Example                                         |
+|------------------------|-----------------------------------------------|------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
+| SITE_URL               | https://develop.fiji.gliprc.com/unified-login | Url to test.                                                                                                     |                                                 |
+| SITE_ENV               | XMN-UP                                        | Sandbox to use.                                                                                                  |                                                 |
+| RC_PLATFORM_APP_KEY    |                                               | Ringcentral sdk credential                                                                                       |                                                 |
+| RC_PLATFORM_APP_SECRET |                                               | Ringcentral sdk credential                                                                                       |                                                 |
+| FIXTURES               | $TESTCAFE_ROOT/fixtures/\*\*/\*.ts            | Fixtures to run.                                                                                                 |                                                 |
+| CONCURRENCY            | 1                                             | Number of workers.                                                                                               |                                                 |
+| SCREENSHOTS_PATH       | /tmp/                                         | Where screenshots are stored.                                                                                    |                                                 |
+| BROWSERS               | chrome                                        | Select browsers to run. To run on Selenium Grid, the name pattern of browsers should be selenium:{BRPWSER_NAME}. | selenium:chrome                                 |
+| SELENIUM_SERVER        |                                               | Selenium grid server to run cases on.                                                                            | http://hub.lab.rcch.ringcentral.com:5555/wd/hub |
+| INCLUDE_TAGS           |                                               | Select cases to run by tags.                                                                                     | P0,P1                                           |
+| EXCLUDE_TAGS           |                                               | Select cases not to run by tags.                                                                                 | P2,P3                                           |
 
 ### Command Line Sample ###
 ```bash
 # install dependency
 npm install
+
+# using live mode during development
+npx testcafe-live chrome ./fixtures/
 
 # using default configuration to run
 npm run e2e
