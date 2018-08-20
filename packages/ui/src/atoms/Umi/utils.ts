@@ -11,4 +11,3 @@ const countToString = (unreadCount?: number) => {
 };
 
 export { countToString };
-
