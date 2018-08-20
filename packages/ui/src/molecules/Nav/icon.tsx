@@ -25,7 +25,7 @@ const IconComponent = {
   get Messages() {
     return <Message />;
   },
-  get Calls() {
+  get Phone() {
     return <Phone />;
   },
   get Meetings() {

@@ -5,6 +5,7 @@ import MuiListItemText, { ListItemTextProps } from '@material-ui/core/ListItemTe
 import { WithTheme } from '@material-ui/core/styles/withTheme';
 import { Umi } from '../../atoms';
 import NavIcon from './icon';
+import { NavLink } from 'react-router-dom';
 
 type TListItem = {
   active: number,
@@ -15,15 +16,9 @@ const CustomListItem: React.SFC<TListItem> = (props) => {
 };
 const ListItem = styled<TListItem>(CustomListItem).attrs({ className : 'left-list-item' })`
   && {
-    position: relative;
-    padding-left: 20px;
-    padding-right: 20px;
-    height: 48px;
+    padding: 0;
+    height: 44px;
     outline: none;
-    width: ${ props => props.expand ? '100%' : '70px'};
-    .nav-text span{
-      color: ${props => props.active ? '#0684BD' : '#bfbfbf'};;
-    }
   }
   // In order to make sure use tab switch nav
   &.left-item-focus {
@@ -33,7 +28,8 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({ className : 'left-lis
   }
   &&:hover {
       background-color: ${props => props.active ? '#EBF6FA' : '#F5F5F5'};
-     .left-icon {
+      opacity: .88;
+     .nav-icon {
         color: #9e9e9e; // 500
      }
   }
@@ -78,7 +74,30 @@ const UMI = styled<TUMIProps>(Umi)`
     color: #fff !important;
   }
 `;
-
+const ListLink = styled(NavLink)`
+  outline: none;
+  display: flex;
+  height: 100%;
+  padding: 0 20px;
+  width: 100%;
+  align-items: center;
+  text-decoration: none;
+  &&:hover {
+     background: ${props => props.color};
+  }
+  &&&:active {
+    background: #D7EBF4 !important; // water
+    opacity: .76;
+    span, .nav-icon {
+     color: #0684BD; // RC Blue
+    }
+  }
+  &&.active {
+    && .nav-icon, && .nav-text span {
+      color: #0684BD; // RC Blue
+    }
+  }
+`;
 type TNavItemProps = {
   expand: boolean;
   type?: string;
@@ -87,12 +106,13 @@ type TNavItemProps = {
   icon: string;
   showCount: boolean;
   num?: number;
+  url?: string;
   unreadCount: number;
 } & Partial<Pick<WithTheme, 'theme'>>;
 
 const Item = ((props: TNavItemProps) => {
-  const { expand, active, title, showCount, unreadCount, icon } = props;
-  const bgColor = '#EBF6FA'; // Ice and 100
+  const { expand, active, title, showCount, unreadCount, icon, url } = props;
+  const bgColor = active ? '#EBF6FA' : '#F5F5F5'; // Ice and 100
   return (
     <ListItem
       button={true}
@@ -104,9 +124,11 @@ const Item = ((props: TNavItemProps) => {
       color={bgColor}
       expand={expand}
     >
-      <NavIcon component={icon} active={active} className={'nav-icon'} />
-      <ListItemText expand={expand} className={'nav-text'}>{title}</ListItemText>
-      <UMI unreadCount={unreadCount} important={true} expand={expand} showCount={showCount} />
+      <ListLink to={`/${url}`} className={'left-link'}>
+        <NavIcon component={icon} active={active} className={'nav-icon'} />
+        <ListItemText expand={expand} className={'nav-text'}>{title}</ListItemText>
+        <UMI unreadCount={unreadCount} important={true} expand={expand} showCount={showCount} />
+      </ListLink>
     </ListItem>
   );
 });

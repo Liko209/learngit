@@ -12,7 +12,7 @@ storiesOf('NavItem', module)
         {
           Messages: 'Messages',
           Links: 'Links',
-          Calls: 'Calls',
+          Calls: 'Phone',
           Meetings: 'Meetings',
           Dashboard: 'Dashboard',
           Calendar: 'Calendar',
