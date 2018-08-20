@@ -36,6 +36,7 @@ const LeftNav = styled(MuiDrawer)`
 `;
 
 const Icons = [['Dashboard','Messages', 'Phone','Meetings'],['Calendar', 'Tasks', 'Notes','Files']];
+const UMICount = [120,0,16,1,0,1,99,0,11];
 export default (props) => {
   const isExpand = props.isExpand;
   return <LeftNav expand={+isExpand} variant="permanent" classes={{paper: 'left-paper'}}>
@@ -49,6 +50,7 @@ export default (props) => {
             arr.map((item,idx) => {
               const navUrl = item.toLocaleLowerCase();
               const isActive = window.location.pathname.slice(1) === navUrl;
+              let umiType = UMICount[idx]
               return (<NavItem
                 expand={+isExpand}
                 url={navUrl}
@@ -57,7 +59,7 @@ export default (props) => {
                 title={item}
                 key={idx}
                 variant='count'
-                unreadCount={10}
+                unreadCount={umiType}
               />)
           })
           }
