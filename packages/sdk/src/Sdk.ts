@@ -1,4 +1,4 @@
-import  featureFlag  from './component/featureFlag';
+import featureFlag from './component/featureFlag';
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date:2018-03-07 19:20:43
@@ -29,6 +29,7 @@ import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
 import SyncService from './service/sync';
 import { ApiConfig, DBConfig, SdkConfig } from './types';
+import { AccountService } from './service';
 
 const AM = AccountManager;
 
@@ -43,7 +44,7 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-  ) {}
+  ) { }
 
   async init(config: SdkConfig) {
     // Use default config value
@@ -67,6 +68,9 @@ class Sdk {
 
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
+
+    const accountService: AccountService = AccountService.getInstance();
+    HandleByRingCentral.tokenRefreshDelegate = accountService;
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,

@@ -8,7 +8,7 @@
 // import { connect } from 'react-redux';
 // import styled from 'styled-components';
 
-// import { makeSelectItem } from '@/store/selectors/items';
+// import { makeSelectItem } from '#/store/selectors/items';
 
 // const Wrapper = styled.div`
 //   font-size: 14px;

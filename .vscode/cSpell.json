@@ -94,7 +94,10 @@
         "lifecycles",
         "testcafe",
         "headshot",
-        "happypack"
+        "happypack",
+        "Injectable",
+        "Odeson",
+        "subheader"
     ],
     "flagWords": []
 }

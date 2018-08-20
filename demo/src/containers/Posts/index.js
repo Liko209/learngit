@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 
 import ChatView from 'react-chatview';
 
-import Post from '@/containers/Post';
+import Post from '#/containers/Post';
 
 import PostsPresenter from './PostsPresenter';
 

@@ -10,15 +10,15 @@ import { withRouter } from 'react-router-dom';
 import _ from 'lodash';
 import { reaction } from 'mobx';
 
-import storeManager, { ENTITY_NAME } from '@/store';
-import { GLOBAL_STORE_DATA, ACTIONS_TYPE } from '@/constants';
+import storeManager, { ENTITY_NAME } from '#/store';
+import { GLOBAL_STORE_DATA, ACTIONS_TYPE } from '#/constants';
 
 import { service } from 'sdk';
 
-import Toolbar from '@/components/PostEditor/EditorToolbar';
-import ErrorHandler from '@/containers/ErrorHandler';
+import Toolbar from '#/components/PostEditor/EditorToolbar';
+import ErrorHandler from '#/containers/ErrorHandler';
 
-// import PostEditorComponent from '@/components/PostEditor';
+// import PostEditorComponent from '#/components/PostEditor';
 import { MentionsInput, Mention } from 'react-mentions';
 import defaultStyle from './mentionStyle';
 import {
@@ -28,7 +28,7 @@ import {
   compileQuoteText,
   b64toFile
 } from './handle';
-// import notificationCenter from '@/utils/notificationCenter';
+// import notificationCenter from '#/utils/notificationCenter';
 // import { observer } from 'mobx-react';
 const { PostService, AccountService } = service;
 

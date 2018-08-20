@@ -7,7 +7,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { styledTheme } from '@/styled';
+import { styledTheme } from '#/styled';
 
 import Header from './Header';
 import SearchBar from './SearchBar';

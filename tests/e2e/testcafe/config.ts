@@ -1,7 +1,13 @@
-const ENV_NAME = process.env.ENV_NAME || 'XMN-UP';
+/*
+ * @Author: Henry Xu(henry.xu@ringcentral.com)
+ * @Date: 2018-08-16 11:29:42
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
 const SITE_URL = process.env.SITE_URL || 'https://develop.fiji.gliprc.com/unified-login';
 
-const CONFIGS = {
+const ENV = {
   'WEB-AQA-XIA': {
     ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-xta02.lab.rcch.ringcentral.com:3303',
     ACCOUNT_POOL_ENV: 'webaqaxia',
@@ -26,12 +32,11 @@ const CONFIGS = {
     RC_PLATFORM_BASE_URL: 'https://api-xmnup.lab.nordigy.ru',
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
   }
-};
+}[SITE_ENV];
 
-const CONFIG = CONFIGS[ENV_NAME];
 
 export {
-  CONFIG,
-  ENV_NAME,
-  SITE_URL
-}
+  SITE_ENV,
+  SITE_URL,
+  ENV,
+};

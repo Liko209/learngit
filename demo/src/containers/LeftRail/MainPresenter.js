@@ -1,6 +1,6 @@
 import { service } from 'sdk';
 
-import BasePresenter from '@/store/base/BasePresenter';
+import BasePresenter from '#/store/base/BasePresenter';
 
 import ConversationListPresenter from './ConversationListPresenter';
 

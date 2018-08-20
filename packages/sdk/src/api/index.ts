@@ -4,10 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { loginRCByPassword, loginGlip2ByPassword, refreshToken } from './ringcentral/login';
+import { ITokenRefreshDelegate } from './ringcentral/ITokenRefreshDelegate';
 import { loginGlip, indexData, initialData, remainingData } from './glip/user';
 export { default as Api } from './api';
 export {
     loginRCByPassword, loginGlip2ByPassword,
-    refreshToken, loginGlip, indexData, initialData, remainingData,
+    refreshToken, loginGlip, indexData, initialData, remainingData, ITokenRefreshDelegate,
 };
 export * from './handlers';
