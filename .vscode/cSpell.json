@@ -97,7 +97,8 @@
         "happypack",
         "Injectable",
         "Odeson",
-        "subheader"
+        "subheader",
+        "cateye"
     ],
     "flagWords": []
 }

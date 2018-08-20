@@ -3,6 +3,12 @@
  * @Date: 2018-08-16 11:29:42
  * Copyright © RingCentral. All rights reserved.
  */
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
+const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
 
 const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
 const SITE_URL = process.env.SITE_URL || 'https://develop.fiji.gliprc.com/unified-login';
@@ -36,6 +42,8 @@ const ENV = {
 
 
 export {
+  RC_PLATFORM_APP_KEY,
+  RC_PLATFORM_APP_SECRET,
   SITE_ENV,
   SITE_URL,
   ENV,

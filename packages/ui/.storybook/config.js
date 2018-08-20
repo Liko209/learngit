@@ -2,17 +2,14 @@ import React from 'react';
 import { configure, setAddon, addDecorator } from '@storybook/react';
 import JSXAddon from 'storybook-addon-jsx';
 import { withKnobs } from '@storybook/addon-knobs/react';
-import { withInfo } from '@storybook/addon-info';
 import '@storybook/addon-console';
 
-import { ThemeProvider, createTheme } from '../src/theme/index';
-
-const theme = createTheme();
+import { ThemeProvider } from '../src/theme/index';
 
 const ThemeDecorator = storyFn => (
-    <ThemeProvider theme={theme}>
-        <div style={{ paddingTop: '25px' }}>{storyFn()}</div>
-    </ThemeProvider>
+  <ThemeProvider themeName="default">
+      <div style={{ paddingTop: '25px' }}>{storyFn()}</div>
+  </ThemeProvider>
 );
 
 function requireAll(requireContext) {
