@@ -1,17 +1,35 @@
-/*
- * @Author: Valor Lin (valor.lin@ringcentral.com)
- * @Date: 2018-08-17 12:13:16
- * Copyright © RingCentral. All rights reserved.
- */
 import React from 'react';
-import createMuiTheme, { Theme, ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
-import MuiThemeProvider, { MuiThemeProviderProps } from '@material-ui/core/styles/MuiThemeProvider';
+import createMuiTheme, { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
+
+export interface ThemeProviderProps {
+  themeName: string;
+  children: React.ReactNode;
+}
 
 const createTheme = (options: ThemeOptions) =>
   createMuiTheme(options);
 
-const ThemeProvider: React.SFC<MuiThemeProviderProps> = ({ theme, children }) => {
+const createThemes = () => {
+  const requireContext = require.context('./config', false, /.ts$/);
+  const themePaths = requireContext.keys();
+
+  return themePaths
+    .reduce(
+      (themes, themePath) => {
+        const themeName = themePath.split('.')[1].split('/')[1];
+        themes[themeName] = createTheme(requireContext(themePath)[themeName]);
+        return themes;
+      },
+      {},
+    );
+};
+
+const themes = createThemes();
+
+const ThemeProvider: React.SFC<ThemeProviderProps> = ({ themeName, children }) => {
+  const theme = themes[themeName];
   return (
     <StyledThemeProvider theme={theme}>
       <MuiThemeProvider theme={theme}>
@@ -21,5 +39,6 @@ const ThemeProvider: React.SFC<MuiThemeProviderProps> = ({ theme, children }) =>
   );
 };
 
-export { createTheme, Theme, ThemeOptions, ThemeProvider };
-export default ThemeProvider;
+export {
+  ThemeProvider,
+};
