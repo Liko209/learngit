@@ -1,5 +1,4 @@
 import { HttpResponse, HttpResponseBuilder } from 'foundation';
-import Dexie from 'dexie/dist/dexie';
 
 import ErrorParser from '../parser';
 import { DBCriticalError } from '../../../dao/errors/handler';
