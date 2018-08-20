@@ -3475,9 +3475,9 @@ testcafe-legacy-api@3.1.7:
     pinkie "^2.0.1"
     strip-bom "^2.0.0"
 
-"testcafe-reporter-allure-lazy@https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/2163a53a2a49b32b3652c1fa5ed1533f/testcafe-reporter-allure-lazy-1.0.1.tgz":
-  version "1.0.1"
-  resolved "https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/2163a53a2a49b32b3652c1fa5ed1533f/testcafe-reporter-allure-lazy-1.0.1.tgz#f2830dd3f204a7ae0c7dfef59080bbe8f233e831"
+"testcafe-reporter-allure-lazy@https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/bb1bc1f181383d4fe3bdcca9f93ed725/testcafe-reporter-allure-lazy-1.0.3.tgz":
+  version "1.0.3"
+  resolved "https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/bb1bc1f181383d4fe3bdcca9f93ed725/testcafe-reporter-allure-lazy-1.0.3.tgz#9eb3e24f2af1e7b8e94be6b6546c89d6f191569c"
   dependencies:
     allure-commandline "^2.5.0"
     allure-js-commons "^1.3.2"
@@ -3504,9 +3504,9 @@ testcafe-reporter-xunit@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/testcafe-reporter-xunit/-/testcafe-reporter-xunit-2.1.0.tgz#e6d66c572ce15af266706af0fd610b2a841dd443"
 
-"testcafe@https://git.ringcentral.com/TA/testcafe/testcafe/uploads/9eb16284760b139367d653ae0e4dfa44/testcafe-0.21.0.tgz":
-  version "0.21.0"
-  resolved "https://git.ringcentral.com/TA/testcafe/testcafe/uploads/9eb16284760b139367d653ae0e4dfa44/testcafe-0.21.0.tgz#bf5635c0fa5dbe720d3735c62e7cdfc77cfb0a2d"
+"testcafe@https://git.ringcentral.com/TA/testcafe/testcafe/uploads/3833e97a5c9f2a8d8fd84cee8feeea3a/testcafe-0.21.1.tgz":
+  version "0.21.1"
+  resolved "https://git.ringcentral.com/TA/testcafe/testcafe/uploads/3833e97a5c9f2a8d8fd84cee8feeea3a/testcafe-0.21.1.tgz#635d8726d0d3b353374d3f0a034febfadc413424"
   dependencies:
     async-exit-hook "^1.1.2"
     babel-core "^6.22.1"

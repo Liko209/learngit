@@ -28,9 +28,9 @@
     "glob": "^7.1.2",
     "lodash": "^4.17.10",
     "ringcentral-js-concise": "^0.5.5",
-    "testcafe": "https://git.ringcentral.com/TA/testcafe/testcafe/uploads/9eb16284760b139367d653ae0e4dfa44/testcafe-0.21.0.tgz",
+    "testcafe": "https://git.ringcentral.com/TA/testcafe/testcafe/uploads/3833e97a5c9f2a8d8fd84cee8feeea3a/testcafe-0.21.1.tgz",
     "testcafe-browser-provider-selenium": "^0.2.0",
-    "testcafe-reporter-allure-lazy": "https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/2163a53a2a49b32b3652c1fa5ed1533f/testcafe-reporter-allure-lazy-1.0.1.tgz",
+    "testcafe-reporter-allure-lazy": "https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/bb1bc1f181383d4fe3bdcca9f93ed725/testcafe-reporter-allure-lazy-1.0.3.tgz",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
