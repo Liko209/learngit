@@ -1,5 +1,8 @@
+import { v4 as uuid } from 'uuid';
 import accountPoolHelper from './accounts';
 import { RcPlatformManager } from './glip';
+import { Status, AllureStep } from '../libs/report';
+
 import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
 
 export function setUp(accountType: string) {
@@ -57,5 +60,40 @@ export class TestHelper {
 
   get glipApiManager(): RcPlatformManager {
     return this.t.ctx.rcPlatformManager;
+  }
+
+  async log(
+    message: string,
+    status: Status = Status.PASSED,
+    takeScreen: boolean = false,
+    startTime?: number,
+    endTime?: number,
+    parent?: AllureStep) {
+
+    if (this.t.ctx.logs == undefined) {
+      this.t.ctx.logs = [];
+    }
+    if (startTime == undefined) {
+      startTime = Date.now();
+    }
+    if (endTime == undefined) {
+      endTime = startTime;
+    }
+
+    let screenPath;
+    if (takeScreen) {
+      screenPath = uuid() + '.png';
+      await this.t.takeScreenshot(screenPath);
+      screenPath = this.t['testRun'].opts.screenshotPath + '/' + screenPath;
+    }
+
+    const step = new AllureStep(message, status, startTime, endTime, screenPath, [],);
+    if (parent == undefined) {
+      this.t.ctx.logs.push(step);
+    } else {
+      parent.children.push(step);
+    }
+    console.log(step.toString());
+    return step;
   }
 }

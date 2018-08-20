@@ -5,11 +5,12 @@
  */
 
 import { Status, AllureStep } from '../libs/report';
-import { v4 as uuid } from 'uuid';
+import { TestHelper } from '../libs/helpers';
 
 export abstract class BasePage {
   private _t: TestController;
   private _chain: Promise<any>;
+  private _helper: TestHelper;
   public then: any;
 
   constructor(
@@ -17,6 +18,7 @@ export abstract class BasePage {
     chain?: Promise<any>,
   ) {
     this._t = t;
+    this._helper = new TestHelper(t);
     this._chain = chain || Promise.resolve();
     if (chain != undefined) {
       this.forwardThen();
@@ -47,32 +49,7 @@ export abstract class BasePage {
     startTime?: number,
     endTime?: number,
     parent?: AllureStep) {
-
-    if (this._t.ctx.logs == undefined) {
-      this._t.ctx.logs = [];
-    }
-    if (startTime == undefined) {
-      startTime = Date.now();
-    }
-    if (endTime == undefined) {
-      endTime = startTime;
-    }
-
-    let screenPath;
-    if (takeScreen) {
-      screenPath = uuid() + '.png';
-      await this._t.takeScreenshot(screenPath);
-      screenPath = this._t['testRun'].opts.screenshotPath + '/' + screenPath;
-    }
-
-    const step = new AllureStep(message, status, startTime, endTime, screenPath, [],);
-    if (parent == undefined) {
-      this._t.ctx.logs.push(step);
-    } else {
-      parent.children.push(step);
-    }
-    console.log(step.toString());
-    return step;
+      return await this._helper.log(message, status, takeScreen, startTime, endTime, parent);
   }
 
   async execute() {
