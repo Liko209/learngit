@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+
 import Ringcentral from 'ringcentral-js-concise';
 
 type IdType= number | string;

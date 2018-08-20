@@ -19,6 +19,7 @@ fixture('Demo')
 
 test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
   const testHelper = TestHelper.from(t);
+  await testHelper.glipApiManager.getClient(testHelper.users.user702)
 
   let page;
   await (page = new BlankPage(t)
