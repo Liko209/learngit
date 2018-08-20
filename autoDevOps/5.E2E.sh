@@ -12,8 +12,7 @@ echo $RC_PLATFORM_APP_KEY
 echo $RC_PLATFORM_APP_SECRET
 
 npm run e2e
-
-echo 'e2e result: '$?
+e2eResult=$?
 
 xmlResult=$project/tests/e2e/testcafe/allure/allure-results
 htmlResult=$project/tests/e2e/testcafe/allure/html-results
@@ -23,7 +22,7 @@ localFolder=$htmlResult
 remoteFolder=e2e/$subDomain/$BUILD_NUMBER
 syncFolderToServer $localFolder $remoteFolder
 
-# TODO: generate html from the xml results
-# allure generate allure/allure-results/ -o /tmp/allure1
 E2EUrl=https://e2e.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/index.html
 addEnv E2EResult="> **E2E Url**: $E2EUrl"
+
+echo "E2E Result: $e2eResult"
