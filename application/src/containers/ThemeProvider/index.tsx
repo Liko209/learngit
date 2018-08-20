@@ -8,7 +8,7 @@ interface IProps {
 class ThemeProvider extends React.PureComponent<IProps> {
   render() {
     const { children } = this.props;
-    return <UIThemeProvider theme={defaultTheme}>{children}</UIThemeProvider>;
+    return <UIThemeProvider themeName={defaultTheme}>{children}</UIThemeProvider>;
   }
 }
 

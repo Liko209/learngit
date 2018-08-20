@@ -1,2 +1,2 @@
 export * from './ConversationList';
-export * from './Nav';
+export * from './NavItem';

@@ -38,7 +38,7 @@ const LeftNav = styled(MuiDrawer)`
 const Icons = [['Dashboard','Messages', 'Phone','Meetings'],['Calendar', 'Tasks', 'Notes','Files']];
 export default (props) => {
   const isExpand = props.isExpand;
-  return <LeftNav expand={isExpand} variant="permanent" classes={{paper: 'left-paper'}}>
+  return <LeftNav expand={+isExpand} variant="permanent" classes={{paper: 'left-paper'}}>
     {Icons.map((arr, index) => {
       return (
         <MuiList component="nav"
@@ -55,6 +55,7 @@ export default (props) => {
                 active={+isActive}
                 icon={item}
                 title={item}
+                key={idx}
                 variant='count'
                 unreadCount={10}
               />)
