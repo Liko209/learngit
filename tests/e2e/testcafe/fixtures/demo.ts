@@ -18,8 +18,8 @@ fixture('Demo')
   .afterEach(tearDown())
 
 test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
-  const testHelper = TestHelper.from(t);
-  await testHelper.glipApiManager.getClient(testHelper.users.user702, String(testHelper.data.mainCompanyNumber));
+  const helper = TestHelper.from(t);
+  await helper.glipApiManager.getClient(helper.users.user702, helper.companyNumber);
 
   let page;
   await (page = new BlankPage(t)
@@ -31,10 +31,10 @@ test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
 
   await page
     .shouldNavigateTo(RingcentralSignInNavigationPage)
-    .setCredential(testHelper.data.mainCompanyNumber)
+    .setCredential(helper.companyNumber)
     .toNextPage()
     .shouldNavigateTo(RingcentralSignInPage)
-    .setExtension(testHelper.users.user701.extension)
-    .setPassword(testHelper.users.user701.password)
+    .setExtension(helper.users.user701.extension)
+    .setPassword(helper.users.user701.password)
     .signIn();
 });

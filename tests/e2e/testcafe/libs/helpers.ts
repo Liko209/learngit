@@ -44,6 +44,10 @@ export class TestHelper {
     return this.data.teams;
   }
 
+  get companyNumber() {
+    return String(this.data.mainCompanyNumber);
+  }
+
   setupGlipApiManager(
     key: string = RC_PLATFORM_APP_KEY,
     secret: string = RC_PLATFORM_APP_SECRET,
