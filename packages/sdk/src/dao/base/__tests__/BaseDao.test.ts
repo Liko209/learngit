@@ -46,12 +46,6 @@ describe('BaseDao', () => {
     await expect(dao.get(1)).resolves.toBeFalsy();
   });
 
-  it('should throw error if put invalid', async () => {
-    await expect(dao.put(null)).rejects.toThrow();
-    await expect(dao.put({})).rejects.toThrow();
-    await expect(dao.put({ name: 'hihi' })).rejects.toThrow();
-  });
-
   it('should put new item', async () => {
     await dao.put({
       id: 1,
@@ -187,9 +181,10 @@ describe('BaseDao', () => {
 
   it('do in transation', async () => {
     dao.doInTransaction(async () => {
-      await dao.put({ id: 1000, name: 'transation' });
+      await dao.put({ id: 1000, name: 'transaction' });
       const result = await dao.get(1000);
-      expect(result.name).toBe('transation');
+      expect(result).not.toBeNull();
+      expect((result as RandomItem).name).toBe('transaction');
     });
   });
 });

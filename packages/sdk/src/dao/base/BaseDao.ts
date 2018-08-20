@@ -6,47 +6,59 @@ import _ from 'lodash';
 import { DexieDB, IDatabaseCollection, IDatabase } from 'foundation';
 import Query from './Query';
 import { ErrorTypes, Throw } from '../../utils';
+import { errorHandler } from '../errors/handler';
 
 class BaseDao<T extends {}> {
   static COLLECTION_NAME: string = '';
   private collection: IDatabaseCollection<T>;
   private db: IDatabase;
   constructor(collectionName: string, db: IDatabase) {
-    /**
-     * should remove this condition later
-     */
-    // if (db) {
     this.db = db;
     this.collection = db.getCollection<T>(collectionName);
-    // }
   }
 
   async put(item: T | T[]): Promise<void> {
-    if (Array.isArray(item)) {
-      await this.bulkPut(item);
-    } else {
-      this._validateItem(item, true);
-      await this.db.ensureDBOpened();
-      await this.collection.put(item);
+    try {
+      if (Array.isArray(item)) {
+        await this.bulkPut(item);
+      } else {
+        this._validateItem(item, true);
+        await this.db.ensureDBOpened();
+        await this.collection.put(item);
+      }
+    } catch (err) {
+      errorHandler(err);
     }
   }
 
   async bulkPut(array: T[]): Promise<void> {
-    array.forEach(item => this._validateItem(item, true));
-    await this.db.ensureDBOpened();
-    await this.db.getTransaction('rw', [this.collection], async () => {
-      this.collection.bulkPut(array);
-    });
+    try {
+      array.forEach(item => this._validateItem(item, true));
+      await this.doInTransaction(async () => {
+        this.collection.bulkPut(array);
+      });
+    } catch (err) {
+      errorHandler(err);
+    }
   }
 
   async get(key: number): Promise<T | null> {
-    this._validateKey(key);
-    await this.db.ensureDBOpened();
-    return this.collection.get(key);
+    try {
+      this._validateKey(key);
+      await this.db.ensureDBOpened();
+      return this.collection.get(key);
+    } catch (err) {
+      errorHandler(err);
+      return null;
+    }
   }
 
   async clear(): Promise<void> {
-    await this.collection.clear();
+    try {
+      await this.collection.clear();
+    } catch (err) {
+      errorHandler(err);
+    }
   }
 
   /**
@@ -55,47 +67,68 @@ class BaseDao<T extends {}> {
    * return undefined no matter if a record was deleted or not
    */
   async delete(key: number): Promise<void> {
-    this._validateKey(key);
-    await this.db.ensureDBOpened();
-    await this.collection.delete(key);
+    try {
+      this._validateKey(key);
+      await this.db.ensureDBOpened();
+      await this.collection.delete(key);
+    } catch (err) {
+      errorHandler(err);
+    }
   }
 
   async bulkDelete(keys: number[]): Promise<void> {
-    keys.forEach(key => this._validateKey(key));
-    await this.db.ensureDBOpened();
-    await this.collection.bulkDelete(keys);
+    try {
+      keys.forEach(key => this._validateKey(key));
+      await this.db.ensureDBOpened();
+      await this.collection.bulkDelete(keys);
+    } catch (err) {
+      errorHandler(err);
+    }
   }
 
   async update(item: Partial<T> | Partial<T>[]): Promise<void> {
-    if (Array.isArray(item)) {
-      const array = item;
-      await this.bulkUpdate(array);
-    } else {
-      await this.db.ensureDBOpened();
-      const primKey = this.collection.primaryKeyName();
-      const saved = await this.get(item[primKey]);
-      // If item not exists, will put
-      if (!saved) {
-        await this.put(item as T);
+    try {
+      if (Array.isArray(item)) {
+        const array = item;
+        await this.bulkUpdate(array);
       } else {
-        await this.collection.update(item[primKey], item);
+        await this.db.ensureDBOpened();
+        const primKey = this.collection.primaryKeyName();
+        const saved = await this.get(item[primKey]);
+        // If item not exists, will put
+        if (!saved) {
+          await this.put(item as T);
+        } else {
+          await this.collection.update(item[primKey], item);
+        }
       }
+    } catch (err) {
+      errorHandler(err);
     }
   }
 
   async bulkUpdate(array: Partial<T>[]): Promise<void> {
-    await this.db.ensureDBOpened();
-    await this.db.getTransaction('rw', [this.collection], async () => {
-      await Promise.all(array.map(item => this.update(item)));
-    });
+    try {
+      await this.db.ensureDBOpened();
+      await this.doInTransaction(async () => {
+        await Promise.all(array.map(item => this.update(item)));
+      });
+    } catch (err) {
+      errorHandler(err);
+    }
   }
 
   async getAll(): Promise<T[]> {
-    await this.db.ensureDBOpened();
-    return this.collection.getAll();
+    try {
+      await this.db.ensureDBOpened();
+      return this.collection.getAll();
+    } catch (err) {
+      errorHandler(err);
+      return [];
+    }
   }
 
-  async doInTransaction(func: any): Promise<void> {
+  async doInTransaction(func: () => {}): Promise<void> {
     await this.db.ensureDBOpened();
     await this.db.getTransaction('rw', [this.collection], async () => {
       await func();
@@ -115,14 +148,14 @@ class BaseDao<T extends {}> {
   }
   private _validateItem(item: T, withPrimaryKey: boolean): void {
     if (!_.isObjectLike(item)) {
-      Throw(ErrorTypes.INVALIDTE_PARAMETERS, `Item should be an object. Received ${item}`);
+      Throw(ErrorTypes.DB_INVALID_USAGE_ERROR, `Item should be an object. Received ${item}`);
     }
     if (_.isEmpty(item)) {
-      Throw(ErrorTypes.INVALIDTE_PARAMETERS, `Item should not be an empty object.`);
+      Throw(ErrorTypes.DB_INVALID_USAGE_ERROR, `Item should not be an empty object.`);
     }
     if (withPrimaryKey && !item[this.collection.primaryKeyName()]) {
       Throw(
-        ErrorTypes.INVALIDTE_PARAMETERS,
+        ErrorTypes.DB_INVALID_USAGE_ERROR,
         `Lack of primary key ${this.collection.primaryKeyName()} in object ${JSON.stringify(item)}`,
       );
     }
@@ -130,7 +163,7 @@ class BaseDao<T extends {}> {
 
   private _validateKey(key: number) {
     if (!_.isInteger(key)) {
-      Throw(ErrorTypes.INVALIDTE_PARAMETERS, 'Key for db get method should be an integer.');
+      Throw(ErrorTypes.DB_INVALID_USAGE_ERROR, 'Key for db get method should be an integer.');
     }
   }
 }

@@ -1,27 +1,27 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import BasePageHeader, { BasePageHeaderProps } from '../BasePageHeader';
 
 type ShelfPageHeaderProps = {
   title?: string,
-  leftSection?: React.ReactNode,
-  rightSection?: React.ReactNode,
+  Left?: React.ReactNode,
+  Right?: React.ReactNode,
 } & BasePageHeaderProps;
 
 const StyledShelfPageHeader = styled<ShelfPageHeaderProps>(BasePageHeader)`
   && {
-    background-color: #f8f8f8;
+  background-color: ${({ theme }) => theme.palette.grey[50]};
 
     > div {
-      padding-left: 16px;
-      padding-right: 16px;
+      padding-left: ${({ theme }) => theme.spacing.unit * 4}px;
+      padding-right: ${({ theme }) => theme.spacing.unit * 4}px;
     }
 
     .left-section {
       display: flex;
       align-items: center;
-      padding-right: 16px;
+      padding-right: ${({ theme }) => theme.spacing.unit * 4}px;
     }
 
     .left-wrapper {
@@ -30,23 +30,23 @@ const StyledShelfPageHeader = styled<ShelfPageHeaderProps>(BasePageHeader)`
       flex-grow: 1;
       flex-shrink: 1;
       overflow: hidden;
-      padding-right: ${(props: ShelfPageHeaderProps) => props.rightSection ? '20px' : ''};
+      padding-right: ${({ theme, Right }) => Right ? theme.spacing.unit * 5 + 'px' : ''};
     }
 
     .right-wrapper {
       display: flex;
       align-items: center;
-      padding-left: 16px;
+      padding-left: ${({ theme }) => theme.spacing.unit * 4}px;
     }
   }
 `;
 
 const TitleWrapper = styled<TypographyProps>(Typography)`
   && {
-    font-size: 20px;
-    font-weight: 700;
-    font-family: 'Roboto', sans-serif;
-    color: #616161;
+    font-size: ${({ theme }) => theme.typography.title.fontSize};
+    font-weight: ${({ theme }) => theme.typography.title.fontWeight};;
+    font-family: ${({ theme }) => theme.typography.title.fontFamily};
+    color: ${({ theme }) => theme.palette.grey[700]};
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -56,16 +56,16 @@ const TitleWrapper = styled<TypographyProps>(Typography)`
 const ShelfPageHeader: React.SFC<ShelfPageHeaderProps> = (
   props: ShelfPageHeaderProps,
 ) => {
-  const { children, leftSection, rightSection, title, innerRef, ...rest } = props;
+  const { children, Left, Right, title, innerRef, ...rest } = props;
 
-  const right = rightSection ? (
+  const right = Right ? (
     <div className="right-wrapper">
-      {rightSection}
+      {Right}
     </div>
   ) : null;
-  const left = leftSection ? (
+  const left = Left ? (
     <div className="left-section">
-      {leftSection}
+      {Left}
     </div>
   ) : null;
   return (

@@ -1,21 +1,19 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 import MuiToolbar, { ToolbarProps } from '@material-ui/core/Toolbar';
 import MuiAppBar, { AppBarProps } from '@material-ui/core/AppBar';
-import { WithTheme } from '@material-ui/core';
 
 export type BasePageHeaderProps = {} & ToolbarProps &
-  AppBarProps &
-  Partial<Pick<WithTheme, 'theme'>>;
+  AppBarProps;
 
-export const StyledPageHeader = styled<BasePageHeaderProps>(MuiAppBar).attrs({})`
+export const StyledPageHeader = styled<BasePageHeaderProps>(MuiAppBar)`
   && {
-    min-height: 56px;
+    min-height: ${({ theme }) => theme.spacing.unit * 14}px;
     padding-left: 0;
     padding-right: 0;
 
     > div {
-      min-height: 56px;
+      min-height: ${({ theme }) => theme.spacing.unit * 14}px;
     }
   }
 `;

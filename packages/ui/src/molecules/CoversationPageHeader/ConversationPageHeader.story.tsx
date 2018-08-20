@@ -34,7 +34,7 @@ storiesOf('ConversationPageHeader', module)
       white-space: nowrap;
       flex-wrap: nowrap;
     `;
-    const rightIconBar = (
+    const RightIconBar = (props: any) => (
       <RightButtonBar>
         <StyledIconButton>local_phone</StyledIconButton>
         <StyledIconButton>favorite</StyledIconButton>
@@ -44,8 +44,8 @@ storiesOf('ConversationPageHeader', module)
     return (
       <ConversationPageHeader
         title={getTitleKnob()}
-        subTitle={leftIconBar}
-        rightSection={rightIconBar}
+        SubTitle={leftIconBar}
+        Right={RightIconBar}
       />
     );
   }))
@@ -61,12 +61,12 @@ storiesOf('ConversationPageHeader', module)
         <StyledIconButton>favorite</StyledIconButton>
       </RightButtonBar>
     );
-    return <ConversationPageHeader title={getTitleKnob()} rightSection={iconBar} />;
+    return <ConversationPageHeader title={getTitleKnob()} Right={iconBar} />;
   }))
   .addWithJSX('title only', withInfo(``)(() => {
     return <ConversationPageHeader title={getTitleKnob()} />;
   }))
   .addWithJSX('with right text button', withInfo(``)(() => {
     const textButton = <Button variant="text" color="primary">Button</Button>;
-    return <ConversationPageHeader title={getTitleKnob()} rightSection={textButton} />;
+    return <ConversationPageHeader title={getTitleKnob()} Right={textButton} />;
   }));
