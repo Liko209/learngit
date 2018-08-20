@@ -24,11 +24,11 @@ storiesOf('ShelfPageHeader', module)
     return (
       <ShelfPageHeader
         title={getTitleKnob()}
-        rightSection={rightIcon}
+        Right={rightIcon}
       />
     );
   }))
   .addWithJSX('with left slot', withInfo(``)(() => {
     const leftIcon = <IconButton variant="plain" awake={true}>keyboard_arrow_left</IconButton>;
-    return <ShelfPageHeader title={getTitleKnob()} leftSection={leftIcon} />;
+    return <ShelfPageHeader title={getTitleKnob()} Left={leftIcon} />;
   }));
