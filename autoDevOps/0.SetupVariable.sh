@@ -50,8 +50,8 @@ else
   esac
 fi
 
-# demoHasUpdate="$(git diff HEAD^ HEAD  ${project}/demo)"
-demoHasUpdate=1
+demoHasUpdate="$(git diff HEAD^ HEAD  ${project}/demo)"
+# demoHasUpdate=1
 if  [ "$demoHasUpdate" ]; then
   subDomain=demo-${subDomain}
   addEnv projectName='Fiji Demo'
