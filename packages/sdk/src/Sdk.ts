@@ -65,6 +65,7 @@ class Sdk {
     });
 
     Api.init(apiConfig);
+    await this.daoManager.initDatabase();
 
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
@@ -92,8 +93,6 @@ class Sdk {
       // with accountManager.on(EVENT_LOGIN)
       notificationCenter.emitService(SERVICE.LOGIN);
     }
-
-    await this.daoManager.initDatabase();
   }
 
   async onLogin() {
