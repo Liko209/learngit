@@ -5,6 +5,7 @@
 */
 
 import { IDatabaseCollection, IQueryCriteria, IQuery, IFilter, IDatabase } from 'foundation';
+import { errorHandler } from '../errors/handler';
 class Query<T> implements IQuery<T> {
   criteria: IQueryCriteria<T>[] = [];
   parallel?: IQuery<T>[];
@@ -176,35 +177,56 @@ class Query<T> implements IQuery<T> {
     if (typeof desc === 'boolean' && !sortBy) {
       throw new Error('sortBy should be specified if desc is specified');
     }
-    await this.db.ensureDBOpened();
-    return this.collection.getAll(this, { sortBy, desc });
+    try {
+      await this.db.ensureDBOpened();
+      const result = await this.collection.getAll(this, { sortBy, desc });
+      return result;
+    } catch (err) {
+      errorHandler(err);
+      return [];
+    }
   }
 
   async count(): Promise<number> {
-    await this.db.ensureDBOpened();
-    const result = await this.collection.count(this);
-    if (result) {
-      return result;
+    try {
+      await this.db.ensureDBOpened();
+      const result = await this.collection.count(this);
+      if (result) {
+        return result;
+      }
+      return 0;
+    } catch (err) {
+      errorHandler(err);
+      return 0;
     }
-    return 0;
   }
 
   async first(): Promise<T | null> {
-    await this.db.ensureDBOpened();
-    const result = await this.collection.first(this);
-    if (result) {
-      return result;
+    try {
+      await this.db.ensureDBOpened();
+      const result = await this.collection.first(this);
+      if (result) {
+        return result;
+      }
+      return null;
+    } catch (err) {
+      errorHandler(err);
+      return null;
     }
-    return null;
   }
 
   async last(): Promise<T | null> {
-    await this.db.ensureDBOpened();
-    const result = await this.collection.last(this);
-    if (result) {
-      return result;
+    try {
+      await this.db.ensureDBOpened();
+      const result = await this.collection.last(this);
+      if (result) {
+        return result;
+      }
+      return null;
+    } catch (err) {
+      errorHandler(err);
+      return null;
     }
-    return null;
   }
 }
 

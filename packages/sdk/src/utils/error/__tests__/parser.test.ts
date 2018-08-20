@@ -1,9 +1,9 @@
 import { HttpResponse, HttpResponseBuilder } from 'foundation';
-import Dexie from 'dexie/dist/dexie';
 
 import ErrorParser from '../parser';
+import { DBCriticalError } from '../../../dao/errors/handler';
 
-const DEXIE_ERROR_CODE = 2000;
+const DB_CRITICAL_ERROR = 2001;
 const HTTP_BASE_CODE = 1000;
 
 function createResponse(obj: any) {
@@ -14,8 +14,8 @@ function createResponse(obj: any) {
 
 describe('ErrorParser', () => {
   it('ErrorParser parse/dexie/http', () => {
-    const dexieError: any = new Dexie.DexieError();
-    expect(ErrorParser.parse(dexieError).code).toBe(DEXIE_ERROR_CODE);
+    const dexieError: any = new DBCriticalError();
+    expect(ErrorParser.parse(dexieError).code).toBe(DB_CRITICAL_ERROR);
 
     const httpError: HttpResponse = createResponse({
       status: 200,

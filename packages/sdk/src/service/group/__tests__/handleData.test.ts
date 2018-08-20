@@ -27,7 +27,7 @@ jest.mock('../../../dao', () => {
     queryGroupsByIds: jest.fn(),
     bulkDelete: jest.fn(),
     bulkPut: jest.fn(),
-    doInTransation: jest.fn(),
+    doInTransaction: jest.fn(),
   };
   return {
     daoManager: {
