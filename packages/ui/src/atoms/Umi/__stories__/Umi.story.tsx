@@ -6,7 +6,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { number, boolean } from '@storybook/addon-knobs/react';
+import { number, boolean, select } from '@storybook/addon-knobs/react';
 import { Umi } from '..';
 
 storiesOf('Atoms/Umi', module)
@@ -15,7 +15,11 @@ storiesOf('Atoms/Umi', module)
       return (
         <Umi
           unreadCount={number('unreadCount', 10)}
-          showCount={boolean('showCount', true)}
+          variant={select('variant', {
+            count: 'count',
+            dot: 'dot',
+            auto: 'auto',
+          },              'count')}
           important={boolean('important', false)}
         />
       );
