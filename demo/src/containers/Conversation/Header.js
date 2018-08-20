@@ -15,8 +15,8 @@ import RingCentralWebPhone from 'ringcentral-web-phone';
 
 import { service } from 'sdk';
 
-import { getGroupName } from '@/utils/groupName';
-import storeManager, { ENTITY_NAME } from '@/store';
+import { getGroupName } from '#/utils/groupName';
+import storeManager, { ENTITY_NAME } from '#/store';
 
 import { platform } from './platform';
 import { appkey, appName } from './constant';

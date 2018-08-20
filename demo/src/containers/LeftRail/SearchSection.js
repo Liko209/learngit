@@ -10,7 +10,7 @@ import { withRouter } from 'react-router';
 
 import { service } from 'sdk';
 
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '#/store';
 import { ListSection, ListItem, Left, Right } from './style';
 
 const { GroupService } = service;

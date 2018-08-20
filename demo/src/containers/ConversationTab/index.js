@@ -2,10 +2,10 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { service } from 'sdk';
-import storeManager, { ENTITY_NAME } from '@/store';
-import ConversationTab from '@/components/ConversationTab';
-import ConversationTabPresenter from '@/containers/ConversationTab/ConversationTabPresenter';
-import { getGroupName } from '@/utils/groupName';
+import storeManager, { ENTITY_NAME } from '#/store';
+import ConversationTab from '#/components/ConversationTab';
+import ConversationTabPresenter from '#/containers/ConversationTab/ConversationTabPresenter';
+import { getGroupName } from '#/utils/groupName';
 // parents component => components/ConversationSection/index
 
 const { AccountService } = service;

@@ -41,7 +41,7 @@ storiesOf('Molecules/ConversationList', module)
             <ListItem
               title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
               unreadCount={12}
-              showCount={false}
+              umiVariant="auto"
               important={true}
             />
             <ListItem title="Maria" unreadCount={9} />
@@ -62,7 +62,7 @@ storiesOf('Molecules/ConversationList', module)
           <ListItem
             title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
             unreadCount={12}
-            showCount={false}
+            umiVariant="auto"
             important={true}
           />
           <ListItem title="Maria" unreadCount={9} />
@@ -104,6 +104,7 @@ storiesOf('Molecules/ConversationList', module)
               unreadCount: 12,
               showCount: false,
               important: true,
+              umiVariant: 'auto',
             }, {
               title: 'Maria',
               unreadCount: 9,
@@ -185,11 +186,11 @@ storiesOf('Molecules/ConversationList', module)
       return (
         <StoryWrapper>
           <ListItem
-            important={important}
             status={status}
             title={title}
             unreadCount={unreadCount}
-            showCount={!isTeam}
+            important={important}
+            umiVariant={isTeam ? 'auto' : 'count'}
             onClick={action('onClick')}
             onMoreClick={action('onMoreClick')}
           />

@@ -8,8 +8,8 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
 
-import storeManager, { ENTITY_NAME } from '@/store';
-import MediaImage from '@/components/MediaImage';
+import storeManager, { ENTITY_NAME } from '#/store';
+import MediaImage from '#/components/MediaImage';
 
 const Item = styled.div`
   padding: 5px;

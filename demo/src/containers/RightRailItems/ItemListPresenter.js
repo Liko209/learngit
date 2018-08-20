@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import moment from 'moment';
-import OrderListStore from '@/store/base/OrderListStore';
-import OrderListPresenter from '@/store/base/OrderListPresenter';
+import OrderListStore from '#/store/base/OrderListStore';
+import OrderListPresenter from '#/store/base/OrderListPresenter';
 
-import { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '#/store';
 
 import { GlipTypeDictionary } from 'sdk';
 import { service } from 'sdk';

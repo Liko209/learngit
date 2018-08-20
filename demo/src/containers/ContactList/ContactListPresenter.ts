@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Person } from 'sdk/models';
-import BasePresenter from '@/store/base/BasePresenter';
+import BasePresenter from '#/store/base/BasePresenter';
 import { observable, action, computed } from 'mobx';
 import { service } from 'sdk';
 import {

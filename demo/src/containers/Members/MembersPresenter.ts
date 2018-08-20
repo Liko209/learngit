@@ -5,7 +5,7 @@
  */
 import { observable, action } from 'mobx';
 
-import BasePresenter from '@/store/base/BasePresenter';
+import BasePresenter from '#/store/base/BasePresenter';
 
 import { service } from 'sdk';
 

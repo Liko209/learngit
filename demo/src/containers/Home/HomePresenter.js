@@ -1,11 +1,11 @@
 import LogRocket from 'logrocket';
 import { observable, action } from 'mobx';
 
-import BasePresenter from '@/store/base/BasePresenter';
+import BasePresenter from '#/store/base/BasePresenter';
 
 import { service } from 'sdk';
 import notificationHandler from './notificationHandler';
-import { env, betaUserIdList } from '@/globalConfig';
+import { env, betaUserIdList } from '#/globalConfig';
 
 const { AccountService, AuthService, ConfigService, SERVICE, SOCKET } = service;
 

@@ -10,8 +10,8 @@ import 'react-select/dist/react-select.css';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
 
-import Modal from '@/components/Modal';
-import Button from '@/components/Button';
+import Modal from '#/components/Modal';
+import Button from '#/components/Button';
 
 import AddMemberPresenter from './AddMemberPresenter';
 import { getName } from '../../utils/getName';

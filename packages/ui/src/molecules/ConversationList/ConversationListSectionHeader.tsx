@@ -4,12 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 
-import {
-  WithTheme,
-  ListItem as MuiListItem,
-} from '@material-ui/core';
+import MuiListItem from '@material-ui/core/ListItem';
 
 import { Umi, Icon } from '../../atoms';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
@@ -27,15 +24,16 @@ type SectionHeaderProps = {
   icon: JSX.Element;
   showCount?: boolean;
   important?: boolean;
+  umiVariant?: 'count' | 'dot' | 'auto';
   expanded?: boolean;
   className?: string;
   onClick?: (e: React.MouseEvent) => any;
   onArrowClick?: (e: React.MouseEvent) => any;
-} & Partial<Pick<WithTheme, 'theme'>>;
+};
 
 const ConversationListSectionHeader = (props: SectionHeaderProps) => {
   const { icon, title, unreadCount, important, expanded,
-    showCount, className, onClick, onArrowClick } = props;
+    umiVariant, className, onClick, onArrowClick } = props;
 
   const arrow = expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
 
@@ -43,7 +41,7 @@ const ConversationListSectionHeader = (props: SectionHeaderProps) => {
     <StyledListItem className={className} button={true} onClick={onClick}>
       {icon}
       <ItemText>{title}</ItemText>
-      <Umi important={important} unreadCount={unreadCount} showCount={showCount} />
+      <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
       <Icon onClick={onArrowClick}>{arrow}</Icon>
     </StyledListItem>
   );

@@ -5,8 +5,8 @@
  */
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import Presence from '@/containers/Presence';
-import Badge from '@/containers/Badge';
+import Presence from '#/containers/Presence';
+import Badge from '#/containers/Badge';
 import { Wrapper, Text, Placeholder } from './style';
 import { withRouter } from 'react-router-dom';
 

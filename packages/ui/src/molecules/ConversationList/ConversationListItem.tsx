@@ -3,10 +3,9 @@
  * @Date: 2018-08-17 10:34:48
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
-import styled from 'styled-components';
+import React from 'react';
+import styled from '../../styled-components';
 
-import { WithTheme } from '@material-ui/core/styles/withTheme';
 import MuiMenuItem, { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
 
 import { Presence, Umi, Icon } from '../../atoms';
@@ -47,37 +46,28 @@ type ListItemProps = {
   title: string;
   status?: string;
   unreadCount?: number;
-  showCount?: boolean;
   important?: boolean;
+  umiVariant?: 'count' | 'dot' | 'auto';
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
-} & MuiMenuItemProps & Partial<Pick<WithTheme, 'theme'>>;
+} & MuiMenuItemProps;
 
-class ConversationListItem extends Component<ListItemProps> {
-  static defaultProps = {
-    unreadCount: 0,
-    showCount: true,
-    important: false,
-  };
+const ConversationListItem = (props: ListItemProps) => {
+  const { title, status, unreadCount, important, onClick, onMoreClick, umiVariant } = props;
+  const fontWeight = unreadCount ? 'bold' : 'normal';
 
-  render() {
-    const { title, status, unreadCount, important,
-      showCount, onClick, onMoreClick } = this.props;
-
-    const fontWeight = unreadCount ? 'bold' : 'normal';
-    return (
-      <StyledListItem
-        button={true}
-        onClick={onClick}
-      >
-        <Presence status={status} />
-        <ItemText style={{ fontWeight }}>{title}</ItemText>
-        <Umi important={important} unreadCount={unreadCount} showCount={showCount} />
-        <Icon onClick={onMoreClick}>more_vert</Icon>
-      </StyledListItem>
-    );
-  }
-}
+  return (
+    <StyledListItem
+      button={true}
+      onClick={onClick}
+    >
+      <Presence status={status} />
+      <ItemText style={{ fontWeight }}>{title}</ItemText>
+      <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
+      <Icon onClick={onMoreClick}>more_vert</Icon>
+    </StyledListItem>
+  );
+};
 
 export default ConversationListItem;
 export { ListItemProps, ConversationListItem };

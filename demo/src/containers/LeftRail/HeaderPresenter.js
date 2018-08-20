@@ -2,8 +2,8 @@ import { observable, computed, action } from 'mobx';
 
 import { service } from 'sdk';
 
-import storeManager, { ENTITY_NAME } from '@/store';
-import BasePresenter from '@/store/base/BasePresenter';
+import storeManager, { ENTITY_NAME } from '#/store';
+import BasePresenter from '#/store/base/BasePresenter';
 
 const { AuthService, AccountService, SERVICE } = service;
 export default class HeaderPresenter extends BasePresenter {

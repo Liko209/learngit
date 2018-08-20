@@ -6,7 +6,7 @@
 import React from 'react';
 import createMuiTheme, { Theme, ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
 import MuiThemeProvider, { MuiThemeProviderProps } from '@material-ui/core/styles/MuiThemeProvider';
-import { ThemeProvider as StyledThemeProvider } from 'styled-components';
+import { ThemeProvider as StyledThemeProvider } from '../styled-components';
 
 const createTheme = (options: ThemeOptions) =>
   createMuiTheme(options);

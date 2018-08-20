@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '#/store';
 
 const hasDisplayName = person => person && person.displayName;
 

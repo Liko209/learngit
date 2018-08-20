@@ -8,8 +8,8 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
 
-import storeManager, { ENTITY_NAME } from '@/store';
-import SingleEntityMapStore from '@/store/base/SingleEntityMapStore';
+import storeManager, { ENTITY_NAME } from '#/store';
+import SingleEntityMapStore from '#/store/base/SingleEntityMapStore';
 
 import { service } from 'sdk';
 

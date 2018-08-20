@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { GLOBAL_STORE_DATA, ACTIONS_TYPE } from '@/constants';
-import storeManager from '@/store';
+import { GLOBAL_STORE_DATA, ACTIONS_TYPE } from '#/constants';
+import storeManager from '#/store';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
