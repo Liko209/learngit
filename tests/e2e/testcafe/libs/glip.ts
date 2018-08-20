@@ -14,7 +14,6 @@ export interface IAccount {
   glip_id: IdType,
   name: string,
   email: string,
-  number: string,
   extension: string,
   password: string,
 }
@@ -59,15 +58,15 @@ export class RcPlatformManager {
     this.clients = {};
   }
 
-  createClient(account: IAccount): RcPlatformHelper {
+  createClient(account: IAccount, companyNumber: string): RcPlatformHelper {
     const sdk = new Ringcentral(this.platformKey, this.platformSecret, this.platformUrl);
-    return new RcPlatformHelper(sdk, account.number, account.extension, account.password);
+    return new RcPlatformHelper(sdk, companyNumber, account.extension, account.password);
   }
 
-  async getClient(account: IAccount){
+  async getClient(account: IAccount, companyNumber: string){
     let client: RcPlatformHelper = this.clients[account.glip_id];
     if (client == undefined) {
-      client = this.createClient(account);
+      client = this.createClient(account, companyNumber);
       await client.auth();
       this.clients[account.glip_id] = client;
     }

@@ -3,6 +3,9 @@
  * @Date: 2018-08-16 11:29:42
  * Copyright © RingCentral. All rights reserved.
  */
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
 const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
