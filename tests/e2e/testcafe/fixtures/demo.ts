@@ -11,24 +11,33 @@ import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
 import { SITE_URL, SITE_ENV } from '../config';
 
 import { formalName } from '../libs/filter';
-import { setUp, tearDown } from '../libs/helpers';
+import { setUp, tearDown, TestHelper} from '../libs/helpers';
 
 fixture('Demo')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown())
 
 test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
-  await new BlankPage(t)
+  const helper = TestHelper.from(t);
+
+  let page;
+  await (page = new BlankPage(t)
     .open(SITE_URL)
     .shouldNavigateTo(EnvironmentSelectionPage)
     .selectEnvironment(SITE_ENV)
     .toNextPage()
+  );
+
+  const client702 = await helper.glipApiManager.getClient(helper.users.user702, helper.companyNumber);
+  await client702.sendPost(helper.teams.team1_u1_u2.glip_id, {text: 'hello world'});
+
+  await (page = page
     .shouldNavigateTo(RingcentralSignInNavigationPage)
-    .setCredential(`${t.ctx.data.mainCompanyNumber}`)
+    .setCredential(helper.companyNumber)
     .toNextPage()
     .shouldNavigateTo(RingcentralSignInPage)
-    .setExtension(t.ctx.data.users.user701.extension)
-    .setPassword(t.ctx.data.users.user701.password)
+    .setExtension(helper.users.user701.extension)
+    .setPassword(helper.users.user701.password)
     .signIn()
-    .execute();
+  );
 });
