@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import {
   ConversationList as List,
   ConversationListSection,
@@ -12,6 +13,7 @@ import {
 } from 'ui-components';
 import FavoriteListPresenter from './FavoriteListPresenter';
 import ConversationListItemCell from './ConversationListItemCell';
+import { ENTITY_NAME } from '@/store';
 interface IProps {
 
 }
@@ -27,6 +29,7 @@ interface Group {
   members: number[];
 }
 
+@observer
 class FavoriteSection extends React.Component<IProps, IState> {
   favoritePresenter: FavoriteListPresenter;
   constructor(props: IProps) {
@@ -34,15 +37,18 @@ class FavoriteSection extends React.Component<IProps, IState> {
     this.favoritePresenter = new FavoriteListPresenter();
   }
 
+  componentDidMount() {
+    this.favoritePresenter.fetchData();
+  }
+
   renderFavoriteGroups() {
     const store = this.favoritePresenter.getStore();
-    let ids = store.getIds();
-    if (!ids.length) {
-      ids = [123];
-    }
+    const ids = store.getIds();
     return (
       <List value={0}>
-        {ids.map(id => (<ConversationListItemCell id={id} key={id} />))}
+        {ids.map(id => (
+          <ConversationListItemCell id={id} key={id} entityName={ENTITY_NAME.GROUP} />
+        ))}
       </List>
     );
   }

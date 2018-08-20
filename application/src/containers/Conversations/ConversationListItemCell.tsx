@@ -8,35 +8,49 @@ import React from 'react';
 import {
   ConversationListItem,
 } from 'ui-components';
-
+import storeManager, { ENTITY_NAME } from '../../store';
+import MultiEntityMapStore from '../../store/base/MultiEntityMapStore';
+import SingleEntityMapStore from '../../store/base/SingleEntityMapStore';
+import GroupModel from '@/store/models/Group';
+import { observer } from 'mobx-react';
 interface IProps {
   id: number;
   key: number;
+  entityName: string;
 }
 
 interface IState {
-  // groups: Group[];
 }
-
+@observer
 export default class ConversationListItemCell extends React.Component<IProps, IState>{
   id: number;
   displayName: string;
   unreadCount: number;
   showCount: boolean;
   status: string;
+  groupStore: MultiEntityMapStore | SingleEntityMapStore;
   constructor(props: IProps) {
     super(props);
     this.id = props.id;
-    this.displayName = '123';
-    this.unreadCount = 10;
-    this.showCount = true;
+    this.displayName = '';
+    this.unreadCount = 0;
+    this.showCount = false;
+    this.status = '';
+    this.groupStore = storeManager.getEntityMapStore(props.entityName);
+  }
+
+  getDataFromStore() {
+    const group: GroupModel = this.groupStore.get(this.id);
+    this.displayName = group.setAbbreviation;
+    this.showCount = !group.isTeam; // || at_mentions
+    this.status = ''; // should get from state store
   }
 
   render() {
+    this.getDataFromStore();
     return (
       <ConversationListItem
         key={this.id}
-        status="online"
         title={this.displayName}
         unreadCount={this.unreadCount}
         showCount={this.showCount}
