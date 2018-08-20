@@ -1,5 +1,5 @@
 import React from 'react';
-import createMuiTheme, { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
+import createMuiTheme, { ThemeOptions, Theme } from '@material-ui/core/styles/createMuiTheme';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
@@ -40,5 +40,6 @@ const ThemeProvider: React.SFC<ThemeProviderProps> = ({ themeName, children }) =
 };
 
 export {
+  Theme,
   ThemeProvider,
 };
