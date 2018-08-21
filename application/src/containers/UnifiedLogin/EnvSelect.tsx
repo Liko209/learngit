@@ -41,7 +41,7 @@ class EnvSelect extends React.Component<Props, States> {
 
   changeHandler(event: React.ChangeEvent<HTMLSelectElement>) {
     const value = event.target.value;
-    const configService: ConfigService = ConfigService.getInstance();
+    const configService: service.ConfigService = ConfigService.getInstance();
     configService.switchEnv(value);
     this.setState({ value });
     location.reload();

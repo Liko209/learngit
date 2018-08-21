@@ -93,7 +93,8 @@ class UnifiedLogin extends React.Component<
       });
 
       try {
-        await AuthService.getInstance().unifiedLogin({ code });
+        const authService: service.AuthService = AuthService.getInstance();
+        await authService.unifiedLogin({ code });
         history.replace((location.state && location.state.from) || '/');
       } catch (error) {
         // const handler = new ErrorHandler(error);
