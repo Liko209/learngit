@@ -16,7 +16,7 @@ function loadFileConfigs(env: string) {
         .split('.')[1]
         .split('/')
         .slice(1),
-    )
+  )
     .reduce((config, names: string[], currentIndex) => {
       const value = modules[currentIndex];
       const name = names[0];
@@ -81,7 +81,7 @@ class Config {
   private config = {};
 
   private constructor() {
-    this.config = loadFileConfigs('Chris_sandbox');
+    this.config = loadFileConfigs('XMN-UP');
   }
 
   public static get Instance() {

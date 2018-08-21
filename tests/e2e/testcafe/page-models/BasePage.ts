@@ -3,7 +3,7 @@
  * @Date: 2018-08-08 13:16:21
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { Selector } from 'testcafe';
 import { Status, AllureStep } from '../libs/report';
 import { TestHelper } from '../libs/helpers';
 
@@ -20,7 +20,7 @@ export abstract class BasePage {
     this._t = t;
     this._helper = new TestHelper(t);
     this._chain = chain || Promise.resolve();
-    if (chain != undefined) {
+    if (chain !== undefined) {
       this.forwardThen();
     }
   }
@@ -39,7 +39,7 @@ export abstract class BasePage {
       const promise = this._chain;
       this._chain = Promise.resolve();
       return promise.then.apply(promise, arguments);
-    }
+    };
   }
 
   protected async log(
@@ -49,13 +49,23 @@ export abstract class BasePage {
     startTime?: number,
     endTime?: number,
     parent?: AllureStep) {
-      return await this._helper.log(message, status, takeScreen, startTime, endTime, parent);
+    return await this._helper.log(message, status, takeScreen, startTime, endTime, parent);
   }
 
   async execute() {
-    let chain = this._chain;
+    const chain = this._chain;
     this._chain = Promise.resolve();
     return await chain;
+  }
+
+  select(anchor: string) {
+    return Selector(`*[data-anchor="${anchor}"]`);
+  }
+
+  click(anchor: string) {
+    return this.chain(async t =>
+      await t.click(this.select(anchor)),
+    );
   }
 
   shouldNavigateTo<T extends BasePage>(

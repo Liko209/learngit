@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.test.json",
+  "compilerOptions": {
+    "outDir": "./dist/testcafe",
+    "module": "es2015",
+    "target": "es2017",
+    "baseUrl": "",
+    "types": [
+      "testcafe",
+      "node"
+    ]
+  }
+}
