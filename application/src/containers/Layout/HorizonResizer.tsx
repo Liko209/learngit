@@ -1,8 +1,9 @@
 import React, { MouseEvent } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 interface IWrapperPorps {
   offset: number;
+  show: boolean;
 }
 
 interface IResizerPorps extends IWrapperPorps {
@@ -20,10 +21,13 @@ const Wrapper = styled.div`
   margin-left: -3px;
   padding: 3px
   cursor: col-resize;
+  ${props => props.show === false && css`
+    display: none;
+  `}
 `;
 
-const Resizer = ({ offset, onMouseDown }: IResizerPorps) => {
-  return <Wrapper onMouseDown={onMouseDown} offset={offset} />;
+const Resizer = ({ offset, show, onMouseDown }: IResizerPorps) => {
+  return <Wrapper onMouseDown={onMouseDown} offset={offset} show={show} />;
 };
 
 export default Resizer;

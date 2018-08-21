@@ -22,9 +22,9 @@ const Wrapper = styled.div`
   `}
 `;
 
-const Panel = ({ width, children }: IPanelProps) => {
+const Panel = ({ width, minWidth, maxWidth, children }: IPanelProps) => {
   return (
-    <Wrapper width={width}>
+    <Wrapper width={width} data-min-width={minWidth} data-max-width={maxWidth}>
       {children}
     </Wrapper>
   );

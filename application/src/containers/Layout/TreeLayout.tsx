@@ -3,7 +3,7 @@ import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
 import HorizonResizer from './HorizonResizer';
 import { addResizeListener, removeResizeListener } from './optimizedResize';
-import { getOffsetLeft, getOffsetTop, pauseEvent } from './utils';
+import { getOffsetLeft, pauseEvent } from './utils';
 
 interface IProps {
   Left: ComponentClass | SFC;
@@ -13,11 +13,14 @@ interface IProps {
 
 interface IStates {
   middle: number;
-  left: number; // current left panel width value
+  left: number; // current panel width value
   right: number;
-  last_left: number; // last left panel width value
+  last_left: number; // remember last panel width value
   last_right: number;
-  currentNode: any;
+  show_left: boolean; // show resizer
+  show_right: boolean;
+  currentElement: Element | null; // Resizer(vertical line)
+  currentIndex: number;
 }
 
 class TreeLayout extends Component<IProps, IStates> {
@@ -25,11 +28,14 @@ class TreeLayout extends Component<IProps, IStates> {
     super(props);
     this.state = {
       middle: 0,
-      left: 250, // current left panel width value
+      left: 250,
       right: 300,
-      last_left: 250, // last left panel width value
+      last_left: 250,
       last_right: 300,
-      currentNode: null,
+      show_left: true,
+      show_right: true,
+      currentElement: null,
+      currentIndex: -1,
     };
     this.onResize = this.onResize.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
@@ -48,62 +54,60 @@ class TreeLayout extends Component<IProps, IStates> {
 
   onMouseDown(e: ReactMouseEvent) {
     document.addEventListener('mouseup', this.onMouseUp);
-    document.addEventListener<'mousemove'>('mousemove', this.onMouseMove);
-    if (!this.state.currentNode) {
-      this.setState({ currentNode: e.target });
-    }
+    document.addEventListener<'mousemove'>('mousemove', this.onMouseMove); // document mousemove
+    const currentElement = e.nativeEvent.srcElement;
+    const parentElement = currentElement!.parentElement;
+    const collectionElement = parentElement!.querySelectorAll('[offset]');
+    const currentIndex = Array.from(collectionElement).indexOf(currentElement!);
+    this.setState({ currentElement, currentIndex });
   }
 
   onMouseUp() {
     document.removeEventListener('mouseup', this.onMouseUp);
     document.removeEventListener<'mousemove'>('mousemove', this.onMouseMove);
-    if (this.state.currentNode) {
-      this.setState({ currentNode: null });
+    if (this.state.currentElement) {
+      this.setState({ currentElement: null, currentIndex: -1 });
     }
   }
 
   onMouseMove(e: MouseEvent) {
     pauseEvent(e); // mouse move prevent select text
-    const { currentNode } = this.state;
-    if (currentNode === null) {
-      return; // document mousemove
-    }
-    const leftNode: any = currentNode.previousSibling;
-    let leftWidth = 0;
-    let leftMinWidth = 0;
-    let leftMaxWidth = 0;
-    if (leftNode) {
-      leftWidth = leftNode.getAttribute('width');
-      leftMinWidth = leftNode.getAttribute('minWidth');
-      leftMaxWidth = leftNode.getAttribute('maxWidth');
-    }
-    const rightNode: any = currentNode.nextSibling;
-    let rightWidth = 0;
-    let rightMinWidth = 0;
-    let rightMaxWidth = 0;
-    if (rightNode) {
-      rightWidth = rightNode.getAttribute('width');
-      rightMinWidth = rightNode.getAttribute('minWidth');
-      rightMaxWidth = rightNode.getAttribute('maxWidth');
-    }
+    const { currentElement, currentIndex } = this.state;
 
+    const leftNode: any = currentElement!.previousSibling;
+    const leftMinWidth = leftNode.dataset.minWidth || 10;
+    const leftMaxWidth = leftNode.dataset.maxWidth || 9999;
+    const rightNode: any = currentElement!.nextSibling;
+    const rightMinWidth = rightNode.dataset.minWidth || 10;
+    const rightMaxWidth = rightNode.dataset.maxWidth || 9999;
+
+    const clientX = e.clientX;
     const leftNodeOffsetLeft = getOffsetLeft(leftNode);
     const rightNodeOffsetLeft = getOffsetLeft(rightNode);
     const rightNodeOffsetWidth = rightNode.offsetWidth;
-    const clientX = e.clientX;
 
     const newLeftWidth = clientX - leftNodeOffsetLeft;
     const newRightWidth = rightNodeOffsetWidth - (clientX - rightNodeOffsetLeft);
 
-    this.setState({ middle: newLeftWidth, right: newRightWidth });
-
-    // leftNode.setAttribute('width', newLeftWidth);
-    // rightNode.setAttribute('width', newRightWidth);
-
+    if (newLeftWidth >= leftMinWidth
+      && newLeftWidth <= leftMaxWidth
+      && newRightWidth >= rightMinWidth
+      && newRightWidth <= rightMaxWidth) {
+      switch (currentIndex) {
+        case 0:
+          this.setState({ left: newLeftWidth, middle: newRightWidth, last_left: newLeftWidth });
+          break;
+        case 1:
+          this.setState({ middle: newLeftWidth, right: newRightWidth, last_right: newRightWidth });
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   onResize() {
-    let { left, middle, right } = this.state;
+    let { left, middle, right, show_left, show_right } = this.state;
     const { last_left, last_right } = this.state;
     const nav = 72; // todo 72 is dynamic value
     const max = 1820; // todo change to 1920
@@ -162,22 +166,34 @@ class TreeLayout extends Component<IProps, IStates> {
       }
     }
 
-    this.setState({ left, middle, right });
+    if (left === 0) {
+      show_left = false;
+    } else {
+      show_left = true;
+    }
+
+    if (right === 0) {
+      show_right = false;
+    } else {
+      show_right = true;
+    }
+
+    this.setState({ left, middle, right, show_left, show_right });
   }
 
   render() {
     const { Left, Middle, Right } = this.props;
-    const { left, middle, right } = this.state;
+    const { left, middle, right, show_left, show_right } = this.state;
     return (
       <Layout>
         <HorizonPanel width={left} minWidth={180} maxWidth={360}>
           <Left />
         </HorizonPanel>
-        <HorizonResizer offset={left} onMouseDown={this.onMouseDown} />
-        <HorizonPanel width={middle}>
+        <HorizonResizer offset={left} onMouseDown={this.onMouseDown} show={show_left} />
+        <HorizonPanel width={middle} minWidth={400}>
           <Middle />
         </HorizonPanel>
-        <HorizonResizer offset={left + middle} onMouseDown={this.onMouseDown} />
+        <HorizonResizer offset={left + middle} onMouseDown={this.onMouseDown} show={show_right} />
         <HorizonPanel width={right} minWidth={180} maxWidth={360}>
           <Right />
         </HorizonPanel>
