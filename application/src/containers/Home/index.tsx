@@ -37,7 +37,7 @@ class Home extends Component<IProps, IStates>  {
   }
 
   async signOutClickHandler() {
-    const authService = AuthService.getInstance();
+    const authService: service.AuthService = AuthService.getInstance();
     await authService.logout();
     window.location.href = '/';
   }

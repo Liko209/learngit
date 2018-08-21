@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "jupiter puppeteer",
   "scripts": {
-    "start": "node src/app.ts"
+    "start": "node src/app.js"
   },
   "author": "Dennis Jiang",
   "license": "ISC",

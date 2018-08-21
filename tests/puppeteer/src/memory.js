@@ -20,6 +20,7 @@ function getMB (bytes) {
 ;(async () => {
   const browser = await puppeteer.launch({
     args: ['--enable-precise-memory-info', '--no-sandbox'],
+    headless: false,
     ignoreHTTPSErrors: true
   })
   const page = await browser.newPage()

@@ -6,7 +6,6 @@ interface IThemeConfig {
 }
 
 const themeConfig: IThemeConfig = config.get('theme');
-
 const defaultTheme = themeConfig.default;
 const themes = themeConfig.themes;
 
