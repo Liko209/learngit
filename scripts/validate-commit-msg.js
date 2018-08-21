@@ -1,6 +1,6 @@
 /*
  * @Author: Alvin Huang (alvin.huang@ringcentral.com)
- * @Date: 2018-7-18 15:08:04
+ * @Date: 2018-7-18 15:08:05
  * Copyright © RingCentral. All rights reserved.
  */
 const chalk = require('chalk')
