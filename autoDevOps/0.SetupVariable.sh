@@ -74,7 +74,7 @@ function syncFolderToServer(){
   ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "mkdir -p $serverRootFolder/$remoteFolder"
   rsync -azPq --delete --progress \
     -e "ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no" \
-    $localFolder/ $serverRootFolder/$remoteFolder
+    $localFolder/ $theServer:$serverRootFolder/$remoteFolder
   ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "chown -R root:root $serverRootFolder/$remoteFolder"
 }
 
