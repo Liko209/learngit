@@ -17,25 +17,6 @@ import { Group, Post, Raw, Profile } from '../../models';
 import { GROUP_QUERY_TYPE } from '../constants';
 import StateService from '../state';
 
-// async function checkIncompleteGroupsMembers(groups: Group[]) {
-//   if (groups.length) {
-//     try {
-//       return await Promise.all(
-//         groups.map(async (group: Group) => {
-//           if (group.members) {
-//             const personService: PersonService = PersonService.getInstance();
-//             return personService.getPersonsByIds(group.members);
-//           }
-//           return group;
-//         }),
-//       );
-//     } catch (e) {
-//       mainLogger.warn(`checkIncompleteGroupsMembers error: ${e}`);
-//     }
-//   }
-//   return [];
-// }
-
 async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
   const transformedData: (Group | null)[] = await Promise.all(
     groups.map(async (item: Raw<Group>) => {
@@ -66,7 +47,7 @@ async function doNotification(deactivatedData: Group[], normalData: Group[]) {
   /**
    * favorite groups/teams: put/delete
    * normal groups: put/delete
-   * normal teams: put/delte
+   * normal teams: put/delete
    */
 
   const archivedTeams = normalData.filter((item: Group) => item.is_archived);
@@ -108,7 +89,7 @@ async function doNotification(deactivatedData: Group[], normalData: Group[]) {
   const addFavorites = normalData.filter((item: Group) => favIds.indexOf(item.id) !== -1);
   addedTeams.length > 0 && notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, addedTeams);
   addedGroups.length > 0 && notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, addedGroups);
-  addFavorites.length > 0 && notificationCenter.emitEntityPut(ENTITY.FAVORITE_GROUPS, addFavorites);
+  addFavorites.length > 0 && await doFavoriteGroupsNotification(favIds);
 }
 
 async function operateGroupDao(deactivatedData: Group[], normalData: Group[]) {
@@ -144,13 +125,7 @@ export default async function handleData(groups: Raw<Group>[]) {
   const transformData = await getTransformData(groups);
   const data = transformData
     .filter(item => item !== null && item.members && item.members.indexOf(userId) !== -1);
-  // handle deactivated data and normal data
-  // const normalGroups =
-  // const normalGroups = await baseHandleData({
-  //   data,
-  //   eventKey: ENTITY.GROUP,
-  //   dao,
-  // });
+
   // handle deactivated data and normal data
   await saveDataAndDoNotification(data);
   // check all group members exist in local or not if not, should get from remote
@@ -158,6 +133,30 @@ export default async function handleData(groups: Raw<Group>[]) {
   // if (shouldCheckIncompleteMembers) {
   //   await checkIncompleteGroupsMembers(normalGroups);
   // }
+}
+
+async function doFavoriteGroupsNotification(favIds: number[]) {
+  if (favIds.length) {
+    const dao = daoManager.getDao(GroupDao);
+    let groups = await dao.queryGroupsByIds(favIds);
+    groups = sortFavoriteGroups(favIds, groups);
+    notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, groups);
+  } else {
+    notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, []);
+  }
+}
+
+function sortFavoriteGroups(ids: number[], groups: Group[]): Group[] {
+  const result: Group[] = [];
+  for (let i = 0; i < ids.length; i += 1) {
+    for (let j = 0; j < groups.length; j += 1) {
+      if (ids[i] === groups[j].id) {
+        result.push(groups[i]);
+        break;
+      }
+    }
+  }
+  return result;
 }
 
 async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Profile) {
@@ -170,7 +169,6 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
       const dao = daoManager.getDao(GroupDao);
       if (moreFavorites.length) {
         const resultGroups: Group[] = await dao.queryGroupsByIds(moreFavorites);
-        notificationCenter.emitEntityPut(ENTITY.FAVORITE_GROUPS, resultGroups);
         const teams = resultGroups.filter((item: Group) => item.is_team);
         notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, teams);
         const groups = resultGroups.filter((item: Group) => !item.is_team);
@@ -178,15 +176,12 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
       }
       if (moreNormals.length) {
         const resultGroups = await dao.queryGroupsByIds(moreNormals);
-        notificationCenter.emitEntityDelete(ENTITY.FAVORITE_GROUPS, resultGroups);
         const teams = resultGroups.filter((item: Group) => item.is_team);
-        // notificationCenter.emitEntityPut(ENTITY.FAVORITE_GROUPS, teams);
-
-        const groups = resultGroups.filter((item: Group) => !item.is_team);
         notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, teams);
-
+        const groups = resultGroups.filter((item: Group) => !item.is_team);
         notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, groups);
       }
+      await doFavoriteGroupsNotification(newProfile.favorite_group_ids || []);
     }
   }
 }

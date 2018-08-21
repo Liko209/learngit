@@ -58,6 +58,13 @@ class NotificationCenter extends EventEmitter2 {
     });
   }
 
+  emitEntityReplaceAll(key: string, entities: any[]): void {
+    this.trigger(key, {
+      type: EVENT_TYPES.REPLACE_ALL,
+      entities: transform2Map(entities),
+    });
+  }
+
   emitEntityDelete(key: string, entities: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.DELETE,

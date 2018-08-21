@@ -20,7 +20,7 @@ export abstract class BasePage {
     this._t = t;
     this._helper = new TestHelper(t);
     this._chain = chain || Promise.resolve();
-    if (chain != undefined) {
+    if (chain !== undefined) {
       this.forwardThen();
     }
   }
@@ -39,7 +39,7 @@ export abstract class BasePage {
       const promise = this._chain;
       this._chain = Promise.resolve();
       return promise.then.apply(promise, arguments);
-    }
+    };
   }
 
   protected async log(
@@ -49,11 +49,11 @@ export abstract class BasePage {
     startTime?: number,
     endTime?: number,
     parent?: AllureStep) {
-      return await this._helper.log(message, status, takeScreen, startTime, endTime, parent);
+    return await this._helper.log(message, status, takeScreen, startTime, endTime, parent);
   }
 
   async execute() {
-    let chain = this._chain;
+    const chain = this._chain;
     this._chain = Promise.resolve();
     return await chain;
   }

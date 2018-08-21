@@ -70,13 +70,13 @@ export class TestHelper {
     endTime?: number,
     parent?: AllureStep) {
 
-    if (this.t.ctx.logs == undefined) {
+    if (this.t.ctx.logs === undefined) {
       this.t.ctx.logs = [];
     }
-    if (startTime == undefined) {
+    if (startTime === undefined) {
       startTime = Date.now();
     }
-    if (endTime == undefined) {
+    if (endTime === undefined) {
       endTime = startTime;
     }
 
@@ -87,8 +87,8 @@ export class TestHelper {
       screenPath = this.t['testRun'].opts.screenshotPath + '/' + screenPath;
     }
 
-    const step = new AllureStep(message, status, startTime, endTime, screenPath, [],);
-    if (parent == undefined) {
+    const step = new AllureStep(message, status, startTime, endTime, screenPath, [], );
+    if (parent === undefined) {
       this.t.ctx.logs.push(step);
     } else {
       parent.children.push(step);

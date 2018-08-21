@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 10:36:36
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from 'styled-components';
 import { WithTheme } from '@material-ui/core';
@@ -13,7 +18,8 @@ const PRESENCE_COLOR_MAP = {
   default: 'transparent',
 };
 
-const Presence = styled<PresenceProps, 'div'>('div')`
+const StyledPresence = styled<PresenceProps, 'div'>('div')`
+  display: inline-block;
   width: 8px;
   height: 8px;
   margin: 6px 8px;
@@ -21,5 +27,7 @@ const Presence = styled<PresenceProps, 'div'>('div')`
   border-radius: 50%;
 `;
 
+const Presence = (props: PresenceProps) => <StyledPresence {...props} />;
+
 export { Presence };
-export default { Presence };
+export default Presence;

@@ -1,18 +1,30 @@
-import React from 'react';
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 10:34:45
+ * Copyright © RingCentral. All rights reserved.
+ */
+import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 
-import { List } from '@material-ui/core';
+import MuiMenuList from '@material-ui/core/MenuList';
 
-export type ConversationListProps = {
-  value: any;
+const StyledList = styled(MuiMenuList)`
+  && {
+    background-color: white;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+`;
+
+type ListProps = {
   className?: string;
   onClick?: Function;
   onChange?: Function;
 };
 
-export class TConversationList extends React.PureComponent<ConversationListProps> {
+class ConversationList extends PureComponent<ListProps> {
 
-  constructor(props: ConversationListProps) {
+  constructor(props: ListProps) {
     super(props);
 
     this._handleChange = this._handleChange.bind(this);
@@ -20,16 +32,19 @@ export class TConversationList extends React.PureComponent<ConversationListProps
 
   render() {
     return (
-      <List
+      <StyledList
         component="div"
-        className={this.props.className}
         onClick={this._handleChange}
       >
         {this.props.children}
-      </List>
+      </StyledList>
     );
   }
 
+  /**
+   * TODO use the same way with <BottomNavigation/> to implement onChange event.
+   * See https://bit.ly/2Bf2sP0
+   */
   private _handleChange(event: React.MouseEvent) {
     const { onChange, onClick } = this.props;
 
@@ -47,12 +62,6 @@ export class TConversationList extends React.PureComponent<ConversationListProps
     return Array.from(el.parentElement.children).indexOf(el);
   }
 }
-export const ConversationList = styled<ConversationListProps>(TConversationList)`
-  && {
-    background-color: white;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-`;
 
 export default ConversationList;
+export { ListProps, ConversationList };

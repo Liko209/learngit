@@ -70,7 +70,7 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd', multip
     ]
   }).then(bundle =>
     bundle.write({
-      format,
+      format:"cjs",
       file: destination,
       name: pkgName,
       globals: {
