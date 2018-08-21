@@ -1,22 +1,31 @@
 // Replace ${deployHost} with real deployHost
 import merge from 'lodash/merge';
+import { service } from 'sdk';
+
+const { ConfigService } = service;
 
 const deployHost = `${window.location.protocol}//${window.location.hostname}${
   window.location.port ? `:${window.location.port}` : ''
   }`;
 
-function loadFileConfigs(env: string) {
-  const config = {};
+function parseConfigFiles() {
   const requireContext = require.context('./', true, /.json$/);
   const keys = requireContext.keys();
   const modules = keys.map(requireContext);
-  keys
-    .map((path: string) =>
-      path
-        .split('.')[1]
-        .split('/')
-        .slice(1),
-    )
+
+  return {
+    modules,
+    keys: keys.map(clean),
+  };
+
+  function clean(path: string) {
+    return path.split('.')[1].split('/').slice(1);
+  }
+}
+
+function loadFileConfigs(env: string) {
+  const { keys, modules } = parseConfigFiles();
+  const config = keys
     .reduce((config, names: string[], currentIndex) => {
       const value = modules[currentIndex];
       const name = names[0];
@@ -31,7 +40,7 @@ function loadFileConfigs(env: string) {
         config[name] = value;
       }
       return config;
-    },      config);
+    },      {});
 
   return buildConfig(config, { deployHost });
 }
@@ -77,28 +86,42 @@ function set(object: object, property: string | string[], value: any) {
 }
 
 class Config {
-  private static instance: Config;
-  private config = {};
+  private static _instance: Config;
+  private _config = {};
+  private _env = '';
 
   private constructor() {
-    this.config = loadFileConfigs('Chris_sandbox');
+    const configService: ConfigService = ConfigService.getInstance();
+    const value = configService.getEnv() || 'XMN-UP';
+    this._env = value;
+    this._config = loadFileConfigs(value);
   }
 
   public static get Instance() {
-    this.instance = this.instance || (this.instance = new this());
-    return this.instance;
+    this._instance = this._instance || (this._instance = new this());
+    return this._instance;
+  }
+
+  getEnv() {
+    return this._env;
+  }
+
+  getAllEnv() {
+    return parseConfigFiles().keys
+      .filter(arr => arr[0] === 'api')
+      .map(arr => arr[1]);
   }
 
   get(property: string) {
-    return get(this.config, property);
+    return get(this._config, property);
   }
 
   set(property: string, value: any) {
-    set(this.config, property, value);
+    set(this._config, property, value);
   }
 
   has(property: string) {
-    return get(this.config, property) !== undefined;
+    return get(this._config, property) !== undefined;
   }
 }
 
