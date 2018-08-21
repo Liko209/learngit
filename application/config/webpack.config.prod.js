@@ -288,9 +288,7 @@ module.exports = {
           // https://github.com/mishoo/UglifyJS2/issues/2011
           comparisons: false
         },
-        mangle: {
-          safari10: true
-        },
+        mangle: false,
         output: {
           ecma: 5,
           comments: false,
