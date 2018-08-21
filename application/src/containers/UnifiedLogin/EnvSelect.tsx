@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-21 16:31:06
+ * Copyright © RingCentral. All rights reserved.
+ */
 import * as React from 'react';
 import { service } from 'sdk';
 import Config from '@/config';

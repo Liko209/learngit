@@ -1,6 +1,6 @@
 /*
- * @Author: Henry Xu(henry.xu@ringcentral.com)
- * @Date: 2018-08-08 13:17:10
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-21 16:30:42
  * Copyright © RingCentral. All rights reserved.
  */
 

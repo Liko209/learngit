@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-21 16:30:30
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { BlankPage } from '../page-models/BlankPage';
 import { UnifiedLoginPage } from '../page-models/UnifiedLoginPage';
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
