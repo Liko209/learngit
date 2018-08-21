@@ -3,8 +3,8 @@ import { observable, action, computed } from 'mobx';
 export default class PersonModel {
   id: number;
   @observable companyId: number;
-  @observable firstName: string;
-  @observable lastName: string;
+  @observable firstName?: string;
+  @observable lastName?: string;
   @observable headshot: string;
   @observable email: string;
   @observable rcPhoneNumbers: string[];
@@ -108,5 +108,5 @@ export default class PersonModel {
     }
   }
 
-  dispose() {} // eslint-disable-line
+  dispose() { } // eslint-disable-line
 }

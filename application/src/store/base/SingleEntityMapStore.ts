@@ -51,8 +51,8 @@ export default class SingleEntityMapStore extends BaseStore {
   }
 
   @action
-  set(property: string, value: any) {
-    this.data.set(property, value);
+  set(id: number, value: any) {
+    this.data.set(id, value);
   }
 
   @action
@@ -71,18 +71,18 @@ export default class SingleEntityMapStore extends BaseStore {
   }
 
   @action
-  remove(property: string) {
-    this.data.delete(property);
+  remove(id: number) {
+    this.data.delete(id);
   }
 
   @action
-  batchRemove(properties: string[]) {
-    properties.forEach((property) => {
-      this.remove(property);
+  batchRemove(ids: number[]) {
+    ids.forEach((id) => {
+      this.remove(id);
     });
   }
 
-  get(property: string) {
+  get(id: number) {
     if (!this.init) {
       this.init = true;
       this.getByService().then((data: any) => {
@@ -91,11 +91,11 @@ export default class SingleEntityMapStore extends BaseStore {
         }
       });
     }
-    return this.data.get(property);
+    return this.data.get(id);
   }
 
-  has(property: string) {
-    return this.data.has(property);
+  has(id: number) {
+    return this.data.has(id);
   }
 
   getSize() {
