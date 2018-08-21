@@ -1,4 +1,4 @@
-import { Presenter } from './Presenter';
+import { LeftRailPresenter } from './LeftRailPresenter';
 
 import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -16,11 +16,11 @@ import FavoriteSection from './FavoriteSection';
 type IProps = {} & RouteComponentProps<any>;
 
 class LeftRail extends Component<IProps> {
-  presenter: Presenter;
+  presenter: LeftRailPresenter;
 
   constructor(props: IProps) {
     super(props);
-    this.presenter = new Presenter();
+    this.presenter = new LeftRailPresenter();
   }
 
   render() {

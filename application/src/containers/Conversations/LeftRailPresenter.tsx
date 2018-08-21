@@ -6,7 +6,7 @@ import EntityMapStore from '@/store/base/MultiEntityMapStore';
 
 const { AccountService } = service;
 
-class Presenter extends BasePresenter {
+class LeftRailPresenter extends BasePresenter {
   @observable
   userId: number;
   accountService: AccountService;
@@ -30,5 +30,5 @@ class Presenter extends BasePresenter {
   }
 }
 
-export { Presenter };
-export default Presenter;
+export { LeftRailPresenter };
+export default LeftRailPresenter;
