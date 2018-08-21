@@ -1,4 +1,5 @@
 import config from '@/config';
+console.log('config: ', config);
 
 interface IThemeConfig {
   default: string;
@@ -6,7 +7,6 @@ interface IThemeConfig {
 }
 
 const themeConfig: IThemeConfig = config.get('theme');
-
 const defaultTheme = themeConfig.default;
 const themes = themeConfig.themes;
 
