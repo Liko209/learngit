@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 
 import { WithTheme } from '@material-ui/core/styles/withTheme';
 import { ListItem as MuiListItem } from '@material-ui/core';
@@ -60,5 +60,7 @@ const TItem = (props: ItemProps) => {
 };
 
 export const ConversationListItem = styled<ItemProps>(TItem)``;
+
+ConversationListItem.dependencies = [MuiListItem, ItemText, Presence, Umi, Icon];
 
 export default ConversationListItem;

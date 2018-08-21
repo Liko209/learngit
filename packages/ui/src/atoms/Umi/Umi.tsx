@@ -1,6 +1,5 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
-import { WithTheme } from '@material-ui/core';
+import styled, { css } from '../../styled-components';
 
 const styleWithNumber = css`
   font-size: 12px;
@@ -38,7 +37,7 @@ type UmiProps = {
   unreadCount?: number;
   important?: boolean;
   showCount?: boolean;
-} & Partial<Pick<WithTheme, 'theme'>>;
+};
 
 const countToString = (unreadCount?: number) => {
   if (!unreadCount) {
@@ -52,13 +51,11 @@ const countToString = (unreadCount?: number) => {
   return String(unreadCount);
 };
 
-const Umi = (props: UmiProps) => {
-  return (
-    <StyledUmi {...props}>
-      {countToString(props.unreadCount)}
-    </StyledUmi>
-  );
-};
+const Umi = (props: UmiProps) => (
+  <StyledUmi {...props}>
+    {countToString(props.unreadCount)}
+  </StyledUmi>
+);
 
 export { UmiProps, Umi };
 export default Umi;

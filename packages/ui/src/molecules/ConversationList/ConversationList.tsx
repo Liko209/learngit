@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
+import styled from '../../styled-components';
 
 import { List } from '@material-ui/core';
 
@@ -47,6 +47,7 @@ export class TConversationList extends React.PureComponent<ConversationListProps
     return Array.from(el.parentElement.children).indexOf(el);
   }
 }
+
 export const ConversationList = styled<ConversationListProps>(TConversationList)`
   && {
     background-color: white;
@@ -54,5 +55,7 @@ export const ConversationList = styled<ConversationListProps>(TConversationList)
     padding-bottom: 0;
   }
 `;
+
+ConversationList.dependencies = [List];
 
 export default ConversationList;

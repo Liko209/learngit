@@ -1,10 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { WithTheme } from '@material-ui/core';
 
-export type PresenceProps = {
+type PresenceProps = {
   status?: string;
-} & Partial<Pick<WithTheme, 'theme'>> & React.HTMLAttributes<HTMLDivElement>;
+} & React.HTMLAttributes<HTMLDivElement>;
 
 const PRESENCE_COLOR_MAP = {
   online: '#4cd964',
@@ -21,5 +20,7 @@ const Presence = styled<PresenceProps, 'div'>('div')`
   border-radius: 50%;
 `;
 
-export { Presence };
-export default { Presence };
+Presence.displayName = 'Presence';
+
+export { PresenceProps, Presence };
+export default Presence;

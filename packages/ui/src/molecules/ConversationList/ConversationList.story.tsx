@@ -8,6 +8,7 @@ import { action } from '@storybook/addon-actions';
 
 import Collapse from '@material-ui/core/Collapse';
 import { Icon } from '../../atoms';
+import createDependencies from '../../create-dependencies-doc';
 
 import {
   ConversationList as List,
@@ -20,9 +21,10 @@ const transition = 'all ease 0.15s';
 storiesOf('ConversationList', module)
   .addDecorator(
     backgrounds([{ name: 'slide-background', value: '#e3e3e3', default: true }]),
-)
-  .add('List', withInfo(``)(
-    () => {
+  )
+  .add('List', withInfo(`
+      ${createDependencies(List.dependencies)}
+    `)(() => {
       const width = select(
         'Width',
         {
@@ -63,8 +65,9 @@ storiesOf('ConversationList', module)
       );
     },
   ))
-  .add('Item', withInfo(``)(
-    () => {
+  .add('Item', withInfo(`
+      ${createDependencies(Item.dependencies)}
+    `)(() => {
 
       const width = select(
         'Width',

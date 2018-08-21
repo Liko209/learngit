@@ -2,15 +2,15 @@ import * as React from 'react';
 import styled from '../../styled-components';
 import MuiButton, { ButtonProps } from '@material-ui/core/Button';
 
-type TButtonProps = {} & ButtonProps;
-
-const StyledButton = styled<TButtonProps>(MuiButton)`
+const StyledButton = styled<ButtonProps>(MuiButton)`
   && {
     min-width: ${({ theme }) => theme.spacing.unit * 26}px;
   }
 `;
 
-export const Button: React.SFC<TButtonProps> = ({ innerRef, ...rest }) => {
+type IButton = { dependencies?: React.ComponentType[] } & React.SFC<ButtonProps>;
+
+const Button: IButton = ({ innerRef, ...rest }) => {
   return <StyledButton {...rest} />;
 };
 
@@ -18,5 +18,7 @@ Button.defaultProps = {
   size: 'large',
 };
 
-export { TButtonProps };
+Button.dependencies = [MuiButton];
+
+export { Button, ButtonProps };
 export default Button;
