@@ -8,8 +8,9 @@ const msgPath = process.env.GIT_PARAMS
 const msg = require('fs').readFileSync(msgPath, 'utf-8').trim()
 
 const commitRE = /^(feat|fix|docs|style|refactor|test|chore|revert)(\(.+\))?: /
+const mergeRE = /^(Merge pull request)|(Merge (.*?) into (.*?)|(Merge branch (.*?))(?:\r?\n)*$)/;
 
-if (!commitRE.test(msg)) {
+if (!commitRE.test(msg) && !mergeRE.test(msg)) {
   console.log()
   console.error(
     `  ${chalk.bgRed.dim(' ERROR ')} ${chalk.red(`invalid commit message format.`)}\n\n` +
