@@ -1,45 +1,45 @@
 const puppeteer = require('puppeteer');
+const { login } = require('./setup');
+const { getMB } = require('./utils');
 // jest.setTimeout(1000000);
+
+let TEST_TIMES = 10;
 
 const APP_URL = process.env.appUrl;
 const MAX_MEMORY = process.env.maxMemory;
 
-async function setup(page) {
-  await page.goto(APP_URL);
-  await page.select('select', 'Chris_sandbox');
-  await page.goto(APP_URL);
-  await page.click('input[name=username]');
-  await page.type('input[name=username]', '18662032065');
-  await page.click('input[name=password]');
-  await page.type('input[name=password]', 'Test!123');
-  await page.click('button');
-  await page.waitForSelector('.Resizer');
+const firstUsedMemoryAvg = [];
+const firstTotalMemoryAvg = [];
+
+const reloadUsedMemoryAvg = [];
+const reloadTotalMemoryAvg = [];
+
+const switchTabUsedMemoryAvg = [];
+const switchTabTotalMemoryAvg = [];
+function getAvg(arr) {
+  return getMB(arr.reduce((pre, next) => pre + next, 0) / TEST_TIMES) || 0;
 }
 
-function getMB(bytes) {
-  return bytes / 1024 / 1024;
-}
-
-(async () => {
+async function memoryTests() {
   try {
     const browser = await puppeteer.launch({
       args: ['--enable-precise-memory-info', '--no-sandbox'],
-      headless: false,
       ignoreHTTPSErrors: true
     });
     const page = await browser.newPage();
     page.setDefaultNavigationTimeout(60 * 1000);
     const client = await page.target().createCDPSession();
     await client.send('Performance.enable');
-    await setup(page);
+    await login(page, APP_URL, MAX_MEMORY);
     // let performance = await page.metrics();
     const {
       usedSize: firstUsedSize,
       totalSize: firstTotalSize
     } = await client.send('Runtime.getHeapUsage');
-    console.log(
-      `First login usedMemory = ${firstUsedSize} && FirstTotalSize = ${firstTotalSize}`
-    );
+
+    firstUsedMemoryAvg.push(firstUsedSize);
+    firstTotalMemoryAvg.push(firstTotalSize);
+
     await page.reload({
       waitUntil: 'load'
     });
@@ -48,9 +48,10 @@ function getMB(bytes) {
       usedSize: reloadUsedSize,
       totalSize: reloadTotalSize
     } = await client.send('Runtime.getHeapUsage');
-    console.log(
-      `Refresh loading usedMmory = ${reloadUsedSize} && TotalSize = ${reloadTotalSize}`
-    );
+
+    reloadUsedMemoryAvg.push(reloadUsedSize);
+    reloadTotalMemoryAvg.push(reloadTotalSize);
+
     const otherPage = await browser.newPage();
     await otherPage.goto('http://www.google.com');
     await otherPage.waitForSelector('#main');
@@ -59,22 +60,61 @@ function getMB(bytes) {
       usedSize: tabUsedSize,
       totalSize: tabTotalSize
     } = await client.send('Runtime.getHeapUsage');
-    console.log(
-      `Switch tab usedSize = ${tabUsedSize} && totalSize = ${tabTotalSize}`
-    );
+
+    switchTabUsedMemoryAvg.push(tabUsedSize);
+    switchTabTotalMemoryAvg.push(tabTotalSize);
+
     await otherPage.close();
     // console.log(otherPage, '------otherPage');
     // console.log(await browser.pages());
 
-    if (getMB(tabTotalSize) > MAX_MEMORY) {
-      console.error('Memory error');
-      process.exit(1);
-    } else {
-      console.log('Success!');
-    }
+    console.log(TEST_TIMES, '-----TEST success');
     await browser.close();
   } catch (e) {
-    console.error('Fail');
-    process.exit(1);
+    console.error(`Test fail: ${e}`);
+    --TEST_TIMES;
+    console.log(TEST_TIMES, '-----TEST');
+    await e;
   }
-})();
+}
+process.on('uncaughtException', function(err) {
+  console.log(err);
+});
+
+function run() {
+  const testPromiseArr = [];
+  for (let i = 0; i < TEST_TIMES; i++) {
+    testPromiseArr.push(memoryTests());
+  }
+  Promise.all(testPromiseArr)
+    .catch(e => {
+      console.log(e, '--------eeeeeee');
+    })
+    .finally(() => {
+      console.log(
+        `--------------- Finally success times: ${TEST_TIMES} --------------`
+      );
+      console.log(
+        `firstUsed: ${getAvg(firstUsedMemoryAvg)}MB firstTotalUsed: ${getAvg(
+          firstTotalMemoryAvg
+        )}MB`
+      );
+      console.log(
+        `reloadUsed: ${getAvg(reloadUsedMemoryAvg)}MB reloadTotalUsed: ${getAvg(
+          reloadTotalMemoryAvg
+        )}MB`
+      );
+      console.log(
+        `switchTabUsed: ${getAvg(
+          switchTabUsedMemoryAvg
+        )}MB switchTabTotalUsed: ${getAvg(switchTabTotalMemoryAvg)}MB`
+      );
+      if (TEST_TIMES < 5) {
+        process.exit(1);
+      } else {
+        process.exit('success');
+      }
+    });
+}
+
+run();
