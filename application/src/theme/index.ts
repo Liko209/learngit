@@ -1,5 +1,4 @@
 import config from '@/config';
-console.log('config: ', config);
 
 interface IThemeConfig {
   default: string;
