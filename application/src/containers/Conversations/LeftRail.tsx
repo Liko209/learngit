@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import styled from 'styled-components';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { Divider } from 'ui-components';
 
@@ -17,6 +18,11 @@ import { IConversationSectionPresenter }
 
 type IProps = {} & RouteComponentProps<any>;
 
+const Container = styled.div`
+  height: 100%;
+  overflow: auto;
+`;
+
 class LeftRail extends Component<IProps> {
   presenter: LeftRailPresenter;
   teamPresenter: IConversationSectionPresenter;
@@ -31,7 +37,7 @@ class LeftRail extends Component<IProps> {
 
   render() {
     return (
-      <div>
+      <Container>
         <UnreadSection />
         <Divider />
         <MentionSection />
@@ -47,7 +53,7 @@ class LeftRail extends Component<IProps> {
         <NavLink to="/messages/123">123 </NavLink>
         <NavLink to="/messages/456">456 </NavLink>
         <NavLink to="/messages/789">789 </NavLink> */}
-      </div>
+      </Container>
     );
   }
 
