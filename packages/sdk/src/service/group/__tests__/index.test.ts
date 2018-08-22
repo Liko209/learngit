@@ -137,7 +137,7 @@ describe('GroupService', () => {
     expect(result1).toEqual(mock);
   });
 
-  it.only('getLatestGroup()', async () => {
+  it('getLatestGroup()', async () => {
     const mock = { id: 1 };
     daoManager.getDao.mockReturnValueOnce(groupDao);
     daoManager.getKVDao.mockReturnValueOnce(configDao);
