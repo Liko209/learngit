@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from 'styled-components';
-import MuiMenu from '@material-ui/core/Menu';
+import MuiPopper from '@material-ui/core/Popper';
 
-const Menu = styled(MuiMenu)`
+const Popper = styled(MuiPopper)`
 `;
 
-export { Menu };
-export default { Menu };
+export { Popper };
+export default Popper;

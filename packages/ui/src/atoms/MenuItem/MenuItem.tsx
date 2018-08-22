@@ -7,10 +7,6 @@ import styled from 'styled-components';
 import MuiMenuItem from '@material-ui/core/MenuItem';
 
 const MenuItem = styled(MuiMenuItem)`
-  && {
-    font-size: 20px;
-    color: #171717;
-  }
 `;
 
 export { MenuItem };
