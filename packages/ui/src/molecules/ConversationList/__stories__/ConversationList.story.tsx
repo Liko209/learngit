@@ -194,6 +194,7 @@ storiesOf('Molecules/ConversationList', module)
       return (
         <StoryWrapper>
           <ListItem
+            data-anchor="xxxx"
             status={status}
             title={title}
             unreadCount={unreadCount}
