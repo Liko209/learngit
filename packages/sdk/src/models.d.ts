@@ -1,5 +1,4 @@
 /*
-import { BaseModel } from 'sdk/models';
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
