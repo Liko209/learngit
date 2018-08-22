@@ -96,5 +96,8 @@ export default async function stateHandleData(state: Raw<State>[]) {
   await Promise.all(savePromises);
 }
 
+export async function handlePartialData(state: Partial<MyState>[]) {
+
+}
 // export { getStates, transform };
 // export default stateHandleData;

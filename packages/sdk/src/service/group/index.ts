@@ -23,6 +23,7 @@ import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
 import { ErrorParser } from '../../utils/error';
 import handleData, {
+  handlePartialData,
   filterGroups,
   handleGroupMostRecentPostChanged,
   handleFavoriteGroupsChanged,
@@ -46,6 +47,7 @@ export default class GroupService extends BaseService<Group> {
   constructor() {
     const subscriptions = {
       [SOCKET.GROUP]: handleData,
+      [SOCKET.PARTIAL_GROUP]: handlePartialData,
       [SOCKET.POST]: handleGroupMostRecentPostChanged,
       [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
     };

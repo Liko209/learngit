@@ -79,7 +79,7 @@
     "linters": {
       "*.{ts, tsx, js, jsx}": [
         "tslint",
-        "yarn test:staged"
+        "yarn test:cover"
       ]
     },
     "ignore": [
