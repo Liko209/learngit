@@ -12,7 +12,7 @@ interface IInternalPorps {
 }
 
 interface IExternalPorps extends IInternalPorps {
-  onClick?: (event: MouseEvent) => void;
+  onClick?: (e: MouseEvent) => void;
   children: ReactNode;
 }
 
