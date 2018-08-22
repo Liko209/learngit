@@ -1,10 +1,11 @@
 import { observable, action, computed } from 'mobx';
+import { toTitleCase } from '../../utils/case';
 
 export default class PersonModel {
   id: number;
   @observable companyId: number;
-  @observable firstName?: string;
-  @observable lastName?: string;
+  @observable _firstName: string;
+  @observable _lastName: string;
   @observable headshot: string;
   @observable email: string;
   @observable rcPhoneNumbers: string[];
@@ -21,8 +22,8 @@ export default class PersonModel {
     } = model;
     this.id = id;
     this.companyId = companyId;
-    this.firstName = firstName;
-    this.lastName = lastName;
+    this._firstName = firstName;
+    this._lastName = lastName;
     this.headshot = headshot;
     this.email = email;
     this.rcPhoneNumbers = rcPhoneNumbers;
@@ -49,6 +50,22 @@ export default class PersonModel {
     };
 
     return new PersonModel(model);
+  }
+
+  @computed
+  get firstName() {
+    if (this._firstName) {
+      return toTitleCase(this._firstName);
+    }
+    return '';
+  }
+
+  @computed
+  get lastName() {
+    if (this._lastName) {
+      return toTitleCase(this._lastName);
+    }
+    return '';
   }
 
   @computed
@@ -92,10 +109,10 @@ export default class PersonModel {
       this.companyId = companyId;
     }
     if (firstName) {
-      this.firstName = firstName;
+      this._firstName = firstName;
     }
     if (lastName) {
-      this.lastName = lastName;
+      this._lastName = lastName;
     }
     if (headshot) {
       this.headshot = headshot;
