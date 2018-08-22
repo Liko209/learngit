@@ -16,16 +16,17 @@ const styleHiddenWhenNoCount = css`
 
 const styleCount = css`
   font-size: 12px;
-  height: 16px;
-  line-height: 16px;
+  line-height: 18px;
+  text-align: center;
   color: white;
   ${styleHiddenWhenNoCount}
 `;
 
 const styleDot = css`
   font-size: 0;
-  height: 8px;
-  line-height: 8px;
+  height: 10px;
+  width: 10px;
+  line-height: 10px;
   color: transparent;
 `;
 
@@ -47,7 +48,8 @@ const styles = {
 
 const StyledUmi = styled<UmiProps, 'span'>('span')`
   display: inline-block;
-  padding: 0 4px;
+  width: ${ props => String(props.unreadCount).length === 1 ? 18 + 'px' : (String(props.unreadCount).length === 2 ? 22 + 'px' : 28 + 'px') };
+  height: 18px;
   border-radius: 8px;
   margin-right: 2px;
   transition-property: font-size, height, line-height, color;
@@ -55,7 +57,6 @@ const StyledUmi = styled<UmiProps, 'span'>('span')`
   transition-duration: 150ms;
   background: ${ ({ important }) => important ? '#ff8800' : '#69a3eb'};
   ${({ variant = 'count' }) => styles[variant]}
-
 `;
 
 type UmiProps = {
@@ -73,7 +74,6 @@ class Umi extends PureComponent<UmiProps> {
 
   render() {
     const text = this.props.variant === 'dot' ? '1' : countToString(this.props.unreadCount);
-
     return (
       <StyledUmi {...this.props}>
         {text}

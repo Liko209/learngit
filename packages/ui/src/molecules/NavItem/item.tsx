@@ -27,6 +27,9 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({ className : 'left-lis
        span {
           color: ${({ theme }) => theme.palette.grey[700]};
        }
+       .nav-icon {
+        color: ${({ theme }) => theme.palette.grey[700]}; // 500
+     }
     }
   }
   &&:hover {
@@ -72,9 +75,6 @@ const UMI = styled<TUMIProps>(CustomUMI)`
     position: ${props => !props.expand ? 'absolute' : 'static'};
     top: ${props => !props.expand ? '6px' : ''};
     left: ${props => !props.expand ? '34px' : ''};
-    width: auto;
-    height: auto;
-    padding: 1px 5px;
     border-radius: ${({ theme }) => theme.shape.borderRadius * 6 + 'px'};
     transition: opacity .2s ease;
     transform: scale(.85);
