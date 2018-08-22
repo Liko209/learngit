@@ -61,7 +61,7 @@ export default class OrderListPresenter extends BasePresenter {
       } else if (type === 'replaceAll') {
         matchedKeys.forEach((key) => {
           const model = entities.get(key) as IEntity;
-          const { data } = model;
+          const data = model;
           if (this.isMatchedFunc(data)) {
             const idSortKey = this.transformFunc(data);
             matchedIDSortKeyArray.push(idSortKey);

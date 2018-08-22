@@ -21,28 +21,39 @@ interface IProps {
 
 interface IState {
 }
-
 @observer
 export default class ConversationListItemCell extends React.Component<IProps, IState>{
+  id: number;
+  displayName: string;
+  unreadCount: number;
+  showCount: boolean;
+  status: string;
   groupStore: MultiEntityMapStore | SingleEntityMapStore;
   constructor(props: IProps) {
     super(props);
+    this.id = props.id;
+    this.displayName = '';
+    this.unreadCount = 0;
+    this.showCount = false;
+    this.status = '';
     this.groupStore = storeManager.getEntityMapStore(props.entityName);
   }
 
-  getPropsForRender() {
-    const id = this.props.id;
-    const group: GroupModel = this.groupStore.get(id);
-    const status = '';
-    const unreadCount = 0;
-    return { unreadCount, status, title:group.setAbbreviation, showCount:!group.isTeam, key: id  };
+  getDataFromStore() {
+    const group: GroupModel = this.groupStore.get(this.id);
+    this.displayName = group.setAbbreviation;
+    this.showCount = !group.isTeam; // || at_mentions
+    this.status = ''; // should get from state store
   }
 
   render() {
-    const props = this.getPropsForRender();
+    this.getDataFromStore();
     return (
       <ConversationListItem
-        {...props}
+        key={this.id}
+        title={this.displayName}
+        unreadCount={this.unreadCount}
+        showCount={this.showCount}
       />
     );
   }

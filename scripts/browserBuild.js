@@ -22,6 +22,19 @@ const rollupUglifyEs = require('rollup-plugin-uglify-es');
 const rollupTslint = require('rollup-plugin-tslint');
 const dtsGenerator = require('dts-generator');
 
+const filenameToMid = (function () {
+	if (path.sep === '/') {
+		return function (filename) {
+			return filename;
+		};
+	} else {
+		const separatorExpression = new RegExp(path.sep.replace('\\', '\\\\'), 'g');
+		return function (filename) {
+			return filename.replace(separatorExpression, '/');
+		};
+	}
+})();
+
 function browserBuild(p, pkgName, entryPath, destination, format = 'umd', multipleEntry = false) {
   if (!multipleEntry) {
     dtsGenerator.default({
@@ -33,6 +46,14 @@ function browserBuild(p, pkgName, entryPath, destination, format = 'umd', multip
         const { currentModuleId } = params;
         if (currentModuleId.indexOf('/index') !== -1) {
           return `${pkgName}/${currentModuleId.slice(0, currentModuleId.indexOf('/index'))}`;
+        }
+      },
+      resolveModuleImport: params => {
+        const { importedModuleId, currentModuleId } = params;
+        const index = importedModuleId.search(/\.d$/);
+        if (index !== -1) {
+          const resolved = `${pkgName}/${filenameToMid(path.join(path.dirname(currentModuleId), importedModuleId.slice(0, index)))}`;
+          return  resolved;
         }
       }
     });

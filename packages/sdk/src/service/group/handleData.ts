@@ -16,6 +16,7 @@ import { transform } from '../utils';
 import { Group, Post, Raw, Profile } from '../../models';
 import { GROUP_QUERY_TYPE } from '../constants';
 import StateService from '../state';
+import { mainLogger } from 'foundation';
 
 async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
   const transformedData: (Group | null)[] = await Promise.all(
@@ -136,6 +137,7 @@ export default async function handleData(groups: Raw<Group>[]) {
 }
 
 async function doFavoriteGroupsNotification(favIds: number[]) {
+  mainLogger.debug(`-------doFavoriteGroupsNotification--------`);
   if (favIds.length) {
     const dao = daoManager.getDao(GroupDao);
     let groups = await dao.queryGroupsByIds(favIds);
@@ -151,7 +153,7 @@ function sortFavoriteGroups(ids: number[], groups: Group[]): Group[] {
   for (let i = 0; i < ids.length; i += 1) {
     for (let j = 0; j < groups.length; j += 1) {
       if (ids[i] === groups[j].id) {
-        result.push(groups[i]);
+        result.push(groups[j]);
         break;
       }
     }
@@ -160,10 +162,11 @@ function sortFavoriteGroups(ids: number[], groups: Group[]): Group[] {
 }
 
 async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Profile) {
+  mainLogger.debug(`---------handleFavoriteGroupsChanged---------`);
   if (oldProfile && newProfile) {
     const oldIds = oldProfile.favorite_group_ids || [];
     const newIds = newProfile.favorite_group_ids || [];
-    if (oldIds.sort().toString() !== newIds.sort().toString()) {
+    if (oldIds.toString() !== newIds.toString()) {
       const moreFavorites: number[] = _.difference(newIds, oldIds);
       const moreNormals: number[] = _.difference(oldIds, newIds);
       const dao = daoManager.getDao(GroupDao);
@@ -257,4 +260,5 @@ export {
   handleGroupMostRecentPostChanged,
   saveDataAndDoNotification,
   filterGroups,
+  sortFavoriteGroups,
 };
