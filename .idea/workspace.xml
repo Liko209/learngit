@@ -2,11 +2,33 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d43a8fc2-d559-48e9-8f63-c620b3677f48" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/config/theme/default.json" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/config/theme/default.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/ui/src/molecules/NavItem/icon.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/ui/src/molecules/NavItem/icon.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/src/containers/Layout/HorizonButton.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/src/containers/Layout/HorizonPanel.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/src/containers/Layout/HorizonResizer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/src/containers/Layout/Layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/src/containers/Layout/TreeLayout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/src/containers/Layout/TwoLayout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/src/containers/Layout/Vertical.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/src/containers/Layout/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/src/containers/Layout/optimizedResize.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/application/src/containers/Layout/utils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/application/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/application/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/containers/Conversation/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/containers/Conversations/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/containers/Conversations/LeftRail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/containers/Conversations/LeftRail.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/containers/Home/Wrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/containers/Home/Wrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/containers/Home/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/containers/Home/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/containers/LayoutRoute/Left.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/containers/LayoutRoute/Main.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/containers/LayoutRoute/Right.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/containers/LayoutRoute/Wrapper.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/containers/LayoutRoute/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/containers/LayoutRoute/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoDevOps/1.InstallDeps.sh" beforeDir="false" afterPath="$PROJECT_DIR$/autoDevOps/1.InstallDeps.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoDevOps/_Init.sh" beforeDir="false" afterPath="$PROJECT_DIR$/autoDevOps/_Init.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/ui/src/molecules/NavItem/item.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/ui/src/molecules/NavItem/item.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/ui/src/molecules/NavItem/leftNav.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/ui/src/molecules/NavItem/leftNav.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/ui/src/theme/ThemeProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/ui/src/theme/ThemeProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tslint.json" beforeDir="false" afterPath="$PROJECT_DIR$/tslint.json" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -29,23 +51,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="item.tsx" pinned="false" current-in-tab="false">
+      <file leaf-file-name="item.tsx" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/packages/ui/src/molecules/NavItem/item.tsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="301">
-              <caret line="52" column="37" selection-start-line="52" selection-start-column="37" selection-end-line="52" selection-end-column="37" />
-              <folding>
-                <element signature="e#0#26#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="icon.tsx" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/packages/ui/src/molecules/NavItem/icon.tsx">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="175">
-              <caret line="15" column="2" lean-forward="true" selection-start-line="15" selection-start-column="2" selection-end-line="15" selection-end-column="2" />
+            <state relative-caret-position="117">
+              <caret line="27" column="24" selection-start-line="27" selection-start-column="24" selection-end-line="27" selection-end-column="24" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -77,12 +87,10 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>purple</find>
       <find>#f5f5f5</find>
       <find>NavIcon</find>
       <find>active</find>
       <find>isEx</find>
-      <find>left-item-focus</find>
       <find>ListItem</find>
       <find>impo</find>
       <find>important</find>
@@ -107,6 +115,8 @@
       <find>D7EBF4</find>
       <find>0684BD</find>
       <find>bfbfbf</find>
+      <find>ListLink</find>
+      <find>left-item-focus</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -165,8 +175,8 @@
         <option value="$PROJECT_DIR$/application/src/containers/ThemeProvider/index.tsx" />
         <option value="$PROJECT_DIR$/packages/ui/src/theme/ThemeProvider.tsx" />
         <option value="$PROJECT_DIR$/application/node_modules/ui-components/theme/ThemeProvider.js" />
-        <option value="$PROJECT_DIR$/packages/ui/src/molecules/NavItem/item.tsx" />
         <option value="$PROJECT_DIR$/packages/ui/src/molecules/NavItem/icon.tsx" />
+        <option value="$PROJECT_DIR$/packages/ui/src/molecules/NavItem/item.tsx" />
       </list>
     </option>
   </component>
@@ -217,49 +227,6 @@
             <path>
               <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
               <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="molecules" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="molecules" type="462c0819:PsiDirectoryNode" />
-              <item name="NavItem" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Fiji" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Fiji" type="462c0819:PsiDirectoryNode" />
-              <item name="packages" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="theme" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -323,12 +290,12 @@
       <workItem from="1534468027141" duration="17303000" />
       <workItem from="1534726916723" duration="12043000" />
       <workItem from="1534747294785" duration="8714000" />
-      <workItem from="1534899765002" duration="12425000" />
+      <workItem from="1534899765002" duration="13631000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="176195000" />
+    <option name="totallyTimeSpent" value="177401000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1773" y="-14" width="1440" height="833" extended-state="0" />
@@ -397,13 +364,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/packages/ui/src/molecules/index.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="42">
-          <caret line="2" selection-start-line="2" selection-end-line="2" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/test.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="169">
@@ -791,16 +751,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/packages/ui/src/molecules/NavItem/item.tsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="301">
-          <caret line="52" column="37" selection-start-line="52" selection-start-column="37" selection-end-line="52" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/packages/ui/src/theme/config/default.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="72">
@@ -808,10 +758,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/application/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="29" column="33" lean-forward="true" selection-start-line="29" selection-start-column="33" selection-end-line="29" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/packages/ui/src/molecules/NavItem/icon.tsx">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="15" column="2" lean-forward="true" selection-start-line="15" selection-start-column="2" selection-end-line="15" selection-end-column="2" />
+        <state relative-caret-position="189">
+          <caret line="9" column="25" lean-forward="true" selection-start-line="9" selection-start-column="25" selection-end-line="9" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/ui/src/molecules/NavItem/item.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="117">
+          <caret line="27" column="24" selection-start-line="27" selection-start-column="24" selection-end-line="27" selection-end-column="24" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
           </folding>

@@ -21,9 +21,12 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({ className : 'left-lis
     outline: none;
   }
   // In order to make sure use tab switch nav
-  &.left-item-focus {
+  &&.left-item-focus {
     .left-link {
        background: ${props => props.color};
+       span {
+          color: ${({ theme }) => theme.palette.grey[700]};
+       }
     }
   }
   &&:hover {
@@ -121,6 +124,7 @@ const Item = ((props: TNavItemProps) => {
       button={true}
       tabIndex={-1}
       active={active}
+      data-author={title}
       disableRipple={true}
       focusVisibleClassName={'left-item-focus'}
       disableGutters={true}

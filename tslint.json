@@ -16,14 +16,20 @@
     "import-name": [
       false
     ],
+    "jsx-no-multiline-js": [
+      false
+    ],
+    "max-line-length": [
+      true,
+      200
+    ],
     "function-name": [
       true,
       {
         "private-method-regex": "^_[a-zA-Z0-9]+$",
         "static-method-regex": "^[a-z][\\w\\d]+$"
       }
-    ],
-    "jsx-no-multiline-js": false
+    ]
   },
   "jsRules": {
     "no-empty": true
