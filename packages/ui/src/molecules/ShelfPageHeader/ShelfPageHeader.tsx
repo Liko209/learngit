@@ -44,7 +44,7 @@ const StyledShelfPageHeader = styled<ShelfPageHeaderProps>(BasePageHeader)`
 const TitleWrapper = styled<TypographyProps>(Typography)`
   && {
     font-size: ${({ theme }) => theme.typography.title.fontSize};
-    font-weight: ${({ theme }) => theme.typography.title.fontWeight};;
+    font-weight: ${({ theme }) => theme.typography.title.fontWeight};
     font-family: ${({ theme }) => theme.typography.title.fontFamily};
     color: ${({ theme }) => theme.palette.grey[700]};
     white-space: nowrap;

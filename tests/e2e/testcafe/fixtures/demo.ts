@@ -11,11 +11,11 @@ import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
 import { SITE_URL, SITE_ENV } from '../config';
 
 import { formalName } from '../libs/filter';
-import { setUp, tearDown, TestHelper} from '../libs/helpers';
+import { setUp, tearDown, TestHelper } from '../libs/helpers';
 
-fixture('Demo')
+fixture.skip('Demo')
   .beforeEach(setUp('rcBetaUserAccount'))
-  .afterEach(tearDown())
+  .afterEach(tearDown());
 
 test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
   const helper = TestHelper.from(t);
@@ -29,7 +29,7 @@ test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
   );
 
   const client702 = await helper.glipApiManager.getClient(helper.users.user702, helper.companyNumber);
-  await client702.sendPost(helper.teams.team1_u1_u2.glip_id, {text: 'hello world'});
+  await client702.sendPost(helper.teams.team1_u1_u2.glip_id, { text: 'hello world' });
 
   await (page = page
     .shouldNavigateTo(RingcentralSignInNavigationPage)

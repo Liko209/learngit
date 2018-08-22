@@ -3,13 +3,14 @@ import { service } from 'sdk';
 import storeManager, { ENTITY_NAME } from '@/store';
 import BasePresenter from '@/store/base/BasePresenter';
 import EntityMapStore from '@/store/base/MultiEntityMapStore';
+import { AccountService as IAccountService } from 'sdk/service';
 
 const { AccountService } = service;
 
 class LeftRailPresenter extends BasePresenter {
   @observable
-  userId: number;
-  accountService: AccountService;
+  userId: number|null;
+  accountService: IAccountService;
   personStore: EntityMapStore;
   companyStore: EntityMapStore;
 
