@@ -59,16 +59,14 @@ export default class OrderListPresenter extends BasePresenter {
           notMatchedKeys.push(key);
         });
       } else if (type === 'replaceAll') {
-        matchedKeys.forEach((key) => {
-          const model = entities.get(key) as IEntity;
-          const data = model;
+        entities.forEach((data) => {
           if (this.isMatchedFunc(data)) {
             const idSortKey = this.transformFunc(data);
             matchedIDSortKeyArray.push(idSortKey);
             matchedEntities.push(data);
           }
-          notMatchedKeys.concat(this.store.getIds());
         });
+        notMatchedKeys.push(...existKeys);
       } else {
         matchedKeys.forEach((key) => {
           const model = entities.get(key) as IEntity;
@@ -92,9 +90,9 @@ export default class OrderListPresenter extends BasePresenter {
           }
         }
       });
+      this.store.batchRemove(notMatchedKeys);
       this.updateEntityStore(entityName, matchedEntities);
       this.store.batchSet(matchedIDSortKeyArray);
-      this.store.batchRemove(notMatchedKeys);
     }
 
     // this.store.dump();

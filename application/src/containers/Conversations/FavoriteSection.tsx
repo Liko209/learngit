@@ -54,7 +54,13 @@ class FavoriteSection extends React.Component<IProps, IState> {
     return (
       <SortableList distance={distance} onSortEnd={this._handleSortEnd} lockAxis="y">
         {this.ids.map((id, index) => (
-          <SortableItem id={id} key={id} index={index} entityName={ENTITY_NAME.GROUP} />
+          <SortableItem
+            id={id}
+            key={id}
+            index={index}
+            entityName={ENTITY_NAME.GROUP}
+            isFavorite={true}
+          />
         ))}
       </SortableList>
     );
