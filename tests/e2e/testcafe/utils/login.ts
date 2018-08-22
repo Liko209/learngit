@@ -13,7 +13,6 @@ import { MainPage } from '../page-models/MainPage';
 
 function login(t: TestController) {
   const helper = TestHelper.from(t);
-
   return new BlankPage(t)
     .open(SITE_URL)
     .shouldNavigateTo(UnifiedLoginPage)

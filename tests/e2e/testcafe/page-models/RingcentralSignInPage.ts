@@ -22,7 +22,7 @@ export class RingcentralSignInPage extends BasePage {
   }
 
   get signInButton(): Selector {
-    return Selector('*[data-test-automation-id="signInBtn"]');
+    return Selector('[data-test-automation-id="signInBtn"]');
   }
 
   setCredential(credential: string): this {

@@ -9,9 +9,9 @@ const  { GROUP_QUERY_TYPE, ENTITY, GroupService } = service;
 export default class TeamListPresenter extends OrderListPresenter
  implements IConversationSectionPresenter {
   public iconName:string = 'people';
-  public title:string = 'Team';
+  public title:string = 'Teams';
   public entityName = ENTITY_NAME.GROUP;
-  public anchor = 'Team';
+  public anchor = 'Teams';
   constructor() {
     super(
       new OrderListStore(`ConversationList: ${GROUP_QUERY_TYPE.TEAM}`),
