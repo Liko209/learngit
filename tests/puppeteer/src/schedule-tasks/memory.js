@@ -65,56 +65,55 @@ async function memoryTests() {
     switchTabTotalMemoryAvg.push(tabTotalSize);
 
     await otherPage.close();
-    // console.log(otherPage, '------otherPage');
-    // console.log(await browser.pages());
 
-    console.log(TEST_TIMES, '-----TEST success');
+    // console.log(TEST_TIMES, '-----TEST success');
     await browser.close();
   } catch (e) {
     console.error(`Test fail: ${e}`);
     --TEST_TIMES;
-    console.log(TEST_TIMES, '-----TEST');
+    // console.log(TEST_TIMES, '-----TEST');
     await e;
   }
 }
-process.on('uncaughtException', function(err) {
-  console.log(err);
-});
 
 function run() {
   const testPromiseArr = [];
   for (let i = 0; i < TEST_TIMES; i++) {
     testPromiseArr.push(memoryTests());
   }
-  Promise.all(testPromiseArr)
-    .catch(e => {
-      console.log(e, '--------eeeeeee');
-    })
-    .finally(() => {
-      console.log(
-        `--------------- Finally success times: ${TEST_TIMES} --------------`
-      );
-      console.log(
-        `firstUsed: ${getAvg(firstUsedMemoryAvg)}MB firstTotalUsed: ${getAvg(
-          firstTotalMemoryAvg
-        )}MB`
-      );
-      console.log(
-        `reloadUsed: ${getAvg(reloadUsedMemoryAvg)}MB reloadTotalUsed: ${getAvg(
-          reloadTotalMemoryAvg
-        )}MB`
-      );
-      console.log(
-        `switchTabUsed: ${getAvg(
-          switchTabUsedMemoryAvg
-        )}MB switchTabTotalUsed: ${getAvg(switchTabTotalMemoryAvg)}MB`
-      );
-      if (TEST_TIMES < 5) {
-        process.exit(1);
-      } else {
-        process.exit('success');
+  Promise.all(testPromiseArr).finally(() => {
+    console.log(
+      `--------------- Finally success times: ${TEST_TIMES} --------------`
+    );
+
+    const firstUsedMemory = `${getAvg(firstUsedMemoryAvg)}MB`;
+    const firstTotalUsedMemory = `${getAvg(firstTotalMemoryAvg)}MB`;
+
+    const reloadUsed = `${getAvg(reloadUsedMemoryAvg)}MB`;
+    const reloadTotal = `${getAvg(reloadTotalMemoryAvg)}MB`;
+
+    const switchTabUsed = `${getAvg(switchTabUsedMemoryAvg)}MB`;
+    const switchTabTotal = `${getAvg(switchTabTotalMemoryAvg)}MB`;
+
+    console.log(
+      `firstUsed: ${firstUsedMemory} firstTotalUsed: ${firstTotalUsedMemory}`
+    );
+    console.log(`reloadUsed: ${reloadUsed} reloadTotalUsed: ${reloadTotal}`);
+    console.log(
+      `switchTabUsed: ${switchTabUsed} switchTabTotalUsed: ${switchTabTotal}`
+    );
+    if (TEST_TIMES < 5) {
+      process.exit(1);
+    } else {
+      if (firstTotalUsedMemory > MAX_MEMORY) {
       }
-    });
+      if (reloadTotal > MAX_MEMORY) {
+      }
+      if (switchTabTotal > MAX_MEMORY) {
+      }
+      process.exit(0);
+    }
+  });
 }
 
 run();
