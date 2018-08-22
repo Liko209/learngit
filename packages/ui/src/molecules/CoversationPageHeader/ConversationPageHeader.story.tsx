@@ -1,3 +1,8 @@
+/*
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-08-22 15:23:24
+ * Copyright © RingCentral. All rights reserved.
+ */
 /// <reference path="../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import styled from 'styled-components';

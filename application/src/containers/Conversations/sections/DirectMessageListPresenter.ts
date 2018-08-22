@@ -1,3 +1,8 @@
+/*
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-08-22 15:21:39
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { service } from 'sdk';
 import ConversationListPresenter from './ConversationListPresenter';
 const { GROUP_QUERY_TYPE, ENTITY, AccountService } = service;

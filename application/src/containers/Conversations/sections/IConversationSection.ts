@@ -1,3 +1,8 @@
+/*
+ * @Author: Andy Hu (andy.hu@ringcentral.com)
+ * @Date: 2018-08-22 15:22:05
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { ENTITY_NAME } from '../../../store';
 import OrderListPresenter from '@/store/base/OrderListPresenter';
 

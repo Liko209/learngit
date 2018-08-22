@@ -1,3 +1,8 @@
+/*
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-08-22 15:21:30
+ * Copyright © RingCentral. All rights reserved.
+ */
 import OrderListPresenter from '../../../store/base/OrderListPresenter';
 import OrderListStore from '../../../store/base/OrderListStore';
 import { ENTITY_NAME } from '../../../store';

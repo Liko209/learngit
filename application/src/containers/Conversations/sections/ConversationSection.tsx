@@ -1,3 +1,8 @@
+/*
+ * @Author: Andy Hu (andy.hu@ringcentral.com)
+ * @Date: 2018-08-22 15:21:35
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import { observer } from 'mobx-react';
 import {
