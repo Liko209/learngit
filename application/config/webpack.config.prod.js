@@ -147,7 +147,7 @@ module.exports = {
           },
           // Compile .tsx?
           {
-            test: /\.(ts|tsx)$/,
+            test: /\.(js|jsx|ts|tsx)$/,
             include: paths.appSrc,
             use: [
               {
@@ -288,9 +288,7 @@ module.exports = {
           // https://github.com/mishoo/UglifyJS2/issues/2011
           comparisons: false
         },
-        mangle: {
-          safari10: true
-        },
+        mangle: false,
         output: {
           ecma: 5,
           comments: false,
@@ -322,11 +320,11 @@ module.exports = {
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     // Perform type checking and linting in a separate process to speed up compilation
-    // new ForkTsCheckerWebpackPlugin({
-    //   async: false,
-    //   tsconfig: paths.appTsProdConfig,
-    //   tslint: paths.appTsLint
-    // }),
+    new ForkTsCheckerWebpackPlugin({
+      async: false,
+      tsconfig: paths.appTsProdConfig,
+      tslint: paths.appTsLint
+    }),
     // generate service worker
     new GenerateSW({
       skipWaiting: true,

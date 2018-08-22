@@ -6,8 +6,8 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import Badge from '@/components/Badge';
-import storeManager, { ENTITY_NAME } from '@/store';
+import Badge from '#/components/Badge';
+import storeManager, { ENTITY_NAME } from '#/store';
 
 export default observer((props) => {
   const { id } = props;

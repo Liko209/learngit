@@ -8,13 +8,13 @@ import StateDao from '../../dao/state';
 import GroupStateDao from '../../dao/groupState';
 import notificationCenter from '../../service/notificationCenter';
 import { ENTITY } from '../../service/eventKey';
-import { MyState, GroupState, Raw } from '../../models';
+import { State, GroupState, Raw } from '../../models';
 
-export type TransformedState = MyState & {
+export type TransformedState = State & {
   groupState: GroupState[];
 };
 
-export function transform(item: Raw<MyState>): TransformedState {
+export function transform(item: Raw<State>): TransformedState {
   const clone = Object.assign({}, item);
   const groupIds = new Set();
   const groupStates = {};
@@ -57,9 +57,9 @@ export function transform(item: Raw<MyState>): TransformedState {
   /* eslint-enable no-underscore-dangle */
 }
 
-export function getStates(state: Raw<MyState>[]) {
+export function getStates(state: Raw<State>[]) {
   const transformedData: TransformedState[] = [];
-  const myState: MyState[] = [];
+  const myState: State[] = [];
   let groupStates: GroupState[] = [];
 
   state.forEach((item) => {
@@ -69,13 +69,13 @@ export function getStates(state: Raw<MyState>[]) {
     groupStates = groupStates.concat(groupState);
 
     if (Object.keys(rest).length) {
-      myState.push(rest as MyState);
+      myState.push(rest);
     }
   });
   return { myState, groupStates, transformedData };
 }
 
-export default async function stateHandleData(state: Raw<MyState>[]) {
+export default async function stateHandleData(state: Raw<State>[]) {
   if (state.length === 0) {
     return;
   }

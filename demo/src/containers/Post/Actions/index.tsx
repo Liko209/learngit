@@ -6,8 +6,8 @@
  */
 import React, { Component } from 'react';
 import { service } from 'sdk';
-import storeManager, { ENTITY_NAME } from '@/store';
-import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import storeManager, { ENTITY_NAME } from '#/store';
+import MultiEntityMapStore from '#/store/base/MultiEntityMapStore';
 import Edit from './Edit';
 import Like from './Like';
 import Delete from './Delete';

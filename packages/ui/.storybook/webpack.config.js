@@ -7,7 +7,6 @@
 // to "React Create App". This only has babel loader to load JavaScript.
 const path = require("path");
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const TSDocgenPlugin = require("react-docgen-typescript-webpack-plugin");
 const HappyPack = require('happypack');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
@@ -26,6 +25,9 @@ module.exports = (baseConfig, env, config) => {
         {
           path: 'ts-loader',
           query: { happyPackMode: true }
+        },
+        {
+          path: 'react-docgen-typescript-loader',
         }
       ]
     })
@@ -35,7 +37,6 @@ module.exports = (baseConfig, env, config) => {
       checkSyntacticErrors: true
     })
   );
-  config.plugins.push(new TSDocgenPlugin());
   config.resolve.plugins = [
     new TsconfigPathsPlugin({ configFile: path.resolve(__dirname, "../tsconfig.json") }),
   ];

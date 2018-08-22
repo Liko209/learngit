@@ -5,7 +5,7 @@
  */
 import { Markdown } from 'glipdown';
 
-import { getGroupName } from '@/utils/groupName';
+import { getGroupName } from '#/utils/groupName';
 
 import { glipdown2html } from '../../containers/Post/utils';
 

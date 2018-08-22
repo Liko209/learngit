@@ -5,7 +5,10 @@
  */
 import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
-import { LAST_INDEX_TIMESTAMP, SOCKET_SERVER_HOST } from '../../dao/config/constants';
+import {
+  LAST_INDEX_TIMESTAMP,
+  SOCKET_SERVER_HOST,
+} from '../../dao/config/constants';
 import { ErrorParser } from '../../utils/error';
 import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
@@ -21,6 +24,7 @@ import stateHandleData from '../state/handleData';
 import { IndexDataModel } from '../../api/glip/user';
 import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
+import featureFlag from '../../component/featureFlag';
 
 const dispatchIncomingData = (data: IndexDataModel) => {
   const {
@@ -36,7 +40,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     teams = [],
     posts = [],
     max_posts_exceeded: maxPostsExceeded = false,
-    client_config: clientConfig,
+    client_config: clientConfig = {},
   } = data;
 
   const arrState: any[] = [];
@@ -53,13 +57,13 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     accountHandleData({
       userId,
       companyId,
-      clientConfig,
       profileId: profile ? profile._id : undefined,
-    }),
+    }), // eslint-disable-line no-underscore-dangle, no-undefined
     companyHandleData(companies),
     itemHandleData(items),
     presenceHandleData(presences),
     stateHandleData(arrState),
+    featureFlag.handleData(clientConfig),
   ])
     .then(() => profileHandleData(arrProfile))
     .then(() => personHandleData(people))
@@ -68,32 +72,36 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     .then(() => postHandleData(posts, maxPostsExceeded));
 };
 
-const handleData = async (result: IResponse<IndexDataModel>) => {
+const handleData = async (
+  result: IResponse<IndexDataModel>,
+  shouldSaveScoreboard: boolean = true,
+) => {
   try {
     if (!(result instanceof Object) || !(result.data instanceof Object)) {
       return; // sometimes indexData return false
     }
-    // logger.time('handle index data');
-    await dispatchIncomingData(result.data);
-    // logger.timeEnd('handle index data');
-
     const { timestamp = null, scoreboard = null } = result.data;
     const configDao = daoManager.getKVDao(ConfigDao);
 
+    if (scoreboard && shouldSaveScoreboard) {
+      configDao.put(SOCKET_SERVER_HOST, scoreboard);
+      notificationCenter.emitConfigPut(CONFIG.SOCKET_SERVER_HOST, scoreboard);
+    }
+    // logger.time('handle index data');
+    await dispatchIncomingData(result.data);
+    // logger.timeEnd('handle index data');
     if (timestamp) {
       configDao.put(LAST_INDEX_TIMESTAMP, timestamp);
       notificationCenter.emitConfigPut(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
     }
-    if (scoreboard) {
-      configDao.put(SOCKET_SERVER_HOST, scoreboard);
-      notificationCenter.emitConfigPut(CONFIG.SOCKET_SERVER_HOST, scoreboard);
-    }
 
     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_DONE);
+
   } catch (error) {
     mainLogger.error(error);
-    notificationCenter
-      .emitService(SERVICE.FETCH_INDEX_DATA_ERROR, { error: ErrorParser.parse(error) });
+    notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, {
+      error: ErrorParser.parse(error),
+    });
   }
 };
 

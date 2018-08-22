@@ -1,12 +1,11 @@
 /*
  * @Author: Lily.li (lily.li@ringcentral.com)
  * @Date: 2018-05-15 13:24:31
- * @Last Modified by: Lily.li (lily.li@ringcentral.com)
- * @Last Modified time: 2018-06-07 12:32:21
+ * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { GLOBAL_STORE_DATA, ACTIONS_TYPE } from '@/constants';
-import storeManager from '@/store';
+import { GLOBAL_STORE_DATA, ACTIONS_TYPE } from '#/constants';
+import storeManager from '#/store';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -35,8 +34,8 @@ export default class EditActions extends Component<Props> {
     const { postId } = this.props;
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_STORE_DATA.MODIFY_POST, {
+      postId,
       type: ACTIONS_TYPE.EDIT,
-      postId
     });
   }
   render() {

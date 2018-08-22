@@ -26,7 +26,7 @@ export default class GlobalStore extends BaseStore {
 
   @action
   batchRemove(keys: any[]) {
-    keys.forEach(key => {
+    keys.forEach((key) => {
       this.remove(key);
     });
   }

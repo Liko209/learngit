@@ -85,7 +85,7 @@ export class SocketFSM extends StateMachine {
         },
 
         onFinishConnect() {
-          //
+
         },
 
         onFireDisconnect() {
@@ -97,7 +97,6 @@ export class SocketFSM extends StateMachine {
     });
 
     SocketFSM.instanceID += 1;
-
     this.name = `_FSM${SocketFSM.instanceID}`;
     this.logPrefix = `[${SOCKET_LOGGER} ${this.name}]`;
 
@@ -212,6 +211,7 @@ export class SocketFSM extends StateMachine {
     });
 
     this.socketClient.socket.on('system_message', (data: any) => {
+      dataDispatcher.onDataArrived(data);
       this.info(`socket-> system_message. ${data || ''}`);
     });
 

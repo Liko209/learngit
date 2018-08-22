@@ -10,33 +10,31 @@ import AccountDao from '../../dao/account';
 import { ACCOUNT_USER_ID } from '../../dao/account/constants';
 import notificationCenter from '../notificationCenter';
 import { ENTITY } from '../../service/eventKey';
-import PersonService from '../../service/person';
 import ProfileService from '../../service/profile';
 import _ from 'lodash';
 import { transform } from '../utils';
 import { Group, Post, Raw, Profile } from '../../models';
-import { mainLogger } from 'foundation';
 import { GROUP_QUERY_TYPE } from '../constants';
 import StateService from '../state';
 
-async function checkIncompleteGroupsMembers(groups: Group[]) {
-  if (groups.length) {
-    try {
-      return await Promise.all(
-        groups.map(async (group: Group) => {
-          if (group.members) {
-            const personService: PersonService = PersonService.getInstance();
-            return personService.getPersonsByIds(group.members);
-          }
-          return group;
-        }),
-      );
-    } catch (e) {
-      mainLogger.warn(`checkIncompleteGroupsMembers error: ${e}`);
-    }
-  }
-  return [];
-}
+// async function checkIncompleteGroupsMembers(groups: Group[]) {
+//   if (groups.length) {
+//     try {
+//       return await Promise.all(
+//         groups.map(async (group: Group) => {
+//           if (group.members) {
+//             const personService: PersonService = PersonService.getInstance();
+//             return personService.getPersonsByIds(group.members);
+//           }
+//           return group;
+//         }),
+//       );
+//     } catch (e) {
+//       mainLogger.warn(`checkIncompleteGroupsMembers error: ${e}`);
+//     }
+//   }
+//   return [];
+// }
 
 async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
   const transformedData: (Group | null)[] = await Promise.all(
@@ -154,10 +152,12 @@ export default async function handleData(groups: Raw<Group>[]) {
   //   dao,
   // });
   // handle deactivated data and normal data
-  const normalGroups = await saveDataAndDoNotification(data);
+  await saveDataAndDoNotification(data);
   // check all group members exist in local or not if not, should get from remote
   // seems we only need check normal groups, don't need to check deactivated data
-  await checkIncompleteGroupsMembers(normalGroups);
+  // if (shouldCheckIncompleteMembers) {
+  //   await checkIncompleteGroupsMembers(normalGroups);
+  // }
 }
 
 async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Profile) {
@@ -194,9 +194,9 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
 async function handleGroupMostRecentPostChanged(posts: Post[]) {
   const groupDao = daoManager.getDao(GroupDao);
   let validGroups: Group[] = [];
-  await groupDao.doInTransation(async () => {
+  await groupDao.doInTransaction(async () => {
     const groups: (null | Group)[] = await Promise.all(
-      posts.map(async post => {
+      posts.map(async (post) => {
         const group: null | Group = await groupDao.get(post.group_id);
         if (group) {
           group.most_recent_content_modified_at = post.modified_at;
@@ -205,7 +205,7 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
           return group;
         }
         return null;
-      })
+      }),
     );
     validGroups = groups.filter(item => item !== null) as Group[];
   });

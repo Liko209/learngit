@@ -20,6 +20,6 @@ registerConfigs.classes.forEach(config => container.registerClass(config));
 // registerConfigs.asyncClasses.forEach(config => container.registerAsyncClass(config));
 registerConfigs.constants.forEach(config => container.registerConstantValue(config));
 
-const sdk = container.get(Sdk.name);
+const sdk: Sdk  = container.get(Sdk.name);
 export { sdk as Sdk };
 export { sdk, service, utils, dao, api };
