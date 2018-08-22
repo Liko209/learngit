@@ -17,6 +17,6 @@ cd $project
 echo "Generate subDomain: $subDomain"
 
 # Init blank parameters
-addEnv SAResult='Not Lint yet' 
+addEnv SAResult='Not Lint yet'
 addEnv UTResult='Not UT yet' 
 addEnv E2EResult='Not E2E yet' 
