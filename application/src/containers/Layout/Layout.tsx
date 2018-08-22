@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, MouseEvent } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -10,6 +10,7 @@ const Wrapper = styled.div`
 type Direction = 'horizon' | 'vertical';
 
 interface IProps {
+  onClick: (event: MouseEvent) => void;
   children: any;
 }
 
@@ -98,9 +99,9 @@ class Layout extends Component<IProps, IStates> {
   windowResizeHorizon() { }
 
   render() {
-    const { children } = this.props;
+    const { onClick, children } = this.props;
     return (
-      <Wrapper>
+      <Wrapper onClick={onClick}>
         {children}
       </Wrapper>
     );

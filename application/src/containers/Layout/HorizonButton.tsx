@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import styled, { css } from 'styled-components';
 
 interface IWrapperPorps {
@@ -7,7 +7,7 @@ interface IWrapperPorps {
 }
 
 interface IButtonPorps extends IWrapperPorps {
-  onClick: () => void;
+  onClick: (event: MouseEvent) => void;
 }
 
 const Wrapper = styled.div`
@@ -16,7 +16,7 @@ const Wrapper = styled.div`
   bottom: 0;
   left: ${(props: IWrapperPorps) => `${props.offset}px`};
   right: auto;
-  z-index: 9999;
+  z-index: 8888;
   background-color: red;
   width: 10px;
   height: 20px;

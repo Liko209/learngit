@@ -2,7 +2,7 @@ import React, { Component, ComponentClass, SFC, MouseEvent as ReactMouseEvent } 
 import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
 import HorizonResizer from './HorizonResizer';
-// import HorizonButton from './HorizonButton';
+import HorizonButton from './HorizonButton';
 import { addResizeListener, removeResizeListener } from './optimizedResize';
 import { getOffsetLeft, pauseEvent } from './utils';
 
@@ -16,12 +16,12 @@ interface IStates {
   middle: number;
   left: number; // current panel width value
   right: number;
-  last_left: number; // remember last panel width value
-  last_right: number;
-  show_left_resizer: boolean; // show resizer
-  show_right_resizer: boolean;
-  show_left_button: boolean;
-  show_right_button: boolean;
+  localLeftPanelWidth: number; // remember last panel width value
+  localRightPanelWidth: number;
+  showLeftResizer: boolean; // show resizer
+  showRightResizer: boolean;
+  forceDisplayLeftPanel: boolean;
+  forceDisplayRightPanel: boolean;
   currentElement: Element | null; // Resizer(vertical line)
   currentIndex: number;
 }
@@ -29,18 +29,18 @@ interface IStates {
 class TreeLayout extends Component<IProps, IStates> {
   constructor(props: IProps) {
     super(props);
-    const last_left = localStorage.getItem('conversation_left') || '268';
-    const last_right = localStorage.getItem('conversation_right') || '268';
+    const localLeftPanelWidth = localStorage.getItem('conversation_left') || '268';
+    const localRightPanelWidth = localStorage.getItem('conversation_right') || '268';
     this.state = {
       middle: 0,
-      left: parseInt(last_left, 10),
-      right: parseInt(last_right, 10),
-      last_left: parseInt(last_left, 10),
-      last_right: parseInt(last_right, 10),
-      show_left_resizer: true,
-      show_right_resizer: true,
-      show_left_button: false,
-      show_right_button: false,
+      left: parseInt(localLeftPanelWidth, 10),
+      right: parseInt(localRightPanelWidth, 10),
+      localLeftPanelWidth: parseInt(localLeftPanelWidth, 10),
+      localRightPanelWidth: parseInt(localRightPanelWidth, 10),
+      showLeftResizer: true,
+      showRightResizer: true,
+      forceDisplayLeftPanel: false,
+      forceDisplayRightPanel: false,
       currentElement: null,
       currentIndex: -1,
     };
@@ -48,6 +48,10 @@ class TreeLayout extends Component<IProps, IStates> {
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
+    this.onClickLeftButton = this.onClickLeftButton.bind(this);
+    this.onClickRightButton = this.onClickRightButton.bind(this);
+    this.onClickLayout = this.onClickLayout.bind(this);
+    this.onClickPreventBubble = this.onClickPreventBubble.bind(this);
   }
 
   componentDidMount() {
@@ -104,11 +108,11 @@ class TreeLayout extends Component<IProps, IStates> {
       && newRightWidth <= rightMaxWidth) {
       switch (currentIndex) {
         case 0:
-          this.setState({ left: newLeftWidth, middle: newRightWidth, last_left: newLeftWidth });
+          this.setState({ left: newLeftWidth, middle: newRightWidth, localLeftPanelWidth: newLeftWidth });
           localStorage.setItem('conversation_left', String(newLeftWidth));
           break;
         case 1:
-          this.setState({ middle: newLeftWidth, right: newRightWidth, last_right: newRightWidth });
+          this.setState({ middle: newLeftWidth, right: newRightWidth, localRightPanelWidth: newRightWidth });
           localStorage.setItem('conversation_right', String(newRightWidth));
           break;
         default:
@@ -118,8 +122,8 @@ class TreeLayout extends Component<IProps, IStates> {
   }
 
   onResize() {
-    let { left, middle, right, show_left_resizer, show_right_resizer } = this.state;
-    const { last_left, last_right } = this.state;
+    let { left, middle, right, showLeftResizer, showRightResizer, forceDisplayLeftPanel, forceDisplayRightPanel } = this.state;
+    const { localLeftPanelWidth, localRightPanelWidth } = this.state;
     const nav = 72; // todo 72 is dynamic value
     const max = 1820; // todo change to 1920
     const windowWidth = window.innerWidth;
@@ -142,9 +146,9 @@ class TreeLayout extends Component<IProps, IStates> {
           left = 0;
           middle = body - nav - left - right;
         }
-        if (middle <= 400) {
-          middle = 400;
-        }
+        // if (middle <= 400) {
+        //   middle = 400;
+        // }
       }
     } else {
       // show left
@@ -153,13 +157,13 @@ class TreeLayout extends Component<IProps, IStates> {
         middle = body - nav - left - right;
       }
       if (left >= 180) {
-        if (left < last_left) {
+        if (left < localLeftPanelWidth) {
           middle = 400;
           left = body - nav - middle - right;
         }
         // ensure left value too big, because setState is micro task
-        if (left > last_left) {
-          left = last_left;
+        if (left > localLeftPanelWidth) {
+          left = localLeftPanelWidth;
           middle = body - nav - left - right;
         }
       }
@@ -169,54 +173,80 @@ class TreeLayout extends Component<IProps, IStates> {
         middle = body - nav - left - right;
       }
       if (right >= 180) {
-        if (right < last_right) {
+        if (right < localRightPanelWidth) {
           middle = 400;
           right = body - nav - left - middle;
         }
         // ensure right value too big, because setState is micro task
-        if (right > last_right) {
-          right = last_right;
+        if (right > localRightPanelWidth) {
+          right = localRightPanelWidth;
           middle = body - nav - left - right;
         }
       }
     }
 
     if (left === 0) {
-      show_left_resizer = false;
+      showLeftResizer = false;
     } else {
-      show_left_resizer = true;
+      showLeftResizer = true;
+      forceDisplayLeftPanel = false;
     }
 
     if (right === 0) {
-      show_right_resizer = false;
+      showRightResizer = false;
+      // forceDisplayRightPanel = true;
     } else {
-      show_right_resizer = true;
+      showRightResizer = true;
+      forceDisplayRightPanel = false;
     }
 
-    this.setState({ left, middle, right, show_left_resizer, show_right_resizer });
+    this.setState({ left, middle, right, showLeftResizer, showRightResizer, forceDisplayLeftPanel, forceDisplayRightPanel });
   }
 
-  onClick() {
+  onClickLeftButton(e: ReactMouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    const { forceDisplayLeftPanel } = this.state;
+    this.setState({ forceDisplayLeftPanel: !forceDisplayLeftPanel, forceDisplayRightPanel: false });
+  }
 
+  onClickRightButton(e: ReactMouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    const { forceDisplayRightPanel } = this.state;
+    this.setState({ forceDisplayLeftPanel: false, forceDisplayRightPanel: !forceDisplayRightPanel });
+  }
+
+  onClickPreventBubble(e: ReactMouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  onClickLayout() {
+    this.setState({
+      forceDisplayLeftPanel: false,
+      forceDisplayRightPanel: false,
+    });
   }
 
   render() {
     const { Left, Middle, Right } = this.props;
-    const { left, middle, right, show_left_resizer, show_right_resizer } = this.state;
+    const { left, middle, right, showLeftResizer, showRightResizer, forceDisplayLeftPanel, forceDisplayRightPanel } = this.state;
     return (
-      <Layout>
-        <HorizonPanel width={left} minWidth={180} maxWidth={360}>
+      <Layout onClick={this.onClickLayout}>
+        <HorizonPanel width={left} minWidth={180} maxWidth={360} forceDisplay={forceDisplayLeftPanel} forcePosition="left" onClick={this.onClickPreventBubble}>
           <Left />
         </HorizonPanel>
-        <HorizonResizer offset={left} onMouseDown={this.onMouseDown} show={show_left_resizer} />
+        <HorizonResizer offset={left} onMouseDown={this.onMouseDown} show={showLeftResizer} />
         <HorizonPanel width={middle} minWidth={400}>
           <Middle />
         </HorizonPanel>
-        <HorizonResizer offset={left + middle} onMouseDown={this.onMouseDown} show={show_right_resizer} />
-        {/* <HorizonButton offset={left + middle - 10} onClick={this.onClick} show={!show_right_resizer} /> */}
-        <HorizonPanel width={right} minWidth={180} maxWidth={360}>
+        <HorizonResizer offset={left + middle} onMouseDown={this.onMouseDown} show={showRightResizer} />
+        <HorizonPanel width={right} minWidth={180} maxWidth={360} forceDisplay={forceDisplayRightPanel} forcePosition="right" onClick={this.onClickPreventBubble}>
           <Right />
         </HorizonPanel>
+        <HorizonButton offset={left + (forceDisplayLeftPanel ? 180 : 0)} onClick={this.onClickLeftButton} show={!showLeftResizer} />
+        <HorizonButton offset={left + middle - 10 - (forceDisplayRightPanel ? 180 : 0)} onClick={this.onClickRightButton} show={!showRightResizer} />
       </Layout>
     );
   }

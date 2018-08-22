@@ -1,6 +1,6 @@
 import React, { Component, ComponentClass, SFC, MouseEvent } from 'react';
-import Layout from './Layout';
-import HorizonPanel from './HorizonPanel';
+// import Layout from './Layout';
+// import HorizonPanel from './HorizonPanel';
 // import HorizonResizer from './HorizonResizer';
 
 interface IProps {
@@ -40,17 +40,18 @@ class TwoLayout extends Component<IProps, IStates> {
   }
 
   render() {
-    const { Left, Right } = this.props;
+    // const { Left, Right } = this.props;
     return (
-      <Layout>
-        <HorizonPanel width={400}>
-          <Left />
-        </HorizonPanel>
-        {/* <HorizonResizer onMouseDown={this.onMouseDown} /> */}
-        <HorizonPanel width={268}>
-          <Right />
-        </HorizonPanel>
-      </Layout>
+      <div>two layout</div>
+      // <Layout>
+      //   <HorizonPanel width={400}>
+      //     <Left />
+      //   </HorizonPanel>
+      //   {/* <HorizonResizer onMouseDown={this.onMouseDown} /> */}
+      //   <HorizonPanel width={268}>
+      //     <Right />
+      //   </HorizonPanel>
+      // </Layout>
     );
   }
 }
