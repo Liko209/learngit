@@ -16,7 +16,7 @@ const createTheme = (options: ThemeOptions) =>
   createMuiTheme(options);
 
 const createThemes = () => {
-  const requireContext = require.context('./config', false, /.ts$/);
+  const requireContext = require.context('./config', false, /.(ts|js)$/);
   const themePaths = requireContext.keys();
 
   return themePaths

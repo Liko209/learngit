@@ -1,38 +1,34 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router-dom';
-
-import Wrapper from './Wrapper';
-import LeftPanel from './Left';
-import MainPanel from './Main';
-import RightPanel from './Right';
-// todo Left and Main and Right extends Panel component
+import React, { Component, ComponentClass, SFC } from 'react';
+import { Route, RouteComponentProps } from 'react-router-dom';
+import TreeLayout from '@/containers/Layout/TreeLayout';
+import TwoLayout from '@/containers/Layout/TwoLayout';
 
 interface IProps {
-  path: any;
-  left?: any;
-  main: any;
-  right?: any;
+  path: string;
+  Left?: ComponentClass | SFC;
+  Middle?: ComponentClass | SFC;
+  Right?: ComponentClass | SFC;
 }
 
-interface IStates { }
-
-class LayoutRoute extends Component<IProps, IStates>  {
+class LayoutRoute extends Component<IProps>  {
   constructor(props: IProps) {
     super(props);
-    this.state = {};
   }
 
   render() {
-    const { left: Left, main: Main, right: Right, ...rest } = this.props;
+    const { Left, Middle, Right, ...rest } = this.props;
     return (
       <Route {...rest}>
         {
-          (props: any) =>
-            <Wrapper>
-              {Left && <LeftPanel><Left /></LeftPanel>}
-              <MainPanel><Main /></MainPanel>
-              {Right && <RightPanel><Right /></RightPanel>}
-            </Wrapper>
+          (props: RouteComponentProps<any>) => {
+            if (Left && Middle && Right) {
+              return <TreeLayout Left={Left} Middle={Middle} Right={Right} />;
+            }
+            if (Left && Right) {
+              return <TwoLayout Left={Left} Right={Right} />;
+            }
+            return <div>Need at least Left and Right component</div>;
+          }
         }
       </Route>
     );
