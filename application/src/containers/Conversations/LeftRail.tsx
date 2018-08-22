@@ -3,7 +3,7 @@ import { withRouter, NavLink } from 'react-router-dom';
 
 const List = () => {
   return (
-    <div>
+    <div style={{ backgroundColor: 'green', height: '100%' }}>
       <strong>Conversation list: </strong>
       <NavLink to="/messages/123">123 </NavLink>
       <NavLink to="/messages/456">456 </NavLink>

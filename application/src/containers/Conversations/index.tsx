@@ -7,7 +7,7 @@ import RightRail from './RightRail';
 
 const Conversation = () => {
   return (
-    <TreeLayout>
+    <TreeLayout tag="conversation">
       <LeftRail />
       <Thread />
       <RightRail />

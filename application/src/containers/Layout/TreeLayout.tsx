@@ -3,10 +3,11 @@ import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
 import HorizonResizer from './HorizonResizer';
 import HorizonButton from './HorizonButton';
-import { addResizeListener, removeResizeListener } from './optimizedResize';
+import { addResizeListener, removeResizeListener } from './optimizer';
 import { getOffsetLeft, pauseEvent } from './utils';
 
 interface IProps {
+  tag: string;
   children: ReactNode[];
 }
 
@@ -14,9 +15,9 @@ interface IStates {
   middle: number;
   left: number; // current panel width value
   right: number;
-  localLeftPanelWidth: number; // remember last panel width value
+  localLeftPanelWidth: number;
   localRightPanelWidth: number;
-  showLeftResizer: boolean; // show resizer
+  showLeftResizer: boolean;
   showRightResizer: boolean;
   forceDisplayLeftPanel: boolean;
   forceDisplayRightPanel: boolean;
@@ -27,8 +28,9 @@ interface IStates {
 class TreeLayout extends Component<IProps, IStates> {
   constructor(props: IProps) {
     super(props);
-    const localLeftPanelWidth = localStorage.getItem('conversation_left') || '268';
-    const localRightPanelWidth = localStorage.getItem('conversation_right') || '268';
+    const { tag } = props;
+    const localLeftPanelWidth = localStorage.getItem(`${tag}_left`) || '268';
+    const localRightPanelWidth = localStorage.getItem(`${tag}_right`) || '268';
     this.state = {
       middle: 0,
       left: parseInt(localLeftPanelWidth, 10),
@@ -66,9 +68,9 @@ class TreeLayout extends Component<IProps, IStates> {
   onMouseDown(e: ReactMouseEvent) {
     document.addEventListener('mouseup', this.onMouseUp);
     document.addEventListener<'mousemove'>('mousemove', this.onMouseMove); // document mousemove
-    const currentElement = e.nativeEvent.srcElement;
+    const currentElement = e.nativeEvent.srcElement; // Resizer
     const parentElement = currentElement!.parentElement;
-    const collectionElement = parentElement!.querySelectorAll('[offset]');
+    const collectionElement = parentElement!.querySelectorAll('[offset]'); // todo
     const currentIndex = Array.from(collectionElement).indexOf(currentElement!);
     this.setState({ currentElement, currentIndex });
   }
@@ -84,11 +86,12 @@ class TreeLayout extends Component<IProps, IStates> {
   onMouseMove(e: MouseEvent) {
     pauseEvent(e); // mouse move prevent select text
     const { currentElement, currentIndex } = this.state;
+    const { tag } = this.props;
 
-    const leftNode: any = currentElement!.previousSibling;
+    const leftNode: any = currentElement!.previousSibling; // todo
     const leftMinWidth = leftNode.dataset.minWidth || 10;
     const leftMaxWidth = leftNode.dataset.maxWidth || 9999;
-    const rightNode: any = currentElement!.nextSibling;
+    const rightNode: any = currentElement!.nextSibling; // todo
     const rightMinWidth = rightNode.dataset.minWidth || 10;
     const rightMaxWidth = rightNode.dataset.maxWidth || 9999;
 
@@ -107,11 +110,11 @@ class TreeLayout extends Component<IProps, IStates> {
       switch (currentIndex) {
         case 0:
           this.setState({ left: newLeftWidth, middle: newRightWidth, localLeftPanelWidth: newLeftWidth });
-          localStorage.setItem('conversation_left', String(newLeftWidth));
+          localStorage.setItem(`${tag}_left`, String(newLeftWidth));
           break;
         case 1:
           this.setState({ middle: newLeftWidth, right: newRightWidth, localRightPanelWidth: newRightWidth });
-          localStorage.setItem('conversation_right', String(newRightWidth));
+          localStorage.setItem(`${tag}_right`, String(newRightWidth));
           break;
         default:
           break;
@@ -192,32 +195,42 @@ class TreeLayout extends Component<IProps, IStates> {
 
     if (right === 0) {
       showRightResizer = false;
-      // forceDisplayRightPanel = true;
     } else {
       showRightResizer = true;
       forceDisplayRightPanel = false;
     }
 
-    this.setState({ left, middle, right, showLeftResizer, showRightResizer, forceDisplayLeftPanel, forceDisplayRightPanel });
+    this.setState({
+      left,
+      middle,
+      right,
+      showLeftResizer,
+      showRightResizer,
+      forceDisplayLeftPanel,
+      forceDisplayRightPanel,
+    });
   }
 
   onClickLeftButton(e: ReactMouseEvent) {
-    e.stopPropagation();
-    e.preventDefault();
+    pauseEvent(e);
     const { forceDisplayLeftPanel } = this.state;
-    this.setState({ forceDisplayLeftPanel: !forceDisplayLeftPanel, forceDisplayRightPanel: false });
+    this.setState({
+      forceDisplayLeftPanel: !forceDisplayLeftPanel,
+      forceDisplayRightPanel: false,
+    });
   }
 
   onClickRightButton(e: ReactMouseEvent) {
-    e.stopPropagation();
-    e.preventDefault();
+    pauseEvent(e);
     const { forceDisplayRightPanel } = this.state;
-    this.setState({ forceDisplayLeftPanel: false, forceDisplayRightPanel: !forceDisplayRightPanel });
+    this.setState({
+      forceDisplayLeftPanel: false,
+      forceDisplayRightPanel: !forceDisplayRightPanel,
+    });
   }
 
   onClickPreventBubble(e: ReactMouseEvent) {
-    e.stopPropagation();
-    e.preventDefault();
+    pauseEvent(e);
   }
 
   onClickLayout() {
