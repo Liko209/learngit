@@ -1,2 +1,3 @@
 echo '====Start Install Deps'
-NODE_ENV=development npm ci
+npm i
+npm run postinstall
