@@ -31,7 +31,8 @@ class Home extends Component<IProps, IStates>  {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      isExpand: true,
+      isExpand: localStorage.getItem('isExpand') === null ? true :
+        JSON.parse(String(localStorage.getItem('isExpand'))),
     };
     this.signOutClickHandler = this.signOutClickHandler.bind(this);
   }
@@ -45,9 +46,11 @@ class Home extends Component<IProps, IStates>  {
     this.setState({
       isExpand: !this.state.isExpand,
     });
+    localStorage.setItem('isExpand', JSON.stringify(!this.state.isExpand));
   }
   render() {
     // const { match } = this.props;
+    const { isExpand } = this.state;
     return (
       <Wrapper>
         <TopBar>
@@ -55,7 +58,7 @@ class Home extends Component<IProps, IStates>  {
           <button onClick={this.handleExpand}>Expand</button>
         </TopBar>
         <Bottom>
-          <LeftNav isExpand={this.state.isExpand}/>
+          <LeftNav isExpand={isExpand}/>
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
