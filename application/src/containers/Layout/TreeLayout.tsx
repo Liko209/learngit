@@ -1,4 +1,4 @@
-import React, { Component, ComponentClass, SFC, MouseEvent as ReactMouseEvent } from 'react';
+import React, { Component, ReactNode, MouseEvent as ReactMouseEvent } from 'react';
 import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
 import HorizonResizer from './HorizonResizer';
@@ -7,9 +7,7 @@ import { addResizeListener, removeResizeListener } from './optimizedResize';
 import { getOffsetLeft, pauseEvent } from './utils';
 
 interface IProps {
-  Left: ComponentClass | SFC;
-  Middle: ComponentClass | SFC;
-  Right: ComponentClass | SFC;
+  children: ReactNode[];
 }
 
 interface IStates {
@@ -230,20 +228,20 @@ class TreeLayout extends Component<IProps, IStates> {
   }
 
   render() {
-    const { Left, Middle, Right } = this.props;
+    const { children } = this.props;
     const { left, middle, right, showLeftResizer, showRightResizer, forceDisplayLeftPanel, forceDisplayRightPanel } = this.state;
     return (
       <Layout onClick={this.onClickLayout}>
         <HorizonPanel width={left} minWidth={180} maxWidth={360} forceDisplay={forceDisplayLeftPanel} forcePosition="left" onClick={this.onClickPreventBubble}>
-          <Left />
+          {children[0]}
         </HorizonPanel>
         <HorizonResizer offset={left} onMouseDown={this.onMouseDown} show={showLeftResizer} />
         <HorizonPanel width={middle} minWidth={400}>
-          <Middle />
+          {children[1]}
         </HorizonPanel>
         <HorizonResizer offset={left + middle} onMouseDown={this.onMouseDown} show={showRightResizer} />
         <HorizonPanel width={right} minWidth={180} maxWidth={360} forceDisplay={forceDisplayRightPanel} forcePosition="right" onClick={this.onClickPreventBubble}>
-          <Right />
+          {children[2]}
         </HorizonPanel>
         <HorizonButton offset={left + (forceDisplayLeftPanel ? 180 : 0)} onClick={this.onClickLeftButton} show={!showLeftResizer} />
         <HorizonButton offset={left + middle - 10 - (forceDisplayRightPanel ? 180 : 0)} onClick={this.onClickRightButton} show={!showRightResizer} />

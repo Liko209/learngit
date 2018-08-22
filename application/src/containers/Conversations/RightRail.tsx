@@ -1,7 +1,11 @@
 import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-interface IProps extends RouteComponentProps<any> { }
+interface IParams {
+  id: string;
+}
+
+interface IProps extends RouteComponentProps<IParams> { }
 
 const RightRail = ({ match }: IProps) => {
   const id = parseInt(match.params.id, 10);

@@ -1,9 +1,7 @@
 import React from 'react';
-import { withRouter, NavLink, RouteComponentProps } from 'react-router-dom';
+import { withRouter, NavLink } from 'react-router-dom';
 
-interface IProps extends RouteComponentProps<{}> { }
-
-const List = ({ match }: IProps) => {
+const List = () => {
   return (
     <div>
       <strong>Conversation list: </strong>
