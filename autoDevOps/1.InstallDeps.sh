@@ -1,2 +1,2 @@
 echo '====Start Install Deps'
-npm i
+NODE_ENV=development npm ci
