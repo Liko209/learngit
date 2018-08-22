@@ -12,9 +12,8 @@ import { ConversationList as List, ConversationListSection, Icon } from 'ui-comp
 
 import ConversationListItemCell from './ConversationListItemCell';
 import FavoriteListPresenter from './FavoriteListPresenter';
-
 interface IProps {
-
+  expanded?: boolean;
 }
 
 interface IState {
@@ -31,6 +30,10 @@ const SortableList = SortableContainer(List);
 const SortableItem = SortableElement(ConversationListItemCell);
 @observer
 class FavoriteSection extends React.Component<IProps, IState> {
+  static defaultProps = {
+    expanded: true,
+  };
+
   favoritePresenter: FavoriteListPresenter;
   @observable
   ids: number[] = [];
@@ -50,6 +53,7 @@ class FavoriteSection extends React.Component<IProps, IState> {
 
   renderFavoriteGroups() {
     const distance = 1;
+    const currentUserId = this.favoritePresenter.getCurrentUserId() || undefined;
     return (
       <SortableList distance={distance} onSortEnd={this._handleSortEnd} lockAxis="y">
         {this.ids.map((id, index) => (
@@ -59,6 +63,7 @@ class FavoriteSection extends React.Component<IProps, IState> {
             index={index}
             entityName={ENTITY_NAME.GROUP}
             isFavorite={true}
+            currentUserId={currentUserId}
           />
         ))}
       </SortableList>
@@ -77,7 +82,7 @@ class FavoriteSection extends React.Component<IProps, IState> {
         title={'Favorites'}
         unreadCount={12}
         important={true}
-        expanded={false}
+        expanded={this.props.expanded}
       >
         {this.renderFavoriteGroups()}
       </ConversationListSection>

@@ -91,7 +91,7 @@ export default class GroupService extends BaseService<Group> {
         groupType === GROUP_QUERY_TYPE.TEAM,
         favoriteGroupIds,
       )) as Group[];
-      const limitLength = groupType === GROUP_QUERY_TYPE.TEAM ? 20 : 10;
+      const limitLength = groupType === GROUP_QUERY_TYPE.TEAM ? 10 : 10;
       result = await filterGroups(result, groupType, limitLength);
     }
     return result;

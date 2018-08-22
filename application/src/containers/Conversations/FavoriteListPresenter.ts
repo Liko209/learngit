@@ -9,8 +9,7 @@ import OrderListStore from '../../store/base/OrderListStore';
 import { ENTITY_NAME } from '../../store';
 import { service } from 'sdk';
 import { Group } from 'sdk/src/models';
-import { GroupService as IGroupService } from 'sdk/service';
-const { GROUP_QUERY_TYPE, ENTITY , GroupService } = service;
+const { GROUP_QUERY_TYPE, ENTITY, GroupService, AccountService } = service;
 export default class FavoriteListPresenter extends OrderListPresenter {
   eventName: string;
   groupType: string;
@@ -28,19 +27,24 @@ export default class FavoriteListPresenter extends OrderListPresenter {
     this.init();
   }
   init() {
-    const groupCallback = ({ type, entities }:IIncomingData) => {
+    const groupCallback = ({ type, entities }: IIncomingData) => {
       this.handleIncomingData(ENTITY_NAME.GROUP, { type, entities });
     };
     this.subscribeNotification(this.eventName, groupCallback);
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
-    const groupService : IGroupService = GroupService.getInstance();
+    const groupService = GroupService.getInstance<service.GroupService>();
     groupService.reorderFavoriteGroups(oldIndex, newIndex);
   }
 
+  getCurrentUserId() {
+    const accountService = AccountService.getInstance<service.AccountService>();
+    return accountService.getCurrentUserId();
+  }
+
   async fetchData() {
-    const groupService:IGroupService = GroupService.getInstance();
+    const groupService = GroupService.getInstance<service.GroupService>();
     const groups = await groupService.getGroupsByType(this.groupType);
     this.handlePageData(ENTITY_NAME.GROUP, groups, true);
   }
