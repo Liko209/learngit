@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import _ from 'lodash';
 import {
   ConversationListItem,
 } from 'ui-components';
@@ -48,6 +49,19 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     this.displayName = getGroupName(group, currentUserId);
     this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
     this.status = '';
+    if (currentUserId) {
+      let targetPresencePersonId: number | undefined;
+      const otherMembers = _.difference(group.members, [currentUserId]);
+      if (otherMembers.length === 0) {
+        targetPresencePersonId = currentUserId;
+      } else if (otherMembers.length === 1) {
+        targetPresencePersonId = otherMembers[0];
+      }
+
+      if (targetPresencePersonId) {
+        this.status = this.presenceStore.get(targetPresencePersonId) && this.presenceStore.get(targetPresencePersonId).presence;
+      }
+    }
   }
 
   render() {
