@@ -4,7 +4,7 @@ import ProfileService from '../../profile';
 import GroupAPI from '../../../api/glip/group';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../../constants';
 import GroupService from '../index';
-import { daoManager, AccountDao, GroupDao } from '../../../dao';
+import { daoManager, AccountDao, GroupDao, ConfigDao } from '../../../dao';
 import { Group } from '../../../models';
 import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
@@ -26,6 +26,7 @@ describe('GroupService', () => {
   const groupService: GroupService = new GroupService();
   const accountDao = new AccountDao(null);
   const groupDao = new GroupDao(null);
+  const configDao = new ConfigDao(null);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -139,8 +140,10 @@ describe('GroupService', () => {
 
   it('getLatestGroup()', async () => {
     const mock = { id: 1 };
-    daoManager.getKVDao.mockReturnValueOnce(groupDao);
-    groupDao.getLatestGroup.mockResolvedValue(mock);
+    daoManager.getDao.mockReturnValueOnce(groupDao);
+    groupDao.getLatestGroup.mockResolvedValueOnce(mock);
+    daoManager.getKVDao.mockReturnValueOnce(configDao);
+    configDao.get.mockReturnValueOnce(undefined);
     const result = await groupService.getLatestGroup();
     expect(result).toEqual(mock);
   });

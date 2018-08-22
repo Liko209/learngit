@@ -3,7 +3,7 @@
  * @Date: 2018-03-06 10:00:30
  */
 
-import { daoManager } from '../../dao';
+import { daoManager, ConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
 import { Group, Raw } from '../../models';
@@ -32,6 +32,7 @@ import Permission from './permission';
 import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
 import { SOCKET, SERVICE } from '../eventKey';
+import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 
 export type CreateTeamOptions = {
   isPublic?: boolean;
@@ -90,7 +91,7 @@ export default class GroupService extends BaseService<Group> {
         groupType === GROUP_QUERY_TYPE.TEAM,
         favoriteGroupIds,
       )) as Group[];
-      const limitLength = groupType === GROUP_QUERY_TYPE.TEAM ? 20 : 10;
+      const limitLength = groupType === GROUP_QUERY_TYPE.TEAM ? 10 : 10;
       result = await filterGroups(result, groupType, limitLength);
     }
     return result;
@@ -170,6 +171,11 @@ export default class GroupService extends BaseService<Group> {
   }
 
   async getLatestGroup(): Promise<Group | null> {
+    const configDao = daoManager.getKVDao(ConfigDao);
+    const groupId = configDao.get(LAST_CLICKED_GROUP);
+    if (groupId) {
+      return this.getById(groupId);
+    }
     const groupDao = daoManager.getDao(GroupDao);
     return groupDao.getLatestGroup();
   }
@@ -301,6 +307,16 @@ export default class GroupService extends BaseService<Group> {
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
     const profileService: ProfileService = ProfileService.getInstance();
     profileService.reorderFavoriteGroups(oldIndex, newIndex);
+  }
+
+  async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
+    const profileService: ProfileService = ProfileService.getInstance();
+    profileService.markGroupAsFavorite(groupId, markAsFavorite);
+  }
+
+  clickGroup(groupId: number) {
+    const configDao = daoManager.getKVDao(ConfigDao);
+    configDao.put(LAST_CLICKED_GROUP, groupId);
   }
 
   async handleResponse(resp: IResponse<Raw<Group>>) {

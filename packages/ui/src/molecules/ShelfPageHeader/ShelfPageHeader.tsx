@@ -1,3 +1,8 @@
+/*
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-08-22 15:23:35
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from '../../styled-components';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';

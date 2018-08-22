@@ -60,10 +60,12 @@ const StyledUmi = styled<UmiProps, 'span'>('span')`
   ${({ variant = 'count' }) => styles[variant]}
 `;
 
+type UmiVariant = 'count' | 'dot' | 'auto';
+
 type UmiProps = {
   important?: boolean;
   unreadCount?: number;
-  variant?: 'count' | 'dot' | 'auto';
+  variant?: UmiVariant;
 };
 
 class Umi extends PureComponent<UmiProps> {
@@ -85,4 +87,4 @@ class Umi extends PureComponent<UmiProps> {
 }
 
 export default Umi;
-export { UmiProps, Umi };
+export { UmiVariant, UmiProps, Umi };

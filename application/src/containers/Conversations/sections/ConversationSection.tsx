@@ -1,3 +1,8 @@
+/*
+ * @Author: Andy Hu (andy.hu@ringcentral.com)
+ * @Date: 2018-08-22 15:21:35
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import { observer } from 'mobx-react';
 import {
@@ -7,27 +12,18 @@ import {
 } from 'ui-components';
 import ConversationListItemCell from '../ConversationListItemCell';
 import { IConversationSectionPresenter } from './IConversationSection';
+import DirectMessageListPresenter
+  from '../../../containers/Conversations/sections/DirectMessageListPresenter';
 interface IProps {
-  expanded?:boolean;
+  expanded?: boolean;
   presenter: IConversationSectionPresenter;
-}
-
-interface IState {
-  groups: Group[];
-}
-
-interface Group {
-  id: number;
-  display_name: string;
-  is_team: boolean;
-  members: number[];
 }
 
 @observer
 class ConversationSection
-extends React.Component<IProps, IState> {
+  extends React.Component<IProps> {
   static defaultProps = {
-    expanded:true,
+    expanded: true,
   };
 
   componentDidMount() {
@@ -35,13 +31,23 @@ extends React.Component<IProps, IState> {
   }
 
   renderList() {
-    const store = this.props.presenter.getStore();
+    const { presenter } = this.props;
+    const store = presenter.getStore();
     const ids = store.getIds();
-    const entityName = this.props.presenter.entityName;
+    const entityName = presenter.entityName;
+    const currentUserId =
+      presenter instanceof DirectMessageListPresenter &&
+        presenter.getCurrentUserId &&
+        presenter.getCurrentUserId() ? presenter.getCurrentUserId() as number : undefined;
     return (
       <ConversationList>
         {ids.map(id => (
-          <ConversationListItemCell id={id} key={id} entityName={entityName} />
+          <ConversationListItemCell
+            id={id}
+            key={id}
+            entityName={entityName}
+            currentUserId={currentUserId}
+          />
         ))}
       </ConversationList>
     );
@@ -56,7 +62,7 @@ extends React.Component<IProps, IState> {
           title={title}
           expanded={this.props.expanded}
         >
-        {this.renderList()}
+          {this.renderList()}
         </ConversationListSection>
       </div >
     );
