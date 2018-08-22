@@ -4,7 +4,7 @@ import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import Wrapper from './Wrapper';
 import TopBar from './TopBar';
 import Bottom from './Bottom';
-import LeftNav from './LeftNav.jsx';
+import { LeftNav } from 'ui-components';
 import Main from './Main';
 
 import NotFound from '@/containers/NotFound';

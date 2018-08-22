@@ -1,12 +1,20 @@
 import styled from 'styled-components';
 import React from 'react';
-import { NavItem } from 'ui-components';
-import MuiList from "@material-ui/core/List/index";
-import MuiDrawer from "@material-ui/core/Drawer/index";
+import { NavItem } from './item';
+import MuiList from '@material-ui/core/List/index';
+import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
+import { WithTheme } from '@material-ui/core/styles/withTheme';
 
 const MaxWidth = 200;
 const MinWidth = 72;
-const LeftNav = styled(MuiDrawer)`
+
+type TLeftNav = {
+  expand: number,
+} & DrawerProps & Partial<Pick<WithTheme, 'theme'>>;
+const CustomLeftNav: React.SFC<TLeftNav> = (props) => {
+  return <MuiDrawer {...props} />;
+};
+const Left = styled<TLeftNav>(CustomLeftNav)`
   && {
     display:flex;
     width: ${props => props.expand ? MaxWidth : MinWidth}px;
@@ -35,22 +43,31 @@ const LeftNav = styled(MuiDrawer)`
   }
 `;
 
-const Icons = [['Dashboard','Messages', 'Phone','Meetings'],['Calendar', 'Tasks', 'Notes','Files']];
-const UMICount = [120,0,16,1,0,1,99,0,11,33];
-export default (props) => {
+const Icons = [
+  ['Dashboard', 'Messages', 'Phone', 'Meetings'],
+  ['Calendar', 'Tasks', 'Notes', 'Files'],
+];
+type TNavProps = {
+  isExpand: boolean,
+} & Partial<Pick<WithTheme, 'theme'>>;
+
+const UMICount = [120, 0, 16, 1, 0, 1, 99, 0, 11];
+export const LeftNav = (props: TNavProps) => {
   const isExpand = props.isExpand;
-  return <LeftNav expand={+isExpand} variant="permanent" classes={{paper: 'left-paper'}}>
+  return (
+    <Left expand={+isExpand} variant="permanent" classes={{ paper: 'left-paper' }}>
     {Icons.map((arr, index) => {
       return (
-        <MuiList component="nav"
-              disablePadding={true}
-              key={index}
+        <MuiList
+          component="nav"
+          disablePadding={true}
+          key={index}
         >
           {
-            arr.map((item,idx) => {
+            arr.map((item, idx) => {
               const navUrl = item.toLocaleLowerCase();
               const isActive = window.location.pathname.slice(1) === navUrl;
-              let umiType = UMICount[idx]
+              const umiType = UMICount[idx]
               return (<NavItem
                 expand={+isExpand}
                 url={navUrl}
@@ -58,13 +75,14 @@ export default (props) => {
                 icon={item}
                 title={item}
                 key={idx}
-                variant='count'
+                variant="count"
                 unreadCount={umiType}
-              />)
-          })
+              />);
+            })
           }
         </MuiList>
-      )
+      );
     })}
-  </LeftNav>;
+  </Left>
+  );
 };

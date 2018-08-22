@@ -9,7 +9,7 @@ import { NavLink } from 'react-router-dom';
 
 type TListItem = {
   active: number,
-  expand: boolean,
+  expand: number,
 } & ListItemProps & Partial<Pick<WithTheme, 'theme'>>;
 const CustomListItem: React.SFC<TListItem> = (props) => {
   return <MuiListItem {...props} />;
@@ -35,7 +35,7 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({ className : 'left-lis
   }
 `;
 type TListItemTextProps = {
-  expand: boolean,
+  expand: number,
 } & ListItemTextProps & Partial<Pick<WithTheme, 'theme'>>;
 
 const CustomListItemText: React.SFC<TListItemTextProps> = (props) => {
@@ -56,7 +56,7 @@ const ListItemText = styled<TListItemTextProps>(CustomListItemText)`
   }
 `;
 type TUMIProps = {
-  expand: boolean,
+  expand: number,
   unreadCount: number,
   important: boolean,
   variant: 'count' | 'dot' | 'auto',
@@ -104,7 +104,7 @@ const ListLink = styled(NavLink)`
   }
 `;
 type TNavItemProps = {
-  expand: boolean;
+  expand: number;
   type?: string;
   title?: string;
   active: number;
