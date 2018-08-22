@@ -11,8 +11,9 @@ import {
 import storeManager from '../../store';
 import MultiEntityMapStore from '../../store/base/MultiEntityMapStore';
 import SingleEntityMapStore from '../../store/base/SingleEntityMapStore';
-import GroupModel from '@/store/models/Group';
+import GroupModel from '../../store/models/Group';
 import { observer } from 'mobx-react';
+
 interface IProps {
   id: number;
   key: number;
@@ -26,7 +27,7 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
   id: number;
   displayName: string;
   unreadCount: number;
-  showCount: boolean;
+  umiVariant: 'auto'|'dot'|'count';
   status: string;
   groupStore: MultiEntityMapStore | SingleEntityMapStore;
   constructor(props: IProps) {
@@ -34,7 +35,6 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     this.id = props.id;
     this.displayName = '';
     this.unreadCount = 0;
-    this.showCount = false;
     this.status = '';
     this.groupStore = storeManager.getEntityMapStore(props.entityName);
   }
@@ -42,7 +42,7 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
   getDataFromStore() {
     const group: GroupModel = this.groupStore.get(this.id);
     this.displayName = group.setAbbreviation;
-    this.showCount = !group.isTeam; // || at_mentions
+    this.umiVariant = group.isTeam ? 'auto' :'count'; // || at_mentions
     this.status = ''; // should get from state store
   }
 
@@ -53,7 +53,7 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
         key={this.id}
         title={this.displayName}
         unreadCount={this.unreadCount}
-        showCount={this.showCount}
+        umiVariant={this.umiVariant}
       />
     );
   }

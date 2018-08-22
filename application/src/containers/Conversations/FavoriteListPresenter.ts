@@ -9,10 +9,11 @@ import OrderListStore from '../../store/base/OrderListStore';
 import { ENTITY_NAME } from '../../store';
 import { service } from 'sdk';
 import { Group } from 'sdk/src/models';
-const { GROUP_QUERY_TYPE, ENTITY, GroupService } = service;
+import { GroupService as IGroupService } from 'sdk/service';
+const { GROUP_QUERY_TYPE, ENTITY , GroupService } = service;
 export default class FavoriteListPresenter extends OrderListPresenter {
   eventName: string;
-  groupType: GROUP_QUERY_TYPE;
+  groupType: string;
   constructor() {
     super(
       new OrderListStore(`ConversationList: ${GROUP_QUERY_TYPE.FAVORITE}`),
@@ -22,25 +23,24 @@ export default class FavoriteListPresenter extends OrderListPresenter {
         sortKey: index,
       }),
     );
-
     this.groupType = GROUP_QUERY_TYPE.FAVORITE;
     this.eventName = ENTITY.FAVORITE_GROUPS;
     this.init();
   }
   init() {
-    const groupCallback = ({ type, entities }) => {
+    const groupCallback = ({ type, entities }:IIncomingData) => {
       this.handleIncomingData(ENTITY_NAME.GROUP, { type, entities });
     };
     this.subscribeNotification(this.eventName, groupCallback);
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
-    const groupService = GroupService.getInstance();
+    const groupService : IGroupService = GroupService.getInstance();
     groupService.reorderFavoriteGroups(oldIndex, newIndex);
   }
 
   async fetchData() {
-    const groupService = GroupService.getInstance();
+    const groupService:IGroupService = GroupService.getInstance();
     const groups = await groupService.getGroupsByType(this.groupType);
     this.handlePageData(ENTITY_NAME.GROUP, groups, true);
   }
