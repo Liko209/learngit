@@ -2,6 +2,7 @@ import React, { Component, ComponentClass, SFC, MouseEvent as ReactMouseEvent } 
 import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
 import HorizonResizer from './HorizonResizer';
+import HorizonButton from './HorizonButton';
 import { addResizeListener, removeResizeListener } from './optimizedResize';
 import { getOffsetLeft, pauseEvent } from './utils';
 
@@ -17,8 +18,10 @@ interface IStates {
   right: number;
   last_left: number; // remember last panel width value
   last_right: number;
-  show_left: boolean; // show resizer
-  show_right: boolean;
+  show_left_resizer: boolean; // show resizer
+  show_right_resizer: boolean;
+  show_left_button: boolean;
+  show_right_button: boolean;
   currentElement: Element | null; // Resizer(vertical line)
   currentIndex: number;
 }
@@ -26,14 +29,18 @@ interface IStates {
 class TreeLayout extends Component<IProps, IStates> {
   constructor(props: IProps) {
     super(props);
+    const last_left = localStorage.getItem('conversation_left') || '268';
+    const last_right = localStorage.getItem('conversation_right') || '268';
     this.state = {
       middle: 0,
-      left: 250,
-      right: 300,
-      last_left: 250,
-      last_right: 300,
-      show_left: true,
-      show_right: true,
+      left: parseInt(last_left, 10),
+      right: parseInt(last_right, 10),
+      last_left: parseInt(last_left, 10),
+      last_right: parseInt(last_right, 10),
+      show_left_resizer: true,
+      show_right_resizer: true,
+      show_left_button: false,
+      show_right_button: false,
       currentElement: null,
       currentIndex: -1,
     };
@@ -45,11 +52,13 @@ class TreeLayout extends Component<IProps, IStates> {
 
   componentDidMount() {
     addResizeListener(this.onResize);
+    // window.addEventListener('resize', this.onResize);
     this.onResize();
   }
 
   componentWillUnmount() {
     removeResizeListener();
+    // window.removeEventListener('resize', this.onResize);
   }
 
   onMouseDown(e: ReactMouseEvent) {
@@ -96,9 +105,11 @@ class TreeLayout extends Component<IProps, IStates> {
       switch (currentIndex) {
         case 0:
           this.setState({ left: newLeftWidth, middle: newRightWidth, last_left: newLeftWidth });
+          localStorage.setItem('conversation_left', String(newLeftWidth));
           break;
         case 1:
           this.setState({ middle: newLeftWidth, right: newRightWidth, last_right: newRightWidth });
+          localStorage.setItem('conversation_right', String(newRightWidth));
           break;
         default:
           break;
@@ -107,7 +118,7 @@ class TreeLayout extends Component<IProps, IStates> {
   }
 
   onResize() {
-    let { left, middle, right, show_left, show_right } = this.state;
+    let { left, middle, right, show_left_resizer, show_right_resizer } = this.state;
     const { last_left, last_right } = this.state;
     const nav = 72; // todo 72 is dynamic value
     const max = 1820; // todo change to 1920
@@ -145,7 +156,9 @@ class TreeLayout extends Component<IProps, IStates> {
         if (left < last_left) {
           middle = 400;
           left = body - nav - middle - right;
-        } else {
+        }
+        // ensure left value too big, because setState is micro task
+        if (left > last_left) {
           left = last_left;
           middle = body - nav - left - right;
         }
@@ -159,7 +172,9 @@ class TreeLayout extends Component<IProps, IStates> {
         if (right < last_right) {
           middle = 400;
           right = body - nav - left - middle;
-        } else {
+        }
+        // ensure right value too big, because setState is micro task
+        if (right > last_right) {
           right = last_right;
           middle = body - nav - left - right;
         }
@@ -167,33 +182,38 @@ class TreeLayout extends Component<IProps, IStates> {
     }
 
     if (left === 0) {
-      show_left = false;
+      show_left_resizer = false;
     } else {
-      show_left = true;
+      show_left_resizer = true;
     }
 
     if (right === 0) {
-      show_right = false;
+      show_right_resizer = false;
     } else {
-      show_right = true;
+      show_right_resizer = true;
     }
 
-    this.setState({ left, middle, right, show_left, show_right });
+    this.setState({ left, middle, right, show_left_resizer, show_right_resizer });
+  }
+
+  onClick() {
+
   }
 
   render() {
     const { Left, Middle, Right } = this.props;
-    const { left, middle, right, show_left, show_right } = this.state;
+    const { left, middle, right, show_left_resizer, show_right_resizer } = this.state;
     return (
       <Layout>
         <HorizonPanel width={left} minWidth={180} maxWidth={360}>
           <Left />
         </HorizonPanel>
-        <HorizonResizer offset={left} onMouseDown={this.onMouseDown} show={show_left} />
+        <HorizonResizer offset={left} onMouseDown={this.onMouseDown} show={show_left_resizer} />
         <HorizonPanel width={middle} minWidth={400}>
           <Middle />
         </HorizonPanel>
-        <HorizonResizer offset={left + middle} onMouseDown={this.onMouseDown} show={show_right} />
+        <HorizonResizer offset={left + middle} onMouseDown={this.onMouseDown} show={show_right_resizer} />
+        <HorizonButton offset={left + middle - 10} onClick={this.onClick} show={!show_right_resizer} />
         <HorizonPanel width={right} minWidth={180} maxWidth={360}>
           <Right />
         </HorizonPanel>
