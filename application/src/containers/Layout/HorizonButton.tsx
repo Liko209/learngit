@@ -17,7 +17,7 @@ const Wrapper = styled.div`
   right: auto;
   z-index: 8888;
   background-color: red;
-  width: 20px;
+  width: 10px;
   height: 20px;
   cursor: pointer;
   left: ${(props: IInternalPorps) => `${props.offset}px`};
