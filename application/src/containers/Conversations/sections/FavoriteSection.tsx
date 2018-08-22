@@ -10,8 +10,8 @@ import React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 import { ConversationList as List, ConversationListSection, Icon } from 'ui-components';
 
-import ConversationListItemCell from './ConversationListItemCell';
-import FavoriteListPresenter from './FavoriteListPresenter';
+import ConversationListItemCell from '../ConversationListItemCell';
+import FavoriteListPresenter from '../FavoriteListPresenter';
 interface IProps {
   expanded?: boolean;
 }

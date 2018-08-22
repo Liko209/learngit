@@ -10,7 +10,7 @@ import {
   BookmarkSection,
   ConversationSection,
 } from './sections';
-import FavoriteSection from './FavoriteSection';
+import FavoriteSection from './sections/FavoriteSection';
 import TeamListPresenter from '@/containers/Conversations/sections/TeamListPresenter';
 import DirectMessageListPresenter from './sections/DirectMessageListPresenter';
 import { IConversationSectionPresenter }
