@@ -86,10 +86,7 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
 
     autorun(() => {
-      const group: GroupModel = this.groupStore.get(this.id);
-      this.displayName = group.setAbbreviation;
-      this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
-      this.status = ''; // should get from state store
+      this.getDataFromStore();
     });
   }
 
