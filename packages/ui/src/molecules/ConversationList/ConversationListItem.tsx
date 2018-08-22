@@ -16,7 +16,7 @@ const StyledListItem = styled(MuiMenuItem)`
   white-space: nowrap;
   padding: 6px 16px 6px 12px;
   background: white;
-  color: #212121;
+  color: ${({ theme }) => theme.palette.grey['900']};
   /**
    * Workaround to resolve transition conflicts with react-sortable-hoc
    * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
@@ -25,11 +25,11 @@ const StyledListItem = styled(MuiMenuItem)`
 }
 
 &&:hover {
-  background: #f8f8f8;
+  background: ${({ theme }) => theme.palette.grey['100']};
 }
 
 &&:focus {
-  background: #e0e0e0;
+  background: ${({ theme }) => theme.palette.grey['300']};
 }
 
 && ${Icon} {

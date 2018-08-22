@@ -15,6 +15,11 @@ const StyledListItem = styled(MuiListItem)`
   && {
     padding: 8px 16px 8px 12px;
     background: white;
+    color: ${({ theme }) => theme.palette.grey['700']};
+  }
+
+  && > ${Icon} {
+    color: ${({ theme }) => theme.palette.grey['400']};
   }
 `;
 
