@@ -1,3 +1,8 @@
+/*
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-08-22 15:22:51
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from '../../styled-components';
 import MuiIconButton, { IconButtonProps } from '@material-ui/core/IconButton';

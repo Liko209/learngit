@@ -47,7 +47,7 @@ class ConversationListSection extends Component<SectionProps, SectionStates> {
           {this.props.children && <Divider />}
           {this.props.children}
         </Collapse>
-      </div>
+      </div >
     );
   }
 

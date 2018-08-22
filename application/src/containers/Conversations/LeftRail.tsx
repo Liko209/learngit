@@ -7,19 +7,26 @@ import {
   UnreadSection,
   MentionSection,
   BookmarkSection,
-  DirectMessageSection,
-  TeamSection,
+  ConversationSection,
 } from './sections';
 import FavoriteSection from './FavoriteSection';
+import TeamListPresenter from '@/containers/Conversations/sections/TeamListPresenter';
+import DirectMessageListPresenter from './sections/DirectMessageListPresenter';
+import { IConversationSectionPresenter }
+  from '@/containers/Conversations/sections/IConversationSection';
 
 type IProps = {} & RouteComponentProps<any>;
 
 class LeftRail extends Component<IProps> {
   presenter: LeftRailPresenter;
+  teamPresenter: IConversationSectionPresenter;
+  directMessagePresenter: IConversationSectionPresenter;
 
   constructor(props: IProps) {
     super(props);
     this.presenter = new LeftRailPresenter();
+    this.teamPresenter = new TeamListPresenter();
+    this.directMessagePresenter = new DirectMessageListPresenter();
   }
 
   render() {
@@ -33,9 +40,9 @@ class LeftRail extends Component<IProps> {
         <Divider />
         <FavoriteSection />
         <Divider />
-        <DirectMessageSection />
+        <ConversationSection presenter={this.directMessagePresenter} />
         <Divider />
-        <TeamSection />
+        <ConversationSection presenter={this.teamPresenter} />
         {/* <strong>Conversation list: </strong>
         <NavLink to="/messages/123">123 </NavLink>
         <NavLink to="/messages/456">456 </NavLink>

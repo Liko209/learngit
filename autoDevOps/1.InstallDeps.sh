@@ -1,2 +1,2 @@
 echo '====Start Install Deps'
-yarn
+NODE_ENV=development npm ci

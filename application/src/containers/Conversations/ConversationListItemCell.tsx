@@ -5,15 +5,19 @@
  */
 
 import React from 'react';
+import _ from 'lodash';
 import {
   Menu,
   MenuItem,
   ConversationListItem,
 } from 'ui-components';
-import storeManager from '@/store';
-import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
-import GroupModel from '@/store/models/Group';
+
+import storeManager, { ENTITY_NAME } from '../../store';
+import MultiEntityMapStore from '../../store/base/MultiEntityMapStore';
+import SingleEntityMapStore from '../../store/base/SingleEntityMapStore';
+import GroupModel from '../../store/models/Group';
 import { observer } from 'mobx-react';
+import { getGroupName } from '../../utils/groupName';
 import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 const { GroupService } = service;
@@ -22,6 +26,7 @@ interface IProps {
   key: number;
   entityName: string;
   isFavorite?: boolean;
+  currentUserId?: number;
 }
 
 interface IState {
@@ -31,8 +36,6 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
   static defaultProps = {
     isFavorite: false,
   };
-
-  groupStore: MultiEntityMapStore;
 
   @observable
   id: number;
@@ -63,6 +66,9 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     return !!this.anchorEl;
   }
 
+  groupStore: MultiEntityMapStore | SingleEntityMapStore;
+  presenceStore: MultiEntityMapStore | SingleEntityMapStore;
+
   constructor(props: IProps) {
     super(props);
     this.id = props.id;
@@ -70,7 +76,8 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     this.unreadCount = 0;
     this.umiVariant = 'count';
     this.status = '';
-    this.groupStore = storeManager.getEntityMapStore(props.entityName) as MultiEntityMapStore;
+    this.groupStore = storeManager.getEntityMapStore(props.entityName);
+    this.presenceStore = storeManager.getEntityMapStore(ENTITY_NAME.PRESENCE);
     this._openMenu = this._openMenu.bind(this);
     this._toggleFavorite = this._toggleFavorite.bind(this);
     this._handleClose = this._handleClose.bind(this);
@@ -86,6 +93,27 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     });
   }
 
+  getDataFromStore() {
+    const group: GroupModel = this.groupStore.get(this.id);
+    const { currentUserId } = this.props;
+    this.displayName = getGroupName(group, currentUserId);
+    this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
+    this.status = '';
+    if (currentUserId) {
+      let targetPresencePersonId: number | undefined;
+      const otherMembers = _.difference(group.members, [currentUserId]);
+      if (otherMembers.length === 0) {
+        targetPresencePersonId = currentUserId;
+      } else if (otherMembers.length === 1) {
+        targetPresencePersonId = otherMembers[0];
+      }
+
+      if (targetPresencePersonId) {
+        this.status = this.presenceStore.get(targetPresencePersonId) && this.presenceStore.get(targetPresencePersonId).presence;
+      }
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -98,6 +126,7 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
           umiVariant={this.umiVariant}
           onMoreClick={this._openMenu}
           onClick={this._onClick}
+          status={this.status}
         />
         <Menu
           id="render-props-menu"

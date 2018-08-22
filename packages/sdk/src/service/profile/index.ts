@@ -84,15 +84,20 @@ export default class ProfileService extends BaseService<Profile> {
       if (markAsFavorite) {
         if (favIds.indexOf(groupId) === -1) {
           newIds = [groupId].concat(favIds);
+        } else {
+          return profile;
         }
       } else {
         if (favIds.indexOf(groupId) !== -1) {
           newIds = favIds.filter(id => id !== groupId);
+        } else {
+          return profile;
         }
       }
       profile.favorite_group_ids = newIds;
       return this._putProfileAndHandle(profile, 'favorite_group_ids', favIds);
     }
+    return null;
   }
 
   async putFavoritePost(postId: number, toBook: boolean): Promise<Profile | null> {

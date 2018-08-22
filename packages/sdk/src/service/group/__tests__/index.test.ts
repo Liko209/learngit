@@ -46,6 +46,7 @@ describe('GroupService', () => {
     // groupDao.queryGroupsByIds.mockResolvedValue(mock);
     // const result2 = await groupService.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE, 0, 20);
     // expect(result2).toEqual(mock);
+    // TO be fixed
 
     profileService.getProfile.mockResolvedValueOnce({ favorite_group_ids: [] });
     const result22 = await groupService.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE, 0, 20);
@@ -140,9 +141,9 @@ describe('GroupService', () => {
   it('getLatestGroup()', async () => {
     const mock = { id: 1 };
     daoManager.getDao.mockReturnValueOnce(groupDao);
+    groupDao.getLatestGroup.mockResolvedValueOnce(mock);
     daoManager.getKVDao.mockReturnValueOnce(configDao);
     configDao.get.mockReturnValueOnce(undefined);
-    groupDao.getLatestGroup.mockResolvedValue(mock);
     const result = await groupService.getLatestGroup();
     expect(result).toEqual(mock);
   });

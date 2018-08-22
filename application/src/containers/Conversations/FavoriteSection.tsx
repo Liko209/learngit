@@ -39,7 +39,6 @@ class FavoriteSection extends React.Component<IProps, IState> {
     this.favoritePresenter = new FavoriteListPresenter();
     this._handleSortEnd = this._handleSortEnd.bind(this);
     const store = this.favoritePresenter.getStore();
-
     autorun(() => {
       this.ids = store.getIds();
     });
