@@ -34,10 +34,10 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
     // this group btns will awake
     &:hover {
      .nav-icon {
-       color: #9e9e9e; // 500
+       color: ${({ theme }) => theme.palette.grey[500]}; // 500
      }
      .nav-text span {
-       color: #616161; // 700
+       color: ${({ theme }) => theme.palette.grey[700]}; // 700
      }
    }
   }
@@ -67,7 +67,7 @@ export const LeftNav = (props: TNavProps) => {
             arr.map((item, idx) => {
               const navUrl = item.toLocaleLowerCase();
               const isActive = window.location.pathname.slice(1) === navUrl;
-              const umiType = UMICount[idx]
+              const umiType = UMICount[idx];
               return (<NavItem
                 expand={+isExpand}
                 url={navUrl}

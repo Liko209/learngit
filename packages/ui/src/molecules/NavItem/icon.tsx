@@ -17,7 +17,8 @@ const Icon = styled<TIconProps>(
   && {
     width: 20px;
     transition: all .2s ease;
-    color: ${props => props.active ? '#0684BD' : '#bfbfbf'};
+    color: ${ ({ active, theme }) => active ?
+    theme.palette.primary.main : theme.palette.accent.ash};
   }
 `;
 
@@ -58,8 +59,8 @@ const NavIcon = (props: TIconProps) => {
   return <Icon component={props.component} {...props}/>;
 };
 type TIconProps = {
-  component: string,
   active: number,
+  component: string,
   className: string,
 };
 export default NavIcon;

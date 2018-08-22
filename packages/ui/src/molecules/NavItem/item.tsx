@@ -17,7 +17,7 @@ const CustomListItem: React.SFC<TListItem> = (props) => {
 const ListItem = styled<TListItem>(CustomListItem).attrs({ className : 'left-list-item' })`
   && {
     padding: 0;
-    height: 44px;
+    height: ${({ theme }) => theme.spacing.unit * 11 + 'px'};
     outline: none;
   }
   // In order to make sure use tab switch nav
@@ -30,7 +30,7 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({ className : 'left-lis
       background-color: ${props => props.active ? '#EBF6FA' : '#F5F5F5'};
       opacity: .88;
      .nav-icon {
-        color: #9e9e9e; // 500
+        color: ${({ theme }) => theme.palette.grey[500]}; // 500
      }
   }
 `;
@@ -44,13 +44,13 @@ const CustomListItemText: React.SFC<TListItemTextProps> = (props) => {
 const ListItemText = styled<TListItemTextProps>(CustomListItemText)`
   && {
     font-size: 12px;
-    color: #9e9e9e; // 500
+    color: ${({ theme }) => theme.palette.grey[500]}; // 500
     transform: translate3d(${props => props.expand ? 12 : -10}px, 0, 0);
     opacity: ${props => props.expand ? 1 : 0};
     transition: transform .2s ease, opacity .2s ease;
     padding: 0;
     span {
-      color: #bfbfbf; // Aah
+      color: ${({ theme }) => theme.palette.accent.ash}; // Aah
       transition: color .2s ease;
     }
   }
@@ -72,7 +72,7 @@ const UMI = styled<TUMIProps>(CustomUMI)`
     width: auto;
     height: auto;
     padding: 1px 5px;
-    border-radius: 12px;
+    border-radius: ${({ theme }) => theme.shape.borderRadius * 6 + 'px'};
     transition: opacity .2s ease;
     transform: scale(.85);
     color: #fff !important;
@@ -83,7 +83,7 @@ const ListLink = styled(NavLink)`
   outline: none;
   display: flex;
   height: 100%;
-  padding: 0 20px;
+  padding: 0 ${({ theme }) => theme.spacing.unit * 5 + 'px'};
   width: 100%;
   align-items: center;
   text-decoration: none;
@@ -94,23 +94,21 @@ const ListLink = styled(NavLink)`
     background: #D7EBF4 !important; // water
     opacity: .76;
     span, .nav-icon {
-     color: #0684BD; // RC Blue
+     color: ${({ theme, color }) => color ? theme.palette[color].main : '#0684BD'}; // RC Blue
     }
   }
   &&.active {
     && .nav-icon, && .nav-text span {
-      color: #0684BD; // RC Blue
+      color: ${({ theme, color }) => color ? theme.palette[color].main : '#0684BD'}; // RC Blue
     }
   }
 `;
 type TNavItemProps = {
   expand: number;
-  type?: string;
   title?: string;
   active: number;
   icon: string;
   variant: 'count' | 'dot' | 'auto',
-  num?: number;
   url?: string;
   unreadCount: number;
 } & Partial<Pick<WithTheme, 'theme'>>;
