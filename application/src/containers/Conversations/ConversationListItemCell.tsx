@@ -8,14 +8,13 @@ import React from 'react';
 import {
   Menu,
   MenuItem,
-  Popper,
   ConversationListItem,
 } from 'ui-components';
 import storeManager from '@/store';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import GroupModel from '@/store/models/Group';
 import { observer } from 'mobx-react';
-import { observable } from '../../../../node_modules/mobx';
+import { observable, computed, action, autorun } from 'mobx';
 
 interface IProps {
   id: number;
@@ -27,15 +26,30 @@ interface IState {
 }
 @observer
 export default class ConversationListItemCell extends React.Component<IProps, IState>{
-  id: number;
-  displayName: string;
-  unreadCount: number;
-  umiVariant: 'count' | 'dot' | 'auto';
-  status: string;
   groupStore: MultiEntityMapStore;
+
   @observable
-  menuOpen: boolean;
-  anchorEl: HTMLElement;
+  id: number;
+
+  @observable
+  displayName: string;
+
+  @observable
+  unreadCount: number;
+
+  @observable
+  umiVariant: 'count' | 'dot' | 'auto';
+
+  @observable
+  status: string;
+
+  @observable
+  anchorEl: HTMLElement | null = null;
+
+  @computed
+  get menuOpen() {
+    return !!this.anchorEl;
+  }
 
   constructor(props: IProps) {
     super(props);
@@ -47,17 +61,17 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     this.groupStore = storeManager.getEntityMapStore(props.entityName) as MultiEntityMapStore;
     this._openMenu = this._openMenu.bind(this);
     this._toggleFavorite = this._toggleFavorite.bind(this);
-  }
+    this._handleClose = this._handleClose.bind(this);
 
-  getDataFromStore() {
-    const group: GroupModel = this.groupStore.get(this.id);
-    this.displayName = group.setAbbreviation;
-    this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
-    this.status = ''; // should get from state store
+    autorun(() => {
+      const group: GroupModel = this.groupStore.get(this.id);
+      this.displayName = group.setAbbreviation;
+      this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
+      this.status = ''; // should get from state store
+    });
   }
 
   render() {
-    this.getDataFromStore();
     return (
       <React.Fragment>
         <ConversationListItem
@@ -69,21 +83,32 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
           umiVariant={this.umiVariant}
           onMoreClick={this._openMenu}
         />
-        <Menu id="render-props-menu" anchorEl={this.anchorEl} open={this.menuOpen}>
+        <Menu
+          id="render-props-menu"
+          anchorEl={this.anchorEl}
+          open={this.menuOpen}
+          onClose={this._handleClose}
+        >
           <MenuItem onClick={this._toggleFavorite}>Favorite</MenuItem>
         </Menu>
       </React.Fragment>
     );
   }
 
+  @action
   private _openMenu(event: React.MouseEvent<HTMLElement>) {
     const { currentTarget } = event;
     this.anchorEl = currentTarget;
-    this.menuOpen = true;
   }
 
+  @action
+  private _handleClose() {
+    this.anchorEl = null;
+  }
+
+  @action
   private _toggleFavorite() {
     console.log('_toggleFavorite()');
-    this.menuOpen = false;
+    this._handleClose();
   }
 }
