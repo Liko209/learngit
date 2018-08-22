@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 import { service } from 'sdk';
 import config from '@/config';
-// import ErrorHandler from '@/containers/ErrorHandler/index.tsx';
+import EnvSelect from './EnvSelect';
 
 const { glip2 } = config.get('api');
 const { AuthService } = service;
@@ -93,7 +93,8 @@ class UnifiedLogin extends React.Component<
       });
 
       try {
-        await AuthService.getInstance().unifiedLogin({ code });
+        const authService: service.AuthService = AuthService.getInstance();
+        await authService.unifiedLogin({ code });
         history.replace((location.state && location.state.from) || '/');
       } catch (error) {
         // const handler = new ErrorHandler(error);
@@ -133,9 +134,10 @@ class UnifiedLogin extends React.Component<
           <h1>
             <span>Sign In</span>
           </h1>
-          <Button type="submit" disabled={btnDisabled}>
+          <Button data-anchor="btnLogin" type="submit" disabled={btnDisabled}>
             {btnText}
           </Button>
+          <EnvSelect />
         </Form>
         {/* <LoginVersionStatus /> */}
         {/* <Download /> */}
