@@ -1,9 +1,8 @@
-import { LeftRailPresenter } from './LeftRailPresenter';
-
 import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { Divider } from 'ui-components';
 
+import { LeftRailPresenter } from './LeftRailPresenter';
 import {
   UnreadSection,
   MentionSection,

@@ -3,19 +3,16 @@
  * @Date: 2018-08-16 13:41:46
  * Copyright © RingCentral. All rights reserved.
  */
-
-import React from 'react';
-import { observer } from 'mobx-react';
-import {
-  ConversationList as List,
-  ConversationListSection,
-  Icon,
-} from 'ui-components';
-import FavoriteListPresenter from './FavoriteListPresenter';
-import ConversationListItemCell from './ConversationListItemCell';
 import { ENTITY_NAME } from '@/store';
-import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
-import { observable, autorun } from 'mobx';
+import { autorun, observable } from 'mobx';
+import { observer } from 'mobx-react';
+import React from 'react';
+import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
+import { ConversationList as List, ConversationListSection, Icon } from 'ui-components';
+
+import ConversationListItemCell from './ConversationListItemCell';
+import FavoriteListPresenter from './FavoriteListPresenter';
+
 interface IProps {
 
 }
@@ -69,17 +66,15 @@ class FavoriteSection extends React.Component<IProps, IState> {
 
   render() {
     return (
-      <div>
-        <ConversationListSection
-          icon={<Icon>start</Icon>}
-          title={'Favorites'}
-          unreadCount={12}
-          important={true}
-          expanded={false}
-        >
-          {this.renderFavoriteGroups()}
-        </ConversationListSection>
-      </div >
+      <ConversationListSection
+        icon={<Icon>start</Icon>}
+        title={'Favorites'}
+        unreadCount={12}
+        important={true}
+        expanded={false}
+      >
+        {this.renderFavoriteGroups()}
+      </ConversationListSection>
     );
   }
 }

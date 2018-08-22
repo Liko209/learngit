@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Selector } from 'testcafe';
+import { ReactSelector } from 'testcafe-react-selectors';
 import { Status, AllureStep } from '../libs/report';
 import { TestHelper } from '../libs/helpers';
 
@@ -58,14 +59,24 @@ export abstract class BasePage {
     return await chain;
   }
 
-  select(anchor: string) {
-    return Selector(`*[data-anchor="${anchor}"]`);
+  selectComponent(str: string) {
+    return ReactSelector(str);
   }
 
-  click(anchor: string) {
-    return this.chain(async t =>
-      await t.click(this.select(anchor)),
-    );
+  clickComponent(str: string) {
+    return this.clickElement(this.selectComponent(str));
+  }
+
+  select(str: string) {
+    return Selector(`*[data-anchor="${str}"]`);
+  }
+
+  click(str: string) {
+    return this.clickElement(this.select(str));
+  }
+
+  clickElement(el: Selector) {
+    return this.chain(async t => await t.click(el));
   }
 
   shouldNavigateTo<T extends BasePage>(

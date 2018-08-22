@@ -6,10 +6,12 @@
         "Appender",
         "appenders",
         "apppender",
+        "autorun",
         "backend",
         "backends",
         "builtins",
         "categorys",
+        "cateye",
         "chatview",
         "chunkhash",
         "commitlint",
@@ -95,15 +97,7 @@
         "Withs",
         "woff",
         "workspaces",
-        "Zhan",
-        "lifecycles",
-        "testcafe",
-        "headshot",
-        "happypack",
-        "Injectable",
-        "Odeson",
-        "subheader",
-        "cateye"
+        "Zhan"
     ],
     "flagWords": []
 }
