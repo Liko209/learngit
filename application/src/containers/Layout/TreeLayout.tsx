@@ -2,7 +2,7 @@ import React, { Component, ComponentClass, SFC, MouseEvent as ReactMouseEvent } 
 import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
 import HorizonResizer from './HorizonResizer';
-import HorizonButton from './HorizonButton';
+// import HorizonButton from './HorizonButton';
 import { addResizeListener, removeResizeListener } from './optimizedResize';
 import { getOffsetLeft, pauseEvent } from './utils';
 
@@ -213,7 +213,7 @@ class TreeLayout extends Component<IProps, IStates> {
           <Middle />
         </HorizonPanel>
         <HorizonResizer offset={left + middle} onMouseDown={this.onMouseDown} show={show_right_resizer} />
-        <HorizonButton offset={left + middle - 10} onClick={this.onClick} show={!show_right_resizer} />
+        {/* <HorizonButton offset={left + middle - 10} onClick={this.onClick} show={!show_right_resizer} /> */}
         <HorizonPanel width={right} minWidth={180} maxWidth={360}>
           <Right />
         </HorizonPanel>

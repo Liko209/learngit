@@ -21,7 +21,7 @@ const Wrapper = styled.div`
   margin-left: -3px;
   padding: 3px
   cursor: col-resize;
-  ${props => props.show === false && css`
+  ${props => !props.show && css`
     display: none;
   `}
 `;

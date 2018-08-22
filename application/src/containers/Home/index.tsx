@@ -56,6 +56,7 @@ class Home extends Component<IProps, IStates>  {
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
+              {/* <Route path="/messages/:id?" component={Conversation} /> */}
               <LayoutRoute
                 path="/messages/:id?"
                 Left={ConversationLeft}

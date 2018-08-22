@@ -1,4 +1,4 @@
-import React, { Component, ReactChild } from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -31,59 +31,59 @@ class Layout extends Component<IProps, IStates> {
   }
 
   componentWillMount() {
-    this.updateState(this.props);
+    // this.updateState(this.props);
   }
 
   componentDidMount() {
-    this.initial();
-    const type = this.state.type;
-    if (type === 'vertical') {
-      window.addEventListener('resize', this.windowResizeVertical);
-    } else if (type === 'horizon') {
-      window.addEventListener('resize', this.windowResizeHorizon);
-    }
+    // this.initial();
+    // const type = this.state.type;
+    // if (type === 'vertical') {
+    //   window.addEventListener('resize', this.windowResizeVertical);
+    // } else if (type === 'horizon') {
+    //   window.addEventListener('resize', this.windowResizeHorizon);
+    // }
   }
 
   componentWillReceiveProps(nextProps: IProps) {
-    this.updateState(nextProps);
+    // this.updateState(nextProps);
   }
 
   componentDidUpdate() {
-    this.initial();
+    // this.initial();
   }
 
   componentWillUnmount() {
-    const type = this.state.type;
-    if (type === 'vertical') {
-      window.removeEventListener('resize', this.windowResizeVertical);
-    } else if (type === 'horizon') {
-      window.removeEventListener('resize', this.windowResizeHorizon);
-    }
+    // const type = this.state.type;
+    // if (type === 'vertical') {
+    //   window.removeEventListener('resize', this.windowResizeVertical);
+    // } else if (type === 'horizon') {
+    //   window.removeEventListener('resize', this.windowResizeHorizon);
+    // }
   }
 
   updateState(props: IProps) {
-    let type = this.state.type;
-    if (props.children.length > 0) {
-      if (props.children[0].type.displayName === 'Horizon') {
-        type = 'horizon';
-      } else if (props.children[0].type.displayName === 'Vertical') {
-        type = 'vertical';
-      }
-    }
-    this.setState({ type });
+    // let type = this.state.type;
+    // if (props.children.length > 0) {
+    //   if (props.children[0].type.displayName === 'Horizon') {
+    //     type = 'horizon';
+    //   } else if (props.children[0].type.displayName === 'Vertical') {
+    //     type = 'vertical';
+    //   }
+    // }
+    // this.setState({ type });
   }
 
   initial() {
-    const type = this.state.type;
-    if (type === 'vertical') {
-      // this.initialVertical();
-      // this.eventHandle();
-      // this.windowResizeVertical();
-    } else if (type === 'horizon') {
-      this.initialHorizon();
-      // this.eventHandle();
-      this.windowResizeHorizon();
-    }
+    // const type = this.state.type;
+    // if (type === 'vertical') {
+    //   // this.initialVertical();
+    //   // this.eventHandle();
+    //   // this.windowResizeVertical();
+    // } else if (type === 'horizon') {
+    //   this.initialHorizon();
+    //   // this.eventHandle();
+    //   this.windowResizeHorizon();
+    // }
   }
 
   initialHorizon() {

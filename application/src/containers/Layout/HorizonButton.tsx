@@ -21,7 +21,7 @@ const Wrapper = styled.div`
   width: 10px;
   height: 20px;
   cursor: pointer;
-  ${props => props.show === false && css`
+  ${props => !props.show && css`
     display: none;
   `}
 `;

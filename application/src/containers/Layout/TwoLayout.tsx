@@ -1,7 +1,7 @@
 import React, { Component, ComponentClass, SFC, MouseEvent } from 'react';
 import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
-import HorizonResizer from './HorizonResizer';
+// import HorizonResizer from './HorizonResizer';
 
 interface IProps {
   Left: ComponentClass | SFC;
