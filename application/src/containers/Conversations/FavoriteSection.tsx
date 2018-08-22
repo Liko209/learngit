@@ -10,13 +10,12 @@ import {
   ConversationList as List,
   ConversationListSection,
   Icon,
-  Divider,
 } from 'ui-components';
 import FavoriteListPresenter from './FavoriteListPresenter';
 import ConversationListItemCell from './ConversationListItemCell';
 import { ENTITY_NAME } from '@/store';
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
-import { observable, action, autorun } from 'mobx';
+import { observable, autorun } from 'mobx';
 interface IProps {
 
 }
@@ -43,7 +42,6 @@ class FavoriteSection extends React.Component<IProps, IState> {
     this.favoritePresenter = new FavoriteListPresenter();
     this._handleSortEnd = this._handleSortEnd.bind(this);
     const store = this.favoritePresenter.getStore();
-
     autorun(() => {
       this.ids = store.getIds();
     });
@@ -77,11 +75,10 @@ class FavoriteSection extends React.Component<IProps, IState> {
           title={'Favorites'}
           unreadCount={12}
           important={true}
-          showCount={true}
           expanded={false}
         >
           {this.renderFavoriteGroups()}
-        </ConversationListSection>;
+        </ConversationListSection>
       </div >
     );
   }

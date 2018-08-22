@@ -12,18 +12,18 @@ const {
   ENTITY,
 } = service;
 
-const ENTITY_NAME = {
-  GROUP: 'group',
-  PERSON: 'person',
-  GROUP_STATE: 'groupState',
-  MY_STATE: 'myState',
-  ITEM: 'item',
-  POST: 'post',
-  PRESENCE: 'presence',
-  COMPANY: 'company',
-  PROFILE: 'profile',
-  POST_SENT_STATUS: 'postSendStatus',
-};
+enum ENTITY_NAME  {
+  'GROUP'= 'group',
+  'PERSON'= 'person',
+  'GROUP_STATE'= 'groupState',
+  'MY_STATE'= 'myState',
+  'ITEM' = 'item',
+  'POST'= 'post',
+  'PRESENCE'= 'presence',
+  'COMPANY'= 'company',
+  'PROFILE'= 'profile',
+  'POST_SENT_STATUS'= 'postSendStatus',
+}
 
 const ENTITY_EVENT_NAME = {
   [ENTITY_NAME.GROUP]: [

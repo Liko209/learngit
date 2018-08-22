@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { observable, action, ObservableMap } from 'mobx';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
-import { ENTITY_EVENT_NAME } from './constants';
+import { ENTITY_EVENT_NAME, ENTITY_NAME } from './constants';
 
 const modelProvider = new ModelProvider();
 
@@ -20,7 +20,7 @@ export default class SingleEntityMapStore extends BaseStore {
     const callback = ({ type, entities }: IIncomingData) => {
       this.handleIncomingData({ type, entities });
     };
-    ENTITY_EVENT_NAME[entityName].forEach((eventName) => {
+    ENTITY_EVENT_NAME[entityName].forEach((eventName:ENTITY_NAME) => {
       this.subscribeNotification(eventName, callback);
     });
   }
@@ -82,7 +82,7 @@ export default class SingleEntityMapStore extends BaseStore {
     });
   }
 
-  get(property: string) {
+  get(id: number) {
     if (!this.init) {
       this.init = true;
       this.getByService().then((data: any) => {
@@ -91,7 +91,7 @@ export default class SingleEntityMapStore extends BaseStore {
         }
       });
     }
-    return this.data.get(property);
+    return this.data.get(id);
   }
 
   has(property: string) {

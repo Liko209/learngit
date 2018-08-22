@@ -1,10 +1,17 @@
-import OrderListPresenter from '../../store/base/OrderListPresenter';
-import OrderListStore from '../../store/base/OrderListStore';
-import { ENTITY_NAME } from '../../store';
+import OrderListPresenter from '../../../store/base/OrderListPresenter';
+import OrderListStore from '../../../store/base/OrderListStore';
+import { ENTITY_NAME } from '../../../store';
 import { Group } from 'sdk/src/models';
 import { service } from 'sdk';
+import { IConversationSectionPresenter }
+from '@/containers/Conversations/sections/IConversationSection';
 const  { GROUP_QUERY_TYPE, ENTITY, GroupService } = service;
-export default class FavoriteListPresenter extends OrderListPresenter {
+export default class TeamListPresenter extends OrderListPresenter
+ implements IConversationSectionPresenter {
+  public iconName:string = 'people';
+  public title:string = 'Team';
+  public entityName = ENTITY_NAME.GROUP;
+  public anchor = 'Team';
   constructor() {
     super(
       new OrderListStore(`ConversationList: ${GROUP_QUERY_TYPE.TEAM}`),
@@ -17,7 +24,7 @@ export default class FavoriteListPresenter extends OrderListPresenter {
         ),
       }),
     );
-    const groupCallback = ({ type, entities }) => {
+    const groupCallback = ({ type, entities }:IIncomingData) => {
       this.handleIncomingData(ENTITY_NAME.GROUP, { type, entities });
     };
     this.subscribeNotification(ENTITY.TEAM_GROUPS, groupCallback);
