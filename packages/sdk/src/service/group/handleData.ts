@@ -234,7 +234,7 @@ async function filterGroups(
     const times =
       result
         .filter(item => statesIds.includes(item.id))
-        .map((item: Group) => item.most_recent_post_created_at || Infinity)
+        .map((item: Group) => item.most_recent_post_created_at || item.created_at)
         .sort() || [];
     if (times.length > 0) {
       const time = times[0];
@@ -249,6 +249,11 @@ async function filterGroups(
       }
     }
   }
+  groups.sort((group1: Group, group2: Group) => {
+    const time1 = group1.most_recent_post_created_at || group1.created_at;
+    const time2 = group2.most_recent_post_created_at || group1.created_at;
+    return time2 - time1;
+  });
   if (result.length > defaultLength) {
     result.length = defaultLength;
   }
