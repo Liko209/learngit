@@ -1,21 +1,14 @@
 import React, { Component } from 'react';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
-
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 import { LeftNav } from 'ui-components';
 import Main from './Main';
 
 import NotFound from '@/containers/NotFound';
-import LayoutRoute from '@/containers/LayoutRoute';
-
-import ConversationLeft from '@/containers/Conversations/LeftRail';
-import ConversationMain from '@/containers/Conversations/Thread';
-import ConversationRight from '@/containers/Conversations/RightRail';
-import CallMain from '@/containers/Calls/Main';
-import CallRight from '@/containers/Calls/Right';
-import MeetingMain from '@/containers/Meetings/Main';
-import MeetingRight from '@/containers/Meetings/Right';
+import Conversations from '@/containers/Conversations';
+import Calls from '@/containers/Calls';
+import Meetings from '@/containers/Meetings';
 
 import TopBar from 'ui-components/organisms/TopBar';
 import avatar from './avatar.jpg';
@@ -57,25 +50,17 @@ class Home extends Component<IProps, IStates>  {
       <Wrapper>
         <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online"/>
         <Bottom>
-          <LeftNav isExpand={isExpand}/>
+          <LeftNav isExpand={isExpand} id="leftnav"/>
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
-              {/* <Route path="/messages/:id?" component={Conversation} /> */}
-              <LayoutRoute
-                path="/messages/:id?"
-                Left={ConversationLeft}
-                Middle={ConversationMain}
-                Right={ConversationRight}
-              />
-              <LayoutRoute path="/calls" Left={CallMain} Right={CallRight} />
-              <LayoutRoute path="/meetings" Left={MeetingMain} Right={MeetingRight} />
+              <Route path="/messages/:id?" component={Conversations} />
+              <Route path="/calls" component={Calls} />
+              <Route path="/meetings" component={Meetings} />
               <Route component={NotFound} />
             </Switch>
           </Main>
-
         </Bottom>
-
       </Wrapper>);
   }
 }

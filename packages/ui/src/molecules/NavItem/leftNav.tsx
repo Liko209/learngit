@@ -48,14 +48,15 @@ const Icons = [
   ['Contacts', 'Calendar', 'Tasks', 'Notes', 'Files', 'Settings'],
 ];
 type TNavProps = {
-  isExpand: boolean,
+  isExpand: boolean;
+  id: string;
 } & Partial<Pick<WithTheme, 'theme'>>;
 
 const UMICount = [120, 0, 16, 1, 0, 1, 99, 0, 11];
 export const LeftNav = (props: TNavProps) => {
   const isExpand = props.isExpand;
   return (
-    <Left expand={+isExpand} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel">
+    <Left expand={+isExpand} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={props.id}>
     {Icons.map((arr, index) => {
       return (
         <MuiList
