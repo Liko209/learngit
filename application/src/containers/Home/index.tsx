@@ -40,7 +40,7 @@ class Home extends Component<IProps, IStates>  {
           <button onClick={this.signOutClickHandler}>Logout</button>
         </TopBar>
         <Bottom>
-          <LeftNav>
+          <LeftNav id="leftnav">
             {/* <NavLink to="/" exact={true}>Home </NavLink> */}
             <NavLink to="/messages">Messages </NavLink>
             <NavLink to="/calls">Calls </NavLink>
@@ -55,9 +55,7 @@ class Home extends Component<IProps, IStates>  {
               <Route component={NotFound} />
             </Switch>
           </Main>
-
         </Bottom>
-
       </Wrapper>);
   }
 }

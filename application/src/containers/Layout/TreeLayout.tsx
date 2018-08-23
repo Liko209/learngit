@@ -26,9 +26,12 @@ interface IStates {
 }
 
 class TreeLayout extends Component<IProps, IStates> {
+  // private refLayout: React.RefObject<HTMLDivElement>;
+
   constructor(props: IProps) {
     super(props);
     const { tag } = props;
+    // this.refLayout = React.createRef();
     const localLeftPanelWidth = localStorage.getItem(`${tag}_left`) || '268';
     const localRightPanelWidth = localStorage.getItem(`${tag}_right`) || '268';
     this.state = {
@@ -125,10 +128,14 @@ class TreeLayout extends Component<IProps, IStates> {
   onResize() {
     let { left, middle, right, showLeftResizer, showRightResizer, forceDisplayLeftPanel, forceDisplayRightPanel } = this.state;
     const { localLeftPanelWidth, localRightPanelWidth } = this.state;
-    const nav = 72; // todo 72 is dynamic value
-    const max = 1820; // todo change to 1920
+    const nav = document.getElementById('leftnav')!.getBoundingClientRect().width;
+    const max = 1920;
     const windowWidth = window.innerWidth;
     const body = windowWidth > max ? max : windowWidth;
+    // const element = ReactDOM.findDOMNode(this.refLayout.current!) as Element;
+    // const layoutWidth = element.parentElement!.getBoundingClientRect().width;
+    // console.log(layoutWidth);
+    // const nav = body - layoutWidth;
 
     middle = body - nav - left - right;
     if (middle <= 400) {

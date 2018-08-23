@@ -4,6 +4,7 @@ import styled from 'styled-components';
 interface IExternalPorps {
   onClick?: (e: MouseEvent) => void;
   children: ReactNode[];
+  // ref?: React.RefObject<HTMLDivElement>;
 }
 
 const Wrapper = styled.div`
