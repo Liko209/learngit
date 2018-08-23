@@ -10,14 +10,14 @@ export function setUp(accountType: string) {
     const helper = TestHelper.from(t);
     await helper.checkOutAccounts(accountType);
     helper.setupGlipApiManager();
-  }
+  };
 }
 
 export function tearDown() {
   return async (t: TestController) => {
     const helper = TestHelper.from(t);
     await helper.checkInAccounts();
-  }
+  };
 }
 export class TestHelper {
   static from(t: TestController): TestHelper {
@@ -66,18 +66,12 @@ export class TestHelper {
     message: string,
     status: Status = Status.PASSED,
     takeScreen: boolean = false,
-    startTime?: number,
-    endTime?: number,
+    startTime: number = Date.now(),
+    endTime: number = Date.now(),
     parent?: AllureStep) {
 
-    if (this.t.ctx.logs == undefined) {
+    if (this.t.ctx.logs === undefined) {
       this.t.ctx.logs = [];
-    }
-    if (startTime == undefined) {
-      startTime = Date.now();
-    }
-    if (endTime == undefined) {
-      endTime = startTime;
     }
 
     let screenPath;
@@ -87,8 +81,8 @@ export class TestHelper {
       screenPath = this.t['testRun'].opts.screenshotPath + '/' + screenPath;
     }
 
-    const step = new AllureStep(message, status, startTime, endTime, screenPath, [],);
-    if (parent == undefined) {
+    const step = new AllureStep(message, status, startTime, endTime, screenPath, []);
+    if (parent === undefined) {
       this.t.ctx.logs.push(step);
     } else {
       parent.children.push(step);
