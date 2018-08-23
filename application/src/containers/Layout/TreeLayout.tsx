@@ -59,13 +59,11 @@ class TreeLayout extends Component<IProps, IStates> {
 
   componentDidMount() {
     addResizeListener(this.onResize);
-    // window.addEventListener('resize', this.onResize);
     this.onResize();
   }
 
   componentWillUnmount() {
     removeResizeListener();
-    // window.removeEventListener('resize', this.onResize);
   }
 
   onMouseDown(e: ReactMouseEvent) {
@@ -73,7 +71,7 @@ class TreeLayout extends Component<IProps, IStates> {
     document.addEventListener<'mousemove'>('mousemove', this.onMouseMove); // document mousemove
     const currentElement = e.nativeEvent.srcElement; // Resizer
     const parentElement = currentElement!.parentElement;
-    const collectionElement = parentElement!.querySelectorAll('[offset]'); // todo
+    const collectionElement = parentElement!.querySelectorAll('[offset]');
     const currentIndex = Array.from(collectionElement).indexOf(currentElement!);
     this.setState({ currentElement, currentIndex });
   }
@@ -91,10 +89,10 @@ class TreeLayout extends Component<IProps, IStates> {
     const { currentElement, currentIndex } = this.state;
     const { tag } = this.props;
 
-    const leftNode: any = currentElement!.previousSibling; // todo
+    const leftNode: any = currentElement!.previousSibling;
     const leftMinWidth = leftNode.dataset.minWidth || 10;
     const leftMaxWidth = leftNode.dataset.maxWidth || 9999;
-    const rightNode: any = currentElement!.nextSibling; // todo
+    const rightNode: any = currentElement!.nextSibling;
     const rightMinWidth = rightNode.dataset.minWidth || 10;
     const rightMaxWidth = rightNode.dataset.maxWidth || 9999;
 
