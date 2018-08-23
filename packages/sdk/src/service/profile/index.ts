@@ -72,8 +72,9 @@ export default class ProfileService extends BaseService<Profile> {
       const oldFavGroupIds = profile.favorite_group_ids || [];
       const newFavGroupIds = this._reorderFavoriteGroupIds(oldIndex, newIndex, oldFavGroupIds);
       profile.favorite_group_ids = newFavGroupIds;
-      this._putProfileAndHandle(profile, 'favorite_group_ids', oldFavGroupIds);
+      return this._putProfileAndHandle(profile, 'favorite_group_ids', oldFavGroupIds);
     }
+    return null;
   }
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
