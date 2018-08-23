@@ -26,11 +26,24 @@ export const getGroupName = (group: GroupModel, userId?: number) => {
     }
   } else {
     const groupMemberIDs = _.difference(memberIds, [userId]);
-    const toTitleCase = (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    const compareFunc = (a: string, b: string) =>
-      (/[a-zA-Z]/.test(a) && !/[a-zA-Z]/.test(b)) ||
-        (/0-9/.test(a) && /[^a-zA-Z0-9]/.test(b)) ? -1 :
-        a.toLowerCase().localeCompare(b.toLowerCase());
+    const compareCharacters = (a: string, b: string) => {
+      if (a === b) {
+        return 0;
+      }
+      const priority = (char: string) => !char ? 0 : /[a-z]/i.test(char) ? 1 : /[0-9]/.test(char) ? 2 : 3;
+      return (priority(a) - priority(b)) || a.toLowerCase().localeCompare(b.toLowerCase());
+    };
+
+    const compareNames = (name1: string, name2: string) => {
+      const maxLength = Math.max(name1.length, name2.length);
+      for (let i = 0; i < maxLength; i += 1) {
+        const result = compareCharacters(name1[i], name2[i]);
+        if (result !== 0) {
+          return result;
+        }
+      }
+      return 0;
+    };
 
     if (groupMemberIDs.length === 1) {
       // 1 other member, 1:1 conversation
@@ -44,12 +57,12 @@ export const getGroupName = (group: GroupModel, userId?: number) => {
         if (!firstName && !lastName) {
           emails.push(email);
         } else if (firstName) {
-          names.push(toTitleCase(firstName));
+          names.push(firstName);
         } else if (lastName) {
-          names.push(toTitleCase(lastName));
+          names.push(lastName);
         }
       });
-      peopleName = names.sort(compareFunc).concat(emails.sort(compareFunc)).join(', ');
+      peopleName = names.sort(compareNames).concat(emails.sort(compareNames)).join(', ');
     }
   }
   return peopleName;
