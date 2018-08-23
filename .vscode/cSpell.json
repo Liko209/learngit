@@ -98,7 +98,10 @@
         "Injectable",
         "Odeson",
         "subheader",
-        "cateye"
+        "cateye",
+        "visibilitychange",
+        "msvisibilitychange",
+        "webkitvisibilitychange"
     ],
     "flagWords": []
 }

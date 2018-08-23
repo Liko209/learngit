@@ -62,10 +62,13 @@ export default class SingleEntityMapStore extends BaseStore {
     }
     let model = this.createModel(data);
     if (matchedProperties) {
-      model = matchedProperties.reduce((matchedModel, property) => {
-        matchedModel[property] = model[property]; // eslint-disable-line
-        return matchedModel;
-      },                               {});
+      model = matchedProperties.reduce(
+        (matchedModel, property) => {
+          matchedModel[property] = model[property];
+          return matchedModel;
+        },
+        {},
+      );
     }
     this.data.merge(model);
   }

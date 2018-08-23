@@ -11,9 +11,7 @@ type IReactComponent<P = any> =
     | React.ClassicComponentClass<P>;
 
 export interface IStoresProps {
-  stores: {
-    [key: string]: MultiEntityMapStore;
-  };
+  getEntity: (entityName: string, id: number) => {};
 }
 
 type IProps<OriginalProps> = OriginalProps & IStoresProps;
@@ -21,36 +19,56 @@ type IProps<OriginalProps> = OriginalProps & IStoresProps;
 /**
  * Store Injection
  */
-function createStoreInjector<T, OriginalProps>(
-  grabStoresFn: (storeManager: StoreManager) => {},
-  component: IReactComponent<OriginalProps>,
-  injectNames: string,
-) {
-  let displayName =
+function createStoreInjector<T, OriginalProps>(component: IReactComponent<OriginalProps>) {
+  const displayName =
     `inject-
     ${(component.displayName ||
       component.name ||
       (component.constructor && component.constructor.name) ||
       'Unknown')}`;
-  if (injectNames) displayName = `${displayName}-with-${injectNames}`;
 
   class Injector extends Component<OriginalProps> {
     static readonly displayName = displayName;
     static readonly wrappedComponent = component;
     wrappedInstance: React.ReactInstance;
+    storeManager: StoreManager;
+    entityStore: {[parameter: string]: MultiEntityMapStore} = {};
 
     constructor(props: OriginalProps) {
       super(props);
       this.createElementWithStores = this.createElementWithStores.bind(this);
+      this.getEntity = this.getEntity.bind(this);
+    }
+
+    componentWillUnmount() {
+      Object.values(this.entityStore).forEach((store) => {
+        store.delUsedIds(this);
+      });
+    }
+
+    getEntity(entityName: string, id: number) {
+      const entityNames = Object.values(ENTITY_NAME);
+      if (!entityNames.includes(entityName)) {
+        throw new Error('entity name must be included in ENTITY_NAME');
+      }
+
+      let store = this.entityStore[entityName];
+      if (!store) {
+        store = this.storeManager.getEntityMapStore(entityName) as MultiEntityMapStore;
+        this.entityStore[entityName] = store;
+      }
+      store.addUsedIds(this, id);
+
+      return store.get(id);
     }
 
     createElementWithStores(storeManager: StoreManager) {
       const newProps = {
         ...(this.props as {}),
-        stores: grabStoresFn(storeManager),
       } as IProps<OriginalProps>;
-      const stores = grabStoresFn(storeManager);
-      newProps.stores = stores;
+
+      this.storeManager = storeManager;
+      newProps.getEntity = this.getEntity;
 
       return createElement(component, newProps);
     }
@@ -70,33 +88,10 @@ function createStoreInjector<T, OriginalProps>(
   return Injector;
 }
 
-function grabStoresByName(storeNames: string[]) {
-  return function (storeManager: StoreManager) {
-    const stores = {};
-    const entityName = Object.values(ENTITY_NAME);
-    storeNames.forEach((storeName) => {
-      if (!entityName.includes(storeName)) {
-        throw new Error(
-          'MobX injector: Store \'' +
-          storeName +
-          '\' is not available! Make sure it is provided by some Provider',
-        );
-      }
-      stores[storeName] = storeManager.getEntityMapStore(storeName);
-    });
-    return stores;
-  };
-}
-
-export default function inject(...storeNames: string[]) {
-  const grabStoresFn = grabStoresByName(storeNames);
+export default function inject() {
   return function <T extends Component, OriginalProps extends {}>(
     componentClass: IReactComponent<OriginalProps>,
   ) {
-    return createStoreInjector<T, OriginalProps>(
-      grabStoresFn,
-      componentClass,
-      storeNames.join('-'),
-    );
+    return createStoreInjector<T, OriginalProps>(componentClass);
   };
 }
