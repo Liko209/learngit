@@ -10,10 +10,10 @@ export default class DirectMessageListPresenter extends ConversationListPresente
   constructor() {
     super(
       'people',
-      'Direct Message',
+      'Direct Messages',
       ENTITY.PEOPLE_GROUPS,
       GROUP_QUERY_TYPE.GROUP,
-      'Direct Message',
+      'Direct Messages',
     );
   }
 
