@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../styled-components';
-
 import React from 'react';
 import Search from '@material-ui/icons/Search';
 import Typography from '@material-ui/core/Typography';
@@ -63,7 +62,7 @@ const Indicators = styled.div`
   left: 0;
   color: ${({ theme }) => theme.palette.grey[500]};
   &:hover {
-    color: transparent;
+    color: ${({ theme }) => theme.palette.grey[500]};
   }
 `;
 const IconSearch = styled(Search)`
@@ -170,6 +169,19 @@ const colourStyles = {
   },
 };
 
+// type TSelectWithTheme<OptionsType> = {
+//   theme: any;
+// } & Props & CommonProps<OptionsType>;
+// class SelectWithTheme extends Select<TSelectWithTheme<OptionsType>> {
+//   render() {
+//     return (
+//       <Select
+//         {...this.props}
+//       />
+//     );
+//   }
+// }
+
 class SearchBar extends React.Component<TSearchBarProps, {
   value:
   ValueType<{ value: string; label: string; }>,
@@ -185,6 +197,7 @@ class SearchBar extends React.Component<TSearchBarProps, {
       value,
     });
   }
+
   render() {
     return (
       <Select
