@@ -10,6 +10,7 @@ import IconButton from '../IconButton';
 
 type TIconMore = {
   awake?: boolean;
+  handleSignOutClick?: ((event: React.MouseEvent<HTMLInputElement>) => void);
 };
 
 const MenuListCompositionWrapper = styled.div`
@@ -74,7 +75,7 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
                   <MenuList>
                     <MenuItem onClick={this.handleClose}>Profile</MenuItem>
                     <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                    <MenuItem onClick={this.handleClose}>Logout</MenuItem>
+                    <MenuItem onClick={this.props.handleSignOutClick}>Logout</MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>

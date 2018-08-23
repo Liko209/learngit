@@ -48,9 +48,9 @@ class Home extends Component<IProps, IStates>  {
     const { isExpand } = this.state;
     return (
       <Wrapper>
-        <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online"/>
+        <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online" data-anchor="expandButton" handleSignOutClick={this.signOutClickHandler} />
         <Bottom>
-          <LeftNav isExpand={isExpand} id="leftnav"/>
+          <LeftNav isExpand={isExpand} id="leftnav" />
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
