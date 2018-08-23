@@ -1,3 +1,4 @@
 echo '====Start Install Deps'
-npm ci
-npm run postinstall
+
+rm -rf $project/**/package-lock.json 
+npm i
