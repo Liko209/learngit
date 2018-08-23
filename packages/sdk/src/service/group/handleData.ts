@@ -13,7 +13,7 @@ import { ENTITY } from '../../service/eventKey';
 import ProfileService from '../../service/profile';
 import _ from 'lodash';
 import { transform } from '../utils';
-import { Group, Post, Raw, Profile } from '../../models';
+import { Group, Post, Raw, Profile, PartialWithKey } from '../../models';
 import { GROUP_QUERY_TYPE } from '../constants';
 import StateService from '../state';
 
@@ -36,12 +36,89 @@ import StateService from '../state';
 //   return [];
 // }
 
+async function getExistedAndTransformDataFromPartial(groups: Partial<Raw<Group>>[]): Promise<Group[]> {
+  const groupDao = daoManager.getDao<GroupDao>(GroupDao);
+  const transformedData: (Partial<Group> | null)[] = await Promise.all(
+    groups.map(async (item: Partial<Raw<Group>>) => {
+      if (item._id) {
+        const finalItem = item;
+        const existedGroup = await groupDao.get(item._id);
+        if (existedGroup) {
+          // If existed in DB, update directly and return the updated result for notification later
+          /* eslint-enable no-underscore-dangle */
+          const transformed: PartialWithKey<Group> = transform<PartialWithKey<Group>>(finalItem);
+          await groupDao.update(transformed);
+          if (transformed.id) {
+            const updated = await groupDao.get(transformed.id);
+            return updated;
+          }
+        } else {
+          // If not existed in DB, request from API and handle the response again
+          const resp = await GroupAPI.requestGroupById(item._id);
+          if (resp && resp.data) {
+            handleData([resp.data] as Raw<Group>[]);
+          }
+        }
+      }
+      return null;
+    }),
+  );
+
+  return transformedData.filter((item: Group | null) => item !== null) as Group[];
+}
+
+async function calculateDeltaData(deltaGroup: Raw<Group>): Promise<Group | void> {
+  const groupDao = daoManager.getDao<GroupDao>(GroupDao);
+
+  const originData = await groupDao.get(deltaGroup._id);
+  if (originData && deltaGroup._delta) {
+    const { add, remove, set } = deltaGroup._delta;
+    const result = originData;
+    if (remove) {
+      for (const key in remove) {
+        if (remove.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
+          result[key] = _.drop(originData[key], remove[key]);
+        } else {
+          // No a regular delta message if the add field is not existed,
+          // Force end the calculation and return
+          return;
+        }
+      }
+    }
+
+    if (add) {
+      for (const key in add) {
+        if (add.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
+          result[key] = _.concat([], originData[key], add[key]);
+        } else {
+          // No a regular delta message if the add field is not existed
+          // Force end the calculation and return
+          return;
+        }
+      }
+    }
+
+    if (set) {
+      for (const key in set) {
+        if (set.hasOwnProperty(key)) {
+          result[key] = set[key];
+        }
+      }
+    }
+    return result;
+  }
+}
+
 async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
   const transformedData: (Group | null)[] = await Promise.all(
     groups.map(async (item: Raw<Group>) => {
       let finalItem = item;
       /* eslint-disable no-underscore-dangle */
       if (finalItem._delta && item._id) {
+        const calculated = await calculateDeltaData(item);
+        if (calculated) {
+          return calculated;
+        }
         const resp = await GroupAPI.requestGroupById(item._id);
         if (resp && resp.data) {
           finalItem = resp.data;
@@ -142,6 +219,7 @@ export default async function handleData(groups: Raw<Group>[]) {
   const accountDao = daoManager.getKVDao(AccountDao);
   const userId = Number(accountDao.get(ACCOUNT_USER_ID));
   const transformData = await getTransformData(groups);
+
   const data = transformData
     .filter(item => item !== null && item.members && item.members.indexOf(userId) !== -1);
   // handle deactivated data and normal data
@@ -257,8 +335,12 @@ async function filterGroups(
   return result;
 }
 
-async function handlePartialData(groups: Partial<Group>[]) {
-
+async function handlePartialData(groups: Partial<Raw<Group>>[]) {
+  if (groups.length === 0) {
+    return;
+  }
+  const transformData = await getExistedAndTransformDataFromPartial(groups);
+  await doNotification([], transformData);
 }
 
 export {

@@ -9,12 +9,13 @@ import GroupStateDao from '../../dao/groupState';
 import notificationCenter from '../../service/notificationCenter';
 import { ENTITY } from '../../service/eventKey';
 import { State, GroupState, Raw } from '../../models';
+import _ from 'lodash';
 
 export type TransformedState = State & {
   groupState: GroupState[];
 };
 
-export function transform(item: Raw<State>): TransformedState {
+export function transform(item: Raw<State> | Partial<Raw<State>>): TransformedState {
   const clone = Object.assign({}, item);
   const groupIds = new Set();
   const groupStates = {};
@@ -57,6 +58,29 @@ export function transform(item: Raw<State>): TransformedState {
   /* eslint-enable no-underscore-dangle */
 }
 
+export async function getPartialStates(state: Partial<Raw<State>>[]) {
+  const transformedData: TransformedState[] = [];
+  const myState: State[] = [];
+  let groupStates: GroupState[] = [];
+
+  state.forEach((item) => {
+    const transformed: TransformedState = transform(item);
+    transformedData.push(transformed);
+    const { groupState, ...rest } = transformed;
+    const groupStateDao = daoManager.getDao(GroupStateDao);
+    _.map(groupState, async (state: GroupState) => {
+      const originState = await groupStateDao.get(state.id);
+      return originState;
+    });
+    groupStates = groupStates.concat(groupState);
+
+    if (Object.keys(rest).length) {
+      myState.push(rest);
+    }
+  });
+  return { myState, groupStates, transformedData };
+}
+
 export function getStates(state: Raw<State>[]) {
   const transformedData: TransformedState[] = [];
   const myState: State[] = [];
@@ -96,8 +120,20 @@ export default async function stateHandleData(state: Raw<State>[]) {
   await Promise.all(savePromises);
 }
 
-export async function handlePartialData(state: Partial<MyState>[]) {
-
+export async function handlePartialData(state: Partial<State>[]) {
+  if (state.length === 0) {
+    return;
+  }
+  const stateDao = daoManager.getDao(StateDao);
+  const groupStateDao = daoManager.getDao(GroupStateDao);
+  const savePromises: Promise<void>[] = [];
+  const { myState, groupStates } = await getPartialStates(state);
+  notificationCenter.emitEntityPut(ENTITY.MY_STATE, myState);
+  savePromises.push(stateDao.bulkUpdate(myState));
+  if (groupStates.length) {
+    notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, groupStates);
+    savePromises.push(groupStateDao.bulkUpdate(groupStates));
+  }
 }
 // export { getStates, transform };
 // export default stateHandleData;

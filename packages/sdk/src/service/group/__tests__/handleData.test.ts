@@ -8,7 +8,7 @@ import { Group, Post, Raw, Profile } from '../../../models';
 import handleData, {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
-  filterGroups,
+  filterGroups, handlePartialData,
 } from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
@@ -28,6 +28,7 @@ jest.mock('../../../dao', () => {
     bulkDelete: jest.fn(),
     bulkPut: jest.fn(),
     doInTransaction: jest.fn(),
+    update: jest.fn(),
   };
   return {
     daoManager: {
@@ -93,12 +94,20 @@ describe('handleData', () => {
   });
 
   it('passing an array', async () => {
+    expect.assertions(5);
     daoManager.getDao(GroupDao).get.mockReturnValue(1);
     const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
-      { _id: 1, members: [1], deactivated: true, _delta: true },
+      {
+        _id: 1, members: [1], deactivated: true, _delta: {
+          remove: { members: Array(1) },
+          set: { modified_at: 1535007198836, most_recent_content_modified_at: 1535007198836, version: 2916578790211584 },
+          _id: 4276230,
+        },
+      },
       { _id: 2, members: [1, 2], deactivated: false },
       { _id: 3, deactivated: false },
     ]);
+    console.log('handleData');
     await handleData(groups);
     // expect getTransformData function
     expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
@@ -114,6 +123,32 @@ describe('handleData', () => {
   });
 });
 
+describe('handlePartialData', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should save directly if find partial in DB', async () => {
+    daoManager.getDao(GroupDao).get.mockReturnValueOnce(1);
+    const groups: Partial<Raw<Group>>[] = toArrayOf<Partial<Raw<Group>>>([
+      { _id: 3375110, version: 2484043918606336, modified_at: 1535014387734, post_cursor: 26 },
+    ]);
+    await handlePartialData(groups);
+    expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
+    expect(GroupAPI.requestGroupById).not.toHaveBeenCalled();
+  });
+
+  it('should call api if can not find partial in DB', async () => {
+    daoManager.getDao(GroupDao).get.mockReturnValueOnce(null);
+    const groups: Partial<Raw<Group>>[] = toArrayOf<Partial<Raw<Group>>>([
+      { _id: 3375110, version: 2484043918606336, modified_at: 1535014387734, post_cursor: 26 },
+    ]);
+    await handlePartialData(groups);
+    expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(0);
+    expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
+  });
+});
 describe('handleFavoriteGroupsChanged()', () => {
   beforeEach(() => {
     jest.clearAllMocks();
