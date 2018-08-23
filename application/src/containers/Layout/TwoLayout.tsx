@@ -1,54 +1,28 @@
-import React, { Component, ComponentClass, SFC, MouseEvent } from 'react';
+import React, { Component, ReactNode } from 'react';
 import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
-// import HorizonResizer from './HorizonResizer';
 
 interface IProps {
-  Left: ComponentClass | SFC;
-  Right: ComponentClass | SFC;
+  children: ReactNode[];
 }
 
-interface IStates {
-  middle: number;
-  left: number; // current left panel width value
-  right: number;
-  last_left: number; // last left panel width value
-  last_right: number;
-}
+interface IStates { }
 
 class TwoLayout extends Component<IProps, IStates> {
   constructor(props: IProps) {
     super(props);
-    this.state = {
-      middle: 0,
-      left: 250, // current left panel width value
-      right: 300,
-      last_left: 250, // last left panel width value
-      last_right: 300,
-    };
-    this.onMouseDown = this.onMouseDown.bind(this);
-    // this.onMouseUp = this.onMouseUp.bind(this);
-    // this.onMouseMove = this.onMouseMove.bind(this);
-  }
-
-  onMouseDown(e: MouseEvent) {
-    // document.addEventListener('mouseup', this.onMouseUp);
-    // document.addEventListener('mousemove', this.onMouseMove);
-    // if (!this.state.currentNode) {
-    //   this.setState({ currentNode: e.target });
-    // }
+    this.state = {};
   }
 
   render() {
-    const { Left, Right } = this.props;
+    const { children } = this.props;
     return (
       <Layout>
         <HorizonPanel width={400}>
-          <Left />
+          {children[0]}
         </HorizonPanel>
-        {/* <HorizonResizer onMouseDown={this.onMouseDown} /> */}
-        <HorizonPanel width={268}>
-          <Right />
+        <HorizonPanel width={400}>
+          {children[1]}
         </HorizonPanel>
       </Layout>
     );

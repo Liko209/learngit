@@ -1,11 +1,9 @@
 import React from 'react';
-import { withRouter, NavLink, RouteComponentProps } from 'react-router-dom';
+import { withRouter, NavLink } from 'react-router-dom';
 
-interface IProps extends RouteComponentProps<{}> { }
-
-const List = ({ match }: IProps) => {
+const List = () => {
   return (
-    <div>
+    <div style={{ backgroundColor: 'green', height: '100%' }}>
       <strong>Conversation list: </strong>
       <NavLink to="/messages/123">123 </NavLink>
       <NavLink to="/messages/456">456 </NavLink>
