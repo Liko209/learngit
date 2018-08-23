@@ -78,8 +78,7 @@
   "lint-staged": {
     "linters": {
       "*.{ts, tsx, js, jsx}": [
-        "tslint",
-        "yarn test:staged"
+        "tslint"
       ]
     },
     "ignore": [

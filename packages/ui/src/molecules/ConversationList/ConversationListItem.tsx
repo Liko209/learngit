@@ -8,7 +8,7 @@ import styled from '../../styled-components';
 
 import MuiMenuItem, { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
 
-import { Presence, Umi, Icon } from '../../atoms';
+import { Presence, Umi, Icon, PresenceProps } from '../../atoms';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
 const StyledListItem = styled(MuiMenuItem)`
@@ -44,7 +44,7 @@ const StyledListItem = styled(MuiMenuItem)`
 
 type ListItemProps = {
   title: string;
-  status?: string;
+  status?: PresenceProps['presence'];
   unreadCount?: number;
   important?: boolean;
   umiVariant?: 'count' | 'dot' | 'auto';
@@ -53,17 +53,16 @@ type ListItemProps = {
 } & MuiMenuItemProps;
 
 const ConversationListItem = (props: ListItemProps) => {
-  const { title, status, unreadCount, important, onClick, onMoreClick, umiVariant } = props;
+  const { title, status, unreadCount, important, onClick, onMoreClick } = props;
   const fontWeight = unreadCount ? 'bold' : 'normal';
 
   return (
-    <StyledListItem
-      button={true}
-      onClick={onClick}
-    >
-      <Presence status={status} />
-      <ItemText style={{ fontWeight }}>{title}</ItemText>
-      <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
+    <StyledListItem button={true} onClick={onClick}>
+      <Presence presence={status} />
+      <ItemText style={{ fontWeight }}>
+        {title}
+      </ItemText>
+      <Umi important={important} unreadCount={unreadCount} />
       <Icon onClick={onMoreClick}>more_vert</Icon>
     </StyledListItem>
   );

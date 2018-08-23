@@ -1,32 +1,30 @@
-import React from 'react';
-import styled, { css } from 'styled-components';
+import React, { MouseEvent } from 'react';
+import styled from 'styled-components';
 
-interface IWrapperPorps {
+interface IInternalPorps {
   offset: number;
   show: boolean;
 }
 
-interface IButtonPorps extends IWrapperPorps {
-  onClick: () => void;
+interface IExternalPorps extends IInternalPorps {
+  onClick: (e: MouseEvent) => void;
 }
 
 const Wrapper = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
-  left: ${(props: IWrapperPorps) => `${props.offset}px`};
   right: auto;
-  z-index: 9999;
+  z-index: 8888;
   background-color: red;
   width: 10px;
   height: 20px;
   cursor: pointer;
-  ${props => !props.show && css`
-    display: none;
-  `}
+  left: ${(props: IInternalPorps) => `${props.offset}px`};
+  display: ${(props: IInternalPorps) => props.show ? 'block' : 'none'};
 `;
 
-const Button = ({ offset, show, onClick }: IButtonPorps) => {
+const Button = ({ offset, show, onClick }: IExternalPorps) => {
   return <Wrapper onClick={onClick} offset={offset} show={show} />;
 };
 
