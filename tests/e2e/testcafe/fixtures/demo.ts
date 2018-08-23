@@ -11,7 +11,7 @@ import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
 import { SITE_URL, SITE_ENV } from '../config';
 
 import { formalName } from '../libs/filter';
-import { setUp, tearDown, TestHelper} from '../libs/helpers';
+import { setUp, tearDown, TestHelper } from '../libs/helpers';
 
 fixture('Demo')
   .beforeEach(setUp('rcBetaUserAccount'))

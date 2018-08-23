@@ -55,6 +55,9 @@ const theme: DeepPartial<Theme> = {
       persimmon: '#ff793d',
       tomato: '#ff3737',
     },
+    action: {
+      hoverOpacity: 0.12,
+    },
   },
   shape: {
     borderRadius: 2,

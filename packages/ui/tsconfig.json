@@ -6,7 +6,8 @@
     "rootDir": "src"
   },
   "include": [
-    "src"
+    "src",
+    "../../node_modules/@types/react"
   ],
   "exclude": [
     "node_modules",

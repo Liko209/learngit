@@ -1,4 +1,4 @@
 echo '====Start Build application'
-yarn build:app
+cd $project/application
 
 syncFolderToServer $project/application/build $subDomain
