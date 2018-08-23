@@ -42,6 +42,11 @@ class Home extends Component<IProps, IStates>  {
       isExpand: !this.state.isExpand,
     });
     localStorage.setItem('isExpand', JSON.stringify(!this.state.isExpand));
+    const { location, history } = this.props;
+    history.push({
+      pathname: location.pathname,
+      search: `?leftnav=${!this.state.isExpand}`,
+    });
   }
   render() {
     // const { match } = this.props;

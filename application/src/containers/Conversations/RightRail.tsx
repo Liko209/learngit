@@ -10,7 +10,7 @@ interface IProps extends RouteComponentProps<IParams> { }
 const RightRail = ({ match }: IProps) => {
   const id = parseInt(match.params.id, 10);
   return (
-    <div style={{ backgroundColor: 'blue', height: '100%' }}>
+    <div style={{ backgroundColor: '#fff', height: '100%', borderLeft: '1px solid #ddd' }}>
       <strong>Conversation right rail: </strong>
       {!isNaN(id) && <div>id: {id}</div>}
     </div>

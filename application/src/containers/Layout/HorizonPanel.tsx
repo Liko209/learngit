@@ -21,6 +21,7 @@ const Wrapper = styled.div`
   height: 100%;
   display: ${(props: IInternalPorps) => props.width > 0 ? 'inline-block' : 'none'};
   width: ${(props: IInternalPorps) => `${props.width}px`};
+  transition: all .25s ease;
   ${props => props.forceDisplay && css`
     display: inline-block;
     width: 180px;
