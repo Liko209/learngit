@@ -107,7 +107,6 @@ describe('handleData', () => {
       { _id: 2, members: [1, 2], deactivated: false },
       { _id: 3, deactivated: false },
     ]);
-    console.log('handleData');
     await handleData(groups);
     // expect getTransformData function
     expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
