@@ -8,7 +8,6 @@ import _ from 'lodash';
 import storeManager, { ENTITY_NAME } from '../store';
 import PersonModel from '../store/models/Person';
 import GroupModel from '../store/models/Group';
-import { toTitleCase } from '../utils/case';
 
 const hasDisplayName = (person: PersonModel) => person && person.displayName;
 
@@ -58,9 +57,9 @@ export const getGroupName = (group: GroupModel, userId?: number) => {
         if (!firstName && !lastName) {
           emails.push(email);
         } else if (firstName) {
-          names.push(toTitleCase(firstName));
+          names.push(firstName);
         } else if (lastName) {
-          names.push(toTitleCase(lastName));
+          names.push(lastName);
         }
       });
       peopleName = names.sort(compareNames).concat(emails.sort(compareNames)).join(', ');
