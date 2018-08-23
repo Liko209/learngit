@@ -1,4 +1,6 @@
 import React, { Component, ReactNode, MouseEvent as ReactMouseEvent } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { parse } from 'query-string';
 import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
 import HorizonResizer from './HorizonResizer';
@@ -6,7 +8,7 @@ import HorizonButton from './HorizonButton';
 import { addResizeListener, removeResizeListener } from './optimizer';
 import { getOffsetLeft, pauseEvent } from './utils';
 
-interface IProps {
+interface IProps extends RouteComponentProps<{}> {
   tag: string;
   children: ReactNode[];
 }
@@ -60,6 +62,16 @@ class TreeLayout extends Component<IProps, IStates> {
   componentDidMount() {
     addResizeListener(this.onResize);
     this.onResize();
+  }
+
+  componentWillReceiveProps(nextProps: IProps) {
+    // nextProps.location.search = ?leftnav=true
+    const parsed = parse(nextProps.location.search);
+    if (parsed.leftnav === 'true') {
+      this.onResize(200);
+    } else if (parsed.leftnav === 'false') {
+      this.onResize(72);
+    }
   }
 
   componentWillUnmount() {
@@ -128,10 +140,10 @@ class TreeLayout extends Component<IProps, IStates> {
     }
   }
 
-  onResize() {
+  onResize(leftnav?: number) {
     let { left, middle, right, showLeftResizer, showRightResizer, forceDisplayLeftPanel, forceDisplayRightPanel } = this.state;
     const { localLeftPanelWidth, localRightPanelWidth } = this.state;
-    const nav = document.getElementById('leftnav')!.getBoundingClientRect().width;
+    const nav = leftnav || document.getElementById('leftnav')!.getBoundingClientRect().width;
     const max = 1920;
     const windowWidth = window.innerWidth;
     const body = windowWidth > max ? max : windowWidth;
@@ -273,4 +285,4 @@ class TreeLayout extends Component<IProps, IStates> {
   }
 }
 
-export default TreeLayout;
+export default withRouter(TreeLayout);

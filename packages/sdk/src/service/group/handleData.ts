@@ -260,10 +260,15 @@ async function filterGroups(
   return result;
 }
 
+async function handlePartialData(groups: Partial<Group>[]) {
+
+}
+
 export {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
   saveDataAndDoNotification,
   filterGroups,
   sortFavoriteGroups,
+  handlePartialData,
 };

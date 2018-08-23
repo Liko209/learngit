@@ -8,7 +8,7 @@ import StateAPI from '../../api/glip/state';
 import BaseService from '../BaseService';
 import PostService from '../post';
 import { SOCKET } from '../eventKey';
-import handleData from './handleData';
+import handleData, { handlePartialData } from './handleData';
 
 export default class StateService extends BaseService<GroupState> {
   static serviceName = 'StateService';
@@ -16,6 +16,7 @@ export default class StateService extends BaseService<GroupState> {
   constructor() {
     const subscriptions = {
       [SOCKET.STATE]: handleData,
+      [SOCKET.PARTIAL_STATE]: handlePartialData,
     };
     super(GroupStateDao, StateAPI, handleData, subscriptions);
   }
