@@ -11,11 +11,9 @@ import Select, { components } from 'react-select';
 import { ControlProps } from 'react-select/lib/components/Control';
 import { OptionProps } from 'react-select/lib/components/Option';
 import { ValueType } from 'react-select/lib/types';
-import { Theme } from '../../theme';
 
 type TSearchBarProps = {
   awake?: boolean;
-  theme: Theme;
 };
 
 const suggestions = [

@@ -17,6 +17,7 @@ import { PresenceProps } from '../../atoms';
 type TTopBarProps = {
   avatar?: string;
   handleLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
+  handleSignOutClick: ((event: React.MouseEvent<HTMLInputElement>) => void);
 } & PresenceProps;
 
 type TTopBarState = {
@@ -123,7 +124,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
             <SearchBar />
           </TopLeft>
           <TopRight>
-            <MenuListComposition awake={topBarState === 'hover'} />
+            <MenuListComposition awake={topBarState === 'hover'} handleSignOutClick={this.props.handleSignOutClick} />
             <AvatarWithPresence src={this.props.avatar} presence={this.props.presence} />
           </TopRight>
         </TopBarWrapper>

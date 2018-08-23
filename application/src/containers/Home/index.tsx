@@ -54,7 +54,7 @@ class Home extends Component<IProps, IStates>  {
     // const { match } = this.props;
     return (
       <Wrapper>
-        <TopBar handleLeftNavExpand={this.expandLeftNav} avatar={avatar} presence="online" data-anchor="expandButton" />
+        <TopBar handleLeftNavExpand={this.expandLeftNav} avatar={avatar} presence="online" data-anchor="expandButton" handleSignOutClick={this.signOutClickHandler} />
         <Bottom>
           <LeftNav isExpand={this.state.isExpand} />
           <Main>
