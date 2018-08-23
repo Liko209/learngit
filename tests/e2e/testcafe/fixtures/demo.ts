@@ -18,7 +18,7 @@ fixture.skip('Demo')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown());
 
-test(formalName('Sign In Success', ['P0', 'SignIn']), async t => {
+test(formalName('Sign In Success', ['P0', 'SignIn']), async (t) => {
   const helper = TestHelper.from(t);
 
   let page;
