@@ -22,7 +22,7 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
     transition: all .25s ease;
   }
   .left-paper {
-    position: relative;
+    position: absolute;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
