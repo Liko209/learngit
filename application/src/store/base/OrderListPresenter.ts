@@ -59,9 +59,10 @@ export default class OrderListPresenter extends BasePresenter {
           notMatchedKeys.push(key);
         });
       } else if (type === 'replaceAll') {
+        let index = 0;
         entities.forEach((data) => {
           if (this.isMatchedFunc(data)) {
-            const idSortKey = this.transformFunc(data);
+            const idSortKey = this.transformFunc(data, index += 1);
             matchedIDSortKeyArray.push(idSortKey);
             matchedEntities.push(data);
           }
