@@ -45,7 +45,7 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
 
 const Icons = [
   ['Dashboard', 'Messages', 'Phone', 'Meetings'],
-  ['Calendar', 'Tasks', 'Notes', 'Files'],
+  ['Contacts', 'Calendar', 'Tasks', 'Notes', 'Files', 'Settings'],
 ];
 type TNavProps = {
   isExpand: boolean,

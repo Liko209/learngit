@@ -16,11 +16,13 @@ storiesOf('NavItem', module)
           Phone: 'Phone',
           Meetings: 'Meetings',
           Dashboard: 'Dashboard',
+          Contacts: 'Contacts',
           Calendar: 'Calendar',
           Tasks: 'Tasks',
           Files: 'Files',
           Notes: 'Notes',
           Integration: 'Integration',
+          Settings: 'Settings',
         },
         'Messages',
       );
