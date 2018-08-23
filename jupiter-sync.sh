@@ -13,6 +13,19 @@ case "$1" in
                         --delete --progress \
                         ./application/build/ $theServer:$theFolder/application-fiji-$ID
                 ssh $theServer "chown -R root:root $theFolder/application-fiji-$ID && cd $theFolder/application-fiji-$ID; pwd; ls -al" 
+                echo "Success build application and deploy to https://application-fiji-$ID.fiji.gliprc.com"
+        ;;
+        "sbs" | "story-book-sync")
+                echo 'Which ID do you want to upload? (Only the number, ${ID})'
+                read ID
+                echo $ID
+                subDomain=storybooks-$ID
+                cd packages/ui && npm run build-storybook
+                rsync -azPv \
+                        --delete --progress \
+                        ./storybook-static/ $theServer:$theFolder/$subDomain
+                ssh $theServer "chown -R root:root $theFolder/$subDomain && cd $theFolder/$subDomain; pwd; ls -al" 
+                echo "Success build storybook and deploy to https://$subDomain.fiji.gliprc.com"
         ;;
         "h" | "html")
                 ssh $theServer  -t "cd $theFolder/html; pwd; ls -al; bash"
