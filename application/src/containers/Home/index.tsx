@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom';
-
+import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import Wrapper from './Wrapper';
-import TopBar from './TopBar';
 import Bottom from './Bottom';
-import LeftNav from './LeftNav';
+import { LeftNav } from 'ui-components';
 import Main from './Main';
 
 import NotFound from '@/containers/NotFound';
@@ -12,18 +10,25 @@ import Conversations from '@/containers/Conversations';
 import Calls from '@/containers/Calls';
 import Meetings from '@/containers/Meetings';
 
+import TopBar from 'ui-components/organisms/TopBar';
+import avatar from './avatar.jpg';
+
 import { service } from 'sdk';
 
 const { AuthService } = service;
 
-interface IProps { }
+interface IProps extends RouteComponentProps<any> { }
 
-interface IStates { }
-
+interface IStates {
+  isExpand: boolean;
+}
 class Home extends Component<IProps, IStates>  {
   constructor(props: IProps) {
     super(props);
-    this.state = {};
+    this.state = {
+      isExpand: localStorage.getItem('isExpand') === null ? true :
+        JSON.parse(String(localStorage.getItem('isExpand'))),
+    };
     this.signOutClickHandler = this.signOutClickHandler.bind(this);
   }
 
@@ -32,20 +37,20 @@ class Home extends Component<IProps, IStates>  {
     await authService.logout();
     window.location.href = '/';
   }
-
+  handleExpand = () => {
+    this.setState({
+      isExpand: !this.state.isExpand,
+    });
+    localStorage.setItem('isExpand', JSON.stringify(!this.state.isExpand));
+  }
   render() {
+    // const { match } = this.props;
+    const { isExpand } = this.state;
     return (
       <Wrapper>
-        <TopBar>
-          <button onClick={this.signOutClickHandler}>Logout</button>
-        </TopBar>
+        <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online"/>
         <Bottom>
-          <LeftNav id="leftnav">
-            {/* <NavLink to="/" exact={true}>Home </NavLink> */}
-            <NavLink to="/messages">Messages </NavLink>
-            <NavLink to="/calls">Calls </NavLink>
-            <NavLink to="/meetings">Meetings </NavLink>
-          </LeftNav>
+          <LeftNav isExpand={isExpand} id="leftnav"/>
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
