@@ -2,7 +2,7 @@ import React, { MouseEvent, ReactNode } from 'react';
 import styled from 'styled-components';
 
 interface IExternalPorps {
-  onClick: (e: MouseEvent) => void;
+  onClick?: (e: MouseEvent) => void;
   children: ReactNode[];
 }
 

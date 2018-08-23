@@ -8,7 +8,9 @@ import LeftNav from './LeftNav';
 import Main from './Main';
 
 import NotFound from '@/containers/NotFound';
-import Conversation from '@/containers/Conversations';
+import Conversations from '@/containers/Conversations';
+import Calls from '@/containers/Calls';
+import Meetings from '@/containers/Meetings';
 
 import { service } from 'sdk';
 
@@ -47,9 +49,9 @@ class Home extends Component<IProps, IStates>  {
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
-              <Route path="/messages/:id?" component={Conversation} />
-              {/* <Route path="/calls" component={Calls} /> */}
-              {/* <Route path="/meetings" component={Meetings} /> */}
+              <Route path="/messages/:id?" component={Conversations} />
+              <Route path="/calls" component={Calls} />
+              <Route path="/meetings" component={Meetings} />
               <Route component={NotFound} />
             </Switch>
           </Main>
