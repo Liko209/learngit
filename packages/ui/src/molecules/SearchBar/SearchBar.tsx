@@ -3,7 +3,7 @@
  * @Date: 2018-08-20 09:21:51
  * Copyright © RingCentral. All rights reserved.
  */
-import styled, { withTheme } from '../../styled-components';
+import styled from '../../styled-components';
 import React from 'react';
 import Search from '@material-ui/icons/Search';
 import Typography from '@material-ui/core/Typography';
@@ -218,4 +218,4 @@ class SearchBar extends React.Component<TSearchBarProps, {
   }
 }
 
-export default withTheme(SearchBar);
+export default SearchBar;
