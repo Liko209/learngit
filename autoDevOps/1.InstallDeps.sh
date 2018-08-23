@@ -1,2 +1,3 @@
 echo '====Start Install Deps'
-yarn
+npm ci
+npm run postinstall
