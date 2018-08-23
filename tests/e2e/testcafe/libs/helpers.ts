@@ -63,7 +63,7 @@ export class TestHelper {
     this.t.ctx.rcPlatformManager = new RcPlatformManager(key, secret, server);
   }
 
-  get glipApiManager() : RcPlatformManager {
+  get glipApiManager(): RcPlatformManager {
     return this.t.ctx.rcPlatformManager;
   }
 
@@ -71,18 +71,12 @@ export class TestHelper {
     message: string,
     status: Status = Status.PASSED,
     takeScreen: boolean = false,
-    startTime ? : number,
-    endTime ? : number,
-    parent ? : AllureStep) {
+    startTime: number = Date.now(),
+    endTime: number = Date.now(),
+    parent?: AllureStep) {
 
     if (this.t.ctx.logs === undefined) {
       this.t.ctx.logs = [];
-    }
-    if (startTime === undefined) {
-      startTime = Date.now();
-    }
-    if (endTime === undefined) {
-      endTime = startTime;
     }
 
     let screenPath;
