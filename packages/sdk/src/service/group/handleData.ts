@@ -79,7 +79,7 @@ async function calculateDeltaData(deltaGroup: Raw<Group>): Promise<Group | void>
         if (remove.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
           result[key] = _.drop(originData[key], remove[key]);
         } else {
-          // No a regular delta message if the add field is not existed,
+          // No a regular delta message if the remove field is not existed,
           // Force end the calculation and return
           return;
         }
