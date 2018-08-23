@@ -3,8 +3,7 @@
  * @Date: 2018-08-20 09:21:51
  * Copyright © RingCentral. All rights reserved.
  */
-import styled from '../../styled-components';
-
+import styled, { withTheme } from '../../styled-components';
 import React from 'react';
 import Search from '@material-ui/icons/Search';
 import Typography from '@material-ui/core/Typography';
@@ -12,9 +11,11 @@ import Select, { components } from 'react-select';
 import { ControlProps } from 'react-select/lib/components/Control';
 import { OptionProps } from 'react-select/lib/components/Option';
 import { ValueType } from 'react-select/lib/types';
+import { Theme } from '../../theme';
 
 type TSearchBarProps = {
   awake?: boolean;
+  theme: Theme;
 };
 
 const suggestions = [
@@ -63,7 +64,7 @@ const Indicators = styled.div`
   left: 0;
   color: ${({ theme }) => theme.palette.grey[500]};
   &:hover {
-    color: transparent;
+    color: ${({ theme }) => theme.palette.grey[500]};
   }
 `;
 const IconSearch = styled(Search)`
@@ -170,6 +171,19 @@ const colourStyles = {
   },
 };
 
+// type TSelectWithTheme<OptionsType> = {
+//   theme: any;
+// } & Props & CommonProps<OptionsType>;
+// class SelectWithTheme extends Select<TSelectWithTheme<OptionsType>> {
+//   render() {
+//     return (
+//       <Select
+//         {...this.props}
+//       />
+//     );
+//   }
+// }
+
 class SearchBar extends React.Component<TSearchBarProps, {
   value:
   ValueType<{ value: string; label: string; }>,
@@ -185,6 +199,7 @@ class SearchBar extends React.Component<TSearchBarProps, {
       value,
     });
   }
+
   render() {
     return (
       <Select
@@ -203,4 +218,4 @@ class SearchBar extends React.Component<TSearchBarProps, {
   }
 }
 
-export default SearchBar;
+export default withTheme(SearchBar);

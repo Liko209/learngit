@@ -65,6 +65,11 @@ const TopRight = styled.div`
   justify-content: flex-end;
 `;
 
+const BackForward: any = styled.div`
+  display: flex;
+  visibility: ${(props: { invisible: boolean }) => props.invisible ? 'hidden' : 'visible'};
+`;
+
 class TopBar extends React.Component<TTopBarProps, TTopBarState> {
   constructor(props: TTopBarProps) {
     super(props);
@@ -98,6 +103,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
 
   render() {
     const { topBarState } = this.state;
+    const isElectron = navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
     return (
       <StyledTopBar>
         <TopBarWrapper onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
@@ -106,12 +112,14 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               format_list_bulleted
             </IconButton>
             <TopLogo variant="headline">Ringcentral</TopLogo>
-            <IconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
-              chevron_left
-            </IconButton>
-            <IconButton tooltipTitle="Forward" size="small" awake={topBarState === 'hover'}>
-              chevron_right
-            </IconButton>
+            <BackForward invisible={!isElectron}>
+              <IconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
+                chevron_left
+              </IconButton>
+              <IconButton tooltipTitle="Forward" size="small" awake={topBarState === 'hover'}>
+                chevron_right
+              </IconButton>
+            </BackForward>
             <SearchBar />
           </TopLeft>
           <TopRight>
