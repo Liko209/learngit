@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { service } from 'sdk';
 import config from '@/config';
 import EnvSelect from './EnvSelect';
+import Download from './download';
 
 const { glip2 } = config.get('api');
 const { AuthService } = service;
@@ -67,8 +68,7 @@ function extractUrlParameter(name: string) {
 class UnifiedLogin extends React.Component<
   IRouter,
   { btnDisabled: boolean; btnText: string }
-  > {
-
+> {
   static defaultProps = {
     location: {},
     history: {},
@@ -117,13 +117,13 @@ class UnifiedLogin extends React.Component<
 
     window.location.href = `${glip2.server}${
       glip2.apiPlatform
-      }/oauth/authorize?force=true&response_type=code&client_id=${
+    }/oauth/authorize?force=true&response_type=code&client_id=${
       glip2.clientId
-      }&state=%2Frc&redirect_uri=${
+    }&state=%2Frc&redirect_uri=${
       window.location.origin
-      }/unified-login/&brand_id=${
+    }/unified-login/&brand_id=${
       glip2.brandId
-      }&glip_auth=true&display=touch&title_bar=true`;
+    }&glip_auth=true&display=touch&title_bar=true`;
   }
 
   render() {
@@ -140,7 +140,7 @@ class UnifiedLogin extends React.Component<
           <EnvSelect />
         </Form>
         {/* <LoginVersionStatus /> */}
-        {/* <Download /> */}
+        <Download />
       </div>
     );
   }
