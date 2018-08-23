@@ -60,9 +60,17 @@ const IconButton: React.SFC<TIconButtonProps> = (
   props: TIconButtonProps,
 ) => {
   const { children, tooltipTitle, innerRef, ...rest } = props;
+  const { size, variant, awake, disabled, invisible } = rest;
   const main = (
     <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
-      <StyledIcon {...rest}>{children}</StyledIcon>
+      <StyledIcon
+        size={size}
+        variant={variant}
+        awake={awake}
+        disabled={disabled}
+        invisible={invisible}
+      >{children}
+      </StyledIcon>
     </StyledIconButton>
   );
   return tooltipTitle ? (<MuiTooltip title={tooltipTitle}>{main}</MuiTooltip>) : main;

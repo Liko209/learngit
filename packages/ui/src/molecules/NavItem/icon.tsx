@@ -11,7 +11,7 @@ import AddBox from '@material-ui/icons/AddBox';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import Link from '@material-ui/icons/Link';
 import Settings from '@material-ui/icons/Settings';
-import Person from '@material-ui/icons/Person';
+import Contacts from '@material-ui/icons/Contacts';
 
 const Icon = styled<TIconProps>(
   ({ component, ...props }) => React.cloneElement(IconComponent[component], props),
@@ -59,7 +59,7 @@ const IconComponent = {
     return <Settings />;
   },
   get Contacts() {
-    return <Person />;
+    return <Contacts />;
   },
 };
 

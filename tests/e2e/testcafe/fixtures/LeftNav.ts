@@ -9,8 +9,7 @@ import { UnifiedLoginPage } from '../page-models/UnifiedLoginPage';
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
 import LeftNavPage from '../page-models/LeftNavPage';
-import { SITE_URL, SITE_ENV } from '../config';
-
+import { SITE_URL } from '../config';
 import { formalName } from '../libs/filter';
 import { setUp, tearDown, TestHelper } from '../libs/helpers';
 
@@ -41,23 +40,4 @@ test(formalName('Left nav redirect', ['P0', 'LeftNav']), async t => {
     .redirect('Tasks')
     .redirect('Notes')
     .redirect('Files');
-});
-
-test(formalName('expand menu', ['P2', 'LeftNav Expand']), async t => {
-  const helper = TestHelper.from(t);
-
-  await new BlankPage(t)
-    .open(SITE_URL)
-    .shouldNavigateTo(UnifiedLoginPage)
-    .clickLogin()
-    .shouldNavigateTo(RingcentralSignInNavigationPage)
-    .setCredential(helper.companyNumber)
-    .toNextPage()
-    .shouldNavigateTo(RingcentralSignInPage)
-    .setExtension(helper.users.user701.extension)
-    .setPassword(helper.users.user701.password)
-    .signIn()
-    .shouldNavigateTo(LeftNavPage)
-    .click('expandButton');
-
 });

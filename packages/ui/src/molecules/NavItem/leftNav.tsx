@@ -55,7 +55,7 @@ const UMICount = [120, 0, 16, 1, 0, 1, 99, 0, 11];
 export const LeftNav = (props: TNavProps) => {
   const isExpand = props.isExpand;
   return (
-    <Left expand={+isExpand} variant="permanent" classes={{ paper: 'left-paper' }}>
+    <Left expand={+isExpand} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel">
     {Icons.map((arr, index) => {
       return (
         <MuiList

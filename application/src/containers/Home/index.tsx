@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 
 import Wrapper from './Wrapper';
-import TopBar from './TopBar';
 import Bottom from './Bottom';
 import { LeftNav } from 'ui-components';
 import Main from './Main';
@@ -17,6 +16,9 @@ import CallMain from '@/containers/Calls/Main';
 import CallRight from '@/containers/Calls/Right';
 import MeetingMain from '@/containers/Meetings/Main';
 import MeetingRight from '@/containers/Meetings/Right';
+
+import TopBar from 'ui-components/organisms/TopBar';
+import avatar from './avatar.jpg';
 
 import { service } from 'sdk';
 
@@ -53,10 +55,7 @@ class Home extends Component<IProps, IStates>  {
     const { isExpand } = this.state;
     return (
       <Wrapper>
-        <TopBar data-anchor="expandButton">
-          <button onClick={this.signOutClickHandler}>Logout</button>
-          <button onClick={this.handleExpand}>Expand</button>
-        </TopBar>
+        <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online"/>
         <Bottom>
           <LeftNav isExpand={isExpand}/>
           <Main>
