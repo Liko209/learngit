@@ -10,7 +10,11 @@ interface IExternalPorps {
 const Wrapper = styled.div`
   height: 100%;
   width: 100%;
-  position: relative;
+  position: absolute;
+  top: 0;
+  bottom:0;
+  right: 0;
+  left: 0;
 `;
 
 const Layout = ({ onClick, children }: IExternalPorps) => {

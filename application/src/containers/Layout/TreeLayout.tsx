@@ -90,11 +90,16 @@ class TreeLayout extends Component<IProps, IStates> {
     const { tag } = this.props;
 
     const leftNode: any = currentElement!.previousSibling;
-    const leftMinWidth = leftNode.dataset.minWidth || 10;
-    const leftMaxWidth = leftNode.dataset.maxWidth || 9999;
+    // safari bug
+    // leftNode.dataset.minWidth || 10;
+    // https://stackoverflow.com/questions/45769532/safari-is-everywhere-bug-html5-dataset-attribute-can-not-be-obtained
+    const leftMinWidth = leftNode.getAttribute('data-min-width') || 10;
+    const leftMaxWidth = leftNode.getAttribute('data-max-width') || 9999;
     const rightNode: any = currentElement!.nextSibling;
-    const rightMinWidth = rightNode.dataset.minWidth || 10;
-    const rightMaxWidth = rightNode.dataset.maxWidth || 9999;
+    const rightMinWidth = rightNode.getAttribute('data-min-width') || 10;
+    const rightMaxWidth = rightNode.getAttribute('data-max-width') || 9999;
+    // console.log(leftMinWidth, leftMaxWidth);
+    // console.log(rightMinWidth, rightMaxWidth);
 
     const clientX = e.clientX;
     const leftNodeOffsetLeft = getOffsetLeft(leftNode);
