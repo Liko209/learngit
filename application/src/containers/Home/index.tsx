@@ -53,7 +53,7 @@ class Home extends Component<IProps, IStates>  {
     const { isExpand } = this.state;
     return (
       <Wrapper>
-        <TopBar>
+        <TopBar data-anchor="expandButton">
           <button onClick={this.signOutClickHandler}>Logout</button>
           <button onClick={this.handleExpand}>Expand</button>
         </TopBar>

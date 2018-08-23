@@ -42,3 +42,22 @@ test(formalName('Left nav redirect', ['P0', 'LeftNav']), async t => {
     .redirect('Notes')
     .redirect('Files');
 });
+
+test(formalName('expand menu', ['P2', 'LeftNav Expand']), async t => {
+  const helper = TestHelper.from(t);
+
+  await new BlankPage(t)
+    .open(SITE_URL)
+    .shouldNavigateTo(UnifiedLoginPage)
+    .clickLogin()
+    .shouldNavigateTo(RingcentralSignInNavigationPage)
+    .setCredential(helper.companyNumber)
+    .toNextPage()
+    .shouldNavigateTo(RingcentralSignInPage)
+    .setExtension(helper.users.user701.extension)
+    .setPassword(helper.users.user701.password)
+    .signIn()
+    .shouldNavigateTo(LeftNavPage)
+    .click('expandButton');
+
+});
