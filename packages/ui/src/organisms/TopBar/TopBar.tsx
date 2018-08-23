@@ -16,6 +16,7 @@ import { PresenceProps } from '../../atoms';
 
 type TTopBarProps = {
   avatar?: string;
+  handleLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
 } & PresenceProps;
 
 type TTopBarState = {
@@ -101,7 +102,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
       <StyledTopBar>
         <TopBarWrapper onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
           <TopLeft screenSize={this.state.screenSize}>
-            <IconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'}>
+            <IconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.handleLeftNavExpand}>
               format_list_bulleted
             </IconButton>
             <TopLogo variant="headline">Ringcentral</TopLogo>

@@ -1,51 +1,51 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-08-17 10:34:57
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 
-import {
-  WithTheme,
-  ListItem as MuiMenuItem,
-} from '@material-ui/core';
+import MuiListItem from '@material-ui/core/ListItem';
 
 import { Umi, Icon } from '../../atoms';
-import { ItemText } from './ItemText';
+import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
-export type SectionHeaderProps = {
-  title: string;
-  unreadCount?: number;
-  icon: JSX.Element;
-  showCount?: boolean;
-  important?: boolean;
-  expanded?: boolean;
-  className?: string;
-  onClick?: (e: React.MouseEvent) => any;
-  onMoreClick?: (e: React.MouseEvent) => any;
-} & Partial<Pick<WithTheme, 'theme'>>;
-
-const TSectionHeader = (props: SectionHeaderProps) => {
-  const { icon, title, unreadCount, important, expanded,
-    showCount, className, onClick, onMoreClick } = props;
-
-  const arrow = expanded ?
-    <Icon onClick={onMoreClick}>keyboard_arrow_up</Icon> :
-    <Icon onClick={onMoreClick}>keyboard_arrow_down</Icon>;
-
-  return (
-    <MuiMenuItem className={className} button={true} onClick={onClick}>
-      {icon}
-      <ItemText>
-        {title}
-      </ItemText>
-      <Umi important={important} unreadCount={unreadCount} showCount={!showCount} />
-      {arrow}
-    </MuiMenuItem>
-  );
-};
-
-export const ConversationListSectionHeader = styled<SectionHeaderProps>(TSectionHeader)`
+const StyledListItem = styled(MuiListItem)`
   && {
     padding: 8px 16px 8px 12px;
     background: white;
   }
 `;
 
+type SectionHeaderProps = {
+  title: string;
+  unreadCount?: number;
+  icon: JSX.Element;
+  showCount?: boolean;
+  important?: boolean;
+  umiVariant?: 'count' | 'dot' | 'auto';
+  expanded?: boolean;
+  className?: string;
+  onClick?: (e: React.MouseEvent) => any;
+  onArrowClick?: (e: React.MouseEvent) => any;
+};
+
+const ConversationListSectionHeader = (props: SectionHeaderProps) => {
+  const { icon, title, unreadCount, important, expanded,
+    umiVariant, className, onClick, onArrowClick } = props;
+
+  const arrow = expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
+
+  return (
+    <StyledListItem className={className} button={true} onClick={onClick}>
+      {icon}
+      <ItemText>{title}</ItemText>
+      <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
+      <Icon onClick={onArrowClick}>{arrow}</Icon>
+    </StyledListItem>
+  );
+};
+
 export default ConversationListSectionHeader;
+export { ConversationListSectionHeader, SectionHeaderProps };

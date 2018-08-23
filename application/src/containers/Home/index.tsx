@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { RouteComponentProps, NavLink, Switch, Route, Redirect } from 'react-router-dom';
+import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
-import LeftNav from './LeftNav';
+import { LeftNav } from 'ui-components';
 import Main from './Main';
 
 import NotFound from '@/containers/NotFound';
@@ -26,13 +26,23 @@ const { AuthService } = service;
 
 interface IProps extends RouteComponentProps<any> { }
 
-interface IStates { }
-
+interface IStates {
+  isExpand: boolean;
+}
 class Home extends Component<IProps, IStates>  {
   constructor(props: IProps) {
     super(props);
-    this.state = {};
+    this.state = {
+      isExpand: true,
+    };
     this.signOutClickHandler = this.signOutClickHandler.bind(this);
+    this.expandLeftNav = this.expandLeftNav.bind(this);
+  }
+  expandLeftNav() {
+    const { isExpand } = this.state;
+    this.setState({
+      isExpand: !isExpand,
+    });
   }
 
   async signOutClickHandler() {
@@ -40,19 +50,13 @@ class Home extends Component<IProps, IStates>  {
     await authService.logout();
     window.location.href = '/';
   }
-
   render() {
     // const { match } = this.props;
     return (
       <Wrapper>
-        <TopBar avatar={avatar} presence="online" />
+        <TopBar handleLeftNavExpand={this.expandLeftNav} avatar={avatar} presence="online" data-anchor="expandButton" />
         <Bottom>
-          <LeftNav>
-            {/* <NavLink to="/" exact={true}>Home </NavLink> */}
-            <NavLink to="/messages">Messages </NavLink>
-            <NavLink to="/calls">Calls </NavLink>
-            <NavLink to="/meetings">Meetings </NavLink>
-          </LeftNav>
+          <LeftNav isExpand={this.state.isExpand} />
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
