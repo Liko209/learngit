@@ -1,6 +1,6 @@
 echo '====Start Install Deps'
 
-npm i --unsafe-perm
+npm i
 
 exitCode=$?
 if [ $exitCode -ne 0 ]; then
