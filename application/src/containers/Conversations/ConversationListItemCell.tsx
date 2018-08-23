@@ -6,11 +6,9 @@
 
 import React from 'react';
 import _ from 'lodash';
-import {
-  Menu,
-  MenuItem,
-  ConversationListItem,
-} from 'ui-components';
+import { ConversationListItem } from 'ui-components/molecules/ConversationList/ConversationListItem';
+import { Menu } from 'ui-components/atoms/Menu';
+import { MenuItem } from 'ui-components/atoms/MenuItem';
 
 import storeManager, { ENTITY_NAME } from '../../store';
 import MultiEntityMapStore from '../../store/base/MultiEntityMapStore';
