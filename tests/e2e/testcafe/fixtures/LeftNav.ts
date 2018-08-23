@@ -34,5 +34,11 @@ test(formalName('Left nav redirect', ['P0', 'LeftNav']), async t => {
     .signIn()
     .shouldNavigateTo(LeftNavPage)
     .redirect('Dashboard')
-    .redirect('Messages');
+    .redirect('Messages')
+    .redirect('Phone')
+    .redirect('Meetings')
+    .redirect('Calendar')
+    .redirect('Tasks')
+    .redirect('Notes')
+    .redirect('Files');
 });
