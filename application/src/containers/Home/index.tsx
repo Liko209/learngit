@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { RouteComponentProps, NavLink, Switch, Route, Redirect } from 'react-router-dom';
+import { NavLink, Switch, Route, Redirect } from 'react-router-dom';
 
 import Wrapper from './Wrapper';
 import TopBar from './TopBar';
@@ -8,21 +8,15 @@ import LeftNav from './LeftNav';
 import Main from './Main';
 
 import NotFound from '@/containers/NotFound';
-import LayoutRoute from '@/containers/LayoutRoute';
-
-import ConversationLeft from '@/containers/Conversations/LeftRail';
-import ConversationMain from '@/containers/Conversations/Thread';
-import ConversationRight from '@/containers/Conversations/RightRail';
-import CallMain from '@/containers/Calls/Main';
-import CallRight from '@/containers/Calls/Right';
-import MeetingMain from '@/containers/Meetings/Main';
-import MeetingRight from '@/containers/Meetings/Right';
+import Conversations from '@/containers/Conversations';
+import Calls from '@/containers/Calls';
+import Meetings from '@/containers/Meetings';
 
 import { service } from 'sdk';
 
 const { AuthService } = service;
 
-interface IProps extends RouteComponentProps<any> { }
+interface IProps { }
 
 interface IStates { }
 
@@ -40,14 +34,13 @@ class Home extends Component<IProps, IStates>  {
   }
 
   render() {
-    // const { match } = this.props;
     return (
       <Wrapper>
         <TopBar>
           <button onClick={this.signOutClickHandler}>Logout</button>
         </TopBar>
         <Bottom>
-          <LeftNav>
+          <LeftNav id="leftnav">
             {/* <NavLink to="/" exact={true}>Home </NavLink> */}
             <NavLink to="/messages">Messages </NavLink>
             <NavLink to="/calls">Calls </NavLink>
@@ -56,21 +49,13 @@ class Home extends Component<IProps, IStates>  {
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
-              {/* <Route path="/messages/:id?" component={Conversation} /> */}
-              <LayoutRoute
-                path="/messages/:id?"
-                Left={ConversationLeft}
-                Middle={ConversationMain}
-                Right={ConversationRight}
-              />
-              <LayoutRoute path="/calls" Left={CallMain} Right={CallRight} />
-              <LayoutRoute path="/meetings" Left={MeetingMain} Right={MeetingRight} />
+              <Route path="/messages/:id?" component={Conversations} />
+              <Route path="/calls" component={Calls} />
+              <Route path="/meetings" component={Meetings} />
               <Route component={NotFound} />
             </Switch>
           </Main>
-
         </Bottom>
-
       </Wrapper>);
   }
 }
