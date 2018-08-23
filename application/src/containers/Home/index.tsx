@@ -34,7 +34,7 @@ class Home extends Component<IProps, IStates>  {
   }
 
   async signOutClickHandler() {
-    const authService = AuthService.getInstance();
+    const authService: service.AuthService = AuthService.getInstance();
     await authService.logout();
     window.location.href = '/';
   }
@@ -56,14 +56,15 @@ class Home extends Component<IProps, IStates>  {
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
+              {/* <Route path="/messages/:id?" component={Conversation} /> */}
               <LayoutRoute
                 path="/messages/:id?"
-                left={ConversationLeft}
-                main={ConversationMain}
-                right={ConversationRight}
+                Left={ConversationLeft}
+                Middle={ConversationMain}
+                Right={ConversationRight}
               />
-              <LayoutRoute path="/calls" main={CallMain} right={CallRight} />
-              <LayoutRoute path="/meetings" main={MeetingMain} right={MeetingRight} />
+              <LayoutRoute path="/calls" Left={CallMain} Right={CallRight} />
+              <LayoutRoute path="/meetings" Left={MeetingMain} Right={MeetingRight} />
               <Route component={NotFound} />
             </Switch>
           </Main>

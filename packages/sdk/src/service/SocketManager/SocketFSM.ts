@@ -199,6 +199,7 @@ export class SocketFSM extends StateMachine {
     });
 
     this.socketClient.socket.on('partial', (data: any) => {
+      dataDispatcher.onDataArrived(data, true);
       this.info(`socket-> partial. ${data || ''}`);
     });
 

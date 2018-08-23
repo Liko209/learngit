@@ -1,9 +1,10 @@
-import featureFlag from './component/featureFlag';
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date:2018-03-07 19:20:43
  * Copyright © RingCentral. All rights reserved.
  */
+
+import featureFlag from './component/featureFlag';
 import { Foundation, NetworkManager, Token } from 'foundation';
 import merge from 'lodash/merge';
 

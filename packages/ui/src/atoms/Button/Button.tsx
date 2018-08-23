@@ -1,26 +1,21 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 import MuiButton, { ButtonProps } from '@material-ui/core/Button';
-import { WithTheme } from '@material-ui/core';
 
-type TButtonProps = {} & ButtonProps & Partial<Pick<WithTheme, 'theme'>>;
+type TButtonProps = {} & ButtonProps;
 
 const StyledButton = styled<TButtonProps>(MuiButton)`
   && {
-    min-width: 104px;
-    min-height: ${props =>
-    props.size && props.size === 'small' ? '28px' : '40px'};
-    height: ${props =>
-    props.size && props.size === 'small' ? '28px' : '40px'};
-    padding: ${props => (props.href ? '0' : '0 20px')};
-    font-size: 14px;
-    line-height: 16px;
-    border-radius: 2px;
+    min-width: ${({ theme }) => theme.spacing.unit * 26}px;
   }
 `;
 
 export const Button: React.SFC<TButtonProps> = ({ innerRef, ...rest }) => {
   return <StyledButton {...rest} />;
+};
+
+Button.defaultProps = {
+  size: 'large',
 };
 
 export { TButtonProps };

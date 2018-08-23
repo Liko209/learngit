@@ -1,4 +1,13 @@
-const theme = {
+import { Theme } from '../ThemeProvider';
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends (infer U)[]
+  ? DeepPartial<U>[]
+  : T[P] extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepPartial<U>>
+  : DeepPartial<T[P]>
+};
+
+const theme: DeepPartial<Theme> = {
   palette: {
     primary: {
       light: '#18a4de',
