@@ -1,7 +1,8 @@
 echo '====Start Install Deps'
 
-rm -rf $project/**/package-lock.json 
-npm i
-yarn bt && yarn build:packages && yarn bt
+npm i --unsafe-perm
 
-echo $?
+exitCode=$?
+if [ $exitCode -ne 0 ]; then
+  exit 1
+fi
