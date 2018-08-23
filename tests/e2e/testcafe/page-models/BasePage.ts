@@ -22,7 +22,7 @@ export abstract class BasePage {
     this._helper = new TestHelper(t);
     this._chain = chain || Promise.resolve();
     if (chain !== undefined) {
-      this.forwardThen();
+      this._forwardThen();
     }
   }
 
@@ -30,12 +30,12 @@ export abstract class BasePage {
   protected onExit() { }
 
   protected chain(cb: (t: TestController, value?: any) => Promise<any>) {
-    this._chain = this._chain.then((value) => cb(this._t, value));
-    this.forwardThen();
+    this._chain = this._chain.then((value: any) => cb(this._t, value));
+    this._forwardThen();
     return this;
   }
 
-  private forwardThen() {
+  private _forwardThen() {
     this.then = function () {
       const promise = this._chain;
       this._chain = Promise.resolve();

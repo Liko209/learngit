@@ -32,8 +32,10 @@ export class RingcentralSignInPage extends BasePage {
   }
 
   setExtension(extension: string): this {
-    return this.chain(async t =>
-      await t.typeText(this.extensionField, extension),
+    return this.chain(async (t) => {
+      if (extension === '') return;
+      return await t.typeText(this.extensionField, extension);
+    },
     );
   }
 
