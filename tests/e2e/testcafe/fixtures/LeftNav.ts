@@ -12,6 +12,7 @@ import LeftNavPage from '../page-models/LeftNavPage';
 import { SITE_URL } from '../config';
 import { formalName } from '../libs/filter';
 import { setUp, tearDown, TestHelper } from '../libs/helpers';
+import { Selector } from 'testcafe';
 
 fixture('LeftNav')
   .beforeEach(setUp('rcBetaUserAccount'))
@@ -40,4 +41,15 @@ test(formalName('Left nav redirect', ['P0', 'LeftNav']), async t => {
     .redirect('Tasks')
     .redirect('Notes')
     .redirect('Files');
+
+  const expandBtn = Selector('[data-anchor="expandButton"]');
+  const leftPanel = Selector('[data-anchor="left-panel"]').clientWidth;
+  await t.click(expandBtn);
+  await t.expect(leftPanel).eql(72);
+
+  await t.eval(() => location.reload(true));
+  await t.expect(leftPanel).eql(72);
+  await t.click(expandBtn);
+  await t.eval(() => location.reload(true));
+  await t.expect(leftPanel).eql(200);
 });
