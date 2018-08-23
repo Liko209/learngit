@@ -1,13 +1,13 @@
-import { Theme } from '../ThemeProvider';
-type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends (infer U)[]
-  ? DeepPartial<U>[]
-  : T[P] extends ReadonlyArray<infer U>
-  ? ReadonlyArray<DeepPartial<U>>
-  : DeepPartial<T[P]>
-};
+// import { Theme } from '@material-ui/core/styles/createMuiTheme';
+// type DeepPartial<T> = {
+//   [P in keyof T]?: T[P] extends (infer U)[]
+//   ? DeepPartial<U>[]
+//   : T[P] extends ReadonlyArray<infer U>
+//   ? ReadonlyArray<DeepPartial<U>>
+//   : DeepPartial<T[P]>
+// };
 
-const theme: DeepPartial<Theme> = {
+const theme = {
   palette: {
     primary: {
       light: '#18a4de',

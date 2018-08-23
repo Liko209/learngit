@@ -40,7 +40,7 @@ type IDependencies = {
   dependencies?: (React.ComponentType | ((props: any) => JSX.Element))[];
 };
 
-export interface IThemedStyledFunction<P, T, O = P> {
+interface IThemedStyledFunction<P, T, O = P> {
   (
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<styledComponents.ThemedStyledProps<P, T>>[] // tslint:disable-line
@@ -56,7 +56,7 @@ export interface IThemedStyledFunction<P, T, O = P> {
   ): IThemedStyledFunction<DiffBetween<A, P & U>, T, DiffBetween<A, O & U>>;
 }
 
-export interface IThemedBaseStyledInterface<T>
+interface IThemedBaseStyledInterface<T>
   extends ThemedStyledComponentFactories<T> {
   <P, TTag extends keyof JSX.IntrinsicElements>(
     tag: TTag,
@@ -68,7 +68,7 @@ export interface IThemedBaseStyledInterface<T>
   ): IThemedStyledFunction<P, T, WithOptionalTheme<P, T>>;
 }
 
-export interface IThemedStyledComponentsModule<T> {
+interface IThemedStyledComponentsModule<T> {
   default: IThemedBaseStyledInterface<T>;
   css: styledComponents.ThemedCssFunction<T>;
   keyframes(
@@ -94,5 +94,13 @@ const {
   ThemeProvider,
 } = styledComponents as IThemedStyledComponentsModule<Theme>;
 
-export { css, injectGlobal, keyframes, ThemeProvider, ComponentClass };
+export {
+  css,
+  injectGlobal,
+  keyframes,
+  ThemeProvider,
+  IThemedStyledFunction,
+  IThemedBaseStyledInterface,
+  IThemedStyledComponentsModule,
+};
 export default styled;
