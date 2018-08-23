@@ -32,7 +32,7 @@ export default class OrderListPresenter extends BasePresenter {
   }
 
   handleIncomingData(entityName: string, { type, entities }: IIncomingData) {
-    if (!entities.size) {
+    if (!entities.size && type !== 'replaceAll') {
       return;
     }
     const existKeys = this.store.getIds();
