@@ -50,7 +50,7 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
   umiVariant: 'count' | 'dot' | 'auto';
 
   @observable
-  status: string;
+  status: 'default' | 'offline' | 'online' | 'away' | undefined;
 
   @observable
   anchorEl: HTMLElement | null = null;
@@ -75,7 +75,7 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     this.displayName = '';
     this.unreadCount = 0;
     this.umiVariant = 'count';
-    this.status = '';
+    this.status = undefined;
     this.groupStore = storeManager.getEntityMapStore(props.entityName);
     this.presenceStore = storeManager.getEntityMapStore(ENTITY_NAME.PRESENCE);
     this._openMenu = this._openMenu.bind(this);
@@ -95,7 +95,6 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     const { currentUserId } = this.props;
     this.displayName = getGroupName(group, currentUserId);
     this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
-    this.status = '';
     if (currentUserId) {
       let targetPresencePersonId: number | undefined;
       const otherMembers = _.difference(group.members, [currentUserId]);
