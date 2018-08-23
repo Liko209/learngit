@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { RouteComponentProps, NavLink, Switch, Route, Redirect } from 'react-router-dom';
 
 import Wrapper from './Wrapper';
-import TopBar from './TopBar';
 import Bottom from './Bottom';
 import LeftNav from './LeftNav';
 import Main from './Main';
@@ -17,6 +16,9 @@ import CallMain from '@/containers/Calls/Main';
 import CallRight from '@/containers/Calls/Right';
 import MeetingMain from '@/containers/Meetings/Main';
 import MeetingRight from '@/containers/Meetings/Right';
+
+import TopBar from 'ui-components/organisms/TopBar';
+import avatar from './avatar.jpg';
 
 import { service } from 'sdk';
 
@@ -43,9 +45,7 @@ class Home extends Component<IProps, IStates>  {
     // const { match } = this.props;
     return (
       <Wrapper>
-        <TopBar>
-          <button onClick={this.signOutClickHandler}>Logout</button>
-        </TopBar>
+        <TopBar avatar={avatar} presence="online" />
         <Bottom>
           <LeftNav>
             {/* <NavLink to="/" exact={true}>Home </NavLink> */}

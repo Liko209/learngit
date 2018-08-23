@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { WithTheme } from '@material-ui/core/styles/withTheme';
 import { ListItem as MuiListItem } from '@material-ui/core';
 
-import { Presence, Umi, Icon } from '../../atoms';
+import { Presence, Umi, Icon, PresenceProps } from '../../atoms';
 import { ItemText } from './ItemText';
 
 const ListItem = styled(MuiListItem)`
@@ -35,7 +35,7 @@ const ListItem = styled(MuiListItem)`
 
 export type ItemProps = {
   title: string;
-  status?: string;
+  status?: PresenceProps['presence'];
   unreadCount?: number;
   showCount?: boolean;
   important?: boolean;
@@ -49,7 +49,7 @@ const TItem = (props: ItemProps) => {
 
   return (
     <ListItem button={true} onClick={onClick}>
-      <Presence status={status} />
+      <Presence presence={status} />
       <ItemText style={{ fontWeight }}>
         {title}
       </ItemText>
