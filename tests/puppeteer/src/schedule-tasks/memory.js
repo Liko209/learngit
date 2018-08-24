@@ -1,9 +1,14 @@
 const puppeteer = require('puppeteer');
+const fs = require('fs-extra');
+const moment = require('moment');
 const { login } = require('./setup');
 const { getMB } = require('./utils');
 // jest.setTimeout(1000000);
 
-let TEST_TIMES = 10;
+const NOW_TIME = moment().format('YYYY-MM-DD HH:mm:ss');
+const FILE_NAME = `memory_${NOW_TIME}`;
+
+let TEST_TIMES = process.env.times || 10;
 
 const APP_URL = process.env.appUrl;
 const MAX_MEMORY = process.env.maxMemory;
@@ -16,8 +21,14 @@ const reloadTotalMemoryAvg = [];
 
 const switchTabUsedMemoryAvg = [];
 const switchTabTotalMemoryAvg = [];
+
 function getAvg(arr) {
   return getMB(arr.reduce((pre, next) => pre + next, 0) / TEST_TIMES) || 0;
+}
+
+function report(content) {
+  fs.ensureDir(`${__dirname}/report`);
+  fs.writeFileSync(`${__dirname}/report/${FILE_NAME}`, content);
 }
 
 async function memoryTests() {
@@ -102,14 +113,21 @@ function run() {
     console.log(
       `switchTabUsed: ${switchTabUsed} switchTabTotalUsed: ${switchTabTotal}`
     );
-    if (TEST_TIMES < 5) {
+    if (TEST_TIMES < TEST_TIMES / 2) {
       process.exit(1);
     } else {
-      if (firstTotalUsedMemory > MAX_MEMORY) {
-      }
-      if (reloadTotal > MAX_MEMORY) {
-      }
-      if (switchTabTotal > MAX_MEMORY) {
+      if (
+        firstTotalUsedMemory > MAX_MEMORY ||
+        reloadTotal > MAX_MEMORY ||
+        switchTabTotal > MAX_MEMORY
+      ) {
+        report(
+          `Memory Error  firstUsed: ${firstUsedMemory} firstTotalUsed: ${firstTotalUsedMemory}\nreloadUsed: ${reloadUsed} reloadTotalUsed: ${reloadTotal}\nswitchTabUsed: ${switchTabUsed} switchTabTotalUsed: ${switchTabTotal}`
+        );
+        console.log('');
+        console.log('Emergency Memory Error!');
+        console.log('');
+        process.exit(1);
       }
       process.exit(0);
     }
