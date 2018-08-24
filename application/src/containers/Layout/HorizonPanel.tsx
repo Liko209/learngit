@@ -27,6 +27,7 @@ const Wrapper = styled.div`
     flex: 1;
   ` : css`
     flex-basis: ${(props: IInternalPorps) => `${props.width}px`};
+    width: ${(props: IInternalPorps) => `${props.width}px`};
   `};
   ${props => props.forceDisplay && css`
     display: inline-block;
