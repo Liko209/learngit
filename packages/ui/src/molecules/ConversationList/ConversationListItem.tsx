@@ -66,7 +66,7 @@ const ConversationListItem = (props: ListItemProps) => {
     >
       <Presence presence={status} />
       <ItemText style={{ fontWeight }}>{title}</ItemText>
-      <Umi  important={important} unreadCount={unreadCount} />
+      <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
       <Icon onClick={onMoreClick}>more_vert</Icon>
     </StyledListItem>
   );
