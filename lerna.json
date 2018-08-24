@@ -3,7 +3,8 @@
   "packages": [
     "packages/*",
     "demo",
-    "application"
+    "application",
+    "tests/e2e/testcafe"
   ],
   "version": "0.0.0"
 }

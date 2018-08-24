@@ -7,12 +7,11 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 let eventemitter2 = require('eventemitter2');
 let HttpStatus = require('http-status-codes');
 let Dexie = _interopDefault(require('dexie'));
-let foundation = require('foundation');
+let foundation = require('./foundation');
 let _ = _interopDefault(require('lodash'));
 let stringNaturalCompare = require('string-natural-compare');
 let merge = _interopDefault(require('lodash/merge'));
 let btoa = _interopDefault(require('btoa'));
-
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -3586,7 +3585,6 @@ let Platform = /** @class */ (function () {
                     case 2:
                         glipAuthData = _a.sent();
                         this._updateToken(glipAuthData.headers['x-authorization'], rcAuthData.data);
-                        console.log(rcAuthData.data, glipAuthData.headers['x-authorization'])
                         return [2 /*return*/];
                 }
             });
@@ -3627,6 +3625,9 @@ let GroupAPI = /** @class */ (function (_super) {
   __extends(GroupAPI, _super);
   function GroupAPI() {
     return _super !== null && _super.apply(this, arguments) || this;
+  }
+  GroupAPI.modifyGroupById = function (id, data) {
+    return this.glipNetworkClient.put(`/team/${id}`, data);
   }
   GroupAPI.requestGroupById = function (id) {
     return this.getDataById(id);
@@ -3842,3 +3843,4 @@ exports.loginGlip = loginGlip;
 exports.indexData = indexData;
 exports.initialData = initialData;
 exports.remainingData = remainingData;
+exports.Api= Api

@@ -5,11 +5,11 @@
  */
 
 export enum Status {
-  PASSED = "passed",
-  PENDING = "pending",
-  SKIPPED = "skipped",
-  FAILED = "failed",
-  BROKEN = "broken",
+  PASSED = 'passed',
+  PENDING = 'pending',
+  SKIPPED = 'skipped',
+  FAILED = 'failed',
+  BROKEN = 'broken',
 }
 
 export class AllureStep {

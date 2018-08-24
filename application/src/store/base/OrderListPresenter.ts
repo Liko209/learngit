@@ -32,7 +32,7 @@ export default class OrderListPresenter extends BasePresenter {
   }
 
   handleIncomingData(entityName: string, { type, entities }: IIncomingData) {
-    if (!entities.size) {
+    if (!entities.size && type !== 'replaceAll') {
       return;
     }
     const existKeys = this.store.getIds();
@@ -55,9 +55,19 @@ export default class OrderListPresenter extends BasePresenter {
             const idSortKey = this.transformFunc(data);
             matchedIDSortKeyArray.push(idSortKey);
             matchedEntities.push(data);
-            notMatchedKeys.push(key);
+          }
+          notMatchedKeys.push(key);
+        });
+      } else if (type === 'replaceAll') {
+        let index = 0;
+        entities.forEach((data) => {
+          if (this.isMatchedFunc(data)) {
+            const idSortKey = this.transformFunc(data, index += 1);
+            matchedIDSortKeyArray.push(idSortKey);
+            matchedEntities.push(data);
           }
         });
+        notMatchedKeys.push(...existKeys);
       } else {
         matchedKeys.forEach((key) => {
           const model = entities.get(key) as IEntity;
@@ -81,9 +91,9 @@ export default class OrderListPresenter extends BasePresenter {
           }
         }
       });
+      this.store.batchRemove(notMatchedKeys);
       this.updateEntityStore(entityName, matchedEntities);
       this.store.batchSet(matchedIDSortKeyArray);
-      this.store.batchRemove(notMatchedKeys);
     }
 
     // this.store.dump();
@@ -117,8 +127,8 @@ export default class OrderListPresenter extends BasePresenter {
       return;
     }
     const handledData: IIDSortKey[] = [];
-    dataModels.forEach((item) => {
-      handledData.push(this.transformFunc(item));
+    dataModels.forEach((item, index) => {
+      handledData.push(this.transformFunc(item, index));
     });
 
     if (isBigger) {

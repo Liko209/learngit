@@ -1,3 +1,8 @@
+/*
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-08-22 15:23:35
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from '../../styled-components';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
@@ -44,7 +49,7 @@ const StyledShelfPageHeader = styled<ShelfPageHeaderProps>(BasePageHeader)`
 const TitleWrapper = styled<TypographyProps>(Typography)`
   && {
     font-size: ${({ theme }) => theme.typography.title.fontSize};
-    font-weight: ${({ theme }) => theme.typography.title.fontWeight};;
+    font-weight: ${({ theme }) => theme.typography.title.fontWeight};
     font-family: ${({ theme }) => theme.typography.title.fontFamily};
     color: ${({ theme }) => theme.palette.grey[700]};
     white-space: nowrap;
