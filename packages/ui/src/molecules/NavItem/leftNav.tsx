@@ -40,6 +40,9 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
        color: ${({ theme }) => theme.palette.grey[700]}; // 700
      }
    }
+   &::-webkit-scrollbar {
+      width: 0 !important;
+    }
   }
 `;
 
