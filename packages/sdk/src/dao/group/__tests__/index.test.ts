@@ -68,7 +68,7 @@ describe('GroupDao', () => {
 
     it('query teams', async () => {
       const teams = await groupDao.queryGroups(0, Infinity, true);
-      expect(teams.map((t: Group) => t.id)).toEqual([4, 3, 1]);
+      expect(teams.map((t: Group) => t.id).sort()).toEqual([4, 3, 1].sort());
     });
 
     it('query teams and excludes items by id', async () => {
@@ -78,7 +78,7 @@ describe('GroupDao', () => {
 
     it('query favorite groups', async () => {
       const teams = await groupDao.queryGroupsByIds([1, 2, 3]);
-      expect(teams.map((t: Group) => t.id)).toEqual([3, 2, 1]);
+      expect(teams.map((t: Group) => t.id).sort()).toEqual([3, 2, 1].sort());
     });
 
     it('query all groups', async () => {

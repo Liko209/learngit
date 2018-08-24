@@ -55,14 +55,19 @@ const StyledUmi = styled<UmiProps, 'span'>('span')`
   transition-property: font-size, height, line-height, color;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
-  background: ${ ({ important }) => important ? '#ff8800' : '#69a3eb'};
+  background: ${ ({ important, theme }) => {
+    const { primary, accent } = theme.palette;
+    return important ? primary.main : accent.lake;
+  }};
   ${({ variant = 'count' }) => styles[variant]}
 `;
+
+type UmiVariant = 'count' | 'dot' | 'auto';
 
 type UmiProps = {
   important?: boolean;
   unreadCount?: number;
-  variant?: 'count' | 'dot' | 'auto';
+  variant?: UmiVariant;
 };
 
 class Umi extends PureComponent<UmiProps> {
@@ -83,4 +88,4 @@ class Umi extends PureComponent<UmiProps> {
 }
 
 export default Umi;
-export { UmiProps, Umi };
+export { UmiVariant, UmiProps, Umi };

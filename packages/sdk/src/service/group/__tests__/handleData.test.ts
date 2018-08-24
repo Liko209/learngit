@@ -131,8 +131,9 @@ describe('handleFavoriteGroupsChanged()', () => {
       favorite_post_ids: 0,
     };
     await handleFavoriteGroupsChanged(oldProfile as Profile, newProfile as Profile);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(3);
-    expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(3);
+    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(2);
+    expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(2);
+    expect(notificationCenter.emitEntityReplaceAll).toHaveBeenCalledTimes(1);
   });
   it('params are arry empty', async () => {
     daoManager.getDao(GroupDao).queryGroupsByIds.mockReturnValue([{ is_team: true }]);

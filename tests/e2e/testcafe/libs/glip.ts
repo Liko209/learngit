@@ -4,25 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-
 import Ringcentral from 'ringcentral-js-concise';
 
-type IdType= number | string;
+type IdType = number | string;
 
 export interface IAccount {
-  rc_id: IdType,
-  glip_id: IdType,
-  name: string,
-  email: string,
-  extension: string,
-  password: string,
+  rc_id: IdType;
+  glip_id: IdType;
+  name: string;
+  email: string;
+  extension: string;
+  password: string;
 }
 
 export class RcPlatformHelper {
 
   username: string;
   extension: string;
-  password: string
+  password: string;
 
   sdk: any;
   constructor(sdk: any, username: string, extension: string, password: string) {
@@ -36,7 +35,7 @@ export class RcPlatformHelper {
     await this.sdk.authorize({
       username: this.username,
       extension: this.extension,
-      password: this.password
+      password: this.password,
     });
     this.sdk.autoRefresh = true;
   }
@@ -63,9 +62,9 @@ export class RcPlatformManager {
     return new RcPlatformHelper(sdk, companyNumber, account.extension, account.password);
   }
 
-  async getClient(account: IAccount, companyNumber: string){
+  async getClient(account: IAccount, companyNumber: string) {
     let client: RcPlatformHelper = this.clients[account.glip_id];
-    if (client == undefined) {
+    if (client === undefined) {
       client = this.createClient(account, companyNumber);
       await client.auth();
       this.clients[account.glip_id] = client;

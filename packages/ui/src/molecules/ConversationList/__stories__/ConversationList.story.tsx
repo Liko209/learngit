@@ -29,10 +29,18 @@ storiesOf('Molecules/ConversationList', module)
         <Section
           icon={<Icon>star</Icon>}
           title={text('title', 'Favorite')}
+          expanded={boolean('expanded', true)}
           unreadCount={number('unreadCount', 12)}
           important={boolean('important', true)}
-          showCount={boolean('showCount', true)}
-          expanded={boolean('expanded', true)}
+          umiVariant={select(
+            'umiVariant',
+            {
+              count: 'count',
+              dot: 'dot',
+              auto: 'auto',
+            },
+            'count',
+          )}
           onExpand={action('onExpand')}
           onCollapse={action('onCollapse')}
         >
@@ -186,6 +194,7 @@ storiesOf('Molecules/ConversationList', module)
       return (
         <StoryWrapper>
           <ListItem
+            data-anchor="xxxx"
             status={status}
             title={title}
             unreadCount={unreadCount}

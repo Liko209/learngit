@@ -5,19 +5,22 @@ import { Status, AllureStep } from '../libs/report';
 
 import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
 
+import { waitForReact } from 'testcafe-react-selectors';
+
 export function setUp(accountType: string) {
   return async (t: TestController) => {
     const helper = TestHelper.from(t);
     await helper.checkOutAccounts(accountType);
     helper.setupGlipApiManager();
-  }
+  };
 }
 
 export function tearDown() {
   return async (t: TestController) => {
     const helper = TestHelper.from(t);
     await helper.checkInAccounts();
-  }
+    await waitForReact();
+  };
 }
 export class TestHelper {
   static from(t: TestController): TestHelper {
@@ -32,7 +35,9 @@ export class TestHelper {
   }
 
   async checkInAccounts(env: string = ENV.ACCOUNT_POOL_ENV) {
-    await accountPoolHelper.checkInAccounts(env, this.t.ctx.data.accountType, this.t.ctx.data.companyEmailDomain);
+    await accountPoolHelper.checkInAccounts(
+      env, this.t.ctx.data.accountType, this.t.ctx.data.companyEmailDomain,
+    );
   }
 
   get data() {
@@ -66,18 +71,12 @@ export class TestHelper {
     message: string,
     status: Status = Status.PASSED,
     takeScreen: boolean = false,
-    startTime?: number,
-    endTime?: number,
+    startTime: number = Date.now(),
+    endTime: number = Date.now(),
     parent?: AllureStep) {
 
-    if (this.t.ctx.logs == undefined) {
+    if (this.t.ctx.logs === undefined) {
       this.t.ctx.logs = [];
-    }
-    if (startTime == undefined) {
-      startTime = Date.now();
-    }
-    if (endTime == undefined) {
-      endTime = startTime;
     }
 
     let screenPath;
@@ -87,8 +86,8 @@ export class TestHelper {
       screenPath = this.t['testRun'].opts.screenshotPath + '/' + screenPath;
     }
 
-    const step = new AllureStep(message, status, startTime, endTime, screenPath, [],);
-    if (parent == undefined) {
+    const step = new AllureStep(message, status, startTime, endTime, screenPath, []);
+    if (parent === undefined) {
       this.t.ctx.logs.push(step);
     } else {
       parent.children.push(step);
