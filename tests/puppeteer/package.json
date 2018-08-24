@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "description": "jupiter puppeteer",
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "schedule": "node src/schedule-tasks/index.js"
   },
   "author": "Dennis Jiang",
   "license": "ISC",
   "dependencies": {
     "fs": "0.0.1-security",
+    "fs-extra": "^7.0.0",
     "lodash": "^4.17.10",
+    "moment": "^2.22.2",
     "plotly": "^1.0.6",
     "progress": "^2.0.0",
     "puppeteer": "^1.5.0"

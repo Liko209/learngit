@@ -38,6 +38,12 @@ const TopBarWrapper = styled(Toolbar)`
   && {
     justify-content: space-between;
     padding: 0 ${({ theme }) => `${theme.spacing.unit * 4}px`};
+    &:hover {
+      .react-select__control {
+        background: ${({ theme }) => theme.palette.grey[300]};
+        border: 1px solid ${({ theme }) => theme.palette.grey[300]};
+      }
+    }
   }
 `;
 const TopLogo = styled(Typography)`
@@ -112,7 +118,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
             <IconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.handleLeftNavExpand} data-anchor="expandButton">
               format_list_bulleted
             </IconButton>
-            <TopLogo variant="headline">Ringcentral</TopLogo>
+            <TopLogo variant="headline">RingCentral</TopLogo>
             <BackForward invisible={!isElectron}>
               <IconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
                 chevron_left
