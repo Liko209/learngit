@@ -21,6 +21,7 @@ type IProps = {} & RouteComponentProps<any>;
 const Container = styled.div`
   height: 100%;
   overflow: auto;
+  border-right: 1px solid ${({ theme }) => theme.palette.divider};
 `;
 
 class LeftRail extends Component<IProps> {
