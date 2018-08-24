@@ -44,6 +44,6 @@ const removeResizeListener = function () {
 export { addResizeListener, removeResizeListener };
 
 // // start process
-// optimizedResize.add(function () {
+// optimizer.addResizeListener(function () {
 //   console.log('Resource conscious resize callback!')
 // });

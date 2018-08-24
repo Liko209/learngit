@@ -8,7 +8,7 @@ import styled from '../../styled-components';
 
 import MuiMenuItem, { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
 
-import { Presence, Umi, Icon } from '../../atoms';
+import { Presence, Umi, Icon, PresenceProps } from '../../atoms';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
 const StyledListItem = styled(MuiMenuItem)`
@@ -44,7 +44,7 @@ const StyledListItem = styled(MuiMenuItem)`
 
 type ListItemProps = {
   title: string;
-  status?: string;
+  status?: PresenceProps['presence'];
   unreadCount?: number;
   important?: boolean;
   umiVariant?: 'count' | 'dot' | 'auto';
@@ -64,9 +64,9 @@ const ConversationListItem = (props: ListItemProps) => {
       component={component}
       selected={selected}
     >
-      <Presence status={status} />
+      <Presence presence={status} />
       <ItemText style={{ fontWeight }}>{title}</ItemText>
-      <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
+      <Umi  important={important} unreadCount={unreadCount} />
       <Icon onClick={onMoreClick}>more_vert</Icon>
     </StyledListItem>
   );

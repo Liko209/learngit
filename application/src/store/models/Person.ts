@@ -1,5 +1,4 @@
 import { observable, action, computed } from 'mobx';
-import { toTitleCase } from '../../utils/case';
 
 export default class PersonModel {
   id: number;
@@ -55,7 +54,7 @@ export default class PersonModel {
   @computed
   get firstName() {
     if (this._firstName) {
-      return toTitleCase(this._firstName);
+      return this._firstName;
     }
     return '';
   }
@@ -63,7 +62,7 @@ export default class PersonModel {
   @computed
   get lastName() {
     if (this._lastName) {
-      return toTitleCase(this._lastName);
+      return this._lastName;
     }
     return '';
   }

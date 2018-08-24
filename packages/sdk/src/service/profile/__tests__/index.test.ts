@@ -56,7 +56,7 @@ describe('ProfileService', () => {
       const result = await profileService.putFavoritePost(100, true);
       expect(result).toBeNull();
     });
-    it('favarite post ids in local to like, and not in to un like', async () => {
+    it('favorite post ids in local to like, and not in to un like', async () => {
       const profile = {
         id: 2,
         favorite_post_ids: [100, 101, 102],
@@ -70,7 +70,7 @@ describe('ProfileService', () => {
       expect(result.favorite_post_ids).toEqual([100, 101, 102]);
     });
 
-    it('favarite post ids not in local to like', async () => {
+    it('favorite post ids not in local to like', async () => {
       const profile = {
         id: 2,
         favorite_post_ids: [100, 101, 102],
@@ -94,7 +94,7 @@ describe('ProfileService', () => {
       expect(result.favorite_post_ids).toEqual([100, 101, 102, 103]);
     });
 
-    it('favarite post ids not in local to unlike', async () => {
+    it('favorite post ids not in local to unlike', async () => {
       const profile = {
         id: 2,
         favorite_post_ids: [100, 101, 102],
@@ -113,9 +113,43 @@ describe('ProfileService', () => {
           favorite_post_ids: [100, 101],
         },
       ]);
-
-      const result = await profileService.putFavoritePost(102, false);
+      const result = await profileService.putFavoritePost(102, false) || { favorite_post_ids: [] };
       expect(result.favorite_post_ids).toEqual([100, 101]);
     });
+  });
+
+  describe('reorderFavoriteGroups', () => {
+    it('reorder back to forward', async () => {
+      const profile = {
+        id: 2,
+        favorite_group_ids: [1, 2, 3],
+      };
+      mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
+      profileService.getById = jest.fn().mockImplementation(id => profile);
+      ProfileAPI.putDataById.mockResolvedValueOnce({
+        data: profile,
+      });
+      handleData.mockResolvedValueOnce([profile]);
+      const result = await profileService.reorderFavoriteGroups(1, 0) || { favorite_group_ids: [] };
+      expect(result.favorite_group_ids).toEqual([2, 1, 3]);
+    });
+
+    it.only('reorder forward to back', async () => {
+      const profile = {
+        id: 2,
+        favorite_group_ids: [1, 2, 3],
+      };
+      mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
+      profileService.getById = jest.fn().mockImplementation(id => profile);
+      ProfileAPI.putDataById.mockResolvedValueOnce({
+        data: profile,
+      });
+      handleData.mockResolvedValueOnce([{ favorite_group_ids: [3, 2, 1] }]);
+      const result = await profileService.reorderFavoriteGroups(0, 2) || { favorite_group_ids: [] };
+      expect(result.favorite_group_ids).toEqual([3, 2, 1]);
+    });
+  });
+  describe('markGroupAsFavorite', () => {
+    it('', () => { });
   });
 });
