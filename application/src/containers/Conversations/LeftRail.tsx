@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { Divider } from 'ui-components';
+import { Divider, styled } from 'ui-components';
 
 import { LeftRailPresenter } from './LeftRailPresenter';
 import {
