@@ -112,7 +112,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
             <IconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.handleLeftNavExpand} data-anchor="expandButton">
               format_list_bulleted
             </IconButton>
-            <TopLogo variant="headline">Ringcentral</TopLogo>
+            <TopLogo variant="headline">RingCentral</TopLogo>
             <BackForward invisible={!isElectron}>
               <IconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
                 chevron_left
