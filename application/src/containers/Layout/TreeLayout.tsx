@@ -69,8 +69,10 @@ class TreeLayout extends Component<IProps, IStates> {
     const parsed = parse(nextProps.location.search);
     if (parsed.leftnav === 'true') {
       this.onResize(200);
+      // setTimeout(() => this.onResize(200), 1000);
     } else if (parsed.leftnav === 'false') {
       this.onResize(72);
+      // setTimeout(() => this.onResize(72), 1000);
     }
   }
 
