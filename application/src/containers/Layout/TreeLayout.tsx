@@ -273,7 +273,7 @@ class TreeLayout extends Component<IProps, IStates> {
           {children[0]}
         </HorizonPanel>
         <HorizonResizer offset={left} onMouseDown={this.onMouseDown} show={showLeftResizer} />
-        <HorizonPanel width={middle} minWidth={400}>
+        <HorizonPanel width={middle} minWidth={400} response={true}>
           {children[1]}
         </HorizonPanel>
         <HorizonResizer offset={left + middle} onMouseDown={this.onMouseDown} show={showRightResizer} />
