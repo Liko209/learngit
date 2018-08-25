@@ -15,16 +15,27 @@ fixture('teamSection')
   .afterEach(tearDown());
 
 const randomTeamName = 'Team' + Number(new Date());
+
+// test(
+//   formalName(
+//     'Display team',
+//     ['P0', 'ConversationList']),
+//   async (t) => {
+//     await setupSDK(t);
+//     await unifiedLogin(t)
+//       .shouldNavigateTo(TeamSection)
+//       .shouldBeTeam();
+//   },
+// );
+
 test(
-  formalName('Team section display the conversation which the login user as one of the team member',
-             ['P0', 'ConversationList']),
+  formalName(
+    'Modify team name',
+    ['P0', 'Team section']),
   async (t) => {
     await setupSDK(t);
     await unifiedLogin(t)
       .shouldNavigateTo(TeamSection)
-      .createTeamByAPI(Number(t.ctx.data.users.user701.glip_id), randomTeamName)
-      .nthTeamNameEquals(0, randomTeamName)
-      .modifyTeamNameByApi(randomTeamName + 1)
-      .nthTeamNameEquals(0, randomTeamName + 1);
+      .teamNameShouldChange();
   },
 );
