@@ -34,7 +34,7 @@
     "react-mentions": "2.0.1",
     "react-modal": "3.4.5",
     "react-router-dom": "4.3.1",
-    "react-select": "2.0.0",
+    "react-select": "1.2.1",
     "react-virtualized": "9.19.1",
     "ringcentral": "3.2.0",
     "ringcentral-web-phone": "0.4.5",

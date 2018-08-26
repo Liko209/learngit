@@ -9,6 +9,7 @@ interface IInternalPorps {
   maxWidth?: number;
   forceDisplay?: boolean;
   forcePosition?: TPosition;
+  response?: boolean; // leftnav expend or collapes, there will be a flash
 }
 
 interface IExternalPorps extends IInternalPorps {
@@ -20,8 +21,14 @@ const Wrapper = styled.div`
   vertical-align: top;
   height: 100%;
   display: ${(props: IInternalPorps) => props.width > 0 ? 'inline-block' : 'none'};
-  width: ${(props: IInternalPorps) => `${props.width}px`};
+  /* width: ${(props: IInternalPorps) => `${props.width}px`}; */
   /* transition: all .25s; */
+  ${props => props.response ? css`
+    flex: 1;
+  ` : css`
+    flex-basis: ${(props: IInternalPorps) => `${props.width}px`};
+    width: ${(props: IInternalPorps) => `${props.width}px`};
+  `};
   ${props => props.forceDisplay && css`
     display: inline-block;
     width: 180px;
@@ -33,7 +40,7 @@ const Wrapper = styled.div`
   `}
 `;
 
-const Panel = ({ width, minWidth, maxWidth, forceDisplay, forcePosition, onClick, children }: IExternalPorps) => {
+const Panel = ({ width, minWidth, maxWidth, forceDisplay, forcePosition, onClick, children, response }: IExternalPorps) => {
   return (
     <Wrapper
       width={width}
@@ -42,6 +49,7 @@ const Panel = ({ width, minWidth, maxWidth, forceDisplay, forcePosition, onClick
       forceDisplay={forceDisplay}
       forcePosition={forcePosition}
       onClick={onClick}
+      response={response}
     >
       {children}
     </Wrapper>

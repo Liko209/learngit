@@ -7,9 +7,9 @@ import notificationCenter from '../../../service/notificationCenter';
 import handleData, {
   transform,
   getStates,
-  TransformedState,
+  TransformedState, handlePartialData,
 } from '../../../service/state/handleData';
-import { sample, transformedGroupState, transformedMyState, sample2 } from './dummy';
+import { sample, transformedGroupState, transformedMyState, sample2, partialSample } from './dummy';
 import { rawMyStateFactory } from '../../../__tests__/factories';
 
 jest.mock('../../../dao', () => {
@@ -75,5 +75,14 @@ describe('stateHandleData()', () => {
   });
   it('should run for partial data', async () => {
     await expect(handleData([sample2])).resolves;
+  });
+});
+describe('handlePartialData', () => {
+  it('should save to db', async () => {
+    jest.clearAllMocks();
+    await handlePartialData([partialSample]);
+    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
+    expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(2);
   });
 });
