@@ -16,6 +16,7 @@ const Wrapper = styled.div`
   right: 0;
   left: 0;
   overflow: hidden;
+  display: flex;
 `;
 
 const Layout = ({ onClick, children }: IExternalPorps) => {

@@ -16,10 +16,11 @@ export type BaseModel = {
   model_size?: number;
 };
 
-export type Raw < T > = Pick<T, Exclude<keyof T, 'id'>> & {
+export type Raw<T> = Pick<T, Exclude<keyof T, 'id'>> & {
   _id: number;
   id?: number;
 };
+export type PartialWithKey<T> = Pick<T, Extract<keyof T, 'id'>> & Partial<T>;
 
 export type Group = BaseModel & {
   members: number[];
@@ -50,7 +51,7 @@ export type Group = BaseModel & {
   };
   post_cursor?: number;
   deactivated_post_cursor?: number;
-  _delta?: object;
+  _delta?: { add?: object, remove?: object, set?: object };
   is_public?: boolean;
   description?: string;
 };
