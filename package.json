@@ -8,26 +8,28 @@
   },
   "scripts": {
     "preinstall": "node scripts/check-pm.js",
-    "postinstall": "yarn bt && yarn build:packages && yarn bt",
-    "start:ui": "cd packages/ui && yarn storybook",
-    "start:demo": "cd demo && yarn start",
-    "start:app": "cd application && yarn start",
+    "postinstall": "npm run bt && npm run build:packages && npm run bt",
+    "start:ui": "cd packages/ui && npm run storybook",
+    "start:demo": "cd demo && npm run start",
+    "start:app": "cd application && npm run start",
     "clean:build": "rm -rf ./packages/*/build ./packages/*/build-es",
-    "clean:all": "lerna clean --yes && rm -rf ./node_modules && yarn clean:build",
+    "clean:all": "lerna clean --yes && rm -rf ./node_modules && npm run clean:build",
     "build:packages": "node ./scripts/build.js",
-    "build:demo": "cd demo && yarn build",
-    "build:app": "cd application && yarn build",
+    "build:demo": "cd demo && npm run build",
+    "build:app": "cd application && npm run build",
+    "build:ui": "cd packages/ui && npm run build-storybook",
     "test": "node ./scripts/test.js --env=jsdom",
-    "test:staged": "yarn test:cover --findRelatedTests",
-    "test:cover": "yarn test --coverage",
+    "test:staged": "npm run test:cover -- --findRelatedTests",
+    "test:cover": "npm run test -- --coverage",
     "lint": "tslint",
-    "publish": "yarn clean:build && yarn build && lerna publish --silent",
+    "publish": "npm run clean:build && npm run build && lerna publish --silent",
     "watch": "node scripts/watch.js",
     "precommit": "lint-staged",
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",
     "commitmsg": "node scripts/validate-commit-msg.js",
-    "bt": "lerna bootstrap --hoist"
+    "bt": "lerna bootstrap --hoist",
+    "raise-coverage": "node scripts/raise-coverage"
   },
   "devDependencies": {
     "@types/enzyme": "*",
@@ -73,20 +75,20 @@
     "tslint": "5.11.0",
     "tslint-config-airbnb": "5.9.2",
     "tslint-react": "3.6.0",
-    "typescript": "2.9.2"
+    "typescript": "2.9.2",
+    "uuid": "3.3.2"
   },
   "lint-staged": {
     "linters": {
       "*.{ts, tsx, js, jsx}": [
-        "tslint"
+        "tslint",
+        "npm run test:cover",
+        "npm run raise-coverage"
       ]
     },
     "ignore": [
       "demo/**",
       "tests/**"
     ]
-  },
-  "dependencies": {
-    "uuid": "3.3.2"
   }
 }
