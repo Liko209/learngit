@@ -19,7 +19,7 @@ const randomTeamName = 'Team' + Number(new Date());
 test(
   formalName(
     'Display team',
-    ['P0', 'ConversationList']),
+    ['P0', 'Team section']),
   async (t) => {
     await setupSDK(t);
     await unifiedLogin(t)
