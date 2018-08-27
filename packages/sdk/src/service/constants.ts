@@ -16,6 +16,7 @@ const EVENT_TYPES = {
   PUT: 'put',
   UPDATE: 'update',
   DELETE: 'delete',
+  REPLACE_ALL: 'replaceAll',
   // LOGIN: 'login',
   // LOGOUT: 'logout',
   // INDEX_EXIST: 'fetchIndexDataExist',

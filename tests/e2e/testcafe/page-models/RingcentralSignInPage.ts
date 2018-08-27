@@ -22,7 +22,7 @@ export class RingcentralSignInPage extends BasePage {
   }
 
   get signInButton(): Selector {
-    return Selector('*[data-test-automation-id="signInBtn"]');
+    return Selector('[data-test-automation-id="signInBtn"]');
   }
 
   setCredential(credential: string): this {
@@ -32,8 +32,10 @@ export class RingcentralSignInPage extends BasePage {
   }
 
   setExtension(extension: string): this {
-    return this.chain(async t =>
-      await t.typeText(this.extensionField, extension),
+    return this.chain(async (t) => {
+      if (extension === '') return;
+      return await t.typeText(this.extensionField, extension);
+    },
     );
   }
 

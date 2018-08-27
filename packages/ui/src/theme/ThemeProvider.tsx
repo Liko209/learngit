@@ -27,7 +27,7 @@ const createThemes = () => {
         return themes;
       },
       {},
-    );
+  );
 };
 
 const themes = createThemes();

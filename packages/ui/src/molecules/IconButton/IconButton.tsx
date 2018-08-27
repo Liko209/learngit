@@ -1,3 +1,8 @@
+/*
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-08-22 15:22:51
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from '../../styled-components';
 import MuiIconButton, { IconButtonProps } from '@material-ui/core/IconButton';
@@ -60,9 +65,17 @@ const IconButton: React.SFC<TIconButtonProps> = (
   props: TIconButtonProps,
 ) => {
   const { children, tooltipTitle, innerRef, ...rest } = props;
+  const { size, variant, awake, disabled, invisible } = rest;
   const main = (
     <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
-      <StyledIcon {...rest}>{children}</StyledIcon>
+      <StyledIcon
+        size={size}
+        variant={variant}
+        awake={awake}
+        disabled={disabled}
+        invisible={invisible}
+      >{children}
+      </StyledIcon>
     </StyledIconButton>
   );
   return tooltipTitle ? (<MuiTooltip title={tooltipTitle}>{main}</MuiTooltip>) : main;
