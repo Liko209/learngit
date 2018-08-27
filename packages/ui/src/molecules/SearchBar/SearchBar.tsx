@@ -66,7 +66,7 @@ const Indicators = styled.div`
   }
 `;
 const IconSearch = styled(Search)`
-  padding: 0 ${({ theme }) => `${theme.spacing.unit * 3}px`};
+  margin: 0 ${({ theme }) => `${theme.spacing.unit * 3}px`};
 `;
 const IndicatorsContainer = () => {
   return (
@@ -85,8 +85,7 @@ const DropdownIndicator = (props: any) => {
 const Placeholder = (props: React.Props<any>) =>
   (
     <Typography
-      style={{ position: 'absolute', left: '36px' }}
-      color="textSecondary"
+      style={{ position: 'absolute', left: '48px', color: '#9E9E9E' }}
     >
       {props.children}
     </Typography>
@@ -158,21 +157,23 @@ const colourStyles = {
   input: (styles: React.CSSProperties) => {
     return {
       ...styles,
-      margin: '2px 2px 2px 28px',
+      margin: '2px 2px 2px 40px',
     };
   },
   singleValue: (styles: React.CSSProperties) => {
     return {
       ...styles,
-      margin: '2px 2px 2px 28px',
+      margin: '2px 2px 2px 40px',
     };
   },
 };
 
-// type TSelectWithTheme<OptionsType> = {
-//   theme: any;
-// } & Props & CommonProps<OptionsType>;
-// class SelectWithTheme extends Select<TSelectWithTheme<OptionsType>> {
+// type TSelectWithThemeProps<OptionType> = {
+//   theme?: Theme;
+//   awake?: boolean;
+// } & Props<OptionType>;
+
+// class SelectWithTheme<OptionType> extends Select<TSelectWithThemeProps<OptionType>, <State>> {
 //   render() {
 //     return (
 //       <Select
@@ -201,6 +202,7 @@ class SearchBar extends React.Component<TSearchBarProps, {
   render() {
     return (
       <Select
+        classNamePrefix="react-select"
         value={this.state.value}
         placeholder="Search"
         onChange={this.handleChange}

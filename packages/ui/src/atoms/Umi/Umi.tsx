@@ -48,7 +48,7 @@ const styles = {
 
 const StyledUmi = styled<UmiProps, 'span'>('span')`
   display: inline-block;
-  width: ${ props => String(props.unreadCount).length === 1 ? 18 + 'px' : (String(props.unreadCount).length === 2 ? 22 + 'px' : 28 + 'px') };
+  width: ${ props => String(props.unreadCount).length === 1 ? 18 + 'px' : (String(props.unreadCount).length === 2 ? 22 + 'px' : 28 + 'px')};
   height: 18px;
   border-radius: 8px;
   margin-right: 2px;
@@ -56,8 +56,8 @@ const StyledUmi = styled<UmiProps, 'span'>('span')`
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
   background: ${ ({ important, theme }) => {
-    const { primary, accent } = theme.palette;
-    return important ? primary.main : accent.lake;
+    const { secondary, accent } = theme.palette;
+    return important ? secondary.main : accent.lake;
   }};
   ${({ variant = 'count' }) => styles[variant]}
 `;

@@ -38,6 +38,12 @@ const TopBarWrapper = styled(Toolbar)`
   && {
     justify-content: space-between;
     padding: 0 ${({ theme }) => `${theme.spacing.unit * 4}px`};
+    &:hover {
+      .react-select__control {
+        background: ${({ theme }) => theme.palette.grey[300]};
+        border: 1px solid ${({ theme }) => theme.palette.grey[300]};
+      }
+    }
   }
 `;
 const TopLogo = styled(Typography)`

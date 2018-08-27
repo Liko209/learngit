@@ -57,7 +57,7 @@ class ConversationListItemText extends Component<ItemTextProps, ItemTextStates> 
         <StyledTypography
           {...this.props}
           ref={this.textRef}
-          onMouseEnter={this._handleMouseEnter}
+          onMouseOver={this._handleMouseEnter}
           onMouseLeave={this._handleMouseLeave}
         >
           {this.props.children}

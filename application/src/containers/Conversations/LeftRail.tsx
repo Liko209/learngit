@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { Divider } from 'ui-components';
+import { Divider, styled } from 'ui-components';
 
 import { LeftRailPresenter } from './LeftRailPresenter';
 import {
@@ -21,6 +20,7 @@ type IProps = {} & RouteComponentProps<any>;
 const Container = styled.div`
   height: 100%;
   overflow: auto;
+  border-right: 1px solid ${({ theme }) => theme.palette.divider};
 `;
 
 class LeftRail extends Component<IProps> {
