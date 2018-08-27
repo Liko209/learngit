@@ -21,6 +21,7 @@ const Wrapper = styled.div`
   vertical-align: top;
   height: 100%;
   display: ${(props: IInternalPorps) => props.width > 0 ? 'inline-block' : 'none'};
+  overflow: hidden;
   /* width: ${(props: IInternalPorps) => `${props.width}px`}; */
   /* transition: all .25s; */
   ${props => props.response ? css`

@@ -53,16 +53,20 @@ type ListItemProps = {
 } & MuiMenuItemProps;
 
 const ConversationListItem = (props: ListItemProps) => {
-  const { title, status, unreadCount, important, onClick, onMoreClick } = props;
+  const { title, status, unreadCount, important,
+    onClick, onMoreClick, umiVariant, component, selected } = props;
+
   const fontWeight = unreadCount ? 'bold' : 'normal';
 
   return (
-    <StyledListItem button={true} onClick={onClick}>
+    <StyledListItem
+      onClick={onClick}
+      component={component}
+      selected={selected}
+    >
       <Presence presence={status} />
-      <ItemText style={{ fontWeight }}>
-        {title}
-      </ItemText>
-      <Umi important={important} unreadCount={unreadCount} />
+      <ItemText style={{ fontWeight }}>{title}</ItemText>
+      <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
       <Icon onClick={onMoreClick}>more_vert</Icon>
     </StyledListItem>
   );

@@ -2,23 +2,24 @@ import React from 'react';
 import styled from 'styled-components';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import MuiListItemText, {
-  ListItemTextProps
+  ListItemTextProps,
 } from '@material-ui/core/ListItemText';
 import { WithTheme } from '@material-ui/core/styles/withTheme';
 import { Umi } from '../../atoms';
 import NavIcon from './icon';
 import { NavLink } from 'react-router-dom';
+import { Tooltip as MuiTooltip } from '@material-ui/core';
 
 type TListItem = {
   active: number;
   expand: number;
 } & ListItemProps &
   Partial<Pick<WithTheme, 'theme'>>;
-const CustomListItem: React.SFC<TListItem> = props => {
+const CustomListItem: React.SFC<TListItem> = (props) => {
   return <MuiListItem {...props} />;
 };
 const ListItem = styled<TListItem>(CustomListItem).attrs({
-  className: 'left-list-item'
+  className: 'left-list-item',
 })`
   && {
     padding: 0;
@@ -50,7 +51,7 @@ type TListItemTextProps = {
 } & ListItemTextProps &
   Partial<Pick<WithTheme, 'theme'>>;
 
-const CustomListItemText: React.SFC<TListItemTextProps> = props => {
+const CustomListItemText: React.SFC<TListItemTextProps> = (props) => {
   return <MuiListItemText {...props} />;
 };
 const ListItemText = styled<TListItemTextProps>(CustomListItemText)`
@@ -73,7 +74,7 @@ type TUMIProps = {
   important: boolean;
   variant: 'count' | 'dot' | 'auto';
 };
-const CustomUMI: React.SFC<TUMIProps> = props => {
+const CustomUMI: React.SFC<TUMIProps> = (props) => {
   return <Umi {...props} />;
 };
 const UMI = styled<TUMIProps>(CustomUMI)`
@@ -129,7 +130,7 @@ type TNavItemProps = {
 const Item = (props: TNavItemProps) => {
   const { expand, active, title, variant, unreadCount, icon, url } = props;
   const bgColor = active ? '#EBF6FA' : '#F5F5F5'; // Ice and 100
-  return (
+  const NavItems = (
     <ListItem
       button={true}
       tabIndex={-1}
@@ -155,6 +156,7 @@ const Item = (props: TNavItemProps) => {
       </ListLink>
     </ListItem>
   );
+  return !expand ? <MuiTooltip title={title} enterDelay={400}>{NavItems}</MuiTooltip> : NavItems;
 };
 export const NavItem = styled<TNavItemProps>(Item)``;
 export default NavItem;

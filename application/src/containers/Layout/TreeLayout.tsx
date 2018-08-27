@@ -83,7 +83,7 @@ class TreeLayout extends Component<IProps, IStates> {
   onMouseDown(e: ReactMouseEvent) {
     document.addEventListener('mouseup', this.onMouseUp);
     document.addEventListener<'mousemove'>('mousemove', this.onMouseMove); // document mousemove
-    const currentElement = e.nativeEvent.srcElement; // Resizer
+    const currentElement = e.target as Element; // Resizer
     const parentElement = currentElement!.parentElement;
     const collectionElement = parentElement!.querySelectorAll('[offset]');
     const currentIndex = Array.from(collectionElement).indexOf(currentElement!);
