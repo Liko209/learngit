@@ -3,7 +3,7 @@ echo '====Start E2E'
 cd $project/tests/e2e/testcafe
 rm -rf $project/tests/e2e/testcafe/allure/
 
-yarn
+npm i
 
 # SELENIUM_SERVER is setup in jenkins as we may want to change it any time without update the code
 echo $SELENIUM_SERVER
