@@ -28,7 +28,7 @@ createTestCafe()
       .browsers(BROWSERS)
       .reporter(REPORTER)
       .screenshots(SCREENSHOTS_PATH)
-      .concurrency(parseInt(CONCURRENCY, 10))
+      .concurrency(Number(CONCURRENCY))
       .run();
   })
   .then((failedCount: any) => {
