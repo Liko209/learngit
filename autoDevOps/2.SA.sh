@@ -60,7 +60,6 @@ if [ "$hasLintError" = 1 ]; then
   syncFolderToServer $project/lint/ $lintFolder
   lintErrorUrl=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/index.html
   addEnv SAResult="> **SA Error**: $lintErrorUrl"
-  exit 1
 else
   addEnv SAResult="> **SA Error**: Do Not Have Lint Error"
 fi
