@@ -25,4 +25,6 @@ if [ "$hasLintError" != 1 ]; then
 
   # # 6. Puppeteer
   # . $autoDevOps/6.Puppeteer.sh
+else
+  addEnv hasLintError=1
 fi
