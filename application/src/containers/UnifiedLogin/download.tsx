@@ -29,13 +29,13 @@ const Download = () => (
     Download:{' '}
     <DownLoadLink
       download={true}
-      href="https://download.fiji.gliprc.com/Fiji.exe"
+      href="https://download.fiji.gliprc.com/Jupiter.exe"
     >
       Windows
     </DownLoadLink>
     <DownLoadLink
       download={true}
-      href="https://download.fiji.gliprc.com/Fiji.dmg"
+      href="https://download.fiji.gliprc.com/Jupiter.dmg"
     >
       Mac
     </DownLoadLink>

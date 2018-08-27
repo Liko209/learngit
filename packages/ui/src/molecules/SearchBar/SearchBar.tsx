@@ -66,7 +66,7 @@ const Indicators = styled.div`
   }
 `;
 const IconSearch = styled(Search)`
-  padding: 0 ${({ theme }) => `${theme.spacing.unit * 3}px`};
+  margin: 0 ${({ theme }) => `${theme.spacing.unit * 3}px`};
 `;
 const IndicatorsContainer = () => {
   return (
@@ -85,8 +85,7 @@ const DropdownIndicator = (props: any) => {
 const Placeholder = (props: React.Props<any>) =>
   (
     <Typography
-      style={{ position: 'absolute', left: '36px' }}
-      color="textSecondary"
+      style={{ position: 'absolute', left: '48px', color: '#9E9E9E' }}
     >
       {props.children}
     </Typography>
@@ -158,13 +157,13 @@ const colourStyles = {
   input: (styles: React.CSSProperties) => {
     return {
       ...styles,
-      margin: '2px 2px 2px 28px',
+      margin: '2px 2px 2px 40px',
     };
   },
   singleValue: (styles: React.CSSProperties) => {
     return {
       ...styles,
-      margin: '2px 2px 2px 28px',
+      margin: '2px 2px 2px 40px',
     };
   },
 };
