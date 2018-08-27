@@ -1,7 +1,7 @@
 node{
     nodejs('NodeJS10.9') {
         stage('Install Dependences'){
-            sh "rm **/package-lock.json"
+            sh "rm -rf **/package-lock.json"
             sh "npm install"
         }
         stage('Run SA'){
