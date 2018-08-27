@@ -28,7 +28,7 @@
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",
     "commitmsg": "node scripts/validate-commit-msg.js",
-    "bt": "lerna bootstrap --hoist",
+    "bt": "lerna bootstrap --hoist --no-ci",
     "raise-coverage": "node scripts/raise-coverage"
   },
   "devDependencies": {
