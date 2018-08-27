@@ -169,10 +169,12 @@ const colourStyles = {
   },
 };
 
-// type TSelectWithTheme<OptionsType> = {
-//   theme: any;
-// } & Props & CommonProps<OptionsType>;
-// class SelectWithTheme extends Select<TSelectWithTheme<OptionsType>> {
+// type TSelectWithThemeProps<OptionType> = {
+//   theme?: Theme;
+//   awake?: boolean;
+// } & Props<OptionType>;
+
+// class SelectWithTheme<OptionType> extends Select<TSelectWithThemeProps<OptionType>, <State>> {
 //   render() {
 //     return (
 //       <Select
@@ -201,6 +203,7 @@ class SearchBar extends React.Component<TSearchBarProps, {
   render() {
     return (
       <Select
+        classNamePrefix="react-select"
         value={this.state.value}
         placeholder="Search"
         onChange={this.handleChange}

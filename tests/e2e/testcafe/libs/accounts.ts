@@ -14,7 +14,7 @@ class AccountPoolHelper {
   }
 
   async checkOutAccounts(envName: string, accountType: string, isDebug: string = 'false') {
-    const response = await this.accountPoolClient.snatchAccount(envName, accountType, undefined, isDebug)
+    const response = await this.accountPoolClient.snatchAccount(envName, accountType, undefined, isDebug);
     return response.body;
   }
 

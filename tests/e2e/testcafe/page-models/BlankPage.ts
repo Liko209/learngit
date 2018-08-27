@@ -10,7 +10,7 @@ import { Status } from '../libs/report';
 export class BlankPage extends BasePage {
 
   open(url: string): this {
-    return this.chain(async t => {
+    return this.chain(async (t) => {
       await t.navigateTo(url);
       await this.log(`open ${url}`, Status.PASSED, true);
     });

@@ -16,7 +16,7 @@ const StyledListItem = styled(MuiMenuItem)`
   white-space: nowrap;
   padding: 6px 16px 6px 12px;
   background: white;
-  color: #212121;
+  color: ${({ theme }) => theme.palette.grey['900']};
   /**
    * Workaround to resolve transition conflicts with react-sortable-hoc
    * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
@@ -25,11 +25,11 @@ const StyledListItem = styled(MuiMenuItem)`
 }
 
 &&:hover {
-  background: #f8f8f8;
+  background: ${({ theme }) => theme.palette.grey['100']};
 }
 
 &&:focus {
-  background: #e0e0e0;
+  background: ${({ theme }) => theme.palette.grey['300']};
 }
 
 && ${Icon} {
@@ -53,16 +53,20 @@ type ListItemProps = {
 } & MuiMenuItemProps;
 
 const ConversationListItem = (props: ListItemProps) => {
-  const { title, status, unreadCount, important, onClick, onMoreClick } = props;
+  const { title, status, unreadCount, important,
+    onClick, onMoreClick, umiVariant, component, selected } = props;
+
   const fontWeight = unreadCount ? 'bold' : 'normal';
 
   return (
-    <StyledListItem button={true} onClick={onClick}>
+    <StyledListItem
+      onClick={onClick}
+      component={component}
+      selected={selected}
+    >
       <Presence presence={status} />
-      <ItemText style={{ fontWeight }}>
-        {title}
-      </ItemText>
-      <Umi important={important} unreadCount={unreadCount} />
+      <ItemText style={{ fontWeight }}>{title}</ItemText>
+      <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
       <Icon onClick={onMoreClick}>more_vert</Icon>
     </StyledListItem>
   );

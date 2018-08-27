@@ -6,7 +6,11 @@
 import styled from 'styled-components';
 import MuiDivider from '@material-ui/core/Divider';
 
-const Divider = styled(MuiDivider)``;
+const Divider = styled(MuiDivider)`
+  && {
+    background-color: ${({ theme }) => theme.palette.grey['300']};
+  }
+`;
 
 export { Divider };
 export default Divider;

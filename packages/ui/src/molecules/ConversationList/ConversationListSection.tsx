@@ -5,12 +5,14 @@
  */
 import React, { Component } from 'react';
 import Collapse from '@material-ui/core/Collapse';
+import { noop } from '../../utils';
+import { Divider } from '../../atoms';
 import SectionHeader, { SectionHeaderProps } from './ConversationListSectionHeader';
 
 type SectionProps = {
   expanded?: boolean;
-  onExpand?: () => any;
-  onCollapse?: () => any;
+  onExpand?: Function;
+  onCollapse?: Function;
 } & SectionHeaderProps;
 
 type SectionStates = {
@@ -18,6 +20,11 @@ type SectionStates = {
 };
 
 class ConversationListSection extends Component<SectionProps, SectionStates> {
+  static defaultProps = {
+    onExpand: noop,
+    onCollapse: noop,
+  };
+
   constructor(props: SectionProps) {
     super(props);
 
@@ -36,8 +43,11 @@ class ConversationListSection extends Component<SectionProps, SectionStates> {
           expanded={expanded}
           onClick={this._handleClick}
         />
-        <Collapse in={expanded}>{this.props.children}</Collapse>
-      </div>
+        <Collapse in={expanded}>
+          {this.props.children && <Divider />}
+          {this.props.children}
+        </Collapse>
+      </div >
     );
   }
 

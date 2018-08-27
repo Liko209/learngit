@@ -152,3 +152,11 @@ export const sample2 = {
   first_time_users_ensured: true,
   _csrf: null,
 };
+
+export const partialSample = {
+  _id: 1376263,
+  version: 1475284066893824,
+  person_id: 1376259,
+  modified_at: 1535014387727,
+  'post_cursor:3375110': 26,
+};

@@ -13,28 +13,83 @@ import { ENTITY } from '../../service/eventKey';
 import ProfileService from '../../service/profile';
 import _ from 'lodash';
 import { transform } from '../utils';
-import { Group, Post, Raw, Profile } from '../../models';
+import { Group, Post, Raw, Profile, PartialWithKey } from '../../models';
 import { GROUP_QUERY_TYPE } from '../constants';
 import StateService from '../state';
+import { mainLogger } from 'foundation';
 
-// async function checkIncompleteGroupsMembers(groups: Group[]) {
-//   if (groups.length) {
-//     try {
-//       return await Promise.all(
-//         groups.map(async (group: Group) => {
-//           if (group.members) {
-//             const personService: PersonService = PersonService.getInstance();
-//             return personService.getPersonsByIds(group.members);
-//           }
-//           return group;
-//         }),
-//       );
-//     } catch (e) {
-//       mainLogger.warn(`checkIncompleteGroupsMembers error: ${e}`);
-//     }
-//   }
-//   return [];
-// }
+async function getExistedAndTransformDataFromPartial(groups: Partial<Raw<Group>>[]): Promise<Group[]> {
+  const groupDao = daoManager.getDao<GroupDao>(GroupDao);
+  const transformedData: (Partial<Group> | null)[] = await Promise.all(
+    groups.map(async (item: Partial<Raw<Group>>) => {
+      if (item._id) {
+        const finalItem = item;
+        const existedGroup = await groupDao.get(item._id);
+        if (existedGroup) {
+          // If existed in DB, update directly and return the updated result for notification later
+          /* eslint-enable no-underscore-dangle */
+          const transformed: PartialWithKey<Group> = transform<PartialWithKey<Group>>(finalItem);
+          await groupDao.update(transformed);
+          if (transformed.id) {
+            const updated = await groupDao.get(transformed.id);
+            return updated;
+          }
+        } else {
+          // If not existed in DB, request from API and handle the response again
+          const resp = await GroupAPI.requestGroupById(item._id);
+          if (resp && resp.data) {
+            handleData([resp.data] as Raw<Group>[]);
+          }
+        }
+      }
+      return null;
+    }),
+  );
+
+  return transformedData.filter((item: Group | null) => item !== null) as Group[];
+}
+
+async function calculateDeltaData(deltaGroup: Raw<Group>): Promise<Group | void> {
+  const groupDao = daoManager.getDao<GroupDao>(GroupDao);
+
+  const originData = await groupDao.get(deltaGroup._id);
+  if (originData && deltaGroup._delta) {
+    const { add, remove, set } = deltaGroup._delta;
+    const result = originData;
+    if (remove) {
+      for (const key in remove) {
+        if (remove.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
+          result[key] = _.drop(originData[key], remove[key]);
+        } else {
+          // No a regular delta message if the remove field is not existed,
+          // Force end the calculation and return
+          return;
+        }
+      }
+    }
+
+    if (add) {
+      for (const key in add) {
+        if (add.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
+          result[key] = _.concat([], originData[key], add[key]);
+        } else {
+          // No a regular delta message if the add field is not existed
+          // Force end the calculation and return
+          return;
+        }
+      }
+    }
+
+    if (set) {
+      for (const key in set) {
+        if (set.hasOwnProperty(key)) {
+          result[key] = set[key];
+        }
+      }
+    }
+    return result;
+  }
+}
 
 async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
   const transformedData: (Group | null)[] = await Promise.all(
@@ -42,6 +97,10 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
       let finalItem = item;
       /* eslint-disable no-underscore-dangle */
       if (finalItem._delta && item._id) {
+        const calculated = await calculateDeltaData(item);
+        if (calculated) {
+          return calculated;
+        }
         const resp = await GroupAPI.requestGroupById(item._id);
         if (resp && resp.data) {
           finalItem = resp.data;
@@ -66,7 +125,7 @@ async function doNotification(deactivatedData: Group[], normalData: Group[]) {
   /**
    * favorite groups/teams: put/delete
    * normal groups: put/delete
-   * normal teams: put/delte
+   * normal teams: put/delete
    */
 
   const archivedTeams = normalData.filter((item: Group) => item.is_archived);
@@ -108,7 +167,7 @@ async function doNotification(deactivatedData: Group[], normalData: Group[]) {
   const addFavorites = normalData.filter((item: Group) => favIds.indexOf(item.id) !== -1);
   addedTeams.length > 0 && notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, addedTeams);
   addedGroups.length > 0 && notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, addedGroups);
-  addFavorites.length > 0 && notificationCenter.emitEntityPut(ENTITY.FAVORITE_GROUPS, addFavorites);
+  addFavorites.length > 0 && await doFavoriteGroupsNotification(favIds);
 }
 
 async function operateGroupDao(deactivatedData: Group[], normalData: Group[]) {
@@ -142,15 +201,10 @@ export default async function handleData(groups: Raw<Group>[]) {
   const accountDao = daoManager.getKVDao(AccountDao);
   const userId = Number(accountDao.get(ACCOUNT_USER_ID));
   const transformData = await getTransformData(groups);
+
   const data = transformData
     .filter(item => item !== null && item.members && item.members.indexOf(userId) !== -1);
-  // handle deactivated data and normal data
-  // const normalGroups =
-  // const normalGroups = await baseHandleData({
-  //   data,
-  //   eventKey: ENTITY.GROUP,
-  //   dao,
-  // });
+
   // handle deactivated data and normal data
   await saveDataAndDoNotification(data);
   // check all group members exist in local or not if not, should get from remote
@@ -160,17 +214,42 @@ export default async function handleData(groups: Raw<Group>[]) {
   // }
 }
 
+async function doFavoriteGroupsNotification(favIds: number[]) {
+  mainLogger.debug(`-------doFavoriteGroupsNotification--------`);
+  if (favIds.length) {
+    const dao = daoManager.getDao(GroupDao);
+    let groups = await dao.queryGroupsByIds(favIds);
+    groups = sortFavoriteGroups(favIds, groups);
+    notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, groups);
+  } else {
+    notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, []);
+  }
+}
+
+function sortFavoriteGroups(ids: number[], groups: Group[]): Group[] {
+  const result: Group[] = [];
+  for (let i = 0; i < ids.length; i += 1) {
+    for (let j = 0; j < groups.length; j += 1) {
+      if (ids[i] === groups[j].id) {
+        result.push(groups[j]);
+        break;
+      }
+    }
+  }
+  return result;
+}
+
 async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Profile) {
+  mainLogger.debug(`---------handleFavoriteGroupsChanged---------`);
   if (oldProfile && newProfile) {
     const oldIds = oldProfile.favorite_group_ids || [];
     const newIds = newProfile.favorite_group_ids || [];
-    if (oldIds.sort().toString() !== newIds.sort().toString()) {
+    if (oldIds.toString() !== newIds.toString()) {
       const moreFavorites: number[] = _.difference(newIds, oldIds);
       const moreNormals: number[] = _.difference(oldIds, newIds);
       const dao = daoManager.getDao(GroupDao);
       if (moreFavorites.length) {
         const resultGroups: Group[] = await dao.queryGroupsByIds(moreFavorites);
-        notificationCenter.emitEntityPut(ENTITY.FAVORITE_GROUPS, resultGroups);
         const teams = resultGroups.filter((item: Group) => item.is_team);
         notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, teams);
         const groups = resultGroups.filter((item: Group) => !item.is_team);
@@ -178,15 +257,12 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
       }
       if (moreNormals.length) {
         const resultGroups = await dao.queryGroupsByIds(moreNormals);
-        notificationCenter.emitEntityDelete(ENTITY.FAVORITE_GROUPS, resultGroups);
         const teams = resultGroups.filter((item: Group) => item.is_team);
-        // notificationCenter.emitEntityPut(ENTITY.FAVORITE_GROUPS, teams);
-
-        const groups = resultGroups.filter((item: Group) => !item.is_team);
         notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, teams);
-
+        const groups = resultGroups.filter((item: Group) => !item.is_team);
         notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, groups);
       }
+      await doFavoriteGroupsNotification(newProfile.favorite_group_ids || []);
     }
   }
 }
@@ -236,7 +312,7 @@ async function filterGroups(
     const times =
       result
         .filter(item => statesIds.includes(item.id))
-        .map((item: Group) => item.most_recent_post_created_at || Infinity)
+        .map((item: Group) => item.most_recent_post_created_at || item.created_at)
         .sort() || [];
     if (times.length > 0) {
       const time = times[0];
@@ -251,10 +327,23 @@ async function filterGroups(
       }
     }
   }
+  groups.sort((group1: Group, group2: Group) => {
+    const time1 = group1.most_recent_post_created_at || group1.created_at;
+    const time2 = group2.most_recent_post_created_at || group1.created_at;
+    return time2 - time1;
+  });
   if (result.length > defaultLength) {
     result.length = defaultLength;
   }
   return result;
+}
+
+async function handlePartialData(groups: Partial<Raw<Group>>[]) {
+  if (groups.length === 0) {
+    return;
+  }
+  const transformData = await getExistedAndTransformDataFromPartial(groups);
+  await doNotification([], transformData);
 }
 
 export {
@@ -262,4 +351,6 @@ export {
   handleGroupMostRecentPostChanged,
   saveDataAndDoNotification,
   filterGroups,
+  sortFavoriteGroups,
+  handlePartialData,
 };
