@@ -11,7 +11,7 @@ import { withRouter } from 'react-router-dom';
 import SearchPageWrapper from './SearchPageWrapper';
 import FullSearch from './FullSearchHeader';
 import SearchContent from './SearchContent';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { service } from 'sdk';
 
 import storeManager, { ENTITY_NAME } from '#/store';
