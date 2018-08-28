@@ -1,3 +1,4 @@
+#!/bin/bash
 echo '====Start SA'
 rm -rf $project/lint
 mkdir -p $project/lint
@@ -52,6 +53,7 @@ if [ "$uiLintError" ]; then
 fi
 
 echo "hasLintError: $hasLintError"
+export hasLintError=$hasLintError
 if [ "$hasLintError" = 1 ]; then
   echo '<pre>' >> $project/lint/index.html
   cat $project/lint/index.txt >> $project/lint/index.html
@@ -60,7 +62,6 @@ if [ "$hasLintError" = 1 ]; then
   syncFolderToServer $project/lint/ $lintFolder
   lintErrorUrl=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/index.html
   addEnv SAResult="> **SA Error**: $lintErrorUrl"
-  exit 1
 else
   addEnv SAResult="> **SA Error**: Do Not Have Lint Error"
 fi

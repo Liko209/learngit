@@ -1,3 +1,4 @@
+#!/bin/bash
 echo '====Start UT'
 
 CI=true node $project/scripts/test.js --env=jsdom 2>&1 | awk '/Summary of all failing/,0'
