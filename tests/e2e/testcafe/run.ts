@@ -13,7 +13,7 @@ import { flattenGlobs, parseArgs } from './libs/utils';
 const FIXTURES = flattenGlobs(parseArgs(process.env.FIXTURES || `${__dirname}/../fixtures/**/*.ts`));
 const REPORTER = process.env.REPORTER || 'allure-lazy';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
-const SCREENSHOT_ON_FAIL = String(process.env.SCREENSHOT_ON_FAIL).trim().toLowerCase() === 'false' || true;
+const SCREENSHOT_ON_FAIL = String(process.env.SCREENSHOT_ON_FAIL).trim().toLowerCase() === 'false' ? false : true;
 const CONCURRENCY = process.env.CONCURRENCY || '1';
 const BROWSERS = parseArgs(process.env.BROWSERS || 'chrome');
 const INCLUDE_TAGS = parseArgs(process.env.INCLUDE_TAGS || '');
