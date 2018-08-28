@@ -125,8 +125,7 @@ class TreeLayout extends Component<IProps, IStates> {
     const rightNodeOffsetWidth = rightNode.offsetWidth;
 
     const newLeftWidth = clientX - leftNodeOffsetLeft;
-    const newRightWidth =
-      rightNodeOffsetWidth - (clientX - rightNodeOffsetLeft);
+    const newRightWidth = rightNodeOffsetWidth - (clientX - rightNodeOffsetLeft);
 
     if (
       newLeftWidth >= leftMinWidth &&
@@ -168,9 +167,7 @@ class TreeLayout extends Component<IProps, IStates> {
       forceDisplayRightPanel,
     } = this.state;
     const { localLeftPanelWidth, localRightPanelWidth } = this.state;
-    const nav =
-      leftnav ||
-      document.getElementById('leftnav')!.getBoundingClientRect().width;
+    const nav = leftnav || document.getElementById('leftnav')!.getBoundingClientRect().width;
     const max = 1920;
     const windowWidth = window.innerWidth;
     const body = windowWidth > max ? max : windowWidth;
