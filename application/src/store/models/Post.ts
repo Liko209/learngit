@@ -1,7 +1,14 @@
-export default class PostModel {
-  static fromJS(data: any) {
-    return data;
+import { IEntity } from './../store.d';
+import { Post } from 'sdk/models';
+export default class PostModel implements IEntity {
+  id: number;
+  constructor(data: Post) {
+    this.id = data.id;
   }
 
-  dispose() {}
+  static fromJS(data: Post) {
+    return new PostModel(data);
+  }
+
+  dispose() { }
 }

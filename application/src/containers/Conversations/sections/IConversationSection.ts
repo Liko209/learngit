@@ -5,6 +5,8 @@
  */
 import { ENTITY_NAME } from '../../../store';
 import OrderListPresenter from '@/store/base/OrderListPresenter';
+import { Group } from 'sdk/models';
+import GroupModel from '../../../store/models/Group';
 
 export type IConversationSectionPresenter = {
   fetchData: () => any;
@@ -13,4 +15,4 @@ export type IConversationSectionPresenter = {
   entityName: ENTITY_NAME;
   entity: string;
   anchor: string;
-} & OrderListPresenter;
+} & OrderListPresenter<Group, GroupModel>;

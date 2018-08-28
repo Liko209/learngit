@@ -13,11 +13,11 @@ import {
   Company,
   Item,
   Profile,
-  Presence,
   State,
   Person,
   Group,
   Post,
+  RawPresence,
 } from '../../models';
 import { IFlag } from '../../component/featureFlag/interface';
 
@@ -27,7 +27,7 @@ export type IndexDataModel = {
   profile?: Raw<Profile>;
   companies?: Raw<Company>[];
   items?: Raw<Item>[];
-  presences?: Raw<Presence>[];
+  presences?: RawPresence[];
   state?: Raw<State>;
   people?: Raw<Person>[];
   groups?: Raw<Group>[];

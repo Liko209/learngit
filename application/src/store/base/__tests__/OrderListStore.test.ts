@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import OrderListStore from '../OrderListStore';
+import { IIDSortKey } from '../../store';
 
 const store = new OrderListStore('group');
 let idSortKey1: IIDSortKey;
@@ -15,7 +16,7 @@ describe('OrderListStore', () => {
     it('store batchSet should be called', () => {
       idSortKey1 = {
         id: 1,
-        sortKey: 2222
+        sortKey: 2222,
       };
       jest.spyOn(store, 'batchSet');
       store.set(idSortKey1);
@@ -26,11 +27,11 @@ describe('OrderListStore', () => {
     beforeAll(() => {
       idSortKey2 = {
         id: 2,
-        sortKey: 1111
+        sortKey: 1111,
       };
       idSortKey3 = {
         id: 3,
-        sortKey: 3333
+        sortKey: 3333,
       };
     });
     it('getIdArray should be get expectIdArray', () => {
@@ -44,16 +45,16 @@ describe('OrderListStore', () => {
       const expectIdArray = [
         {
           id: 1,
-          sortKey: 2222
+          sortKey: 2222,
         },
         {
           id: 2,
-          sortKey: 1111
+          sortKey: 1111,
         },
         {
           id: 3,
-          sortKey: 3333
-        }
+          sortKey: 3333,
+        },
       ];
       store.batchSet([idSortKey2, idSortKey3]);
       expect(store.getIdArray()).not.toEqual(expectIdArray);
@@ -61,14 +62,14 @@ describe('OrderListStore', () => {
     it('first()', () => {
       expect(store.first()).toEqual({
         id: 2,
-        sortKey: 1111
+        sortKey: 1111,
       });
     });
 
     it('last()', () => {
       expect(store.last()).toEqual({
         id: 3,
-        sortKey: 3333
+        sortKey: 3333,
       });
     });
   });
@@ -102,7 +103,7 @@ describe('OrderListStore', () => {
       store.dump(1);
       expect(console.log).toHaveBeenCalledWith(
         '===> dump: [{"id":3,"sortKey":3333}]',
-        [1]
+        [1],
       );
     });
   });

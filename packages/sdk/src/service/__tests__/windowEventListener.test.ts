@@ -1,3 +1,5 @@
+/// <reference path="../../__tests__/types.d.ts" />
+
 describe('Window event listener', () => {
   beforeAll(() => {
     jest.mock('../notificationCenter');

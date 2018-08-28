@@ -6,13 +6,13 @@ import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import StoreContext from '@/store/context';
 
 type IReactComponent<P = any> =
-    | React.SFC<P>
-    | React.ComponentClass<P>
-    | React.ClassicComponentClass<P>;
+  | React.SFC<P>
+  | React.ComponentClass<P>
+  | React.ClassicComponentClass<P>;
 
 export interface IStoresProps {
   stores: {
-    [key: string]: MultiEntityMapStore;
+    [key: string]: MultiEntityMapStore<any, any>;
   };
 }
 

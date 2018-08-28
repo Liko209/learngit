@@ -1,26 +1,27 @@
 /*
- * @Author: Chris Zhan (chris.zhan@ringcentral.com)
- * @Date: 2018-05-10 10:55:24
- * Copyright © RingCentral. All rights reserved.
- */
+* @Author: Chris Zhan (chris.zhan@ringcentral.com)
+* @Date: 2018-05-10 10:55:24
+* Copyright © RingCentral. All rights reserved.
+*/
 import faker from 'faker';
 import BaseStore from '../BaseStore';
 import { ENTITY_EVENT_NAME, ENTITY_CACHE_COUNT } from '../constants';
 import ModelProvider from '../ModelProvider';
 import SingleEntityMapStore from '../SingleEntityMapStore';
+import { IEntity, IIncomingData } from '../../store';
 
 jest.mock('../ModelProvider');
 
 jest.mock('../BaseStore');
 
-let instance: SingleEntityMapStore;
-let getService = () => {};
+let instance: SingleEntityMapStore<any, any>;
+const getService = () => { };
 const getEntity: (i?: number) => IEntity = (i?: number) => ({
-  id: i || faker.random.number(10)
+  id: i || faker.random.number(10),
 });
 const getEntityMap: (n?: number) => Map<number, IEntity> = (n?: number) => {
   const map: Map<number, IEntity> = new Map<number, IEntity>();
-  for (let i = 0; i < (n || faker.random.number(10)); i++) {
+  for (let i = 0; i < (n || faker.random.number(10)); i += 1) {
     map.set(i, getEntity(i));
   }
   return map;
@@ -62,9 +63,9 @@ describe('handleIncomingData()', () => {
   });
 
   it('should return if entities is empty', () => {
-    const data: IIncomingData = {
+    const data: IIncomingData<any> = {
       type: '',
-      entities: new Map()
+      entities: new Map(),
     };
     instance.handleIncomingData(data);
 
@@ -74,9 +75,9 @@ describe('handleIncomingData()', () => {
 
   it('should return if no matched properties', () => {
     const entities: Map<number, IEntity> = getEntityMap(3);
-    const data: IIncomingData = {
+    const data: IIncomingData<any> = {
+      entities,
       type: 'delete',
-      entities: entities
     };
     instance.handleIncomingData(data);
     expect(instance.batchSet).not.toHaveBeenCalled();
@@ -85,16 +86,16 @@ describe('handleIncomingData()', () => {
 
   it('should remove if type is delete', () => {
     const entities: Map<number, IEntity> = new Map<number, IEntity>();
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i += 1) {
       entities.set(i, {
         id: i,
         existing: 'attr',
-        some: 'thing'
+        some: 'thing',
       });
     }
-    const data: IIncomingData = {
+    const data: IIncomingData<any> = {
+      entities,
       type: 'delete',
-      entities: entities
     };
     instance.handleIncomingData(data);
     expect(instance.batchSet).not.toHaveBeenCalled();
@@ -103,16 +104,16 @@ describe('handleIncomingData()', () => {
 
   it('should set if type is not delete', () => {
     const entities: Map<number, IEntity> = new Map<number, IEntity>();
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i += 1) {
       entities.set(i, {
         id: i,
         existing: 'attr',
-        some: 'thing'
+        some: 'thing',
       });
     }
-    const data: IIncomingData = {
+    const data: IIncomingData<any> = {
+      entities,
       type: 'put',
-      entities: entities
     };
     instance.handleIncomingData(data);
     expect(instance.batchSet).toHaveBeenCalled();
@@ -165,7 +166,7 @@ describe('batchSet()', () => {
       some: 'some',
       props: 'props',
       other: 'other',
-      id: 1
+      id: 1,
     };
     jest
       .spyOn(instance, 'createModel')
@@ -175,7 +176,7 @@ describe('batchSet()', () => {
 
     expect(instance.data.merge).toHaveBeenCalledWith({
       id: 1,
-      some: 'some'
+      some: 'some',
     });
     expect(instance.data.merge).toHaveBeenCalledTimes(1);
   });
@@ -267,7 +268,7 @@ describe('has()', () => {
 describe('getByService()', () => {
   const model = {};
   const service = {
-    getName: jest.fn(() => model)
+    getName: jest.fn(() => model),
   };
   beforeAll(() => {
     jest.spyOn(instance, 'getService').mockImplementation(() => service);
@@ -291,7 +292,7 @@ describe('getByService()', () => {
   });
 
   it('should call this.service.get{name} if this.service exists', () => {
-    instance.service = service;
+    instance.service = service as any;
     expect(instance.getByService()).toBe(model);
     expect(instance.getService).not.toHaveBeenCalled();
     expect(service.getName).toHaveBeenCalled();
@@ -309,11 +310,11 @@ describe('createModel()', () => {
   it('should call getModelCreator', () => {
     const result = {};
     const Model = {
-      fromJS: jest.fn(() => result)
+      fromJS: jest.fn(() => result),
     };
     const modelProvider: ModelProvider = (ModelProvider as jest.Mock<
       ModelProvider
-    >).mock.instances[0];
+      >).mock.instances[0];
     jest
       .spyOn(modelProvider, 'getModelCreator')
       .mockImplementation(() => Model);
