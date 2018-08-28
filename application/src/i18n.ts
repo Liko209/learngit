@@ -3,6 +3,7 @@ import i18nextXhrBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguagedetector from 'i18next-browser-languagedetector';
 import moment from 'moment';
 import { reactI18nextModule } from 'react-i18next';
+import { toTitleCase } from './utils/case';
 
 i18next
   .use(i18nextXhrBackend)
@@ -19,6 +20,7 @@ i18next
 
     interpolation: {
       format(value: any, format: any, lng: any) {
+        if (format === 'titlecase') return toTitleCase(value);
         if (format === 'uppercase') return value.toUpperCase();
         if (value instanceof Date) return moment(value).format(format);
         return value;
