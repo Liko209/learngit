@@ -47,6 +47,7 @@ var utils_1 = require("./libs/utils");
 var FIXTURES = utils_1.flattenGlobs(utils_1.parseArgs(process.env.FIXTURES || __dirname + "/../fixtures/**/*.ts"));
 var REPORTER = process.env.REPORTER || 'allure-lazy';
 var SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
+var SCREENSHOT_ON_FAIL = String(process.env.SCREENSHOT_ON_FAIL).trim().toLowerCase() === 'false' || true;
 var CONCURRENCY = process.env.CONCURRENCY || '1';
 var BROWSERS = utils_1.parseArgs(process.env.BROWSERS || 'chrome');
 var INCLUDE_TAGS = utils_1.parseArgs(process.env.INCLUDE_TAGS || '');
@@ -89,7 +90,7 @@ function runTests() {
                         .filter(filter_1.filterByTags(INCLUDE_TAGS, EXCLUDE_TAGS))
                         .browsers(BROWSERS)
                         .reporter(REPORTER)
-                        .screenshots(SCREENSHOTS_PATH)
+                        .screenshots(SCREENSHOTS_PATH, SCREENSHOT_ON_FAIL)
                         .concurrency(Number(CONCURRENCY));
                     _a.label = 2;
                 case 2:
