@@ -4,19 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from '../../styled-components';
 
 import MuiMenuItem, { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
 
+import styled from '../../styled-components';
+import { spacing, grey } from '../../utils';
 import { Presence, Umi, Icon, PresenceProps } from '../../atoms';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
 const StyledListItem = styled(MuiMenuItem)`
 && {
   white-space: nowrap;
-  padding: 6px 16px 6px 12px;
   background: white;
-  color: ${({ theme }) => theme.palette.grey['900']};
+  padding: ${spacing(2, 4, 2, 3)};
+  color: ${grey('900')};
   /**
    * Workaround to resolve transition conflicts with react-sortable-hoc
    * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
@@ -25,11 +26,11 @@ const StyledListItem = styled(MuiMenuItem)`
 }
 
 &&:hover {
-  background: ${({ theme }) => theme.palette.grey['100']};
+  background: ${grey('100')};
 }
 
 &&:focus {
-  background: ${({ theme }) => theme.palette.grey['300']};
+  background: ${grey('300')};
 }
 
 && ${Icon} {
