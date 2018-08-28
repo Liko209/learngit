@@ -1,6 +1,10 @@
-import React, { Component, ReactNode, MouseEvent as ReactMouseEvent } from 'react';
+import React, {
+  Component,
+  ReactNode,
+  MouseEvent as ReactMouseEvent,
+} from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { parse } from 'query-string';
+import { parse } from 'qs';
 import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
 import HorizonResizer from './HorizonResizer';
@@ -121,19 +125,30 @@ class TreeLayout extends Component<IProps, IStates> {
     const rightNodeOffsetWidth = rightNode.offsetWidth;
 
     const newLeftWidth = clientX - leftNodeOffsetLeft;
-    const newRightWidth = rightNodeOffsetWidth - (clientX - rightNodeOffsetLeft);
+    const newRightWidth =
+      rightNodeOffsetWidth - (clientX - rightNodeOffsetLeft);
 
-    if (newLeftWidth >= leftMinWidth
-      && newLeftWidth <= leftMaxWidth
-      && newRightWidth >= rightMinWidth
-      && newRightWidth <= rightMaxWidth) {
+    if (
+      newLeftWidth >= leftMinWidth &&
+      newLeftWidth <= leftMaxWidth &&
+      newRightWidth >= rightMinWidth &&
+      newRightWidth <= rightMaxWidth
+    ) {
       switch (currentIndex) {
         case 0:
-          this.setState({ left: newLeftWidth, middle: newRightWidth, localLeftPanelWidth: newLeftWidth });
+          this.setState({
+            left: newLeftWidth,
+            middle: newRightWidth,
+            localLeftPanelWidth: newLeftWidth,
+          });
           localStorage.setItem(`${tag}_left`, String(newLeftWidth));
           break;
         case 1:
-          this.setState({ middle: newLeftWidth, right: newRightWidth, localRightPanelWidth: newRightWidth });
+          this.setState({
+            middle: newLeftWidth,
+            right: newRightWidth,
+            localRightPanelWidth: newRightWidth,
+          });
           localStorage.setItem(`${tag}_right`, String(newRightWidth));
           break;
         default:
@@ -143,9 +158,19 @@ class TreeLayout extends Component<IProps, IStates> {
   }
 
   onResize(leftnav?: number) {
-    let { left, middle, right, showLeftResizer, showRightResizer, forceDisplayLeftPanel, forceDisplayRightPanel } = this.state;
+    let {
+      left,
+      middle,
+      right,
+      showLeftResizer,
+      showRightResizer,
+      forceDisplayLeftPanel,
+      forceDisplayRightPanel,
+    } = this.state;
     const { localLeftPanelWidth, localRightPanelWidth } = this.state;
-    const nav = leftnav || document.getElementById('leftnav')!.getBoundingClientRect().width;
+    const nav =
+      leftnav ||
+      document.getElementById('leftnav')!.getBoundingClientRect().width;
     const max = 1920;
     const windowWidth = window.innerWidth;
     const body = windowWidth > max ? max : windowWidth;
@@ -266,22 +291,60 @@ class TreeLayout extends Component<IProps, IStates> {
 
   render() {
     const { children } = this.props;
-    const { left, middle, right, showLeftResizer, showRightResizer, forceDisplayLeftPanel, forceDisplayRightPanel } = this.state;
+    const {
+      left,
+      middle,
+      right,
+      showLeftResizer,
+      showRightResizer,
+      forceDisplayLeftPanel,
+      forceDisplayRightPanel,
+    } = this.state;
     return (
       <Layout onClick={this.onClickLayout}>
-        <HorizonPanel width={left} minWidth={180} maxWidth={360} forceDisplay={forceDisplayLeftPanel} forcePosition="left" onClick={this.onClickPreventBubble}>
+        <HorizonPanel
+          width={left}
+          minWidth={180}
+          maxWidth={360}
+          forceDisplay={forceDisplayLeftPanel}
+          forcePosition="left"
+          onClick={this.onClickPreventBubble}
+        >
           {children[0]}
         </HorizonPanel>
-        <HorizonResizer offset={left} onMouseDown={this.onMouseDown} show={showLeftResizer} />
+        <HorizonResizer
+          offset={left}
+          onMouseDown={this.onMouseDown}
+          show={showLeftResizer}
+        />
         <HorizonPanel width={middle} minWidth={400} response={true}>
           {children[1]}
         </HorizonPanel>
-        <HorizonResizer offset={left + middle} onMouseDown={this.onMouseDown} show={showRightResizer} />
-        <HorizonPanel width={right} minWidth={180} maxWidth={360} forceDisplay={forceDisplayRightPanel} forcePosition="right" onClick={this.onClickPreventBubble}>
+        <HorizonResizer
+          offset={left + middle}
+          onMouseDown={this.onMouseDown}
+          show={showRightResizer}
+        />
+        <HorizonPanel
+          width={right}
+          minWidth={180}
+          maxWidth={360}
+          forceDisplay={forceDisplayRightPanel}
+          forcePosition="right"
+          onClick={this.onClickPreventBubble}
+        >
           {children[2]}
         </HorizonPanel>
-        <HorizonButton offset={left + (forceDisplayLeftPanel ? 180 : 0)} onClick={this.onClickLeftButton} show={!showLeftResizer} />
-        <HorizonButton offset={left + middle - 10 - (forceDisplayRightPanel ? 180 : 0)} onClick={this.onClickRightButton} show={!showRightResizer} />
+        <HorizonButton
+          offset={left + (forceDisplayLeftPanel ? 180 : 0)}
+          onClick={this.onClickLeftButton}
+          show={!showLeftResizer}
+        />
+        <HorizonButton
+          offset={left + middle - 10 - (forceDisplayRightPanel ? 180 : 0)}
+          onClick={this.onClickRightButton}
+          show={!showRightResizer}
+        />
       </Layout>
     );
   }
