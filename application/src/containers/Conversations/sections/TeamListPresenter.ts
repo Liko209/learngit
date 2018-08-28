@@ -5,7 +5,7 @@ export default class TeamListPresenter extends ConversationListPresenter {
   constructor() {
     super(
       'people',
-      'Teams',
+      'team_plural',
       ENTITY.TEAM_GROUPS,
       GROUP_QUERY_TYPE.TEAM,
       'Teams',

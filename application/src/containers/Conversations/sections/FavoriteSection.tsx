@@ -3,16 +3,21 @@
  * @Date: 2018-08-16 13:41:46
  * Copyright © RingCentral. All rights reserved.
  */
-import { ENTITY_NAME } from '@/store';
+import React from 'react';
+import { translate } from 'react-i18next';
+import { TranslationFunction } from 'i18next';
 import { autorun, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import React from 'react';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 import { ConversationList as List, ConversationListSection, Icon } from 'ui-components';
 
+import { toTitleCase } from '@/utils';
+import { ENTITY_NAME } from '@/store';
 import ConversationListItemCell from '../ConversationListItemCell';
 import FavoriteListPresenter from '../FavoriteListPresenter';
+
 interface IProps {
+  t: TranslationFunction;
   expanded?: boolean;
 }
 
@@ -29,7 +34,7 @@ interface Group {
 const SortableList = SortableContainer(List);
 const SortableItem = SortableElement(ConversationListItemCell);
 @observer
-class FavoriteSection extends React.Component<IProps, IState> {
+class FavoriteSectionComponent extends React.Component<IProps, IState> {
   static defaultProps = {
     expanded: true,
   };
@@ -76,10 +81,11 @@ class FavoriteSection extends React.Component<IProps, IState> {
   }
 
   render() {
+    const { t } = this.props;
     return (
       <ConversationListSection
         icon={<Icon>start</Icon>}
-        title={'Favorites'}
+        title={toTitleCase(t('favorite_plural'))}
         unreadCount={12}
         important={true}
         expanded={this.props.expanded}
@@ -89,5 +95,6 @@ class FavoriteSection extends React.Component<IProps, IState> {
     );
   }
 }
-
+const FavoriteSection = translate('Conversations')(FavoriteSectionComponent);
 export default FavoriteSection;
+export { FavoriteSection };
