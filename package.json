@@ -82,7 +82,7 @@
   "lint-staged": {
     "linters": {
       "*.{ts, tsx, js, jsx}": [
-        "tslint",
+        "npm run lint-all",
         "npm run test:cover",
         "npm run raise-coverage"
       ]
