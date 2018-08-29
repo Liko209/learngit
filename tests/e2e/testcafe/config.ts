@@ -11,7 +11,7 @@ const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
 const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
 
 const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
-const SITE_URL = process.env.SITE_URL || 'http://localhost:3000/unified-login';
+const SITE_URL = process.env.SITE_URL || 'https://application-fiji-356.fiji.gliprc.com/unified-login';
 
 const ENV = {
   'WEB-AQA-XIA': {
