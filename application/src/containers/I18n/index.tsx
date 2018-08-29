@@ -1,17 +1,13 @@
 import * as React from 'react';
 import { translate } from 'react-i18next';
 import { TranslationFunction } from 'i18next';
-import injectStore, { IStoresProps } from '@/store/inject';
-import { ENTITY_NAME } from '@/store';
 
 type IProps = {
   t: TranslationFunction;
-} & IStoresProps;
-@injectStore()
+};
 class I18n extends React.PureComponent<IProps> {
   render() {
-    const { t, getEntity } = this.props;
-    const post = getEntity(ENTITY_NAME.POST, 1);
+    const { t } = this.props;
     return (
       <div>
         <h2>{t('heading')}</h2>
@@ -20,7 +16,6 @@ class I18n extends React.PureComponent<IProps> {
         <p>{t('key2', { date: new Date() })}</p>
         <p>{t('keyWithCount', { count: 1 })}</p>
         <p>{t('keyWithCount', { count: 100 })}</p>
-        <p>store: {JSON.stringify(post)}</p>
       </div>
     );
   }
