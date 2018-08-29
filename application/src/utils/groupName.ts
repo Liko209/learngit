@@ -8,6 +8,8 @@ import _ from 'lodash';
 import storeManager, { ENTITY_NAME } from '../store';
 import PersonModel from '../store/models/Person';
 import GroupModel from '../store/models/Group';
+import MultiEntityMapStore from '../store/base/MultiEntityMapStore';
+import { Person } from 'sdk/models';
 
 const hasDisplayName = (person: PersonModel) => person && person.displayName;
 
@@ -15,9 +17,9 @@ export const getGroupName = (group: GroupModel, userId?: number) => {
   if (group.isTeam || !userId) {
     return group.setAbbreviation;
   }
-  const memberIds: number[] = group.members;
+  const memberIds: number[] = group.members || [];
   let peopleName = '';
-  const personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON);
+  const personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON) as MultiEntityMapStore<Person, PersonModel>;
   if (memberIds.length === 1 && memberIds[0] === userId) {
     const person = personStore.get(userId);
     if (hasDisplayName(person)) {
@@ -47,7 +49,7 @@ export const getGroupName = (group: GroupModel, userId?: number) => {
 
     if (groupMemberIDs.length === 1) {
       // 1 other member, 1:1 conversation
-      const otherMember: PersonModel = personStore.get(groupMemberIDs[0]);
+      const otherMember = personStore.get(groupMemberIDs[0]);
       peopleName = otherMember.displayName;
     } else if (groupMemberIDs.length > 1) {
       // more than one members, group conversation

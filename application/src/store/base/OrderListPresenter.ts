@@ -1,10 +1,12 @@
 import _ from 'lodash';
 import BasePresenter from './BasePresenter';
 import OrderListStore from './OrderListStore';
+import { IEntity, IIDSortKey, IIncomingData } from '../store';
+import { BaseModel } from 'sdk/models';
 
 const DEFAULT_PAGE_SIZE = 20;
 
-export default class OrderListPresenter extends BasePresenter {
+export default class OrderListPresenter<T extends BaseModel, K extends IEntity> extends BasePresenter {
   private store: OrderListStore;
   private hasBigger: boolean;
   private hasSmaller: boolean;
@@ -31,7 +33,7 @@ export default class OrderListPresenter extends BasePresenter {
     this.pageSize = pageSize;
   }
 
-  handleIncomingData(entityName: string, { type, entities }: IIncomingData) {
+  handleIncomingData(entityName: string, { type, entities }: IIncomingData<T>) {
     if (!entities.size && type !== 'replaceAll') {
       return;
     }

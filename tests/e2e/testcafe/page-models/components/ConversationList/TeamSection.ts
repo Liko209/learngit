@@ -7,55 +7,36 @@ import { ReactSelector } from 'testcafe-react-selectors';
 import { GroupAPI } from '../../../libs/sdk';
 import { BasePage } from '../../BasePage';
 
+const teamSection = ReactSelector('ConversationListSection').withProps('title', 'Teams');
+const team = teamSection.findReact('ConversationListItem').nth(0);
 class TeamSection extends BasePage {
-
-  nthTeamInPanel(order: number) {
-    return ReactSelector('ConversationListSection')
-      .withProps({ title: 'Teams' })
-      .findReact('ConversationListItemCell').nth(order);
-  }
-
-  createTeamByAPI(creatorId: number, name: string) {
-    const args = {
-      set_abbreviation: name,
-      privacy: 'private',
-      description: '',
-      members: [creatorId],
-      creator_id: creatorId,
-      permissions: {
-        admin: {
-          uids: [creatorId],
-        },
-        user: {
-          uids: [],
-          level: 35,
-        },
-      },
-      is_new: true,
-      is_team: true,
-      is_public: false,
-    };
-    return this.chain(async t => GroupAPI.createTeam(args));
-  }
-
-  modifyTeamNameByApi(name: string) {
-    return this.chain(async () => {
-      const { props: { id: teamId } } = await this.nthTeamInPanel(0).getReact();
-      await GroupAPI.modifyGroupById(
-        teamId,
-        { set_abbreviation: name },
-      );
-    },
-    );
-  }
-
-  nthTeamNameEquals(order: number, name: string) {
+  public shouldBeTeam() {
     return this.chain(async (t) => {
-      const ele = ReactSelector('ConversationListSection').find('div').findReact('ConversationListItem').withProps({ title: name });
-      await t.wait(3000).expect(ele.exists).ok();
+      await t.expect(team.exists).ok('Failed to find the team, probably caused by long-time loadng', { timeout: 1500000 });
+      const id = (await team.getReact()).key;
+      const props = (await this._getTeamProps(id));
+      return await t.expect(props.is_team).ok(`Team ${id} is not a team`);
     });
   }
 
+  public teamNameShouldChange() {
+    return this.chain(async (t) => {
+      await t.expect(team.exists).ok('Failed to find the team, probably caused by long-time loadng', { timeout: 150000 });
+      const id = (await team.getReact()).key;
+      const randomName = Math.random().toString(36).substring(7);
+      await this._modifyTeamName(id, randomName);
+      const text = () => team.findReact('Typography').innerText;
+      await t.expect(text()).eql(randomName, 'wrong name', { timeout: 150000 });
+    });
+  }
+
+  private async  _getTeamProps(id: number): Promise<{ is_team: boolean }> {
+    return (await GroupAPI.requestGroupById(id)).data;
+  }
+
+  private async _modifyTeamName(id: number, name: string) {
+    GroupAPI.modifyGroupById(id, { set_abbreviation: name });
+  }
 }
 
 export { TeamSection };

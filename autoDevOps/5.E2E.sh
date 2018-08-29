@@ -6,11 +6,13 @@ rm -rf $project/tests/e2e/testcafe/allure/
 
 npm i
 
+export SITE_URL=$appUrl
 # SELENIUM_SERVER is setup in jenkins as we may want to change it any time without update the code
 echo $SELENIUM_SERVER
 echo $BROWSERS
 echo $RC_PLATFORM_APP_KEY
 echo $RC_PLATFORM_APP_SECRET
+echo $SITE_URL
 
 npm run e2e
 e2eResult=$?

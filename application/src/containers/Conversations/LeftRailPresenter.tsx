@@ -2,23 +2,27 @@ import { observable, computed } from 'mobx';
 import { service } from 'sdk';
 import storeManager, { ENTITY_NAME } from '@/store';
 import BasePresenter from '@/store/base/BasePresenter';
-import EntityMapStore from '@/store/base/MultiEntityMapStore';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import { AccountService as IAccountService } from 'sdk/service';
+import { Company, Group, Person } from 'sdk/models';
+import PersonModel from '../../store/models/Person';
+import CompanyModel from '../../store/models/Company';
+const { GROUP_QUERY_TYPE, ENTITY } = service;
 
 const { AccountService } = service;
 
 class LeftRailPresenter extends BasePresenter {
   @observable
-  userId: number|null;
+  userId: number | null;
   accountService: IAccountService;
-  personStore: EntityMapStore;
-  companyStore: EntityMapStore;
+  personStore: MultiEntityMapStore<Person, PersonModel>;
+  companyStore: MultiEntityMapStore<Company, CompanyModel>;
 
   constructor() {
     super();
     this.accountService = AccountService.getInstance();
-    this.personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON) as EntityMapStore;
-    this.companyStore = storeManager.getEntityMapStore(ENTITY_NAME.COMPANY) as EntityMapStore;
+    this.personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON) as MultiEntityMapStore<Person, PersonModel>;
+    this.companyStore = storeManager.getEntityMapStore(ENTITY_NAME.COMPANY) as MultiEntityMapStore<Company, CompanyModel>;
     this.userId = this.accountService.getCurrentUserId();
   }
   @computed
@@ -28,6 +32,51 @@ class LeftRailPresenter extends BasePresenter {
   @computed
   get company() {
     return this.user && this.user.companyId && this.companyStore.get(this.user.companyId);
+  }
+  @computed
+  get sections() {
+    return [
+      {
+        title: 'Unread',
+        iconName: 'fiber_new',
+      },
+      {
+        title: 'Mentions',
+        iconName: 'alternate_email',
+      },
+      {
+        title: 'Bookmarks',
+        iconName: 'bookmark',
+      },
+      {
+        title: 'Favorite',
+        iconName: 'start',
+        queryType: GROUP_QUERY_TYPE.FAVORITE,
+        entity: ENTITY.FAVORITE_GROUPS,
+        sortable: true,
+        expanded: true,
+        transformFunc: (dataModel: Group, index: number) => ({
+          id: dataModel.id,
+          sortKey: index,
+        }),
+      },
+      {
+        title: 'Direct Messages',
+        iconName: 'people',
+        queryType: GROUP_QUERY_TYPE.GROUP,
+        entity: ENTITY.PEOPLE_GROUPS,
+        sortable: false,
+        expanded: true,
+      },
+      {
+        title: 'Teams',
+        iconName: 'people',
+        queryType: GROUP_QUERY_TYPE.TEAM,
+        entity: ENTITY.TEAM_GROUPS,
+        sortable: false,
+        expanded: true,
+      },
+    ];
   }
 }
 

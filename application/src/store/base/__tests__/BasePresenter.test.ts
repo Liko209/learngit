@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BasePresenter from '../BasePresenter';
-import storeManager from '@/store';
+import storeManager from '../../../store';
 
 const presenter = new BasePresenter();
 
 describe('BasePresenter', () => {
-  beforeEach(() => {});
+  beforeEach(() => { });
 
   describe('updateEntityStore', () => {
     it('storeManager should call dispatchUpdatedDataModels', () => {
@@ -17,7 +17,7 @@ describe('BasePresenter', () => {
       presenter.updateEntityStore('group', [{ id: 222 }]);
       expect(storeManager.dispatchUpdatedDataModels).toHaveBeenCalledWith(
         'group',
-        [{ id: 222 }]
+        [{ id: 222 }],
       );
     });
 
@@ -26,7 +26,7 @@ describe('BasePresenter', () => {
       presenter.updateEntityStore('group', []);
       expect(storeManager.dispatchUpdatedDataModels).not.toHaveBeenCalledWith(
         'group',
-        []
+        [],
       );
     });
   });

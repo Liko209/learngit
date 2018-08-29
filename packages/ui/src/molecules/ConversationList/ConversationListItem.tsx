@@ -52,7 +52,9 @@ type ListItemProps = {
   onMoreClick?: (e: React.MouseEvent) => any;
 } & MuiMenuItemProps;
 
-const ConversationListItem = (props: ListItemProps) => {
+type IConversationListItem = { dependencies?: React.ComponentType[] } & React.SFC<ListItemProps>;
+
+const ConversationListItem: IConversationListItem = (props: ListItemProps) => {
   const { title, status, unreadCount, important,
     onClick, onMoreClick, umiVariant, component, selected } = props;
 
@@ -71,6 +73,8 @@ const ConversationListItem = (props: ListItemProps) => {
     </StyledListItem>
   );
 };
+
+ConversationListItem.dependencies = [ItemText, Presence, Umi, Icon];
 
 export default ConversationListItem;
 export { ListItemProps, ConversationListItem };

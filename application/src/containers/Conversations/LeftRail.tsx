@@ -3,19 +3,18 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { Divider, styled } from 'ui-components';
 
 import { LeftRailPresenter } from './LeftRailPresenter';
-import {
-  UnreadSection,
-  MentionSection,
-  BookmarkSection,
-  ConversationSection,
-} from './sections';
-import FavoriteSection from './sections/FavoriteSection';
-import TeamListPresenter from '@/containers/Conversations/sections/TeamListPresenter';
-import DirectMessageListPresenter from './sections/DirectMessageListPresenter';
-import { IConversationSectionPresenter }
-  from '@/containers/Conversations/sections/IConversationSection';
+import { ConversationSection } from './sections';
+import ConversationListPresenter from '@/containers/Conversations/sections/ConversationListPresenter';
 
 type IProps = {} & RouteComponentProps<any>;
+
+export type ISection = {
+  title: string;
+  iconName: string;
+  sortable?: boolean;
+  expanded?: boolean;
+  presenter: ConversationListPresenter;
+};
 
 const Container = styled.div`
   height: 100%;
@@ -25,34 +24,24 @@ const Container = styled.div`
 
 class LeftRail extends Component<IProps> {
   presenter: LeftRailPresenter;
-  teamPresenter: IConversationSectionPresenter;
-  directMessagePresenter: IConversationSectionPresenter;
+  sections: ISection[];
 
   constructor(props: IProps) {
     super(props);
     this.presenter = new LeftRailPresenter();
-    this.teamPresenter = new TeamListPresenter();
-    this.directMessagePresenter = new DirectMessageListPresenter();
+    this.sections = this.presenter.sections.map(({ entity, queryType, transformFunc, ...rest }) => ({
+      presenter: new ConversationListPresenter(entity, queryType, transformFunc),
+      ...rest,
+    }));
   }
 
   render() {
     return (
       <Container>
-        <UnreadSection />
-        <Divider />
-        <MentionSection />
-        <Divider />
-        <BookmarkSection />
-        <Divider />
-        <FavoriteSection />
-        <Divider />
-        <ConversationSection presenter={this.directMessagePresenter} />
-        <Divider />
-        <ConversationSection presenter={this.teamPresenter} />
-        {/* <strong>Conversation list: </strong>
-        <NavLink to="/messages/123">123 </NavLink>
-        <NavLink to="/messages/456">456 </NavLink>
-        <NavLink to="/messages/789">789 </NavLink> */}
+        {this.sections.map(({ title, iconName, sortable, presenter }, index) => [
+          index ? <Divider key="divider" /> : null,
+          <ConversationSection key="section" title={title} iconName={iconName} sortable={sortable} presenter={presenter} />,
+        ])}
       </Container>
     );
   }
