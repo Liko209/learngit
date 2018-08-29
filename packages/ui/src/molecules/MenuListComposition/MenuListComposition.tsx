@@ -25,14 +25,15 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
     open: false,
   };
 
-  anchorEl: any;
+  anchorEl = React.createRef<Element>();
 
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
   }
 
-  handleClose = (event: React.MouseEvent) => {
-    if (this.anchorEl.contains(event.target)) {
+  handleClose = (event: React.MouseEvent<Element>) => {
+    const node = this.anchorEl.current;
+    if (node && node.contains(event.currentTarget)) {
       return;
     }
 
@@ -45,9 +46,7 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
     return (
       <MenuListCompositionWrapper>
         <IconButton
-          buttonRef={(node) => {
-            this.anchorEl = node;
-          }}
+          buttonRef={this.anchorEl}
           aria-haspopup="true"
           size="medium"
           tooltipTitle="menu"
@@ -58,7 +57,7 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
         </IconButton>
         <MenuWrapper
           open={open}
-          anchorEl={this.anchorEl}
+          anchorEl={this.anchorEl.current}
           transition={true}
           disablePortal={true}
         >
