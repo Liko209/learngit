@@ -1,10 +1,7 @@
 import BaseService from '../../service/BaseService';
 import handleData from './handleData';
 import { SOCKET } from '../eventKey';
-
-export interface Ipresence {
-  id: number;
-}
+import { Presence } from '../../models';
 
 export default class PresenceService extends BaseService {
   static key = 'PresenceService';
@@ -22,8 +19,8 @@ export default class PresenceService extends BaseService {
     this.caches = {};
   }
 
-  saveToMemory(presences: Ipresence[]): void {
-    presences.forEach((presence: Ipresence) => {
+  saveToMemory(presences: Presence[]): void {
+    presences.forEach((presence: Presence) => {
       this.caches[presence.id] = presence;
     });
   }

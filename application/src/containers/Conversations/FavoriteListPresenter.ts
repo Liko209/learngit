@@ -9,8 +9,10 @@ import OrderListStore from '../../store/base/OrderListStore';
 import { ENTITY_NAME } from '../../store';
 import { service } from 'sdk';
 import { Group } from 'sdk/src/models';
+import { IIncomingData } from '../../store/store';
+import GroupModel from '../../store/models/Group';
 const { GROUP_QUERY_TYPE, ENTITY, GroupService, AccountService } = service;
-export default class FavoriteListPresenter extends OrderListPresenter {
+export default class FavoriteListPresenter extends OrderListPresenter<Group, GroupModel> {
   eventName: string;
   groupType: string;
   constructor() {
@@ -27,7 +29,7 @@ export default class FavoriteListPresenter extends OrderListPresenter {
     this.init();
   }
   init() {
-    const groupCallback = ({ type, entities }: IIncomingData) => {
+    const groupCallback = ({ type, entities }: IIncomingData<Group>) => {
       this.handleIncomingData(ENTITY_NAME.GROUP, { type, entities });
     };
     this.subscribeNotification(this.eventName, groupCallback);

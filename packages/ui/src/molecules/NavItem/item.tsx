@@ -23,7 +23,7 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({
 })`
   && {
     padding: 0;
-    height: ${({ theme }) => theme.spacing.unit * 11 + 'px'};
+    height: 44px;
     outline: none;
   }
   // In order to make sure use tab switch nav
@@ -93,7 +93,7 @@ const ListLink = styled(NavLink)`
   outline: none;
   display: flex;
   height: 100%;
-  padding: 0 ${({ theme }) => theme.spacing.unit * 5 + 'px'};
+  padding: 0 20px;
   width: 100%;
   align-items: center;
   text-decoration: none;
@@ -106,14 +106,14 @@ const ListLink = styled(NavLink)`
     span,
     .nav-icon {
       color: ${({ theme, color }) =>
-        color ? theme.palette[color].main : '#0684BD'}; // RC Blue
+  color ? theme.palette[color].main : '#0684BD'}; // RC Blue
     }
   }
   &&.active {
     && .nav-icon,
     && .nav-text span {
       color: ${({ theme, color }) =>
-        color ? theme.palette[color].main : '#0684BD'}; // RC Blue
+  color ? theme.palette[color].main : '#0684BD'}; // RC Blue
     }
   }
 `;

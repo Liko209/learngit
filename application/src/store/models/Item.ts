@@ -1,7 +1,14 @@
-export default class ItemModel {
-  static fromJS(data: any) {
-    return data;
+import { Item } from 'sdk/models';
+import { IEntity } from '../store';
+export default class ItemModel implements IEntity {
+  id: number;
+  constructor(data: Item) {
+    this.id = data.id;
   }
 
-  dispose() {}
+  static fromJS(data: Item) {
+    return new ItemModel(data);
+  }
+
+  dispose() { }
 }

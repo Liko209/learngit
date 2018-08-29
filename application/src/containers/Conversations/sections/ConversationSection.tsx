@@ -41,7 +41,7 @@ class ConversationSection
         presenter.getCurrentUserId() ? presenter.getCurrentUserId() as number : undefined;
     return (
       <ConversationList>
-        {ids.map(id => (
+        {ids.map((id: number) => (
           <ConversationListItemCell
             id={id}
             key={id}

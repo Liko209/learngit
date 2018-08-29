@@ -6,12 +6,14 @@
 import OrderListPresenter from '../../../store/base/OrderListPresenter';
 import OrderListStore from '../../../store/base/OrderListStore';
 import { ENTITY_NAME } from '../../../store';
-import { Group } from 'sdk/src/models';
+import { Group } from 'sdk/models';
 import { service } from 'sdk';
 import { IConversationSectionPresenter }
   from '../../../containers/Conversations/sections/IConversationSection';
+import { IIncomingData } from '../../../store/store';
+import GroupModel from '../../../store/models/Group';
 const { GroupService } = service;
-export default class ConversationListPresenter extends OrderListPresenter
+export default class ConversationListPresenter extends OrderListPresenter<Group, GroupModel>
   implements IConversationSectionPresenter {
   public entityName: ENTITY_NAME = ENTITY_NAME.GROUP;
   constructor(
@@ -32,7 +34,7 @@ export default class ConversationListPresenter extends OrderListPresenter
         ),
       }),
     );
-    const groupCallback = ({ type, entities }: IIncomingData) => {
+    const groupCallback = ({ type, entities }: IIncomingData<Group>) => {
       this.handleIncomingData(this.entityName, { type, entities });
     };
     this.subscribeNotification(this.entity, groupCallback);

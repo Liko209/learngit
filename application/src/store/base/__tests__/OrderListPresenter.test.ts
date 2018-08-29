@@ -1,14 +1,15 @@
 /*
- * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-05-08 10:35:17
- * Copyright © RingCentral. All rights reserved.
- */
+* @Author: Shining Miao (shining.miao@ringcentral.com)
+* @Date: 2018-05-08 10:35:17
+* Copyright © RingCentral. All rights reserved.
+*/
 import OrderListPresenter from '../OrderListPresenter';
 import OrderListStore from '../OrderListStore';
+import { Presence } from 'sdk/models';
 
 describe('OrderListPresenter', () => {
   const orderListStore = new OrderListStore('group');
-  let presenter: OrderListPresenter;
+  let presenter: OrderListPresenter<any, any>;
 
   beforeAll(() => {
     jest.spyOn(orderListStore, 'batchSet');
@@ -27,16 +28,16 @@ describe('OrderListPresenter', () => {
       const idArray = [
         {
           id: 2,
-          sortKey: 1111
+          sortKey: 1111,
         },
         {
           id: 1,
-          sortKey: 2222
+          sortKey: 2222,
         },
         {
           id: 3,
-          sortKey: 3333
-        }
+          sortKey: 3333,
+        },
       ];
       orderListStore.batchSet(idArray);
     });
@@ -46,21 +47,21 @@ describe('OrderListPresenter', () => {
         () => {
           return true;
         },
-        () => ({ id: 111, sortKey: 222 })
+        () => ({ id: 111, sortKey: 222 }),
       );
       jest.spyOn(presenter, 'updateEntityStore');
       presenter.handleIncomingData('presence', {
         type: 'put',
-        entities: new Map([[111, { name: 'alan', id: 111 }]])
+        entities: new Map([[111, { name: 'alan', id: 111 }]]),
       });
       expect(presenter.updateEntityStore).toHaveBeenCalledWith('presence', [
         {
           name: 'alan',
-          id: 111
-        }
+          id: 111,
+        },
       ]);
       expect(orderListStore.batchSet).toHaveBeenCalledWith([
-        { id: 111, sortKey: 222 }
+        { id: 111, sortKey: 222 },
       ]);
       expect(orderListStore.batchRemove).toHaveBeenCalledWith([]);
     });
@@ -71,21 +72,21 @@ describe('OrderListPresenter', () => {
         () => {
           return true;
         },
-        () => ({ id: 111, sortKey: 222 })
+        () => ({ id: 111, sortKey: 222 }),
       );
       jest.spyOn(presenter, 'updateEntityStore');
       presenter.handleIncomingData('presence', {
         type: 'put',
-        entities: new Map()
+        entities: new Map(),
       });
       expect(presenter.updateEntityStore).not.toHaveBeenCalledWith(
         'presence',
-        []
+        [],
       );
       expect(orderListStore.batchSet).toHaveBeenCalledWith([
         { id: 2, sortKey: 1111 },
         { id: 1, sortKey: 2222 },
-        { id: 3, sortKey: 3333 }
+        { id: 3, sortKey: 3333 },
       ]);
       expect(orderListStore.batchRemove).toHaveBeenCalledWith([]);
     });
@@ -96,16 +97,16 @@ describe('OrderListPresenter', () => {
         () => {
           return false;
         },
-        () => ({ id: 111, sortKey: 222 })
+        () => ({ id: 111, sortKey: 222 }),
       );
       jest.spyOn(presenter, 'updateEntityStore');
       presenter.handleIncomingData('presence', {
         type: 'put',
-        entities: new Map([[111, { name: 'alan', id: 111 }]])
+        entities: new Map([[111, { name: 'alan', id: 111 }]]),
       });
       expect(presenter.updateEntityStore).toHaveBeenCalledWith('presence', []);
       expect(orderListStore.batchSet).toHaveBeenCalledWith([
-        { id: 111, sortKey: 222 }
+        { id: 111, sortKey: 222 },
       ]);
       expect(orderListStore.batchRemove).toHaveBeenCalledWith([111]);
     });
@@ -116,11 +117,11 @@ describe('OrderListPresenter', () => {
         () => {
           return true;
         },
-        () => ({ id: 111, sortKey: 222 })
+        () => ({ id: 111, sortKey: 222 }),
       );
       presenter.handleIncomingData('presence', {
         type: 'delete',
-        entities: new Map([[111, { name: 'alan', id: 111 }]])
+        entities: new Map([[111, { name: 'alan', id: 111 }]]),
       });
       expect(orderListStore.batchRemove).toHaveBeenCalled();
     });
@@ -131,21 +132,21 @@ describe('OrderListPresenter', () => {
         () => {
           return true;
         },
-        () => ({ id: 1, sortKey: 1112 })
+        () => ({ id: 1, sortKey: 1112 }),
       );
       jest.spyOn(presenter, 'updateEntityStore');
       presenter.handleIncomingData('presence', {
         type: 'put',
-        entities: new Map([[1, { name: 'tom', id: 1 }]])
+        entities: new Map([[1, { name: 'tom', id: 1 }]]),
       });
       expect(presenter.updateEntityStore).toHaveBeenCalledWith('presence', [
         {
           name: 'tom',
-          id: 1
-        }
+          id: 1,
+        },
       ]);
       expect(orderListStore.batchSet).toHaveBeenCalledWith([
-        { id: 1, sortKey: 1112 }
+        { id: 1, sortKey: 1112 },
       ]);
       expect(orderListStore.batchRemove).toHaveBeenCalledWith([]);
     });
@@ -162,7 +163,7 @@ describe('OrderListPresenter', () => {
         () => {
           return true;
         },
-        () => ({ id: 111, sortKey: 222 })
+        () => ({ id: 111, sortKey: 222 }),
       );
       jest.spyOn(presenter, 'updateEntityStore');
     });
@@ -174,14 +175,14 @@ describe('OrderListPresenter', () => {
     it('store should be batch set with handleData by isBigger as true', () => {
       presenter.handlePageData('group', [{ id: 222 }], true);
       expect(presenter.updateEntityStore).toHaveBeenCalledWith('group', [
-        { id: 222 }
+        { id: 222 },
       ]);
       expect(orderListStore.batchSet).toHaveBeenCalledWith([]);
     });
     it('store should be batch set with handleData by isBigger as false', () => {
       presenter.handlePageData('group', [{ id: 222 }], false);
       expect(presenter.updateEntityStore).toHaveBeenCalledWith('group', [
-        { id: 222 }
+        { id: 222 },
       ]);
       expect(orderListStore.batchSet).toHaveBeenCalledWith([]);
     });
