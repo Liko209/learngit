@@ -1,0 +1,18 @@
+{
+  "heading": "heading",
+  "description": "description",
+  "key1": "{{what}} is {{how}}",
+  "key2": "The current date is {{date, MM/DD/YYYY}}",
+  "keyWithCount": "{{count}} item",
+  "keyWithCount_plural": "{{count}} items",
+  "Dashboard": "Dashboard",
+  "Messages": "Messages",
+  "Phone": "Phone",
+  "Meetings": "Meetings",
+  "Contacts": "Contacts",
+  "Calendar": "Calendar",
+  "Tasks": "Tasks",
+  "Notes": "Notes",
+  "Files": "Files",
+  "Settings": "Settings"
+}

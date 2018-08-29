@@ -4,20 +4,23 @@ import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 import { LeftNav } from 'ui-components';
 import Main from './Main';
-
+import { translate } from 'react-i18next';
 import NotFound from '@/containers/NotFound';
 import Conversations from '@/containers/Conversations';
 import Calls from '@/containers/Calls';
 import Meetings from '@/containers/Meetings';
-
+import Settings from '@/containers/Settings';
+import { TranslationFunction, i18n } from 'i18next';
 import TopBar from 'ui-components/organisms/TopBar';
 import avatar from './avatar.jpg';
-
 import { service } from 'sdk';
 
 const { AuthService } = service;
 
-interface IProps extends RouteComponentProps<any> { }
+interface IProps extends RouteComponentProps<any> {
+  i18n: i18n;
+  t: TranslationFunction;
+}
 
 interface IStates {
   isExpand: boolean;
@@ -50,18 +53,37 @@ class Home extends Component<IProps, IStates>  {
   }
   render() {
     // const { match } = this.props;
+    const { t } = this.props;
+
+    const Icons = [
+      [
+        { icon: 'Dashboard', title: t('Dashboard') },
+        { icon:'Messages', title: t('Messages') },
+        { icon: 'Phone', title: t('Phone') },
+        { icon: 'Meetings', title: t('Meetings') },
+      ],
+      [
+        { icon: 'Contacts', title: 'Contacts' },
+        { icon: 'Calendar', title: 'Calendar' },
+        { icon: 'Tasks', title: 'Tasks' },
+        { icon: 'Notes', title: 'Notes' },
+        { icon: 'Files', title: 'Files' },
+        { icon: 'Settings', title: 'Settings' },
+      ],
+    ];
     const { isExpand } = this.state;
     return (
       <Wrapper>
         <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online" data-anchor="expandButton" handleSignOutClick={this.signOutClickHandler} />
         <Bottom>
-          <LeftNav isExpand={isExpand} id="leftnav" />
+          <LeftNav isExpand={isExpand} id="leftnav" icons={Icons}/>
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
               <Route path="/messages/:id?" component={Conversations} />
               <Route path="/calls" component={Calls} />
               <Route path="/meetings" component={Meetings} />
+              <Route path="/settings" component={Settings} />
               <Route component={NotFound} />
             </Switch>
           </Main>
@@ -70,4 +92,4 @@ class Home extends Component<IProps, IStates>  {
   }
 }
 
-export default Home;
+export default translate('translations')(Home);
