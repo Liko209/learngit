@@ -27,6 +27,7 @@ test(formalName('Sign In Success', ['P0', 'SignIn']), async (t) => {
     .shouldNavigateTo(EnvironmentSelectionPage)
     .selectEnvironment(SITE_ENV)
     .toNextPage()
+    .inlineLog('inlineLog can be used inside the call chain')
   );
 
   const client702 = await helper.glipApiManager.getClient(helper.users.user702, helper.companyNumber);

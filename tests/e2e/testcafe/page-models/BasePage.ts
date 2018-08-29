@@ -30,7 +30,7 @@ export abstract class BasePage {
   protected onExit() { }
 
   protected chain(cb: (t: TestController, value?: any) => Promise<any>) {
-    this._chain = this._chain.then((value: any) => cb(this._t, value));
+    this._chain = this._chain.then(value => cb(this._t, value));
     this._forwardThen();
     return this;
   }
@@ -51,6 +51,18 @@ export abstract class BasePage {
     endTime?: number,
     parent?: AllureStep) {
     return await this._helper.log(message, status, takeScreen, startTime, endTime, parent);
+  }
+
+  inlineLog(
+    message: string,
+    status: Status = Status.PASSED,
+    takeScreen: boolean = false,
+    startTime?: number,
+    endTime?: number,
+  ) {
+    return this.chain(async t =>
+      await this.log(message, status, takeScreen, startTime, endTime, undefined),
+    );
   }
 
   async execute() {

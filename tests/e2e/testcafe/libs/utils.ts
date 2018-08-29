@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 import * as G from 'glob';
 
 export function parseArgs(argsString: string) {

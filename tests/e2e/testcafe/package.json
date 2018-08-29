@@ -17,6 +17,7 @@
     "@types/account-pool-ts-api": "git+ssh://git@git.ringcentral.com:TA/account-pool/ts-api.git#master",
     "@types/allure-js-commons": "0.0.0",
     "@types/dotenv": "^4.0.3",
+    "@types/es6-promise": "^3.3.0",
     "@types/glob": "^5.0.35",
     "@types/lodash": "^4.14.116",
     "@types/node": "^10.7.0",
