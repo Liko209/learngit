@@ -6,8 +6,8 @@
 import { ReactSelector } from 'testcafe-react-selectors';
 import { BasePage } from '../../BasePage';
 
-const section = ReactSelector('FavoriteSection');
-const listItem = ReactSelector('FavoriteSection ConversationListItem');
+const section = ReactSelector('ConversationSection').withProps('title', 'Favorite');
+const listItem = section.findReact('ConversationListItem');
 const header = section.findReact('ConversationListSectionHeader');
 const collapse = section.findReact('Collapse');
 

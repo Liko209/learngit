@@ -6,7 +6,7 @@ import { BaseModel } from 'sdk/models';
 
 const DEFAULT_PAGE_SIZE = 20;
 
-export default class OrderListPresenter<T extends BaseModel, K extends IEntity> extends BasePresenter<T> {
+export default class OrderListPresenter<T extends BaseModel, K extends IEntity> extends BasePresenter {
   private store: OrderListStore;
   private hasBigger: boolean;
   private hasSmaller: boolean;

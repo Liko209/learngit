@@ -141,7 +141,7 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
       const res = this.getByService(id);
       if (res instanceof Promise && typeof res.then === 'function') {
         res.then((res: T & { error?: {} }) => {
-          if (!res.error) {
+          if (res && !res.error) {
             this.set(res);
           }
         });

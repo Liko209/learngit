@@ -12,7 +12,7 @@ const team = teamSection.findReact('ConversationListItem').nth(0);
 class TeamSection extends BasePage {
   public shouldBeTeam() {
     return this.chain(async (t) => {
-      await t.expect(team.exists).ok('Failed to find the team, probably caused by long-time loadng', { timeout:1500000 });
+      await t.expect(team.exists).ok('Failed to find the team, probably caused by long-time loadng', { timeout: 1500000 });
       const id = (await team.getReact()).key;
       const props = (await this._getTeamProps(id));
       return await t.expect(props.is_team).ok(`Team ${id} is not a team`);
@@ -21,20 +21,20 @@ class TeamSection extends BasePage {
 
   public teamNameShouldChange() {
     return this.chain(async (t) => {
-      await t.expect(team.exists).ok('Failed to find the team, probably caused by long-time loadng', { timeout:150000 });
+      await t.expect(team.exists).ok('Failed to find the team, probably caused by long-time loadng', { timeout: 150000 });
       const id = (await team.getReact()).key;
       const randomName = Math.random().toString(36).substring(7);
       await this._modifyTeamName(id, randomName);
       const text = () => team.findReact('Typography').innerText;
-      await t.expect(text()).eql(randomName, 'wrong name', { timeout:150000 });
+      await t.expect(text()).eql(randomName, 'wrong name', { timeout: 150000 });
     });
   }
 
-  private async  _getTeamProps(id:number) :Promise <{ is_team:boolean }> {
+  private async  _getTeamProps(id: number): Promise<{ is_team: boolean }> {
     return (await GroupAPI.requestGroupById(id)).data;
   }
 
-  private async _modifyTeamName(id:number, name:string) {
+  private async _modifyTeamName(id: number, name: string) {
     GroupAPI.modifyGroupById(id, { set_abbreviation: name });
   }
 }

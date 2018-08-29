@@ -11,7 +11,7 @@ const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
 const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
 
 const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
-const SITE_URL = process.env.SITE_URL || 'https://application-fiji-356.fiji.gliprc.com/unified-login';
+const SITE_URL = process.env.SITE_URL || 'http://localhost:3000/unified-login';
 
 const ENV = {
   'WEB-AQA-XIA': {
@@ -137,7 +137,7 @@ const SDK_ENV = {
       apiPlatform: '/restapi',
       clientId: 'FVKGRbLRTxGxPempqg5f9g',
       clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
-      redirectUri : 'glip://rclogin',
+      redirectUri: 'glip://rclogin',
     },
     glip2: {
       server: 'https://api-glpci2xmn.lab.nordigy.ru',
@@ -224,9 +224,9 @@ const SDK_ENV = {
   'XMN-UP': {
     rc: {
       server: 'https://api-xmnup.lab.nordigy.ru',
-      apiPlatform : '/restapi',
-      clientId : 'FVKGRbLRTxGxPempqg5f9g',
-      clientSecret : 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
+      apiPlatform: '/restapi',
+      clientId: 'FVKGRbLRTxGxPempqg5f9g',
+      clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
       redirectUri: 'glip://rclogin',
     },
     glip2: {
