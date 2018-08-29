@@ -4,12 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from 'styled-components';
-import { WithTheme } from '@material-ui/core';
+import styled from '../../styled-components';
 
 export type PresenceProps = {
   presence?: 'online' | 'away' | 'offline' | 'default';
-} & Partial<Pick<WithTheme, 'theme'>> & React.HTMLAttributes<HTMLDivElement>;
+} & React.HTMLAttributes<HTMLDivElement>;
 
 const PRESENCE_COLOR_MAP = {
   online: '#4cd964',
