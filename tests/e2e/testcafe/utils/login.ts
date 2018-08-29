@@ -25,11 +25,12 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
     ({ credential, password } = authInfo);
     extension = authInfo.extension || '';
   } else {
-  const helper = TestHelper.from(t);
-credential = helper.companyNumber;
+    const helper = TestHelper.from(t);
+    credential = helper.companyNumber;
     extension = helper.users.user701.extension;
     password = helper.users.user701.password;
   }
+
   return new BlankPage(t)
     .open(SITE_URL)
     .shouldNavigateTo(UnifiedLoginPage)

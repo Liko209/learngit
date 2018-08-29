@@ -35,6 +35,24 @@ export abstract class BasePage {
     return this;
   }
 
+  protected click(el: Selector) {
+    return this.chain(async t => await t.click(el));
+  }
+
+  protected wait(timeout: number) {
+    return this.chain(async t => await t.wait(timeout));
+  }
+
+  protected waitFor(selector: Selector) {
+    return this.chain(async (t) => {
+      await selector;
+    });
+  }
+
+  protected checkExist(selector: Selector) {
+    return this.chain(t => t.expect(selector.exists).ok());
+  }
+
   private _forwardThen() {
     this.then = function () {
       const promise = this._chain;
@@ -57,26 +75,6 @@ export abstract class BasePage {
     const chain = this._chain;
     this._chain = Promise.resolve();
     return await chain;
-  }
-
-  selectComponent(str: string) {
-    return ReactSelector(str);
-  }
-
-  clickComponent(str: string) {
-    return this.clickElement(this.selectComponent(str));
-  }
-
-  select(str: string) {
-    return Selector(`*[data-anchor="${str}"]`);
-  }
-
-  click(str: string) {
-    return this.clickElement(this.select(str));
-  }
-
-  clickElement(el: Selector) {
-    return this.chain(async t => await t.click(el));
   }
 
   shouldNavigateTo<T extends BasePage>(

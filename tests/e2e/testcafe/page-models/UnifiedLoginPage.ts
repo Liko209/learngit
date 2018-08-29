@@ -3,18 +3,23 @@
  * @Date: 2018-08-21 16:30:42
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { Selector } from 'testcafe';
 import { BasePage } from './BasePage';
-
-const ANCHORS = {
-  BTN_LOGIN: 'btnLogin',
-};
-const { BTN_LOGIN } = ANCHORS;
+import { ReactSelector } from 'testcafe-react-selectors';
 
 class UnifiedLoginPage extends BasePage {
-  clickLogin(): this {
-    return this.click(BTN_LOGIN);
+  get loginButton() {
+    return Selector('button[type="submit"]');
   }
+
+  get envSelect() {
+    return ReactSelector('EnvSelect');
+  }
+
+  clickLogin(): this {
+    return this.click(this.loginButton);
+  }
+
 }
 
 export { UnifiedLoginPage };

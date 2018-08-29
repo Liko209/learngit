@@ -18,7 +18,7 @@ class FavoriteSection extends BasePage {
   listItem: Selector = listItem;
 
   clickHeader() {
-    return this.clickElement(this.header);
+    return this.click(this.header);
   }
 
   dragListItem(from: number, to: number) {

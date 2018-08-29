@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import accountPoolHelper from './accounts';
 import { RcPlatformManager } from './glip';
-import { Status, AllureStep } from '../libs/report';
+import { Status, AllureStep } from './report';
 
 import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
 

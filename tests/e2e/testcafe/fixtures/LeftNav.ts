@@ -18,7 +18,7 @@ fixture('LeftNav')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown());
 
-test(formalName('Left nav redirect', ['P0', 'LeftNav']), async t => {
+test(formalName('Left nav redirect', ['P0', 'LeftNav']), async (t) => {
   const helper = TestHelper.from(t);
 
   await new BlankPage(t)
