@@ -1,53 +1,16 @@
-interface IEntity {
+export type IEntity = {
   id: number;
+  data?: any;
+  dispose?: () => void;
   [name: string]: any;
 }
 
-interface IIncomingData {
+export type IIncomingData<T> = {
   type: string;
-  entities: Map<number, IEntity>;
+  entities: Map<number, T>;
 }
 
-interface IService {
-  getById(id: number): Promise<IEntity>;
-}
-
-interface IIDSortKey {
+export type IIDSortKey = {
   id: number;
   sortKey: number;
-}
-
-interface ICompany {
-  id: number;
-  name: string;
-}
-
-interface IGroup {
-  id: number;
-  isTeam: boolean;
-  setAbbreviation: string;
-  members: number[];
-  description: string;
-  pinnedPostIds: number[];
-}
-
-interface IGroupState {
-  id: number;
-  unread_count: number;
-  unread_mentions_count: number;
-}
-
-interface IPerson {
-  id: number;
-  companyId: number;
-  firstName: string;
-  lastName: string;
-  headshot: string;
-  email: string;
-  rcPhoneNumbers: string[];
-}
-
-interface IPresence {
-  id: number;
-  presence: string;
 }

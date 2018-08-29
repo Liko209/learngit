@@ -97,7 +97,18 @@
         "Withs",
         "woff",
         "workspaces",
-        "Zhan"
+        "Zhan",
+        "lifecycles",
+        "testcafe",
+        "headshot",
+        "happypack",
+        "Injectable",
+        "Odeson",
+        "subheader",
+        "cateye",
+        "visibilitychange",
+        "msvisibilitychange",
+        "webkitvisibilitychange"
     ],
     "flagWords": []
 }

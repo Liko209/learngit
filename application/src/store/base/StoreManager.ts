@@ -10,6 +10,7 @@ import GlobalStore from './GlobalStore';
 import OrderListStore from './OrderListStore';
 
 import { ENTITY_SERVICE, ENTITY_TYPE, HANDLER_TYPE } from './constants';
+import { IEntity } from '../store';
 
 enum STORE_TYPE {
   UI,
@@ -19,7 +20,7 @@ enum STORE_TYPE {
 
 interface IStores {
   [STORE_TYPE.UI]: Map<string, OrderListStore>;
-  [STORE_TYPE.ENTITY]: Map<string, MultiEntityMapStore | SingleEntityMapStore>;
+  [STORE_TYPE.ENTITY]: Map<string, MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>>;
   [STORE_TYPE.GLOBAL]: GlobalStore;
 }
 class StoreManager {
@@ -40,7 +41,7 @@ class StoreManager {
   }
 
   injectStores(
-    stores: (MultiEntityMapStore | SingleEntityMapStore | OrderListStore)[],
+    stores: (MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any> | OrderListStore)[],
   ) {
     stores.forEach((store) => {
       this.injectStore(store);
@@ -48,7 +49,7 @@ class StoreManager {
   }
 
   injectStore(
-    store: MultiEntityMapStore | SingleEntityMapStore | OrderListStore,
+    store: MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any> | OrderListStore,
   ) {
     const { name } = store;
     if (store instanceof OrderListStore) {
@@ -59,7 +60,7 @@ class StoreManager {
   }
 
   removeStore(
-    store: MultiEntityMapStore | SingleEntityMapStore | OrderListStore,
+    store: MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any> | OrderListStore,
   ) {
     const { name } = store;
     if (store instanceof OrderListStore) {
@@ -71,7 +72,7 @@ class StoreManager {
   }
 
   removeStores(
-    stores: (MultiEntityMapStore | SingleEntityMapStore | OrderListStore)[],
+    stores: (MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any> | OrderListStore)[],
   ) {
     stores.forEach((store) => {
       this.removeStore(store);
@@ -90,15 +91,13 @@ class StoreManager {
   }
 
   getUIStore(storeName: string) {
-    return this.getStore(STORE_TYPE.UI, storeName);
+    return this.getStore(STORE_TYPE.UI, storeName) as OrderListStore;
   }
 
   getEntityMapStore(
     entityStoreName: string,
-  ): MultiEntityMapStore | SingleEntityMapStore {
-    let store = this.getStore(STORE_TYPE.ENTITY, entityStoreName) as
-      | MultiEntityMapStore
-      | SingleEntityMapStore;
+  ) {
+    let store = this.getStore(STORE_TYPE.ENTITY, entityStoreName) as MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>;
     if (!store) {
       if (ENTITY_TYPE[entityStoreName] === HANDLER_TYPE.MULTI_ENTITY) {
         store = new MultiEntityMapStore(
@@ -127,7 +126,7 @@ class StoreManager {
   dispatchUpdatedDataModels(entityStoreName: string, entities: IEntity[]) {
     const store = this.getEntityMapStore(
       entityStoreName,
-    ) as MultiEntityMapStore;
+    ) as MultiEntityMapStore<any, any>;
     store.batchSet(entities);
   }
 }

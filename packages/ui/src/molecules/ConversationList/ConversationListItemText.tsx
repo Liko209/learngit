@@ -5,17 +5,17 @@
  */
 import React, { Component, CSSProperties } from 'react';
 import ReactDOM from 'react-dom';
-import styled from 'styled-components';
 
 import MuiTypography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { isTextOverflow } from '../../utils';
+import styled from '../../styled-components';
+import { isTextOverflow, spacing } from '../../utils';
 
 const StyledTypography = styled(MuiTypography)`
   && {
     flex: 1;
-    padding: 0 8px;
+    padding: ${spacing(0, 2)};
     font-size: 14px;
     overflow: hidden;
     text-overflow: ellipsis;

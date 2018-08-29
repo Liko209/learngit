@@ -134,7 +134,7 @@ describe('ProfileService', () => {
       expect(result.favorite_group_ids).toEqual([2, 1, 3]);
     });
 
-    it.only('reorder forward to back', async () => {
+    it('reorder forward to back', async () => {
       const profile = {
         id: 2,
         favorite_group_ids: [1, 2, 3],

@@ -7,24 +7,20 @@ import serviceManager from '../../service/serviceManager';
 import PresenceService from '../../service/presence/index';
 import notificationCenter from '../../service/notificationCenter';
 import { ENTITY } from '../../service/eventKey';
+import { Presence, RawPresence } from '../../models';
 
-export interface ITransform {
-  person_id: number;
-  presence: string;
-}
-
-function transform(obj: ITransform) {
+function transform(obj: RawPresence) {
   return {
     id: obj.person_id,
     presence: obj.presence,
   };
 }
 
-const presenceHandleData = async (presences: ITransform[]) => {
+const presenceHandleData = async (presences: RawPresence[]) => {
   if (presences.length === 0) {
     return;
   }
-  const transformedData = presences.map(item => transform(item));
+  const transformedData = presences.map(item => transform(item)) as Presence[];
   notificationCenter.emitEntityPut(ENTITY.PRESENCE, transformedData);
   const presenceService = serviceManager.getInstance(PresenceService);
   presenceService.saveToMemory(transformedData);

@@ -1,51 +1,36 @@
+import { IEntity } from './../store.d';
 import { observable } from 'mobx';
+import { Group } from 'sdk/models';
 
-export default class GroupModel {
+export default class GroupModel implements IEntity {
   id: number;
-  @observable isTeam: boolean;
+  @observable isTeam?: boolean;
   @observable setAbbreviation: string;
   @observable members: number[];
-  @observable description: string;
-  @observable pinnedPostIds: number[];
+  @observable description?: string;
+  @observable pinnedPostIds?: number[];
 
-  constructor(model: IGroup) {
+  constructor(data: Group) {
     const {
       id,
-      setAbbreviation,
+      set_abbreviation,
       members,
-      isTeam,
+      is_team,
       description,
-      pinnedPostIds,
-    } = model;
+      pinned_post_ids,
+    } = data;
 
     this.id = id;
-    this.setAbbreviation = setAbbreviation;
+    this.setAbbreviation = set_abbreviation;
     this.members = members;
     this.description = description;
-    this.isTeam = isTeam;
-    this.pinnedPostIds = pinnedPostIds;
+    this.isTeam = is_team;
+    this.pinnedPostIds = pinned_post_ids;
   }
 
-  static fromJS(data: any) {
-    const {
-      is_team: isTeam,
-      set_abbreviation: setAbbreviation,
-      id,
-      members,
-      description,
-      pinned_post_ids: pinnedPostIds,
-    } = data;
-    const model = {
-      id,
-      isTeam,
-      setAbbreviation,
-      members,
-      description,
-      pinnedPostIds,
-    };
-
-    return new GroupModel(model);
+  static fromJS(data: Group) {
+    return new GroupModel(data);
   }
 
-  dispose() {}
+  dispose() { }
 }
