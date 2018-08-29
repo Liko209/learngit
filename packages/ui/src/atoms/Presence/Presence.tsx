@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from '../../styled-components';
+import styled from 'styled-components';
 
 export type PresenceProps = {
   presence?: 'online' | 'away' | 'offline' | 'default';
