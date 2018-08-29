@@ -12,12 +12,13 @@ import { MenuItem } from 'ui-components/atoms/MenuItem';
 
 import storeManager, { ENTITY_NAME } from '../../store';
 import MultiEntityMapStore from '../../store/base/MultiEntityMapStore';
-import SingleEntityMapStore from '../../store/base/SingleEntityMapStore';
 import GroupModel from '../../store/models/Group';
 import { observer } from 'mobx-react';
 import { getGroupName } from '../../utils/groupName';
 import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
+import { Group, Presence } from 'sdk/models';
+import PresenceModel from '../../store/models/Presence';
 const { GroupService } = service;
 interface IProps {
   id: number;
@@ -64,8 +65,8 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     return !!this.anchorEl;
   }
 
-  groupStore: MultiEntityMapStore | SingleEntityMapStore;
-  presenceStore: MultiEntityMapStore | SingleEntityMapStore;
+  groupStore: MultiEntityMapStore<Group, GroupModel>;
+  presenceStore: MultiEntityMapStore<Presence, PresenceModel>;
 
   constructor(props: IProps) {
     super(props);
@@ -74,8 +75,8 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     this.unreadCount = 0;
     this.umiVariant = 'count';
     this.status = undefined;
-    this.groupStore = storeManager.getEntityMapStore(props.entityName);
-    this.presenceStore = storeManager.getEntityMapStore(ENTITY_NAME.PRESENCE);
+    this.groupStore = storeManager.getEntityMapStore(props.entityName) as MultiEntityMapStore<Group, GroupModel>;
+    this.presenceStore = storeManager.getEntityMapStore(ENTITY_NAME.PRESENCE) as MultiEntityMapStore<Presence, PresenceModel>;
     this._openMenu = this._openMenu.bind(this);
     this._toggleFavorite = this._toggleFavorite.bind(this);
     this._handleClose = this._handleClose.bind(this);
@@ -89,7 +90,7 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
   }
 
   getDataFromStore() {
-    const group: GroupModel = this.groupStore.get(this.id);
+    const group = this.groupStore.get(this.id);
     const { currentUserId } = this.props;
     this.displayName = getGroupName(group, currentUserId);
     this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
@@ -115,7 +116,7 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
           aria-owns={open ? 'render-props-menu' : undefined}
           aria-haspopup="true"
           key={this.id}
-          title={this.displayName}
+          title={this.displayName || ''}
           unreadCount={this.unreadCount}
           umiVariant={this.umiVariant}
           onMoreClick={this._openMenu}

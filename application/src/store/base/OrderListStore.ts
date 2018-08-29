@@ -2,6 +2,7 @@ import { observable, action, IObservableArray } from 'mobx';
 import _ from 'lodash';
 
 import BaseStore from './BaseStore';
+import { IIDSortKey } from '../store';
 
 export default class OrderListStore extends BaseStore {
   idArray: IObservableArray<IIDSortKey> = observable.array([], { deep: false });

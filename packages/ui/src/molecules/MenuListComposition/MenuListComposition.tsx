@@ -42,7 +42,6 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
 
   render() {
     const { open } = this.state;
-
     return (
       <MenuListCompositionWrapper>
         <IconButton

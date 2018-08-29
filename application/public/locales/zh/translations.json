@@ -4,5 +4,9 @@
   "key1": "{{what}} 是 {{how}}",
   "key2": "当前时间 {{date, MM/DD/YYYY}}",
   "keyWithCount": "{{count}} 项",
-  "keyWithCount_plural": "{{count}} 项"
+  "keyWithCount_plural": "{{count}} 项",
+  "Dashboard": "仪表盘",
+  "Messages": "消息",
+  "Phone": "电话",
+  "Meetings": "会议"
 }
