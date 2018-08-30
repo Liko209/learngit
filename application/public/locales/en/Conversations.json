@@ -1,0 +1,13 @@
+{
+  "directMessage": "direct message",
+  "directMessage_plural": "direct messages",
+  "bookmark": "bookmark",
+  "bookmark_plural": "bookmarks",
+  "favorite": "favorite",
+  "favorite_plural": "favorites",
+  "team": "team",
+  "team_plural": "teams",
+  "mention": "mention",
+  "mention_plural": "mentions",
+  "unread": "unread"
+}
