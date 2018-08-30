@@ -4,16 +4,16 @@ import React, {
   MouseEvent as ReactMouseEvent,
 } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { parse } from 'qs';
+// import { parse } from 'qs';
 import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
 import HorizonResizer from './HorizonResizer';
 import HorizonButton from './HorizonButton';
 import { addResizeListener, removeResizeListener } from './optimizer';
-import { getOffsetLeft, pauseEvent } from './utils';
 
 interface IProps extends RouteComponentProps<{}> {
   tag: string;
+  leftNavWidth: number;
   children: ReactNode[];
 }
 
@@ -68,15 +68,30 @@ class TreeLayout extends Component<IProps, IStates> {
     this.onResize();
   }
 
-  componentWillReceiveProps(nextProps: IProps) {
-    // nextProps.location.search = ?leftnav=true
-    const parsed = parse(nextProps.location.search);
-    if (parsed.leftnav === 'true') {
-      this.onResize(200);
-      // setTimeout(() => this.onResize(200), 1000);
-    } else if (parsed.leftnav === 'false') {
-      this.onResize(72);
-      // setTimeout(() => this.onResize(72), 1000);
+  // componentWillReceiveProps(nextProps: IProps) {
+  //   // nextProps.location.search = ?leftnav=true
+  //   const parsed = parse(nextProps.location.search);
+  //   if (parsed.leftnav === 'true') {
+  //     this.onResize(200);
+  //     // setTimeout(() => this.onResize(200), 1000);
+  //   } else if (parsed.leftnav === 'false') {
+  //     this.onResize(72);
+  //     // setTimeout(() => this.onResize(72), 1000);
+  //   }
+  // }
+
+  // static getDerivedStateFromProps(props: IProps, state: IStates) {
+  //   if (props.leftNavWidth !== state.leftNavWidth) {
+  //     return {
+  //       leftNavWidth: props.leftNavWidth,
+  //     };
+  //   }
+  //   return null;
+  // }
+
+  componentDidUpdate(prevProps: IProps) {
+    if (this.props.leftNavWidth !== prevProps.leftNavWidth) {
+      this.onResize(this.props.leftNavWidth); // need to recalculate
     }
   }
 
@@ -103,7 +118,9 @@ class TreeLayout extends Component<IProps, IStates> {
   }
 
   onMouseMove(e: MouseEvent) {
-    pauseEvent(e); // mouse move prevent select text
+    // mouse move prevent select text
+    e.stopPropagation();
+    e.preventDefault();
     const { currentElement, currentIndex } = this.state;
     const { tag } = this.props;
 
@@ -120,8 +137,10 @@ class TreeLayout extends Component<IProps, IStates> {
     // console.log(rightMinWidth, rightMaxWidth);
 
     const clientX = e.clientX;
-    const leftNodeOffsetLeft = getOffsetLeft(leftNode);
-    const rightNodeOffsetLeft = getOffsetLeft(rightNode);
+    // const leftNodeOffsetLeft = getOffsetLeft(leftNode);
+    // const rightNodeOffsetLeft = getOffsetLeft(rightNode);
+    const leftNodeOffsetLeft = leftNode.getBoundingClientRect().left;
+    const rightNodeOffsetLeft = rightNode.getBoundingClientRect().left;
     const rightNodeOffsetWidth = rightNode.offsetWidth;
 
     const newLeftWidth = clientX - leftNodeOffsetLeft;
@@ -167,7 +186,9 @@ class TreeLayout extends Component<IProps, IStates> {
       forceDisplayRightPanel,
     } = this.state;
     const { localLeftPanelWidth, localRightPanelWidth } = this.state;
-    const nav = leftnav || document.getElementById('leftnav')!.getBoundingClientRect().width;
+    const { leftNavWidth } = this.props;
+    // const nav = leftnav || document.getElementById('leftnav')!.getBoundingClientRect().width;
+    const nav = leftNavWidth;
     const max = 1920;
     const windowWidth = window.innerWidth;
     const body = windowWidth > max ? max : windowWidth;
@@ -176,36 +197,40 @@ class TreeLayout extends Component<IProps, IStates> {
     // console.log(layoutWidth);
     // const nav = body - layoutWidth;
 
+    const middle_min = 400;
+    const left_min = 180;
+    const right_min = 180;
+
     middle = body - nav - left - right;
-    if (middle <= 400) {
+    if (middle <= middle_min) {
       // hide right
-      middle = 400;
+      middle = middle_min;
       right = body - nav - left - middle;
-      if (right < 180) {
+      if (right < right_min) {
         right = 0;
         middle = body - nav - left - right;
       }
-      if (middle <= 400) {
+      if (middle <= middle_min) {
         // hide left
-        middle = 400;
+        middle = middle_min;
         left = body - nav - middle - right;
-        if (left < 180) {
+        if (left < left_min) {
           left = 0;
           middle = body - nav - left - right;
         }
-        // if (middle <= 400) {
-        //   middle = 400;
+        // if (middle <= middle_min) {
+        //   middle = middle_min;
         // }
       }
     } else {
       // show left
-      if (left === 0 && middle >= 400 + 180) {
-        left = 180;
+      if (left === 0 && middle >= middle_min + left_min) {
+        left = left_min;
         middle = body - nav - left - right;
       }
-      if (left >= 180) {
+      if (left >= left_min) {
         if (left < localLeftPanelWidth) {
-          middle = 400;
+          middle = middle_min;
           left = body - nav - middle - right;
         }
         // ensure left value too big, because setState is micro task
@@ -215,13 +240,13 @@ class TreeLayout extends Component<IProps, IStates> {
         }
       }
       // show right
-      if (right === 0 && middle >= 400 + 180) {
-        right = 180;
+      if (right === 0 && middle >= middle_min + right_min) {
+        right = right_min;
         middle = body - nav - left - right;
       }
-      if (right >= 180) {
+      if (right >= right_min) {
         if (right < localRightPanelWidth) {
-          middle = 400;
+          middle = middle_min;
           right = body - nav - left - middle;
         }
         // ensure right value too big, because setState is micro task
@@ -258,7 +283,8 @@ class TreeLayout extends Component<IProps, IStates> {
   }
 
   onClickLeftButton(e: ReactMouseEvent) {
-    pauseEvent(e);
+    e.stopPropagation();
+    e.preventDefault();
     const { forceDisplayLeftPanel } = this.state;
     this.setState({
       forceDisplayLeftPanel: !forceDisplayLeftPanel,
@@ -267,7 +293,8 @@ class TreeLayout extends Component<IProps, IStates> {
   }
 
   onClickRightButton(e: ReactMouseEvent) {
-    pauseEvent(e);
+    e.stopPropagation();
+    e.preventDefault();
     const { forceDisplayRightPanel } = this.state;
     this.setState({
       forceDisplayLeftPanel: false,
@@ -276,7 +303,8 @@ class TreeLayout extends Component<IProps, IStates> {
   }
 
   onClickPreventBubble(e: ReactMouseEvent) {
-    pauseEvent(e);
+    e.stopPropagation();
+    e.preventDefault();
   }
 
   onClickLayout() {
