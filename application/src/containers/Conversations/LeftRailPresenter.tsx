@@ -37,19 +37,19 @@ class LeftRailPresenter extends BasePresenter {
   get sections() {
     return [
       {
-        title: 'Unread',
+        title: 'unread',
         iconName: 'fiber_new',
       },
       {
-        title: 'Mentions',
+        title: 'mention_plural',
         iconName: 'alternate_email',
       },
       {
-        title: 'Bookmarks',
+        title: 'bookmark_plural',
         iconName: 'bookmark',
       },
       {
-        title: 'Favorite',
+        title: 'favorite_plural',
         iconName: 'start',
         queryType: GROUP_QUERY_TYPE.FAVORITE,
         entity: ENTITY.FAVORITE_GROUPS,
@@ -61,7 +61,7 @@ class LeftRailPresenter extends BasePresenter {
         }),
       },
       {
-        title: 'Direct Messages',
+        title: 'directMessage_plural',
         iconName: 'people',
         queryType: GROUP_QUERY_TYPE.GROUP,
         entity: ENTITY.PEOPLE_GROUPS,
@@ -69,7 +69,7 @@ class LeftRailPresenter extends BasePresenter {
         expanded: true,
       },
       {
-        title: 'Teams',
+        title: 'team_plural',
         iconName: 'people',
         queryType: GROUP_QUERY_TYPE.TEAM,
         entity: ENTITY.TEAM_GROUPS,
