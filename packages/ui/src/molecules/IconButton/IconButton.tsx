@@ -6,7 +6,8 @@
 import React from 'react';
 import styled from '../../styled-components';
 import MuiIconButton, { IconButtonProps } from '@material-ui/core/IconButton';
-import { Icon as MuiIcon, Tooltip as MuiTooltip } from '@material-ui/core';
+import { Icon as MuiIcon } from '@material-ui/core';
+import { ArrowTip } from '../../atoms';
 
 type TIconButtonProps = {
   tooltipTitle?: string;
@@ -78,7 +79,7 @@ const IconButton: React.SFC<TIconButtonProps> = (
       </StyledIcon>
     </StyledIconButton>
   );
-  return tooltipTitle ? (<MuiTooltip title={tooltipTitle}>{main}</MuiTooltip>) : main;
+  return tooltipTitle ? (<ArrowTip title={tooltipTitle} node={main}/>) : main;
 };
 
 IconButton.defaultProps = {

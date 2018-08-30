@@ -5,10 +5,9 @@ import MuiListItemText, {
   ListItemTextProps,
 } from '@material-ui/core/ListItemText';
 import { WithTheme } from '@material-ui/core/styles/withTheme';
-import { Umi } from '../../atoms';
+import { Umi, ArrowTip } from '../../atoms';
 import NavIcon from './icon';
 import { NavLink } from 'react-router-dom';
-import { Tooltip as MuiTooltip } from '@material-ui/core';
 
 type TListItem = {
   active: number;
@@ -156,7 +155,7 @@ const Item = (props: TNavItemProps) => {
       </ListLink>
     </ListItem>
   );
-  return !expand ? <MuiTooltip title={title} enterDelay={400}>{NavItems}</MuiTooltip> : NavItems;
+  return !expand ? <ArrowTip title={title} enterDelay={400} node={NavItems}/> : NavItems;
 };
 export const NavItem = styled<TNavItemProps>(Item)``;
 export default NavItem;
