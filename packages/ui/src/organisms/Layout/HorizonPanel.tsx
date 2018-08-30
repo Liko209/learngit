@@ -31,7 +31,7 @@ const Wrapper = styled.div`
   `};
   ${props => props.forceDisplay && css`
     display: inline-block;
-    width: 180px;
+    width: ${({ theme }) => theme.size.width * 18};
     position: absolute;
     top: 0;
     bottom: 0;

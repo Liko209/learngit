@@ -65,6 +65,13 @@ const theme = {
   spacing: {
     unit: 4,
   },
+  zIndex: {
+    supernatant: 2,
+  },
+  size: {
+    width: 10,
+    height: 10,
+  },
 };
 
 export default theme;
