@@ -1,54 +1,37 @@
+import { IEntity } from './../store.d';
 import { observable, action, computed } from 'mobx';
+import { Person } from 'sdk/models';
 
-export default class PersonModel {
+export default class PersonModel implements IEntity {
   id: number;
   @observable companyId: number;
-  @observable firstName: string;
-  @observable lastName: string;
-  @observable headshot: string;
+  @observable firstName?: string;
+  @observable lastName?: string;
+  @observable headshot?: string;
   @observable email: string;
-  @observable rcPhoneNumbers: string[];
+  @observable rcPhoneNumbers?: object[];
 
-  constructor(model: IPerson) {
+  constructor(model: Person) {
     const {
       id,
-      companyId,
-      firstName,
-      lastName,
+      company_id,
+      first_name,
+      last_name,
       headshot,
       email,
-      rcPhoneNumbers,
+      rc_phone_numbers,
     } = model;
     this.id = id;
-    this.companyId = companyId;
-    this.firstName = firstName;
-    this.lastName = lastName;
+    this.companyId = company_id;
+    this.firstName = first_name;
+    this.lastName = last_name;
     this.headshot = headshot;
     this.email = email;
-    this.rcPhoneNumbers = rcPhoneNumbers;
+    this.rcPhoneNumbers = rc_phone_numbers;
   }
 
-  static fromJS(data: any) {
-    const {
-      company_id: companyId,
-      first_name: firstName,
-      last_name: lastName,
-      id,
-      headshot,
-      email,
-      rc_phone_numbers: rcPhoneNumbers,
-    } = data;
-    const model = {
-      id,
-      companyId,
-      firstName,
-      lastName,
-      headshot,
-      email,
-      rcPhoneNumbers,
-    };
-
-    return new PersonModel(model);
+  static fromJS(data: Person) {
+    return new PersonModel(data);
   }
 
   @computed
@@ -86,7 +69,7 @@ export default class PersonModel {
     lastName?: string;
     headshot?: string;
     email?: string;
-    rcPhoneNumbers?: string[];
+    rcPhoneNumbers?: object[];
   }) {
     if (companyId) {
       this.companyId = companyId;
@@ -108,5 +91,5 @@ export default class PersonModel {
     }
   }
 
-  dispose() {} // eslint-disable-line
+  dispose() { } // eslint-disable-line
 }

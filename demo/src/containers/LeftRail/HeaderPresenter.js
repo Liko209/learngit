@@ -2,8 +2,8 @@ import { observable, computed, action } from 'mobx';
 
 import { service } from 'sdk';
 
-import storeManager, { ENTITY_NAME } from '@/store';
-import BasePresenter from '@/store/base/BasePresenter';
+import storeManager, { ENTITY_NAME } from '#/store';
+import BasePresenter from '#/store/base/BasePresenter';
 
 const { AuthService, AccountService, SERVICE } = service;
 export default class HeaderPresenter extends BasePresenter {
@@ -34,6 +34,9 @@ export default class HeaderPresenter extends BasePresenter {
     this.subscribeNotificationOnce(SERVICE.FETCH_INDEX_DATA_DONE, () =>
       this.init()
     );
+    this.subscribeNotification(SERVICE.DO_SIGN_OUT, () => {
+      this.signOutClickHandler();
+    });
   }
 
   @action

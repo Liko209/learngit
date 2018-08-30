@@ -34,7 +34,7 @@ Avatar.defaultProps = {
   width: '36px',
   height: '36px',
   borderRadius: '100%',
-  backgroundColor: '#ddd'
+  backgroundColor: '#ddd',
 };
 
 export default Avatar;

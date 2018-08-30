@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-06-22 09:23:37
  */
 import styled from 'styled-components';
-import SplitPane from '@/components/SplitPane';
+import SplitPane from '#/components/SplitPane';
 
 const SplitPaneWrapper = styled(SplitPane)`
   width: 100%;

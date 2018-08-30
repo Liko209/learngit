@@ -1,4 +1,6 @@
+#!/bin/bash
 echo '====Start Build application'
-yarn build:app
+cd $project/application
 
+npm run build
 syncFolderToServer $project/application/build $subDomain

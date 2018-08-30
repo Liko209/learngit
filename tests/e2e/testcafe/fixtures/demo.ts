@@ -8,21 +8,37 @@ import { BlankPage } from '../page-models/BlankPage';
 import { EnvironmentSelectionPage } from '../page-models/EnvironmentSelectionPage';
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
+import { SITE_URL, SITE_ENV } from '../config';
 
-fixture('My fixture');
+import { formalName } from '../libs/filter';
+import { setUp, tearDown, TestHelper } from '../libs/helpers';
 
-test('Sign In Success', async (t) => {
-  await new BlankPage(t)
-      .open('https://develop.fiji.gliprc.com/unified-login')
-      .shouldNavigateTo(EnvironmentSelectionPage)
-      .selectEnvironment('XMN-UP')
-      .toNextPage()
-      .shouldNavigateTo(RingcentralSignInNavigationPage)
-      .setCredential('18662118607')
-      .toNextPage()
-      .shouldNavigateTo(RingcentralSignInPage)
-      .setExtension('701')
-      .setPassword('Test!123')
-      .signIn()
-      .execute();
+declare var test: TestFn;
+fixture.skip('Demo')
+  .beforeEach(setUp('rcBetaUserAccount'))
+  .afterEach(tearDown());
+
+test(formalName('Sign In Success', ['P0', 'SignIn']), async (t) => {
+  const helper = TestHelper.from(t);
+
+  let page;
+  await (page = new BlankPage(t)
+    .open(SITE_URL)
+    .shouldNavigateTo(EnvironmentSelectionPage)
+    .selectEnvironment(SITE_ENV)
+    .toNextPage()
+  );
+
+  const client702 = await helper.glipApiManager.getClient(helper.users.user702, helper.companyNumber);
+  await client702.sendPost(helper.teams.team1_u1_u2.glip_id, { text: 'hello world' });
+
+  await (page = page
+    .shouldNavigateTo(RingcentralSignInNavigationPage)
+    .setCredential(helper.companyNumber)
+    .toNextPage()
+    .shouldNavigateTo(RingcentralSignInPage)
+    .setExtension(helper.users.user701.extension)
+    .setPassword(helper.users.user701.password)
+    .signIn()
+  );
 });

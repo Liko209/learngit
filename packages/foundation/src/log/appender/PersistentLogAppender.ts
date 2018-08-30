@@ -30,7 +30,7 @@ class PersistentLogAppender extends BaseAppender {
     const logs: string[] = this._loggingEvents.map(this.format.bind(this));
     const firstKey = this._loggingEvents[0].getStartTimestamp();
     const lastKey = this._loggingEvents[this._loggingEvents.length - 1
-    ].getStartTimestamp();
+].getStartTimestamp();
     const key = `${firstKey} - ${lastKey}`;
     this._loggingEvents = [];
 

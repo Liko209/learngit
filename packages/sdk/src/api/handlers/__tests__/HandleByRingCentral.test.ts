@@ -127,15 +127,20 @@ describe('HandleByRingCentral', () => {
 
   describe('refreshToken', () => {
     it('should reject if refresh fail', async () => {
-      authService.refreshRCToken = jest.fn().mockRejectedValueOnce(null);
+      expect.assertions(1);
+      HandleByRingCentral.tokenRefreshDelegate = {
+        refreshRCToken:
+          jest.fn().mockRejectedValueOnce(null),
+      };
       const originToken = { timestamp: 0, accessTokenExpireIn: 6000, refreshTokenExpireIn: 6000 };
-      HandleByRingCentral.doRefreshToken(
+      const refreshToken = HandleByRingCentral.doRefreshToken(
         originToken,
-      ).catch((token) => {
-        expect(token).toEqual(originToken);
-      });
+      );
+      return expect(refreshToken).rejects.toEqual(originToken);
     });
     it('should resolve if refresh success', async () => {
+      expect.assertions(1);
+
       const fakeToken = {
         timestamp: 1,
         accessTokenExpireIn: 6001,
@@ -143,16 +148,20 @@ describe('HandleByRingCentral', () => {
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
       };
-      authService.refreshRCToken = jest.fn().mockResolvedValueOnce(fakeToken);
+      HandleByRingCentral.tokenRefreshDelegate = {
+        refreshRCToken:
+          jest.fn().mockResolvedValueOnce(fakeToken),
+      };
       const originToken = { timestamp: 0, accessTokenExpireIn: 6000, refreshTokenExpireIn: 6000 };
-      HandleByRingCentral.doRefreshToken(
+      const refreshToken = HandleByRingCentral.doRefreshToken(
         originToken,
-      ).then((token) => {
-        expect(token.timestamp).toEqual(fakeToken.timestamp);
-        expect(token.accessTokenExpireIn).toEqual(fakeToken.accessTokenExpireIn);
-        expect(token.refreshTokenExpireIn).toEqual(fakeToken.refreshTokenExpireIn);
-        expect(token.access_token).toEqual(fakeToken.accessToken);
-        expect(token.refreshToken).toEqual(fakeToken.refreshToken);
+      );
+      return expect(refreshToken).resolves.toEqual({
+        accessTokenExpireIn: 6001,
+        access_token: undefined,
+        refreshToken: 'refreshToken',
+        refreshTokenExpireIn: 6001,
+        timestamp: 1,
       });
     });
   });

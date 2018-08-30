@@ -8,10 +8,10 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import styled from 'styled-components';
 
-import Button from '@/components/Button';
-import Ellipsis from '@/components/Ellipsis';
-import Box, { Container } from '@/components/Layout';
-import Presence from '@/containers/Presence';
+import Button from '#/components/Button';
+import Ellipsis from '#/components/Ellipsis';
+import Box, { Container } from '#/components/Layout';
+import Presence from '#/containers/Presence';
 
 import HeaderPresenter from './HeaderPresenter';
 

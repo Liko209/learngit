@@ -17,9 +17,9 @@ export class RingcentralSignInNavigationPage extends BasePage {
     return Selector('[data-test-automation-id=\'loginCredentialNext\']');
   }
 
-  setCredential(credential: string): this {
+  setCredential(credential: string | number): this {
     return this.chain(async t =>
-      await t.typeText(this.credentialField, credential),
+      await t.typeText(this.credentialField, String(credential)),
     );
   }
 

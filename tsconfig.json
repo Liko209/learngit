@@ -23,5 +23,8 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "experimentalDecorators": true
-  }
+  },
+  "files": [
+    "./typings/images.d.ts"
+  ]
 }

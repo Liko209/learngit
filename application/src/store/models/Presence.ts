@@ -1,19 +1,21 @@
+import { IEntity } from './../store.d';
 import { observable } from 'mobx';
+import { Presence } from 'sdk/models';
 
-export default class PresenceModel {
+export default class PresenceModel implements IEntity {
   id: number;
-  @observable presence: string;
+  @observable presence?: 'default' | 'offline' | 'online' | 'away';
 
-  constructor(model: IPresence) {
-    const { id, presence } = model;
+  constructor(data: Presence) {
+    const { id, presence } = data;
 
     this.id = id;
     this.presence = presence;
   }
 
-  static fromJS(data: any) {
+  static fromJS(data: Presence) {
     return new PresenceModel(data);
   }
 
-  dispose() {}
+  dispose() { }
 }

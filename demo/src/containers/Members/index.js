@@ -9,13 +9,13 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import throttle from 'lodash/throttle';
 
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '#/store';
 
-import RightPanelTitle from '@/components/Conversation/RightTitle';
-import More from '@/components/Conversation/MembersMore';
-import AvatarPresence from '@/components/AvatarWithPresence/index';
-import AddMember from '@/components/AddMember';
-import AddMemberModal from '@/containers/Members/AddMemberModal';
+import RightPanelTitle from '#/components/Conversation/RightTitle';
+import More from '#/components/Conversation/MembersMore';
+import AvatarPresence from '#/components/AvatarWithPresence/index';
+import AddMember from '#/components/AddMember';
+import AddMemberModal from '#/containers/Members/AddMemberModal';
 
 import MembersPresenter from './MembersPresenter';
 

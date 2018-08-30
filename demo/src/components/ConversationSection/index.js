@@ -6,8 +6,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import ConversationTab from '@/containers/ConversationTab';
-import ConversationCategory from '@/components/ConversationCategory';
+import ConversationTab from '#/containers/ConversationTab';
+import ConversationCategory from '#/components/ConversationCategory';
 
 const ConversationSection = ({ to, head, groupIds, handleOpenModal }) => (
   <div>

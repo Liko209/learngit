@@ -1,10 +1,12 @@
 import _ from 'lodash';
 import BasePresenter from './BasePresenter';
 import OrderListStore from './OrderListStore';
+import { IEntity, IIDSortKey, IIncomingData } from '../store';
+import { BaseModel } from 'sdk/models';
 
 const DEFAULT_PAGE_SIZE = 20;
 
-export default class OrderListPresenter extends BasePresenter {
+export default class OrderListPresenter<T extends BaseModel, K extends IEntity> extends BasePresenter {
   private store: OrderListStore;
   private hasBigger: boolean;
   private hasSmaller: boolean;
@@ -31,8 +33,8 @@ export default class OrderListPresenter extends BasePresenter {
     this.pageSize = pageSize;
   }
 
-  handleIncomingData(entityName: string, { type, entities }: IIncomingData) {
-    if (!entities.size) {
+  handleIncomingData(entityName: string, { type, entities }: IIncomingData<T>) {
+    if (!entities.size && type !== 'replaceAll') {
       return;
     }
     const existKeys = this.store.getIds();
@@ -55,9 +57,19 @@ export default class OrderListPresenter extends BasePresenter {
             const idSortKey = this.transformFunc(data);
             matchedIDSortKeyArray.push(idSortKey);
             matchedEntities.push(data);
-            notMatchedKeys.push(key);
+          }
+          notMatchedKeys.push(key);
+        });
+      } else if (type === 'replaceAll') {
+        let index = 0;
+        entities.forEach((data) => {
+          if (this.isMatchedFunc(data)) {
+            const idSortKey = this.transformFunc(data, index += 1);
+            matchedIDSortKeyArray.push(idSortKey);
+            matchedEntities.push(data);
           }
         });
+        notMatchedKeys.push(...existKeys);
       } else {
         matchedKeys.forEach((key) => {
           const model = entities.get(key) as IEntity;
@@ -81,9 +93,9 @@ export default class OrderListPresenter extends BasePresenter {
           }
         }
       });
+      this.store.batchRemove(notMatchedKeys);
       this.updateEntityStore(entityName, matchedEntities);
       this.store.batchSet(matchedIDSortKeyArray);
-      this.store.batchRemove(notMatchedKeys);
     }
 
     // this.store.dump();
@@ -117,8 +129,8 @@ export default class OrderListPresenter extends BasePresenter {
       return;
     }
     const handledData: IIDSortKey[] = [];
-    dataModels.forEach((item) => {
-      handledData.push(this.transformFunc(item));
+    dataModels.forEach((item, index) => {
+      handledData.push(this.transformFunc(item, index));
     });
 
     if (isBigger) {

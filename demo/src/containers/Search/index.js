@@ -11,10 +11,10 @@ import { withRouter } from 'react-router-dom';
 import SearchPageWrapper from './SearchPageWrapper';
 import FullSearch from './FullSearchHeader';
 import SearchContent from './SearchContent';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { service } from 'sdk';
 
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '#/store';
 import ChatView from 'react-chatview';
 import styled from 'styled-components';
 

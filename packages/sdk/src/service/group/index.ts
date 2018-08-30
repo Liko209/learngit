@@ -3,7 +3,7 @@
  * @Date: 2018-03-06 10:00:30
  */
 
-import { daoManager } from '../../dao';
+import { daoManager, ConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
 import { Group, Raw } from '../../models';
@@ -23,14 +23,17 @@ import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
 import { ErrorParser } from '../../utils/error';
 import handleData, {
+  handlePartialData,
   filterGroups,
   handleGroupMostRecentPostChanged,
   handleFavoriteGroupsChanged,
+  sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
 import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
 import { SOCKET, SERVICE } from '../eventKey';
+import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 
 export type CreateTeamOptions = {
   isPublic?: boolean;
@@ -46,10 +49,25 @@ export default class GroupService extends BaseService<Group> {
   constructor() {
     const subscriptions = {
       [SOCKET.GROUP]: handleData,
+      [SOCKET.PARTIAL_GROUP]: handlePartialData,
       [SOCKET.POST]: handleGroupMostRecentPostChanged,
       [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
+  }
+
+  private async _getFavoriteGroups(): Promise<Group[]> {
+    let result: Group[] = [];
+    const profileService: ProfileService = ProfileService.getInstance();
+    const profile = await profileService.getProfile();
+    if (profile &&
+      profile.favorite_group_ids &&
+      profile.favorite_group_ids.length > 0) {
+      const dao = daoManager.getDao(GroupDao);
+      result = (await dao.queryGroupsByIds(profile.favorite_group_ids)) as Group[];
+      result = sortFavoriteGroups(profile.favorite_group_ids, result);
+    }
+    return result;
   }
 
   async getGroupsByType(
@@ -61,17 +79,7 @@ export default class GroupService extends BaseService<Group> {
     let result: Group[] = [];
     const dao = daoManager.getDao(GroupDao);
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
-      const profileService: ProfileService = ProfileService.getInstance();
-      const profile = await profileService.getProfile();
-      if (
-        profile &&
-        profile.favorite_group_ids &&
-        profile.favorite_group_ids.length > 0
-      ) {
-        result = (await dao.queryGroupsByIds(
-          profile.favorite_group_ids,
-        )) as Group[];
-      }
+      result = await this._getFavoriteGroups();
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
       result = (await dao.queryAllGroups(offset, limit)) as Group[];
     } else {
@@ -85,7 +93,7 @@ export default class GroupService extends BaseService<Group> {
         groupType === GROUP_QUERY_TYPE.TEAM,
         favoriteGroupIds,
       )) as Group[];
-      const limitLength = groupType === GROUP_QUERY_TYPE.TEAM ? 20 : 10;
+      const limitLength = groupType === GROUP_QUERY_TYPE.TEAM ? 10 : 10;
       result = await filterGroups(result, groupType, limitLength);
     }
     return result;
@@ -165,6 +173,11 @@ export default class GroupService extends BaseService<Group> {
   }
 
   async getLatestGroup(): Promise<Group | null> {
+    const configDao = daoManager.getKVDao(ConfigDao);
+    const groupId = configDao.get(LAST_CLICKED_GROUP);
+    if (groupId) {
+      return this.getById(groupId);
+    }
     const groupDao = daoManager.getDao(GroupDao);
     return groupDao.getLatestGroup();
   }
@@ -291,6 +304,21 @@ export default class GroupService extends BaseService<Group> {
     } catch (error) {
       throw ErrorParser.parse(error);
     }
+  }
+
+  async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
+    const profileService: ProfileService = ProfileService.getInstance();
+    profileService.reorderFavoriteGroups(oldIndex, newIndex);
+  }
+
+  async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
+    const profileService: ProfileService = ProfileService.getInstance();
+    profileService.markGroupAsFavorite(groupId, markAsFavorite);
+  }
+
+  clickGroup(groupId: number) {
+    const configDao = daoManager.getKVDao(ConfigDao);
+    configDao.put(LAST_CLICKED_GROUP, groupId);
   }
 
   async handleResponse(resp: IResponse<Raw<Group>>) {

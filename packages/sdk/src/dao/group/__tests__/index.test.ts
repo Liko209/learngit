@@ -68,7 +68,7 @@ describe('GroupDao', () => {
 
     it('query teams', async () => {
       const teams = await groupDao.queryGroups(0, Infinity, true);
-      expect(teams.map((t: Group) => t.id)).toEqual([4, 3, 1]);
+      expect(teams.map((t: Group) => t.id).sort()).toEqual([4, 3, 1].sort());
     });
 
     it('query teams and excludes items by id', async () => {
@@ -78,7 +78,7 @@ describe('GroupDao', () => {
 
     it('query favorite groups', async () => {
       const teams = await groupDao.queryGroupsByIds([1, 2, 3]);
-      expect(teams.map((t: Group) => t.id)).toEqual([3, 2, 1]);
+      expect(teams.map((t: Group) => t.id).sort()).toEqual([3, 2, 1].sort());
     });
 
     it('query all groups', async () => {
@@ -101,11 +101,12 @@ describe('GroupDao', () => {
 
     it('get latest group', async () => {
       await expect(groupDao.getLatestGroup()).resolves.toMatchObject({
-        id: 4,
+        id: 2,
         members: [123, 234],
-        is_team: true,
-        set_abbreviation: 'Ringcentral2',
-        most_recent_post_created_at: 4,
+        is_team: false,
+        set_abbreviation: 'Nello Huang',
+        deactivated: false,
+        most_recent_post_created_at: 2,
       });
     });
 

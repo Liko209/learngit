@@ -1,5 +1,4 @@
 /*
-import { BaseModel } from 'sdk/models';
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
@@ -7,6 +6,9 @@ import { BaseModel } from 'sdk/models';
 export type BaseModel = {
   id: number;
   _id?: number;
+};
+
+export type ExtendedBaseModel = BaseModel & {
   created_at: number;
   modified_at: number;
   creator_id: number;
@@ -15,14 +17,15 @@ export type BaseModel = {
   version: number;
   model_id?: string;
   model_size?: number;
-};
+}
 
-export type Raw < T > = Pick<T, Exclude<keyof T, 'id'>> & {
+export type Raw<T> = Pick<T, Exclude<keyof T, 'id'>> & {
   _id: number;
   id?: number;
 };
+export type PartialWithKey<T> = Pick<T, Extract<keyof T, 'id'>> & Partial<T>;
 
-export type Group = BaseModel & {
+export type Group = ExtendedBaseModel & {
   members: number[];
   company_id: number;
   set_abbreviation: string;
@@ -51,24 +54,24 @@ export type Group = BaseModel & {
   };
   post_cursor?: number;
   deactivated_post_cursor?: number;
-  _delta?: object;
+  _delta?: { add?: object, remove?: object, set?: object };
   is_public?: boolean;
   description?: string;
 };
 
-export type Profile = BaseModel & {
+export type Profile = ExtendedBaseModel & {
   person_id?: number;
   favorite_group_ids: number[];
   favorite_post_ids: number[];
 };
 
-export type Company = BaseModel & {
+export type Company = ExtendedBaseModel & {
   name: string;
   domain: string;
   admins: number[];
 };
 
-export type Person = BaseModel & {
+export type Person = ExtendedBaseModel & {
   company_id: number;
   email: string;
   is_webmail?: boolean;
@@ -92,7 +95,7 @@ export type UserInfo = {
   company_id: number;
 };
 
-export type State = BaseModel & {
+export type State = ExtendedBaseModel & {
   person_id: number;
   current_group_id: number;
   away_status_history?: string[];
@@ -101,7 +104,7 @@ export type State = BaseModel & {
 
 export type MyState = State;
 
-export type GroupState = BaseModel & {
+export type GroupState = ExtendedBaseModel & {
   id: number;
   unread_count?: number;
   unread_mentions_count?: number;
@@ -110,7 +113,7 @@ export type GroupState = BaseModel & {
   marked_as_unread?: number;
 };
 
-export type Post = BaseModel & {
+export type Post = ExtendedBaseModel & {
   group_id: number;
   company_id: number;
   text: string;
@@ -126,7 +129,7 @@ export type Post = BaseModel & {
   items?: object[];
 };
 
-export type Item = BaseModel & {
+export type Item = ExtendedBaseModel & {
   group_ids: number[];
   post_ids: number[];
   company_id: number;
@@ -142,7 +145,7 @@ export type NoteItem = Item & {
   title: string;
 };
 
-export type StoredFile = Raw<BaseModel> & {
+export type StoredFile = Raw<ExtendedBaseModel> & {
   storage_url: string;
   download_url: string;
   storage_path: string;
@@ -150,8 +153,11 @@ export type StoredFile = Raw<BaseModel> & {
   size: number;
 };
 
-export type Presence = {
-  _id?: number;
+export type RawPresence = {
   person_id: number;
-  presence: string;
+  presence: 'default' | 'offline' | 'online' | 'away' | undefined;
+}
+
+export type Presence = BaseModel & {
+  presence: 'default' | 'offline' | 'online' | 'away' | undefined;
 };

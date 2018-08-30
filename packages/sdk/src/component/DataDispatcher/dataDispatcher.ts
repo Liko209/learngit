@@ -1,32 +1,30 @@
 import { parseSocketMessage } from '../../utils';
 import { EventEmitter2 } from 'eventemitter2';
 import { SOCKET } from '../../service';
-
+import { mainLogger } from 'foundation';
 type Handler = (data: any) => any;
 class DataDispatcher extends EventEmitter2 {
   register(key: SOCKET, dataHandler: Handler) {
-    console.info('DataDispatcher registing', key);
     this.on(key, dataHandler);
   }
 
   unregister(key: SOCKET, dataHandler: Handler) {
-    console.info('DataDispatcher unregistering', key);
     this.off(key, dataHandler);
   }
 
-  async onDataArrived(data: string) {
-    const messages = parseSocketMessage(data);
-    console.info('DataDispatcher handling', Object.keys(messages));
-
+  async onDataArrived(data: string, partial?: boolean) {
+    const entries = parseSocketMessage(data);
     return Promise.all(
-      Object
-        .entries(messages)
-        .map(this._emitMessageAsync.bind(this)),
+      Object.keys(entries).map((key: string) =>
+        this.emitAsync(this._getEmitEvent('SOCKET', key, partial), entries[key]),
+      ),
     );
   }
 
-  private async _emitMessageAsync([key, message]: [string, any]) {
-    return this.emitAsync(`SOCKET.${key.toUpperCase()}`, message);
+  private _getEmitEvent(channel: string, eventKey: string, partial?: boolean) {
+    const event = `${channel.toUpperCase()}${partial ? '.PARTIAL' : ''}.${eventKey.toUpperCase()}`;
+    mainLogger.info(`Data dispatched for event:${event}`);
+    return event;
   }
 }
 export default new DataDispatcher();

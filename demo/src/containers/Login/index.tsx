@@ -13,8 +13,8 @@ import Title from './Title';
 import Input from './Input';
 import Info from './Info';
 import LoginVersionStatus from '../Status/LoginVersionStatus';
-import { env, betaUserList } from '@/globalConfig';
-import ErrorHandler from '@/containers/ErrorHandler';
+import { env, betaUserList } from '#/globalConfig';
+import ErrorHandler from '#/containers/ErrorHandler';
 
 const { AuthService } = service;
 const { ErrorTypes } = utils;
@@ -38,7 +38,7 @@ class Login extends React.Component<Props, States> {
       username: '',
       extension: '',
       password: '',
-      errors: []
+      errors: [],
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -55,7 +55,7 @@ class Login extends React.Component<Props, States> {
   async handleSubmit(event: React.FormEvent<HTMLButtonElement>) {
     event.preventDefault();
     const { username, password, extension } = this.state;
-    let errors: string[] = [];
+    const errors: string[] = [];
     if (!username) {
       errors.push('Phone number can not be empty.');
     }
@@ -76,7 +76,7 @@ class Login extends React.Component<Props, States> {
     const { location, history } = this.props;
     this.setState({
       btnDisabled: true,
-      btnText: `Login...`
+      btnText: `Login...`,
     });
 
     try {
@@ -93,12 +93,11 @@ class Login extends React.Component<Props, States> {
         },
         [ErrorTypes.NETWORK]: () => {
           handler.show(error);
-        }
+        },
       });
-    } finally {
       this.setState({
         btnDisabled: false,
-        btnText: 'Login'
+        btnText: 'Login',
       });
     }
   }
@@ -110,7 +109,7 @@ class Login extends React.Component<Props, States> {
       extension,
       btnDisabled,
       btnText,
-      errors
+      errors,
     } = this.state;
     return (
       <div>
@@ -141,7 +140,11 @@ class Login extends React.Component<Props, States> {
             {btnText}
           </Button>
           <Info>
-            <ul>{errors.map(error => <li key={error}>{error}</li>)}</ul>
+            <ul>
+              {errors.map(error => (
+                <li key={error}>{error}</li>
+              ))}
+            </ul>
           </Info>
         </Form>
         <Download />

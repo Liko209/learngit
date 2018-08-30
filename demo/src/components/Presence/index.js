@@ -29,6 +29,7 @@ const setPresenceColor = presence => {
   }
 };
 
+
 const Presence = props => (
   <StyledPresence
       invisible={props.offlineHide && props.presence === 'offline'}

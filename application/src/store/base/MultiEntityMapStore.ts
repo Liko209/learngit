@@ -2,57 +2,66 @@ import _ from 'lodash';
 import { action, toJS, transaction, ObservableMap, observable } from 'mobx';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
+import visibilityChangeEvent from './visibilityChangeEvent';
 import { ENTITY_EVENT_NAME, ENTITY_CACHE_COUNT } from './constants';
+import { IIncomingData, IEntity } from '../store';
+import { BaseService } from 'sdk/service';
+import { BaseModel } from 'sdk/models';
 
 const modelProvider = new ModelProvider();
 
-export default class EntityMapStore extends BaseStore {
+export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity> extends BaseStore {
   data: ObservableMap = observable.map(new Map(), { deep: false });
+  usedIds: Map<any, Set<number>> = new Map();
 
   getService: Function | [Function, string];
   maxCacheCount: number;
-  service: IService;
+  service: BaseService<T>;
 
   constructor(entityName: string, getService: Function | [Function, string]) {
     super(entityName);
 
     this.getService = getService;
     this.maxCacheCount = ENTITY_CACHE_COUNT[entityName];
-    const callback = ({ type, entities }: IIncomingData) => {
+    const callback = ({ type, entities }: IIncomingData<T>) => {
       this.handleIncomingData({ type, entities });
     };
     ENTITY_EVENT_NAME[entityName].forEach((eventName: string) => {
       this.subscribeNotification(eventName, callback);
     });
+    visibilityChangeEvent(this.refreshCache.bind(this));
   }
 
-  handleIncomingData({ type, entities }: IIncomingData) {
+  handleIncomingData({ type, entities }: IIncomingData<T>) {
     if (!entities.size) {
       return;
     }
-    const existKeys = Array.from(this.data.keys());
-    const matchedKeys = _.intersection(Array.from(entities.keys()), existKeys);
+    const existKeys: number[] = Array.from(this.data.keys());
+    const matchedKeys: number[] = _.intersection(Array.from(entities.keys()), existKeys);
     if (type !== 'delete') {
       //   this.batchRemove(matchedKeys);
       // } else {
-      const matchedEntities: IEntity[] = [];
-      matchedKeys.forEach((key) => {
-        matchedEntities.push(entities.get(key) as IEntity);
+      const matchedEntities: T[] = [];
+      matchedKeys.forEach((key: number) => {
+        const entity = entities.get(key);
+        if (entity) {
+          matchedEntities.push(entity);
+        }
       });
       if (type === 'update') {
-        this.batchDeepSet(matchedEntities);
+        this.batchDeepSet(matchedEntities as any);
         return;
       }
       if (type === 'replace') {
-        this.batchReplace(matchedEntities);
+        this.batchReplace(matchedEntities as any);
         return;
       }
-      this.batchSet(matchedEntities);
+      this.batchSet(matchedEntities as any);
     }
   }
 
   @action
-  set(data: IEntity) {
+  set(data: T) {
     const model = this.createModel(data);
     const { id } = model;
 
@@ -60,7 +69,7 @@ export default class EntityMapStore extends BaseStore {
   }
 
   @action
-  batchSet(entities: IEntity[]) {
+  batchSet(entities: K[]) {
     if (!entities.length) {
       return;
     }
@@ -74,7 +83,7 @@ export default class EntityMapStore extends BaseStore {
   }
 
   @action
-  batchDeepSet(entities: IEntity[]) {
+  batchDeepSet(entities: K[]) {
     if (!entities.length) {
       return;
     }
@@ -89,7 +98,7 @@ export default class EntityMapStore extends BaseStore {
   }
 
   @action
-  batchReplace(entities: IEntity[]) {
+  batchReplace(entities: K[]) {
     if (!entities.length) {
       return;
     }
@@ -123,32 +132,32 @@ export default class EntityMapStore extends BaseStore {
     );
   }
 
-  get(id: number) {
+  get(id: number): K {
     let model = this.data.get(id);
 
     if (!model) {
-      this.set({ id });
+      this.set({ id } as T);
       model = this.data.get(id);
       const res = this.getByService(id);
-      if (typeof res.then === 'function') {
-        res.then((res: IEntity) => {
-          if (res) {
+      if (res instanceof Promise && typeof res.then === 'function') {
+        res.then((res: T & { error?: {} }) => {
+          if (res && !res.error) {
             this.set(res);
           }
         });
       } else {
-        this.set(res);
+        this.set(res as T);
         model = this.data.get(id);
       }
     }
     return model;
   }
 
-  has(id: number) {
+  has(id: number): boolean {
     return this.data.has(id);
   }
 
-  first() {
+  first(): K | {} {
     if (this.getSize() > 0) {
       const firstKey = this.data.keys().next().value;
       return this.get(firstKey);
@@ -160,7 +169,7 @@ export default class EntityMapStore extends BaseStore {
     return this.data.size;
   }
 
-  getByService(id: number) {
+  getByService(id: number): Promise<T> | T {
     if (!this.service) {
       if (Array.isArray(this.getService)) {
         this.service = this.getService[0]();
@@ -174,8 +183,31 @@ export default class EntityMapStore extends BaseStore {
     return this.service.getById(id);
   }
 
-  createModel(model: object) {
+  createModel(model: T | K): K {
     const Model = modelProvider.getModelCreator(this.name);
     return Model.fromJS(model);
+  }
+
+  addUsedIds(key: any, id: number) {
+    const usedIds = this.usedIds.get(key);
+    if (usedIds) {
+      usedIds.add(id);
+    } else {
+      this.usedIds.set(key, new Set([id]));
+    }
+  }
+
+  delUsedIds(key: any) {
+    return this.usedIds.delete(key);
+  }
+
+  refreshCache() {
+    const usedIds: number[] = [];
+    this.usedIds.forEach((ids) => {
+      usedIds.push(...ids);
+    });
+    const existKeys = Array.from(this.data.keys());
+    const diffKeys = _.difference(existKeys, [...(new Set(usedIds))]);
+    this.batchRemove(diffKeys);
   }
 }

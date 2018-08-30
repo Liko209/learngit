@@ -37,9 +37,10 @@ class Api {
     NetworkSetup.setup(types);
     // This explicit set rc handler accessToken as the RC token provider for glip handler
     const tokenManager = NetworkManager.Instance.getTokenManager();
-    const rcTokenHandler = tokenManager && tokenManager.getOAuthTokenHandler(HandleByRingCentral);
-    HandleByGlip.rcTokenProvider = rcTokenHandler
-      && rcTokenHandler.accessToken.bind(rcTokenHandler);
+    const rcTokenHandler =
+      tokenManager && tokenManager.getOAuthTokenHandler(HandleByRingCentral);
+    HandleByGlip.rcTokenProvider =
+      rcTokenHandler && rcTokenHandler.accessToken.bind(rcTokenHandler);
   }
 
   static get httpConfig() {
@@ -71,6 +72,7 @@ class Api {
         networkRequests,
         currentConfig.apiPlatform,
         type.defaultVia,
+        currentConfig.apiPlatformVersion,
       );
       this.httpSet.set(name, networkClient);
     }
@@ -83,6 +85,10 @@ class Api {
 
   static get glip2NetworkClient() {
     return this.getNetworkClient('glip2', HandleByGlip2);
+  }
+
+  static get glipDesktopNetworkClient() {
+    return this.getNetworkClient('glip_desktop', HandleByGlip);
   }
 
   static get rcNetworkClient() {

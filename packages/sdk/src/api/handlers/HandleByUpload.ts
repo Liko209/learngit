@@ -1,8 +1,15 @@
 import _ from 'lodash';
 
-import { IRequest, OAuthTokenHandler, ITokenHandler, AbstractHandleType } from 'foundation';
+import {
+  IRequest,
+  OAuthTokenHandler,
+  ITokenHandler,
+  AbstractHandleType,
+  NETWORK_VIA,
+} from 'foundation';
 
 const HandleByUpload = new class extends AbstractHandleType {
+  defaultVia = NETWORK_VIA.HTTP;
   survivalModeSupportable = true;
   requestDecoration(tokenHandler: ITokenHandler) {
     const handler = tokenHandler as OAuthTokenHandler;

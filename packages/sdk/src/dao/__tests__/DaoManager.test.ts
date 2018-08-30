@@ -8,7 +8,7 @@ import DaoManager from '../DaoManager';
 import BaseKVDao from '../base/BaseKVDao'; // eslint-disable-line
 import { BaseDao } from '../base';
 import { Person } from '../../models';
-import Dexie from '../../../node_modules/dexie';
+import Dexie from 'dexie';
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));

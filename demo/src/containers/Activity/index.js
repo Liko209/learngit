@@ -10,7 +10,7 @@ import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import { service } from 'sdk';
 
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '#/store';
 
 import Wrapper from './Wrapper';
 import Author from './Author';

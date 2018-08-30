@@ -19,14 +19,14 @@ interface State {
 class Pane extends React.Component<Props, State> {
   static displayName = 'Pane';
   static defaultProps = {
-    split: 'vertical'
+    split: 'vertical',
   };
   private node: HTMLDivElement | null;
 
   constructor(props: Props, context: any) {
     super(props, context);
     this.state = {
-      size: ''
+      size: '',
     };
   }
 
@@ -39,7 +39,7 @@ class Pane extends React.Component<Props, State> {
       position: 'relative',
       outline: 'none',
       width: '',
-      height: ''
+      height: '',
     };
 
     if (split === 'vertical') {
@@ -59,7 +59,7 @@ class Pane extends React.Component<Props, State> {
 
     return (
       <div
-          ref={el => {
+          ref={(el) => {
             this.node = el;
           }}
           className={classes.join(' ')}

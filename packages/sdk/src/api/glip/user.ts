@@ -1,14 +1,25 @@
 /*
- * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-02-05 17:54:13
- * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
- * @Last Modified time: 2018-08-06 13:53:32
+ * @Author: Lip Wang (lip.wangn@ringcentral.com)
+ * @Date: 2018-08-09 13:45:49
+ * Copyright © RingCentral. All rights reserved.
  */
+
 import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
 import { IResponse } from '../NetworkClient';
 import Api from '../api';
 import { GLIP_API } from './constants';
-import { Raw, Company, Item, Profile, Presence, State, Person, Group, Post } from '../../models';
+import {
+  Raw,
+  Company,
+  Item,
+  Profile,
+  State,
+  Person,
+  Group,
+  Post,
+  RawPresence,
+} from '../../models';
+import { IFlag } from '../../component/featureFlag/interface';
 
 export type IndexDataModel = {
   user_id: number;
@@ -16,7 +27,7 @@ export type IndexDataModel = {
   profile?: Raw<Profile>;
   companies?: Raw<Company>[];
   items?: Raw<Item>[];
-  presences?: Raw<Presence>[];
+  presences?: RawPresence[];
   state?: Raw<State>;
   people?: Raw<Person>[];
   groups?: Raw<Group>[];
@@ -25,7 +36,7 @@ export type IndexDataModel = {
   max_posts_exceeded?: boolean;
   timestamp?: number;
   scoreboard?: string;
-  client_config: object;
+  client_config: IFlag;
 };
 
 type IndexResponse = IResponse<IndexDataModel>;
@@ -60,7 +71,21 @@ function indexData(params: object, requestConfig = {}, headers = {}): Promise<In
   return Api.glipNetworkClient.get('/index', params, NETWORK_VIA.HTTP, requestConfig, headers);
 }
 
+function initialData(params: object, requestConfig = {}, headers = {}): Promise<IndexResponse> {
+  return Api.glipDesktopNetworkClient
+    .get('/initial', params, NETWORK_VIA.HTTP, requestConfig, headers);
+}
+
+function remainingData(params: object, requestConfig = {}, headers = {}): Promise<IndexResponse> {
+  return Api.glipDesktopNetworkClient
+    .get('/remaining', params, NETWORK_VIA.HTTP, requestConfig, headers);
+}
+
+// plugins data
+
 export {
   loginGlip,
   indexData,
+  initialData,
+  remainingData,
 };

@@ -1,58 +1,65 @@
-import React, { Component, createElement } from 'react';
+import React, { Component, createElement, ComponentType } from 'react';
 import hoistStatics from 'hoist-non-react-statics';
+import { BaseModel } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import StoreManager from '@/store/base/StoreManager';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import StoreContext from '@/store/context';
+import { Omit } from '@material-ui/core';
+import { IEntity } from './store';
 
-type IReactComponent<P = any> =
-    | React.SFC<P>
-    | React.ComponentClass<P>
-    | React.ClassicComponentClass<P>;
-
-export interface IStoresProps {
-  stores: {
-    [key: string]: MultiEntityMapStore;
-  };
+export interface IComponentWithGetEntityProps {
+  getEntity: (entityName: string, id: number) => {};
 }
-
-type IProps<OriginalProps> = OriginalProps & IStoresProps;
 
 /**
  * Store Injection
  */
-function createStoreInjector<T, OriginalProps>(
-  grabStoresFn: (storeManager: StoreManager) => {},
-  component: IReactComponent<OriginalProps>,
-  injectNames: string,
-) {
-  let displayName =
+function createStoreInjector<P>(WrappedComponent: ComponentType<P>) {
+  const displayName =
     `inject-
-    ${(component.displayName ||
-      component.name ||
-      (component.constructor && component.constructor.name) ||
+    ${(WrappedComponent.displayName ||
+      WrappedComponent.name ||
+      (WrappedComponent.constructor && WrappedComponent.constructor.name) ||
       'Unknown')}`;
-  if (injectNames) displayName = `${displayName}-with-${injectNames}`;
 
-  class Injector extends Component<OriginalProps> {
+  class Injector extends Component<P & IComponentWithGetEntityProps> {
     static readonly displayName = displayName;
-    static readonly wrappedComponent = component;
+    static readonly wrappedComponent = WrappedComponent;
     wrappedInstance: React.ReactInstance;
+    storeManager: StoreManager;
+    entityStore: {[parameter: string]: MultiEntityMapStore<any, any>} = {};
 
-    constructor(props: OriginalProps) {
+    constructor(props: P & IComponentWithGetEntityProps) {
       super(props);
       this.createElementWithStores = this.createElementWithStores.bind(this);
+      this.getEntity = this.getEntity.bind(this);
+    }
+
+    componentWillUnmount() {
+      Object.values(this.entityStore).forEach((store) => {
+        store.delUsedIds(this);
+      });
+    }
+
+    getEntity<T extends BaseModel, K extends IEntity>(entityName: ENTITY_NAME, id: number) {
+      let store = this.entityStore[entityName];
+      if (!store) {
+        store = this.storeManager.getEntityMapStore(entityName) as MultiEntityMapStore<T, K>;
+        this.entityStore[entityName] = store;
+      }
+      store.addUsedIds(this, id);
+
+      return store.get(id);
     }
 
     createElementWithStores(storeManager: StoreManager) {
-      const newProps = {
-        ...(this.props as {}),
-        stores: grabStoresFn(storeManager),
-      } as IProps<OriginalProps>;
-      const stores = grabStoresFn(storeManager);
-      newProps.stores = stores;
+      this.storeManager = storeManager;
 
-      return createElement(component, newProps);
+      return createElement<P>(
+        WrappedComponent,
+        { ...this.props as {}, getEntity: this.getEntity } as P & IComponentWithGetEntityProps,
+      );
     }
 
     render() {
@@ -65,38 +72,15 @@ function createStoreInjector<T, OriginalProps>(
   }
 
   // Static fields from component should be visible on the generated Injector
-  hoistStatics(Injector, component);
+  hoistStatics(Injector, WrappedComponent);
 
   return Injector;
 }
 
-function grabStoresByName(storeNames: string[]) {
-  return function (storeManager: StoreManager) {
-    const stores = {};
-    const entityName = Object.values(ENTITY_NAME);
-    storeNames.forEach((storeName) => {
-      if (!entityName.includes(storeName)) {
-        throw new Error(
-          'MobX injector: Store \'' +
-          storeName +
-          '\' is not available! Make sure it is provided by some Provider',
-        );
-      }
-      stores[storeName] = storeManager.getEntityMapStore(storeName);
-    });
-    return stores;
-  };
-}
-
-export default function inject(...storeNames: string[]) {
-  const grabStoresFn = grabStoresByName(storeNames);
-  return function <T extends Component, OriginalProps extends {}>(
-    componentClass: IReactComponent<OriginalProps>,
-  ) {
-    return createStoreInjector<T, OriginalProps>(
-      grabStoresFn,
-      componentClass,
-      storeNames.join('-'),
-    );
+export default function inject() {
+  return <OriginalProps extends { [key: string]: any }, Component extends React.ComponentClass<OriginalProps>>(
+    WrappedComponent: ComponentType<OriginalProps>,
+  ): ComponentType<Omit<OriginalProps, keyof IComponentWithGetEntityProps>> => {
+    return createStoreInjector<OriginalProps>(WrappedComponent);
   };
 }

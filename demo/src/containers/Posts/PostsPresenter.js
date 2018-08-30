@@ -1,6 +1,6 @@
 import ConversationThreadPresenter from './ConversationThreadPresenter';
-import storeManager from '@/store';
-import { GLOBAL_STORE_DATA } from '@/constants';
+import storeManager from '#/store';
+import { GLOBAL_STORE_DATA } from '#/constants';
 
 const MAX_CONVERSATION_THREAD = 5;
 

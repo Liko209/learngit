@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '#/store';
 import { withRouter } from 'react-router-dom';
 import { LinkItem } from './Link';
 

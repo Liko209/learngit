@@ -10,10 +10,10 @@ import React from 'react';
 import { service } from 'sdk';
 
 import PropTypes from 'prop-types';
-import { envConfig } from '@/globalConfig';
-import ErrorHandler from '@/containers/ErrorHandler';
+import { envConfig } from '#/globalConfig';
+import ErrorHandler from '#/containers/ErrorHandler';
 
-import Download from '@/components/Download';
+import Download from '#/components/Download';
 import Form from '../Login/Form';
 // import messages from '../Login/messages';
 import Button from '../Login/Button';
@@ -67,7 +67,6 @@ class UnifiedLogin extends React.Component {
       } catch (error) {
         const handler = new ErrorHandler(error);
         handler.handle().show();
-      } finally {
         this.setState({
           btnDisabled: false,
           btnText: `Login` // Login

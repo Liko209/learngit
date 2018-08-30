@@ -9,10 +9,10 @@ import 'react-select/dist/react-select.css';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router';
 import styled from 'styled-components';
-import ErrorHandler from '@/containers/ErrorHandler';
+import ErrorHandler from '#/containers/ErrorHandler';
 
-import Modal from '@/components/Modal';
-import Button from '@/components/Button';
+import Modal from '#/components/Modal';
+import Button from '#/components/Button';
 
 import CreateTeamPresenter from './CreateTeamPresenter';
 import { getName } from '../../utils/getName';
@@ -87,7 +87,7 @@ const SwitchValue = styled.input``;
 class AddMemberModal extends Component<Props> {
   createTeamPresenter: CreateTeamPresenter;
   state = {
-    selectedMembers: []
+    selectedMembers: [],
   };
 
   constructor(props: Props) {
@@ -123,12 +123,12 @@ class AddMemberModal extends Component<Props> {
       return Promise.resolve({ options: [] });
     }
 
-    return this.createTeamPresenter.fetchSearch(input).then(data => {
-      const members = data.map(member => {
+    return this.createTeamPresenter.fetchSearch(input).then((data) => {
+      const members = data.map((member) => {
         if (currentUserId !== member.id) {
           return {
             value: member.id,
-            label: getName(member)
+            label: getName(member),
           };
         }
         return {};
@@ -139,8 +139,7 @@ class AddMemberModal extends Component<Props> {
 
   handleSwitchPermisson(
     event: React.ChangeEvent<HTMLInputElement>,
-    type: string
-  ) {
+    type: string) {
     const { checked } = event.target;
     const { model } = this.createTeamPresenter;
     model.options[type] = checked;
@@ -150,8 +149,7 @@ class AddMemberModal extends Component<Props> {
     const { handleCloseModal, history } = this.props;
     const { model } = this.createTeamPresenter;
     model.memberIds = selectedMembers.map(
-      ({ value }: { value: number; label: string }) => value
-    );
+      ({ value }: { value: number; label: string }) => value);
     this.createTeamPresenter
       .createTeam()
       .then((result: Group | null) => {
@@ -160,7 +158,7 @@ class AddMemberModal extends Component<Props> {
           history.push(`/conversation/${result.id}`);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         const handler = new ErrorHandler(error);
         handler.handle().show();
       });

@@ -3,8 +3,8 @@
  * @Date: 2018-04-02 13:53:43
  * Copyright © RingCentral. All rights reserved.
  */
-import storeManager, { ENTITY_NAME } from '@/store';
-import BasePresenter from '@/store/base/BasePresenter';
+import storeManager, { ENTITY_NAME } from '#/store';
+import BasePresenter from '#/store/base/BasePresenter';
 
 import { service } from 'sdk';
 

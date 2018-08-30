@@ -5,7 +5,11 @@
  */
 import axios from 'axios';
 
-import { INetworkRequestExecutorListener, IRequest, NETWORK_FAIL_TYPE } from '../../network';
+import {
+  INetworkRequestExecutorListener,
+  IRequest,
+  NETWORK_FAIL_TYPE,
+} from '../../network';
 import BaseClient from '../BaseClient';
 import HttpResponse from './HttpResponse';
 
@@ -29,9 +33,9 @@ class Http extends BaseClient {
       timeout,
       baseURL: host,
       url: path,
+      withCredentials: true,
       data: {},
       params: {},
-      withCredentials: true,
       cancelToken: new CancelToken((cancel) => {
         this.tasks[request.id].cancel = cancel;
       }),

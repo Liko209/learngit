@@ -11,12 +11,12 @@ import moment from 'moment';
 import { Markdown } from 'glipdown';
 import { observer } from 'mobx-react';
 
-import Avatar from '@/containers/Avatar';
-import Activity from '@/containers/Activity';
-import Items from '@/containers/Items';
-import Attachment from '@/containers/Attachment';
-import { TYPE } from '@/constants';
-import storeManager, { ENTITY_NAME } from '@/store';
+import Avatar from '#/containers/Avatar';
+import Activity from '#/containers/Activity';
+import Items from '#/containers/Items';
+import Attachment from '#/containers/Attachment';
+import { TYPE } from '#/constants';
+import storeManager, { ENTITY_NAME } from '#/store';
 
 import Wrapper from './Wrapper';
 import Left from './Left';

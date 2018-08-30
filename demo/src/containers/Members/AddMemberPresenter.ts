@@ -5,7 +5,7 @@
  */
 import { observable, action } from 'mobx';
 
-import BasePresenter from '@/store/base/BasePresenter';
+import BasePresenter from '#/store/base/BasePresenter';
 
 import { service } from 'sdk';
 
@@ -23,7 +23,7 @@ export default class AddMemberPresenter extends BasePresenter {
   async fetchSearch(query: string) {
     const searchService = SearchService.getInstance<SearchService>();
     const result = await searchService.searchMembers(query);
-    const filterMembers = result.filter(member => {
+    const filterMembers = result.filter((member) => {
       return !this.existMembers.find(existMember => existMember === member.id);
     });
     return filterMembers;

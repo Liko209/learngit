@@ -5,27 +5,39 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "env": "node environment/launch-env.js",
-    "test": "node index.js --env=true",
-    "testcafe": "testcafe"
-  },
-  "engines": {
-    "npm": ">=6.x.x",
-    "node": ">=8.x.x <10.x.x"
+    "testcafe": "testcafe",
+    "e2e": "node js/run.js"
   },
   "os": [
     "darwin",
-    "linux"
+    "linux",
+    "win32"
   ],
   "dependencies": {
+    "@types/account-pool-ts-api": "git+ssh://git@git.ringcentral.com:TA/account-pool/ts-api.git#master",
     "@types/allure-js-commons": "0.0.0",
-    "@types/node": "^10.5.7",
+    "@types/dotenv": "^4.0.3",
+    "@types/glob": "^5.0.35",
+    "@types/lodash": "^4.14.116",
+    "@types/node": "^10.7.0",
     "@types/uuid": "^3.4.3",
+    "account-pool-ts-api": "git+ssh://git@git.ringcentral.com:TA/account-pool/ts-api.git#master",
     "allure-js-commons": "^1.3.2",
+    "btoa": "^1.2.1",
     "cross-env": "^5.2.0",
-    "testcafe": "https://git.ringcentral.com/TA/testcafe/testcafe/uploads/9eb16284760b139367d653ae0e4dfa44/testcafe-0.21.0.tgz",
+    "axios": "0.18.0",
+    "dexie": "3.0.0-alpha.2",
+    "eventemitter2": "5.0.1",
+    "glob": "^7.1.2",
+    "http-status-codes": "1.3.0",
+    "lodash": "^4.17.10",
+    "ringcentral-js-concise": "^0.5.5",
+    "string-natural-compare": "2.0.2",
+    "testcafe": "https://git.ringcentral.com/TA/testcafe/testcafe/uploads/3833e97a5c9f2a8d8fd84cee8feeea3a/testcafe-0.21.1.tgz",
     "testcafe-browser-provider-selenium": "^0.2.0",
-    "testcafe-reporter-allure-lazy": "https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/2163a53a2a49b32b3652c1fa5ed1533f/testcafe-reporter-allure-lazy-1.0.1.tgz",
+    "testcafe-live": "0.1.3",
+    "testcafe-react-selectors": "^3.0.0",
+    "testcafe-reporter-allure-lazy": "https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/bb1bc1f181383d4fe3bdcca9f93ed725/testcafe-reporter-allure-lazy-1.0.3.tgz",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

@@ -3,6 +3,8 @@
  * @Date:2018-03-07 19:20:43
  * Copyright © RingCentral. All rights reserved.
  */
+
+import featureFlag from './component/featureFlag';
 import { Foundation, NetworkManager, Token } from 'foundation';
 import merge from 'lodash/merge';
 
@@ -28,6 +30,7 @@ import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
 import SyncService from './service/sync';
 import { ApiConfig, DBConfig, SdkConfig } from './types';
+import { AccountService } from './service';
 
 const AM = AccountManager;
 
@@ -42,7 +45,7 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-  ) {}
+  ) { }
 
   async init(config: SdkConfig) {
     // Use default config value
@@ -63,9 +66,13 @@ class Sdk {
     });
 
     Api.init(apiConfig);
+    await this.daoManager.initDatabase();
 
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
+
+    const accountService: AccountService = AccountService.getInstance();
+    HandleByRingCentral.tokenRefreshDelegate = accountService;
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,
@@ -87,13 +94,12 @@ class Sdk {
       // with accountManager.on(EVENT_LOGIN)
       notificationCenter.emitService(SERVICE.LOGIN);
     }
-
-    await this.daoManager.initDatabase();
   }
 
   async onLogin() {
     this.updateNetworkToken();
     await this.syncService.syncData();
+    featureFlag.getServicePermission();
     this.accountManager.updateSupportedServices();
   }
 

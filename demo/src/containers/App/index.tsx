@@ -6,17 +6,17 @@ import {
   Switch,
   Route,
   withRouter,
-  RouteComponentProps
+  RouteComponentProps,
 } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
-import AuthRoute from '@/components/AuthRoute';
-import Login from '@/containers/Login';
-import UnifiedLogin from '@/containers/UnifiedLogin';
-import Home from '@/containers/Home';
-import Status from '@/containers/Status';
-import NoteWrapper from '@/containers/Editor/wrapper';
-import SingleConversation from '@/containers/singleConversation';
-import ThemeProvider from '@/styled';
+import AuthRoute from '#/components/AuthRoute';
+import Login from '#/containers/Login';
+import UnifiedLogin from '#/containers/UnifiedLogin';
+import Home from '#/containers/Home';
+import Status from '#/containers/Status';
+import NoteWrapper from '#/containers/Editor/wrapper';
+import SingleConversation from '#/containers/singleConversation';
+import ThemeProvider from '#/styled';
 
 import AppPresenter from './AppPresenter';
 
@@ -37,7 +37,7 @@ class App extends React.Component<Props, States> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      mode: 'ordinary'
+      mode: 'ordinary',
     };
     this.presenter = new AppPresenter(this.props.history);
   }

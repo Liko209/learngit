@@ -32,9 +32,12 @@ yarn-error.log*
 .vscode/symbols.json
 # vscode history extension
 .history
-.idea
+.idea/
 # cache
 .rpt2_cache
 
 # lint report folder
 /lint
+# UT error
+/ut
+package-lock.json
