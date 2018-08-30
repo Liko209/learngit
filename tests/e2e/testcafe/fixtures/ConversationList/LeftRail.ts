@@ -6,11 +6,11 @@ import { unifiedLogin } from '../../utils';
 import { LeftRail } from '../../page-models/components/ConversationList/LeftRail';
 
 declare var test: TestFn;
-fixture('ConversationList/DefaultView')
+fixture('ConversationList/LeftRail')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown());
 
-test(formalName('Sections Order', ['P0', 'JPT2', 'Default view']), async (t) => {
+test(formalName('Sections Order', ['P0', 'JPT2', 'LeftRail']), async (t) => {
   await unifiedLogin(t)
     .shouldNavigateTo(LeftRail)
     .checkSectionsOrder('Unread', 'Mentions', 'Bookmarks', 'Favorites', 'Direct Messages', 'Teams');
