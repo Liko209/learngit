@@ -14,6 +14,8 @@ import { ValueType } from 'react-select/lib/types';
 
 type TSearchBarProps = {
   awake?: boolean;
+  className?: string;
+  setSearchBarState: Function;
 };
 
 const suggestions = [
@@ -111,7 +113,7 @@ const Placeholder = (props: React.Props<any>) =>
 
 const colourStyles = {
   container: (styles: React.CSSProperties) => {
-    return { ...styles, width: '100%', margin: '0 20px' };
+    return { ...styles, width: '100%', margin: '0 20px', maxWidth: '1368px' };
   },
   control: (styles: React.CSSProperties, state: ControlProps<any>) => {
     return {
@@ -199,15 +201,21 @@ class SearchBar extends React.Component<TSearchBarProps, {
     });
   }
 
+  onBlur = () => {
+    this.props.setSearchBarState(false);
+  }
+
   render() {
     return (
       <Select
+        className={this.props.className}
         classNamePrefix="react-select"
         value={this.state.value}
         placeholder="Search"
         onChange={this.handleChange}
         options={suggestions}
         styles={colourStyles}
+        onBlur={this.onBlur}
         components={{
           DropdownIndicator,
           IndicatorsContainer,

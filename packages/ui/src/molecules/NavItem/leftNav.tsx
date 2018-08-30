@@ -20,6 +20,7 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
     width: ${props => props.expand ? MaxWidth : MinWidth}px;
     height: 100%;
     transition: all .25s ease;
+    z-index: 1;
   }
   .left-paper {
     position: absolute;
@@ -60,33 +61,33 @@ export const LeftNav = (props: TNavProps) => {
   const isExpand = props.isExpand;
   return (
     <Left expand={+isExpand} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={props.id}>
-    {Icons.map((arr, index) => {
-      return (
-        <MuiList
-          component="nav"
-          disablePadding={true}
-          key={index}
-        >
-          {
-            arr.map((item, idx) => {
-              const navUrl = item.toLocaleLowerCase();
-              const isActive = window.location.pathname.slice(1) === navUrl;
-              const umiType = UMICount[idx];
-              return (<NavItem
-                expand={+isExpand}
-                url={navUrl}
-                active={+isActive}
-                icon={item}
-                title={item}
-                key={idx}
-                variant="count"
-                unreadCount={umiType}
-              />);
-            })
-          }
-        </MuiList>
-      );
-    })}
-  </Left>
+      {Icons.map((arr, index) => {
+        return (
+          <MuiList
+            component="nav"
+            disablePadding={true}
+            key={index}
+          >
+            {
+              arr.map((item, idx) => {
+                const navUrl = item.toLocaleLowerCase();
+                const isActive = window.location.pathname.slice(1) === navUrl;
+                const umiType = UMICount[idx];
+                return (<NavItem
+                  expand={+isExpand}
+                  url={navUrl}
+                  active={+isActive}
+                  icon={item}
+                  title={item}
+                  key={idx}
+                  variant="count"
+                  unreadCount={umiType}
+                />);
+              })
+            }
+          </MuiList>
+        );
+      })}
+    </Left>
   );
 };

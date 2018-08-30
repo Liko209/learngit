@@ -64,10 +64,10 @@ const StyledIconButton = styled<TIconButtonProps>(WrappedMuiIconButton)`
 const IconButton: React.SFC<TIconButtonProps> = (
   props: TIconButtonProps,
 ) => {
-  const { children, tooltipTitle, innerRef, ...rest } = props;
+  const { className, children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
   const main = (
-    <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
+    <StyledIconButton className={className} disableRipple={rest.variant === 'plain'} {...rest}>
       <StyledIcon
         size={size}
         variant={variant}

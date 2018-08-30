@@ -10,7 +10,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import SearchBar from '../../molecules/SearchBar';
 import IconButton from '../../molecules/IconButton';
-import AvatarWithPresence from '../../molecules/AvatarWithPresence';
 import MenuListComposition from '../../molecules/MenuListComposition';
 import { PresenceProps } from '../../atoms';
 
@@ -23,10 +22,12 @@ type TTopBarProps = {
 type TTopBarState = {
   topBarState: 'resting' | 'hover';
   screenSize: number;
+  isShowSearchBar: boolean;
 };
 
 const StyledTopBar = styled(AppBar).attrs({ position: 'static' })`
   && {
+    min-height: 64px;
     background-color: ${({ theme }) =>
     `${theme.palette.common.white}`};
     box-shadow: none;
@@ -36,6 +37,7 @@ const StyledTopBar = styled(AppBar).attrs({ position: 'static' })`
 `;
 const TopBarWrapper = styled(Toolbar)`
   && {
+    min-height: 64px;
     justify-content: space-between;
     padding: 0 ${({ theme }) => `${theme.spacing.unit * 4}px`};
     &:hover {
@@ -57,24 +59,85 @@ const TopLogo = styled(Typography)`
   }
 `;
 
+const MenuWithLogo = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const BackForward: any = styled.div`
+  display: flex;
+  visibility: ${(props: { invisible: boolean }) => props.invisible ? 'hidden' : 'visible'};
+`;
+
+const StyledMenuListComposition = styled(MenuListComposition)``;
+
+const StyledIconMore = styled(IconButton)``;
+
+const StyledIconSearch = styled(IconButton)``;
+
+const StyledSearchBar = styled(SearchBar)``;
+
 const TopLeft = styled.div`
   display: flex;
   align-items: center;
-  flex-basis: ${({ theme }) => `${theme.spacing.unit * 248}px`};
-  flex-shrink: ${(props: { screenSize: number }) => {
-    return props.screenSize > 1164 ? 0 : 1; // need use spacing unit
-  }};
+  @media (max-width: 1920px) {
+    flex: 0 1 1624px;
+  }
+  @media (max-width: 1280px) {
+    flex: 0 0 984px;
+  }
+  @media (max-width: 1100px) {
+    flex: 0 1 984px;
+  }
+  @media (max-width: 600px) {
+    ${StyledSearchBar} {
+      display: ${(props: { isShowSearchBar: boolean }) => props.isShowSearchBar ? 'block' : 'none'};
+    }
+    ${BackForward} {
+      display: none;
+    }
+    ${StyledIconSearch} {
+      display: ${(props: { isShowSearchBar: boolean }) => props.isShowSearchBar ? 'none' : 'block'};
+    }
+    ${TopLogo} {
+      display: ${(props: { isShowSearchBar: boolean }) => props.isShowSearchBar ? 'none' : 'block'};
+    }
+    justify-content: space-between;
+    /* ${StyledIconSearch} {
+      display: flex;
+      justify-content: flex-end;
+    } */
+  }
+  @media (min-width: 601px) {
+    ${StyledIconSearch} {
+      display: none;
+    }
+  }
 `;
 
 const TopRight = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-`;
-
-const BackForward: any = styled.div`
-  display: flex;
-  visibility: ${(props: { invisible: boolean }) => props.invisible ? 'hidden' : 'visible'};
+  @media (max-width: 1920px) {
+    flex: 0 0 264px;
+  }
+  @media (max-width: 1280px) {
+    flex: 0 1 264px;
+  }
+  @media (max-width: 1100px) {
+    flex: 0 1 auto;
+  }
+  @media (max-width: 600px) {
+    ${StyledMenuListComposition} {
+      display: none;
+    }
+  }
+  @media (min-width: 601px) {
+    ${StyledIconMore} {
+      display: none;
+    }
+  }
 `;
 
 class TopBar extends React.Component<TTopBarProps, TTopBarState> {
@@ -83,6 +146,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
     this.state = {
       screenSize: 0,
       topBarState: 'resting',
+      isShowSearchBar: false,
     };
   }
   onWindowResize = () => {
@@ -91,6 +155,9 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
     });
   }
   componentDidMount() {
+    this.setState({
+      screenSize: document.body.clientWidth,
+    });
     window.addEventListener('resize', this.onWindowResize);
   }
   componentWillUnmount() {
@@ -108,17 +175,31 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
     });
   }
 
+  showSearchBar = () => {
+    this.setState({
+      isShowSearchBar: true,
+    });
+  }
+
+  setSearchBarState = (isShowSearchBar: boolean) => {
+    this.setState({
+      isShowSearchBar,
+    });
+  }
+
   render() {
-    const { topBarState } = this.state;
+    const { topBarState, isShowSearchBar } = this.state;
     const isElectron = navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
     return (
       <StyledTopBar>
         <TopBarWrapper onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
-          <TopLeft screenSize={this.state.screenSize}>
-            <IconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.handleLeftNavExpand} data-anchor="expandButton">
-              format_list_bulleted
-            </IconButton>
-            <TopLogo variant="headline">RingCentral</TopLogo>
+          <TopLeft isShowSearchBar={isShowSearchBar}>
+            <MenuWithLogo>
+              <IconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.handleLeftNavExpand} data-anchor="expandButton">
+                format_list_bulleted
+              </IconButton>
+              <TopLogo variant="headline">RingCentral</TopLogo>
+            </MenuWithLogo>
             <BackForward invisible={!isElectron}>
               <IconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
                 chevron_left
@@ -127,11 +208,29 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
                 chevron_right
               </IconButton>
             </BackForward>
-            <SearchBar />
+            <StyledSearchBar setSearchBarState={this.setSearchBarState} />
+            <StyledIconSearch onClick={this.showSearchBar} tooltipTitle="Search" size="medium" awake={topBarState === 'hover'}>
+              search
+            </StyledIconSearch>
           </TopLeft>
           <TopRight>
-            <MenuListComposition awake={topBarState === 'hover'} handleSignOutClick={this.props.handleSignOutClick} />
-            <AvatarWithPresence src={this.props.avatar} presence={this.props.presence} />
+            <IconButton
+              size="medium"
+              tooltipTitle="plus"
+              awake={topBarState === 'hover'}
+            >
+              add_circle
+            </IconButton>
+            <StyledMenuListComposition
+              awake={topBarState === 'hover'}
+              handleSignOutClick={this.props.handleSignOutClick}
+              src={this.props.avatar}
+              presence={this.props.presence}
+            />
+            {/* <StyledAvatarWithPresence src={this.props.avatar} presence={this.props.presence} /> */}
+            <StyledIconMore tooltipTitle="More" size="medium" awake={topBarState === 'hover'}>
+              more_vert
+            </StyledIconMore>
           </TopRight>
         </TopBarWrapper>
       </StyledTopBar>
