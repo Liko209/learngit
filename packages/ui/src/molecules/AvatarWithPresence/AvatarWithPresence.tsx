@@ -12,7 +12,7 @@ import { AvatarPresence, PresenceProps } from '../../atoms/Presence';
 type TAvatarWithPresenceProps = {
   src?: string;
   innerRef?: RefObject<HTMLElement>;
-  onClick: ((event: React.MouseEvent<HTMLInputElement>) => void);
+  onClick: Function;
 } & PresenceProps;
 
 const StyledAvatarWithPresence = styled.div`

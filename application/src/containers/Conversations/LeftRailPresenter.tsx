@@ -7,10 +7,11 @@ import { AccountService as IAccountService } from 'sdk/service';
 import { Company, Group, Person } from 'sdk/models';
 import PersonModel from '../../store/models/Person';
 import CompanyModel from '../../store/models/Company';
+const { GROUP_QUERY_TYPE, ENTITY } = service;
 
 const { AccountService } = service;
 
-class LeftRailPresenter extends BasePresenter<Group> {
+class LeftRailPresenter extends BasePresenter {
   @observable
   userId: number | null;
   accountService: IAccountService;
@@ -31,6 +32,51 @@ class LeftRailPresenter extends BasePresenter<Group> {
   @computed
   get company() {
     return this.user && this.user.companyId && this.companyStore.get(this.user.companyId);
+  }
+  @computed
+  get sections() {
+    return [
+      {
+        title: 'Unread',
+        iconName: 'fiber_new',
+      },
+      {
+        title: 'Mentions',
+        iconName: 'alternate_email',
+      },
+      {
+        title: 'Bookmarks',
+        iconName: 'bookmark',
+      },
+      {
+        title: 'Favorite',
+        iconName: 'start',
+        queryType: GROUP_QUERY_TYPE.FAVORITE,
+        entity: ENTITY.FAVORITE_GROUPS,
+        sortable: true,
+        expanded: true,
+        transformFunc: (dataModel: Group, index: number) => ({
+          id: dataModel.id,
+          sortKey: index,
+        }),
+      },
+      {
+        title: 'Direct Messages',
+        iconName: 'people',
+        queryType: GROUP_QUERY_TYPE.GROUP,
+        entity: ENTITY.PEOPLE_GROUPS,
+        sortable: false,
+        expanded: true,
+      },
+      {
+        title: 'Teams',
+        iconName: 'people',
+        queryType: GROUP_QUERY_TYPE.TEAM,
+        entity: ENTITY.TEAM_GROUPS,
+        sortable: false,
+        expanded: true,
+      },
+    ];
   }
 }
 

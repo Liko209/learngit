@@ -47,21 +47,20 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
   }
 `;
 
-const Icons = [
-  ['Dashboard', 'Messages', 'Phone', 'Meetings'],
-  ['Contacts', 'Calendar', 'Tasks', 'Notes', 'Files', 'Settings'],
-];
 type TNavProps = {
   isExpand: boolean;
   id: string;
+  icons: {
+    icon: string,
+    title: string,
+  }[][];
 } & Partial<Pick<WithTheme, 'theme'>>;
-
 const UMICount = [120, 0, 16, 1, 0, 1, 99, 0, 11];
 export const LeftNav = (props: TNavProps) => {
-  const isExpand = props.isExpand;
+  const { isExpand, icons } = props;
   return (
     <Left expand={+isExpand} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={props.id}>
-      {Icons.map((arr, index) => {
+      {icons.map((arr, index) => {
         return (
           <MuiList
             component="nav"
@@ -70,15 +69,15 @@ export const LeftNav = (props: TNavProps) => {
           >
             {
               arr.map((item, idx) => {
-                const navUrl = item.toLocaleLowerCase();
+                const navUrl = item.icon.toLocaleLowerCase();
                 const isActive = window.location.pathname.slice(1) === navUrl;
                 const umiType = UMICount[idx];
                 return (<NavItem
                   expand={+isExpand}
                   url={navUrl}
                   active={+isActive}
-                  icon={item}
-                  title={item}
+                  icon={item.icon}
+                  title={item.title}
                   key={idx}
                   variant="count"
                   unreadCount={umiType}

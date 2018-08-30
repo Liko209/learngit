@@ -137,7 +137,7 @@ const SDK_ENV = {
       apiPlatform: '/restapi',
       clientId: 'FVKGRbLRTxGxPempqg5f9g',
       clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
-      redirectUri : 'glip://rclogin',
+      redirectUri: 'glip://rclogin',
     },
     glip2: {
       server: 'https://api-glpci2xmn.lab.nordigy.ru',
@@ -224,9 +224,9 @@ const SDK_ENV = {
   'XMN-UP': {
     rc: {
       server: 'https://api-xmnup.lab.nordigy.ru',
-      apiPlatform : '/restapi',
-      clientId : 'FVKGRbLRTxGxPempqg5f9g',
-      clientSecret : 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
+      apiPlatform: '/restapi',
+      clientId: 'FVKGRbLRTxGxPempqg5f9g',
+      clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
       redirectUri: 'glip://rclogin',
     },
     glip2: {

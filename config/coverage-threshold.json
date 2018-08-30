@@ -1,8 +1,8 @@
 {
   "./packages/sdk/": {
-    "statements": 91.35,
-    "branches": 79.2,
-    "lines": 91.2,
+    "statements": 91.13,
+    "branches": 78.18,
+    "lines": 90.94,
     "functions": 90.68
   },
   "./packages/foundation/": {
@@ -11,10 +11,5 @@
     "lines": 83.48,
     "functions": 82.7
   },
-  "global": {
-    "statements": 24.34,
-    "branches": 7.99,
-    "lines": 46.72,
-    "functions": 23.4
-  }
+  "global": {}
 }

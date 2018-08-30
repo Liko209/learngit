@@ -5,11 +5,10 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-import { WithTheme } from '@material-ui/core';
 
 export type PresenceProps = {
   presence?: 'online' | 'away' | 'offline' | 'default';
-} & Partial<Pick<WithTheme, 'theme'>> & React.HTMLAttributes<HTMLDivElement>;
+} & React.HTMLAttributes<HTMLDivElement>;
 
 const PRESENCE_COLOR_MAP = {
   online: '#4cd964',

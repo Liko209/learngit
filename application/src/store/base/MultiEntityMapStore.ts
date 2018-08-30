@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { action, toJS, transaction, ObservableMap, observable } from 'mobx';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
+import visibilityChangeEvent from './visibilityChangeEvent';
 import { ENTITY_EVENT_NAME, ENTITY_CACHE_COUNT } from './constants';
 import { IIncomingData, IEntity } from '../store';
 import { BaseService } from 'sdk/service';
@@ -11,6 +12,7 @@ const modelProvider = new ModelProvider();
 
 export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity> extends BaseStore {
   data: ObservableMap = observable.map(new Map(), { deep: false });
+  usedIds: Map<any, Set<number>> = new Map();
 
   getService: Function | [Function, string];
   maxCacheCount: number;
@@ -27,6 +29,7 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
     ENTITY_EVENT_NAME[entityName].forEach((eventName: string) => {
       this.subscribeNotification(eventName, callback);
     });
+    visibilityChangeEvent(this.refreshCache.bind(this));
   }
 
   handleIncomingData({ type, entities }: IIncomingData<T>) {
@@ -137,8 +140,8 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
       model = this.data.get(id);
       const res = this.getByService(id);
       if (res instanceof Promise && typeof res.then === 'function') {
-        res.then((res: T) => {
-          if (res) {
+        res.then((res: T & { error?: {} }) => {
+          if (res && !res.error) {
             this.set(res);
           }
         });
@@ -183,5 +186,28 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
   createModel(model: T | K): K {
     const Model = modelProvider.getModelCreator(this.name);
     return Model.fromJS(model);
+  }
+
+  addUsedIds(key: any, id: number) {
+    const usedIds = this.usedIds.get(key);
+    if (usedIds) {
+      usedIds.add(id);
+    } else {
+      this.usedIds.set(key, new Set([id]));
+    }
+  }
+
+  delUsedIds(key: any) {
+    return this.usedIds.delete(key);
+  }
+
+  refreshCache() {
+    const usedIds: number[] = [];
+    this.usedIds.forEach((ids) => {
+      usedIds.push(...ids);
+    });
+    const existKeys = Array.from(this.data.keys());
+    const diffKeys = _.difference(existKeys, [...(new Set(usedIds))]);
+    this.batchRemove(diffKeys);
   }
 }

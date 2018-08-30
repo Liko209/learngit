@@ -65,10 +65,13 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity
     }
     let model = this.createModel(data);
     if (matchedProperties) {
-      model = matchedProperties.reduce((matchedModel: IEntity, property: keyof IEntity) => {
-        matchedModel[property] = model[property]; // eslint-disable-line
-        return matchedModel;
-      },                               {}) as IEntity;
+      model = matchedProperties.reduce(
+        (matchedModel: IEntity, property: keyof IEntity) => {
+          matchedModel[property] = model[property]; // eslint-disable-line
+          return matchedModel;
+        },
+        {},
+      ) as IEntity;
     }
     this.data.merge(model);
   }
@@ -85,7 +88,7 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity
     });
   }
 
-  get(property: keyof T) {
+  get(property: keyof K) {
     if (!this.init) {
       this.init = true;
       this.getByService().then((data: any) => {

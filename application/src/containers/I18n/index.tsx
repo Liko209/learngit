@@ -1,14 +1,10 @@
 import * as React from 'react';
 import { translate } from 'react-i18next';
 import { TranslationFunction } from 'i18next';
-import storeInject, { IStoresProps } from '@/store/inject';
-import { ENTITY_NAME } from '@/store';
 
 type IProps = {
   t: TranslationFunction;
-} & IStoresProps;
-
-@storeInject(ENTITY_NAME.POST, ENTITY_NAME.GROUP)
+};
 class I18n extends React.PureComponent<IProps> {
   render() {
     const { t } = this.props;
