@@ -10,12 +10,10 @@ import Conversations from '@/containers/Conversations';
 import Calls from '@/containers/Calls';
 import Meetings from '@/containers/Meetings';
 import Settings from '@/containers/Settings';
+import HomePresenter from './HomePresenter';
 import { TranslationFunction, i18n } from 'i18next';
 import TopBar from 'ui-components/organisms/TopBar';
 import avatar from './avatar.jpg';
-import { service } from 'sdk';
-
-const { AuthService } = service;
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -26,20 +24,16 @@ interface IStates {
   isExpand: boolean;
 }
 class Home extends Component<IProps, IStates>  {
+  private homePresenter: HomePresenter;
   constructor(props: IProps) {
     super(props);
     this.state = {
       isExpand: localStorage.getItem('isExpand') === null ? true :
         JSON.parse(String(localStorage.getItem('isExpand'))),
     };
-    this.signOutClickHandler = this.signOutClickHandler.bind(this);
+    this.homePresenter = new HomePresenter();
   }
 
-  async signOutClickHandler() {
-    const authService: service.AuthService = AuthService.getInstance();
-    await authService.logout();
-    window.location.href = '/';
-  }
   handleExpand = () => {
     this.setState({
       isExpand: !this.state.isExpand,
@@ -52,13 +46,13 @@ class Home extends Component<IProps, IStates>  {
     });
   }
   render() {
-    // const { match } = this.props;
+    const { signOutClickHandler } = this.homePresenter;
     const { t } = this.props;
 
     const Icons = [
       [
         { icon: 'Dashboard', title: t('Dashboard') },
-        { icon:'Messages', title: t('Messages') },
+        { icon: 'Messages', title: t('Messages') },
         { icon: 'Phone', title: t('Phone') },
         { icon: 'Meetings', title: t('Meetings') },
       ],
@@ -74,9 +68,9 @@ class Home extends Component<IProps, IStates>  {
     const { isExpand } = this.state;
     return (
       <Wrapper>
-        <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online" data-anchor="expandButton" handleSignOutClick={this.signOutClickHandler} />
+        <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online" data-anchor="expandButton" handleSignOutClick={signOutClickHandler} />
         <Bottom>
-          <LeftNav isExpand={isExpand} id="leftnav" icons={Icons}/>
+          <LeftNav isExpand={isExpand} id="leftnav" icons={Icons} />
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
