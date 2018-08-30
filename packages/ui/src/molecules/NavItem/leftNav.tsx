@@ -28,7 +28,7 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
     overflow-x: hidden;
     width: ${props => props.expand ? MaxWidth : MinWidth}px;
     justify-content: space-between;
-    padding: 24px 0;
+    padding: ${({ theme }) => theme.spacing.unit * 6 + 'px'} 0;
     box-sizing: border-box;
     transition: all .25s ease;
     // this group btns will awake
