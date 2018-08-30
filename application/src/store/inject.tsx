@@ -6,7 +6,7 @@ import StoreManager from '@/store/base/StoreManager';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import StoreContext from '@/store/context';
 import { Omit } from '@material-ui/core';
-import { IEntity } from '@/store/store';
+import { IEntity } from './store';
 
 export interface IComponentWithGetEntityProps {
   getEntity: (entityName: string, id: number) => {};

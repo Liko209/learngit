@@ -1,22 +1,22 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { Dialog , DialogHeader, DialogTitle } from '.';
 import ContactList from './contact.list';
+import Dialog from '../../atoms/Dialog';
+import DialogHeader from '../../atoms/DialogHeader';
+import DialogTitle from '../../atoms/DialogTitle';
 
-storiesOf('Dialog', module)
+storiesOf('Molecules/Dialog', module)
   .addWithJSX('Simple Popup', withInfo(`
       description or documentation about my component, supports markdown
-
       ~~~js
       <Button>Click Here</Button>
       ~~~
-
   `)(() => {
     return (
       <Dialog
         open={true}
-        size={'sm'}
+        size={'small'}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         scroll={'paper'}
