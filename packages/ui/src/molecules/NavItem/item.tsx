@@ -23,13 +23,12 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({
 })`
   && {
     padding: 0;
-    height: 44px;
+    height: ${({ theme }) => theme.spacing.unit * 11 + 'px'};
     outline: none;
   }
   // In order to make sure use tab switch nav
   &&.left-item-focus {
     .left-link {
-      background: ${props => props.color};
       span {
         color: ${({ theme }) => theme.palette.grey[700]};
       }
@@ -39,8 +38,8 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({
     }
   }
   &&:hover {
-    background-color: ${props => (props.active ? '#EBF6FA' : '#F5F5F5')};
-    opacity: 0.88;
+    background-color: ${({ theme, active }) => active ? theme.palette.action.active : theme.palette.grey[100]};
+    opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
     .nav-icon {
       color: ${({ theme }) => theme.palette.grey[500]}; // 500
     }
@@ -56,7 +55,7 @@ const CustomListItemText: React.SFC<TListItemTextProps> = (props) => {
 };
 const ListItemText = styled<TListItemTextProps>(CustomListItemText)`
   && {
-    font-size: 12px;
+    font-size: ${({ theme }) => theme.typography.fontSize + 'px'};
     color: ${({ theme }) => theme.palette.grey[500]}; // 500
     transform: translate3d(${props => (props.expand ? 12 : -10)}px, 0, 0);
     opacity: ${props => (props.expand ? 1 : 0)};
@@ -93,27 +92,22 @@ const ListLink = styled(NavLink)`
   outline: none;
   display: flex;
   height: 100%;
-  padding: 0 20px;
+  padding: 0 ${({ theme }) => theme.spacing.unit * 5 + 'px'};
   width: 100%;
   align-items: center;
   text-decoration: none;
-  &&:hover {
-    background: ${props => props.color};
-  }
   &&&:active {
     background: #d7ebf4 !important; // water
-    opacity: 0.76;
+    opacity: ${({ theme }) => 1 - 2 * theme.palette.action.hoverOpacity};
     span,
     .nav-icon {
-      color: ${({ theme, color }) =>
-  color ? theme.palette[color].main : '#0684BD'}; // RC Blue
+      color: ${({ theme }) => theme.palette.primary.main}; // RC Blue
     }
   }
   &&.active {
     && .nav-icon,
     && .nav-text span {
-      color: ${({ theme, color }) =>
-  color ? theme.palette[color].main : '#0684BD'}; // RC Blue
+      color: ${({ theme }) => theme.palette.primary.main}; // RC Blue
     }
   }
 `;
@@ -129,7 +123,6 @@ type TNavItemProps = {
 
 const Item = (props: TNavItemProps) => {
   const { expand, active, title, variant, unreadCount, icon, url } = props;
-  const bgColor = active ? '#EBF6FA' : '#F5F5F5'; // Ice and 100
   const NavItems = (
     <ListItem
       button={true}
@@ -139,7 +132,6 @@ const Item = (props: TNavItemProps) => {
       disableRipple={true}
       focusVisibleClassName={'left-item-focus'}
       disableGutters={true}
-      color={bgColor}
       expand={expand}
     >
       <ListLink to={`/${url}`} className={'left-link'}>

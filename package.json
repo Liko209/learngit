@@ -25,7 +25,7 @@
     "lint-all": "tslint -p application && tslint -p packages/foundation && tslint -p packages/sdk && tslint -p packages/ui",
     "publish": "npm run clean:build && npm run build && lerna publish --silent",
     "watch": "node scripts/watch.js",
-    "precommit": "npm run lint-all && npm run test:cover && npm run raise-coverage && git add config/coverage-threshold.json",
+    "precommit": "npm run lint-all && npm run raise-coverage && git add config/coverage-threshold.json",
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",
     "commitmsg": "node scripts/validate-commit-msg.js",
