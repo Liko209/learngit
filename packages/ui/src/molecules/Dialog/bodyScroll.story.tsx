@@ -8,7 +8,7 @@ import DialogTitle from '../../atoms/DialogTitle';
 import DialogHeader from '../../atoms/DialogHeader';
 import { randomText } from './utils';
 
-storiesOf('Dialog', module)
+storiesOf('Molecules/Dialog', module)
   .addWithJSX('Body scroll', withInfo(`
       description or documentation about my component, supports markdown
 
@@ -20,7 +20,7 @@ storiesOf('Dialog', module)
     return (
         <Dialog
           open={true}
-          size={'md'}
+          size={'medium'}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           scroll={'body'}

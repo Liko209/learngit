@@ -12,7 +12,7 @@ import Dialog from '../../atoms/Dialog';
 import DialogContent from '../../atoms/DialogContent';
 import DialogActions from '../../atoms/DialogAction';
 
-storiesOf('Dialog', module)
+storiesOf('Molecules/Dialog', module)
   .addWithJSX('Forms', withInfo(`
       description or documentation about my component, supports markdown
 
@@ -30,7 +30,7 @@ storiesOf('Dialog', module)
     return (
         <Dialog
           open={true}
-          size={'lg'}
+          size={'large'}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           scroll={'body'}
