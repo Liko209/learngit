@@ -1,6 +1,6 @@
 {
-  "direct_message": "direct message",
-  "direct_message_plural": "direct messages",
+  "directMessage": "direct message",
+  "directMessage_plural": "direct messages",
   "bookmark": "bookmark",
   "bookmark_plural": "bookmarks",
   "favorite": "favorite",
