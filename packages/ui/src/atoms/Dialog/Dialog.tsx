@@ -3,18 +3,18 @@ import MuiDialog, { DialogProps } from '@material-ui/core/Dialog';
 import styled from 'styled-components';
 
 interface IDialogProps extends DialogProps {
-  size: 'sm'|'fullWidth'|'md'|'lg'|'fullScreen';
+  size: 'small'|'fullWidth'|'medium'|'large'|'fullScreen';
 }
 
-const Dialog = styled(({ size = 'sm', ...restProps  } :IDialogProps) => {
+const Dialog = styled(({ size = 'small', ...restProps  } :IDialogProps) => {
   switch (size) {
-    case 'sm':
+    case 'small':
       restProps.maxWidth = 'xs';
       break;
-    case 'md':
+    case 'medium':
       restProps.maxWidth = 'sm';
       break;
-    case 'lg':
+    case 'large':
       restProps.maxWidth = 'md';
       break;
     case 'fullScreen':
