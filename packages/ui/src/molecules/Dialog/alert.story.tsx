@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { Dialog , DialogActions, DialogHeader, DialogTitle } from '.';
 import { Button, Typography } from '@material-ui/core';
 import { select, boolean  } from '@storybook/addon-knobs';
+import DialogTitle from '../../atoms/DialogTitle';
+import DialogHeader from '../../atoms/DialogHeader';
+import DialogActions from '../../atoms/DialogAction';
+import Dialog from '../../atoms/Dialog';
 
 storiesOf('Dialog', module)
   .addWithJSX('Alert and Confirmation', withInfo(`
