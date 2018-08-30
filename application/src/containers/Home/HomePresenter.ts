@@ -3,7 +3,7 @@
  * @Date: 2018-08-30 11:21:18
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action } from 'mobx';
+import { action } from 'mobx';
 
 import BasePresenter from '@/store/base/BasePresenter';
 
@@ -15,8 +15,6 @@ import betaUsers from '@/config/whitelist.json';
 const { AccountService, AuthService, SERVICE } = service;
 
 export default class HomePresenter extends BasePresenter {
-  @observable loading = false;
-  @observable error = {};
   private userId: number | null;
   constructor() {
     super();
@@ -40,7 +38,6 @@ export default class HomePresenter extends BasePresenter {
       this.signOutClickHandler();
       return;
     }
-    this.loading = false;
   }
 
   @action

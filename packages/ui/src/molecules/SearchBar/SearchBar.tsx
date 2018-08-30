@@ -113,7 +113,7 @@ const Placeholder = (props: React.Props<any>) =>
 
 const colourStyles = {
   container: (styles: React.CSSProperties) => {
-    return { ...styles, width: '100%', margin: '0 20px', maxWidth: '1368px' };
+    return { ...styles, width: '100%', margin: '0 20px', maxWidth: '1308px' };
   },
   control: (styles: React.CSSProperties, state: ControlProps<any>) => {
     return {

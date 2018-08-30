@@ -90,6 +90,7 @@ const TopLeft = styled.div`
     flex: 0 1 984px;
   }
   @media (max-width: 600px) {
+    justify-content: space-between;
     ${StyledSearchBar} {
       display: ${(props: { isShowSearchBar: boolean }) => props.isShowSearchBar ? 'block' : 'none'};
     }
@@ -102,11 +103,6 @@ const TopLeft = styled.div`
     ${TopLogo} {
       display: ${(props: { isShowSearchBar: boolean }) => props.isShowSearchBar ? 'none' : 'block'};
     }
-    justify-content: space-between;
-    /* ${StyledIconSearch} {
-      display: flex;
-      justify-content: flex-end;
-    } */
   }
   @media (min-width: 601px) {
     ${StyledIconSearch} {
@@ -227,7 +223,6 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               src={this.props.avatar}
               presence={this.props.presence}
             />
-            {/* <StyledAvatarWithPresence src={this.props.avatar} presence={this.props.presence} /> */}
             <StyledIconMore tooltipTitle="More" size="medium" awake={topBarState === 'hover'}>
               more_vert
             </StyledIconMore>
