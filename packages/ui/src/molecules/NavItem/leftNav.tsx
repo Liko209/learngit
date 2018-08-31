@@ -49,14 +49,14 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
 type TNavProps = {
   isExpand: boolean;
   id: string;
+  umiCount: number[];
   icons: {
     icon: string,
     title: string,
   }[][];
 } & Partial<Pick<WithTheme, 'theme'>>;
-const UMICount = [120, 0, 16, 1, 0, 1, 99, 0, 11];
 export const LeftNav = (props: TNavProps) => {
-  const { isExpand, icons } = props;
+  const { isExpand, icons, umiCount } = props;
   return (
     <Left expand={+isExpand} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={props.id}>
       {icons.map((arr, index) => {
@@ -70,7 +70,7 @@ export const LeftNav = (props: TNavProps) => {
               arr.map((item, idx) => {
                 const navUrl = item.icon.toLocaleLowerCase();
                 const isActive = window.location.pathname.slice(1) === navUrl;
-                const umiType = UMICount[idx];
+                const umiType = umiCount[idx];
                 return (<NavItem
                   expand={+isExpand}
                   url={navUrl}

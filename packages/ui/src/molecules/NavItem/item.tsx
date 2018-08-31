@@ -93,11 +93,10 @@ const ListLink = styled(NavLink)`
   height: 100%;
   padding: 0 ${({ theme }) => theme.spacing.unit * 5 + 'px'};
   width: 100%;
-  margin-left: 6px;
+  margin-left: ${({ theme }) => theme.spacing.unit * 6 / 4 + 'px'};
   align-items: center;
   text-decoration: none;
   &&&:active {
-    background: #d7ebf4 !important; // water
     opacity: ${({ theme }) => 1 - 2 * theme.palette.action.hoverOpacity};
     span,
     .nav-icon {

@@ -25,6 +25,7 @@ interface IProps extends RouteComponentProps<any> {
 interface IStates {
   isExpand: boolean;
 }
+const UMICount = [120, 0, 16, 1, 0, 1, 99, 0, 11];
 class Home extends Component<IProps, IStates>  {
   constructor(props: IProps) {
     super(props);
@@ -76,7 +77,7 @@ class Home extends Component<IProps, IStates>  {
       <Wrapper>
         <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online" data-anchor="expandButton" handleSignOutClick={this.signOutClickHandler} />
         <Bottom>
-          <LeftNav isExpand={isExpand} id="leftnav" icons={Icons}/>
+          <LeftNav isExpand={isExpand} id="leftnav" icons={Icons} umiCount={UMICount} />
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
