@@ -10,6 +10,7 @@ interface IExternalPorps extends IInternalPorps {
   onClick: (e: MouseEvent) => void;
 }
 
+// todo: have not UX design
 const Wrapper = styled.div`
   position: absolute;
   top: 0;

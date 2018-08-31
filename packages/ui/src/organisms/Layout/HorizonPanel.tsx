@@ -22,6 +22,7 @@ const Wrapper = styled.div`
   height: 100%;
   display: ${(props: IInternalPorps) => props.width > 0 ? 'inline-block' : 'none'};
   overflow: hidden;
+  background-color: ${({ theme }) => theme.palette.background.paper};
   /* width: ${(props: IInternalPorps) => `${props.width}px`}; */
   /* transition: all .25s; */
   ${props => props.response ? css`
@@ -31,7 +32,7 @@ const Wrapper = styled.div`
   `};
   ${props => props.forceDisplay && css`
     display: inline-block;
-    width: 180px;
+    width: ${({ theme }) => theme.size.width * 18}px;
     position: absolute;
     top: 0;
     bottom: 0;

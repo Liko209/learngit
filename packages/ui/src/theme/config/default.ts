@@ -1,4 +1,4 @@
-// import { Theme } from '@material-ui/core/styles/createMuiTheme';
+// import { Theme } from '../ThemeProvider';
 // type DeepPartial<T> = {
 //   [P in keyof T]?: T[P] extends (infer U)[]
 //   ? DeepPartial<U>[]
@@ -57,6 +57,7 @@ const theme = {
     },
     action: {
       hoverOpacity: 0.12,
+      active: '#EBF6FA',
     },
   },
   shape: {
@@ -64,6 +65,16 @@ const theme = {
   },
   spacing: {
     unit: 4,
+  },
+  zIndex: {
+    supernatant: 2,
+  },
+  size: {
+    width: 10,
+    height: 10,
+  },
+  typography: {
+    fontSize: 12,
   },
 };
 

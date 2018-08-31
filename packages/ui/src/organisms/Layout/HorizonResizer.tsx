@@ -15,9 +15,9 @@ const Wrapper = styled.div`
   top: 0;
   bottom: 0;
   right: auto;
-  z-index: 9999;
-  margin-left: -4px;
-  padding: 4px;
+  z-index: ${({ theme }) => theme.zIndex.supernatant};
+  margin-left: ${({ theme }) => -theme.spacing.unit}px;
+  padding: ${({ theme }) => theme.spacing.unit}px;
   cursor: col-resize;
   background-color: transparent;
   left: ${(props: IInternalPorps) => `${props.offset}px`};

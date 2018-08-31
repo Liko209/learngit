@@ -1,20 +1,20 @@
 import React from 'react';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
+import MuiDialog, { DialogProps } from '@material-ui/core/Dialog';
 import styled from 'styled-components';
 
-interface Props extends DialogProps {
-  size: 'sm'|'fullWidth'|'md'|'lg'|'fullScreen';
+interface IDialogProps extends DialogProps {
+  size: 'small'|'fullWidth'|'medium'|'large'|'fullScreen';
 }
 
-const container = styled(({ size = 'sm', ...restProps  } :Props) => {
+const Dialog = styled(({ size = 'small', ...restProps  } :IDialogProps) => {
   switch (size) {
-    case 'sm':
+    case 'small':
       restProps.maxWidth = 'xs';
       break;
-    case 'md':
+    case 'medium':
       restProps.maxWidth = 'sm';
       break;
-    case 'lg':
+    case 'large':
       restProps.maxWidth = 'md';
       break;
     case 'fullScreen':
@@ -24,13 +24,13 @@ const container = styled(({ size = 'sm', ...restProps  } :Props) => {
   }
   const classes = { root:'root', paperWidthXs:'sm', paperWidthSm:'md', paperWidthMd:'lg' };
   return (
-    <Dialog
+    <MuiDialog
        classes={classes}
        {...restProps}
     />
   );
 })`
-&.root{
+&.root {
   padding:0;
   min-height: 120px;
 }
@@ -51,4 +51,5 @@ const container = styled(({ size = 'sm', ...restProps  } :Props) => {
 }
 `;
 
-export default container;
+export default Dialog;
+export { Dialog };
