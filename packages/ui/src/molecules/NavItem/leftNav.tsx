@@ -3,20 +3,19 @@
  * @Date: 2018-8-23 10:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import styled from 'styled-components';
+import styled from '../../styled-components';
 import React from 'react';
-import { NavItem } from './item';
+import NavItem from './item';
 import MuiList from '@material-ui/core/List/index';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
-import { WithTheme } from '@material-ui/core/styles/withTheme';
 
 const MaxWidth = 200;
 const MinWidth = 72;
 
 type TLeftNav = {
-  expand: number,
-} & DrawerProps & Partial<Pick<WithTheme, 'theme'>>;
-const CustomLeftNav: React.SFC<TLeftNav> = (props) => {
+  expand: boolean,
+} & DrawerProps;
+const CustomLeftNav: React.SFC<TLeftNav> = ({ expand, ...props }) => {
   return <MuiDrawer {...props} />;
 };
 const Left = styled<TLeftNav>(CustomLeftNav)`
@@ -52,18 +51,18 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
 `;
 
 type TNavProps = {
-  isExpand: boolean;
+  expanded: boolean;
   id: string;
   umiCount: number[];
   icons: {
     icon: string,
     title: string,
   }[][];
-} & Partial<Pick<WithTheme, 'theme'>>;
+};
 export const LeftNav = (props: TNavProps) => {
-  const { isExpand, icons, umiCount } = props;
+  const { expanded, icons, umiCount } = props;
   return (
-    <Left expand={+isExpand} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={props.id}>
+    <Left expand={expanded} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={props.id}>
       {icons.map((arr, index) => {
         return (
           <MuiList
@@ -77,9 +76,9 @@ export const LeftNav = (props: TNavProps) => {
                 const isActive = window.location.pathname.slice(1) === navUrl;
                 const umiType = umiCount[idx];
                 return (<NavItem
-                  expand={+isExpand}
+                  expand={expanded}
                   url={navUrl}
-                  active={+isActive}
+                  active={isActive}
                   icon={item.icon}
                   title={item.title}
                   key={idx}

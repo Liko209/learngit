@@ -4,22 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from 'styled-components';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
+import { NavLink } from 'react-router-dom';
 import MuiListItemText, {
   ListItemTextProps,
 } from '@material-ui/core/ListItemText';
-import { WithTheme } from '@material-ui/core/styles/withTheme';
 import { Umi, ArrowTip } from '../../atoms';
 import NavIcon from './icon';
-import { NavLink } from 'react-router-dom';
+import styled from '../../styled-components';
 
 type TListItem = {
-  active: number;
-  expand: number;
-} & ListItemProps &
-  Partial<Pick<WithTheme, 'theme'>>;
-const CustomListItem: React.SFC<TListItem> = (props) => {
+  active: boolean;
+  expand: boolean;
+} & ListItemProps;
+const CustomListItem: React.SFC<TListItem> = ({ active, expand, ...props }) => {
   return <MuiListItem {...props} />;
 };
 const ListItem = styled<TListItem>(CustomListItem).attrs({
@@ -27,7 +25,7 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({
 })`
   && {
     padding: 0;
-    height: ${({ theme }) => theme.spacing.unit * 11 + 'px'};
+    height: ${({ theme }) => theme.size.height * 44 / 10 + 'px'};
     outline: none;
   }
   // In order to make sure use tab switch nav
@@ -50,16 +48,14 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({
   }
 `;
 type TListItemTextProps = {
-  expand: number;
-} & ListItemTextProps &
-  Partial<Pick<WithTheme, 'theme'>>;
+  expand: boolean;
+} & ListItemTextProps;
 
-const CustomListItemText: React.SFC<TListItemTextProps> = (props) => {
+const CustomListItemText: React.SFC<TListItemTextProps> = ({ expand, ...props }) => {
   return <MuiListItemText {...props} />;
 };
 const ListItemText = styled<TListItemTextProps>(CustomListItemText)`
   && {
-    font-size: ${({ theme }) => theme.typography.fontSize + 'px'};
     color: ${({ theme }) => theme.palette.grey[500]}; // 500
     transform: translate3d(${props => (props.expand ? 12 : -10)}px, 0, 0);
     opacity: ${props => (props.expand ? 1 : 0)};
@@ -68,11 +64,12 @@ const ListItemText = styled<TListItemTextProps>(CustomListItemText)`
     span {
       color: ${({ theme }) => theme.palette.accent.ash}; // Aah
       transition: color 0.2s ease;
+      font-size: ${({ theme }) => theme.typography.fontSize + 'px'};
     }
   }
 `;
 type TUMIProps = {
-  expand: number;
+  expand: boolean;
   unreadCount: number;
   important: boolean;
   variant: 'count' | 'dot' | 'auto';
@@ -115,18 +112,18 @@ const ListLink = styled(NavLink)`
     }
   }
 `;
-type TNavItemProps = {
-  expand: number;
+export type TNavItemProps = {
+  expand: boolean;
   title?: string;
-  active: number;
+  active: boolean;
   icon: string;
   variant: 'count' | 'dot' | 'auto';
   url?: string;
   unreadCount: number;
   invert?: boolean;
-} & Partial<Pick<WithTheme, 'theme'>>;
+};
 
-const Item = (props: TNavItemProps) => {
+const NavItem = (props: TNavItemProps) => {
   const { expand, active, title, variant, unreadCount, icon, url } = props;
   const NavItems = (
     <ListItem
@@ -164,5 +161,4 @@ const Item = (props: TNavItemProps) => {
     NavItems
   );
 };
-export const NavItem = styled<TNavItemProps>(Item)``;
 export default NavItem;

@@ -38,7 +38,7 @@ storiesOf('NavItem', module)
       return (
         <BrowserRouter>
           <NavItem
-            expand={+expand}
+            expand={expand}
             active={activeNum}
             icon={iconType}
             url={iconType}

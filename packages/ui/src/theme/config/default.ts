@@ -73,9 +73,6 @@ const theme = {
     width: 10,
     height: 10,
   },
-  typography: {
-    fontSize: 12,
-  },
 };
 
 export default theme;
