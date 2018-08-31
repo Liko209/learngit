@@ -1,3 +1,8 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-8-22 11:12:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from 'styled-components';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';

@@ -1,3 +1,8 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-8-22 17:29:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from 'styled-components';
 import Message from '@material-ui/icons/Message';

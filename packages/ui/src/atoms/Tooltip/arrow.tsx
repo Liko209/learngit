@@ -1,3 +1,8 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-8-39 17:29:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -53,14 +58,16 @@ export interface IProps {
   node: any;
   enterDelay?: number;
   leaveDelay?: number;
-  classes?: any;
+  classes?: {
+    arrowPopper: string;
+    arrowArrow: string;
+    tooltipPlacementBottom: string;
+    tooltipPlacementTop: string
+  };
   placement?: string;
 }
 
 class CustomizedTooltips extends React.Component<IProps & WithStyles> {
-  // constructor(props: IProps & WithStyles<'arrowPopper', 'arrowArrow'>) {
-  //   super(props);
-  // }
   state = {
     arrowRef: null,
   };

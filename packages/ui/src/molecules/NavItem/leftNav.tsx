@@ -1,3 +1,8 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-8-23 10:29:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import styled from 'styled-components';
 import React from 'react';
 import { NavItem } from './item';
