@@ -1,5 +1,6 @@
 module.exports = {
   roots: ['application', 'packages'],
+  collectCoverage: true,
   collectCoverageFrom: [
     `${process.env.APP}/src/**/*.{js,jsx,ts,tsx}`,
     `!${process.env.APP}/src/**/__tests__/*`,
