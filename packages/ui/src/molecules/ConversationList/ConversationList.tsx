@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 
 import MuiMenuList from '@material-ui/core/MenuList';
 
@@ -23,7 +23,7 @@ type ListProps = {
 };
 
 class ConversationList extends PureComponent<ListProps> {
-
+  static dependencies: React.ComponentType[];
   constructor(props: ListProps) {
     super(props);
 
@@ -62,6 +62,8 @@ class ConversationList extends PureComponent<ListProps> {
     return Array.from(el.parentElement.children).indexOf(el);
   }
 }
+
+ConversationList.dependencies = [MuiMenuList];
 
 export default ConversationList;
 export { ListProps, ConversationList };

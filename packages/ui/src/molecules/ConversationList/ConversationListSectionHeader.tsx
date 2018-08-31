@@ -4,22 +4,23 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from '../../styled-components';
 
 import MuiListItem from '@material-ui/core/ListItem';
 
+import styled from '../../styled-components';
+import { spacing, grey } from '../../utils';
 import { Umi, Icon } from '../../atoms';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
 const StyledListItem = styled(MuiListItem)`
   && {
-    padding: 8px 16px 8px 12px;
+    padding: ${spacing(2, 4, 2, 3)};
     background: white;
-    color: ${({ theme }) => theme.palette.grey['700']};
+    color: ${grey('700')};
   }
 
   && > ${Icon} {
-    color: ${({ theme }) => theme.palette.grey['400']};
+    color: ${grey('400')};
   }
 `;
 

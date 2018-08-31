@@ -15,6 +15,17 @@ const styles = createStyles({
         borderColor: 'transparent transparent #616161 transparent',
       },
     },
+    '&[x-placement*="top"] $arrowArrow': {
+      bottom: '-1em',
+      left: 0,
+      marginTop: '-0.9em',
+      width: '3em',
+      height: '1em',
+      '&::before': {
+        borderWidth: '1em 1em 1em',
+        borderColor: '#616161 transparent transparent',
+      },
+    },
   },
   arrowArrow: {
     position: 'absolute',
@@ -30,6 +41,12 @@ const styles = createStyles({
       borderStyle: 'solid',
     },
   },
+  tooltipPlacementBottom: {
+    margin: '12px 0',
+  },
+  tooltipPlacementTop: {
+    margin: '16px 0',
+  },
 });
 export interface IProps {
   title?: string;
@@ -37,6 +54,7 @@ export interface IProps {
   enterDelay?: number;
   leaveDelay?: number;
   classes?: any;
+  placement?: string;
 }
 
 class CustomizedTooltips extends React.Component<IProps & WithStyles> {
@@ -63,7 +81,11 @@ class CustomizedTooltips extends React.Component<IProps & WithStyles> {
             <span className={classes.arrowArrow} ref={this.handleArrowRef} />
           </React.Fragment>
         }
-        classes={{ popper: classes.arrowPopper }}
+        classes={{
+          popper: classes.arrowPopper,
+          tooltipPlacementBottom: classes.tooltipPlacementBottom,
+          tooltipPlacementTop: classes.tooltipPlacementTop,
+        }}
         PopperProps={{
           popperOptions: {
             modifiers: {

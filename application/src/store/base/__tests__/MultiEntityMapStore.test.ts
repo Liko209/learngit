@@ -91,7 +91,7 @@ describe('handleIncomingData()', () => {
   const entities: Map<number, IEntity> = getEntityMap(10);
 
   it('should batchSet if type is put', () => {
-    const data: IIncomingData<BaseModel> = {
+    const data: IIncomingData<any> = {
       entities,
       type: 'put',
     };
@@ -102,7 +102,7 @@ describe('handleIncomingData()', () => {
   });
 
   it('should batchDeepSet if type is update', () => {
-    const data: IIncomingData<BaseModel> = {
+    const data: IIncomingData<any> = {
       entities,
       type: 'update',
     };

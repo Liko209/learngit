@@ -17,7 +17,7 @@ export const getGroupName = (group: GroupModel, userId?: number) => {
   if (group.isTeam || !userId) {
     return group.setAbbreviation;
   }
-  const memberIds: number[] = group.members;
+  const memberIds: number[] = group.members || [];
   let peopleName = '';
   const personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON) as MultiEntityMapStore<Person, PersonModel>;
   if (memberIds.length === 1 && memberIds[0] === userId) {

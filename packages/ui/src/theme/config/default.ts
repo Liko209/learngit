@@ -1,13 +1,13 @@
-import { Theme } from '../ThemeProvider';
-type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends (infer U)[]
-  ? DeepPartial<U>[]
-  : T[P] extends ReadonlyArray<infer U>
-  ? ReadonlyArray<DeepPartial<U>>
-  : DeepPartial<T[P]>
-};
+// import { Theme } from '../ThemeProvider';
+// type DeepPartial<T> = {
+//   [P in keyof T]?: T[P] extends (infer U)[]
+//   ? DeepPartial<U>[]
+//   : T[P] extends ReadonlyArray<infer U>
+//   ? ReadonlyArray<DeepPartial<U>>
+//   : DeepPartial<T[P]>
+// };
 
-const theme: DeepPartial<Theme> = {
+const theme = {
   palette: {
     primary: {
       light: '#18a4de',
@@ -57,6 +57,7 @@ const theme: DeepPartial<Theme> = {
     },
     action: {
       hoverOpacity: 0.12,
+      active: '#EBF6FA',
     },
   },
   shape: {
@@ -64,6 +65,16 @@ const theme: DeepPartial<Theme> = {
   },
   spacing: {
     unit: 4,
+  },
+  zIndex: {
+    supernatant: 2,
+  },
+  size: {
+    width: 10,
+    height: 10,
+  },
+  typography: {
+    fontSize: 12,
   },
 };
 
