@@ -153,7 +153,16 @@ const Item = (props: TNavItemProps) => {
       </ListLink>
     </ListItem>
   );
-  return !expand ? <ArrowTip title={title} enterDelay={400} placement="top" node={NavItems}/> : NavItems;
+  return !expand ? (
+    <ArrowTip
+      title={title}
+      enterDelay={400}
+      placement="top"
+      node={NavItems}
+    />
+  ) : (
+    NavItems
+  );
 };
 export const NavItem = styled<TNavItemProps>(Item)``;
 export default NavItem;

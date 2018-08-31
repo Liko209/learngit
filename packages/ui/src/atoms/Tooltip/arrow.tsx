@@ -55,14 +55,14 @@ const styles = createStyles({
 });
 export interface IProps {
   title?: string;
-  node: any;
+  node: JSX.Element;
   enterDelay?: number;
   leaveDelay?: number;
   classes?: {
     arrowPopper: string;
     arrowArrow: string;
     tooltipPlacementBottom: string;
-    tooltipPlacementTop: string
+    tooltipPlacementTop: string;
   };
   placement?: string;
 }
@@ -71,9 +71,9 @@ class CustomizedTooltips extends React.Component<IProps & WithStyles> {
   state = {
     arrowRef: null,
   };
-  handleArrowRef = (node: any) => {
+  handleArrowRef = (ele: HTMLSpanElement) => {
     this.setState({
-      arrowRef: node,
+      arrowRef: ele,
     });
   }
   render() {
