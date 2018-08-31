@@ -21,7 +21,7 @@ if [ "$hasLintError" != 1 ]; then
   fi
 
   # # 5. E2E
-  . $autoDevOps/5.E2E.sh
+  # . $autoDevOps/5.E2E.sh
 
   # # 6. Puppeteer
   # . $autoDevOps/6.Puppeteer.sh
