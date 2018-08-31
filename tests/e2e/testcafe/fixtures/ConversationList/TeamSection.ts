@@ -10,7 +10,7 @@ import { setupSDK } from '../../utils/setupSDK';
 import { TeamSection } from '../../page-models/components';
 
 declare var test: TestFn;
-fixture('teamSection')
+fixture('TeamSection')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown());
 
@@ -19,23 +19,11 @@ const randomTeamName = 'Team' + Number(new Date());
 test(
   formalName(
     'Display team',
-    ['P0', 'Team section']),
+    ['P0', 'TeamSection']),
   async (t) => {
     await setupSDK(t);
     await unifiedLogin(t)
       .shouldNavigateTo(TeamSection)
       .shouldBeTeam();
-  },
-);
-
-test(
-  formalName(
-    'Modify team name',
-    ['P0', 'Team section']),
-  async (t) => {
-    await setupSDK(t);
-    await unifiedLogin(t)
-      .shouldNavigateTo(TeamSection)
-      .teamNameShouldChange();
   },
 );

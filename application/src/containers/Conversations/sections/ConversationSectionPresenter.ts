@@ -3,15 +3,17 @@
  * @Date: 2018-08-22 15:21:30
  * Copyright © RingCentral. All rights reserved.
  */
-import OrderListPresenter from '../../../store/base/OrderListPresenter';
-import OrderListStore from '../../../store/base/OrderListStore';
-import { ENTITY_NAME } from '../../../store';
-import { Group } from 'sdk/models';
 import { service } from 'sdk';
-import { IIncomingData } from '../../../store/store';
-import GroupModel from '../../../store/models/Group';
+import { Group } from 'sdk/models';
+import OrderListPresenter from '@/store/base/OrderListPresenter';
+import OrderListStore from '@/store/base/OrderListStore';
+import { ENTITY_NAME } from '@/store';
+import { IIncomingData } from '@/store/store';
+import GroupModel from '@/store/models/Group';
+
 const { GroupService, AccountService } = service;
-export default class ConversationListPresenter extends OrderListPresenter<Group, GroupModel> {
+
+class ConversationSectionPresenter extends OrderListPresenter<Group, GroupModel> {
   public entityName: ENTITY_NAME = ENTITY_NAME.GROUP;
   constructor(
     public entity?: string,
@@ -58,3 +60,6 @@ export default class ConversationListPresenter extends OrderListPresenter<Group,
     groupService.reorderFavoriteGroups(oldIndex, newIndex);
   }
 }
+
+export default ConversationSectionPresenter;
+export { ConversationSectionPresenter };

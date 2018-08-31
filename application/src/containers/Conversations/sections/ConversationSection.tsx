@@ -15,7 +15,7 @@ import {
 } from 'ui-components';
 import { toTitleCase } from '@/utils';
 import ConversationListItemCell from '../ConversationListItemCell';
-import ConversationListPresenter from './ConversationListPresenter';
+import ConversationSectionPresenter from './ConversationSectionPresenter';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 interface IProps {
@@ -24,7 +24,7 @@ interface IProps {
   iconName: string;
   expanded?: boolean;
   sortable?: boolean;
-  presenter: ConversationListPresenter;
+  presenter: ConversationSectionPresenter;
 }
 const SortableList = SortableContainer(ConversationList);
 const SortableItem = SortableElement(ConversationListItemCell);
