@@ -34,19 +34,27 @@ class Home extends Component<IProps, IStates>  {
     this.homePresenter = new HomePresenter();
   }
 
-  handleExpand = () => {
+  handleLeftNavExpand = () => {
     this.setState({
       isExpand: !this.state.isExpand,
     });
     localStorage.setItem('isExpand', JSON.stringify(!this.state.isExpand));
     const { location, history } = this.props;
-    history.push({
+    history.replace({
       pathname: location.pathname,
       search: `?leftnav=${!this.state.isExpand}`,
     });
   }
+
+  handleSignOutClick = () => {
+    const { handleSignOutClick } = this.homePresenter;
+
+    handleSignOutClick().then(() => {
+      window.location.href = '/';
+    });
+  }
+
   render() {
-    const { signOutClickHandler } = this.homePresenter;
     const { t } = this.props;
 
     const Icons = [
@@ -68,7 +76,7 @@ class Home extends Component<IProps, IStates>  {
     const { isExpand } = this.state;
     return (
       <Wrapper>
-        <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online" data-anchor="expandButton" handleSignOutClick={signOutClickHandler} />
+        <TopBar avatar={avatar} presence="online" data-anchor="expandButton" onLeftNavExpand={this.handleLeftNavExpand} onSignOutClick={this.handleSignOutClick} />
         <Bottom>
           <LeftNav isExpand={isExpand} id="leftnav" icons={Icons} />
           <Main>

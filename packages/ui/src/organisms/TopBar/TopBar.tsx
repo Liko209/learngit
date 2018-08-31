@@ -12,11 +12,12 @@ import SearchBar from '../../molecules/SearchBar';
 import IconButton from '../../molecules/IconButton';
 import MenuListComposition from '../../molecules/MenuListComposition';
 import { PresenceProps } from '../../atoms';
+import { spacing } from '../../utils';
 
 type TTopBarProps = {
   avatar?: string;
-  handleLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
-  handleSignOutClick: ((event: React.MouseEvent<HTMLInputElement>) => void);
+  onLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
+  onSignOutClick: ((event: React.MouseEvent<HTMLInputElement>) => void);
 } & PresenceProps;
 
 type TTopBarState = {
@@ -39,7 +40,7 @@ const TopBarWrapper = styled(Toolbar)`
   && {
     min-height: 64px;
     justify-content: space-between;
-    padding: 0 ${({ theme }) => `${theme.spacing.unit * 4}px`};
+    padding: 0 ${spacing(4)};
     &:hover {
       .react-select__control {
         background: ${({ theme }) => theme.palette.grey[300]};
@@ -191,7 +192,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
         <TopBarWrapper onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
           <TopLeft isShowSearchBar={isShowSearchBar}>
             <MenuWithLogo>
-              <IconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.handleLeftNavExpand} data-anchor="expandButton">
+              <IconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.onLeftNavExpand} data-anchor="expandButton">
                 format_list_bulleted
               </IconButton>
               <TopLogo variant="headline">RingCentral</TopLogo>
@@ -219,7 +220,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
             </IconButton>
             <StyledMenuListComposition
               awake={topBarState === 'hover'}
-              handleSignOutClick={this.props.handleSignOutClick}
+              handleSignOutClick={this.props.onSignOutClick}
               src={this.props.avatar}
               presence={this.props.presence}
             />

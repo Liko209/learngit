@@ -35,15 +35,14 @@ export default class HomePresenter extends BasePresenter {
       !betaUsers.betaUserIdList.some((username: string) => String(this.userId).indexOf(username) > -1)
     ) {
       alert('Invalid account');
-      this.signOutClickHandler();
+      this.handleSignOutClick();
       return;
     }
   }
 
   @action
-  public async signOutClickHandler() {
+  public async handleSignOutClick() {
     const authService: service.AuthService = AuthService.getInstance();
-    await authService.logout();
-    window.location.href = '/';
+    return authService.logout();
   }
 }
