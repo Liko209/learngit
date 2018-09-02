@@ -20,7 +20,13 @@ const HandleByGlip = new class extends AbstractHandleType {
         if (handler && handler.isOAuthTokenAvailable()) {
           request.params = {
             ...request.params,
+            tk: handler.accessToken(),
           };
+          request.headers = {
+            ...request.headers,
+            Authorization: `Bearer ${handler.accessToken()}`,
+          };
+
         }
       }
       if (this.rcTokenProvider && request.via === NETWORK_VIA.SOCKET) {

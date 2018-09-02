@@ -34,14 +34,14 @@ describe('HandleByUpload', () => {
     expect(decoratedRequest.params.tk).toBeUndefined();
     expect(decoratedRequest).toEqual(request);
   });
-  it('should not add tk to params if needAuth is true ', () => {
+  it('should add tk to params if needAuth is true ', () => {
     handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
     handler.accessToken = jest.fn().mockImplementation(() => 'token');
     const decoration = HandleByUpload.requestDecoration(handler);
     const request = postRequest();
     request.needAuth = jest.fn().mockImplementation(() => true);
     const decoratedRequest = decoration(request);
-    expect(decoratedRequest.params.tk).toBeUndefined();
+    expect(decoratedRequest.params.tk).toBe('token');
   });
   it('should not add tk to params if isOAuthTokenAvailable is false ', () => {
     handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);

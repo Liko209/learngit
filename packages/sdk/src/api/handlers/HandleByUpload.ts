@@ -21,6 +21,7 @@ const HandleByUpload = new class extends AbstractHandleType {
         if (handler.isOAuthTokenAvailable()) {
           request.params = {
             ...request.params,
+            tk: handler.accessToken(),
           };
         }
       }
