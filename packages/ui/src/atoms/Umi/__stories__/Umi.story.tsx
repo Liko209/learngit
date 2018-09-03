@@ -9,7 +9,7 @@ import { withInfo } from '@storybook/addon-info';
 import { number, boolean, select } from '@storybook/addon-knobs/react';
 import { Umi } from '..';
 
-storiesOf('Atoms/Umi', module)
+storiesOf('Atoms/Umi 🔜', module)
   .add('with knobs', withInfo({ inline: true })(
     () => {
       return (

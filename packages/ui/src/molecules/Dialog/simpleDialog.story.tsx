@@ -7,7 +7,7 @@ import DialogHeader from '../../atoms/DialogHeader';
 import DialogTitle from '../../atoms/DialogTitle';
 import { withInfoDecorator } from '../../utils/decorators';
 
-storiesOf('Molecules/Dialog', module)
+storiesOf('Molecules/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(Dialog))
   .addWithJSX('Simple Popup', () => {
     return (

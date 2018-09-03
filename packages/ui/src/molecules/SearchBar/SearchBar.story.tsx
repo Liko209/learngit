@@ -6,12 +6,11 @@
 /// <reference path="../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfo } from '@storybook/addon-info';
 import { withInfoDecorator } from '../../utils/decorators';
 
 import SearchBar from '.';
 
-storiesOf('Molecules/SearchBar', module)
+storiesOf('Molecules/SearchBar 🔜', module)
   .addDecorator(withInfoDecorator(SearchBar, { inline: true }))
   .addWithJSX('SearchBar', () => {
     return (
