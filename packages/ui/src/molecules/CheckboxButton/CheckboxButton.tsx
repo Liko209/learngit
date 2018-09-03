@@ -27,7 +27,7 @@ const iconSizes = {
   small: 1.6,
 };
 
-const rippleEnter = (theme: Theme) => keyframes`
+const rippleEnter = ({ theme }: { theme: Theme }) => keyframes`
   from {
     transform: scale(0);
     opacity: 0.1;
