@@ -39,19 +39,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var createTestCafe = require('testcafe');
 var TerminationHandler = require('testcafe/lib/cli/termination-handler');
 var filter_1 = require("./libs/filter");
 var utils_1 = require("./libs/utils");
-var FIXTURES = utils_1.flattenGlobs(utils_1.parseArgs(process.env.FIXTURES || __dirname + "/../fixtures/**/*.ts"));
+var config_1 = require("./config");
 var REPORTER = process.env.REPORTER || 'allure-lazy';
 var SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
 var SCREENSHOT_ON_FAIL = String(process.env.SCREENSHOT_ON_FAIL).trim().toLowerCase() === 'false' ? false : true;
 var CONCURRENCY = process.env.CONCURRENCY || '1';
-var BROWSERS = utils_1.parseArgs(process.env.BROWSERS || 'chrome');
-var INCLUDE_TAGS = utils_1.parseArgs(process.env.INCLUDE_TAGS || '');
-var EXCLUDE_TAGS = utils_1.parseArgs(process.env.EXCLUDE_TAGS || '');
+var FIXTURES = utils_1.flattenGlobs(process.env.FIXTURES ? utils_1.parseArgs(process.env.FIXTURES) : config_1.EXECUTION_STRATEGIES_HELPER.fixtures);
+var BROWSERS = process.env.BROWSERS ? utils_1.parseArgs(process.env.BROWSERS) : config_1.EXECUTION_STRATEGIES_HELPER.browsers;
+var INCLUDE_TAGS = process.env.INCLUDE_TAGS ? utils_1.parseArgs(process.env.INCLUDE_TAGS) : config_1.EXECUTION_STRATEGIES_HELPER.includeTags;
+var EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? utils_1.parseArgs(process.env.EXCLUDE_TAGS) : config_1.EXECUTION_STRATEGIES_HELPER.excludeTags;
 var showMessageOnExit = true;
 var exitMessageShown = false;
 var exiting = false;
@@ -92,6 +93,7 @@ function runTests() {
                         .reporter(REPORTER)
                         .screenshots(SCREENSHOTS_PATH, SCREENSHOT_ON_FAIL)
                         .concurrency(Number(CONCURRENCY));
+                    runner.once('done-bootstrapping', function () { return console.log('running...'); });
                     _a.label = 2;
                 case 2:
                     _a.trys.push([2, , 4, 6]);

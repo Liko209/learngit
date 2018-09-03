@@ -9,15 +9,16 @@ const TerminationHandler = require('testcafe/lib/cli/termination-handler');
 
 import { filterByTags } from './libs/filter';
 import { flattenGlobs, parseArgs } from './libs/utils';
+import { EXECUTION_STRATEGIES_HELPER as STRATEGY } from './config';
 
-const FIXTURES = flattenGlobs(parseArgs(process.env.FIXTURES || `${__dirname}/../fixtures/**/*.ts`));
 const REPORTER = process.env.REPORTER || 'allure-lazy';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
 const SCREENSHOT_ON_FAIL = String(process.env.SCREENSHOT_ON_FAIL).trim().toLowerCase() === 'false' ? false : true;
 const CONCURRENCY = process.env.CONCURRENCY || '1';
-const BROWSERS = parseArgs(process.env.BROWSERS || 'chrome');
-const INCLUDE_TAGS = parseArgs(process.env.INCLUDE_TAGS || '');
-const EXCLUDE_TAGS = parseArgs(process.env.EXCLUDE_TAGS || '');
+const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : STRATEGY.fixtures);
+const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : STRATEGY.browsers;
+const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : STRATEGY.includeTags;
+const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : STRATEGY.excludeTags;
 
 let showMessageOnExit = true;
 let exitMessageShown = false;
@@ -58,7 +59,7 @@ async function runTests() {
     .screenshots(SCREENSHOTS_PATH, SCREENSHOT_ON_FAIL)
     .concurrency(Number(CONCURRENCY));
 
-  // runner.once('done-bootstrapping', () => console.log('running...'));
+  runner.once('done-bootstrapping', () => console.log('running...'));
 
   try {
     failed = await runner.run();

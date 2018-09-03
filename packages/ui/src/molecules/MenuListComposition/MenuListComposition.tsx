@@ -6,7 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
-import IconButton from '../IconButton';
+import JuiIconButton from '../IconButton';
 
 type TIconMore = {
   awake?: boolean;
@@ -44,7 +44,7 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
     const { open } = this.state;
     return (
       <MenuListCompositionWrapper>
-        <IconButton
+        <JuiIconButton
           buttonRef={this.anchorEl}
           aria-haspopup="true"
           size="medium"
@@ -53,7 +53,7 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
           onClick={this.handleToggle}
         >
           add_circle
-        </IconButton>
+        </JuiIconButton>
         <MenuWrapper
           open={open}
           anchorEl={this.anchorEl.current}

@@ -8,16 +8,16 @@ import { ThemeProvider } from '../src/theme/index';
 
 const ThemeDecorator = storyFn => (
   <ThemeProvider themeName="default">
-      <div style={{ paddingTop: '25px' }}>{storyFn()}</div>
+    <div style={{ paddingTop: '25px' }}>{storyFn()}</div>
   </ThemeProvider>
 );
 
 function requireAll(requireContext) {
-    return requireContext.keys().map(requireContext);
+  return requireContext.keys().map(requireContext);
 }
 
 function loadStories() {
-    requireAll(require.context('../src', true, /\.story\.tsx?$/));
+  requireAll(require.context('../src', true, /\.story\.tsx?$/));
 }
 
 addDecorator(withKnobs);

@@ -4,7 +4,7 @@
  * @Date: 2018-08-15 11:15:59
  * Copyright © RingCentral. All rights reserved.
  */
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 function isValidTag(tag) {
     return /^[a-zA-Z_$][a-zA-Z_$0-9 ]*$/.test(tag);
 }

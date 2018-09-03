@@ -14,13 +14,13 @@ const StyledWrapper = styled.div`
 `;
 const Wrapper = (props: { children: any }) => <StyledWrapper>{props.children}</StyledWrapper>;
 
-storiesOf('Atoms/Presence', module)
+storiesOf('Atoms/Presence 🔜', module)
   .add('status', withInfo({ inline: true })(() => {
     return (
       <div>
-        <Wrapper><Presence status="online" /> online</Wrapper>
-        <Wrapper><Presence status="away" /> away</Wrapper>
-        <Wrapper><Presence status="offline" /> offline</Wrapper>
+        <Wrapper><Presence presence="online" /> online</Wrapper>
+        <Wrapper><Presence presence="away" /> away</Wrapper>
+        <Wrapper><Presence presence="offline" /> offline</Wrapper>
       </div>
     );
   }));

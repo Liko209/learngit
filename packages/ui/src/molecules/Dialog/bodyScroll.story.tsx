@@ -7,34 +7,29 @@ import Dialog from '../../atoms/Dialog';
 import DialogTitle from '../../atoms/DialogTitle';
 import DialogHeader from '../../atoms/DialogHeader';
 import { randomText } from './utils';
+import { withInfoDecorator } from '../../utils/decorators';
 
-storiesOf('Molecules/Dialog', module)
-  .addWithJSX('Body scroll', withInfo(`
-      description or documentation about my component, supports markdown
-
-      ~~~js
-      <Button>Click Here</Button>
-      ~~~
-
-  `)(() => {
+storiesOf('Molecules/Dialog 🔜', module)
+  .addDecorator(withInfoDecorator(Dialog))
+  .addWithJSX('Body scroll', () => {
     return (
-        <Dialog
-          open={true}
-          size={'medium'}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          scroll={'body'}
-        >
-          <DialogHeader titleComp={<DialogTitle>Headline</DialogTitle>}>
-            <Typography align="justify" variant="body1">
+      <Dialog
+        open={true}
+        size={'medium'}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        scroll={'body'}
+      >
+        <DialogHeader titleComp={<DialogTitle>Headline</DialogTitle>}>
+          <Typography align="justify" variant="body1">
             {randomText}
-            </Typography>
-          </DialogHeader>
-          <DialogActions>
-            <Button color="primary">
-              Agree
+          </Typography>
+        </DialogHeader>
+        <DialogActions>
+          <Button color="primary">
+            Agree
             </Button>
-          </DialogActions>
-        </Dialog>
+        </DialogActions>
+      </Dialog>
     );
-  }));
+  });
