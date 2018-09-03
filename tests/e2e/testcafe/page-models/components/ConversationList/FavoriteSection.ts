@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ReactSelector } from 'testcafe-react-selectors';
-import { BasePage } from '../../BasePage';
+import { BaseComponent } from '../..';
 
-export class FavoriteSection extends BasePage {
+export class FavoriteSection extends BaseComponent {
 
   get section() {
     return ReactSelector('ConversationSection').withProps('title', 'Favorite');

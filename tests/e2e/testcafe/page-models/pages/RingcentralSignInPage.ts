@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BasePage } from './BasePage';
+import { BasePage } from '..';
 import { Selector } from 'testcafe';
 
 export class RingcentralSignInPage extends BasePage {
@@ -26,28 +26,21 @@ export class RingcentralSignInPage extends BasePage {
   }
 
   setCredential(credential: string): this {
-    return this.chain(async t =>
-      await t.typeText(this.credentialField, credential),
-    );
+    return this.chain(async t => await t.typeText(this.credentialField, credential));
   }
 
   setExtension(extension: string): this {
     return this.chain(async (t) => {
       if (extension === '') return;
       return await t.typeText(this.extensionField, extension);
-    },
-    );
+    });
   }
 
   setPassword(password: string): this {
-    return this.chain(async t =>
-      await t.typeText(this.passwordField, password),
-    );
+    return this.chain(async t => await t.typeText(this.passwordField, password));
   }
 
   signIn(): this {
-    return this.chain(async t =>
-      await t.click(this.signInButton),
-    );
+    return this.chain(async t => await t.click(this.signInButton));
   }
 }

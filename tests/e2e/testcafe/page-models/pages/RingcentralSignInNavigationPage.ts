@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BasePage } from './BasePage';
+import { BasePage } from '..';
 import { Selector } from 'testcafe';
 
 export class RingcentralSignInNavigationPage extends BasePage {

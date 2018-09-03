@@ -7,7 +7,6 @@ import { formalName } from '../libs/filter';
 import { setUp, tearDown } from '../libs/helpers';
 import { unifiedLogin } from '../utils';
 
-declare var test: TestFn;
 fixture('UnifiedLogin')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown());
