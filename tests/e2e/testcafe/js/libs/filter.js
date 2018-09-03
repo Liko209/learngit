@@ -28,7 +28,7 @@ function formalName(name, tags) {
         formalName = tags
             .map(function (tag) { return tag.trim(); })
             .map(function (tag) { return validateTag(tag) || "[" + tag + "]"; })
-            .join("") + " " + formalName;
+            .join('') + ' ' + formalName;
     }
     return formalName;
 }
@@ -41,7 +41,7 @@ function parseFormalName(formalName) {
         tags.push(match[1]);
         rest = match[2];
     }
-    return { name: rest.trim(), tags: tags };
+    return { tags: tags, name: rest.trim() };
 }
 exports.parseFormalName = parseFormalName;
 function filterByTags(includeTags, excludeTags) {
@@ -49,10 +49,10 @@ function filterByTags(includeTags, excludeTags) {
         var flag = true;
         var nameTags = parseFormalName(caseName);
         if (includeTags && includeTags.length > 0) {
-            flag = flag && nameTags.tags.some(function (tag) { return includeTags.some(function (includeTag) { return tag == includeTag; }); });
+            flag = flag && nameTags.tags.some(function (tag) { return includeTags.some(function (includeTag) { return tag === includeTag; }); });
         }
         if (excludeTags && excludeTags.length > 0) {
-            flag = flag && !nameTags.tags.some(function (tag) { return excludeTags.some(function (excludeTag) { return tag == excludeTag; }); });
+            flag = flag && !nameTags.tags.some(function (tag) { return excludeTags.some(function (excludeTag) { return tag === excludeTag; }); });
         }
         return flag;
     };

@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import G from 'glob';
+import * as _ from 'lodash';
+import * as G from 'glob';
 
 export function parseArgs(argsString: string) {
   return argsString.split(',').filter(Boolean).map(s => s.trim());
