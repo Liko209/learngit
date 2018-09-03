@@ -6,16 +6,23 @@
 import { ReactSelector } from 'testcafe-react-selectors';
 import { BasePage } from '../../BasePage';
 
-const section = ReactSelector('ConversationSection').withProps('title', 'Favorite');
-const listItem = section.findReact('ConversationListItem');
-const header = section.findReact('ConversationListSectionHeader');
-const collapse = section.findReact('Collapse');
+export class FavoriteSection extends BasePage {
 
-class FavoriteSection extends BasePage {
-  section: Selector = section;
-  header: Selector = header;
-  collapse: Selector = collapse;
-  listItem: Selector = listItem;
+  get section() {
+    return ReactSelector('ConversationSection').withProps('title', 'Favorite');
+  }
+
+  get header() {
+    return this.section.findReact('ConversationListSectionHeader');
+  }
+
+  get collapse() {
+    return this.section.findReact('Collapse');
+  }
+
+  get listItem() {
+    return this.section.findReact('ConversationListItem');
+  }
 
   clickHeader() {
     return this.clickElement(this.header);
@@ -25,14 +32,11 @@ class FavoriteSection extends BasePage {
     return this.chain(async (t) => {
       const draggedItem = this.listItem.nth(from);
       const targetItem = this.listItem.nth(to);
-
-      // TODO This is a hack to wait for draggedItem
+      // TODO: This is a hack to wait for draggedItem
       await t.click(draggedItem);
-
       const draggedComponent = await draggedItem.getReact();
       await t.dragToElement(draggedItem, targetItem);
       const targetComponent = await targetItem.getReact();
-
       await t.expect(draggedComponent.key).eql(targetComponent.key, `should drag ${from} item to ${to} position`);
     });
   }
@@ -49,5 +53,3 @@ class FavoriteSection extends BasePage {
     });
   }
 }
-
-export { FavoriteSection };
