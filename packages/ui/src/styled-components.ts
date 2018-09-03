@@ -31,8 +31,8 @@ type Attrs<P, A extends Partial<P>, T> = {
 
 type ThemedStyledComponentFactories<T> = {
   [TTag in keyof JSX.IntrinsicElements]: styledComponents.ThemedStyledFunction<
-    JSX.IntrinsicElements[TTag],
-    T
+  JSX.IntrinsicElements[TTag],
+  T
   >
 };
 
@@ -49,7 +49,7 @@ interface IThemedStyledFunction<P, T, O = P> {
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P & U, T>
-    >[] // tslint:disable-line
+      >[] // tslint:disable-line
   ): styledComponents.StyledComponentClass<P & U, T, O & U> & IDependencies;
   attrs<U, A extends Partial<P & U> = {}>(
     attrs: Attrs<P & U, A, T>,
@@ -60,9 +60,9 @@ interface IThemedBaseStyledInterface<T>
   extends ThemedStyledComponentFactories<T> {
   <P, TTag extends keyof JSX.IntrinsicElements>(
     tag: TTag,
-  ): IThemedStyledFunction<P, T, P & JSX.IntrinsicElements[TTag]> ;
+  ): IThemedStyledFunction<P, T, P & JSX.IntrinsicElements[TTag]>;
   <P, O>(component: styledComponents.StyledComponentClass<P, T, O>):
-  IThemedStyledFunction<P, T, O>;
+    IThemedStyledFunction<P, T, O>;
   <P extends { [prop: string]: any; theme?: T }>(
     component: React.ComponentType<P>,
   ): IThemedStyledFunction<P, T, WithOptionalTheme<P, T>>;
@@ -102,5 +102,7 @@ export {
   IThemedStyledFunction,
   IThemedBaseStyledInterface,
   IThemedStyledComponentsModule,
+  IDependencies,
+  WithOptionalTheme,
 };
 export default styled;

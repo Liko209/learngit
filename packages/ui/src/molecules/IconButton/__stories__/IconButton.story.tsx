@@ -3,13 +3,20 @@
  * @Date: 2018-08-22 15:22:47
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../.storybook/storybook.d.ts" />
+/// <reference path="../../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select } from '@storybook/addon-knobs/react';
-import { withInfo } from '@storybook/addon-info';
+import { alignCenterDecorator, withInfoDecorator } from '../../../utils/decorators';
 
-import IconButton from '.';
+import JuiIconButton from '..';
+import styled from '../../../styled-components';
+
+const Wrapper = styled.div`
+  .iconButtonWrapper {
+    margin-right: 20px;
+  }
+`;
 
 const knobs = {
   size: () => select(
@@ -30,73 +37,71 @@ const knobs = {
     'primary',
   ),
   invisible: () => boolean('invisible', false),
-  awake: () => boolean('awake', false),
+  awake: () => boolean('awake', true),
   disabled: () => boolean('disabled', false),
 };
-storiesOf('IconButton', module)
-  .addDecorator((storyFn) => {
-    return <div style={{ textAlign: 'center' }}>{storyFn()}</div>;
-  })
-  .addWithJSX('plain', withInfo(``)(() => {
+storiesOf('Molecules/IconButton', module)
+  .addDecorator(alignCenterDecorator)
+  .addDecorator(withInfoDecorator(JuiIconButton, { inline: true }))
+  .addWithJSX('plain', () => {
     return (
-      <div>
-        <IconButton
+      <Wrapper>
+        <JuiIconButton
+          className="iconButtonWrapper"
           variant="plain"
           color={knobs.color()}
           size={knobs.size()}
           awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
-          tooltipTitle="I'm a star"
+          tooltipTitle="add"
         >
           add_circle
-        </IconButton>
-        <br />
-        <br />
-        <IconButton
+        </JuiIconButton>
+        <JuiIconButton
+          className="iconButtonWrapper"
           variant="plain"
           color={knobs.color()}
           size={knobs.size()}
           awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
-          tooltipTitle="like"
+          tooltipTitle="remove"
         >
           remove_circle
-        </IconButton>
-        <br />
-        <br />
-        <IconButton
+        </JuiIconButton>
+        <JuiIconButton
+          className="iconButtonWrapper"
           variant="plain"
           color={knobs.color()}
           size={knobs.size()}
           awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
-          tooltipTitle="I'm a star"
+          tooltipTitle="add"
         >
           add_circle_outlined
-        </IconButton>
-        <br />
-        <br />
-        <IconButton
+        </JuiIconButton>
+        <JuiIconButton
+          className="iconButtonWrapper"
           variant="plain"
           color={knobs.color()}
           size={knobs.size()}
           awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
-          tooltipTitle="like"
+          tooltipTitle="remove"
         >
           remove_circle_outlined
-        </IconButton>
-      </div>
+        </JuiIconButton>
+      </Wrapper>
     );
-  }))
-  .addWithJSX('round', withInfo(``)(() => {
+  })
+  .addWithJSX('round', () => {
     return (
-      <div>
-        <IconButton
+      <Wrapper>
+        <JuiIconButton
+          className="iconButtonWrapper"
           variant="round"
           color={knobs.color()}
           size={knobs.size()}
@@ -106,10 +111,9 @@ storiesOf('IconButton', module)
           tooltipTitle="I'm a star"
         >
           star
-        </IconButton>
-        <br />
-        <br />
-        <IconButton
+        </JuiIconButton>
+        <JuiIconButton
+          className="iconButtonWrapper"
           variant="round"
           color={knobs.color()}
           size={knobs.size()}
@@ -119,10 +123,9 @@ storiesOf('IconButton', module)
           tooltipTitle="like"
         >
           favorite
-        </IconButton>
-        <br />
-        <br />
-        <IconButton
+        </JuiIconButton>
+        <JuiIconButton
+          className="iconButtonWrapper"
           variant="round"
           color={knobs.color()}
           size={knobs.size()}
@@ -132,10 +135,9 @@ storiesOf('IconButton', module)
           tooltipTitle="I'm a star"
         >
           star_border
-        </IconButton>
-        <br />
-        <br />
-        <IconButton
+        </JuiIconButton>
+        <JuiIconButton
+          className="iconButtonWrapper"
           variant="round"
           color={knobs.color()}
           size={knobs.size()}
@@ -145,7 +147,7 @@ storiesOf('IconButton', module)
           tooltipTitle="like"
         >
           favorite_border
-        </IconButton>
-      </div>
+        </JuiIconButton>
+      </Wrapper>
     );
-  }));
+  });
