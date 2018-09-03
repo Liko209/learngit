@@ -5,8 +5,10 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import AccountService from '..';
 import { daoManager, AccountDao, PersonDao } from '../../../dao';
+import { ACCOUNT_CONVERSATION_LIST_LIMITS } from '../../../dao/account/constants';
 
 import { refreshToken } from '../../../api';
+import { GROUP_QUERY_TYPE } from '../../constants';
 jest.mock('../../../dao');
 jest.mock('../../../api');
 
@@ -139,5 +141,50 @@ describe('AccountService', () => {
     expect.assertions(1);
     const token = accountService.refreshRCToken();
     return expect(token).resolves.toEqual(null);
+  });
+
+  describe('getConversationListLimits()', () => {
+    it('should return default limits', () => {
+      const conversationListLimits = accountService.getConversationListLimits();
+
+      expect(conversationListLimits).toEqual({
+        all: 20,
+        group: 20,
+        team: 20,
+        favorite: Infinity,
+      });
+    });
+  });
+
+  describe('getConversationListLimit()', () => {
+    it('should the specific type limit', () => {
+      const limit = accountService.getConversationListLimit(GROUP_QUERY_TYPE.GROUP);
+      expect(limit).toEqual(20);
+    });
+  });
+
+  describe('setConversationListLimits()', () => {
+    it('should update limits', () => {
+      const newLimits = {
+        all: 1,
+        group: 2,
+        team: 3,
+        favorite: 4,
+      };
+      accountService.setConversationListLimits(newLimits);
+      expect(accountDao.put).toHaveBeenCalledWith(ACCOUNT_CONVERSATION_LIST_LIMITS, newLimits);
+    });
+  });
+
+  describe('setConversationListLimit()', () => {
+    it('should update limit of specific type', () => {
+      accountService.setConversationListLimit(GROUP_QUERY_TYPE.TEAM, 1);
+      expect(accountDao.put).toHaveBeenCalledWith(ACCOUNT_CONVERSATION_LIST_LIMITS, {
+        team: 1,
+        all: 20,
+        favorite: Infinity,
+        group: 20,
+      });
+    });
   });
 });
