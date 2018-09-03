@@ -4,6 +4,8 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { service } from 'sdk';
 import { parse } from 'qs';
 
+import ContentLoader from 'ui-components/organisms/ContentLoader';
+
 interface IProps extends RouteComponentProps<{}> { }
 
 interface IStates { }
@@ -35,10 +37,7 @@ class GetToken extends Component<IProps, IStates>  {
   }
 
   render() {
-    return (
-      <div>
-        get tokenk, loading...
-      </div>);
+    return < ContentLoader />;
   }
 }
 

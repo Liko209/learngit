@@ -1,4 +1,4 @@
-import React, { Component, createElement, ComponentType } from 'react';
+import React, { Component, createElement, ComponentType, ComponentClass } from 'react';
 import hoistStatics from 'hoist-non-react-statics';
 import { BaseModel } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
@@ -23,14 +23,14 @@ function createStoreInjector<P>(WrappedComponent: ComponentType<P>) {
       (WrappedComponent.constructor && WrappedComponent.constructor.name) ||
       'Unknown')}`;
 
-  class Injector extends Component<P & IComponentWithGetEntityProps> {
+  class Injector extends Component<Omit<P, keyof IComponentWithGetEntityProps>> {
     static readonly displayName = displayName;
     static readonly wrappedComponent = WrappedComponent;
     wrappedInstance: React.ReactInstance;
     storeManager: StoreManager;
     entityStore: {[parameter: string]: MultiEntityMapStore<any, any>} = {};
 
-    constructor(props: P & IComponentWithGetEntityProps) {
+    constructor(props: Omit<P, keyof IComponentWithGetEntityProps>) {
       super(props);
       this.createElementWithStores = this.createElementWithStores.bind(this);
       this.getEntity = this.getEntity.bind(this);
@@ -78,9 +78,9 @@ function createStoreInjector<P>(WrappedComponent: ComponentType<P>) {
 }
 
 export default function inject() {
-  return <OriginalProps extends { [key: string]: any }, Component extends React.ComponentClass<OriginalProps>>(
+  return <OriginalProps extends { [key: string]: any }, Component extends React.ComponentType<OriginalProps>>(
     WrappedComponent: ComponentType<OriginalProps>,
-  ): ComponentType<Omit<OriginalProps, keyof IComponentWithGetEntityProps>> => {
+  ): ComponentClass<Omit<OriginalProps, keyof IComponentWithGetEntityProps>> => {
     return createStoreInjector<OriginalProps>(WrappedComponent);
   };
 }
