@@ -11,7 +11,7 @@ import { withInfo } from '@storybook/addon-info';
 import MenuListComposition from '.';
 import { withInfoDecorator } from '../../utils/decorators';
 
-storiesOf('Molecules/MenuListComposition', module)
+storiesOf('Molecules/MenuListComposition 🔜', module)
   .addDecorator(withInfoDecorator(MenuListComposition, { inline: true }))
   .addWithJSX('MenuListComposition', () => {
     return (

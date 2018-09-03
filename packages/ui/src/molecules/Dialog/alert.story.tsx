@@ -9,7 +9,7 @@ import DialogActions from '../../atoms/DialogAction';
 import Dialog from '../../atoms/Dialog';
 import { withInfoDecorator } from '../../utils/decorators';
 
-storiesOf('Molecules/Dialog', module)
+storiesOf('Molecules/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(Dialog))
   .addWithJSX('Alert and Confirmation', () => {
     const size = select(

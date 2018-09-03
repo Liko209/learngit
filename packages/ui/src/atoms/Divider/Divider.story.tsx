@@ -3,14 +3,15 @@
  * @Date: 2018-08-17 10:37:17
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfo } from '@storybook/addon-info';
 import { Divider } from '.';
+import { withInfoDecorator } from '../../utils/decorators';
 
-storiesOf('Atoms/Divider', module)
-  .add('default', withInfo(``)(() => (
-    <Fragment>
+storiesOf('Atoms/Divider 🔜', module)
+  .addDecorator(withInfoDecorator(Divider, { inline: true }))
+  .add('default', () => (
+    <div>
       <h2>test</h2>
       <p>test test test test test</p>
       <Divider />
@@ -20,5 +21,5 @@ storiesOf('Atoms/Divider', module)
       <h2>test</h2>
       <p>test test test test test</p>
       <Divider />
-    </Fragment>
-  )));
+    </div>
+  ));

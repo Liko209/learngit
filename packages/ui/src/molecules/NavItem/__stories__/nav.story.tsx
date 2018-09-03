@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { boolean, number, select } from '@storybook/addon-knobs/react';
 import { storiesOf } from '@storybook/react';
-import { withInfo } from '@storybook/addon-info';
 import { NavItem } from '..';
 import { BrowserRouter } from 'react-router-dom';
 import { withInfoDecorator } from '../../../utils/decorators';
