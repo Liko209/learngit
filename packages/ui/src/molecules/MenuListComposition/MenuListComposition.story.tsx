@@ -9,10 +9,12 @@ import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 
 import MenuListComposition from '.';
+import { withInfoDecorator } from '../../utils/decorators';
 
-storiesOf('MenuListComposition', module)
-  .addWithJSX('MenuListComposition', withInfo(``)(() => {
+storiesOf('Molecules/MenuListComposition', module)
+  .addDecorator(withInfoDecorator(MenuListComposition, { inline: true }))
+  .addWithJSX('MenuListComposition', () => {
     return (
       <MenuListComposition />
     );
-  }));
+  });

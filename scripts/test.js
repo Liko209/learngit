@@ -50,7 +50,7 @@ switch(true) {
     process.env.APP = '<rootDir>/packages/foundation';
     break;
   default:
-    process.env.APP = '<rootDir>/{demo|application|packages/sdk|packages/foundation}';
+    process.env.APP = '<rootDir>/{application|packages/sdk|packages/foundation}';
     break;
 }
 

@@ -78,6 +78,12 @@ export class TestHelper {
     if (this.t.ctx.logs === undefined) {
       this.t.ctx.logs = [];
     }
+    if (startTime === undefined) {
+      startTime = Date.now();
+    }
+    if (endTime === undefined) {
+      endTime = startTime;
+    }
 
     let screenPath;
     if (takeScreen) {

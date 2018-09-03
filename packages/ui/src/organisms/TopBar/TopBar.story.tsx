@@ -7,14 +7,16 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
+import { withInfoDecorator } from '../../utils/decorators';
 
 import TopBar from '.';
 
 import avatar from '../../atoms/Avatar/img/avatar.jpg';
 
-storiesOf('TopBar', module)
-  .addWithJSX('TopBar', withInfo(``)(() => {
+storiesOf('Organisms/TopBar', module)
+  .addDecorator(withInfoDecorator(TopBar, { inline: true }))
+  .addWithJSX('TopBar', () => {
     return (
       <TopBar avatar={avatar} presence="online" />
     );
-  }));
+  });
