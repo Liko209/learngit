@@ -46,7 +46,9 @@ const styles = {
   auto: styleAuto,
 };
 
-const StyledUmi = styled<UmiProps, 'span'>('span')`
+const StyledUmi = styled<UmiProps, 'span'>('span').attrs({
+  'aria-hidden': true} as any,
+)`
   display: inline-block;
   width: ${ props => String(props.unreadCount).length === 1 ? 18 + 'px' : (String(props.unreadCount).length === 2 ? 22 + 'px' : 28 + 'px')};
   height: 18px;
