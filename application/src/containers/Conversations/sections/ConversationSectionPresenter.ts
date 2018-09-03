@@ -16,20 +16,14 @@ const { GroupService, AccountService } = service;
 class ConversationSectionPresenter extends OrderListPresenter<Group, GroupModel> {
   public entityName: ENTITY_NAME = ENTITY_NAME.GROUP;
   constructor(
-    public entity?: string,
-    public queryType?: string,
-    transformFunc?: Function,
+    public entity: string,
+    public queryType: string,
+    transformFunc: Function,
   ) {
     super(
       new OrderListStore(`ConversationList: ${queryType}`),
       () => true,
-      transformFunc ? transformFunc : (dataModel: Group, index: number) => ({
-        id: dataModel.id,
-        sortKey: -(
-          dataModel.most_recent_post_created_at ||
-          (dataModel.is_new && dataModel.created_at)
-        ),
-      }),
+      transformFunc,
     );
     this.init();
   }

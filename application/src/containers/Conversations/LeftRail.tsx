@@ -4,6 +4,7 @@ import { Divider, styled } from 'ui-components';
 
 import { LeftRailPresenter } from './LeftRailPresenter';
 import { ConversationSection, ConversationSectionPresenter } from './sections';
+import { transformGroupSortKey } from './transformFunc';
 
 type IProps = {} & RouteComponentProps<any>;
 
@@ -29,7 +30,7 @@ class LeftRail extends Component<IProps> {
     super(props);
     this.presenter = new LeftRailPresenter();
     this.sections = this.presenter.sections.map(({ entity, queryType, transformFunc, ...rest }) => ({
-      presenter: new ConversationSectionPresenter(entity, queryType, transformFunc),
+      presenter: new ConversationSectionPresenter(entity, queryType, transformFunc || transformGroupSortKey),
       ...rest,
     }));
   }
