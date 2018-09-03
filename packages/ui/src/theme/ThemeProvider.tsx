@@ -4,7 +4,7 @@ import createMuiTheme, {
   Theme as MuiTheme,
 } from '@material-ui/core/styles/createMuiTheme';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import { ThemeProvider as StyledThemeProvider } from 'styled-components';
+import { ThemeProps as StyledThemeProps, ThemeProvider as StyledThemeProvider } from 'styled-components';
 import defaultTheme from './config/default';
 
 export interface ThemeProviderProps {
@@ -44,8 +44,10 @@ const ThemeProvider: React.SFC<ThemeProviderProps> = ({ themeName, children }) =
 };
 
 type Theme = MuiTheme & typeof defaultTheme;
+type ThemeProps = StyledThemeProps<Theme>;
 
 export {
   Theme,
+  ThemeProps,
   ThemeProvider,
 };

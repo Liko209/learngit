@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import ReactContentLoader from 'react-content-loader';
 import Grid from '@material-ui/core/Grid';
 import { withTheme } from 'styled-components';
-import { ThemeProps } from '../../styled-components';
+import { ThemeProps } from '../../theme';
 
 class ContentLoader extends PureComponent<ThemeProps> {
   static dependencies: React.ComponentType[];
@@ -10,7 +10,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
   render() {
     const { theme: { palette: { grey } } } = this.props;
     return (
-      <Grid container={true} direction="row" alignItems="stretch" justify="space-between">
+      <Grid style={{ height: '100%' }} container={true} direction="row" alignItems="stretch" justify="space-between">
         <Grid item={true} style={{ width: '16%', backgroundColor: `${grey['A100']}` }}>
           <ReactContentLoader style={{ width: '100%' }} width={200} height={300}>
             <rect x="20" y="15" rx="10" ry="10" width="160" height="20" />

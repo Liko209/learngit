@@ -94,8 +94,6 @@ const {
   ThemeProvider,
 } = styledComponents as IThemedStyledComponentsModule<Theme>;
 
-type ThemeProps = styledComponents.ThemeProps<Theme>;
-
 export {
   css,
   injectGlobal,
@@ -104,6 +102,5 @@ export {
   IThemedStyledFunction,
   IThemedBaseStyledInterface,
   IThemedStyledComponentsModule,
-  ThemeProps,
 };
 export default styled;
