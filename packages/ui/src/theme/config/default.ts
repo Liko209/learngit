@@ -74,7 +74,42 @@ const theme = {
     height: 10,
   },
   typography: {
-    fontSize: 14,
+    title1: {
+      fontSize: '1.25rem',
+      fontWeight: 400,
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      lineHeight: '24px',
+    },
+    title2: {
+      fontSize: '1.25rem',
+      fontWeight: 500,
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      lineHeight: '24px',
+    },
+    subheading1: {
+      fontSize: '1rem',
+      fontWeight: 400,
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      lineHeight: '24px',
+    },
+    subheading2: {
+      fontSize: '1rem',
+      fontWeight: 500,
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      lineHeight: '24px',
+    },
+    caption1: {
+      fontSize: '0.75rem',
+      fontWeight: 400,
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      lineHeight: '16px',
+    },
+    caption2: {
+      fontSize: '0.75rem',
+      fontWeight: 500,
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      lineHeight: '16px',
+    },
   },
 };
 
