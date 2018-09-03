@@ -430,4 +430,18 @@ describe('PostService', () => {
       jest.clearAllMocks();
     });
   });
+
+  describe('groupHasPostInLocal', async () => {
+    it('has post in local', async () => {
+      postDao.queryPostsByGroupId.mockResolvedValueOnce([{ id: 1 }]);
+      const result = await postService.groupHasPostInLocal(1);
+      expect(result).toBe(true);
+    });
+    it('has not post in local', async () => {
+      postDao.queryPostsByGroupId.mockResolvedValueOnce([]);
+      const result = await postService.groupHasPostInLocal(1);
+      expect(result).toBe(false);
+    });
+  });
+
 });

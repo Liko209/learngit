@@ -12,6 +12,7 @@ import { fetchIndexData, fetchInitialData, fetchRemainingData } from './fetchInd
 import handleData from './handleData';
 import { mainLogger } from 'foundation';
 import { notificationCenter } from '..';
+import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 
 export default class SyncService extends BaseService {
   private isLoading: boolean;
@@ -35,11 +36,17 @@ export default class SyncService extends BaseService {
     const configDao = daoManager.getKVDao(ConfigDao);
     const lastIndexTimestamp = configDao.get(LAST_INDEX_TIMESTAMP);
     if (lastIndexTimestamp) {
-      await this._sysnIndexData(lastIndexTimestamp);
+      await this._syncIndexData(lastIndexTimestamp);
     } else {
       await this._firstLogin();
     }
     this.isLoading = false;
+    this._preLoadPosts();
+  }
+
+  private async _preLoadPosts() {
+    const handler = new PreloadPostsForGroupHandler();
+    handler.preloadPosts();
   }
 
   private async _firstLogin() {
@@ -54,7 +61,7 @@ export default class SyncService extends BaseService {
       notificationCenter.emitService(SERVICE.DO_SIGN_OUT);
     }
   }
-  private async _sysnIndexData(timeStamp: number) {
+  private async _syncIndexData(timeStamp: number) {
     // 5 minutes ago to ensure data is correct
     const result = await fetchIndexData(String(timeStamp - 300000));
     handleData(result);
