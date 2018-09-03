@@ -1,5 +1,5 @@
-import { transformGroupSortKey } from '../transformFunc';
 import { Group } from 'sdk/models';
+import { transformGroupSortKey } from '../transformFunc';
 
 describe('transformFunc', () => {
 
@@ -18,10 +18,9 @@ describe('transformFunc', () => {
       });
     });
 
-    it('should use group create time as sortKey if the group had no most recent post and was new', () => {
+    it('should use group create time as sortKey if the group had no most recent post', () => {
       const result = transformGroupSortKey({
         id: 1,
-        is_new: true,
         created_at: 1400000000000,
       } as Group);
 
