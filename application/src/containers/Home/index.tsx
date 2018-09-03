@@ -40,6 +40,7 @@ class Home extends Component<IProps, IStates>  {
     await authService.logout();
     window.location.href = '/';
   }
+
   handleExpand = () => {
     this.setState({
       isExpand: !this.state.isExpand,
@@ -51,6 +52,7 @@ class Home extends Component<IProps, IStates>  {
       search: `?leftnav=${!this.state.isExpand}`,
     });
   }
+
   render() {
     // const { match } = this.props;
     const { t } = this.props;
@@ -58,7 +60,7 @@ class Home extends Component<IProps, IStates>  {
     const Icons = [
       [
         { icon: 'Dashboard', title: t('Dashboard') },
-        { icon:'Messages', title: t('Messages') },
+        { icon: 'Messages', title: t('Messages') },
         { icon: 'Phone', title: t('Phone') },
         { icon: 'Meetings', title: t('Meetings') },
       ],
@@ -76,7 +78,7 @@ class Home extends Component<IProps, IStates>  {
       <Wrapper>
         <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online" data-anchor="expandButton" handleSignOutClick={this.signOutClickHandler} />
         <Bottom>
-          <LeftNav isExpand={isExpand} id="leftnav" icons={Icons}/>
+          <LeftNav isExpand={isExpand} id="leftnav" icons={Icons} />
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />

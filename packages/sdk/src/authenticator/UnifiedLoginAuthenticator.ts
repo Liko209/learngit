@@ -44,7 +44,21 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
   }
 
   private async _authenticateGlip(token: string): Promise<IAuthResponse> {
-    return { success: true };
+    // login type
+    const configDao = daoManager.getKVDao(ConfigDao);
+    configDao.put(ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM.GLIP);
+    // save token
+    const authDao = daoManager.getKVDao(AuthDao);
+    authDao.put(AUTH_GLIP_TOKEN, token);
+    // notification
+    notificationCenter.emitConfigPut(AUTH_GLIP_TOKEN, token);
+    return {
+      success: true,
+      accountInfos: [{
+        type: GlipAccount.name,
+        data: token,
+      }],
+    };
   }
 
   private async _authenticateRC(code: string): Promise<IAuthResponse> {
@@ -52,7 +66,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
     const authData = await oauthTokenViaAuthCode({
       code,
-      redirect_uri: `${window.location.origin}/unified-login/`,
+      redirect_uri: window.location.origin,
     });
 
     const authDao = daoManager.getKVDao(AuthDao);
@@ -81,16 +95,13 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
     return {
       success: true,
-      accountInfos: [
-        {
-          type: RCAccount.name,
-          data: authData.data,
-        },
-        {
-          type: GlipAccount.name,
-          data: glipToken,
-        },
-      ],
+      accountInfos: [{
+        type: RCAccount.name,
+        data: authData.data,
+      }, {
+        type: GlipAccount.name,
+        data: glipToken,
+      }],
     };
   }
 }

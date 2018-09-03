@@ -7,13 +7,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
+import { parse } from 'qs';
 
 import { service } from "sdk";
-
-const { AuthService } = service;
+import GetToken from './GetToken';
 
 const AuthRoute = ({ component: Component, ...rest }) => {
-  const isAuthenticated = AuthService.getInstance().isLoggedIn();
+
+  const params = parse(window.location.search, { ignoreQueryPrefix: true });
+  if (params.code || params.id_token) {
+    // RC User
+    // http://localhost:3000/?state=STATE&code=CODE
+    // Glip User (Free User)
+    // http://localhost:3000/?state=STATE&id_token=TOKEN
+    return <Route {...rest} component={GetToken} />
+  }
+
+  const isAuthenticated = service.AuthService.getInstance().isLoggedIn();
   return (
     <Route
       {...rest}
@@ -31,6 +41,8 @@ const AuthRoute = ({ component: Component, ...rest }) => {
       }
     />
   );
+
+
 };
 
 AuthRoute.propTypes = {

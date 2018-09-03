@@ -21,7 +21,8 @@ export interface Login {
 }
 
 export interface UnifiedLogin {
-  code: string;
+  code?: string;
+  token?: string;
 }
 
 export default class AuthService extends BaseService {
@@ -33,13 +34,14 @@ export default class AuthService extends BaseService {
     this._accountManager = accountManager;
   }
 
-  async unifiedLogin({ code }: UnifiedLogin) {
+  async unifiedLogin({ code, token }: UnifiedLogin) {
     try {
-      const resp = await this._accountManager.login(UnifiedLoginAuthenticator.name, { code });
+      const resp = await this._accountManager.login(UnifiedLoginAuthenticator.name, { code, token });
       mainLogger.info(`unifiedLogin finished ${JSON.stringify(resp)}`);
       this.onLogin();
     } catch (err) {
-      mainLogger.warn(`unified login error: ${err}`);
+      mainLogger.error(`unified login error: ${err}`);
+      throw ErrorParser.parse(err);
     }
   }
 

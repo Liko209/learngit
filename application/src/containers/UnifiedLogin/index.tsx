@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import i18next, { TranslationFunction } from 'i18next';
+import { translate } from 'react-i18next';
+import { stringify } from 'qs';
 import styled from 'styled-components';
 
-import { service } from 'sdk';
 import config from '@/config';
 import EnvSelect from './EnvSelect';
-import Download from './download';
-
-const { glip2 } = config.get('api');
-const { AuthService } = service;
+import Download from '@/containers/UnifiedLogin/Download';
 
 const Form = styled.form`
   width: 300px;
@@ -51,99 +51,117 @@ const Button = styled.button`
   }
 `;
 
-interface IRouter {
-  location: { state: { from: Function } };
-  history: { replace: Function };
+const getLanguage = () => i18next.language || window.localStorage.getItem('i18nextLng');
+
+interface IProps extends RouteComponentProps<{}> {
+  t: TranslationFunction;
 }
 
-function extractUrlParameter(name: string) {
-  const nameTemp = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]');
-  const regex = new RegExp(`[\\?&]${nameTemp}=([^&#]*)`);
-  const results = regex.exec(window.location.search);
-  return results === null
-    ? ''
-    : decodeURIComponent(results[1].replace(/\+/g, ' '));
+interface IStates {
+  disabled: boolean;
+  brandId: string;
 }
 
-class UnifiedLogin extends React.Component<
-  IRouter,
-  { btnDisabled: boolean; btnText: string }
-> {
-  static defaultProps = {
-    location: {},
-    history: {},
-  };
-
-  constructor(props: IRouter) {
+class UnifiedLogin extends React.Component<IProps, IStates> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
-      btnDisabled: false,
-      btnText: 'Login',
+      disabled: false,
+      brandId: '1210',
     };
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  async componentDidMount() {
-    const { location, history } = this.props;
-    const code = extractUrlParameter('code');
-    if (code) {
-      this.setState({
-        btnDisabled: true,
-        btnText: `Login...`, // Login...
-      });
-
-      try {
-        const authService: service.AuthService = AuthService.getInstance();
-        await authService.unifiedLogin({ code });
-        history.replace((location.state && location.state.from) || '/');
-      } catch (error) {
-        // const handler = new ErrorHandler(error);
-        // handler.handle().show();
-        console.log(error);
-        this.setState({
-          btnDisabled: false,
-          btnText: `Login`, // Login
-        });
-      }
-    }
+  onChange = (event: React.FormEvent<HTMLSelectElement>) => {
+    this.setState({ brandId: event.currentTarget.value });
   }
 
-  handleSubmit(event: React.SyntheticEvent) {
+  onSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    this.setState({
-      btnDisabled: true,
-      btnText: `Login...`, // Login...
-    });
+    const { brandId } = this.state;
+    const { location } = this.props;
+    const { glip2 } = config.get('api');
+    const url = `${glip2.server}${glip2.apiPlatform}/oauth/authorize`;
+    const { from } = location.state || { from: {} };
+    const { pathname, search, hash } = from;
+    const state = pathname + search.replace('&', '$') + hash;
+    const redirect_uri = window.location.origin; // The URI must match exactly with the sandbox configuration
+    const params = {
+      redirect_uri,
+      state,
+      response_type: 'code',
+      client_id: glip2.clientId,
+      brand_id: brandId,
+      ui_locales: getLanguage(), // default en_US
+      force: true,
+      endpointId: '',
+      display: 'touch',
+      prompt: 'login sso',
+      scope: '',
+      ui_options: 'external_popup remember_me_on show_back_to_app',
+      hideNavigationBar: true,
+      glip_auth: true,
+      response_hint: 'remember_me+login_type',
+      title_bar: true,
+    };
+    window.location.href = url + '?' + stringify(params);
 
-    window.location.href = `${glip2.server}${
-      glip2.apiPlatform
-    }/oauth/authorize?force=true&response_type=code&client_id=${
-      glip2.clientId
-    }&state=%2Frc&redirect_uri=${
-      window.location.origin
-    }/unified-login/&brand_id=${
-      glip2.brandId
-    }&glip_auth=true&display=touch&title_bar=true`;
+    // Auth wiki
+    // https://wiki.ringcentral.com/pages/viewpage.action?pageId=207394909
+
+    // Glip sign In
+    // https://service.ringcentral.com/login/unifiedLoginM.html?
+    // session=-8895747689600087505
+    // &responseType=code
+    // &clientId=cZPfEqZkQxKa9dUEu9RkCA
+    // &brandId=1210
+    // &state=/rc
+    // &localeId=en_US
+    // &endpointId=
+    // &display=touch
+    // &prompt=login sso
+    // &scope=
+    // &appUrlScheme=https://app.glip.com/api/no-auth/rc-signon
+    // &ui_options=external_popup remember_me_on show_back_to_app
+    // &hideNavigationBar=true
+    // &glip_auth=true
+    // &response_hint=remember_me+login_type
+    // &title_bar=true
+
+    // window.location.href = `${glip2.server}${
+    //   glip2.apiPlatform
+    //   }/oauth/authorize?force=true&response_type=code&client_id=${
+    //   glip2.clientId
+    //   }&state=%2Frc&redirect_uri=${
+    //   window.location.origin
+    //   }/unified-login/&brand_id=${
+    //   glip2.brandId
+    //   }&glip_auth=true&display=touch&title_bar=true`;
   }
 
   render() {
-    const { btnDisabled, btnText } = this.state;
+    const { disabled, brandId } = this.state;
+    const { t } = this.props;
     return (
       <div>
-        <Form onSubmit={this.handleSubmit}>
-          <h1>
-            <span>Sign In</span>
-          </h1>
-          <Button data-anchor="btnLogin" type="submit" disabled={btnDisabled}>
-            {btnText}
+        <Form onSubmit={this.onSubmit}>
+          <Button type="submit" disabled={disabled} data-anchor="btnLogin" >
+            {t('SignIn')}
           </Button>
+          <select onChange={this.onChange} value={brandId} style={{ display: 'none' }}>
+            <option value="1210">RC US</option>
+            <option value="3610">CA</option>
+            <option value="2010">EU</option>
+            <option value="3710">UK</option>
+            <option value="5010">AU</option>
+            <option value="3420">AT&T</option>
+            <option value="7310">TELUS</option>
+          </select>
           <EnvSelect />
         </Form>
-        {/* <LoginVersionStatus /> */}
         <Download />
-      </div>
+      </div >
     );
   }
 }
 
-export default UnifiedLogin;
+export default translate('translations')(UnifiedLogin);
