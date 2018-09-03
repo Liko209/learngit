@@ -1,4 +1,5 @@
 import { transformGroupSortKey } from '../transformFunc';
+import { Group } from 'sdk/models';
 
 describe('transformFunc', () => {
 
@@ -7,9 +8,9 @@ describe('transformFunc', () => {
     it('should use most recent post create time as sortKey', () => {
       const result = transformGroupSortKey({
         id: 1,
-        create_at: 1400000000000,
+        created_at: 1400000000000,
         most_recent_post_created_at: 1500000000000,
-      });
+      } as Group);
 
       expect(result).toEqual({
         id: 1,
@@ -22,7 +23,7 @@ describe('transformFunc', () => {
         id: 1,
         is_new: true,
         created_at: 1400000000000,
-      });
+      } as Group);
 
       expect(result).toEqual({
         id: 1,
