@@ -4,26 +4,87 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import styled from '../../styled-components';
-import MuiButton, { ButtonProps } from '@material-ui/core/Button';
+import tinycolor from 'tinycolor2';
+import styled, { keyframes, IDependencies } from '../../styled-components';
+import MuiButton, { ButtonProps as MuiButtonProps } from '@material-ui/core/Button';
+import { typography, spacing, palette, width } from '../../utils/styles';
+import { Theme } from '../../theme';
 
-const StyledButton = styled<ButtonProps>(MuiButton)`
-  && {
-    min-width: ${({ theme }) => theme.spacing.unit * 26}px;
+type JuiButtonProps = MuiButtonProps & {
+  size?: 'small' | 'large';
+  variant?: 'text' | 'contained';
+  disabled?: boolean;
+  color?: 'primary' | 'secondary';
+};
+
+const rippleEnter = (theme: Theme) => keyframes`
+  from {
+    transform: scale(0);
+    opacity: 0.1;
+  }
+  to {
+    transform: scale(1);
+    opacity: ${theme.palette.action.hoverOpacity * 2};
   }
 `;
 
-type IButton = { dependencies?: React.ComponentType[] } & React.SFC<ButtonProps>;
-
-const Button: IButton = ({ innerRef, ...rest }) => {
-  return <StyledButton {...rest} />;
+const touchRippleClasses = {
+  rippleVisible: 'rippleVisible',
 };
+const WrappedMuiButton = (props: JuiButtonProps) => (
+  <MuiButton
+    classes={{ disabled: 'disabled', contained: 'containedButtonStyle' }}
+    TouchRippleProps={{ classes: touchRippleClasses }}
+    {...props}
+  />
+);
+const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
+  && {
+    min-width: ${({ theme }) => width(10.4)({ theme })};
+    padding-left: ${spacing(4)};
+    padding-right: ${spacing(4)};
+    ${typography('button')}
 
-Button.defaultProps = {
+    &.containedButtonStyle {
+      box-shadow: unset;
+      color: white;
+      &:hover {
+        background-color: ${({ theme, color = 'primary' }) => tinycolor(palette(color, 'main')({ theme })).setAlpha(1 - theme.palette.action.hoverOpacity).toRgbString()};
+      }
+      &:active {
+        box-shadow: unset;
+      }
+      &.disabled {
+        color: ${({ theme }) => palette('action', 'disabled')({ theme })};
+      }
+    }
+
+    &.textButtonStyle {
+      &.disabled {
+        color: ${palette('accent', 'ash')};
+      }
+    }
+
+
+    .rippleVisible {
+      opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
+      transform: scale(1);
+      animation-name: ${({ theme }) => rippleEnter(theme)};
+    }
+  }
+`;
+
+type IButton = React.StatelessComponent<JuiButtonProps> & IDependencies;
+const JuiButton: IButton = ({ innerRef, ...rest }: JuiButtonProps) => (<StyledButton {...rest} />);
+
+JuiButton.defaultProps = {
   size: 'large',
+  color: 'primary',
+  variant: 'contained',
+  disabled: false,
 };
 
-Button.dependencies = [MuiButton];
+JuiButton.dependencies = [MuiButton];
 
-export { Button, ButtonProps };
-export default Button;
+export { JuiButton, JuiButtonProps };
+export default JuiButton;

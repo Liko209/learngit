@@ -5,14 +5,11 @@ import ContactList from './contact.list';
 import Dialog from '../../atoms/Dialog';
 import DialogHeader from '../../atoms/DialogHeader';
 import DialogTitle from '../../atoms/DialogTitle';
+import { withInfoDecorator } from '../../utils/decorators';
 
 storiesOf('Molecules/Dialog', module)
-  .addWithJSX('Simple Popup', withInfo(`
-      description or documentation about my component, supports markdown
-      ~~~js
-      <Button>Click Here</Button>
-      ~~~
-  `)(() => {
+  .addDecorator(withInfoDecorator(Dialog))
+  .addWithJSX('Simple Popup', () => {
     return (
       <Dialog
         open={true}
@@ -21,9 +18,9 @@ storiesOf('Molecules/Dialog', module)
         aria-describedby="alert-dialog-description"
         scroll={'paper'}
       >
-    <DialogHeader titleComp={<DialogTitle>Headline</DialogTitle>}>
-      <ContactList/>
-    </DialogHeader>
+        <DialogHeader titleComp={<DialogTitle>Headline</DialogTitle>}>
+          <ContactList />
+        </DialogHeader>
       </Dialog>
     );
-  }));
+  });

@@ -4,89 +4,123 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from '../../styled-components';
-import MuiIconButton, { IconButtonProps } from '@material-ui/core/IconButton';
+import styled, { keyframes, IDependencies } from '../../styled-components';
+import MuiIconButton, { IconButtonProps as MuiIconButtonProps } from '@material-ui/core/IconButton';
 import { Icon as MuiIcon } from '@material-ui/core';
+import { palette, grey, width } from '../../utils/styles';
+import tinycolor from 'tinycolor2';
+import { Theme } from '../../theme';
 import { ArrowTip } from '../../atoms';
 
-type TIconButtonProps = {
+type JuiIconButtonProps = {
   tooltipTitle?: string;
   invisible?: boolean;
   awake?: boolean;
   variant?: 'round' | 'plain';
   size?: 'small' | 'medium' | 'large';
-} & IconButtonProps;
+  color?: 'primary' | 'secondary';
+} & MuiIconButtonProps;
 
-const sizes = {
-  'plain-large': 6,
-  'plain-medium': 5,
-  'plain-small': 4,
-  'round-large': 12,
-  'round-medium': 10,
-  'round-small': 8,
+const iconSizes = {
+  large: 2.4,
+  medium: 2,
+  small: 1.6,
 };
 
-const WrappedMuiIcon = ({ invisible, awake, ...rest }: TIconButtonProps) => (
+const WrappedMuiIcon = ({ invisible, awake, ...rest }: JuiIconButtonProps) => (
   <MuiIcon {...rest} />
 );
-const StyledIcon = styled<TIconButtonProps>(WrappedMuiIcon)`
-  && {
-    color: ${({ disabled, awake, invisible, theme }) => disabled ? theme.palette.accent.ash :
-    awake ? theme.palette.grey[500] :
-      invisible ? 'transparent' : theme.palette.accent.ash};
-    font-size: ${({ variant, size, theme }) => (sizes[`${variant}-${size}`] * theme.spacing.unit /
-    (variant === 'round' ? 2 : 1) + 'px')};
+const StyledIcon = styled<JuiIconButtonProps>(WrappedMuiIcon)``;
+const rippleEnter = (theme: Theme) => keyframes`
+  from {
+    transform: scale(0);
+    opacity: 0.1;
+  }
+  to {
+    transform: scale(1);
+    opacity: ${theme.palette.action.hoverOpacity * 2};
   }
 `;
-
-const WrappedMuiIconButton = ({ invisible, awake, ...rest }: TIconButtonProps) => (
-  <MuiIconButton {...rest} />
+const touchRippleClasses = {
+  rippleVisible: 'rippleVisible',
+};
+const WrappedMuiIconButton = ({ invisible, awake, ...rest }: JuiIconButtonProps) => (
+  <MuiIconButton {...rest} classes={{ disabled: 'disabled' }} TouchRippleProps={{ classes: touchRippleClasses }} />
 );
-const StyledIconButton = styled<TIconButtonProps>(WrappedMuiIconButton)`
+const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
   && {
-    width: ${({ variant, size, theme }) => (
-    sizes[`${variant}-${size}`] * theme.spacing.unit + 'px'
-  )};
-    height: ${({ variant, size, theme }) => (
-    sizes[`${variant}-${size}`] * theme.spacing.unit + 'px'
-  )};
+    width: ${({ variant, size = 'medium', theme }) => width((variant === 'round' ? iconSizes[size] * 2 : iconSizes[size]))({ theme })};
+    height: ${({ variant, size = 'medium', theme }) => width((variant === 'round' ? iconSizes[size] * 2 : iconSizes[size]))({ theme })};
+    color: ${({ disabled, awake, invisible }) => awake ? grey('500') : palette('accent', 'ash')};
+    font-size: ${({ size = 'medium', theme }) => width(iconSizes[size])({ theme })};
+    opacity: ${({ invisible }) => invisible ? 0 : 1};
     &:hover {
       background-color: ${({ theme, variant }) => variant === 'plain' ?
-    'transparent' : theme.palette.action.hover};
+    'transparent' : tinycolor(grey('500')({ theme })).setAlpha(theme.palette.action.hoverOpacity).toRgbString()};
+      ${StyledIcon} {
+        color: ${({ theme }) => tinycolor(grey('500')({ theme })).setAlpha(1 - theme.palette.action.hoverOpacity).toRgbString()};
+      }
     }
     &:active {
       ${StyledIcon} {
-        color: ${({ theme, color }) => color ? theme.palette[color].main : 'inherit'}
+        color: ${({ theme, color = 'primary' }) => palette(color, 'main')({ theme })}
       }
+    }
+
+    &.disabled {
+      ${StyledIcon} {
+        color: ${({ theme }) => palette('action', 'disabledBackground')({ theme })}
+      }
+    }
+
+    .rippleVisible {
+      opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
+      transform: scale(1);
+      animation-name: ${({ theme }) => rippleEnter(theme)};
     }
   }
 `;
 
-const IconButton: React.SFC<TIconButtonProps> = (
-  props: TIconButtonProps,
+// Tooltip does not work on disabled IconButton without this: https://github.com/mui-org/material-ui/issues/8416
+const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
+  display: inline-block;
+  width: ${({ variant, size = 'medium', theme }) => width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({ theme })};
+  height: ${({ variant, size = 'medium', theme }) => width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({ theme })};
+  font-size: 0;
+`;
+
+type IJuiIconButton = React.StatelessComponent<JuiIconButtonProps> & IDependencies;
+const JuiIconButton: IJuiIconButton = (
+  props: JuiIconButtonProps,
 ) => {
   const { children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
   const main = (
-    <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
-      <StyledIcon
-        size={size}
-        variant={variant}
-        awake={awake}
-        disabled={disabled}
-        invisible={invisible}
-      >{children}
-      </StyledIcon>
-    </StyledIconButton>
+    <WrapperForTooltip {...rest}>
+      <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
+        <StyledIcon
+          size={size}
+          variant={variant}
+          awake={awake}
+          disabled={disabled}
+          invisible={invisible}
+        >{children}
+        </StyledIcon>
+      </StyledIconButton>
+    </WrapperForTooltip>
   );
   return tooltipTitle ? (<ArrowTip title={tooltipTitle} node={main}/>) : main;
 };
 
-IconButton.defaultProps = {
+JuiIconButton.defaultProps = {
   variant: 'round',
   color: 'primary',
   size: 'medium',
+  invisible: false,
+  tooltipTitle: '',
 };
 
-export { IconButton, IconButtonProps };
-export default IconButton;
+JuiIconButton.dependencies = [MuiIconButton, MuiIcon, ArrowTip];
+
+export { JuiIconButton, JuiIconButtonProps };
+export default JuiIconButton;

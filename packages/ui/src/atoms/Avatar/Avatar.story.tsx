@@ -7,7 +7,7 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs/react';
-import { withInfo } from '@storybook/addon-info';
+import { withInfoDecorator } from '../../utils/decorators';
 
 import Avatar from '.';
 
@@ -24,16 +24,17 @@ const knobs = {
     'medium',
   ),
 };
-storiesOf('Avatar', module)
-  .addWithJSX('Image', withInfo(``)(() => {
+storiesOf('Atoms/Avatar', module)
+  .addDecorator(withInfoDecorator(Avatar, { inline: true }))
+  .addWithJSX('Image', () => {
     return (
       <Avatar size={knobs.size()} src={avatar} />
     );
-  }))
-  .addWithJSX('Name', withInfo(``)(() => {
+  })
+  .addWithJSX('Name', () => {
     return (
       <Avatar size={knobs.size()}>
         SH
       </Avatar>
     );
-  }));
+  });

@@ -11,12 +11,12 @@ import { withInfo } from '@storybook/addon-info';
 import backgrounds from '@storybook/addon-backgrounds';
 import { text } from '@storybook/addon-knobs/react';
 import ConversationPageHeader from '.';
-import { Button } from '../../atoms/Button';
-import { IconButton } from '../IconButton/index';
+import { JuiButton } from '../../atoms/Button';
+import { JuiIconButton } from '../IconButton/index';
 
-const StyledIconButton = styled(IconButton)``;
+const StyledIconButton = styled(JuiIconButton)``;
 const getTitleKnob = () => text('title', 'Global UXD');
-storiesOf('ConversationPageHeader', module)
+storiesOf('Molecules/ConversationPageHeader 🔜', module)
   .addDecorator(
     backgrounds([{ name: 'slide-background', value: '#f3f3f3', default: true }]),
   )
@@ -72,6 +72,6 @@ storiesOf('ConversationPageHeader', module)
     return <ConversationPageHeader title={getTitleKnob()} />;
   }))
   .addWithJSX('with right text button', withInfo(``)(() => {
-    const textButton = <Button variant="text" color="primary">Button</Button>;
+    const textButton = <JuiButton variant="text" color="primary">Button</JuiButton>;
     return <ConversationPageHeader title={getTitleKnob()} Right={textButton} />;
   }));
