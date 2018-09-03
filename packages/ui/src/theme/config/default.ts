@@ -61,7 +61,7 @@ const theme = {
     },
   },
   shape: {
-    borderRadius: 2,
+    borderRadius: 4,
   },
   spacing: {
     unit: 4,
@@ -74,7 +74,7 @@ const theme = {
     height: 10,
   },
   typography: {
-    fontSize: 12,
+    fontSize: 14,
   },
 };
 
