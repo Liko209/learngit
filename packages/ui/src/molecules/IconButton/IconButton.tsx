@@ -29,15 +29,7 @@ const iconSizes = {
 const WrappedMuiIcon = ({ invisible, awake, ...rest }: JuiIconButtonProps) => (
   <MuiIcon {...rest} />
 );
-const StyledIcon = styled<JuiIconButtonProps>(WrappedMuiIcon)`
-  && {
-    color: ${({ disabled, awake, invisible }) =>
-    disabled ? '' :
-      awake ? grey('500') :
-        invisible ? 'transparent' : palette('accent', 'ash')};
-    font-size: ${({ size = 'medium', theme }) => width(iconSizes[size])({ theme })};
-  }
-`;
+const StyledIcon = styled<JuiIconButtonProps>(WrappedMuiIcon)``;
 const rippleEnter = (theme: Theme) => keyframes`
   from {
     transform: scale(0);
@@ -52,12 +44,15 @@ const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
 const WrappedMuiIconButton = ({ invisible, awake, ...rest }: JuiIconButtonProps) => (
-  <MuiIconButton {...rest} TouchRippleProps={{ classes: touchRippleClasses }} />
+  <MuiIconButton {...rest} classes={{ disabled: 'disabled' }} TouchRippleProps={{ classes: touchRippleClasses }} />
 );
 const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
   && {
     width: ${({ variant, size = 'medium', theme }) => width((variant === 'round' ? iconSizes[size] * 2 : iconSizes[size]))({ theme })};
     height: ${({ variant, size = 'medium', theme }) => width((variant === 'round' ? iconSizes[size] * 2 : iconSizes[size]))({ theme })};
+    color: ${({ disabled, awake, invisible }) => awake ? grey('500') : palette('accent', 'ash')};
+    font-size: ${({ size = 'medium', theme }) => width(iconSizes[size])({ theme })};
+    opacity: ${({ invisible }) => invisible ? 0 : 1};
     &:hover {
       background-color: ${({ theme, variant }) => variant === 'plain' ?
     'transparent' : tinycolor(grey('500')({ theme })).setAlpha(theme.palette.action.hoverOpacity).toRgbString()};
@@ -68,6 +63,12 @@ const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
     &:active {
       ${StyledIcon} {
         color: ${({ theme, color = 'primary' }) => palette(color, 'main')({ theme })}
+      }
+    }
+
+    &.disabled {
+      ${StyledIcon} {
+        color: ${({ theme }) => palette('action', 'disabledBackground')({ theme })}
       }
     }
 

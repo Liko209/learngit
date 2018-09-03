@@ -37,8 +37,7 @@ const overlappingSize = {
   large: 3,
 };
 const padding = (theme: Theme, componentName: string, size: string = 'medium', overlapping?: boolean, variant?: string) =>
-  variant === 'plain' ?
-    `${spacing(3)({ theme })}px` :
+  variant === 'plain' ? `${spacing(3)({ theme })}` :
     variant === 'round' || componentName === 'JuiCheckboxButton' ?
       (overlapping ? `-${spacing(overlappingSize[size])({ theme })}` : 0) : `${spacing(2)({ theme })}`;
 

@@ -43,7 +43,7 @@ const touchRippleClasses = {
 
 const StyledIcon = styled(MuiIcon)``;
 const WrappedMuiCheckboxButton = ({ invisible, awake, checked, ...rest }: JuiCheckboxButtonProps) => (
-  <MuiCheckbox {...rest} TouchRippleProps={{ classes: touchRippleClasses }} />
+  <MuiCheckbox {...rest} classes={{ disabled: 'disabled' }} TouchRippleProps={{ classes: touchRippleClasses }} />
 );
 const StyledCheckboxButton = styled<JuiCheckboxButtonProps>(WrappedMuiCheckboxButton)`
   && {
@@ -61,6 +61,12 @@ const StyledCheckboxButton = styled<JuiCheckboxButtonProps>(WrappedMuiCheckboxBu
       color: ${({ theme, color = 'primary' }) => palette(color, 'main')({ theme })};
     }
 
+    &.disabled {
+      ${StyledIcon} {
+        color: ${({ theme }) => palette('action', 'disabledBackground')};
+      }
+    }
+
     ${StyledIcon} {
       font-size: inherit;
     }
@@ -68,7 +74,7 @@ const StyledCheckboxButton = styled<JuiCheckboxButtonProps>(WrappedMuiCheckboxBu
     .rippleVisible {
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
       transform: scale(1);
-      animation-name: ${({ theme }) => rippleEnter(theme)};
+      animation-name: ${rippleEnter};
     }
   }
 `;
@@ -109,18 +115,16 @@ class JuiCheckboxButton extends React.Component<JuiCheckboxButtonProps, { checke
 
   render() {
     const { iconName, checkedIconName, tooltipTitle, innerRef, onChange, ...rest } = this.props;
-    const icon = (
-      <StyledIcon
-      >{iconName}
-      </StyledIcon>);
-    const checkedIcon = (
-      <StyledIcon
-      >{checkedIconName}
-      </StyledIcon>);
     return (
       <MuiTooltip title={tooltipTitle}>
-        <WrapperForTooltip className="checkboxButtonWrapper" {...rest}>
-          <StyledCheckboxButton onChange={this.changeHandler} checked={this.state.checked} icon={icon} checkedIcon={checkedIcon} {...rest} />
+        <WrapperForTooltip {...rest}>
+          <StyledCheckboxButton
+            onChange={this.changeHandler}
+            checked={this.state.checked}
+            icon={<StyledIcon>{iconName}</StyledIcon>}
+            checkedIcon={<StyledIcon>{checkedIconName}</StyledIcon>}
+            {...rest}
+          />
         </WrapperForTooltip>
       </MuiTooltip>
     );
