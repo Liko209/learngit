@@ -51,7 +51,28 @@ const Button = styled.button`
   }
 `;
 
-const getLanguage = () => i18next.language || window.localStorage.getItem('i18nextLng');
+const getLanguage = () => {
+  const lng = i18next.language || window.localStorage.getItem('i18nextLng') || 'en-US';
+  const arr = lng.split('-');
+  const map = {
+    de: ['DE'],
+    en: ['US', 'GB'],
+    es: ['ES', '419'],
+    fr: ['FR', 'CA'],
+    it: ['IT'],
+    pt: ['BR'],
+    ja: ['JP'],
+  };
+  const locals = map[arr[0]];
+  if (!locals) {
+    return 'en-US';
+  }
+  const local = locals.find((l: string) => l === arr[1]);
+  if (!local) {
+    return arr[0] + '-' + locals[0];
+  }
+  return lng;
+};
 
 interface IProps extends RouteComponentProps<{}> {
   t: TranslationFunction;
@@ -165,3 +186,16 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
 }
 
 export default translate('translations')(UnifiedLogin);
+
+// const map = {
+//   'de-DE': 'de-DE', // Deutsch
+//   'en-GB': 'en-GB', // English (U.K.)
+//   'en-US': 'en-US', // English (U.S.)
+//   'es-ES': 'es-ES', // Español
+//   'es-419': 'es-419', // Español (Latinoamérica)
+//   'fr-FR': 'fr-FR', // Français
+//   'fr-CA': 'fr-CA', // Français (Canada)
+//   'it-IT': 'it-IT', // Italiano
+//   'pt-BR': 'pt-BR', // Português (Brasil)
+//   'ja-JP': 'ja-JP', // 日本語
+// };
