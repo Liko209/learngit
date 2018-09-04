@@ -13,7 +13,7 @@ class Home extends BaseComponent {
 
   public expectExistComponent() {
     return this.chain(async (t) => {
-      await t.expect(this.getHomeComponent.count).eql(1);
+      await t.expect(this.getHomeComponent.exists).ok();
     });
   }
 
