@@ -3,12 +3,12 @@
  * @Date: 2018-08-21 16:46:24
  * Copyright © RingCentral. All rights reserved.
  */
-import { TestHelper } from '../libs/helpers';
 import { SITE_URL } from '../config';
-import { BlankPage } from '../page-models/BlankPage';
-import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
-import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
-import { UnifiedLoginPage } from '../page-models/UnifiedLoginPage';
+import { TestHelper } from '../libs/helpers';
+import { BlankPage } from '../page-models/pages/BlankPage';
+import { RingcentralSignInNavigationPage } from '../page-models/pages/RingcentralSignInNavigationPage';
+import { RingcentralSignInPage } from '../page-models/pages/RingcentralSignInPage';
+import { UnifiedLoginPage } from '../page-models/pages/UnifiedLoginPage';
 
 type AuthInfo = {
   credential: string;
@@ -25,13 +25,14 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
     ({ credential, password } = authInfo);
     extension = authInfo.extension || '';
   } else {
-  const helper = TestHelper.from(t);
-credential = helper.companyNumber;
+    const helper = TestHelper.from(t);
+    credential = helper.companyNumber;
     extension = helper.users.user701.extension;
     password = helper.users.user701.password;
   }
+
   return new BlankPage(t)
-    .open(SITE_URL)
+    .navigateTo(SITE_URL)
     .shouldNavigateTo(UnifiedLoginPage)
     .clickLogin()
     .shouldNavigateTo(RingcentralSignInNavigationPage)

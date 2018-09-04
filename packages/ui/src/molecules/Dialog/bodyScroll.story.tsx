@@ -9,7 +9,7 @@ import DialogHeader from '../../atoms/DialogHeader';
 import { randomText } from './utils';
 import { withInfoDecorator } from '../../utils/decorators';
 
-storiesOf('Molecules/Dialog', module)
+storiesOf('Molecules/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(Dialog))
   .addWithJSX('Body scroll', () => {
     return (

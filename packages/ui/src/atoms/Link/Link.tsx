@@ -45,7 +45,7 @@ const typographySizeMap = {
 };
 
 JuiLink.defaultProps = {
-  size: 'large',
+  size: 'medium',
   color: 'primary',
   disabled: false,
   Component: 'a',

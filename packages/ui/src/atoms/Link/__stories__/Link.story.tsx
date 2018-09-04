@@ -18,7 +18,7 @@ function getKnobs() {
       medium: 'medium',
       large: 'large',
     },
-    'large',
+    'medium',
   );
   const color = select(
     'color',

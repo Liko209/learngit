@@ -17,6 +17,8 @@ type JuiButtonBarProps = {
   direction?: 'horizontal' | 'vertical';
   invisible?: boolean;
   awake?: boolean;
+  size?: 'small' | 'medium' | 'large';
+  color?: 'primary' | 'secondary';
 } & {
   className?: string;
   style?: React.CSSProperties;
@@ -25,6 +27,8 @@ type JuiButtonBarProps = {
 const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
   display: flex;
   flex-direction: ${({ direction }) => direction === 'vertical' ? 'column' : 'row'};
+  white-space: nowrap;
+  flex-wrap: nowrap;
 `;
 
 type StyledIconButtonChild = JuiIconButtonProps & JuiButtonBarProps & { index?: number, componentName: string };
@@ -69,6 +73,10 @@ const JuiButtonBar: IButtonBar = ({ children, ...rest }) => {
 JuiButtonBar.defaultProps = {
   overlapping: false,
   direction: 'horizontal',
+  size: 'medium',
+  color: 'primary',
+  awake: false,
+  invisible: false,
 };
 
 JuiButtonBar.dependencies = [];

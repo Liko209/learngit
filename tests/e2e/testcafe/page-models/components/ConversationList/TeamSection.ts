@@ -5,15 +5,22 @@
  */
 import { ReactSelector } from 'testcafe-react-selectors';
 import { GroupAPI } from '../../../libs/sdk';
-import { BasePage } from '../../BasePage';
+import { BaseComponent } from '../..';
 
-const teamSection = ReactSelector('ConversationListSection').withProps('title', 'Teams');
-const team = teamSection.findReact('ConversationListItem').nth(0);
-class TeamSection extends BasePage {
+class TeamSection extends BaseComponent {
+
+  get teamSection() {
+    return ReactSelector('ConversationListSection').withProps('title', 'Teams');
+  }
+
+  get team() {
+    return this.teamSection.findReact('ConversationListItem').nth(0);
+  }
+
   public shouldBeTeam() {
     return this.chain(async (t) => {
-      await t.expect(team.exists).ok('Failed to find the team, probably caused by long-time loadng', { timeout: 1500000 });
-      const id = (await team.getReact()).key;
+      await t.expect(this.team.exists).ok('Fail to find the team, probably caused by long-time loading');
+      const id = (await this.team.getReact()).key;
       const props = (await this._getTeamProps(id));
       return await t.expect(props.is_team).ok(`Team ${id} is not a team`);
     });
@@ -21,12 +28,12 @@ class TeamSection extends BasePage {
 
   public teamNameShouldChange() {
     return this.chain(async (t) => {
-      await t.expect(team.exists).ok('Failed to find the team, probably caused by long-time loadng', { timeout: 150000 });
-      const id = (await team.getReact()).key;
+      await t.expect(this.team.exists).ok('Fail to find the team, probably caused by long-time loading');
+      const id = (await this.team.getReact()).key;
       const randomName = Math.random().toString(36).substring(7);
       await this._modifyTeamName(id, randomName);
-      const text = () => team.findReact('Typography').innerText;
-      await t.expect(text()).eql(randomName, 'wrong name', { timeout: 150000 });
+      const text = () => this.team.findReact('Typography').innerText;
+      await t.expect(text()).eql(randomName, 'wrong name');
     });
   }
 

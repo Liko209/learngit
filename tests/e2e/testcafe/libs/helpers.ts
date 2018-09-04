@@ -59,7 +59,8 @@ export class TestHelper {
   setupGlipApiManager(
     key: string = RC_PLATFORM_APP_KEY,
     secret: string = RC_PLATFORM_APP_SECRET,
-    server: string = ENV.RC_PLATFORM_BASE_URL) {
+    server: string = ENV.RC_PLATFORM_BASE_URL,
+  ) {
     this.t.ctx.rcPlatformManager = new RcPlatformManager(key, secret, server);
   }
 

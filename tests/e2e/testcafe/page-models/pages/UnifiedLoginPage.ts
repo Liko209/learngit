@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BasePage } from './BasePage';
+import { BasePage } from '..';
 
 const ANCHORS = {
   BTN_LOGIN: 'btnLogin',

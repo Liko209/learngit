@@ -1,8 +1,7 @@
 import * as _ from 'lodash';
 import * as G from 'glob';
-import * as PATH from 'path';
-
-const WORKSPACE = PATH.dirname(require.main.filename);
+import * as path from 'path';
+import * as fs from 'fs';
 
 export function parseArgs(argsString: string) {
   return argsString.split(',').filter(Boolean).map(s => s.trim());
@@ -13,31 +12,29 @@ export function flattenGlobs(globs: string[]): string[] {
 }
 
 export class ExecutionStrategiesHelper {
+
   static VALID_ACTIONS = ['on_push', 'on_merge'];
+
   config: any;
 
-  static getConfigFromJson(branch: string) {
-    const items = branch.split('/');
-    const file = items.pop().concat('.json');
-    const paths = G.sync(WORKSPACE + '/../config/'.concat(items.join('/')).concat(file));
-
-    if (!_.isEmpty(paths)) {
-      const path = paths[0];
-      const config = require(path);
-      return config;
+  loadConfig() {
+    const config_path = path.join(this.configsDir, this.branch) + '.json';
+    const default_path = path.join(this.configsDir, 'default.json');
+    this.config = require(default_path);
+    if (fs.existsSync(config_path)) {
+      _.merge(this.config, require(config_path));
     }
-    const path = WORKSPACE + '/../config/default.json';
-    const config = require(path);
-    return config;
+    console.log(`execution options:`);
+    console.log(this.config);
   }
 
   constructor(
     private branch: string,
     private action: string,
+    private configsDir: string,
     private defaultBranch: string = 'default',
     private defaultAction: string = 'on_push',
   ) {
-    this.config = ExecutionStrategiesHelper.getConfigFromJson(branch);
   }
 
   private _isValidAction() {

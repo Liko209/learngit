@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 08:41:34
+ * Copyright © RingCentral. All rights reserved.
+ */
 // you can use this file to add your custom webpack plugins, loaders and anything you like.
 // This is just the basic way to add additional webpack configurations.
 // For more information refer the docs: https://storybook.js.org/configurations/custom-webpack-config
@@ -9,6 +14,7 @@ const path = require("path");
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const HappyPack = require('happypack');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = (baseConfig, env, config) => {
   config.module.rules.push({
@@ -30,7 +36,8 @@ module.exports = (baseConfig, env, config) => {
           path: 'react-docgen-typescript-loader',
         }
       ]
-    })
+    }),
+    new CopyWebpackPlugin([{ from: '../../application/public/theme/', to: 'theme' }])
   );
   config.plugins.push(
     new ForkTsCheckerWebpackPlugin({

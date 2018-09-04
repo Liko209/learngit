@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BlankPage } from '../page-models/BlankPage';
-import { UnifiedLoginPage } from '../page-models/UnifiedLoginPage';
-import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
-import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
-import LeftNavPage from '../page-models/LeftNavPage';
+import { BlankPage } from '../page-models/pages/BlankPage';
+import { UnifiedLoginPage } from '../page-models/pages/UnifiedLoginPage';
+import { RingcentralSignInNavigationPage } from '../page-models/pages/RingcentralSignInNavigationPage';
+import { RingcentralSignInPage } from '../page-models/pages/RingcentralSignInPage';
+import { LeftNavigationPage } from '../page-models/pages/LeftNavigationPage';
 import { SITE_URL } from '../config';
 import { formalName } from '../libs/filter';
 import { setUp, tearDown, TestHelper } from '../libs/helpers';
@@ -18,11 +18,11 @@ fixture('LeftNav')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown());
 
-test(formalName('Left nav redirect', ['P0', 'LeftNav']), async t => {
+test(formalName('Left nav redirect', ['P0', 'LeftNav']), async (t) => {
   const helper = TestHelper.from(t);
 
   await new BlankPage(t)
-    .open(SITE_URL)
+    .navigateTo(SITE_URL)
     .shouldNavigateTo(UnifiedLoginPage)
     .clickLogin()
     .shouldNavigateTo(RingcentralSignInNavigationPage)
@@ -32,7 +32,7 @@ test(formalName('Left nav redirect', ['P0', 'LeftNav']), async t => {
     .setExtension(helper.users.user701.extension)
     .setPassword(helper.users.user701.password)
     .signIn()
-    .shouldNavigateTo(LeftNavPage)
+    .shouldNavigateTo(LeftNavigationPage)
     .redirect('Dashboard')
     .redirect('Messages')
     .redirect('Phone')

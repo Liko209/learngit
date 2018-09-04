@@ -1,50 +1,79 @@
-import React from 'react';
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 08:39:11
+ * Copyright © RingCentral. All rights reserved.
+ */
+import React, { Component } from 'react';
 import createMuiTheme, {
-  ThemeOptions,
   Theme as MuiTheme,
 } from '@material-ui/core/styles/createMuiTheme';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
-import defaultTheme from './config/default';
+import themeHandler from './ThemeHandler';
+import option from './options.json';
+import { ITheme, IPalette } from './theme';
 
-export interface ThemeProviderProps {
+interface IThemeProviderProps {
   themeName: string;
   children: React.ReactNode;
 }
 
-const createTheme = (options: ThemeOptions) =>
-  createMuiTheme(options);
+interface IThemeProviderPropsState {
+  theme: MuiTheme | null;
+}
 
-const createThemes = () => {
-  const requireContext = require.context('./config', false, /.(ts|js)$/);
-  const themePaths = requireContext.keys();
+class ThemeProvider extends Component<IThemeProviderProps, IThemeProviderPropsState> {
+  private _mounted: boolean;
+  constructor(props: IThemeProviderProps) {
+    super(props);
+    this.state = {
+      theme: null,
+    };
 
-  return themePaths
-    .reduce(
-      (themes, themePath) => {
-        const themeName = themePath.split('.')[1].split('/')[1];
-        themes[themeName] = createTheme(requireContext(themePath)[themeName]);
-        return themes;
-      },
-      {},
+    this.onThemeChanged = this.onThemeChanged.bind(this);
+  }
+
+  async componentDidMount() {
+    this._mounted = true;
+    const { themeName } = this.props;
+    const themeOptions = await themeHandler.read(themeName);
+    this.setState({
+      theme: createMuiTheme(themeOptions),
+    });
+
+    themeHandler.on(option.bindEvent, this.onThemeChanged);
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
+    themeHandler.offAny(this.onThemeChanged);
+  }
+
+  onThemeChanged(themeOptions: {}) {
+    if (!this._mounted) return;
+    this.setState({
+      theme: createMuiTheme(themeOptions),
+    });
+  }
+
+  render() {
+    const { theme } = this.state;
+    const { children } = this.props;
+    if (!theme) {
+      return null;
+    }
+    return (
+      <StyledThemeProvider theme={theme}>
+        <MuiThemeProvider theme={theme}>
+          {React.Children.only(children)}
+        </MuiThemeProvider>
+      </StyledThemeProvider>
     );
-};
+  }
+}
 
-const themes = createThemes();
-
-const ThemeProvider: React.SFC<ThemeProviderProps> = ({ themeName, children }) => {
-  const theme = themes[themeName];
-  return (
-    <StyledThemeProvider theme={theme}>
-      <MuiThemeProvider theme={theme}>
-        {React.Children.only(children)}
-      </MuiThemeProvider>
-    </StyledThemeProvider>
-  );
-};
-
-type Theme = MuiTheme & typeof defaultTheme;
-type CustomPalette = typeof defaultTheme.palette;
+type Theme = MuiTheme & ITheme;
+type CustomPalette = IPalette;
 
 export {
   Theme,
