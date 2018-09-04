@@ -138,7 +138,7 @@ const NavItem = (props: TNavItemProps) => {
     >
       <ListLink to={`/${url}`} className={'left-link'}>
         <NavIcon component={icon} active={active} className={'nav-icon'} />
-        <ListItemText expand={expand} className={'nav-text'}>
+        <ListItemText expand={expand} className={'nav-text'} aria-label={title}>
           {title}
         </ListItemText>
         <UMI
