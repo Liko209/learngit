@@ -6,10 +6,11 @@
 import React from 'react';
 import styled, { keyframes, IDependencies } from '../../styled-components';
 import MuiIconButton, { IconButtonProps as MuiIconButtonProps } from '@material-ui/core/IconButton';
-import { Icon as MuiIcon, Tooltip as MuiTooltip } from '@material-ui/core';
+import { Icon as MuiIcon } from '@material-ui/core';
 import { palette, grey, width } from '../../utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme } from '../../theme';
+import { ArrowTip } from '../../atoms';
 
 type JuiIconButtonProps = {
   tooltipTitle?: string;
@@ -50,9 +51,11 @@ const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
   && {
     width: ${({ variant, size = 'medium', theme }) => width((variant === 'round' ? iconSizes[size] * 2 : iconSizes[size]))({ theme })};
     height: ${({ variant, size = 'medium', theme }) => width((variant === 'round' ? iconSizes[size] * 2 : iconSizes[size]))({ theme })};
-    color: ${({ disabled, awake, invisible }) => awake ? grey('500') : palette('accent', 'ash')};
-    font-size: ${({ size = 'medium', theme }) => width(iconSizes[size])({ theme })};
+    color: ${({ awake }) => awake ? grey('500') : palette('accent', 'ash')};
     opacity: ${({ invisible }) => invisible ? 0 : 1};
+    ${StyledIcon} {
+      font-size: ${({ size = 'medium', theme }) => width(iconSizes[size])({ theme })};
+    }
     &:hover {
       background-color: ${({ theme, variant }) => variant === 'plain' ?
     'transparent' : tinycolor(grey('500')({ theme })).setAlpha(theme.palette.action.hoverOpacity).toRgbString()};
@@ -62,17 +65,18 @@ const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
     }
     &:active {
       ${StyledIcon} {
-        color: ${({ theme, color = 'primary' }) => palette(color, 'main')({ theme })}
+        color: ${({ theme, color = 'primary' }) => palette(color, 'main')({ theme })};
       }
     }
 
     &.disabled {
       ${StyledIcon} {
-        color: ${({ theme }) => palette('action', 'disabledBackground')({ theme })}
+        color: ${({ theme }) => palette('action', 'disabledBackground')({ theme })};
       }
     }
 
     .rippleVisible {
+      color: ${({ theme, color = 'primary' }) => palette(color, 'main')({ theme })};
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
       transform: scale(1);
       animation-name: ${({ theme }) => rippleEnter(theme)};
@@ -94,22 +98,21 @@ const JuiIconButton: IJuiIconButton = (
 ) => {
   const { children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
-  return (
-    <MuiTooltip title={tooltipTitle}>
-      <WrapperForTooltip {...rest}>
-        <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
-          <StyledIcon
-            size={size}
-            variant={variant}
-            awake={awake}
-            disabled={disabled}
-            invisible={invisible}
-          >{children}
-          </StyledIcon>
-        </StyledIconButton>
-      </WrapperForTooltip>
-    </MuiTooltip>
+  const main = (
+    <WrapperForTooltip {...rest}>
+      <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
+        <StyledIcon
+          size={size}
+          variant={variant}
+          awake={awake}
+          disabled={disabled}
+          invisible={invisible}
+        >{children}
+        </StyledIcon>
+      </StyledIconButton>
+    </WrapperForTooltip>
   );
+  return tooltipTitle ? (<ArrowTip title={tooltipTitle} node={main}/>) : main;
 };
 
 JuiIconButton.defaultProps = {
@@ -120,7 +123,7 @@ JuiIconButton.defaultProps = {
   tooltipTitle: '',
 };
 
-JuiIconButton.dependencies = [MuiIconButton, MuiIcon, MuiTooltip];
+JuiIconButton.dependencies = [MuiIconButton, MuiIcon, ArrowTip];
 
 export { JuiIconButton, JuiIconButtonProps };
 export default JuiIconButton;

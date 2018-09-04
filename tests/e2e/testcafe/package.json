@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "testcafe": "testcafe",
-    "e2e": "node js/run.js"
+    "e2e": "ts-node run.ts"
   },
   "os": [
     "darwin",
@@ -40,6 +40,7 @@
     "testcafe-live": "0.1.3",
     "testcafe-react-selectors": "^3.0.0",
     "testcafe-reporter-allure-lazy": "https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/2e736277938715aabc2cf91abcd2d759/testcafe-reporter-allure-lazy-1.0.4.tgz",
+    "ts-node": "^7.0.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

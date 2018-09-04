@@ -54,9 +54,6 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       &:active {
         box-shadow: unset;
       }
-      &.disabled {
-        color: ${({ theme }) => palette('action', 'disabled')({ theme })};
-      }
     }
 
     &.textButtonStyle {

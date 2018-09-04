@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 11:02:11
+ * Copyright © RingCentral. All rights reserved.
+ */
 'use strict';
 require('babel-polyfill');
 
