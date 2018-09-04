@@ -2,8 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var _ = require("lodash");
 var G = require("glob");
-var PATH = require("path");
-var WORKSPACE = PATH.dirname(require.main.filename);
+var config_1 = require("../config");
 function parseArgs(argsString) {
     return argsString.split(',').filter(Boolean).map(function (s) { return s.trim(); });
 }
@@ -25,13 +24,13 @@ var ExecutionStrategiesHelper = /** @class */ (function () {
     ExecutionStrategiesHelper.getConfigFromJson = function (branch) {
         var items = branch.split('/');
         var file = items.pop().concat('.json');
-        var paths = G.sync(WORKSPACE + '/../config/'.concat(items.join('/')).concat(file));
+        var paths = G.sync(config_1.APP_ROOT + '/config/'.concat(items.join('/')).concat(file));
         if (!_.isEmpty(paths)) {
             var path_1 = paths[0];
-            var config_1 = require(path_1);
-            return config_1;
+            var config_2 = require(path_1);
+            return config_2;
         }
-        var path = WORKSPACE + '/../config/default.json';
+        var path = config_1.APP_ROOT + '/config/default.json';
         var config = require(path);
         return config;
     };
