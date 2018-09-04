@@ -8,7 +8,7 @@ import { BlankPage } from '../page-models/pages/BlankPage';
 import { RingcentralSignInNavigationPage } from '../page-models/pages/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/pages/RingcentralSignInPage';
 import { UnifiedLoginPage } from '../page-models/pages/UnifiedLoginPage';
-import { GetTokenPage } from '../page-models/pages/GetTokenPage';
+import { TokenGetterPage } from '../page-models/pages/TokenGetterPage';
 // import { Home } from '../page-models/components';
 import { TestHelper } from '../libs/helpers';
 
@@ -44,7 +44,7 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
     .setExtension(extension)
     .setPassword(password)
     .signIn()
-    .shouldNavigateTo(GetTokenPage)
+    .shouldNavigateTo(TokenGetterPage)
     .expectUrlParamsIsCorrect();
   // .shouldNavigateTo(Home)
   // .expectExistComponent();

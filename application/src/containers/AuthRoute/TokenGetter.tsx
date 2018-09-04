@@ -10,13 +10,7 @@ interface IProps extends RouteComponentProps<{}> { }
 
 interface IStates { }
 
-type TParams = {
-  state: string;
-  code: string;
-  id_token: string;
-};
-
-class GetToken extends Component<IProps, IStates>  {
+class TokenGetter extends Component<IProps, IStates>  {
   constructor(props: IProps) {
     super(props);
   }
@@ -27,11 +21,11 @@ class GetToken extends Component<IProps, IStates>  {
     // Free User (Glip create a new user)
     // http://localhost:3000/?state=STATE&id_token=TOKEN
     const { location, history } = this.props;
-    const params: TParams = parse(location.search, { ignoreQueryPrefix: true });
-    const { state, code, id_token } = params;
+    const params = parse(location.search, { ignoreQueryPrefix: true });
+    const { state, code, id_token: token } = params;
     const authService: service.AuthService = service.AuthService.getInstance();
-    if (code || id_token) {
-      await authService.unifiedLogin({ code, token: id_token });
+    if (code || token) {
+      await authService.unifiedLogin({ code, token });
     }
     history.replace(state.replace('$', '&') || '/');
   }
@@ -41,4 +35,4 @@ class GetToken extends Component<IProps, IStates>  {
   }
 }
 
-export default withRouter(GetToken);
+export default withRouter(TokenGetter);

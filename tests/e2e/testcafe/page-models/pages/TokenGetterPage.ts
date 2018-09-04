@@ -1,7 +1,7 @@
 import { ClientFunction } from 'testcafe';
 import { BasePage } from '..';
 
-export class GetTokenPage extends BasePage {
+export class TokenGetterPage extends BasePage {
   expectUrlParamsIsCorrect(): this {
     return this.chain(async (t) => {
       const getLocation = ClientFunction(() => document.location.href);

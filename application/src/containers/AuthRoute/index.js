@@ -10,7 +10,7 @@ import { Route, Redirect } from 'react-router-dom';
 import { parse } from 'qs';
 
 import { service } from "sdk";
-import GetToken from './GetToken';
+import TokenGetter from './TokenGetter';
 
 const AuthRoute = ({ component: Component, ...rest }) => {
 
@@ -20,7 +20,7 @@ const AuthRoute = ({ component: Component, ...rest }) => {
     // http://localhost:3000/?state=STATE&code=CODE
     // Glip User (Free User)
     // http://localhost:3000/?state=STATE&id_token=TOKEN
-    return <Route {...rest} component={GetToken} />
+    return <Route {...rest} component={TokenGetter} />
   }
 
   const isAuthenticated = service.AuthService.getInstance().isLoggedIn();
