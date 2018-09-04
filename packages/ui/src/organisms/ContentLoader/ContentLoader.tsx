@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import ReactContentLoader from 'react-content-loader';
 import Grid from '@material-ui/core/Grid';
 import { withTheme } from 'styled-components';
-import { ThemeProps } from '../../theme';
+import { ThemeProps } from '../../theme/theme';
 
 class ContentLoader extends PureComponent<ThemeProps> {
   static dependencies: React.ComponentType[];
