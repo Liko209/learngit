@@ -1,7 +1,7 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
- * @Date: 2018-08-22 15:23:45
+ * @Date: 2018-08-22 15:24:04
  * Copyright © RingCentral. All rights reserved.
  */
-export * from './BasePageHeader';
-export { default } from './BasePageHeader';
+export * from './Link';
+export { default } from './Link';

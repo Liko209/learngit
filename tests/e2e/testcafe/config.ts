@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as dotenv from 'dotenv';
+import { ExecutionStrategiesHelper } from './libs/utils';
 
 dotenv.config();
 
@@ -252,6 +253,12 @@ const SDK_ENV = {
     },
   },
 }[SITE_ENV];
+
+const EXECUTION_STRATEGIES_HELPER = new ExecutionStrategiesHelper(
+  process.env.BRANCH || '',
+  process.env.ACTION || '',
+);
+
 export {
   RC_PLATFORM_APP_KEY,
   RC_PLATFORM_APP_SECRET,
@@ -259,4 +266,5 @@ export {
   SITE_URL,
   ENV,
   SDK_ENV,
+  EXECUTION_STRATEGIES_HELPER,
 };

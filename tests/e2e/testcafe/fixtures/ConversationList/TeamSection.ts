@@ -16,26 +16,16 @@ fixture('teamSection')
 
 const randomTeamName = 'Team' + Number(new Date());
 
-test(
-  formalName(
-    'Display team',
-    ['P0', 'Team section']),
-  async (t) => {
-    await setupSDK(t);
-    await unifiedLogin(t)
-      .shouldNavigateTo(TeamSection)
-      .shouldBeTeam();
-  },
-);
+test(formalName('Display team', ['P0', 'Team section']), async (t) => {
+  await setupSDK(t);
+  await unifiedLogin(t)
+    .shouldNavigateTo(TeamSection)
+    .shouldBeTeam();
+});
 
-test(
-  formalName(
-    'Modify team name',
-    ['P0', 'Team section']),
-  async (t) => {
-    await setupSDK(t);
-    await unifiedLogin(t)
-      .shouldNavigateTo(TeamSection)
-      .teamNameShouldChange();
-  },
-);
+test(formalName('Modify team name', ['P0', 'Team section']), async (t) => {
+  await setupSDK(t);
+  await unifiedLogin(t)
+    .shouldNavigateTo(TeamSection)
+    .teamNameShouldChange();
+});

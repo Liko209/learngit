@@ -27,7 +27,7 @@ const createThemes = () => {
         return themes;
       },
       {},
-  );
+    );
 };
 
 const themes = createThemes();
@@ -44,10 +44,10 @@ const ThemeProvider: React.SFC<ThemeProviderProps> = ({ themeName, children }) =
 };
 
 type Theme = MuiTheme & typeof defaultTheme;
-type ThemeProps = StyledThemeProps<Theme>;
+type CustomPalette = typeof defaultTheme.palette;
 
 export {
   Theme,
-  ThemeProps,
+  CustomPalette,
   ThemeProvider,
 };
