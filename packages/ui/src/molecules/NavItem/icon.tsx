@@ -1,5 +1,10 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-8-22 17:29:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 import Message from '@material-ui/icons/Message';
 import Phone from '@material-ui/icons/Phone';
 import Videocam from '@material-ui/icons/Videocam';
@@ -14,10 +19,10 @@ import Settings from '@material-ui/icons/Settings';
 import Contacts from '@material-ui/icons/Contacts';
 
 const Icon = styled<TIconProps>(
-  ({ component, ...props }) => React.cloneElement(IconComponent[component], props),
+  ({ component, active, ...props }) => React.cloneElement(IconComponent[component], props),
 )`
   && {
-    width: 20px;
+    width: ${({ theme }) => theme.size.width };
     transition: all .2s ease;
     color: ${ ({ active, theme }) => active ?
     theme.palette.primary.main : theme.palette.accent.ash};
@@ -67,7 +72,7 @@ const NavIcon = (props: TIconProps) => {
   return <Icon component={props.component} {...props}/>;
 };
 type TIconProps = {
-  active: number,
+  active: boolean,
   component: string,
   className: string,
 };
