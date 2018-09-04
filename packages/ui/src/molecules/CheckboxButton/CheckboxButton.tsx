@@ -6,11 +6,11 @@
 import React from 'react';
 import styled, { keyframes } from '../../styled-components';
 import MuiCheckbox, { CheckboxProps } from '@material-ui/core/Checkbox';
+import MuiTooltip from '@material-ui/core/Tooltip';
 import { Icon as MuiIcon } from '@material-ui/core';
 import { palette, grey, width } from '../../utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme } from '../../theme';
-import { ArrowTip } from '../../atoms/Tooltip';
 
 type JuiCheckboxButtonProps = {
   tooltipTitle?: string;
@@ -99,7 +99,7 @@ class JuiCheckboxButton extends React.Component<JuiCheckboxButtonProps, { checke
     checkedIconName: 'check_box',
   };
 
-  static dependencies = [MuiCheckbox, MuiIcon];
+  static dependencies = [MuiCheckbox, MuiIcon, MuiTooltip];
 
   constructor(props: JuiCheckboxButtonProps) {
     super(props);
@@ -117,20 +117,17 @@ class JuiCheckboxButton extends React.Component<JuiCheckboxButtonProps, { checke
   render() {
     const { className, iconName, checkedIconName, tooltipTitle, innerRef, onChange, ...rest } = this.props;
     return (
-      <ArrowTip
-        title={tooltipTitle}
-        node={(
-          <WrapperForTooltip className={className} {...rest}>
-            <StyledCheckboxButton
-              onChange={this.changeHandler}
-              checked={this.state.checked}
-              icon={<StyledIcon>{iconName}</StyledIcon>}
-              checkedIcon={<StyledIcon>{checkedIconName}</StyledIcon>}
-              {...rest}
-            />
-          </WrapperForTooltip>
-        )}
-      />
+      <MuiTooltip title={tooltipTitle} >
+        <WrapperForTooltip className={className} {...rest}>
+          <StyledCheckboxButton
+            onChange={this.changeHandler}
+            checked={this.state.checked}
+            icon={<StyledIcon>{iconName}</StyledIcon>}
+            checkedIcon={<StyledIcon>{checkedIconName}</StyledIcon>}
+            {...rest}
+          />
+        </WrapperForTooltip>
+      </MuiTooltip>
     );
   }
 }

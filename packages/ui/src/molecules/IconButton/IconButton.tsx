@@ -6,11 +6,11 @@
 import React from 'react';
 import styled, { keyframes, IDependencies } from '../../styled-components';
 import MuiIconButton, { IconButtonProps as MuiIconButtonProps } from '@material-ui/core/IconButton';
-import { Icon as MuiIcon } from '@material-ui/core';
+import MuiIcon from '@material-ui/core/Icon';
+import MuiTooltip from '@material-ui/core/Tooltip';
 import { palette, grey, width } from '../../utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme } from '../../theme';
-import { ArrowTip } from '../../atoms/Tooltip';
 
 type JuiIconButtonProps = {
   tooltipTitle?: string;
@@ -99,23 +99,20 @@ const JuiIconButton: IJuiIconButton = (
   const { className, children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
   return (
-    <ArrowTip
-      title={tooltipTitle}
-      node={(
-        <WrapperForTooltip className={className} {...rest}>
-          <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
-            <StyledIcon
-              size={size}
-              variant={variant}
-              awake={awake}
-              disabled={disabled}
-              invisible={invisible}
-            >{children}
-            </StyledIcon>
-          </StyledIconButton>
-        </WrapperForTooltip>
-      )}
-    />
+    <MuiTooltip title={tooltipTitle}>
+      <WrapperForTooltip className={className} {...rest}>
+        <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
+          <StyledIcon
+            size={size}
+            variant={variant}
+            awake={awake}
+            disabled={disabled}
+            invisible={invisible}
+          >{children}
+          </StyledIcon>
+        </StyledIconButton>
+      </WrapperForTooltip>
+    </MuiTooltip>
   );
 };
 
@@ -127,7 +124,7 @@ JuiIconButton.defaultProps = {
   tooltipTitle: '',
 };
 
-JuiIconButton.dependencies = [MuiIconButton, MuiIcon, ArrowTip];
+JuiIconButton.dependencies = [MuiIconButton, MuiIcon, MuiTooltip];
 
 export { JuiIconButton, JuiIconButtonProps };
 export default JuiIconButton;
