@@ -41,10 +41,10 @@ export default class SyncService extends BaseService {
       await this._firstLogin();
     }
     this.isLoading = false;
-    this._preLoadPosts();
+    this._preloadPosts();
   }
 
-  private async _preLoadPosts() {
+  private async _preloadPosts() {
     const handler = new PreloadPostsForGroupHandler();
     handler.preloadPosts();
   }

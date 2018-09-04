@@ -31,7 +31,6 @@ abstract class AbstractProcessor {
       this._processors.push(processor);
       return true;
     }
-    // console.warn('already in ');
     return false;
   }
 

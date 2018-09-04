@@ -30,9 +30,13 @@ describe('PreloadPostsProcessor', () => {
   const postService = new PostService();
   PostService.getInstance = jest.fn().mockReturnValue(postService);
 
-  it('basic functions', () => {
+  it('name', () => {
     const processor = new PreloadPostsProcessor('1', group);
     expect(processor.name()).toBe('1');
+  });
+
+  it('canContinue', () => {
+    const processor = new PreloadPostsProcessor('1', group);
     expect(processor.canContinue()).toBe(true);
   });
 
