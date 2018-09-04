@@ -57,7 +57,7 @@ export default class SyncService extends BaseService {
       result = await fetchRemainingData(currentTime);
       handleData(result);
     } catch (e) {
-      mainLogger.error('fetch initial data or remining data error');
+      mainLogger.error('fetch initial data or remaining data error');
       notificationCenter.emitService(SERVICE.DO_SIGN_OUT);
     }
   }

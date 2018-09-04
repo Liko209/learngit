@@ -33,12 +33,14 @@ class PreloadPostsProcessor implements IProcessor {
         group_id: this._group.id,
       };
       const requestResult = await PostAPI.requestPosts(params);
-      if (requestResult.status && requestResult.status > 400) {
+      if (requestResult.status && requestResult.status >= 500) {
         this._canContinue = false;
         return false;
       }
-      baseHandleData(requestResult.data.posts);
-      itemHandleData(requestResult.data.items);
+      if (requestResult.data) {
+        baseHandleData(requestResult.data.posts || []);
+        itemHandleData(requestResult.data.items || []);
+      }
     }
     return true;
   }

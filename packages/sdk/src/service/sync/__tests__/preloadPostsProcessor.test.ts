@@ -40,6 +40,12 @@ describe('PreloadPostsProcessor', () => {
     expect(processor.canContinue()).toBe(true);
   });
 
+  it('process, does not need preload because this group does not have post', async () => {
+    const processor = new PreloadPostsProcessor('3', group);
+    const yes = await processor.process();
+    expect(yes).toBe(true);
+  });
+
   it('process, does not need preload because not already has post in local', async () => {
     group.most_recent_post_id = 123;
     postService.groupHasPostInLocal.mockResolvedValueOnce(true);
@@ -56,12 +62,22 @@ describe('PreloadPostsProcessor', () => {
     expect(yes).toBe(true);
   });
 
-  it('process, preload but with  > 400 error', async () => {
+  it('process, preload but with  >= 500 error', async () => {
     postService.groupHasPostInLocal.mockResolvedValueOnce(false);
-    PostAPI.requestPosts.mockResolvedValueOnce({ status: 403 });
+    PostAPI.requestPosts.mockResolvedValueOnce({ status: 500 });
     const processor = new PreloadPostsProcessor('3', group);
     const yes = await processor.process();
     expect(yes).toBe(false);
     expect(processor.canContinue()).toBe(false);
+  });
+
+  it('process, preload and handle data', async () => {
+    postService.groupHasPostInLocal.mockResolvedValueOnce(false);
+    PostAPI.requestPosts.mockResolvedValueOnce({
+      data: {},
+    });
+    const processor = new PreloadPostsProcessor('3', group);
+    const yes = await processor.process();
+    expect(yes).toBe(true);
   });
 });
