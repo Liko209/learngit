@@ -3,6 +3,12 @@
     "tslint-react",
     "tslint-config-airbnb"
   ],
+  "linterOptions": {
+    "exclude": [
+      "demo/**/*",
+      "packages/ui-components/**/*"
+    ]
+  },
   "rules": {
     "variable-name": [
       true,

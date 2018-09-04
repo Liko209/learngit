@@ -8,5 +8,11 @@
   "Dashboard": "仪表盘",
   "Messages": "消息",
   "Phone": "电话",
-  "Meetings": "会议"
+  "Meetings": "会议",
+  "Contacts": "联系人",
+  "Calendar": "日历",
+  "Tasks": "任务",
+  "Notes": "笔记",
+  "Files": "文件",
+  "Settings": "设置"
 }
