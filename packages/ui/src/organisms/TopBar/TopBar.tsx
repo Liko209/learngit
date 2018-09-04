@@ -29,11 +29,14 @@ type TTopBarState = {
 const StyledTopBar = styled(AppBar).attrs({ position: 'static' })`
   && {
     min-height: 64px;
+    min-width: 400px;
     background-color: ${({ theme }) =>
     `${theme.palette.common.white}`};
     box-shadow: none;
     border-bottom: 1px solid rgba(0, 0, 0, ${({ theme }) =>
     `${theme.palette.action.hoverOpacity}`});
+    z-index: ${({ theme }) =>
+    `${theme.zIndex.tooltip}`};
   }
 `;
 const TopBarWrapper = styled(Toolbar)`

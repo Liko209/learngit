@@ -20,7 +20,6 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
     width: ${props => props.expand ? MaxWidth : MinWidth}px;
     height: 100%;
     transition: all .25s ease;
-    z-index: 1;
   }
   .left-paper {
     position: absolute;

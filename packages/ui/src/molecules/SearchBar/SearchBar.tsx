@@ -87,7 +87,7 @@ const DropdownIndicator = (props: any) => {
 const Placeholder = (props: React.Props<any>) =>
   (
     <Typography
-      style={{ position: 'absolute', left: '48px', color: '#9E9E9E' }}
+      style={{ position: 'relative', left: '40px', color: '#9E9E9E' }}
     >
       {props.children}
     </Typography>
@@ -130,6 +130,12 @@ const colourStyles = {
       },
     };
   },
+  menuPortal: (styles: React.CSSProperties) => {
+    return {
+      ...styles,
+      zIndex: 1500,
+    };
+  },
   menuList: (styles: React.CSSProperties) => {
     return {
       ...styles,
@@ -154,12 +160,6 @@ const colourStyles = {
         backgroundColor: '#f4f4f4',
         color: '#515151 !important',
       },
-    };
-  },
-  input: (styles: React.CSSProperties) => {
-    return {
-      ...styles,
-      margin: '2px 2px 2px 40px',
     };
   },
   singleValue: (styles: React.CSSProperties) => {
