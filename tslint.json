@@ -6,7 +6,8 @@
   "linterOptions": {
     "exclude": [
       "demo/**/*",
-      "packages/ui-components/**/*"
+      "packages/ui-components/**/*",
+      "**/*.json"
     ]
   },
   "rules": {
