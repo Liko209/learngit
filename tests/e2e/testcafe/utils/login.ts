@@ -9,6 +9,7 @@ import { BlankPage } from '../page-models/BlankPage';
 import { RingcentralSignInNavigationPage } from '../page-models/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/RingcentralSignInPage';
 import { UnifiedLoginPage } from '../page-models/UnifiedLoginPage';
+import { GetTokenPage } from '../page-models/GetTokenPage';
 
 type AuthInfo = {
   credential: string;
@@ -25,8 +26,8 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
     ({ credential, password } = authInfo);
     extension = authInfo.extension || '';
   } else {
-  const helper = TestHelper.from(t);
-credential = helper.companyNumber;
+    const helper = TestHelper.from(t);
+    credential = helper.companyNumber;
     extension = helper.users.user701.extension;
     password = helper.users.user701.password;
   }
@@ -40,7 +41,9 @@ credential = helper.companyNumber;
     .shouldNavigateTo(RingcentralSignInPage)
     .setExtension(extension)
     .setPassword(password)
-    .signIn();
+    .signIn()
+    .shouldNavigateTo(GetTokenPage)
+    .expectUrlParamsIsCorrect();
 }
 
 export { AuthInfo, unifiedLogin };
