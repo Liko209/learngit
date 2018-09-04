@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as G from 'glob';
 import * as PATH from 'path';
 
-const WORKSPACE = PATH.dirname(require.main.filename);
+import { APP_ROOT } from '../config';
 
 export function parseArgs(argsString: string) {
   return argsString.split(',').filter(Boolean).map(s => s.trim());
@@ -19,14 +19,14 @@ export class ExecutionStrategiesHelper {
   static getConfigFromJson(branch: string) {
     const items = branch.split('/');
     const file = items.pop().concat('.json');
-    const paths = G.sync(WORKSPACE + '/../config/'.concat(items.join('/')).concat(file));
+    const paths = G.sync(APP_ROOT + '/config/'.concat(items.join('/')).concat(file));
 
     if (!_.isEmpty(paths)) {
       const path = paths[0];
       const config = require(path);
       return config;
     }
-    const path = WORKSPACE + '/../config/default.json';
+    const path = APP_ROOT + '/config/default.json';
     const config = require(path);
     return config;
   }

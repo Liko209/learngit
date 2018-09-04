@@ -4,9 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 import { ExecutionStrategiesHelper } from './libs/utils';
 
 dotenv.config();
+
+const APP_ROOT = __dirname;
+console.log(APP_ROOT);
 
 const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
 const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
@@ -260,6 +264,7 @@ const EXECUTION_STRATEGIES_HELPER = new ExecutionStrategiesHelper(
 );
 
 export {
+  APP_ROOT,
   RC_PLATFORM_APP_KEY,
   RC_PLATFORM_APP_SECRET,
   SITE_ENV,
