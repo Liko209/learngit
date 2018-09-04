@@ -6,7 +6,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import storeManager from '../../../store';
-import ConversationListItemCell from '../ConversationListItemCell';
+import { ConversationListItemCell } from '../ConversationListItemCell';
 
 const ConversationListItemModule = require.requireActual('ui-components/molecules/ConversationList/ConversationListItem');
 ConversationListItemModule.ConversationListItem = ({ title, status, umiVariant }: { title: string, status?: string, umiVariant: string }) => (

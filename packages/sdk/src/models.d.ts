@@ -87,6 +87,7 @@ export type Person = ExtendedBaseModel & {
   inviter_id?: number;
   rc_phone_numbers?: object[];
   sanitized_rc_extension?: object;
+  is_pseudo_user?: boolean;
 };
 
 export type UserInfo = {

@@ -10,7 +10,7 @@ import { Icon as MuiIcon } from '@material-ui/core';
 import { palette, grey, width } from '../../utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme } from '../../theme';
-import { ArrowTip } from '../../atoms';
+import { ArrowTip } from '../../atoms/Tooltip';
 
 type JuiIconButtonProps = {
   tooltipTitle?: string;
@@ -96,23 +96,27 @@ type IJuiIconButton = React.StatelessComponent<JuiIconButtonProps> & IDependenci
 const JuiIconButton: IJuiIconButton = (
   props: JuiIconButtonProps,
 ) => {
-  const { children, tooltipTitle, innerRef, ...rest } = props;
+  const { className, children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
-  const main = (
-    <WrapperForTooltip {...rest}>
-      <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
-        <StyledIcon
-          size={size}
-          variant={variant}
-          awake={awake}
-          disabled={disabled}
-          invisible={invisible}
-        >{children}
-        </StyledIcon>
-      </StyledIconButton>
-    </WrapperForTooltip>
+  return (
+    <ArrowTip
+      title={tooltipTitle}
+      node={(
+        <WrapperForTooltip className={className} {...rest}>
+          <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
+            <StyledIcon
+              size={size}
+              variant={variant}
+              awake={awake}
+              disabled={disabled}
+              invisible={invisible}
+            >{children}
+            </StyledIcon>
+          </StyledIconButton>
+        </WrapperForTooltip>
+      )}
+    />
   );
-  return tooltipTitle ? (<ArrowTip title={tooltipTitle} node={main}/>) : main;
 };
 
 JuiIconButton.defaultProps = {

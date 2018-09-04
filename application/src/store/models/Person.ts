@@ -1,8 +1,8 @@
-import { IEntity } from './../store.d';
 import { observable, action, computed } from 'mobx';
 import { Person } from 'sdk/models';
+import Base from './Base';
 
-export default class PersonModel implements IEntity {
+export default class PersonModel extends Base<Person> {
   id: number;
   @observable companyId: number;
   @observable firstName?: string;
@@ -10,24 +10,26 @@ export default class PersonModel implements IEntity {
   @observable headshot?: string;
   @observable email: string;
   @observable rcPhoneNumbers?: object[];
+  @observable isPseudoUser?: boolean;
 
-  constructor(model: Person) {
+  constructor(data: Person) {
+    super(data);
     const {
-      id,
       company_id,
       first_name,
       last_name,
       headshot,
       email,
       rc_phone_numbers,
-    } = model;
-    this.id = id;
+      is_pseudo_user,
+    } = data;
     this.companyId = company_id;
     this.firstName = first_name;
     this.lastName = last_name;
     this.headshot = headshot;
     this.email = email;
     this.rcPhoneNumbers = rc_phone_numbers;
+    this.isPseudoUser = is_pseudo_user;
   }
 
   static fromJS(data: Person) {
@@ -90,6 +92,4 @@ export default class PersonModel implements IEntity {
       this.rcPhoneNumbers = rcPhoneNumbers;
     }
   }
-
-  dispose() { } // eslint-disable-line
 }

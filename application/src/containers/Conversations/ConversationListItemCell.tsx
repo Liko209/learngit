@@ -19,8 +19,9 @@ import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import { Group, Presence } from 'sdk/models';
 import PresenceModel from '../../store/models/Presence';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 const { GroupService } = service;
-interface IProps {
+interface IProps extends RouteComponentProps<{}> {
   id: number;
   key: number;
   entityName: string;
@@ -31,7 +32,7 @@ interface IProps {
 interface IState {
 }
 @observer
-export default class ConversationListItemCell extends React.Component<IProps, IState>{
+export class ConversationListItemCell extends React.Component<IProps, IState>{
   static defaultProps = {
     isFavorite: false,
   };
@@ -150,6 +151,7 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
   private _onClick() {
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.clickGroup(this.id);
+    this.props.history.push(`/messages/${this.id}`);
   }
 
   @action
@@ -157,7 +159,8 @@ export default class ConversationListItemCell extends React.Component<IProps, IS
     console.log('_toggleFavorite()');
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.markGroupAsFavorite(this.id, !this.isFavorite);
-
     this._handleClose();
   }
 }
+
+export default withRouter(ConversationListItemCell);

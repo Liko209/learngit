@@ -1,0 +1,11 @@
+{
+  "add_to_favorites": "Add to Favorites",
+  "remove_from_favorites": "Remove from Favorites",
+  "this_is_a_private_team": "This is a private team",
+  "this_is_a_public_team": "This is a public team",
+  "start_voice_call_with": "Start voice call with {{whom}}",
+  "start_conference_call_in": "Start Conference Call in {{groupName}}",
+  "start_video_call": "Start Video Call",
+  "add_members": "Add members",
+  "conversation_settings": "Conversation Settings"
+}

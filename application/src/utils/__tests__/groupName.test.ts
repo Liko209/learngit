@@ -5,6 +5,7 @@
  */
 import storeManager from '../../store';
 import { getGroupName } from '../groupName';
+import { groupModelFactory } from '../../__tests__/factories';
 
 const personStore = {
   get: jest.fn(),
@@ -15,7 +16,7 @@ describe('getGroupName', () => {
   });
   describe('team', () => {
     it('should return setAbbreviation of team', () => {
-      expect(getGroupName({
+      expect(getGroupName(groupModelFactory.build({
         id: 1132,
         members: [1, 2, 3],
         description: 'llll',
@@ -23,11 +24,11 @@ describe('getGroupName', () => {
         isTeam: true,
         setAbbreviation: 'aaa',
         dispose: () => { },
-      })).toBe('aaa');
+      }))).toBe('aaa');
     });
 
     it('should return setAbbreviation if no currentUserId provided', () => {
-      expect(getGroupName({
+      expect(getGroupName(groupModelFactory.build({
         id: 1132,
         members: [1, 2, 3],
         description: 'llll',
@@ -35,7 +36,7 @@ describe('getGroupName', () => {
         isTeam: false,
         setAbbreviation: 'aaa',
         dispose: () => { },
-      })).toBe('aaa');
+      }))).toBe('aaa');
     });
   });
 
@@ -45,7 +46,7 @@ describe('getGroupName', () => {
         displayName: 'Jack',
       });
       expect(getGroupName(
-        {
+        groupModelFactory.build({
           id: 1132,
           members: [1],
           description: 'llll',
@@ -53,7 +54,7 @@ describe('getGroupName', () => {
           isTeam: false,
           setAbbreviation: 'aaa',
           dispose: () => { },
-        },
+        }),
         1),
       ).toBe('Jack (me)');
     });
@@ -71,7 +72,7 @@ describe('getGroupName', () => {
       });
 
       expect(getGroupName(
-        {
+        groupModelFactory.build({
           id: 1132,
           members: [1, 2],
           description: 'llll',
@@ -79,7 +80,7 @@ describe('getGroupName', () => {
           isTeam: false,
           setAbbreviation: 'aaa',
           dispose: () => { },
-        },
+        }),
         1)).toBe('Jack');
     });
   });
@@ -139,7 +140,7 @@ describe('getGroupName', () => {
         personStore.get.mockImplementation(id => people[id]);
 
         expect(getGroupName(
-          {
+          groupModelFactory.build({
             id: 1132,
             members: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             description: 'llll',
@@ -147,7 +148,7 @@ describe('getGroupName', () => {
             isTeam: false,
             setAbbreviation: 'aaa',
             dispose: () => { },
-          },
+          }),
           1)).toBe('Andy, Hu, Jeffrey, Shining, 01david, +Casey, lip.wang@ringcentral.com, 01david@rc.come, +chris.zhan@ringcentral.com');
       },
     );
