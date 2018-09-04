@@ -1,5 +1,5 @@
 import { ClientFunction } from 'testcafe';
-import { BasePage } from './BasePage';
+import { BasePage } from '..';
 
 export class GetTokenPage extends BasePage {
   expectUrlParamsIsCorrect(): this {
