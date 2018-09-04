@@ -1,7 +1,12 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-8-25 15:29:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import * as React from 'react';
 import { boolean, number, select } from '@storybook/addon-knobs/react';
 import { storiesOf } from '@storybook/react';
-import { NavItem } from '..';
+import NavItem from '..';
 import { BrowserRouter } from 'react-router-dom';
 import { withInfoDecorator } from '../../../utils/decorators';
 
@@ -33,7 +38,7 @@ storiesOf('Molecules/NavItem', module)
     return (
       <BrowserRouter>
         <NavItem
-          expand={+expand}
+          expand={expand}
           active={activeNum}
           icon={iconType}
           url={iconType}

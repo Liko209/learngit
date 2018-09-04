@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 08:42:56
+ * Copyright © RingCentral. All rights reserved.
+ */
 'use strict';
 
 if (process.env.NODE_ENV === 'test') {
