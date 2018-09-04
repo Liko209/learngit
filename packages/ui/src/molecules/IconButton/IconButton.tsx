@@ -6,10 +6,11 @@
 import React from 'react';
 import styled, { keyframes, IDependencies } from '../../styled-components';
 import MuiIconButton, { IconButtonProps as MuiIconButtonProps } from '@material-ui/core/IconButton';
-import { Icon as MuiIcon, Tooltip as MuiTooltip } from '@material-ui/core';
+import { Icon as MuiIcon } from '@material-ui/core';
 import { palette, grey, width } from '../../utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme } from '../../theme';
+import { ArrowTip } from '../../atoms';
 
 type JuiIconButtonProps = {
   tooltipTitle?: string;
@@ -97,22 +98,21 @@ const JuiIconButton: IJuiIconButton = (
 ) => {
   const { children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
-  return (
-    <MuiTooltip title={tooltipTitle}>
-      <WrapperForTooltip {...rest}>
-        <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
-          <StyledIcon
-            size={size}
-            variant={variant}
-            awake={awake}
-            disabled={disabled}
-            invisible={invisible}
-          >{children}
-          </StyledIcon>
-        </StyledIconButton>
-      </WrapperForTooltip>
-    </MuiTooltip>
+  const main = (
+    <WrapperForTooltip {...rest}>
+      <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
+        <StyledIcon
+          size={size}
+          variant={variant}
+          awake={awake}
+          disabled={disabled}
+          invisible={invisible}
+        >{children}
+        </StyledIcon>
+      </StyledIconButton>
+    </WrapperForTooltip>
   );
+  return tooltipTitle ? (<ArrowTip title={tooltipTitle} node={main}/>) : main;
 };
 
 JuiIconButton.defaultProps = {
@@ -123,7 +123,7 @@ JuiIconButton.defaultProps = {
   tooltipTitle: '',
 };
 
-JuiIconButton.dependencies = [MuiIconButton, MuiIcon, MuiTooltip];
+JuiIconButton.dependencies = [MuiIconButton, MuiIcon, ArrowTip];
 
 export { JuiIconButton, JuiIconButtonProps };
 export default JuiIconButton;

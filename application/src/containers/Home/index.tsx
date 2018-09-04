@@ -23,14 +23,15 @@ interface IProps extends RouteComponentProps<any> {
 }
 
 interface IStates {
-  isExpand: boolean;
+  expanded: boolean;
 }
+const UMI_Count = [120, 0, 16, 1, 0, 1, 99, 0, 11];
 class Home extends Component<IProps, IStates>  {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      isExpand: localStorage.getItem('isExpand') === null ? true :
-        JSON.parse(String(localStorage.getItem('isExpand'))),
+      expanded: localStorage.getItem('expanded') === null ? true :
+        JSON.parse(String(localStorage.getItem('expanded'))),
     };
     this.signOutClickHandler = this.signOutClickHandler.bind(this);
   }
@@ -42,13 +43,13 @@ class Home extends Component<IProps, IStates>  {
   }
   handleExpand = () => {
     this.setState({
-      isExpand: !this.state.isExpand,
+      expanded: !this.state.expanded,
     });
-    localStorage.setItem('isExpand', JSON.stringify(!this.state.isExpand));
+    localStorage.setItem('expanded', JSON.stringify(!this.state.expanded));
     const { location, history } = this.props;
     history.push({
       pathname: location.pathname,
-      search: `?leftnav=${!this.state.isExpand}`,
+      search: `?leftnav=${!this.state.expanded}`,
     });
   }
   render() {
@@ -71,12 +72,12 @@ class Home extends Component<IProps, IStates>  {
         { icon: 'Settings', title: t('Settings') },
       ],
     ];
-    const { isExpand } = this.state;
+    const { expanded } = this.state;
     return (
       <Wrapper>
         <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online" data-anchor="expandButton" handleSignOutClick={this.signOutClickHandler} />
         <Bottom>
-          <LeftNav isExpand={isExpand} id="leftnav" icons={Icons}/>
+          <LeftNav expanded={expanded} id="leftnav" icons={Icons} umiCount={UMI_Count} />
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
