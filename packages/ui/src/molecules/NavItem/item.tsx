@@ -136,7 +136,7 @@ const NavItem = (props: TNavItemProps) => {
       disableGutters={true}
       expand={expand}
     >
-      <ListLink to={`/${url}`} className={'left-link'}>
+      <ListLink to={`/${url}`} className={'left-link'} title={title}>
         <NavIcon component={icon} active={active} className={'nav-icon'} />
         <ListItemText expand={expand} className={'nav-text'} aria-label={title}>
           {title}
