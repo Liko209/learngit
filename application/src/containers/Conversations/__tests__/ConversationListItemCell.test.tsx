@@ -54,6 +54,9 @@ describe('ConversationListItemCell', () => {
           id={1}
           key={1}
           entityName={'group'}
+          history={{} as any}
+          location={{} as any}
+          match={{} as any}
         />,
       ).html(),
     ).toBe('<div>some group name, count</div>');
@@ -76,6 +79,9 @@ describe('ConversationListItemCell', () => {
           key={1}
           entityName={'group'}
           currentUserId={1}
+          history={{} as any}
+          location={{} as any}
+          match={{} as any}
         />,
       ).html(),
     ).toBe('<div><div>online</div>some group name, count</div>');
@@ -93,6 +99,9 @@ describe('ConversationListItemCell', () => {
           id={1}
           key={1}
           entityName={'group'}
+          history={{} as any}
+          location={{} as any}
+          match={{} as any}
         />,
       ).html(),
     ).toBe('<div>some group name, auto</div>');
