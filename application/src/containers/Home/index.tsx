@@ -65,12 +65,12 @@ class Home extends Component<IProps, IStates>  {
         { icon: 'Meetings', title: t('Meetings') },
       ],
       [
-        { icon: 'Contacts', title: 'Contacts' },
-        { icon: 'Calendar', title: 'Calendar' },
-        { icon: 'Tasks', title: 'Tasks' },
-        { icon: 'Notes', title: 'Notes' },
-        { icon: 'Files', title: 'Files' },
-        { icon: 'Settings', title: 'Settings' },
+        { icon: 'Contacts', title: t('Contacts') },
+        { icon: 'Calendar', title: t('Calendar') },
+        { icon: 'Tasks', title: t('Tasks') },
+        { icon: 'Notes', title: t('Notes') },
+        { icon: 'Files', title: t('Files') },
+        { icon: 'Settings', title: t('Settings') },
       ],
     ];
     const { isExpand } = this.state;

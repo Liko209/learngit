@@ -1,3 +1,9 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 11:01:49
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 /**
  * WEBPACK DLL GENERATOR
  *

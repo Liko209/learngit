@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 11:02:26
+ * Copyright © RingCentral. All rights reserved.
+ */
 const fs = require('fs');
 const { resolve } = require('path');
 const pullAll = require('lodash/pullAll');
