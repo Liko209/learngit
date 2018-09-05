@@ -3,6 +3,7 @@
  * @Date: 2018-08-21 16:46:24
  * Copyright © RingCentral. All rights reserved.
  */
+import { Role } from 'testcafe';
 import { SITE_URL } from '../config';
 import { TestHelper } from '../libs/helpers';
 import { BlankPage } from '../page-models/pages/BlankPage';
@@ -15,6 +16,13 @@ type AuthInfo = {
   extension?: string;
   password: string;
 };
+
+function createRole(authInfo?: AuthInfo) {
+  return Role(
+    SITE_URL,
+    async t => await unifiedLogin(t, authInfo),
+  );
+}
 
 function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
   let credential: string = '';
@@ -44,4 +52,4 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
     .signIn();
 }
 
-export { AuthInfo, unifiedLogin };
+export { AuthInfo, unifiedLogin, createRole };

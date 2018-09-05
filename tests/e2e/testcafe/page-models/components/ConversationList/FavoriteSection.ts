@@ -7,9 +7,8 @@ import { ReactSelector } from 'testcafe-react-selectors';
 import { BaseComponent } from '../..';
 
 export class FavoriteSection extends BaseComponent {
-
   get section() {
-    return ReactSelector('ConversationSection').withProps('title', 'Favorite');
+    return ReactSelector('ConversationListSection').withProps('title', 'Favorites');
   }
 
   get header() {
@@ -21,7 +20,7 @@ export class FavoriteSection extends BaseComponent {
   }
 
   get listItem() {
-    return this.section.findReact('ConversationListItem');
+    return this.section.findReact('ConversationListItem3');
   }
 
   clickHeader() {
@@ -30,10 +29,11 @@ export class FavoriteSection extends BaseComponent {
 
   dragListItem(from: number, to: number) {
     return this.chain(async (t) => {
+      await this.listItem();
+
       const draggedItem = this.listItem.nth(from);
       const targetItem = this.listItem.nth(to);
-      // TODO: This is a hack to wait for draggedItem
-      await t.click(draggedItem);
+
       const draggedComponent = await draggedItem.getReact();
       await t.dragToElement(draggedItem, targetItem);
       const targetComponent = await targetItem.getReact();
@@ -41,13 +41,19 @@ export class FavoriteSection extends BaseComponent {
     });
   }
 
-  expectExpanded() {
+  checkHasEnoughFavoriteConversations() {
+    return this.chain(async (t) => {
+      await t.expect(this.listItem.count).gt(3, 'The account don\'t have enough Favorites conversations for this test case.');
+    });
+  }
+
+  checkExpanded() {
     return this.chain(async (t) => {
       await t.expect(this.collapse.clientHeight).gt(0);
     });
   }
 
-  expectCollapsed() {
+  checkCollapsed() {
     return this.chain(async (t) => {
       await t.expect(this.collapse.clientHeight).eql(0);
     });

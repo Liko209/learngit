@@ -5,7 +5,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Selector } from 'testcafe';
-import { ReactSelector } from 'testcafe-react-selectors';
+import { ReactSelector, waitForReact } from 'testcafe-react-selectors';
 import { Status } from '../libs/report';
 import { TestHelper } from '../libs/helpers';
 
@@ -80,9 +80,37 @@ export abstract class BaseUI {
     return ui;
   }
 
+  validateSelectors() {
+    const re = /get (.+)\(/g;
+    const str = this.constructor.toString();
+    const selectorNames: string[] = [];
+    let match;
+    while (match = re.exec(str)) {
+      selectorNames.push(match[1]);
+    }
+
+    return this.chain(async (t) => {
+      for (const selectorName of selectorNames) {
+        const selector = this[selectorName];
+        await selector();
+        await t.expect(selector.exists).ok(`Selector "${selectorName}" can not match any component`);
+      }
+    });
+  }
+
+  useRole(role) {
+    return this.chain(async (t) => {
+      await t.useRole(role);
+    });
+  }
 }
 
 export abstract class BaseComponent extends BaseUI {
+  waitForReact() {
+    return this.chain(async (t) => {
+      await waitForReact();
+    });
+  }
 }
 
 export abstract class BasePage extends BaseUI {
