@@ -15,16 +15,23 @@ const { GroupService, AccountService } = service;
 
 class ConversationSectionPresenter extends OrderListPresenter<Group, GroupModel> {
   public entityName: ENTITY_NAME = ENTITY_NAME.GROUP;
+  public entity: string;
+  public queryType?: service.GROUP_QUERY_TYPE;
+
   constructor(
-    public entity: string,
-    public queryType: string,
-    transformFunc: Function,
+    options: {
+      entity: string;
+      transformFunc: Function;
+      queryType?: service.GROUP_QUERY_TYPE;
+    },
   ) {
     super(
-      new OrderListStore(`ConversationList: ${queryType}`),
+      new OrderListStore(`ConversationList: ${options.queryType}`),
       () => true,
-      transformFunc,
+      options.transformFunc,
     );
+    this.entity = options.entity;
+    this.queryType = options.queryType;
     this.init();
   }
 

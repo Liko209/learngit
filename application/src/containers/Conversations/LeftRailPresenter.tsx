@@ -11,6 +11,16 @@ const { GROUP_QUERY_TYPE, ENTITY } = service;
 
 const { AccountService } = service;
 
+interface IConversationListSectionModel {
+  title: string;
+  iconName: string;
+  queryType?: service.GROUP_QUERY_TYPE;
+  entity: string;
+  sortable?: boolean;
+  expanded?: boolean;
+  transformFunc?: Function;
+}
+
 class LeftRailPresenter extends BasePresenter {
   @observable
   userId: number | null;
@@ -34,25 +44,22 @@ class LeftRailPresenter extends BasePresenter {
     return this.user && this.user.companyId && this.companyStore.get(this.user.companyId);
   }
   @computed
-  get sections() {
+  get sections(): IConversationListSectionModel[] {
     return [
       {
         title: 'unread',
         iconName: 'fiber_new',
         entity: '', // TODO
-        queryType: '', // TODO
       },
       {
         title: 'mention_plural',
         iconName: 'alternate_email',
         entity: '', // TODO
-        queryType: '', // TODO
       },
       {
         title: 'bookmark_plural',
         iconName: 'bookmark',
         entity: '', // TODO
-        queryType: '', // TODO
       },
       {
         title: 'favorite_plural',

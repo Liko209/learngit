@@ -30,7 +30,11 @@ class LeftRail extends Component<IProps> {
     super(props);
     this.presenter = new LeftRailPresenter();
     this.sections = this.presenter.sections.map(({ entity, queryType, transformFunc, ...rest }) => ({
-      presenter: new ConversationSectionPresenter(entity, queryType, transformFunc || transformGroupSortKey),
+      presenter: new ConversationSectionPresenter({
+        entity,
+        queryType,
+        transformFunc: transformFunc || transformGroupSortKey,
+      }),
       ...rest,
     }));
   }
