@@ -15,7 +15,7 @@ const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
 
 const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,
-  sortKey: dataModel.created_at,
+  sortKey: -dataModel.created_at,
 });
 
 export default class ConversationStreamViewModel extends OrderListPresenter<PostModel, Post> {
@@ -42,7 +42,7 @@ export default class ConversationStreamViewModel extends OrderListPresenter<Post
   async loadPosts() {
     this.postService = PostService.getInstance();
     const offset = this.getStore().getSize();
-    const { id: oldest = 0 } = this.getStore().first() || {};
+    const { id: oldest = 0 } = this.getStore().last() || {};
     const { posts, hasMore } = await this.postService.getPostsByGroupId({
       offset,
       groupId: Number(this.groupId),

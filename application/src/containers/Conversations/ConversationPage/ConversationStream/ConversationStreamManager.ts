@@ -1,5 +1,4 @@
 import ConversationThreadPresenter from './ConversationStreamViewModel';
-import storeManager from '@/store';
 
 const MAX_CONVERSATION_THREAD = 5;
 
