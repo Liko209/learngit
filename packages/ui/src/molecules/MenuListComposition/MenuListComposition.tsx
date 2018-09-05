@@ -6,12 +6,14 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
-import JuiIconButton from '../IconButton';
+import AvatarWithPresence from '../AvatarWithPresence';
+import { PresenceProps } from '../../atoms';
 
 type TIconMore = {
   awake?: boolean;
   handleSignOutClick?: ((event: React.MouseEvent<HTMLInputElement>) => void);
-};
+  src?: string;
+} & PresenceProps;
 
 const MenuListCompositionWrapper = styled.div`
   display: flex;
@@ -25,13 +27,13 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
     open: false,
   };
 
-  anchorEl = React.createRef<Element>();
+  anchorEl = React.createRef<HTMLElement>();
 
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
   }
 
-  handleClose = (event: React.MouseEvent<Element>) => {
+  handleClose = (event: React.MouseEvent<HTMLElement>) => {
     const node = this.anchorEl.current;
     if (node && node.contains(event.currentTarget)) {
       return;
@@ -44,16 +46,12 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
     const { open } = this.state;
     return (
       <MenuListCompositionWrapper>
-        <JuiIconButton
-          buttonRef={this.anchorEl}
+        <AvatarWithPresence
+          innerRef={this.anchorEl}
           aria-haspopup="true"
-          size="medium"
-          tooltipTitle="menu"
-          awake={this.props.awake}
           onClick={this.handleToggle}
-        >
-          add_circle
-        </JuiIconButton>
+          {...this.props}
+        />
         <MenuWrapper
           open={open}
           anchorEl={this.anchorEl.current}
