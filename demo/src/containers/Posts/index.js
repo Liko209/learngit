@@ -37,11 +37,7 @@ class Posts extends Component {
   }
 
   componentDidMount() {
-    const {
-      match: {
-        params: { id }
-      }
-    } = this.props;
+    const id  = this.props.id;
     const conversationThread = this.presenter.getConversationThread(id);
     const offset = conversationThread.getSize();
     if (!offset) {

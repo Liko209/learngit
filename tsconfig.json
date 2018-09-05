@@ -26,6 +26,8 @@
     "resolveJsonModule": true
   },
   "files": [
-    "./typings/images.d.ts"
+    "./typings/images.d.ts",
+    "./typings/chat-view.d.ts",
+    "./typings/json.d.ts"
   ]
 }
