@@ -38,6 +38,7 @@ class Home extends Component<IProps, IStates>  {
 
   async signOutClickHandler() {
     const authService: service.AuthService = AuthService.getInstance();
+
     await authService.logout();
     window.location.href = '/';
   }
@@ -59,7 +60,7 @@ class Home extends Component<IProps, IStates>  {
     const Icons = [
       [
         { icon: 'Dashboard', title: t('Dashboard') },
-        { icon:'Messages', title: t('Messages') },
+        { icon: 'Messages', title: t('Messages') },
         { icon: 'Phone', title: t('Phone') },
         { icon: 'Meetings', title: t('Meetings') },
       ],
