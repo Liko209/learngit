@@ -1,21 +1,23 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-8-22 11:12:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
-import styled from 'styled-components';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
+import { NavLink } from 'react-router-dom';
 import MuiListItemText, {
   ListItemTextProps,
 } from '@material-ui/core/ListItemText';
-import { WithTheme } from '@material-ui/core/styles/withTheme';
-import { Umi } from '../../atoms';
+import { Umi, ArrowTip } from '../../atoms';
 import NavIcon from './icon';
-import { NavLink } from 'react-router-dom';
-import { Tooltip as MuiTooltip } from '@material-ui/core';
+import styled from '../../styled-components';
 
 type TListItem = {
-  active: number;
-  expand: number;
-} & ListItemProps &
-  Partial<Pick<WithTheme, 'theme'>>;
-const CustomListItem: React.SFC<TListItem> = (props) => {
+  active: boolean;
+  expand: boolean;
+} & ListItemProps;
+const CustomListItem: React.SFC<TListItem> = ({ active, expand, ...props }) => {
   return <MuiListItem {...props} />;
 };
 const ListItem = styled<TListItem>(CustomListItem).attrs({
@@ -23,13 +25,12 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({
 })`
   && {
     padding: 0;
-    height: 44px;
+    height: ${({ theme }) => theme.size.height * 44 / 10 + 'px'};
     outline: none;
   }
   // In order to make sure use tab switch nav
   &&.left-item-focus {
     .left-link {
-      background: ${props => props.color};
       span {
         color: ${({ theme }) => theme.palette.grey[700]};
       }
@@ -39,24 +40,22 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({
     }
   }
   &&:hover {
-    background-color: ${props => (props.active ? '#EBF6FA' : '#F5F5F5')};
-    opacity: 0.88;
+    background-color: ${({ theme, active }) => active ? theme.palette.action.active : theme.palette.grey[100]};
+    opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
     .nav-icon {
       color: ${({ theme }) => theme.palette.grey[500]}; // 500
     }
   }
 `;
 type TListItemTextProps = {
-  expand: number;
-} & ListItemTextProps &
-  Partial<Pick<WithTheme, 'theme'>>;
+  expand: boolean;
+} & ListItemTextProps;
 
-const CustomListItemText: React.SFC<TListItemTextProps> = (props) => {
+const CustomListItemText: React.SFC<TListItemTextProps> = ({ expand, ...props }) => {
   return <MuiListItemText {...props} />;
 };
 const ListItemText = styled<TListItemTextProps>(CustomListItemText)`
   && {
-    font-size: 12px;
     color: ${({ theme }) => theme.palette.grey[500]}; // 500
     transform: translate3d(${props => (props.expand ? 12 : -10)}px, 0, 0);
     opacity: ${props => (props.expand ? 1 : 0)};
@@ -65,11 +64,12 @@ const ListItemText = styled<TListItemTextProps>(CustomListItemText)`
     span {
       color: ${({ theme }) => theme.palette.accent.ash}; // Aah
       transition: color 0.2s ease;
+      font-size: ${({ theme }) => theme.typography.fontSize + 'px'};
     }
   }
 `;
 type TUMIProps = {
-  expand: number;
+  expand: boolean;
   unreadCount: number;
   important: boolean;
   variant: 'count' | 'dot' | 'auto';
@@ -93,43 +93,38 @@ const ListLink = styled(NavLink)`
   outline: none;
   display: flex;
   height: 100%;
-  padding: 0 20px;
+  padding: 0 ${({ theme }) => theme.spacing.unit * 5 + 'px'};
   width: 100%;
+  margin-left: ${({ theme }) => theme.spacing.unit * 6 / 4 + 'px'};
   align-items: center;
   text-decoration: none;
-  &&:hover {
-    background: ${props => props.color};
-  }
   &&&:active {
-    background: #d7ebf4 !important; // water
-    opacity: 0.76;
+    opacity: ${({ theme }) => 1 - 2 * theme.palette.action.hoverOpacity};
     span,
     .nav-icon {
-      color: ${({ theme, color }) =>
-  color ? theme.palette[color].main : '#0684BD'}; // RC Blue
+      color: ${({ theme }) => theme.palette.primary.main}; // RC Blue
     }
   }
   &&.active {
     && .nav-icon,
     && .nav-text span {
-      color: ${({ theme, color }) =>
-  color ? theme.palette[color].main : '#0684BD'}; // RC Blue
+      color: ${({ theme }) => theme.palette.primary.main}; // RC Blue
     }
   }
 `;
-type TNavItemProps = {
-  expand: number;
+export type TNavItemProps = {
+  expand: boolean;
   title?: string;
-  active: number;
+  active: boolean;
   icon: string;
   variant: 'count' | 'dot' | 'auto';
   url?: string;
   unreadCount: number;
-} & Partial<Pick<WithTheme, 'theme'>>;
+  invert?: boolean;
+};
 
-const Item = (props: TNavItemProps) => {
+const NavItem = (props: TNavItemProps) => {
   const { expand, active, title, variant, unreadCount, icon, url } = props;
-  const bgColor = active ? '#EBF6FA' : '#F5F5F5'; // Ice and 100
   const NavItems = (
     <ListItem
       button={true}
@@ -139,12 +134,11 @@ const Item = (props: TNavItemProps) => {
       disableRipple={true}
       focusVisibleClassName={'left-item-focus'}
       disableGutters={true}
-      color={bgColor}
       expand={expand}
     >
-      <ListLink to={`/${url}`} className={'left-link'}>
+      <ListLink to={`/${url}`} className={'left-link'} title={title}>
         <NavIcon component={icon} active={active} className={'nav-icon'} />
-        <ListItemText expand={expand} className={'nav-text'}>
+        <ListItemText expand={expand} className={'nav-text'} aria-label={title}>
           {title}
         </ListItemText>
         <UMI
@@ -156,7 +150,15 @@ const Item = (props: TNavItemProps) => {
       </ListLink>
     </ListItem>
   );
-  return !expand ? <MuiTooltip title={title} enterDelay={400}>{NavItems}</MuiTooltip> : NavItems;
+  return !expand ? (
+    <ArrowTip
+      title={title}
+      enterDelay={400}
+      placement="top"
+      node={NavItems}
+    />
+  ) : (
+    NavItems
+  );
 };
-export const NavItem = styled<TNavItemProps>(Item)``;
 export default NavItem;

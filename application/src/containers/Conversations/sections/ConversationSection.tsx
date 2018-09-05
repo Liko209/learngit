@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { translate } from 'react-i18next';
+import { TranslationFunction } from 'i18next';
 import { observer } from 'mobx-react';
 import { autorun, observable } from 'mobx';
 import {
@@ -11,21 +13,24 @@ import {
   Icon,
   ConversationList,
 } from 'ui-components';
+import { toTitleCase } from '@/utils';
 import ConversationListItemCell from '../ConversationListItemCell';
-import ConversationListPresenter from './ConversationListPresenter';
+import ConversationSectionPresenter from './ConversationSectionPresenter';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 interface IProps {
+  t: TranslationFunction;
   title: string;
   iconName: string;
   expanded?: boolean;
   sortable?: boolean;
-  presenter: ConversationListPresenter;
+  presenter: ConversationSectionPresenter;
 }
 const SortableList = SortableContainer(ConversationList);
 const SortableItem = SortableElement(ConversationListItemCell);
 @observer
-class ConversationSection extends React.Component<IProps> {
+class ConversationSectionComponent
+  extends React.Component<IProps> {
   static defaultProps = {
     expanded: true,
     sortable: false,
@@ -91,12 +96,12 @@ class ConversationSection extends React.Component<IProps> {
   }
 
   render() {
-    const { title, iconName, expanded } = this.props;
+    const { t, title, iconName, expanded } = this.props;
     return (
       <div>
         <ConversationListSection
           icon={<Icon>{iconName}</Icon>}
-          title={title}
+          title={toTitleCase(t(title))}
           important={true}
           expanded={expanded}
         >
@@ -107,5 +112,6 @@ class ConversationSection extends React.Component<IProps> {
   }
 }
 
+const ConversationSection = translate('Conversations')(ConversationSectionComponent);
 export { ConversationSection };
 export default ConversationSection;

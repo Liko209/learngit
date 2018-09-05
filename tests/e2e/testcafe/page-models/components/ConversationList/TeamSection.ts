@@ -4,30 +4,51 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ReactSelector } from 'testcafe-react-selectors';
-import { GroupAPI } from '../../../libs/sdk';
-import { BasePage } from '../../BasePage';
+import { GroupAPI, PostAPI } from '../../../libs/sdk';
+import { BaseComponent } from '../..';
 
-const teamSection = ReactSelector('ConversationListSection').withProps('title', 'Teams');
-const team = teamSection.findReact('ConversationListItem').nth(0);
-class TeamSection extends BasePage {
-  public shouldBeTeam() {
+class TeamSection extends BaseComponent {
+  get teamSection() {
+    return ReactSelector('ConversationListSection').withProps('title', 'Teams');
+  }
+
+  get teams() {
+    return this.teamSection.findReact('ConversationListItem');
+  }
+
+  get team0() {
+    return this.teams.nth(0);
+  }
+
+  shouldBeTeam() {
     return this.chain(async (t) => {
-      await t.expect(team.exists).ok('Failed to find the team, probably caused by long-time loadng', { timeout: 1500000 });
-      const id = (await team.getReact()).key;
+      await this.team0();
+      const id = (await this.team0.getReact()).key;
       const props = (await this._getTeamProps(id));
       return await t.expect(props.is_team).ok(`Team ${id} is not a team`);
     });
   }
 
-  public teamNameShouldChange() {
+  teamNameShouldChange() {
     return this.chain(async (t) => {
-      await t.expect(team.exists).ok('Failed to find the team, probably caused by long-time loadng', { timeout: 150000 });
-      const id = (await team.getReact()).key;
+      await this.team0();
+      const id = (await this.team0.getReact()).key;
       const randomName = Math.random().toString(36).substring(7);
       await this._modifyTeamName(id, randomName);
-      const text = () => team.findReact('Typography').innerText;
-      await t.expect(text()).eql(randomName, 'wrong name', { timeout: 150000 });
+      await t.expect(this._getTeamName(this.team0)).eql(randomName, { timeout: 10000 });
     });
+  }
+
+  checkTeamIndex(id: number, i: number) {
+    return this.chain(async (t) => {
+      await this.teams();
+      const component = await this.teams.nth(i).getReact();
+      await t.expect(component.key).eql(id);
+    });
+  }
+
+  private _getTeamName(team: Selector) {
+    return team.findReact('Typography').innerText;
   }
 
   private async  _getTeamProps(id: number): Promise<{ is_team: boolean }> {

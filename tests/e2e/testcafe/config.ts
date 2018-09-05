@@ -4,8 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 
 dotenv.config();
+
+const APP_ROOT = __dirname;
+const CONFIGS_ROOT = path.join(APP_ROOT, 'config');
+
+import { ExecutionStrategiesHelper } from './libs/utils';
 
 const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
 const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
@@ -252,11 +258,22 @@ const SDK_ENV = {
     },
   },
 }[SITE_ENV];
+
+const EXECUTION_STRATEGIES_HELPER = new ExecutionStrategiesHelper(
+  process.env.BRANCH || '',
+  process.env.ACTION || '',
+  CONFIGS_ROOT,
+);
+EXECUTION_STRATEGIES_HELPER.loadConfig();
+
 export {
+  APP_ROOT,
+  CONFIGS_ROOT,
   RC_PLATFORM_APP_KEY,
   RC_PLATFORM_APP_SECRET,
   SITE_ENV,
   SITE_URL,
   ENV,
   SDK_ENV,
+  EXECUTION_STRATEGIES_HELPER,
 };

@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 08:44:54
+ * Copyright © RingCentral. All rights reserved.
+ */
 'use strict';
 
 // Do this as the first thing so that any code reading it knows the right env.
@@ -50,7 +55,7 @@ switch(true) {
     process.env.APP = '<rootDir>/packages/foundation';
     break;
   default:
-    process.env.APP = '<rootDir>/{demo|application|packages/sdk|packages/foundation}';
+    process.env.APP = '<rootDir>/{application|packages/sdk|packages/foundation}';
     break;
 }
 

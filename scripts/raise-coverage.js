@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 08:44:49
+ * Copyright © RingCentral. All rights reserved.
+ */
 const fs = require('fs');
 const { resolve } = require('path');
 const chalk = require('chalk');

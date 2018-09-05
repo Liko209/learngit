@@ -1,17 +1,18 @@
 import { v4 as uuid } from 'uuid';
+import { waitForReact } from 'testcafe-react-selectors';
+import { setupSDK } from '../utils/setupSDK';
+import { Status, AllureStep } from '../libs/report';
+import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
 import accountPoolHelper from './accounts';
 import { RcPlatformManager } from './glip';
-import { Status, AllureStep } from './report';
-
-import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
-
-import { waitForReact } from 'testcafe-react-selectors';
 
 export function setUp(accountType: string) {
   return async (t: TestController) => {
     const helper = TestHelper.from(t);
     await helper.checkOutAccounts(accountType);
     helper.setupGlipApiManager();
+    await setupSDK(t);
+    await waitForReact();
   };
 }
 
@@ -19,9 +20,9 @@ export function tearDown() {
   return async (t: TestController) => {
     const helper = TestHelper.from(t);
     await helper.checkInAccounts();
-    await waitForReact();
   };
 }
+
 export class TestHelper {
   static from(t: TestController): TestHelper {
     return new TestHelper(t);
@@ -59,7 +60,8 @@ export class TestHelper {
   setupGlipApiManager(
     key: string = RC_PLATFORM_APP_KEY,
     secret: string = RC_PLATFORM_APP_SECRET,
-    server: string = ENV.RC_PLATFORM_BASE_URL) {
+    server: string = ENV.RC_PLATFORM_BASE_URL,
+  ) {
     this.t.ctx.rcPlatformManager = new RcPlatformManager(key, secret, server);
   }
 
@@ -77,6 +79,12 @@ export class TestHelper {
 
     if (this.t.ctx.logs === undefined) {
       this.t.ctx.logs = [];
+    }
+    if (startTime === undefined) {
+      startTime = Date.now();
+    }
+    if (endTime === undefined) {
+      endTime = startTime;
     }
 
     let screenPath;

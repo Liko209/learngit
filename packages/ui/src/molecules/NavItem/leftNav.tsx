@@ -1,17 +1,21 @@
-import styled from 'styled-components';
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-8-23 10:29:02
+ * Copyright © RingCentral. All rights reserved.
+ */
+import styled from '../../styled-components';
 import React from 'react';
-import { NavItem } from './item';
+import NavItem from './item';
 import MuiList from '@material-ui/core/List/index';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
-import { WithTheme } from '@material-ui/core/styles/withTheme';
 
 const MaxWidth = 200;
 const MinWidth = 72;
 
 type TLeftNav = {
-  expand: number,
-} & DrawerProps & Partial<Pick<WithTheme, 'theme'>>;
-const CustomLeftNav: React.SFC<TLeftNav> = (props) => {
+  expand: boolean,
+} & DrawerProps;
+const CustomLeftNav: React.SFC<TLeftNav> = ({ expand, ...props }) => {
   return <MuiDrawer {...props} />;
 };
 const Left = styled<TLeftNav>(CustomLeftNav)`
@@ -28,7 +32,7 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
     overflow-x: hidden;
     width: ${props => props.expand ? MaxWidth : MinWidth}px;
     justify-content: space-between;
-    padding: 24px 0;
+    padding: ${({ theme }) => theme.spacing.unit * 6 + 'px'} 0;
     box-sizing: border-box;
     transition: all .25s ease;
     // this group btns will awake
@@ -47,18 +51,18 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
 `;
 
 type TNavProps = {
-  isExpand: boolean;
+  expanded: boolean;
   id: string;
+  umiCount: number[];
   icons: {
     icon: string,
     title: string,
   }[][];
-} & Partial<Pick<WithTheme, 'theme'>>;
-const UMICount = [120, 0, 16, 1, 0, 1, 99, 0, 11];
+};
 export const LeftNav = (props: TNavProps) => {
-  const { isExpand, icons } = props;
+  const { expanded, icons, umiCount } = props;
   return (
-    <Left expand={+isExpand} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={props.id}>
+    <Left expand={expanded} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={props.id}>
       {icons.map((arr, index) => {
         return (
           <MuiList
@@ -70,11 +74,11 @@ export const LeftNav = (props: TNavProps) => {
               arr.map((item, idx) => {
                 const navUrl = item.icon.toLocaleLowerCase();
                 const isActive = window.location.pathname.slice(1) === navUrl;
-                const umiType = UMICount[idx];
+                const umiType = umiCount[idx];
                 return (<NavItem
-                  expand={+isExpand}
+                  expand={expanded}
                   url={navUrl}
-                  active={+isActive}
+                  active={isActive}
                   icon={item.icon}
                   title={item.title}
                   key={idx}

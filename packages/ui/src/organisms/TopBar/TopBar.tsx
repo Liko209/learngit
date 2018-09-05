@@ -9,15 +9,15 @@ import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import SearchBar from '../../molecules/SearchBar';
-import IconButton from '../../molecules/IconButton';
+import JuiIconButton from '../../molecules/IconButton';
 import AvatarWithPresence from '../../molecules/AvatarWithPresence';
 import MenuListComposition from '../../molecules/MenuListComposition';
 import { PresenceProps } from '../../atoms';
 
 type TTopBarProps = {
   avatar?: string;
-  handleLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
-  handleSignOutClick: ((event: React.MouseEvent<HTMLInputElement>) => void);
+  handleLeftNavExpand?: ((event: React.MouseEvent<HTMLInputElement>) => void);
+  handleSignOutClick?: ((event: React.MouseEvent<HTMLInputElement>) => void);
 } & PresenceProps;
 
 type TTopBarState = {
@@ -115,17 +115,17 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
       <StyledTopBar>
         <TopBarWrapper onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
           <TopLeft screenSize={this.state.screenSize}>
-            <IconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.handleLeftNavExpand} data-anchor="expandButton">
+            <JuiIconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.handleLeftNavExpand} data-anchor="expandButton">
               format_list_bulleted
-            </IconButton>
+            </JuiIconButton>
             <TopLogo variant="headline">RingCentral</TopLogo>
             <BackForward invisible={!isElectron}>
-              <IconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
+              <JuiIconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
                 chevron_left
-              </IconButton>
-              <IconButton tooltipTitle="Forward" size="small" awake={topBarState === 'hover'}>
+              </JuiIconButton>
+              <JuiIconButton tooltipTitle="Forward" size="small" awake={topBarState === 'hover'}>
                 chevron_right
-              </IconButton>
+              </JuiIconButton>
             </BackForward>
             <SearchBar />
           </TopLeft>

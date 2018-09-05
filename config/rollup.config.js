@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 08:43:01
+ * Copyright © RingCentral. All rights reserved.
+ */
 const path = require('path');
 
 const rollupTypescript2 = require('rollup-plugin-typescript2');

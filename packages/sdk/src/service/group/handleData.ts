@@ -286,7 +286,7 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
     validGroups = groups.filter(item => item !== null) as Group[];
   });
 
-  await doNotification([], validGroups);
+  await saveDataAndDoNotification(validGroups);
 }
 
 /**
