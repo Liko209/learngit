@@ -52,11 +52,17 @@ async function runTests() {
   const testCafe = await createTestCafe();
   const runner = testCafe.createRunner();
 
+  console.log(`Final config: fixtures = ${JSON.stringify(FIXTURES)}`);
+  console.log(`Final config: include_tags = ${JSON.stringify(INCLUDE_TAGS)}`);
+  console.log(`Final config: exclude_tags = ${JSON.stringify(EXCLUDE_TAGS)}`);
+  console.log(`Final config: browsers = ${JSON.stringify(BROWSERS)}`);
+
   runner
     .src(FIXTURES)
     .filter(filterByTags(INCLUDE_TAGS, EXCLUDE_TAGS))
     .browsers(BROWSERS)
-    .reporter(REPORTER)
+    .reporter(REPORTER, process.stderr)
+    .reporter('spec', process.stdout)
     .screenshots(SCREENSHOTS_PATH, SCREENSHOT_ON_FAIL)
     .concurrency(Number(CONCURRENCY));
 

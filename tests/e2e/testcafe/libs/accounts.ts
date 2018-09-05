@@ -60,7 +60,7 @@ class AccountPoolManager implements IAccountPoolClient {
     }
     const data = await this.accountPoolClient.checkOutAccounts(accountType);
     this.allAccounts.push(data);
-    console.log('In case of unexpected error, you can use following command to reclaim account');
+    console.log('Account Pool: in case of unexpected error, you can use following command to reclaim account');
     console.log(releaseCommandBuilder(this.baseUrl, this.envName, accountType, data.companyEmailDomain));
     return data;
   }
@@ -72,7 +72,7 @@ class AccountPoolManager implements IAccountPoolClient {
 
   async checkInAll() {
     console.log('Account Pool: following accounts are used in this run:');
-    console.log(this.allAccounts);
+    console.log(JSON.stringify(this.allAccounts));
     for (const data of this.allAccounts) {
       await this.accountPoolClient.checkInAccounts(data);
       console.log(`Account Pool: success to reclaim account: ${data.companyEmailDomain}`);

@@ -10,5 +10,11 @@
     "include_tags": [],
     "exclude_tags": ["demo"],
     "browsers": ["selenium:chrome"]
+ },
+ "on_debug": {
+    "fixtures": ["./fixtures/**/*.ts"],
+    "include_tags": [],
+    "exclude_tags": [],
+    "browsers": ["chrome"]
  }
 }
