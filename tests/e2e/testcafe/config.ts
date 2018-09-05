@@ -13,11 +13,11 @@ const CONFIGS_ROOT = path.join(APP_ROOT, 'config');
 
 import { ExecutionStrategiesHelper } from './libs/utils';
 
-const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
-const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
+const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || 'MkCdlSVqQ06H6i7KYcv9bg';
+const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '5_tFBXBQTLWaVcPF61LUGgngBfc8KGQCaZ0_UTw80vsw';
 
 const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
-const SITE_URL = process.env.SITE_URL || 'http://localhost:3000/unified-login';
+const SITE_URL = process.env.SITE_URL || 'https://application-fiji-develop.fiji.gliprc.com/unified-login';
 
 const ENV = {
   'WEB-AQA-XIA': {
