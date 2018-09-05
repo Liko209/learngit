@@ -80,6 +80,12 @@ export abstract class BaseUI {
     return ui;
   }
 
+  checkExisted(selector: Selector) {
+    return this.chain(async (t) => {
+      await t.expect(selector.exists).ok();
+    });
+  }
+
   validateSelectors() {
     const re = /get (.+)\(/g;
     const str = this.constructor.toString();
@@ -92,7 +98,7 @@ export abstract class BaseUI {
     return this.chain(async (t) => {
       for (const selectorName of selectorNames) {
         const selector = this[selectorName];
-        await selector();
+        await selector;
         await t.expect(selector.exists).ok(`Selector "${selectorName}" can not match any component`);
       }
     });

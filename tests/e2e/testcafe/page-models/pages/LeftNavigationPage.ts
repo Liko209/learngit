@@ -3,7 +3,7 @@
  * @Date: 2018-08-22 17:16:18
  * Copyright © RingCentral. All rights reserved.
  */
-import { AnchorSelector } from '../utils';
+import { AnchorSelector } from '../../utils';
 import { BasePage } from '..';
 
 export class LeftNavigationPage extends BasePage {

@@ -1,5 +1,4 @@
 import { v4 as uuid } from 'uuid';
-import { waitForReact } from 'testcafe-react-selectors';
 import { setupSDK } from '../utils/setupSDK';
 import { Status, AllureStep } from '../libs/report';
 import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
@@ -12,7 +11,6 @@ export function setUp(accountType: string) {
     await helper.checkOutAccounts(accountType);
     helper.setupGlipApiManager();
     await setupSDK(t);
-    await waitForReact();
   };
 }
 
@@ -32,7 +30,11 @@ export class TestHelper {
   }
 
   async checkOutAccounts(accountType: string, env: string = ENV.ACCOUNT_POOL_ENV) {
-    this.t.ctx.data = await accountPoolHelper.checkOutAccounts(env, accountType);
+    try {
+      this.t.ctx.data = await accountPoolHelper.checkOutAccounts(env, accountType);
+    } catch (e) {
+      throw new Error('failed to check out accounts');
+    }
   }
 
   async checkInAccounts(env: string = ENV.ACCOUNT_POOL_ENV) {
@@ -79,12 +81,6 @@ export class TestHelper {
 
     if (this.t.ctx.logs === undefined) {
       this.t.ctx.logs = [];
-    }
-    if (startTime === undefined) {
-      startTime = Date.now();
-    }
-    if (endTime === undefined) {
-      endTime = startTime;
     }
 
     let screenPath;

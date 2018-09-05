@@ -16,17 +16,23 @@ fixture('ConversationList/FavoriteSection')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown());
 
-test(formalName('Expand & Collapse', ['P2', 'ConversationList']), async (t) => {
+test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async (t) => {
   await unifiedLogin(t)
+    .log('1. Navigate to Favorites section')
     .shouldNavigateTo(FavoriteSection)
+    .log('2. Check the section is expended')
     .checkExpanded()
+    .log('3. Click the favorite section name')
     .clickHeader()
+    .log('4. Check the section is collapsed')
     .checkCollapsed()
+    .log('5. Click the favorite section name')
     .clickHeader()
+    .log('6. Check the section is expended')
     .checkExpanded();
 });
 
-test(formalName('Drag & Drop', ['P2', 'ConversationList']), async (t) => {
+test(formalName('Drag & Drop', ['JPT-10', 'P2', 'ConversationList']), async (t) => {
   // XIA-UP
   const authInfo = {
     credential: 'system@tarcnonbetauser1487802163099530.com',
@@ -37,6 +43,8 @@ test(formalName('Drag & Drop', ['P2', 'ConversationList']), async (t) => {
   const FIRST = 0;
 
   await unifiedLogin(t, authInfo)
+    .log('1. Navigate to Favorites section')
     .shouldNavigateTo(FavoriteSection)
+    .log('2. Drag & drop conversation')
     .dragListItem(LAST, FIRST);
 });

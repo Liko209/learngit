@@ -12,7 +12,7 @@ export interface INameTags {
 }
 
 function isValidTag(tag: string): boolean {
-  return /^[a-zA-Z_$][a-zA-Z_$0-9 ]*$/.test(tag);
+  return /^[a-zA-Z_$][a-zA-Z_\-$0-9 ]*$/.test(tag);
 }
 
 function validateTag(tag: string) {

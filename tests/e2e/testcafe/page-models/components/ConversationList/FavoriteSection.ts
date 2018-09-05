@@ -7,24 +7,24 @@ import { ReactSelector } from 'testcafe-react-selectors';
 import { BaseComponent } from '../..';
 
 export class FavoriteSection extends BaseComponent {
-  get section() {
+  get section(): Selector {
     return ReactSelector('ConversationListSection').withProps('title', 'Favorites');
   }
 
-  get header() {
+  get header(): Selector {
     return this.section.findReact('ConversationListSectionHeader');
   }
 
-  get collapse() {
+  get collapse(): Selector {
     return this.section.findReact('Collapse');
   }
 
-  get listItem() {
-    return this.section.findReact('ConversationListItem3');
+  get listItem(): Selector {
+    return this.section.findReact('ConversationListItem');
   }
 
   clickHeader() {
-    return this.click(this.header);
+    return this.clickElement(this.header);
   }
 
   dragListItem(from: number, to: number) {

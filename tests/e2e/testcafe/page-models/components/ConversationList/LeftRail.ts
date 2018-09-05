@@ -1,10 +1,10 @@
 // author = 'mia.cai@ringcentral.com'
 import { ReactSelector } from 'testcafe-react-selectors';
-import { BasePage } from '../../BasePage';
+import { BaseComponent } from '../..';
 
-class LeftRail extends BasePage {
+class LeftRail extends BaseComponent {
   get sections() {
-    return ReactSelector('ConversationListSection');
+    return ReactSelector('ConversationListSection2');
   }
 
   private _getSection(title: string, position: number) {
@@ -26,7 +26,13 @@ class LeftRail extends BasePage {
 
   checkSectionIndex(sectionTitle: string, index: number): this {
     const section = this._getSection(sectionTitle, index);
-    return this.checkExist(section);
+    return this.checkExisted(section);
+  }
+
+  protected waitFor(selector: Selector) {
+    return this.chain(async (t) => {
+      await selector;
+    });
   }
 }
 

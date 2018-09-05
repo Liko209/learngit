@@ -9,11 +9,11 @@ fixture('ConversationList/maxConversation')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown());
 
-test(formalName('maxConversation', ['P2', 'JPT57', 'ConversationList']), async (t) => {
+test(formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']), async (t) => {
 
   await unifiedLogin(t)
-    .log('1.Navigate to Messages')
+    .log('1. Navigate to Messages')
     .shouldNavigateTo(MaxConversation)
-    .log('2.Check Teams section displays 20 recent conversations')
+    .log('2. Check Teams section displays 20 recent conversations')
     .checkMaxConversation('Teams', 'Team', 20);
 });

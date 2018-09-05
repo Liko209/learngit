@@ -17,7 +17,7 @@ class UnifiedLoginPage extends BasePage {
   }
 
   clickLogin(): this {
-    return this.click(this.loginButton);
+    return this.clickElement(this.loginButton);
   }
 
 }
