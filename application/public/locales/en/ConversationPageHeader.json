@@ -1,12 +1,12 @@
 {
-  "add_to_favorites": "Add to Favorites",
-  "remove_from_favorites": "Remove from Favorites",
-  "this_is_a_private_team": "This is a private team",
-  "this_is_a_public_team": "This is a public team",
-  "start_voice_call_with": "Start Voice Call",
-  "start_conference_call_in": "Start Conference Call",
-  "start_video_call": "Start Video Call",
-  "add_members": "Add Members",
-  "conversation_settings": "Conversation Settings",
+  "addToFavorites": "Add to Favorites",
+  "removeFromFavorites": "Remove from Favorites",
+  "thisIsAPrivateTeam": "This is a private team",
+  "thisIsAPublicTeam": "This is a public team",
+  "startVoiceCall": "Start Voice Call",
+  "startConferenceCall": "Start Conference Call",
+  "startVideoCall": "Start Video Call",
+  "addMembers": "Add Members",
+  "conversationSettings": "Conversation Settings",
   "text": "text"
 }
