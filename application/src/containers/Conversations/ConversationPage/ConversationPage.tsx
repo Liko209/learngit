@@ -12,7 +12,7 @@ interface IProps extends RouteComponentProps<IParams> { }
 const ConversationPageComponent = ({ match }: IProps) => {
   const id = parseInt(match.params.id, 10);
   return (
-    <JuiConversationPage data-id={id}>
+    <JuiConversationPage>
       <ConversationPageHeader id={id} />
       <JuiDivider />
     </JuiConversationPage>

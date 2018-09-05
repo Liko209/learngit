@@ -16,7 +16,7 @@ import { translate } from 'react-i18next';
 import { TranslationFunction } from 'i18next';
 
 type ConversationPageHeaderProps = {
-  id: number;
+  id?: number;
   t: TranslationFunction;
 };
 @observer
@@ -38,7 +38,6 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
     }
     const groupName = getGroupName(group, this.presenter.userId || undefined);
     const type = this.presenter.getConversationType(group);
-    const otherMember = this.presenter.getOtherMember(group);
     const isFavorite = this.presenter.groupIsInFavorites(group);
     const isPrivate = group.privacy === 'private';
 
