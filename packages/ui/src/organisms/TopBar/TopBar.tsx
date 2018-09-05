@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import SearchBar from '../../molecules/SearchBar';
-import IconButton from '../../molecules/IconButton';
+import JuiIconButton from '../../molecules/IconButton';
 import MenuListComposition from '../../molecules/MenuListComposition';
 import { PresenceProps } from '../../atoms';
 import { spacing } from '../../utils';
@@ -75,24 +75,30 @@ const BackForward: any = styled.div`
 
 const StyledMenuListComposition = styled(MenuListComposition)``;
 
-const StyledIconMore = styled(IconButton)``;
+const StyledIconPlus = styled(JuiIconButton)``;
 
-const StyledIconSearch = styled(IconButton)``;
+const StyledIconMore = styled(JuiIconButton)``;
+
+const StyledIconSearch = styled(JuiIconButton)``;
 
 const StyledSearchBar = styled(SearchBar)``;
 
 const TopLeft = styled.div`
   display: flex;
   align-items: center;
-  @media (max-width: 1920px) {
-    flex: 0 1 1624px;
+
+  @media (min-width: 1280px) and (max-width: 1920px) {
+    flex: 1;
   }
-  @media (max-width: 1280px) {
-    flex: 0 0 984px;
+
+  @media (min-width: 1100px) and (max-width: 1280px) {
+    width: 984px;
   }
+
   @media (max-width: 1100px) {
-    flex: 0 1 984px;
+    flex: 1;
   }
+
   @media (max-width: 600px) {
     justify-content: space-between;
     ${StyledSearchBar} {
@@ -119,18 +125,23 @@ const TopRight = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  @media (max-width: 1920px) {
-    flex: 0 0 264px;
+
+  @media (min-width: 1280px) and (max-width: 1920px) {
+    width: 264px;
   }
-  @media (max-width: 1280px) {
-    flex: 0 1 264px;
+
+  @media (min-width: 1100px) and (max-width: 1279px) {
+    flex: 1;
   }
+
   @media (max-width: 1100px) {
-    flex: 0 1 auto;
+    width: 96px;
   }
+
   @media (max-width: 600px) {
     ${StyledMenuListComposition} {
       display: none;
+      flex-shrink: 0;
     }
   }
   @media (min-width: 601px) {
@@ -195,18 +206,18 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
         <TopBarWrapper onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
           <TopLeft isShowSearchBar={isShowSearchBar}>
             <MenuWithLogo>
-              <IconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.onLeftNavExpand} data-anchor="expandButton">
+              <JuiIconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.onLeftNavExpand} data-anchor="expandButton">
                 format_list_bulleted
-              </IconButton>
+              </JuiIconButton>
               <TopLogo variant="headline">RingCentral</TopLogo>
             </MenuWithLogo>
             <BackForward invisible={!isElectron}>
-              <IconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
+              <JuiIconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
                 chevron_left
-              </IconButton>
-              <IconButton tooltipTitle="Forward" size="small" awake={topBarState === 'hover'}>
+              </JuiIconButton>
+              <JuiIconButton tooltipTitle="Forward" size="small" awake={topBarState === 'hover'}>
                 chevron_right
-              </IconButton>
+              </JuiIconButton>
             </BackForward>
             <StyledSearchBar setSearchBarState={this.setSearchBarState} />
             <StyledIconSearch onClick={this.showSearchBar} tooltipTitle="Search" size="medium" awake={topBarState === 'hover'}>
@@ -214,13 +225,13 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
             </StyledIconSearch>
           </TopLeft>
           <TopRight>
-            <IconButton
+            <StyledIconPlus
               size="medium"
               tooltipTitle="plus"
               awake={topBarState === 'hover'}
             >
               add_circle
-            </IconButton>
+            </StyledIconPlus>
             <StyledMenuListComposition
               awake={topBarState === 'hover'}
               handleSignOutClick={this.props.onSignOutClick}

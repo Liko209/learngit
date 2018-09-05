@@ -87,7 +87,13 @@ const DropdownIndicator = (props: any) => {
 const Placeholder = (props: React.Props<any>) =>
   (
     <Typography
-      style={{ position: 'relative', left: '40px', color: '#9E9E9E' }}
+      style={{
+        position: 'absolute',
+        left: '48px',
+        color: '#9E9E9E',
+        top: '50%',
+        transform: 'translate(0,-50%)',
+      }}
     >
       {props.children}
     </Typography>

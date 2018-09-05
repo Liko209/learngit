@@ -7,11 +7,11 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs/react';
-import { withInfo } from '@storybook/addon-info';
 
 import AvatarWithPresence from '.';
 
-import avatar from '../../atoms/Avatar/img/avatar.jpg';
+import avatar from '../../atoms/Avatar/__stories__/img/avatar.jpg';
+import { withInfoDecorator } from '../../utils/decorators';
 
 const knobs = {
   presence: () => select(
@@ -25,9 +25,10 @@ const knobs = {
   ),
 };
 
-storiesOf('AvatarWithPresence', module)
-  .addWithJSX('AvatarWithPresence', withInfo(``)(() => {
+storiesOf('Molecules/AvatarWithPresence 🔜', module)
+  .addDecorator(withInfoDecorator(AvatarWithPresence, { inline: true }))
+  .addWithJSX('AvatarWithPresence', () => {
     return (
       <AvatarWithPresence src={avatar} presence={knobs.presence()} />
     );
-  }));
+  });

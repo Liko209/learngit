@@ -5,37 +5,79 @@
  */
 
 const createTestCafe = require('testcafe');
+const TerminationHandler = require('testcafe/lib/cli/termination-handler');
+
 import { filterByTags } from './libs/filter';
 import { flattenGlobs, parseArgs } from './libs/utils';
+import { EXECUTION_STRATEGIES_HELPER as STRATEGY } from './config';
 
-const FIXTURES = flattenGlobs(parseArgs(process.env.FIXTURES || `${__dirname}/../fixtures/**/*.ts`));
 const REPORTER = process.env.REPORTER || 'allure-lazy';
-const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp/';
+const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
+const SCREENSHOT_ON_FAIL = String(process.env.SCREENSHOT_ON_FAIL).trim().toLowerCase() === 'false' ? false : true;
 const CONCURRENCY = process.env.CONCURRENCY || '1';
-const BROWSERS = parseArgs(process.env.BROWSERS || 'chrome');
-const INCLUDE_TAGS = parseArgs(process.env.INCLUDE_TAGS || '');
-const EXCLUDE_TAGS = parseArgs(process.env.EXCLUDE_TAGS || '');
+const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : STRATEGY.fixtures);
+const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : STRATEGY.browsers;
+const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : STRATEGY.includeTags;
+const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : STRATEGY.excludeTags;
 
-let testcafe: any = null;
+let showMessageOnExit = true;
+let exitMessageShown = false;
+let exiting = false;
 
-createTestCafe()
-  .then((tc: any) => {
-    testcafe = tc;
-    const runner = testcafe.createRunner();
-    return runner
-      .src(FIXTURES)
-      .filter(filterByTags(INCLUDE_TAGS, EXCLUDE_TAGS))
-      .browsers(BROWSERS)
-      .reporter(REPORTER)
-      .screenshots(SCREENSHOTS_PATH)
-      .concurrency(parseInt(CONCURRENCY, 10))
-      .run();
-  })
-  .then((failedCount: any) => {
-    console.log('Tests failed: ' + failedCount);
-    testcafe.close();
-  })
-  .catch((error: any) => {
-    console.log(`${error}`);
-    testcafe.close();
-  });
+function exitHandler(terminationLevel) {
+  if (showMessageOnExit && !exitMessageShown) {
+    exitMessageShown = true;
+    console.log('Stopping TestCafe...');
+    process.on('exit', () => console.log('TestCafe stopped'));
+  }
+  if (exiting || terminationLevel < 2) {
+    return;
+  }
+  exiting = true;
+  exit(0);
+}
+
+function exit(code) {
+  setTimeout(() => process.exit(code), 0);
+}
+
+function error(err) {
+  console.log(String(err));
+  exit(1);
+}
+
+async function runTests() {
+  let failed = 0;
+  const testCafe = await createTestCafe();
+  const runner = testCafe.createRunner();
+
+  runner
+    .src(FIXTURES)
+    .filter(filterByTags(INCLUDE_TAGS, EXCLUDE_TAGS))
+    .browsers(BROWSERS)
+    .reporter(REPORTER)
+    .screenshots(SCREENSHOTS_PATH, SCREENSHOT_ON_FAIL)
+    .concurrency(Number(CONCURRENCY));
+
+  runner.once('done-bootstrapping', () => console.log('running...'));
+
+  try {
+    failed = await runner.run();
+  } finally {
+    await testCafe.close();
+  }
+  exit(failed);
+}
+
+(async function cli() {
+  const terminationHandler = new TerminationHandler();
+
+  terminationHandler.on(TerminationHandler.TERMINATION_LEVEL_INCREASED_EVENT, exitHandler);
+
+  try {
+    await runTests();
+  } catch (err) {
+    showMessageOnExit = false;
+    error(err);
+  }
+})();
