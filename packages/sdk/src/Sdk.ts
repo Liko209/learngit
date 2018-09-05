@@ -7,6 +7,7 @@
 import featureFlag from './component/featureFlag';
 import { Foundation, NetworkManager, Token } from 'foundation';
 import merge from 'lodash/merge';
+import './service/windowEventListener'; // to initial window events listener
 
 import {
   Api,
