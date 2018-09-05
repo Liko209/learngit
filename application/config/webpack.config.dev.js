@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 11:01:41
+ * Copyright © RingCentral. All rights reserved.
+ */
 'use strict';
 
 const fs = require('fs');
@@ -146,7 +151,6 @@ module.exports = {
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
       '@': paths.appSrc,
-      UI: path.resolve(__filename, '../../packages/ui-components')
     },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).

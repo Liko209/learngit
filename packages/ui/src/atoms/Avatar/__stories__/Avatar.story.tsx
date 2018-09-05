@@ -3,13 +3,13 @@
  * @Date: 2018-08-17 14:40:24
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../.storybook/storybook.d.ts" />
+/// <reference path="../../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs/react';
-import { withInfoDecorator } from '../../utils/decorators';
+import { withInfoDecorator } from '../../../utils/decorators';
 
-import Avatar from '.';
+import Avatar from '..';
 
 import avatar from './img/avatar.jpg';
 
@@ -20,8 +20,23 @@ const knobs = {
       small: 'small',
       medium: 'medium',
       large: 'large',
+      xlarge: 'xlarge',
     },
     'medium',
+  ),
+
+  color: () => select(
+    'color',
+    {
+      lake: 'lake',
+      tiffany: 'tiffany',
+      cateye: 'cateye',
+      grass: 'grass',
+      gold: 'gold',
+      persimmon: 'persimmon',
+      tomato: 'tomato',
+    },
+    'lake',
   ),
 };
 storiesOf('Atoms/Avatar', module)
@@ -33,7 +48,7 @@ storiesOf('Atoms/Avatar', module)
   })
   .addWithJSX('Name', () => {
     return (
-      <Avatar size={knobs.size()}>
+      <Avatar size={knobs.size()} color={knobs.color()}>
         SH
       </Avatar>
     );

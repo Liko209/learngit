@@ -5,3 +5,4 @@ export * from './Umi';
 export * from './Menu';
 export * from './MenuItem';
 export * from './Popper';
+export * from './Tooltip';

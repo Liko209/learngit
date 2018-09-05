@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 08:40:01
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import styled from 'styled-components';
 import MuiTypography, { TypographyProps } from '@material-ui/core/Typography';

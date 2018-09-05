@@ -16,42 +16,27 @@ fixture('ConversationList/FavoriteSection')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown());
 
-// XIA-UP
-const authInfo = {
-  credential: 'system@tarcnonbetauser1487802163099530.com',
-  password: 'Test!123',
-};
-
-/**
- * AC 1
- *
- * Can expand/collapse the favorite section by clicking the section name.
- *
- * Given: At least one conversation in the favorite section.
- * When:  Clicking the section name.
- * Then:  The favorite section can be expanded or collapsed.
- */
 test(formalName('Expand & Collapse', ['P2', 'ConversationList']), async (t) => {
-  await unifiedLogin(t, authInfo)
+  await unifiedLogin(t)
     .shouldNavigateTo(FavoriteSection)
-    .expectExpanded()
+    .checkExpanded()
     .clickHeader()
-    .expectCollapsed()
+    .checkCollapsed()
     .clickHeader()
-    .expectExpanded();
+    .checkExpanded();
 });
 
-/**
- * AC 3
- *
- * User can reorder the list in favorite section by drag and drop.
- *
- * Given: Have some conversations in favorite section.
- * When:  Drag and drop conversation.
- * Then:  The list of 'Favorite' section was reordered.
- */
 test(formalName('Drag & Drop', ['P2', 'ConversationList']), async (t) => {
+  // XIA-UP
+  const authInfo = {
+    credential: 'system@tarcnonbetauser1487802163099530.com',
+    password: 'Test!123',
+  };
+
+  const LAST = -1;
+  const FIRST = 0;
+
   await unifiedLogin(t, authInfo)
     .shouldNavigateTo(FavoriteSection)
-    .dragListItem(-1, 0);
+    .dragListItem(LAST, FIRST);
 });

@@ -39,14 +39,20 @@ class LeftRailPresenter extends BasePresenter {
       {
         title: 'unread',
         iconName: 'fiber_new',
+        entity: '', // TODO
+        queryType: '', // TODO
       },
       {
         title: 'mention_plural',
         iconName: 'alternate_email',
+        entity: '', // TODO
+        queryType: '', // TODO
       },
       {
         title: 'bookmark_plural',
         iconName: 'bookmark',
+        entity: '', // TODO
+        queryType: '', // TODO
       },
       {
         title: 'favorite_plural',
@@ -65,7 +71,6 @@ class LeftRailPresenter extends BasePresenter {
         iconName: 'people',
         queryType: GROUP_QUERY_TYPE.GROUP,
         entity: ENTITY.PEOPLE_GROUPS,
-        sortable: false,
         expanded: true,
       },
       {
@@ -73,7 +78,6 @@ class LeftRailPresenter extends BasePresenter {
         iconName: 'people',
         queryType: GROUP_QUERY_TYPE.TEAM,
         entity: ENTITY.TEAM_GROUPS,
-        sortable: false,
         expanded: true,
       },
     ];

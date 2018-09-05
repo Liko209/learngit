@@ -46,40 +46,37 @@ storiesOf('Atoms/ButtonBar', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiButtonBar, { inline: true }))
   .addWithJSX('Plain Icon Button Bar', () => {
-    const { size, ...rest } = getKnobs();
     return (
       <div>
-        <JuiButtonBar {...rest}>
-          <JuiIconButton variant="plain" size={size} tooltipTitle="like">favorite</JuiIconButton>
-          <JuiIconButton variant="plain" size={size} tooltipTitle="like">favorite</JuiIconButton>
-          <JuiIconButton variant="plain" size={size} tooltipTitle="like">favorite</JuiIconButton>
-          <JuiIconButton variant="plain" size={size} tooltipTitle="like">favorite</JuiIconButton>
+        <JuiButtonBar {...getKnobs()}>
+          <JuiIconButton variant="plain" tooltipTitle="like">favorite</JuiIconButton>
+          <JuiIconButton variant="plain" tooltipTitle="like">favorite</JuiIconButton>
+          <JuiIconButton variant="plain" tooltipTitle="like">favorite</JuiIconButton>
+          <JuiIconButton variant="plain" tooltipTitle="like">favorite</JuiIconButton>
         </JuiButtonBar>
       </div>
     );
   })
   .addWithJSX('Round Icon Button Bar', () => {
-    const { size, ...rest } = getKnobs();
     return (
       <div>
-        <JuiButtonBar {...rest}>
-          <JuiIconButton variant="round" size={size} tooltipTitle="like">favorite</JuiIconButton>
-          <JuiIconButton variant="round" size={size} tooltipTitle="like">favorite</JuiIconButton>
-          <JuiIconButton variant="round" size={size} tooltipTitle="like">favorite</JuiIconButton>
-          <JuiIconButton variant="round" size={size} tooltipTitle="like">favorite</JuiIconButton>
+        <JuiButtonBar {...getKnobs()}>
+          <JuiIconButton variant="round" tooltipTitle="like">favorite</JuiIconButton>
+          <JuiIconButton variant="round" tooltipTitle="like">favorite</JuiIconButton>
+          <JuiIconButton variant="round" tooltipTitle="like">favorite</JuiIconButton>
+          <JuiIconButton variant="round" tooltipTitle="like">favorite</JuiIconButton>
         </JuiButtonBar>
       </div>
     );
   })
   .addWithJSX('Checkbox Button Bar', () => {
-    const { size, ...rest } = getKnobs();
     return (
       <div>
-        <JuiButtonBar {...rest}>
-          <JuiCheckboxButton size={size} tooltipTitle="favorite" iconName="star_border" checkedIconName="star">favorite</JuiCheckboxButton>
-          <JuiCheckboxButton size={size} tooltipTitle="favorite" iconName="star_border" checkedIconName="star">favorite</JuiCheckboxButton>
-          <JuiCheckboxButton size={size} tooltipTitle="favorite" iconName="star_border" checkedIconName="star">favorite</JuiCheckboxButton>
-          <JuiCheckboxButton size={size} tooltipTitle="favorite" iconName="star_border" checkedIconName="star">favorite</JuiCheckboxButton>
+        <JuiButtonBar {...getKnobs()}>
+          <JuiCheckboxButton tooltipTitle="favorite" iconName="star_border" checkedIconName="star">favorite</JuiCheckboxButton>
+          <JuiCheckboxButton tooltipTitle="favorite" iconName="star_border" checkedIconName="star">favorite</JuiCheckboxButton>
+          <JuiCheckboxButton tooltipTitle="favorite" iconName="star_border" checkedIconName="star">favorite</JuiCheckboxButton>
+          <JuiCheckboxButton tooltipTitle="favorite" iconName="star_border" checkedIconName="star">favorite</JuiCheckboxButton>
         </JuiButtonBar>
       </div>
     );

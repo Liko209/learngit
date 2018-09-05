@@ -98,4 +98,15 @@ function typography(name: string) {
   `;
 }
 
-export { spacing, width, height, palette, cssValue, primary, secondary, grey, typography };
+/**
+ * ellipsis
+ */
+function ellipsis() {
+  return css`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  `;
+}
+
+export { spacing, width, height, palette, cssValue, primary, secondary, grey, typography, ellipsis };

@@ -13,7 +13,7 @@ import DialogContent from '../../atoms/DialogContent';
 import DialogActions from '../../atoms/DialogAction';
 import { withInfoDecorator } from '../../utils/decorators';
 
-storiesOf('Molecules/Dialog', module)
+storiesOf('Molecules/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(Dialog))
   .addWithJSX('Forms', () => {
     const withTitle = boolean('withTitle', true);

@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 08:44:35
+ * Copyright © RingCentral. All rights reserved.
+ */
 const path = require('path');
 const fse = require('fs-extra');
 
