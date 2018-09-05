@@ -8,8 +8,10 @@ import StateDao from '../../dao/state';
 import GroupStateDao from '../../dao/groupState';
 import notificationCenter from '../../service/notificationCenter';
 import { ENTITY } from '../../service/eventKey';
-import { State, GroupState, Raw } from '../../models';
+import StateService from '.';
+import { State, GroupState, Group, Raw } from '../../models';
 import _ from 'lodash';
+import { mainLogger } from 'foundation';
 
 export type TransformedState = State & {
   groupState: GroupState[];
@@ -30,12 +32,13 @@ export function transform(item: Raw<State> | Partial<Raw<State>>): TransformedSt
       'group_missed_calls_count',
       'group_tasks_count',
       'last_read_through',
-      'unread_count',
+      // 'unread_count', this field is generated in new UMI implementation
       'unread_mentions_count',
       'read_through',
       'marked_as_unread',
       'post_cursor',
       'previous_post_cursor',
+      'unread_deactivated_count',
     ];
     const m = key.match(new RegExp(`(${keys.join('|')}):(\\d+)`));
     if (m) {
@@ -52,7 +55,13 @@ export function transform(item: Raw<State> | Partial<Raw<State>>): TransformedSt
       delete clone[key];
     }
   });
+
   (clone as TransformedState).groupState = [...Array.from(groupIds)].map(id => groupStates[id]);
+  if (item && item.trigger_ids) {
+    (clone as TransformedState).groupState.forEach((state) => {
+      state.trigger_ids = item.trigger_ids;
+    });
+  }
   clone.away_status_history = clone.away_status_history || [];
   return clone as TransformedState;
   /* eslint-enable no-underscore-dangle */
@@ -103,20 +112,26 @@ export default async function stateHandleData(state: Raw<State>[]) {
   if (state.length === 0) {
     return;
   }
+  const { myState, groupStates } = getStates(state);
+  await operateDaoAndDoNotification(myState, groupStates);
+}
+
+async function operateDaoAndDoNotification(myState?: State[], groupStates?: GroupState[]) {
   const stateDao = daoManager.getDao(StateDao);
   const groupStateDao = daoManager.getDao(GroupStateDao);
-  // const state = [].concat(data);
   const savePromises: Promise<void>[] = [];
-  const { myState, groupStates } = getStates(state);
-
-  notificationCenter.emitEntityPut(ENTITY.MY_STATE, myState);
-  savePromises.push(stateDao.bulkUpdate(myState));
-
-  if (groupStates.length) {
-    notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, groupStates);
-    savePromises.push(groupStateDao.bulkUpdate(groupStates));
+  if (myState) {
+    notificationCenter.emitEntityPut(ENTITY.MY_STATE, myState);
+    savePromises.push(stateDao.bulkUpdate(myState));
   }
-
+  if (groupStates) {
+    const stateService: StateService = StateService.getInstance();
+    const result = await stateService.calculateUMI(groupStates);
+    if (result.length) {
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, result);
+      savePromises.push(groupStateDao.bulkUpdate(result));
+    }
+  }
   await Promise.all(savePromises);
 }
 
@@ -124,16 +139,26 @@ export async function handlePartialData(state: Partial<State>[]) {
   if (state.length === 0) {
     return;
   }
-  const stateDao = daoManager.getDao(StateDao);
-  const groupStateDao = daoManager.getDao(GroupStateDao);
-  const savePromises: Promise<void>[] = [];
   const { myState, groupStates } = await getPartialStates(state);
-  notificationCenter.emitEntityPut(ENTITY.MY_STATE, myState);
-  savePromises.push(stateDao.bulkUpdate(myState));
-  if (groupStates.length) {
-    notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, groupStates);
-    savePromises.push(groupStateDao.bulkUpdate(groupStates));
-  }
+  await operateDaoAndDoNotification(myState, groupStates);
 }
-// export { getStates, transform };
-// export default stateHandleData;
+
+export async function handleGroupChange(groups?: Group[]) {
+  if (!groups || !groups.length) {
+    mainLogger.info('[State Service] Invalid group change trigger');
+    return;
+  }
+  const groupStates = _.map(groups, (group) => {
+    if (!group.post_cursor && !group.drp_post_cursor) {
+      return;
+    }
+    const groupState: GroupState = {
+      id: group.id,
+      group_post_cursor: group.post_cursor,
+      group_post_drp_cursor: group.drp_post_cursor,
+      trigger_ids: group.trigger_ids,
+    } as GroupState;
+    return groupState;
+  });
+  await operateDaoAndDoNotification(undefined, _.compact(groupStates));
+}
