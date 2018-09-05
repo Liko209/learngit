@@ -26,6 +26,7 @@
     "resolveJsonModule": true
   },
   "files": [
-    "./typings/images.d.ts"
+    "./typings/images.d.ts",
+    "./typings/json.d.ts"
   ]
 }
