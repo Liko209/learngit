@@ -23,9 +23,11 @@ jest.mock('../../../utils/groupName', () => ({
 
 const groupStore = {
   get: jest.fn(),
+  addUsedIds: jest.fn(),
 };
 const presenceStore = {
   get: jest.fn(),
+  addUsedIds: jest.fn(),
 };
 describe('ConversationListItemCell', () => {
   beforeAll(() => {
