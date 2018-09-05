@@ -23,4 +23,5 @@ export class ConversationCard extends React.Component<IProps>{
     return <div style={{ height: 50, overflow: 'hidden' }}{...rest}>Time:{moment(createdAt).format('llll')}, {text}</div>;
   }
 }
+
 export default ConversationCard;
