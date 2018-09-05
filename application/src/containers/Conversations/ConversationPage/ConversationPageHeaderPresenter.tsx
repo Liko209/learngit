@@ -5,17 +5,18 @@
 */
 import { observable } from 'mobx';
 import _ from 'lodash';
-import BasePresenter from '../../../store/base/BasePresenter';
-import { service } from 'sdk';
+import BasePresenter from '@/store/base/BasePresenter';
+import { service, dao } from 'sdk';
 import { GroupService as IGroupService, AccountService as IAccountService } from 'sdk/service';
-import storeManager, { ENTITY_NAME } from '../../../store';
-import MultiEntityMapStore from '../../../store/base/MultiEntityMapStore';
+import storeManager, { ENTITY_NAME } from '@/store';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import { Group, Person, Profile } from 'sdk/models';
-import GroupModel from '../../../store/models/Group';
+import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
-import ProfileModel from '../../../store/models/Profile';
-import SingleEntityMapStore from '../../../store/base/SingleEntityMapStore';
+import ProfileModel from '@/store/models/Profile';
+import SingleEntityMapStore from '@/store/base/SingleEntityMapStore';
 const { GroupService, AccountService } = service;
+const { ACCOUNT_USER_ID } = dao;
 
 enum ConversationTypes {
   TEAM,
@@ -44,6 +45,12 @@ class ConversationPageHeaderPresenter extends BasePresenter {
     this.personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON) as MultiEntityMapStore<Person, PersonModel>;
     this.profileStore = storeManager.getEntityMapStore(ENTITY_NAME.PROFILE) as SingleEntityMapStore<Profile, ProfileModel>;
     this.userId = this.accountService.getCurrentUserId();
+
+    this.subscribeNotification(ACCOUNT_USER_ID, ({ type, payload }: { type: string, payload: string }) => {
+      if (type === 'put') {
+        this.userId = Number(payload);
+      }
+    });
   }
 
   getConversationType(group: GroupModel) {
