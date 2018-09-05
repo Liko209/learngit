@@ -1,4 +1,4 @@
-import React, { Component, createElement, ComponentType } from 'react';
+import React, { Component, createElement, ComponentType, ComponentClass } from 'react';
 import hoistStatics from 'hoist-non-react-statics';
 import { BaseModel } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
@@ -9,7 +9,7 @@ import { Omit } from '@material-ui/core';
 import { IEntity } from './store';
 
 export interface IComponentWithGetEntityProps {
-  getEntity: (entityName: string, id: number) => {};
+  getEntity: (entityName: ENTITY_NAME, id: number) => {};
 }
 
 /**
@@ -80,7 +80,7 @@ function createStoreInjector<P>(WrappedComponent: ComponentType<P>) {
 export default function inject() {
   return <OriginalProps extends { [key: string]: any }, Component extends React.ComponentClass<OriginalProps>>(
     WrappedComponent: ComponentType<OriginalProps>,
-  ): ComponentType<Omit<OriginalProps, keyof IComponentWithGetEntityProps>> => {
+  ): ComponentClass<Omit<OriginalProps, keyof IComponentWithGetEntityProps>> => {
     return createStoreInjector<OriginalProps>(WrappedComponent);
   };
 }
