@@ -10,30 +10,30 @@ import { ConversationListItem } from 'ui-components/molecules/ConversationList/C
 import { Menu } from 'ui-components/atoms/Menu';
 import { MenuItem } from 'ui-components/atoms/MenuItem';
 
-import storeManager, { ENTITY_NAME } from '../../store';
-import MultiEntityMapStore from '../../store/base/MultiEntityMapStore';
+import { ENTITY_NAME } from '../../store';
+import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
 import GroupModel from '../../store/models/Group';
 import { observer } from 'mobx-react';
 import { getGroupName } from '../../utils/groupName';
 import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
-import { Group, Presence } from 'sdk/models';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router';
 const { GroupService } = service;
-interface IProps extends RouteComponentProps<any> {
+
+type IProps  =  RouteComponentProps<any> & IComponentWithGetEntityProps &{
   id: number;
   key: number;
   entityName: string;
   isFavorite?: boolean;
   currentUserId?: number;
-}
+};
 
 interface IState {
 }
 
 @observer
-export class ConversationListItemCell extends React.Component<IProps, IState>{
+class ConversationListItemCell extends React.Component<IProps, IState>{
   static defaultProps = {
     isFavorite: false,
   };
@@ -67,9 +67,6 @@ export class ConversationListItemCell extends React.Component<IProps, IState>{
     return !!this.anchorEl;
   }
 
-  groupStore: MultiEntityMapStore<Group, GroupModel>;
-  presenceStore: MultiEntityMapStore<Presence, PresenceModel>;
-
   constructor(props: IProps) {
     super(props);
     this.id = props.id;
@@ -77,8 +74,6 @@ export class ConversationListItemCell extends React.Component<IProps, IState>{
     this.unreadCount = 0;
     this.umiVariant = 'count';
     this.status = undefined;
-    this.groupStore = storeManager.getEntityMapStore(props.entityName) as MultiEntityMapStore<Group, GroupModel>;
-    this.presenceStore = storeManager.getEntityMapStore(ENTITY_NAME.PRESENCE) as MultiEntityMapStore<Presence, PresenceModel>;
     this._openMenu = this._openMenu.bind(this);
     this._toggleFavorite = this._toggleFavorite.bind(this);
     this._handleClose = this._handleClose.bind(this);
@@ -92,9 +87,10 @@ export class ConversationListItemCell extends React.Component<IProps, IState>{
   }
 
   getDataFromStore() {
-    const group = this.groupStore.get(this.id);
+    const { getEntity } = this.props;
+    const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
     const { currentUserId } = this.props;
-    this.displayName = getGroupName(group, currentUserId);
+    this.displayName = getGroupName(getEntity, group, currentUserId);
     this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
     if (currentUserId) {
       let targetPresencePersonId: number | undefined;
@@ -106,7 +102,8 @@ export class ConversationListItemCell extends React.Component<IProps, IState>{
       }
 
       if (targetPresencePersonId) {
-        this.status = this.presenceStore.get(targetPresencePersonId) && this.presenceStore.get(targetPresencePersonId).presence;
+        const presence = getEntity(ENTITY_NAME.PRESENCE, targetPresencePersonId) as PresenceModel;
+        this.status = presence && presence.presence;
       }
     }
   }
@@ -168,4 +165,5 @@ export class ConversationListItemCell extends React.Component<IProps, IState>{
   }
 }
 
-export default withRouter(ConversationListItemCell);
+export default withRouter(injectStore()(ConversationListItemCell));
+export { ConversationListItemCell };
