@@ -59,7 +59,7 @@ const StyledCheckboxButton = styled<JuiCheckboxButtonProps>(WrappedMuiCheckboxBu
     tinycolor(grey('500')({ theme })).setAlpha(theme.palette.action.hoverOpacity).toRgbString()};
     }
     &:active {
-      color: ${({ theme, color = 'primary' }) => palette(color, 'main')({ theme })};
+      color: ${({ theme, color = 'primary', checked }) => checked ? palette(color, 'main')({ theme }) : grey('500')({ theme })};
     }
 
     &.disabled {

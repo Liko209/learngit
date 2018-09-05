@@ -1,4 +1,4 @@
-import React, { Component, createElement, ComponentType } from 'react';
+import React, { Component, createElement, ComponentType, ComponentClass } from 'react';
 import hoistStatics from 'hoist-non-react-statics';
 import { BaseModel } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
@@ -9,7 +9,7 @@ import { Omit } from '@material-ui/core';
 import Base from '@/store/models/Base';
 
 export interface IComponentWithGetEntityProps {
-  getEntity: (entityName: string, id: number) => {};
+  getEntity: <T extends BaseModel, K extends Base<T>>(entityName: ENTITY_NAME, id: number) => K;
 }
 
 /**
@@ -43,7 +43,7 @@ function createStoreInjector<P>(WrappedComponent: ComponentType<P>) {
     }
 
     getEntity<T extends BaseModel, K extends Base<T>>(entityName: ENTITY_NAME, id: number) {
-      let store = this.entityStore[entityName];
+      let store: MultiEntityMapStore<T, K> = this.entityStore[entityName];
       if (!store) {
         store = this.storeManager.getEntityMapStore(entityName) as MultiEntityMapStore<T, K>;
         this.entityStore[entityName] = store;
@@ -80,7 +80,7 @@ function createStoreInjector<P>(WrappedComponent: ComponentType<P>) {
 export default function inject() {
   return <OriginalProps extends { [key: string]: any }, Component extends React.ComponentClass<OriginalProps>>(
     WrappedComponent: ComponentType<OriginalProps>,
-  ): ComponentType<Omit<OriginalProps, keyof IComponentWithGetEntityProps>> => {
+  ): ComponentClass<Omit<OriginalProps, keyof IComponentWithGetEntityProps>> => {
     return createStoreInjector<OriginalProps>(WrappedComponent);
   };
 }

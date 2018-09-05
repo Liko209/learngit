@@ -5,23 +5,20 @@
  */
 
 import _ from 'lodash';
-import storeManager, { ENTITY_NAME } from '../store';
+import { ENTITY_NAME } from '../store';
 import PersonModel from '../store/models/Person';
 import GroupModel from '../store/models/Group';
-import MultiEntityMapStore from '../store/base/MultiEntityMapStore';
-import { Person } from 'sdk/models';
 
 const hasDisplayName = (person: PersonModel) => person && person.displayName;
 
-export const getGroupName = (group: GroupModel, userId?: number) => {
+export const getGroupName = (getEntity: (entityName: ENTITY_NAME, id: number) => {}, group: GroupModel, userId?: number) => {
   if (group.isTeam || !userId) {
     return group.setAbbreviation;
   }
   const memberIds: number[] = group.members || [];
   let peopleName = '';
-  const personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON) as MultiEntityMapStore<Person, PersonModel>;
   if (memberIds.length === 1 && memberIds[0] === userId) {
-    const person = personStore.get(userId);
+    const person = getEntity(ENTITY_NAME.PERSON, userId) as PersonModel;
     if (hasDisplayName(person)) {
       peopleName = person.displayName;
       peopleName += ' (me)';
@@ -49,13 +46,13 @@ export const getGroupName = (group: GroupModel, userId?: number) => {
 
     if (groupMemberIDs.length === 1) {
       // 1 other member, 1:1 conversation
-      const otherMember = personStore.get(groupMemberIDs[0]);
+      const otherMember = getEntity(ENTITY_NAME.PERSON, groupMemberIDs[0]) as PersonModel;
       peopleName = otherMember.displayName;
     } else if (groupMemberIDs.length > 1) {
       // more than one members, group conversation
       const names: string[] = [];
       const emails: string[] = [];
-      groupMemberIDs.map(id => personStore.get(id)).forEach(({ firstName, lastName, email }) => {
+      groupMemberIDs.map(id => getEntity(ENTITY_NAME.PERSON, id) as PersonModel).forEach(({ firstName, lastName, email }) => {
         if (!firstName && !lastName) {
           emails.push(email);
         } else if (firstName) {

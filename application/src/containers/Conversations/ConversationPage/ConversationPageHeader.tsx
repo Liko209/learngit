@@ -4,18 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-// import { JuiConversationPageHeader, JuiButtonBar, JuiCheckboxButton, JuiIconButton } from 'ui-components';
 import { JuiConversationPageHeader } from 'ui-components/molecules/ConversationPageHeader';
 import { JuiButtonBar } from 'ui-components/atoms/ButtonBar';
 import { JuiCheckboxButton } from 'ui-components/molecules/CheckboxButton';
 import { JuiIconButton } from 'ui-components/molecules/IconButton';
 import { ConversationPageHeaderPresenter, ConversationTypes } from './ConversationPageHeaderPresenter';
-import { getGroupName } from '../../../utils/groupName';
+import { getGroupName } from '@/utils/groupName';
 import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
 import { TranslationFunction } from 'i18next';
+import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
+import { ENTITY_NAME } from '@/store';
+import GroupModel from '@/store/models/Group';
+import { Group } from 'sdk/models';
 
-type ConversationPageHeaderProps = {
+type ConversationPageHeaderProps = IComponentWithGetEntityProps & {
   id?: number;
   t: TranslationFunction;
 };
@@ -28,15 +31,15 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
     this.presenter = new ConversationPageHeaderPresenter();
   }
   render() {
-    const { id, t = (str: string) => str } = this.props;
+    const { id, t = (str: string) => str, getEntity } = this.props;
     if (!id) {
       return null;
     }
-    const group = this.presenter.groupStore.get(id);
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
     if (!group.members) {
       return null;
     }
-    const groupName = getGroupName(group, this.presenter.userId || undefined);
+    const groupName = getGroupName(getEntity, group, this.presenter.userId || undefined);
     const type = this.presenter.getConversationType(group);
     const isFavorite = this.presenter.groupIsInFavorites(group);
     const isPrivate = group.privacy === 'private';
@@ -107,5 +110,5 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
   }
 }
 
-const ConversationPageHeader = translate('ConversationPageHeader')(ConversationPageHeaderComponent);
+const ConversationPageHeader = translate('ConversationPageHeader')(injectStore()(ConversationPageHeaderComponent));
 export { ConversationPageHeader, ConversationPageHeaderProps };
