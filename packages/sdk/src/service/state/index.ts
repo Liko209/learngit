@@ -7,8 +7,10 @@ import { GroupState, MyState, Post } from '../../models';
 import StateAPI from '../../api/glip/state';
 import BaseService from '../BaseService';
 import PostService from '../post';
-import { SOCKET } from '../eventKey';
-import handleData, { handlePartialData } from './handleData';
+import { SOCKET, SERVICE } from '../eventKey';
+import handleData, { handlePartialData, handleGroupChange } from './handleData';
+import { mainLogger } from 'foundation';
+import _ from 'lodash';
 
 export default class StateService extends BaseService<GroupState> {
   static serviceName = 'StateService';
@@ -17,6 +19,7 @@ export default class StateService extends BaseService<GroupState> {
     const subscriptions = {
       [SOCKET.STATE]: handleData,
       [SOCKET.PARTIAL_STATE]: handlePartialData,
+      [SERVICE.GROUP_CURSOR]: handleGroupChange,
     };
     super(GroupStateDao, StateAPI, handleData, subscriptions);
   }
@@ -89,5 +92,82 @@ export default class StateService extends BaseService<GroupState> {
     const stateDao = daoManager.getDao(StateDao);
     const result: MyState | null = await stateDao.getFirst();
     return result;
+  }
+
+  async calculateUMI(groupStates: GroupState[]) {
+    if (!groupStates.length) {
+      mainLogger.info('[State Service]: empty new umis to calculate');
+      return [];
+    }
+    const myState = await this.getMyState();
+    const currentPersonId = myState && myState.person_id;
+    const resultGroupStates = await Promise.all(groupStates.map(async (updatedGroupState) => {
+      const isSelf = updatedGroupState.trigger_ids && currentPersonId && updatedGroupState.trigger_ids.includes(currentPersonId);
+      let originGroupState = await this.getByIdFromDao(updatedGroupState.id);
+      if (originGroupState) {
+        // 1. UMI related check
+        if (updatedGroupState.group_post_cursor && updatedGroupState.group_post_drp_cursor) {
+          if ((updatedGroupState.group_post_cursor + updatedGroupState.group_post_drp_cursor) >=
+            ((originGroupState.group_post_cursor || 0) + (originGroupState.group_post_drp_cursor || 0))) {
+            originGroupState.group_post_cursor = updatedGroupState.group_post_cursor;
+            originGroupState.group_post_drp_cursor = updatedGroupState.group_post_drp_cursor;
+          } else {
+            mainLogger.info('[State service]: invalid group_post_cursor and group_post_drp_cursor change');
+            return;
+          }
+        } else if (updatedGroupState.group_post_cursor) {
+          if (updatedGroupState.group_post_cursor >= (originGroupState.group_post_cursor || 0)) {
+            originGroupState.group_post_cursor = updatedGroupState.group_post_cursor;
+          } else {
+            mainLogger.info('[State service]: invalid group_post_cursor change');
+            return;
+          }
+        } else if (updatedGroupState.group_post_drp_cursor) {
+          originGroupState.group_post_drp_cursor = updatedGroupState.group_post_drp_cursor;
+        }
+
+        if (updatedGroupState.post_cursor) {
+          const cursorIncrease = updatedGroupState.post_cursor > (originGroupState.post_cursor || 0);
+          const markAsUnread = updatedGroupState.marked_as_unread;
+          if (cursorIncrease || markAsUnread) {
+            originGroupState.post_cursor = updatedGroupState.post_cursor;
+          } else {
+            mainLogger.info('[State service]: invalid state_post_cursor change: ' + updatedGroupState);
+            return;
+          }
+        }
+        if (updatedGroupState.unread_deactivated_count) {
+          originGroupState.unread_deactivated_count = updatedGroupState.unread_deactivated_count;
+        }
+        // End of UMI related check
+        // Start calculate umi if not self message
+        if (!isSelf) {
+          const group_cursor = (originGroupState.group_post_cursor || 0) + (originGroupState.group_post_drp_cursor || 0);
+          const state_cursor = (originGroupState.post_cursor || 0) + (originGroupState.unread_deactivated_count || 0);
+          originGroupState.unread_count = Math.max(group_cursor - state_cursor, 0);
+          mainLogger.info(`[State service]: umi change by: ' ${JSON.stringify(updatedGroupState)}`);
+          mainLogger.info(`[State service]: originGroupState: ${JSON.stringify(originGroupState)}`);
+          mainLogger.info(`[State service]: unread_count: ' ${originGroupState.unread_count}`);
+        }
+
+        if (originGroupState.unread_count) {
+          originGroupState.marked_as_unread = true;
+        }
+        if (updatedGroupState.read_through) {
+          originGroupState.read_through = updatedGroupState.read_through;
+        }
+      } else {
+        // Calculate unread and update group state directly
+        originGroupState = updatedGroupState;
+        if (!isSelf) {
+          const group_cursor = (originGroupState.group_post_cursor || 0) + (originGroupState.group_post_drp_cursor || 0);
+          const state_cursor = (originGroupState.post_cursor || 0) + (originGroupState.unread_deactivated_count || 0);
+          originGroupState.unread_count = Math.max(group_cursor - state_cursor, 0);
+        }
+      }
+      return originGroupState;
+    }));
+
+    return _.compact(resultGroupStates);
   }
 }

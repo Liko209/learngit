@@ -16,7 +16,6 @@ export const sample = {
   first_time_users_ensured: true,
   _csrf: null,
   model_id: '3592486919',
-  'unread_count:3780517890': 0,
   'unread_mentions_count:3780517890': 0,
   'marked_as_unread:3780517890': false,
   compose_cache: {
@@ -28,13 +27,10 @@ export const sample = {
   current_person_id: 3592527875,
   last_group_id: 4325408770,
   'last_read_through:3780517890': 610017284,
-  'unread_count:3788095490': 0,
   'unread_mentions_count:3788095490': 0,
   'read_through:3788095490': 758243332,
-  'unread_count:3791036418': 0,
   'unread_mentions_count:3791036418': 0,
   'read_through:3791036418': 758251524,
-  'unread_count:3793313794': 3,
   'unread_mentions_count:3793313794': 1,
   'read_through:3793313794': 758259716,
   'last_read_through:3793313794': 758259716,
@@ -43,16 +39,12 @@ export const sample = {
   'marked_as_unread:3791036418': true,
   'last_read_through:3788095490': 758243332,
   'marked_as_unread:3788095490': false,
-  'unread_count:4325425154': 0,
   'unread_mentions_count:4325425154': 0,
   'marked_as_unread:4325425154': false,
-  'unread_count:4325416962': 0,
   'unread_mentions_count:4325416962': 0,
   'marked_as_unread:4325416962': false,
-  'unread_count:4325408770': 0,
   'unread_mentions_count:4325408770': 0,
   'marked_as_unread:4325408770': false,
-  'unread_count:658546694': 0,
   'unread_mentions_count:658546694': 0,
 };
 
@@ -83,7 +75,6 @@ export const transformedMyState = {
 export const transformedGroupState = [
   {
     id: 3780517890,
-    unread_count: 0,
     unread_mentions_count: 0,
     marked_as_unread: false,
     read_through: 758235140,
@@ -91,7 +82,6 @@ export const transformedGroupState = [
   },
   {
     id: 3788095490,
-    unread_count: 0,
     unread_mentions_count: 0,
     read_through: 758243332,
     last_read_through: 758243332,
@@ -99,7 +89,6 @@ export const transformedGroupState = [
   },
   {
     id: 3791036418,
-    unread_count: 0,
     unread_mentions_count: 0,
     read_through: 758251524,
     last_read_through: 758251524,
@@ -107,7 +96,6 @@ export const transformedGroupState = [
   },
   {
     id: 3793313794,
-    unread_count: 3,
     unread_mentions_count: 1,
     read_through: 758259716,
     last_read_through: 758259716,
@@ -115,25 +103,32 @@ export const transformedGroupState = [
   },
   {
     id: 4325425154,
-    unread_count: 0,
     unread_mentions_count: 0,
     marked_as_unread: false,
   },
   {
     id: 4325416962,
-    unread_count: 0,
     unread_mentions_count: 0,
     marked_as_unread: false,
   },
   {
     id: 4325408770,
-    unread_count: 0,
     unread_mentions_count: 0,
     marked_as_unread: false,
   },
-  { id: 658546694, unread_count: 0, unread_mentions_count: 0 },
+  { id: 658546694, unread_mentions_count: 0 },
 ];
 
+export const calculatedGroupState = [
+  { read_through: 758259716, unread_count: 0 },
+  { read_through: 758259716, unread_count: 0 },
+  { read_through: 758259716, unread_count: 0 },
+  { read_through: 758259716, unread_count: 0 },
+  { read_through: 758259716, unread_count: 0 },
+  { read_through: 758259716, unread_count: 0 },
+  { read_through: 758259716, unread_count: 0 },
+  { read_through: 758259716, unread_count: 0 },
+];
 export const sample2 = {
   _id: 3592486919,
   created_at: 1513170564815,
@@ -159,4 +154,207 @@ export const partialSample = {
   person_id: 1376259,
   modified_at: 1535014387727,
   'post_cursor:3375110': 26,
+};
+
+export const originState = () => {
+  return {
+    id: 532486,
+    post_cursor: 2072,
+    read_through: 533078020,
+    last_read_through: 528793604,
+    unread_mentions_count: 0,
+    marked_as_unread: true,
+    deactivated_post_cursor: 9,
+    group_missed_calls_count: 0,
+    group_tasks_count: 0,
+    unread_deactivated_count: 0,
+    previous_post_cursor: 1747,
+    unread_count: 0,
+    group_post_cursor: 2073,
+  };
+};
+
+export const groupState1 = {
+  id: 532486,
+  read_through: 533078020,
+  post_cursor: 2073,
+};
+
+export const groupStateResult1 = {
+  deactivated_post_cursor: 9,
+  group_missed_calls_count: 0,
+  group_post_cursor: 2073,
+  group_tasks_count: 0,
+  id: 532486,
+  last_read_through: 528793604,
+  marked_as_unread: true,
+  post_cursor: 2073,
+  previous_post_cursor: 1747,
+  read_through: 533078020,
+  unread_count: 0,
+  unread_deactivated_count: 0,
+  unread_mentions_count: 0,
+};
+
+export const groupState2 = {
+  id: 532486,
+  group_post_cursor: 2074,
+  trigger_ids: [1409027],
+};
+
+export const groupStateResult2 = {
+  deactivated_post_cursor: 9,
+  group_missed_calls_count: 0,
+  group_post_cursor: 2074,
+  group_tasks_count: 0,
+  id: 532486,
+  last_read_through: 528793604,
+  marked_as_unread: true,
+  post_cursor: 2072,
+  previous_post_cursor: 1747,
+  read_through: 533078020,
+  unread_count: 2,
+  unread_deactivated_count: 0,
+  unread_mentions_count: 0,
+};
+
+export const groupState3 = {
+  id: 532486,
+  group_post_cursor: 2076,
+  group_post_drp_cursor: 1,
+  trigger_ids: [1409027],
+};
+
+export const groupStateResultNoOrigin3 = {
+  group_post_cursor: 2076,
+  group_post_drp_cursor: 1,
+  id: 532486,
+  trigger_ids: [1409027],
+  unread_count: 2077,
+};
+
+export const groupStateResult3 = {
+  deactivated_post_cursor: 9,
+  group_missed_calls_count: 0,
+  group_post_cursor: 2076,
+  group_post_drp_cursor: 1,
+  group_tasks_count: 0,
+  id: 532486,
+  last_read_through: 528793604,
+  marked_as_unread: true,
+  post_cursor: 2072,
+  previous_post_cursor: 1747,
+  read_through: 533078020,
+  unread_count: 5,
+  unread_deactivated_count: 0,
+  unread_mentions_count: 0,
+};
+
+export const groupState4 = {
+  id: 532487,
+  group_post_cursor: 2071,
+  trigger_ids: [1409027],
+};
+
+export const groupState5 = {
+  id: 532486,
+  group_post_cursor: 2074,
+  group_post_drp_cursor: 1,
+  trigger_ids: [1409027],
+};
+
+export const groupStateResult5 = {
+  deactivated_post_cursor: 9,
+  group_missed_calls_count: 0,
+  group_post_cursor: 2074,
+  group_post_drp_cursor: 1,
+  group_tasks_count: 0,
+  id: 532486,
+  last_read_through: 528793604,
+  marked_as_unread: true,
+  post_cursor: 2072,
+  previous_post_cursor: 1747,
+  read_through: 533078020,
+  unread_count: 3,
+  unread_deactivated_count: 0,
+  unread_mentions_count: 0,
+};
+
+export const groupState6 = {
+  id: 532486,
+  group_post_drp_cursor: 1,
+  trigger_ids: [1409027],
+};
+
+export const groupStateResult6 = {
+  deactivated_post_cursor: 9,
+  group_missed_calls_count: 0,
+  group_post_cursor: 2073,
+  group_post_drp_cursor: 1,
+  group_tasks_count: 0,
+  id: 532486,
+  last_read_through: 528793604,
+  marked_as_unread: true,
+  post_cursor: 2072,
+  previous_post_cursor: 1747,
+  read_through: 533078020,
+  unread_count: 2,
+  unread_deactivated_count: 0,
+  unread_mentions_count: 0,
+};
+
+export const groupState7 = {
+  id: 532486,
+  post_cursor: 2071,
+  marked_as_unread: true,
+};
+
+export const groupStateResult7 = {
+  deactivated_post_cursor: 9,
+  group_missed_calls_count: 0,
+  group_post_cursor: 2073,
+  group_tasks_count: 0,
+  id: 532486,
+  last_read_through: 528793604,
+  marked_as_unread: true,
+  post_cursor: 2071,
+  previous_post_cursor: 1747,
+  read_through: 533078020,
+  unread_count: 2,
+  unread_deactivated_count: 0,
+  unread_mentions_count: 0,
+};
+
+export const groupState8 = {
+  id: 532486,
+  post_cursor: 2073,
+  unread_deactivated_count: 1,
+};
+
+export const groupStateResult8 = {
+  deactivated_post_cursor: 9,
+  group_missed_calls_count: 0,
+  group_post_cursor: 2073,
+  group_tasks_count: 0,
+  id: 532486,
+  last_read_through: 528793604,
+  marked_as_unread: true,
+  post_cursor: 2073,
+  previous_post_cursor: 1747,
+  read_through: 533078020,
+  unread_count: 0,
+  unread_deactivated_count: 1,
+  unread_mentions_count: 0,
+};
+
+export const groupState9 = {
+  id: 532486,
+  post_cursor: 2071,
+};
+
+export const groupState10 = {
+  id: 532486,
+  group_post_cursor: 2070,
+  group_post_drp_cursor: 1,
+  trigger_ids: [1409027],
 };
