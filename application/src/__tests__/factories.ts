@@ -31,17 +31,6 @@ const groupModelFactory = Factory.makeFactory<GroupModel>({
   members: [faker.random.number(100000000)],
 });
 
-// company_id: faker.random.number(100000000),
-//   email_friendly_abbreviation: 'Me',
-//   set_abbreviation: 'Me',
-//   privacy: faker.random.arrayElement(['private', 'protected', 'public']),
-//   is_team: faker.random.boolean(),
-//   most_recent_content_modified_at: uniqueNumber(),
-//   most_recent_post_id: uniqueNumber(),
-//   most_recent_post_created_at: uniqueNumber(),
-//   post_cursor: faker.random.number(1000),
-//   deactivated_post_cursor: faker.random.number(1000),
-
 export {
   personModelFactory,
   groupModelFactory,

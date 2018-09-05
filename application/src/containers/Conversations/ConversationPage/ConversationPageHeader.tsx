@@ -64,44 +64,44 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
       </JuiCheckboxButton>
     );
 
-    const CallButton = <JuiIconButton tooltipTitle={t('start_voice_call_with', { whom: otherMember ? otherMember.displayName : '' })}>local_phone</JuiIconButton>;
-    const AudioConferenceButton = <JuiIconButton tooltipTitle={t('start_conference_call_in', { groupName })}>device_hub</JuiIconButton>;
+    const CallButton = <JuiIconButton tooltipTitle={t('start_voice_call_with')}>local_phone</JuiIconButton>;
+    const AudioConferenceButton = <JuiIconButton tooltipTitle={t('start_conference_call_in')}>device_hub</JuiIconButton>;
     const MeetingButton = <JuiIconButton tooltipTitle={t('start_video_call')}>videocam</JuiIconButton>;
     const AddMemberButton = <JuiIconButton tooltipTitle={t('add_members')}>person_add</JuiIconButton>;
     const MoreButton = <JuiIconButton tooltipTitle={t('conversation_settings')}>settings</JuiIconButton>;
 
-    const buttons = {
-      1: MarkFavoriteButton,
-      2: LockButton,
-      3: CallButton,
-      4: AudioConferenceButton,
-      5: MeetingButton,
-      6: AddMemberButton,
-      7: MoreButton,
-    };
+    enum Buttons {
+      MarkFavorite,
+      Lock,
+      Call,
+      AudioConference,
+      Meeting,
+      AddMember,
+      More,
+    }
+
     const typeIconMap = {
-      [ConversationTypes.TEAM]: [1, 2, 4, 5, 6, 7],
-      [ConversationTypes.ME]: [1, 7],
-      [ConversationTypes.SMS]: [1, 3, 5, 6, 7],
-      [ConversationTypes.NORMAL_ONE_TO_ONE]: [1, 3, 5, 6, 7],
-      [ConversationTypes.NORMAL_GROUP]: [1, 4, 5, 6, 7],
+      [ConversationTypes.TEAM]: [Buttons.MarkFavorite, Buttons.Lock, Buttons.AudioConference, Buttons.Meeting, Buttons.AddMember, Buttons.More],
+      [ConversationTypes.ME]: [Buttons.MarkFavorite, Buttons.More],
+      [ConversationTypes.SMS]: [Buttons.MarkFavorite, Buttons.Call, Buttons.Meeting, Buttons.AddMember, Buttons.More],
+      [ConversationTypes.NORMAL_ONE_TO_ONE]: [Buttons.MarkFavorite, Buttons.Call, Buttons.Meeting, Buttons.AddMember, Buttons.More],
+      [ConversationTypes.NORMAL_GROUP]: [Buttons.MarkFavorite, Buttons.AudioConference, Buttons.Meeting, Buttons.AddMember, Buttons.More],
     };
-    console.log(type);
     return (
       <JuiConversationPageHeader
-        title={groupName + (type === ConversationTypes.SMS ? ' (text)' : '')}
+        title={groupName + (type === ConversationTypes.SMS ? ` (${t('text')})` : '')}
         SubTitle={
           <JuiButtonBar size="small" overlapping={true}>
-            {typeIconMap[type].includes(1) ? buttons[1] : null}
-            {typeIconMap[type].includes(2) ? buttons[2] : null}
+            {typeIconMap[type].includes(Buttons.MarkFavorite) ? MarkFavoriteButton : null}
+            {typeIconMap[type].includes(Buttons.Lock) ? LockButton : null}
           </JuiButtonBar>}
         Right={
           <JuiButtonBar size="medium" overlapping={true}>
-            {typeIconMap[type].includes(3) ? buttons[3] : null}
-            {typeIconMap[type].includes(4) ? buttons[4] : null}
-            {typeIconMap[type].includes(5) ? buttons[5] : null}
-            {typeIconMap[type].includes(6) ? buttons[6] : null}
-            {typeIconMap[type].includes(7) ? buttons[7] : null}
+            {typeIconMap[type].includes(Buttons.Call) ? CallButton : null}
+            {typeIconMap[type].includes(Buttons.AudioConference) ? AudioConferenceButton : null}
+            {typeIconMap[type].includes(Buttons.Meeting) ? MeetingButton : null}
+            {typeIconMap[type].includes(Buttons.AddMember) ? AddMemberButton : null}
+            {typeIconMap[type].includes(Buttons.More) ? MoreButton : null}
           </JuiButtonBar>}
       />
     );
