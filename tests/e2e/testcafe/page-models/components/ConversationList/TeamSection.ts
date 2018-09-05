@@ -37,12 +37,26 @@ class TeamSection extends BaseComponent {
     });
   }
 
+  public createTeam() {
+    return this.chain(async (t) => {
+      return this._createTeam();
+    });
+  }
+
   private async  _getTeamProps(id: number): Promise<{ is_team: boolean }> {
     return (await GroupAPI.requestGroupById(id)).data;
   }
 
   private async _modifyTeamName(id: number, name: string) {
-    GroupAPI.modifyGroupById(id, { set_abbreviation: name });
+    return GroupAPI.modifyGroupById(id, { set_abbreviation: name });
+  }
+  private async _createTeam() {
+    return GroupAPI.createTeam({creator_id:21125873667,
+      description:Math.random().toString(36),
+      email_friendly_abbreviation:'test1fdfdf',
+      is_new:true,
+      is_public:false,
+      is_team: true});
   }
 }
 

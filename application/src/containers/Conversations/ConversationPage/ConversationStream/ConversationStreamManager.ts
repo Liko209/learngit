@@ -1,13 +1,10 @@
 import ConversationThreadPresenter from './ConversationStreamViewModel';
-import GlobalStore from '@/store/base/GlobalStore';
 import storeManager from '@/store';
 
 const MAX_CONVERSATION_THREAD = 5;
 
 export default class ConversationThreadsManager {
   conversationThreadPresenters: Map<number, ConversationThreadPresenter> = new Map();
-  globalStore: GlobalStore = storeManager.getGlobalStore();
-
   addConversationThread(groupId: number) {
     this.conversationThreadPresenters.set(
       groupId,
