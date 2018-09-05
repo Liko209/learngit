@@ -119,16 +119,6 @@ export const transformedGroupState = [
   { id: 658546694, unread_mentions_count: 0 },
 ];
 
-export const calculatedGroupState = [
-  { read_through: 758259716, unread_count: 0 },
-  { read_through: 758259716, unread_count: 0 },
-  { read_through: 758259716, unread_count: 0 },
-  { read_through: 758259716, unread_count: 0 },
-  { read_through: 758259716, unread_count: 0 },
-  { read_through: 758259716, unread_count: 0 },
-  { read_through: 758259716, unread_count: 0 },
-  { read_through: 758259716, unread_count: 0 },
-];
 export const sample2 = {
   _id: 3592486919,
   created_at: 1513170564815,

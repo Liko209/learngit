@@ -9,8 +9,6 @@ import { daoManager, StateDao, GroupStateDao } from '../../../dao';
 import PostService from '../../post';
 import StateAPI from '../../../api/glip/state';
 import {
-  transformedGroupState,
-  calculatedGroupState,
   groupState1,
   groupStateResult1,
   groupState2,
