@@ -9,6 +9,7 @@ const TerminationHandler = require('testcafe/lib/cli/termination-handler');
 
 import { filterByTags } from './libs/filter';
 import { flattenGlobs, parseArgs } from './libs/utils';
+import { accountPoolClient } from './libs/accounts';
 import { EXECUTION_STRATEGIES_HELPER as STRATEGY } from './config';
 
 const REPORTER = process.env.REPORTER || 'allure-lazy';
@@ -65,8 +66,10 @@ async function runTests() {
     failed = await runner.run();
   } finally {
     await testCafe.close();
+    await accountPoolClient.checkInAll();
   }
-  exit(failed);
+  console.log(`${failed} failed cases are found`);
+  exit(failed > 0 ? 2 : 0);
 }
 
 (async function cli() {

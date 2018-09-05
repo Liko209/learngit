@@ -4,16 +4,26 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AccountOperationsApi as AccountPoolApi } from 'account-pool-ts-api';
 import * as assert from 'assert';
+import { AccountOperationsApi as AccountPoolApi } from 'account-pool-ts-api';
+import { ENV } from '../config';
 interface IAccountPoolClient {
+  baseUrl: string;
+  envName: string;
   checkOutAccounts(accountType: string): Promise<any>;
   checkInAccounts(data: any): Promise<any>;
 }
 
-export class AccountPoolClient implements IAccountPoolClient {
+function releaseCommandBuilder(url: string, env: string, accountType: string, domain: string) {
+  return (
+    `curl -X PUT ${url}/account/${env}/${accountType} -H 'Content-Type: application/x-www-form-urlencoded' ` +
+    `-d 'action=release&companyEmailDomain=${domain}'`
+  );
+}
 
-  constructor(private envName: string, private client: AccountPoolApi = new AccountPoolApi()) {
+class AccountPoolClient implements IAccountPoolClient {
+
+  constructor(public baseUrl: string, public envName: string, private client: AccountPoolApi = new AccountPoolApi()) {
   }
 
   async checkOutAccounts(accountType: string) {
@@ -28,35 +38,50 @@ export class AccountPoolClient implements IAccountPoolClient {
 
 class AccountPoolManager implements IAccountPoolClient {
 
-  objectPool: any;
+  availableAccounts: any;
+  allAccounts: any[];
+  baseUrl: string;
+  envName: string;
 
   constructor(private accountPoolClient: IAccountPoolClient) {
-    this.objectPool = {};
+    this.baseUrl = accountPoolClient.baseUrl;
+    this.envName = accountPoolClient.envName;
+    this.availableAccounts = {};
+    this.allAccounts = [];
   }
 
   async checkOutAccounts(accountType: string) {
-    if (this.objectPool[accountType] === undefined) {
-      this.objectPool[accountType] = [];
+    if (this.availableAccounts[accountType] === undefined) {
+      this.availableAccounts[accountType] = [];
     }
-    const fifo: any[] = this.objectPool[accountType];
+    const fifo: any[] = this.availableAccounts[accountType];
     if (fifo.length > 0) {
       return fifo.shift();
     }
-    return await this.accountPoolClient.checkOutAccounts(accountType);
+    const data = await this.accountPoolClient.checkOutAccounts(accountType);
+    this.allAccounts.push(data);
+    console.log('In case of unexpected error, you can use following command to reclaim account');
+    console.log(releaseCommandBuilder(this.baseUrl, this.envName, accountType, data.companyEmailDomain));
+    return data;
   }
 
   async checkInAccounts(data: any) {
-    assert(this.objectPool[data.accountType] !== undefined);
-    this.objectPool[data.accountType].push(data);
+    assert(this.availableAccounts[data.accountType] !== undefined);
+    this.availableAccounts[data.accountType].push(data);
   }
 
   async checkInAll() {
-    console.log('Account Pool: following accounts are used in this run');
-    console.log(this.objectPool);
-    for (const accountType in this.objectPool) {
-      for (const data of this.objectPool[accountType]) {
-        await this.accountPoolClient.checkInAccounts(data);
-      }
+    console.log('Account Pool: following accounts are used in this run:');
+    console.log(this.allAccounts);
+    for (const data of this.allAccounts) {
+      await this.accountPoolClient.checkInAccounts(data);
+      console.log(`Account Pool: success to reclaim account: ${data.companyEmailDomain}`);
     }
   }
 }
+
+const accountPoolClient = new AccountPoolManager(
+  new AccountPoolClient(ENV.ACCOUNT_POOL_BASE_URL, ENV.ACCOUNT_POOL_ENV),
+);
+
+export { accountPoolClient };

@@ -18,13 +18,16 @@ export class ExecutionStrategiesHelper {
   config: any;
 
   loadConfig() {
-    const config_path = path.join(this.configsDir, this.branch) + '.json';
     const default_path = path.join(this.configsDir, 'default.json');
+    const config_path  = path.join(this.configsDir, this.branch) + '.json';
     this.config = require(default_path);
+    console.log(`Execution Strategy: branch: ${this.branch || 'default'}`);
+    console.log(`Execution Strategy: action: ${this.action || 'on_push'}`);
     if (fs.existsSync(config_path)) {
+      console.log(`Execution Strategy: found configuration file for branch ${this.branch}`);
       _.merge(this.config, require(config_path));
     }
-    console.log(`execution options:`);
+    console.log(`Execution Strategy: following options are loaded:`);
     console.log(this.config);
   }
 

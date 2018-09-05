@@ -1,11 +1,12 @@
 import { v4 as uuid } from 'uuid';
-import accountPoolHelper from './accounts';
-import { RcPlatformManager } from './glip';
-import { Status, AllureStep } from '../libs/report';
-
-import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
 
 import { waitForReact } from 'testcafe-react-selectors';
+
+import { RcPlatformManager } from './glip';
+import { Status, AllureStep } from '../libs/report';
+import { accountPoolClient } from '../libs/accounts';
+
+import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
 
 export function setUp(accountType: string) {
   return async (t: TestController) => {
@@ -30,14 +31,12 @@ export class TestHelper {
   constructor(private t: TestController) {
   }
 
-  async checkOutAccounts(accountType: string, env: string = ENV.ACCOUNT_POOL_ENV) {
-    this.t.ctx.data = await accountPoolHelper.checkOutAccounts(env, accountType);
+  async checkOutAccounts(accountType: string) {
+    this.t.ctx.data = await accountPoolClient.checkOutAccounts(accountType);
   }
 
   async checkInAccounts(env: string = ENV.ACCOUNT_POOL_ENV) {
-    await accountPoolHelper.checkInAccounts(
-      env, this.t.ctx.data.accountType, this.t.ctx.data.companyEmailDomain,
-    );
+    await accountPoolClient.checkInAccounts(this.t.ctx.data);
   }
 
   get data() {
