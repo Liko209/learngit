@@ -334,7 +334,9 @@ module.exports = {
     new GenerateSW({
       skipWaiting: true,
       clientsClaim: true,
-      navigateFallback: 'index.html'
+      navigateFallback: 'index.html',
+      globDirectory: paths.appPublic,
+      globPatterns: ['theme/**/*.json', 'locales/**/*.json']
     }),
     ...[
       argv.indexOf('--analyze') !== -1 ? new BundleAnalyzerPlugin() : () => { }
