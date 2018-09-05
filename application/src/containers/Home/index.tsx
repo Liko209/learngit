@@ -14,10 +14,7 @@ import HomePresenter from './HomePresenter';
 import { TranslationFunction, i18n } from 'i18next';
 import TopBar from 'ui-components/organisms/TopBar';
 import avatar from './avatar.jpg';
-import { service } from 'sdk';
 import { parse, stringify } from 'qs';
-
-const { AuthService } = service;
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -39,10 +36,8 @@ class Home extends Component<IProps, IStates>  {
     this.homePresenter = new HomePresenter();
   }
 
-  handleExpand = () => {
-    this.setState({
-      expanded: !this.state.expanded,
-    });
+  handleLeftNavExpand = () => {
+    this.setState({ expanded: !this.state.expanded });
     localStorage.setItem('expanded', JSON.stringify(!this.state.expanded));
     const { location, history } = this.props;
     const params = parse(location.search, { ignoreQueryPrefix: true }) || {};
