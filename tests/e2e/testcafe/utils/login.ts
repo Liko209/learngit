@@ -40,6 +40,7 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
   }
 
   return new BlankPage(t)
+    .log(`account: ${credential} extension: ${extension}`)
     .navigateTo(SITE_URL)
     .shouldNavigateTo(UnifiedLoginPage)
     .clickLogin()
