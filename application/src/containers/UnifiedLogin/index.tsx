@@ -103,7 +103,7 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
     const { glip2 } = config.get('api');
     const url = `${glip2.server}${glip2.apiPlatform}/oauth/authorize`;
     const { from } = location.state || { from: {} };
-    const { pathname, search, hash } = from;
+    const { pathname = '/', search = '', hash = '' } = from;
     const state = pathname + search.replace('&', '$') + hash;
     const redirect_uri = window.location.origin; // The URI must match exactly with the sandbox configuration
     const params = {

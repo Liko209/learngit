@@ -22,12 +22,12 @@ class TokenGetter extends Component<IProps, IStates>  {
     // http://localhost:3000/?state=STATE&id_token=TOKEN
     const { location, history } = this.props;
     const params = parse(location.search, { ignoreQueryPrefix: true });
-    const { state, code, id_token: token } = params;
+    const { state = '/', code, id_token: token } = params;
     const authService: service.AuthService = service.AuthService.getInstance();
     if (code || token) {
       await authService.unifiedLogin({ code, token });
     }
-    history.replace(state.replace('$', '&') || '/');
+    history.replace(state.replace('$', '&'));
   }
 
   render() {
