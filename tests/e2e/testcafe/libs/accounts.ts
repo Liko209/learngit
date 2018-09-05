@@ -4,25 +4,59 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AccountOperationsApi as AccountPool } from 'account-pool-ts-api';
+import { AccountOperationsApi as AccountPoolApi } from 'account-pool-ts-api';
+import * as assert from 'assert';
+interface IAccountPoolClient {
+  checkOutAccounts(accountType: string): Promise<any>;
+  checkInAccounts(data: any): Promise<any>;
+}
 
-class AccountPoolHelper {
-  accountPoolClient: AccountPool;
+export class AccountPoolClient implements IAccountPoolClient {
 
-  constructor() {
-    this.accountPoolClient = new AccountPool();
+  constructor(private envName: string, private client: AccountPoolApi = new AccountPoolApi()) {
   }
 
-  async checkOutAccounts(envName: string, accountType: string, isDebug: string = 'false') {
-    const response = await this.accountPoolClient.snatchAccount(envName, accountType, undefined, isDebug);
+  async checkOutAccounts(accountType: string) {
+    const response = await this.client.snatchAccount(this.envName, accountType, undefined, 'false');
     return response.body;
   }
 
-  async checkInAccounts(envName: string, accountType: string, companyEmailDomain: string) {
-    await this.accountPoolClient.releaseAccount(envName, accountType, companyEmailDomain);
+  async checkInAccounts(data: any) {
+    await this.client.releaseAccount(this.envName, data.accountType, data.companyEmailDomain);
   }
 }
 
-const accountPoolHelper = new AccountPoolHelper();
+class AccountPoolManager implements IAccountPoolClient {
 
-export default accountPoolHelper;
+  objectPool: any;
+
+  constructor(private accountPoolClient: IAccountPoolClient) {
+    this.objectPool = {};
+  }
+
+  async checkOutAccounts(accountType: string) {
+    if (this.objectPool[accountType] === undefined) {
+      this.objectPool[accountType] = [];
+    }
+    const fifo: any[] = this.objectPool[accountType];
+    if (fifo.length > 0) {
+      return fifo.shift();
+    }
+    return await this.accountPoolClient.checkOutAccounts(accountType);
+  }
+
+  async checkInAccounts(data: any) {
+    assert(this.objectPool[data.accountType] !== undefined);
+    this.objectPool[data.accountType].push(data);
+  }
+
+  async checkInAll() {
+    console.log('Account Pool: following accounts are used in this run');
+    console.log(this.objectPool);
+    for (const accountType in this.objectPool) {
+      for (const data of this.objectPool[accountType]) {
+        await this.accountPoolClient.checkInAccounts(data);
+      }
+    }
+  }
+}
