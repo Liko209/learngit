@@ -286,7 +286,11 @@ module.exports = {
     new webpack.NamedModulesPlugin(),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
-    new webpack.DefinePlugin(env.stringified),
+    new webpack.DefinePlugin({
+      ...env.stringified,
+      'process.env.APP_VERSION': JSON.stringify(appPackage.version),
+      'process.env.BUILD_TIME': Date.now()
+    }),
     // This is necessary to emit hot updates (currently CSS only):
     new webpack.HotModuleReplacementPlugin(),
     // Watcher doesn't work well if you mistype casing in a path so we use
@@ -319,13 +323,13 @@ module.exports = {
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-          dllPath =>
-            new AddAssetHtmlPlugin({
-              filepath: dllPath,
-              includeSourcemap: false
-            })
-        )
-      : [() => {}])
+        dllPath =>
+          new AddAssetHtmlPlugin({
+            filepath: dllPath,
+            includeSourcemap: false
+          })
+      )
+      : [() => { }])
   ]),
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

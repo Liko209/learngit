@@ -43,7 +43,6 @@ class LoginVersionStatus extends React.Component {
       currentBranch: '',
       commitInfo: [],
     };
-    console.log('------', this.commitInfo);
   }
 
   render() {
