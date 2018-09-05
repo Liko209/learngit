@@ -16,15 +16,17 @@ import { notificationCenter } from '..';
 export default class SyncService extends BaseService {
   private isLoading: boolean;
   constructor() {
-    const subscriptions = {
-      [SOCKET.STATE_CHANGE]: ({ state }: { state: any }) => {
-        if (state === 'connected' || state === 'refresh') {
-          this.syncData();
-        }
-      },
-    };
-    super(null, null, null, subscriptions);
+    super(null, null, null, []);
+    this._subscribeSocketStateChange();
     this.isLoading = false;
+  }
+
+  private _subscribeSocketStateChange() {
+    notificationCenter.on(SOCKET.STATE_CHANGE, ({ state }: { state: any }) => {
+      if (state === 'connected' || state === 'refresh') {
+        this.syncData();
+      }
+    });
   }
 
   async syncData() {
