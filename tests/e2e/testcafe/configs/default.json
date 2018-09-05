@@ -3,12 +3,12 @@
     "fixtures": ["./fixtures/**/*.ts"],
     "include_tags": [],
     "exclude_tags": ["demo"],
-    "browsers": ["selenium:chrome", "selenium:firefox", "selenium:safari", "selenium:ie"]
+    "browsers": ["selenium:chrome", "selenium:firefox", "selenium:internet explorer", "selenium:MicrosoftEdge"]
  },
   "on_push": {
     "fixtures": ["./fixtures/**/*.ts"],
-    "include_tags": ["P0"],
+    "include_tags": [],
     "exclude_tags": ["demo"],
-    "browsers": ["chrome"]
+    "browsers": ["selenium:chrome"]
  }
 }
