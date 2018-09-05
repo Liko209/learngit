@@ -9,7 +9,7 @@ import GroupAPI from '../../api/glip/group';
 import AccountDao from '../../dao/account';
 import { ACCOUNT_USER_ID } from '../../dao/account/constants';
 import notificationCenter from '../notificationCenter';
-import { ENTITY } from '../../service/eventKey';
+import { ENTITY, SERVICE } from '../../service/eventKey';
 import ProfileService from '../../service/profile';
 import _ from 'lodash';
 import { transform } from '../utils';
@@ -118,6 +118,8 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
 }
 
 async function doNotification(deactivatedData: Group[], normalData: Group[]) {
+  notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
+
   const profileService: ProfileService = ProfileService.getInstance();
   const profile = await profileService.getProfile();
   const favIds = (profile && profile.favorite_group_ids) || [];

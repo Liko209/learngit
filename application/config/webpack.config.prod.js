@@ -20,6 +20,7 @@ const { GenerateSW } = require('workbox-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const paths = require("./paths");
 const getClientEnvironment = require("./env");
+const appPackage = require(paths.appPackageJson);
 
 const argv = process.argv;
 // Webpack uses `publicPath` to determine where the app is being served from.
@@ -273,7 +274,11 @@ module.exports = {
     // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
     // It is absolutely essential that NODE_ENV was set to production here.
     // Otherwise React will be compiled in the very slow development mode.
-    new webpack.DefinePlugin(env.stringified),
+    new webpack.DefinePlugin({
+      ...env.stringified,
+      'process.env.APP_VERSION': JSON.stringify(appPackage.version),
+      'process.env.BUILD_TIME': Date.now()
+    }),
     // Minify the code.
     new UglifyJsPlugin({
       uglifyOptions: {
