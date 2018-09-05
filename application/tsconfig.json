@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "outDir": "build",
     "rootDir": "src",
+    "module": "commonjs",
     "target": "es6",
     "paths": {
       "@/*": [

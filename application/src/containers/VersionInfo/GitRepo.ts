@@ -187,7 +187,7 @@ class RunGitInfoIntoFile {
   }
 
   writeInfoToFile(callback: Function) {
-    let info = '/* eslint-disable */ \n\n';
+    let info = '/* tslint:disable */ \n\n';
     info += 'export const gitCommitInfo = { \n';
     info += `currentBranch: '${this.currentBranch}',\n`;
     info += 'commitInfo:\n[';
@@ -201,7 +201,7 @@ class RunGitInfoIntoFile {
       info += '},\n';
     }
     info += ']}';
-    this.srcDir = `${this.gitRepo.getSrcDir()}/commitInfo.js`;
+    this.srcDir = `${this.gitRepo.getSrcDir()}/commitInfo.ts`;
     fs.writeFile(`${this.srcDir}`, info, (err: any) => {
       if (err) {
         console.error(`write commit info to file error ${err}`);
