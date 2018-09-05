@@ -20,6 +20,7 @@ const { GenerateSW } = require('workbox-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const paths = require("./paths");
 const getClientEnvironment = require("./env");
+const appPackage = require(paths.appPackageJson);
 
 const argv = process.argv;
 // Webpack uses `publicPath` to determine where the app is being served from.
