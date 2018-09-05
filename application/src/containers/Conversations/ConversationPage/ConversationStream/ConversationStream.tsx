@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import ConversationThreadsManager from './ConversationThreadsManager';
-import { ConversationCard } from '@/containers/ConversationCard';
+import ConversationThreadsManager from './ConversationStreamManager';
+import { ConversationCard } from '@/containers/Conversations/ConversationPage/ConversationCard';
 import { JuiChatView } from 'ui-components';
 import { observable } from 'mobx';
 
-interface IProps{
+interface IProps {
   groupId: number;
 }
 
 @observer
-class ConversationStream extends Component <IProps>{
-  public manager :ConversationThreadsManager = new ConversationThreadsManager();
+class ConversationStream extends Component<IProps>{
+  public manager: ConversationThreadsManager = new ConversationThreadsManager();
   public scrollable: any = {};
   public firstPost: React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
-  @observable hasMore:boolean = true;
-  constructor(props:IProps) {
+  @observable hasMore: boolean = true;
+  constructor(props: IProps) {
     super(props);
     this.scrollable = {};
   }
@@ -23,7 +23,7 @@ class ConversationStream extends Component <IProps>{
     this.afterRendered();
   }
 
-  componentDidUpdate(prevProps:IProps) {
+  componentDidUpdate(prevProps: IProps) {
     this.afterRendered();
   }
 
@@ -32,7 +32,7 @@ class ConversationStream extends Component <IProps>{
     this.conversationThread.updateLastGroup();
   }
   get conversationThread() {
-    const id  = this.props.groupId;
+    const id = this.props.groupId;
     return this.manager.getConversationThread(id);
   }
 
@@ -41,7 +41,7 @@ class ConversationStream extends Component <IProps>{
     this.manager.dispose(groupId);
   }
 
-  loadPosts = async  () => {
+  loadPosts = async () => {
     try {
       await this.conversationThread.loadPosts();
     } catch (err) {
@@ -52,7 +52,6 @@ class ConversationStream extends Component <IProps>{
   hasMorePost = () => {
     const groupId = this.props.groupId;
     const conversationThread = this.manager.getConversationThread(groupId);
-    console.log('has more?', conversationThread.checkHasMore());
     return conversationThread.checkHasMore();
   }
 
@@ -65,10 +64,10 @@ class ConversationStream extends Component <IProps>{
     const postIds = store.getIds();
     return (
       <JuiChatView
-          flipped={true}
-          scrollLoadThreshold={100}
-          onInfiniteLoad={this.loadPosts}
-          shouldTriggerLoad={this.hasMorePost}
+        flipped={true}
+        scrollLoadThreshold={100}
+        onInfiniteLoad={this.loadPosts}
+        shouldTriggerLoad={this.hasMorePost}
       >
         {postIds.map(id => <ConversationCard id={id} key={id} />)}
       </JuiChatView>

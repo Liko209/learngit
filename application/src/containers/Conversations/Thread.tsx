@@ -1,6 +1,6 @@
 import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { ConversationStream } from '@/containers/ConversationStream';
+import { ConversationStream } from '@/containers/Conversations/ConversationPage/ConversationStream';
 
 interface IParams {
   id: string;
@@ -13,7 +13,7 @@ const Thread = ({ match }: IProps) => {
   return (
     <div style={{ backgroundColor: '#fff', height: '100%' }}>
       <strong>Conversation thread: {id} </strong>
-      <div style={{ height:'100%', display:'flex' }}>{!isNaN(id) ? <ConversationStream groupId={id}/> :  null}</div>
+      <div style={{ height: '100%', display: 'flex' }}>{!isNaN(id) ? <ConversationStream groupId={id} /> : null}</div>
     </div>
   );
 };

@@ -1,14 +1,14 @@
-import ConversationThreadPresenter from './ConversationThreadViewModel';
+import ConversationThreadPresenter from './ConversationStreamViewModel';
 import GlobalStore from '@/store/base/GlobalStore';
 import storeManager from '@/store';
 
 const MAX_CONVERSATION_THREAD = 5;
 
 export default class ConversationThreadsManager {
-  conversationThreadPresenters:Map<number, ConversationThreadPresenter> = new Map();
-  globalStore:GlobalStore = storeManager.getGlobalStore();
+  conversationThreadPresenters: Map<number, ConversationThreadPresenter> = new Map();
+  globalStore: GlobalStore = storeManager.getGlobalStore();
 
-  addConversationThread(groupId:number) {
+  addConversationThread(groupId: number) {
     this.conversationThreadPresenters.set(
       groupId,
       new ConversationThreadPresenter(groupId),
@@ -16,13 +16,13 @@ export default class ConversationThreadsManager {
     return this.getConversationThread(groupId);
   }
 
-  delConversationThread(groupId:number) {
+  delConversationThread(groupId: number) {
     const conversationThread = this.conversationThreadPresenters.get(groupId);
     conversationThread && conversationThread.dispose();
     this.conversationThreadPresenters.delete(groupId);
   }
 
-  getConversationThread(groupId:number) : ConversationThreadPresenter {
+  getConversationThread(groupId: number): ConversationThreadPresenter {
     let conversationThread = this.conversationThreadPresenters.get(groupId);
     if (!conversationThread) {
       conversationThread = this.addConversationThread(groupId);
@@ -39,7 +39,7 @@ export default class ConversationThreadsManager {
     return this.delConversationThread(firstKey);
   }
 
-  loadPosts(groupId:number) {
+  loadPosts(groupId: number) {
     const conversationThreadPresenter = this.getConversationThread(groupId);
     conversationThreadPresenter && conversationThreadPresenter.loadPosts();
   }
@@ -51,7 +51,7 @@ export default class ConversationThreadsManager {
     }
   }
 
-  getStore(groupId:number) {
+  getStore(groupId: number) {
     const conversationThreadPresenter = this.getConversationThread(groupId);
     if (conversationThreadPresenter) {
       return conversationThreadPresenter.getStore();
@@ -59,12 +59,12 @@ export default class ConversationThreadsManager {
     return null;
   }
 
-  dispose(groupId:number) {
+  dispose(groupId: number) {
     if (groupId) {
       const conversationThreadPresenter = this.getConversationThread(groupId);
       conversationThreadPresenter.dispose();
     } else {
-      this.conversationThreadPresenters.forEach((presenter:ConversationThreadPresenter) => {
+      this.conversationThreadPresenters.forEach((presenter: ConversationThreadPresenter) => {
         presenter.dispose();
       });
     }

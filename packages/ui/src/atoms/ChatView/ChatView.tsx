@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import ChatView from 'react-chatview';
 import styled from 'styled-components';
 interface IProps {
-  onInfiniteLoad:() => any;
-  shouldTriggerLoad:() => boolean;
-  flipped:boolean;
-  scrollLoadThreshold:number;
-  returnScrollable?:(el:any) => void;
-  reversed?:boolean;
+  onInfiniteLoad: () => any;
+  shouldTriggerLoad: () => boolean;
+  flipped: boolean;
+  scrollLoadThreshold: number;
+  returnScrollable?: (el: any) => void;
+  reversed?: boolean;
 }
 
 const Chatview = styled<IProps>(ChatView)`
@@ -16,7 +16,7 @@ const Chatview = styled<IProps>(ChatView)`
   width:100%;
 `;
 
-function hasScrolled(el:any, direction = 'vertical') {
+function hasScrolled(el: any, direction = 'vertical') {
   if (!el) {
     return;
   }
@@ -33,7 +33,7 @@ class JuiChatView extends Component<IProps>{
     return this.afterRendered();
   }
 
-  async componentDidUpdate(prevProps:IProps) {
+  async componentDidUpdate(prevProps: IProps) {
     return this.afterRendered();
   }
 
@@ -45,7 +45,6 @@ class JuiChatView extends Component<IProps>{
   }
 
   shouldTriggerLoad() {
-    console.log(!hasScrolled(this.scrollable) && this.props.shouldTriggerLoad());
     return !hasScrolled(this.scrollable) && this.props.shouldTriggerLoad();
   }
 
@@ -59,7 +58,7 @@ class JuiChatView extends Component<IProps>{
     }
   }
 
-  getScrollable = (scrollable:any) => {
+  getScrollable = (scrollable: any) => {
     this.scrollable = scrollable;
   }
 
@@ -69,7 +68,7 @@ class JuiChatView extends Component<IProps>{
 
   render() {
     return (
-      <Chatview {...this.props} returnScrollable={this.getScrollable}/>
+      <Chatview {...this.props} returnScrollable={this.getScrollable} />
     );
   }
 }
