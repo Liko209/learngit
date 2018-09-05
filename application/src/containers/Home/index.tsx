@@ -10,12 +10,10 @@ import Conversations from '@/containers/Conversations';
 import Calls from '@/containers/Calls';
 import Meetings from '@/containers/Meetings';
 import Settings from '@/containers/Settings';
+import HomePresenter from './HomePresenter';
 import { TranslationFunction, i18n } from 'i18next';
 import TopBar from 'ui-components/organisms/TopBar';
 import avatar from './avatar.jpg';
-import { service } from 'sdk';
-
-const { AuthService } = service;
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -27,39 +25,43 @@ interface IStates {
 }
 const UMI_Count = [120, 0, 16, 1, 0, 1, 99, 0, 11];
 class Home extends Component<IProps, IStates>  {
+  private homePresenter: HomePresenter;
   constructor(props: IProps) {
     super(props);
     this.state = {
       expanded: localStorage.getItem('expanded') === null ? true :
         JSON.parse(String(localStorage.getItem('expanded'))),
     };
-    this.signOutClickHandler = this.signOutClickHandler.bind(this);
+    this.homePresenter = new HomePresenter();
   }
 
-  async signOutClickHandler() {
-    const authService: service.AuthService = AuthService.getInstance();
-    await authService.logout();
-    window.location.href = '/';
-  }
-  handleExpand = () => {
+  handleLeftNavExpand = () => {
     this.setState({
       expanded: !this.state.expanded,
     });
     localStorage.setItem('expanded', JSON.stringify(!this.state.expanded));
     const { location, history } = this.props;
-    history.push({
+    history.replace({
       pathname: location.pathname,
       search: `?leftnav=${!this.state.expanded}`,
     });
   }
+
+  handleSignOutClick = () => {
+    const { handleSignOutClick } = this.homePresenter;
+
+    handleSignOutClick().then(() => {
+      window.location.href = '/';
+    });
+  }
+
   render() {
-    // const { match } = this.props;
     const { t } = this.props;
 
     const Icons = [
       [
         { icon: 'Dashboard', title: t('Dashboard') },
-        { icon:'Messages', title: t('Messages') },
+        { icon: 'Messages', title: t('Messages') },
         { icon: 'Phone', title: t('Phone') },
         { icon: 'Meetings', title: t('Meetings') },
       ],
@@ -75,7 +77,7 @@ class Home extends Component<IProps, IStates>  {
     const { expanded } = this.state;
     return (
       <Wrapper>
-        <TopBar handleLeftNavExpand={this.handleExpand} avatar={avatar} presence="online" data-anchor="expandButton" handleSignOutClick={this.signOutClickHandler} />
+        <TopBar avatar={avatar} presence="online" data-anchor="expandButton" onLeftNavExpand={this.handleLeftNavExpand} onSignOutClick={this.handleSignOutClick} />
         <Bottom>
           <LeftNav expanded={expanded} id="leftnav" icons={Icons} umiCount={UMI_Count} />
           <Main>
@@ -89,7 +91,8 @@ class Home extends Component<IProps, IStates>  {
             </Switch>
           </Main>
         </Bottom>
-      </Wrapper>);
+      </Wrapper>
+    );
   }
 }
 
