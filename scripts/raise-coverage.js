@@ -12,6 +12,9 @@ const cwd = process.cwd();
 const summaryPath = resolve(cwd, 'coverage/coverage-summary.json');
 const thresholdPath = resolve(cwd, 'config/coverage-threshold.json');
 
+// Allow coverage threshold a bit lower than the actual coverage.
+const ALLOW_RANGE = 0.05;
+
 raiseCoverage(summaryPath, thresholdPath);
 
 function raiseCoverage(summaryPath, thresholdPath) {
@@ -22,8 +25,8 @@ function raiseCoverage(summaryPath, thresholdPath) {
   let improved = false;
   Object.entries(threshold.global).forEach(([key, pct]) => {
     const newPct = summary.total[key].pct;
-    if (newPct > pct) {
-      threshold.global[key] = newPct;
+    if (newPct > pct + ALLOW_RANGE) {
+      threshold.global[key] = newPct - ALLOW_RANGE;
       improved = true;
     }
     logCoverage(key, pct, newPct);
@@ -31,9 +34,9 @@ function raiseCoverage(summaryPath, thresholdPath) {
 
   if (improved) {
     writeJSON(thresholdPath, threshold);
-    log(chalk.green.bold('\nGood job!!!'));
+    log(chalk.green.bold('Good job!!!'));
   } else {
-    log('\nNothing changed.');
+    log('Nothing changed.');
   }
   log(chalk.green('\n=============================\n'));
 }
