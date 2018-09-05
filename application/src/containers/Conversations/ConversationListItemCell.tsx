@@ -33,7 +33,7 @@ interface IState {
 }
 
 @observer
-class ConversationListItemCell extends React.Component<IProps, IState>{
+export class ConversationListItemCell extends React.Component<IProps, IState>{
   static defaultProps = {
     isFavorite: false,
   };
@@ -154,7 +154,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     groupService.clickGroup(this.id);
     this._jump2Conversation(this.id);
   }
-  private _jump2Conversation(id:number) {
+  private _jump2Conversation(id: number) {
     const { history } = this.props;
     history.push(`/messages/${id}`);
   }
