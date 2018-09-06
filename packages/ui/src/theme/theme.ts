@@ -1,10 +1,3 @@
-/*
- * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
- * @Date: 2018-09-04 13:57:26
- * Copyright © RingCentral. All rights reserved.
- */
-import { ThemeProps as StyledThemeProps } from 'styled-components';
-import { Theme as MuiTheme } from '@material-ui/core/styles/createMuiTheme';
 
 type IPalette = {
   primary: {
@@ -115,10 +108,7 @@ type ITheme = {
   },
 };
 
-type ThemeProps = StyledThemeProps<ITheme & MuiTheme>;
-
 export {
   IPalette,
   ITheme,
-  ThemeProps,
 };

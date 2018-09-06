@@ -1,11 +1,17 @@
-import React, { Component, ReactNode, MouseEvent as ReactMouseEvent } from 'react';
+import React, {
+  Component,
+  ReactNode,
+  MouseEvent as ReactMouseEvent,
+} from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+// import { parse } from 'qs';
 import Layout from './Layout';
 import HorizonPanel from './HorizonPanel';
 import HorizonResizer from './HorizonResizer';
 import HorizonButton from './HorizonButton';
 import { addResizeListener, removeResizeListener } from './optimizer';
 
-interface IProps {
+interface IProps extends RouteComponentProps<{}> {
   tag: string;
   leftNavWidth: number;
   children: ReactNode[];
@@ -369,4 +375,4 @@ class TreeLayout extends Component<IProps, IStates> {
   }
 }
 
-export default TreeLayout;
+export default withRouter(TreeLayout);

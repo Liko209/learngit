@@ -1,11 +1,8 @@
 import { v4 as uuid } from 'uuid';
-
-import { waitForReact } from 'testcafe-react-selectors';
-
 import { RcPlatformManager } from './glip';
 import { Status, AllureStep } from '../libs/report';
 import { accountPoolClient } from '../libs/accounts';
-
+import { setupSDK } from '../utils/setupSDK';
 import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
 
 export function setUp(accountType: string) {
@@ -13,6 +10,7 @@ export function setUp(accountType: string) {
     const helper = TestHelper.from(t);
     await helper.checkOutAccounts(accountType);
     helper.setupGlipApiManager();
+    await setupSDK(t);
   };
 }
 
@@ -20,9 +18,9 @@ export function tearDown() {
   return async (t: TestController) => {
     const helper = TestHelper.from(t);
     await helper.checkInAccounts();
-    await waitForReact();
   };
 }
+
 export class TestHelper {
   static from(t: TestController): TestHelper {
     return new TestHelper(t);
@@ -77,12 +75,6 @@ export class TestHelper {
 
     if (this.t.ctx.logs === undefined) {
       this.t.ctx.logs = [];
-    }
-    if (startTime === undefined) {
-      startTime = Date.now();
-    }
-    if (endTime === undefined) {
-      endTime = startTime;
     }
 
     let screenPath;

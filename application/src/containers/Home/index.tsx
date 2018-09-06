@@ -14,7 +14,6 @@ import HomePresenter from './HomePresenter';
 import { TranslationFunction, i18n } from 'i18next';
 import TopBar from 'ui-components/organisms/TopBar';
 import avatar from './avatar.jpg';
-import { parse, stringify } from 'qs';
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -24,7 +23,7 @@ interface IProps extends RouteComponentProps<any> {
 interface IStates {
   expanded: boolean;
 }
-const UMI_Count = [120, 0, 16, 1, 0, 1, 99, 0, 11];
+const UMI_Count = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 class Home extends Component<IProps, IStates>  {
   private homePresenter: HomePresenter;
   constructor(props: IProps) {
@@ -37,19 +36,20 @@ class Home extends Component<IProps, IStates>  {
   }
 
   handleLeftNavExpand = () => {
-    this.setState({ expanded: !this.state.expanded });
+    this.setState({
+      expanded: !this.state.expanded,
+    });
     localStorage.setItem('expanded', JSON.stringify(!this.state.expanded));
     const { location, history } = this.props;
-    const params = parse(location.search, { ignoreQueryPrefix: true }) || {};
-    params.leftnav = !this.state.expanded;
     history.replace({
       pathname: location.pathname,
-      search: stringify(params, { addQueryPrefix: true }),
+      search: `?leftnav=${!this.state.expanded}`,
     });
   }
 
   handleSignOutClick = () => {
     const { handleSignOutClick } = this.homePresenter;
+
     handleSignOutClick().then(() => {
       window.location.href = '/';
     });

@@ -3,13 +3,12 @@
  * @Date: 2018-07-09 15:32:58
  * Copyright © RingCentral. All rights reserved
 */
-
-const GROUP_QUERY_TYPE = {
-  ALL: 'all',
-  GROUP: 'group',
-  TEAM: 'team',
-  FAVORITE: 'favorite',
-};
+enum GROUP_QUERY_TYPE {
+  ALL = 'all',
+  GROUP = 'group',
+  TEAM = 'team',
+  FAVORITE = 'favorite',
+}
 
 const EVENT_TYPES = {
   REPLACE: 'replace',

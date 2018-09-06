@@ -20,18 +20,6 @@
       "outFiles": [
         "${workspaceFolder}/**/*.js"
       ]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "protocol": "inspector",
-      "name": "Launch test files with TestCafe",
-      "program": "${workspaceRoot}/node_modules/testcafe/bin/testcafe.js",
-      "args": [
-        "firefox",
-        "${file}"
-      ],
-      "cwd": "${workspaceRoot}"
     }
   ]
 }
