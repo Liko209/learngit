@@ -23,16 +23,22 @@ function raiseCoverage(summaryPath, thresholdPath) {
   const summary = readJSON(summaryPath);
   const threshold = readJSON(thresholdPath);
   let improved = false;
-  Object.entries(threshold.global).forEach(([key, pct]) => {
-    const newPct = summary.total[key].pct;
-    if (newPct > pct + ALLOW_RANGE) {
-      threshold.global[key] = newPct - ALLOW_RANGE;
+
+  log('Current threshold: \n');
+
+  Object.entries(threshold.global).forEach(([key, oldThreshold]) => {
+    const newThreshold = summary.total[key].pct - ALLOW_RANGE;
+
+    if (newThreshold > oldThreshold) {
+      threshold.global[key] = newThreshold;
       improved = true;
     }
-    logCoverage(key, pct, newPct);
+
+    logCoverage(key, oldThreshold, newThreshold);
   });
 
-  log('\n');
+  log();
+
   if (improved) {
     writeJSON(thresholdPath, threshold);
     log(chalk.green.bold('Good job!!!'));
@@ -54,7 +60,8 @@ function logCoverage(key, oldPct, newPct) {
 }
 
 function colorPct(pct) {
-  const str = String(pct).padEnd(5) + '%';
+  const str = pct.toFixed(2).padEnd(5) + '%';
+
   if (pct > 80) {
     return chalk.green(str);
   } else if (pct > 60) {
