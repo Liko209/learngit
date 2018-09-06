@@ -8,23 +8,23 @@ import { Group } from 'sdk/models';
 import OrderListPresenter from '@/store/base/OrderListPresenter';
 import OrderListStore from '@/store/base/OrderListStore';
 import { ENTITY_NAME } from '@/store';
-import { IIncomingData } from '@/store/store';
 import GroupModel from '@/store/models/Group';
 
 const { GroupService, AccountService } = service;
 
+interface IConversationSectionPresenterOptions {
+  entity: string;
+  transformFunc: Function;
+  queryType?: service.GROUP_QUERY_TYPE;
+  maxLimit?: number;
+}
+
 class ConversationSectionPresenter extends OrderListPresenter<Group, GroupModel> {
   public entityName: ENTITY_NAME = ENTITY_NAME.GROUP;
-  public entity: string;
-  public queryType?: service.GROUP_QUERY_TYPE;
+  private entity: string;
+  private queryType?: service.GROUP_QUERY_TYPE;
 
-  constructor(
-    options: {
-      entity: string;
-      transformFunc: Function;
-      queryType?: service.GROUP_QUERY_TYPE;
-    },
-  ) {
+  constructor(options: IConversationSectionPresenterOptions) {
     super(
       new OrderListStore(`ConversationList: ${options.queryType}`),
       () => true,
@@ -35,17 +35,15 @@ class ConversationSectionPresenter extends OrderListPresenter<Group, GroupModel>
     this.init();
   }
 
-  init() {
-    const groupCallback = ({ type, entities }: IIncomingData<Group>) => {
-      this.handleIncomingData(this.entityName, { type, entities });
-    };
-    this.entity && this.subscribeNotification(this.entity, groupCallback);
+  async init() {
+    await this.fetchData();
+
+    // When groups change, fetch data from service again
+    this.entity && this.subscribeNotification(this.entity, () => this.fetchData());
   }
 
   async fetchData() {
-    if (!this.queryType) {
-      return;
-    }
+    if (!this.queryType) return;
     const groupService = GroupService.getInstance<service.GroupService>();
     const groups = await groupService.getGroupsByType(this.queryType);
     this.handlePageData(this.entityName, groups, true);

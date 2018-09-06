@@ -204,26 +204,31 @@ describe('handleGroupMostRecentPostChanged()', () => {
 
 describe('filterGroups()', () => {
   const stateService: StateService = new StateService();
+
   beforeEach(() => {
     jest.clearAllMocks();
     StateService.getInstance = jest.fn().mockReturnValue(stateService);
   });
-  it('items with states without ids', async () => {
-    const teams = generateFakeGroups(5, true);
-    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
-    expect(result.length).toBe(2);
+
+  it('should remove extra, when limit < data count', async () => {
+    const LIMIT = 20;
+    const TEAMS_COUNT = 50;
+    const teams = generateFakeGroups(TEAMS_COUNT, true);
+    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, LIMIT);
+    expect(result.length).toBe(LIMIT);
   });
-  it('items is less then limit', async () => {
-    const teams = generateFakeGroups(5, true);
-    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 20);
-    expect(result.length).toBe(5);
+
+  it('should return all, when limit > data count', async () => {
+    const LIMIT = 20;
+    const TEAMS_COUNT = 5;
+    const teams = generateFakeGroups(TEAMS_COUNT, true);
+    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, LIMIT);
+    expect(result.length).toBe(TEAMS_COUNT);
   });
-  it('items with states id', async () => {
+
+  it('should return data until first unread, and ignore the limit', async () => {
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
-      {
-        id: 2,
-        unread_count: 1,
-      },
+      { id: 2, unread_count: 1 },
     ]);
     const teams = generateFakeGroups(5, true);
     let result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
@@ -232,6 +237,7 @@ describe('filterGroups()', () => {
     result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 5);
     expect(result.length).toBe(5);
   });
+
   it('items with states ids', async () => {
     stateService.getAllGroupStatesFromLocal.mockResolvedValue([
       {

@@ -26,8 +26,10 @@ interface IProps {
   sortable?: boolean;
   presenter: ConversationSectionPresenter;
 }
+
 const SortableList = SortableContainer(ConversationList);
 const SortableItem = SortableElement(ConversationListItemCell);
+
 @observer
 class ConversationSectionComponent
   extends React.Component<IProps> {
@@ -48,10 +50,6 @@ class ConversationSectionComponent
     });
   }
 
-  componentDidMount() {
-    this.props.presenter.fetchData();
-  }
-
   private _handleSortEnd({ oldIndex, newIndex }: { oldIndex: number; newIndex: number; }) {
     this.ids = arrayMove(this.ids, oldIndex, newIndex);
     this.props.presenter.reorderFavoriteGroups(oldIndex, newIndex);
@@ -60,9 +58,8 @@ class ConversationSectionComponent
   renderList() {
     const { presenter, sortable } = this.props;
     const currentUserId = presenter.getCurrentUserId() || undefined;
-    const store = presenter.getStore();
-    const ids = store.getIds();
     const entityName = presenter.entityName;
+
     if (sortable) {
       const distance = 1;
       return (
@@ -83,7 +80,7 @@ class ConversationSectionComponent
 
     return (
       <ConversationList>
-        {ids.map((id: number) => (
+        {this.ids.map((id: number) => (
           <ConversationListItemCell
             id={id}
             key={id}
