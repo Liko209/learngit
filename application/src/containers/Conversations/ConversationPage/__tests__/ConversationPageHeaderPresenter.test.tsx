@@ -3,8 +3,6 @@
  * @Date: 2018-09-04 09:31:32
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../../__tests__/types.d.ts" />
-
 import { service } from 'sdk';
 import ConversationPageHeaderPresenter, { ConversationTypes } from '../ConversationPageHeaderPresenter';
 import { groupModelFactory, personModelFactory } from '../../../../__tests__/factories';
@@ -15,7 +13,7 @@ const mockGetEntity = (presenter: ConversationPageHeaderPresenter, entityName: s
   if (!jest.isMockFunction(presenter.getEntity)) {
     presenter.getEntity = jest.fn();
   }
-  presenter.getEntity.mockImplementation((en, id) => {
+  (presenter.getEntity as jest.Mock).mockImplementation((en: string, id: number) => {
     if (en === entityName) {
       return impl(id);
     }
@@ -26,7 +24,7 @@ const mockGetSingleEntity = (presenter: ConversationPageHeaderPresenter, entityN
   if (!jest.isMockFunction(presenter.getSingleEntity)) {
     presenter.getSingleEntity = jest.fn();
   }
-  presenter.getSingleEntity.mockImplementation((en, property) => {
+  (presenter.getSingleEntity as any).mockImplementation((en: string, property: string) => {
     if (en === entityName) {
       return impl(property);
     }

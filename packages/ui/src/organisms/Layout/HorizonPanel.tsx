@@ -23,6 +23,7 @@ const Wrapper = styled.div`
   display: ${(props: IInternalPorps) => props.width > 0 ? 'inline-block' : 'none'};
   overflow: hidden;
   background-color: ${({ theme }) => theme.palette.background.paper};
+  z-index: 1;
   /* width: ${(props: IInternalPorps) => `${props.width}px`}; */
   /* transition: all .25s; */
   ${props => props.response ? css`
@@ -38,7 +39,7 @@ const Wrapper = styled.div`
     bottom: 0;
     left: ${(props: IInternalPorps) => props.forcePosition === 'left' ? 0 : 'auto'};
     right: ${(props: IInternalPorps) => props.forcePosition === 'right' ? 0 : 'auto'};
-    z-index: 1;
+    z-index: 2;
   `}
 `;
 
