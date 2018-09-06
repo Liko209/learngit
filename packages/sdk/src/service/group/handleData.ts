@@ -314,19 +314,19 @@ async function filterGroups(
   groups: Group[],
   limit: number,
 ) {
-  const sortedGroups = groups.sort((group1: Group, group2: Group) => getGroupTime(group1) - getGroupTime(group2));
+  const sortedGroups = groups.sort((group1: Group, group2: Group) => getGroupTime(group2) - getGroupTime(group1));
 
-  // Find oldest unread  group's time
+  // Find oldest unread group's time
   const unreadGroupIds = await getUnreadGroupIds(sortedGroups);
-  const firstUnreadGroupTime = sortedGroups
+  const oldestUnreadGroupTime = sortedGroups
     .filter(group => unreadGroupIds.includes(group.id))
     .map(getGroupTime)
     .sort()
     .shift();
 
-  if (firstUnreadGroupTime) {
+  if (oldestUnreadGroupTime) {
     // With unread message
-    return sortedGroups.filter((group: Group) => getGroupTime(group) >= firstUnreadGroupTime);
+    return sortedGroups.filter((group: Group) => getGroupTime(group) >= oldestUnreadGroupTime);
   }
 
   // Without unread message

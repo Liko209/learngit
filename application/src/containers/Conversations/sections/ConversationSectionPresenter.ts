@@ -46,6 +46,8 @@ class ConversationSectionPresenter extends OrderListPresenter<Group, GroupModel>
     if (!this.queryType) return;
     const groupService = GroupService.getInstance<service.GroupService>();
     const groups = await groupService.getGroupsByType(this.queryType);
+    const store = this.getStore();
+    store.clearAll();
     this.handlePageData(this.entityName, groups, true);
   }
 

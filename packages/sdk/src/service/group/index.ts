@@ -78,7 +78,6 @@ export default class GroupService extends BaseService<Group> {
   ): Promise<Group[]> {
     const accountService: AccountService = AccountService.getInstance();
     const limit = _limit || accountService.getConversationListLimit(groupType);
-
     mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
     let result: Group[] = [];
     const dao = daoManager.getDao(GroupDao);
@@ -97,7 +96,6 @@ export default class GroupService extends BaseService<Group> {
 
       result = await dao.queryGroups(
         offset,
-        // TODO implement order by multi field in foundation/db, and remove this hack.
         Infinity,
         groupType === GROUP_QUERY_TYPE.TEAM,
         favoriteGroupIds,
