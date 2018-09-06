@@ -5,7 +5,7 @@ describe('Window event listener', () => {
     jest.mock('../notificationCenter');
     jest.spyOn(window, 'addEventListener');
   });
-  it.only('should bind eventListenr to window', () => {
+  it('should bind eventListener to window', () => {
     require('../windowEventListener');
     expect(window.addEventListener.mock.calls[0][0]).toBe('online');
     expect(window.addEventListener.mock.calls[1][0]).toBe('offline');

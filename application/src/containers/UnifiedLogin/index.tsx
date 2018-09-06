@@ -10,6 +10,7 @@ import { service } from 'sdk';
 import config from '@/config';
 import EnvSelect from './EnvSelect';
 import Download from './download';
+import LoginVersionStatus from '../VersionInfo/LoginVersionStatus';
 
 const { glip2 } = config.get('api');
 const { AuthService } = service;
@@ -139,7 +140,7 @@ class UnifiedLogin extends React.Component<
           </Button>
           <EnvSelect />
         </Form>
-        {/* <LoginVersionStatus /> */}
+        <LoginVersionStatus />
         <Download />
       </div>
     );
