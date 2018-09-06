@@ -13,7 +13,7 @@ import { ENTITY, SERVICE } from '../../service/eventKey';
 import ProfileService from '../../service/profile';
 import _ from 'lodash';
 import { transform } from '../utils';
-import { Group, Post, Raw, Profile, PartialWithKey } from '../../models';
+import { Group, Post, Raw, Profile, PartialWithKey, GroupState } from '../../models';
 import { GROUP_QUERY_TYPE } from '../constants';
 import StateService from '../state';
 import { mainLogger } from 'foundation';
@@ -160,11 +160,11 @@ async function doNotification(deactivatedData: Group[], normalData: Group[]) {
 
   let addedTeams = normalData
     .filter((item: Group) => item.is_team && favIds.indexOf(item.id) === -1);
-  addedTeams = await filterGroups(addedTeams, GROUP_QUERY_TYPE.TEAM, 20);
+  addedTeams = await filterGroups(addedTeams, 20);
 
   let addedGroups = normalData
     .filter((item: Group) => !item.is_team && favIds.indexOf(item.id) === -1);
-  addedGroups = await filterGroups(addedGroups, GROUP_QUERY_TYPE.GROUP, 10);
+  addedGroups = await filterGroups(addedGroups, 10);
 
   const addFavorites = normalData.filter((item: Group) => favIds.indexOf(item.id) !== -1);
   addedTeams.length > 0 && notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, addedTeams);
@@ -291,53 +291,51 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
   await saveDataAndDoNotification(validGroups);
 }
 
+function getGroupTime(group: Group) {
+  return group.most_recent_post_created_at || group.created_at;
+}
+
+function hasUnread(groupState: GroupState) {
+  return groupState.unread_count || groupState.unread_mentions_count;
+}
+
+async function getUnreadGroupIds(groups: Group[]) {
+  const stateService: StateService = StateService.getInstance();
+  const states = await stateService.getAllGroupStatesFromLocal() || [];
+  return states
+    .filter(hasUnread)
+    .map(state => state.id);
+}
+
 /**
  * extract out groups/teams which are latest than the oldest unread post
  * or just use default limit length
  */
-
 async function filterGroups(
   groups: Group[],
-  groupType = GROUP_QUERY_TYPE.TEAM,
-  defaultLength: number,
+  limit: number,
 ) {
-  if (groups.length <= defaultLength) {
-    return groups;
+  const sortedGroups = groups.sort((group1: Group, group2: Group) => getGroupTime(group1) - getGroupTime(group2));
+
+  // Find oldest unread  group's time
+  const unreadGroupIds = await getUnreadGroupIds(sortedGroups);
+  const firstUnreadGroupTime = sortedGroups
+    .filter(group => unreadGroupIds.includes(group.id))
+    .map(getGroupTime)
+    .sort()
+    .shift();
+
+  if (firstUnreadGroupTime) {
+    // With unread message
+    return sortedGroups.filter((group: Group) => getGroupTime(group) >= firstUnreadGroupTime);
   }
-  const stateService: StateService = StateService.getInstance();
-  const states = await stateService.getAllGroupStatesFromLocal();
-  let result = groups;
-  const statesIds = states
-    ? states.filter(item => item.unread_count || item.unread_mentions_count).map(item => item.id)
-    : [];
-  if (statesIds.length > 0) {
-    const times =
-      result
-        .filter(item => statesIds.includes(item.id))
-        .map((item: Group) => item.most_recent_post_created_at || item.created_at)
-        .sort() || [];
-    if (times.length > 0) {
-      const time = times[0];
-      if (time !== Infinity) {
-        const tmpGroups = result.filter((item: Group) => {
-          return item.most_recent_post_created_at && item.most_recent_post_created_at >= time;
-        });
-        if (tmpGroups.length > defaultLength) {
-          result = tmpGroups;
-          return result;
-        }
-      }
-    }
+
+  // Without unread message
+  if (sortedGroups.length > limit) {
+    sortedGroups.length = limit;
   }
-  groups.sort((group1: Group, group2: Group) => {
-    const time1 = group1.most_recent_post_created_at || group1.created_at;
-    const time2 = group2.most_recent_post_created_at || group1.created_at;
-    return time2 - time1;
-  });
-  if (result.length > defaultLength) {
-    result.length = defaultLength;
-  }
-  return result;
+
+  return sortedGroups;
 }
 
 async function handlePartialData(groups: Partial<Raw<Group>>[]) {
