@@ -1,12 +1,11 @@
-import { IEntity } from './../store.d';
 import { Post } from 'sdk/models';
+import Base from './Base';
 import { observable } from 'mobx';
-export default class PostModel implements IEntity {
-  id: number;
+export default class PostModel extends Base<Post> {
   @observable createdAt: number;
   @observable text: string;
   constructor(data: Post) {
-    this.id = data.id;
+    super(data);
     this.createdAt = data.created_at;
     this.text = data.text;
   }
@@ -14,6 +13,4 @@ export default class PostModel implements IEntity {
   static fromJS(data: Post) {
     return new PostModel(data);
   }
-
-  dispose() { }
 }

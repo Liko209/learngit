@@ -6,10 +6,10 @@ import StoreManager from '@/store/base/StoreManager';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import StoreContext from '@/store/context';
 import { Omit } from '@material-ui/core';
-import { IEntity } from './store';
+import Base from '@/store/models/Base';
 
 export interface IComponentWithGetEntityProps {
-  getEntity: (entityName: ENTITY_NAME, id: number) => {};
+  getEntity: <T extends BaseModel, K extends Base<T>>(entityName: ENTITY_NAME, id: number) => K;
 }
 
 /**
@@ -28,7 +28,7 @@ function createStoreInjector<P>(WrappedComponent: ComponentType<P>) {
     static readonly wrappedComponent = WrappedComponent;
     wrappedInstance: React.ReactInstance;
     storeManager: StoreManager;
-    entityStore: {[parameter: string]: MultiEntityMapStore<any, any>} = {};
+    entityStore: { [parameter: string]: MultiEntityMapStore<any, any> } = {};
 
     constructor(props: P & IComponentWithGetEntityProps) {
       super(props);
@@ -42,8 +42,8 @@ function createStoreInjector<P>(WrappedComponent: ComponentType<P>) {
       });
     }
 
-    getEntity<T extends BaseModel, K extends IEntity>(entityName: ENTITY_NAME, id: number) {
-      let store = this.entityStore[entityName];
+    getEntity<T extends BaseModel, K extends Base<T>>(entityName: ENTITY_NAME, id: number) {
+      let store: MultiEntityMapStore<T, K> = this.entityStore[entityName];
       if (!store) {
         store = this.storeManager.getEntityMapStore(entityName) as MultiEntityMapStore<T, K>;
         this.entityStore[entityName] = store;

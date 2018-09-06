@@ -18,10 +18,9 @@ import { getGroupName } from '../../utils/groupName';
 import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
-import { withRouter, RouteComponentProps } from 'react-router';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 const { GroupService } = service;
-
-type IProps  =  RouteComponentProps<any> & IComponentWithGetEntityProps &{
+type IProps = IComponentWithGetEntityProps & RouteComponentProps<{}> & {
   id: number;
   key: number;
   entityName: string;
@@ -157,10 +156,8 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   }
   @action
   private _toggleFavorite() {
-    console.log('_toggleFavorite()');
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.markGroupAsFavorite(this.id, !this.isFavorite);
-
     this._handleClose();
   }
 }

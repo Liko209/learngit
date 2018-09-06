@@ -6,6 +6,7 @@
 
 import TypeDictionary from './types';
 import GlipTypeUtil from './util';
+import _ from 'lodash';
 
 interface IMessage<V> {
   [key: number]: V;
@@ -40,12 +41,18 @@ function parseSocketMessage(message: string | SystemMessage) {
   }
 
   const {
-    body: { objects },
+    body: { objects, hint },
   } = JSON.parse(message);
-
+  let post_creator_ids: number[] | undefined;
+  if (hint && hint.post_creator_ids) {
+    post_creator_ids = (_.values(hint.post_creator_ids));
+  }
   const result = {};
   objects.forEach((arr: any[]) => {
     arr.forEach((obj) => {
+      if (post_creator_ids) {
+        obj.trigger_ids = post_creator_ids;
+      }
       if (obj.search_results) {
         result['search'] = obj.search_results;
       }

@@ -7,3 +7,6 @@ export * from './MenuItem';
 export * from './Popper';
 export * from './Tooltip';
 export * from './InfiniteLoadList';
+export * from './ButtonBar';
+export * from './Button';
+export * from './Link';

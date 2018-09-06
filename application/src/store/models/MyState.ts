@@ -1,12 +1,11 @@
-import { IEntity } from './../store.d';
 import { MyState } from 'sdk/models';
+import Base from './Base';
 
-export default class MyStateModel implements IEntity {
-  id: number;
+export default class MyStateModel extends Base<MyState> {
   awayStatusHistory: string[];
   constructor(data: MyState) {
-    const { id, away_status_history: awayStatusHistory = [] } = data;
-    this.id = id;
+    super(data);
+    const { away_status_history: awayStatusHistory = [] } = data;
     this.awayStatusHistory = awayStatusHistory;
   }
   static fromJS(data: MyState) {

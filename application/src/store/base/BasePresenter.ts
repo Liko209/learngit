@@ -5,6 +5,7 @@ import MultiEntityMapStore from './MultiEntityMapStore';
 import SingleEntityMapStore from './SingleEntityMapStore';
 import { ENTITY_NAME } from './constants';
 import { IEntity } from '../store';
+import Base from '@/store/models/Base';
 
 export default class BasePresenter extends BaseNotificationSubscribable {
   updateEntityStore(entityName: string, entities: IEntity[]) {
@@ -15,13 +16,13 @@ export default class BasePresenter extends BaseNotificationSubscribable {
     storeManager.dispatchUpdatedDataModels(entityName, entities);
   }
 
-  getEntity<T extends BaseModel, K extends IEntity>(entityName: ENTITY_NAME, id: number) {
+  getEntity<T extends BaseModel, K extends Base<T>>(entityName: ENTITY_NAME, id: number) {
     const storeManager = StoreManager.Instance;
     const store = storeManager.getEntityMapStore(entityName) as MultiEntityMapStore<T, K>;
     return store.get(id);
   }
 
-  getSingleEntity<T extends BaseModel, K extends IEntity>(entityName: ENTITY_NAME, id: keyof K) {
+  getSingleEntity<T extends BaseModel, K extends Base<T>>(entityName: ENTITY_NAME, id: keyof K) {
     const storeManager = StoreManager.Instance;
     const store = storeManager.getEntityMapStore(entityName) as SingleEntityMapStore<T, K>;
     return store.get(id);

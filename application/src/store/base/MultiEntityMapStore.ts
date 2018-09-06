@@ -4,13 +4,14 @@ import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import visibilityChangeEvent from './visibilityChangeEvent';
 import { ENTITY_EVENT_NAME, ENTITY_CACHE_COUNT } from './constants';
-import { IIncomingData, IEntity } from '../store';
+import { IIncomingData } from '../store';
 import { BaseService } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
+import Base from '@/store/models/Base';
 
 const modelProvider = new ModelProvider();
 
-export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity> extends BaseStore {
+export default class MultiEntityMapStore<T extends BaseModel, K extends Base<T>> extends BaseStore {
   data: ObservableMap = observable.map(new Map(), { deep: false });
   usedIds: Map<any, Set<number>> = new Map();
 
@@ -183,7 +184,7 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
   }
 
   createModel(model: T | K): K {
-    const Model = modelProvider.getModelCreator(this.name);
+    const Model = modelProvider.getModelCreator<K>(this.name);
     return Model.fromJS(model);
   }
 

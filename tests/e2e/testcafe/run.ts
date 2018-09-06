@@ -9,6 +9,7 @@ const TerminationHandler = require('testcafe/lib/cli/termination-handler');
 
 import { filterByTags } from './libs/filter';
 import { flattenGlobs, parseArgs } from './libs/utils';
+import { accountPoolClient } from './libs/accounts';
 import { EXECUTION_STRATEGIES_HELPER as STRATEGY } from './config';
 
 const REPORTER = process.env.REPORTER || 'allure-lazy';
@@ -51,11 +52,17 @@ async function runTests() {
   const testCafe = await createTestCafe();
   const runner = testCafe.createRunner();
 
+  console.log(`Final config: fixtures = ${JSON.stringify(FIXTURES)}`);
+  console.log(`Final config: include_tags = ${JSON.stringify(INCLUDE_TAGS)}`);
+  console.log(`Final config: exclude_tags = ${JSON.stringify(EXCLUDE_TAGS)}`);
+  console.log(`Final config: browsers = ${JSON.stringify(BROWSERS)}`);
+
   runner
     .src(FIXTURES)
     .filter(filterByTags(INCLUDE_TAGS, EXCLUDE_TAGS))
     .browsers(BROWSERS)
-    .reporter(REPORTER)
+    .reporter(REPORTER, process.stderr)
+    .reporter('spec', process.stdout)
     .screenshots(SCREENSHOTS_PATH, SCREENSHOT_ON_FAIL)
     .concurrency(Number(CONCURRENCY));
 
@@ -65,8 +72,10 @@ async function runTests() {
     failed = await runner.run();
   } finally {
     await testCafe.close();
+    await accountPoolClient.checkInAll();
   }
-  exit(failed);
+  console.log(`${failed} failed cases are found`);
+  exit(failed > 0 ? 2 : 0);
 }
 
 (async function cli() {

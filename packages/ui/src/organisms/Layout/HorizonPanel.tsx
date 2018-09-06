@@ -38,6 +38,7 @@ const Wrapper = styled.div`
     bottom: 0;
     left: ${(props: IInternalPorps) => props.forcePosition === 'left' ? 0 : 'auto'};
     right: ${(props: IInternalPorps) => props.forcePosition === 'right' ? 0 : 'auto'};
+    z-index: 1;
   `}
 `;
 
