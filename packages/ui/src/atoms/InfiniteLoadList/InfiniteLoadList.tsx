@@ -37,8 +37,11 @@ const ListContainer = styled<{flipped:boolean}, 'div'>('div')`
   display:flex;
   flex-grow:1;
   flex-direction:column;
+  @media all and (-ms-high-contrast:none){
+    .foo { color: green } /* IE10 */
+    *::-ms-backdrop, .foo { color: red } /* IE11 */
+}
   min-height:100%;
-  height:0px;
   justify-content:${({ flipped }) => (flipped ? 'flex-end' :'flex-start')};
 `;
 
