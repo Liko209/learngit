@@ -16,6 +16,8 @@ import { transform } from '../utils';
 import { Group, Post, Raw, Profile, PartialWithKey, GroupState } from '../../models';
 import StateService from '../state';
 import { mainLogger } from 'foundation';
+import AccountService from '../account';
+import { GROUP_QUERY_TYPE } from '../constants';
 
 async function getExistedAndTransformDataFromPartial(groups: Partial<Raw<Group>>[]): Promise<Group[]> {
   const groupDao = daoManager.getDao<GroupDao>(GroupDao);
@@ -117,6 +119,8 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
 }
 
 async function doNotification(deactivatedData: Group[], normalData: Group[]) {
+  const accountService: AccountService = AccountService.getInstance();
+
   notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
 
   const profileService: ProfileService = ProfileService.getInstance();
@@ -157,13 +161,15 @@ async function doNotification(deactivatedData: Group[], normalData: Group[]) {
     notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, deactivatedGroups);
   }
 
+  const limits = accountService.getConversationListLimits();
+
   let addedTeams = normalData
     .filter((item: Group) => item.is_team && favIds.indexOf(item.id) === -1);
-  addedTeams = await filterGroups(addedTeams, 20);
+  addedTeams = await filterGroups(addedTeams, limits[GROUP_QUERY_TYPE.TEAM]);
 
   let addedGroups = normalData
     .filter((item: Group) => !item.is_team && favIds.indexOf(item.id) === -1);
-  addedGroups = await filterGroups(addedGroups, 10);
+  addedGroups = await filterGroups(addedGroups, limits[GROUP_QUERY_TYPE.GROUP]);
 
   const addFavorites = normalData.filter((item: Group) => favIds.indexOf(item.id) !== -1);
   addedTeams.length > 0 && notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, addedTeams);

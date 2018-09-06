@@ -4,6 +4,7 @@ import { daoManager, GroupDao } from '../../../dao';
 import GroupAPI from '../../../api/glip/group';
 import PersonService from '../../../service/person';
 import ProfileService from '../../../service/profile';
+import AccountService from '../../../service/account';
 import { Group, Post, Raw, Profile } from '../../../models';
 import handleData, {
   handleFavoriteGroupsChanged,
@@ -12,15 +13,14 @@ import handleData, {
 } from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
-import { GROUP_QUERY_TYPE } from '../../constants';
-jest.mock('../../notificationCenter');
-jest.mock('../../state');
+import { DEFAULT_CONVERSATION_LIST_LIMITS } from '../../account/constants';
 
-jest.mock('../../notificationCenter');
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
-PersonService.getInstance = jest.fn().mockReturnValue(new PersonService());
-ProfileService.getInstance = jest.fn().mockReturnValue(new ProfileService());
+jest.mock('../../../service/account');
+jest.mock('../../notificationCenter');
+jest.mock('../../state');
+jest.mock('../../notificationCenter');
 jest.mock('../../../dao', () => {
   const dao = {
     get: jest.fn().mockReturnValue(1),
@@ -92,9 +92,17 @@ function generateFakeGroups(count: number, { hasPost = true } = {}) {
 }
 
 const stateService: StateService = new StateService();
+const accountService = new AccountService();
+const personService = new PersonService();
+const profileService = new ProfileService();
+
 beforeEach(() => {
   jest.clearAllMocks();
   StateService.getInstance = jest.fn().mockReturnValue(stateService);
+  AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+  PersonService.getInstance = jest.fn().mockReturnValue(personService);
+  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+  accountService.getConversationListLimits.mockReturnValue(DEFAULT_CONVERSATION_LIST_LIMITS);
 });
 
 describe('handleData()', () => {
