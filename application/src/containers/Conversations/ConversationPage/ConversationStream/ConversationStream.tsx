@@ -69,7 +69,7 @@ class ConversationStream extends Component<IProps>{
         onInfiniteLoad={this.loadPosts}
         shouldTriggerLoad={this.hasMorePost}
       >
-        {postIds.map(id => <ConversationCard id={id} key={id} />)}
+        {postIds.reverse().map(id => <ConversationCard id={id} key={id} />)}
       </JuiChatView>
     );
   }

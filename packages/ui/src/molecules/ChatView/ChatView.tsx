@@ -1,20 +1,12 @@
 import React, { Component } from 'react';
-
-import ChatView from 'react-chatview';
-import styled from 'styled-components';
+import { InfiniteLoadList } from '../../atoms/InfiniteLoadList';
 interface IProps {
   onInfiniteLoad: () => any;
   shouldTriggerLoad: () => boolean;
   flipped: boolean;
   scrollLoadThreshold: number;
   returnScrollable?: (el: any) => void;
-  reversed?: boolean;
 }
-
-const Chatview = styled<IProps>(ChatView)`
-  height:100%;
-  width:100%;
-`;
 
 function hasScrolled(el: any, direction = 'vertical') {
   if (!el) {
@@ -68,7 +60,7 @@ class JuiChatView extends Component<IProps>{
 
   render() {
     return (
-      <Chatview {...this.props} returnScrollable={this.getScrollable} />
+      <InfiniteLoadList {...this.props} returnScrollable={this.getScrollable} />
     );
   }
 }
