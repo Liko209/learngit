@@ -17,6 +17,7 @@ import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/models';
+import { toTitleCase } from '@/utils';
 
 type ConversationPageHeaderProps = IComponentWithGetEntityProps & {
   id?: number;
@@ -46,7 +47,7 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
 
     const MarkFavoriteButton = (
       <JuiCheckboxButton
-        tooltipTitle={isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
+        tooltipTitle={isFavorite ? toTitleCase(t('removeFromFavorites')) : toTitleCase(t('addToFavorites'))}
         checkedIconName="star"
         iconName="star_border"
         checked={isFavorite}
@@ -66,11 +67,11 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
       </JuiCheckboxButton>
     );
 
-    const CallButton = <JuiIconButton tooltipTitle={t('startVoiceCall')}>local_phone</JuiIconButton>;
-    const AudioConferenceButton = <JuiIconButton tooltipTitle={t('startConferenceCall')}>device_hub</JuiIconButton>;
-    const MeetingButton = <JuiIconButton tooltipTitle={t('startVideoCall')}>videocam</JuiIconButton>;
-    const AddMemberButton = <JuiIconButton tooltipTitle={t('addMembers')}>person_add</JuiIconButton>;
-    const MoreButton = <JuiIconButton tooltipTitle={t('conversationSettings')}>settings</JuiIconButton>;
+    const CallButton = <JuiIconButton tooltipTitle={toTitleCase(t('startVoiceCall'))}>local_phone</JuiIconButton>;
+    const AudioConferenceButton = <JuiIconButton tooltipTitle={toTitleCase(t('startConferenceCall'))}>device_hub</JuiIconButton>;
+    const MeetingButton = <JuiIconButton tooltipTitle={toTitleCase(t('startVideoCall'))}>videocam</JuiIconButton>;
+    const AddMemberButton = <JuiIconButton tooltipTitle={toTitleCase(t('addMembers'))}>person_add</JuiIconButton>;
+    const MoreButton = <JuiIconButton tooltipTitle={toTitleCase(t('conversationSettings'))}>settings</JuiIconButton>;
 
     enum Buttons {
       MarkFavorite,
