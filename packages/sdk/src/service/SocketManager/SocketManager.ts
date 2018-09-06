@@ -18,7 +18,7 @@ export class SocketManager {
 
   private logPrefix: string;
   // private activeFSM: any = null;
-  private closeingFSMs: { [key: string]: SocketFSM } = {};
+  private closingFSMs: { [key: string]: SocketFSM } = {};
   private successConnectedUrls: string[] = [];
   private hasLoggedIn: boolean = false;
 
@@ -60,8 +60,8 @@ export class SocketManager {
       count += 1;
     }
 
-    if (this.closeingFSMs) {
-      count += Object.keys(this.closeingFSMs).length;
+    if (this.closingFSMs) {
+      count += Object.keys(this.closingFSMs).length;
     }
 
     return count;
@@ -232,7 +232,7 @@ export class SocketManager {
   private _stopActiveFSM() {
     if (this.activeFSM) {
       this.activeFSM.stop();
-      // this.closeingFSMs[this.activeFSM.name] = this.activeFSM;
+      // this.closingFSMs[this.activeFSM.name] = this.activeFSM;
       this.activeFSM = null;
     }
   }
