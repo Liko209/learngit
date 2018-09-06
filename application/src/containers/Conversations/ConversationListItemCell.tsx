@@ -18,17 +18,19 @@ import { getGroupName } from '../../utils/groupName';
 import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 const { GroupService } = service;
-interface IProps extends IComponentWithGetEntityProps {
+type IProps = IComponentWithGetEntityProps & RouteComponentProps<{}> & {
   id: number;
   key: number;
   entityName: string;
   isFavorite?: boolean;
   currentUserId?: number;
-}
+};
 
 interface IState {
 }
+
 @observer
 class ConversationListItemCell extends React.Component<IProps, IState>{
   static defaultProps = {
@@ -146,16 +148,19 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   private _onClick() {
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.clickGroup(this.id);
+    this._jump2Conversation(this.id);
   }
-
+  private _jump2Conversation(id: number) {
+    const { history } = this.props;
+    history.push(`/messages/${id}`);
+  }
   @action
   private _toggleFavorite() {
-    console.log('_toggleFavorite()');
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.markGroupAsFavorite(this.id, !this.isFavorite);
-
     this._handleClose();
   }
 }
 
-export default injectStore()(ConversationListItemCell);
+export default withRouter(injectStore()(ConversationListItemCell));
+export { ConversationListItemCell };

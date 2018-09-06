@@ -3,14 +3,15 @@ import { observable, action, ObservableMap } from 'mobx';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import { ENTITY_EVENT_NAME, ENTITY_NAME } from './constants';
-import { IIncomingData, IEntity } from '../store';
+import { IIncomingData } from '../store';
 import BaseService from 'sdk/service/BaseService';
 import { BaseModel } from 'sdk/models';
+import Base from '@/store/models/Base';
 
 const modelProvider = new ModelProvider();
 
-export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity> extends BaseStore {
-  @observable data: ObservableMap = new ObservableMap<keyof IEntity, any>();
+export default class SingleEntityMapStore<T extends BaseModel, K extends Base<T>> extends BaseStore {
+  @observable data: ObservableMap = new ObservableMap<keyof K, any>();
   init: boolean;
   getService: Function;
   service: BaseService<T>;
@@ -38,7 +39,7 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity
       _.merge(entity, value);
     });
 
-    const matchedProperties: (keyof IEntity)[] = _.intersection(
+    const matchedProperties: (keyof K)[] = _.intersection(
       Object.keys(entity).map(property => _.camelCase(property)),
       existProperties,
     );
@@ -54,35 +55,35 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity
   }
 
   @action
-  set(property: keyof IEntity, value: any) {
+  set(property: keyof K, value: any) {
     this.data.set(property, value);
   }
 
   @action
-  batchSet(data: T, matchedProperties?: (keyof IEntity)[]) {
+  batchSet(data: T, matchedProperties?: (keyof K)[]) {
     if (!Object.keys(data).length) {
       return;
     }
     let model = this.createModel(data);
     if (matchedProperties) {
       model = matchedProperties.reduce(
-        (matchedModel: IEntity, property: keyof IEntity) => {
+        (matchedModel: K, property: keyof K) => {
           matchedModel[property] = model[property]; // eslint-disable-line
           return matchedModel;
         },
         {},
-      ) as IEntity;
+      ) as K;
     }
-    this.data.merge(model);
+    this.data.merge(model.toJS ? model.toJS() : model);
   }
 
   @action
-  remove(property: keyof IEntity) {
+  remove(property: keyof K) {
     this.data.delete(property);
   }
 
   @action
-  batchRemove(properties: (keyof IEntity)[]) {
+  batchRemove(properties: (keyof K)[]) {
     properties.forEach((property) => {
       this.remove(property);
     });
@@ -100,7 +101,7 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity
     return this.data.get(property);
   }
 
-  has(property: keyof IEntity) {
+  has(property: keyof K) {
     return this.data.has(property);
   }
 
@@ -116,8 +117,8 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity
     return this.service[serviceFunctionName]();
   }
 
-  createModel(data: T): IEntity {
-    const Model = modelProvider.getModelCreator(this.name);
+  createModel(data: T): K {
+    const Model = modelProvider.getModelCreator<K>(this.name);
     return Model.fromJS(data);
   }
 }

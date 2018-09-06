@@ -116,7 +116,7 @@ export default class PostService extends BaseService<Post> {
   }
 
   async getPostsByGroupId(
-    { groupId, offset, postId = 0, limit = 20 }: IPostQuery,
+    { groupId, offset = 0, postId = 0, limit = 20 }: IPostQuery,
   ): Promise<IPostResult> {
     try {
       const result = await this.getPostsFromLocal({
@@ -377,5 +377,11 @@ export default class PostService extends BaseService<Post> {
   getLastPostOfGroup(groupId: number): Promise<Post | null> {
     const postDao = daoManager.getDao(PostDao);
     return postDao.queryLastPostByGroupId(groupId);
+  }
+
+  async groupHasPostInLocal(groupId: number) {
+    const postDao: PostDao = daoManager.getDao(PostDao);
+    const posts: Post[] = await postDao.queryPostsByGroupId(groupId, 0, 1);
+    return posts.length !== 0;
   }
 }

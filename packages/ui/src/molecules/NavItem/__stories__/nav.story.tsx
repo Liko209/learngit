@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { boolean, number, select } from '@storybook/addon-knobs/react';
 import { storiesOf } from '@storybook/react';
-import NavItem from '..';
+import NavItem from '../item';
 import { BrowserRouter } from 'react-router-dom';
 import { withInfoDecorator } from '../../../utils/decorators';
 
@@ -34,12 +34,11 @@ storiesOf('Molecules/NavItem', module)
     const unreadCount = number('Unread-count', 120);
     const expand = boolean('expand', false);
     const isActive = boolean('isActive', false);
-    const activeNum = isActive ? 1 : 0;
     return (
       <BrowserRouter>
         <NavItem
           expand={expand}
-          active={activeNum}
+          active={isActive}
           icon={iconType}
           url={iconType}
           title={iconType}

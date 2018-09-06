@@ -11,9 +11,9 @@ case "$1" in
                 npm run build:app
                 rsync -azPv \
                         --delete --progress \
-                        ./application/build/ $theServer:$theFolder/application-fiji-$ID
-                ssh $theServer "chown -R root:root $theFolder/application-fiji-$ID && cd $theFolder/application-fiji-$ID; pwd; ls -al" 
-                echo "Success build application and deploy to https://application-fiji-$ID.fiji.gliprc.com"
+                        ./application/build/ $theServer:$theFolder/feature-fiji-$ID
+                ssh $theServer "chown -R root:root $theFolder/feature-fiji-$ID && cd $theFolder/feature-fiji-$ID; pwd; ls -al"
+                echo "Success build application and deploy to https://feature-fiji-$ID.fiji.gliprc.com"
         ;;
         "sbs" | "story-book-sync")
                 echo 'Which ID do you want to upload? (Only the number, ${ID})'
@@ -24,7 +24,7 @@ case "$1" in
                 rsync -azPv \
                         --delete --progress \
                         ./storybook-static/ $theServer:$theFolder/$subDomain
-                ssh $theServer "chown -R root:root $theFolder/$subDomain && cd $theFolder/$subDomain; pwd; ls -al" 
+                ssh $theServer "chown -R root:root $theFolder/$subDomain && cd $theFolder/$subDomain; pwd; ls -al"
                 echo "Success build storybook and deploy to https://$subDomain.fiji.gliprc.com"
         ;;
         "h" | "html")

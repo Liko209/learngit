@@ -339,4 +339,17 @@ export default class GroupService extends BaseService<Group> {
     // should handle errors when error handling ready
     return null;
   }
+
+  async getLeftRailGroups(): Promise<Group[]> {
+    let result: Group[] = [];
+    let groups = await this.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE);
+    result = result.concat(groups);
+
+    groups = await this.getGroupsByType(GROUP_QUERY_TYPE.GROUP);
+    result = result.concat(groups);
+
+    groups = await this.getGroupsByType(GROUP_QUERY_TYPE.TEAM);
+    result = result.concat(groups);
+    return result;
+  }
 }

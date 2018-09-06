@@ -14,7 +14,6 @@ import ProfileService from '../../service/profile';
 import _ from 'lodash';
 import { transform } from '../utils';
 import { Group, Post, Raw, Profile, PartialWithKey, GroupState } from '../../models';
-import { GROUP_QUERY_TYPE } from '../constants';
 import StateService from '../state';
 import { mainLogger } from 'foundation';
 
