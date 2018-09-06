@@ -1,16 +1,15 @@
-import { IEntity } from './../store.d';
 import { observable } from 'mobx';
 import { GroupState } from 'sdk/models';
+import Base from './Base';
 
-export default class GroupStateModel implements IEntity {
-  id: number;
+export default class GroupStateModel extends Base<GroupState> {
   @observable unreadCount?: number;
   @observable unreadMentionsCount?: number;
 
   constructor(data: GroupState) {
-    const { id, unread_count, unread_mentions_count } = data;
+    super(data);
+    const { unread_count, unread_mentions_count } = data;
 
-    this.id = id;
     this.unreadCount = unread_count;
     this.unreadMentionsCount = unread_mentions_count;
   }
@@ -18,6 +17,4 @@ export default class GroupStateModel implements IEntity {
   static fromJS(data: GroupState) {
     return new GroupStateModel(data);
   }
-
-  dispose() { }
 }

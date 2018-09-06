@@ -4,7 +4,7 @@ import { parse } from 'qs';
 
 import ThreeLayout from 'ui-components/organisms/Layout/ThreeLayout';
 import LeftRail from './LeftRail';
-import Thread from './Thread';
+import { ConversationPage } from './ConversationPage';
 import RightRail from './RightRail';
 
 interface IParams {
@@ -74,7 +74,7 @@ class Conversation extends Component<IProps, IStates> {
     return (
       <ThreeLayout tag="conversation" leftNavWidth={leftNavWidth}>
         <LeftRail />
-        <Thread />
+        <ConversationPage />
         <RightRail />
       </ThreeLayout>
     );
