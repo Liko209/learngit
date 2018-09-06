@@ -135,7 +135,6 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends Base<T>>
 
   get(id: number): K {
     let model = this.data.get(id);
-
     if (!model) {
       this.set({ id } as T);
       model = this.data.get(id);

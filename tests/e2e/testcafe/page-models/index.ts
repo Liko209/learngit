@@ -8,6 +8,7 @@ import { Selector } from 'testcafe';
 import { ReactSelector } from 'testcafe-react-selectors';
 import { Status } from '../libs/report';
 import { TestHelper } from '../libs/helpers';
+import { SITE_URL } from '../config';
 
 export abstract class BaseUI {
   protected _t: TestController;
@@ -79,7 +80,11 @@ export abstract class BaseUI {
     const ui = new uiClass(this._t, this._chain);
     return ui;
   }
-
+  reload() {
+    return this.chain(async (t) => {
+      await t.navigateTo(SITE_URL);
+    });
+  }
 }
 
 export abstract class BaseComponent extends BaseUI {

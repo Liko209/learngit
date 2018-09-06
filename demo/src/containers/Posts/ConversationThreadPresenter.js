@@ -52,7 +52,6 @@ export default class ConversationThreadPresenter extends OrderListPresenter {
         });
         this.handlePageData(ENTITY_NAME.POST, posts, true);
         this.hasMore = hasMore;
-
         resolve();
       } catch (error) {
         reject(error);

@@ -34,7 +34,6 @@ storiesOf('Molecules/NavItem', module)
     const unreadCount = number('Unread-count', 120);
     const expand = boolean('expand', false);
     const isActive = boolean('isActive', false);
-    const activeNum = isActive ? 1 : 0;
     return (
       <BrowserRouter>
         <NavItem
