@@ -2,6 +2,7 @@ import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { JuiConversationPage, JuiDivider } from 'ui-components';
 import { ConversationPageHeader } from './ConversationPageHeader';
+import { ConversationStream } from './ConversationStream';
 
 interface IParams {
   id: string;
@@ -15,6 +16,7 @@ const ConversationPageComponent = ({ match }: IProps) => {
     <JuiConversationPage>
       <ConversationPageHeader id={id} />
       <JuiDivider />
+      <ConversationStream groupId={id} />
     </JuiConversationPage>
   );
 };
