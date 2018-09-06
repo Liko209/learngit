@@ -30,6 +30,7 @@ type IProps = IComponentWithGetEntityProps & RouteComponentProps<{}> & {
 
 interface IState {
 }
+
 @observer
 class ConversationListItemCell extends React.Component<IProps, IState>{
   static defaultProps = {
@@ -147,9 +148,12 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   private _onClick() {
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.clickGroup(this.id);
-    this.props.history.push(`/messages/${this.id}`);
+    this._jump2Conversation(this.id);
   }
-
+  private _jump2Conversation(id: number) {
+    const { history } = this.props;
+    history.push(`/messages/${id}`);
+  }
   @action
   private _toggleFavorite() {
     const groupService: service.GroupService = GroupService.getInstance();
