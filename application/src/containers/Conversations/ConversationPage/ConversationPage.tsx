@@ -11,6 +11,9 @@ interface IParams {
 interface IProps extends RouteComponentProps<IParams> { }
 
 const ConversationPageComponent = ({ match }: IProps) => {
+  if (!match.params.id) {
+    return null;
+  }
   const id = parseInt(match.params.id, 10);
   return (
     <JuiConversationPage>
