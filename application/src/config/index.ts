@@ -4,9 +4,8 @@ import { service } from 'sdk';
 
 const { ConfigService } = service;
 
-const deployHost = `${window.location.protocol}//${window.location.hostname}${
-  window.location.port ? `:${window.location.port}` : ''
-  }`;
+const { protocol, hostname, port } = window.location;
+const deployHost = `${protocol}//${hostname}${port && `:${port}`}`;
 
 function parseConfigFiles() {
   const requireContext = require.context('./', true, /.json$/);

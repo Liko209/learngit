@@ -4,11 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SITE_URL } from '../config';
-import { TestHelper } from '../libs/helpers';
 import { BlankPage } from '../page-models/pages/BlankPage';
 import { RingcentralSignInNavigationPage } from '../page-models/pages/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/pages/RingcentralSignInPage';
 import { UnifiedLoginPage } from '../page-models/pages/UnifiedLoginPage';
+import { TokenGetterPage } from '../page-models/pages/TokenGetterPage';
+// import { Home } from '../page-models/components';
+import { TestHelper } from '../libs/helpers';
 
 type AuthInfo = {
   credential: string;
@@ -41,7 +43,11 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
     .shouldNavigateTo(RingcentralSignInPage)
     .setExtension(extension)
     .setPassword(password)
-    .signIn();
+    .signIn()
+    .shouldNavigateTo(TokenGetterPage)
+    .expectUrlParamsIsCorrect();
+  // .shouldNavigateTo(Home)
+  // .expectExistComponent();
 }
 
 export { AuthInfo, unifiedLogin };
