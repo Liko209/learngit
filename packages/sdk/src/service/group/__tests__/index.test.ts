@@ -374,4 +374,15 @@ describe('GroupService', () => {
       await expect(groupService.createTeam('some team', 1323, [], 'abc')).resolves.toBeNull();
     });
   });
+
+  describe('get left rail conversations', () => {
+    it('get left rail conversations', async () => {
+      daoManager.getDao.mockReturnValue(groupDao);
+      groupDao.queryGroupsByIds.mockResolvedValueOnce([{ id: 1 }, { id: 2 }]);
+      groupDao.queryGroups.mockResolvedValueOnce([{ id: 3 }]);
+      groupDao.queryGroups.mockResolvedValueOnce([{ id: 4 }]);
+      const groups = await groupService.getLeftRailGroups();
+      expect(groups.length).toBe(2);
+    });
+  });
 });
