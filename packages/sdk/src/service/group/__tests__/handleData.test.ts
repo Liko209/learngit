@@ -234,18 +234,7 @@ describe('filterGroups()', () => {
     expect(result.length).toBe(TEAMS_COUNT);
   });
 
-  it('should return all, when have unread but not post (may be just removed)', async () => {
-    const LIMIT = 20;
-    const TEAMS_COUNT = 5;
-
-    const teams = generateFakeGroups(TEAMS_COUNT, { hasPost: false });
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2 }]);
-
-    const result = await filterGroups(teams, LIMIT);
-    expect(result.length).toBe(TEAMS_COUNT);
-  });
-
-  it('should return data until first unread, when have unread and limit > data count', async () => {
+  it('should return groups until unread group', async () => {
     const LIMIT = 2;
     const TEAMS_COUNT = 5;
 
@@ -256,7 +245,7 @@ describe('filterGroups()', () => {
     expect(result.length).toBe(4);
   });
 
-  it('should return data until first unread @mention, when have unread and limit > data count', async () => {
+  it('should return groups until unread @mention', async () => {
     const LIMIT = 2;
     const TEAMS_COUNT = 5;
 
@@ -267,7 +256,7 @@ describe('filterGroups()', () => {
     expect(result.length).toBe(4);
   });
 
-  it('should return data until first unread, when have multiple group have unread and limit > data count', async () => {
+  it('should return groups until oldest unread, when multiple groups have unread', async () => {
     const LIMIT = 2;
     const TEAMS_COUNT = 5;
 
