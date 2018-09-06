@@ -29,11 +29,13 @@ interface IState{
 const ScrollContainer = styled.div`
   height:100%;
   width:100%;
-  overflow:hidden scroll;
+  overflow-x:hidden;
+  overflow-y:scroll;
 `;
 
 const ListContainer = styled<{flipped:boolean}, 'div'>('div')`
   display:flex;
+  flex-grow:1;
   flex-direction:column;
   min-height:100%;
   justify-content:${({ flipped }) => (flipped ? 'flex-end' :'flex-start')};
