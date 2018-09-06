@@ -60,11 +60,15 @@ jest.mock('../../../api/glip/group', () => {
   return { requestGroupById: jest.fn().mockResolvedValue(response) };
 });
 
-function generateFakeGroups(count: number, is_team: boolean) {
+type GenerateFakeGroupOptions = {
+  hasPost: boolean;
+};
+
+function generateFakeGroups(count: number, { hasPost = true } = {}) {
   const groups: Group[] = [];
 
   for (let i = 1; i <= count; i += 1) {
-    groups.push({
+    const group: Group = {
       id: i,
       created_at: i,
       modified_at: i,
@@ -77,8 +81,12 @@ function generateFakeGroups(count: number, is_team: boolean) {
       set_abbreviation: '',
       email_friendly_abbreviation: '',
       most_recent_content_modified_at: i,
-      most_recent_post_created_at: i,
-    });
+    };
+
+    if (hasPost) {
+      group.most_recent_post_created_at = i;
+    }
+    groups.push(group);
   }
   return groups;
 }
@@ -202,7 +210,7 @@ describe('handleGroupMostRecentPostChanged()', () => {
   });
 });
 
-describe('filterGroups()', () => {
+describe.only('filterGroups()', () => {
   const stateService: StateService = new StateService();
 
   beforeEach(() => {
@@ -213,7 +221,7 @@ describe('filterGroups()', () => {
   it('should remove extra, when limit < data count', async () => {
     const LIMIT = 20;
     const TEAMS_COUNT = 50;
-    const teams = generateFakeGroups(TEAMS_COUNT, true);
+    const teams = generateFakeGroups(TEAMS_COUNT);
     const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, LIMIT);
     expect(result.length).toBe(LIMIT);
   });
@@ -221,7 +229,7 @@ describe('filterGroups()', () => {
   it('should return all, when limit > data count', async () => {
     const LIMIT = 20;
     const TEAMS_COUNT = 5;
-    const teams = generateFakeGroups(TEAMS_COUNT, true);
+    const teams = generateFakeGroups(TEAMS_COUNT);
     const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, LIMIT);
     expect(result.length).toBe(TEAMS_COUNT);
   });
@@ -230,8 +238,19 @@ describe('filterGroups()', () => {
     const LIMIT = 2;
     const TEAMS_COUNT = 5;
 
-    const teams = generateFakeGroups(TEAMS_COUNT, true);
+    const teams = generateFakeGroups(TEAMS_COUNT);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
+
+    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, LIMIT);
+    expect(result.length).toBe(4);
+  });
+
+  it('should return data until first unread @mention, when have unread and limit > data count', async () => {
+    const LIMIT = 2;
+    const TEAMS_COUNT = 5;
+
+    const teams = generateFakeGroups(TEAMS_COUNT);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_mentions_count: 1 }]);
 
     const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, LIMIT);
     expect(result.length).toBe(4);
@@ -241,7 +260,7 @@ describe('filterGroups()', () => {
     const LIMIT = 2;
     const TEAMS_COUNT = 5;
 
-    const teams = generateFakeGroups(TEAMS_COUNT, true);
+    const teams = generateFakeGroups(TEAMS_COUNT);
     stateService.getAllGroupStatesFromLocal.mockResolvedValue([
       { id: 4, unread_count: 1 },
       { id: 3, unread_count: 1 },
@@ -249,5 +268,17 @@ describe('filterGroups()', () => {
 
     const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, LIMIT);
     expect(result.length).toBe(3);
+  });
+
+  it('should return groups that have not post', async () => {
+    const LIMIT = 2;
+    const TEAMS_COUNT = 5;
+
+    const teams = generateFakeGroups(TEAMS_COUNT, { hasPost: false });
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
+    console.log('teams: ', teams);
+
+    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, LIMIT);
+    expect(result.length).toBe(LIMIT);
   });
 });
