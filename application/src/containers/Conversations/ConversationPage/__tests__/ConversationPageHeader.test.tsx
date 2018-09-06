@@ -63,7 +63,7 @@ const groupStore = {
 };
 
 const mockPresenter = (type = ConversationTypes.TEAM, isFavorite = false) => {
-  ConversationPageHeaderPresenter.mockImplementation(() => ({
+  (ConversationPageHeaderPresenter as any).mockImplementation(() => ({
     getConversationType: jest.fn().mockReturnValue(type),
     getOtherMember: jest.fn().mockReturnValue({}),
     groupIsInFavorites: jest.fn().mockReturnValue(isFavorite),

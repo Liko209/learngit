@@ -3,8 +3,6 @@
  * @Date: 2018-09-05 00:17:13
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../../../../__tests__/types.d.ts" />
-
 import { service } from 'sdk';
 import ConversationStreamViewModel from '../ConversationStreamViewModel';
 const { PostService, StateService, notificationCenter, ENTITY } = service;
@@ -24,9 +22,9 @@ describe('ConversationStreamViewModel', () => {
       const presenter = new ConversationStreamViewModel(1);
       expect(presenter).toHaveProperty('postService', postService);
       expect(presenter).toHaveProperty('stateService', stateService);
-      expect(notificationCenter.on.mock.calls[notificationCenter.on.mock.calls.length - 1][0]).toBe(ENTITY.POST);
+      expect((notificationCenter.on as jest.Mock).mock.calls[(notificationCenter.on as jest.Mock).mock.calls.length - 1][0]).toBe(ENTITY.POST);
       expect(OrderListStore).toHaveBeenCalled();
-      expect((presenter as any).getStore()).toBe(OrderListStore.mock.instances[0]);
+      expect((presenter as any).getStore()).toBe((OrderListStore as any).mock.instances[0]);
     });
   });
 });
