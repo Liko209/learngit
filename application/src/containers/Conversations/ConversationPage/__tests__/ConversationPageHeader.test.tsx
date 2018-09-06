@@ -3,7 +3,6 @@
  * @Date: 2018-09-04 16:45:39
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React from 'react';
 import { mount } from 'enzyme';
 import { ConversationPageHeader } from './../ConversationPageHeader';
