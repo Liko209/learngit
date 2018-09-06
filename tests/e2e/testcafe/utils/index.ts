@@ -5,3 +5,4 @@
  */
 export * from './login';
 export * from './sleep';
+export * from './AnchorSelector';
