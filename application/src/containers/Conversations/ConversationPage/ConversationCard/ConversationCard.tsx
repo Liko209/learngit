@@ -3,7 +3,7 @@ import React from 'react';
 import  { ENTITY_NAME } from '@/store';
 import { observer } from 'mobx-react';
 import moment from 'moment';
-import { styled, Divider } from 'ui-components';
+import { styled, JuiDivider } from 'ui-components';
 import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
 import PostModel from '@/store/models/Post';
 interface IProps extends IComponentWithGetEntityProps {
@@ -47,7 +47,7 @@ export class ConversationCard extends React.Component<IProps>{
       <span>Time:{moment(createdAt).format('llll')}</span>
       {text}
       </ConversationCardWrapper>
-      <Divider key="divider"/>
+      <JuiDivider key="divider"/>
       </React.Fragment>
     );
   }
