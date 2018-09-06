@@ -15,8 +15,9 @@ cd $project
 . $autoDevOps/0.SetupVariable.sh
 
 echo "Generate subDomain: $subDomain"
+echo "linkDomain: $linkDomain"
 
 # Init blank parameters
 addEnv SAResult='Not Lint yet'
-addEnv UTResult='Not UT yet' 
-addEnv E2EResult='Not E2E yet' 
+addEnv UTResult='Not UT yet'
+addEnv E2EResult='Not E2E yet'

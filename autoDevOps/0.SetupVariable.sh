@@ -1,6 +1,7 @@
 #!/bin/bash
 echo '====Start Setup Variable'
 rm -rf $project/build.properties
+# gitlabActionType
 # gitlabMergeRequestId
 # gitlabMergeRequestIid
 # gitlabSourceName
@@ -27,15 +28,29 @@ export serverRootFolder=/srv/docker-compose-nginx/html
 export sshKey=$jupiterMacProPrivateKey
 export sshPort=2222
 
+echo "gitlabActionType: ${gitlabActionType}"
+echo "gitlabMergeRequestId: ${gitlabMergeRequestId}"
+echo "gitlabMergeRequestState: ${gitlabMergeRequestState}"
+echo "gitlabBranch: ${gitlabBranch}"
+echo "gitlabSourceName: ${gitlabSourceName}"
 echo "gitlabSourceBranch: ${gitlabSourceBranch}"
 echo "gitlabTargetBranch: ${gitlabTargetBranch}"
 # Generate the subDomain
-subDomain=${gitlabSourceBranch/\//'-'} # "/"" => "-""
+subDomain=${gitlabSourceBranch//[\/\.]/$'-'} # "/."" => "-""
 subDomain=${subDomain,,} # Uppercase becomes Lowercase
+
+if [[ $gitlabSourceBranch == "master" ]]; then
+  linkDomain="release"
+elif [[ $gitlabSourceBranch == stage\/* ]]; then
+  linkDomain="stage"
+else
+  linkDomain=""
+fi
 
 if [ "$gitlabTargetBranch" != "$gitlabSourceBranch" ]; then
   echo 'A Merge Request Event'
   subDomain=mr-${subDomain}
+  linkDomain=""
   addEnv RECIPIENT_LIST=jupiter_mr_ci@ringcentral.glip.com
 else
   case $gitlabSourceBranch in
@@ -57,12 +72,12 @@ if  [ "$demoHasUpdate" ]; then
   subDomain=demo-${subDomain}
   addEnv projectName='Fiji Demo'
 else
-  subDomain=application-${subDomain}
   addEnv projectName='Jupiter Application'
 fi
 
 export demoHasUpdate
 export subDomain
+export linkDomain
 export appUrl=https://${subDomain}.fiji.gliprc.com
 addEnv appUrl=$appUrl
 
@@ -79,4 +94,15 @@ function syncFolderToServer(){
   ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "chown -R root:root $serverRootFolder/$remoteFolder"
 }
 
+function updateLinkDomainOnServer(){
+  sourceFolder=$1
+  linkFolder=$2
+  echo "=====Start linking domain: "
+  echo "serverRootFolder: ${serverRootFolder}"
+  echo "$sourceFolder ==> $linkFolder"
+  ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "cd $serverRootFolder; ln -s $sourceFolder $linkFolder"
+  ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "chown -R root:root $serverRootFolder/$linkFolder"
+}
+
 alias syncFolderToServer=syncFolderToServer
+alias updateLinkDomainOnServer=updateLinkDomainOnServer
