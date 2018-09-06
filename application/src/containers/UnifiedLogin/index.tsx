@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { service } from 'sdk';
 import config from '@/config';
 import EnvSelect from './EnvSelect';
-import Download from './download';
+import Download from './Download';
 import LoginVersionStatus from '../VersionInfo/LoginVersionStatus';
 
 const { glip2 } = config.get('api');

@@ -332,7 +332,10 @@ async function filterGroups(
 
   if (oldestUnreadGroupTime) {
     // With unread message
-    return sortedGroups.filter((group: Group) => getGroupTime(group) >= oldestUnreadGroupTime);
+    const filteredGroups = sortedGroups.filter((group: Group, i) => getGroupTime(group) >= oldestUnreadGroupTime);
+    if (filteredGroups.length > limit) {
+      return filteredGroups;
+    }
   }
 
   // Without unread message

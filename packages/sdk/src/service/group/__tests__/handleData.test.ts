@@ -222,70 +222,102 @@ describe('handleGroupMostRecentPostChanged()', () => {
 
 describe('filterGroups()', () => {
 
-  it('should remove extra, when limit < data count', async () => {
-    const LIMIT = 20;
-    const TEAMS_COUNT = 50;
-
-    const teams = generateFakeGroups(TEAMS_COUNT);
-
-    const result = await filterGroups(teams, LIMIT);
-    expect(result.length).toBe(LIMIT);
-  });
-
-  it('should return all, when limit > data count', async () => {
-    const LIMIT = 20;
-    const TEAMS_COUNT = 5;
-
-    const teams = generateFakeGroups(TEAMS_COUNT);
-
-    const result = await filterGroups(teams, LIMIT);
-    expect(result.length).toBe(TEAMS_COUNT);
-  });
-
-  it('should return groups until unread group', async () => {
+  it('should remove extra, when limit < total groups', async () => {
     const LIMIT = 2;
-    const TEAMS_COUNT = 5;
+    const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TEAMS_COUNT);
+    const groups = generateFakeGroups(TOTAL_GROUPS);
+
+    const filteredGroups = await filterGroups(groups, LIMIT);
+    expect(filteredGroups.length).toBe(LIMIT);
+  });
+
+  it('should return all groups, when limit = total groups', async () => {
+    const LIMIT = 5;
+    const TOTAL_GROUPS = 5;
+
+    const teams = generateFakeGroups(TOTAL_GROUPS);
+
+    const filteredGroups = await filterGroups(teams, LIMIT);
+    expect(filteredGroups.length).toBe(TOTAL_GROUPS);
+  });
+
+  it('should return all groups, when limit > total groups', async () => {
+    const LIMIT = 10;
+    const TOTAL_GROUPS = 5;
+
+    const teams = generateFakeGroups(TOTAL_GROUPS);
+
+    const filteredGroups = await filterGroups(teams, LIMIT);
+    expect(filteredGroups.length).toBe(TOTAL_GROUPS);
+  });
+
+  it(`should return groups until unread group when unread group's position > limit`, async () => {
+    const LIMIT = 2;
+    const TOTAL_GROUPS = 5;
+
+    const teams = generateFakeGroups(TOTAL_GROUPS);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
 
-    const result = await filterGroups(teams, LIMIT);
-    expect(result.length).toBe(4);
+    const filteredGroups = await filterGroups(teams, LIMIT);
+    expect(filteredGroups.length).toBe(4);
+  });
+
+  it(`should return all groups when unread group's position = limit`, async () => {
+    const LIMIT = 4;
+    const TOTAL_GROUPS = 5;
+
+    const teams = generateFakeGroups(TOTAL_GROUPS);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
+
+    const filteredGroups = await filterGroups(teams, LIMIT);
+    expect(filteredGroups.length).toBe(LIMIT);
+  });
+
+  it(`should return all groups when unread group's position < limit`, async () => {
+    const LIMIT = 5;
+    const TOTAL_GROUPS = 5;
+
+    const teams = generateFakeGroups(TOTAL_GROUPS);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
+
+    const filteredGroups = await filterGroups(teams, LIMIT);
+    expect(filteredGroups.length).toBe(LIMIT);
   });
 
   it('should return groups until unread @mention', async () => {
     const LIMIT = 2;
-    const TEAMS_COUNT = 5;
+    const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TEAMS_COUNT);
+    const teams = generateFakeGroups(TOTAL_GROUPS);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_mentions_count: 1 }]);
 
-    const result = await filterGroups(teams, LIMIT);
-    expect(result.length).toBe(4);
+    const filteredGroups = await filterGroups(teams, LIMIT);
+    expect(filteredGroups.length).toBe(4);
   });
 
   it('should return groups until oldest unread, when multiple groups have unread', async () => {
     const LIMIT = 2;
-    const TEAMS_COUNT = 5;
+    const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TEAMS_COUNT);
+    const teams = generateFakeGroups(TOTAL_GROUPS);
     stateService.getAllGroupStatesFromLocal.mockResolvedValue([
       { id: 4, unread_count: 1 },
       { id: 3, unread_count: 1 },
     ]);
 
-    const result = await filterGroups(teams, LIMIT);
-    expect(result.length).toBe(3);
+    const filteredGroups = await filterGroups(teams, LIMIT);
+    expect(filteredGroups.length).toBe(3);
   });
 
   it('should also return groups that have not post', async () => {
     const LIMIT = 2;
-    const TEAMS_COUNT = 5;
+    const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TEAMS_COUNT, { hasPost: false });
+    const teams = generateFakeGroups(TOTAL_GROUPS, { hasPost: false });
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
-    const result = await filterGroups(teams, LIMIT);
-    expect(result.length).toBe(LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT);
+    expect(filteredGroups.length).toBe(LIMIT);
   });
 });
