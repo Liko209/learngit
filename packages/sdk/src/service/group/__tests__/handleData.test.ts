@@ -226,34 +226,28 @@ describe('filterGroups()', () => {
     expect(result.length).toBe(TEAMS_COUNT);
   });
 
-  it('should return data until first unread, and ignore the limit', async () => {
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
-      { id: 2, unread_count: 1 },
-    ]);
-    const teams = generateFakeGroups(5, true);
-    let result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
-    expect(result.length).toBe(4);
+  it('should return data until first unread, when have unread and limit > data count', async () => {
+    const LIMIT = 2;
+    const TEAMS_COUNT = 5;
 
-    result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 5);
-    expect(result.length).toBe(5);
+    const teams = generateFakeGroups(TEAMS_COUNT, true);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
+
+    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, LIMIT);
+    expect(result.length).toBe(4);
   });
 
-  it('items with states ids', async () => {
-    stateService.getAllGroupStatesFromLocal.mockResolvedValue([
-      {
-        id: 4,
-        unread_count: 1,
-      },
-      {
-        id: 3,
-        unread_count: 1,
-      },
-    ]);
-    const teams = generateFakeGroups(5, true);
-    let result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
-    expect(result.length).toBe(3);
+  it('should return data until first unread, when have multiple group have unread and limit > data count', async () => {
+    const LIMIT = 2;
+    const TEAMS_COUNT = 5;
 
-    result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 1);
+    const teams = generateFakeGroups(TEAMS_COUNT, true);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValue([
+      { id: 4, unread_count: 1 },
+      { id: 3, unread_count: 1 },
+    ]);
+
+    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, LIMIT);
     expect(result.length).toBe(3);
   });
 });
