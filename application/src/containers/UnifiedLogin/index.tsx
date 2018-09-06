@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import config from '@/config';
 import EnvSelect from './EnvSelect';
 import Download from './Download';
+import LoginVersionStatus from '../VersionInfo/LoginVersionStatus';
 
 const Form = styled.form`
   width: 300px;
@@ -179,6 +180,7 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
           </select>
           <EnvSelect />
         </Form>
+        <LoginVersionStatus />
         <Download />
       </div >
     );

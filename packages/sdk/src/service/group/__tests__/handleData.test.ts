@@ -94,7 +94,7 @@ describe('handleData', () => {
   });
 
   it('passing an array', async () => {
-    expect.assertions(5);
+    expect.assertions(6);
     daoManager.getDao(GroupDao).get.mockReturnValue(1);
     const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
       {
@@ -114,6 +114,7 @@ describe('handleData', () => {
     expect(daoManager.getDao(GroupDao).bulkDelete).toHaveBeenCalledTimes(1);
     expect(daoManager.getDao(GroupDao).bulkPut).toHaveBeenCalledTimes(2);
     // expect doNotification function
+    expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
     // expect checkIncompleteGroupsMembers function
@@ -134,6 +135,8 @@ describe('handlePartialData', () => {
     ]);
     await handlePartialData(groups);
     expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
+
     expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
     expect(GroupAPI.requestGroupById).not.toHaveBeenCalled();
   });

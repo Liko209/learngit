@@ -1,21 +1,18 @@
 import { observable } from 'mobx';
 import { Company } from 'sdk/models';
-import { IEntity } from '../store';
+import Base from './Base';
 
-export default class CompanyModel implements IEntity {
+export default class CompanyModel extends Base<Company> {
   id: number;
   @observable name: string;
 
   constructor(data: Company) {
-    const { id, name }: { id: number; name: string } = data;
-
-    this.id = id;
+    super(data);
+    const { name }: { name: string } = data;
     this.name = name;
   }
 
   static fromJS(data: Company) {
     return new CompanyModel(data);
   }
-
-  dispose() { }
 }

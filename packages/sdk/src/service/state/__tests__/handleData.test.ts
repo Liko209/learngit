@@ -7,10 +7,11 @@ import notificationCenter from '../../../service/notificationCenter';
 import handleData, {
   transform,
   getStates,
-  TransformedState, handlePartialData,
+  TransformedState, handlePartialData, handleGroupChange,
 } from '../../../service/state/handleData';
 import { sample, transformedGroupState, transformedMyState, sample2, partialSample } from './dummy';
-import { rawMyStateFactory } from '../../../__tests__/factories';
+import { rawMyStateFactory, groupFactory } from '../../../__tests__/factories';
+import StateService from '..';
 
 jest.mock('../../../dao', () => {
   const dao = {
@@ -23,6 +24,10 @@ jest.mock('../../../dao', () => {
   };
 });
 
+jest.mock('..', () => ({
+  getInstance: jest.fn().mockReturnThis(),
+  calculateUMI: jest.fn().mockImplementation((groupState) => { return groupState; }),
+}));
 jest.mock('../../../service/notificationCenter', () => ({
   emitEntityUpdate: jest.fn(),
   emitEntityPut: jest.fn(),
@@ -84,5 +89,28 @@ describe('handlePartialData', () => {
     expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(2);
+  });
+  it('should not save to db and update if empty state', async () => {
+    jest.clearAllMocks();
+    await handlePartialData([]);
+    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(0);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(0);
+    expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe('handleGroupChange', () => {
+  it('should save to db and update if group', async () => {
+    jest.clearAllMocks();
+    await handleGroupChange([groupFactory.build({ post_cursor: 1 })]);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
+    expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  it('should save to db and update if group', async () => {
+    jest.clearAllMocks();
+    await handleGroupChange([groupFactory.build({ post_cursor: 1 })]);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
+    expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(1);
   });
 });

@@ -9,7 +9,7 @@ import * as path from 'path';
 dotenv.config();
 
 const APP_ROOT = __dirname;
-const CONFIGS_ROOT = path.join(APP_ROOT, 'config');
+const CONFIGS_ROOT = path.join(APP_ROOT, 'configs');
 
 import { ExecutionStrategiesHelper } from './libs/utils';
 

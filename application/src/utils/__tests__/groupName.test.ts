@@ -5,37 +5,47 @@
  */
 import storeManager from '../../store';
 import { getGroupName } from '../groupName';
-
+import BasePresenter from '../../store/base/BasePresenter';
+import { toJS } from 'mobx';
 const personStore = {
   get: jest.fn(),
 };
+const basePresenter = new BasePresenter();
 describe('getGroupName', () => {
   beforeAll(() => {
     storeManager.getEntityMapStore = jest.fn().mockReturnValue(personStore);
   });
   describe('team', () => {
     it('should return setAbbreviation of team', () => {
-      expect(getGroupName({
-        id: 1132,
-        members: [1, 2, 3],
-        description: 'llll',
-        pinnedPostIds: [2, 3, 4],
-        isTeam: true,
-        setAbbreviation: 'aaa',
-        dispose: () => { },
-      })).toBe('aaa');
+      expect(getGroupName(
+        basePresenter.getEntity,
+        {
+          id: 1132,
+          members: [1, 2, 3],
+          description: 'llll',
+          pinnedPostIds: [2, 3, 4],
+          isTeam: true,
+          setAbbreviation: 'aaa',
+          dispose: () => { },
+          toJS: () => { },
+        },
+      )).toBe('aaa');
     });
 
     it('should return setAbbreviation if no currentUserId provided', () => {
-      expect(getGroupName({
-        id: 1132,
-        members: [1, 2, 3],
-        description: 'llll',
-        pinnedPostIds: [2, 3, 4],
-        isTeam: false,
-        setAbbreviation: 'aaa',
-        dispose: () => { },
-      })).toBe('aaa');
+      expect(getGroupName(
+        basePresenter.getEntity,
+        {
+          id: 1132,
+          members: [1, 2, 3],
+          description: 'llll',
+          pinnedPostIds: [2, 3, 4],
+          isTeam: false,
+          setAbbreviation: 'aaa',
+          dispose: () => { },
+          toJS: () => { },
+        },
+      )).toBe('aaa');
     });
   });
 
@@ -45,6 +55,7 @@ describe('getGroupName', () => {
         displayName: 'Jack',
       });
       expect(getGroupName(
+        basePresenter.getEntity,
         {
           id: 1132,
           members: [1],
@@ -53,6 +64,7 @@ describe('getGroupName', () => {
           isTeam: false,
           setAbbreviation: 'aaa',
           dispose: () => { },
+          toJS: () => { },
         },
         1),
       ).toBe('Jack (me)');
@@ -71,6 +83,7 @@ describe('getGroupName', () => {
       });
 
       expect(getGroupName(
+        basePresenter.getEntity,
         {
           id: 1132,
           members: [1, 2],
@@ -79,6 +92,7 @@ describe('getGroupName', () => {
           isTeam: false,
           setAbbreviation: 'aaa',
           dispose: () => { },
+          toJS: () => { },
         },
         1)).toBe('Jack');
     });
@@ -139,6 +153,7 @@ describe('getGroupName', () => {
         personStore.get.mockImplementation(id => people[id]);
 
         expect(getGroupName(
+          basePresenter.getEntity,
           {
             id: 1132,
             members: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -147,6 +162,7 @@ describe('getGroupName', () => {
             isTeam: false,
             setAbbreviation: 'aaa',
             dispose: () => { },
+            toJS: () => { },
           },
           1)).toBe('Andy, Hu, Jeffrey, Shining, 01david, +Casey, lip.wang@ringcentral.com, 01david@rc.come, +chris.zhan@ringcentral.com');
       },

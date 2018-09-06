@@ -1,8 +1,10 @@
-import { IEntity } from './../store.d';
+import storeManager, { ENTITY_NAME } from '@/store';
 import { observable, action, computed } from 'mobx';
 import { Person } from 'sdk/models';
+import Base from './Base';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 
-export default class PersonModel implements IEntity {
+export default class PersonModel extends Base<Person> {
   id: number;
   @observable companyId: number;
   @observable firstName?: string;
@@ -10,24 +12,29 @@ export default class PersonModel implements IEntity {
   @observable headshot?: string;
   @observable email: string;
   @observable rcPhoneNumbers?: object[];
+  @observable isPseudoUser?: boolean;
+  @observable glipUserId?: number;
 
-  constructor(model: Person) {
+  constructor(data: Person) {
+    super(data);
     const {
-      id,
       company_id,
       first_name,
       last_name,
       headshot,
       email,
       rc_phone_numbers,
-    } = model;
-    this.id = id;
+      is_pseudo_user,
+      glip_user_id,
+    } = data;
     this.companyId = company_id;
     this.firstName = first_name;
     this.lastName = last_name;
     this.headshot = headshot;
     this.email = email;
     this.rcPhoneNumbers = rc_phone_numbers;
+    this.isPseudoUser = is_pseudo_user;
+    this.glipUserId = glip_user_id;
   }
 
   static fromJS(data: Person) {
@@ -35,7 +42,16 @@ export default class PersonModel implements IEntity {
   }
 
   @computed
-  get displayName() {
+  get displayName(): string {
+    if (this.isPseudoUser) {
+      if (this.glipUserId) {
+        const personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON) as MultiEntityMapStore<Person, PersonModel>;
+        const linkedUser = personStore.get(this.glipUserId);
+        if (linkedUser) {
+          return linkedUser.displayName;
+        }
+      }
+    }
     let dName = '';
     if (this.firstName) {
       dName += this.firstName;
@@ -90,6 +106,4 @@ export default class PersonModel implements IEntity {
       this.rcPhoneNumbers = rcPhoneNumbers;
     }
   }
-
-  dispose() { } // eslint-disable-line
 }

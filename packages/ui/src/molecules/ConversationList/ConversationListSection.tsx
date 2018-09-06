@@ -6,7 +6,7 @@
 import React, { Component } from 'react';
 import Collapse from '@material-ui/core/Collapse';
 import { noop } from '../../utils';
-import { Divider } from '../../atoms';
+import { JuiDivider } from '../../atoms';
 import SectionHeader, { SectionHeaderProps } from './ConversationListSectionHeader';
 
 type SectionProps = {
@@ -44,7 +44,7 @@ class ConversationListSection extends Component<SectionProps, SectionStates> {
           onClick={this._handleClick}
         />
         <Collapse in={expanded}>
-          {this.props.children && <Divider />}
+          {this.props.children && <JuiDivider />}
           {this.props.children}
         </Collapse>
       </div >
