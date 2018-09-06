@@ -30,7 +30,7 @@ const ScrollContainer = styled.div`
   height:100%;
   width:100%;
   overflow-x:hidden;
-  overflow-y:scroll;
+  overflow-y:auto;
 `;
 
 const ListContainer = styled<{flipped:boolean}, 'div'>('div')`
@@ -38,6 +38,7 @@ const ListContainer = styled<{flipped:boolean}, 'div'>('div')`
   flex-grow:1;
   flex-direction:column;
   min-height:100%;
+  height:0px;
   justify-content:${({ flipped }) => (flipped ? 'flex-end' :'flex-start')};
 `;
 
