@@ -3,6 +3,7 @@
  * @Date: 2018-08-21 16:46:24
  * Copyright © RingCentral. All rights reserved.
  */
+import { Role } from 'testcafe';
 import { SITE_URL } from '../config';
 import { BlankPage } from '../page-models/pages/BlankPage';
 import { RingcentralSignInNavigationPage } from '../page-models/pages/RingcentralSignInNavigationPage';
@@ -17,6 +18,13 @@ type AuthInfo = {
   extension?: string;
   password: string;
 };
+
+function createRole(authInfo?: AuthInfo) {
+  return Role(
+    SITE_URL,
+    async t => await unifiedLogin(t, authInfo),
+  );
+}
 
 function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
   let credential: string = '';
@@ -34,6 +42,7 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
   }
 
   return new BlankPage(t)
+    .log(`account: ${credential} extension: ${extension}`)
     .navigateTo(SITE_URL)
     .shouldNavigateTo(UnifiedLoginPage)
     .clickLogin()
@@ -50,4 +59,4 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
   // .expectExistComponent();
 }
 
-export { AuthInfo, unifiedLogin };
+export { AuthInfo, unifiedLogin, createRole };

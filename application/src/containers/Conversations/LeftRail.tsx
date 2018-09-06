@@ -3,8 +3,8 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { JuiDivider, styled } from 'ui-components';
 
 import { LeftRailPresenter } from './LeftRailPresenter';
-import { ConversationSection } from './sections';
-import ConversationListPresenter from '@/containers/Conversations/sections/ConversationListPresenter';
+import { ConversationSection, ConversationSectionPresenter } from './sections';
+import { transformGroupSortKey } from './transformFunc';
 
 type IProps = {} & RouteComponentProps<any>;
 
@@ -13,7 +13,7 @@ export type ISection = {
   iconName: string;
   sortable?: boolean;
   expanded?: boolean;
-  presenter: ConversationListPresenter;
+  presenter: ConversationSectionPresenter;
 };
 
 const Container = styled.div`
@@ -30,7 +30,11 @@ class LeftRail extends Component<IProps> {
     super(props);
     this.presenter = new LeftRailPresenter();
     this.sections = this.presenter.sections.map(({ entity, queryType, transformFunc, ...rest }) => ({
-      presenter: new ConversationListPresenter(entity, queryType, transformFunc),
+      presenter: new ConversationSectionPresenter({
+        entity,
+        queryType,
+        transformFunc: transformFunc || transformGroupSortKey,
+      }),
       ...rest,
     }));
   }

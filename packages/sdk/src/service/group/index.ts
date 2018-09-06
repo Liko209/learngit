@@ -15,6 +15,7 @@ import {
 import BaseService from '../../service/BaseService';
 import GroupServiceHandler from '../../service/group/groupServiceHandler';
 import ProfileService from '../../service/profile';
+import AccountService from '../../service/account';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
 import GroupAPI from '../../api/glip/group';
@@ -73,28 +74,33 @@ export default class GroupService extends BaseService<Group> {
   async getGroupsByType(
     groupType = GROUP_QUERY_TYPE.ALL,
     offset = 0,
-    limit = 20,
+    _limit?: number,
   ): Promise<Group[]> {
+    const accountService: AccountService = AccountService.getInstance();
+    const limit = _limit || accountService.getConversationListLimit(groupType);
     mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
     let result: Group[] = [];
     const dao = daoManager.getDao(GroupDao);
+
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
       result = await this._getFavoriteGroups();
+
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
-      result = (await dao.queryAllGroups(offset, limit)) as Group[];
+      result = await dao.queryAllGroups(offset, limit);
+
     } else {
       const profileService: ProfileService = ProfileService.getInstance();
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
-      result = (await dao.queryGroups(
+
+      result = await dao.queryGroups(
         offset,
         Infinity,
         groupType === GROUP_QUERY_TYPE.TEAM,
         favoriteGroupIds,
-      )) as Group[];
-      const limitLength = groupType === GROUP_QUERY_TYPE.TEAM ? 10 : 10;
-      result = await filterGroups(result, groupType, limitLength);
+      );
+      result = await filterGroups(result, limit);
     }
     return result;
   }
