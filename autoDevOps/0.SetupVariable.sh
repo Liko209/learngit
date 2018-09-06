@@ -97,10 +97,11 @@ function syncFolderToServer(){
 function updateLinkDomainOnServer(){
   sourceFolder=$1
   linkFolder=$2
-  echo '=====Start linking domain'
-  echo $sourceFolder
-  echo $linkFolder
-  ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "link -s $serverRootFolder/$sourceFolder $serverRootFolder/$linkFolder"
+  echo "=====Start linking domain: "
+  echo "serverRootFolder: ${serverRootFolder}"
+  echo "$sourceFolder ==> $linkFolder"
+  ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "cd $serverRootFolder; ln -s $sourceFolder $linkFolder"
+  ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "chown -R root:root $serverRootFolder/$linkFolder"
 }
 
 alias syncFolderToServer=syncFolderToServer
