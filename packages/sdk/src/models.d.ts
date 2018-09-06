@@ -53,6 +53,8 @@ export type Group = ExtendedBaseModel & {
     };
   };
   post_cursor?: number;
+  drp_post_cursor?: number;
+  trigger_ids?: number[]
   deactivated_post_cursor?: number;
   _delta?: { add?: object, remove?: object, set?: object };
   is_public?: boolean;
@@ -88,6 +90,7 @@ export type Person = ExtendedBaseModel & {
   rc_phone_numbers?: object[];
   sanitized_rc_extension?: object;
   is_pseudo_user?: boolean;
+  glip_user_id?: number;
 };
 
 export type UserInfo = {
@@ -101,17 +104,23 @@ export type State = ExtendedBaseModel & {
   current_group_id: number;
   away_status_history?: string[];
   current_plugin: string;
+  trigger_ids?: number[]
 };
 
 export type MyState = State;
 
-export type GroupState = ExtendedBaseModel & {
+export type GroupState = {
   id: number;
   unread_count?: number;
   unread_mentions_count?: number;
   read_through?: number;
   last_read_through?: number;
-  marked_as_unread?: number;
+  marked_as_unread?: boolean;
+  post_cursor?: number;
+  unread_deactivated_count?: number;
+  group_post_cursor?: number;
+  group_post_drp_cursor?: number;
+  trigger_ids?: number[]
 };
 
 export type Post = ExtendedBaseModel & {

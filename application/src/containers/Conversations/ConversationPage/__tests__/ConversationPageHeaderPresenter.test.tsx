@@ -8,7 +8,30 @@
 import { service } from 'sdk';
 import ConversationPageHeaderPresenter, { ConversationTypes } from '../ConversationPageHeaderPresenter';
 import { groupModelFactory, personModelFactory } from '../../../../__tests__/factories';
+import { ENTITY_NAME } from '@/store';
 const { AccountService } = service;
+
+const mockGetEntity = (presenter: ConversationPageHeaderPresenter, entityName: string, impl: Function) => {
+  if (!jest.isMockFunction(presenter.getEntity)) {
+    presenter.getEntity = jest.fn();
+  }
+  presenter.getEntity.mockImplementation((en, id) => {
+    if (en === entityName) {
+      return impl(id);
+    }
+  });
+};
+
+const mockGetSingleEntity = (presenter: ConversationPageHeaderPresenter, entityName: string, impl: Function) => {
+  if (!jest.isMockFunction(presenter.getSingleEntity)) {
+    presenter.getSingleEntity = jest.fn();
+  }
+  presenter.getSingleEntity.mockImplementation((en, property) => {
+    if (en === entityName) {
+      return impl(property);
+    }
+  });
+};
 describe('ConversationPageHeaderPresenter', () => {
   let presenter: ConversationPageHeaderPresenter;
   beforeAll(() => {
@@ -50,7 +73,7 @@ describe('ConversationPageHeaderPresenter', () => {
     });
 
     it('should be SMS conversation if has two members and one of them is pseudo', () => {
-      jest.spyOn(presenter.personStore, 'get').mockImplementation((id) => {
+      mockGetEntity(presenter, ENTITY_NAME.PERSON, (id: number) => {
         if (id === 1213) {
           return personModelFactory.build({
             isPseudoUser: true,
@@ -72,7 +95,7 @@ describe('ConversationPageHeaderPresenter', () => {
 
   describe('groupIsInFavorites', () => {
     beforeAll(() => {
-      jest.spyOn(presenter.profileStore, 'get').mockImplementation((property) => {
+      mockGetSingleEntity(presenter, ENTITY_NAME.PROFILE, (property: string) => {
         if (property === 'favoriteGroupIds') {
           return [1, 3, 4, 5];
         }

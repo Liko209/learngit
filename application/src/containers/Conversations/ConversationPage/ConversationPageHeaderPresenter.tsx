@@ -5,17 +5,16 @@
 */
 import { observable } from 'mobx';
 import _ from 'lodash';
-import BasePresenter from '../../../store/base/BasePresenter';
-import { service } from 'sdk';
+import BasePresenter from '@/store/base/BasePresenter';
+import { service, dao } from 'sdk';
 import { GroupService as IGroupService, AccountService as IAccountService } from 'sdk/service';
-import storeManager, { ENTITY_NAME } from '../../../store';
-import MultiEntityMapStore from '../../../store/base/MultiEntityMapStore';
-import { Group, Person, Profile } from 'sdk/models';
-import GroupModel from '../../../store/models/Group';
+import { Person, Profile } from 'sdk/models';
+import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
-import ProfileModel from '../../../store/models/Profile';
-import SingleEntityMapStore from '../../../store/base/SingleEntityMapStore';
+import ProfileModel from '@/store/models/Profile';
+import { ENTITY_NAME } from '@/store';
 const { GroupService, AccountService } = service;
+const { ACCOUNT_USER_ID } = dao;
 
 enum ConversationTypes {
   TEAM,
@@ -32,18 +31,18 @@ class ConversationPageHeaderPresenter extends BasePresenter {
   groupId: number;
   groupService: IGroupService;
   accountService: IAccountService;
-  groupStore: MultiEntityMapStore<Group, GroupModel>;
-  personStore: MultiEntityMapStore<Person, PersonModel>;
-  profileStore: SingleEntityMapStore<Profile, ProfileModel>;
 
   constructor() {
     super();
     this.groupService = GroupService.getInstance();
     this.accountService = AccountService.getInstance();
-    this.groupStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP) as MultiEntityMapStore<Group, GroupModel>;
-    this.personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON) as MultiEntityMapStore<Person, PersonModel>;
-    this.profileStore = storeManager.getEntityMapStore(ENTITY_NAME.PROFILE) as SingleEntityMapStore<Profile, ProfileModel>;
     this.userId = this.accountService.getCurrentUserId();
+
+    this.subscribeNotification(ACCOUNT_USER_ID, ({ type, payload }: { type: string, payload: string }) => {
+      if (type === 'put') {
+        this.userId = Number(payload);
+      }
+    });
   }
 
   getConversationType(group: GroupModel) {
@@ -74,13 +73,14 @@ class ConversationPageHeaderPresenter extends BasePresenter {
       if (!otherMemberId) {
         return null;
       }
-      return this.personStore.get(otherMemberId);
+      return this.getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, otherMemberId);
     }
     return null;
   }
 
   groupIsInFavorites(group: GroupModel) {
-    const favoriteGroups = this.profileStore.get('favoriteGroupIds') || [];
+    const favoriteGroups = this.getSingleEntity<Profile, ProfileModel>(ENTITY_NAME.PROFILE, 'favoriteGroupIds') || [];
+    console.log(favoriteGroups);
     return favoriteGroups.indexOf(group.id) >= 0;
   }
 }

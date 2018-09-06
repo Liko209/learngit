@@ -3,12 +3,11 @@
  * @Date: 2018-09-04 16:45:39
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React from 'react';
 import { mount } from 'enzyme';
-import storeManager from '../../../../store';
 import { ConversationPageHeader } from './../ConversationPageHeader';
 import { ConversationPageHeaderPresenter, ConversationTypes } from '../ConversationPageHeaderPresenter';
+import StoreManager from '@/store/base/StoreManager';
 
 jest.mock('../ConversationPageHeaderPresenter', () => ({
   ConversationPageHeaderPresenter: jest.fn(),
@@ -55,12 +54,16 @@ jest.mock('../../../../utils/groupName', () => ({
 }));
 
 const groupStore = {
-  get: jest.fn(),
+  get: jest.fn().mockReturnValue({
+    id: 1,
+    isTeam: false,
+    members: [1],
+  }),
+  addUsedIds: jest.fn(),
 };
 
 const mockPresenter = (type = ConversationTypes.TEAM, isFavorite = false) => {
   ConversationPageHeaderPresenter.mockImplementation(() => ({
-    groupStore,
     getConversationType: jest.fn().mockReturnValue(type),
     getOtherMember: jest.fn().mockReturnValue({}),
     groupIsInFavorites: jest.fn().mockReturnValue(isFavorite),
@@ -68,20 +71,12 @@ const mockPresenter = (type = ConversationTypes.TEAM, isFavorite = false) => {
 };
 describe('ConversationPageHeader', () => {
   beforeAll(() => {
-    storeManager.getEntityMapStore = jest.fn((entityName) => {
-      switch (entityName) {
-        case 'group':
-          return groupStore;
-        default:
-          return null;
-      }
-    });
-
     groupStore.get.mockReturnValue({
       id: 1,
       isTeam: false,
       members: [1],
     });
+    StoreManager.prototype.getEntityMapStore = jest.fn().mockReturnValue(groupStore);
 
     mockPresenter();
   });
