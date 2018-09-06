@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import ConversationThreadsManager from './ConversationStreamManager';
-import { ConversationCard } from '@/containers/Conversations/ConversationPage/ConversationCard';
+import  ConversationCard  from '@/containers/Conversations/ConversationPage/ConversationCard';
 import { JuiChatView } from 'ui-components';
 import { observable } from 'mobx';
 
