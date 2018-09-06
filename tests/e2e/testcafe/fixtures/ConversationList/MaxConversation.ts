@@ -18,10 +18,9 @@ test(formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']), async 
   await unifiedLogin(t)
     .log('1. Navigate to Messages')
     .shouldNavigateTo(MaxConversation)
-    .waitForSections()
     .log(`2.1 Create ${MAX_NUMBER} conversations`)
     .chain(async (t, h) => {
-      await t.wait(2000);
+      await t.wait(20000);
       const client701 = await h.glipApiManager.getClient(h.users.user701, h.companyNumber);
       for (let i = 0; i < MAX_NUMBER; i += 1) {
         const resp = await client701.createGroup({
