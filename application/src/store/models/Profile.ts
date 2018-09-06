@@ -1,12 +1,16 @@
-import { IEntity } from './../store.d';
 import { Profile } from 'sdk/models';
-export default class ProfileModel implements IEntity {
-  id: number;
+import Base from './Base';
+export default class ProfileModel extends Base<Profile> {
   favoritePostIds: number[];
+  favoriteGroupIds: number[];
   constructor(data: Profile) {
-    const { id, favorite_post_ids: favoritePostIds = [] } = data;
+    super(data);
+    const {
+      favorite_post_ids: favoritePostIds = [],
+      favorite_group_ids: favoriteGroupIds = [],
+    } = data;
     this.favoritePostIds = favoritePostIds;
-    this.id = id;
+    this.favoriteGroupIds = favoriteGroupIds;
   }
   static fromJS(data: Profile) {
     return new ProfileModel(data);

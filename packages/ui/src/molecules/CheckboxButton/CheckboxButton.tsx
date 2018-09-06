@@ -6,7 +6,8 @@
 import React from 'react';
 import styled, { keyframes } from '../../styled-components';
 import MuiCheckbox, { CheckboxProps } from '@material-ui/core/Checkbox';
-import { Icon as MuiIcon, Tooltip as MuiTooltip } from '@material-ui/core';
+import MuiTooltip from '@material-ui/core/Tooltip';
+import { Icon as MuiIcon } from '@material-ui/core';
 import { palette, grey, width } from '../../utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme } from '../../theme';
@@ -42,7 +43,7 @@ const touchRippleClasses = {
 };
 
 const StyledIcon = styled(MuiIcon)``;
-const WrappedMuiCheckboxButton = ({ invisible, awake, checked, ...rest }: JuiCheckboxButtonProps) => (
+const WrappedMuiCheckboxButton = ({ invisible, awake, ...rest }: JuiCheckboxButtonProps) => (
   <MuiCheckbox {...rest} classes={{ disabled: 'disabled' }} TouchRippleProps={{ classes: touchRippleClasses }} />
 );
 const StyledCheckboxButton = styled<JuiCheckboxButtonProps>(WrappedMuiCheckboxButton)`
@@ -58,7 +59,7 @@ const StyledCheckboxButton = styled<JuiCheckboxButtonProps>(WrappedMuiCheckboxBu
     tinycolor(grey('500')({ theme })).setAlpha(theme.palette.action.hoverOpacity).toRgbString()};
     }
     &:active {
-      color: ${({ theme, color = 'primary' }) => palette(color, 'main')({ theme })};
+      color: ${({ theme, color = 'primary', checked }) => checked ? palette(color, 'main')({ theme }) : grey('500')({ theme })};
     }
 
     &.disabled {
@@ -114,10 +115,10 @@ class JuiCheckboxButton extends React.Component<JuiCheckboxButtonProps, { checke
   }
 
   render() {
-    const { iconName, checkedIconName, tooltipTitle, innerRef, onChange, ...rest } = this.props;
+    const { className, iconName, checkedIconName, tooltipTitle, innerRef, onChange, ...rest } = this.props;
     return (
-      <MuiTooltip title={tooltipTitle}>
-        <WrapperForTooltip {...rest}>
+      <MuiTooltip title={tooltipTitle} >
+        <WrapperForTooltip className={className} {...rest}>
           <StyledCheckboxButton
             onChange={this.changeHandler}
             checked={this.state.checked}
