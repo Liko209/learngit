@@ -9,7 +9,6 @@ import {
   ACCOUNT_USER_ID,
   ACCOUNT_PROFILE_ID,
   ACCOUNT_COMPANY_ID,
-  ACCOUNT_CONVERSATION_LIST_LIMITS,
 } from '../../dao/account/constants';
 import { daoManager, AuthDao } from '../../dao';
 import AccountDao from '../../dao/account';
@@ -23,18 +22,7 @@ import { refreshToken, ITokenRefreshDelegate, TokenModel } from '../../api';
 import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware, ErrorTypes } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
-import { GROUP_QUERY_TYPE } from '../constants';
-
-const DEFAULT_CONVERSATION_LIST_LIMITS = {
-  [GROUP_QUERY_TYPE.ALL]: 20,
-  [GROUP_QUERY_TYPE.TEAM]: 20,
-  [GROUP_QUERY_TYPE.GROUP]: 20,
-  [GROUP_QUERY_TYPE.FAVORITE]: Infinity,
-};
-
-type ConversationListLimits = typeof DEFAULT_CONVERSATION_LIST_LIMITS;
-
-class AccountService extends BaseService implements ITokenRefreshDelegate {
+export default class AccountService extends BaseService implements ITokenRefreshDelegate {
   static serviceName = 'AccountService';
 
   private accountDao: AccountDao;
@@ -119,25 +107,4 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
       return null;
     }
   }
-
-  setConversationListLimits(limits: ConversationListLimits): void {
-    this.accountDao.put(ACCOUNT_CONVERSATION_LIST_LIMITS, limits);
-  }
-
-  setConversationListLimit(type: GROUP_QUERY_TYPE, limit: number): void {
-    const conversationListLimits = this.getConversationListLimits();
-    conversationListLimits[type] = limit;
-    this.setConversationListLimits(conversationListLimits);
-  }
-
-  getConversationListLimits(): ConversationListLimits {
-    return this.accountDao.get(ACCOUNT_CONVERSATION_LIST_LIMITS) || DEFAULT_CONVERSATION_LIST_LIMITS;
-  }
-
-  getConversationListLimit(type: GROUP_QUERY_TYPE) {
-    return this.getConversationListLimits()[type];
-  }
 }
-
-export default AccountService;
-export { ConversationListLimits };

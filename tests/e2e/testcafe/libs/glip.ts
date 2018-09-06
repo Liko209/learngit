@@ -44,10 +44,6 @@ export class RcPlatformHelper {
     const url = `/restapi/v1.0/glip/groups/${groupId}/posts`;
     return await this.sdk.post(url, data);
   }
-  async createGroup(data:any) {
-    const url = '/restapi/v1.0/glip/groups';
-    return await this.sdk.post(url, data);
-  }
 }
 
 export class RcPlatformManager {

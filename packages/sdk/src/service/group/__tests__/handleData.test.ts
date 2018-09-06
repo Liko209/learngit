@@ -4,7 +4,6 @@ import { daoManager, GroupDao } from '../../../dao';
 import GroupAPI from '../../../api/glip/group';
 import PersonService from '../../../service/person';
 import ProfileService from '../../../service/profile';
-import AccountService from '../../../service/account';
 import { Group, Post, Raw, Profile } from '../../../models';
 import handleData, {
   handleFavoriteGroupsChanged,
@@ -13,14 +12,15 @@ import handleData, {
 } from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
-import { DEFAULT_CONVERSATION_LIST_LIMITS } from '../../account/constants';
-
-jest.mock('../../../service/person');
-jest.mock('../../../service/profile');
-jest.mock('../../../service/account');
+import { GROUP_QUERY_TYPE } from '../../constants';
 jest.mock('../../notificationCenter');
 jest.mock('../../state');
+
 jest.mock('../../notificationCenter');
+jest.mock('../../../service/person');
+jest.mock('../../../service/profile');
+PersonService.getInstance = jest.fn().mockReturnValue(new PersonService());
+ProfileService.getInstance = jest.fn().mockReturnValue(new ProfileService());
 jest.mock('../../../dao', () => {
   const dao = {
     get: jest.fn().mockReturnValue(1),
@@ -60,15 +60,11 @@ jest.mock('../../../api/glip/group', () => {
   return { requestGroupById: jest.fn().mockResolvedValue(response) };
 });
 
-type GenerateFakeGroupOptions = {
-  hasPost: boolean;
-};
-
-function generateFakeGroups(count: number, { hasPost = true } = {}) {
+function generateFakeGroups(count: number, is_team: boolean) {
   const groups: Group[] = [];
 
   for (let i = 1; i <= count; i += 1) {
-    const group: Group = {
+    groups.push({
       id: i,
       created_at: i,
       modified_at: i,
@@ -81,31 +77,17 @@ function generateFakeGroups(count: number, { hasPost = true } = {}) {
       set_abbreviation: '',
       email_friendly_abbreviation: '',
       most_recent_content_modified_at: i,
-    };
-
-    if (hasPost) {
-      group.most_recent_post_created_at = i;
-    }
-    groups.push(group);
+      most_recent_post_created_at: i,
+    });
   }
   return groups;
 }
 
-const stateService: StateService = new StateService();
-const accountService = new AccountService();
-const personService = new PersonService();
-const profileService = new ProfileService();
+describe('handleData', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-beforeEach(() => {
-  jest.clearAllMocks();
-  StateService.getInstance = jest.fn().mockReturnValue(stateService);
-  AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-  PersonService.getInstance = jest.fn().mockReturnValue(personService);
-  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-  accountService.getConversationListLimits.mockReturnValue(DEFAULT_CONVERSATION_LIST_LIMITS);
-});
-
-describe('handleData()', () => {
   it('passing an empty array', async () => {
     const result = await handleData([]);
     expect(result).toBeUndefined();
@@ -221,103 +203,51 @@ describe('handleGroupMostRecentPostChanged()', () => {
 });
 
 describe('filterGroups()', () => {
-
-  it('should remove extra, when limit < total groups', async () => {
-    const LIMIT = 2;
-    const TOTAL_GROUPS = 5;
-
-    const groups = generateFakeGroups(TOTAL_GROUPS);
-
-    const filteredGroups = await filterGroups(groups, LIMIT);
-    expect(filteredGroups.length).toBe(LIMIT);
+  const stateService: StateService = new StateService();
+  beforeEach(() => {
+    jest.clearAllMocks();
+    StateService.getInstance = jest.fn().mockReturnValue(stateService);
   });
-
-  it('should return all groups, when limit = total groups', async () => {
-    const LIMIT = 5;
-    const TOTAL_GROUPS = 5;
-
-    const teams = generateFakeGroups(TOTAL_GROUPS);
-
-    const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(TOTAL_GROUPS);
+  it('items with states without ids', async () => {
+    const teams = generateFakeGroups(5, true);
+    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
+    expect(result.length).toBe(2);
   });
-
-  it('should return all groups, when limit > total groups', async () => {
-    const LIMIT = 10;
-    const TOTAL_GROUPS = 5;
-
-    const teams = generateFakeGroups(TOTAL_GROUPS);
-
-    const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(TOTAL_GROUPS);
+  it('items is less then limit', async () => {
+    const teams = generateFakeGroups(5, true);
+    const result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 20);
+    expect(result.length).toBe(5);
   });
-
-  it(`should return groups until unread group when unread group's position > limit`, async () => {
-    const LIMIT = 2;
-    const TOTAL_GROUPS = 5;
-
-    const teams = generateFakeGroups(TOTAL_GROUPS);
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
-
-    const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(4);
-  });
-
-  it(`should return all groups when unread group's position = limit`, async () => {
-    const LIMIT = 4;
-    const TOTAL_GROUPS = 5;
-
-    const teams = generateFakeGroups(TOTAL_GROUPS);
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
-
-    const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(LIMIT);
-  });
-
-  it(`should return all groups when unread group's position < limit`, async () => {
-    const LIMIT = 5;
-    const TOTAL_GROUPS = 5;
-
-    const teams = generateFakeGroups(TOTAL_GROUPS);
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
-
-    const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(LIMIT);
-  });
-
-  it('should return groups until unread @mention', async () => {
-    const LIMIT = 2;
-    const TOTAL_GROUPS = 5;
-
-    const teams = generateFakeGroups(TOTAL_GROUPS);
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_mentions_count: 1 }]);
-
-    const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(4);
-  });
-
-  it('should return groups until oldest unread, when multiple groups have unread', async () => {
-    const LIMIT = 2;
-    const TOTAL_GROUPS = 5;
-
-    const teams = generateFakeGroups(TOTAL_GROUPS);
-    stateService.getAllGroupStatesFromLocal.mockResolvedValue([
-      { id: 4, unread_count: 1 },
-      { id: 3, unread_count: 1 },
+  it('items with states id', async () => {
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
+      {
+        id: 2,
+        unread_count: 1,
+      },
     ]);
+    const teams = generateFakeGroups(5, true);
+    let result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
+    expect(result.length).toBe(4);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(3);
+    result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 5);
+    expect(result.length).toBe(5);
   });
+  it('items with states ids', async () => {
+    stateService.getAllGroupStatesFromLocal.mockResolvedValue([
+      {
+        id: 4,
+        unread_count: 1,
+      },
+      {
+        id: 3,
+        unread_count: 1,
+      },
+    ]);
+    const teams = generateFakeGroups(5, true);
+    let result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 2);
+    expect(result.length).toBe(3);
 
-  it('should also return groups that have not post', async () => {
-    const LIMIT = 2;
-    const TOTAL_GROUPS = 5;
-
-    const teams = generateFakeGroups(TOTAL_GROUPS, { hasPost: false });
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
-
-    const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(LIMIT);
+    result = await filterGroups(teams, GROUP_QUERY_TYPE.TEAM, 1);
+    expect(result.length).toBe(3);
   });
 });

@@ -4,16 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import { TranslationFunction } from 'i18next';
+import { translate } from 'react-i18next';
 import styled from 'styled-components';
+import getUrl from './getUrl';
 
-import { service } from 'sdk';
-import config from '@/config';
 import EnvSelect from './EnvSelect';
 import Download from './Download';
 import LoginVersionStatus from '../VersionInfo/LoginVersionStatus';
-
-const { glip2 } = config.get('api');
-const { AuthService } = service;
 
 const Form = styled.form`
   width: 300px;
@@ -52,99 +51,51 @@ const Button = styled.button`
   }
 `;
 
-interface IRouter {
-  location: { state: { from: Function } };
-  history: { replace: Function };
+interface IProps extends RouteComponentProps<{}> {
+  t: TranslationFunction;
 }
 
-function extractUrlParameter(name: string) {
-  const nameTemp = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]');
-  const regex = new RegExp(`[\\?&]${nameTemp}=([^&#]*)`);
-  const results = regex.exec(window.location.search);
-  return results === null
-    ? ''
-    : decodeURIComponent(results[1].replace(/\+/g, ' '));
-}
+interface IStates { }
 
-class UnifiedLogin extends React.Component<
-  IRouter,
-  { btnDisabled: boolean; btnText: string }
-> {
-  static defaultProps = {
-    location: {},
-    history: {},
-  };
-
-  constructor(props: IRouter) {
+class UnifiedLogin extends React.Component<IProps, IStates> {
+  constructor(props: IProps) {
     super(props);
-    this.state = {
-      btnDisabled: false,
-      btnText: 'Login',
-    };
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  async componentDidMount() {
-    const { location, history } = this.props;
-    const code = extractUrlParameter('code');
-    if (code) {
-      this.setState({
-        btnDisabled: true,
-        btnText: `Login...`, // Login...
-      });
+  // onChange = (event: React.FormEvent<HTMLSelectElement>) => {
+  //   this.setState({ brandId: event.currentTarget.value });
+  // }
 
-      try {
-        const authService: service.AuthService = AuthService.getInstance();
-        await authService.unifiedLogin({ code });
-        history.replace((location.state && location.state.from) || '/');
-      } catch (error) {
-        // const handler = new ErrorHandler(error);
-        // handler.handle().show();
-        console.log(error);
-        this.setState({
-          btnDisabled: false,
-          btnText: `Login`, // Login
-        });
-      }
-    }
-  }
-
-  handleSubmit(event: React.SyntheticEvent) {
+  onSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    this.setState({
-      btnDisabled: true,
-      btnText: `Login...`, // Login...
-    });
-
-    window.location.href = `${glip2.server}${
-      glip2.apiPlatform
-    }/oauth/authorize?force=true&response_type=code&client_id=${
-      glip2.clientId
-    }&state=%2Frc&redirect_uri=${
-      window.location.origin
-    }/unified-login/&brand_id=${
-      glip2.brandId
-    }&glip_auth=true&display=touch&title_bar=true`;
+    const { location } = this.props;
+    window.location.href = getUrl(location);
   }
 
   render() {
-    const { btnDisabled, btnText } = this.state;
+    const { t } = this.props;
     return (
       <div>
-        <Form onSubmit={this.handleSubmit}>
-          <h1>
-            <span>Sign In</span>
-          </h1>
-          <Button data-anchor="btnLogin" type="submit" disabled={btnDisabled}>
-            {btnText}
+        <Form onSubmit={this.onSubmit}>
+          <Button type="submit" data-anchor="btnLogin" >
+            {t('SignIn')}
           </Button>
+          {/* <select onChange={this.onChange} value={brandId} style={{ display: 'none' }}>
+            <option value="1210">RC US</option>
+            <option value="3610">CA</option>
+            <option value="2010">EU</option>
+            <option value="3710">UK</option>
+            <option value="5010">AU</option>
+            <option value="3420">AT&T</option>
+            <option value="7310">TELUS</option>
+          </select> */}
           <EnvSelect />
         </Form>
         <LoginVersionStatus />
         <Download />
-      </div>
+      </div >
     );
   }
 }
 
-export default UnifiedLogin;
+export default translate('translations')(UnifiedLogin);

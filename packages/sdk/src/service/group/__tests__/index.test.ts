@@ -1,7 +1,6 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import PersonService from '../../person';
 import ProfileService from '../../profile';
-import AccountService from '../../account';
 import GroupAPI from '../../../api/glip/group';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../../constants';
 import GroupService from '../index';
@@ -16,13 +15,10 @@ jest.mock('../../../dao');
 jest.mock('../handleData');
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
-jest.mock('../../../service/account');
 const profileService = new ProfileService();
 const personService = new PersonService();
-const accountService = new AccountService();
 PersonService.getInstance = jest.fn().mockReturnValue(personService);
 ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 
 jest.mock('../../../api/glip/group');
 

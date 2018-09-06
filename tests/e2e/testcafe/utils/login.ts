@@ -3,26 +3,20 @@
  * @Date: 2018-08-21 16:46:24
  * Copyright © RingCentral. All rights reserved.
  */
-import { Role } from 'testcafe';
 import { SITE_URL } from '../config';
-import { TestHelper } from '../libs/helpers';
 import { BlankPage } from '../page-models/pages/BlankPage';
 import { RingcentralSignInNavigationPage } from '../page-models/pages/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/pages/RingcentralSignInPage';
 import { UnifiedLoginPage } from '../page-models/pages/UnifiedLoginPage';
+import { TokenGetterPage } from '../page-models/pages/TokenGetterPage';
+// import { Home } from '../page-models/components';
+import { TestHelper } from '../libs/helpers';
 
 type AuthInfo = {
   credential: string;
   extension?: string;
   password: string;
 };
-
-function createRole(authInfo?: AuthInfo) {
-  return Role(
-    SITE_URL,
-    async t => await unifiedLogin(t, authInfo),
-  );
-}
 
 function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
   let credential: string = '';
@@ -40,7 +34,6 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
   }
 
   return new BlankPage(t)
-    .log(`account: ${credential} extension: ${extension}`)
     .navigateTo(SITE_URL)
     .shouldNavigateTo(UnifiedLoginPage)
     .clickLogin()
@@ -50,7 +43,11 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
     .shouldNavigateTo(RingcentralSignInPage)
     .setExtension(extension)
     .setPassword(password)
-    .signIn();
+    .signIn()
+    .shouldNavigateTo(TokenGetterPage)
+    .expectUrlParamsIsCorrect();
+  // .shouldNavigateTo(Home)
+  // .expectExistComponent();
 }
 
-export { AuthInfo, unifiedLogin, createRole };
+export { AuthInfo, unifiedLogin };

@@ -13,7 +13,7 @@ const summaryPath = resolve(cwd, 'coverage/coverage-summary.json');
 const thresholdPath = resolve(cwd, 'config/coverage-threshold.json');
 
 // Allow coverage threshold a bit lower than the actual coverage.
-const ALLOW_RANGE = 0.1;
+const ALLOW_RANGE = 0.05;
 
 raiseCoverage(summaryPath, thresholdPath);
 

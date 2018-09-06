@@ -13,11 +13,10 @@ import { ENTITY, SERVICE } from '../../service/eventKey';
 import ProfileService from '../../service/profile';
 import _ from 'lodash';
 import { transform } from '../utils';
-import { Group, Post, Raw, Profile, PartialWithKey, GroupState } from '../../models';
+import { Group, Post, Raw, Profile, PartialWithKey } from '../../models';
+import { GROUP_QUERY_TYPE } from '../constants';
 import StateService from '../state';
 import { mainLogger } from 'foundation';
-import AccountService from '../account';
-import { GROUP_QUERY_TYPE } from '../constants';
 
 async function getExistedAndTransformDataFromPartial(groups: Partial<Raw<Group>>[]): Promise<Group[]> {
   const groupDao = daoManager.getDao<GroupDao>(GroupDao);
@@ -119,8 +118,6 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
 }
 
 async function doNotification(deactivatedData: Group[], normalData: Group[]) {
-  const accountService: AccountService = AccountService.getInstance();
-
   notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
 
   const profileService: ProfileService = ProfileService.getInstance();
@@ -161,15 +158,13 @@ async function doNotification(deactivatedData: Group[], normalData: Group[]) {
     notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, deactivatedGroups);
   }
 
-  const limits = accountService.getConversationListLimits();
-
   let addedTeams = normalData
     .filter((item: Group) => item.is_team && favIds.indexOf(item.id) === -1);
-  addedTeams = await filterGroups(addedTeams, limits[GROUP_QUERY_TYPE.TEAM]);
+  addedTeams = await filterGroups(addedTeams, GROUP_QUERY_TYPE.TEAM, 20);
 
   let addedGroups = normalData
     .filter((item: Group) => !item.is_team && favIds.indexOf(item.id) === -1);
-  addedGroups = await filterGroups(addedGroups, limits[GROUP_QUERY_TYPE.GROUP]);
+  addedGroups = await filterGroups(addedGroups, GROUP_QUERY_TYPE.GROUP, 10);
 
   const addFavorites = normalData.filter((item: Group) => favIds.indexOf(item.id) !== -1);
   addedTeams.length > 0 && notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, addedTeams);
@@ -293,57 +288,56 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
     validGroups = groups.filter(item => item !== null) as Group[];
   });
 
-  await saveDataAndDoNotification(validGroups);
-}
-
-function getGroupTime(group: Group) {
-  return group.most_recent_post_created_at || group.created_at;
-}
-
-function hasUnread(groupState: GroupState) {
-  return groupState.unread_count || groupState.unread_mentions_count;
-}
-
-async function getUnreadGroupIds(groups: Group[]) {
-  const stateService: StateService = StateService.getInstance();
-  const states = await stateService.getAllGroupStatesFromLocal() || [];
-  return states
-    .filter(hasUnread)
-    .map(state => state.id);
+  await doNotification([], validGroups);
 }
 
 /**
  * extract out groups/teams which are latest than the oldest unread post
  * or just use default limit length
  */
+
 async function filterGroups(
   groups: Group[],
-  limit: number,
+  groupType = GROUP_QUERY_TYPE.TEAM,
+  defaultLength: number,
 ) {
-  const sortedGroups = groups.sort((group1: Group, group2: Group) => getGroupTime(group2) - getGroupTime(group1));
-
-  // Find oldest unread group's time
-  const unreadGroupIds = await getUnreadGroupIds(sortedGroups);
-  const oldestUnreadGroupTime = sortedGroups
-    .filter(group => unreadGroupIds.includes(group.id))
-    .map(getGroupTime)
-    .sort()
-    .shift();
-
-  if (oldestUnreadGroupTime) {
-    // With unread message
-    const filteredGroups = sortedGroups.filter((group: Group, i) => getGroupTime(group) >= oldestUnreadGroupTime);
-    if (filteredGroups.length > limit) {
-      return filteredGroups;
+  if (groups.length <= defaultLength) {
+    return groups;
+  }
+  const stateService: StateService = StateService.getInstance();
+  const states = await stateService.getAllGroupStatesFromLocal();
+  let result = groups;
+  const statesIds = states
+    ? states.filter(item => item.unread_count || item.unread_mentions_count).map(item => item.id)
+    : [];
+  if (statesIds.length > 0) {
+    const times =
+      result
+        .filter(item => statesIds.includes(item.id))
+        .map((item: Group) => item.most_recent_post_created_at || item.created_at)
+        .sort() || [];
+    if (times.length > 0) {
+      const time = times[0];
+      if (time !== Infinity) {
+        const tmpGroups = result.filter((item: Group) => {
+          return item.most_recent_post_created_at && item.most_recent_post_created_at >= time;
+        });
+        if (tmpGroups.length > defaultLength) {
+          result = tmpGroups;
+          return result;
+        }
+      }
     }
   }
-
-  // Without unread message
-  if (sortedGroups.length > limit) {
-    sortedGroups.length = limit;
+  groups.sort((group1: Group, group2: Group) => {
+    const time1 = group1.most_recent_post_created_at || group1.created_at;
+    const time2 = group2.most_recent_post_created_at || group1.created_at;
+    return time2 - time1;
+  });
+  if (result.length > defaultLength) {
+    result.length = defaultLength;
   }
-
-  return sortedGroups;
+  return result;
 }
 
 async function handlePartialData(groups: Partial<Raw<Group>>[]) {
