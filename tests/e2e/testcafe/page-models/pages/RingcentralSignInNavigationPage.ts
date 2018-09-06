@@ -28,4 +28,9 @@ export class RingcentralSignInNavigationPage extends BasePage {
       await t.click(this.nextButton),
     );
   }
+  cleanInput() {
+    return this.chain(async t =>
+      await t.click(this.credentialField).pressKey('ctrl+a delete'),
+    );
+  }
 }

@@ -14,7 +14,7 @@ import { formalName } from '../libs/filter';
 import { setUp, tearDown, TestHelper } from '../libs/helpers';
 
 declare var test: TestFn;
-fixture.skip('Demo')
+fixture('Demo')
   .beforeEach(setUp('rcBetaUserAccount'))
   .afterEach(tearDown());
 

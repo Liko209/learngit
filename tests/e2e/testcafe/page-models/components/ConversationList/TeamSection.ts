@@ -26,20 +26,23 @@ class TeamSection extends BaseComponent {
     });
   }
 
-  public teamNameShouldChange() {
+  public teamNameShouldBe(name) {
     return this.chain(async (t) => {
-      await t.expect(this.team.exists).ok('Fail to find the team, probably caused by long-time loading');
-      const id = (await this.team.getReact()).key;
-      const randomName = Math.random().toString(36).substring(7);
-      await this._modifyTeamName(id, randomName);
       const text = () => this.team.findReact('Typography').innerText;
-      await t.expect(text()).eql(randomName, 'wrong name');
+      return await t.expect(text()).eql(name, 'wrong name');
     });
   }
 
   public createTeam() {
-    return this.chain(async (t) => {
-      return this._createTeam();
+    return this.chain(async (t, h) => {
+      const client701 = await h.glipApiManager.getClient(h.users.user701, h.companyNumber);
+      await client701.createTeam({
+        type: 'Team',
+        isPublic: true,
+        name: `My Team ${Math.random().toString(10)}`,
+        description: 'Best team ever',
+        members: [h.users.user701.rc_id.toString()],
+      });
     });
   }
 
@@ -47,16 +50,12 @@ class TeamSection extends BaseComponent {
     return (await GroupAPI.requestGroupById(id)).data;
   }
 
-  private async _modifyTeamName(id: number, name: string) {
-    return GroupAPI.modifyGroupById(id, { set_abbreviation: name });
-  }
-  private async _createTeam() {
-    return GroupAPI.createTeam({creator_id:21125873667,
-      description:Math.random().toString(36),
-      email_friendly_abbreviation:'test1fdfdf',
-      is_new:true,
-      is_public:false,
-      is_team: true});
+  modifyTeamName(name) {
+    return  this.chain(async(t) => {
+      await t.expect(this.team.exists).ok('Fail to find the team, probably caused by long-time loading');
+      const id = (await this.team.getReact()).key;
+      return await GroupAPI.modifyGroupById(id, { set_abbreviation: name });
+    });
   }
 }
 

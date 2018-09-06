@@ -16,16 +16,25 @@ fixture('teamSection')
 
 const randomTeamName = 'Team' + Number(new Date());
 
-test(formalName('Display team', ['P0', 'Team section']), async (t) => {
+test(formalName('Team section display the conversation which the login user as one of the team member', ['P2', 'Team section']), async (t) => {
   await setupSDK(t);
   await unifiedLogin(t)
+    .chain(t => t.wait(10000))
+    .log('1. should navigate to Team Section')
     .shouldNavigateTo(TeamSection)
+    .log('2. First group should be a team')
     .shouldBeTeam();
 });
 
 test(formalName('Modify team name', ['P0', 'Team section']), async (t) => {
+  const randomTeamName = Math.random().toString(10);
   await setupSDK(t);
   await unifiedLogin(t)
+    .chain(t => t.wait(10000))
+    .log('1. should navigate to Team Section')
     .shouldNavigateTo(TeamSection)
-    .teamNameShouldChange();
+    .log('2. Modify team name')
+    .modifyTeamName(randomTeamName)
+    .chain(t => t.wait(10000))
+    .teamNameShouldBe(randomTeamName);
 });
