@@ -18,7 +18,7 @@ const ALLOW_RANGE = 0.05;
 raiseCoverage(summaryPath, thresholdPath);
 
 function raiseCoverage(summaryPath, thresholdPath) {
-  log(chalk.green('=============================\n'));
+  log(chalk.green('\n=============================\n'));
 
   const summary = readJSON(summaryPath);
   const threshold = readJSON(thresholdPath);
@@ -32,6 +32,7 @@ function raiseCoverage(summaryPath, thresholdPath) {
     logCoverage(key, pct, newPct);
   });
 
+  log('\n');
   if (improved) {
     writeJSON(thresholdPath, threshold);
     log(chalk.green.bold('Good job!!!'));
