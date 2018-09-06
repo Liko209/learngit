@@ -6,6 +6,7 @@
 import storeManager from '../../store';
 import { getGroupName } from '../groupName';
 import BasePresenter from '../../store/base/BasePresenter';
+import { toJS } from 'mobx';
 const personStore = {
   get: jest.fn(),
 };
@@ -26,6 +27,7 @@ describe('getGroupName', () => {
           isTeam: true,
           setAbbreviation: 'aaa',
           dispose: () => { },
+          toJS: () => { },
         },
       )).toBe('aaa');
     });
@@ -41,6 +43,7 @@ describe('getGroupName', () => {
           isTeam: false,
           setAbbreviation: 'aaa',
           dispose: () => { },
+          toJS: () => { },
         },
       )).toBe('aaa');
     });
@@ -61,6 +64,7 @@ describe('getGroupName', () => {
           isTeam: false,
           setAbbreviation: 'aaa',
           dispose: () => { },
+          toJS: () => { },
         },
         1),
       ).toBe('Jack (me)');
@@ -88,6 +92,7 @@ describe('getGroupName', () => {
           isTeam: false,
           setAbbreviation: 'aaa',
           dispose: () => { },
+          toJS: () => { },
         },
         1)).toBe('Jack');
     });
@@ -157,6 +162,7 @@ describe('getGroupName', () => {
             isTeam: false,
             setAbbreviation: 'aaa',
             dispose: () => { },
+            toJS: () => { },
           },
           1)).toBe('Andy, Hu, Jeffrey, Shining, 01david, +Casey, lip.wang@ringcentral.com, 01david@rc.come, +chris.zhan@ringcentral.com');
       },

@@ -1,14 +1,11 @@
 import { Item } from 'sdk/models';
-import { IEntity } from '../store';
-export default class ItemModel implements IEntity {
-  id: number;
+import Base from './Base';
+export default class ItemModel extends Base<Item> {
   constructor(data: Item) {
-    this.id = data.id;
+    super(data);
   }
 
   static fromJS(data: Item) {
     return new ItemModel(data);
   }
-
-  dispose() { }
 }

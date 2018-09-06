@@ -38,6 +38,7 @@ function getKnobs() {
   const disabled = boolean('disabled', false);
   const awake = boolean('awake', true);
   const invisible = boolean('invisible', false);
+  const checked = boolean('checked', false);
   return {
     content,
     size,
@@ -45,6 +46,7 @@ function getKnobs() {
     disabled,
     awake,
     invisible,
+    checked,
   };
 }
 

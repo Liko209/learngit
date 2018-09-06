@@ -93,3 +93,5 @@ export const LeftNav = (props: TNavProps) => {
     </Left>
   );
 };
+
+export default LeftNav;

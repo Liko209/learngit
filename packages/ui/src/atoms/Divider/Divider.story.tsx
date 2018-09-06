@@ -5,21 +5,21 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { Divider } from '.';
+import { JuiDivider } from '.';
 import { withInfoDecorator } from '../../utils/decorators';
 
 storiesOf('Atoms/Divider 🔜', module)
-  .addDecorator(withInfoDecorator(Divider, { inline: true }))
+  .addDecorator(withInfoDecorator(JuiDivider, { inline: true }))
   .add('default', () => (
     <div>
       <h2>test</h2>
       <p>test test test test test</p>
-      <Divider />
+      <JuiDivider />
       <h2>test</h2>
       <p>test test test test test</p>
-      <Divider />
+      <JuiDivider />
       <h2>test</h2>
       <p>test test test test test</p>
-      <Divider />
+      <JuiDivider />
     </div>
   ));

@@ -1,14 +1,11 @@
-import { IEntity } from './../store.d';
 import { Post } from 'sdk/models';
-export default class PostModel implements IEntity {
-  id: number;
+import Base from './Base';
+export default class PostModel extends Base<Post> {
   constructor(data: Post) {
-    this.id = data.id;
+    super(data);
   }
 
   static fromJS(data: Post) {
     return new PostModel(data);
   }
-
-  dispose() { }
 }
