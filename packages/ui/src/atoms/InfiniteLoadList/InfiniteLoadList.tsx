@@ -34,13 +34,13 @@ const ScrollContainer = styled.div`
 `;
 
 const ListContainer = styled<{flipped:boolean}, 'div'>('div')`
+  @media all and (-ms-high-contrast:none){
+    & { height: 0 }
+    *::-ms-backdrop, & { height: 0 } /* IE11 */
+  }
   display:flex;
   flex-grow:1;
   flex-direction:column;
-  @media all and (-ms-high-contrast:none){
-    .foo { color: green } /* IE10 */
-    *::-ms-backdrop, .foo { color: red } /* IE11 */
-}
   min-height:100%;
   justify-content:${({ flipped }) => (flipped ? 'flex-end' :'flex-start')};
 `;
