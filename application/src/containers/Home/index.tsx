@@ -23,7 +23,7 @@ interface IProps extends RouteComponentProps<any> {
 interface IStates {
   expanded: boolean;
 }
-const UMI_Count = [120, 0, 16, 1, 0, 1, 99, 0, 11];
+const UMI_Count = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 class Home extends Component<IProps, IStates>  {
   private homePresenter: HomePresenter;
   constructor(props: IProps) {
