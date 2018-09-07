@@ -34,6 +34,21 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
       db.db.on('ready', () => {
         this.getKVDao(ConfigDao).put(DB_SCHEMA_VERSION, schema.version);
       });
+      const isIEOrEdge = typeof navigator !== 'undefined'
+        && /(MSIE|Trident|Edge)/.test(navigator.userAgent);
+      if (isIEOrEdge) {
+        const BLOCK_MESSAGE_KEY = 'DB_VERSION_CHANGE';
+        const BLOCK_MESSAGE_VALUE = '1';
+        db.db.on('blocked', () => {
+          localStorage.setItem(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
+        });
+        window.addEventListener('storage', async (e) => {
+          if (e.key === BLOCK_MESSAGE_KEY && e.newValue === BLOCK_MESSAGE_VALUE) {
+            localStorage.removeItem(BLOCK_MESSAGE_KEY);
+            await this.dbManager.deleteDatabase();
+          }
+        });
+      }
     }
   }
 
