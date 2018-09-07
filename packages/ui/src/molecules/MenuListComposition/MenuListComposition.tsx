@@ -22,12 +22,28 @@ const MenuListCompositionWrapper = styled.div`
 
 const MenuWrapper = styled(Popper)``;
 
-class MenuListComposition extends React.Component<TIconMore, { open: boolean }> {
+class MenuListComposition extends React.Component<TIconMore, { open: boolean, screenSize: number; }> {
   state = {
     open: false,
+    screenSize: 0,
   };
 
   anchorEl = React.createRef<HTMLElement>();
+
+  onWindowResize = () => {
+    if (document.body.clientWidth <= 601) {
+      this.setState({ open: false });
+    }
+  }
+  componentDidMount() {
+    this.setState({
+      screenSize: document.body.clientWidth,
+    });
+    window.addEventListener('resize', this.onWindowResize);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onWindowResize);
+  }
 
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
@@ -69,9 +85,7 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
               <Paper>
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList>
-                    <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                    <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                    <MenuItem onClick={this.props.handleSignOutClick}>Logout</MenuItem>
+                    <MenuItem onClick={this.props.handleSignOutClick}>SignOut</MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>

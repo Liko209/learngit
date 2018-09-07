@@ -22,7 +22,6 @@ type TTopBarProps = {
 
 type TTopBarState = {
   topBarState: 'resting' | 'hover';
-  screenSize: number;
   isShowSearchBar: boolean;
 };
 
@@ -130,12 +129,12 @@ const TopRight = styled.div`
     width: 264px;
   }
 
-  @media (min-width: 1100px) and (max-width: 1279px) {
+  @media (min-width: 1101px) and (max-width: 1279px) {
     flex: 1;
   }
 
   @media (max-width: 1100px) {
-    width: 96px;
+    width: 84px;
   }
 
   @media (max-width: 600px) {
@@ -155,24 +154,9 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
   constructor(props: TTopBarProps) {
     super(props);
     this.state = {
-      screenSize: 0,
       topBarState: 'resting',
       isShowSearchBar: false,
     };
-  }
-  onWindowResize = () => {
-    this.setState({
-      screenSize: document.body.clientWidth,
-    });
-  }
-  componentDidMount() {
-    this.setState({
-      screenSize: document.body.clientWidth,
-    });
-    window.addEventListener('resize', this.onWindowResize);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.onWindowResize);
   }
 
   handleMouseOver = () => {
