@@ -38,12 +38,12 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
       const isIEOrEdge = /(MSIE|Trident|Edge)/.test(navigator.userAgent);
       if (isIEOrEdge) {
         const BLOCK_MESSAGE_KEY = 'DB_VERSION_CHANGE';
-        const BLOCK_MESSAGE_VALUE = '1';
+        const BLOCK_MESSAGE_VALUE = 1;
         db.db.on('blocked', () => {
           configDao.put(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
         });
         window.addEventListener('storage', async (e) => {
-          if (e.key === configDao.getKey(BLOCK_MESSAGE_KEY) && e.newValue === BLOCK_MESSAGE_VALUE) {
+          if (e.key === configDao.getKey(BLOCK_MESSAGE_KEY) && Number(e.newValue) === BLOCK_MESSAGE_VALUE) {
             configDao.remove(BLOCK_MESSAGE_KEY);
             await this.dbManager.deleteDatabase();
           }
