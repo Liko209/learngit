@@ -11,7 +11,7 @@ fixture('ConversationStream/ConversationStream')
   .afterEach(tearDown());
 
 test(
-  formalName('The posts in the conversation should be displayed in the order of recency (date/time)', ['P1', 'ConversationStream']), async (t) => {
+  formalName('The posts in the conversation should be displayed in the order of recency (date/time)', ['P1', 'JPT-52', 'ConversationStream']), async (t) => {
     await unifiedLogin(t)
     .chain(t => t.wait(10000))
     .log('1. Navigate to ConversationStream')
@@ -29,7 +29,7 @@ test(
   });
 
 test(
-  formalName('No post in conversation when the conversation', ['P2', 'ConversationStream']), async (t) => {
+  formalName('No post in conversation when the conversation', ['P2', 'JPT-53', 'ConversationStream']), async (t) => {
     await unifiedLogin(t)
     .chain(t => t.wait(10000))
     .log('1. Navigate to team section')
@@ -44,7 +44,7 @@ test(
   });
 
 test(
-  formalName('Should be able to read the newest posts once open a conversation', ['P0', 'ConversationStream']),
+  formalName('Should be able to read the newest posts once open a conversation', ['P0', 'JPT-65', 'ConversationStream']),
   async (t) => {
     await unifiedLogin(t)
     .shouldNavigateTo(ConversationStream)
