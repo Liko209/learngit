@@ -16,7 +16,7 @@ fixture('teamSection')
 
 const randomTeamName = 'Team' + Number(new Date());
 
-test(formalName('Team section display the conversation which the login user as one of the team member', ['P2', 'Team section']), async (t) => {
+test(formalName('Team section display the conversation which the login user as one of the team member', ['P2', 'JPT-12', 'Team section']), async (t) => {
   await setupSDK(t);
   await unifiedLogin(t)
     .chain(t => t.wait(10000))
@@ -26,7 +26,7 @@ test(formalName('Team section display the conversation which the login user as o
     .shouldBeTeam();
 });
 
-test(formalName('Modify team name', ['P0', 'Team section']), async (t) => {
+test(formalName('Each conversation should be represented by the team name.', ['P0', ' JPT-13', 'Team section']), async (t) => {
   const randomTeamName = Math.random().toString(10);
   await setupSDK(t);
   await unifiedLogin(t)
