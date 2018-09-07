@@ -24,7 +24,7 @@ test(formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']), async 
       await t.wait(2000);
       const client701 = await h.glipApiManager.getClient(h.users.user701, h.companyNumber);
       for (let i = 0; i < MAX_NUMBER; i += 1) {
-        const resp = await client701.createGroup({
+        const resp = await client701.createTeam({
           name: i + '_' + Date.now() + '_JPT57teams',
           description: 'test' + i,
           type: TYPE,
