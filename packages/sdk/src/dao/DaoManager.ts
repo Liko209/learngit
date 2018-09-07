@@ -30,20 +30,21 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
     }
 
     const db = this.dbManager.getDatabase();
+    const configDao = this.getKVDao(ConfigDao);
     if (db instanceof DexieDB) {
       db.db.on('ready', () => {
-        this.getKVDao(ConfigDao).put(DB_SCHEMA_VERSION, schema.version);
+        configDao.put(DB_SCHEMA_VERSION, schema.version);
       });
       const isIEOrEdge = /(MSIE|Trident|Edge)/.test(navigator.userAgent);
       if (isIEOrEdge) {
         const BLOCK_MESSAGE_KEY = 'DB_VERSION_CHANGE';
         const BLOCK_MESSAGE_VALUE = '1';
         db.db.on('blocked', () => {
-          this.getKVDao(ConfigDao).put(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
+          configDao.put(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
         });
         window.addEventListener('storage', async (e) => {
-          if (e.key === BLOCK_MESSAGE_KEY && e.newValue === BLOCK_MESSAGE_VALUE) {
-            this.getKVDao(ConfigDao).remove(BLOCK_MESSAGE_KEY);
+          if (e.key === configDao.getKey(BLOCK_MESSAGE_KEY) && e.newValue === BLOCK_MESSAGE_VALUE) {
+            configDao.remove(BLOCK_MESSAGE_KEY);
             await this.dbManager.deleteDatabase();
           }
         });
