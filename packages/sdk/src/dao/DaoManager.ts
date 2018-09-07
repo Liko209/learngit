@@ -40,11 +40,11 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
         const BLOCK_MESSAGE_KEY = 'DB_VERSION_CHANGE';
         const BLOCK_MESSAGE_VALUE = '1';
         db.db.on('blocked', () => {
-          localStorage.setItem(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
+          this.getKVDao(ConfigDao).put(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
         });
         window.addEventListener('storage', async (e) => {
           if (e.key === BLOCK_MESSAGE_KEY && e.newValue === BLOCK_MESSAGE_VALUE) {
-            localStorage.removeItem(BLOCK_MESSAGE_KEY);
+            this.getKVDao(ConfigDao).remove(BLOCK_MESSAGE_KEY);
             await this.dbManager.deleteDatabase();
           }
         });
