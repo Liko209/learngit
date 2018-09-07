@@ -34,8 +34,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
       db.db.on('ready', () => {
         this.getKVDao(ConfigDao).put(DB_SCHEMA_VERSION, schema.version);
       });
-      const isIEOrEdge = typeof navigator !== 'undefined'
-        && /(MSIE|Trident|Edge)/.test(navigator.userAgent);
+      const isIEOrEdge = /(MSIE|Trident|Edge)/.test(navigator.userAgent);
       if (isIEOrEdge) {
         const BLOCK_MESSAGE_KEY = 'DB_VERSION_CHANGE';
         const BLOCK_MESSAGE_VALUE = '1';
