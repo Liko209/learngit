@@ -34,7 +34,6 @@ class TeamSection extends BaseComponent {
       await this.team0();
       const id = (await this.team0.getReact()).key;
       const randomName = Math.random().toString(36).substring(7);
-      await this._modifyTeamName(id, randomName);
       await t.expect(this._getTeamName(this.team0)).eql(randomName, { timeout: 10000 });
     });
   }
@@ -52,8 +51,15 @@ class TeamSection extends BaseComponent {
   }
 
   public createTeam() {
-    return this.chain(async (t) => {
-      return this._createTeam();
+    return this.chain(async (t, h) => {
+      const client701 = await h.glipApiManager.getClient(h.users.user701, h.companyNumber);
+      await client701.createTeam({
+        type: 'Team',
+        isPublic: true,
+        name: `My Team ${Math.random().toString(10)}`,
+        description: 'Best team ever',
+        members: [h.users.user701.rc_id.toString()],
+      });
     });
   }
 
@@ -61,17 +67,11 @@ class TeamSection extends BaseComponent {
     return (await GroupAPI.requestGroupById(id)).data;
   }
 
-  private async _modifyTeamName(id: number, name: string) {
-    return GroupAPI.modifyGroupById(id, { set_abbreviation: name });
-  }
-  private async _createTeam() {
-    return GroupAPI.createTeam({
-      creator_id: 21125873667,
-      description: Math.random().toString(36),
-      email_friendly_abbreviation: 'test1fdfdf',
-      is_new: true,
-      is_public: false,
-      is_team: true,
+  modifyTeamName(name) {
+    return  this.chain(async(t) => {
+      await t.expect(this.team0.exists).ok('Fail to find the team, probably caused by long-time loading');
+      const id = (await this.team0.getReact()).key;
+      return await GroupAPI.modifyGroupById(id, { set_abbreviation: name });
     });
   }
 }

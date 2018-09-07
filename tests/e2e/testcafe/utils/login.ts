@@ -47,6 +47,7 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
     .shouldNavigateTo(UnifiedLoginPage)
     .clickLogin()
     .shouldNavigateTo(RingcentralSignInNavigationPage)
+    .cleanInput()
     .setCredential(credential)
     .toNextPage()
     .shouldNavigateTo(RingcentralSignInPage)
