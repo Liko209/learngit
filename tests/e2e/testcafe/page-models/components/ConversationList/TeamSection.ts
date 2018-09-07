@@ -13,14 +13,16 @@ class TeamSection extends BaseComponent {
     return ReactSelector('ConversationListSection').withProps('title', 'Teams');
   }
 
-  get team() {
+  get team0() {
     return this.teamSection.findReact('ConversationListItem').nth(0);
   }
-
+  get teams() {
+    return this.teamSection.findReact('ConversationListItem');
+  }
   public shouldBeTeam() {
     return this.chain(async (t) => {
-      await t.expect(this.team.exists).ok('Fail to find the team, probably caused by long-time loading');
-      const id = (await this.team.getReact()).key;
+      await t.expect(this.team0.exists).ok('Fail to find the team, probably caused by long-time loading');
+      const id = (await this.team0.getReact()).key;
       const props = (await this._getTeamProps(id));
       return await t.expect(props.is_team).ok(`Team ${id} is not a team`);
     });
@@ -28,7 +30,7 @@ class TeamSection extends BaseComponent {
 
   public teamNameShouldBe(name) {
     return this.chain(async (t) => {
-      const text = () => this.team.findReact('Typography').innerText;
+      const text = () => this.team0.findReact('Typography').innerText;
       return await t.expect(text()).eql(name, 'wrong name');
     });
   }
@@ -52,9 +54,16 @@ class TeamSection extends BaseComponent {
 
   modifyTeamName(name) {
     return  this.chain(async(t) => {
-      await t.expect(this.team.exists).ok('Fail to find the team, probably caused by long-time loading');
-      const id = (await this.team.getReact()).key;
+      await t.expect(this.team0.exists).ok('Fail to find the team, probably caused by long-time loading');
+      const id = (await this.team0.getReact()).key;
       return await GroupAPI.modifyGroupById(id, { set_abbreviation: name });
+    });
+  }
+  checkTeamIndex(id: number, i: number) {
+    return this.chain(async (t) => {
+      await this.teams();
+      const component = await this.teams.nth(i).getReact();
+      await t.expect(component.key).eql(id);
     });
   }
 }
