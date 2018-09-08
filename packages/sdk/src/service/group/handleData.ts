@@ -21,6 +21,7 @@ import { GROUP_QUERY_TYPE } from '../constants';
 
 async function getExistedAndTransformDataFromPartial(groups: Partial<Raw<Group>>[]): Promise<Group[]> {
   const groupDao = daoManager.getDao<GroupDao>(GroupDao);
+
   const transformedData: (Partial<Group> | null)[] = await Promise.all(
     groups.map(async (item: Partial<Raw<Group>>) => {
       if (item._id) {
@@ -276,24 +277,25 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
 
 async function handleGroupMostRecentPostChanged(posts: Post[]) {
   const groupDao = daoManager.getDao(GroupDao);
-  let validGroups: Group[] = [];
+  let validGroups: Partial<Raw<Group>>[] = [];
   await groupDao.doInTransaction(async () => {
-    const groups: (null | Group)[] = await Promise.all(
+    const groups: (null | Partial<Raw<Group>>)[] = await Promise.all(
       posts.map(async (post) => {
         const group: null | Group = await groupDao.get(post.group_id);
         if (group) {
-          group.most_recent_content_modified_at = post.modified_at;
-          group.most_recent_post_created_at = post.created_at;
-          group.most_recent_post_id = post.id;
-          return group;
+          const pg: Partial<Raw<Group>> = {
+            _id: post.group_id, most_recent_post_created_at: post.created_at,
+            most_recent_content_modified_at: post.modified_at, most_recent_post_id: post.id,
+          };
+          return pg;
         }
         return null;
       }),
     );
-    validGroups = groups.filter(item => item !== null) as Group[];
-  });
 
-  await saveDataAndDoNotification(validGroups);
+    validGroups = groups.filter(item => item !== null) as Partial<Raw<Group>>[];
+  });
+  await handlePartialData(validGroups);
 }
 
 function getGroupTime(group: Group) {
