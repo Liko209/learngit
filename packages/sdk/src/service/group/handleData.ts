@@ -275,14 +275,34 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
   }
 }
 
+function isNeedToUpdateMostRecent4Group(post: Post, group: Group): boolean {
+  return !group.most_recent_post_created_at || group.most_recent_post_created_at < post.created_at;
+}
+
+function getUniqMostRecentPostsByGroup(posts: Post[]): Post[] {
+  const groupedPosts = _.groupBy(posts, 'group_id');
+
+  const uniqMaxPosts: Post[] = [];
+  _.each(groupedPosts, (item) => {
+    const sortedItem = _.orderBy(item, ['created_at'], ['desc']);
+    const maxItem = _.head(sortedItem);
+    if (maxItem) {
+      uniqMaxPosts.push(maxItem);
+    }
+  });
+
+  return uniqMaxPosts;
+}
+
 async function handleGroupMostRecentPostChanged(posts: Post[]) {
+  const uniqMaxPosts = getUniqMostRecentPostsByGroup(posts);
   const groupDao = daoManager.getDao(GroupDao);
   let validGroups: Partial<Raw<Group>>[] = [];
   await groupDao.doInTransaction(async () => {
     const groups: (null | Partial<Raw<Group>>)[] = await Promise.all(
-      posts.map(async (post) => {
+      uniqMaxPosts.map(async (post) => {
         const group: null | Group = await groupDao.get(post.group_id);
-        if (group) {
+        if (group && isNeedToUpdateMostRecent4Group(post, group)) {
           const pg: Partial<Raw<Group>> = {
             _id: post.group_id, most_recent_post_created_at: post.created_at,
             most_recent_content_modified_at: post.modified_at, most_recent_post_id: post.id,
@@ -363,4 +383,6 @@ export {
   filterGroups,
   sortFavoriteGroups,
   handlePartialData,
+  isNeedToUpdateMostRecent4Group,
+  getUniqMostRecentPostsByGroup,
 };
