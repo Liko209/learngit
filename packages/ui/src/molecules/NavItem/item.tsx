@@ -3,7 +3,7 @@
  * @Date: 2018-8-22 11:12:02
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { PureComponent } from 'react';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import { NavLink } from 'react-router-dom';
 import MuiListItemText, {
@@ -121,44 +121,52 @@ export type TNavItemProps = {
   url?: string;
   unreadCount: number;
   invert?: boolean;
+  handleTitle?: Function;
+  handleRouterChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
 };
-
-const NavItem = (props: TNavItemProps) => {
-  const { expand, active, title, variant, unreadCount, icon, url } = props;
-  const NavItems = (
-    <ListItem
-      button={true}
-      tabIndex={-1}
-      active={active}
-      data-anchor={title}
-      disableRipple={true}
-      focusVisibleClassName={'left-item-focus'}
-      disableGutters={true}
-      expand={expand}
-    >
-      <ListLink to={`/${url}`} className={'left-link'} title={title}>
-        <NavIcon component={icon} active={active} className={'nav-icon'} />
-        <ListItemText expand={expand} className={'nav-text'} aria-label={title}>
-          {title}
-        </ListItemText>
-        <UMI
-          unreadCount={unreadCount}
-          important={true}
-          expand={expand}
-          variant={variant}
-        />
-      </ListLink>
-    </ListItem>
-  );
-  return !expand ? (
-    <ArrowTip
-      title={title}
-      enterDelay={400}
-      placement="top"
-      node={NavItems}
-    />
-  ) : (
-    NavItems
-  );
-};
+class NavItem extends PureComponent<TNavItemProps> {
+  constructor(props: TNavItemProps) {
+    super(props);
+  }
+  render() {
+    const { expand, active, title, variant, unreadCount, icon, url, handleTitle, handleRouterChange } = this.props;
+    active ? handleTitle!(title) : null;
+    const NavItems = (
+      <ListItem
+        button={true}
+        tabIndex={-1}
+        active={active}
+        data-anchor={title}
+        disableRipple={true}
+        focusVisibleClassName={'left-item-focus'}
+        disableGutters={true}
+        expand={expand}
+      >
+        <ListLink to={`/${url}`} className={'left-link'} onClick={handleRouterChange}>
+          <NavIcon component={icon} active={active} className={'nav-icon'} />
+          <ListItemText expand={expand} className={'nav-text'} aria-label={title}>
+            {title}
+          </ListItemText>
+          <UMI
+            unreadCount={unreadCount}
+            important={true}
+            expand={expand}
+            variant={variant}
+          />
+        </ListLink>
+      </ListItem>
+    );
+    return !expand ? (
+      <ArrowTip
+        title={title}
+        enterDelay={400}
+        placement="right"
+      >
+        {NavItems}
+      </ArrowTip>
+    ) : (
+      NavItems
+    );
+  }
+}
 export default NavItem;

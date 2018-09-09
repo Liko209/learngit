@@ -13,16 +13,30 @@ import JuiIconButton from '../../molecules/IconButton';
 import MenuListComposition from '../../molecules/MenuListComposition';
 import { PresenceProps } from '../../atoms';
 import { spacing } from '../../utils';
+import AvatarWithPresence from '../../molecules/AvatarWithPresence';
+import MenuItem from '@material-ui/core/MenuItem';
 
 type TTopBarProps = {
+  showLeftPanel: boolean,
+  showRightPanel: boolean,
   avatar?: string;
+  awake?: boolean;
   onLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
   onSignOutClick: ((event: React.MouseEvent<HTMLInputElement>) => void);
+  menuItems?: any[];
+  forwardDisabled?: boolean;
+  backDisabled?: boolean;
+  handleNavClose?: ((event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index: number) => void);
+  handleBackWard?: ((event: React.MouseEvent<HTMLSpanElement>) => void);
+  handleForward?: ((event: React.MouseEvent<HTMLSpanElement>) => void);
+  handleButtonPress?: ((event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
+  handleButtonRelease?: ((event: React.TouchEvent|React.MouseEvent<HTMLElement>, nav: string) => void);
 } & PresenceProps;
 
 type TTopBarState = {
   topBarState: 'resting' | 'hover';
   screenSize: number;
+  open: boolean;
   isShowSearchBar: boolean;
 };
 
@@ -156,9 +170,20 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
     super(props);
     this.state = {
       screenSize: 0,
+      open: false,
       topBarState: 'resting',
       isShowSearchBar: false,
     };
+  }
+  anchorEl = React.createRef<HTMLElement>();
+  handleClose = (event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<Element>) => {
+    const node = this.anchorEl.current;
+    if (node && node.contains(event.currentTarget)) {
+      return;
+    }
+    this.setState({
+      open: false,
+    });
   }
   onWindowResize = () => {
     this.setState({
@@ -197,9 +222,32 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
       isShowSearchBar,
     });
   }
+  handleToggle = () => {
+    this.setState({
+      open: !this.state.open,
+    });
+  }
+  handleMenuItem = () => {
+    const signOut = <MenuItem onClick={this.props.onSignOutClick} key={2}>Logout</MenuItem>;
+    const MENUITEM = [signOut];
+    return MENUITEM;
+  }
 
   render() {
-    const { topBarState, isShowSearchBar } = this.state;
+    const { topBarState, isShowSearchBar, open } = this.state;
+    const {
+      avatar,
+      presence,
+      handleBackWard,
+      handleForward,
+      menuItems,
+      showLeftPanel,
+      showRightPanel,
+      backDisabled,
+      forwardDisabled,
+      handleNavClose,
+      handleButtonPress,
+      handleButtonRelease } = this.props;
     const isElectron = navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
     return (
       <StyledTopBar>
@@ -211,13 +259,45 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               </JuiIconButton>
               <TopLogo variant="headline">RingCentral</TopLogo>
             </MenuWithLogo>
-            <BackForward invisible={!isElectron}>
-              <JuiIconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
-                chevron_left
-              </JuiIconButton>
-              <JuiIconButton tooltipTitle="Forward" size="small" awake={topBarState === 'hover'}>
-                chevron_right
-              </JuiIconButton>
+            <BackForward invisible={isElectron}>
+              <StyledMenuListComposition
+                items={menuItems}
+                open={showLeftPanel}
+                handleClose={handleNavClose!}
+              >
+                <JuiIconButton
+                  tooltipTitle="Backward"
+                  size="small"
+                  awake={topBarState === 'hover'}
+                  onClick={handleBackWard}
+                  disabled={backDisabled}
+                  onTouchStart={handleButtonPress}
+                  onTouchEnd={handleButtonRelease!.bind(this, '', 'backward')}
+                  onMouseDown={handleButtonPress}
+                  onMouseUp={handleButtonRelease!.bind(this, '', 'backward')}
+                >
+                  chevron_left
+                </JuiIconButton>
+              </StyledMenuListComposition>
+              <StyledMenuListComposition
+                items={menuItems}
+                open={showRightPanel}
+                handleClose={handleNavClose!}
+              >
+                <JuiIconButton
+                  tooltipTitle="Forward"
+                  size="small"
+                  awake={topBarState === 'hover'}
+                  onClick={handleForward}
+                  disabled={forwardDisabled}
+                  onTouchStart={handleButtonPress}
+                  onTouchEnd={handleButtonRelease!.bind(this, '', 'forward')}
+                  onMouseDown={handleButtonPress}
+                  onMouseUp={handleButtonRelease!.bind(this, '', 'forward')}
+                >
+                  chevron_right
+                </JuiIconButton>
+              </StyledMenuListComposition>
             </BackForward>
             <StyledSearchBar setSearchBarState={this.setSearchBarState} />
             <StyledIconSearch onClick={this.showSearchBar} tooltipTitle="Search" size="medium" awake={topBarState === 'hover'}>
@@ -233,14 +313,18 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               add_circle
             </StyledIconPlus>
             <StyledMenuListComposition
-              awake={topBarState === 'hover'}
-              handleSignOutClick={this.props.onSignOutClick}
-              src={this.props.avatar}
-              presence={this.props.presence}
-            />
-            <StyledIconMore tooltipTitle="More" size="medium" awake={topBarState === 'hover'}>
-              more_vert
-            </StyledIconMore>
+              items={this.handleMenuItem()}
+              handleClose={this.handleClose}
+              open={open}
+            >
+              <AvatarWithPresence
+                innerRef={this.anchorEl}
+                aria-haspopup="true"
+                src={avatar}
+                presence={presence}
+                onClick={this.handleToggle}
+              />
+            </StyledMenuListComposition>
           </TopRight>
         </TopBarWrapper>
       </StyledTopBar>

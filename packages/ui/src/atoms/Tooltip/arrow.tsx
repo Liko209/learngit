@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
 
 const styles = createStyles({
   arrowPopper: {
@@ -31,6 +31,16 @@ const styles = createStyles({
         borderColor: '#616161 transparent transparent',
       },
     },
+    '&[x-placement*="right"] $arrowArrow': {
+      left: 0,
+      marginLeft: '-0.9em',
+      height: '3em',
+      width: '1em',
+      '&::before': {
+        borderWidth: '1em 1em 1em 0',
+        borderColor: `transparent #616161 transparent transparent`,
+      },
+    },
   },
   arrowArrow: {
     position: 'absolute',
@@ -52,22 +62,12 @@ const styles = createStyles({
   tooltipPlacementTop: {
     margin: '16px 0',
   },
+  tooltipPlacementRight: {
+    margin: '2px 0',
+  },
 });
-export interface IProps {
-  title?: string;
-  node: JSX.Element;
-  enterDelay?: number;
-  leaveDelay?: number;
-  classes?: {
-    arrowPopper: string;
-    arrowArrow: string;
-    tooltipPlacementBottom: string;
-    tooltipPlacementTop: string;
-  };
-  placement?: string;
-}
 
-class CustomizedTooltips extends React.Component<IProps & WithStyles> {
+class CustomizedTooltips extends React.Component<TooltipProps & WithStyles> {
   state = {
     arrowRef: null,
   };
@@ -77,11 +77,10 @@ class CustomizedTooltips extends React.Component<IProps & WithStyles> {
     });
   }
   render() {
-    const { classes, title, node, enterDelay, leaveDelay } = this.props;
+    const { title, classes, children, ...rest } = this.props;
     return (
       <Tooltip
-        enterDelay={enterDelay}
-        leaveDelay={leaveDelay}
+        {...rest}
         title={
           <React.Fragment>
             {title}
@@ -92,6 +91,7 @@ class CustomizedTooltips extends React.Component<IProps & WithStyles> {
           popper: classes.arrowPopper,
           tooltipPlacementBottom: classes.tooltipPlacementBottom,
           tooltipPlacementTop: classes.tooltipPlacementTop,
+          tooltipPlacementRight: classes.tooltipPlacementRight,
         }}
         PopperProps={{
           popperOptions: {
@@ -104,7 +104,7 @@ class CustomizedTooltips extends React.Component<IProps & WithStyles> {
           },
         }}
       >
-        {node}
+        {children}
       </Tooltip>
     );
   }

@@ -53,14 +53,16 @@ const Left = styled<TLeftNav>(CustomLeftNav)`
 type TNavProps = {
   expanded: boolean;
   id: string;
-  umiCount: number[];
+  umiCount: any[];
+  handleTitle?: Function;
+  handleRouterChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
   icons: {
     icon: string,
     title: string,
   }[][];
 };
 export const LeftNav = (props: TNavProps) => {
-  const { expanded, icons, umiCount } = props;
+  const { expanded, icons, umiCount, handleTitle, handleRouterChange } = props;
   return (
     <Left expand={expanded} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={props.id}>
       {icons.map((arr, index) => {
@@ -74,7 +76,7 @@ export const LeftNav = (props: TNavProps) => {
               arr.map((item, idx) => {
                 const navUrl = item.icon.toLocaleLowerCase();
                 const isActive = window.location.pathname.slice(1) === navUrl;
-                const umiType = umiCount[idx];
+                const umiType = umiCount.length ? umiCount[idx] : 0;
                 return (<NavItem
                   expand={expanded}
                   url={navUrl}
@@ -82,6 +84,8 @@ export const LeftNav = (props: TNavProps) => {
                   icon={item.icon}
                   title={item.title}
                   key={idx}
+                  handleRouterChange={handleRouterChange}
+                  handleTitle={handleTitle}
                   variant="count"
                   unreadCount={umiType}
                 />);

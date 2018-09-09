@@ -6,52 +6,47 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
-import AvatarWithPresence from '../AvatarWithPresence';
-import { PresenceProps } from '../../atoms';
 
 type TIconMore = {
-  awake?: boolean;
-  handleSignOutClick?: ((event: React.MouseEvent<HTMLInputElement>) => void);
-  src?: string;
-} & PresenceProps;
+  items?: any[];
+  open: boolean;
+  style?: {
+    top?: number;
+    right?: number
+  };
+  handleClose: ((event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index?: number) => void);
+};
 
 const MenuListCompositionWrapper = styled.div`
+  position: relative;
   display: flex;
   margin-right: ${({ theme }) => `${1 * theme.spacing.unit}px`};
 `;
 
-const MenuWrapper = styled(Popper)``;
+const MenuWrapper = styled(Popper)`
+  position: absolute;
+  top: 30px;
+  left: -20px;
+`;
 
-class MenuListComposition extends React.Component<TIconMore, { open: boolean }> {
-  state = {
-    open: false,
-  };
-
-  anchorEl = React.createRef<HTMLElement>();
-
-  handleToggle = () => {
-    this.setState(state => ({ open: !state.open }));
+class MenuListComposition extends React.Component<TIconMore> {
+  constructor(props: TIconMore) {
+    super(props);
   }
-
-  handleClose = (event: React.MouseEvent<HTMLElement>) => {
-    const node = this.anchorEl.current;
-    if (node && node.contains(event.currentTarget)) {
-      return;
+  componentWillReceiveProps(nextProps: TIconMore) {
+    if (this.props.open !== nextProps.open) {
+      this.setState({
+        open: nextProps.open,
+      });
     }
-
-    this.setState({ open: false });
   }
+  anchorEl = React.createRef<Element>();
 
   render() {
-    const { open } = this.state;
+    const { items, handleClose, open, children } = this.props;
     return (
       <MenuListCompositionWrapper>
-        <AvatarWithPresence
-          innerRef={this.anchorEl}
-          aria-haspopup="true"
-          onClick={this.handleToggle}
-          {...this.props}
-        />
+        {children ? children : null}
         <MenuWrapper
           open={open}
           anchorEl={this.anchorEl.current}
@@ -67,11 +62,13 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
               }}
             >
               <Paper>
-                <ClickAwayListener onClickAway={this.handleClose}>
+                <ClickAwayListener onClickAway={handleClose}>
                   <MenuList>
-                    <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                    <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                    <MenuItem onClick={this.props.handleSignOutClick}>Logout</MenuItem>
+                    {
+                      items!.map((item, index) => {
+                        return (<MenuItem onClick={handleClose.bind(this, event, index)} key={index}>{item}</MenuItem>);
+                      })
+                    }
                   </MenuList>
                 </ClickAwayListener>
               </Paper>

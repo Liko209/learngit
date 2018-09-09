@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled, { keyframes, IDependencies } from '../../styled-components';
+import styled, { keyframes } from '../../styled-components';
 import MuiIconButton, { IconButtonProps as MuiIconButtonProps } from '@material-ui/core/IconButton';
 import MuiIcon from '@material-ui/core/Icon';
-import MuiTooltip from '@material-ui/core/Tooltip';
 import { palette, grey, width } from '../../utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme } from '../../theme';
+import { ArrowTip } from '../../atoms/Tooltip';
 
 type JuiIconButtonProps = {
   tooltipTitle?: string;
@@ -58,7 +58,7 @@ const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
     }
     &:hover {
       background-color: ${({ theme, variant }) => variant === 'plain' ?
-    'transparent' : tinycolor(grey('500')({ theme })).setAlpha(theme.palette.action.hoverOpacity).toRgbString()};
+  'transparent' : tinycolor(grey('500')({ theme })).setAlpha(theme.palette.action.hoverOpacity).toRgbString()};
       ${StyledIcon} {
         color: ${({ theme }) => tinycolor(grey('500')({ theme })).setAlpha(1 - theme.palette.action.hoverOpacity).toRgbString()};
       }
@@ -92,28 +92,26 @@ const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
   font-size: 0;
 `;
 
-type IJuiIconButton = React.StatelessComponent<JuiIconButtonProps> & IDependencies;
-const JuiIconButton: IJuiIconButton = (
+const JuiIconButton: any = (
   props: JuiIconButtonProps,
 ) => {
   const { className, children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
-  return (
-    <MuiTooltip title={tooltipTitle}>
-      <WrapperForTooltip className={className} {...rest}>
-        <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
-          <StyledIcon
-            size={size}
-            variant={variant}
-            awake={awake}
-            disabled={disabled}
-            invisible={invisible}
-          >{children}
-          </StyledIcon>
-        </StyledIconButton>
-      </WrapperForTooltip>
-    </MuiTooltip>
+  const main = (
+    <WrapperForTooltip className={className} {...rest}>
+      <StyledIconButton disableRipple={rest.variant === 'plain'} disabled={disabled}>
+        <StyledIcon
+          size={size}
+          variant={variant}
+          awake={awake}
+          disabled={disabled}
+          invisible={invisible}
+        >{children}
+        </StyledIcon>
+      </StyledIconButton>
+    </WrapperForTooltip>
   );
+  return (tooltipTitle ? <ArrowTip title={tooltipTitle}>{main}</ArrowTip> : main);
 };
 
 JuiIconButton.defaultProps = {
@@ -124,7 +122,7 @@ JuiIconButton.defaultProps = {
   tooltipTitle: '',
 };
 
-JuiIconButton.dependencies = [MuiIconButton, MuiIcon, MuiTooltip];
+JuiIconButton.dependencies = [MuiIconButton, MuiIcon];
 
 export { JuiIconButton, JuiIconButtonProps };
 export default JuiIconButton;
