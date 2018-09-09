@@ -7,7 +7,7 @@ import BaseDao from './base/BaseDao'; // eslint-disable-line
 import BaseKVDao from './base/BaseKVDao'; // eslint-disable-line
 import schema from './schema';
 import Manager from '../Manager';
-import { Newable } from '../types';
+import { INewable } from '../types';
 import ConfigDao from './config/index';
 import { DB_SCHEMA_VERSION, LAST_INDEX_TIMESTAMP } from './config/constants';
 
@@ -69,12 +69,12 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
     return this.dbManager && this.dbManager.isDatabaseOpen();
   }
 
-  getDao<T extends BaseDao<any>>(DaoClass: Newable<T>): T {
+  getDao<T extends BaseDao<any>>(DaoClass: INewable<T>): T {
     const database = this.dbManager.getDatabase();
     return this.get(DaoClass, database);
   }
 
-  getKVDao<T extends BaseKVDao>(KVDaoClass: Newable<T>): T {
+  getKVDao<T extends BaseKVDao>(KVDaoClass: INewable<T>): T {
     const storage = this.kvStorageManager.getStorage();
     return this.get(KVDaoClass, storage);
   }

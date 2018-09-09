@@ -73,14 +73,7 @@ class LogManager {
   }
 
   windowError(msg: string, url: string, line: number) {
-    const message =
-      'Error in (' +
-      (url || window.location) +
-      ') on line ' +
-      line +
-      ' with message (' +
-      msg +
-      ')';
+    const message = `Error in ('${(url || window.location)}) on line ${line} with message (${msg})`;
     this.getMainLogger().fatal(message);
   }
 

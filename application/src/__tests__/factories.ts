@@ -17,7 +17,7 @@ const personModelFactory = Factory.makeFactory<PersonModel>({
   companyId: uniqueNumber(),
   email: faker.internet.email(),
   firstName: faker.name.findName(),
-  lastName: faker.name.lastName(),
+  lastName: faker.name.findName(),
   displayName: '',
   update: () => { },
 });

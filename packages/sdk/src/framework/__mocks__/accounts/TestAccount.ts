@@ -7,16 +7,16 @@
 import { IAuthenticator, AbstractAccount } from '../..';
 import { IAuthResponse, IAuthParams } from '../../account';
 
-interface TestLoginInfo extends IAuthParams {
+interface ITestLoginInfo extends IAuthParams {
   username: string;
   password: string;
 }
 
-class TestLogin implements TestLoginInfo {
+class TestLogin implements ITestLoginInfo {
   username = '123';
   password = '123';
 
-  isMatched(info: TestLoginInfo): boolean {
+  isMatched(info: ITestLoginInfo): boolean {
     return info.username === this.username && info.password === this.password;
   }
 }
@@ -24,7 +24,7 @@ class TestLogin implements TestLoginInfo {
 const validUser = new TestLogin();
 
 class TestAuthenticator implements IAuthenticator {
-  async authenticate(loginInfo: TestLoginInfo): Promise<IAuthResponse> {
+  async authenticate(loginInfo: ITestLoginInfo): Promise<IAuthResponse> {
     const isProvisioned = validUser.isMatched(loginInfo);
     if (isProvisioned) {
       return {

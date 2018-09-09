@@ -6,7 +6,7 @@ import { IResponse } from '../NetworkClient';
 import Api from '../api';
 import { Post, Item, Raw } from '../../models';
 
-export interface PostsModel {
+export interface IPostsModel {
   posts: Raw<Post>[];
   items: Raw<Item>[];
 }
@@ -23,7 +23,7 @@ class PostAPI extends Api {
    * }
    */
   static basePath = '/post';
-  static requestPosts(params: object): Promise<IResponse<PostsModel>> {
+  static requestPosts(params: object): Promise<IResponse<IPostsModel>> {
     return this.glipNetworkClient.get('/posts', params);
   }
 

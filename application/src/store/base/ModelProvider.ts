@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ModelConstructor } from '../models/Base';
+import { IModelConstructor } from '../models/Base';
 
 class ModelProvider {
   ModelCreator: object;
@@ -7,7 +7,7 @@ class ModelProvider {
     this.ModelCreator = {};
   }
 
-  getModelCreator<T>(name: string): ModelConstructor<T> {
+  getModelCreator<T>(name: string): IModelConstructor<T> {
     let Creator = this.ModelCreator[name];
     if (!Creator) {
       Creator = require(`../models/${_.upperFirst(name)}.ts`).default; // eslint-disable-line

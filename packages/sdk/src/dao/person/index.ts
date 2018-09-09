@@ -148,7 +148,7 @@ class PersonDao extends BaseDao<Person> {
     const q1 = this.createQuery().startsWith('first_name', prefix, true);
     const q2 = this.createQuery().startsWith('display_name', prefix, true);
     const q3 = this.createQuery().startsWith('email', prefix, true);
-    const reg = new RegExp('^' + prefix + '.*', 'i');
+    const reg = new RegExp(`^${prefix}.*`, 'i');
 
     let persons = await q1
       .or(q2)

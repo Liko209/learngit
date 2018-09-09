@@ -1,4 +1,4 @@
-import { TokenModel } from './login';
+import { ITokenModel } from './login';
 export interface ITokenRefreshDelegate {
-  refreshRCToken: () => Promise<TokenModel | null>;
+  refreshRCToken: () => Promise<ITokenModel | null>;
 }

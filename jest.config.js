@@ -25,10 +25,11 @@ module.exports = {
   ],
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
-    '^@/(.*)$': `<rootDir>/application/src/$1`,
-    '^#/(.*)$': '<rootDir>/demo/src/$1',
+    '^@/(.*)$': '<rootDir>/application/src/$1',
+    '^sdk/(.*)$': '<rootDir>/packages/sdk/src/$1',
+    '^ui-components/(.*)$': '<rootDir>/packages/ui-components/src/$1',
   },
-  moduleFileExtensions: [
+  moduleFileExtensions:   [
     'web.ts',
     'ts',
     'web.tsx',
@@ -39,7 +40,8 @@ module.exports = {
     'jsx',
     'json',
     'node',
-    'mjs'
+    'mjs',
+    'd.ts'
   ],
   globals: {
     'ts-jest': {

@@ -19,7 +19,7 @@ import { CLIENT_ID } from '../../dao/config/constants';
 import { UserInfo } from '../../models';
 import { mainLogger } from 'foundation';
 import { generateUUID } from '../../utils/mathUtils';
-import { refreshToken, ITokenRefreshDelegate, TokenModel } from '../../api';
+import { refreshToken, ITokenRefreshDelegate, ITokenModel } from '../../api';
 import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware, ErrorTypes } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
@@ -105,7 +105,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
     return id;
   }
 
-  async refreshRCToken(): Promise<TokenModel | null> {
+  async refreshRCToken(): Promise<ITokenModel | null> {
     const authDao = daoManager.getKVDao(AuthDao);
     try {
       const rcToken = authDao.get(AUTH_RC_TOKEN);

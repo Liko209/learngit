@@ -5,10 +5,10 @@
  */
 import Manager from '../Manager';
 import BaseService from './BaseService';
-import { Newable } from '../types';
+import { INewable } from '../types';
 
 class ServiceManager extends Manager<BaseService> {
-  getInstance<T extends BaseService>(ServiceClass: Newable<T>): T {
+  getInstance<T extends BaseService>(ServiceClass: INewable<T>): T {
     return this.get(ServiceClass);
   }
 }

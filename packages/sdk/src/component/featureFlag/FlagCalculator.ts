@@ -2,7 +2,7 @@ import {
   IFlag,
   IFeatureConfig,
   BETA_FEATURE,
-  AccountInfo,
+  IAccountInfo,
   PERMISSION,
   IFlagCalculator,
   Middleware,
@@ -24,7 +24,7 @@ class FlagCalculator implements IFlagCalculator {
     this._flags = {};
     this._permissionKeys = Object.values(PERMISSION);
   }
-  get accountInfo(): AccountInfo {
+  get accountInfo(): IAccountInfo {
     const dao: AccountDao = daoManager.getKVDao(AccountDao);
     const companyId: number = dao.get(ACCOUNT_COMPANY_ID);
     const userId: number = dao.get(ACCOUNT_USER_ID);

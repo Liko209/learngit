@@ -5,8 +5,8 @@
  */
 const exec = require('child_process').execSync;
 const pkgFile = require('../package.json')
-const adminEmail = ['steve.chen@ringcentral.com', 'lyman.lai@ringcentral.com', 'steven.zhuang@ringcentral.com']
-const admin = ['Steve Chen','Lyman Lai', 'Steven Zhuang'];
+const adminEmail = ['steve.chen@ringcentral.com', 'jeffery.huang@ringcentral.com', 'steven.zhuang@ringcentral.com']
+const admin = ['Steve Chen', 'Jeffrey Huang', 'Steven Zhuang'];
 
 function checkGitUser() {
   let gitUser = {};

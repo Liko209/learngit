@@ -13,14 +13,14 @@ import {
 } from '../../dao/account/constants';
 import notificationCenter from '../../service/notificationCenter';
 
-export interface HandleData {
+export interface IHandleData {
   userId?: number;
   companyId?: number;
   profileId?: number;
   clientConfig?: object;
 }
 
-const accountHandleData = ({ userId, companyId, profileId, clientConfig }: HandleData): void => {
+const accountHandleData = ({ userId, companyId, profileId, clientConfig }: IHandleData): void => {
   const dao = daoManager.getKVDao(AccountDao);
   if (userId) {
     notificationCenter.emitConfigPut(ACCOUNT_USER_ID, userId);

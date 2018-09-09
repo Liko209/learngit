@@ -11,7 +11,7 @@ import { IndexDataModel } from '../../api/glip/user';
 import { IResponse } from '../../api/NetworkClient';
 import { progressBar } from '../../utils/progress';
 
-interface Params {
+interface IParams {
   newer_than?: string;
 }
 
@@ -41,7 +41,7 @@ const fetchIndexData = async (
   timeStamp: string,
 ): Promise<IResponse<IndexDataModel>> => {
   progressBar.start();
-  const params: Params = { newer_than: timeStamp };
+  const params: IParams = { newer_than: timeStamp };
 
   notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_EXIST);
 

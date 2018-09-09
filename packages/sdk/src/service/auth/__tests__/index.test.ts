@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /// <reference path="../../../__tests__/types.d.ts" />
-import { NetworkManager } from 'foundation';
 
 import { loginGlip, loginGlip2ByPassword, loginRCByPassword, Api } from '../../../api';
 import { generateCode, oauthTokenViaAuthCode } from '../../../api/ringcentral/auth';
@@ -22,7 +21,6 @@ jest.mock('../../../dao');
 jest.mock('../../notificationCenter');
 jest.mock('../../../framework');
 
-NetworkManager.Instance = new NetworkManager();
 const accountManager: AccountManager = new AccountManager(null);
 const authService: AuthService = new AuthService(accountManager);
 

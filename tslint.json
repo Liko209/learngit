@@ -5,8 +5,6 @@
   ],
   "linterOptions": {
     "exclude": [
-      "demo/**/*",
-      "packages/ui-components/**/*",
       "**/*.json"
     ]
   },
@@ -36,6 +34,10 @@
         "private-method-regex": "^_[a-zA-Z0-9]+$",
         "static-method-regex": "^[a-z][\\w\\d]+$"
       }
+    ],
+    "interface-name": [
+      true,
+      "always-prefix"
     ]
   },
   "jsRules": {
