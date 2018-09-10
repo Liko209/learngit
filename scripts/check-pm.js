@@ -8,17 +8,14 @@ const isNpm = execPath && execPath.indexOf("npm") > -1;
 function log(...msg) {
   console.log(...msg);
 }
-function cyan(...msg) {
-  const chalk = require("chalk");
-  console.log(chalk && chalk.cyan(...msg));
-}
+
 if (!isNpm) {
-  cyan('please use npm to install all dependencies')
+  log('please use npm to install all dependencies')
   log()
   log('To install dependencies:')
-  cyan('$ npm i')
+  log('$ npm i')
   log()
-  cyan('For more help, see https://docs.npmjs.com/.')
+  log('For more help, see https://docs.npmjs.com/.')
 
   process.exit(1)
 }

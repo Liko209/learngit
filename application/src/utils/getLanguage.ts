@@ -24,7 +24,7 @@ const getLanguage = () => {
   }
   const local = locals.find((l: string) => l === arr[1]);
   if (!local) {
-    return arr[0] + '-' + locals[0];
+    return `${arr[0]}-${locals[0]}`;
   }
   return lng;
 };

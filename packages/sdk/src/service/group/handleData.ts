@@ -222,7 +222,7 @@ export default async function handleData(groups: Raw<Group>[]) {
 }
 
 async function doFavoriteGroupsNotification(favIds: number[]) {
-  mainLogger.debug(`-------doFavoriteGroupsNotification--------`);
+  mainLogger.debug('-------doFavoriteGroupsNotification--------');
   if (favIds.length) {
     const dao = daoManager.getDao(GroupDao);
     let groups = await dao.queryGroupsByIds(favIds);
@@ -247,7 +247,7 @@ function sortFavoriteGroups(ids: number[], groups: Group[]): Group[] {
 }
 
 async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Profile) {
-  mainLogger.debug(`---------handleFavoriteGroupsChanged---------`);
+  mainLogger.debug('---------handleFavoriteGroupsChanged---------');
   if (oldProfile && newProfile) {
     const oldIds = oldProfile.favorite_group_ids || [];
     const newIds = newProfile.favorite_group_ids || [];

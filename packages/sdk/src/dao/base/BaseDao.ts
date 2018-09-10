@@ -151,7 +151,7 @@ class BaseDao<T extends {}> {
       Throw(ErrorTypes.DB_INVALID_USAGE_ERROR, `Item should be an object. Received ${item}`);
     }
     if (_.isEmpty(item)) {
-      Throw(ErrorTypes.DB_INVALID_USAGE_ERROR, `Item should not be an empty object.`);
+      Throw(ErrorTypes.DB_INVALID_USAGE_ERROR, 'Item should not be an empty object.');
     }
     if (withPrimaryKey && !item[this.collection.primaryKeyName()]) {
       Throw(

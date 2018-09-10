@@ -6,7 +6,7 @@
 import Dexie, { TransactionMode } from 'dexie';
 import DexieCollection from './DexieCollection';
 import {
-  TableSchemaDefinition,
+  ITableSchemaDefinition,
   ISchemaDefinition,
   IDatabase,
   IDatabaseCollection,
@@ -72,7 +72,7 @@ class DexieDB implements IDatabase {
       const dexieSchema = {};
       const callbacks = {};
       Object.keys(sch).forEach((tb) => {
-        const { unique, indices = [], onUpgrade }: TableSchemaDefinition = sch[tb
+        const { unique, indices = [], onUpgrade }: ITableSchemaDefinition = sch[tb
 ];
         const def = `${unique}${
           indices.length ? `, ${indices.join(', ')}` : ''

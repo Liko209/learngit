@@ -11,10 +11,7 @@
 /packages/*/build-es/
 /packages/*/coverage/
 /packages/*/node_modules/
-/packages/ui-components/
-/demo/node_modules/
-/demo/build/
-/demo/build-es/
+/packages/ui-components/storybook-static
 /application/node_modules/
 /application/build/
 /application/build-es/
@@ -40,4 +37,3 @@ yarn-error.log*
 /lint
 # UT error
 /ut
-package-lock.json

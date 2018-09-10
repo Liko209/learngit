@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "checkJs": false,
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
     "esModuleInterop": true,
-    "module": "esnext",
+    "module": "commonjs",
     "target": "es5",
     "lib": [
       "es2015",
@@ -28,6 +29,7 @@
   "files": [
     "./typings/images.d.ts",
     "./typings/chat-view.d.ts",
-    "./typings/json.d.ts"
+    "./typings/string-natural-compare.d.ts",
+    "./typings/glipdown.d.ts"
   ]
 }

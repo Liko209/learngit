@@ -34,7 +34,7 @@ const getUrl = (location: History.LocationState) => {
     response_hint: 'remember_me+login_type',
     title_bar: true,
   };
-  return url + '?' + stringify(params);
+  return `${url}?${stringify(params)}`;
 };
 
 export default getUrl;

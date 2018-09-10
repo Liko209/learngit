@@ -33,7 +33,7 @@ class GroupAPI extends Api {
   }
 
   static createTeam(data: Partial<Group>): Promise<IResponse<Raw<Group>>> {
-    return this.glipNetworkClient.post(`/team`, data);
+    return this.glipNetworkClient.post('/team', data);
   }
 }
 

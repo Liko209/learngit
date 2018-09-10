@@ -3,7 +3,7 @@
  * @Date: 2018-06-14 16:00:49
  * Copyright © RingCentral. All rights reserved.
  */
-import { Person } from 'sdk/src/models';
+import { Person } from 'sdk/models';
 
 export const getName = (item: Person) => {
   if (item.display_name) {

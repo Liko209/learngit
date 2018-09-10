@@ -65,9 +65,9 @@ class DateFormatter {
     const os = Math.abs(date.getTimezoneOffset());
     let h = String(Math.floor(os / 60));
     let m = String(os % 60);
-    if (h.length === 1) h = '0' + h;
-    if (m.length === 1) m = '0' + m;
-    return date.getTimezoneOffset() < 0 ? '+' + h + m : '-' + h + m;
+    if (h.length === 1) h = `0${h}`;
+    if (m.length === 1) m = `0${m}`;
+    return date.getTimezoneOffset() < 0 ? `+${h}${m}` : `-${h}${m}`;
   }
 }
 

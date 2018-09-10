@@ -7,9 +7,9 @@
 import { IAccount } from './IAccount';
 import { IAccountObserver } from './IAccountObserver';
 
-interface AccountConfig {
+interface IAccountConfig {
   type: string;
   accountCreator: (type: string, accountObserver: IAccountObserver) => IAccount;
 }
 
-export { AccountConfig };
+export { IAccountConfig };

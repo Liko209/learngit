@@ -49,7 +49,7 @@ function buildConfig(conf: any, variables: any) {
 
   // Replace variables
   Object.keys(variables).forEach((key: string) => {
-    const re = new RegExp('\\$\\{' + key + '\\}', 'g');
+    const re = new RegExp(`\\$\\{${key}\\}`, 'g');
     str = str.replace(re, variables[key]);
   });
 

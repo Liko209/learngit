@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export interface FoundationConfig {
+export interface IFoundationConfig {
   rcConfig: object;
   dbAdapter: string;
   timeout?: number;

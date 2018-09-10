@@ -66,7 +66,7 @@ function isInBeta(flag: EBETA_FLAG): boolean {
 }
 
 function isInBetaList(flagName: string): boolean {
-  return isInBetaEmailList(flagName + '_emails') || isInBetaDomainList(flagName + '_domains');
+  return isInBetaEmailList(`${flagName}_emails`) || isInBetaDomainList(`${flagName}_domains`);
 }
 
 function isInBetaEmailList(flagName: string): boolean {

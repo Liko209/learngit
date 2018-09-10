@@ -29,7 +29,7 @@ export default class ProgressBar {
       this._step > 0 ? (this._step -= 0.1) : (this._step = 0);
       percentage -= this._step;
       requestAnimationFrame(() => {
-        console.log((percentage * 100).toFixed(2) + '%');
+        console.log(`${(percentage * 100).toFixed(2)}%`);
         if (percentage <= 0.9 && !this._isDone) {
           NProgress.inc(percentage);
           this.update(e);

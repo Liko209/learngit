@@ -1,21 +1,21 @@
 import {
-  Newable,
+  INewable,
   InjectableName,
   Injectable,
-  ContainerConfig,
-  ClassConfig,
-  AsyncClassConfig,
-  ProviderConfig,
-  ConstantConfig,
-  RegisterConfig,
+  IContainerConfig,
+  IClassConfig,
+  IAsyncClassConfig,
+  IProviderConfig,
+  IConstantConfig,
+  IRegisterConfig,
   RegisterType,
 } from './types';
 
 class Container {
-  private _containerConfig: ContainerConfig;
-  private _registrationMap = new Map<InjectableName<any>, RegisterConfig>();
+  private _containerConfig: IContainerConfig;
+  private _registrationMap = new Map<InjectableName<any>, IRegisterConfig>();
 
-  constructor(containerConfig?: ContainerConfig) {
+  constructor(containerConfig?: IContainerConfig) {
     this._containerConfig = containerConfig || {};
     this.registerConstantValue({
       name: Container.name,
@@ -23,8 +23,8 @@ class Container {
     });
   }
 
-  registerClass<T>(config: ClassConfig): void {
-    const registration: RegisterConfig = {
+  registerClass<T>(config: IClassConfig): void {
+    const registration: IRegisterConfig = {
       type: RegisterType.Instance,
       implementationType: config.value,
       singleton: config.singleton,
@@ -33,8 +33,8 @@ class Container {
     this._registrationMap.set(config.name, registration);
   }
 
-  registerAsyncClass(config: AsyncClassConfig): void {
-    const registration: RegisterConfig = {
+  registerAsyncClass(config: IAsyncClassConfig): void {
+    const registration: IRegisterConfig = {
       type: RegisterType.Instance,
       asyncImplementationType: config.value,
       singleton: config.singleton,
@@ -44,8 +44,8 @@ class Container {
     this._registrationMap.set(config.name, registration);
   }
 
-  registerProvider<T>(config: ProviderConfig<T>) {
-    const registration: RegisterConfig = {
+  registerProvider<T>(config: IProviderConfig<T>) {
+    const registration: IRegisterConfig = {
       type: RegisterType.Provider,
       provider: config.value,
       async: config.async,
@@ -54,8 +54,8 @@ class Container {
     this._registrationMap.set(config.name, registration);
   }
 
-  registerConstantValue(config: ConstantConfig) {
-    const registration: RegisterConfig = {
+  registerConstantValue(config: IConstantConfig) {
+    const registration: IRegisterConfig = {
       type: RegisterType.ConstantValue,
       cache: config.value,
       async: config.async,
@@ -95,13 +95,13 @@ class Container {
     return !!this.getRegistration(name).async;
   }
 
-  getRegistration(name: InjectableName<any>): RegisterConfig {
+  getRegistration(name: InjectableName<any>): IRegisterConfig {
     const config = this._registrationMap.get(name);
     if (!config) throw new Error(`${name} not been registered.`);
     return config;
   }
 
-  private _getCache(registration: RegisterConfig) {
+  private _getCache(registration: IRegisterConfig) {
     const isSingleton = this._containerConfig.singleton || registration.singleton;
 
     if (isSingleton && registration.cache) {
@@ -109,7 +109,7 @@ class Container {
     }
   }
 
-  private _setCache(registration: RegisterConfig, result: any) {
+  private _setCache(registration: IRegisterConfig, result: any) {
     const isSingleton = this._containerConfig.singleton || registration.singleton;
 
     if (isSingleton) {
@@ -117,7 +117,7 @@ class Container {
     }
   }
 
-  private _resolve<T>(registration: RegisterConfig, injections: Injectable[]): T {
+  private _resolve<T>(registration: IRegisterConfig, injections: Injectable[]): T {
     let result: any = null;
 
     if (registration.type === RegisterType.ConstantValue) {
@@ -134,7 +134,7 @@ class Container {
   }
 
   private async _asyncResolve<T>(
-    registration: RegisterConfig,
+    registration: IRegisterConfig,
     injections: Injectable[],
   ): Promise<T> {
 
@@ -161,10 +161,10 @@ class Container {
     return Promise.all(names.map(name => this.asyncGet(name)));
   }
 
-  private _resolveInstance<T>(creator: Newable<T>, injections: any[]): any {
+  private _resolveInstance<T>(creator: INewable<T>, injections: any[]): any {
     let instance = null;
 
-    const Class = creator as Newable<any>;
+    const Class = creator as INewable<any>;
     instance = new Class(...injections);
 
     return instance;
