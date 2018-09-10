@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
 import { service } from 'sdk';
 import BasePresenter from '@/store/base/BasePresenter';
 
@@ -16,7 +15,6 @@ class ViewModel extends BasePresenter {
     this._authService = service.AuthService.getInstance();
   }
 
-  @computed
   get isAuthenticated() {
     return this._authService.isLoggedIn();
   }
