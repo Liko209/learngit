@@ -7,7 +7,7 @@ import { setupSDK } from '../../utils/setupSDK';
 
 declare var test: TestFn;
 fixture('ConversationStream/ConversationStream')
-  .beforeEach(setUp('rcBetaUserAccount'))
+  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
 test(

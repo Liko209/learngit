@@ -13,7 +13,7 @@ import { FavoriteSection } from '../../page-models/components';
 
 declare var test: TestFn;
 fixture('ConversationList/FavoriteSection')
-  .beforeEach(setUp('rcBetaUserAccount'))
+  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
 test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async (t) => {
