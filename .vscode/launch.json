@@ -15,11 +15,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/packages/sdk/src/component/featureFlag/__tests__/FlagCalculator.test.ts",
-      "outFiles": [
-        "${workspaceFolder}/**/*.js"
-      ]
+      "name": "Jest Current File",
+      "program": "${workspaceFolder}/scripts/test.js",
+      "args": [
+        "--env=jsdom",
+        "${relativeFile}",
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     },
     {
       "type": "node",
