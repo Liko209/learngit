@@ -47,6 +47,16 @@ SITE_URL=http://localhost:8888 SELENIUM_SERVER=http://xmn145.rcoffice.ringcentra
 allure serve ./allure/allure-results/
 ```
 
+## Generate Accounts in Account Pool
+
+In case you don't have enough accounts sets to run cases, you can following below guideline to generate accounts by yourself.
+
+You can find the account pool you use in ./config.ts and enter admin page. For example, suggest the account pool you use is http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9998 . Then the admin page for this account is http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9998/admin
+
+On the admin page, choose "Account Generation",  and select Envrionment you use first (xmn-up for this example). Then you can click "Add Generation Setting"  to add the number of specific account types you want to generate. 
+
+NOTE: Don't create too many accounts at a time (at most 10 for each account type).
+
 ## Coding Guideline ##
 
 ### Directory Outline ###
