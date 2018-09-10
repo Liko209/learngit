@@ -32,12 +32,15 @@ npm install
 # using live mode during development
 npx testcafe-live chrome ./fixtures/
 
+# for local
 # using default configuration to run
 npm run e2e
 
+# for pipeline
 # using seleinum:{BROWSER_NAME} for remote run on selenium grid
 # in order to run remotely, you need to set SELENIUM_SERVER (export or put it in .env)
-SITE_URL=http://localhost:8888 SELENIUM_SERVER=http://xmn145.rcoffice.ringcentral.com:4444/wd/hub ACTION='on_merge' BRANCH='e2e/maintenance' npm run e2e
+DEBUG=false 
+SITE_URL=http://localhost:8888 SELENIUM_SERVER=http://xmn145.rcoffice.ringcentral.com:4444/wd/hub ACTION='on_merge' BRANCH='your_branch_name' npm run e2e
 
 # report can be found under ./allure/allure-results/
 # using following command to view report
