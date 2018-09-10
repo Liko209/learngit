@@ -8,7 +8,7 @@
 */
 import { formalName } from '../../libs/filter';
 import { setUp, tearDown } from '../../libs/helpers';
-import { unifiedLogin } from '../../utils';
+import { directLogin } from '../../utils';
 import { FavoriteSection } from '../../page-models/components';
 
 declare var test: TestFn;
@@ -17,7 +17,7 @@ fixture('ConversationList/FavoriteSection')
   .afterEach(tearDown());
 
 test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async (t) => {
-  await unifiedLogin(t)
+  await directLogin(t)
     .log('1. Navigate to Favorites section')
     .shouldNavigateTo(FavoriteSection)
     .log('2. Check the section is expended')
@@ -42,7 +42,7 @@ test(formalName('Drag & Drop', ['JPT-10', 'P2', 'ConversationList']), async (t) 
   const LAST = -1;
   const FIRST = 0;
 
-  await unifiedLogin(t, authInfo)
+  await directLogin(t, authInfo)
     .log('1. Navigate to Favorites section')
     .shouldNavigateTo(FavoriteSection)
     .log('2. Drag & drop conversation')
