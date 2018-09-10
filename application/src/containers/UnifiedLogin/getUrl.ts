@@ -1,3 +1,9 @@
+/*
+ * @Author: Devin Lin (devin.lin@ringcentral.com)
+ * @Date: 2018-09-10 09:37:39
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { History } from 'history';
 import { stringify } from 'qs';
 import config from '@/config';
