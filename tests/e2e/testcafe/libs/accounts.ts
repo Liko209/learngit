@@ -11,7 +11,7 @@ import {
   AccountLockAcquire,
 } from 'glip-account-pool-client';
 
-import { ENV, ACCOUNT_POOL_API_VERSION } from '../config';
+import { ENV, DEBUG, ACCOUNT_POOL_BASE_URL_FOR_DEBUG } from '../config';
 interface IAccountPoolClient {
   baseUrl: string;
   envName: string;
@@ -27,23 +27,6 @@ function releaseCommandBuilder(url: string, env: string, accountType: string, do
 }
 
 class AccountPoolClient implements IAccountPoolClient {
-  client: AccountPoolApi;
-
-  constructor(public baseUrl: string, public envName: string) {
-    this.client = new AccountPoolApi(this.baseUrl);
-  }
-
-  async checkOutAccounts(accountType: string): Promise<any> {
-    const response = await this.client.snatchAccount(this.envName, accountType, undefined, 'false');
-    return response.body;
-  }
-
-  async checkInAccounts(data: any): Promise<any> {
-    await this.client.releaseAccount(this.envName, data.accountType, data.companyEmailDomain);
-  }
-}
-
-class AccountPoolClientV2 implements IAccountPoolClient {
   accountLockApi: AccountLockApi;
 
   constructor(public baseUrl: string, public envName: string) {
@@ -111,8 +94,8 @@ class AccountPoolManager implements IAccountPoolClient {
 }
 
 const accountPoolClient = new AccountPoolManager(
-  ACCOUNT_POOL_API_VERSION === '1.0' ? new AccountPoolClient(ENV.ACCOUNT_POOL_BASE_URL, ENV.ACCOUNT_POOL_ENV) :
-    new AccountPoolClientV2(ENV.ACCOUNT_POOL_BASE_URL, ENV.ACCOUNT_POOL_ENV),
+    DEBUG === true ? new AccountPoolClient(ACCOUNT_POOL_BASE_URL_FOR_DEBUG, ENV.ACCOUNT_POOL_ENV) :
+      new AccountPoolClient(ENV.ACCOUNT_POOL_BASE_URL, ENV.ACCOUNT_POOL_ENV),
 );
 
 export { accountPoolClient };
