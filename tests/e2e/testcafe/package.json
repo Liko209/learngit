@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "testcafe": "testcafe",
-    "e2e": "ts-node run.ts"
+    "pre-test": "node scripts/build-env.js",
+    "e2e": "npm run pre-test && ts-node run.ts"
   },
   "os": [
     "darwin",
@@ -37,6 +38,7 @@
     "ringcentral-js-concise": "^0.5.5",
     "string-natural-compare": "2.0.2",
     "testcafe": "https://git.ringcentral.com/TA/testcafe/testcafe/uploads/fa5d20e7c71b2edc410ff2c6264513cb/testcafe-0.22.0.tgz",
+    "testcafe-browser-provider-electron": "0.0.6",
     "testcafe-browser-provider-selenium": "^0.2.0",
     "testcafe-live": "0.1.3",
     "testcafe-react-selectors": "^3.0.0",
