@@ -1,8 +1,9 @@
 /*
- * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-08-15 08:54:29
+ * @Author: Devin Lin (devin.lin@ringcentral.com)
+ * @Date: 2018-09-10 09:37:45
  * Copyright © RingCentral. All rights reserved.
  */
+
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { TranslationFunction } from 'i18next';
