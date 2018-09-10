@@ -6,7 +6,12 @@
 
 import * as assert from 'assert';
 import { AccountOperationsApi as AccountPoolApi } from 'account-pool-ts-api';
-import { ENV } from '../config';
+import {
+  AccountLockApi,
+  AccountLockAcquire,
+} from 'glip-account-pool-client';
+
+import { ENV, ACCOUNT_POOL_API_VERSION } from '../config';
 interface IAccountPoolClient {
   baseUrl: string;
   envName: string;
@@ -22,17 +27,41 @@ function releaseCommandBuilder(url: string, env: string, accountType: string, do
 }
 
 class AccountPoolClient implements IAccountPoolClient {
+  client: AccountPoolApi;
 
-  constructor(public baseUrl: string, public envName: string, private client: AccountPoolApi = new AccountPoolApi()) {
+  constructor(public baseUrl: string, public envName: string) {
+    this.client = new AccountPoolApi(this.baseUrl);
   }
 
-  async checkOutAccounts(accountType: string) {
+  async checkOutAccounts(accountType: string): Promise<any> {
     const response = await this.client.snatchAccount(this.envName, accountType, undefined, 'false');
     return response.body;
   }
 
-  async checkInAccounts(data: any) {
+  async checkInAccounts(data: any): Promise<any> {
     await this.client.releaseAccount(this.envName, data.accountType, data.companyEmailDomain);
+  }
+}
+
+class AccountPoolClientV2 implements IAccountPoolClient {
+  accountLockApi: AccountLockApi;
+
+  constructor(public baseUrl: string, public envName: string) {
+    this.accountLockApi = new AccountLockApi(this.baseUrl);
+  }
+
+  async checkOutAccounts(accountType: string) {
+    this.accountLockApi.basePath = this.baseUrl;
+    const accountLockAcquireBody = new AccountLockAcquire();
+    accountLockAcquireBody.envName = this.envName;
+    accountLockAcquireBody.accountType = accountType;
+    const acquiredAccount = await this.accountLockApi.accountLocksPost(accountLockAcquireBody);
+    return acquiredAccount.body;
+  }
+
+  async checkInAccounts(data: any) {
+    const res = await this.accountLockApi.accountLocksAccountLockIdDelete(data.accountLockId);
+    return res.body;
   }
 }
 
@@ -74,14 +103,16 @@ class AccountPoolManager implements IAccountPoolClient {
     console.log('Account Pool: following accounts are used in this run:');
     console.log(JSON.stringify(this.allAccounts));
     for (const data of this.allAccounts) {
-      await this.accountPoolClient.checkInAccounts(data);
+      const ret = await this.accountPoolClient.checkInAccounts(data);
+      console.log('release result:', ret);
       console.log(`Account Pool: success to reclaim account: ${data.companyEmailDomain}`);
     }
   }
 }
 
 const accountPoolClient = new AccountPoolManager(
-  new AccountPoolClient(ENV.ACCOUNT_POOL_BASE_URL, ENV.ACCOUNT_POOL_ENV),
+  ACCOUNT_POOL_API_VERSION === '1.0' ? new AccountPoolClient(ENV.ACCOUNT_POOL_BASE_URL, ENV.ACCOUNT_POOL_ENV) :
+    new AccountPoolClientV2(ENV.ACCOUNT_POOL_BASE_URL, ENV.ACCOUNT_POOL_ENV),
 );
 
 export { accountPoolClient };

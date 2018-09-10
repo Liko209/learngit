@@ -15,6 +15,7 @@ import { ExecutionStrategiesHelper } from './libs/utils';
 
 const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
 const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
+const ACCOUNT_POOL_API_VERSION = process.env.ACCOUNT_POOL_API_VERSION || '2.0';
 
 const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
 const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
@@ -39,7 +40,7 @@ const ENV = {
     GLIP_SERVER_BASE_URL: 'https://aws13-g04-uds01.asialab.glip.net:23304',
   },
   'XMN-UP': {
-    ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-xta03.lab.rcch.ringcentral.com:3303',
+    ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9998',
     ACCOUNT_POOL_ENV: 'xmn-up',
     RC_PLATFORM_BASE_URL: 'https://api-xmnup.lab.nordigy.ru',
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
@@ -276,4 +277,5 @@ export {
   ENV,
   SDK_ENV,
   EXECUTION_STRATEGIES_HELPER,
+  ACCOUNT_POOL_API_VERSION,
 };

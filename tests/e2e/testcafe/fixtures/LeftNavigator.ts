@@ -15,7 +15,7 @@ import { setUp, tearDown, TestHelper } from '../libs/helpers';
 import { Selector } from 'testcafe';
 
 fixture('LeftNav')
-  .beforeEach(setUp('rcBetaUserAccount'))
+  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
 test(formalName('Left nav redirect', ['P0', 'LeftNav']), async (t) => {
