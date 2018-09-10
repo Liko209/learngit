@@ -1,3 +1,9 @@
+/*
+ * @Author: Devin Lin (devin.lin@ringcentral.com)
+ * @Date: 2018-09-10 09:37:59
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import i18next from 'i18next';
 
 const getLanguage = () => {
