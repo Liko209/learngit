@@ -11,7 +11,7 @@ import { setupSDK } from '../../utils/setupSDK';
 
 declare var test: TestFn;
 fixture('TeamSection')
-  .beforeEach(setUp('rcBetaUserAccount'))
+  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
 const randomTeamName = 'Team' + Number(new Date());

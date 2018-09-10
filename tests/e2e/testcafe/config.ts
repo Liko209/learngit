@@ -18,6 +18,8 @@ const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
 
 const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
 const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
+const DEBUG = true;
+const ACCOUNT_POOL_BASE_URL_FOR_DEBUG = 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9998';
 
 const ENV = {
   'WEB-AQA-XIA': {
@@ -39,7 +41,7 @@ const ENV = {
     GLIP_SERVER_BASE_URL: 'https://aws13-g04-uds01.asialab.glip.net:23304',
   },
   'XMN-UP': {
-    ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-xta03.lab.rcch.ringcentral.com:3303',
+    ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9997',
     ACCOUNT_POOL_ENV: 'xmn-up',
     RC_PLATFORM_BASE_URL: 'https://api-xmnup.lab.nordigy.ru',
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
@@ -276,4 +278,6 @@ export {
   ENV,
   SDK_ENV,
   EXECUTION_STRATEGIES_HELPER,
+  DEBUG,
+  ACCOUNT_POOL_BASE_URL_FOR_DEBUG,
 };
