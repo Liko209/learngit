@@ -6,7 +6,7 @@ import { unifiedLogin } from '../../utils';
 import { MaxConversation } from '../../page-models/components/ConversationList/MaxConversation';
 
 fixture('ConversationList/maxConversation')
-  .beforeEach(setUp('rcBetaUserAccount'))
+  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
 test(formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']), async (t) => {

@@ -8,7 +8,7 @@ import { setUp, tearDown } from '../libs/helpers';
 import { unifiedLogin } from '../utils';
 
 fixture('UnifiedLogin')
-  .beforeEach(setUp('rcBetaUserAccount'))
+  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
 test(formalName('Unified Login', ['P0', 'Login']), async (t) => {
