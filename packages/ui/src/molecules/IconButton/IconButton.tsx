@@ -98,8 +98,8 @@ const JuiIconButton: any = (
   const { className, children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
   const main = (
-    <WrapperForTooltip className={className} {...rest}>
-      <StyledIconButton disableRipple={rest.variant === 'plain'} disabled={disabled}>
+    <WrapperForTooltip className={className} variant={variant} size={size}>
+      <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
         <StyledIcon
           size={size}
           variant={variant}

@@ -17,7 +17,7 @@
     "build:packages": "node ./scripts/build.js",
     "build:demo": "cd demo && npm run build",
     "build:app": "cd application && npm run build",
-    "build:ui": "cd packages/ui && npm run build-storybook",
+    "build:ui": "cd packages/ui-components && npm run build-storybook",
     "test": "node ./scripts/test.js --env=jsdom",
     "test:staged": "npm run test:cover -- --findRelatedTests",
     "test:cover": "npm run test -- --coverage",
@@ -80,5 +80,9 @@
     "tslint-react": "3.6.0",
     "typescript": "2.9.2",
     "uuid": "3.3.2"
+  },
+  "dependencies": {
+    "@types/react-document-title": "2.0.3",
+    "react-document-title": "2.0.3"
   }
 }
