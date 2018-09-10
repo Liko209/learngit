@@ -19,6 +19,7 @@
       "program": "${workspaceFolder}/scripts/test.js",
       "args": [
         "--env=jsdom",
+        "--no-cache",
         "${relativeFile}",
       ],
       "console": "integratedTerminal",

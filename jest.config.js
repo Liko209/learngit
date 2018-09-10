@@ -1,6 +1,5 @@
 module.exports = {
   roots: ['application', 'packages'],
-  collectCoverage: true,
   collectCoverageFrom: [
     `${process.env.APP}/src/**/*.{js,jsx,ts,tsx}`,
     `!${process.env.APP}/src/**/__tests__/*`,
@@ -29,7 +28,7 @@ module.exports = {
     '^sdk/(.*)$': '<rootDir>/packages/sdk/src/$1',
     '^ui-components/(.*)$': '<rootDir>/packages/ui-components/src/$1',
   },
-  moduleFileExtensions:   [
+  moduleFileExtensions: [
     'web.ts',
     'ts',
     'web.tsx',
