@@ -1,6 +1,7 @@
+process.env.APP = process.env.APP || '<rootDir>/{application|packages/sdk|packages/foundation}';
+
 module.exports = {
   roots: ['application', 'packages'],
-  collectCoverage: true,
   collectCoverageFrom: [
     `${process.env.APP}/src/**/*.{js,jsx,ts,tsx}`,
     `!${process.env.APP}/src/**/__tests__/*`,
@@ -47,5 +48,6 @@ module.exports = {
     'ts-jest': {
       tsConfigFile: 'tsconfig.test.json'
     }
-  }
+  },
+  testEnvironment: "jsdom",
 };
