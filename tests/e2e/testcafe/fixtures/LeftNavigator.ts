@@ -4,15 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BlankPage } from '../page-models/pages/BlankPage';
-import { UnifiedLoginPage } from '../page-models/pages/UnifiedLoginPage';
-import { RingcentralSignInNavigationPage } from '../page-models/pages/RingcentralSignInNavigationPage';
-import { RingcentralSignInPage } from '../page-models/pages/RingcentralSignInPage';
+import { Selector } from 'testcafe';
+
 import { LeftNavigationPage } from '../page-models/pages/LeftNavigationPage';
-import { SITE_URL } from '../config';
 import { formalName } from '../libs/filter';
 import { setUp, tearDown, TestHelper } from '../libs/helpers';
-import { Selector } from 'testcafe';
+import { directLogin } from '../utils';
 
 fixture('LeftNav')
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
@@ -21,17 +18,7 @@ fixture('LeftNav')
 test(formalName('Left nav redirect', ['P0', 'LeftNav']), async (t) => {
   const helper = TestHelper.from(t);
 
-  await new BlankPage(t)
-    .navigateTo(SITE_URL)
-    .shouldNavigateTo(UnifiedLoginPage)
-    .clickLogin()
-    .shouldNavigateTo(RingcentralSignInNavigationPage)
-    .setCredential(helper.companyNumber)
-    .toNextPage()
-    .shouldNavigateTo(RingcentralSignInPage)
-    .setExtension(helper.users.user701.extension)
-    .setPassword(helper.users.user701.password)
-    .signIn()
+  await directLogin(t)
     .shouldNavigateTo(LeftNavigationPage)
     .redirect('Dashboard')
     .redirect('Messages')

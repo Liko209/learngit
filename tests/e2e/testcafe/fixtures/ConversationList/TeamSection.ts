@@ -5,7 +5,7 @@
  */
 import { formalName } from '../../libs/filter';
 import { setUp, tearDown, TestHelper } from '../../libs/helpers';
-import { unifiedLogin } from '../../utils';
+import { directLogin } from '../../utils';
 import { TeamSection } from '../../page-models/components';
 import { setupSDK } from '../../utils/setupSDK';
 
@@ -14,11 +14,9 @@ fixture('TeamSection')
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
-const randomTeamName = 'Team' + Number(new Date());
-
 test(formalName('Team section display the conversation which the login user as one of the team member', ['P2', 'JPT-12', 'Team section']), async (t) => {
   await setupSDK(t);
-  await unifiedLogin(t)
+  await directLogin(t)
     .chain(t => t.wait(10000))
     .log('1. should navigate to Team Section')
     .shouldNavigateTo(TeamSection)
@@ -29,7 +27,7 @@ test(formalName('Team section display the conversation which the login user as o
 test(formalName('Each conversation should be represented by the team name.', ['P0', ' JPT-13', 'Team section']), async (t) => {
   const randomTeamName = Math.random().toString(10);
   await setupSDK(t);
-  await unifiedLogin(t)
+  await directLogin(t)
     .chain(t => t.wait(10000))
     .log('1. should navigate to Team Section')
     .shouldNavigateTo(TeamSection)
@@ -50,7 +48,7 @@ test(
     const group123 = helper.teams.team3_u1_u2_u3.glip_id;
     const text = 'bring me to top';
 
-    await unifiedLogin(t)
+    await directLogin(t)
       .log('1. Navigate to Team section')
       .shouldNavigateTo(TeamSection)
       .log(`2. Conversation "${group12}" receive message.`)

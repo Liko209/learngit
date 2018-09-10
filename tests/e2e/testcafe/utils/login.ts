@@ -3,14 +3,15 @@
  * @Date: 2018-08-21 16:46:24
  * Copyright © RingCentral. All rights reserved.
  */
+import axios from 'axios';
 import { Role } from 'testcafe';
-import { SITE_URL } from '../config';
+import { SITE_URL, ENV } from '../config';
 import { BlankPage } from '../page-models/pages/BlankPage';
 import { RingcentralSignInNavigationPage } from '../page-models/pages/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/pages/RingcentralSignInPage';
 import { UnifiedLoginPage } from '../page-models/pages/UnifiedLoginPage';
 import { TokenGetterPage } from '../page-models/pages/TokenGetterPage';
-// import { Home } from '../page-models/components';
+
 import { TestHelper } from '../libs/helpers';
 
 type AuthInfo = {
@@ -19,14 +20,43 @@ type AuthInfo = {
   password: string;
 };
 
+async function getUrlWithAuthCode(
+  redirectUrl: string,
+  authInfo: AuthInfo,
+  authUrl: string = ENV.AUTH_URL,
+  appClientId: string = ENV.JUPITER_APP_KEY,
+) {
+  const data = {
+    username: authInfo.credential,
+    password: authInfo.password,
+    autoLogin: false,
+    ibb: '',
+    sddi: '',
+    prompt: 'login sso',
+    display: 'touch',
+    clientId: appClientId,
+    appUrlScheme: redirectUrl,
+    state: '/',
+    responseType: 'code',
+    responseHint: '',
+    glipAuth: true,
+    localeId: 'en_US',
+  };
+  if (authInfo.extension !== undefined) {
+    data['extension'] = authInfo.extension;
+  }
+  const response = await axios.post(authUrl, data);
+  return response.data.redirectUri;
+}
+
 function createRole(authInfo?: AuthInfo) {
   return Role(
     SITE_URL,
-    async t => await unifiedLogin(t, authInfo),
+    async t => await interactiveLogin(t, authInfo),
   );
 }
 
-function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
+function interactiveLogin(t: TestController, authInfo?: AuthInfo) {
   let credential: string = '';
   let extension: string = '';
   let password: string = '';
@@ -56,8 +86,29 @@ function unifiedLogin(t: TestController, authInfo?: AuthInfo) {
     .signIn()
     .shouldNavigateTo(TokenGetterPage)
     .expectUrlParamsIsCorrect();
-  // .shouldNavigateTo(Home)
-  // .expectExistComponent();
 }
 
-export { AuthInfo, unifiedLogin, createRole };
+function directLogin(t: TestController, authInfo?: AuthInfo) {
+  let credential: string = '';
+  let extension: string = '';
+  let password: string = '';
+
+  if (authInfo) {
+    ({ credential, password } = authInfo);
+    extension = authInfo.extension || '';
+  } else {
+    const helper = TestHelper.from(t);
+    credential = helper.companyNumber;
+    extension = helper.users.user701.extension;
+    password = helper.users.user701.password;
+  }
+  return new BlankPage(t)
+    .log(`account: ${credential} extension: ${extension}`)
+    .chain(async (t) => {
+      const urlWithAuthCode = await getUrlWithAuthCode(SITE_URL, { credential, extension, password });
+      await t.navigateTo(urlWithAuthCode);
+    })
+    .shouldNavigateTo(TokenGetterPage);
+}
+
+export { AuthInfo, interactiveLogin, createRole, directLogin };

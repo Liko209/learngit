@@ -11,7 +11,7 @@ import {
   AccountLockAcquire,
 } from 'glip-account-pool-client';
 
-import { ENV, DEBUG, ACCOUNT_POOL_BASE_URL_FOR_DEBUG } from '../config';
+import { ENV, DEBUG } from '../config';
 interface IAccountPoolClient {
   baseUrl: string;
   envName: string;
@@ -93,9 +93,8 @@ class AccountPoolManager implements IAccountPoolClient {
   }
 }
 
-const accountPoolClient = new AccountPoolManager(
-    DEBUG === true ? new AccountPoolClient(ACCOUNT_POOL_BASE_URL_FOR_DEBUG, ENV.ACCOUNT_POOL_ENV) :
-      new AccountPoolClient(ENV.ACCOUNT_POOL_BASE_URL, ENV.ACCOUNT_POOL_ENV),
-);
+const _accountPoolUrl = DEBUG ? ENV.ACCOUNT_POOL_FOR_DEBUG_BASE_URL : ENV.ACCOUNT_POOL_BASE_URL;
+const _accountPoolClient = new AccountPoolClient(_accountPoolUrl, ENV.ACCOUNT_POOL_ENV);
+const accountPoolClient = new AccountPoolManager(_accountPoolClient);
 
 export { accountPoolClient };
