@@ -140,7 +140,7 @@ const TopRight = styled.div`
   @media (max-width: 600px) {
     ${StyledMenuListComposition} {
       display: none;
-      flex-shrink: 0;
+      color: red;
     }
   }
   @media (min-width: 601px) {

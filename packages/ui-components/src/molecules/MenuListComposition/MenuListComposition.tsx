@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from '../../styled-components';
-import debounce from 'lodash/debounce';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
@@ -30,18 +29,6 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
 
   anchorEl = React.createRef<HTMLElement>();
 
-  onWindowResize = () => {
-    if (document.body.clientWidth <= 601) {
-      debounce(() => this.setState({ open: false }), 200)();
-    }
-  }
-  componentDidMount() {
-    window.addEventListener('resize', this.onWindowResize);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.onWindowResize);
-  }
-
   handleToggle = () => {
     this.setState(state => ({ open: !state.open }));
   }
@@ -58,7 +45,7 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
   render() {
     const { open } = this.state;
     return (
-      <MenuListCompositionWrapper>
+      <MenuListCompositionWrapper className={this.props.className}>
         <AvatarWithPresence
           innerRef={this.anchorEl}
           aria-haspopup="true"
