@@ -19,7 +19,7 @@ const Link = styled(NavLink)`
 //   return SS.getItem(key);
 // };
 // const parse = JSON.parse;
-export default class NavPresenter extends BasePresenter {
+class NavPresenter extends BasePresenter {
   @observable buttonPressTimer: any = 0;
   @observable menus:JSX.Element[] = [];
   @observable backNavArray: { url: string, urlTitle: string }[] = [];
@@ -59,10 +59,8 @@ export default class NavPresenter extends BasePresenter {
       disable = forwardDisabled;
       removedArr = forwardNavArray.reverse();
       addArr = backNavArray;
-      action = (url?: string) => {
-        console.log('go forward');
-        // this.props.history.goForward();
-        return window.history.go(url);
+      action = () => {
+        return window.history.go(-1);
       };
       disableType = 'backDisabled';
       emptyDisable = 'forwardDisabled';
@@ -70,16 +68,16 @@ export default class NavPresenter extends BasePresenter {
       disable = backDisabled;
       removedArr = backNavArray.reverse();
       addArr = forwardNavArray;
-      action = (url?: string) => {
+      action = () => {
         return window.history.back();
       };
       disableType = 'forwardDisabled';
       emptyDisable = 'backDisabled';
     }
     if (!isLongPress && !disable) {
-      const REMOVE_ITEM = removedArr.shift(); // out stack
+      removedArr.shift(); // out stack
       addArr.push(currentItem);
-      action(REMOVE_ITEM!.url);
+      action();
       this.backNavArray = addArr;
       this.forwardNavArray = removedArr;
       state.pressNav = true;
@@ -189,3 +187,4 @@ export default class NavPresenter extends BasePresenter {
     this.state.pressNav = false;
   }
 }
+export default new NavPresenter();

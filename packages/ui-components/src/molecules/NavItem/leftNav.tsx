@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../styled-components';
-import React from 'react';
+import React, { PureComponent } from 'react';
 import NavItem from './item';
 import MuiList from '@material-ui/core/List/index';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
@@ -61,41 +61,42 @@ type TNavProps = {
     title: string,
   }[][];
 };
-export const LeftNav = (props: TNavProps) => {
-  const { expanded, icons, umiCount, handleTitle, handleRouterChange } = props;
-  return (
-    <Left expand={expanded} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={props.id}>
-      {icons.map((arr, index) => {
-        return (
-          <MuiList
-            component="nav"
-            disablePadding={true}
-            key={index}
-          >
-            {
-              arr.map((item, idx) => {
-                const navUrl = item.icon.toLocaleLowerCase();
-                const isActive = window.location.pathname.slice(1) === navUrl;
-                const umiType = umiCount.length ? umiCount[idx] : 0;
-                return (<NavItem
-                  expand={expanded}
-                  url={navUrl}
-                  active={isActive}
-                  icon={item.icon}
-                  title={item.title}
-                  key={idx}
-                  handleRouterChange={handleRouterChange}
-                  handleTitle={handleTitle}
-                  variant="count"
-                  unreadCount={umiType}
-                />);
-              })
-            }
-          </MuiList>
-        );
-      })}
-    </Left>
-  );
-};
-
-export default LeftNav;
+class LeftNav extends PureComponent<TNavProps>{
+  render() {
+    const { expanded, icons, umiCount, handleTitle, handleRouterChange, id } = this.props;
+    return (
+     <Left expand={expanded} variant="permanent" classes={{ paper: 'left-paper' }} data-anchor="left-panel" id={id}>
+       {icons.map((arr, index) => {
+         return (
+           <MuiList
+             component="nav"
+             disablePadding={true}
+             key={index}
+           >
+             {
+               arr.map((item, idx) => {
+                 const navUrl = item.icon.toLocaleLowerCase();
+                 const isActive = window.location.pathname.slice(1) === navUrl;
+                 const umiType = umiCount.length ? umiCount[idx] : 0;
+                 return (<NavItem
+                   expand={expanded}
+                   url={navUrl}
+                   active={isActive}
+                   icon={item.icon}
+                   title={item.title}
+                   key={idx}
+                   handleRouterChange={handleRouterChange}
+                   handleTitle={handleTitle}
+                   variant="count"
+                   unreadCount={umiType}
+                 />);
+               })
+             }
+           </MuiList>
+         );
+       })}
+     </Left>
+    );
+  }
+}
+export { LeftNav };

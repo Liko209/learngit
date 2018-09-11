@@ -9,8 +9,6 @@ import _ from 'lodash';
 import { ConversationListItem } from 'ui-components/molecules/ConversationList/ConversationListItem';
 import { Menu } from 'ui-components/atoms/Menu';
 import { MenuItem } from 'ui-components/atoms/MenuItem';
-import DocumentTitle from 'react-document-title';
-
 import { ENTITY_NAME } from '../../store';
 import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
 import GroupModel from '../../store/models/Group';
@@ -32,12 +30,11 @@ type IProps = IComponentWithGetEntityProps & RouteComponentProps<{}> & {
 };
 
 interface IState {
-  title: string;
 }
 
 @observer
 class ConversationListItemCell extends React.Component<IProps, IState>{
-  private navPresenter: NavPresenter;
+  private navPresenter: any;
   static defaultProps = {
     isFavorite: false,
   };
@@ -84,14 +81,11 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     this._onClick = this._onClick.bind(this);
     this.isFavorite = !!props.isFavorite;
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
-    this.navPresenter = new NavPresenter();
+    this.navPresenter = NavPresenter;
 
     autorun(() => {
       this.getDataFromStore();
     });
-    this.state = {
-      title: '',
-    };
   }
 
   getDataFromStore() {
@@ -115,33 +109,26 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
       }
     }
   }
-  shouldComponentUpdate(nextProps: IProps, nextState: IState) {
-    if (nextProps.entityName !== this.props.entityName) {
-      return true;
-    }
-    if (nextState.title !== this.state.title) {
-      return true;
-    }
-    return false;
-  }
+  // shouldComponentUpdate(nextProps: IProps, nextState: IState) {
+  //   if (nextProps.entityName !== this.props.entityName) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
   render() {
-    const { title } = this.navPresenter.state;
-    console.log(title);
     return (
       <div>
-        <DocumentTitle title={title}>
-          <ConversationListItem
-            aria-owns={open ? 'render-props-menu' : undefined}
-            aria-haspopup="true"
-            key={this.id}
-            title={this.displayName || ''}
-            unreadCount={this.unreadCount}
-            umiVariant={this.umiVariant}
-            onMoreClick={this._openMenu}
-            onClick={this._onClick}
-            status={this.status}
-          />
-        </DocumentTitle>
+        <ConversationListItem
+          aria-owns={open ? 'render-props-menu' : undefined}
+          aria-haspopup="true"
+          key={this.id}
+          title={this.displayName || ''}
+          unreadCount={this.unreadCount}
+          umiVariant={this.umiVariant}
+          onMoreClick={this._openMenu}
+          onClick={this._onClick}
+          status={this.status}
+        />
         <Menu
           id="render-props-menu"
           anchorEl={this.anchorEl}
@@ -176,10 +163,6 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     history.push(`/messages/${id}`);
     this.navPresenter.handleRouterChange();
     this.navPresenter.handleTitle(this.displayName);
-    const { title } = this.navPresenter.state;
-    this.setState({
-      title,
-    });
   }
   @action
   private _toggleFavorite() {

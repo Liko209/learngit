@@ -32,7 +32,7 @@ const UMI_Count = [0];
 @observer
 class Home extends Component<IProps, IStates>  {
   private homePresenter: HomePresenter;
-  private navPresenter: NavPresenter;
+  private navPresenter: any;
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -40,7 +40,7 @@ class Home extends Component<IProps, IStates>  {
         JSON.parse(String(localStorage.getItem('expanded'))),
     };
     this.homePresenter = new HomePresenter();
-    this.navPresenter = new NavPresenter();
+    this.navPresenter = NavPresenter;
   }
   handleLeftNavExpand = () => {
     this.setState({ expanded: !this.state.expanded });
