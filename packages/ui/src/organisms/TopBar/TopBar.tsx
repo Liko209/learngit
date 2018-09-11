@@ -91,7 +91,7 @@ const TopLeft = styled.div`
   }
 
   @media (min-width: 1100px) and (max-width: 1280px) {
-    width: 984px;
+    width: ${({ theme }) => `${246 * theme.size.width}px`};
   }
 
   @media (max-width: 1100px) {
@@ -126,7 +126,7 @@ const TopRight = styled.div`
   justify-content: flex-end;
 
   @media (min-width: 1280px) and (max-width: 1920px) {
-    width: 264px;
+    width: ${({ theme }) => `${66 * theme.size.width}px`};
   }
 
   @media (min-width: 1101px) and (max-width: 1279px) {
@@ -134,7 +134,7 @@ const TopRight = styled.div`
   }
 
   @media (max-width: 1100px) {
-    width: 84px;
+    width: ${({ theme }) => `${21 * theme.size.width}px`};
   }
 
   @media (max-width: 600px) {

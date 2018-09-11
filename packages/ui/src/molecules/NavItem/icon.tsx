@@ -22,7 +22,7 @@ const Icon = styled<TIconProps>(
   ({ component, active, ...props }) => React.cloneElement(IconComponent[component], props),
 )`
   && {
-    width: ${({ theme }) => theme.size.width };
+    width: ${({ theme }) => theme.size.width * 5};
     transition: all .2s ease;
     color: ${ ({ active, theme }) => active ?
     theme.palette.primary.main : theme.palette.accent.ash};
@@ -69,7 +69,7 @@ const IconComponent = {
 };
 
 const NavIcon = (props: TIconProps) => {
-  return <Icon component={props.component} {...props}/>;
+  return <Icon component={props.component} {...props} />;
 };
 type TIconProps = {
   active: boolean,

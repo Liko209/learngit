@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from '../../styled-components';
+import debounce from 'lodash/debounce';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
@@ -22,23 +23,19 @@ const MenuListCompositionWrapper = styled.div`
 
 const MenuWrapper = styled(Popper)``;
 
-class MenuListComposition extends React.Component<TIconMore, { open: boolean, screenSize: number; }> {
+class MenuListComposition extends React.Component<TIconMore, { open: boolean }> {
   state = {
     open: false,
-    screenSize: 0,
   };
 
   anchorEl = React.createRef<HTMLElement>();
 
   onWindowResize = () => {
     if (document.body.clientWidth <= 601) {
-      this.setState({ open: false });
+      debounce(() => this.setState({ open: false }), 200)();
     }
   }
   componentDidMount() {
-    this.setState({
-      screenSize: document.body.clientWidth,
-    });
     window.addEventListener('resize', this.onWindowResize);
   }
   componentWillUnmount() {

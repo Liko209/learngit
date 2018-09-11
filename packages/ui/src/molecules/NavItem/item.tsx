@@ -25,7 +25,7 @@ const ListItem = styled<TListItem>(CustomListItem).attrs({
 })`
   && {
     padding: 0;
-    height: ${({ theme }) => theme.size.height * 44 / 10 + 'px'};
+    height: ${({ theme }) => theme.size.height * 11 + 'px'};
     outline: none;
   }
   // In order to make sure use tab switch nav
@@ -158,7 +158,7 @@ const NavItem = (props: TNavItemProps) => {
       node={NavItems}
     />
   ) : (
-    NavItems
-  );
+      NavItems
+    );
 };
 export default NavItem;
