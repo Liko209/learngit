@@ -1,16 +1,16 @@
 import { PartialApiConfig } from './api';
 import { DBConfig } from './db';
 
-interface Newable<T> {
+interface INewable<T> {
   new (...args: any[]): T;
 }
 
-interface SdkConfig {
+interface ISdkConfig {
   api?: PartialApiConfig;
   db?: Partial<DBConfig>;
 }
 
-export { Newable, SdkConfig };
+export { INewable, ISdkConfig };
 export * from './api';
 export * from './db';
 export * from './pagination';

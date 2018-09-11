@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved
 */
 import { IAuthParams } from '../../../framework/account/IAuthenticator';
-interface PhoneNumberAuthPrams extends IAuthParams {
+interface IPhoneNumberAuthPrams extends IAuthParams {
   phonenumber: string;
   extension: string;
   password: string;
 }
 
-export { PhoneNumberAuthPrams };
+export { IPhoneNumberAuthPrams };

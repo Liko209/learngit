@@ -131,12 +131,12 @@ export class SocketManager {
     // tslint:disable-next-line:max-line-length
     this.info(`onServerHostUpdated: ${serverUrl}, hasLoggedIn: ${this.hasLoggedIn}, hasActiveFSM: ${hasActive}`);
     if (!this.hasLoggedIn) {
-      this.info(`Ignore server updated event due to not logged-in`);
+      this.info('Ignore server updated event due to not logged-in');
       return;
     }
     // Ignore invalid url
     if (!serverUrl) {
-      this.info(`Server URL is changed, but it is an invalid URL.`);
+      this.info('Server URL is changed, but it is an invalid URL.');
       return;
     }
 
@@ -156,7 +156,7 @@ export class SocketManager {
         this._stopActiveFSM();
         this._startFSM();
       } else if (!isNewUrl) {
-        this.warn(`Server URL is changed, but it is used before.`);
+        this.warn('Server URL is changed, but it is used before.');
       }
     }
   }
@@ -183,7 +183,7 @@ export class SocketManager {
   private _onOnline() {
     this.info('onOnline');
     if (!this.hasLoggedIn) {
-      this.info(`Ignore online event due to not logged-in`);
+      this.info('Ignore online event due to not logged-in');
       return;
     }
 

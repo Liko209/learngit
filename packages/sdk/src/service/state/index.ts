@@ -132,7 +132,7 @@ export default class StateService extends BaseService<GroupState> {
           if (cursorIncrease || markAsUnread) {
             originGroupState.post_cursor = updatedGroupState.post_cursor;
           } else {
-            mainLogger.info('[State service]: invalid state_post_cursor change: ' + updatedGroupState);
+            mainLogger.info(`[State service]: invalid state_post_cursor change: ${updatedGroupState}`);
             return;
           }
         }

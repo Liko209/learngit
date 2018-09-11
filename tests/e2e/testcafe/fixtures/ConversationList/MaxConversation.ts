@@ -1,12 +1,12 @@
 // author = 'mia.cai@ringcentral.com'
 
 import { formalName } from '../../libs/filter';
-import { setUp, tearDown, TestHelper } from '../../libs/helpers';
-import { unifiedLogin } from '../../utils';
+import { setUp, tearDown } from '../../libs/helpers';
+import { directLogin } from '../../utils';
 import { MaxConversation } from '../../page-models/components/ConversationList/MaxConversation';
 
 fixture('ConversationList/maxConversation')
-  .beforeEach(setUp('rcBetaUserAccount'))
+  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
 test(formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']), async (t) => {
@@ -15,7 +15,7 @@ test(formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']), async 
   const TYPE = 'Team';
   const teamNames = [];
 
-  await unifiedLogin(t)
+  await directLogin(t)
     .log('1. Navigate to Messages')
     .shouldNavigateTo(MaxConversation)
     .waitForSections()
@@ -25,8 +25,8 @@ test(formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']), async 
       const client701 = await h.glipApiManager.getClient(h.users.user701, h.companyNumber);
       for (let i = 0; i < MAX_NUMBER; i += 1) {
         const resp = await client701.createTeam({
-          name: i + '_' + Date.now() + '_JPT57teams',
-          description: 'test' + i,
+          name: `${i}_${Date.now()}_JPT57teams`,
+          description: `test${i}`,
           type: TYPE,
           members: [h.users.user701.rc_id],
         });

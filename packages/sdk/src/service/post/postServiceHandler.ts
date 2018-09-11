@@ -5,7 +5,7 @@
 import { daoManager, AccountDao, PostDao } from '../../dao';
 import { ACCOUNT_USER_ID, ACCOUNT_COMPANY_ID } from '../../dao/account/constants';
 import { randomInt, versionHash } from '../../utils/mathUtils';
-import { Markdown } from './glipdown';
+import { Markdown } from 'glipdown';
 import { Post } from '../../models';
 import { RawPostInfo } from './types';
 // global_url_regex

@@ -24,13 +24,13 @@ function formatDate(date: string) {
   let mins = String(d.getMinutes());
   let seconds = String(d.getSeconds());
 
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-  if (hours.length < 2) hours = '0' + hours;
-  if (mins.length < 2) mins = '0' + mins;
-  if (seconds.length < 2) seconds = '0' + seconds;
+  if (month.length < 2) month = `0${month}`;
+  if (day.length < 2) day = `0${day}`;
+  if (hours.length < 2) hours = `0${hours}`;
+  if (mins.length < 2) mins = `0${mins}`;
+  if (seconds.length < 2) seconds = `0${seconds}`;
 
-  return [year, month, day].join('-') + ' ' + [hours, mins, seconds].join(':');
+  return `${[year, month, day].join('-')} ${[hours, mins, seconds].join(':')}`;
 }
 class LoginVersionStatus extends React.Component {
   private commitInfo: {

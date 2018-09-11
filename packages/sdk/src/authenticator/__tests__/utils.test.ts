@@ -1,3 +1,9 @@
+/*
+ * @Author: Devin Lin (devin.lin@ringcentral.com)
+ * @Date: 2018-09-10 11:03:37
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { setRcToken, setRcAccoutType, setGlipToken, setGlipAccoutType } from '../utils';
 
 describe('utils method', () => {

@@ -1,20 +1,20 @@
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-03-01 15:43:04
- * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
- * @Last Modified time: 2018-08-06 13:58:32
+ * @Last Modified by: Jeffery Huang
+ * @Last Modified time: 2018-09-09 14:07:31
  */
 import { IResponse } from '../NetworkClient';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
 import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
-export interface AuthModel { }
+export interface IAuthModel { }
 
-export interface AuthCodeModel {
+export interface IAuthCodeModel {
   code: string;
 }
 
-function oauthTokenViaAuthCode(params: object, headers?: object): Promise<IResponse<AuthModel>> {
+function oauthTokenViaAuthCode(params: object, headers?: object): Promise<IResponse<IAuthModel>> {
   const model = {
     ...params,
     grant_type: 'authorization_code',
@@ -31,7 +31,7 @@ function oauthTokenViaAuthCode(params: object, headers?: object): Promise<IRespo
   return Api.glip2NetworkClient.http(query);
 }
 
-function generateCode(clientId: string, redirectUri: string): Promise<IResponse<AuthCodeModel>> {
+function generateCode(clientId: string, redirectUri: string): Promise<IResponse<IAuthCodeModel>> {
   const model = {
     clientId,
     redirectUri,

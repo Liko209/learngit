@@ -1,6 +1,7 @@
+process.env.APP = process.env.APP || '<rootDir>/{application|packages/sdk|packages/foundation}';
+
 module.exports = {
   roots: ['application', 'packages'],
-  collectCoverage: true,
   collectCoverageFrom: [
     `${process.env.APP}/src/**/*.{js,jsx,ts,tsx}`,
     `!${process.env.APP}/src/**/__tests__/*`,
@@ -25,8 +26,9 @@ module.exports = {
   ],
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
-    '^@/(.*)$': `<rootDir>/application/src/$1`,
-    '^#/(.*)$': '<rootDir>/demo/src/$1',
+    '^@/(.*)$': '<rootDir>/application/src/$1',
+    '^sdk/(.*)$': '<rootDir>/packages/sdk/src/$1',
+    '^ui-components/(.*)$': '<rootDir>/packages/ui-components/src/$1',
   },
   moduleFileExtensions: [
     'web.ts',
@@ -39,11 +41,13 @@ module.exports = {
     'jsx',
     'json',
     'node',
-    'mjs'
+    'mjs',
+    'd.ts'
   ],
   globals: {
     'ts-jest': {
       tsConfigFile: 'tsconfig.test.json'
     }
-  }
+  },
+  testEnvironment: "jsdom",
 };

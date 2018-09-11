@@ -113,6 +113,8 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   }
 
   render() {
+    console.log('display-name');
+    console.log(this.displayName);
     return (
       <React.Fragment>
         <DocumentTitle title={this.displayName || 'Jupiter'}>

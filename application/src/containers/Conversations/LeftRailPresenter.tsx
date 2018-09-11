@@ -1,20 +1,16 @@
 import { observable, computed } from 'mobx';
-import { service } from 'sdk';
 import storeManager, { ENTITY_NAME } from '@/store';
 import BasePresenter from '@/store/base/BasePresenter';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
-import { AccountService as IAccountService } from 'sdk/service';
+import { AccountService, GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
 import { Company, Group, Person } from 'sdk/models';
 import PersonModel from '../../store/models/Person';
 import CompanyModel from '../../store/models/Company';
-const { GROUP_QUERY_TYPE, ENTITY } = service;
-
-const { AccountService } = service;
 
 interface IConversationListSectionModel {
   title: string;
   iconName: string;
-  queryType?: service.GROUP_QUERY_TYPE;
+  queryType?: GROUP_QUERY_TYPE;
   entity: string;
   sortable?: boolean;
   expanded?: boolean;
@@ -24,7 +20,7 @@ interface IConversationListSectionModel {
 class LeftRailPresenter extends BasePresenter {
   @observable
   userId: number | null;
-  accountService: IAccountService;
+  accountService: AccountService;
   personStore: MultiEntityMapStore<Person, PersonModel>;
   companyStore: MultiEntityMapStore<Company, CompanyModel>;
 

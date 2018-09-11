@@ -11,7 +11,7 @@ interface INotifier<T> {
   unsubscribe: (handler: Handler<T>) => any;
   broadcast: (data: T) => any;
 }
-interface AccountInfo {
+interface IAccountInfo {
   userId: number;
   companyId: number;
 }
@@ -37,7 +37,7 @@ export {
   IFlag,
   Handler,
   IFeatureConfig,
-  AccountInfo,
+  IAccountInfo,
   IFlagCalculator,
   BETA_FEATURE,
   FLAG_PREFIX,

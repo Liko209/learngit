@@ -1,9 +1,9 @@
-import { Newable } from './types';
+import { INewable } from './types';
 
 class Manager<Base> {
-  private instances: Map<Newable<Base>, Base> = new Map();
+  private instances: Map<INewable<Base>, Base> = new Map();
 
-  get<T extends Base>(Class: Newable<T>, ...args: any[]): T {
+  get<T extends Base>(Class: INewable<T>, ...args: any[]): T {
     let instance: T;
 
     if (!this.instances.has(Class)) {

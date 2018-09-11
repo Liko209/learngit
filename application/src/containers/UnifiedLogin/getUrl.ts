@@ -1,3 +1,9 @@
+/*
+ * @Author: Devin Lin (devin.lin@ringcentral.com)
+ * @Date: 2018-09-10 09:37:39
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { History } from 'history';
 import { stringify } from 'qs';
 import config from '@/config';
@@ -28,7 +34,7 @@ const getUrl = (location: History.LocationState) => {
     response_hint: 'remember_me+login_type',
     title_bar: true,
   };
-  return url + '?' + stringify(params);
+  return `${url}?${stringify(params)}`;
 };
 
 export default getUrl;

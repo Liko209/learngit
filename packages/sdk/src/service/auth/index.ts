@@ -14,13 +14,13 @@ import BaseService from '../BaseService';
 import { SERVICE } from '../eventKey';
 import notificationCenter from '../notificationCenter';
 
-export interface Login {
+export interface ILogin {
   username: string;
   extension: string;
   password: string;
 }
 
-export interface UnifiedLogin {
+export interface IUnifiedLogin {
   code?: string;
   token?: string;
 }
@@ -34,7 +34,7 @@ export default class AuthService extends BaseService {
     this._accountManager = accountManager;
   }
 
-  async unifiedLogin({ code, token }: UnifiedLogin) {
+  async unifiedLogin({ code, token }: IUnifiedLogin) {
     try {
       const resp = await this._accountManager.login(UnifiedLoginAuthenticator.name, { code, token });
       mainLogger.info(`unifiedLogin finished ${JSON.stringify(resp)}`);
@@ -45,7 +45,7 @@ export default class AuthService extends BaseService {
     }
   }
 
-  async login(params: Login) {
+  async login(params: ILogin) {
     await Promise.all([this.loginGlip(params), this.loginGlip2(params)]);
     this.onLogin();
   }
@@ -56,7 +56,7 @@ export default class AuthService extends BaseService {
     notificationCenter.emitService(SERVICE.LOGIN);
   }
 
-  async loginGlip(params: Login) {
+  async loginGlip(params: ILogin) {
     try {
       await this._accountManager.login(RCPasswordAuthenticator.name, params);
     } catch (err) {
@@ -65,7 +65,7 @@ export default class AuthService extends BaseService {
     }
   }
 
-  async loginGlip2(params: Login) {
+  async loginGlip2(params: ILogin) {
     const authDao = daoManager.getKVDao(AuthDao);
     try {
       const glip2AuthData = await loginGlip2ByPassword(params);

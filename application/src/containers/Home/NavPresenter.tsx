@@ -8,7 +8,7 @@ const Link = styled(NavLink)`
   &&{
     color: ${({ theme }) => theme.palette.grey[700]};
     text-decoration: none;
-    font-size: ${({ theme }) => theme.typography.fontSize + 'px'};
+    font-size: ${({ theme }) => theme.typography.fontSize}px;
   }
 `;
 // const SS = window.sessionStorage;

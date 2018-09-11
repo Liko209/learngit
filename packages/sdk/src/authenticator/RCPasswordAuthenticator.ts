@@ -10,14 +10,14 @@ import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
 import { GlipAccount, RCAccount } from '../account';
 import { ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM } from './constants';
 
-interface RCPasswordAuthenticateParams extends IAuthParams {
+interface IRCPasswordAuthenticateParams extends IAuthParams {
   username: string;
   password: string;
   extension?: string;
 }
 
 class RCPasswordAuthenticator implements IAuthenticator {
-  async authenticate(params: RCPasswordAuthenticateParams): Promise<IAuthResponse> {
+  async authenticate(params: IRCPasswordAuthenticateParams): Promise<IAuthResponse> {
     params.username = this.parsePhoneNumber(params.username);
 
     const rcAuthData = await loginRCByPassword(params);
