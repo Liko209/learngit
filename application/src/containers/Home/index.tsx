@@ -67,6 +67,13 @@ class Home extends Component<IProps, IStates>  {
     const state = this.navPresenter.state;
     state.prevUrl = prevUrl;
     state.currentUrl = currentUrl;
+    const { forwardNavArray, backNavArray } = this.navPresenter;
+    if (forwardNavArray.length) {
+      state.forwardDisabled = false;
+    }
+    if (backNavArray.length) {
+      state.backDisabled = false;
+    }
   }
   componentDidMount() {
     this.props.history.listen((route) => {
@@ -75,14 +82,16 @@ class Home extends Component<IProps, IStates>  {
       const { title, showLeftPanel, showRightPanel, pressNav } = state;
       setTimeout(() => {
         const { prevUrl } = state;
-        const backNavArray = this.navPresenter.backNavArray;
+        const { backNavArray } = this.navPresenter;
         const routeObj = { urlTitle: title, url: prevUrl };
         !showLeftPanel && !showRightPanel && !pressNav && backNavArray.push(routeObj);
+        // this.navPresenter.backNavArray = backNavArray;
         if (backNavArray.length > 10) {
           backNavArray.shift();
         }
         if (backNavArray.length) {
           this.navPresenter.state.backDisabled = false;
+          this.navPresenter.setItem('backNavArray', JSON.stringify(backNavArray));
         }
       });
     });

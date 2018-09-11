@@ -11,19 +11,20 @@ const Link = styled(NavLink)`
     font-size: ${({ theme }) => theme.typography.fontSize}px;
   }
 `;
-// const SS = window.sessionStorage;
-// const setItem = (key: string, value: any) => {
-//   return SS.setItem(key, value);
-// };
-// const getItem = (key: string) => {
-//   return SS.getItem(key);
-// };
-// const parse = JSON.parse;
+const SS = window.sessionStorage;
+const parse = JSON.parse;
+// 1.long press get reversed list,then click back btn, get sequence list
 class NavPresenter extends BasePresenter {
+  getItem = (key: string) => {
+    return SS.getItem(key) || '[]';
+  }
+  setItem = (key: string, value: any) => {
+    return SS.setItem(key, value);
+  }
   @observable buttonPressTimer: any = 0;
   @observable menus:JSX.Element[] = [];
-  @observable backNavArray: { url: string, urlTitle: string }[] = [];
-  @observable forwardNavArray: { url: string, urlTitle: string }[] = [];
+  @observable backNavArray: { url: string, urlTitle: string }[] = parse(this.getItem('backNavArray'));
+  @observable forwardNavArray: { url: string, urlTitle: string }[] = parse(this.getItem('forwardNavArray'));
   @observable counts: number = 0;
   @observable state = {
     title: 'Jupiter',
@@ -35,17 +36,18 @@ class NavPresenter extends BasePresenter {
     pressNav: false,
     currentUrl: '',
     disabled: true,
-    backNavArray: [],
     showLeftPanel: false,
     showRightPanel: false,
     isLongPress: false,
   };
   @action
-  handleToward = (dir: string) => {
+  private _handleToward = (dir: string) => {
     const state = this.state;
     const { isLongPress, forwardDisabled, backDisabled, title, currentUrl } = state;
     const backNavArray = this.backNavArray;
     const forwardNavArray = this.forwardNavArray;
+    console.log('_handleToward-backNavArray');
+    console.log(backNavArray);
 
     // current title
     const currentItem = { urlTitle: title, url: currentUrl };
@@ -75,11 +77,15 @@ class NavPresenter extends BasePresenter {
       emptyDisable = 'backDisabled';
     }
     if (!isLongPress && !disable) {
-      removedArr.shift(); // out stack
-      addArr.push(currentItem);
+      const REMOVED_ITEM = removedArr.shift(); // out stack
+      console.log('removed-backNavArray');
+      console.log(removedArr);
+      REMOVED_ITEM && addArr.push(currentItem);
       action();
-      this.backNavArray = addArr;
-      this.forwardNavArray = removedArr;
+      this.backNavArray = removedArr; // reversed
+      this.forwardNavArray = addArr;
+      this.setItem('backNavArray', JSON.stringify(removedArr));
+      this.setItem('forwardNavArray', JSON.stringify(addArr));
       state.pressNav = true;
       state[disableType] = false;
       if (!removedArr.length) {
@@ -91,11 +97,11 @@ class NavPresenter extends BasePresenter {
   }
   @action
   handleForward = () => {
-    this.handleToward('forward');
+    this._handleToward('forward');
   }
   @action
   handleBackWard = () => {
-    this.handleToward('backward');
+    this._handleToward('backward');
   }
   @action
   handleButtonPress = () => {
@@ -110,8 +116,10 @@ class NavPresenter extends BasePresenter {
     clearTimeout(this.buttonPressTimer);
     const state = this.state;
     const time = state.time;
-    const backNavArray = this.backNavArray;
+    const backNavArray = this.backNavArray; // get sequence list
     const forwardNavArray = this.forwardNavArray;
+    console.log('handleButtonRelease');
+    console.log(backNavArray);
     if (time > 200) {
       state.nav = nav;
       state.time = 0;
@@ -119,9 +127,11 @@ class NavPresenter extends BasePresenter {
       if (nav === 'backward') {
         state.showLeftPanel = true;
         this.handleMenuItem(backNavArray.reverse());
+        this.setItem('backNavArray', JSON.stringify(backNavArray));
       }else {
         state.showRightPanel = true;
         this.handleMenuItem(forwardNavArray.reverse());
+        this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
       }
     } else {
       state.showRightPanel = false;
@@ -152,6 +162,8 @@ class NavPresenter extends BasePresenter {
       this.handleMenuItem(forwardNavArray.reverse());
       this.backNavArray = backNavArray;
       this.forwardNavArray = forwardNavArray;
+      this.setItem('backNavArray', JSON.stringify(backNavArray));
+      this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
       state.showLeftPanel = false;
       if (!backNavArray.length) {
         state.backDisabled = true;
@@ -166,6 +178,8 @@ class NavPresenter extends BasePresenter {
       this.handleMenuItem(backNavArray.reverse());
       this.backNavArray = backNavArray;
       this.forwardNavArray = forwardNavArray;
+      this.setItem('backNavArray', JSON.stringify(backNavArray));
+      this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
       state.showRightPanel = false;
       if (!forwardNavArray.length) {
         state.forwardDisabled = true;
