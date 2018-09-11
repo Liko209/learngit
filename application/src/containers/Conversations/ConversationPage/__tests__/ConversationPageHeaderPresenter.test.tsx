@@ -12,23 +12,26 @@ import {
   personModelFactory,
 } from '../../../../__tests__/factories';
 import { ENTITY_NAME } from '@/store';
-import * as storeUtils from '@/store/utils';
+import { getEntity, getSingleEntity } from '@/store/utils';
 const { AccountService } = service;
 
-jest.mock('@/store/utils');
+jest.mock('@/store/utils', () => {
+  return {
+    getEntity: jest.fn(),
+    getSingleEntity: jest.fn(),
+  };
+});
 
 const mockGetEntity = (entityName: string, impl: Function) => {
-  (storeUtils.getEntity as jest.Mock).mockImplementation(
-    (en: string, id: number) => {
-      if (en === entityName) {
-        return impl(id);
-      }
-    },
-  );
+  (getEntity as jest.Mock).mockImplementation((en: string, id: number) => {
+    if (en === entityName) {
+      return impl(id);
+    }
+  });
 };
 
 const mockGetSingleEntity = (entityName: string, impl: Function) => {
-  (storeUtils.getSingleEntity as jest.Mock).mockImplementation(
+  (getSingleEntity as jest.Mock).mockImplementation(
     (en: string, property: string) => {
       if (en === entityName) {
         return impl(property);

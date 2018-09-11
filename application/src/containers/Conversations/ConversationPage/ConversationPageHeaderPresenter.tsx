@@ -87,7 +87,6 @@ class ConversationPageHeaderPresenter extends BaseNotificationSubscribable {
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
-    console.log(favoriteGroups);
     return favoriteGroups.indexOf(group.id) >= 0;
   }
 }
