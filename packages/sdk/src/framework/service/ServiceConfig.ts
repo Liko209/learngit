@@ -5,10 +5,10 @@
 */
 import { IService } from './IService';
 
-interface ServiceConfig {
+interface IServiceConfig {
   accounts: string[];
   service: string;
   serviceCreator: () => IService;
 }
 
-export { ServiceConfig };
+export { IServiceConfig };

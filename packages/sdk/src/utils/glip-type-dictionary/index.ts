@@ -11,7 +11,7 @@ import _ from 'lodash';
 interface IMessage<V> {
   [key: number]: V;
 }
-interface SystemMessage {
+interface ISystemMessage {
   type: string;
   data: object[];
 }
@@ -34,7 +34,7 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_PAGE]: 'item',
 };
 
-function parseSocketMessage(message: string | SystemMessage) {
+function parseSocketMessage(message: string | ISystemMessage) {
   if (typeof message === 'object') {
     const { type, data } = message;
     return { [type]: data };

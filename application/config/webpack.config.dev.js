@@ -152,6 +152,9 @@ module.exports = {
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
       '@': paths.appSrc,
+      'ui-components': path.resolve(paths.appNodeModules, './ui-components/src'),
+      sdk: path.resolve(paths.appNodeModules, './sdk/src'),
+      foundation: path.resolve(paths.appNodeModules, './sdk/node_modules/foundation/src'),
     },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).
@@ -195,7 +198,6 @@ module.exports = {
           // Compile .tsx?
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            include: paths.appSrc,
             use: [
               {
                 loader: 'babel-loader',

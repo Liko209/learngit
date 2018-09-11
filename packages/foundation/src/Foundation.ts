@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 // import { NetworkManager } from './network';
-import config, { FoundationConfig } from './config';
+import config, { IFoundationConfig } from './config';
 
 class Foundation {
-  static init(newConfig: FoundationConfig) {
+  static init(newConfig: IFoundationConfig) {
     // TODO refactor: foundation should not care about rcConfig,
     // and foundation should not contain biz logic.
     Object.assign(config.rcConfig, newConfig.rcConfig);

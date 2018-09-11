@@ -1,6 +1,4 @@
-import { service } from 'sdk';
-
-const {
+import {
   PersonService,
   ItemService,
   CompanyService,
@@ -10,7 +8,9 @@ const {
   StateService,
   ProfileService,
   ENTITY,
-} = service;
+} from 'sdk/service';
+
+import * as sdk from 'sdk';
 
 enum ENTITY_NAME  {
   'GROUP'= 'group',
@@ -24,6 +24,8 @@ enum ENTITY_NAME  {
   'PROFILE'= 'profile',
   'POST_SENT_STATUS'= 'postSendStatus',
 }
+
+console.log(sdk);
 
 const ENTITY_EVENT_NAME = {
   [ENTITY_NAME.GROUP]: [

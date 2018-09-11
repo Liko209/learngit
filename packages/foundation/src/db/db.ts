@@ -35,13 +35,13 @@ export interface IDatabaseCollection<T> {
   last: (query?: IQuery<T>) => Promise<T>;
 }
 
-export interface TableSchemaDefinition {
+export interface ITableSchemaDefinition {
   unique: string;
   indices?: string[];
   onUpgrade?: (item: any) => void;
 }
 export interface ISchemaDefinition {
-  [tableName: string]: TableSchemaDefinition;
+  [tableName: string]: ITableSchemaDefinition;
 }
 export interface ISchemaVersions {
   [version: number]: ISchemaDefinition;

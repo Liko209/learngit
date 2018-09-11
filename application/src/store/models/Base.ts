@@ -25,7 +25,7 @@ export default class Base<T extends BaseModel> implements IEntity {
   dispose() { }
 }
 
-export interface ModelConstructor<T> {
+export interface IModelConstructor<T> {
   new(): T;
   fromJS: (data: any) => T;
 }

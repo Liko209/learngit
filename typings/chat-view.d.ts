@@ -1,4 +1,4 @@
-declare module 'react-chatview'{
+declare module 'react-chatview' {
   import React from 'react';
   interface IProps{
     flipped:boolean;
@@ -7,6 +7,6 @@ declare module 'react-chatview'{
     shouldTriggerLoad: ()=>boolean;
     returnScrollable?:(el:any)=>void;
   }
- const  ChatView: React.SFC<IProps>;
+  const  ChatView: React.SFC<IProps>;
   export default ChatView;
 }

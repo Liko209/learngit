@@ -1,6 +1,6 @@
 /*
  * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-08-03 13:59:44
+ * @Date: 2018-09-10 09:36:17
  * Copyright © RingCentral. All rights reserved.
  */
 
@@ -9,8 +9,8 @@ import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import { parse } from 'qs';
 
-import { service } from "sdk";
 import TokenGetter from './TokenGetter';
+import ViewModel from './ViewModel';
 
 const AuthRoute = ({ component: Component, ...rest }) => {
 
@@ -23,7 +23,8 @@ const AuthRoute = ({ component: Component, ...rest }) => {
     return <Route {...rest} component={TokenGetter} />
   }
 
-  const isAuthenticated = service.AuthService.getInstance().isLoggedIn();
+  const vm = new ViewModel();
+  const { isAuthenticated } = vm;
   return (
     <Route
       {...rest}

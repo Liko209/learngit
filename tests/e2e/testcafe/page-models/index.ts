@@ -127,8 +127,7 @@ export abstract class BaseComponent extends BaseUI {
 }
 
 export abstract class BasePage extends BaseUI {
-
-  navigateTo(url: string): this {
+  navigateTo(url: string) {
     return this.chain(async (t) => {
       await t.navigateTo(url);
     });

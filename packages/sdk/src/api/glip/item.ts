@@ -9,14 +9,14 @@ import Api from '../api';
 import { FileItem, Item, BaseModel, StoredFile, Raw, NoteItem } from '../../models';
 import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
 
-interface RightRailItemModel extends BaseModel {
+interface IRightRailItemModel extends BaseModel {
   items: Raw<Item>[];
 }
 
 type ProgressCallback = (e: ProgressEventInit) => any;
 type UploadFileResponse = IResponse<StoredFile>;
 type FileResponse = IResponse<Raw<FileItem>>;
-type RightRailResponse = IResponse<RightRailItemModel>;
+type RightRailResponse = IResponse<IRightRailItemModel>;
 type NoteResponse = IResponse<Raw<NoteItem>>;
 
 const ITEMPATH = {
@@ -82,7 +82,7 @@ class ItemAPI extends Api {
 
 export default ItemAPI;
 export {
-  RightRailItemModel,
+  IRightRailItemModel,
   FileResponse,
   ProgressCallback,
   UploadFileResponse,

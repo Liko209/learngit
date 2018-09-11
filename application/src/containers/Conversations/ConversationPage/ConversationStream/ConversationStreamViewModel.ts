@@ -2,13 +2,10 @@ import OrderListStore from '@/store/base/OrderListStore';
 import OrderListPresenter from '@/store/base/OrderListPresenter';
 import storeManager, { ENTITY_NAME } from '@/store';
 
-import { service } from 'sdk';
-import { Post } from 'sdk/src/models';
+import { Post } from 'sdk/models';
 import PostModel from '@/store/models/Post';
-import { StateService as IStateService, PostService as IPostService } from 'sdk/service';
+import { PostService, StateService, ENTITY } from 'sdk/service';
 import { IIncomingData } from '@/store/store';
-
-const { PostService, StateService, ENTITY } = service;
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -19,8 +16,8 @@ const transformFunc = (dataModel: Post) => ({
 });
 
 export default class ConversationStreamViewModel extends OrderListPresenter<PostModel, Post> {
-  stateService: IStateService;
-  postService: IPostService;
+  stateService: StateService;
+  postService: PostService;
   groupStateStore = storeManager.getEntityMapStore(
     ENTITY_NAME.GROUP_STATE,
   );

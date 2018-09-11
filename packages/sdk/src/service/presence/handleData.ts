@@ -22,7 +22,7 @@ const presenceHandleData = async (presences: RawPresence[]) => {
   }
   const transformedData = presences.map(item => transform(item)) as Presence[];
   notificationCenter.emitEntityPut(ENTITY.PRESENCE, transformedData);
-  const presenceService = serviceManager.getInstance(PresenceService);
+  const presenceService: PresenceService = serviceManager.getInstance(PresenceService);
   presenceService.saveToMemory(transformedData);
 };
 

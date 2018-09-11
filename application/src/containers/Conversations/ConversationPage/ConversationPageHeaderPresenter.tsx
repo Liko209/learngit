@@ -6,15 +6,13 @@
 import { observable } from 'mobx';
 import _ from 'lodash';
 import BasePresenter from '@/store/base/BasePresenter';
-import { service, dao } from 'sdk';
-import { GroupService as IGroupService, AccountService as IAccountService } from 'sdk/service';
+import { GroupService, AccountService } from 'sdk/service';
 import { Person, Profile } from 'sdk/models';
+import { ACCOUNT_USER_ID } from 'sdk/dao';
 import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
 import ProfileModel from '@/store/models/Profile';
 import { ENTITY_NAME } from '@/store';
-const { GroupService, AccountService } = service;
-const { ACCOUNT_USER_ID } = dao;
 
 enum ConversationTypes {
   TEAM,
@@ -29,8 +27,8 @@ class ConversationPageHeaderPresenter extends BasePresenter {
   userId: number | null;
   @observable
   groupId: number;
-  groupService: IGroupService;
-  accountService: IAccountService;
+  groupService: GroupService;
+  accountService: AccountService;
 
   constructor() {
     super();

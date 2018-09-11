@@ -26,7 +26,7 @@ class LogUploadLogManager {
   ) {
     return axios({
       method: 'POST',
-      url: `/log/`,
+      url: '/log/',
       data: { userInfo, logInfo },
     });
   }

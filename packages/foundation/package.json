@@ -2,9 +2,7 @@
   "name": "foundation",
   "version": "0.1.0",
   "private": true,
-  "main": "build/index.js",
-  "typings": "build/index.d.js",
-  "module": "build/index.js",
+  "main": "src",
   "dependencies": {
     "axios": "0.18.0",
     "dexie": "3.0.0-alpha.2",
@@ -19,6 +17,7 @@
   "devDependencies": {
     "@types/lodash": "*",
     "@types/lokijs": "*",
-    "@types/socket.io-client": "*"
+    "@types/socket.io-client": "*",
+    "typescript": "3.0.3"
   }
 }

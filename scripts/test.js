@@ -42,9 +42,6 @@ if (argv.length) {
 }
 
 switch(true) {
-  case argv.includes('demo'):
-    process.env.APP = '<rootDir>/demo';
-    break;
   case argv.includes('application'):
     process.env.APP = '<rootDir>/application';
     break;

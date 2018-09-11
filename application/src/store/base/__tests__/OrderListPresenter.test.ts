@@ -5,7 +5,6 @@
 */
 import OrderListPresenter from '../OrderListPresenter';
 import OrderListStore from '../OrderListStore';
-import { Presence } from 'sdk/models';
 
 describe('OrderListPresenter', () => {
   const orderListStore = new OrderListStore('group');

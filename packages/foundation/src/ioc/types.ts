@@ -1,13 +1,13 @@
-interface Newable<T> {
+interface INewable<T> {
   new(...args: any[]): T;
 }
 
-interface AsyncNewable<T> {
+interface IAsyncNewable<T> {
   (...args: any[]): Promise<any>;
 }
 
-type InjectableName<T> = Newable<T> | string | Function;
-type Injectable = Newable<any> | Function | Object;
+type InjectableName<T> = INewable<T> | string | Function;
+type Injectable = INewable<any> | Function | Object;
 
 enum RegisterType {
   ConstantValue = 'ConstantValue',
@@ -28,38 +28,38 @@ interface InjectableConfig {
   singleton?: boolean;
 }
 
-interface Provider {
+interface IProvider {
   (...args: any[]): ((...args: any[]) => Promise<any>) | Promise<any>;
 }
 
-interface ClassConfig extends InjectableConfig {
-  value: Newable<any>;
+interface IClassConfig extends InjectableConfig {
+  value: INewable<any>;
 }
 
-interface AsyncClassConfig extends InjectableConfig {
-  value: AsyncNewable<any>;
+interface IAsyncClassConfig extends InjectableConfig {
+  value: IAsyncNewable<any>;
 }
 
-interface ProviderConfig<T> extends InjectableConfig {
-  value: Provider;
+interface IProviderConfig<T> extends InjectableConfig {
+  value: IProvider;
 }
 
-interface ConstantConfig extends InjectableConfig {
+interface IConstantConfig extends InjectableConfig {
   value: Object;
 }
 
-interface RegisterConfig {
+interface IRegisterConfig {
   type: RegisterType;
   cache?: any;
-  implementationType?: Newable<any>;
-  asyncImplementationType?: AsyncNewable<any>;
-  provider?: Provider;
+  implementationType?: INewable<any>;
+  asyncImplementationType?: IAsyncNewable<any>;
+  provider?: IProvider;
   singleton?: boolean;
   async?: boolean;
   injects?: InjectableName<any>[];
 }
 
-interface ContainerConfig {
+interface IContainerConfig {
   singleton?: boolean;
 }
 
@@ -67,13 +67,13 @@ export {
   InjectableName,
   Injectable,
   InjectableConfig,
-  ContainerConfig,
-  ClassConfig,
-  AsyncClassConfig,
-  ProviderConfig,
-  ConstantConfig,
-  RegisterConfig,
+  IContainerConfig,
+  IClassConfig,
+  IAsyncClassConfig,
+  IProviderConfig,
+  IConstantConfig,
+  IRegisterConfig,
   RegisterType,
-  Newable,
-  AsyncNewable,
+  INewable,
+  IAsyncNewable,
 };

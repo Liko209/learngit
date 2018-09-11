@@ -11,7 +11,7 @@ import { generateCode, oauthTokenViaAuthCode } from '../api/ringcentral/auth';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
 import { setRcToken, setRcAccoutType, setGlipToken, setGlipAccoutType } from './utils';
 
-interface UnifiedLoginAuthenticateParams extends IAuthParams {
+interface IUnifiedLoginAuthenticateParams extends IAuthParams {
   code?: string;
   token?: string;
 }
@@ -24,7 +24,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
    * 2. Glip account
    * we only consider 1 now, will implement case 2 in the future
    */
-  async authenticate(params: UnifiedLoginAuthenticateParams): Promise<IAuthResponse> {
+  async authenticate(params: IUnifiedLoginAuthenticateParams): Promise<IAuthResponse> {
 
     if (params.code) {
       return this._authenticateRC(params.code);
