@@ -117,7 +117,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   // }
   render() {
     return (
-      <div>
+      <React.Fragment>
         <ConversationListItem
           aria-owns={open ? 'render-props-menu' : undefined}
           aria-haspopup="true"
@@ -137,7 +137,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
         >
           <MenuItem onClick={this._toggleFavorite}>{this.favoriteText}</MenuItem>
         </Menu>
-      </div>
+      </React.Fragment>
     );
   }
 
