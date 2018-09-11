@@ -9,6 +9,7 @@ import _ from 'lodash';
 import { ConversationListItem } from 'ui-components/molecules/ConversationList/ConversationListItem';
 import { Menu } from 'ui-components/atoms/Menu';
 import { MenuItem } from 'ui-components/atoms/MenuItem';
+import DocumentTitle from 'react-document-title';
 
 import { ENTITY_NAME } from '../../store';
 import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
@@ -19,6 +20,8 @@ import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import NavPresenter from '../Home/NavPresenter';
+
 const { GroupService } = service;
 type IProps = IComponentWithGetEntityProps & RouteComponentProps<{}> & {
   id: number;
@@ -33,6 +36,7 @@ interface IState {
 
 @observer
 class ConversationListItemCell extends React.Component<IProps, IState>{
+  private navPresenter: NavPresenter;
   static defaultProps = {
     isFavorite: false,
   };
@@ -79,6 +83,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     this._onClick = this._onClick.bind(this);
     this.isFavorite = !!props.isFavorite;
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
+    this.navPresenter = new NavPresenter();
 
     autorun(() => {
       this.getDataFromStore();
@@ -110,17 +115,19 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   render() {
     return (
       <React.Fragment>
-        <ConversationListItem
-          aria-owns={open ? 'render-props-menu' : undefined}
-          aria-haspopup="true"
-          key={this.id}
-          title={this.displayName || ''}
-          unreadCount={this.unreadCount}
-          umiVariant={this.umiVariant}
-          onMoreClick={this._openMenu}
-          onClick={this._onClick}
-          status={this.status}
-        />
+        <DocumentTitle title={this.displayName || 'Jupiter'}>
+          <ConversationListItem
+            aria-owns={open ? 'render-props-menu' : undefined}
+            aria-haspopup="true"
+            key={this.id}
+            title={this.displayName || ''}
+            unreadCount={this.unreadCount}
+            umiVariant={this.umiVariant}
+            onMoreClick={this._openMenu}
+            onClick={this._onClick}
+            status={this.status}
+          />
+        </DocumentTitle>
         <Menu
           id="render-props-menu"
           anchorEl={this.anchorEl}
@@ -153,6 +160,8 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   private _jump2Conversation(id: number) {
     const { history } = this.props;
     history.push(`/messages/${id}`);
+    this.navPresenter.handleRouterChange();
+    this.navPresenter.handleTitle(this.displayName);
   }
   @action
   private _toggleFavorite() {

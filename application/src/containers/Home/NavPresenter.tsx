@@ -24,7 +24,7 @@ export default class NavPresenter extends BasePresenter {
   @observable menus:JSX.Element[] = [];
   @observable backNavArray: { url: string, urlTitle: string }[] = [];
   @observable forwardNavArray: { url: string, urlTitle: string }[] = [];
-
+  @observable counts: number = 0;
   @observable state = {
     title: 'Jupiter',
     time: 0,
@@ -43,9 +43,12 @@ export default class NavPresenter extends BasePresenter {
   @action
   handleToward = (dir: string) => {
     const state = this.state;
-    const { isLongPress, forwardDisabled, backDisabled } = state;
+    const { isLongPress, forwardDisabled, backDisabled, title, currentUrl } = state;
     const backNavArray = this.backNavArray;
     const forwardNavArray = this.forwardNavArray;
+
+    // current title
+    const currentItem = { urlTitle: title, url: currentUrl };
     let disable;
     let removedArr;
     let addArr;
@@ -54,29 +57,31 @@ export default class NavPresenter extends BasePresenter {
     let emptyDisable;
     if (dir === 'forward') {
       disable = forwardDisabled;
-      removedArr = forwardNavArray;
+      removedArr = forwardNavArray.reverse();
       addArr = backNavArray;
-      action = () => {
-        return window.history.forward();
+      action = (url?: string) => {
+        console.log('go forward');
+        // this.props.history.goForward();
+        return window.history.go(url);
       };
       disableType = 'backDisabled';
       emptyDisable = 'forwardDisabled';
     } else {
       disable = backDisabled;
-      removedArr = backNavArray;
+      removedArr = backNavArray.reverse();
       addArr = forwardNavArray;
-      action = () => {
+      action = (url?: string) => {
         return window.history.back();
       };
       disableType = 'forwardDisabled';
       emptyDisable = 'backDisabled';
     }
     if (!isLongPress && !disable) {
-      const REMOVEITEM = removedArr.shift(); // out stack
-      REMOVEITEM && addArr.push(REMOVEITEM);
-      action();
-      this.backNavArray = backNavArray;
-      this.forwardNavArray = forwardNavArray;
+      const REMOVE_ITEM = removedArr.shift(); // out stack
+      addArr.push(currentItem);
+      action(REMOVE_ITEM!.url);
+      this.backNavArray = addArr;
+      this.forwardNavArray = removedArr;
       state.pressNav = true;
       state[disableType] = false;
       if (!removedArr.length) {
@@ -115,12 +120,10 @@ export default class NavPresenter extends BasePresenter {
       state.isLongPress = true;
       if (nav === 'backward') {
         state.showLeftPanel = true;
-        this.backNavArray = backNavArray.reverse();
-        this.handleMenuItem(this.backNavArray);
+        this.handleMenuItem(backNavArray.reverse());
       }else {
         state.showRightPanel = true;
-        this.forwardNavArray = forwardNavArray.reverse();
-        this.handleMenuItem(this.forwardNavArray);
+        this.handleMenuItem(forwardNavArray.reverse());
       }
     } else {
       state.showRightPanel = false;
@@ -137,17 +140,17 @@ export default class NavPresenter extends BasePresenter {
   }
   @action
   handleNavClose = (event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index: number|undefined) => {
+    // click outside will invoke
     const state = this.state;
     const { nav, title, currentUrl } = state;
     // current title
     const currentItem = { urlTitle: title, url: currentUrl };
-    let backNavArray = this.backNavArray;
-    let forwardNavArray = this.forwardNavArray;
-    // const { forwardNavArray } = this.state;
+    let backNavArray = this.backNavArray.reverse();
+    let forwardNavArray = this.forwardNavArray.reverse();
     if (nav === 'backward' && index !== undefined) {
       const toForward = backNavArray.splice(0, index + 1); // delete current and before
       toForward.splice(toForward.length - 1, 1); // delete click items
-      forwardNavArray = toForward.concat(currentItem);
+      forwardNavArray = toForward.reverse().concat(currentItem);
       this.handleMenuItem(forwardNavArray.reverse());
       this.backNavArray = backNavArray;
       this.forwardNavArray = forwardNavArray;
@@ -161,7 +164,7 @@ export default class NavPresenter extends BasePresenter {
     } else if (nav === 'forward' && index !== undefined) {
       const toBack = forwardNavArray.splice(0, index + 1);
       toBack.splice(toBack.length - 1, 1);
-      backNavArray = toBack.concat(currentItem);
+      backNavArray = toBack.reverse().concat(currentItem).concat(backNavArray);
       this.handleMenuItem(backNavArray.reverse());
       this.backNavArray = backNavArray;
       this.forwardNavArray = forwardNavArray;
@@ -176,7 +179,9 @@ export default class NavPresenter extends BasePresenter {
     state.showRightPanel = false;
     state.showLeftPanel = false;
   }
+  // handle without click
   handleTitle  = (title: string) => {
+    console.log(title);
     this.state.title = title;
   }
   handleRouterChange = () => {
