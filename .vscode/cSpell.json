@@ -108,7 +108,9 @@
         "cateye",
         "visibilitychange",
         "msvisibilitychange",
-        "webkitvisibilitychange"
+        "webkitvisibilitychange",
+        "autorun",
+        "textsms"
     ],
     "flagWords": []
 }

@@ -42,7 +42,7 @@ const getKnobs = () => {
     awake,
   };
 };
-storiesOf('Atoms/ButtonBar', module)
+storiesOf('Molecules/ButtonBar', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiButtonBar, { inline: true }))
   .addWithJSX('Plain Icon Button Bar', () => {

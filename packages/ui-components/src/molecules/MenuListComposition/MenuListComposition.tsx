@@ -45,7 +45,7 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
   render() {
     const { open } = this.state;
     return (
-      <MenuListCompositionWrapper>
+      <MenuListCompositionWrapper className={this.props.className}>
         <AvatarWithPresence
           innerRef={this.anchorEl}
           aria-haspopup="true"
@@ -69,9 +69,7 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
               <Paper>
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList>
-                    <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                    <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                    <MenuItem onClick={this.props.handleSignOutClick}>Logout</MenuItem>
+                    <MenuItem onClick={this.props.handleSignOutClick}>SignOut</MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
