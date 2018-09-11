@@ -27,13 +27,13 @@ ConversationPageHeaderModule.JuiConversationPageHeader = ({ title, SubTitle, Rig
 );
 jest.doMock('ui-components/molecules/ConversationPageHeader', ConversationPageHeaderModule);
 
-const ButtonBarModule = require.requireActual('ui-components/atoms/ButtonBar');
+const ButtonBarModule = require.requireActual('ui-components/molecules/ButtonBar');
 ButtonBarModule.JuiButtonBar = ({ children }: any) => (
   <div className="button-bar">
     {children}
   </div>
 );
-jest.doMock('ui-components/atoms/ButtonBar', ButtonBarModule);
+jest.doMock('ui-components/molecules/ButtonBar', ButtonBarModule);
 
 const CheckboxButtonModule = require.requireActual('ui-components/molecules/CheckboxButton');
 CheckboxButtonModule.JuiCheckboxButton = ({ iconName, checkedIconName, checked }: any) => (
