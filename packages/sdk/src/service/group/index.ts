@@ -28,6 +28,7 @@ import handleData, {
   filterGroups,
   handleGroupMostRecentPostChanged,
   handleFavoriteGroupsChanged,
+  handleHiddenGroupsChanged,
   sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
@@ -55,6 +56,7 @@ export default class GroupService extends BaseService<Group> {
       [SOCKET.PARTIAL_GROUP]: handlePartialData,
       [SOCKET.POST]: handleGroupMostRecentPostChanged,
       [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
+      [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
   }
@@ -353,7 +355,7 @@ export default class GroupService extends BaseService<Group> {
     return result;
   }
 
-  async hideConversation(groupId: number, hidden: boolean, shouldUpdateSkipConfirmation: boolean): Promise<ServiceCommonErrorType> {
+  async hideConversation(groupId: number, hidden: boolean, shouldUpdateSkipConfirmation: boolean): Promise<ServiceCommomErrorType> {
     const profileService: ProfileService = ProfileService.getInstance();
     const result = await profileService.hideConversation(groupId, hidden, shouldUpdateSkipConfirmation);
     if (result instanceof BaseError) {

@@ -11,6 +11,7 @@ import handleData, {
   handleGroupMostRecentPostChanged,
   filterGroups, handlePartialData, isNeedToUpdateMostRecent4Group,
   getUniqMostRecentPostsByGroup,
+  handleHiddenGroupsChanged,
 } from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
@@ -254,7 +255,7 @@ describe('filterGroups()', () => {
     expect(filteredGroups.length).toBe(TOTAL_GROUPS);
   });
 
-  it(`should return groups until unread group when unread group's position > limit`, async () => {
+  it("should return groups until unread group when unread group's position > limit", async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
 
@@ -265,7 +266,7 @@ describe('filterGroups()', () => {
     expect(filteredGroups.length).toBe(4);
   });
 
-  it(`should return all groups when unread group's position = limit`, async () => {
+  it("should return all groups when unread group's position = limit", async () => {
     const LIMIT = 4;
     const TOTAL_GROUPS = 5;
 
@@ -276,7 +277,7 @@ describe('filterGroups()', () => {
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
-  it(`should return all groups when unread group's position < limit`, async () => {
+  it("should return all groups when unread group's position < limit", async () => {
     const LIMIT = 5;
     const TOTAL_GROUPS = 5;
 
@@ -346,5 +347,17 @@ describe('getUniqMostRecentPostsByGroup', () => {
     expect(groupedPosts.length).toEqual(2);
     expect(groupedPosts[0].id).toEqual(2);
     expect(groupedPosts[1].id).toEqual(3);
+  });
+});
+
+describe('handleHiddenGroupsChanged', () => {
+  it('handleHiddenGroupsChanged, more hidden', async () => {
+    daoManager.getDao(GroupDao).get.mockReturnValue([{ id: 1, is_team: true }, { id: 2, is_team: false }]);
+    await handleHiddenGroupsChanged([], [1, 2]);
+    expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(2);
+  });
+  it('handleHiddenGroupsChanged, less hidden', async () => {
+    await handleHiddenGroupsChanged([1, 2], []);
+    expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(0);
   });
 });

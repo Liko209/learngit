@@ -258,20 +258,38 @@ async function handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Prof
       const dao = daoManager.getDao(GroupDao);
       if (moreFavorites.length) {
         const resultGroups: Group[] = await dao.queryGroupsByIds(moreFavorites);
-        const teams = resultGroups.filter((item: Group) => item.is_team);
-        notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, teams);
-        const groups = resultGroups.filter((item: Group) => !item.is_team);
-        notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, groups);
+        doNonFavoriteGroupsNotification(resultGroups, false);
       }
       if (moreNormals.length) {
         const resultGroups = await dao.queryGroupsByIds(moreNormals);
-        const teams = resultGroups.filter((item: Group) => item.is_team);
-        notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, teams);
-        const groups = resultGroups.filter((item: Group) => !item.is_team);
-        notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, groups);
+        doNonFavoriteGroupsNotification(resultGroups, true);
       }
       await doFavoriteGroupsNotification(newProfile.favorite_group_ids || []);
     }
+  }
+}
+
+async function handleHiddenGroupsChanged(localHiddenGroupIds: number[], remoteHiddenGroupIds: number[]) {
+  const moreHiddenIds: number[] = _.difference(remoteHiddenGroupIds, localHiddenGroupIds);
+  if (moreHiddenIds.length) {
+    const dao = daoManager.getDao(GroupDao);
+    const groups = await dao.queryGroupsByIds(moreHiddenIds);
+    doNonFavoriteGroupsNotification(groups, false);
+  }
+  // does not need to handle else
+}
+
+function doNonFavoriteGroupsNotification(groups: Group[], isPut: boolean) {
+  if (isPut) {
+    const teams = groups.filter((item: Group) => item.is_team);
+    teams.length && notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, teams);
+    const peopleGroups = groups.filter((item: Group) => !item.is_team);
+    peopleGroups && notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, peopleGroups);
+  } else {
+    const teams = groups.filter((item: Group) => item.is_team);
+    teams && notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, teams);
+    const peopleGroups = groups.filter((item: Group) => !item.is_team);
+    peopleGroups && notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, peopleGroups);
   }
 }
 
@@ -379,6 +397,7 @@ async function handlePartialData(groups: Partial<Raw<Group>>[]) {
 export {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
+  handleHiddenGroupsChanged,
   saveDataAndDoNotification,
   filterGroups,
   sortFavoriteGroups,
