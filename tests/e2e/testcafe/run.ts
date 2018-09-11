@@ -10,7 +10,7 @@ const TerminationHandler = require('testcafe/lib/cli/termination-handler');
 import { filterByTags } from './libs/filter';
 import { flattenGlobs, parseArgs } from './libs/utils';
 import { accountPoolClient } from './libs/accounts';
-import { EXECUTION_STRATEGIES_HELPER as STRATEGY } from './config';
+import { EXECUTION_STRATEGIES_HELPER as STRATEGY, QUARANTINEMODE } from './config';
 
 const REPORTER = process.env.REPORTER || 'allure-lazy';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
@@ -69,7 +69,7 @@ async function runTests() {
   runner.once('done-bootstrapping', () => console.log('running...'));
 
   try {
-    failed = await runner.run({ quarantineMode: true });
+    failed = await runner.run({ quarantineMode: QUARANTINEMODE });
   } finally {
     await testCafe.close();
     await accountPoolClient.checkInAll();
