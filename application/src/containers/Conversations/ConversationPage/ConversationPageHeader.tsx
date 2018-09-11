@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { JuiConversationPageHeader } from 'ui-components/molecules/ConversationPageHeader';
-import { JuiButtonBar } from 'ui-components/atoms/ButtonBar';
+import { JuiButtonBar } from 'ui-components/molecules/ButtonBar';
 import { JuiCheckboxButton } from 'ui-components/molecules/CheckboxButton';
 import { JuiIconButton } from 'ui-components/molecules/IconButton';
 import { ConversationPageHeaderPresenter, ConversationTypes } from './ConversationPageHeaderPresenter';

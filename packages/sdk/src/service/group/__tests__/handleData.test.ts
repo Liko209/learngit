@@ -9,11 +9,13 @@ import { Group, Post, Raw, Profile } from '../../../models';
 import handleData, {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
-  filterGroups, handlePartialData,
+  filterGroups, handlePartialData, isNeedToUpdateMostRecent4Group,
+  getUniqMostRecentPostsByGroup,
 } from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
 import { DEFAULT_CONVERSATION_LIST_LIMITS } from '../../account/constants';
+import { transform } from '../../utils';
 
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
@@ -319,5 +321,30 @@ describe('filterGroups()', () => {
 
     const filteredGroups = await filterGroups(teams, LIMIT);
     expect(filteredGroups.length).toBe(LIMIT);
+  });
+});
+
+describe('isNeedToUpdateMostRecent4Group', () => {
+  it('should to update most recent post for a group', () => {
+    const posts: Post[] = toArrayOf<Post>([{ id: 1, group_id: 1, modified_at: 100, created_at: 100 }]);
+    const groups: Group[] = toArrayOf<Group>([{ id: 1, most_recent_post_created_at: 99 }, { id: 1, most_recent_post_created_at: 100 }]);
+    expect(isNeedToUpdateMostRecent4Group(posts[0], groups[0])).toBeTruthy();
+    expect(isNeedToUpdateMostRecent4Group(posts[0], groups[1])).toBeFalsy();
+  });
+});
+
+describe('getUniqMostRecentPostsByGroup', () => {
+  it('should have 2 posts', () => {
+    const posts: Post[] = toArrayOf<Post>([
+      { id: 1, group_id: 1, modified_at: 1, created_at: 100 },
+      { id: 2, group_id: 1, modified_at: 1, created_at: 101 },
+
+      { id: 3, group_id: 2, modified_at: 1, created_at: 101 },
+    ]);
+
+    const groupedPosts = getUniqMostRecentPostsByGroup(posts);
+    expect(groupedPosts.length).toEqual(2);
+    expect(groupedPosts[0].id).toEqual(2);
+    expect(groupedPosts[1].id).toEqual(3);
   });
 });
