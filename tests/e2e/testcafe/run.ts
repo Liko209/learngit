@@ -69,7 +69,7 @@ async function runTests() {
   runner.once('done-bootstrapping', () => console.log('running...'));
 
   try {
-    failed = await runner.run({ quarantineMode: false });
+    failed = await runner.run({ quarantineMode: true });
   } finally {
     await testCafe.close();
     await accountPoolClient.checkInAll();
