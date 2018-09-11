@@ -22,7 +22,7 @@ import GroupAPI from '../../api/glip/group';
 
 import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
-import { ErrorParser } from '../../utils/error';
+import { ErrorParser, BaseError } from '../../utils/error';
 import handleData, {
   handlePartialData,
   filterGroups,
@@ -33,8 +33,10 @@ import handleData, {
 import Permission from './permission';
 import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
-import { SOCKET, SERVICE } from '../eventKey';
+import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
+import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
+import { notificationCenter } from '../';
 
 export type CreateTeamOptions = {
   isPublic?: boolean;
@@ -349,5 +351,23 @@ export default class GroupService extends BaseService<Group> {
     groups = await this.getGroupsByType(GROUP_QUERY_TYPE.TEAM);
     result = result.concat(groups);
     return result;
+  }
+
+  async hideConversation(groupId: number, hidden: boolean, shouldUpdateSkipConfirmation: boolean): Promise<ServiceCommonErrorType> {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const result = await profileService.hideConversation(groupId, hidden, shouldUpdateSkipConfirmation);
+    if (result instanceof BaseError) {
+      // rollback
+      const group = await this.getById(groupId);
+      notificationCenter.emitEntityPut(group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS, [group]);
+      if (result.code === 0) {
+        return ServiceCommonErrorType.NETWORK_NOT_AVAILABLE;
+      }
+      if (result.code > 1300) {
+        return ServiceCommonErrorType.SERVER_ERROR;
+      }
+      return ServiceCommonErrorType.UNKNOWN_ERROR;
+    }
+    return ServiceCommonErrorType.NONE;
   }
 }

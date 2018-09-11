@@ -24,25 +24,29 @@ class PreloadPostsProcessor implements IProcessor {
   }
 
   async process(): Promise<boolean> {
-    const needPreload = await this._needPreload();
-    mainLogger.info(`group id: ${this._group.id}, needPreload: ${needPreload}`);
-    if (needPreload) {
-      const params: any = {
-        limit: DEFAULT_LIMIT,
-        direction: DEFAULT_DIRECTION,
-        group_id: this._group.id,
-      };
-      const requestResult = await PostAPI.requestPosts(params);
-      if (requestResult.status && requestResult.status >= 500) {
-        this._canContinue = false;
-        return false;
+    try {
+      const needPreload = await this._needPreload();
+      mainLogger.info(`group id: ${this._group.id}, needPreload: ${needPreload}`);
+      if (needPreload) {
+        const params: any = {
+          limit: DEFAULT_LIMIT,
+          direction: DEFAULT_DIRECTION,
+          group_id: this._group.id,
+        };
+        const requestResult = await PostAPI.requestPosts(params);
+        if (requestResult.status && requestResult.status >= 500) {
+          this._canContinue = false;
+          return false;
+        }
+        if (requestResult.data) {
+          baseHandleData(requestResult.data.posts || []);
+          itemHandleData(requestResult.data.items || []);
+        }
       }
-      if (requestResult.data) {
-        baseHandleData(requestResult.data.posts || []);
-        itemHandleData(requestResult.data.items || []);
-      }
+      return true;
+    } catch (error) {
+      return false;
     }
-    return true;
   }
   canContinue(): boolean {
     return this._canContinue;

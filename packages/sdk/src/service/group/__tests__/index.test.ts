@@ -10,6 +10,8 @@ import { Group } from '../../../models';
 import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
+import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
+import { ErrorParser } from '../../../utils';
 
 jest.mock('../../../dao');
 // jest.mock('../../utils');
@@ -355,7 +357,7 @@ describe('GroupService', () => {
       );
     });
 
-    it('should call dependecy apis with correct data', async () => {
+    it('should call dependency apis with correct data', async () => {
       GroupAPI.createTeam.mockResolvedValueOnce({ data: 122 });
       jest.spyOn(require('../../utils'), 'transform').mockImplementation(source => source + 1);
       jest.spyOn(Permission, 'createPermissionsMask').mockReturnValue(100);
@@ -387,6 +389,29 @@ describe('GroupService', () => {
       groupDao.queryGroups.mockResolvedValueOnce([{ id: 4 }]);
       const groups = await groupService.getLeftRailGroups();
       expect(groups.length).toBe(2);
+    });
+  });
+
+  describe('hideConversation', () => {
+    it('hideConversation, success', async () => {
+      profileService.hideConversation.mockResolvedValueOnce({ id: 1, hide_group_123: true });
+      const result = await groupService.hideConversation(1, false, true);
+      expect(result).toBe(ServiceCommonErrorType.NONE);
+    });
+    it('hideConversation, network not available', async () => {
+      profileService.hideConversation.mockResolvedValueOnce(ErrorParser.parse({ status: 0 }));
+      const result = await groupService.hideConversation(1, false, true);
+      expect(result).toBe(ServiceCommonErrorType.NETWORK_NOT_AVAILABLE);
+    });
+    it('hideConversation, server error', async () => {
+      profileService.hideConversation.mockResolvedValueOnce(ErrorParser.parse({ status: 500 }));
+      const result = await groupService.hideConversation(1, false, true);
+      expect(result).toBe(ServiceCommonErrorType.SERVER_ERROR);
+    });
+    it('hideConversation, unknown error', async () => {
+      profileService.hideConversation.mockResolvedValueOnce(ErrorParser.parse({ status: 280 }));
+      const result = await groupService.hideConversation(1, false, true);
+      expect(result).toBe(ServiceCommonErrorType.UNKNOWN_ERROR);
     });
   });
 });
