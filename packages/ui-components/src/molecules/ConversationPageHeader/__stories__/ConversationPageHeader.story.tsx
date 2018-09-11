@@ -11,7 +11,7 @@ import { text } from '@storybook/addon-knobs/react';
 import { JuiIconButton } from '../../IconButton';
 import { withInfoDecorator } from '../../../utils/decorators';
 import JuiConversationPageHeader from '../ConversationPageHeader';
-import JuiButtonBar from '../../../atoms/ButtonBar/ButtonBar';
+import JuiButtonBar from '../../../molecules/ButtonBar/ButtonBar';
 import { JuiCheckboxButton } from '../../CheckboxButton';
 
 const getTitleKnob = () => text('title', 'Global UXD');
