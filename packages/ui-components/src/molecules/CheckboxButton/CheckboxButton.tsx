@@ -23,9 +23,9 @@ type JuiCheckboxButtonProps = {
 } & CheckboxProps;
 
 const iconSizes = {
-  large: 2.4,
-  medium: 2,
-  small: 1.6,
+  large: 6,
+  medium: 5,
+  small: 4,
 };
 
 const rippleEnter = ({ theme }: { theme: Theme }) => keyframes`

@@ -18,8 +18,8 @@ type TAvatarWithPresenceProps = {
 const StyledAvatarWithPresence = styled.div`
   display: inline-block;
   position: relative;
-  height: ${({ theme }) => theme.spacing.unit * 10};
-  width: ${({ theme }) => theme.spacing.unit * 10};
+  height: ${({ theme }) => theme.size.height * 10};
+  width: ${({ theme }) => theme.size.width * 10};
 `;
 
 const AvatarWithPresence: React.SFC<TAvatarWithPresenceProps> =

@@ -14,10 +14,10 @@ type TAvatarProps = {
 } & AvatarProps;
 
 const sizes = {
-  xlarge: 8,
-  large: 4,
-  medium: 3.2,
-  small: 2.4,
+  xlarge: 20,
+  large: 10,
+  medium: 8,
+  small: 6,
 };
 
 const fonts = {
