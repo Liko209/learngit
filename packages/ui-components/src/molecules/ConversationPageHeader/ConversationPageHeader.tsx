@@ -32,13 +32,13 @@ const WrappedAppBar = ({ Right, ...rest }: JuiConversationPageHeaderProps) => (
 );
 const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
   && {
-    min-height: ${height(5.6)};
+    min-height: ${height(14)};
     padding-left: 0;
     padding-right: 0;
     background-color: white;
 
     > div {
-      min-height: ${height(5.6)};
+      min-height: ${height(14)};
       padding-left: ${spacing(6)};
       padding-right: ${spacing(6)};
     }
