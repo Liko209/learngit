@@ -9,7 +9,6 @@ import _ from 'lodash';
 import { ConversationListItem } from 'ui-components/molecules/ConversationList/ConversationListItem';
 import { Menu } from 'ui-components/atoms/Menu';
 import { MenuItem } from 'ui-components/atoms/MenuItem';
-import DocumentTitle from 'react-document-title';
 
 import { ENTITY_NAME } from '../../store';
 import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
@@ -113,23 +112,19 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   }
 
   render() {
-    console.log('display-name');
-    console.log(this.displayName);
     return (
       <React.Fragment>
-        <DocumentTitle title={this.displayName || 'Jupiter'}>
-          <ConversationListItem
-            aria-owns={open ? 'render-props-menu' : undefined}
-            aria-haspopup="true"
-            key={this.id}
-            title={this.displayName || ''}
-            unreadCount={this.unreadCount}
-            umiVariant={this.umiVariant}
-            onMoreClick={this._openMenu}
-            onClick={this._onClick}
-            status={this.status}
-          />
-        </DocumentTitle>
+        <ConversationListItem
+          aria-owns={open ? 'render-props-menu' : undefined}
+          aria-haspopup="true"
+          key={this.id}
+          title={this.displayName || ''}
+          unreadCount={this.unreadCount}
+          umiVariant={this.umiVariant}
+          onMoreClick={this._openMenu}
+          onClick={this._onClick}
+          status={this.status}
+        />
         <Menu
           id="render-props-menu"
           anchorEl={this.anchorEl}
