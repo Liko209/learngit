@@ -6,7 +6,7 @@
 import OrderListStore from '../OrderListStore';
 import { IIDSortKey } from '../../store';
 
-const store = new OrderListStore('group');
+const store = new OrderListStore();
 let idSortKey1: IIDSortKey;
 let idSortKey2: IIDSortKey;
 let idSortKey3: IIDSortKey;

@@ -1,17 +1,21 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-09-10 19:29:47
+ * Copyright © RingCentral. All rights reserved.
+ */
 import _ from 'lodash';
-import { IModelConstructor } from '../models/Base';
 
 class ModelProvider {
-  ModelCreator: object;
+  private _ModelCreator: object;
   constructor() {
-    this.ModelCreator = {};
+    this._ModelCreator = {};
   }
 
-  getModelCreator<T>(name: string): IModelConstructor<T> {
-    let Creator = this.ModelCreator[name];
+  getModelCreator(name: string) {
+    let Creator = this._ModelCreator[name];
     if (!Creator) {
       Creator = require(`../models/${_.upperFirst(name)}.ts`).default; // eslint-disable-line
-      this.ModelCreator[name] = Creator;
+      this._ModelCreator[name] = Creator;
     }
     return Creator;
   }

@@ -2,29 +2,27 @@ import _ from 'lodash';
 import { observable, action, ObservableMap } from 'mobx';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
-import { ENTITY_EVENT_NAME, ENTITY_NAME } from './constants';
-import { IIncomingData } from '../store';
+import { IIncomingData, IEntity, IEntitySetting } from '../store';
+import { ENTITY_NAME } from '../constants';
 import BaseService from 'sdk/service/BaseService';
 import { BaseModel } from 'sdk/models';
-import Base from '@/store/models/Base';
 
 const modelProvider = new ModelProvider();
 
-export default class SingleEntityMapStore<T extends BaseModel, K extends Base<T>> extends BaseStore {
-  @observable data: ObservableMap = new ObservableMap<keyof K, any>();
+export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity> extends BaseStore {
+  @observable data: ObservableMap = new ObservableMap<keyof IEntity, any>();
   init: boolean;
   getService: Function;
   service: BaseService<T>;
-  constructor(entityName: string, getService: Function) {
+  constructor(entityName: ENTITY_NAME, { service, event }: IEntitySetting) {
     super(entityName);
-
     this.init = false;
-    this.getService = getService;
+    this.getService = service as Function;
 
     const callback = ({ type, entities }: IIncomingData<T>) => {
       this.handleIncomingData({ type, entities });
     };
-    ENTITY_EVENT_NAME[entityName].forEach((eventName: ENTITY_NAME) => {
+    event.forEach((eventName: string) => {
       this.subscribeNotification(eventName, callback);
     });
   }
@@ -39,7 +37,7 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends Base<T>
       _.merge(entity, value);
     });
 
-    const matchedProperties: (keyof K)[] = _.intersection(
+    const matchedProperties: (keyof IEntity)[] = _.intersection(
       Object.keys(entity).map(property => _.camelCase(property)),
       existProperties,
     );
@@ -55,35 +53,35 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends Base<T>
   }
 
   @action
-  set(property: keyof K, value: any) {
+  set(property: keyof IEntity, value: any) {
     this.data.set(property, value);
   }
 
   @action
-  batchSet(data: T, matchedProperties?: (keyof K)[]) {
+  batchSet(data: T, matchedProperties?: (keyof IEntity)[]) {
     if (!Object.keys(data).length) {
       return;
     }
     let model = this.createModel(data);
     if (matchedProperties) {
       model = matchedProperties.reduce(
-        (matchedModel: K, property: keyof K) => {
+        (matchedModel: IEntity, property: keyof IEntity) => {
           matchedModel[property] = model[property]; // eslint-disable-line
           return matchedModel;
         },
         {},
-      ) as K;
+      ) as IEntity;
     }
-    this.data.merge(model.toJS ? model.toJS() : model);
+    this.data.merge(model);
   }
 
   @action
-  remove(property: keyof K) {
+  remove(property: keyof IEntity) {
     this.data.delete(property);
   }
 
   @action
-  batchRemove(properties: (keyof K)[]) {
+  batchRemove(properties: (keyof IEntity)[]) {
     properties.forEach((property) => {
       this.remove(property);
     });
@@ -101,7 +99,7 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends Base<T>
     return this.data.get(property);
   }
 
-  has(property: keyof K) {
+  has(property: keyof IEntity) {
     return this.data.has(property);
   }
 
@@ -117,8 +115,8 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends Base<T>
     return this.service[serviceFunctionName]();
   }
 
-  createModel(data: T): K {
-    const Model = modelProvider.getModelCreator<K>(this.name);
+  createModel(data: T): IEntity {
+    const Model = modelProvider.getModelCreator(this.name);
     return Model.fromJS(data);
   }
 }

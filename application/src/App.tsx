@@ -8,8 +8,6 @@ import * as React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
 import ThemeProvider from '@/containers/ThemeProvider';
-import StoreContext from '@/store/context';
-import storeManager from '@/store';
 
 import '@/App.css';
 
@@ -23,17 +21,15 @@ class App extends React.PureComponent {
   public render() {
     return (
       <ThemeProvider>
-        <StoreContext.Provider value={storeManager}>
-          <Router>
-            <Switch>
-              <Route path="/commit-info" component={VersionInfo} />
-              <Route path="/version" component={VersionInfo} />
-              <Route path="/login" component={Login} />
-              <Route path="/unified-login" component={UnifiedLogin} />
-              <AuthRoute path="/" component={Home} />
-            </Switch>
-          </Router>
-        </StoreContext.Provider>
+        <Router>
+          <Switch>
+            <Route path="/commit-info" component={VersionInfo} />
+            <Route path="/version" component={VersionInfo} />
+            <Route path="/login" component={Login} />
+            <Route path="/unified-login" component={UnifiedLogin} />
+            <AuthRoute path="/" component={Home} />
+          </Switch>
+        </Router>
       </ThemeProvider>
     );
   }

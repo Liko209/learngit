@@ -4,12 +4,18 @@ import Base from './Base';
 
 export default class GroupModel extends Base<Group> {
   id: number;
-  @observable isTeam?: boolean;
-  @observable setAbbreviation: string;
-  @observable members: number[];
-  @observable description?: string;
-  @observable pinnedPostIds?: number[];
-  @observable privacy?: string;
+  @observable
+  isTeam?: boolean;
+  @observable
+  setAbbreviation: string;
+  @observable
+  members: number[];
+  @observable
+  description?: string;
+  @observable
+  pinnedPostIds?: number[];
+  @observable
+  privacy?: string;
 
   constructor(data: Group) {
     super(data);

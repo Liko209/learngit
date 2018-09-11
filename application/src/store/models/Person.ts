@@ -1,19 +1,27 @@
 import storeManager, { ENTITY_NAME } from '@/store';
-import { observable, action, computed } from 'mobx';
+import { observable, computed } from 'mobx';
 import { Person } from 'sdk/models';
 import Base from './Base';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 
 export default class PersonModel extends Base<Person> {
   id: number;
-  @observable companyId: number;
-  @observable firstName?: string;
-  @observable lastName?: string;
-  @observable headshot?: string;
-  @observable email: string;
-  @observable rcPhoneNumbers?: object[];
-  @observable isPseudoUser?: boolean;
-  @observable glipUserId?: number;
+  @observable
+  companyId: number;
+  @observable
+  firstName?: string;
+  @observable
+  lastName?: string;
+  @observable
+  headshot?: string;
+  @observable
+  email: string;
+  @observable
+  rcPhoneNumbers?: object[];
+  @observable
+  isPseudoUser?: boolean;
+  @observable
+  glipUserId?: number;
 
   constructor(data: Person) {
     super(data);
@@ -45,7 +53,9 @@ export default class PersonModel extends Base<Person> {
   get displayName(): string {
     if (this.isPseudoUser) {
       if (this.glipUserId) {
-        const personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON) as MultiEntityMapStore<Person, PersonModel>;
+        const personStore = storeManager.getEntityMapStore(
+          ENTITY_NAME.PERSON,
+        ) as MultiEntityMapStore<Person, PersonModel>;
         const linkedUser = personStore.get(this.glipUserId);
         if (linkedUser) {
           return linkedUser.displayName;
@@ -69,41 +79,5 @@ export default class PersonModel extends Base<Person> {
     }
 
     return dName;
-  }
-
-  @action
-  update({
-    companyId,
-    firstName,
-    lastName,
-    headshot,
-    email,
-    rcPhoneNumbers,
-  }: {
-    companyId?: number;
-    firstName?: string;
-    lastName?: string;
-    headshot?: string;
-    email?: string;
-    rcPhoneNumbers?: object[];
-  }) {
-    if (companyId) {
-      this.companyId = companyId;
-    }
-    if (firstName) {
-      this.firstName = firstName;
-    }
-    if (lastName) {
-      this.lastName = lastName;
-    }
-    if (headshot) {
-      this.headshot = headshot;
-    }
-    if (email) {
-      this.email = email;
-    }
-    if (rcPhoneNumbers) {
-      this.rcPhoneNumbers = rcPhoneNumbers;
-    }
   }
 }

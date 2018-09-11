@@ -1,27 +1,33 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-09-10 19:28:52
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { action, ObservableMap, observable } from 'mobx';
 
 import BaseStore from './BaseStore';
+import { ENTITY_NAME } from '../constants';
 
 export default class GlobalStore extends BaseStore {
-  data: ObservableMap = observable.map(new ObservableMap(), { deep: false });
+  private _data: ObservableMap = observable.map(new Map(), { deep: false });
 
   constructor() {
-    super('global');
+    super(ENTITY_NAME.GLOBAL);
   }
 
   @action
   set(key: any, value: any) {
-    this.data.set(key, value);
+    this._data.set(key, value);
   }
 
   @action
   batchSet(data: Map<any, any>) {
-    this.data.merge(data);
+    this._data.merge(data);
   }
 
   @action
   remove(key: any) {
-    this.data.delete(key);
+    this._data.delete(key);
   }
 
   @action
@@ -32,10 +38,10 @@ export default class GlobalStore extends BaseStore {
   }
 
   get(key: any) {
-    return this.data.get(key);
+    return this._data.get(key);
   }
 
   clear() {
-    this.data.clear();
+    this._data.clear();
   }
 }
