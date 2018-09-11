@@ -9,6 +9,7 @@ import _ from 'lodash';
 import { ConversationListItem } from 'ui-components/molecules/ConversationList/ConversationListItem';
 import { Menu } from 'ui-components/atoms/Menu';
 import { MenuItem } from 'ui-components/atoms/MenuItem';
+import DocumentTitle from 'react-document-title';
 
 import { ENTITY_NAME } from '../../store';
 import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
@@ -31,6 +32,7 @@ type IProps = IComponentWithGetEntityProps & RouteComponentProps<{}> & {
 };
 
 interface IState {
+  title: string;
 }
 
 @observer
@@ -87,6 +89,9 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     autorun(() => {
       this.getDataFromStore();
     });
+    this.state = {
+      title: '',
+    };
   }
 
   getDataFromStore() {
@@ -110,21 +115,33 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
       }
     }
   }
-
+  shouldComponentUpdate(nextProps: IProps, nextState: IState) {
+    if (nextProps.entityName !== this.props.entityName) {
+      return true;
+    }
+    if (nextState.title !== this.state.title) {
+      return true;
+    }
+    return false;
+  }
   render() {
+    const { title } = this.navPresenter.state;
+    console.log(title);
     return (
-      <React.Fragment>
-        <ConversationListItem
-          aria-owns={open ? 'render-props-menu' : undefined}
-          aria-haspopup="true"
-          key={this.id}
-          title={this.displayName || ''}
-          unreadCount={this.unreadCount}
-          umiVariant={this.umiVariant}
-          onMoreClick={this._openMenu}
-          onClick={this._onClick}
-          status={this.status}
-        />
+      <div>
+        <DocumentTitle title={title}>
+          <ConversationListItem
+            aria-owns={open ? 'render-props-menu' : undefined}
+            aria-haspopup="true"
+            key={this.id}
+            title={this.displayName || ''}
+            unreadCount={this.unreadCount}
+            umiVariant={this.umiVariant}
+            onMoreClick={this._openMenu}
+            onClick={this._onClick}
+            status={this.status}
+          />
+        </DocumentTitle>
         <Menu
           id="render-props-menu"
           anchorEl={this.anchorEl}
@@ -133,7 +150,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
         >
           <MenuItem onClick={this._toggleFavorite}>{this.favoriteText}</MenuItem>
         </Menu>
-      </React.Fragment>
+      </div>
     );
   }
 
@@ -159,6 +176,10 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     history.push(`/messages/${id}`);
     this.navPresenter.handleRouterChange();
     this.navPresenter.handleTitle(this.displayName);
+    const { title } = this.navPresenter.state;
+    this.setState({
+      title,
+    });
   }
   @action
   private _toggleFavorite() {

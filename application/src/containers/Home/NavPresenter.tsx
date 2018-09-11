@@ -180,10 +180,11 @@ export default class NavPresenter extends BasePresenter {
     state.showLeftPanel = false;
   }
   // handle without click
-  handleTitle  = (title: string) => {
-    console.log(title);
+  @action
+  handleTitle = (title: string) => {
     this.state.title = title;
   }
+  @action
   handleRouterChange = () => {
     this.state.pressNav = false;
   }

@@ -145,8 +145,6 @@ class Home extends Component<IProps, IStates>  {
   render() {
     const { expanded } = this.state;
     const { title, showLeftPanel, showRightPanel, forwardDisabled, backDisabled } = this.navPresenter.state;
-    console.log('home!!!');
-    console.log(title);
     const { menus } = this.navPresenter;
     return (
       <Wrapper>
