@@ -30,7 +30,7 @@ module.exports = {
     '^sdk/(.*)$': '<rootDir>/packages/sdk/src/$1',
     '^ui-components/(.*)$': '<rootDir>/packages/ui-components/src/$1',
   },
-  moduleFileExtensions:   [
+  moduleFileExtensions: [
     'web.ts',
     'ts',
     'web.tsx',
