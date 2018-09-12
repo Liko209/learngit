@@ -20,7 +20,7 @@ case "$1" in
                 read ID
                 echo $ID
                 subDomain=storybooks-$ID
-                cd packages/ui && npm run build-storybook
+                cd packages/ui-components && npm run build-storybook
                 rsync -azPv \
                         --delete --progress \
                         ./storybook-static/ $theServer:$theFolder/$subDomain
