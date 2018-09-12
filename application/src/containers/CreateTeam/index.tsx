@@ -4,32 +4,46 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { observer } from 'mobx-react';
 import JuiCreateTeam from 'ui-components/molecules/Dialog/CreateTeam';
 import HomePresenter from '../Home/HomePresenter';
 
 interface IProps {
   homePresenter: HomePresenter;
 }
+interface IState {
+  disabledOkBtn: boolean;
+}
 
-class CreateTeam extends React.Component<IProps, {}> {
+@observer
+class CreateTeam extends React.Component<IProps, IState> {
   private homePresenter: HomePresenter;
 
   constructor(props: IProps) {
     super(props);
     this.homePresenter = props.homePresenter;
+    this.state = {
+      disabledOkBtn: true,
+    };
   }
 
-  onCancel = () => {};
-  onClose = () => {};
+  onCancel = () => {
+    this.homePresenter.handleOpenCreateTeam();
+  }
+  onClose = () => {
+    this.homePresenter.handleOpenCreateTeam();
+  }
   render() {
+    const { disabledOkBtn } = this.state;
     return (
       <JuiCreateTeam
         open={this.homePresenter.openCreateTeam}
         header="New Team"
         onCancel={this.onCancel}
         onClose={this.onClose}
+        disabledOk={disabledOkBtn}
       >
-        We are having trouble signing you in. Please try again later.
+        TODO ...
       </JuiCreateTeam>
     );
   }

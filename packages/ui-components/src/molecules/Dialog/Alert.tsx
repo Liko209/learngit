@@ -32,14 +32,6 @@ const Alert = ({ open, size, header, okText, onClose, children }: IProps) => {
           onClick={onClose}
           color="primary"
           variant="text"
-          autoFocus={true}
-        >
-          {okText || 'Ok'}
-        </JuiButton>
-        <JuiButton
-          onClick={onClose}
-          color="primary"
-          variant="text"
           disabled={true}
           autoFocus={true}
         >

@@ -19,6 +19,7 @@ interface IProps extends IDialogProps {
   onCancel(event: MouseEvent<HTMLElement>): void;
   header: JSX.Element | string;
   children: JSX.Element | string; // content
+  disabledOk: boolean;
 }
 
 const JuiCreateTeam = ({
@@ -28,6 +29,7 @@ const JuiCreateTeam = ({
   cancelText,
   onClose,
   onCancel,
+  disabledOk,
   children,
 }: IProps) => {
   return (
@@ -36,7 +38,7 @@ const JuiCreateTeam = ({
       <JuiDialogContent>{children}</JuiDialogContent>
       <JuiDialogActions>
         <JuiButton
-          onClick={onClose}
+          onClick={onCancel}
           color="primary"
           variant="text"
           autoFocus={true}
@@ -48,6 +50,7 @@ const JuiCreateTeam = ({
           color="primary"
           variant="contained"
           autoFocus={true}
+          disabled={disabledOk}
         >
           {okText || 'Ok'}
         </JuiButton>
