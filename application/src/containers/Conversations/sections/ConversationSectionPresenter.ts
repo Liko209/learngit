@@ -9,7 +9,7 @@ import OrderListHandler from '@/store/base/OrderListHandler';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 
-const { GroupService, AccountService } = service;
+const { GroupService, AccountService, ProfileService } = service;
 
 interface IConversationSectionPresenterOptions {
   entity: string;
@@ -50,6 +50,11 @@ class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
   getCurrentUserId() {
     const accountService = AccountService.getInstance<service.AccountService>();
     return accountService.getCurrentUserId();
+  }
+
+  getProfile() {
+    const profileService = ProfileService.getInstance<service.ProfileService>();
+    return profileService.getProfile();
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {

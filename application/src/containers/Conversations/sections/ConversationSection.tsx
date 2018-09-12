@@ -64,8 +64,9 @@ class ConversationSectionComponent extends React.Component<IProps> {
   renderList() {
     const { presenter, sortable } = this.props;
     const currentUserId = presenter.getCurrentUserId() || undefined;
+    const profile = presenter.getProfile() || undefined;
     const entityName = presenter.entityName;
-
+    const shouldSkipCloseConfirmation = profile && profile['skip_close_conversation_confirmation'];
     if (sortable) {
       const distance = 1;
       return (
@@ -96,6 +97,7 @@ class ConversationSectionComponent extends React.Component<IProps> {
             key={id}
             entityName={entityName}
             currentUserId={currentUserId}
+            shouldSkipCloseConfirmation={shouldSkipCloseConfirmation}
           />
         ))}
       </ConversationList>

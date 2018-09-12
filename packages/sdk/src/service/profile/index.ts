@@ -47,8 +47,7 @@ export default class ProfileService extends BaseService<Profile> {
     return newOrder;
   }
 
-  private async _putProfileAndHandle(profile: Profile,
-                                     oldKey: string, oldValue: any): Promise<Profile | null> {
+  private async _putProfileAndHandle(profile: Profile, oldKey: string, oldValue: any): Promise<Profile | null> {
 
     profile._id = profile.id;
     delete profile.id;
@@ -136,7 +135,7 @@ export default class ProfileService extends BaseService<Profile> {
       const newProfile = _.cloneDeep(profile);
       newProfile[key] = hidden;
       if (shouldUpdateSkipConfirmation) {
-        newProfile['skip_close_conversation_confirmation'] = true;
+        newProfile['skip_close_conversation_confirmation'] = shouldUpdateSkipConfirmation;
       }
       return this._putProfile(newProfile);
     }

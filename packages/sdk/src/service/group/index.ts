@@ -38,6 +38,7 @@ import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { notificationCenter } from '../';
+import { extractHiddenGroupIds } from '../profile/handleData';
 
 export type CreateTeamOptions = {
   isPublic?: boolean;
@@ -65,11 +66,15 @@ export default class GroupService extends BaseService<Group> {
     let result: Group[] = [];
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
-    if (profile &&
+    if (
+      profile &&
       profile.favorite_group_ids &&
-      profile.favorite_group_ids.length > 0) {
+      profile.favorite_group_ids.length > 0
+    ) {
       const dao = daoManager.getDao(GroupDao);
-      result = (await dao.queryGroupsByIds(profile.favorite_group_ids)) as Group[];
+      result = (await dao.queryGroupsByIds(
+        profile.favorite_group_ids,
+      )) as Group[];
       result = sortFavoriteGroups(profile.favorite_group_ids, result);
     }
     return result;
@@ -88,21 +93,21 @@ export default class GroupService extends BaseService<Group> {
 
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
       result = await this._getFavoriteGroups();
-
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
       result = await dao.queryAllGroups(offset, limit);
-
     } else {
       const profileService: ProfileService = ProfileService.getInstance();
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
+      const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
+      const excludeIds = favoriteGroupIds.concat(hiddenIds);
 
       result = await dao.queryGroups(
         offset,
         Infinity,
         groupType === GROUP_QUERY_TYPE.TEAM,
-        favoriteGroupIds,
+        excludeIds,
       );
       result = await filterGroups(result, limit);
     }
@@ -355,13 +360,24 @@ export default class GroupService extends BaseService<Group> {
     return result;
   }
 
-  async hideConversation(groupId: number, hidden: boolean, shouldUpdateSkipConfirmation: boolean): Promise<ServiceCommomErrorType> {
+  async hideConversation(
+    groupId: number,
+    hidden: boolean,
+    shouldUpdateSkipConfirmation: boolean,
+  ): Promise<ServiceCommonErrorType> {
     const profileService: ProfileService = ProfileService.getInstance();
-    const result = await profileService.hideConversation(groupId, hidden, shouldUpdateSkipConfirmation);
+    const result = await profileService.hideConversation(
+      groupId,
+      hidden,
+      shouldUpdateSkipConfirmation,
+    );
     if (result instanceof BaseError) {
       // rollback
       const group = await this.getById(groupId);
-      notificationCenter.emitEntityPut(group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS, [group]);
+      notificationCenter.emitEntityPut(
+        group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS,
+        [group],
+      );
       if (result.code === 0) {
         return ServiceCommonErrorType.NETWORK_NOT_AVAILABLE;
       }

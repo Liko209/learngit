@@ -20,6 +20,7 @@ import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 const { GroupService } = service;
 type IProps = IInjectedStoreProps<VM> &
   RouteComponentProps<{}> & {
@@ -28,6 +29,7 @@ type IProps = IInjectedStoreProps<VM> &
     entityName: string;
     isFavorite?: boolean;
     currentUserId?: number;
+    shouldSkipCloseConfirmation?: boolean;
   };
 
 interface IState {}
@@ -62,6 +64,11 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   @observable
   favoriteText: string;
 
+  @observable
+  shouldSkipCloseConfirmation: boolean;
+
+  closeText: string;
+
   @computed
   get menuOpen() {
     return !!this.anchorEl;
@@ -78,8 +85,11 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this._toggleFavorite = this._toggleFavorite.bind(this);
     this._handleClose = this._handleClose.bind(this);
     this._onClick = this._onClick.bind(this);
+    this._toggleCloseConversation = this._toggleCloseConversation.bind(this);
     this.isFavorite = !!props.isFavorite;
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
+    this.shouldSkipCloseConfirmation = !!props.shouldSkipCloseConfirmation;
+    this.closeText = 'Close';
 
     autorun(() => {
       this.getDataFromStore();
@@ -111,6 +121,31 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     }
   }
 
+  renderCloseMenuItem() {
+    if (!this.isFavorite) {
+      return (
+        <MenuItem onClick={this._toggleCloseConversation}>
+          {this.closeText}
+        </MenuItem>
+      );
+    }
+    return <React.Fragment />;
+  }
+
+  renderMenu() {
+    return (
+      <Menu
+        id="render-props-menu"
+        anchorEl={this.anchorEl}
+        open={this.menuOpen}
+        onClose={this._handleClose}
+      >
+        <MenuItem onClick={this._toggleFavorite}>{this.favoriteText}</MenuItem>
+        {this.renderCloseMenuItem()}
+      </Menu>
+    );
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -125,16 +160,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
           onClick={this._onClick}
           status={this.status}
         />
-        <Menu
-          id="render-props-menu"
-          anchorEl={this.anchorEl}
-          open={this.menuOpen}
-          onClose={this._handleClose}
-        >
-          <MenuItem onClick={this._toggleFavorite}>
-            {this.favoriteText}
-          </MenuItem>
-        </Menu>
+        {this.renderMenu()}
       </React.Fragment>
     );
   }
@@ -165,6 +191,21 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.markGroupAsFavorite(this.id, !this.isFavorite);
     this._handleClose();
+  }
+  @action
+  private async _toggleCloseConversation() {
+    // if (this.shouldSkipCloseConfirmation) {
+    // } else {
+    //   // show confirm
+    // }
+    this._handleClose();
+    const groupService: service.GroupService = GroupService.getInstance();
+    const result = await groupService.hideConversation(this.id, true, false);
+    if (result === ServiceCommonErrorType.NONE) {
+    } else if (result === ServiceCommonErrorType.NETWORK_NOT_AVAILABLE) {
+    } else if (result === ServiceCommonErrorType.SERVER_ERROR) {
+    } else {
+    }
   }
 }
 
