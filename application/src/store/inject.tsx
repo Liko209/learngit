@@ -1,86 +1,64 @@
-import React, { Component, createElement, ComponentType, ComponentClass } from 'react';
+import React, { ComponentType, createElement, ComponentClass } from 'react';
 import hoistStatics from 'hoist-non-react-statics';
-import { BaseModel } from 'sdk/models';
-import { ENTITY_NAME } from '@/store';
-import StoreManager from '@/store/base/StoreManager';
-import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
-import StoreContext from '@/store/context';
-import { Omit } from '@material-ui/core';
-import Base from '@/store/models/Base';
+import { getEntity, getSingleEntity, getGlobalValue } from './utils';
 
-export interface IComponentWithGetEntityProps {
-  getEntity: <T extends BaseModel, K extends Base<T>>(entityName: ENTITY_NAME, id: number) => K;
+type Omit<T, K extends keyof T> = Pick<
+  T,
+  ({ [P in keyof T]: P } &
+    { [P in K]: never } & { [x: string]: never })[keyof T]
+>;
+
+export interface IVM {
+  dispose?: () => void;
 }
 
-/**
- * Store Injection
- */
-function createStoreInjector<P>(WrappedComponent: ComponentType<P>) {
-  const displayName =
-    `inject-
-    ${(WrappedComponent.displayName ||
-      WrappedComponent.name ||
-      (WrappedComponent.constructor && WrappedComponent.constructor.name) ||
-      'Unknown')}`;
+export interface IInjectedStoreProps<VM> {
+  vm: VM;
+  getEntity: typeof getEntity;
+  getSingleEntity: typeof getSingleEntity;
+  getGlobalValue: typeof getGlobalValue;
+}
 
-  class Injector extends Component<Omit<P, keyof IComponentWithGetEntityProps>> {
-    static readonly displayName = displayName;
-    static readonly wrappedComponent = WrappedComponent;
-    wrappedInstance: React.ReactInstance;
-    storeManager: StoreManager;
-    entityStore: { [parameter: string]: MultiEntityMapStore<any, any> } = {};
+const getDisplayName = (name: string) => `ViewModel(${name})`;
 
-    constructor(props: Omit<P, keyof IComponentWithGetEntityProps>) {
-      super(props);
-      this.createElementWithStores = this.createElementWithStores.bind(this);
-      this.getEntity = this.getEntity.bind(this);
-    }
+export default function inject(VM: new () => IVM) {
+  const vm = new VM();
+  return <P extends IInjectedStoreProps<typeof vm>>(
+    WrappedComponent: ComponentType<P>,
+  ) => {
+    const wrappedComponentName =
+      WrappedComponent.displayName || WrappedComponent.name || 'Component';
 
-    componentWillUnmount() {
-      Object.values(this.entityStore).forEach((store) => {
-        store.delUsedIds(this);
-      });
-    }
+    const displayName = getDisplayName(wrappedComponentName);
 
-    getEntity<T extends BaseModel, K extends Base<T>>(entityName: ENTITY_NAME, id: number) {
-      let store: MultiEntityMapStore<T, K> = this.entityStore[entityName];
-      if (!store) {
-        store = this.storeManager.getEntityMapStore(entityName) as MultiEntityMapStore<T, K>;
-        this.entityStore[entityName] = store;
+    class Injector extends React.Component<P> {
+      static readonly displayName = displayName;
+      static readonly WrappedComponent = WrappedComponent;
+
+      componentWillUnmount() {
+        if (vm.dispose) {
+          vm.dispose();
+        }
       }
-      store.addUsedIds(this, id);
 
-      return store.get(id);
+      render() {
+        const newProps = {
+          ...(this.props as {}),
+          vm,
+          getEntity,
+          getSingleEntity,
+          getGlobalValue,
+        } as IInjectedStoreProps<typeof vm>;
+        return createElement(WrappedComponent, { ...newProps } as P &
+          IInjectedStoreProps<typeof vm>);
+      }
     }
 
-    createElementWithStores(storeManager: StoreManager) {
-      this.storeManager = storeManager;
+    // Static fields from component should be visible on the generated Injector
+    hoistStatics(Injector, WrappedComponent);
 
-      return createElement<P>(
-        WrappedComponent,
-        { ...this.props as {}, getEntity: this.getEntity } as P & IComponentWithGetEntityProps,
-      );
-    }
-
-    render() {
-      return (
-        <StoreContext.Consumer>
-          {this.createElementWithStores}
-        </StoreContext.Consumer>
-      );
-    }
-  }
-
-  // Static fields from component should be visible on the generated Injector
-  hoistStatics(Injector, WrappedComponent);
-
-  return Injector;
-}
-
-export default function inject() {
-  return <OriginalProps extends { [key: string]: any }, Component extends React.ComponentType<OriginalProps>>(
-    WrappedComponent: ComponentType<OriginalProps>,
-  ): ComponentClass<Omit<OriginalProps, keyof IComponentWithGetEntityProps>> => {
-    return createStoreInjector<OriginalProps>(WrappedComponent);
+    return Injector as ComponentClass<
+      Omit<P, keyof IInjectedStoreProps<typeof vm>> & {}
+    > & { WrappedComponent: ComponentType<P> };
   };
 }

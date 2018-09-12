@@ -5,3 +5,4 @@
  */
 export * from './FavoriteSection';
 export * from './TeamSection';
+export * from './DirectMessageSection';

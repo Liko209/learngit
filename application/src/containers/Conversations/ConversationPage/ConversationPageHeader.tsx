@@ -8,23 +8,30 @@ import { JuiConversationPageHeader } from 'ui-components/molecules/ConversationP
 import { JuiButtonBar } from 'ui-components/molecules/ButtonBar';
 import { JuiCheckboxButton } from 'ui-components/molecules/CheckboxButton';
 import { JuiIconButton } from 'ui-components/molecules/IconButton';
-import { ConversationPageHeaderPresenter, ConversationTypes } from './ConversationPageHeaderPresenter';
+import {
+  ConversationPageHeaderPresenter,
+  ConversationTypes,
+} from './ConversationPageHeaderPresenter';
 import { getGroupName } from '@/utils/groupName';
 import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
 import { TranslationFunction } from 'i18next';
-import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
+import injectStore, { IInjectedStoreProps } from '@/store/inject';
+import VM from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/models';
 import { toTitleCase } from '@/utils';
 
-type ConversationPageHeaderProps = IComponentWithGetEntityProps & {
+type ConversationPageHeaderProps = IInjectedStoreProps<VM> & {
   id?: number;
   t: TranslationFunction;
 };
 @observer
-class ConversationPageHeaderComponent extends React.Component<ConversationPageHeaderProps, {}> {
+class ConversationPageHeaderComponent extends React.Component<
+  ConversationPageHeaderProps,
+  {}
+> {
   presenter: ConversationPageHeaderPresenter;
 
   constructor(props: ConversationPageHeaderProps) {
@@ -40,14 +47,22 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
     if (!group.members) {
       return null;
     }
-    const groupName = getGroupName(getEntity, group, this.presenter.userId || undefined);
+    const groupName = getGroupName(
+      getEntity,
+      group,
+      this.presenter.userId || undefined,
+    );
     const type = this.presenter.getConversationType(group);
     const isFavorite = this.presenter.groupIsInFavorites(group);
     const isPrivate = group.privacy === 'private';
 
     const MarkFavoriteButton = (
       <JuiCheckboxButton
-        tooltipTitle={isFavorite ? toTitleCase(t('removeFromFavorites')) : toTitleCase(t('addToFavorites'))}
+        tooltipTitle={
+          isFavorite
+            ? toTitleCase(t('removeFromFavorites'))
+            : toTitleCase(t('addToFavorites'))
+        }
         checkedIconName="star"
         iconName="star_border"
         checked={isFavorite}
@@ -58,7 +73,9 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
 
     const LockButton = (
       <JuiCheckboxButton
-        tooltipTitle={isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')}
+        tooltipTitle={
+          isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')
+        }
         checkedIconName="lock"
         iconName="lock_open"
         checked={isPrivate}
@@ -67,11 +84,31 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
       </JuiCheckboxButton>
     );
 
-    const CallButton = <JuiIconButton tooltipTitle={toTitleCase(t('startVoiceCall'))}>local_phone</JuiIconButton>;
-    const AudioConferenceButton = <JuiIconButton tooltipTitle={toTitleCase(t('startConferenceCall'))}>device_hub</JuiIconButton>;
-    const MeetingButton = <JuiIconButton tooltipTitle={toTitleCase(t('startVideoCall'))}>videocam</JuiIconButton>;
-    const AddMemberButton = <JuiIconButton tooltipTitle={toTitleCase(t('addMembers'))}>person_add</JuiIconButton>;
-    const MoreButton = <JuiIconButton tooltipTitle={toTitleCase(t('conversationSettings'))}>settings</JuiIconButton>;
+    const CallButton = (
+      <JuiIconButton tooltipTitle={toTitleCase(t('startVoiceCall'))}>
+        local_phone
+      </JuiIconButton>
+    );
+    const AudioConferenceButton = (
+      <JuiIconButton tooltipTitle={toTitleCase(t('startConferenceCall'))}>
+        device_hub
+      </JuiIconButton>
+    );
+    const MeetingButton = (
+      <JuiIconButton tooltipTitle={toTitleCase(t('startVideoCall'))}>
+        videocam
+      </JuiIconButton>
+    );
+    const AddMemberButton = (
+      <JuiIconButton tooltipTitle={toTitleCase(t('addMembers'))}>
+        person_add
+      </JuiIconButton>
+    );
+    const MoreButton = (
+      <JuiIconButton tooltipTitle={toTitleCase(t('conversationSettings'))}>
+        settings
+      </JuiIconButton>
+    );
 
     enum Buttons {
       MarkFavorite,
@@ -84,26 +121,58 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
     }
 
     const typeIconMap = {
-      [ConversationTypes.TEAM]: [Buttons.MarkFavorite, Buttons.Lock, Buttons.AudioConference, Buttons.Meeting, Buttons.AddMember, Buttons.More],
+      [ConversationTypes.TEAM]: [
+        Buttons.MarkFavorite,
+        Buttons.Lock,
+        Buttons.AudioConference,
+        Buttons.Meeting,
+        Buttons.AddMember,
+        Buttons.More,
+      ],
       [ConversationTypes.ME]: [Buttons.MarkFavorite, Buttons.More],
-      [ConversationTypes.SMS]: [Buttons.MarkFavorite, Buttons.Call, Buttons.Meeting, Buttons.AddMember, Buttons.More],
-      [ConversationTypes.NORMAL_ONE_TO_ONE]: [Buttons.MarkFavorite, Buttons.Call, Buttons.Meeting, Buttons.AddMember, Buttons.More],
-      [ConversationTypes.NORMAL_GROUP]: [Buttons.MarkFavorite, Buttons.AudioConference, Buttons.Meeting, Buttons.AddMember, Buttons.More],
+      [ConversationTypes.SMS]: [
+        Buttons.MarkFavorite,
+        Buttons.Call,
+        Buttons.Meeting,
+        Buttons.AddMember,
+        Buttons.More,
+      ],
+      [ConversationTypes.NORMAL_ONE_TO_ONE]: [
+        Buttons.MarkFavorite,
+        Buttons.Call,
+        Buttons.Meeting,
+        Buttons.AddMember,
+        Buttons.More,
+      ],
+      [ConversationTypes.NORMAL_GROUP]: [
+        Buttons.MarkFavorite,
+        Buttons.AudioConference,
+        Buttons.Meeting,
+        Buttons.AddMember,
+        Buttons.More,
+      ],
     };
     return (
       <JuiConversationPageHeader
-        title={groupName + (type === ConversationTypes.SMS ? ` (${t('text')})` : '')}
+        title={
+          groupName + (type === ConversationTypes.SMS ? ` (${t('text')})` : '')}
         SubTitle={
           <JuiButtonBar size="small" overlapping={true}>
-            {typeIconMap[type].includes(Buttons.MarkFavorite) ? MarkFavoriteButton : null}
+            {typeIconMap[type].includes(Buttons.MarkFavorite)
+              ? MarkFavoriteButton
+              : null}
             {typeIconMap[type].includes(Buttons.Lock) ? LockButton : null}
           </JuiButtonBar>}
         Right={
           <JuiButtonBar size="medium" overlapping={true}>
             {typeIconMap[type].includes(Buttons.Call) ? CallButton : null}
-            {typeIconMap[type].includes(Buttons.AudioConference) ? AudioConferenceButton : null}
+            {typeIconMap[type].includes(Buttons.AudioConference)
+              ? AudioConferenceButton
+              : null}
             {typeIconMap[type].includes(Buttons.Meeting) ? MeetingButton : null}
-            {typeIconMap[type].includes(Buttons.AddMember) ? AddMemberButton : null}
+            {typeIconMap[type].includes(Buttons.AddMember)
+              ? AddMemberButton
+              : null}
             {typeIconMap[type].includes(Buttons.More) ? MoreButton : null}
           </JuiButtonBar>}
       />
@@ -111,5 +180,7 @@ class ConversationPageHeaderComponent extends React.Component<ConversationPageHe
   }
 }
 
-const ConversationPageHeader = translate('ConversationPageHeader')(injectStore()(ConversationPageHeaderComponent));
+const ConversationPageHeader = translate('ConversationPageHeader')(
+  injectStore(VM)(ConversationPageHeaderComponent),
+);
 export { ConversationPageHeader, ConversationPageHeaderProps };

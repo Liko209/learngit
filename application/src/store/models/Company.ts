@@ -4,7 +4,8 @@ import Base from './Base';
 
 export default class CompanyModel extends Base<Company> {
   id: number;
-  @observable name: string;
+  @observable
+  name: string;
 
   constructor(data: Company) {
     super(data);
