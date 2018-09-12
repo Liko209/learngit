@@ -11,11 +11,11 @@ interface IProps {
   disabled?: boolean;
 }
 
-const JuiSwitchButton: React.SFC<SwitchProps> = (props: IProps) => {
+const JuiToggleButton: React.SFC<SwitchProps> = (props: IProps) => {
   const { disabled } = props;
 
   return (
-    <Jui.SwitchButton
+    <Jui.ToggleButton
       classes={{
         icon: 'custom-icon',
         bar: 'custom-bar',
@@ -29,4 +29,4 @@ const JuiSwitchButton: React.SFC<SwitchProps> = (props: IProps) => {
   );
 };
 
-export default JuiSwitchButton;
+export default JuiToggleButton;

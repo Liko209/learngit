@@ -4,5 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './SwitchButton';
-export { default } from './SwitchButton';
+export * from './ToggleButton';
+export { default } from './ToggleButton';

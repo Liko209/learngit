@@ -6,11 +6,8 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs/react';
-import {
-  withInfoDecorator,
-  alignCenterDecorator,
-} from '../../../utils/decorators';
-import JuiSwitchButton from '../';
+
+import JuiToggleButton from '../';
 
 function getKnobs() {
   const disabled = boolean('disabled', false);
@@ -19,6 +16,6 @@ function getKnobs() {
   };
 }
 
-storiesOf('Molecules/SwitchButton', module).addWithJSX('SwitchButton', () => {
-  return <JuiSwitchButton disabled={getKnobs().disabled} />;
+storiesOf('Molecules/ToggleButton', module).addWithJSX('ToggleButton', () => {
+  return <JuiToggleButton disabled={getKnobs().disabled} />;
 });

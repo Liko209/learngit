@@ -8,7 +8,7 @@ import styled from '../../styled-components';
 import MuiSwitch from '@material-ui/core/Switch';
 import { width, spacing, height, palette } from '../../utils/styles';
 
-const SwitchButton = styled(MuiSwitch)`
+const ToggleButton = styled(MuiSwitch)`
   ${props =>
     !props.disabled
       ? `
@@ -58,4 +58,4 @@ const SwitchButton = styled(MuiSwitch)`
   }
 `;
 
-export { SwitchButton };
+export { ToggleButton };
