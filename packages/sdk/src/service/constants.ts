@@ -32,5 +32,6 @@ enum PERMISSION_ENUM {
 }
 
 const SHOULD_UPDATE_NETWORK_TOKEN = 'should_update_network_token';
+const UMI_METRICS = ['group_post_drp_cursor', 'group_post_cursor', 'post_cursor', 'unread_deactivated_count'];
 
-export { GROUP_QUERY_TYPE, EVENT_TYPES, PERMISSION_ENUM, SHOULD_UPDATE_NETWORK_TOKEN };
+export { GROUP_QUERY_TYPE, EVENT_TYPES, PERMISSION_ENUM, SHOULD_UPDATE_NETWORK_TOKEN, UMI_METRICS };

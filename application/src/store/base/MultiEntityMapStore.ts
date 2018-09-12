@@ -14,8 +14,8 @@ const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
 
 export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity> extends BaseStore {
-  private _data: {[id: number]: K} = {};
-  private _atom: {[id: number]: IAtom} = {};
+  private _data: { [id: number]: K } = {};
+  private _atom: { [id: number]: IAtom } = {};
   private _usedIds: Set<number> = new Set();
 
   private _getService: Function | [Function, string];
@@ -45,7 +45,7 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
     if (type === EVENT_TYPES.DELETE) {
       this.batchRemove(matchedKeys);
     } else {
-      const matchedEntities: (T | {id: number, data: T})[] = [];
+      const matchedEntities: (T | { id: number, data: T })[] = [];
       matchedKeys.forEach((key: number) => {
         const entity = entities.get(key);
         if (entity) {
@@ -57,7 +57,7 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
         return;
       }
       if (type === EVENT_TYPES.REPLACE) {
-        this.batchReplace(matchedEntities as {id: number, data: T}[]);
+        this.batchReplace(matchedEntities as { id: number, data: T }[]);
         return;
       }
       this.batchSet(matchedEntities as T[]);
@@ -89,12 +89,13 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
     entities.forEach((entity) => {
       const { id } = entity;
       const obs = this.get(id);
-      const data = obs ? _.merge(obs, entity) : entity;
-      this.set(data);
+      const model = _.merge(obs, this.createModel(entity));
+      this._data[id] = model;
+      this._atom[id].reportChanged();
     });
   }
 
-  batchReplace(entities: {id: number, data: T}[]) {
+  batchReplace(entities: { id: number, data: T }[]) {
     if (!entities.length) {
       return;
     }
