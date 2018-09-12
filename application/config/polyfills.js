@@ -20,3 +20,9 @@ require('whatwg-fetch');
 // Object.assign() is commonly used with React.
 // It will use the native implementation if it's present and isn't buggy.
 Object.assign = require('object-assign');
+
+// IE not support window.location.origin
+if (!window.location.origin) {
+  const { protocol, hostname, port } = window.location;
+  window.location.origin = `${protocol}//${hostname}${port && `:${port}`}`;
+}
