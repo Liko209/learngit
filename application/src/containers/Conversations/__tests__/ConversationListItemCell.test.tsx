@@ -7,22 +7,35 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { ConversationListItemCell } from '../ConversationListItemCell';
 
-const ConversationListItemModule = require.requireActual('ui-components/molecules/ConversationList/ConversationListItem');
-ConversationListItemModule.ConversationListItem = ({ title, status, umiVariant }: { title: string, status?: string, umiVariant: string }) => (
+const ConversationListItemModule = require.requireActual(
+  'ui-components/molecules/ConversationList/ConversationListItem',
+);
+ConversationListItemModule.ConversationListItem = ({
+  title,
+  status,
+  umiVariant,
+}: {
+  title: string;
+  status?: string;
+  umiVariant: string;
+}) => (
   <div>
     {status ? <div>{status}</div> : null}
     {`${title}, ${umiVariant}`}
   </div>
 );
-jest.doMock('ui-components/molecules/ConversationList/ConversationListItem', ConversationListItemModule);
+jest.doMock(
+  'ui-components/molecules/ConversationList/ConversationListItem',
+  ConversationListItemModule,
+);
 
 jest.mock('../../../utils/groupName', () => ({
   getGroupName: jest.fn().mockReturnValue('some group name'),
 }));
 
+const testFunction = () => {};
 describe('ConversationListItemCell', () => {
-  beforeAll(() => {
-  });
+  beforeAll(() => {});
 
   it('ConversationListItem should receive title from getGroupName', () => {
     const mockGetEntity = () => ({
@@ -40,6 +53,9 @@ describe('ConversationListItemCell', () => {
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
+          vm={{ dispose: () => {} }}
+          getSingleEntity={testFunction as any}
+          getGlobalValue={testFunction as any}
         />,
       ).html(),
     ).toBe('<div>some group name, count</div>');
@@ -73,6 +89,9 @@ describe('ConversationListItemCell', () => {
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
+          vm={{ dispose: () => {} }}
+          getSingleEntity={testFunction as any}
+          getGlobalValue={testFunction as any}
         />,
       ).html(),
     ).toBe('<div><div>online</div>some group name, count</div>');
@@ -105,6 +124,9 @@ describe('ConversationListItemCell', () => {
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
+          vm={{ dispose: () => {} }}
+          getSingleEntity={testFunction as any}
+          getGlobalValue={testFunction as any}
         />,
       ).html(),
     ).toBe('<div>some group name, auto</div>');

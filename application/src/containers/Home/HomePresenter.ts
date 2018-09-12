@@ -5,7 +5,7 @@
  */
 import { action } from 'mobx';
 
-import BasePresenter from '@/store/base/BasePresenter';
+import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 
 import config from '@/config';
 
@@ -14,7 +14,7 @@ import betaUsers from '@/config/whitelist.json';
 
 const { AccountService, AuthService, SERVICE } = service;
 
-export default class HomePresenter extends BasePresenter {
+export default class HomePresenter extends BaseNotificationSubscribable {
   private userId: number | null;
   constructor() {
     super();
@@ -32,7 +32,9 @@ export default class HomePresenter extends BasePresenter {
 
     if (
       env === 'production' &&
-      !betaUsers.betaUserIdList.some((username: string) => String(this.userId).indexOf(username) > -1)
+      !betaUsers.betaUserIdList.some(
+        (username: string) => String(this.userId).indexOf(username) > -1,
+      )
     ) {
       alert('Invalid account');
       this.handleSignOutClick();

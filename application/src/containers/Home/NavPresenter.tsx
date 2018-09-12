@@ -1,4 +1,3 @@
-import BasePresenter from '@/store/base/BasePresenter';
 import { action, observable } from 'mobx';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -13,7 +12,7 @@ const Link = styled(NavLink)`
 `;
 const SS = window.sessionStorage;
 const parse = JSON.parse;
-class NavPresenter extends BasePresenter {
+class NavPresenter {
   getItem = (key: string) => {
     return SS.getItem(key) || '[]';
   }

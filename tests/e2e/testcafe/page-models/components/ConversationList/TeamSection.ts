@@ -38,7 +38,7 @@ class TeamSection extends BaseComponent {
   public createTeam() {
     return this.chain(async (t, h) => {
       const client701 = await h.glipApiManager.getClient(h.users.user701, h.companyNumber);
-      await client701.createTeam({
+      await client701.createGroup({
         type: 'Team',
         isPublic: true,
         name: `My Team ${Math.random().toString(10)}`,
@@ -53,7 +53,7 @@ class TeamSection extends BaseComponent {
   }
 
   modifyTeamName(name) {
-    return  this.chain(async(t) => {
+    return this.chain(async (t) => {
       await t.expect(this.team0.exists).ok('Fail to find the team, probably caused by long-time loading');
       const id = (await this.team0.getReact()).key;
       return await GroupAPI.modifyGroupById(id, { set_abbreviation: name });

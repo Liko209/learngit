@@ -10,7 +10,7 @@ export default class Base<T extends BaseModel> implements IEntity {
   id: number;
   data?: any;
   constructor(data: T) {
-    const { id }: { id: number; } = data;
+    const { id }: { id: number } = data;
     this.id = id;
   }
 
@@ -21,11 +21,9 @@ export default class Base<T extends BaseModel> implements IEntity {
       return this;
     }
   }
-
-  dispose() { }
 }
 
 export interface IModelConstructor<T> {
-  new(): T;
+  new (): T;
   fromJS: (data: any) => T;
 }

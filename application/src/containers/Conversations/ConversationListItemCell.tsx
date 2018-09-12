@@ -9,8 +9,10 @@ import _ from 'lodash';
 import { ConversationListItem } from 'ui-components/molecules/ConversationList/ConversationListItem';
 import { Menu } from 'ui-components/atoms/Menu';
 import { MenuItem } from 'ui-components/atoms/MenuItem';
+
 import { ENTITY_NAME } from '../../store';
-import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
+import injectStore, { IInjectedStoreProps } from '@/store/inject';
+import VM from '@/store/ViewModel';
 import GroupModel from '../../store/models/Group';
 import { observer } from 'mobx-react';
 import { getGroupName } from '../../utils/groupName';
@@ -21,16 +23,16 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import NavPresenter from '../Home/NavPresenter';
 
 const { GroupService } = service;
-type IProps = IComponentWithGetEntityProps & RouteComponentProps<{}> & {
-  id: number;
-  key: number;
-  entityName: string;
-  isFavorite?: boolean;
-  currentUserId?: number;
-};
+type IProps = IInjectedStoreProps<VM> &
+  RouteComponentProps<{}> & {
+    id: number;
+    key: number;
+    entityName: string;
+    isFavorite?: boolean;
+    currentUserId?: number;
+  };
 
-interface IState {
-}
+interface IState {}
 
 @observer
 class ConversationListItemCell extends React.Component<IProps, IState>{
@@ -104,17 +106,15 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
       }
 
       if (targetPresencePersonId) {
-        const presence = getEntity(ENTITY_NAME.PRESENCE, targetPresencePersonId) as PresenceModel;
+        const presence = getEntity(
+          ENTITY_NAME.PRESENCE,
+          targetPresencePersonId,
+        ) as PresenceModel;
         this.status = presence && presence.presence;
       }
     }
   }
-  // shouldComponentUpdate(nextProps: IProps, nextState: IState) {
-  //   if (nextProps.entityName !== this.props.entityName) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
+
   render() {
     return (
       <React.Fragment>
@@ -135,7 +135,9 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
           open={this.menuOpen}
           onClose={this._handleClose}
         >
-          <MenuItem onClick={this._toggleFavorite}>{this.favoriteText}</MenuItem>
+          <MenuItem onClick={this._toggleFavorite}>
+            {this.favoriteText}
+          </MenuItem>
         </Menu>
       </React.Fragment>
     );
@@ -172,5 +174,5 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   }
 }
 
-export default withRouter(injectStore()(ConversationListItemCell));
+export default withRouter(injectStore(VM)(ConversationListItemCell));
 export { ConversationListItemCell };

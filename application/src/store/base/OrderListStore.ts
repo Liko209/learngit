@@ -1,56 +1,54 @@
-import { observable, action, IObservableArray } from 'mobx';
+import { createAtom, IAtom } from 'mobx';
 import _ from 'lodash';
 
-import BaseStore from './BaseStore';
-import { IIDSortKey } from '../store';
+import { IIDSortKey, ISortFunc } from '../store';
 
-export default class OrderListStore extends BaseStore {
-  idArray: IObservableArray<IIDSortKey> = observable.array([], { deep: false });
+const defaultSortFunc = (
+  IdSortKeyPrev: IIDSortKey,
+  IdSortKeyNext: IIDSortKey,
+) => IdSortKeyPrev.sortKey - IdSortKeyNext.sortKey;
+
+export default class OrderListStore {
+  idArray: IIDSortKey[] = [];
+  idsAtom: IAtom;
 
   sortFunc: (IdSortKeyPrev: IIDSortKey, IdSortKeyNext: IIDSortKey) => number;
 
-  constructor(name: string) {
-    super(name);
-    this.sortFunc = (IdSortKeyPrev: IIDSortKey, IdSortKeyNext: IIDSortKey) =>
-      IdSortKeyPrev.sortKey - IdSortKeyNext.sortKey;
+  constructor(sortFunc: ISortFunc = defaultSortFunc) {
+    this.sortFunc = sortFunc;
+    this.idsAtom = createAtom(`orderList: ${Math.random()}`);
   }
 
-  @action
   set({ id, sortKey }: IIDSortKey) {
     this.batchSet([{ id, sortKey }]);
   }
 
-  @action
   batchSet(idArray: IIDSortKey[]) {
     if (!idArray.length) {
       return;
     }
-    // console.log(`===> original batchAdd: ${JSON.stringify(idArray)}`);
-    const unionAndSortIds = _
-      .unionBy(idArray, this.idArray, 'id')
-      .sort(this.sortFunc);
-    // this.idArray = _.unionBy(idArray, this.idArray, 'id');
-    // console.log(`===>concat batchAdd: ${JSON.stringify(this.idArray)}`);
-    this.idArray.replace(unionAndSortIds);
-    // this.idArray = this.idArray.sort(this.sortFunc);
-    // console.log(`===>after sort batchAdd: ${JSON.stringify(this.idArray)}`);
+    const unionAndSortIds = _.unionBy(idArray, this.idArray, 'id').sort(
+      this.sortFunc,
+    );
+
+    this.idArray = unionAndSortIds;
+    this.idsAtom.reportChanged();
   }
 
-  @action
   remove(id: number) {
     _.remove(this.idArray, { id });
+    this.idsAtom.reportChanged();
   }
 
-  @action
   batchRemove(ids: number[]) {
-    ids.forEach((id) => {
+    ids.forEach((id: number) => {
       this.remove(id);
     });
   }
 
-  @action
   clearAll() {
-    this.idArray.replace([]);
+    this.idArray = [];
+    this.idsAtom.reportChanged();
   }
 
   getIdArray() {
@@ -58,6 +56,7 @@ export default class OrderListStore extends BaseStore {
   }
 
   getIds() {
+    this.idsAtom.reportObserved();
     return _.map(this.idArray, 'id');
   }
 

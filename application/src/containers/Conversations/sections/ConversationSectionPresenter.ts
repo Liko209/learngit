@@ -5,8 +5,7 @@
  */
 import { service } from 'sdk';
 import { Group } from 'sdk/models';
-import OrderListPresenter from '@/store/base/OrderListPresenter';
-import OrderListStore from '@/store/base/OrderListStore';
+import OrderListHandler from '@/store/base/OrderListHandler';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 
@@ -19,17 +18,13 @@ interface IConversationSectionPresenterOptions {
   maxLimit?: number;
 }
 
-class ConversationSectionPresenter extends OrderListPresenter<Group, GroupModel> {
+class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
   public entityName: ENTITY_NAME = ENTITY_NAME.GROUP;
   private entity: string;
   private queryType?: service.GROUP_QUERY_TYPE;
 
   constructor(options: IConversationSectionPresenterOptions) {
-    super(
-      new OrderListStore(`ConversationList: ${options.queryType}`),
-      () => true,
-      options.transformFunc,
-    );
+    super(() => true, options.transformFunc);
     this.entity = options.entity;
     this.queryType = options.queryType;
     this.init();
@@ -39,7 +34,8 @@ class ConversationSectionPresenter extends OrderListPresenter<Group, GroupModel>
     await this.fetchData();
 
     // When groups change, fetch data from service again
-    this.entity && this.subscribeNotification(this.entity, () => this.fetchData());
+    this.entity &&
+      this.subscribeNotification(this.entity, () => this.fetchData());
   }
 
   async fetchData() {

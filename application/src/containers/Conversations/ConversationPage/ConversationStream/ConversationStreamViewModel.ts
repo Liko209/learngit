@@ -1,5 +1,4 @@
-import OrderListStore from '@/store/base/OrderListStore';
-import OrderListPresenter from '@/store/base/OrderListPresenter';
+import OrderListHandler from '@/store/base/OrderListHandler';
 import storeManager, { ENTITY_NAME } from '@/store';
 
 import { Post } from 'sdk/models';
@@ -15,19 +14,16 @@ const transformFunc = (dataModel: Post) => ({
   sortKey: -dataModel.created_at,
 });
 
-export default class ConversationStreamViewModel extends OrderListPresenter<PostModel, Post> {
+export default class ConversationStreamViewModel extends OrderListHandler<
+  PostModel,
+  Post
+> {
   stateService: StateService;
   postService: PostService;
-  groupStateStore = storeManager.getEntityMapStore(
-    ENTITY_NAME.GROUP_STATE,
-  );
+  groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   hasMore: boolean = true;
   constructor(public groupId: number) {
-    super(
-      new OrderListStore(`ConversationThread: ${groupId}`),
-      isMatchedFunc(groupId),
-      transformFunc,
-    );
+    super(isMatchedFunc(groupId), transformFunc);
     const postCallback = (params: IIncomingData<PostModel>) => {
       this.handleIncomingData(ENTITY_NAME.POST, params);
     };
