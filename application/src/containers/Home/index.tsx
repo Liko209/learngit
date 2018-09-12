@@ -24,14 +24,18 @@ interface IProps extends RouteComponentProps<any> {
 interface IStates {
   expanded: boolean;
 }
+
 const UMI_Count = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-class Home extends Component<IProps, IStates>  {
+
+class Home extends Component<IProps, IStates> {
   private homePresenter: HomePresenter;
   constructor(props: IProps) {
     super(props);
     this.state = {
-      expanded: localStorage.getItem('expanded') === null ? true :
-        JSON.parse(String(localStorage.getItem('expanded'))),
+      expanded:
+        localStorage.getItem('expanded') === null
+          ? true
+          : JSON.parse(String(localStorage.getItem('expanded'))),
     };
     this.homePresenter = new HomePresenter();
   }
@@ -77,9 +81,20 @@ class Home extends Component<IProps, IStates>  {
     const { expanded } = this.state;
     return (
       <Wrapper>
-        <TopBar avatar={avatar} presence="online" data-anchor="expandButton" onLeftNavExpand={this.handleLeftNavExpand} onSignOutClick={this.handleSignOutClick} />
+        <TopBar
+          avatar={avatar}
+          presence="online"
+          data-anchor="expandButton"
+          onLeftNavExpand={this.handleLeftNavExpand}
+          onSignOutClick={this.handleSignOutClick}
+        />
         <Bottom>
-          <LeftNav expanded={expanded} id="leftnav" icons={Icons} umiCount={UMI_Count} />
+          <LeftNav
+            expanded={expanded}
+            id="leftnav"
+            icons={Icons}
+            umiCount={UMI_Count}
+          />
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
