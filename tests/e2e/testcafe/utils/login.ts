@@ -11,6 +11,7 @@ import { RingcentralSignInNavigationPage } from '../page-models/pages/Ringcentra
 import { RingcentralSignInPage } from '../page-models/pages/RingcentralSignInPage';
 import { UnifiedLoginPage } from '../page-models/pages/UnifiedLoginPage';
 import { TokenGetterPage } from '../page-models/pages/TokenGetterPage';
+import { Home } from '../page-models/components/Home';
 
 import { TestHelper } from '../libs/helpers';
 
@@ -84,8 +85,13 @@ function interactiveLogin(t: TestController, authInfo?: AuthInfo) {
     .setExtension(extension)
     .setPassword(password)
     .signIn()
+    .log('fetch rc token and glip token')
     .shouldNavigateTo(TokenGetterPage)
-    .expectUrlParamsIsCorrect();
+    .expectUrlParamsIsCorrect()
+    .log('expect exist home react component')
+    .shouldNavigateTo(Home)
+    .expectExistComponent();
+
 }
 
 function directLogin(t: TestController, authInfo?: AuthInfo) {
