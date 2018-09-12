@@ -5,27 +5,43 @@
  */
 
 import { service } from 'sdk';
-import { Listener } from 'eventemitter2';
+import { Listener, EventEmitter2 } from 'eventemitter2';
 
 const { notificationCenter } = service;
 
-export default class BaseNotificationSubscribe {
-  notificationObservers: Map<string, Listener> = new Map();
+export default class BaseNotificationSubscribe extends EventEmitter2 {
+  private _notificationObservers: {[eventName: string]: Listener[]} = {};
+
+  private _setNotificationObservers(eventName: string, notificationCallback: Listener) {
+    let listeners = this._notificationObservers[eventName];
+    if (!listeners) {
+      listeners = [];
+      this._notificationObservers[eventName] = listeners;
+    }
+    listeners.push(notificationCallback);
+  }
 
   subscribeNotificationOnce(eventName: string, notificationCallback: Listener) {
-    this.notificationObservers.set(eventName, notificationCallback);
+    this._setNotificationObservers(eventName, notificationCallback);
     notificationCenter.once(eventName, notificationCallback);
   }
 
   subscribeNotification(eventName: string, notificationCallback: Listener) {
-    this.notificationObservers.set(eventName, notificationCallback);
+    this._setNotificationObservers(eventName, notificationCallback);
     notificationCenter.on(eventName, notificationCallback);
   }
 
+  getNotificationObservers() {
+    return this._notificationObservers;
+  }
+
   dispose() {
-    this.notificationObservers.forEach((callback, eventName) => {
-      notificationCenter.removeListener(eventName, callback);
+    Object.keys(this._notificationObservers).forEach((eventName) => {
+      this._notificationObservers[eventName].forEach((listener) => {
+        notificationCenter.removeListener(eventName, listener);
+      });
     });
-    this.notificationObservers.clear();
+
+    this._notificationObservers = {};
   }
 }

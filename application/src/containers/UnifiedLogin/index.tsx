@@ -79,7 +79,7 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
       <div>
         <Form onSubmit={this.onSubmit}>
           <Button type="submit" data-anchor="btnLogin" >
-            {t('SignIn')}
+            {t('signIn')}
           </Button>
           {/* <select onChange={this.onChange} value={brandId} style={{ display: 'none' }}>
             <option value="1210">RC US</option>
@@ -99,4 +99,4 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
   }
 }
 
-export default translate('translations')(UnifiedLogin);
+export default translate('login')(UnifiedLogin);

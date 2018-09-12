@@ -5,13 +5,15 @@
  */
 import React from 'react';
 import styled from '../../styled-components';
-import MuiAvatar, { AvatarProps } from '@material-ui/core/Avatar';
+import MuiAvatar, {
+  AvatarProps as MuiAvatarProps,
+} from '@material-ui/core/Avatar';
 import { width, height, typography, palette } from '../../utils/styles';
 
 type TJuiAvatarProps = {
   size?: 'small' | 'medium' | 'large' | 'xlarge';
   color?: string;
-} & AvatarProps;
+} & MuiAvatarProps;
 
 const sizes = {
   xlarge: 20,

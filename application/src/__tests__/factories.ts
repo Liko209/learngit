@@ -3,12 +3,12 @@ import faker from 'faker';
 import PersonModel from '../store/models/Person';
 import GroupModel from '../store/models/Group';
 
-const uniqueNumber = () => Factory.each(i => faker.random.number(Date.now() + i));
+const uniqueNumber = () =>
+  Factory.each(i => faker.random.number(Date.now() + i));
 
 const base = {
   id: uniqueNumber(),
-  toJS: () => { },
-  dispose: () => { },
+  toJS: () => {},
 };
 
 // PersonModel
@@ -19,10 +19,12 @@ const personModelFactory = Factory.makeFactory<PersonModel>({
   firstName: faker.name.findName(),
   lastName: faker.name.findName(),
   displayName: '',
-  update: () => { },
 });
 
-personModelFactory.withDerivation('displayName', ({ firstName, lastName }) => `${firstName} ${lastName}`);
+personModelFactory.withDerivation(
+  'displayName',
+  ({ firstName, lastName }) => `${firstName} ${lastName}`,
+);
 
 // GroupModel
 const groupModelFactory = Factory.makeFactory<GroupModel>({
@@ -31,7 +33,4 @@ const groupModelFactory = Factory.makeFactory<GroupModel>({
   members: [faker.random.number(100000000)],
 });
 
-export {
-  personModelFactory,
-  groupModelFactory,
-};
+export { personModelFactory, groupModelFactory };

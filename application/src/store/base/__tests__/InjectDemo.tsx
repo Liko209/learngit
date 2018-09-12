@@ -1,15 +1,23 @@
 import React from 'react';
-import { ENTITY_NAME } from '../constants';
-import injectStore, { IComponentWithGetEntityProps } from '../../inject';
+import { observer } from 'mobx-react';
+import { ENTITY_NAME } from '@/store';
+import inject, { IVM, IInjectedStoreProps } from '@/store/inject';
 
-class InjectDemo extends React.Component<IComponentWithGetEntityProps> {
-  render() {
+type IProps = {
+  id: number;
+} & IInjectedStoreProps<VM>;
+
+class VM implements IVM {
+  dispose() {}
+}
+
+@observer
+class InjectDemo extends React.Component<IProps> {
+  render(): React.ReactNode {
     const { getEntity } = this.props;
     const post = getEntity(ENTITY_NAME.POST, 1);
-    return (
-      <div>demo: {JSON.stringify(post)}</div>
-    );
+    return <div>demo: {JSON.stringify(post)}</div>;
   }
 }
 
-export default injectStore()(InjectDemo);
+export default inject(VM)(InjectDemo);

@@ -2,9 +2,7 @@ import { Group } from 'sdk/models';
 import { transformGroupSortKey } from '../transformFunc';
 
 describe('transformFunc', () => {
-
   describe('transformGroupSortKey()', () => {
-
     it('should use most recent post create time as sortKey', () => {
       const result = transformGroupSortKey({
         id: 1,
@@ -30,5 +28,4 @@ describe('transformFunc', () => {
       });
     });
   });
-
 });

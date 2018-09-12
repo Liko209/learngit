@@ -3,8 +3,10 @@ import { GroupState } from 'sdk/models';
 import Base from './Base';
 
 export default class GroupStateModel extends Base<GroupState> {
-  @observable unreadCount?: number;
-  @observable unreadMentionsCount?: number;
+  @observable
+  unreadCount?: number;
+  @observable
+  unreadMentionsCount?: number;
 
   constructor(data: GroupState) {
     super(data);

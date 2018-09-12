@@ -1,145 +1,136 @@
 import _ from 'lodash';
-import { action, toJS, transaction, ObservableMap, observable } from 'mobx';
+import { createAtom, IAtom } from 'mobx';
+import { service } from 'sdk';
+import { BaseService } from 'sdk/service';
+import { BaseModel } from 'sdk/models';
+
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import visibilityChangeEvent from './visibilityChangeEvent';
-import { ENTITY_EVENT_NAME, ENTITY_CACHE_COUNT } from './constants';
-import { IIncomingData } from '../store';
-import { BaseService } from 'sdk/service';
-import { BaseModel } from 'sdk/models';
-import Base from '@/store/models/Base';
+import { IIncomingData, IEntity, IEntitySetting } from '../store';
+import { ENTITY_NAME } from '../constants';
 
 const modelProvider = new ModelProvider();
+const { EVENT_TYPES } = service;
 
-export default class MultiEntityMapStore<T extends BaseModel, K extends Base<T>> extends BaseStore {
-  data: ObservableMap = observable.map(new Map(), { deep: false });
-  usedIds: Map<any, Set<number>> = new Map();
+export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity> extends BaseStore {
+  private _data: {[id: number]: K} = {};
+  private _atom: {[id: number]: IAtom} = {};
+  private _usedIds: Set<number> = new Set();
 
-  getService: Function | [Function, string];
-  maxCacheCount: number;
-  service: BaseService<T>;
+  private _getService: Function | [Function, string];
+  private _maxCacheCount: number;
+  private _service: BaseService<T>;
 
-  constructor(entityName: string, getService: Function | [Function, string]) {
+  constructor(entityName: ENTITY_NAME, { service, event, cacheCount }: IEntitySetting) {
     super(entityName);
 
-    this.getService = getService;
-    this.maxCacheCount = ENTITY_CACHE_COUNT[entityName];
+    this._getService = service;
+    this._maxCacheCount = cacheCount;
     const callback = ({ type, entities }: IIncomingData<T>) => {
       this.handleIncomingData({ type, entities });
     };
-    ENTITY_EVENT_NAME[entityName].forEach((eventName: string) => {
+    event.forEach((eventName: string) => {
       this.subscribeNotification(eventName, callback);
     });
-    visibilityChangeEvent(this.refreshCache.bind(this));
+    visibilityChangeEvent(this._refreshCache.bind(this));
   }
 
   handleIncomingData({ type, entities }: IIncomingData<T>) {
     if (!entities.size) {
       return;
     }
-    const existKeys: number[] = Array.from(this.data.keys());
+    const existKeys: number[] = Object.keys(this._data).map(Number);
     const matchedKeys: number[] = _.intersection(Array.from(entities.keys()), existKeys);
-    if (type !== 'delete') {
-      //   this.batchRemove(matchedKeys);
-      // } else {
-      const matchedEntities: T[] = [];
+    if (type === EVENT_TYPES.DELETE) {
+      this.batchRemove(matchedKeys);
+    } else {
+      const matchedEntities: (T | {id: number, data: T})[] = [];
       matchedKeys.forEach((key: number) => {
         const entity = entities.get(key);
         if (entity) {
           matchedEntities.push(entity);
         }
       });
-      if (type === 'update') {
-        this.batchDeepSet(matchedEntities as any);
+      if (type === EVENT_TYPES.UPDATE) {
+        this.batchDeepSet(matchedEntities as T[]);
         return;
       }
-      if (type === 'replace') {
-        this.batchReplace(matchedEntities as any);
+      if (type === EVENT_TYPES.REPLACE) {
+        this.batchReplace(matchedEntities as {id: number, data: T}[]);
         return;
       }
-      this.batchSet(matchedEntities as any);
+      this.batchSet(matchedEntities as T[]);
     }
   }
 
-  @action
   set(data: T) {
     const model = this.createModel(data);
     const { id } = model;
 
-    this.data.set(id, model);
+    this._createAtom(id);
+    this._data[id] = model;
+    this._atom[id].reportChanged();
   }
 
-  @action
-  batchSet(entities: K[]) {
+  batchSet(entities: T[]) {
     if (!entities.length) {
       return;
     }
-    const handledModels = new Map();
-    entities.forEach((value) => {
-      const model = this.createModel(value);
-      const { id } = model;
-      handledModels.set(id, model);
+    entities.forEach((entity) => {
+      this.set(entity);
     });
-    this.data.merge(handledModels);
   }
 
-  @action
-  batchDeepSet(entities: K[]) {
+  batchDeepSet(entities: T[]) {
     if (!entities.length) {
       return;
     }
-    const handledModels = new Map();
     entities.forEach((entity) => {
       const { id } = entity;
       const obs = this.get(id);
-      const model = this.createModel(obs ? _.merge(toJS(obs), entity) : entity);
-      handledModels.set(id, model);
+      const data = obs ? _.merge(obs, entity) : entity;
+      this.set(data);
     });
-    this.data.merge(handledModels);
   }
 
-  @action
-  batchReplace(entities: K[]) {
+  batchReplace(entities: {id: number, data: T}[]) {
     if (!entities.length) {
       return;
     }
-    const handledModels = new Map();
     entities.forEach((entity) => {
       const { id, data } = entity;
       this.remove(id);
-      const model = this.createModel(data);
-      handledModels.set(model.id, model);
+      this.set(data);
     });
-    this.data.merge(handledModels);
   }
 
-  @action
   remove(id: number) {
     const model = this.get(id);
     if (model) {
-      this.data.delete(id);
-      if (model.dispose) {
-        model.dispose();
-      }
+      delete this._data[id];
+      delete this._atom[id];
     }
   }
 
-  @action
   batchRemove(ids: number[]) {
-    transaction(() =>
-      ids.forEach((id) => {
-        this.remove(id);
-      }),
-    );
+    ids.forEach((id) => {
+      this.remove(id);
+    });
   }
 
-  get(id: number): K {
-    let model = this.data.get(id);
+  clearAll() {
+    this._data = {};
+  }
+
+  get(id: number) {
+    let model = this._data[id];
+
     if (!model) {
       this.set({ id } as T);
-      model = this.data.get(id);
+      model = this._data[id] as K;
       const res = this.getByService(id);
-      if (res instanceof Promise && typeof res.then === 'function') {
+      if (res instanceof Promise) {
         res.then((res: T & { error?: {} }) => {
           if (res && !res.error) {
             this.set(res);
@@ -147,67 +138,76 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends Base<T>>
         });
       } else {
         this.set(res as T);
-        model = this.data.get(id);
+        model = this._data[id] as K;
       }
     }
+
+    this._atom[id].reportObserved();
     return model;
   }
 
   has(id: number): boolean {
-    return this.data.has(id);
-  }
-
-  first(): K | {} {
-    if (this.getSize() > 0) {
-      const firstKey = this.data.keys().next().value;
-      return this.get(firstKey);
-    }
-    return {};
+    return !!this._data[id];
   }
 
   getSize() {
-    return this.data.size;
+    return Object.keys(this._data).length;
+  }
+
+  getData() {
+    return this._data;
   }
 
   getByService(id: number): Promise<T> | T {
-    if (!this.service) {
-      if (Array.isArray(this.getService)) {
-        this.service = this.getService[0]();
+    if (!this._service) {
+      if (Array.isArray(this._getService)) {
+        this._service = this._getService[0]();
       } else {
-        this.service = this.getService();
+        this._service = this._getService();
       }
     }
-    if (Array.isArray(this.getService)) {
-      return this.service[this.getService[1]](id);
+    if (Array.isArray(this._getService)) {
+      return this._service[this._getService[1]](id);
     }
-    return this.service.getById(id);
+    return this._service.getById(id);
   }
 
   createModel(model: T | K): K {
-    const Model = modelProvider.getModelCreator<K>(this.name);
+    const Model = modelProvider.getModelCreator(this.name);
     return Model.fromJS(model);
   }
 
-  addUsedIds(key: any, id: number) {
-    const usedIds = this.usedIds.get(key);
-    if (usedIds) {
-      usedIds.add(id);
-    } else {
-      this.usedIds.set(key, new Set([id]));
+  getUsedIds() {
+    return this._usedIds;
+  }
+
+  private _createAtom(id: number) {
+    let atom = this._atom[id];
+    if (!atom) {
+      const name = `${this.name}:${id}`;
+      atom = createAtom(name, this._addUsedIds(id), this._delUsedIds(id));
+      this._atom[id] = atom;
     }
   }
 
-  delUsedIds(key: any) {
-    return this.usedIds.delete(key);
+  private _addUsedIds(id: number) {
+    return () => {
+      this._usedIds.add(id);
+    };
   }
 
-  refreshCache() {
-    const usedIds: number[] = [];
-    this.usedIds.forEach((ids) => {
-      usedIds.push(...ids);
-    });
-    const existKeys = Array.from(this.data.keys());
-    const diffKeys = _.difference(existKeys, [...(new Set(usedIds))]);
+  private _delUsedIds(id: number) {
+    return () => {
+      this._usedIds.delete(id);
+    };
+  }
+
+  private _refreshCache() {
+    if (this.getSize() < this._maxCacheCount) {
+      return;
+    }
+    const existKeys = Object.keys(this._data).map(Number);
+    const diffKeys = _.difference(existKeys, [...this._usedIds]);
     this.batchRemove(diffKeys);
   }
 }
