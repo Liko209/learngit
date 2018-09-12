@@ -22,7 +22,6 @@ class DirectMessageSection extends BaseComponent {
   }
 
   public shouldShowConversation(id) {
-    console.log(id);
     return this.checkExisted(this.collapse.findReact('ConversationListItemCell').withProps('id', +id));
   }
 }

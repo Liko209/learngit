@@ -16,31 +16,40 @@ fixture('DirectMessageSection')
 
 test(formalName('Show the 1:1 conversation and group conversation in the Direct Message section', ['JPT-5', 'P2', 'ConversationList']), async (t) => {
   await setupSDK(t);
-  const helper = TestHelper.from(t);
-  helper.setupGlipApiManager();
-  const client701 = await helper.glipApiManager.getClient(helper.users.user701, helper.companyNumber);
-  const privateChat = await client701.createGroup({
-    type: 'PrivateChat',
-    isPublic: true,
-    description: 'test',
-    members: [helper.users.user701.rc_id, helper.users.user702.rc_id],
-  });
-  const group = await client701.createGroup({
-    type: 'Group',
-    isPublic: true,
-    description: 'test',
-    members: [helper.users.user701.rc_id, helper.users.user702.rc_id, helper.users.user703.rc_id],
-  });
-  await directLogin(t)
-    .chain(t => t.wait(10000))
-    .log('1. should navigate to Direct Messages Section')
+  let id1: number;
+  let id2: number;
+
+  const page = directLogin(t);
+  await page.chain(t => t.wait(10000))
+    .log('1. should create conversations')
+    .chain(async (t, h) => {
+      await t.wait(4000);
+      const client701 = await h.glipApiManager.getClient(h.users.user701, h.companyNumber);
+      const privateChat = await client701.createGroup({
+        type: 'PrivateChat',
+        isPublic: true,
+        description: 'test',
+        members: [h.users.user701.rc_id, h.users.user702.rc_id],
+      });
+      h.log(`Private chat ${privateChat.data.id} is created.`);
+      const group = await client701.createGroup({
+        type: 'Group',
+        isPublic: true,
+        description: 'test',
+        members: [h.users.user701.rc_id, h.users.user702.rc_id, h.users.user703.rc_id],
+      });
+      h.log(`Group chat ${group.data.id} is created.`);
+      id1 = privateChat.data.id;
+      id2 = group.data.id;
+    });
+  await page.log('2. should navigate to Direct Messages Section')
     .shouldNavigateTo(DirectMessageSection)
-    .log('2. should expand the collapse')
+    .log('3. should expand the collapse')
     .shouldExpand()
-    .log('3. should display 1:1 conversation')
-    .shouldShowConversation(privateChat.data.id)
-    .log('3. should display group conversation')
-    .shouldShowConversation(group.data.id);
+    .log('4. should display 1:1 conversation')
+    .shouldShowConversation(id1)
+    .log('5. should display group conversation')
+    .shouldShowConversation(id2);
 });
 
 // blocked. need new feature implemented to finish the test
