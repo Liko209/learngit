@@ -1,6 +1,6 @@
 /*
- * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-09-11 10:38:53
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2018-09-12 14:46:51
  * Copyright © RingCentral. All rights reserved.
  */
 
@@ -8,25 +8,32 @@ import React, { MouseEvent } from 'react';
 import JuiDialog, { IDialogProps } from '../../atoms/Dialog';
 import JuiDialogTitle from '../../atoms/DialogTitle';
 import JuiDialogContent from '../../atoms/DialogContent';
-import JuiDialogContentText from '../../atoms/DialogContentText';
 import JuiDialogActions from '../../atoms/DialogActions';
 import JuiButton from '../../atoms/Button';
 
 interface IProps extends IDialogProps {
   open: boolean;
   okText?: string;
+  cancelText?: string;
   onClose(event: MouseEvent<HTMLElement>): void;
+  onCancel(event: MouseEvent<HTMLElement>): void;
   header: JSX.Element | string;
   children: JSX.Element | string; // content
 }
 
-const Alert = ({ open, size, header, okText, onClose, children }: IProps) => {
+const JuiCreateTeam = ({
+  open,
+  header,
+  okText,
+  cancelText,
+  onClose,
+  onCancel,
+  children,
+}: IProps) => {
   return (
-    <JuiDialog open={open} size={size || 'small'}>
+    <JuiDialog open={open} size={'medium'} scroll="paper">
       <JuiDialogTitle>{header}</JuiDialogTitle>
-      <JuiDialogContent>
-        <JuiDialogContentText>{children}</JuiDialogContentText>
-      </JuiDialogContent>
+      <JuiDialogContent>{children}</JuiDialogContent>
       <JuiDialogActions>
         <JuiButton
           onClick={onClose}
@@ -34,13 +41,12 @@ const Alert = ({ open, size, header, okText, onClose, children }: IProps) => {
           variant="text"
           autoFocus={true}
         >
-          {okText || 'Ok'}
+          {cancelText || 'Cancel'}
         </JuiButton>
         <JuiButton
           onClick={onClose}
           color="primary"
-          variant="text"
-          disabled={true}
+          variant="contained"
           autoFocus={true}
         >
           {okText || 'Ok'}
@@ -50,4 +56,4 @@ const Alert = ({ open, size, header, okText, onClose, children }: IProps) => {
   );
 };
 
-export default Alert;
+export default JuiCreateTeam;

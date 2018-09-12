@@ -29,13 +29,11 @@ const StyledTopBar = styled(AppBar).attrs({ position: 'static' })`
   && {
     min-height: 64px;
     min-width: 400px;
-    background-color: ${({ theme }) =>
-    `${theme.palette.common.white}`};
+    background-color: ${({ theme }) => `${theme.palette.common.white}`};
     box-shadow: none;
-    border-bottom: 1px solid rgba(0, 0, 0, ${({ theme }) =>
-    `${theme.palette.action.hoverOpacity}`});
-    z-index: ${({ theme }) =>
-    `${theme.zIndex.tooltip}`};
+    border-bottom: 1px solid
+      rgba(0, 0, 0, ${({ theme }) => `${theme.palette.action.hoverOpacity}`});
+    z-index: ${({ theme }) => `${theme.zIndex.tooltip}`};
   }
 `;
 const TopBarWrapper = styled(Toolbar)`
@@ -53,8 +51,7 @@ const TopBarWrapper = styled(Toolbar)`
 `;
 const TopLogo = styled(Typography)`
   && {
-    color: ${({ theme }) =>
-    `${theme.palette.primary.main}`};
+    color: ${({ theme }) => `${theme.palette.primary.main}`};
     font-size: 26px;
     margin-left: ${({ theme }) => `${theme.spacing.unit * 4}px`};
     margin-right: ${({ theme }) => `${theme.spacing.unit * 9}px`};
@@ -69,7 +66,8 @@ const MenuWithLogo = styled.div`
 
 const BackForward: any = styled.div`
   display: flex;
-  visibility: ${(props: { invisible: boolean }) => props.invisible ? 'hidden' : 'visible'};
+  visibility: ${(props: { invisible: boolean }) =>
+    props.invisible ? 'hidden' : 'visible'};
 `;
 
 const StyledMenuListComposition = styled(MenuListComposition)``;
@@ -101,16 +99,19 @@ const TopLeft = styled.div`
   @media (max-width: 600px) {
     justify-content: space-between;
     ${StyledSearchBar} {
-      display: ${(props: { isShowSearchBar: boolean }) => props.isShowSearchBar ? 'block' : 'none'};
+      display: ${(props: { isShowSearchBar: boolean }) =>
+        props.isShowSearchBar ? 'block' : 'none'};
     }
     ${BackForward} {
       display: none;
     }
     ${StyledIconSearch} {
-      display: ${(props: { isShowSearchBar: boolean }) => props.isShowSearchBar ? 'none' : 'block'};
+      display: ${(props: { isShowSearchBar: boolean }) =>
+        props.isShowSearchBar ? 'none' : 'block'};
     }
     ${TopLogo} {
-      display: ${(props: { isShowSearchBar: boolean }) => props.isShowSearchBar ? 'none' : 'block'};
+      display: ${(props: { isShowSearchBar: boolean }) =>
+        props.isShowSearchBar ? 'none' : 'block'};
     }
   }
   @media (min-width: 601px) {
@@ -184,27 +185,50 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
 
   render() {
     const { topBarState, isShowSearchBar } = this.state;
-    const isElectron = navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
+    const isElectron =
+      navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
     return (
       <StyledTopBar>
-        <TopBarWrapper onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
+        <TopBarWrapper
+          onMouseOver={this.handleMouseOver}
+          onMouseLeave={this.handleMouseLeave}
+        >
           <TopLeft isShowSearchBar={isShowSearchBar}>
             <MenuWithLogo>
-              <JuiIconButton tooltipTitle="Menu" size="medium" awake={topBarState === 'hover'} onClick={this.props.onLeftNavExpand} data-anchor="expandButton">
+              <JuiIconButton
+                tooltipTitle="Menu"
+                size="medium"
+                awake={topBarState === 'hover'}
+                onClick={this.props.onLeftNavExpand}
+                data-anchor="expandButton"
+              >
                 format_list_bulleted
               </JuiIconButton>
               <TopLogo variant="headline">RingCentral</TopLogo>
             </MenuWithLogo>
             <BackForward invisible={!isElectron}>
-              <JuiIconButton tooltipTitle="Backward" size="small" awake={topBarState === 'hover'}>
+              <JuiIconButton
+                tooltipTitle="Backward"
+                size="small"
+                awake={topBarState === 'hover'}
+              >
                 chevron_left
               </JuiIconButton>
-              <JuiIconButton tooltipTitle="Forward" size="small" awake={topBarState === 'hover'}>
+              <JuiIconButton
+                tooltipTitle="Forward"
+                size="small"
+                awake={topBarState === 'hover'}
+              >
                 chevron_right
               </JuiIconButton>
             </BackForward>
             <StyledSearchBar setSearchBarState={this.setSearchBarState} />
-            <StyledIconSearch onClick={this.showSearchBar} tooltipTitle="Search" size="medium" awake={topBarState === 'hover'}>
+            <StyledIconSearch
+              onClick={this.showSearchBar}
+              tooltipTitle="Search"
+              size="medium"
+              awake={topBarState === 'hover'}
+            >
               search
             </StyledIconSearch>
           </TopLeft>
@@ -222,7 +246,11 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               src={this.props.avatar}
               presence={this.props.presence}
             />
-            <StyledIconMore tooltipTitle="More" size="medium" awake={topBarState === 'hover'}>
+            <StyledIconMore
+              tooltipTitle="More"
+              size="medium"
+              awake={topBarState === 'hover'}
+            >
               more_vert
             </StyledIconMore>
           </TopRight>
