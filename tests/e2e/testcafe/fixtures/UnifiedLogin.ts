@@ -11,6 +11,6 @@ fixture('UnifiedLogin')
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
-test(formalName('Unified Login', ['P0', 'Login']), async (t) => {
+test(formalName('Unified Login', ['P0', 'JPT-67', 'Login']), async (t) => {
   await interactiveLogin(t);
 });
