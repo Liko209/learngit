@@ -61,12 +61,12 @@ class Home extends Component<IProps, IStates>  {
     });
   }
   componentWillReceiveProps(nextProps: IProps) {
-    const { location } = this.props;
-    const prevUrl = location.pathname;
-    const currentUrl = nextProps.location.pathname;
+    // const { location } = this.props;
+    // const prevUrl = location.pathname;
+    // const currentUrl = nextProps.location.pathname;
     const state = this.navPresenter.state;
-    state.prevUrl = prevUrl;
-    state.currentUrl = currentUrl;
+    // state.prevUrl = prevUrl;
+    // state.currentUrl = currentUrl;
     const { forwardNavArray, backNavArray } = this.navPresenter;
     if (forwardNavArray.length) {
       state.forwardDisabled = false;
@@ -79,13 +79,11 @@ class Home extends Component<IProps, IStates>  {
     this.props.history.listen((route) => {
       // get previous title
       const state = this.navPresenter.state;
-      const { title, showLeftPanel, showRightPanel, pressNav } = state;
+      const { title, showLeftPanel, showRightPanel, pressNav, menuClicked } = state;
       setTimeout(() => {
-        const { prevUrl } = state;
         const { backNavArray } = this.navPresenter;
-        const routeObj = { urlTitle: title, url: prevUrl };
-        if (!showLeftPanel && !showRightPanel && !pressNav) {
-          backNavArray.push(routeObj);
+        if (!showLeftPanel && !showRightPanel && !pressNav && !menuClicked) {
+          backNavArray.push({ title });
           this.navPresenter.backNavArray = backNavArray;
         }
         if (backNavArray.length > 10) {
@@ -138,12 +136,12 @@ class Home extends Component<IProps, IStates>  {
         { icon: 'Meetings', title: t('Meetings') },
       ],
       [
-        { icon: 'Contacts', title: 'Contacts' },
-        { icon: 'Calendar', title: 'Calendar' },
-        { icon: 'Tasks', title: 'Tasks' },
-        { icon: 'Notes', title: 'Notes' },
-        { icon: 'Files', title: 'Files' },
-        { icon: 'Settings', title: 'Settings' },
+        { icon: 'Contacts', title: t('Contacts') },
+        { icon: 'Calendar', title: t('Calendar') },
+        { icon: 'Tasks', title: t('Tasks') },
+        { icon: 'Notes', title: t('Notes') },
+        { icon: 'Files', title: t('Files') },
+        { icon: 'Settings', title: t('Settings') },
       ],
     ];
   }
