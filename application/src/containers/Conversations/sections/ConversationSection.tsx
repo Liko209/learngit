@@ -8,15 +8,15 @@ import { translate } from 'react-i18next';
 import { TranslationFunction } from 'i18next';
 import { observer } from 'mobx-react';
 import { autorun, observable } from 'mobx';
-import {
-  ConversationListSection,
-  Icon,
-  ConversationList,
-} from 'ui-components';
+import { ConversationListSection, Icon, ConversationList } from 'ui-components';
 import { toTitleCase } from '@/utils';
 import ConversationListItemCell from '../ConversationListItemCell';
 import ConversationSectionPresenter from './ConversationSectionPresenter';
-import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
+import {
+  arrayMove,
+  SortableContainer,
+  SortableElement,
+} from 'react-sortable-hoc';
 
 interface IProps {
   t: TranslationFunction;
@@ -31,8 +31,7 @@ const SortableList = SortableContainer(ConversationList);
 const SortableItem = SortableElement(ConversationListItemCell);
 
 @observer
-class ConversationSectionComponent
-  extends React.Component<IProps> {
+class ConversationSectionComponent extends React.Component<IProps> {
   static defaultProps = {
     expanded: true,
     sortable: false,
@@ -46,11 +45,18 @@ class ConversationSectionComponent
     this._handleSortEnd = this._handleSortEnd.bind(this);
     const store = props.presenter.getStore();
     autorun(() => {
+      console.log(store.getIds());
       this.ids = store.getIds();
     });
   }
 
-  private _handleSortEnd({ oldIndex, newIndex }: { oldIndex: number; newIndex: number; }) {
+  private _handleSortEnd({
+    oldIndex,
+    newIndex,
+  }: {
+    oldIndex: number;
+    newIndex: number;
+  }) {
     this.ids = arrayMove(this.ids, oldIndex, newIndex);
     this.props.presenter.reorderFavoriteGroups(oldIndex, newIndex);
   }
@@ -63,7 +69,11 @@ class ConversationSectionComponent
     if (sortable) {
       const distance = 1;
       return (
-        <SortableList distance={distance} onSortEnd={this._handleSortEnd} lockAxis="y">
+        <SortableList
+          distance={distance}
+          onSortEnd={this._handleSortEnd}
+          lockAxis="y"
+        >
           {this.ids.map((id: number, index: number) => (
             <SortableItem
               id={id}
@@ -104,11 +114,13 @@ class ConversationSectionComponent
         >
           {this.renderList()}
         </ConversationListSection>
-      </div >
+      </div>
     );
   }
 }
 
-const ConversationSection = translate('Conversations')(ConversationSectionComponent);
+const ConversationSection = translate('Conversations')(
+  ConversationSectionComponent,
+);
 export { ConversationSection };
 export default ConversationSection;

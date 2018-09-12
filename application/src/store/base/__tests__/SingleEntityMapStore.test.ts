@@ -5,10 +5,11 @@
 */
 import faker from 'faker';
 import BaseStore from '../BaseStore';
-import { ENTITY_EVENT_NAME, ENTITY_CACHE_COUNT } from '../constants';
+import { ENTITY_SETTING } from '../../config';
 import ModelProvider from '../ModelProvider';
 import SingleEntityMapStore from '../SingleEntityMapStore';
 import { IEntity, IIncomingData } from '../../store';
+import { ENTITY_NAME } from '../../constants';
 
 jest.mock('../ModelProvider');
 
@@ -27,9 +28,10 @@ const getEntityMap: (n?: number) => Map<number, IEntity> = (n?: number) => {
   return map;
 };
 beforeAll(() => {
-  ENTITY_EVENT_NAME['name'] = ['DELETE', 'PUT', 'UPDATE'];
-  ENTITY_CACHE_COUNT['name'] = 100;
-  instance = new SingleEntityMapStore('name', getService);
+  ENTITY_SETTING['name'] = {};
+  ENTITY_SETTING['name'].event = ['DELETE', 'PUT', 'UPDATE'];
+  ENTITY_SETTING['name'].service = getService;
+  instance = new SingleEntityMapStore('name' as ENTITY_NAME, ENTITY_SETTING['name']);
 });
 
 describe('SingleEntityMapStore constructor', () => {
@@ -272,7 +274,7 @@ describe('getByService()', () => {
   };
   beforeAll(() => {
     jest.spyOn(instance, 'getService').mockImplementation(() => service);
-    instance.name = 'name';
+    instance.name = 'name' as ENTITY_NAME;
   });
 
   afterEach(() => {

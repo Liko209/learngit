@@ -23,8 +23,8 @@ const AuthRoute = ({ component: Component, ...rest }) => {
     return <Route {...rest} component={TokenGetter} />
   }
 
-  const vm = new ViewModel();
-  const { isAuthenticated } = vm;
+  const _vm = new ViewModel();
+  const isAuthenticated = _vm.isAuthenticated();
   return (
     <Route
       {...rest}

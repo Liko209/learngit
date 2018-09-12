@@ -5,15 +5,16 @@
  */
 import BaseStore from '../BaseStore';
 import BaseNotificationSubscribable from '../BaseNotificationSubscribable';
+import { ENTITY_NAME } from '../../constants';
 
 jest.mock('../BaseNotificationSubscribable', () =>
-  jest.fn().mockImplementation(() => {})
+  jest.fn().mockImplementation(() => {}),
 );
 
 describe('BaseStore', () => {
   it('new BaseStore', () => {
-    const store = new BaseStore('group');
+    const store = new BaseStore(ENTITY_NAME.GROUP);
     expect(BaseNotificationSubscribable).toHaveBeenCalledTimes(1);
-    expect(store.name).toBe('group');
+    expect(store.name).toBe(ENTITY_NAME.GROUP);
   });
 });

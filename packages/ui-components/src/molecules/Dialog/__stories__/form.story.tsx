@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import Stepper from './stepper';
+import Stepper from './../stepper';
 import { Button } from '@material-ui/core';
 import { boolean } from '@storybook/addon-knobs';
 import styled from 'styled-components';
-import Form from './form';
-import DialogTitle from '../../atoms/DialogTitle';
-import DialogHeader from '../../atoms/DialogHeader';
-import Dialog from '../../atoms/Dialog';
-import DialogContent from '../../atoms/DialogContent';
-import DialogActions from '../../atoms/DialogAction';
-import { withInfoDecorator } from '../../utils/decorators';
+import Form from './../form';
+import DialogTitle from '../../../atoms/DialogTitle';
+import DialogHeader from '../../../atoms/DialogHeader';
+import Dialog from '../../../atoms/Dialog';
+import DialogContent from '../../../atoms/DialogContent';
+import DialogActions from '../../../atoms/DialogActions';
+import { withInfoDecorator } from '../../../utils/decorators';
 
 storiesOf('Molecules/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(Dialog))

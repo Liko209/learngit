@@ -3,7 +3,8 @@ import { Presence } from 'sdk/models';
 import Base from './Base';
 
 export default class PresenceModel extends Base<Presence> {
-  @observable presence?: 'default' | 'offline' | 'online' | 'away';
+  @observable
+  presence?: 'default' | 'offline' | 'online' | 'away';
 
   constructor(data: Presence) {
     super(data);
