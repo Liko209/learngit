@@ -119,20 +119,18 @@ export default async function stateHandleData(state: Raw<State>[]) {
 async function operateDaoAndDoNotification(myState?: State[], groupStates?: GroupState[]) {
   const stateDao = daoManager.getDao(StateDao);
   const groupStateDao = daoManager.getDao(GroupStateDao);
-  const savePromises: Promise<void>[] = [];
   if (myState) {
+    await stateDao.bulkUpdate(myState);
     notificationCenter.emitEntityPut(ENTITY.MY_STATE, myState);
-    savePromises.push(stateDao.bulkUpdate(myState));
   }
   if (groupStates) {
     const stateService: StateService = StateService.getInstance();
     const result = await stateService.calculateUMI(groupStates);
     if (result.length) {
+      await groupStateDao.bulkUpdate(result);
       notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, result);
-      savePromises.push(groupStateDao.bulkUpdate(result));
     }
   }
-  await Promise.all(savePromises);
 }
 
 export async function handlePartialData(state: Partial<State>[]) {

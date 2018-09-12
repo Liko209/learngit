@@ -20,6 +20,7 @@ import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import GroupStateModel from '@/store/models/GroupState';
 const { GroupService } = service;
 type IProps = IInjectedStoreProps<VM> &
   RouteComponentProps<{}> & {
@@ -49,6 +50,9 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
 
   @observable
   umiVariant: 'count' | 'dot' | 'auto';
+
+  @observable
+  important: boolean;
 
   @observable
   status: 'default' | 'offline' | 'online' | 'away' | undefined;
@@ -89,9 +93,20 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   getDataFromStore() {
     const { getEntity } = this.props;
     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
+    const groupState = getEntity(
+      ENTITY_NAME.GROUP_STATE,
+      this.id,
+    ) as GroupStateModel;
+
     const { currentUserId } = this.props;
+    this.unreadCount =
+      (!group.isTeam && (groupState.unreadCount || 0)) ||
+      (groupState.unreadMentionsCount || 0);
+    this.important = _.has(groupState, 'unreadMentionsCount')
+      ? !!groupState.unreadMentionsCount
+      : this.important;
     this.displayName = getGroupName(getEntity, group, currentUserId);
-    this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
+    this.umiVariant = 'count'; // || at_mentions
     if (currentUserId) {
       let targetPresencePersonId: number | undefined;
       const otherMembers = _.difference(group.members, [currentUserId]);
@@ -121,6 +136,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
           title={this.displayName || ''}
           unreadCount={this.unreadCount}
           umiVariant={this.umiVariant}
+          important={this.important}
           onMoreClick={this._openMenu}
           onClick={this._onClick}
           status={this.status}
