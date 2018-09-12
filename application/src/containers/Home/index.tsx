@@ -84,8 +84,10 @@ class Home extends Component<IProps, IStates>  {
         const { prevUrl } = state;
         const { backNavArray } = this.navPresenter;
         const routeObj = { urlTitle: title, url: prevUrl };
-        !showLeftPanel && !showRightPanel && !pressNav && backNavArray.push(routeObj);
-        // this.navPresenter.backNavArray = backNavArray;
+        if (!showLeftPanel && !showRightPanel && !pressNav) {
+          backNavArray.push(routeObj);
+          this.navPresenter.backNavArray = backNavArray;
+        }
         if (backNavArray.length > 10) {
           backNavArray.shift();
         }
