@@ -19,8 +19,10 @@ import { getGroupName } from '../../utils/groupName';
 import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
+import showAlert from '../Dialog/ShowAlert';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
+
 const { GroupService } = service;
 type IProps = IInjectedStoreProps<VM> &
   RouteComponentProps<{}> & {
@@ -122,7 +124,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   }
 
   renderCloseMenuItem() {
-    if (!this.isFavorite) {
+    if (!this.isFavorite && this.unreadCount === 0) {
       return (
         <MenuItem onClick={this._toggleCloseConversation}>
           {this.closeText}
@@ -201,10 +203,24 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this._handleClose();
     const groupService: service.GroupService = GroupService.getInstance();
     const result = await groupService.hideConversation(this.id, true, false);
-    if (result === ServiceCommonErrorType.NONE) {
-    } else if (result === ServiceCommonErrorType.NETWORK_NOT_AVAILABLE) {
-    } else if (result === ServiceCommonErrorType.SERVER_ERROR) {
-    } else {
+    this._showErrorAlert(result);
+  }
+  private _showErrorAlert(error: ServiceCommonErrorType) {
+    const header = 'Close Conversation Failed';
+    if (error === ServiceCommonErrorType.NETWORK_NOT_AVAILABLE) {
+      const content =
+        'Network disconnected. Please try again when the network is resumed.';
+      showAlert({ header, content });
+    } else if (
+      error === ServiceCommonErrorType.SERVER_ERROR ||
+      error === ServiceCommonErrorType.UNKNOWN_ERROR
+    ) {
+      const content =
+        'We are having trouble closing the conversation. Please try again later.';
+      showAlert({ header, content });
+    }
+    if (error === ServiceCommonErrorType.NONE) {
+      // jump to section
     }
   }
 }
