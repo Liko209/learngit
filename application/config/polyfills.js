@@ -23,6 +23,5 @@ Object.assign = require('object-assign');
 
 // IE not support window.location.origin
 if (!window.location.origin) {
-  const { protocol, hostname, port } = window.location;
-  window.location.origin = `${protocol}//${hostname}${port && `:${port}`}`;
+  window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 }
