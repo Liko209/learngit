@@ -60,7 +60,7 @@ class NavPresenter extends BasePresenter {
       })();
       addArr = backNavArray;
       action = () => {
-        return window.history.forward();
+        return window.history.go(-1);
       };
       disableType = 'backDisabled';
       emptyDisable = 'forwardDisabled';
@@ -80,9 +80,9 @@ class NavPresenter extends BasePresenter {
       const REMOVED_ITEM = removedArr.shift(); // out stack
       REMOVED_ITEM && addArr.push(currentItem);
       action();
-      this.backNavArray = removedArr.reverse(); // reversed
-      this.forwardNavArray = addArr;
-      this.setItem('backNavArray', JSON.stringify(removedArr.reverse()));
+      this.forwardNavArray = dir === 'forward' ? removedArr : addArr;
+      this.backNavArray = dir === 'forward' ? addArr : removedArr; // reversed
+      this.setItem('backNavArray', JSON.stringify(removedArr));
       this.setItem('forwardNavArray', JSON.stringify(addArr));
       state.pressNav = true;
       state[disableType] = false;
@@ -93,6 +93,61 @@ class NavPresenter extends BasePresenter {
       state.isLongPress = false;
     }
   }
+  // @action
+  // handleForward = () => {
+  //   const { isLongPress, forwardDisabled, title, currentUrl } = this.state;
+  //   const backNavArray = this.backNavArray;
+  //   const forwardNavArray = this.forwardNavArray;
+  //   const currentItem = { urlTitle: title, url: currentUrl };
+  //   if (!isLongPress && !forwardDisabled) {
+  //     const reversedArr = (function () {
+  //       return forwardNavArray.reverse();
+  //     })();
+  //     console.log('reversedArr');
+  //     console.log(reversedArr);
+  //     const REMOVE_ITEM = reversedArr.shift(); // out stack
+  //     REMOVE_ITEM && backNavArray.push(currentItem);
+  //     this.backNavArray = backNavArray;
+  //     this.forwardNavArray = reversedArr;
+  //     window.history.forward();
+  //     this.state.pressNav = true;
+  //     this.state.backDisabled = false;
+  //     this.setItem('backNavArray', JSON.stringify(backNavArray));
+  //     this.setItem('forwardNavArray', JSON.stringify(reversedArr));
+  //     if (!forwardNavArray.length) {
+  //       this.state.forwardDisabled = true;
+  //     }
+  //   } else {
+  //     this.state.isLongPress = false;
+  //   }
+  // }
+  // @action
+  // handleBackWard = () => {
+  //   const state = this.state;
+  //   const { isLongPress, backDisabled, title, currentUrl } = state;
+  //   const currentItem = { urlTitle: title, url: currentUrl };
+  //   const backNavArray = this.backNavArray;
+  //   const forwardNavArray = this.forwardNavArray;
+  //   if (!isLongPress && !backDisabled) {
+  //     const removedArr = (function () {
+  //       return backNavArray.reverse();
+  //     })();
+  //     const REMOVE_ITEM = removedArr.shift(); // out stack
+  //     REMOVE_ITEM && forwardNavArray.push(currentItem);
+  //     window.history.back();
+  //     this.forwardNavArray = forwardNavArray;
+  //     this.backNavArray = removedArr;
+  //     state.pressNav = true;
+  //     state.forwardDisabled = false;
+  //     this.setItem('backNavArray', JSON.stringify(removedArr));
+  //     this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
+  //     if (!backNavArray.length) {
+  //       state.backDisabled = true;
+  //     }
+  //   } else {
+  //     state.isLongPress = false;
+  //   }
+  // }
   @action
   handleForward = () => {
     this._handleToward('forward');
@@ -156,7 +211,7 @@ class NavPresenter extends BasePresenter {
       const REMOVE_ITEM = toForward.splice(toForward.length - 1, 1); // delete click items
       forwardNavArray = toForward.reverse().concat(currentItem);
       this.handleMenuItem(forwardNavArray.reverse());
-      this.backNavArray = backNavArray;
+      this.backNavArray = backNavArray.reverse();
       this.forwardNavArray = forwardNavArray;
       this.state.title = REMOVE_ITEM[0]!.urlTitle; // set title
       this.setItem('backNavArray', JSON.stringify(backNavArray));
@@ -174,7 +229,7 @@ class NavPresenter extends BasePresenter {
       backNavArray = toBack.reverse().concat(currentItem).concat(backNavArray);
       this.handleMenuItem(backNavArray.reverse());
       this.backNavArray = backNavArray;
-      this.forwardNavArray = forwardNavArray;
+      this.forwardNavArray = forwardNavArray.reverse();
       this.state.title = REMOVE_ITEM[0]!.urlTitle;
       this.setItem('backNavArray', JSON.stringify(backNavArray));
       this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
