@@ -1,53 +1,47 @@
 
 import React from 'react';
-import  { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '@/store';
 import { observer } from 'mobx-react';
-import moment from 'moment';
-import { styled, JuiDivider } from 'ui-components';
+import { JuiDivider } from 'ui-components';
 import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
 import PostModel from '@/store/models/Post';
+import { JuiConversationCard, JuiConversationCardHeader, JuiConversationCardFooter } from 'ui-components/organisms/ConversationCard';
+import { JuiAvatar } from 'ui-components/atoms/Avatar';
+import moment from 'moment';
+import { Post, Person } from 'sdk/src/models';
+import PersonModel from '../../../../store/models/Person';
 interface IProps extends IComponentWithGetEntityProps {
   style?: React.CSSProperties;
   id: number;
-  key:number;
+  key: number;
 }
-/* Notice */
-/* this should be removed once conversation card developed*/
-const ConversationCardWrapper = styled.div`
-  margin:10px;
-  font-size:14px;
-  color:#333;
-  padding:20px;
-  padding-top:0px;
-  line-height:160%;
-  text-align:justify;
-  white-space: pre-wrap;
-  word-break:break-all;
-  span{
-    color:#999;
-    font-size:12px;
-    padding-top:20px;
-    margin-bottom:20px;
-    display:block;
-  }
-`;
 
 @observer
 export class ConversationCard extends React.Component<IProps>{
   render() {
-    const { id, getEntity, ...rest } = this.props;
-    const post = getEntity(ENTITY_NAME.POST, id) as PostModel;
+    const { id, getEntity } = this.props;
+    const post = getEntity<Post, PostModel>(ENTITY_NAME.POST, id);
+    const creator = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, post.creatorId);
     const {
       text,
       createdAt,
     } = post;
+    /**
+     * Just a placeholder, should be replaced with a container instead. * <Avatar id={creator.id} size="medium" />
+     */
+    const avatar = <JuiAvatar size="medium">SH</JuiAvatar>;
     return (
       <React.Fragment>
-      <ConversationCardWrapper {...rest} >
-      <span>Time:{moment(createdAt).format('llll')}</span>
-      {text}
-      </ConversationCardWrapper>
-      <JuiDivider key="divider"/>
+        <JuiConversationCard Avatar={avatar}>
+          <JuiConversationCardHeader name={creator.displayName} time={moment(createdAt).format('hh:mm A')} />
+          <div style={{ fontSize: '14px', lineHeight: '24px', color: '#616161' }}>
+            {/* todo: content */}{text}
+          </div>
+          <JuiConversationCardFooter>
+            {/* todo: footer */}
+          </JuiConversationCardFooter>
+        </JuiConversationCard>
+        <JuiDivider />
       </React.Fragment>
     );
   }
