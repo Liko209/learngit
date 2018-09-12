@@ -72,7 +72,7 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity
         {},
       ) as IEntity;
     }
-    this.data.merge(model);
+    this.data.merge(model.toJS ? model.toJS() : model);
   }
 
   @action
