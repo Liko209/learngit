@@ -19,10 +19,9 @@ interface IAccountPoolClient {
   checkInAccounts(data: any): Promise<any>;
 }
 
-function releaseCommandBuilder(url: string, env: string, accountType: string, domain: string) {
+function releaseCommandBuilder(url: string, accountLockId: string) {
   return (
-    `curl -X PUT ${url}/account/${env}/${accountType} -H 'Content-Type: application/x-www-form-urlencoded' ` +
-    `-d 'action=release&companyEmailDomain=${domain}'`
+    `curl -X DELETE "${url}/accountLocks/${accountLockId}" -H "accept: application/json"`
   );
 }
 
@@ -73,7 +72,7 @@ class AccountPoolManager implements IAccountPoolClient {
     const data = await this.accountPoolClient.checkOutAccounts(accountType);
     this.allAccounts.push(data);
     console.log('Account Pool: in case of unexpected error, you can use following command to reclaim account');
-    console.log(releaseCommandBuilder(this.baseUrl, this.envName, accountType, data.companyEmailDomain));
+    console.log(releaseCommandBuilder(this.baseUrl, data.accountLockId));
     return data;
   }
 
