@@ -11,7 +11,7 @@ import { withInfoDecorator } from '../../../utils/decorators';
 
 import JuiChip from '..';
 
-import avatar from '../../Avatar/__stories__/img/avatar.jpg';
+import avatar from '../../../atoms/Avatar/__stories__/img/avatar.jpg';
 
 const knobs = {};
 

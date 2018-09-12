@@ -9,11 +9,39 @@ import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../utils/decorators';
 
 import TopBar from '..';
+import JuiAvatarWithPresence, {
+  TJuiAvatarWithPresenceProps,
+} from '../../../molecules/AvatarWithPresence';
 
 import avatar from '../../../atoms/Avatar/__stories__/img/avatar.jpg';
+
+const onLeftNavExpand = () => {};
+const onSignOutClick = () => {};
+
+const AvatarWithPresence = (props: TJuiAvatarWithPresenceProps) => {
+  return (
+    <JuiAvatarWithPresence
+      presence="online"
+      src={avatar}
+      onClick={onLeftNavExpand}
+      {...props}
+    />
+  );
+};
 
 storiesOf('Organisms/TopBar', module)
   .addDecorator(withInfoDecorator(TopBar, { inline: true }))
   .addWithJSX('TopBar', () => {
-    return <TopBar avatar={avatar} presence="online" />;
+    return (
+      <TopBar
+        onLeftNavExpand={onLeftNavExpand}
+        AvatarWithPresence={AvatarWithPresence}
+        avatarMenuItems={[
+          {
+            label: 'signOut',
+            onClick: this.props.onSignOutClick,
+          },
+        ]}
+      />
+    );
   });

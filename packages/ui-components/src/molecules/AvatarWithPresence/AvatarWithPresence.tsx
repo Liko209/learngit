@@ -6,13 +6,13 @@
 import React, { RefObject } from 'react';
 import styled from '../../styled-components';
 
-import Avatar from '../../atoms/Avatar';
+import JuiAvatar from '../../atoms/Avatar';
 import { AvatarPresence, PresenceProps } from '../../atoms/Presence';
 
-type TAvatarWithPresenceProps = {
+type TJuiAvatarWithPresenceProps = {
   src?: string;
   innerRef?: RefObject<HTMLElement>;
-  onClick: Function;
+  onClick: () => void;
 } & PresenceProps;
 
 const StyledAvatarWithPresence = styled.div`
@@ -22,14 +22,21 @@ const StyledAvatarWithPresence = styled.div`
   width: ${({ theme }) => theme.size.width * 10};
 `;
 
-const AvatarWithPresence: React.SFC<TAvatarWithPresenceProps> =
-  (props: TAvatarWithPresenceProps) => {
-    return (
-      <StyledAvatarWithPresence className={props.className} innerRef={props.innerRef} onClick={props.onClick}>
-        <AvatarPresence presence={props.presence} />
-        <Avatar alt="avatar" size="large" src={props.src} />
-      </StyledAvatarWithPresence>
-    );
-  };
+const JuiAvatarWithPresence: React.SFC<TJuiAvatarWithPresenceProps> = (
+  props: TJuiAvatarWithPresenceProps,
+) => {
+  return (
+    <StyledAvatarWithPresence
+      className={props.className}
+      innerRef={props.innerRef}
+      onClick={props.onClick}
+    >
+      <AvatarPresence presence={props.presence} />
+      <JuiAvatar alt="avatar" size="large" src={props.src} />
+    </StyledAvatarWithPresence>
+  );
+};
 
-export default AvatarWithPresence;
+export { TJuiAvatarWithPresenceProps };
+
+export default JuiAvatarWithPresence;

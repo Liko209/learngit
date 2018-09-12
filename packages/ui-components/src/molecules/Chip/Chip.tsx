@@ -6,7 +6,7 @@
 import React from 'react';
 import styled from '../../styled-components';
 import MuiChip, { ChipProps } from '@material-ui/core/Chip';
-import JuiAvatar from '../Avatar';
+import JuiAvatar from '../../atoms/Avatar';
 import { width } from '../../utils/styles';
 
 type TJuiChipProps = {
@@ -16,13 +16,13 @@ type TJuiChipProps = {
 
 const StyledChip = styled<TJuiChipProps>(MuiChip)`
   && {
-    padding: ${({ theme }) => width(1)({ theme })};
+    padding: ${width(1)};
     box-sizing: border-box;
   }
 
   .deleteIcon {
-    width: ${({ theme }) => width(5)({ theme })};
-    height: ${({ theme }) => width(5)({ theme })};
+    width: ${width(5)};
+    height: ${width(5)};
   }
 `;
 

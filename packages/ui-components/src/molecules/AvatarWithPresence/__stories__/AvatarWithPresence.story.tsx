@@ -8,10 +8,12 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs/react';
 
-import AvatarWithPresence from '..';
+import JuiAvatarWithPresence from '..';
 
 import avatar from '../../../atoms/Avatar/__stories__/img/avatar.jpg';
 import { withInfoDecorator } from '../../../utils/decorators';
+
+const onAvatarWithPresenceClick = () => {};
 
 const knobs = {
   presence: () =>
@@ -27,7 +29,13 @@ const knobs = {
 };
 
 storiesOf('Molecules/AvatarWithPresence 🔜', module)
-  .addDecorator(withInfoDecorator(AvatarWithPresence, { inline: true }))
+  .addDecorator(withInfoDecorator(JuiAvatarWithPresence, { inline: true }))
   .addWithJSX('AvatarWithPresence', () => {
-    return <AvatarWithPresence src={avatar} presence={knobs.presence()} />;
+    return (
+      <JuiAvatarWithPresence
+        src={avatar}
+        presence={knobs.presence()}
+        onClick={onAvatarWithPresenceClick}
+      />
+    );
   });

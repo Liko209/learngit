@@ -9,19 +9,28 @@ import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import SearchBar from '../../molecules/SearchBar';
-import JuiIconButton from '../../molecules/IconButton';
-import MenuListComposition from '../../molecules/MenuListComposition';
-import { PresenceProps } from '../../atoms';
-import { spacing } from '../../utils';
+import JuiIconButton, { JuiIconButtonProps } from '../../molecules/IconButton';
+import MenuListComposition, {
+  TMenuItems,
+  TMenuExpandTrigger,
+} from '../../molecules/MenuListComposition';
+import { spacing, width } from '../../utils';
+import { TJuiAvatarWithPresenceProps } from '../../molecules/AvatarWithPresence';
 
 type TTopBarProps = {
-  avatar?: string;
+  AvatarWithPresence: React.SFC<TJuiAvatarWithPresenceProps>;
+  HeaderIconButton: React.SFC<JuiIconButtonProps>;
+  avatarMenuItems: TMenuItems;
   onLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
-  onSignOutClick: ((event: React.MouseEvent<HTMLInputElement>) => void);
-} & PresenceProps;
+  headerMenuItems: TMenuItems;
+};
 
 type TTopBarState = {
   topBarState: 'resting' | 'hover';
+  isShowSearchBar: boolean;
+};
+
+type TTopLeftProps = {
   isShowSearchBar: boolean;
 };
 
@@ -53,9 +62,9 @@ const TopLogo = styled(Typography)`
   && {
     color: ${({ theme }) => `${theme.palette.primary.main}`};
     font-size: 26px;
-    margin-left: ${({ theme }) => `${theme.spacing.unit * 4}px`};
-    margin-right: ${({ theme }) => `${theme.spacing.unit * 9}px`};
-    width: ${({ theme }) => `${theme.spacing.unit * 41}px`};
+    margin-left: ${spacing(4)};
+    margin-right: ${spacing(9)};
+    width: ${width(41)};
   }
 `;
 
@@ -70,9 +79,9 @@ const BackForward: any = styled.div`
     props.invisible ? 'hidden' : 'visible'};
 `;
 
-const StyledMenuListComposition = styled(MenuListComposition)``;
+const StyledAvatarMenuComposition = styled(MenuListComposition)``;
 
-const StyledIconPlus = styled(JuiIconButton)``;
+const StyledHeaderMenuComposition = styled(MenuListComposition)``;
 
 const StyledIconMore = styled(JuiIconButton)``;
 
@@ -80,7 +89,7 @@ const StyledIconSearch = styled(JuiIconButton)``;
 
 const StyledSearchBar = styled(SearchBar)``;
 
-const TopLeft = styled.div`
+const TopLeft = styled<TTopLeftProps, 'div'>('div')`
   display: flex;
   align-items: center;
   @media (min-width: 1280px) {
@@ -88,7 +97,7 @@ const TopLeft = styled.div`
   }
 
   @media (min-width: 1100px) and (max-width: 1280px) {
-    width: ${({ theme }) => `${246 * theme.size.width}px`};
+    width: ${width(246)};
   }
 
   @media (max-width: 1100px) {
@@ -98,19 +107,16 @@ const TopLeft = styled.div`
   @media (max-width: 600px) {
     justify-content: space-between;
     ${StyledSearchBar} {
-      display: ${(props: { isShowSearchBar: boolean }) =>
-        props.isShowSearchBar ? 'block' : 'none'};
+      display: ${({ isShowSearchBar }) => (isShowSearchBar ? 'block' : 'none')};
     }
     ${BackForward} {
       display: none;
     }
     ${StyledIconSearch} {
-      display: ${(props: { isShowSearchBar: boolean }) =>
-        props.isShowSearchBar ? 'none' : 'block'};
+      display: ${({ isShowSearchBar }) => (isShowSearchBar ? 'none' : 'block')};
     }
     ${TopLogo} {
-      display: ${(props: { isShowSearchBar: boolean }) =>
-        props.isShowSearchBar ? 'none' : 'block'};
+      display: ${({ isShowSearchBar }) => (isShowSearchBar ? 'none' : 'block')};
     }
   }
   @media (min-width: 601px) {
@@ -126,7 +132,7 @@ const TopRight = styled.div`
   justify-content: flex-end;
 
   @media (min-width: 1280px) {
-    width: ${({ theme }) => `${66 * theme.size.width}px`};
+    width: ${width(66)};
   }
 
   @media (min-width: 1101px) and (max-width: 1279px) {
@@ -134,11 +140,11 @@ const TopRight = styled.div`
   }
 
   @media (max-width: 1100px) {
-    width: ${({ theme }) => `${21 * theme.size.width}px`};
+    width: ${width(21)};
   }
 
   @media (max-width: 600px) {
-    ${StyledMenuListComposition} {
+    ${StyledAvatarMenuComposition} {
       display: none;
       color: red;
     }
@@ -184,6 +190,13 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
 
   render() {
     const { topBarState, isShowSearchBar } = this.state;
+    const {
+      avatarMenuItems,
+      headerMenuItems,
+      AvatarWithPresence,
+      HeaderIconButton,
+      onLeftNavExpand,
+    } = this.props;
     const isElectron =
       navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
     return (
@@ -198,7 +211,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
                 tooltipTitle="Menu"
                 size="medium"
                 awake={topBarState === 'hover'}
-                onClick={this.props.onLeftNavExpand}
+                onClick={onLeftNavExpand}
                 data-anchor="expandButton"
               >
                 format_list_bulleted
@@ -232,18 +245,15 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
             </StyledIconSearch>
           </TopLeft>
           <TopRight>
-            <StyledIconPlus
-              size="medium"
-              tooltipTitle="plus"
+            <StyledHeaderMenuComposition
               awake={topBarState === 'hover'}
-            >
-              add_circle
-            </StyledIconPlus>
-            <StyledMenuListComposition
+              menuItems={headerMenuItems}
+              MenuExpandTrigger={HeaderIconButton as TMenuExpandTrigger}
+            />
+            <StyledAvatarMenuComposition
               awake={topBarState === 'hover'}
-              handleSignOutClick={this.props.onSignOutClick}
-              src={this.props.avatar}
-              presence={this.props.presence}
+              menuItems={avatarMenuItems}
+              MenuExpandTrigger={AvatarWithPresence}
             />
             <StyledIconMore
               tooltipTitle="More"
