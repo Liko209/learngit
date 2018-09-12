@@ -40,7 +40,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => (
 );
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
-    min-width: ${({ theme }) => width(10.4)({ theme })};
+    min-width: ${({ theme }) => width(26)({ theme })};
     padding-left: ${spacing(4)};
     padding-right: ${spacing(4)};
     ${typography('button')}

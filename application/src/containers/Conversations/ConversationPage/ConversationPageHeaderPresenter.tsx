@@ -5,10 +5,12 @@
 */
 import { observable } from 'mobx';
 import _ from 'lodash';
-import BasePresenter from '@/store/base/BasePresenter';
 import { GroupService, AccountService } from 'sdk/service';
+
 import { Person, Profile } from 'sdk/models';
 import { ACCOUNT_USER_ID } from 'sdk/dao';
+import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
+import { getEntity, getSingleEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
 import ProfileModel from '@/store/models/Profile';
@@ -22,7 +24,7 @@ enum ConversationTypes {
   NORMAL_ONE_TO_ONE,
 }
 
-class ConversationPageHeaderPresenter extends BasePresenter {
+class ConversationPageHeaderPresenter extends BaseNotificationSubscribable {
   @observable
   userId: number | null;
   @observable
@@ -36,11 +38,14 @@ class ConversationPageHeaderPresenter extends BasePresenter {
     this.accountService = AccountService.getInstance();
     this.userId = this.accountService.getCurrentUserId();
 
-    this.subscribeNotification(ACCOUNT_USER_ID, ({ type, payload }: { type: string, payload: string }) => {
-      if (type === 'put') {
-        this.userId = Number(payload);
-      }
-    });
+    this.subscribeNotification(
+      ACCOUNT_USER_ID,
+      ({ type, payload }: { type: string; payload: string }) => {
+        if (type === 'put') {
+          this.userId = Number(payload);
+        }
+      },
+    );
   }
 
   getConversationType(group: GroupModel) {
@@ -71,14 +76,17 @@ class ConversationPageHeaderPresenter extends BasePresenter {
       if (!otherMemberId) {
         return null;
       }
-      return this.getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, otherMemberId);
+      return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, otherMemberId);
     }
     return null;
   }
 
   groupIsInFavorites(group: GroupModel) {
-    const favoriteGroups = this.getSingleEntity<Profile, ProfileModel>(ENTITY_NAME.PROFILE, 'favoriteGroupIds') || [];
-    console.log(favoriteGroups);
+    const favoriteGroups =
+      getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'favoriteGroupIds',
+      ) || [];
     return favoriteGroups.indexOf(group.id) >= 0;
   }
 }

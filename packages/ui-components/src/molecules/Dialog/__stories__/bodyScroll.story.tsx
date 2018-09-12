@@ -3,11 +3,11 @@ import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 
 import { Typography, DialogActions, Button } from '@material-ui/core';
-import Dialog from '../../atoms/Dialog';
-import DialogTitle from '../../atoms/DialogTitle';
-import DialogHeader from '../../atoms/DialogHeader';
-import { randomText } from './utils';
-import { withInfoDecorator } from '../../utils/decorators';
+import Dialog from '../../../atoms/Dialog';
+import DialogTitle from '../../../atoms/DialogTitle';
+import DialogHeader from '../../../atoms/DialogHeader';
+import { randomText } from './../utils';
+import { withInfoDecorator } from '../../../utils/decorators';
 
 storiesOf('Molecules/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(Dialog))

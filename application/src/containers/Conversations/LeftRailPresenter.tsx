@@ -1,6 +1,5 @@
 import { observable, computed } from 'mobx';
 import storeManager, { ENTITY_NAME } from '@/store';
-import BasePresenter from '@/store/base/BasePresenter';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import { AccountService, GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
 import { Company, Group, Person } from 'sdk/models';
@@ -17,7 +16,7 @@ interface IConversationListSectionModel {
   transformFunc?: Function;
 }
 
-class LeftRailPresenter extends BasePresenter {
+class LeftRailPresenter {
   @observable
   userId: number | null;
   accountService: AccountService;
@@ -25,10 +24,13 @@ class LeftRailPresenter extends BasePresenter {
   companyStore: MultiEntityMapStore<Company, CompanyModel>;
 
   constructor() {
-    super();
     this.accountService = AccountService.getInstance();
-    this.personStore = storeManager.getEntityMapStore(ENTITY_NAME.PERSON) as MultiEntityMapStore<Person, PersonModel>;
-    this.companyStore = storeManager.getEntityMapStore(ENTITY_NAME.COMPANY) as MultiEntityMapStore<Company, CompanyModel>;
+    this.personStore = storeManager.getEntityMapStore(
+      ENTITY_NAME.PERSON,
+    ) as MultiEntityMapStore<Person, PersonModel>;
+    this.companyStore = storeManager.getEntityMapStore(
+      ENTITY_NAME.COMPANY,
+    ) as MultiEntityMapStore<Company, CompanyModel>;
     this.userId = this.accountService.getCurrentUserId();
   }
   @computed
@@ -37,7 +39,11 @@ class LeftRailPresenter extends BasePresenter {
   }
   @computed
   get company() {
-    return this.user && this.user.companyId && this.companyStore.get(this.user.companyId);
+    return (
+      this.user &&
+      this.user.companyId &&
+      this.companyStore.get(this.user.companyId)
+    );
   }
   @computed
   get sections(): IConversationListSectionModel[] {

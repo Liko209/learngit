@@ -6,44 +6,65 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { ConversationPageHeader } from './../ConversationPageHeader';
-import { ConversationPageHeaderPresenter, ConversationTypes } from '../ConversationPageHeaderPresenter';
-import StoreManager from '@/store/base/StoreManager';
+import {
+  ConversationPageHeaderPresenter,
+  ConversationTypes,
+} from '../ConversationPageHeaderPresenter';
+import { StoreManager } from '@/store/base/StoreManager';
 
 jest.mock('../ConversationPageHeaderPresenter', () => ({
   ConversationPageHeaderPresenter: jest.fn(),
-  ConversationTypes: require.requireActual('../ConversationPageHeaderPresenter').ConversationTypes,
+  ConversationTypes: require.requireActual('../ConversationPageHeaderPresenter')
+    .ConversationTypes,
 }));
 
 jest.mock('react-i18next', () => ({
-  translate: jest.fn((sec: any) => (Component: React.ComponentType<any>) => Component),
+  translate: jest.fn((sec: any) => (Component: React.ComponentType<any>) =>
+    Component,
+  ),
 }));
-const ConversationPageHeaderModule = require.requireActual('ui-components/molecules/ConversationPageHeader');
-ConversationPageHeaderModule.JuiConversationPageHeader = ({ title, SubTitle, Right }: any) => (
+const ConversationPageHeaderModule = require.requireActual(
+  'ui-components/molecules/ConversationPageHeader',
+);
+ConversationPageHeaderModule.JuiConversationPageHeader = ({
+  title,
+  SubTitle,
+  Right,
+}: any) => (
   <div>
     {title}
     {SubTitle}
     {Right}
   </div>
 );
-jest.doMock('ui-components/molecules/ConversationPageHeader', ConversationPageHeaderModule);
-
-const ButtonBarModule = require.requireActual('ui-components/atoms/ButtonBar');
-ButtonBarModule.JuiButtonBar = ({ children }: any) => (
-  <div className="button-bar">
-    {children}
-  </div>
+jest.doMock(
+  'ui-components/molecules/ConversationPageHeader',
+  ConversationPageHeaderModule,
 );
-jest.doMock('ui-components/atoms/ButtonBar', ButtonBarModule);
 
-const CheckboxButtonModule = require.requireActual('ui-components/molecules/CheckboxButton');
-CheckboxButtonModule.JuiCheckboxButton = ({ iconName, checkedIconName, checked }: any) => (
-  <div className="checkbox-btn">
-    {checked ? checkedIconName : iconName}
-  </div>
+const ButtonBarModule = require.requireActual(
+  'ui-components/molecules/ButtonBar',
+);
+ButtonBarModule.JuiButtonBar = ({ children }: any) => (
+  <div className="button-bar">{children}</div>
+);
+jest.doMock('ui-components/molecules/ButtonBar', ButtonBarModule);
+
+const CheckboxButtonModule = require.requireActual(
+  'ui-components/molecules/CheckboxButton',
+);
+CheckboxButtonModule.JuiCheckboxButton = ({
+  iconName,
+  checkedIconName,
+  checked,
+}: any) => (
+  <div className="checkbox-btn">{checked ? checkedIconName : iconName}</div>
 );
 jest.doMock('ui-components/molecules/CheckboxButton', CheckboxButtonModule);
 
-const IconButtonModule = require.requireActual('ui-components/molecules/IconButton');
+const IconButtonModule = require.requireActual(
+  'ui-components/molecules/IconButton',
+);
 IconButtonModule.JuiIconButton = ({ children }: any) => (
   <div className="icon-btn">{children}</div>
 );
@@ -76,38 +97,28 @@ describe('ConversationPageHeader', () => {
       isTeam: false,
       members: [1],
     });
-    StoreManager.prototype.getEntityMapStore = jest.fn().mockReturnValue(groupStore);
+    StoreManager.prototype.getEntityMapStore = jest
+      .fn()
+      .mockReturnValue(groupStore);
 
     mockPresenter();
   });
 
   it('should render title', () => {
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('some group name')).toBe(true);
     expect(html.includes('settings')).toBe(true);
   });
 
   it('should render title (text) for SMS conversation', () => {
     mockPresenter(ConversationTypes.SMS);
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('some group name (text)')).toBe(true);
   });
 
   it('should render correct icons for Team conversation', () => {
     mockPresenter(ConversationTypes.TEAM);
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('star')).toBe(true);
     expect(html.includes('lock')).toBe(true);
     expect(html.includes('local_phone')).not.toBe(true);
@@ -118,11 +129,7 @@ describe('ConversationPageHeader', () => {
 
   it('should render correct icons for Me conversation', () => {
     mockPresenter(ConversationTypes.ME);
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('star')).toBe(true);
     expect(html.includes('lock')).not.toBe(true);
     expect(html.includes('local_phone')).not.toBe(true);
@@ -133,11 +140,7 @@ describe('ConversationPageHeader', () => {
 
   it('should render correct icons for one to one conversation', () => {
     mockPresenter(ConversationTypes.NORMAL_ONE_TO_ONE);
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('star')).toBe(true);
     expect(html.includes('lock')).not.toBe(true);
     expect(html.includes('local_phone')).toBe(true);
@@ -148,11 +151,7 @@ describe('ConversationPageHeader', () => {
 
   it('should render correct icons for sms conversation', () => {
     mockPresenter(ConversationTypes.SMS);
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('star')).toBe(true);
     expect(html.includes('lock')).not.toBe(true);
     expect(html.includes('local_phone')).toBe(true);
@@ -163,11 +162,7 @@ describe('ConversationPageHeader', () => {
 
   it('should render correct icons for group conversation', () => {
     mockPresenter(ConversationTypes.NORMAL_GROUP);
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('star')).toBe(true);
     expect(html.includes('lock')).not.toBe(true);
     expect(html.includes('local_phone')).not.toBe(true);
@@ -185,11 +180,7 @@ describe('ConversationPageHeader', () => {
     });
     mockPresenter(ConversationTypes.TEAM);
 
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('lock')).toBe(true);
     expect(html.includes('lock_open')).not.toBe(true);
   });
@@ -203,33 +194,21 @@ describe('ConversationPageHeader', () => {
     });
     mockPresenter(ConversationTypes.TEAM);
 
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('lock_open')).toBe(true);
   });
 
   it('should render unchecked star icon for not favorite conversation', () => {
     mockPresenter(ConversationTypes.NORMAL_GROUP);
 
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('star_border')).toBe(true);
   });
 
   it('should render checked star icon for not favorite conversation', () => {
     mockPresenter(ConversationTypes.NORMAL_GROUP, true);
 
-    const html = mount(
-      <ConversationPageHeader
-        id={1}
-      />,
-    ).html();
+    const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('star_border')).not.toBe(true);
     expect(html.includes('star')).toBe(true);
   });

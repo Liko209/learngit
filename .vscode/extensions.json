@@ -12,6 +12,7 @@
     "yzhang.markdown-all-in-one",
     "eg2.tslint",
     "orta.vscode-jest",
-    "editorconfig.editorconfig"
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode"
   ]
 }

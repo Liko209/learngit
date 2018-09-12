@@ -1,57 +1,57 @@
-
 import React from 'react';
-import  { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '@/store';
 import { observer } from 'mobx-react';
 import moment from 'moment';
 import { styled, JuiDivider } from 'ui-components';
-import injectStore, { IComponentWithGetEntityProps } from '@/store/inject';
+import injectStore, { IInjectedStoreProps } from '@/store/inject';
+import VM from '@/store/ViewModel';
 import PostModel from '@/store/models/Post';
-interface IProps extends IComponentWithGetEntityProps {
+interface IProps extends IInjectedStoreProps<VM> {
   style?: React.CSSProperties;
   id: number;
-  key:number;
+  key: number;
 }
 /* Notice */
 /* this should be removed once conversation card developed*/
 const ConversationCardWrapper = styled.div`
-  margin:10px;
-  font-size:14px;
-  color:#333;
-  padding:20px;
-  padding-top:0px;
-  line-height:160%;
-  text-align:justify;
+  margin: 10px;
+  font-size: 14px;
+  color: #333;
+  padding: 20px;
+  padding-top: 0px;
+  line-height: 160%;
+  text-align: justify;
   white-space: pre-wrap;
-  word-break:break-all;
-  span{
-    color:#999;
-    font-size:12px;
-    padding-top:20px;
-    margin-bottom:20px;
-    display:block;
+  word-break: break-all;
+  span {
+    color: #999;
+    font-size: 12px;
+    padding-top: 20px;
+    margin-bottom: 20px;
+    display: block;
   }
 `;
 
 @observer
-export class ConversationCard extends React.Component<IProps>{
+export class ConversationCard extends React.Component<IProps> {
   render() {
     const { id, getEntity, ...rest } = this.props;
     const post = getEntity(ENTITY_NAME.POST, id) as PostModel;
-    const {
-      text,
-      createdAt,
-    } = post;
+    const { text, createdAt } = post;
     return (
       <React.Fragment>
-      <ConversationCardWrapper {...rest} >
-      <span>Time:{moment(createdAt).format('llll')}</span>
-      {text}
-      </ConversationCardWrapper>
-      <JuiDivider key="divider"/>
+        <ConversationCardWrapper {...rest}>
+          <span>
+            Time:
+            {moment(createdAt).format('llll')}
+          </span>
+          {text}
+        </ConversationCardWrapper>
+        <JuiDivider key="divider" />
       </React.Fragment>
     );
   }
 }
 
 /* this should be removed once conversation card developed*/
-export default injectStore()(ConversationCard);
+export default injectStore(VM)(ConversationCard);

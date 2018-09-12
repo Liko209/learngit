@@ -22,9 +22,9 @@ type JuiIconButtonProps = {
 } & MuiIconButtonProps;
 
 const iconSizes = {
-  large: 2.4,
-  medium: 2,
-  small: 1.6,
+  large: 6,
+  medium: 5,
+  small: 4,
 };
 
 const WrappedMuiIcon = ({ invisible, awake, ...rest }: JuiIconButtonProps) => (

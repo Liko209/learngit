@@ -7,41 +7,31 @@ import MultiEntityMapStore from './MultiEntityMapStore';
 import SingleEntityMapStore from './SingleEntityMapStore';
 import GlobalStore from './GlobalStore';
 
-import OrderListStore from './OrderListStore';
-
-import { ENTITY_SERVICE, ENTITY_TYPE, HANDLER_TYPE } from './constants';
-import { IEntity } from '../store';
+import { HANDLER_TYPE, ENTITY_NAME } from '../constants';
+import { ENTITY_SETTING } from '../config';
+import { IEntity, IEntitySetting } from '../store';
 
 enum STORE_TYPE {
-  UI,
   ENTITY,
   GLOBAL,
 }
 
 interface IStores {
-  [STORE_TYPE.UI]: Map<string, OrderListStore>;
-  [STORE_TYPE.ENTITY]: Map<string, MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>>;
+  [STORE_TYPE.ENTITY]: {[storeName: string]: MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>};
   [STORE_TYPE.GLOBAL]: GlobalStore;
 }
 class StoreManager {
-  private static _instance: StoreManager;
-  private stores: IStores;
+  private _stores: IStores;
 
-  private constructor() {
-    this.stores = {
-      [STORE_TYPE.UI]: new Map(),
-      [STORE_TYPE.ENTITY]: new Map(),
+  constructor() {
+    this._stores = {
+      [STORE_TYPE.ENTITY]: {},
       [STORE_TYPE.GLOBAL]: new GlobalStore(),
     };
   }
 
-  public static get Instance() {
-    this._instance = this._instance || (this._instance = new this());
-    return this._instance;
-  }
-
   injectStores(
-    stores: (MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any> | OrderListStore)[],
+    stores: (MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>)[],
   ) {
     stores.forEach((store) => {
       this.injectStore(store);
@@ -49,65 +39,51 @@ class StoreManager {
   }
 
   injectStore(
-    store: MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any> | OrderListStore,
+    store: MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>,
   ) {
     const { name } = store;
-    if (store instanceof OrderListStore) {
-      this.stores[STORE_TYPE.UI].set(name, store);
-    } else {
-      this.stores[STORE_TYPE.ENTITY].set(name, store);
-    }
+    this._stores[STORE_TYPE.ENTITY][name] = store;
   }
 
   removeStore(
-    store: MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any> | OrderListStore,
+    store: MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>,
   ) {
     const { name } = store;
-    if (store instanceof OrderListStore) {
-      this.stores[STORE_TYPE.UI].delete(name);
-    } else {
-      this.stores[STORE_TYPE.ENTITY].delete(name);
-    }
+    delete this._stores[STORE_TYPE.ENTITY][name];
     store.dispose();
   }
 
   removeStores(
-    stores: (MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any> | OrderListStore)[],
+    stores: (MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>)[],
   ) {
     stores.forEach((store) => {
       this.removeStore(store);
     });
   }
 
-  getStore(type: STORE_TYPE, storeName?: string) {
+  getStore(type: STORE_TYPE, storeName?: ENTITY_NAME) {
     if (type !== STORE_TYPE.GLOBAL && storeName) {
-      return this.stores[type].get(storeName);
+      return this._stores[type][storeName];
     }
-    return this.stores[type];
+    return this._stores[type];
   }
 
   getGlobalStore(): GlobalStore {
     return this.getStore(STORE_TYPE.GLOBAL) as GlobalStore;
   }
 
-  getUIStore(storeName: string) {
-    return this.getStore(STORE_TYPE.UI, storeName) as OrderListStore;
-  }
-
-  getEntityMapStore(
-    entityStoreName: string,
-  ) {
+  getEntityMapStore(entityStoreName: ENTITY_NAME) {
     let store = this.getStore(STORE_TYPE.ENTITY, entityStoreName) as MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>;
     if (!store) {
-      if (ENTITY_TYPE[entityStoreName] === HANDLER_TYPE.MULTI_ENTITY) {
+      if (ENTITY_SETTING[entityStoreName].type === HANDLER_TYPE.MULTI_ENTITY) {
         store = new MultiEntityMapStore(
           entityStoreName,
-          ENTITY_SERVICE[entityStoreName] as Function | [Function, string],
+          ENTITY_SETTING[entityStoreName] as IEntitySetting,
         );
       } else {
         store = new SingleEntityMapStore(
           entityStoreName,
-          ENTITY_SERVICE[entityStoreName] as Function,
+          ENTITY_SETTING[entityStoreName] as IEntitySetting,
         );
       }
       this.injectStore(store);
@@ -116,14 +92,14 @@ class StoreManager {
   }
 
   getAllStore() {
-    return this.stores;
+    return this._stores;
   }
 
   getAllEntityStore() {
-    return this.stores[STORE_TYPE.ENTITY];
+    return this._stores[STORE_TYPE.ENTITY];
   }
 
-  dispatchUpdatedDataModels(entityStoreName: string, entities: IEntity[]) {
+  dispatchUpdatedDataModels(entityStoreName: ENTITY_NAME, entities: IEntity[]) {
     const store = this.getEntityMapStore(
       entityStoreName,
     ) as MultiEntityMapStore<any, any>;
@@ -131,4 +107,6 @@ class StoreManager {
   }
 }
 
-export default StoreManager;
+export { StoreManager };
+
+export default new StoreManager;

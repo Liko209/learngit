@@ -3,8 +3,8 @@
  * @Date: 2018-03-07 17:42:10
  */
 import config from './config';
-
-import { Sdk, LogControlManager } from 'sdk';
+import { Sdk, LogControlManager, service } from 'sdk';
+import storeManager from '@/store';
 
 const api = config.get('api');
 const db = config.get('db');
@@ -17,5 +17,12 @@ export async function initAll() {
   await Sdk.init({
     api,
     db,
+  });
+
+  // subscribe service notification to global store
+  const { notificationCenter, SOCKET } = service;
+  const globalStore = storeManager.getGlobalStore();
+  notificationCenter.on(SOCKET.NETWORK_CHANGE, (data) => {
+    globalStore.set('network', data.state);
   });
 }
