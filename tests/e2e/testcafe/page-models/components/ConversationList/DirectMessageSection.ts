@@ -3,9 +3,7 @@
  * @Date: 2018-08-21 16:35:03
  * Copyright © RingCentral. All rights reserved.
  */
-import { GroupAPI } from '../../../libs/sdk';
 import { BaseComponent } from '../..';
-import { Selector } from 'testcafe';
 
 class DirectMessageSection extends BaseComponent {
 
