@@ -61,12 +61,7 @@ class Home extends Component<IProps, IStates>  {
     });
   }
   componentWillReceiveProps(nextProps: IProps) {
-    // const { location } = this.props;
-    // const prevUrl = location.pathname;
-    // const currentUrl = nextProps.location.pathname;
     const state = this.navPresenter.state;
-    // state.prevUrl = prevUrl;
-    // state.currentUrl = currentUrl;
     const { forwardNavArray, backNavArray } = this.navPresenter;
     if (forwardNavArray.length) {
       state.forwardDisabled = false;
