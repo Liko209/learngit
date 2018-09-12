@@ -5,13 +5,20 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, select, text } from '@storybook/addon-knobs/react';
-import { withInfoDecorator, alignCenterDecorator } from '../../../utils/decorators';
+import { boolean } from '@storybook/addon-knobs/react';
+import {
+  withInfoDecorator,
+  alignCenterDecorator,
+} from '../../../utils/decorators';
 import JuiSwitchButton from '../';
 
-storiesOf('Molecules/SwitchButton', module)
-  .addWithJSX('SwitchButton', () => {
-    return (
-      <JuiSwitchButton />
-    );
-  });
+function getKnobs() {
+  const disabled = boolean('disabled', false);
+  return {
+    disabled,
+  };
+}
+
+storiesOf('Molecules/SwitchButton', module).addWithJSX('SwitchButton', () => {
+  return <JuiSwitchButton disabled={getKnobs().disabled} />;
+});

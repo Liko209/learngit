@@ -9,18 +9,21 @@ import MuiSwitch from '@material-ui/core/Switch';
 import { width, spacing, height, palette } from '../../utils/styles';
 
 const SwitchButton = styled(MuiSwitch)`
-  &:hover {
-    .custom-bar {
-      opacity: ${({ theme }) =>
-        1 - theme.palette.action.hoverOpacity} !important;
+  ${props =>
+    !props.disabled
+      ? `
+    &:hover {
+      .custom-bar {
+        opacity: ${1 - props.theme.palette.action.hoverOpacity} !important;
+      }
     }
-  }
-  &:active {
-    .custom-bar {
-      opacity: ${({ theme }) =>
-        1 - theme.palette.action.hoverOpacity * 2} !important;
+    &:active {
+      .custom-bar {
+        opacity: ${1 - props.theme.palette.action.hoverOpacity * 2} !important;
+      }
     }
-  }
+  `
+      : null};
 
   .custom-bar {
     opacity: 1;
@@ -35,8 +38,14 @@ const SwitchButton = styled(MuiSwitch)`
   .custom-icon {
     width: ${({ theme }) => width(3)({ theme })};
     height: ${({ theme }) => height(3)({ theme })};
-    margin: ${({ theme }) => spacing(1)({ theme })} 0 0;
+    margin: ${({ theme }) => spacing(1.5)({ theme })} 0 0;
     box-shadow: none;
+  }
+
+  .custom-disabled {
+    .custom-icon {
+      background: #fff;
+    }
   }
 
   .custom-checked {

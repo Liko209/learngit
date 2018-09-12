@@ -7,7 +7,13 @@ import React from 'react';
 import { SwitchProps } from '@material-ui/core/Switch';
 import * as Jui from './style';
 
-const JuiSwitchButton: React.SFC<SwitchProps> = () => {
+interface IProps {
+  disabled?: boolean;
+}
+
+const JuiSwitchButton: React.SFC<SwitchProps> = (props: IProps) => {
+  const { disabled } = props;
+
   return (
     <Jui.SwitchButton
       classes={{
@@ -17,6 +23,7 @@ const JuiSwitchButton: React.SFC<SwitchProps> = () => {
         disabled: 'custom-disabled',
       }}
       color="primary"
+      disabled={disabled}
       disableRipple={true}
     />
   );
