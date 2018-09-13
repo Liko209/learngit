@@ -11,9 +11,7 @@ import moment from 'moment';
 import { Post, Person } from 'sdk/src/models';
 import PersonModel from '@/store/models/Person';
 interface IProps extends IInjectedStoreProps<VM> {
-  style?: React.CSSProperties;
   id: number;
-  key: number;
 }
 
 @observer
