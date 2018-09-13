@@ -5,7 +5,7 @@
  */
 
 import { service } from 'sdk';
-import { action, observable, computed, when } from 'mobx';
+import { action, observable, computed, when, IReactionDisposer } from 'mobx';
 import { debounce } from 'lodash';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
@@ -14,14 +14,18 @@ import GroupModel from '@/store/models/Group';
 class ViewModel {
   private _groupService: service.GroupService;
   private _id: number;
+  private _disposer: IReactionDisposer;
   @observable draft: string = '';
 
   constructor(id: number) {
     this._groupService = service.GroupService.getInstance();
     this._id = id;
-    when(
+    this._disposer = when(
       () => !!this.initDraft,
-      () => { this.draft = this.initDraft; },
+      () => {
+        this.draft = this.initDraft;
+        this._disposer();
+      },
     );
   }
 
