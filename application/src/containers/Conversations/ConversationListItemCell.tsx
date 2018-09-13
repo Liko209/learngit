@@ -21,6 +21,8 @@ import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import GroupStateModel from '@/store/models/GroupState';
+import MyStateModel from '@/store/models/MyState';
+import { MyState } from 'sdk/src/models';
 const { GroupService } = service;
 type IProps = IInjectedStoreProps<VM> &
   RouteComponentProps<{}> & {
@@ -66,6 +68,9 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   @observable
   favoriteText: string;
 
+  @observable
+  umiHint: boolean;
+
   @computed
   get menuOpen() {
     return !!this.anchorEl;
@@ -91,17 +96,28 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   }
 
   getDataFromStore() {
-    const { getEntity } = this.props;
+    const { getEntity, getSingleEntity } = this.props;
     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
+    const lastGroup = getSingleEntity<MyState, MyStateModel>(
+      ENTITY_NAME.MY_STATE,
+      'lastGroupId',
+    ) as number;
     const groupState = getEntity(
       ENTITY_NAME.GROUP_STATE,
       this.id,
     ) as GroupStateModel;
 
     const { currentUserId } = this.props;
-    this.unreadCount =
-      (!group.isTeam && (groupState.unreadCount || 0)) ||
-      (groupState.unreadMentionsCount || 0);
+    const isCurrentGroup = lastGroup && lastGroup === this.id;
+
+    this.umiHint = !!(
+      !isCurrentGroup &&
+      (groupState.unreadCount || groupState.unreadMentionsCount)
+    );
+    this.unreadCount = isCurrentGroup
+      ? 0
+      : (!group.isTeam && (groupState.unreadCount || 0)) ||
+        (groupState.unreadMentionsCount || 0);
     this.important = _.has(groupState, 'unreadMentionsCount')
       ? !!groupState.unreadMentionsCount
       : this.important;
@@ -134,6 +150,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
           aria-haspopup="true"
           key={this.id}
           title={this.displayName || ''}
+          umiHint={this.umiHint}
           unreadCount={this.unreadCount}
           umiVariant={this.umiVariant}
           important={this.important}
