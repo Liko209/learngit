@@ -18,6 +18,12 @@ const StyledChip = styled<TJuiChipProps>(MuiChip)`
   && {
     padding: ${width(1)};
     box-sizing: border-box;
+    &:hover {
+      opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity * 1};
+    }
+    &:active {
+      opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity * 2};
+    }
   }
 
   .deleteIcon {

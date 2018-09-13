@@ -129,22 +129,15 @@ const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
 type IJuiIconButton = React.SFC<JuiIconButtonProps> & IDependencies;
 
 const JuiIconButton: IJuiIconButton = (props: JuiIconButtonProps) => {
-  const {
-    className,
-    children,
-    tooltipTitle,
-    innerRef,
-    onClick,
-    ...rest
-  } = props;
+  const { className, children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
   return (
     <MuiTooltip title={tooltipTitle}>
       <WrapperForTooltip
         className={className}
         innerRef={innerRef}
-        onClick={onClick}
-        {...rest}
+        variant={variant}
+        size={size}
       >
         <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
           <StyledIcon
@@ -153,7 +146,6 @@ const JuiIconButton: IJuiIconButton = (props: JuiIconButtonProps) => {
             awake={awake}
             disabled={disabled}
             invisible={invisible}
-            innerRef={innerRef}
           >
             {children}
           </StyledIcon>

@@ -12,20 +12,25 @@ import TopBar from '..';
 import JuiAvatarWithPresence, {
   TJuiAvatarWithPresenceProps,
 } from '../../../molecules/AvatarWithPresence';
+import JuiIconButton, {
+  JuiIconButtonProps,
+} from '../../../molecules/IconButton';
 
 import avatar from '../../../atoms/Avatar/__stories__/img/avatar.jpg';
 
 const onLeftNavExpand = () => {};
-const onSignOutClick = () => {};
+const handleSignOutClick = () => {};
+const handleCreateTeam = () => {};
 
 const AvatarWithPresence = (props: TJuiAvatarWithPresenceProps) => {
+  return <JuiAvatarWithPresence presence="online" src={avatar} {...props} />;
+};
+
+const HeaderIconButton = (props: JuiIconButtonProps) => {
   return (
-    <JuiAvatarWithPresence
-      presence="online"
-      src={avatar}
-      onClick={onLeftNavExpand}
-      {...props}
-    />
+    <JuiIconButton size="medium" tooltipTitle="plus" {...props}>
+      add_circle
+    </JuiIconButton>
   );
 };
 
@@ -34,14 +39,21 @@ storiesOf('Organisms/TopBar', module)
   .addWithJSX('TopBar', () => {
     return (
       <TopBar
-        onLeftNavExpand={onLeftNavExpand}
         AvatarWithPresence={AvatarWithPresence}
         avatarMenuItems={[
           {
             label: 'signOut',
-            onClick: this.props.onSignOutClick,
+            onClick: handleSignOutClick,
           },
         ]}
+        HeaderIconButton={HeaderIconButton}
+        headerMenuItems={[
+          {
+            label: 'Create Team',
+            onClick: handleCreateTeam,
+          },
+        ]}
+        onLeftNavExpand={onLeftNavExpand}
       />
     );
   });

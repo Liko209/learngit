@@ -23,6 +23,7 @@ type TTopBarProps = {
   avatarMenuItems: TMenuItems;
   onLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
   headerMenuItems: TMenuItems;
+  headerLogo: string;
 };
 
 type TTopBarState = {
@@ -196,6 +197,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
       AvatarWithPresence,
       HeaderIconButton,
       onLeftNavExpand,
+      headerLogo,
     } = this.props;
     const isElectron =
       navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
@@ -216,7 +218,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               >
                 format_list_bulleted
               </JuiIconButton>
-              <TopLogo variant="headline">RingCentral</TopLogo>
+              <TopLogo variant="headline">{headerLogo}</TopLogo>
             </MenuWithLogo>
             <BackForward invisible={!isElectron}>
               <JuiIconButton
