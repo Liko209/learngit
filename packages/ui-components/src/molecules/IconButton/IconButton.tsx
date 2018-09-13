@@ -100,7 +100,7 @@ const JuiIconButton: IJuiIconButton = (
   const { size, variant, awake, disabled, invisible } = rest;
   return (
     <MuiTooltip title={tooltipTitle}>
-      <WrapperForTooltip className={className} {...rest}>
+      <WrapperForTooltip className={className} variant={variant} size={size}>
         <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
           <StyledIcon
             size={size}
