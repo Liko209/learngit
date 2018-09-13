@@ -6,14 +6,21 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
-import AvatarWithPresence from '../AvatarWithPresence';
-import { PresenceProps } from '../../atoms';
 
-type TIconMore = {
+export type TMenuItems = {
+  label: string;
+  onClick: (event: React.MouseEvent<HTMLInputElement>) => void;
+}[];
+export type TMenuExpandTrigger = React.SFC<{
+  innerRef: React.RefObject<HTMLElement>;
+  onClick: () => void;
+}>;
+type TMenuListCompositionProps = {
   awake?: boolean;
-  handleSignOutClick?: ((event: React.MouseEvent<HTMLInputElement>) => void);
-  src?: string;
-} & PresenceProps;
+  menuItems: TMenuItems;
+  MenuExpandTrigger: TMenuExpandTrigger;
+  className?: string;
+};
 
 const MenuListCompositionWrapper = styled.div`
   display: flex;
@@ -22,7 +29,10 @@ const MenuListCompositionWrapper = styled.div`
 
 const MenuWrapper = styled(Popper)``;
 
-class MenuListComposition extends React.Component<TIconMore, { open: boolean }> {
+class MenuListComposition extends React.Component<
+  TMenuListCompositionProps,
+  { open: boolean }
+> {
   state = {
     open: false,
   };
@@ -42,15 +52,23 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
     this.setState({ open: false });
   }
 
+  handleMenuItemClick = (
+    menuItemEvent: () => void,
+    event: React.MouseEvent<HTMLElement>,
+  ) => {
+    this.handleClose(event);
+    menuItemEvent();
+  }
+
   render() {
     const { open } = this.state;
+    const { MenuExpandTrigger, menuItems } = this.props;
     return (
       <MenuListCompositionWrapper className={this.props.className}>
-        <AvatarWithPresence
+        <MenuExpandTrigger
           innerRef={this.anchorEl}
           aria-haspopup="true"
           onClick={this.handleToggle}
-          {...this.props}
         />
         <MenuWrapper
           open={open}
@@ -69,7 +87,19 @@ class MenuListComposition extends React.Component<TIconMore, { open: boolean }> 
               <Paper>
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList>
-                    <MenuItem onClick={this.props.handleSignOutClick}>SignOut</MenuItem>
+                    {menuItems.map((item, index) => {
+                      return (
+                        <MenuItem
+                          key={index}
+                          onClick={this.handleMenuItemClick.bind(
+                            this,
+                            item.onClick,
+                          )}
+                        >
+                          {item.label}
+                        </MenuItem>
+                      );
+                    })}
                   </MenuList>
                 </ClickAwayListener>
               </Paper>

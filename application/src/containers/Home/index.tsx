@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
-import { LeftNav } from 'ui-components';
+import { LeftNav, JuiIconButtonProps } from 'ui-components';
 import Main from './Main';
 import { translate } from 'react-i18next';
 import NotFound from '@/containers/NotFound';
@@ -13,6 +13,11 @@ import Settings from '@/containers/Settings';
 import HomePresenter from './HomePresenter';
 import { TranslationFunction, i18n } from 'i18next';
 import TopBar from 'ui-components/organisms/TopBar';
+import JuiAvatarWithPresence, {
+  TJuiAvatarWithPresenceProps,
+} from 'ui-components/molecules/AvatarWithPresence';
+import JuiIconButton from 'ui-components/molecules/IconButton';
+
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
 import CreateTeam from '../CreateTeam';
@@ -25,7 +30,21 @@ interface IProps extends RouteComponentProps<any> {
 interface IStates {
   expanded: boolean;
 }
+
 const UMI_Count = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+const AvatarWithPresence = (props: TJuiAvatarWithPresenceProps) => {
+  return <JuiAvatarWithPresence presence="online" src={avatar} {...props} />;
+};
+
+const HeaderIconButton = (props: JuiIconButtonProps) => {
+  return (
+    <JuiIconButton size="medium" tooltipTitle="plus" {...props}>
+      add_circle
+    </JuiIconButton>
+  );
+};
+
 class Home extends Component<IProps, IStates> {
   private homePresenter: HomePresenter;
   constructor(props: IProps) {
@@ -58,6 +77,10 @@ class Home extends Component<IProps, IStates> {
     });
   }
 
+  handleCreateTeam = () => {
+    this.homePresenter.handleOpenCreateTeam();
+  }
+
   render() {
     const { t } = this.props;
 
@@ -81,11 +104,21 @@ class Home extends Component<IProps, IStates> {
     return (
       <Wrapper>
         <TopBar
-          avatar={avatar}
-          presence="online"
-          data-anchor="expandButton"
+          AvatarWithPresence={AvatarWithPresence}
+          avatarMenuItems={[
+            {
+              label: 'signOut',
+              onClick: this.handleSignOutClick,
+            },
+          ]}
+          HeaderIconButton={HeaderIconButton}
+          headerMenuItems={[
+            {
+              label: 'Create Team',
+              onClick: this.handleCreateTeam,
+            },
+          ]}
           onLeftNavExpand={this.handleLeftNavExpand}
-          onSignOutClick={this.handleSignOutClick}
         />
         <Bottom>
           <LeftNav
