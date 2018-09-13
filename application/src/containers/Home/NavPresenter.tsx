@@ -20,13 +20,14 @@ class NavPresenter {
   @observable backNavArray: { title: string }[] = parse(this.getItem('backNavArray'));
   @observable forwardNavArray: { title: string }[] = parse(this.getItem('forwardNavArray'));
   @observable counts: number = 0;
+  @observable menuClicked: boolean = false;
+
   @observable state = {
     title: 'Jupiter',
     time: 0,
     forwardDisabled: true,
     backDisabled: true,
     nav: '',
-    menuClicked: false,
     pressNav: false,
     disabled: true,
     showLeftPanel: false,
@@ -144,17 +145,17 @@ class NavPresenter {
     // current title
     let backNavArray = this.backNavArray.reverse();
     let forwardNavArray = this.forwardNavArray.reverse();
-    state.menuClicked = true;
     if (nav === 'backward' && index !== undefined) {
       const toForward = backNavArray.splice(0, index + 1); // delete current and before
       const REMOVE_ITEM = toForward.splice(toForward.length - 1, 1); // delete click items
       forwardNavArray = toForward.reverse().concat({ title });
       this.handleMenuItem(forwardNavArray.reverse());
-      this.backNavArray = backNavArray;
+      this.backNavArray = backNavArray.reverse();
       this.forwardNavArray = forwardNavArray;
       this.state.title = REMOVE_ITEM[0]!.title; // set title
       this.setItem('backNavArray', JSON.stringify(backNavArray));
       this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
+      this.menuClicked = true;
       window.history.go(-Math.abs(index + 1));
       state.showLeftPanel = false;
       if (!backNavArray.length) {
@@ -169,11 +170,12 @@ class NavPresenter {
       backNavArray = toBack.reverse().concat({ title }).concat(backNavArray);
       this.handleMenuItem(backNavArray.reverse());
       this.backNavArray = backNavArray;
-      this.forwardNavArray = forwardNavArray;
+      this.forwardNavArray = forwardNavArray.reverse();
       this.state.title = REMOVE_ITEM[0]!.title;
       window.history.go(index + 1);
       this.setItem('backNavArray', JSON.stringify(backNavArray));
       this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
+      this.menuClicked = true;
       state.showRightPanel = false;
       if (!forwardNavArray.length) {
         state.forwardDisabled = true;

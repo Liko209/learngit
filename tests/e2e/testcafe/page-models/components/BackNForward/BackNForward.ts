@@ -19,11 +19,5 @@ class BackNForward extends BaseComponent {
   public clickLeftNavBtn(index: number = 2) {
     return this.clickElement(this.getLeftNavBtn(index));
   }
-  public checkBackBtnExist() {
-    return this.backwardBtn !== undefined;
-  }
-  public checkForwardBtnExist() {
-    return this.forwardBtn !== undefined;
-  }
 }
 export { BackNForward };

@@ -76,14 +76,14 @@ class Home extends Component<IProps, IStates>  {
     this.props.history.listen((route) => {
       // get previous title
       const state = this.navPresenter.state;
-      const { title, showLeftPanel, showRightPanel, pressNav, menuClicked } = state;
+      const { title, showLeftPanel, showRightPanel, pressNav } = state;
       setTimeout(() => {
-        const { backNavArray } = this.navPresenter;
+        const { backNavArray, menuClicked } = this.navPresenter;
         if (!showLeftPanel && !showRightPanel && !pressNav && !menuClicked) {
-          console.log('componentDidMount');
           backNavArray.push({ title });
           this.navPresenter.backNavArray = backNavArray;
         }
+        this.navPresenter.menuClicked = false;
         if (backNavArray.length > 10) {
           backNavArray.shift();
         }
