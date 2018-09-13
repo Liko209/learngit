@@ -32,9 +32,11 @@ export class ConversationCard extends React.Component<IProps> {
       <React.Fragment>
         <JuiConversationCard Avatar={avatar}>
           <JuiConversationCardHeader name={creator.displayName} time={moment(createdAt).format('hh:mm A')} />
+          {/* todo: content */}
           <div style={{ fontSize: '14px', lineHeight: '24px', color: '#616161' }}>
-            {/* todo: content */}{text}
+            {text}
           </div>
+          {/* todo: content */}
           <JuiConversationCardFooter>
             {/* todo: footer */}
           </JuiConversationCardFooter>
