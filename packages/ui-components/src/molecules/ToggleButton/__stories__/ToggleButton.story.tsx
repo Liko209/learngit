@@ -17,5 +17,6 @@ function getKnobs() {
 }
 
 storiesOf('Molecules/ToggleButton', module).addWithJSX('ToggleButton', () => {
-  return <JuiToggleButton disabled={getKnobs().disabled} />;
+  const onChange = (event, checked) => console.log(checked);
+  return <JuiToggleButton onChange={onChange} disabled={getKnobs().disabled} />;
 });

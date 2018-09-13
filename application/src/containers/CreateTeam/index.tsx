@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import JuiCreateTeam from 'ui-components/molecules/Dialog/CreateTeam';
+import JuiCreateTeam from 'ui-components/molecules/CreateTeam';
 import HomePresenter from '../Home/HomePresenter';
 
 interface IProps {

@@ -9,6 +9,14 @@ import MuiSwitch from '@material-ui/core/Switch';
 import { width, spacing, height, palette } from '../../utils/styles';
 
 const ToggleButton = styled(MuiSwitch)`
+  && {
+    width: ${({ theme }) => spacing(12)};
+  }
+  .custom-switchBase {
+    width: ${({ theme }) => spacing(12)};
+    height: ${({ theme }) => spacing(5)};
+    transform: translateX(${({ theme }) => spacing(-2)});
+  }
   ${props =>
     !props.disabled
       ? `
@@ -33,12 +41,13 @@ const ToggleButton = styled(MuiSwitch)`
     width: ${({ theme }) => width(9)({ theme })};
     height: ${({ theme }) => height(5)({ theme })};
     box-sizing: border-box;
+    transform: translate(-50%, -50%);
+    margin: 0;
   }
 
   .custom-icon {
     width: ${({ theme }) => width(3)({ theme })};
     height: ${({ theme }) => height(3)({ theme })};
-    margin: ${({ theme }) => spacing(1.5)({ theme })} 0 0;
     box-shadow: none;
   }
 
@@ -49,6 +58,7 @@ const ToggleButton = styled(MuiSwitch)`
   }
 
   .custom-checked {
+    transform: translateX(${({ theme }) => spacing(2)});
     .custom-icon {
       background: #fff;
     }

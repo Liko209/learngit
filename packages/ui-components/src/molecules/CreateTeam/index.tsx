@@ -5,21 +5,24 @@
  */
 
 import React, { MouseEvent } from 'react';
+
 import JuiDialog, { IDialogProps } from '../../atoms/Dialog';
 import JuiDialogTitle from '../../atoms/DialogTitle';
 import JuiDialogContent from '../../atoms/DialogContent';
 import JuiDialogActions from '../../atoms/DialogActions';
 import JuiButton from '../../atoms/Button';
+import JuiLink from '../../atoms/Link';
+import JuiToggleButton from '../ToggleButton';
+import * as CreateTeam from './style';
 
 interface IProps extends IDialogProps {
   open: boolean;
-  okText?: string;
-  cancelText?: string;
   onClose(event: MouseEvent<HTMLElement>): void;
   onCancel(event: MouseEvent<HTMLElement>): void;
   header: JSX.Element | string;
-  children: JSX.Element | string; // content
-  disabledOk: boolean;
+  disabledOk?: boolean;
+  okText?: string;
+  cancelText?: string;
 }
 
 const JuiCreateTeam = ({
@@ -30,12 +33,40 @@ const JuiCreateTeam = ({
   onClose,
   onCancel,
   disabledOk,
-  children,
 }: IProps) => {
   return (
     <JuiDialog open={open} size={'medium'} scroll="paper">
       <JuiDialogTitle>{header}</JuiDialogTitle>
-      <JuiDialogContent>{children}</JuiDialogContent>
+      <JuiDialogContent>
+        <CreateTeam.Input
+          fullWidth={true}
+          inputProps={{
+            maxlength: 200,
+          }}
+          placeholder="Team name"
+        />
+        <CreateTeam.Input fullWidth={true} />
+        <CreateTeam.Input fullWidth={true} placeholder="Team description" />
+        <CreateTeam.List dense={true}>
+          <CreateTeam.ListItem dense={true}>
+            <CreateTeam.ListItemText>123123123</CreateTeam.ListItemText>
+            <CreateTeam.ListItemSecondaryAction>
+              <JuiToggleButton />
+            </CreateTeam.ListItemSecondaryAction>
+          </CreateTeam.ListItem>
+          <CreateTeam.ListItem dense={true}>
+            <CreateTeam.ListItemText>sdfsdf</CreateTeam.ListItemText>
+            <CreateTeam.ListItemSecondaryAction>
+              <JuiToggleButton />
+            </CreateTeam.ListItemSecondaryAction>
+          </CreateTeam.ListItem>
+        </CreateTeam.List>
+        <CreateTeam.ListTips align="center">
+          You are an admin to this team.
+          <JuiLink>Learn about team administration</JuiLink>
+        </CreateTeam.ListTips>
+      </JuiDialogContent>
+
       <JuiDialogActions>
         <JuiButton
           onClick={onCancel}
