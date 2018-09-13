@@ -6,7 +6,6 @@
 /// <reference path="../../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfo } from '@storybook/addon-info';
 
 import MenuListComposition from '..';
 import JuiAvatarWithPresence, {

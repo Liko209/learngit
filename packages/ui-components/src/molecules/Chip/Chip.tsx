@@ -4,14 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from '../../styled-components';
+import styled, { IDependencies } from '../../styled-components';
 import MuiChip, { ChipProps } from '@material-ui/core/Chip';
 import JuiAvatar from '../../atoms/Avatar';
 import { width } from '../../utils/styles';
 
 type TJuiChipProps = {
-  avatarUrl?: string;
-  handleDelete?: () => void;
+  Avatar?: React.ComponentType<any>;
+  onDeleteClick?: () => void;
 } & ChipProps;
 
 const StyledChip = styled<TJuiChipProps>(MuiChip)`
@@ -32,17 +32,20 @@ const StyledChip = styled<TJuiChipProps>(MuiChip)`
   }
 `;
 
-const JuiChip: React.SFC<TJuiChipProps> = (props: TJuiChipProps) => {
-  const { innerRef, handleDelete, avatarUrl, ...rest } = props;
+const JuiChip: React.SFC<TJuiChipProps> & IDependencies = (
+  props: TJuiChipProps,
+) => {
+  const { innerRef, onDeleteClick, Avatar, ...rest } = props;
   return (
     <StyledChip
       {...rest}
-      onDelete={handleDelete}
+      onDelete={onDeleteClick}
       classes={{ deleteIcon: 'deleteIcon' }}
-      avatar={
-        avatarUrl ? <JuiAvatar size="small" src={avatarUrl} /> : undefined}
+      avatar={Avatar ? <Avatar size="small" /> : undefined}
     />
   );
 };
+
+JuiChip.dependencies = [JuiAvatar];
 
 export default JuiChip;

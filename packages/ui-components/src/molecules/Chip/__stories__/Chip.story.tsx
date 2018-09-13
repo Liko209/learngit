@@ -6,14 +6,16 @@
 /// <reference path="../../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-// import { select } from '@storybook/addon-knobs/react';
 import { withInfoDecorator } from '../../../utils/decorators';
 
 import JuiChip from '..';
 
 import avatar from '../../../atoms/Avatar/__stories__/img/avatar.jpg';
+import JuiAvatar, { TJuiAvatarProps } from '../../../atoms/Avatar';
 
-const knobs = {};
+const Avatar = (props: TJuiAvatarProps) => {
+  return <JuiAvatar src={avatar} {...props} />;
+};
 
 const handleDelete = () => {};
 
@@ -26,14 +28,14 @@ storiesOf('Atoms/Chip', module)
     return (
       <JuiChip
         label="Basic Chip"
-        avatarUrl={avatar}
-        handleDelete={handleDelete}
+        Avatar={Avatar}
+        onDeleteClick={handleDelete}
       />
     );
   })
   .addWithJSX('with Avatar', () => {
-    return <JuiChip label="Basic Chip" avatarUrl={avatar} />;
+    return <JuiChip label="Basic Chip" Avatar={Avatar} />;
   })
   .addWithJSX('with DeleteIcon', () => {
-    return <JuiChip label="Basic Chip" handleDelete={handleDelete} />;
+    return <JuiChip label="Basic Chip" onDeleteClick={handleDelete} />;
   });
