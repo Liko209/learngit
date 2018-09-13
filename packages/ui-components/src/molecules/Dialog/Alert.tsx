@@ -18,22 +18,32 @@ interface IProps extends IDialogProps {
   onClose(event: MouseEvent<HTMLElement>): void;
   header: JSX.Element | string;
   children: JSX.Element | string; // content
+  others?: JSX.Element;
 }
 
-const Alert = ({ open, size, header, okText, onClose, children }: IProps) => {
+const Alert = ({
+  open,
+  size,
+  header,
+  okText,
+  onClose,
+  children,
+  others,
+}: IProps) => {
   return (
-    <JuiDialog
-      open={open}
-      size={size || 'small'}
-    >
+    <JuiDialog open={open} size={size || 'small'}>
       <JuiDialogTitle>{header}</JuiDialogTitle>
       <JuiDialogContent>
-        <JuiDialogContentText>
-          {children}
-        </JuiDialogContentText>
+        <JuiDialogContentText>{children}</JuiDialogContentText>
+        {others}
       </JuiDialogContent>
       <JuiDialogActions>
-        <JuiButton onClick={onClose} color="primary" variant="text" autoFocus={true}>
+        <JuiButton
+          onClick={onClose}
+          color="primary"
+          variant="text"
+          autoFocus={true}
+        >
           {okText || 'Ok'}
         </JuiButton>
       </JuiDialogActions>

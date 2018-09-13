@@ -162,9 +162,15 @@ export default class ProfileService extends BaseService<Profile> {
       const key = `hide_group_${groupId}`;
       const newProfile = _.cloneDeep(profile);
       newProfile[key] = hidden;
-      if (shouldUpdateSkipConfirmation) {
+      /**tslint:disable-next-line  */
+      if (
+        newProfile.skip_close_conversation_confirmation !==
+        shouldUpdateSkipConfirmation
+      ) {
+        /**tslint:disable-next-line  */
         newProfile.skip_close_conversation_confirmation = shouldUpdateSkipConfirmation;
       }
+
       return this._putProfile(newProfile);
     }
     return ErrorParser.parse('none profile error');

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import _ from 'lodash';
 import { ConversationListItem } from 'ui-components/molecules/ConversationList/ConversationListItem';
 import { Menu } from 'ui-components/atoms/Menu';
@@ -22,6 +22,10 @@ import PresenceModel from '../../store/models/Presence';
 import showAlert from '../Dialog/ShowAlert';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
+import showDialogWithCheckView from '../Dialog/DialogWithCheckView';
+import { getSingleEntity } from '@/store/utils';
+import ProfileModel from '@/store/models/Profile';
+import { Profile } from 'sdk/models';
 
 const { GroupService } = service;
 type IProps = IInjectedStoreProps<VM> &
@@ -31,7 +35,6 @@ type IProps = IInjectedStoreProps<VM> &
     entityName: string;
     isFavorite?: boolean;
     currentUserId?: number;
-    shouldSkipCloseConfirmation?: boolean;
   };
 
 interface IState {}
@@ -90,7 +93,10 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this._toggleCloseConversation = this._toggleCloseConversation.bind(this);
     this.isFavorite = !!props.isFavorite;
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
-    this.shouldSkipCloseConfirmation = !!props.shouldSkipCloseConfirmation;
+    this.shouldSkipCloseConfirmation = getSingleEntity<Profile, ProfileModel>(
+      ENTITY_NAME.PROFILE,
+      'skipCloseConversationConfirmation',
+    );
     this.closeText = 'Close';
 
     autorun(() => {
@@ -196,15 +202,37 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   }
   @action
   private async _toggleCloseConversation() {
-    // if (this.shouldSkipCloseConfirmation) {
-    // } else {
-    //   // show confirm
-    // }
     this._handleClose();
+    if (this.shouldSkipCloseConfirmation) {
+      this._closeConversation(this.id, true, true);
+    } else {
+      showDialogWithCheckView({
+        header: 'Close Conversation?',
+        content:
+          'Closing a conversation will remove it from the left pane, but will not delete the contents.',
+        checkBoxContent: "Don't ask me again",
+        okText: 'Close Conversation',
+        onClose: (isChecked: boolean, event: MouseEvent<HTMLElement>) => {
+          this._closeConversation(this.id, true, isChecked);
+        },
+      });
+    }
+  }
+
+  private async _closeConversation(
+    groupId: number,
+    hidden: boolean,
+    shouldSkipNextTime: boolean,
+  ) {
     const groupService: service.GroupService = GroupService.getInstance();
-    const result = await groupService.hideConversation(this.id, true, false);
+    const result = await groupService.hideConversation(
+      groupId,
+      hidden,
+      shouldSkipNextTime,
+    );
     this._showErrorAlert(result);
   }
+
   private _showErrorAlert(error: ServiceCommonErrorType) {
     if (error === ServiceCommonErrorType.NONE) {
       // jump to section
