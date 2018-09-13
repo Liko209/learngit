@@ -9,6 +9,7 @@ type TimerDemoViewProps = {
   text: string;
   now: number;
   onUpdateTimeClick: (event: MouseEvent<HTMLButtonElement>) => void;
+  onUpdateTimeWithLoadingClick: (event: MouseEvent<HTMLButtonElement>) => void;
   onStartTimerClick: (event: MouseEvent<HTMLButtonElement>) => void;
   onStopTimerClick: (event: MouseEvent<HTMLButtonElement>) => void;
 };

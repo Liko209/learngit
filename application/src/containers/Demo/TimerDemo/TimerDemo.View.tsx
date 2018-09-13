@@ -7,6 +7,9 @@ const TimerDemoView = (props: TimerDemoViewProps) => {
       {props.id} - {props.text} : {props.now}
       <div>
         <button onClick={props.onUpdateTimeClick}>updateTime()</button>
+        <button onClick={props.onUpdateTimeWithLoadingClick}>
+          updateTimeWithLoading()
+        </button>
         <button onClick={props.onStartTimerClick}>startTimer()</button>
         <button onClick={props.onStopTimerClick}>stopTimer()</button>
       </div>

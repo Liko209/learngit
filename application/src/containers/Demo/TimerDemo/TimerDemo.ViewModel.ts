@@ -14,6 +14,7 @@ class TimerDemoViewModel extends AbstractViewModel
   @observable
   timer: NodeJS.Timer;
   onUpdateTimeClick = () => this.updateTime();
+  onUpdateTimeWithLoadingClick = () => this.updateTimeWithLoading();
   onStartTimerClick = () => this.startTimer();
   onStopTimerClick = () => this.stopTimer();
 
@@ -27,8 +28,14 @@ class TimerDemoViewModel extends AbstractViewModel
   }
 
   @action.bound
-  @loading
   async updateTime() {
+    await this.wait(500);
+    this.now = Date.now();
+  }
+
+  @action.bound
+  @loading
+  async updateTimeWithLoading() {
     await this.wait(500);
     this.now = Date.now();
   }
