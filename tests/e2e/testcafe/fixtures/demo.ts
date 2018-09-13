@@ -10,7 +10,7 @@ import { directLogin } from '../utils';
 
 declare var test: TestFn;
 fixture('Demo')
-  .beforeEach(setUp('rcBetaUserAccount'))
+  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
 test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
