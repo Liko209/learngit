@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
-import { LeftNav } from 'ui-components';
+import { LeftNav, JuiIconButtonProps } from 'ui-components';
 import Main from './Main';
 import { translate } from 'react-i18next';
 import NotFound from '@/containers/NotFound';
@@ -13,6 +13,11 @@ import Settings from '@/containers/Settings';
 import HomePresenter from './HomePresenter';
 import { TranslationFunction, i18n } from 'i18next';
 import TopBar from 'ui-components/organisms/TopBar';
+import JuiAvatarWithPresence, {
+  TJuiAvatarWithPresenceProps,
+} from 'ui-components/molecules/AvatarWithPresence';
+import JuiIconButton from 'ui-components/molecules/IconButton';
+
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
 
@@ -24,14 +29,30 @@ interface IProps extends RouteComponentProps<any> {
 interface IStates {
   expanded: boolean;
 }
+
 const UMI_Count = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-class Home extends Component<IProps, IStates>  {
+
+const AvatarWithPresence = (props: TJuiAvatarWithPresenceProps) => {
+  return <JuiAvatarWithPresence presence="online" src={avatar} {...props} />;
+};
+
+const HeaderIconButton = (props: JuiIconButtonProps) => {
+  return (
+    <JuiIconButton size="medium" tooltipTitle="plus" {...props}>
+      add_circle
+    </JuiIconButton>
+  );
+};
+
+class Home extends Component<IProps, IStates> {
   private homePresenter: HomePresenter;
   constructor(props: IProps) {
     super(props);
     this.state = {
-      expanded: localStorage.getItem('expanded') === null ? true :
-        JSON.parse(String(localStorage.getItem('expanded'))),
+      expanded:
+        localStorage.getItem('expanded') === null
+          ? true
+          : JSON.parse(String(localStorage.getItem('expanded'))),
     };
     this.homePresenter = new HomePresenter();
   }
@@ -55,6 +76,8 @@ class Home extends Component<IProps, IStates>  {
     });
   }
 
+  handleCreateTeam = () => {};
+
   render() {
     const { t } = this.props;
 
@@ -77,9 +100,31 @@ class Home extends Component<IProps, IStates>  {
     const { expanded } = this.state;
     return (
       <Wrapper>
-        <TopBar avatar={avatar} presence="online" data-anchor="expandButton" onLeftNavExpand={this.handleLeftNavExpand} onSignOutClick={this.handleSignOutClick} />
+        <TopBar
+          AvatarWithPresence={AvatarWithPresence}
+          avatarMenuItems={[
+            {
+              label: t('SignOut'),
+              onClick: this.handleSignOutClick,
+            },
+          ]}
+          HeaderIconButton={HeaderIconButton}
+          headerMenuItems={[
+            {
+              label: t('CreateTeam'),
+              onClick: this.handleCreateTeam,
+            },
+          ]}
+          onLeftNavExpand={this.handleLeftNavExpand}
+          headerLogo="RingCentral"
+        />
         <Bottom>
-          <LeftNav expanded={expanded} id="leftnav" icons={Icons} umiCount={UMI_Count} />
+          <LeftNav
+            expanded={expanded}
+            id="leftnav"
+            icons={Icons}
+            umiCount={UMI_Count}
+          />
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />
