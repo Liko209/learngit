@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 echo '====Start E2E'
 
 cd $project/tests/e2e/testcafe
