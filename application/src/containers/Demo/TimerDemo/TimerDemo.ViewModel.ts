@@ -22,6 +22,10 @@ class TimerDemoViewModel extends AbstractViewModel
     this.id = id;
   }
 
+  componentDidMount() {
+    this.updateTime();
+  }
+
   @action.bound
   @loading
   async updateTime() {

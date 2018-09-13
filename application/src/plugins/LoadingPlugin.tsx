@@ -3,7 +3,7 @@ import { withLoading, WithLoadingProps } from 'ui-components';
 import { IViewModel } from '@/base/IViewModel';
 import { AbstractPlugin } from '@/base/AbstractPlugin';
 
-interface ILoadableViewModel extends IViewModel, WithLoadingProps {}
+interface ILoadingViewModel extends IViewModel, WithLoadingProps {}
 
 class LoadingPlugin extends AbstractPlugin {
   afterInstall(): void {
@@ -30,4 +30,4 @@ function loading(target: any, propertyKey: string, descriptor: any) {
   return descriptor;
 }
 
-export { LoadingPlugin, ILoadableViewModel, loading };
+export { LoadingPlugin, ILoadingViewModel, loading };

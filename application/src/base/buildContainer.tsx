@@ -10,13 +10,13 @@ type BuildContainerOptions<T> = {
   plugins?: IPlugin[];
 };
 
-function buildContainer<T>({
+function buildContainer<T = {}, S = {}, SS = any>({
   View,
   ViewModel,
   plugins = [],
 }: BuildContainerOptions<T>) {
   @observer
-  class Container extends Component<T> {
+  class Container extends Component<T, S, SS> {
     @observable
     vm: IViewModel;
     View = View;
@@ -28,6 +28,26 @@ function buildContainer<T>({
         plugin.install(this.vm);
         this.View = plugin.wrapView(this.View);
       });
+    }
+
+    componentDidMount() {
+      this.vm.componentDidMount && this.vm.componentDidMount();
+    }
+
+    shouldComponentUpdate() {
+      return (
+        this.vm.shouldComponentUpdate &&
+        this.vm.shouldComponentUpdate.apply(this.vm, arguments)
+      );
+    }
+
+    componentWillUnmount() {
+      this.vm.componentWillUnmount && this.vm.componentWillUnmount();
+    }
+
+    componentDidCatch() {
+      this.vm.componentDidCatch &&
+        this.vm.componentDidCatch.apply(this.vm, arguments);
     }
 
     render() {
