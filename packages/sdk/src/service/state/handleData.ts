@@ -17,12 +17,14 @@ export type TransformedState = State & {
   groupState: GroupState[];
 };
 
-export function transform(item: Raw<State> | Partial<Raw<State>>): TransformedState {
+export function transform(
+  item: Raw<State> | Partial<Raw<State>>,
+): TransformedState {
   const clone = Object.assign({}, item);
   const groupIds = new Set();
   const groupStates = {};
 
-  Object.keys(clone).forEach((key) => {
+  Object.keys(clone).forEach(key => {
     if (key === '_id') {
       clone.id = clone._id;
       delete clone[key];
@@ -56,9 +58,11 @@ export function transform(item: Raw<State> | Partial<Raw<State>>): TransformedSt
     }
   });
 
-  (clone as TransformedState).groupState = [...Array.from(groupIds)].map(id => groupStates[id]);
+  (clone as TransformedState).groupState = [...Array.from(groupIds)].map(
+    id => groupStates[id],
+  );
   if (item && item.trigger_ids) {
-    (clone as TransformedState).groupState.forEach((state) => {
+    (clone as TransformedState).groupState.forEach(state => {
       state.trigger_ids = item.trigger_ids;
     });
   }
@@ -72,7 +76,7 @@ export async function getPartialStates(state: Partial<Raw<State>>[]) {
   const myState: State[] = [];
   let groupStates: GroupState[] = [];
 
-  state.forEach((item) => {
+  state.forEach(item => {
     const transformed: TransformedState = transform(item);
     transformedData.push(transformed);
     const { groupState, ...rest } = transformed;
@@ -95,7 +99,7 @@ export function getStates(state: Raw<State>[]) {
   const myState: State[] = [];
   let groupStates: GroupState[] = [];
 
-  state.forEach((item) => {
+  state.forEach(item => {
     const transformed: TransformedState = transform(item);
     transformedData.push(transformed);
     const { groupState, ...rest } = transformed;
@@ -116,7 +120,10 @@ export default async function stateHandleData(state: Raw<State>[]) {
   await operateDaoAndDoNotification(myState, groupStates);
 }
 
-async function operateDaoAndDoNotification(myState?: State[], groupStates?: GroupState[]) {
+async function operateDaoAndDoNotification(
+  myState?: State[],
+  groupStates?: GroupState[],
+) {
   const stateDao = daoManager.getDao(StateDao);
   const groupStateDao = daoManager.getDao(GroupStateDao);
   if (myState) {
@@ -146,7 +153,7 @@ export async function handleGroupChange(groups?: Group[]) {
     mainLogger.info('[State Service] Invalid group change trigger');
     return;
   }
-  const groupStates = _.map(groups, (group) => {
+  const groupStates = _.map(groups, group => {
     if (!group.post_cursor && !group.drp_post_cursor) {
       return;
     }
