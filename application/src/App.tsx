@@ -5,52 +5,35 @@
  */
 
 import * as React from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
-import { DataView, DataViewVM } from './dataview';
+import ThemeProvider from '@/containers/ThemeProvider';
 
-type DemoViewProps = {
-  id: number;
-  text: string;
-};
+import '@/App.css';
 
-function sleep(time: number) {
-  return new Promise((resolve: Function) => {
-    setTimeout(() => {
-      resolve();
-    },         time);
-  });
-}
-
-class DemoVM extends DataViewVM<DemoViewProps> {
-  async dataLoader(): Promise<DemoViewProps> {
-    await sleep(3000);
-    return {
-      id: 1,
-      text: 'Hello World',
-    };
-  }
-}
-
-const DemoView = (props: DemoViewProps) => (
-  <div>
-    {props.id} - {props.text}
-  </div>
-);
-
-class DemoContainer extends React.Component {
-  state = {
-    vm: new DemoVM(),
-  };
-
-  public render() {
-    this.state.vm.data;
-    return <DataView vm={this.state.vm} View={DemoView} />;
-  }
-}
+import AuthRoute from '@/containers/AuthRoute';
+import Login from '@/containers/Login';
+import Home from '@/containers/Home';
+import UnifiedLogin from '@/containers/UnifiedLogin';
+import VersionInfo from '@/containers/VersionInfo';
+import { TimerDemo } from '@/containers/Demo';
 
 class App extends React.PureComponent {
   public render() {
-    return <DemoContainer />;
+    return (
+      <ThemeProvider>
+        <Router>
+          <Switch>
+            <Route path="/commit-info" component={VersionInfo} />
+            <Route path="/version" component={VersionInfo} />
+            <Route path="/login" component={Login} />
+            <Route path="/unified-login" component={UnifiedLogin} />
+            <Route path="/timer-demo" component={TimerDemo} />
+            <AuthRoute path="/" component={Home} />
+          </Switch>
+        </Router>
+      </ThemeProvider>
+    );
   }
 }
 

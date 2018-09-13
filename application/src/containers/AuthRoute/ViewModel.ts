@@ -5,7 +5,6 @@
  */
 
 import { service } from 'sdk';
-import BasePresenter from '@/store/base/BasePresenter';
 import storeManager from '@/store';
 import { computed, observable, action } from 'mobx';
 import * as H from 'history';
