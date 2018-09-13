@@ -11,7 +11,7 @@ import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
-import { ErrorParser } from '../../../utils';
+import { ErrorParser, BaseError } from '../../../utils';
 
 jest.mock('../../../dao');
 // jest.mock('../../utils');
@@ -55,13 +55,21 @@ describe('GroupService', () => {
     // TO be fixed
 
     profileService.getProfile.mockResolvedValueOnce({ favorite_group_ids: [] });
-    const result22 = await groupService.getGroupsByType(GROUP_QUERY_TYPE.FAVORITE, 0, 20);
+    const result22 = await groupService.getGroupsByType(
+      GROUP_QUERY_TYPE.FAVORITE,
+      0,
+      20,
+    );
     expect(result22).toEqual([]);
 
     filterGroups.mockResolvedValueOnce(mock);
     // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
     groupDao.queryGroups.mockResolvedValue(mock);
-    const result3 = await groupService.getGroupsByType(GROUP_QUERY_TYPE.GROUP, 0, 20);
+    const result3 = await groupService.getGroupsByType(
+      GROUP_QUERY_TYPE.GROUP,
+      0,
+      20,
+    );
     expect(result3).toEqual(mock);
   });
 
@@ -157,7 +165,10 @@ describe('GroupService', () => {
   it('getPermissions(group_id)', async () => {
     const mock = [1, 2, 4, 8];
     const group = groupFactory.build({
-      permissions: { admin: { uids: [731217923], level: 31 }, user: { uids: [], level: 15 } },
+      permissions: {
+        admin: { uids: [731217923], level: 31 },
+        user: { uids: [], level: 15 },
+      },
       id: 6037741574,
     });
     const result = await groupService.getPermissions(group);
@@ -172,7 +183,10 @@ describe('GroupService', () => {
       created_at: 1511918848032,
       creator_id: 1394810883,
       description: 'Fiji Core',
-      permissions: { admin: { uids: [731217923], level: 31 }, user: { uids: [], level: 15 } },
+      permissions: {
+        admin: { uids: [731217923], level: 31 },
+        user: { uids: [], level: 15 },
+      },
       id: 6037741574,
     });
     jest.spyOn(daoManager, 'get');
@@ -192,7 +206,10 @@ describe('GroupService', () => {
       const mockGroup = groupFactory.build({
         id: 1,
         deactivated: false,
-        permissions: { admin: { uids: [731217923], level: 31 }, user: { uids: [], level: 15 } },
+        permissions: {
+          admin: { uids: [731217923], level: 31 },
+          user: { uids: [], level: 15 },
+        },
         guest_user_company_ids: [],
         is_team: false,
       });
@@ -219,12 +236,16 @@ describe('GroupService', () => {
       groupService.canPinPost.mockReturnValue(true);
       groupDao.get.mockResolvedValue(mockGroup);
 
-      GroupAPI.pinPost.mockResolvedValueOnce({ data: { _id: 1, pinned_post_ids: [10] } });
+      GroupAPI.pinPost.mockResolvedValueOnce({
+        data: { _id: 1, pinned_post_ids: [10] },
+      });
       await handleData.mockResolvedValueOnce(null);
       let pinResult = await groupService.pinPost(10, 1, true);
       expect(pinResult.pinned_post_ids).toEqual([10]);
 
-      GroupAPI.pinPost.mockResolvedValueOnce({ data: { _id: 1, pinned_post_ids: [] } });
+      GroupAPI.pinPost.mockResolvedValueOnce({
+        data: { _id: 1, pinned_post_ids: [] },
+      });
       await handleData.mockResolvedValueOnce(null);
       pinResult = await groupService.pinPost(10, 1, false);
       console.log(pinResult);
@@ -279,7 +300,9 @@ describe('GroupService', () => {
 
     it('should return api result if request success', async () => {
       GroupAPI.addTeamMembers.mockResolvedValueOnce({ data: 122 });
-      jest.spyOn(require('../../utils'), 'transform').mockImplementation(source => source + 1);
+      jest
+        .spyOn(require('../../utils'), 'transform')
+        .mockImplementation(source => source + 1);
       await expect(groupService.addTeamMembers(1, [])).resolves.toBe(123);
       expect(GroupAPI.addTeamMembers).toHaveBeenCalledWith(1, []);
     });
@@ -359,9 +382,13 @@ describe('GroupService', () => {
 
     it('should call dependency apis with correct data', async () => {
       GroupAPI.createTeam.mockResolvedValueOnce({ data: 122 });
-      jest.spyOn(require('../../utils'), 'transform').mockImplementation(source => source + 1);
+      jest
+        .spyOn(require('../../utils'), 'transform')
+        .mockImplementation(source => source + 1);
       jest.spyOn(Permission, 'createPermissionsMask').mockReturnValue(100);
-      await expect(groupService.createTeam('some team', 1323, [], 'abc')).resolves.toBe(123);
+      await expect(
+        groupService.createTeam('some team', 1323, [], 'abc'),
+      ).resolves.toBe(123);
       expect(GroupAPI.createTeam).toHaveBeenCalledWith(data);
       expect(Permission.createPermissionsMask).toHaveBeenCalledWith({
         TEAM_POST: false,
@@ -374,10 +401,14 @@ describe('GroupService', () => {
 
     it('should return null if request failed', async () => {
       GroupAPI.createTeam.mockResolvedValueOnce(null);
-      await expect(groupService.createTeam('some team', 1323, [], 'abc')).resolves.toBeNull();
+      await expect(
+        groupService.createTeam('some team', 1323, [], 'abc'),
+      ).resolves.toBeNull();
 
       GroupAPI.createTeam.mockResolvedValueOnce({ data: null });
-      await expect(groupService.createTeam('some team', 1323, [], 'abc')).resolves.toBeNull();
+      await expect(
+        groupService.createTeam('some team', 1323, [], 'abc'),
+      ).resolves.toBeNull();
     });
   });
 
@@ -394,7 +425,10 @@ describe('GroupService', () => {
 
   describe('hideConversation', () => {
     it('hideConversation, success', async () => {
-      profileService.hideConversation.mockResolvedValueOnce({ id: 1, hide_group_123: true });
+      profileService.hideConversation.mockResolvedValueOnce({
+        id: 1,
+        hide_group_123: true,
+      });
       const result = await groupService.hideConversation(1, false, true);
       expect(result).toBe(ServiceCommonErrorType.NONE);
     });
@@ -413,7 +447,9 @@ describe('GroupService', () => {
       expect(result).toBe(ServiceCommonErrorType.SERVER_ERROR);
     });
     it('hideConversation, unknown error', async () => {
-      profileService.hideConversation.mockResolvedValueOnce(ErrorParser.parse({ status: 280 }));
+      profileService.hideConversation.mockResolvedValueOnce(
+        ErrorParser.parse({ status: 280 }),
+      );
       const result = await groupService.hideConversation(1, false, true);
       expect(result).toBe(ServiceCommonErrorType.UNKNOWN_ERROR);
     });
