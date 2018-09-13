@@ -97,7 +97,7 @@ describe('ConversationListItemCell', () => {
     ).toBe('<div><div>online</div>some group name, count</div>');
   });
 
-  it('ConversationListItem should receive umiVariant=auto if group is team', () => {
+  it('ConversationListItem should receive umiVariant=count if group is team', () => {
     const mockGetEntity = (type: string) => {
       if (type === 'group') {
         return {
@@ -129,6 +129,6 @@ describe('ConversationListItemCell', () => {
           getGlobalValue={testFunction as any}
         />,
       ).html(),
-    ).toBe('<div>some group name, auto</div>');
+    ).toBe('<div>some group name, count</div>');
   });
 });
