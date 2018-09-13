@@ -60,7 +60,7 @@ describe('StateService', () => {
 
   describe('updateState()', () => {
     beforeEach(() => {
-      daoManager.getDao.mockImplementation((arg) => {
+      daoManager.getDao.mockImplementation(arg => {
         if (arg === GroupStateDao) {
           return groupStateDao;
         }
@@ -130,6 +130,7 @@ describe('StateService', () => {
         'marked_as_unread:1': false,
         'read_through:1': 1,
         'unread_count:1': 0,
+        'unread_deactivated_count:1': 0,
         'unread_mentions_count:1': 0,
       });
     });
@@ -154,11 +155,10 @@ describe('StateService', () => {
 
       await stateService.updateLastGroup(1);
 
-      expect(StateAPI.saveStatePartial)
-        .toHaveBeenCalledWith(1, {
-          last_group_id: 1,
-          'last_read_through:1': 1,
-        });
+      expect(StateAPI.saveStatePartial).toHaveBeenCalledWith(1, {
+        last_group_id: 1,
+        'last_read_through:1': 1,
+      });
     });
   });
 
@@ -186,7 +186,6 @@ describe('StateService', () => {
   });
 
   describe('calculateUMI', () => {
-
     beforeEach(() => {
       jest.clearAllMocks();
     });
