@@ -10,7 +10,6 @@ import React, { MouseEvent } from 'react';
 import ReactDOM from 'react-dom';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
-const GLOBAL_ALERT_NODE = document.getElementById('globalAlert') as HTMLElement;
 
 interface IProps {
   okText?: string;
@@ -42,7 +41,6 @@ class GlobalAlert extends React.Component<IAlertProps> {
     if (this.props.callback) {
       this.props.callback();
     }
-    ReactDOM.unmountComponentAtNode(GLOBAL_ALERT_NODE);
   }
 
   render() {

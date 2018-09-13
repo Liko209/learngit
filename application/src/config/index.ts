@@ -91,7 +91,7 @@ class Config {
 
   private constructor() {
     const configService: service.ConfigService = ConfigService.getInstance();
-    const value = configService.getEnv() || 'XMN-UP';
+    const value = configService.getEnv() || 'Chris_sandbox';
     this._env = value;
     this._config = loadFileConfigs(value);
   }

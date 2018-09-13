@@ -206,6 +206,13 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this._showErrorAlert(result);
   }
   private _showErrorAlert(error: ServiceCommonErrorType) {
+    if (error === ServiceCommonErrorType.NONE) {
+      // jump to section
+      const { history } = this.props;
+      history.replace('/messages');
+      return;
+    }
+
     const header = 'Close Conversation Failed';
     if (error === ServiceCommonErrorType.NETWORK_NOT_AVAILABLE) {
       const content =
@@ -218,9 +225,6 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
       const content =
         'We are having trouble closing the conversation. Please try again later.';
       showAlert({ header, content });
-    }
-    if (error === ServiceCommonErrorType.NONE) {
-      // jump to section
     }
   }
 }
