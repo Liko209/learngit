@@ -7,6 +7,7 @@ import React from 'react';
 import styled, { IDependencies } from '../../styled-components';
 import MuiChip, { ChipProps } from '@material-ui/core/Chip';
 import JuiAvatar from '../../atoms/Avatar';
+import JuiIconButton from '../IconButton';
 import { width } from '../../utils/styles';
 
 type TJuiChipProps = {
@@ -42,6 +43,11 @@ const JuiChip: React.SFC<TJuiChipProps> & IDependencies = (
       onDelete={onDeleteClick}
       classes={{ deleteIcon: 'deleteIcon' }}
       avatar={Avatar ? <Avatar size="small" /> : undefined}
+      deleteIcon={
+        <JuiIconButton variant="plain" tooltipTitle="remove">
+          cancel
+        </JuiIconButton>
+      }
     />
   );
 };
