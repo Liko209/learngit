@@ -222,6 +222,7 @@ export default class StateService extends BaseService<GroupState> {
           group_cursor - state_cursor,
           0,
         );
+        delete resultGroupState.trigger_ids;
         return resultGroupState;
       }),
     );
