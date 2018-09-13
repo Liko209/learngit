@@ -371,6 +371,7 @@ export default class GroupService extends BaseService<Group> {
       hidden,
       shouldUpdateSkipConfirmation,
     );
+
     if (result instanceof BaseError) {
       // rollback
       const group = await this.getById(groupId);
@@ -378,10 +379,10 @@ export default class GroupService extends BaseService<Group> {
         group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS,
         [group],
       );
-      if (result.code === 0) {
+      if (result.code === 5000) {
         return ServiceCommonErrorType.NETWORK_NOT_AVAILABLE;
       }
-      if (result.code > 1300) {
+      if (result.code > 5300) {
         return ServiceCommonErrorType.SERVER_ERROR;
       }
       return ServiceCommonErrorType.UNKNOWN_ERROR;

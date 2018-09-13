@@ -399,12 +399,16 @@ describe('GroupService', () => {
       expect(result).toBe(ServiceCommonErrorType.NONE);
     });
     it('hideConversation, network not available', async () => {
-      profileService.hideConversation.mockResolvedValueOnce(ErrorParser.parse({ status: 0 }));
+      profileService.hideConversation.mockResolvedValueOnce(
+        new BaseError(5000, ''),
+      );
       const result = await groupService.hideConversation(1, false, true);
       expect(result).toBe(ServiceCommonErrorType.NETWORK_NOT_AVAILABLE);
     });
     it('hideConversation, server error', async () => {
-      profileService.hideConversation.mockResolvedValueOnce(ErrorParser.parse({ status: 500 }));
+      profileService.hideConversation.mockResolvedValueOnce(
+        new BaseError(5403, ''),
+      );
       const result = await groupService.hideConversation(1, false, true);
       expect(result).toBe(ServiceCommonErrorType.SERVER_ERROR);
     });

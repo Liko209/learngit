@@ -31,7 +31,11 @@ export default class ProfileService extends BaseService<Profile> {
     return this.getById(profileId);
   }
 
-  private _reorderFavoriteGroupIds(oldIndex: number, newIndex: number, ids: number[]): number[] {
+  private _reorderFavoriteGroupIds(
+    oldIndex: number,
+    newIndex: number,
+    ids: number[],
+  ): number[] {
     const newOrder = _.cloneDeep(ids);
     const id = newOrder[oldIndex];
     if (oldIndex > newIndex) {
@@ -47,11 +51,17 @@ export default class ProfileService extends BaseService<Profile> {
     return newOrder;
   }
 
-  private async _putProfileAndHandle(profile: Profile, oldKey: string, oldValue: any): Promise<Profile | null> {
-
+  private async _putProfileAndHandle(
+    profile: Profile,
+    oldKey: string,
+    oldValue: any,
+  ): Promise<Profile | null> {
     profile._id = profile.id;
     delete profile.id;
-    const response = await ProfileAPI.putDataById<Profile>(profile._id, profile);
+    const response = await ProfileAPI.putDataById<Profile>(
+      profile._id,
+      profile,
+    );
     let result: Profile[] | null;
     if (response.data) {
       result = await handleData([response.data]);
@@ -70,9 +80,17 @@ export default class ProfileService extends BaseService<Profile> {
     const profile = await this.getProfile();
     if (profile) {
       const oldFavGroupIds = profile.favorite_group_ids || [];
-      const newFavGroupIds = this._reorderFavoriteGroupIds(oldIndex, newIndex, oldFavGroupIds);
+      const newFavGroupIds = this._reorderFavoriteGroupIds(
+        oldIndex,
+        newIndex,
+        oldFavGroupIds,
+      );
       profile.favorite_group_ids = newFavGroupIds;
-      return this._putProfileAndHandle(profile, 'favorite_group_ids', oldFavGroupIds);
+      return this._putProfileAndHandle(
+        profile,
+        'favorite_group_ids',
+        oldFavGroupIds,
+      );
     }
     return null;
   }
@@ -101,7 +119,10 @@ export default class ProfileService extends BaseService<Profile> {
     return null;
   }
 
-  async putFavoritePost(postId: number, toBook: boolean): Promise<Profile | null> {
+  async putFavoritePost(
+    postId: number,
+    toBook: boolean,
+  ): Promise<Profile | null> {
     const profile = await this.getProfile();
 
     if (profile) {
@@ -115,27 +136,34 @@ export default class ProfileService extends BaseService<Profile> {
         }
       } else {
         if (oldFavPostIds.indexOf(postId) !== -1) {
-          newFavPostIds = oldFavPostIds
-            .filter((id: number) => id !== postId);
+          newFavPostIds = oldFavPostIds.filter((id: number) => id !== postId);
         } else {
           return profile;
         }
       }
       profile.favorite_post_ids = newFavPostIds;
-      return this._putProfileAndHandle(profile, 'favorite_post_ids', oldFavPostIds);
+      return this._putProfileAndHandle(
+        profile,
+        'favorite_post_ids',
+        oldFavPostIds,
+      );
     }
     // error
     return null;
   }
 
-  async hideConversation(groupId: number, hidden: boolean, shouldUpdateSkipConfirmation: boolean): Promise<Profile | BaseError> {
+  async hideConversation(
+    groupId: number,
+    hidden: boolean,
+    shouldUpdateSkipConfirmation: boolean,
+  ): Promise<Profile | BaseError> {
     const profile = await this.getProfile();
     if (profile) {
       const key = `hide_group_${groupId}`;
       const newProfile = _.cloneDeep(profile);
       newProfile[key] = hidden;
       if (shouldUpdateSkipConfirmation) {
-        newProfile['skip_close_conversation_confirmation'] = shouldUpdateSkipConfirmation;
+        newProfile.skip_close_conversation_confirmation = shouldUpdateSkipConfirmation;
       }
       return this._putProfile(newProfile);
     }
@@ -145,13 +173,20 @@ export default class ProfileService extends BaseService<Profile> {
   private async _putProfile(newProfile: Profile): Promise<Profile | BaseError> {
     newProfile._id = newProfile.id;
     delete newProfile.id;
-    const response = await ProfileAPI.putDataById<Profile>(newProfile._id, newProfile);
-    if (response.data) {
-      const result = await handleData([response.data]);
-      if (result && result.length) {
-        return result[0];
+    try {
+      const response = await ProfileAPI.putDataById<Profile>(
+        newProfile._id,
+        newProfile,
+      );
+      if (response.data) {
+        const result = await handleData([response.data]);
+        if (result && result.length) {
+          return result[0];
+        }
       }
+      return ErrorParser.parse(response);
+    } catch (e) {
+      return ErrorParser.parse(e);
     }
-    return ErrorParser.parse(response);
   }
 }
