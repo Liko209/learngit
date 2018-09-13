@@ -46,5 +46,12 @@ test(formalName('Check any message should display expected elements', ['JPT-5', 
       });
     })
     .log('8. name should be updated')
+    .checkMetadataInTargetPost('jpt5Post')
+    .log('9. modify away status')
+    .chain(async (t, h) => {
+      await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
+        away_status: 'in the meeting',
+      });
+    })
     .checkMetadataInTargetPost('jpt5Post');
 });

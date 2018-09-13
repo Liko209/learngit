@@ -86,16 +86,17 @@ class ConversationStream extends BaseComponent {
   checkMetadataInTargetPost(ctxPost: string) {
     return this.chain(async (t, h) => {
       const glipPerson = await this.getPersonProps(+h.users.user701.glip_id);
-      const { first_name, last_name, email } = glipPerson;
+      const { first_name, last_name, email, away_status } = glipPerson;
       const displayName =
         first_name && last_name ? `${first_name} ${last_name}` :
           first_name ? first_name :
             last_name ? last_name : email;
+      const title = displayName + (away_status ? ` ${away_status}` : '');
       const formatTime = require('moment')(t.ctx[ctxPost].creationTime).format('hh:mm A');
-      h.log(`should find card with name ${displayName} and time ${formatTime}`);
+      h.log(`should find card with name ${title} and time ${formatTime}`);
 
       const targetPost = this.targetPost.findReact('JuiConversationCardHeader').withProps({
-        name: displayName,
+        name: title,
         time: formatTime,
       });
       await t.expect(targetPost.exists).ok();

@@ -24,6 +24,11 @@ export class ConversationCard extends React.Component<IProps> {
       text,
       createdAt,
     } = post;
+    const {
+      displayName,
+      awayStatus,
+    } = creator;
+    const nameWithStatus = `${displayName}${awayStatus ? ` ${awayStatus}` : ''}`;
     /**
      * Just a placeholder, should be replaced with a container instead. * <Avatar id={creator.id} size="medium" />
      */
@@ -31,7 +36,7 @@ export class ConversationCard extends React.Component<IProps> {
     return (
       <React.Fragment>
         <JuiConversationCard Avatar={avatar}>
-          <JuiConversationCardHeader name={creator.displayName} time={moment(createdAt).format('hh:mm A')} />
+          <JuiConversationCardHeader name={nameWithStatus} time={moment(createdAt).format('hh:mm A')} />
           {/* todo: content */}
           <div style={{ fontSize: '14px', lineHeight: '24px', color: '#616161' }}>
             {text}
