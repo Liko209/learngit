@@ -6,6 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import MessageInput from 'ui-components/MessageInput';
 import ViewModel from './ViewModel';
 
 interface IProps {
@@ -13,7 +14,7 @@ interface IProps {
 }
 
 @observer
-class Input extends Component<IProps>  {
+class Input extends Component<IProps> {
   private _vm: ViewModel;
 
   constructor(props: IProps) {
@@ -28,17 +29,14 @@ class Input extends Component<IProps>  {
     }
   }
 
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this._vm.changeDraft(event.target.value);
+  handleChange = (value: any) => {
+    this._vm.changeDraft(value);
   }
 
   render() {
     const { draft } = this._vm;
-    return (
-      <React.Fragment>
-        <input type="text" value={draft} onChange={this.handleChange} />
-      </React.Fragment>
-    );
+    console.log(draft);
+    return <MessageInput value={draft} onChange={this.handleChange} />;
   }
 }
 
