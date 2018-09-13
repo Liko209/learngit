@@ -9,47 +9,47 @@ import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs/react';
 import { withInfoDecorator } from '../../../utils/decorators';
 
-import Avatar from '..';
+import JuiAvatar from '..';
 
 import avatar from './img/avatar.jpg';
 
 const knobs = {
-  size: () => select(
-    'size',
-    {
-      small: 'small',
-      medium: 'medium',
-      large: 'large',
-      xlarge: 'xlarge',
-    },
-    'medium',
-  ),
+  size: () =>
+    select(
+      'size',
+      {
+        small: 'small',
+        medium: 'medium',
+        large: 'large',
+        xlarge: 'xlarge',
+      },
+      'medium',
+    ),
 
-  color: () => select(
-    'color',
-    {
-      lake: 'lake',
-      tiffany: 'tiffany',
-      cateye: 'cateye',
-      grass: 'grass',
-      gold: 'gold',
-      persimmon: 'persimmon',
-      tomato: 'tomato',
-    },
-    'lake',
-  ),
+  color: () =>
+    select(
+      'color',
+      {
+        lake: 'lake',
+        tiffany: 'tiffany',
+        cateye: 'cateye',
+        grass: 'grass',
+        gold: 'gold',
+        persimmon: 'persimmon',
+        tomato: 'tomato',
+      },
+      'lake',
+    ),
 };
 storiesOf('Atoms/Avatar', module)
-  .addDecorator(withInfoDecorator(Avatar, { inline: true }))
+  .addDecorator(withInfoDecorator(JuiAvatar, { inline: true }))
   .addWithJSX('Image', () => {
-    return (
-      <Avatar size={knobs.size()} src={avatar} />
-    );
+    return <JuiAvatar size={knobs.size()} src={avatar} />;
   })
   .addWithJSX('Name', () => {
     return (
-      <Avatar size={knobs.size()} color={knobs.color()}>
+      <JuiAvatar size={knobs.size()} color={knobs.color()}>
         SH
-      </Avatar>
+      </JuiAvatar>
     );
   });

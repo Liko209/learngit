@@ -5,10 +5,12 @@
  */
 import React from 'react';
 import styled from '../../styled-components';
-import MuiAvatar, { AvatarProps as MuiAvatarProps } from '@material-ui/core/Avatar';
+import MuiAvatar, {
+  AvatarProps as MuiAvatarProps,
+} from '@material-ui/core/Avatar';
 import { width, height, typography, palette } from '../../utils/styles';
 
-type AvatarProps = {
+type TJuiAvatarProps = {
   size?: 'small' | 'medium' | 'large' | 'xlarge';
   color?: string;
 } & MuiAvatarProps;
@@ -27,7 +29,7 @@ const fonts = {
   small: 'caption2',
 };
 
-const StyledAvatar = styled<AvatarProps>(MuiAvatar)`
+const StyledAvatar = styled<TJuiAvatarProps>(MuiAvatar)`
   && {
     width: ${({ size = 'medium', theme }) => width(sizes[size])({ theme })};
     height: ${({ size = 'medium', theme }) => height(sizes[size])({ theme })};
@@ -43,21 +45,17 @@ const StyledAvatar = styled<AvatarProps>(MuiAvatar)`
   }
 `;
 
-const Avatar: React.SFC<AvatarProps> = (props: AvatarProps) => {
+const JuiAvatar: React.SFC<TJuiAvatarProps> = (props: TJuiAvatarProps) => {
   const { innerRef, ...rest } = props;
 
-  return (
-    <StyledAvatar {...rest} />
-  );
+  return <StyledAvatar {...rest} />;
 };
 
-Avatar.defaultProps = {
+JuiAvatar.defaultProps = {
   size: 'medium',
   color: 'lake',
 };
 
-const JuiAvatar = styled(Avatar)``;
-
-export { AvatarProps, JuiAvatar };
+export { TJuiAvatarProps, JuiAvatar };
 
 export default JuiAvatar;
