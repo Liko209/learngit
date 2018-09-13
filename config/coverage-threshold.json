@@ -1,15 +1,8 @@
 {
   "global": {
-<<<<<<< HEAD
-    "statements": 0,
-    "branches": 0,
-    "lines": 0,
-    "functions": 0
-=======
-    "statements": 78.15,
-    "branches": 66.64,
-    "lines": 77.67,
-    "functions": 75.8
->>>>>>> 0c08fe18e6d114cf0dadb5ad85d1414b48504d83
+    "statements": 77.95,
+    "branches": 66.69,
+    "lines": 77.45,
+    "functions": 75.36
   }
 }
