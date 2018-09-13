@@ -57,6 +57,8 @@ class Home extends Component<IProps, IStates>  {
   handleSignOutClick = () => {
     const { handleSignOutClick } = this.homePresenter;
     handleSignOutClick().then(() => {
+      sessionStorage.removeItem('backNavArray');
+      sessionStorage.removeItem('forwardNavArray');
       window.location.href = '/';
     });
   }
@@ -78,6 +80,7 @@ class Home extends Component<IProps, IStates>  {
       setTimeout(() => {
         const { backNavArray } = this.navPresenter;
         if (!showLeftPanel && !showRightPanel && !pressNav && !menuClicked) {
+          console.log('componentDidMount');
           backNavArray.push({ title });
           this.navPresenter.backNavArray = backNavArray;
         }

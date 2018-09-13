@@ -1,3 +1,8 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-09-10 17:29:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { action, observable } from 'mobx';
 import React from 'react';
 
@@ -166,7 +171,7 @@ class NavPresenter {
       this.backNavArray = backNavArray;
       this.forwardNavArray = forwardNavArray;
       this.state.title = REMOVE_ITEM[0]!.title;
-      window.history.go(index);
+      window.history.go(index + 1);
       this.setItem('backNavArray', JSON.stringify(backNavArray));
       this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
       state.showRightPanel = false;
