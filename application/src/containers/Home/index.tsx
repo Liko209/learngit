@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import DocumentTitle from 'react-document-title';
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
-import { LeftNav } from 'ui-components';
+import { LeftNav, JuiIconButtonProps } from 'ui-components';
 import Main from './Main';
 import { translate } from 'react-i18next';
 import NotFound from '@/containers/NotFound';
@@ -15,6 +15,11 @@ import Settings from '@/containers/Settings';
 import HomePresenter from './HomePresenter';
 import { TranslationFunction, i18n } from 'i18next';
 import TopBar from 'ui-components/organisms/TopBar';
+import JuiAvatarWithPresence, {
+  TJuiAvatarWithPresenceProps,
+} from 'ui-components/molecules/AvatarWithPresence';
+import JuiIconButton from 'ui-components/molecules/IconButton';
+
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
 import NavPresenter from './NavPresenter';
@@ -28,6 +33,18 @@ interface IStates {
   expanded: boolean;
 }
 
+const AvatarWithPresence = (props: TJuiAvatarWithPresenceProps) => {
+  return <JuiAvatarWithPresence presence="online" src={avatar} {...props} />;
+};
+
+const HeaderIconButton = (props: JuiIconButtonProps) => {
+  return (
+    <JuiIconButton size="medium" tooltipTitle="plus" {...props}>
+      add_circle
+    </JuiIconButton>
+  );
+};
+
 const UMI_Count = [0];
 @observer
 class Home extends Component<IProps, IStates>  {
@@ -36,8 +53,10 @@ class Home extends Component<IProps, IStates>  {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      expanded: localStorage.getItem('expanded') === null ? true :
-        JSON.parse(String(localStorage.getItem('expanded'))),
+      expanded:
+        localStorage.getItem('expanded') === null
+          ? true
+          : JSON.parse(String(localStorage.getItem('expanded'))),
     };
     this.homePresenter = new HomePresenter();
     this.navPresenter = NavPresenter;
@@ -124,12 +143,13 @@ class Home extends Component<IProps, IStates>  {
       search: `?leftnav=${!this.state.expanded}`,
     });
   }
+  handleCreateTeam = () => {};
   getIcons() {
     const { t } = this.props;
     return [
       [
         { icon: 'Dashboard', title: t('Dashboard') },
-        { icon:'Messages', title: t('Messages') },
+        { icon: 'Messages', title: t('Messages') },
         { icon: 'Phone', title: t('Phone') },
         { icon: 'Meetings', title: t('Meetings') },
       ],
@@ -151,19 +171,31 @@ class Home extends Component<IProps, IStates>  {
   }
   render() {
     const { expanded } = this.state;
-    const { title, showLeftPanel, showRightPanel, forwardDisabled, backDisabled } = this.navPresenter.state;
+    const { t } = this.props;
+    const { title, forwardDisabled, showLeftPanel, showRightPanel, backDisabled } = this.navPresenter.state;
     const { menus } = this.navPresenter;
     return (
       <Wrapper>
         <TopBar
-          avatar={avatar}
-          presence="online"
-          data-anchor="expandButton"
+          AvatarWithPresence={AvatarWithPresence}
+          avatarMenuItems={[
+            {
+              label: t('SignOut'),
+              onClick: this.handleSignOutClick,
+            },
+          ]}
+          HeaderIconButton={HeaderIconButton}
+          headerMenuItems={[
+            {
+              label: t('CreateTeam'),
+              onClick: this.handleCreateTeam,
+            },
+          ]}
           onLeftNavExpand={this.handleLeftNavExpand}
-          onSignOutClick={this.handleSignOutClick}
+          headerLogo="RingCentral"
+          menuItems={menus}
           showLeftPanel={showLeftPanel}
           showRightPanel={showRightPanel}
-          menuItems={menus}
           forwardDisabled={forwardDisabled}
           backDisabled={backDisabled}
           handleNavClose={this.handleNavClose}

@@ -7,46 +7,61 @@ import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 
-type TIconMore = {
-  items?: any[];
-  open: boolean;
-  style?: {
-    top?: number;
-    right?: number
-  };
-  handleClose: ((event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index?: number) => void);
+export type TMenuItems = {
+  label: string;
+  onClick: (event: React.MouseEvent<HTMLInputElement>) => void;
+}[];
+export type TMenuExpandTrigger = React.SFC<{
+  innerRef: React.RefObject<HTMLElement>;
+  onClick: () => void;
+}>;
+type TMenuListCompositionProps = {
+  awake?: boolean;
+  menuItems: TMenuItems;
+  MenuExpandTrigger: TMenuExpandTrigger;
+  className?: string;
 };
 
 const MenuListCompositionWrapper = styled.div`
-  position: relative;
   display: flex;
   margin-right: ${({ theme }) => `${1 * theme.spacing.unit}px`};
 `;
 
-const MenuWrapper = styled(Popper)`
-  position: absolute;
-  top: 30px;
-  left: -20px;
-`;
+const MenuWrapper = styled(Popper)``;
 
-class MenuListComposition extends React.Component<TIconMore> {
-  constructor(props: TIconMore) {
-    super(props);
+class MenuListComposition extends React.Component<
+  TMenuListCompositionProps,
+  { open: boolean }
+  > {
+  state = {
+    open: false,
+  };
+
+  anchorEl = React.createRef<HTMLElement>();
+
+  handleToggle = () => {
+    this.setState(state => ({ open: !state.open }));
   }
-  componentWillReceiveProps(nextProps: TIconMore) {
-    if (this.props.open !== nextProps.open) {
-      this.setState({
-        open: nextProps.open,
-      });
+
+  handleClose = (event: React.MouseEvent<HTMLElement>) => {
+    const node = this.anchorEl.current;
+    if (node && node.contains(event.currentTarget)) {
+      return;
     }
+
+    this.setState({ open: false });
   }
-  anchorEl = React.createRef<Element>();
 
   render() {
-    const { items, handleClose, open, children } = this.props;
+    const { open } = this.state;
+    const { MenuExpandTrigger, menuItems } = this.props;
     return (
-      <MenuListCompositionWrapper>
-        {children ? children : null}
+      <MenuListCompositionWrapper className={this.props.className}>
+        <MenuExpandTrigger
+          innerRef={this.anchorEl}
+          aria-haspopup="true"
+          onClick={this.handleToggle}
+        />
         <MenuWrapper
           open={open}
           anchorEl={this.anchorEl.current}
@@ -62,13 +77,15 @@ class MenuListComposition extends React.Component<TIconMore> {
               }}
             >
               <Paper>
-                <ClickAwayListener onClickAway={handleClose}>
+                <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList>
-                    {
-                      items!.map((item, index) => {
-                        return (<MenuItem onClick={handleClose.bind(this, event, index)} key={index}>{item}</MenuItem>);
-                      })
-                    }
+                    {menuItems.map((item, index) => {
+                      return (
+                        <MenuItem key={index} onClick={item.onClick}>
+                          {item.label}
+                        </MenuItem>
+                      );
+                    })}
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
