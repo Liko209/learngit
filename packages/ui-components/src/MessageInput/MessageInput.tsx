@@ -9,15 +9,16 @@ import MarkdownShortcuts from './MarkdownShortcuts';
 import 'react-quill/dist/quill.snow.css';
 
 injectGlobal`
+  .quill {
+    width: 100%;
+    align-self: flex-end;
+  }
   .ql-snow {
     box-sizing: border-box;
     border: 1px solid #dbdbdb !important;
     border-radius: 4px;
     margin: 16px !important;
     background: #f5f5f5;
-    &:focus-within {
-      background: #fff;
-    }
     .ql-editor {
       padding: 8px;
       font-size: 14px;
@@ -27,6 +28,10 @@ injectGlobal`
       &::before {
         font-style: normal !important;
         color: #9e9e9e !important;
+      }
+      &:focus {
+        background: #fff;
+        border-radius: 4px;
       }
     }
   }
