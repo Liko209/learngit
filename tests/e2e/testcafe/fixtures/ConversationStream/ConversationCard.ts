@@ -43,8 +43,8 @@ test(
     await setupSDK(t);
     const postContent = `some random text post ${Date.now()}`;
     await prepare(t, postContent)
-      .log('6. should find metadata in card')
-      .checkMetadataInTargetPost('jpt5Post');
+      .log('6. should have right format time in card')
+      .checkTimeFormatOnPost('jpt5Post', 'hh:mm A');
   },
 );
 
@@ -58,13 +58,15 @@ test(
     const postContent = `some random text post ${Date.now()}`;
     const changedName = `Random ${Date.now()}`;
     await prepare(t, postContent)
-      .log('6. modify user name through api request')
+      .log('6. check current user name')
+      .checkNameOnPost('John Doe701')
+      .log('7. modify user name through api request')
       .chain(async (t, h) => {
         await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
           first_name: changedName,
         });
       })
-      .log('7. name should be updated')
-      .checkMetadataInTargetPost('jpt5Post');
+      .log('8. name should be updated')
+      .checkNameOnPost(`${changedName} Doe701`);
   },
 );

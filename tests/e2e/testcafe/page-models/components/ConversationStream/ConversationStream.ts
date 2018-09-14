@@ -51,7 +51,7 @@ class ConversationStream extends BaseComponent {
   }
 
   public expectRightOrder(...sequence) {
-    return this.chain(async t => {
+    return this.chain(async (t: TestController) => {
       const length = sequence.length;
       for (const i in sequence) {
         await t
@@ -62,19 +62,19 @@ class ConversationStream extends BaseComponent {
   }
 
   public expectLastConversationToBe(text: string) {
-    return this.chain(async t => {
+    return this.chain(async (t: TestController) => {
       await t.expect(this.conversationCard.nth(-1).textContent).contains(text);
     });
   }
 
   public expectNoPosts() {
-    return this.chain(async t => {
+    return this.chain(async (t: TestController) => {
       await t.expect(this.conversationCard.count).eql(0);
     });
   }
 
   shouldMatchURL() {
-    return this.chain(async t => {
+    return this.chain(async (t: TestController) => {
       const getLocation = ClientFunction(() => window.location.href);
       const reg = /messages\/(\d+)/;
       const location = await getLocation();
@@ -83,7 +83,7 @@ class ConversationStream extends BaseComponent {
   }
 
   shouldFindPostById(ctxPost: string) {
-    return this.chain(async t => {
+    return this.chain(async (t: TestController) => {
       this.targetPost = ReactSelector('ConversationCard').withProps(
         'id',
         Number(t.ctx[ctxPost].id),
@@ -92,31 +92,29 @@ class ConversationStream extends BaseComponent {
     });
   }
 
-  checkMetadataInTargetPost(ctxPost: string) {
+  checkNameOnPost(name: string) {
     return this.chain(async (t, h) => {
-      const glipPerson = await this.getPersonProps(+h.users.user701.glip_id);
-      const { first_name, last_name, email } = glipPerson;
-      const displayName =
-        first_name && last_name
-          ? `${first_name} ${last_name}`
-          : first_name
-            ? first_name
-            : last_name
-              ? last_name
-              : email;
+      const targetPost = this.targetPost
+        .findReact('JuiConversationCardHeader')
+        .withProps({
+          name,
+        });
+      await t.expect(targetPost.exists).ok();
+    });
+  }
+
+  checkTimeFormatOnPost(ctxPost: string, format: string) {
+    return this.chain(async (t, h) => {
       const formatTime = require('moment')(t.ctx[ctxPost].creationTime).format(
-        'hh:mm A',
+        format,
       );
-      h.log(`should find card with name ${displayName} and time ${formatTime}`);
 
       const targetPost = this.targetPost
         .findReact('JuiConversationCardHeader')
         .withProps({
-          name: displayName,
           time: formatTime,
         });
       await t.expect(targetPost.exists).ok();
-      h.log('card successfully found');
     });
   }
 
