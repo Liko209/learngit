@@ -36,7 +36,7 @@ class TeamSection extends BaseComponent {
   public createTeam() {
     return this.chain(async (t, h) => {
       const client701 = await h.glipApiManager.getClient(h.users.user701, h.companyNumber);
-      await client701.createTeam({
+      await client701.createGroup({
         type: 'Team',
         isPublic: true,
         name: `My Team ${Math.random().toString(10)}`,
