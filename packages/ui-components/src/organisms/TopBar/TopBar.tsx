@@ -242,7 +242,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               </JuiIconButton>
               <TopLogo variant="headline">{headerLogo}</TopLogo>
             </MenuWithLogo>
-            <BackForward invisible={!isElectron}>
+            <BackForward invisible={isElectron}>
               <MenuListPanel
                 items={menuItems}
                 open={showLeftPanel}
