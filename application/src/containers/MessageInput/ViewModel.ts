@@ -5,35 +5,42 @@
  */
 
 import { service } from 'sdk';
-import { action, observable, computed, when, IReactionDisposer } from 'mobx';
-import { debounce } from 'lodash';
+import { action, observable, computed, when } from 'mobx';
+import { debounce, Cancelable } from 'lodash';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 
+interface IParams {
+  draft: string;
+  id: number;
+}
+
+type DebounceFunction = (params: IParams) => Promise<boolean>;
+
 class ViewModel {
-  private _groupService: service.GroupService;
   private _id: number;
-  private _disposer: IReactionDisposer;
+  private _groupService: service.GroupService;
+  private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
   @observable draft: string = '';
 
   constructor(id: number) {
-    this._groupService = service.GroupService.getInstance();
     this._id = id;
-    this._disposer = when(
+    this._groupService = service.GroupService.getInstance();
+    this._debounceUpdateGroupDraft = debounce<DebounceFunction>(this._groupService.updateGroupDraft, 500);
+    when(
       () => !!this.initDraft,
       () => {
         this.draft = this.initDraft;
-        this._disposer();
       },
     );
+
   }
 
   @action.bound
   changeDraft(draft: string) {
     this.draft = draft; // UI immediately sync
-    const debounceUpdateGroupDraft = debounce(this._groupService.updateGroupDraft, 500); // DB sync 500 ms later
-    debounceUpdateGroupDraft({ draft, id: this._id });
+    this._debounceUpdateGroupDraft({ draft, id: this._id }); // DB sync 500 ms later
   }
 
   @computed get initDraft() {
