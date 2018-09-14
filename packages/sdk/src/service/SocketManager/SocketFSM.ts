@@ -4,13 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import notificationCenter from '../../service/notificationCenter';
-import { SOCKET, SERVICE } from '../../service/eventKey';
+import { SOCKET } from '../../service/eventKey';
 import { mainLogger, SocketClient } from 'foundation';
 import StateMachine from 'ts-javascript-state-machine';
 import dataDispatcher from '../../component/DataDispatcher';
 
 const SOCKET_LOGGER = 'SOCKET_LOGGER';
 
+type StateHandler = (name: string, state: string) => any;
 export class SocketFSM extends StateMachine {
   private static instanceID: number = 0;
   socketClient: any = null;
@@ -20,7 +21,7 @@ export class SocketFSM extends StateMachine {
 
   private logPrefix: string = '';
 
-  constructor(public serverUrl: string) {
+  constructor(public serverUrl: string, public stateHandler: StateHandler) {
     super({
       transitions: [
         { name: 'init', from: 'none', to: 'idle' },
@@ -53,10 +54,9 @@ export class SocketFSM extends StateMachine {
 
         onEnterState() {
           this.info(`onEnterState ${this.state}`);
-          // TO-DO: move out to manager?
-          notificationCenter.emit(SERVICE.SOCKET_STATE_CHANGE, {
-            state: this.state,
-          });
+          if (this.stateHandler) {
+            this.stateHandler(this.name, this.state);
+          }
         },
 
         onInit() {
@@ -189,8 +189,7 @@ export class SocketFSM extends StateMachine {
 
     this.socketClient.socket.on('presense', (data: any) => {
       this.info(`socket-> presense. ${data || ''}`);
-      // TO-DO: move out
-      notificationCenter.emit(SOCKET.PRESENCE, data);
+      dataDispatcher.onDataArrived(data);
     });
 
     this.socketClient.socket.on('message', (data: any) => {
