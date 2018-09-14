@@ -8,31 +8,31 @@ import {
   loadingBottom,
 } from './LoadingMorePlugin';
 
-interface IInfiniteListViewModel {
+interface IInfiniteListViewModel extends IViewModel {
   onScrollTop(): void;
   onScrollBottom(): void;
 }
 
 class InfiniteListPlugin extends AbstractPlugin {
-  loadingPlugin: LoadingPlugin;
-  loadingMorePlugin: LoadingMorePlugin;
+  private _loadingPlugin: LoadingPlugin;
+  private _loadingMorePlugin: LoadingMorePlugin;
 
   constructor() {
     super();
     // TODO Child for AbstractPlugin that automatically apply child plugins.
-    this.loadingPlugin = new LoadingPlugin();
-    this.loadingMorePlugin = new LoadingMorePlugin();
+    this._loadingPlugin = new LoadingPlugin();
+    this._loadingMorePlugin = new LoadingMorePlugin();
   }
 
   beforeInstall(vm: IViewModel): void {
-    this.loadingPlugin.install(vm);
-    this.loadingMorePlugin.install(vm);
+    this._loadingPlugin.install(vm);
+    this._loadingMorePlugin.install(vm);
   }
 
   wrapView(View: ComponentType<any>) {
     let WrappedView = View;
-    WrappedView = this.loadingPlugin.wrapView(View);
-    WrappedView = this.loadingMorePlugin.wrapView(WrappedView);
+    WrappedView = this._loadingPlugin.wrapView(View);
+    WrappedView = this._loadingMorePlugin.wrapView(WrappedView);
     return WrappedView;
   }
 

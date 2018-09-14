@@ -1,9 +1,8 @@
 import React, { Component, ComponentType } from 'react';
 import styled from '../../styled-components';
 import { noop } from '../../utils';
-// import styled from '../../styled-components';
 
-interface InfiniteScrollProps {
+type ScrollerProps = {
   /**
    * The distance in pixels before the end of the items
    * that will trigger a scrollTop/scrollBottom event
@@ -12,23 +11,21 @@ interface InfiniteScrollProps {
   initialScrollTop: number;
   onScrollToTop: (event: UIEvent) => void;
   onScrollToBottom: (event: UIEvent) => void;
-}
+};
+type WithScrollerProps = ScrollerProps;
 
-interface InfiniteScrollStates {
+type ScrollerStates = {
   atTop: boolean;
   atBottom: boolean;
-}
+};
 
-const Scroller = styled.div`
+const StyledScroller = styled.div`
   overflow: auto;
   height: 100%;
 `;
 
-function withInfiniteScroll(Comp: ComponentType<any>) {
-  class InfiniteScroll extends Component<
-    InfiniteScrollProps,
-    InfiniteScrollStates
-  > {
+function withScroller(Comp: ComponentType<any>) {
+  return class Scroller extends Component<ScrollerProps, ScrollerStates> {
     static defaultProps = {
       threshold: 100,
       initialScrollTop: 0,
@@ -48,14 +45,18 @@ function withInfiniteScroll(Comp: ComponentType<any>) {
 
     render() {
       return (
-        <Scroller innerRef={this.scrollElRef}>
+        <StyledScroller innerRef={this.scrollElRef}>
           <Comp {...this.props} />
-        </Scroller>
+        </StyledScroller>
       );
     }
 
     componentDidMount() {
       this._scrollEl.scrollTop = this.props.initialScrollTop;
+      this.setState({
+        atTop: this._isAtTop(),
+        atBottom: this._isAtBottom(),
+      });
       this.attachScrollListener();
     }
 
@@ -104,9 +105,7 @@ function withInfiniteScroll(Comp: ComponentType<any>) {
         scrollEl.scrollHeight - scrollEl.clientHeight - this.props.threshold
       );
     }
-  }
-
-  return InfiniteScroll;
+  };
 }
 
-export { withInfiniteScroll, InfiniteScrollProps };
+export { withScroller, ScrollerProps, WithScrollerProps };

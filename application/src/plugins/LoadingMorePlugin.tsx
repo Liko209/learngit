@@ -1,5 +1,9 @@
 import { ComponentType } from 'react';
-import { withLoadingMore, WithLoadingMoreProps } from 'ui-components';
+import {
+  withLoadingMore,
+  WithLoadingMoreProps,
+  withScroller,
+} from 'ui-components';
 import { AbstractPlugin } from '@/base/AbstractPlugin';
 import { IViewModel } from '@/base/IViewModel';
 import { createFunctionWrapDecorator } from './utils';
@@ -15,7 +19,10 @@ class LoadingMorePlugin extends AbstractPlugin {
   }
 
   wrapView(View: ComponentType<any>) {
-    return withLoadingMore(View);
+    let WrappedView = View;
+    WrappedView = withScroller(WrappedView);
+    WrappedView = withLoadingMore(WrappedView);
+    return WrappedView;
   }
 
   uninstall() {

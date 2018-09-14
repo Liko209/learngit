@@ -9,7 +9,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import { withInfiniteScroll } from '../withInfiniteScroll';
+import { withScroller } from '../withScroller';
 import styled from '../../../styled-components';
 
 const DemoWrapper = styled.div`
@@ -19,21 +19,22 @@ const DemoWrapper = styled.div`
   margin-bottom: 24px;
 `;
 
-storiesOf('HoC/withInfiniteScroll', module).addWithJSX('demo', () => {
+storiesOf('HoC/withScroller', module).addWithJSX('demo', () => {
   const Demo = ({ children }: any) => <ul>{children}</ul>;
 
-  const DemoWithInfiniteScroll = withInfiniteScroll(Demo);
+  const DemoWithScroller = withScroller(Demo);
 
   return (
     <DemoWrapper>
-      <DemoWithInfiniteScroll
+      <DemoWithScroller
+        initialScrollTop={999999}
         onScrollToTop={action('onScrollToTop')}
         onScrollToBottom={action('onScrollToBottom')}
       >
         {_.range(100).map(n => (
           <li key={n}>{n}</li>
         ))}
-      </DemoWithInfiniteScroll>
+      </DemoWithScroller>
     </DemoWrapper>
   );
 });

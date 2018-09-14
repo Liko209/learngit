@@ -1,1 +1,1 @@
-export * from './withInfiniteScroll';
+export * from './withScroller';
