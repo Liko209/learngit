@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactQuill, { Quill } from 'react-quill';
-import { Delta } from 'quill';
+import { Delta, Sources } from 'quill';
 import { injectGlobal } from 'styled-components';
 import MarkdownShortcuts from './MarkdownShortcuts';
 
@@ -54,9 +54,12 @@ class JuiMessageInput extends React.Component<IProps, IState> {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(value: string) {
+  handleChange(content: string, delta: Delta, source: Sources) {
+    if (source === 'api') {
+      return;
+    }
     const { onChange } = this.props;
-    onChange(value);
+    onChange(content);
   }
 
   render() {

@@ -35,7 +35,6 @@ class Input extends Component<IProps> {
 
   render() {
     const { draft } = this._vm;
-    console.log(draft);
     return <MessageInput value={draft} onChange={this.handleChange} />;
   }
 }
