@@ -30,9 +30,7 @@ class ViewModel {
     this._debounceUpdateGroupDraft = debounce<DebounceFunction>(this._groupService.updateGroupDraft, 500);
     when(
       () => !!this.initDraft,
-      () => {
-        this.draft = this.initDraft;
-      },
+      () => { this.draft = this.initDraft; },
     );
 
   }
@@ -43,7 +41,8 @@ class ViewModel {
     this._debounceUpdateGroupDraft({ draft, id: this._id }); // DB sync 500 ms later
   }
 
-  @computed get initDraft() {
+  @computed
+  get initDraft() {
     const groupEntity = getEntity(ENTITY_NAME.GROUP, this._id) as GroupModel;
     return groupEntity.draft || '';
   }
