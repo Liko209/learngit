@@ -149,7 +149,7 @@ class NavPresenter {
       const toContracts = currents.splice(0, index! + 1); // delete current and before
       const REMOVE_ITEM = toContracts.splice(toContracts.length - 1, 1); // delete click items
       if (dir === 'backward') {
-        forwardNavArray = toContracts.reverse().concat({ title });
+        forwardNavArray = toContracts.reverse().concat({ title }).concat(contracts);
         this.handleMenuItem(forwardNavArray.reverse());
         this.backNavArray = backNavArray.reverse();
         this.forwardNavArray = forwardNavArray;
