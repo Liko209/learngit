@@ -15,20 +15,20 @@ fixture('BackNForward/BackNForward')
   .afterEach(tearDown());
 
 test(
-  formalName('test navigation on electron backwards and forwards functions', ['P1', 'JPT-52', 'BackNForward']), async (t) => {
+  formalName('test navigation on electron backwards and forwards functions', ['P2', 'JPT-52', 'BackNForward']), async (t) => {
     const page = directLogin(t);
     await page.chain(t => t.wait(10000))
       .log('1. Navigate to BackNForward')
       .shouldNavigateTo(BackNForward)
-      .log('4. click Phone Nav')
+      .log('2. click Phone Nav')
       .clickLeftNavBtn(2)
-      .log('5. click Meetings Nav')
+      .log('3. click Meetings Nav')
       .clickLeftNavBtn(3)
-      .log('6. click Contacts Nav')
+      .log('4. click Contacts Nav')
       .clickLeftNavBtn(4)
-      .log('7. Click Calendar Nav')
+      .log('5. Click Calendar Nav')
       .clickLeftNavBtn(5)
-      .log('8. Click backward btn')
+      .log('6. Click backward btn')
       .clickBackwardBtn();
     const getLocation = ClientFunction(() => document.location.pathname);
     await t.expect(getLocation()).contains('/contacts');
@@ -36,4 +36,18 @@ test(
       .shouldNavigateTo(BackNForward)
       .clickForwardBtn();
     await t.expect(getLocation()).contains('/calendar');
+    await page.shouldNavigateTo(BackNForward)
+      .log('8. click avatar to sign out')
+      .clickAvatar()
+      .clickSignOut();
+  });
+
+test(
+  formalName('reLogin should disable backward and forward button', ['P2', 'JPT-52', 'BackNForward']), async (t) => {
+    const page = directLogin(t);
+    await page.chain(t => t.wait(10000))
+      .log('1. Navigate to BackNForward')
+      .shouldNavigateTo(BackNForward)
+      .log('2. expect re-login backward btn disabled')
+      .backwardBtnShouldBeDisabled();
   });

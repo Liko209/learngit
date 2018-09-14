@@ -75,8 +75,8 @@ class NavPresenter {
       const REMOVED_ITEM = removedArr.shift(); // out stack
       REMOVED_ITEM && addArr.push(currentItem);
       action();
-      this.forwardNavArray = dir === 'forward' ? removedArr : addArr;
-      this.backNavArray = dir === 'forward' ? addArr : removedArr; // reversed
+      this.forwardNavArray = dir === 'forward' ? removedArr.reverse() : addArr;
+      this.backNavArray = dir === 'forward' ? addArr : removedArr.reverse(); // reversed
       this.setItem('backNavArray', JSON.stringify(removedArr));
       this.setItem('forwardNavArray', JSON.stringify(addArr));
       state.pressNav = true;
@@ -145,44 +145,45 @@ class NavPresenter {
     // current title
     let backNavArray = this.backNavArray.reverse();
     let forwardNavArray = this.forwardNavArray.reverse();
-    if (nav === 'backward' && index !== undefined) {
-      const toForward = backNavArray.splice(0, index + 1); // delete current and before
-      const REMOVE_ITEM = toForward.splice(toForward.length - 1, 1); // delete click items
-      forwardNavArray = toForward.reverse().concat({ title });
-      this.handleMenuItem(forwardNavArray.reverse());
-      this.backNavArray = backNavArray.reverse();
-      this.forwardNavArray = forwardNavArray;
+    const handleCommon = (dir: string, currents: { title: string }[], contracts: { title: string }[]) => {
+      const toContracts = currents.splice(0, index! + 1); // delete current and before
+      const REMOVE_ITEM = toContracts.splice(toContracts.length - 1, 1); // delete click items
+      if (dir === 'backward') {
+        forwardNavArray = toContracts.reverse().concat({ title });
+        this.handleMenuItem(forwardNavArray.reverse());
+        this.backNavArray = backNavArray.reverse();
+        this.forwardNavArray = forwardNavArray;
+        window.history.go(-Math.abs(index! + 1));
+        if (!backNavArray.length) {
+          state.backDisabled = true;
+        }
+        if (forwardNavArray.length) {
+          state.forwardDisabled = false;
+        }
+        state.showLeftPanel = false;
+      } else {
+        backNavArray = toContracts.reverse().concat({ title }).concat(contracts);
+        this.handleMenuItem(backNavArray.reverse());
+        this.backNavArray = backNavArray;
+        this.forwardNavArray = forwardNavArray.reverse();
+        window.history.go(index! + 1);
+        if (!forwardNavArray.length) {
+          state.forwardDisabled = true;
+        }
+        if (backNavArray.length) {
+          state.backDisabled = false;
+        }
+        state.showRightPanel = false;
+      }
       this.state.title = REMOVE_ITEM[0]!.title; // set title
       this.setItem('backNavArray', JSON.stringify(backNavArray));
       this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
       this.menuClicked = true;
-      window.history.go(-Math.abs(index + 1));
-      state.showLeftPanel = false;
-      if (!backNavArray.length) {
-        state.backDisabled = true;
-      }
-      if (forwardNavArray.length) {
-        state.forwardDisabled = false;
-      }
+    };
+    if (nav === 'backward' && index !== undefined) {
+      handleCommon(nav, backNavArray, forwardNavArray);
     } else if (nav === 'forward' && index !== undefined) {
-      const toBack = forwardNavArray.splice(0, index + 1);
-      const REMOVE_ITEM = toBack.splice(toBack.length - 1, 1);
-      backNavArray = toBack.reverse().concat({ title }).concat(backNavArray);
-      this.handleMenuItem(backNavArray.reverse());
-      this.backNavArray = backNavArray;
-      this.forwardNavArray = forwardNavArray.reverse();
-      this.state.title = REMOVE_ITEM[0]!.title;
-      window.history.go(index + 1);
-      this.setItem('backNavArray', JSON.stringify(backNavArray));
-      this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
-      this.menuClicked = true;
-      state.showRightPanel = false;
-      if (!forwardNavArray.length) {
-        state.forwardDisabled = true;
-      }
-      if (backNavArray.length) {
-        state.backDisabled = false;
-      }
+      handleCommon(nav, forwardNavArray, backNavArray);
     }
     state.showRightPanel = false;
     state.showLeftPanel = false;
