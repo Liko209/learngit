@@ -46,7 +46,7 @@ type ListProps = {
   children: JSX.Element;
 };
 
-storiesOf('HoC/withLoading', module).addWithJSX('list', () => {
+storiesOf('HoC/withLoading', module).addWithJSX('demo', () => {
   const knobLoading = boolean('force loading', false);
 
   const List = (props: ListProps) => {
@@ -115,7 +115,7 @@ storiesOf('HoC/withLoading', module).addWithJSX('list', () => {
           </DemoWrapper>
           loading more:
           <DemoWrapper>
-            <ListWithLoadingMore loadingMore={_loading}>
+            <ListWithLoadingMore loadingTop={_loading} loadingBottom={false}>
               {loadingMoreChildren}
             </ListWithLoadingMore>
           </DemoWrapper>

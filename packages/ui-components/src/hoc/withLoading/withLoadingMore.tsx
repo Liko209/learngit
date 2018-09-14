@@ -4,7 +4,8 @@ import { spacing } from '../../utils/styles';
 import { JuiCircularProgress } from '../../atoms/CircularProgress';
 
 type WithLoadingMoreProps = {
-  loadingMore: boolean;
+  loadingTop: boolean;
+  loadingBottom: boolean;
   children: JSX.Element;
 };
 
@@ -26,12 +27,13 @@ const withLoadingMore = <P extends object>(
   Component: ComponentType<P>,
   CustomizedLoading?: ComponentType<any>,
 ): React.SFC<P & WithLoadingMoreProps> => {
-  return ({ loadingMore, ...props }: WithLoadingMoreProps) => {
+  return ({ loadingTop, loadingBottom, ...props }: WithLoadingMoreProps) => {
     const LoadingMore = CustomizedLoading || DefaultLoadingMore;
     return (
       <Component {...props}>
-        {loadingMore ? <LoadingMore /> : null}
+        {loadingTop ? <LoadingMore /> : null}
         {props.children}
+        {loadingBottom ? <LoadingMore /> : null}
       </Component>
     );
   };
