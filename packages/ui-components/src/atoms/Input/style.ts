@@ -5,6 +5,9 @@
  */
 import styled from 'styled-components';
 import MuiInput from '@material-ui/core/Input';
+import MuiInputLabel from '@material-ui/core/InputLabel';
+import MuiFormHelperText from '@material-ui/core/FormHelperText';
+import MuiFormControl from '@material-ui/core/FormControl';
 import { palette } from '../../utils/styles';
 
 const Input = styled(MuiInput)`
@@ -15,4 +18,10 @@ const Input = styled(MuiInput)`
   }
 `;
 
-export { Input };
+const InputLabel = styled(MuiInputLabel)``;
+
+const FormHelperText = styled(MuiFormHelperText)``;
+
+const FormControl = styled(MuiFormControl)``;
+
+export { Input, InputLabel, FormHelperText, FormControl };

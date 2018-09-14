@@ -9,12 +9,19 @@ import MuiListItem from '@material-ui/core/ListItem';
 import MuiListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiTypography from '@material-ui/core/Typography';
+import MuiTextField from '@material-ui/core/TextField';
 
-import JuiInput from '../../atoms/Input';
-import { spacing, grey, typography } from '../../utils/styles';
+import { spacing, grey, typography, palette } from '../../utils/styles';
 
-const Input = styled(JuiInput)`
-  margin: 0 0 ${({ theme }) => spacing(2)} 0;
+const TextField = styled(MuiTextField)`
+  && {
+    margin: 0 0 ${({ theme }) => spacing(2)} 0;
+  }
+  .underline {
+    &:after {
+      border-bottom-color: ${({ theme }) => palette('primary', 'main')};
+    }
+  }
 `;
 
 const List = styled(MuiList)`
@@ -52,7 +59,7 @@ const ListTips = styled(MuiTypography)`
 `;
 
 export {
-  Input,
+  TextField,
   List,
   ListItem,
   ListItemSecondaryAction,
