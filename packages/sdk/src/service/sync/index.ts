@@ -8,7 +8,11 @@ import { SOCKET, SERVICE } from '../eventKey';
 import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
 import { LAST_INDEX_TIMESTAMP } from '../../dao/config/constants';
-import { fetchIndexData, fetchInitialData, fetchRemainingData } from './fetchIndexData';
+import {
+  fetchIndexData,
+  fetchInitialData,
+  fetchRemainingData,
+} from './fetchIndexData';
 import handleData from './handleData';
 import { mainLogger } from 'foundation';
 import { notificationCenter } from '..';
@@ -16,6 +20,7 @@ import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 
 export default class SyncService extends BaseService {
   private isLoading: boolean;
+  private onDataLoaded?: () => Promise<void>;
   constructor() {
     super(null, null, null, []);
     this._subscribeSocketStateChange();
@@ -30,7 +35,8 @@ export default class SyncService extends BaseService {
     });
   }
 
-  async syncData() {
+  async syncData(onDataLoaded?: () => Promise<void>) {
+    this.onDataLoaded = onDataLoaded || this.onDataLoaded;
     if (this.isLoading) {
       return;
     }
@@ -55,8 +61,10 @@ export default class SyncService extends BaseService {
     try {
       const currentTime = Date.now();
       let result = await fetchInitialData(currentTime);
+      this.onDataLoaded && (await this.onDataLoaded());
       handleData(result);
       result = await fetchRemainingData(currentTime);
+      this.onDataLoaded && (await this.onDataLoaded());
       handleData(result);
     } catch (e) {
       mainLogger.error('fetch initial data or remaining data error');
@@ -66,6 +74,7 @@ export default class SyncService extends BaseService {
   private async _syncIndexData(timeStamp: number) {
     // 5 minutes ago to ensure data is correct
     const result = await fetchIndexData(String(timeStamp - 300000));
+    this.onDataLoaded && (await this.onDataLoaded());
     handleData(result);
   }
 }

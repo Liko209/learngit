@@ -46,7 +46,7 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-  ) { }
+  ) {}
 
   async init(config: ISdkConfig) {
     // Use default config value
@@ -99,9 +99,10 @@ class Sdk {
 
   async onLogin() {
     this.updateNetworkToken();
-    await this.syncService.syncData();
-    featureFlag.getServicePermission();
-    this.accountManager.updateSupportedServices();
+    await this.syncService.syncData(async () => {
+      await featureFlag.getServicePermission();
+      this.accountManager.updateSupportedServices();
+    });
   }
 
   async onLogout() {
