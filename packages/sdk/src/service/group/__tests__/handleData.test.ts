@@ -9,7 +9,9 @@ import { Group, Post, Raw, Profile } from '../../../models';
 import handleData, {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
-  filterGroups, handlePartialData, isNeedToUpdateMostRecent4Group,
+  filterGroups,
+  handlePartialData,
+  isNeedToUpdateMostRecent4Group,
   getUniqMostRecentPostsByGroup,
   handleHiddenGroupsChanged,
 } from '../handleData';
@@ -105,7 +107,9 @@ beforeEach(() => {
   AccountService.getInstance = jest.fn().mockReturnValue(accountService);
   PersonService.getInstance = jest.fn().mockReturnValue(personService);
   ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-  accountService.getConversationListLimits.mockReturnValue(DEFAULT_CONVERSATION_LIST_LIMITS);
+  accountService.getConversationListLimits.mockReturnValue(
+    DEFAULT_CONVERSATION_LIST_LIMITS,
+  );
 });
 
 describe('handleData()', () => {
@@ -119,9 +123,16 @@ describe('handleData()', () => {
     daoManager.getDao(GroupDao).get.mockReturnValue(1);
     const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
       {
-        _id: 1, members: [1], deactivated: true, _delta: {
+        _id: 1,
+        members: [1],
+        deactivated: true,
+        _delta: {
           remove: { members: Array(1) },
-          set: { modified_at: 1535007198836, most_recent_content_modified_at: 1535007198836, version: 2916578790211584 },
+          set: {
+            modified_at: 1535007198836,
+            most_recent_content_modified_at: 1535007198836,
+            version: 2916578790211584,
+          },
           _id: 4276230,
         },
       },
@@ -152,7 +163,12 @@ describe('handlePartialData', () => {
   it('should save directly if find partial in DB', async () => {
     daoManager.getDao(GroupDao).get.mockReturnValueOnce(1);
     const groups: Partial<Raw<Group>>[] = toArrayOf<Partial<Raw<Group>>>([
-      { _id: 3375110, version: 2484043918606336, modified_at: 1535014387734, post_cursor: 26 },
+      {
+        _id: 3375110,
+        version: 2484043918606336,
+        modified_at: 1535014387734,
+        post_cursor: 26,
+      },
     ]);
     await handlePartialData(groups);
     expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
@@ -165,7 +181,12 @@ describe('handlePartialData', () => {
   it('should call api if can not find partial in DB', async () => {
     daoManager.getDao(GroupDao).get.mockReturnValueOnce(null);
     const groups: Partial<Raw<Group>>[] = toArrayOf<Partial<Raw<Group>>>([
-      { _id: 3375110, version: 2484043918606336, modified_at: 1535014387734, post_cursor: 26 },
+      {
+        _id: 3375110,
+        version: 2484043918606336,
+        modified_at: 1535014387734,
+        post_cursor: 26,
+      },
     ]);
     await handlePartialData(groups);
     expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(0);
@@ -177,7 +198,9 @@ describe('handleFavoriteGroupsChanged()', () => {
     jest.clearAllMocks();
   });
   it('params', async () => {
-    daoManager.getDao(GroupDao).queryGroupsByIds.mockReturnValue([{ is_team: true }]);
+    daoManager
+      .getDao(GroupDao)
+      .queryGroupsByIds.mockResolvedValue([{ id: 1, is_team: true }]);
     const oldProfile: any = {
       person_id: 0,
       favorite_group_ids: [1, 2],
@@ -188,13 +211,19 @@ describe('handleFavoriteGroupsChanged()', () => {
       favorite_group_ids: [2, 3],
       favorite_post_ids: 0,
     };
-    await handleFavoriteGroupsChanged(oldProfile as Profile, newProfile as Profile);
+    await handleFavoriteGroupsChanged(
+      oldProfile as Profile,
+      newProfile as Profile,
+    );
     expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(2);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(2);
     expect(notificationCenter.emitEntityReplaceAll).toHaveBeenCalledTimes(1);
+    jest.clearAllMocks();
   });
   it('params are arry empty', async () => {
-    daoManager.getDao(GroupDao).queryGroupsByIds.mockReturnValue([{ is_team: true }]);
+    daoManager
+      .getDao(GroupDao)
+      .queryGroupsByIds.mockResolvedValueOnce([{ is_team: true }]);
     const oldProfile: any = {
       person_id: 0,
       favorite_group_ids: [1, 2],
@@ -217,14 +246,15 @@ describe('handleGroupMostRecentPostChanged()', () => {
   });
   it('should update group recent modified time', async () => {
     daoManager.getDao(GroupDao).get.mockReturnValue([{ is_team: true }]);
-    const posts: Post[] = toArrayOf<Post>([{ id: 1, modified_at: 1, created_at: 1 }]);
+    const posts: Post[] = toArrayOf<Post>([
+      { id: 1, modified_at: 1, created_at: 1 },
+    ]);
     await handleGroupMostRecentPostChanged(posts);
     expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(0);
   });
 });
 
 describe('filterGroups()', () => {
-
   it('should remove extra, when limit < total groups', async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
@@ -260,7 +290,9 @@ describe('filterGroups()', () => {
     const TOTAL_GROUPS = 5;
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
+      { id: 2, unread_count: 1 },
+    ]);
 
     const filteredGroups = await filterGroups(teams, LIMIT);
     expect(filteredGroups.length).toBe(4);
@@ -271,7 +303,9 @@ describe('filterGroups()', () => {
     const TOTAL_GROUPS = 5;
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
+      { id: 2, unread_count: 1 },
+    ]);
 
     const filteredGroups = await filterGroups(teams, LIMIT);
     expect(filteredGroups.length).toBe(LIMIT);
@@ -282,7 +316,9 @@ describe('filterGroups()', () => {
     const TOTAL_GROUPS = 5;
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_count: 1 }]);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
+      { id: 2, unread_count: 1 },
+    ]);
 
     const filteredGroups = await filterGroups(teams, LIMIT);
     expect(filteredGroups.length).toBe(LIMIT);
@@ -293,7 +329,9 @@ describe('filterGroups()', () => {
     const TOTAL_GROUPS = 5;
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([{ id: 2, unread_mentions_count: 1 }]);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
+      { id: 2, unread_mentions_count: 1 },
+    ]);
 
     const filteredGroups = await filterGroups(teams, LIMIT);
     expect(filteredGroups.length).toBe(4);
@@ -327,8 +365,13 @@ describe('filterGroups()', () => {
 
 describe('isNeedToUpdateMostRecent4Group', () => {
   it('should to update most recent post for a group', () => {
-    const posts: Post[] = toArrayOf<Post>([{ id: 1, group_id: 1, modified_at: 100, created_at: 100 }]);
-    const groups: Group[] = toArrayOf<Group>([{ id: 1, most_recent_post_created_at: 99 }, { id: 1, most_recent_post_created_at: 100 }]);
+    const posts: Post[] = toArrayOf<Post>([
+      { id: 1, group_id: 1, modified_at: 100, created_at: 100 },
+    ]);
+    const groups: Group[] = toArrayOf<Group>([
+      { id: 1, most_recent_post_created_at: 99 },
+      { id: 1, most_recent_post_created_at: 100 },
+    ]);
     expect(isNeedToUpdateMostRecent4Group(posts[0], groups[0])).toBeTruthy();
     expect(isNeedToUpdateMostRecent4Group(posts[0], groups[1])).toBeFalsy();
   });
@@ -352,7 +395,12 @@ describe('getUniqMostRecentPostsByGroup', () => {
 
 describe('handleHiddenGroupsChanged', () => {
   it('handleHiddenGroupsChanged, more hidden', async () => {
-    daoManager.getDao(GroupDao).get.mockReturnValue([{ id: 1, is_team: true }, { id: 2, is_team: false }]);
+    daoManager
+      .getDao(GroupDao)
+      .queryGroupsByIds.mockReturnValueOnce([
+        { id: 1, is_team: true },
+        { id: 2, is_team: false },
+      ]);
     await handleHiddenGroupsChanged([], [1, 2]);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(2);
   });
