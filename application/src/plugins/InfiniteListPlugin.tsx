@@ -1,5 +1,6 @@
 import { ComponentType } from 'react';
 import { AbstractPlugin } from '@/base/AbstractPlugin';
+import { IViewModel } from '@/base/IViewModel';
 import { LoadingPlugin, loading } from './LoadingPlugin';
 import {
   LoadingMorePlugin,
@@ -18,13 +19,14 @@ class InfiniteListPlugin extends AbstractPlugin {
 
   constructor() {
     super();
+    // TODO Child for AbstractPlugin that automatically apply child plugins.
     this.loadingPlugin = new LoadingPlugin();
     this.loadingMorePlugin = new LoadingMorePlugin();
   }
 
-  afterInstall(): void {
-    this.loadingPlugin.afterInstall();
-    this.loadingMorePlugin.afterInstall();
+  beforeInstall(vm: IViewModel): void {
+    this.loadingPlugin.install(vm);
+    this.loadingMorePlugin.install(vm);
   }
 
   wrapView(View: ComponentType<any>) {

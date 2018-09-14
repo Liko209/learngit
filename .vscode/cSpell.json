@@ -81,6 +81,7 @@
         "repo",
         "Resultset",
         "ringcentral",
+        "Scroller",
         "sockjs",
         "sourcemap",
         "subdomains",

@@ -1,6 +1,10 @@
 import { ComponentType } from 'react';
-import { withLoadingMore } from 'ui-components';
+import { withLoadingMore, WithLoadingMoreProps } from 'ui-components';
 import { AbstractPlugin } from '@/base/AbstractPlugin';
+import { IViewModel } from '@/base/IViewModel';
+import { createFunctionWrapDecorator } from './utils';
+
+interface ILoadingMoreViewModel extends IViewModel, WithLoadingMoreProps {}
 
 class LoadingMorePlugin extends AbstractPlugin {
   afterInstall(): void {
@@ -20,24 +24,22 @@ class LoadingMorePlugin extends AbstractPlugin {
   }
 }
 
-function loadingTop(target: any, propertyKey: string, descriptor: any) {
-  const originalFn = descriptor.value;
-  descriptor.value = async function (...args: any[]) {
-    this.loadingTop = true;
-    await originalFn.apply(this, args);
-    this.loadingTop = false;
-  };
-  return descriptor;
-}
+const loadingTop = createFunctionWrapDecorator({
+  before(vm: ILoadingMoreViewModel) {
+    vm.loadingTop = true;
+  },
+  after(vm: ILoadingMoreViewModel) {
+    vm.loadingTop = false;
+  },
+});
 
-function loadingBottom(target: any, propertyKey: string, descriptor: any) {
-  const originalFn = descriptor.value;
-  descriptor.value = async function (...args: any[]) {
-    this.loadingBottom = true;
-    await originalFn.apply(this, args);
-    this.loadingBottom = false;
-  };
-  return descriptor;
-}
+const loadingBottom = createFunctionWrapDecorator({
+  before(vm: ILoadingMoreViewModel) {
+    vm.loadingBottom = true;
+  },
+  after(vm: ILoadingMoreViewModel) {
+    vm.loadingBottom = false;
+  },
+});
 
 export { LoadingMorePlugin, loadingTop, loadingBottom };

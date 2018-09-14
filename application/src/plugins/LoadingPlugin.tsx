@@ -2,6 +2,7 @@ import { ComponentType } from 'react';
 import { withLoading, WithLoadingProps } from 'ui-components';
 import { IViewModel } from '@/base/IViewModel';
 import { AbstractPlugin } from '@/base/AbstractPlugin';
+import { createFunctionWrapDecorator } from './utils';
 
 interface ILoadingViewModel extends IViewModel, WithLoadingProps {}
 
@@ -20,14 +21,13 @@ class LoadingPlugin extends AbstractPlugin {
   }
 }
 
-function loading(target: any, propertyKey: string, descriptor: any) {
-  const originalFn = descriptor.value;
-  descriptor.value = async function (...args: any[]) {
-    this.loading = true;
-    await originalFn.apply(this, args);
-    this.loading = false;
-  };
-  return descriptor;
-}
+const loading = createFunctionWrapDecorator({
+  before(vm: ILoadingViewModel) {
+    vm.loading = true;
+  },
+  after(vm: ILoadingViewModel) {
+    vm.loading = false;
+  },
+});
 
 export { LoadingPlugin, ILoadingViewModel, loading };

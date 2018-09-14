@@ -11,12 +11,12 @@ class TimerDemoViewModel extends AbstractViewModel
   text: string = 'Current Time';
   @observable
   now: number = Date.now();
-  @observable
-  timer: NodeJS.Timer;
   onUpdateTimeClick = () => this.updateTime();
   onUpdateTimeWithLoadingClick = () => this.updateTimeWithLoading();
   onStartTimerClick = () => this.startTimer();
   onStopTimerClick = () => this.stopTimer();
+
+  timer: NodeJS.Timer;
 
   constructor({ id }: TimerDemoProps) {
     super();
