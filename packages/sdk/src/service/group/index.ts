@@ -39,6 +39,7 @@ import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { notificationCenter } from '../';
 import { extractHiddenGroupIds } from '../profile/handleData';
+import _ from 'lodash';
 
 export type CreateTeamOptions = {
   isPublic?: boolean;
@@ -71,11 +72,12 @@ export default class GroupService extends BaseService<Group> {
       profile.favorite_group_ids &&
       profile.favorite_group_ids.length > 0
     ) {
+      let favorite_group_ids = profile.favorite_group_ids;
+      const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
+      favorite_group_ids = _.difference(favorite_group_ids, hiddenIds);
       const dao = daoManager.getDao(GroupDao);
-      result = (await dao.queryGroupsByIds(
-        profile.favorite_group_ids,
-      )) as Group[];
-      result = sortFavoriteGroups(profile.favorite_group_ids, result);
+      result = (await dao.queryGroupsByIds(favorite_group_ids)) as Group[];
+      result = sortFavoriteGroups(favorite_group_ids, result);
     }
     return result;
   }

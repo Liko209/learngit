@@ -130,7 +130,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   }
 
   renderCloseMenuItem() {
-    if (!this.isFavorite && this.unreadCount === 0) {
+    if (this.unreadCount === 0) {
       return (
         <MenuItem onClick={this._toggleCloseConversation}>
           {this.closeText}
