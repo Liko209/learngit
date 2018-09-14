@@ -2,14 +2,14 @@ import * as React from 'react';
 import { JuiAvatar, TJuiAvatarProps } from 'ui-components/atoms/Avatar';
 import { observer } from 'mobx-react';
 
-type TAvatarProps = {
-  id: number;
-} & TJuiAvatarProps;
+type TAvatarProps = TJuiAvatarProps & {
+  uId: number;
+};
 
 @observer
 class Avatar extends React.Component<TAvatarProps, {}> {
   render() {
-    const { id, ...rest } = this.props;
+    const { uId, ...rest }: TAvatarProps = this.props;
     return <JuiAvatar {...rest}>SH</JuiAvatar>;
   }
 }

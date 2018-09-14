@@ -3,12 +3,10 @@
 * @Date: 2018-09-12 16:29:39
 * Copyright © RingCentral. All rights reserved.
 */
-import { ClientFunction } from 'testcafe';
 import { formalName } from '../../libs/filter';
 import { setUp, tearDown } from '../../libs/helpers';
 import { directLogin } from '../../utils';
 import { setupSDK } from '../../utils/setupSDK';
-import { DirectMessageSection } from '../../page-models/components';
 import { LeftRail } from '../../page-models/components/ConversationList/LeftRail';
 import { ConversationStream } from '../../page-models/components/ConversationStream/ConversationStream';
 import { PersonAPI } from '../../libs/sdk';
@@ -18,11 +16,8 @@ fixture('ConversationCard')
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
-test(formalName('Check any message should display expected elements', ['JPT-5', 'P2', 'ConversationList']), async (t) => {
-  await setupSDK(t);
-  const postContent = `some random text post ${Date.now()}`;
-  const changedName = `Random ${Date.now()}`;
-  await directLogin(t)
+const prepare = (t: TestController, postContent: string) =>
+  directLogin(t)
     .chain(t => t.wait(10000))
     .log('1. should navigate to Left Rail')
     .shouldNavigateTo(LeftRail)
@@ -36,15 +31,40 @@ test(formalName('Check any message should display expected elements', ['JPT-5', 
     .log('4. send post to current group')
     .sendPost2CurrentGroup(postContent, 'jpt5Post')
     .log('5. find the post just sent')
-    .shouldFindPostById('jpt5Post')
-    .log('6. should find metadata in card')
-    .checkMetadataInTargetPost('jpt5Post')
-    .log('7. modify user name through api request')
-    .chain(async (t, h) => {
-      await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
-        first_name: changedName,
-      });
-    })
-    .log('8. name should be updated')
-    .checkMetadataInTargetPost('jpt5Post');
-});
+    .shouldFindPostById('jpt5Post');
+
+test(
+  formalName('Check send time for each message metadata.', [
+    'JPT-43',
+    'P2',
+    'ConversationList',
+  ]),
+  async (t: TestController) => {
+    await setupSDK(t);
+    const postContent = `some random text post ${Date.now()}`;
+    await prepare(t, postContent)
+      .log('6. should find metadata in card')
+      .checkMetadataInTargetPost('jpt5Post');
+  },
+);
+
+test(
+  formalName(
+    'When update user name, can sync dynamically in message metadata.',
+    ['JPT-91', 'P2', 'ConversationList'],
+  ),
+  async (t: TestController) => {
+    await setupSDK(t);
+    const postContent = `some random text post ${Date.now()}`;
+    const changedName = `Random ${Date.now()}`;
+    await prepare(t, postContent)
+      .log('6. modify user name through api request')
+      .chain(async (t, h) => {
+        await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
+          first_name: changedName,
+        });
+      })
+      .log('7. name should be updated')
+      .checkMetadataInTargetPost('jpt5Post');
+  },
+);

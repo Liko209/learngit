@@ -1,15 +1,20 @@
 import React from 'react';
 import { ENTITY_NAME } from '@/store';
 import { observer } from 'mobx-react';
-import { JuiDivider } from 'ui-components';
+import { JuiDivider } from 'ui-components/atoms/Divider';
 import injectStore, { IInjectedStoreProps } from '@/store/inject';
 import VM from '@/store/ViewModel';
 import PostModel from '@/store/models/Post';
-import { JuiConversationCard, JuiConversationCardHeader, JuiConversationCardFooter } from 'ui-components/organisms/ConversationCard';
-import { JuiAvatar } from 'ui-components/atoms/Avatar';
+import {
+  JuiConversationCard,
+  JuiConversationCardHeader,
+  JuiConversationCardFooter,
+} from 'ui-components/organisms/ConversationCard';
 import moment from 'moment';
 import { Post, Person } from 'sdk/src/models';
 import PersonModel from '@/store/models/Person';
+import { getEntity } from '@/store/utils';
+import { Avatar } from '../../../Avatar/Avatar';
 interface IProps extends IInjectedStoreProps<VM> {
   id: number;
 }
@@ -17,23 +22,30 @@ interface IProps extends IInjectedStoreProps<VM> {
 @observer
 export class ConversationCard extends React.Component<IProps> {
   render() {
-    const { id, getEntity } = this.props;
+    const { id } = this.props;
     const post = getEntity<Post, PostModel>(ENTITY_NAME.POST, id);
-    const creator = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, post.creatorId);
-    const {
-      text,
-      createdAt,
-    } = post;
-    /**
-     * Just a placeholder, should be replaced with a container instead. * <Avatar id={creator.id} size="medium" />
-     */
-    const avatar = <JuiAvatar size="medium">SH</JuiAvatar>;
+    const creator = getEntity<Person, PersonModel>(
+      ENTITY_NAME.PERSON,
+      post.creatorId,
+    );
+    const { text, createdAt } = post;
+    const avatar = (
+      <Avatar uId={id} size="medium">
+        SH
+      </Avatar>
+    );
+    console.log(JuiConversationCardHeader);
     return (
       <React.Fragment>
         <JuiConversationCard Avatar={avatar}>
-          <JuiConversationCardHeader name={creator.displayName} time={moment(createdAt).format('hh:mm A')} />
+          <JuiConversationCardHeader
+            name={creator.displayName}
+            time={moment(createdAt).format('hh:mm A')}
+          />
           {/* todo: content */}
-          <div style={{ fontSize: '14px', lineHeight: '24px', color: '#616161' }}>
+          <div
+            style={{ fontSize: '14px', lineHeight: '24px', color: '#616161' }}
+          >
             {text}
           </div>
           {/* todo: content */}
