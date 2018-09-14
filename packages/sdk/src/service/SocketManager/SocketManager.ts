@@ -83,7 +83,7 @@ export class SocketManager {
       this._onServerHostUpdated();
     });
 
-    notificationCenter.on(SOCKET.STATE_CHANGE, ({ state }: { state: any }) => {
+    notificationCenter.on(SERVICE.SOCKET_STATE_CHANGE, ({ state }: { state: any }) => {
       this._onSocketStateChanged(state);
     });
 
@@ -197,7 +197,7 @@ export class SocketManager {
     const state = this.activeFSM.state;
     // TO-DO:
     if (state !== 'connected' && state !== 'connecting') {
-      notificationCenter.emit(SOCKET.STATE_CHANGE, {
+      notificationCenter.emit(SERVICE.SOCKET_STATE_CHANGE, {
         state: 'refresh',
       });
     }

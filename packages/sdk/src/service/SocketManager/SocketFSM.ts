@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import notificationCenter from '../../service/notificationCenter';
-import { SOCKET } from '../../service/eventKey';
+import { SOCKET, SERVICE } from '../../service/eventKey';
 import { mainLogger, SocketClient } from 'foundation';
 import StateMachine from 'ts-javascript-state-machine';
 import dataDispatcher from '../../component/DataDispatcher';
@@ -54,7 +54,7 @@ export class SocketFSM extends StateMachine {
         onEnterState() {
           this.info(`onEnterState ${this.state}`);
           // TO-DO: move out to manager?
-          notificationCenter.emit(SOCKET.STATE_CHANGE, {
+          notificationCenter.emit(SERVICE.SOCKET_STATE_CHANGE, {
             state: this.state,
           });
         },
