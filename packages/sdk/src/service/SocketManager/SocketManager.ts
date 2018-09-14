@@ -83,10 +83,6 @@ export class SocketManager {
       this._onServerHostUpdated();
     });
 
-    notificationCenter.on(SOCKET.STATE_CHANGE, ({ state }: { state: any }) => {
-      this._onSocketStateChanged(state);
-    });
-
     notificationCenter.on(SOCKET.NETWORK_CHANGE, ({ state }: any) => {
       switch (state) {
         case 'offline':
@@ -161,20 +157,6 @@ export class SocketManager {
     }
   }
 
-  private _onSocketStateChanged(state: string) {
-    if (state === 'connected') {
-      const activeState = this.activeFSM && this.activeFSM.state;
-      if (state === activeState) {
-        const activeUrl = this.activeFSM.serverUrl;
-        if (this.successConnectedUrls.indexOf(activeUrl) === -1) {
-          this.successConnectedUrls.push(activeUrl);
-        }
-      } else {
-        this.warn(`Invalid activeState: ${activeState}`);
-      }
-    }
-  }
-
   private _onOffline() {
     this.info('onOffline');
     this._stopActiveFSM();
@@ -195,9 +177,8 @@ export class SocketManager {
     if (!this.activeFSM) return;
 
     const state = this.activeFSM.state;
-    // TO-DO:
     if (state !== 'connected' && state !== 'connecting') {
-      notificationCenter.emit(SOCKET.STATE_CHANGE, {
+      notificationCenter.emit(SERVICE.SOCKET_STATE_CHANGE, {
         state: 'refresh',
       });
     }
@@ -222,7 +203,7 @@ export class SocketManager {
     const configDao = daoManager.getKVDao(ConfigDao);
     const serverHost = configDao.get(SOCKET_SERVER_HOST);
     if (serverHost) {
-      this.activeFSM = new SocketFSM(serverHost);
+      this.activeFSM = new SocketFSM(serverHost, this._stateHandler.bind(this));
       this.activeFSM.start();
     }
 
@@ -235,5 +216,23 @@ export class SocketManager {
       // this.closingFSMs[this.activeFSM.name] = this.activeFSM;
       this.activeFSM = null;
     }
+  }
+
+  private _stateHandler(name: string, state: string) {
+    if (state === 'connected') {
+      const activeState = this.activeFSM && this.activeFSM.state;
+      if (state === activeState) {
+        const activeUrl = this.activeFSM.serverUrl;
+        if (this.successConnectedUrls.indexOf(activeUrl) === -1) {
+          this.successConnectedUrls.push(activeUrl);
+        }
+      } else {
+        this.warn(`Invalid activeState: ${activeState}`);
+      }
+    }
+
+    notificationCenter.emit(SERVICE.SOCKET_STATE_CHANGE, {
+      state,
+    });
   }
 }
