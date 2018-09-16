@@ -66,7 +66,7 @@ class MenuListPanel extends React.Component<TIconMore> {
                   <MenuList>
                     {
                       items!.map((item, index) => {
-                        return (<MenuItem onClick={handleClose.bind(this, index)} key={index}>{item}</MenuItem>);
+                        return (<MenuItem onClick={handleClose.bind(this, event, index)} key={index}>{item}</MenuItem>);
                       })
                     }
                   </MenuList>
