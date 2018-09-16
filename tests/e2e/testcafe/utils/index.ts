@@ -4,5 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './login';
+export * from './mockLogin';
 export * from './sleep';
 export * from './AnchorSelector';

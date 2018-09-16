@@ -59,10 +59,7 @@ async function getUrlWithAuthCode(
 }
 
 function createRole(authInfo?: AuthInfo) {
-  return Role(
-    SITE_URL,
-    async t => await interactiveLogin(t, authInfo),
-  );
+  return Role(SITE_URL, async t => await interactiveLogin(t, authInfo));
 }
 
 function interactiveLogin(t: TestController, authInfo?: AuthInfo) {
@@ -99,7 +96,6 @@ function interactiveLogin(t: TestController, authInfo?: AuthInfo) {
     .log('expect exist home react component')
     .shouldNavigateTo(Home)
     .expectExistComponent();
-
 }
 
 function directLogin(t: TestController, authInfo?: AuthInfo) {
@@ -118,8 +114,12 @@ function directLogin(t: TestController, authInfo?: AuthInfo) {
   }
   return new BlankPage(t)
     .log(`account: ${credential} extension: ${extension}`)
-    .chain(async (t) => {
-      const urlWithAuthCode = await getUrlWithAuthCode(SITE_URL, { credential, extension, password });
+    .chain(async (t: TestController) => {
+      const urlWithAuthCode = await getUrlWithAuthCode(SITE_URL, {
+        credential,
+        extension,
+        password,
+      });
       await t.navigateTo(urlWithAuthCode);
     })
     .shouldNavigateTo(TokenGetterPage);
