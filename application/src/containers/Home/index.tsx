@@ -149,6 +149,8 @@ class Home extends Component<IProps, IStates>  {
     const { expanded } = this.state;
     const { t } = this.props;
     const { title, forwardDisabled, showLeftPanel, showRightPanel, backDisabled } = this.navPresenter.state;
+    console.log('title');
+    console.log(title);
     const {
       menus,
       handleRouterChange,
