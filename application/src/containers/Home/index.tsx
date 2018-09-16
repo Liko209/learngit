@@ -23,6 +23,7 @@ import JuiIconButton from 'ui-components/molecules/IconButton';
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
 import NavPresenter from './NavPresenter';
+import { isElectron } from '@/utils';
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -108,29 +109,10 @@ class Home extends Component<IProps, IStates>  {
         }
         if (backNavArray.length) {
           this.navPresenter.state.backDisabled = false;
-          this.navPresenter.setItem('backNavArray', JSON.stringify(backNavArray));
+          isElectron && this.navPresenter.setItem('backNavArray', JSON.stringify(backNavArray));
         }
       });
     });
-  }
-  handleForward = () => {
-    this.navPresenter.handleForward();
-  }
-  handleBackWard = () => {
-    this.navPresenter.handleBackWard();
-  }
-  handleButtonPress = () => {
-    this.navPresenter.handleButtonPress();
-  }
-  handleButtonRelease = (evt: React.TouchEvent|React.MouseEvent, nav: string) => {
-    // click will trigger also
-    this.navPresenter.handleButtonRelease(evt, nav);
-  }
-  handleMenuItem = (navArray: {url: string, urlTitle: string}[]) => {
-    this.navPresenter.handleMenuItem(navArray);
-  }
-  handleNavClose = (event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index: number|undefined) => {
-    this.navPresenter.handleNavClose(event, index);
   }
   handleExpand = () => {
     this.setState({
@@ -163,17 +145,20 @@ class Home extends Component<IProps, IStates>  {
       ],
     ];
   }
-  handleTitle  = (title: string) => {
-    this.navPresenter.handleTitle(title);
-  }
-  handleRouterChange = () => {
-    this.navPresenter.handleRouterChange();
-  }
   render() {
     const { expanded } = this.state;
     const { t } = this.props;
     const { title, forwardDisabled, showLeftPanel, showRightPanel, backDisabled } = this.navPresenter.state;
-    const { menus } = this.navPresenter;
+    const {
+      menus,
+      handleRouterChange,
+      handleTitle,
+      handleButtonRelease,
+      handleButtonPress,
+      handleForward,
+      handleBackWard,
+      handleNavClose,
+    } = this.navPresenter;
     return (
       <Wrapper>
         <TopBar
@@ -194,15 +179,15 @@ class Home extends Component<IProps, IStates>  {
           onLeftNavExpand={this.handleLeftNavExpand}
           headerLogo="RingCentral"
           menuItems={menus}
+          handleNavClose={handleNavClose}
           showLeftPanel={showLeftPanel}
           showRightPanel={showRightPanel}
           forwardDisabled={forwardDisabled}
           backDisabled={backDisabled}
-          handleNavClose={this.handleNavClose}
-          handleBackWard={this.handleBackWard}
-          handleForward={this.handleForward}
-          handleButtonPress={this.handleButtonPress}
-          handleButtonRelease={this.handleButtonRelease}
+          handleBackWard={handleBackWard}
+          handleForward={handleForward}
+          handleButtonPress={handleButtonPress}
+          handleButtonRelease={handleButtonRelease}
         />
         <Bottom>
           <DocumentTitle title={title}>
@@ -211,8 +196,8 @@ class Home extends Component<IProps, IStates>  {
               id="leftnav"
               icons={this.getIcons()}
               umiCount={UMI_Count}
-              handleRouterChange={this.handleRouterChange}
-              handleTitle={this.handleTitle}
+              handleRouterChange={handleRouterChange}
+              handleTitle={handleTitle}
             />
           </DocumentTitle>
           <Main>

@@ -8,6 +8,7 @@ import React from 'react';
 
 const SS = window.sessionStorage;
 const parse = JSON.parse;
+const stringify = JSON.stringify;
 class NavPresenter {
   getItem = (key: string) => {
     return SS.getItem(key) || '[]';
@@ -77,8 +78,8 @@ class NavPresenter {
       action();
       this.forwardNavArray = dir === 'forward' ? removedArr.reverse() : addArr;
       this.backNavArray = dir === 'forward' ? addArr : removedArr.reverse(); // reversed
-      this.setItem('backNavArray', JSON.stringify(removedArr));
-      this.setItem('forwardNavArray', JSON.stringify(addArr));
+      this.setItem('backNavArray', stringify(removedArr));
+      this.setItem('forwardNavArray', stringify(addArr));
       state.pressNav = true;
       state[disableType] = false;
       if (!removedArr.length) {
@@ -104,7 +105,7 @@ class NavPresenter {
     },                                 timer);
   }
   @action
-  handleButtonRelease = (evt: React.TouchEvent|React.MouseEvent, nav: string) => {
+  handleButtonRelease = (nav: string) => {
     // click will trigger also
     clearTimeout(this.buttonPressTimer);
     const state = this.state;
@@ -118,11 +119,11 @@ class NavPresenter {
       if (nav === 'backward') {
         state.showLeftPanel = true;
         this.handleMenuItem(backNavArray.reverse());
-        this.setItem('backNavArray', JSON.stringify(backNavArray));
+        this.setItem('backNavArray', stringify(backNavArray));
       }else {
         state.showRightPanel = true;
         this.handleMenuItem(forwardNavArray.reverse());
-        this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
+        this.setItem('forwardNavArray', stringify(forwardNavArray));
       }
     } else {
       state.showRightPanel = false;
@@ -176,8 +177,8 @@ class NavPresenter {
         state.showRightPanel = false;
       }
       this.state.title = REMOVE_ITEM[0]!.title; // set title
-      this.setItem('backNavArray', JSON.stringify(backNavArray));
-      this.setItem('forwardNavArray', JSON.stringify(forwardNavArray));
+      this.setItem('backNavArray', stringify(backNavArray));
+      this.setItem('forwardNavArray', stringify(forwardNavArray));
       this.menuClicked = true;
     };
     if (nav === 'backward' && index !== undefined) {

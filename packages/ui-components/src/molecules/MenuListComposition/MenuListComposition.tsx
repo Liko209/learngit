@@ -48,10 +48,8 @@ class MenuListComposition extends React.Component<
     if (node && node.contains(event.currentTarget)) {
       return;
     }
-
     this.setState({ open: false });
   }
-
   render() {
     const { open } = this.state;
     const { MenuExpandTrigger, menuItems } = this.props;

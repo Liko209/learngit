@@ -25,8 +25,8 @@ const MenuListCompositionWrapper = styled.div`
 
 const MenuWrapper = styled(Popper)`
   position: absolute;
-  top: 30px;
-  left: -20px;
+  top: 34px;
+  left: -32px;
 `;
 
 class MenuListPanel extends React.Component<TIconMore> {
@@ -66,7 +66,7 @@ class MenuListPanel extends React.Component<TIconMore> {
                   <MenuList>
                     {
                       items!.map((item, index) => {
-                        return (<MenuItem onClick={handleClose.bind(this, event, index)} key={index}>{item}</MenuItem>);
+                        return (<MenuItem onClick={handleClose.bind(this, index)} key={index}>{item}</MenuItem>);
                       })
                     }
                   </MenuList>

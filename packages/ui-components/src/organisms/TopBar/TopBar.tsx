@@ -242,7 +242,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               </JuiIconButton>
               <TopLogo variant="headline">{headerLogo}</TopLogo>
             </MenuWithLogo>
-            <BackForward invisible={!isElectron}>
+            <BackForward invisible={isElectron}>
               <MenuListPanel
                 items={menuItems}
                 open={showLeftPanel}
@@ -255,9 +255,9 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
                   onClick={handleBackWard}
                   disabled={backDisabled}
                   onTouchStart={handleButtonPress}
-                  onTouchEnd={handleButtonRelease!.bind(this, '', 'backward')}
+                  onTouchEnd={handleButtonRelease!.bind(this, 'backward')}
                   onMouseDown={handleButtonPress}
-                  onMouseUp={handleButtonRelease!.bind(this, '', 'backward')}
+                  onMouseUp={handleButtonRelease!.bind(this, 'backward')}
                 >
                   chevron_left
                 </JuiIconButton>
@@ -274,9 +274,9 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
                   onClick={handleForward}
                   disabled={forwardDisabled}
                   onTouchStart={handleButtonPress}
-                  onTouchEnd={handleButtonRelease!.bind(this, '', 'forward')}
+                  onTouchEnd={handleButtonRelease!.bind(this,  'forward')}
                   onMouseDown={handleButtonPress}
-                  onMouseUp={handleButtonRelease!.bind(this, '', 'forward')}
+                  onMouseUp={handleButtonRelease!.bind(this, 'forward')}
                 >
                   chevron_right
                 </JuiIconButton>
