@@ -13,7 +13,8 @@ jest.mock('foundation');
 describe('Socket FSM', async () => {
   const serverUrl = 'aws13-g04-uds02.asialab.glip.net:11904';
   function fsmCreate() {
-    const fsm = new SocketFSM(serverUrl);
+    const fsm = new SocketFSM(serverUrl, (name, state) => {
+    });
     return fsm;
   }
 
