@@ -37,10 +37,9 @@ export default class StateService extends BaseService<GroupState> {
     };
   }
 
-  static buildUpdateStateParam(groupId: number, lastPostId: number) {
+  static buildUpdateStateParam(groupId: number) {
     return {
       last_group_id: groupId,
-      [`last_read_through:${groupId}`]: lastPostId,
     };
   }
 
@@ -72,11 +71,10 @@ export default class StateService extends BaseService<GroupState> {
 
   async updateLastGroup(groupId: number): Promise<void> {
     const currentState = await this.getMyState();
-    const lastPost = await this.getLastPostOfGroup(groupId);
-    if (currentState && lastPost) {
+    if (currentState) {
       await StateAPI.saveStatePartial(
         currentState.id,
-        StateService.buildUpdateStateParam(groupId, lastPost.id),
+        StateService.buildUpdateStateParam(groupId),
       );
     }
   }

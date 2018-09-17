@@ -162,7 +162,6 @@ describe('StateService', () => {
 
       expect(StateAPI.saveStatePartial).toHaveBeenCalledWith(1, {
         last_group_id: 1,
-        'last_read_through:1': 1,
       });
     });
   });
