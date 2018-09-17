@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import ConversationThreadsManager from './ConversationStreamManager';
 import ConversationCard from '@/containers/Conversations/ConversationPage/ConversationCard';
 import { JuiChatView } from 'ui-components';
-import { observable } from 'mobx';
 import _ from 'lodash';
 
 interface IProps {
@@ -14,8 +13,6 @@ interface IProps {
 class ConversationStream extends Component<IProps> {
   public manager: ConversationThreadsManager = new ConversationThreadsManager();
   public scrollable: any = {};
-  @observable
-  hasMore: boolean = true;
   constructor(props: IProps) {
     super(props);
     this.scrollable = {};
@@ -53,7 +50,7 @@ class ConversationStream extends Component<IProps> {
   hasMorePost = () => {
     const groupId = this.props.groupId;
     const conversationThread = this.manager.getConversationThread(groupId);
-    return conversationThread.checkHasMore();
+    return conversationThread.store.hasMore;
   }
 
   render() {

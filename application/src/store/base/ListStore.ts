@@ -1,11 +1,10 @@
-import { createAtom, IAtom, observable } from 'mobx';
+import { createAtom, IAtom } from 'mobx';
 import _, { ListIteratee } from 'lodash';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';
 
 export default class ListStore<T> extends BaseNotificationSubscribe {
   items: T[] = [];
-  @observable
-  _hasMore: boolean;
+  _hasMore: boolean = true;
   atom: IAtom = createAtom(`list: ${Math.random()}`);
 
   append(...newItems: T[]) {

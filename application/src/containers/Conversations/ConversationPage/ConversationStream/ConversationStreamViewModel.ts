@@ -22,7 +22,6 @@ export class ConversationStreamViewModel extends TransformHandler<
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   stateService: StateService;
   postService: PostService;
-  hasMore: boolean = true;
   constructor(public groupId: number) {
     super(new OrderListHandler(isMatchedFunc(groupId), transformFunc));
     const postCallback = (params: IIncomingData<PostModel>) => {
@@ -43,7 +42,7 @@ export class ConversationStreamViewModel extends TransformHandler<
       postId: oldest,
     });
     this.handlePageData(ENTITY_NAME.POST, posts, true);
-    this.hasMore = hasMore;
+    this.store.hasMore = hasMore;
   }
 
   markAsRead() {
@@ -56,9 +55,5 @@ export class ConversationStreamViewModel extends TransformHandler<
 
   getSize() {
     return this.store.getSize();
-  }
-
-  checkHasMore() {
-    return this.hasMore;
   }
 }
