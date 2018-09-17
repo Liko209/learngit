@@ -1,3 +1,8 @@
+/*
+ * @Author: Andy Hu
+ * @Date: 2018-09-17 14:01:49
+ * Copyright © RingCentral. All rights reserved.
+ */
 import ListStore from '@/store/base/ListStore';
 import _ from 'lodash';
 import { BaseModel } from 'sdk/models';
@@ -49,23 +54,27 @@ export default class TransformHandler<
 
   modificationHandler = (delta: TDelta) => {
     const { updated, deleted, direction } = delta;
-    const strategy = {
-      [DIRECTION.NEWER]: 'prepend',
-      [DIRECTION.OLDER]: 'append',
-    }[direction];
 
     if (updated.length) {
       const added = _(updated)
         .differenceBy(this.store.items, 'id')
         .value();
-      this.store[strategy](...added);
+      this.onAdded(direction, added);
     }
-
     if (deleted.length) {
-      this.store.delete(item => deleted.includes(item.id));
+      this.onDeleted(deleted);
     }
   }
-
+  onAdded(direction: DIRECTION, addedItems: IIDSortKey[]) {
+    const strategy = {
+      [DIRECTION.NEWER]: 'prepend',
+      [DIRECTION.OLDER]: 'append',
+    }[direction];
+    this.store[strategy](...addedItems);
+  }
+  onDeleted(deletedItems: number[]) {
+    this.store.delete(item => deletedItems.includes(item.id));
+  }
   subscribeModification() {
     this._orderListHandler.on(BIND_EVENT.DATA_CHANGE, this.modificationHandler);
   }

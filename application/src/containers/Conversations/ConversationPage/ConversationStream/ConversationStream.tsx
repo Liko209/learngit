@@ -1,3 +1,8 @@
+/*
+ * @Author: Andy Hu
+ * @Date: 2018-09-17 14:01:06
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import ConversationThreadsManager from './ConversationStreamManager';

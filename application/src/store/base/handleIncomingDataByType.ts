@@ -1,3 +1,8 @@
+/*
+ * @Author: Andy Hu
+ * @Date: 2018-09-17 14:00:55
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { IIDSortKey } from '../store';
 import OrderListStore from './OrderListStore';
 type TDelta<I, E> = {
