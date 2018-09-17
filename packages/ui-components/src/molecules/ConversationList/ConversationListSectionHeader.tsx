@@ -37,8 +37,17 @@ type SectionHeaderProps = {
 };
 
 const ConversationListSectionHeader = (props: SectionHeaderProps) => {
-  const { icon, title, unreadCount, important, expanded,
-    umiVariant, className, onClick, onArrowClick } = props;
+  const {
+    icon,
+    title,
+    unreadCount,
+    important,
+    expanded,
+    umiVariant,
+    className,
+    onClick,
+    onArrowClick,
+  } = props;
 
   const arrow = expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
 
@@ -46,7 +55,13 @@ const ConversationListSectionHeader = (props: SectionHeaderProps) => {
     <StyledListItem className={className} button={true} onClick={onClick}>
       {icon}
       <ItemText>{title}</ItemText>
-      <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
+      {!expanded ? (
+        <Umi
+          variant={umiVariant}
+          important={important}
+          unreadCount={unreadCount}
+        />
+      ) : null}
       <Icon onClick={onArrowClick}>{arrow}</Icon>
     </StyledListItem>
   );
