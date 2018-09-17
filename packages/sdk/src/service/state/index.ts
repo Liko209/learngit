@@ -8,10 +8,12 @@ import StateAPI from '../../api/glip/state';
 import BaseService from '../BaseService';
 import PostService from '../post';
 import { SOCKET, SERVICE } from '../eventKey';
+import { ENTITY } from '../../service/eventKey';
 import handleData, { handlePartialData, handleGroupChange } from './handleData';
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
 import { UMI_METRICS } from '../constants';
+import notificationCenter from '../notificationCenter';
 
 export default class StateService extends BaseService<GroupState> {
   static serviceName = 'StateService';
@@ -58,6 +60,13 @@ export default class StateService extends BaseService<GroupState> {
   }
 
   async markAsRead(groupId: number): Promise<void> {
+    notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [
+      {
+        id: groupId,
+        unread_count: 0,
+        unread_mentions_count: 0,
+      },
+    ]);
     return this.updateState(groupId, StateService.buildMarkAsReadParam);
   }
 
