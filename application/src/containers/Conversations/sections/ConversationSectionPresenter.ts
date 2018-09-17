@@ -7,7 +7,12 @@ import { service } from 'sdk';
 import { Group } from 'sdk/models';
 import OrderListHandler from '@/store/base/OrderListHandler';
 import { ENTITY_NAME } from '@/store';
+import { getEntity, getSingleEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
+import MyStateModel from '@/store/models/MyState';
+import GroupStateModel from '@/store/models/GroupState';
+import { MyState } from 'sdk/src/models';
+import _ from 'lodash';
 
 const { GroupService, AccountService } = service;
 
@@ -55,6 +60,36 @@ class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
     const groupService = GroupService.getInstance<service.GroupService>();
     groupService.reorderFavoriteGroups(oldIndex, newIndex);
+  }
+
+  calculateUmi() {
+    const store = this.getStore();
+    const groupIds = store.getIds();
+    const lastGroupId = getSingleEntity<MyState, MyStateModel>(
+      ENTITY_NAME.MY_STATE,
+      'lastGroupId',
+    ) as number;
+    const groupStates = _.map(groupIds, (groupId: number) => {
+      return getEntity(ENTITY_NAME.GROUP_STATE, groupId) as GroupStateModel;
+    });
+
+    let important = false;
+    const unreadCount: number = _.sumBy(
+      groupStates,
+      (groupState: GroupStateModel) => {
+        const isCurrentGroup = lastGroupId && lastGroupId === groupState.id;
+        const group = getEntity(ENTITY_NAME.GROUP, groupState.id) as GroupModel;
+
+        const unreadCount = isCurrentGroup
+          ? 0
+          : (!group.isTeam && (groupState.unreadCount || 0)) ||
+            (groupState.unreadMentionsCount || 0);
+        important = important || !!groupState.unreadMentionsCount;
+        return unreadCount;
+      },
+    );
+
+    return { important, unreadCount };
   }
 }
 
