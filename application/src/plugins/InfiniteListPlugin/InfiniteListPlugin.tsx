@@ -1,12 +1,12 @@
 import { ComponentType } from 'react';
 import { AbstractPlugin } from '@/base/AbstractPlugin';
 import { IViewModel } from '@/base/IViewModel';
-import { LoadingPlugin, loading } from './LoadingPlugin';
+import { LoadingPlugin, loading } from '../LoadingPlugin';
 import {
   LoadingMorePlugin,
-  loadingTop,
-  loadingBottom,
-} from './LoadingMorePlugin';
+  onScrollToTop,
+  onScrollToBottom,
+} from '../LoadingMorePlugin';
 
 interface IInfiniteListViewModel extends IViewModel {
   onScrollTop(): void;
@@ -31,7 +31,7 @@ class InfiniteListPlugin extends AbstractPlugin {
 
   wrapView(View: ComponentType<any>) {
     let WrappedView = View;
-    WrappedView = this._loadingPlugin.wrapView(View);
+    // WrappedView = this._loadingPlugin.wrapView(View);
     WrappedView = this._loadingMorePlugin.wrapView(WrappedView);
     return WrappedView;
   }
@@ -46,6 +46,6 @@ export {
   InfiniteListPlugin,
   IInfiniteListViewModel,
   loading,
-  loadingTop,
-  loadingBottom,
+  onScrollToTop,
+  onScrollToBottom,
 };

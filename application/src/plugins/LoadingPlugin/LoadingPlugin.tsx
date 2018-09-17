@@ -2,7 +2,7 @@ import { ComponentType } from 'react';
 import { withLoading, WithLoadingProps } from 'ui-components';
 import { IViewModel } from '@/base/IViewModel';
 import { AbstractPlugin } from '@/base/AbstractPlugin';
-import { createFunctionWrapDecorator } from './utils';
+import { createFunctionWrapDecorator } from '../utils';
 
 interface ILoadingViewModel extends IViewModel, WithLoadingProps {}
 

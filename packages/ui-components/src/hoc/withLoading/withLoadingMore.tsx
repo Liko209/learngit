@@ -1,4 +1,4 @@
-import React, { ComponentType } from 'react';
+import React, { ComponentType, Fragment } from 'react';
 import styled from '../../styled-components';
 import { spacing } from '../../utils/styles';
 import { JuiCircularProgress } from '../../atoms/CircularProgress';
@@ -9,7 +9,7 @@ type WithLoadingMoreProps = {
   children: JSX.Element;
 };
 
-const StyledLoadingMore = styled.li`
+const StyledLoadingMore = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -23,19 +23,22 @@ const DefaultLoadingMore = () => (
   </StyledLoadingMore>
 );
 
-const withLoadingMore = <P extends object>(
-  Component: ComponentType<P>,
+const withLoadingMore = (
+  Component: ComponentType<any>,
   CustomizedLoading?: ComponentType<any>,
-): React.SFC<P & WithLoadingMoreProps> => {
-  return ({ loadingTop, loadingBottom, ...props }: WithLoadingMoreProps) => {
-    const LoadingMore = CustomizedLoading || DefaultLoadingMore;
-    return (
-      <Component {...props}>
-        {loadingTop ? <LoadingMore /> : null}
-        {props.children}
-        {loadingBottom ? <LoadingMore /> : null}
-      </Component>
-    );
+) => {
+  return class LoadingMoreComponent extends React.Component<any> {
+    render() {
+      const { loadingTop, loadingBottom, ...rest } = this.props;
+      const LoadingMore = CustomizedLoading || DefaultLoadingMore;
+      return (
+        <Fragment>
+          {loadingTop ? <LoadingMore /> : null}
+          <Component {...rest}>{rest.children}</Component>
+          {loadingBottom ? <LoadingMore /> : null}
+        </Fragment>
+      );
+    }
   };
 };
 

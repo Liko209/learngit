@@ -1,10 +1,7 @@
-import { MouseEvent } from 'react';
-
 type InfiniteListDemoProps = {};
 
 type InfiniteListDemoViewProps = {
-  onScrollTop(event: MouseEvent): void;
-  onScrollBottom(event: MouseEvent): void;
+  items: number[];
 };
 
 export { InfiniteListDemoProps, InfiniteListDemoViewProps };

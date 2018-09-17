@@ -14,10 +14,7 @@ type ScrollerProps = {
 };
 type WithScrollerProps = ScrollerProps;
 
-type ScrollerStates = {
-  atTop: boolean;
-  atBottom: boolean;
-};
+type ScrollerStates = {};
 
 const StyledScroller = styled.div`
   overflow: auto;
@@ -32,10 +29,10 @@ function withScroller(Comp: ComponentType<any>) {
       onScrollTop: noop,
       onScrollBottom: noop,
     };
-    state = {
-      atTop: false,
-      atBottom: false,
-    };
+    atTop = false;
+    atBottom = false;
+    private _scrollHeightBeforeUpdate = 0;
+
     scrollElRef: React.RefObject<HTMLElement> = React.createRef();
 
     private get _scrollEl() {
@@ -53,14 +50,22 @@ function withScroller(Comp: ComponentType<any>) {
 
     componentDidMount() {
       this._scrollEl.scrollTop = this.props.initialScrollTop;
-      this.setState({
-        atTop: this._isAtTop(),
-        atBottom: this._isAtBottom(),
-      });
+      this.atTop = this._isAtTop();
+      this.atBottom = this._isAtBottom();
       this.attachScrollListener();
     }
 
+    componentWillUpdate() {
+      this._scrollHeightBeforeUpdate = this._scrollEl.scrollHeight;
+      console.log('componentWillUpdate', this._scrollEl.scrollHeight);
+    }
+
     componentDidUpdate() {
+      console.log('componentDidUpdate', this._scrollEl.scrollHeight);
+      console.log(
+        'componentWillUnmount',
+        this._scrollEl.scrollHeight - this._scrollHeightBeforeUpdate,
+      );
       this.attachScrollListener();
     }
 
@@ -77,8 +82,8 @@ function withScroller(Comp: ComponentType<any>) {
     }
 
     private _handleScroll = (event: UIEvent) => {
-      const prevAtTop = this.state.atTop;
-      const prevAtBottom = this.state.atBottom;
+      const prevAtTop = this.atTop;
+      const prevAtBottom = this.atBottom;
       const atTop = this._isAtTop();
       const atBottom = this._isAtBottom();
 
@@ -88,10 +93,8 @@ function withScroller(Comp: ComponentType<any>) {
         this.props.onScrollToBottom && this.props.onScrollToBottom(event);
       }
 
-      this.setState({
-        atTop,
-        atBottom,
-      });
+      this.atTop = this._isAtTop();
+      this.atBottom = this._isAtBottom();
     }
 
     private _isAtTop() {
