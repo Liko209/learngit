@@ -21,10 +21,9 @@ interface IProps extends IDialogProps {
   others?: JSX.Element;
 }
 
-<<<<<<< HEAD
 const Alert = ({
-  open,
-  size,
+  open = false,
+  size = 'small',
   header,
   okText,
   onClose,
@@ -32,15 +31,7 @@ const Alert = ({
   others,
 }: IProps) => {
   return (
-    <JuiDialog open={open} size={size || 'small'}>
-=======
-const Alert = ({ open = false, size = 'small', header, okText, onClose, children }: IProps) => {
-  return (
-    <JuiDialog
-      open={open}
-      size={size}
-    >
->>>>>>> origin/feature/FIJI-979
+    <JuiDialog open={open} size={size}>
       <JuiDialogTitle>{header}</JuiDialogTitle>
       <JuiDialogContent>
         <JuiDialogContentText>{children}</JuiDialogContentText>
