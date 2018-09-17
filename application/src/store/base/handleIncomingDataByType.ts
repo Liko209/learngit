@@ -1,7 +1,12 @@
 import { IIDSortKey } from '../store';
 import OrderListStore from './OrderListStore';
-
-function handleDelete<T>(matchedKeys: number[]) {
+type TDelta<I, E> = {
+  deleted: number[];
+  updated: I[];
+  updateEntity: E[];
+};
+function handleDelete<T>(matchedKeys: number[]): TDelta<IIDSortKey, T> {
+  debugger;
   return {
     deleted: matchedKeys,
     updated: [],
@@ -9,12 +14,16 @@ function handleDelete<T>(matchedKeys: number[]) {
   };
 }
 
-function handleReplace<T>(matchedKeys: number[], entities: Map<number, T & { id: number, data: T }>, transformFunc: Function) {
+function handleReplace<T>(
+  matchedKeys: number[],
+  entities: Map<number, T & { id: number; data: T }>,
+  transformFunc: Function,
+): TDelta<IIDSortKey, T> {
   const updated: IIDSortKey[] = [];
   const updateEntity: T[] = [];
   const deleted: number[] = [];
-  matchedKeys.forEach((key) => {
-    const entity = entities.get(key) as { id: number, data: T };
+  matchedKeys.forEach((key: number) => {
+    const entity = entities.get(key) as { id: number; data: T };
     const { data } = entity;
     const idSortKey = transformFunc(data);
     updated.push(idSortKey);
@@ -28,11 +37,16 @@ function handleReplace<T>(matchedKeys: number[], entities: Map<number, T & { id:
   };
 }
 
-function handleReplaceAll<T>(matchedKeys: number[], entities: Map<number, T>, transformFunc: Function, store: OrderListStore) {
+function handleReplaceAll<T>(
+  matchedKeys: number[],
+  entities: Map<number, T>,
+  transformFunc: Function,
+  store: OrderListStore,
+): TDelta<IIDSortKey, T> {
   const updated: IIDSortKey[] = [];
   const updateEntity: T[] = [];
   const deleted: number[] = store.getIds();
-  entities.forEach((entity) => {
+  entities.forEach((entity: T) => {
     const idSortKey = transformFunc(entity);
     updated.push(idSortKey);
     updateEntity.push(entity);
@@ -44,11 +58,15 @@ function handleReplaceAll<T>(matchedKeys: number[], entities: Map<number, T>, tr
   };
 }
 
-function handleUpdateAndPut<T>(matchedKeys: number[], entities: Map<number, T>, transformFunc: Function) {
+function handleUpdateAndPut<T>(
+  matchedKeys: number[],
+  entities: Map<number, T>,
+  transformFunc: Function,
+): TDelta<IIDSortKey, T> {
   const updated: IIDSortKey[] = [];
   const updateEntity: T[] = [];
   const deleted: number[] = [];
-  matchedKeys.forEach((key) => {
+  matchedKeys.forEach((key: number) => {
     const entity = entities.get(key) as T;
     const idSortKey = transformFunc(entity);
     updated.push(idSortKey);
@@ -66,4 +84,5 @@ export {
   handleReplace,
   handleReplaceAll,
   handleUpdateAndPut,
+  TDelta,
 };

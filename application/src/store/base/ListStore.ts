@@ -1,36 +1,37 @@
-import { createAtom, IAtom } from 'mobx';
-import _, { ValueIteratee } from 'lodash';
+import { createAtom, IAtom, observable } from 'mobx';
+import _, { ListIteratee } from 'lodash';
+import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';
 
-export default class ListStore<T> {
+export default class ListStore<T> extends BaseNotificationSubscribe {
   items: T[] = [];
-  atom: IAtom;
+  @observable
+  _hasMore: boolean;
+  atom: IAtom = createAtom(`list: ${Math.random()}`);
 
-  constructor(public identifier: ValueIteratee<T>) {
-    this.atom = createAtom(`orderList: ${Math.random()}`);
+  append(...newItems: T[]) {
+    this.items.push(...newItems);
+    return this.atom.reportChanged();
   }
 
-  set(item: T) {
-    this.batchSet([item]);
+  prepend(...newItems: T[]) {
+    this.items.unshift(...newItems);
+    return this.atom.reportChanged();
   }
 
-  batchSet(items: T[]) {
-    if (!items.length) {
-      return;
-    }
-    const unionAndSortIds = _.unionBy(items, this.items, this.identifier);
-    this.items = unionAndSortIds;
+  replace(index: number, newItem: T) {
+    this.items[index] = newItem;
+    return this.atom.reportChanged();
+  }
+  replaceAll(newItems: T[]) {
+    this.items = newItems;
     this.atom.reportChanged();
   }
 
-  remove(id: number) {
-    _.remove(this.items, this.identifier);
+  delete(predicate?: ListIteratee<T>) {
+    _(this.items)
+      .remove(predicate)
+      .value();
     this.atom.reportChanged();
-  }
-
-  batchRemove(ids: number[]) {
-    ids.forEach((id: number) => {
-      this.remove(id);
-    });
   }
 
   clearAll() {
@@ -39,20 +40,12 @@ export default class ListStore<T> {
   }
 
   getItems() {
-    return this.items;
-  }
-
-  getIds() {
     this.atom.reportObserved();
-    return _(this.items).map('id');
+    return this.items;
   }
 
   getSize() {
     return _(this.items).size();
-  }
-
-  get(id: number) {
-    return _(this.items).find(this.identifier);
   }
 
   first() {
@@ -65,6 +58,13 @@ export default class ListStore<T> {
 
   dump(...args: any[]) {
     console.log(`===> dump: ${JSON.stringify(this.items)}`, args);
+  }
+
+  get hasMore() {
+    return this._hasMore;
+  }
+  set hasMore(hasMore: boolean) {
+    this._hasMore = hasMore;
   }
 }
 
