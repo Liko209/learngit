@@ -30,9 +30,11 @@ export class ConversationCard extends React.Component<IProps> {
     );
     const { text, createdAt } = post;
     const { displayName, awayStatus } = creator;
-    const nameWithStatus = `${displayName}${
-      awayStatus ? ` ${awayStatus}` : ''
-    }`;
+    let nameWithStatus = displayName;
+    if (awayStatus) {
+      nameWithStatus += ` ${awayStatus}`;
+    }
+
     const avatar = (
       <Avatar uId={id} size="medium">
         SH
