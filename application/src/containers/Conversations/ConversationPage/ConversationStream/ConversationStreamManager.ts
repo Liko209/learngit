@@ -64,8 +64,8 @@ export default class ConversationThreadsManager {
       ConversationStreamViewModel.dispose();
     } else {
       this.ConversationStreamViewModels.forEach(
-        (presenter: ConversationStreamViewModel) => {
-          presenter.dispose();
+        (vm: ConversationStreamViewModel) => {
+          vm.dispose();
         },
       );
     }

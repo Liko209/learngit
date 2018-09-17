@@ -1,3 +1,8 @@
+/*
+ * @Author: Andy Hu
+ * @Date: 2018-09-17 14:00:44
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { createAtom, IAtom } from 'mobx';
 import _, { ListIteratee } from 'lodash';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';

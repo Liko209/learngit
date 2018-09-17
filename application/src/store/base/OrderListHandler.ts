@@ -1,3 +1,8 @@
+/*
+ * @Author: Andy Hu
+ * @Date: 2018-09-17 14:00:51
+ * Copyright © RingCentral. All rights reserved.
+ */
 import _ from 'lodash';
 import { BaseModel } from 'sdk/models';
 import { service } from 'sdk';
