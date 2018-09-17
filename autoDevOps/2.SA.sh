@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 echo '====Start SA'
 rm -rf $project/lint
 mkdir -p $project/lint

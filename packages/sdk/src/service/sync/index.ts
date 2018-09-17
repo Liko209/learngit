@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BaseService from '../BaseService';
-import { SOCKET, SERVICE } from '../eventKey';
+import { SERVICE } from '../eventKey';
 import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
 import { LAST_INDEX_TIMESTAMP } from '../../dao/config/constants';
@@ -17,17 +17,15 @@ import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 export default class SyncService extends BaseService {
   private isLoading: boolean;
   constructor() {
-    super(null, null, null, []);
-    this._subscribeSocketStateChange();
+    const subscriptions = {
+      [SERVICE.SOCKET_STATE_CHANGE]: ({ state }: { state: any }) => {
+        if (state === 'connected' || state === 'refresh') {
+          this.syncData();
+        }
+      },
+    };
+    super(null, null, null, subscriptions);
     this.isLoading = false;
-  }
-
-  private _subscribeSocketStateChange() {
-    notificationCenter.on(SOCKET.STATE_CHANGE, ({ state }: { state: any }) => {
-      if (state === 'connected' || state === 'refresh') {
-        this.syncData();
-      }
-    });
   }
 
   async syncData() {

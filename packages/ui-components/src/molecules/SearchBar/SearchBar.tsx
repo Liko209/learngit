@@ -84,20 +84,19 @@ const DropdownIndicator = (props: any) => {
   );
 };
 
-const Placeholder = (props: React.Props<any>) =>
-  (
-    <Typography
-      style={{
-        position: 'absolute',
-        left: '48px',
-        color: '#9E9E9E',
-        top: '50%',
-        transform: 'translate(0,-50%)',
-      }}
-    >
-      {props.children}
-    </Typography>
-  );
+const Placeholder = (props: React.Props<any>) => (
+  <Typography
+    style={{
+      position: 'absolute',
+      left: '48px',
+      color: '#9E9E9E',
+      top: '50%',
+      transform: 'translate(0,-50%)',
+    }}
+  >
+    {props.children}
+  </Typography>
+);
 
 // const StyledControl = styled(components.Control)`
 //   && {
@@ -174,6 +173,12 @@ const colourStyles = {
       margin: '2px 2px 2px 40px',
     };
   },
+  input: (styles: React.CSSProperties) => {
+    return {
+      ...styles,
+      margin: '2px 2px 2px 40px',
+    };
+  },
 };
 
 // type TSelectWithThemeProps<OptionType> = {
@@ -191,17 +196,19 @@ const colourStyles = {
 //   }
 // }
 
-class SearchBar extends React.Component<TSearchBarProps, {
-  value:
-  ValueType<{ value: string; label: string; }>,
-}> {
+class SearchBar extends React.Component<
+  TSearchBarProps,
+  {
+    value: ValueType<{ value: string; label: string }>;
+  }
+> {
   constructor(props: TSearchBarProps) {
     super(props);
     this.state = {
       value: null,
     };
   }
-  handleChange = (value: ValueType<{ value: string; label: string; }>) => {
+  handleChange = (value: ValueType<{ value: string; label: string }>) => {
     this.setState({
       value,
     });
