@@ -13,7 +13,7 @@ import { parse } from 'qs';
 class ViewModel {
   private _authService: service.AuthService;
   @observable
-  open: boolean;
+  open: boolean = false;
 
   constructor() {
     this._authService = service.AuthService.getInstance();
