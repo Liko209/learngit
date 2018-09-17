@@ -53,6 +53,7 @@ describe('Socket Manager', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
       notificationCenter.emitService(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeTruthy();
+      expect(socketManager.ongoingFSMCount()).toEqual(1);
     });
 
     it('logout', () => {
