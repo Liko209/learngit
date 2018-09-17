@@ -89,7 +89,16 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
       this.getDataFromStore();
     });
   }
-
+  componentDidMount() {
+    this.props.history.listen(() => {
+      const pathname = window.location.pathname;
+      const uIdIndex = pathname.lastIndexOf('/');
+      const uid = pathname.slice(uIdIndex + 1);
+      if (+uid === this.id) {
+        this.navPresenter.handleTitle(this.displayName);
+      }
+    });
+  }
   getDataFromStore() {
     const { getEntity } = this.props;
     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;

@@ -16,7 +16,7 @@ class NavPresenter {
   setItem = (key: string, value: any) => {
     return SS.setItem(key, value);
   }
-  @observable buttonPressTimer: any = 0;
+  @observable buttonPressTimer: number = 0;
   @observable menus: string[] = [];
   @observable backNavArray: { title: string }[] = parse(this.getItem('backNavArray'));
   @observable forwardNavArray: { title: string }[] = parse(this.getItem('forwardNavArray'));
@@ -76,6 +76,7 @@ class NavPresenter {
       const REMOVED_ITEM = removedArr.shift(); // out stack
       REMOVED_ITEM && addArr.push(currentItem);
       action();
+      this.state.title = REMOVED_ITEM!.title; // set title
       this.forwardNavArray = dir === 'forward' ? removedArr.reverse() : addArr;
       this.backNavArray = dir === 'forward' ? addArr : removedArr.reverse(); // reversed
       this.setItem('backNavArray', stringify(removedArr));
@@ -100,14 +101,14 @@ class NavPresenter {
   @action
   handleButtonPress = () => {
     const timer = 300;
-    this.buttonPressTimer = setTimeout(() => {
+    this.buttonPressTimer = window.setTimeout(() => {
       this.state.time = timer;
-    },                                 timer);
+    },                                        timer);
   }
   @action
   handleButtonRelease = (nav: string) => {
     // click will trigger also
-    clearTimeout(this.buttonPressTimer);
+    window.clearTimeout(this.buttonPressTimer);
     const state = this.state;
     const time = state.time;
     if (time > 200) {

@@ -76,7 +76,10 @@ class LeftNav extends PureComponent<TNavProps>{
              {
                arr.map((item, idx) => {
                  const navUrl = item.icon.toLocaleLowerCase();
-                 const isActive = window.location.pathname.slice(1) === navUrl;
+                 const pathname = window.location.pathname;
+                 const actIndex = pathname.lastIndexOf('/');
+                 const pathSlice = actIndex ? pathname.slice(1, actIndex) : pathname.slice(1);
+                 const isActive = pathSlice === navUrl;
                  const umiType = umiCount.length ? umiCount[idx] : 0;
                  return (<NavItem
                    expand={expanded}

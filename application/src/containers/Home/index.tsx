@@ -50,7 +50,7 @@ const UMI_Count = [0];
 @observer
 class Home extends Component<IProps, IStates>  {
   private homePresenter: HomePresenter;
-  private navPresenter: any;
+  private _NavPresenter: any;
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -60,7 +60,7 @@ class Home extends Component<IProps, IStates>  {
           : JSON.parse(String(localStorage.getItem('expanded'))),
     };
     this.homePresenter = new HomePresenter();
-    this.navPresenter = NavPresenter;
+    this._NavPresenter = NavPresenter;
   }
   handleLeftNavExpand = () => {
     this.setState({ expanded: !this.state.expanded });
@@ -83,8 +83,8 @@ class Home extends Component<IProps, IStates>  {
     });
   }
   componentWillReceiveProps(nextProps: IProps) {
-    const state = this.navPresenter.state;
-    const { forwardNavArray, backNavArray } = this.navPresenter;
+    const state = this._NavPresenter.state;
+    const { forwardNavArray, backNavArray } = this._NavPresenter;
     if (forwardNavArray.length) {
       state.forwardDisabled = false;
     }
@@ -95,15 +95,15 @@ class Home extends Component<IProps, IStates>  {
   componentDidMount() {
     this.props.history.listen((route) => {
       // get previous title
-      const state = this.navPresenter.state;
+      const state = this._NavPresenter.state;
       const { title, showLeftPanel, showRightPanel, pressNav } = state;
       setTimeout(() => {
-        const { backNavArray, menuClicked, forwardNavArray } = this.navPresenter;
+        const { backNavArray, menuClicked, forwardNavArray } = this._NavPresenter;
         if (!showLeftPanel && !showRightPanel && !pressNav && !menuClicked) {
           backNavArray.push({ title });
-          this.navPresenter.backNavArray = backNavArray;
+          this._NavPresenter.backNavArray = backNavArray;
         }
-        this.navPresenter.menuClicked = false;
+        this._NavPresenter.menuClicked = false;
         if (backNavArray.length > 10) {
           backNavArray.shift();
         }
@@ -111,8 +111,8 @@ class Home extends Component<IProps, IStates>  {
           forwardNavArray.shift();
         }
         if (backNavArray.length) {
-          this.navPresenter.state.backDisabled = false;
-          isElectron && this.navPresenter.setItem('backNavArray', JSON.stringify(backNavArray));
+          this._NavPresenter.state.backDisabled = false;
+          isElectron && this._NavPresenter.setItem('backNavArray', JSON.stringify(backNavArray));
         }
       });
     });
@@ -151,7 +151,7 @@ class Home extends Component<IProps, IStates>  {
   render() {
     const { expanded } = this.state;
     const { t } = this.props;
-    const { title, forwardDisabled, showLeftPanel, showRightPanel, backDisabled } = this.navPresenter.state;
+    const { title, forwardDisabled, showLeftPanel, showRightPanel, backDisabled } = this._NavPresenter.state;
     const {
       menus,
       handleRouterChange,
@@ -161,7 +161,7 @@ class Home extends Component<IProps, IStates>  {
       handleForward,
       handleBackWard,
       handleNavClose,
-    } = this.navPresenter;
+    } = this._NavPresenter;
     return (
       <Wrapper>
         <TopBar

@@ -15,7 +15,7 @@ fixture('BackNForward/BackNForward')
   .afterEach(tearDown());
 
 test(
-  formalName('test navigation on electron backwards and forwards functions', ['P2', 'JPT-52', 'BackNForward']), async (t) => {
+  formalName('test navigation on electron backwards and forwards functions', ['P2', 'JPT-44', 'JPT-49', 'BackNForward']), async (t) => {
     const page = directLogin(t);
     await page.chain(t => t.wait(10000))
       .log('1. Navigate to BackNForward')
@@ -43,11 +43,11 @@ test(
   });
 
 test(
-  formalName('reLogin should disable backward and forward button', ['P2', 'JPT-52', 'BackNForward']), async (t) => {
+  formalName('reLogin should disable backward and forward button', ['P2', 'JPT-50', 'BackNForward']), async (t) => {
     const page = directLogin(t);
     await page.chain(t => t.wait(10000))
       .log('1. Navigate to BackNForward')
       .shouldNavigateTo(BackNForward)
       .log('2. expect re-login backward btn disabled')
-      .backwardBtnShouldBeDisabled();
+      .backwardNForwardBtnShouldBeDisabled();
   });

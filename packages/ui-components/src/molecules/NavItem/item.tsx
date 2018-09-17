@@ -3,7 +3,7 @@
  * @Date: 2018-8-22 11:12:02
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { PureComponent } from 'react';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import { NavLink } from 'react-router-dom';
 import MuiListItemText, {
@@ -124,12 +124,12 @@ export type TNavItemProps = {
   handleTitle?: Function;
   handleRouterChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
 };
-class NavItem extends React.Component<TNavItemProps> {
+class NavItem extends PureComponent<TNavItemProps> {
   constructor(props: TNavItemProps) {
     super(props);
   }
   render() {
-    const { active, expand, title, variant, unreadCount, icon, url, handleTitle, handleRouterChange } = this.props;
+    const { active, expand, title, variant, unreadCount, icon, url, handleTitle,  handleRouterChange } = this.props;
     active ? handleTitle!(title) : null;
     const NavItems = (
       <ListItem

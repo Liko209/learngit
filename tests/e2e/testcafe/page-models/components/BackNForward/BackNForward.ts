@@ -19,9 +19,6 @@ class BackNForward extends BaseComponent {
   get signOutBtn() {
     return ReactSelector('TopBar').findReact('MenuList');
   }
-  get disabledBackBtn() {
-    return ReactSelector('JuiIconButton').withProps({ tooltipTitle: 'Backward' });
-  }
   public getLeftNavBtn(index: number): Selector {
     return  ReactSelector('NavItem').nth(index);
   }
@@ -29,10 +26,12 @@ class BackNForward extends BaseComponent {
     return this.clickElement(this.backwardBtn);
   }
 
-  public backwardBtnShouldBeDisabled() {
+  public backwardNForwardBtnShouldBeDisabled() {
     return this.chain(async (t) => {
-      const component = await this.backwardBtn.getReact();
-      await t.expect(component.props.disabled).eql(true);
+      const forwardComponent = await this.forwardBtn.getReact();
+      const backComponent = await this.backwardBtn.getReact();
+      await t.expect(backComponent.props.disabled).eql(true);
+      await t.expect(forwardComponent.props.disabled).eql(true);
     });
   }
 
