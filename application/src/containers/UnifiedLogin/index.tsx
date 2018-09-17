@@ -56,7 +56,7 @@ interface IProps extends RouteComponentProps<{}> {
   t: TranslationFunction;
 }
 
-interface IStates { }
+interface IStates {}
 
 class UnifiedLogin extends React.Component<IProps, IStates> {
   constructor(props: IProps) {
@@ -78,7 +78,7 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
     return (
       <div>
         <Form onSubmit={this.onSubmit}>
-          <Button type="submit" data-anchor="btnLogin" >
+          <Button type="submit" data-anchor="btnLogin">
             {t('signIn')}
           </Button>
           {/* <select onChange={this.onChange} value={brandId} style={{ display: 'none' }}>
@@ -91,10 +91,16 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
             <option value="7310">TELUS</option>
           </select> */}
           <EnvSelect />
+          <a
+            target="_blank"
+            href="https://wiki.ringcentral.com/display/XTO/Jupiter+test+account"
+          >
+            Test Account
+          </a>
         </Form>
         <LoginVersionStatus />
         <Download />
-      </div >
+      </div>
     );
   }
 }

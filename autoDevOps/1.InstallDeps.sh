@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 echo '====Start Install Deps'
 
 npm i

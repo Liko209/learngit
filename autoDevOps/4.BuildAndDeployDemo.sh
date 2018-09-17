@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 echo '====Start Build demo'
 yarn build:demo
 

@@ -15,5 +15,7 @@
   "Notes": "Notes",
   "Files": "Files",
   "Settings": "Settings",
-  "SignIn": "Sign in"
+  "SignIn": "Sign in",
+  "SignOut": "Sign out",
+  "CreateTeam": "Create Team"
 }
