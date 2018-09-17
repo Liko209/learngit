@@ -3,26 +3,27 @@ import { action } from 'mobx';
 import {
   withLoadingMore,
   withScroller,
-  WithLoadingMoreProps,
   WithScrollerProps,
 } from 'ui-components';
-import { AbstractPlugin } from '@/base/AbstractPlugin';
+import { IPlugin } from '@/base/IPlugin';
 import { IViewModel } from '@/base/IViewModel';
 import { createFunctionDecorator } from '../utils';
 
 const topListeners = Symbol('topListeners');
 const bottomListeners = Symbol('bottomListeners');
 
-interface ILoadingMoreViewModel
-  extends IViewModel,
-    WithLoadingMoreProps,
-    WithScrollerProps {}
+interface ILoadingMoreViewModel extends IViewModel, WithScrollerProps {
+  loadingTop: boolean;
+  loadingBottom: boolean;
+}
 
-class LoadingMorePlugin extends AbstractPlugin {
-  afterInstall(vm: ILoadingMoreViewModel): void {
-    this.extendViewModel({
+class LoadingMorePlugin implements IPlugin {
+  install(_vm: IViewModel): void {
+    const vm = _vm.extendProps({
       loadingTop: false,
       loadingBottom: false,
+      onScrollToTop: () => {},
+      onScrollToBottom: () => {},
     });
 
     if (vm[topListeners]) {
@@ -56,11 +57,6 @@ class LoadingMorePlugin extends AbstractPlugin {
     WrappedView = withScroller(WrappedView);
     return WrappedView;
   }
-
-  uninstall() {
-    // TODO handle uninstall
-    console.log(this.vm);
-  }
 }
 
 const onScrollToTop = createFunctionDecorator({
@@ -87,4 +83,9 @@ const onScrollToBottom = createFunctionDecorator({
   },
 });
 
-export { LoadingMorePlugin, onScrollToTop, onScrollToBottom };
+export {
+  LoadingMorePlugin,
+  ILoadingMoreViewModel,
+  onScrollToTop,
+  onScrollToBottom,
+};

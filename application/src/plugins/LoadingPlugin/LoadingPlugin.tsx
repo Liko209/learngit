@@ -1,23 +1,18 @@
 import { ComponentType } from 'react';
 import { withLoading, WithLoadingProps } from 'ui-components';
 import { IViewModel } from '@/base/IViewModel';
-import { AbstractPlugin } from '@/base/AbstractPlugin';
+import { IPlugin } from '@/base/IPlugin';
 import { createFunctionWrapDecorator } from '../utils';
 
 interface ILoadingViewModel extends IViewModel, WithLoadingProps {}
 
-class LoadingPlugin extends AbstractPlugin {
-  afterInstall(): void {
-    this.extendViewModel({ loading: false });
+class LoadingPlugin implements IPlugin {
+  install(vm: IViewModel): void {
+    vm.extendProps({ loading: false });
   }
 
   wrapView(View: ComponentType<any>) {
     return withLoading(View);
-  }
-
-  uninstall() {
-    // TODO handle uninstall
-    console.log(this.vm);
   }
 }
 

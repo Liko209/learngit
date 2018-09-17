@@ -1,14 +1,14 @@
 import { ComponentType } from 'react';
 import { IViewModel } from '@/base/IViewModel';
-import { AbstractPlugin } from '@/base/AbstractPlugin';
+import { IPlugin } from '@/base/IPlugin';
 import { createFunctionDecorator } from '../utils';
 import { ErrorHandlerFactory } from './ErrorHandlerFactory';
 interface IErrorHandlerViewModel extends IViewModel {}
 
 const errorHandlerFactory = new ErrorHandlerFactory();
 
-class ErrorHandlerPlugin extends AbstractPlugin {
-  afterInstall(): void {
+class ErrorHandlerPlugin implements IPlugin {
+  install(): void {
     // TODO Will need to extend vm while using a WrappedView
     // this.extendViewModel({});
   }
@@ -16,11 +16,6 @@ class ErrorHandlerPlugin extends AbstractPlugin {
   wrapView(View: ComponentType<any>) {
     // TODO use custom alert dialog
     return View;
-  }
-
-  uninstall() {
-    // TODO handle uninstall
-    console.log(this.vm);
   }
 }
 

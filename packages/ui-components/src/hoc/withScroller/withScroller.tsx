@@ -26,8 +26,8 @@ function withScroller(Comp: ComponentType<any>) {
     static defaultProps = {
       threshold: 100,
       initialScrollTop: 0,
-      onScrollTop: noop,
-      onScrollBottom: noop,
+      onScrollToTop: noop,
+      onScrollToBottom: noop,
     };
     atTop = false;
     atBottom = false;

@@ -5,6 +5,7 @@
     "outDir": "build",
     "rootDir": "src",
     "target": "es6",
+    "experimentalDecorators": true,
     "paths": {
       "@/*": ["src/*"],
       "sdk/*": ["node_modules/sdk/src/*"],
@@ -12,12 +13,10 @@
       "ui-components/*": ["node_modules/ui-components/src/*"]
     }
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules/**/*",
     "src/**/__tests__/**/*.ts",
-    "src/**/*(.spec|.test).ts",
-  ],
+    "src/**/*(.spec|.test).ts"
+  ]
 }

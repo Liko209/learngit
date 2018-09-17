@@ -61,14 +61,22 @@ function createFunctionWrapDecorator({
     afterInstall,
     install(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
       const originalFn = descriptor.value;
-      descriptor.value = async function (...args: any[]) {
+      descriptor.value = function (...args: any[]) {
         // Before function call
-        options.before && options.before.apply(this, [args]);
+        options.before && options.before.apply(this, [this, args]);
 
-        await originalFn.apply(this, args);
+        const result = originalFn.apply(this, args);
 
         // After function call
-        options.after && options.after.apply(this, [args]);
+        if (result instanceof Promise) {
+          result.then(() => {
+            options.after && options.after.apply(this, [this, args]);
+          });
+        } else {
+          options.after && options.after.apply(this, [this, args]);
+        }
+
+        return result;
       };
       return descriptor;
     },

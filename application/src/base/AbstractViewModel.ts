@@ -2,8 +2,8 @@ import { extendObservable } from 'mobx';
 import { IViewModel } from './IViewModel';
 
 abstract class AbstractViewModel implements IViewModel {
-  extendViewProps(key: string, value?: any) {
-    extendObservable(this, key, value);
+  extendProps<T extends Object>(props: T): this & T {
+    return extendObservable(this, props);
   }
 }
 

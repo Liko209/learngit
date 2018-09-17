@@ -31,18 +31,18 @@ function buildContainer<T = {}, S = {}, SS = any>({
     }
 
     componentDidMount() {
-      this.vm.componentDidMount && this.vm.componentDidMount();
-    }
-
-    shouldComponentUpdate() {
-      return (
-        this.vm.shouldComponentUpdate &&
-        this.vm.shouldComponentUpdate.apply(this.vm, arguments)
-      );
+      this.vm.componentDidMount &&
+        this.vm.componentDidMount.apply(this.vm, arguments);
     }
 
     componentWillUnmount() {
-      this.vm.componentWillUnmount && this.vm.componentWillUnmount();
+      this.vm.componentWillUnmount &&
+        this.vm.componentWillUnmount.apply(this.vm, arguments);
+    }
+
+    componentDidUpdate() {
+      this.vm.componentDidUpdate &&
+        this.vm.componentDidUpdate.apply(this.vm, arguments);
     }
 
     componentDidCatch() {
