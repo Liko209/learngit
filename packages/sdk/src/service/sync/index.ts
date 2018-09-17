@@ -33,14 +33,6 @@ export default class SyncService extends BaseService {
     this.isLoading = false;
   }
 
-  private _subscribeSocketStateChange() {
-    notificationCenter.on(SOCKET.STATE_CHANGE, ({ state }: { state: any }) => {
-      if (state === 'connected' || state === 'refresh') {
-        this.syncData();
-      }
-    });
-  }
-
   async syncData(onDataLoaded?: () => Promise<void>) {
     this.onDataLoaded = onDataLoaded || this.onDataLoaded;
     if (this.isLoading) {
