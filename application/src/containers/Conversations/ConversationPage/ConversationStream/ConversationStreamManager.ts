@@ -75,3 +75,5 @@ export default class ConversationThreadsManager {
     return this.ConversationStreamViewModels.size;
   }
 }
+
+export { ConversationThreadsManager };
