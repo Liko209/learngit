@@ -3,6 +3,7 @@
  * @Date: 2018-08-21 16:46:24
  * Copyright © RingCentral. All rights reserved.
  */
+import { URL } from 'url';
 import axios from 'axios';
 import { Role } from 'testcafe';
 import { SITE_URL, ENV } from '../config';
@@ -21,13 +22,21 @@ type AuthInfo = {
   password: string;
 };
 
+function urlToRedirectUriAndState(url: URL) {
+  const state = url.pathname + url.search.replace('&', '$') + url.hash;
+  const redirectUri = url.origin;
+  return { state, redirectUri };
+}
+
 async function getUrlWithAuthCode(
   redirectUrl: string,
   authInfo: AuthInfo,
   authUrl: string = ENV.AUTH_URL,
   appClientId: string = ENV.JUPITER_APP_KEY,
 ) {
+  const { state, redirectUri } = urlToRedirectUriAndState(new URL(redirectUrl));
   const data = {
+    state,
     username: authInfo.credential,
     password: authInfo.password,
     autoLogin: false,
@@ -36,8 +45,7 @@ async function getUrlWithAuthCode(
     prompt: 'login sso',
     display: 'touch',
     clientId: appClientId,
-    appUrlScheme: redirectUrl,
-    state: '/',
+    appUrlScheme: redirectUri,
     responseType: 'code',
     responseHint: '',
     glipAuth: true,

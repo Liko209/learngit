@@ -8,7 +8,6 @@ import { GroupAPI } from '../../../libs/sdk';
 import { BaseComponent } from '../..';
 
 class TeamSection extends BaseComponent {
-
   get teamSection() {
     return ReactSelector('ConversationListSection').withProps('title', 'Teams');
   }
@@ -20,16 +19,18 @@ class TeamSection extends BaseComponent {
     return this.teamSection.findReact('ConversationListItem');
   }
   public shouldBeTeam() {
-    return this.chain(async (t) => {
-      await t.expect(this.team0.exists).ok('Fail to find the team, probably caused by long-time loading');
+    return this.chain(async t => {
+      await t
+        .expect(this.team0.exists)
+        .ok('Fail to find the team, probably caused by long-time loading');
       const id = (await this.team0.getReact()).key;
-      const props = (await this._getTeamProps(id));
+      const props = await this._getTeamProps(id);
       return await t.expect(props.is_team).ok(`Team ${id} is not a team`);
     });
   }
 
   public teamNameShouldBe(name) {
-    return this.chain(async (t) => {
+    return this.chain(async t => {
       const text = () => this.team0.findReact('Typography').innerText;
       return await t.expect(text()).eql(name, 'wrong name');
     });
@@ -37,7 +38,10 @@ class TeamSection extends BaseComponent {
 
   public createTeam() {
     return this.chain(async (t, h) => {
-      const client701 = await h.glipApiManager.getClient(h.users.user701, h.companyNumber);
+      const client701 = await h.glipApiManager.getClient(
+        h.users.user701,
+        h.companyNumber,
+      );
       await client701.createGroup({
         type: 'Team',
         isPublic: true,
@@ -48,19 +52,21 @@ class TeamSection extends BaseComponent {
     });
   }
 
-  private async  _getTeamProps(id: number): Promise<{ is_team: boolean }> {
+  private async _getTeamProps(id: number): Promise<{ is_team: boolean }> {
     return (await GroupAPI.requestGroupById(id)).data;
   }
 
   modifyTeamName(name) {
-    return this.chain(async (t) => {
-      await t.expect(this.team0.exists).ok('Fail to find the team, probably caused by long-time loading');
+    return this.chain(async t => {
+      await t
+        .expect(this.team0.exists)
+        .ok('Fail to find the team, probably caused by long-time loading');
       const id = (await this.team0.getReact()).key;
       return await GroupAPI.modifyGroupById(id, { set_abbreviation: name });
     });
   }
   checkTeamIndex(id: number, i: number) {
-    return this.chain(async (t) => {
+    return this.chain(async t => {
       await this.teams();
       const component = await this.teams.nth(i).getReact();
       await t.expect(component.key).eql(id);
