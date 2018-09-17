@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 echo '====Start Setup Variable'
 rm -rf $project/build.properties
 # gitlabActionType
