@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 echo '====Start Puppeteer'
 
 cd $project/tests/puppeteer
