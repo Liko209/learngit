@@ -29,11 +29,15 @@ import {
   groupState9,
   groupState10,
 } from './dummy';
+import notificationCenter from '../../../service/notificationCenter';
 
 jest.mock('../../../dao');
 jest.mock('../../post');
 jest.mock('../../../api/glip/state');
-
+jest.mock('../../../service/notificationCenter', () => ({
+  emitEntityUpdate: jest.fn(),
+  emitEntityPut: jest.fn(),
+}));
 describe('StateService', () => {
   const stateService: StateService = new StateService();
 
@@ -125,6 +129,7 @@ describe('StateService', () => {
       stateService.getMyState.mockResolvedValueOnce({ id: 1 });
 
       await stateService.markAsRead(1);
+      expect(notificationCenter.emitEntityUpdate).toBeCalled();
 
       expect(StateAPI.saveStatePartial).toHaveBeenCalledWith(1, {
         'marked_as_unread:1': false,
