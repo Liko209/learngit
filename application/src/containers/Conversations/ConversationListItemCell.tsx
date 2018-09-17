@@ -110,17 +110,15 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     const { currentUserId } = this.props;
     const isCurrentGroup = lastGroup && lastGroup === this.id;
 
-    this.umiHint = !!(
-      !isCurrentGroup &&
-      (groupState.unreadCount || groupState.unreadMentionsCount)
-    );
+    this.umiHint = !!(!isCurrentGroup && groupState.unreadCount);
     this.unreadCount = isCurrentGroup
       ? 0
       : (!group.isTeam && (groupState.unreadCount || 0)) ||
-        (groupState.unreadMentionsCount || 0);
-    this.important = _.has(groupState, 'unreadMentionsCount')
-      ? !!groupState.unreadMentionsCount
-      : this.important;
+        Math.min(
+          groupState.unreadCount || 0,
+          groupState.unreadMentionsCount || 0,
+        );
+    this.important = !!groupState.unreadMentionsCount;
     this.displayName = getGroupName(getEntity, group, currentUserId);
     this.umiVariant = 'count'; // || at_mentions
     if (currentUserId) {
