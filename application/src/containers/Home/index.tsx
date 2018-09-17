@@ -98,7 +98,7 @@ class Home extends Component<IProps, IStates>  {
       const state = this.navPresenter.state;
       const { title, showLeftPanel, showRightPanel, pressNav } = state;
       setTimeout(() => {
-        const { backNavArray, menuClicked } = this.navPresenter;
+        const { backNavArray, menuClicked, forwardNavArray } = this.navPresenter;
         if (!showLeftPanel && !showRightPanel && !pressNav && !menuClicked) {
           backNavArray.push({ title });
           this.navPresenter.backNavArray = backNavArray;
@@ -106,6 +106,9 @@ class Home extends Component<IProps, IStates>  {
         this.navPresenter.menuClicked = false;
         if (backNavArray.length > 10) {
           backNavArray.shift();
+        }
+        if (forwardNavArray.length > 10) {
+          forwardNavArray.shift();
         }
         if (backNavArray.length) {
           this.navPresenter.state.backDisabled = false;
@@ -149,8 +152,6 @@ class Home extends Component<IProps, IStates>  {
     const { expanded } = this.state;
     const { t } = this.props;
     const { title, forwardDisabled, showLeftPanel, showRightPanel, backDisabled } = this.navPresenter.state;
-    console.log('title');
-    console.log(title);
     const {
       menus,
       handleRouterChange,

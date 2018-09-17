@@ -25,8 +25,8 @@ const MenuListCompositionWrapper = styled.div`
 
 const MenuWrapper = styled(Popper)`
   position: absolute;
-  top: 34px;
-  left: -32px;
+  top: 36px;
+  left: -34px;
 `;
 
 class MenuListPanel extends React.Component<TIconMore> {

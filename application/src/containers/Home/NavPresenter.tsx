@@ -134,7 +134,7 @@ class NavPresenter {
   @action
   handleMenuItem = (navArray: {title: string}[]) => {
     const menus = navArray && navArray.map((item) => {
-      return item.title;
+      return item.title.length > 13 ? `${item.title.slice(0, 13)}...` : item.title;
     });
     this.menus = menus;
   }
@@ -151,6 +151,10 @@ class NavPresenter {
       const REMOVE_ITEM = toContracts.splice(toContracts.length - 1, 1); // delete click items
       if (dir === 'backward') {
         forwardNavArray = toContracts.reverse().concat({ title }).concat(contracts);
+        const length = forwardNavArray.length;
+        if (length > 10) {
+          forwardNavArray.splice(0, length - 10);
+        }
         this.handleMenuItem(forwardNavArray.reverse());
         this.backNavArray = backNavArray.reverse();
         this.forwardNavArray = forwardNavArray;
@@ -164,6 +168,10 @@ class NavPresenter {
         state.showLeftPanel = false;
       } else {
         backNavArray = toContracts.reverse().concat({ title }).concat(contracts);
+        const length = backNavArray.length;
+        if (length > 10) {
+          backNavArray.splice(0, length - 10);
+        }
         this.handleMenuItem(backNavArray.reverse());
         this.backNavArray = backNavArray;
         this.forwardNavArray = forwardNavArray.reverse();
@@ -197,6 +205,11 @@ class NavPresenter {
   @action
   handleRouterChange = () => {
     this.state.pressNav = false;
+    const forwardNavArray = this.forwardNavArray;
+    if (forwardNavArray.length) {
+      this.forwardNavArray = [];
+      this.state.forwardDisabled = true;
+    }
   }
 }
 export default new NavPresenter();
