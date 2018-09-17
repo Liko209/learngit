@@ -81,7 +81,6 @@ export default class OrderListHandler<
       'id',
     );
     const matchedKeys = _.intersection(keys, existKeys);
-    debugger;
     const delta = this._handleIncomingDataByType[type]<T>(
       matchedKeys,
       entities,

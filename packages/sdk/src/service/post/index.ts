@@ -143,7 +143,6 @@ export default class PostService extends BaseService<Post> {
         offset,
         limit,
       });
-      debugger;
       if (result.posts.length !== 0) {
         return result;
       }

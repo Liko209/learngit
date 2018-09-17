@@ -6,7 +6,6 @@ type TDelta<I, E> = {
   updateEntity: E[];
 };
 function handleDelete<T>(matchedKeys: number[]): TDelta<IIDSortKey, T> {
-  debugger;
   return {
     deleted: matchedKeys,
     updated: [],

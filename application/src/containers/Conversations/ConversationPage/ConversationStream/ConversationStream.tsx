@@ -65,7 +65,6 @@ class ConversationStream extends Component<IProps> {
     const postIds = _(vm.items)
       .map('id')
       .value();
-    console.log('andy', postIds);
     return (
       <JuiChatView
         flipped={true}
