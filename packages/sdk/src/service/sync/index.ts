@@ -43,8 +43,6 @@ export default class SyncService extends BaseService {
     this.isLoading = true;
     const configDao = daoManager.getKVDao(ConfigDao);
     const lastIndexTimestamp = configDao.get(LAST_INDEX_TIMESTAMP);
-    console.log('syncData', lastIndexTimestamp);
-
     if (lastIndexTimestamp) {
       await this._syncIndexData(lastIndexTimestamp);
     } else {
@@ -61,7 +59,6 @@ export default class SyncService extends BaseService {
 
   private async _firstLogin() {
     try {
-      console.log('_firstLogin');
       const currentTime = Date.now();
       let result = await fetchInitialData(currentTime);
       this.onDataLoaded && (await this.onDataLoaded());
