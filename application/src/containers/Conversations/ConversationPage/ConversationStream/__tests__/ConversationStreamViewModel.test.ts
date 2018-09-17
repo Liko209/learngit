@@ -8,8 +8,9 @@ import { ConversationStreamViewModel } from '../ConversationStreamViewModel';
 const { PostService, StateService, notificationCenter, ENTITY } = service;
 
 import OrderListStore from '../../../../../store/base/OrderListStore';
-
+import { ListStore } from '../../../../../store/base/ListStore';
 jest.mock('../../../../../store/base/OrderListStore', () => jest.fn());
+jest.mock('../../../../../store/base/ListStore', () => jest.fn());
 const postService = {};
 const stateService = {};
 jest.spyOn(PostService, 'getInstance').mockReturnValue(postService);
@@ -23,9 +24,7 @@ describe('ConversationStreamViewModel', () => {
       expect(presenter).toHaveProperty('postService', postService);
       expect(presenter).toHaveProperty('stateService', stateService);
       expect(OrderListStore).toHaveBeenCalled();
-      expect((presenter as any).getStore()).toBe(
-        (OrderListStore as any).mock.instances[0],
-      );
+      expect((presenter as any).orderListStore).toBeInstanceOf(OrderListStore);
     });
   });
 });
