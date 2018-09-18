@@ -141,6 +141,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
 
   @action
   private _openMenu(event: React.MouseEvent<HTMLElement>) {
+    event.stopPropagation();
     const { currentTarget } = event;
     this.anchorEl = currentTarget;
   }
