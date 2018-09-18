@@ -1,15 +1,8 @@
 {
   "global": {
-<<<<<<< Updated upstream
     "statements": 75.15,
     "branches": 64.64,
     "lines": 75.67,
     "functions": 73.7
-=======
-    "statements": 77.61,
-    "branches": 66.91,
-    "lines": 77.31,
-    "functions": 90.94
->>>>>>> Stashed changes
   }
 }

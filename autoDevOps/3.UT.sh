@@ -10,10 +10,10 @@ if [gitlabActionType = 'MERGE']
          coverageFolder=coverage/$subDomain/$BUILD_NUMBER
         syncFolderToServer $project/coverage/ $coverageFolder
         UTUrl=https://coverage.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/lcov-report/index.html
-        addEnv UTResult="> **UT Coverage Report Url**: $UTUrl"
+        addEnv UTResult="> **UT Coverage Failed. Report Url**: $UTUrl"
     else
-        addEnv UTResult="> **UT Coverage Report Url**: $UTUrl"
-        git commit -m "feat(CICD): raised coverage test threshold"
-        git push
+        addEnv UTResult="> **UT Coverage Success. Report Url**: $UTUrl"
+        # git commit -m "feat(CICD): raised coverage test threshold"
+        # git push
     fi
 fi
