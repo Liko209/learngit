@@ -17,7 +17,7 @@ export type ExtendedBaseModel = BaseModel & {
   version: number;
   model_id?: string;
   model_size?: number;
-}
+};
 
 export type Raw<T> = Pick<T, Exclude<keyof T, 'id'>> & {
   _id: number;
@@ -54,9 +54,9 @@ export type Group = ExtendedBaseModel & {
   };
   post_cursor?: number;
   drp_post_cursor?: number;
-  trigger_ids?: number[]
+  trigger_ids?: number[];
   deactivated_post_cursor?: number;
-  _delta?: { add?: object, remove?: object, set?: object };
+  _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
 };
@@ -65,6 +65,7 @@ export type Profile = ExtendedBaseModel & {
   person_id?: number;
   favorite_group_ids: number[];
   favorite_post_ids: number[];
+  me_tab: boolean;
 };
 
 export type Company = ExtendedBaseModel & {
@@ -76,6 +77,7 @@ export type Company = ExtendedBaseModel & {
 export type Person = ExtendedBaseModel & {
   company_id: number;
   email: string;
+  me_group_id: number;
   is_webmail?: boolean;
   first_user?: boolean;
   externally_registered?: boolean;
@@ -104,7 +106,7 @@ export type State = ExtendedBaseModel & {
   current_group_id: number;
   away_status_history?: string[];
   current_plugin: string;
-  trigger_ids?: number[]
+  trigger_ids?: number[];
 };
 
 export type MyState = State;
@@ -120,7 +122,7 @@ export type GroupState = {
   unread_deactivated_count?: number;
   group_post_cursor?: number;
   group_post_drp_cursor?: number;
-  trigger_ids?: number[]
+  trigger_ids?: number[];
 };
 
 export type Post = ExtendedBaseModel & {
@@ -166,7 +168,7 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
 export type RawPresence = {
   person_id: number;
   presence: 'default' | 'offline' | 'online' | 'away' | undefined;
-}
+};
 
 export type Presence = BaseModel & {
   presence: 'default' | 'offline' | 'online' | 'away' | undefined;
