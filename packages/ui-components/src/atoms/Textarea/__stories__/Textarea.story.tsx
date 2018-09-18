@@ -7,7 +7,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs/react';
 
-import Textarea from '../Textarea';
+import Textarea from '../';
 
 storiesOf('Atoms/Textarea', module).addWithJSX('Textarea', () => {
   const onChange = (e: React.ChangeEvent) => {

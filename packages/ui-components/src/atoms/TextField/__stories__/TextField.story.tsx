@@ -7,7 +7,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs/react';
 
-import TextField from '../TextField';
+import TextField from '../';
 
 storiesOf('Atoms/TextField', module).addWithJSX('TextField', () => {
   return (
@@ -15,6 +15,11 @@ storiesOf('Atoms/TextField', module).addWithJSX('TextField', () => {
       id="Team name"
       label="Team name"
       fullWidth={true}
+      InputProps={{
+        classes: {
+          root: 'root',
+        },
+      }}
       inputProps={{
         maxLength: 200,
       }}
