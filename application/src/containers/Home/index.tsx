@@ -20,6 +20,8 @@ import JuiIconButton from 'ui-components/molecules/IconButton';
 
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
+import { observer } from 'mobx-react';
+import LeftNavViewModel from './LeftNav/LeftNavViewModel';
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -29,8 +31,6 @@ interface IProps extends RouteComponentProps<any> {
 interface IStates {
   expanded: boolean;
 }
-
-const UMI_Count = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 const AvatarWithPresence = (props: TJuiAvatarWithPresenceProps) => {
   return <JuiAvatarWithPresence presence="online" src={avatar} {...props} />;
@@ -44,8 +44,11 @@ const HeaderIconButton = (props: JuiIconButtonProps) => {
   );
 };
 
+@observer
 class Home extends Component<IProps, IStates> {
   private homePresenter: HomePresenter;
+  private leftNavViewModel: LeftNavViewModel;
+
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -55,6 +58,7 @@ class Home extends Component<IProps, IStates> {
           : JSON.parse(String(localStorage.getItem('expanded'))),
     };
     this.homePresenter = new HomePresenter();
+    this.leftNavViewModel = new LeftNavViewModel();
   }
 
   handleLeftNavExpand = () => {
@@ -79,7 +83,12 @@ class Home extends Component<IProps, IStates> {
   handleCreateTeam = () => {};
 
   render() {
+    document.title = this.homePresenter.title;
     const { t } = this.props;
+    const UMI_Count = [
+      [0, this.leftNavViewModel.messageUmi, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
 
     const Icons = [
       [

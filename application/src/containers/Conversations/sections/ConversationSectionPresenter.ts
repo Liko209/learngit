@@ -6,7 +6,7 @@
 import { service } from 'sdk';
 import { Group } from 'sdk/models';
 import OrderListHandler from '@/store/base/OrderListHandler';
-import { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import MyStateModel from '@/store/models/MyState';
@@ -27,6 +27,7 @@ class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
   public entityName: ENTITY_NAME = ENTITY_NAME.GROUP;
   private entity: string;
   private queryType?: service.GROUP_QUERY_TYPE;
+  private globalStore = storeManager.getGlobalStore();
 
   constructor(options: IConversationSectionPresenterOptions) {
     super(() => true, options.transformFunc);
@@ -89,6 +90,8 @@ class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
       },
     );
 
+    console.log(`UMI.${this.queryType}`, unreadCount);
+    this.globalStore.set(`UMI.${this.queryType}`, unreadCount);
     return { important, unreadCount };
   }
 }

@@ -3,9 +3,10 @@
  * @Date: 2018-08-30 11:21:18
  * Copyright © RingCentral. All rights reserved.
  */
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
+import { getGlobalValue } from '@/store/utils';
 
 import config from '@/config';
 
@@ -13,6 +14,7 @@ import { service } from 'sdk';
 import betaUsers from '@/config/whitelist.json';
 
 const { AccountService, AuthService, SERVICE } = service;
+const APP_NAME = 'RingCentral';
 
 export default class HomePresenter extends BaseNotificationSubscribable {
   private userId: number | null;
@@ -46,5 +48,15 @@ export default class HomePresenter extends BaseNotificationSubscribable {
   public async handleSignOutClick() {
     const authService: service.AuthService = AuthService.getInstance();
     return authService.logout();
+  }
+
+  @computed
+  get title() {
+    const appUmi = getGlobalValue('UMI.app');
+    console.log('UMI.app', appUmi);
+    if (appUmi) {
+      return `(${appUmi}) ${APP_NAME}`;
+    }
+    return APP_NAME;
   }
 }
