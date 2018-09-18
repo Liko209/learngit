@@ -11,12 +11,6 @@ const profileService = new ProfileService();
 
 const mockAccountService = {
   getCurrentUserProfileId: jest.fn(),
-  getCurrentUserId: jest.fn().mockImplementation(() => 1),
-};
-const mockPersonService = {
-  getById: jest.fn().mockImplementation(() => {
-    return { me_group_id: 2 };
-  }),
 };
 jest.mock('../../../api/glip/profile');
 jest.mock('../../profile/handleData');
@@ -28,15 +22,6 @@ jest.mock('../../../service/account', () => {
   }
 
   return MockAccountService;
-});
-jest.mock('../../../service/person', () => {
-  class MockPersonService {
-    static getInstance() {
-      return mockPersonService;
-    }
-  }
-
-  return MockPersonService;
 });
 ProfileAPI.getDataById = jest.fn();
 ProfileAPI.putDataById = jest.fn();
@@ -128,9 +113,7 @@ describe('ProfileService', () => {
           favorite_post_ids: [100, 101],
         },
       ]);
-      const result = (await profileService.putFavoritePost(102, false)) || {
-        favorite_post_ids: [],
-      };
+      const result = await profileService.putFavoritePost(102, false) || { favorite_post_ids: [] };
       expect(result.favorite_post_ids).toEqual([100, 101]);
     });
   });
@@ -147,9 +130,7 @@ describe('ProfileService', () => {
         data: profile,
       });
       handleData.mockResolvedValueOnce([profile]);
-      const result = (await profileService.reorderFavoriteGroups(1, 0)) || {
-        favorite_group_ids: [],
-      };
+      const result = await profileService.reorderFavoriteGroups(1, 0) || { favorite_group_ids: [] };
       expect(result.favorite_group_ids).toEqual([2, 1, 3]);
     });
 
@@ -164,47 +145,11 @@ describe('ProfileService', () => {
         data: profile,
       });
       handleData.mockResolvedValueOnce([{ favorite_group_ids: [3, 2, 1] }]);
-      const result = (await profileService.reorderFavoriteGroups(0, 2)) || {
-        favorite_group_ids: [],
-      };
+      const result = await profileService.reorderFavoriteGroups(0, 2) || { favorite_group_ids: [] };
       expect(result.favorite_group_ids).toEqual([3, 2, 1]);
     });
   });
-  describe('markMeGroupAsFavorite', () => {
-    it('markMeGroupAsFavorite if a new user logs in', async () => {
-      const profile = {
-        id: 2,
-        favorite_group_ids: [2],
-      };
-      ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: profile,
-      });
-      profileService.markGroupAsFavorite = jest
-        .fn()
-        .mockImplementationOnce(() => profile);
-      handleData.mockResolvedValueOnce([{ favorite_group_ids: [2] }]);
-      mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
-      profileService.getById = jest.fn().mockImplementation(() => profile);
-      const result = await profileService.markMeConversationAsFav();
-      expect(result.favorite_group_ids).toEqual([2]);
-    });
-    it('markMeGroupAsFavorite if an old user logs in', async () => {
-      const profile = {
-        id: 2,
-        favorite_group_ids: [2],
-        me_tab: true,
-      };
-      ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: profile,
-      });
-      profileService.markGroupAsFavorite = jest
-        .fn()
-        .mockImplementationOnce(() => profile);
-      handleData.mockResolvedValueOnce([{ favorite_group_ids: [2] }]);
-      mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
-      profileService.getById = jest.fn().mockImplementation(() => profile);
-      const result = await profileService.markMeConversationAsFav();
-      expect(result).toBeUndefined();
-    });
+  describe('markGroupAsFavorite', () => {
+    it('', () => { });
   });
 });
