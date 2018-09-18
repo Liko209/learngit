@@ -5,7 +5,6 @@
     "outDir": "build",
     "rootDir": "src",
     "target": "es6",
-    "experimentalDecorators": true,
     "paths": {
       "@/*": ["src/*"],
       "sdk/*": ["node_modules/sdk/src/*"],
