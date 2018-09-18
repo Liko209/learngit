@@ -6,22 +6,26 @@
 
 import { ENTITY_NAME } from '@/store';
 import { getEntity }  from '@/store/utils';
-import { computed, observable, action } from 'mobx';
+import { observable, action } from 'mobx';
+import PersonModel from '../../store/models/Person';
 
 class ViewModel {
   constructor() {}
-  @observable person = {};
-  @action
-  public getPersonInfo (uId: number) {
-    this.person = getEntity(ENTITY_NAME.PERSON, 1564675);
-    console.log('this.person');
+  @observable person: PersonModel;
+  @action.bound
+  public async getPersonInfo (uId: number) {
+    this.person = await getEntity(ENTITY_NAME.PERSON, uId) as PersonModel;
     console.log(this.person);
   }
-  public
-  @computed
-  get handleUserName() {
-    const english = /^[A-Za-z0-9]*$/;
-    const { firstName, lastname } = this.person;
+  @action.bound
+  public async handleUserName() {
+    // headShot有值直接用，
+    const { firstName, lastName, headshot } = await this.person;
+    if (headshot) {
+      return headshot;
+    }
+    const userName = `${firstName} ${lastName}`;
+    return userName;
   }
 }
 export default ViewModel;
