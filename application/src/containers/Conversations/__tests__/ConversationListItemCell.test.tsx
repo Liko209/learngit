@@ -53,7 +53,10 @@ describe('ConversationListItemCell', () => {
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
-          vm={{ dispose: () => {} }}
+          vm={{
+            dispose: () => {},
+            extendProps: (props: any) => props,
+          }}
           getSingleEntity={testFunction as any}
           getGlobalValue={testFunction as any}
         />,
@@ -89,7 +92,10 @@ describe('ConversationListItemCell', () => {
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
-          vm={{ dispose: () => {} }}
+          vm={{
+            dispose: () => {},
+            extendProps: (props: any) => props,
+          }}
           getSingleEntity={testFunction as any}
           getGlobalValue={testFunction as any}
         />,
@@ -124,7 +130,10 @@ describe('ConversationListItemCell', () => {
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
-          vm={{ dispose: () => {} }}
+          vm={{
+            dispose: () => {},
+            extendProps: (props: any) => props,
+          }}
           getSingleEntity={testFunction as any}
           getGlobalValue={testFunction as any}
         />,

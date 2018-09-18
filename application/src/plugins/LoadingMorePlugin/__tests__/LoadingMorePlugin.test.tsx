@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { render, mount, shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import { ThemeProvider, JuiCircularProgress } from 'ui-components';
 import { AbstractViewModel } from '@/base/AbstractViewModel';
 import {
@@ -65,8 +65,8 @@ describe('LoadingMorePlugin', () => {
       const plugin = new LoadingMorePlugin();
       const vm = new MyViewModel();
       const View = plugin.wrapView(() => <div>Hello World</div>);
-      plugin.install(vm);
 
+      plugin.install(vm);
       const wrapper = mount(<View {...vm} />);
 
       expect.assertions(2);
@@ -82,6 +82,7 @@ describe('LoadingMorePlugin', () => {
       const plugin = new LoadingMorePlugin();
       const vm = new MyViewModel();
       const View = plugin.wrapView(() => <div>Hello World</div>);
+
       plugin.install(vm);
       const wrapper = mount(<View {...vm} />);
 

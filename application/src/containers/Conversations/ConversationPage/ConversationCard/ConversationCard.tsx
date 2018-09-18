@@ -3,7 +3,7 @@ import { ENTITY_NAME } from '@/store';
 import { observer } from 'mobx-react';
 import { JuiDivider } from 'ui-components/atoms/Divider';
 import injectStore, { IInjectedStoreProps } from '@/store/inject';
-import VM from '@/store/ViewModel';
+import StoreViewModel from '@/store/ViewModel';
 import PostModel from '@/store/models/Post';
 import {
   JuiConversationCard,
@@ -15,7 +15,7 @@ import { Post, Person } from 'sdk/src/models';
 import PersonModel from '@/store/models/Person';
 import { getEntity } from '@/store/utils';
 import { Avatar } from '../../../Avatar/Avatar';
-interface IProps extends IInjectedStoreProps<VM> {
+interface IProps extends IInjectedStoreProps<StoreViewModel> {
   id: number;
 }
 
@@ -60,4 +60,4 @@ export class ConversationCard extends React.Component<IProps> {
 }
 
 /* this should be removed once conversation card developed*/
-export default injectStore(VM)(ConversationCard);
+export default injectStore(StoreViewModel)(ConversationCard);

@@ -38,7 +38,6 @@ function withScroller(Comp: ComponentType<any>) {
     };
     private _atTop = false;
     private _atBottom = false;
-    private _atAbsoluteTopBeforeUpdate = false;
     private _atAbsoluteBottomBeforeUpdate = false;
     private _scrollHeightBeforeUpdate = 0;
     private _scrollElRef: React.RefObject<HTMLElement> = React.createRef();
@@ -66,7 +65,6 @@ function withScroller(Comp: ComponentType<any>) {
     componentWillUpdate() {
       this._scrollHeightBeforeUpdate = this._scrollEl.scrollHeight;
       this._atAbsoluteBottomBeforeUpdate = this._isAtBottom(0);
-      this._atAbsoluteTopBeforeUpdate = this._isAtTop(0);
       this._atTop = this._isAtTop();
       this._atBottom = this._isAtBottom();
     }
@@ -120,10 +118,6 @@ function withScroller(Comp: ComponentType<any>) {
       return (
         this.props.stickTo === 'bottom' && this._atAbsoluteBottomBeforeUpdate
       );
-    }
-
-    private _shouldMoveDelta() {
-      return this.props.stickTo === 'bottom' && this._atAbsoluteTopBeforeUpdate;
     }
 
     private _isAtTop(threshold = this.props.threshold) {

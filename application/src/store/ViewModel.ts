@@ -1,5 +1,7 @@
-import { IVM } from '@/store/inject';
+import { IStoreViewModel } from '@/store/inject';
+import { AbstractViewModel } from '@/base/AbstractViewModel';
 
-export default class VM implements IVM {
+export default class StoreViewModel extends AbstractViewModel
+  implements IStoreViewModel {
   dispose() {}
 }

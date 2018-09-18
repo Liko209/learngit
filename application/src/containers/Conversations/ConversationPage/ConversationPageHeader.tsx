@@ -16,17 +16,17 @@ import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
 import { TranslationFunction } from 'i18next';
 import injectStore, { IInjectedStoreProps } from '@/store/inject';
-import VM from '@/store/ViewModel';
+import StoreViewModel from '@/store/ViewModel';
 import { toTitleCase } from '@/utils';
 
-type ConversationPageHeaderProps = IInjectedStoreProps<VM> & {
+type ConversationPageHeaderProps = IInjectedStoreProps<StoreViewModel> & {
   id: number;
   t: TranslationFunction;
 };
 @observer
 class ConversationPageHeaderComponent extends React.Component<
-ConversationPageHeaderProps,
-{}
+  ConversationPageHeaderProps,
+  {}
 > {
   constructor(props: ConversationPageHeaderProps) {
     super(props);
@@ -43,14 +43,23 @@ ConversationPageHeaderProps,
     const isFavorite = presenter.groupIsInFavorites();
     const isPrivate = presenter.groupIsPrivate();
 
-    const rightButtons = presenter.getRightButtons().map(({ name, iconName, tooltip }) => ((name: string) => {
-      const onRightButtonClick = (e: React.SyntheticEvent) => this.rightButtonClickHandler(e, name);
-      return (
-        <JuiIconButton key={name} tooltipTitle={toTitleCase(t(tooltip))} onClick={onRightButtonClick}>
-          {iconName}
-        </JuiIconButton>
+    const rightButtons = presenter
+      .getRightButtons()
+      .map(({ name, iconName, tooltip }) =>
+        ((name: string) => {
+          const onRightButtonClick = (e: React.SyntheticEvent) =>
+            this.rightButtonClickHandler(e, name);
+          return (
+            <JuiIconButton
+              key={name}
+              tooltipTitle={toTitleCase(t(tooltip))}
+              onClick={onRightButtonClick}
+            >
+              {iconName}
+            </JuiIconButton>
+          );
+        })(name),
       );
-    })(name));
     return (
       <JuiConversationPageHeader
         title={groupName}
@@ -84,7 +93,9 @@ ConversationPageHeaderProps,
         Right={
           <JuiButtonBar size="medium" overlapping={true}>
             {rightButtons}
-            <JuiIconButton tooltipTitle={toTitleCase(t('conversationSettings'))}>
+            <JuiIconButton
+              tooltipTitle={toTitleCase(t('conversationSettings'))}
+            >
               settings
             </JuiIconButton>
           </JuiButtonBar>}
@@ -94,6 +105,6 @@ ConversationPageHeaderProps,
 }
 
 const ConversationPageHeader = translate('ConversationPageHeader')(
-  injectStore(VM)(ConversationPageHeaderComponent),
+  injectStore(StoreViewModel)(ConversationPageHeaderComponent),
 );
 export { ConversationPageHeader, ConversationPageHeaderProps };
