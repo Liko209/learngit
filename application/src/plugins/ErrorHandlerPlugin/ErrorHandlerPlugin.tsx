@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:08:25
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { ComponentType } from 'react';
 import { IViewModel } from '@/base/IViewModel';
 import { IPlugin } from '@/base/IPlugin';

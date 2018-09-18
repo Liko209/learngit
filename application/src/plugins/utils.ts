@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:07:39
+ * Copyright © RingCentral. All rights reserved.
+ */
 type FunctionDecoratorOptions = {
   install(
     target: any,

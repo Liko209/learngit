@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:07:22
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { AbstractViewModel } from '../AbstractViewModel';
 
 class MyViewModel extends AbstractViewModel {}

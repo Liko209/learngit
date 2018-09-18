@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:08:03
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { ComponentType } from 'react';
 import { action } from 'mobx';
 import {

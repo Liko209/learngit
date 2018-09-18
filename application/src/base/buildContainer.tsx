@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:07:05
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { Component, ComponentType } from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';

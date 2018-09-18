@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:09:14
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { MouseEvent } from 'react';
 
 type TimerDemoProps = {

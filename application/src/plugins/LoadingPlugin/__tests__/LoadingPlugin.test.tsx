@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:07:45
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
 import { mount } from 'enzyme';
 import { JuiCircularProgress } from 'ui-components';

@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:08:52
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { buildContainer } from '@/base';
 import { InfiniteListPlugin } from '@/plugins/InfiniteListPlugin';
 import { ErrorHandlerPlugin } from '@/plugins/ErrorHandlerPlugin';
