@@ -135,7 +135,7 @@ class NavPresenter {
   @action
   handleMenuItem = (navArray: {title: string}[]) => {
     const menus = navArray && navArray.map((item) => {
-      return item.title.length > 13 ? `${item.title.slice(0, 13)}...` : item.title;
+      return item.title.length > 52 ? `${item.title.slice(0, 54)}...` : item.title;
     });
     this.menus = menus;
   }
