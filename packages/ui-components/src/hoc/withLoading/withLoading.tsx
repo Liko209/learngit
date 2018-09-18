@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:11:03
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { ComponentType } from 'react';
 import { JuiCircularProgress } from '../../atoms/CircularProgress';
 import styled from '../../styled-components';

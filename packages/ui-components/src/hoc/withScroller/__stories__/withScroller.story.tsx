@@ -1,6 +1,6 @@
 /*
- * @Author: Chris Zhan (chris.zhan@ringcentral.com)
- * @Date: 2018-08-22 15:22:47
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:10:39
  * Copyright © RingCentral. All rights reserved.
  */
 /// <reference path="../../../../.storybook/storybook.d.ts" />

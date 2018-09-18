@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:11:06
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { ComponentType, Fragment } from 'react';
 import styled from '../../styled-components';
 import { spacing } from '../../utils/styles';

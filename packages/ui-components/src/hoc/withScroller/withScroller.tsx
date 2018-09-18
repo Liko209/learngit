@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-09-18 10:10:47
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { Component, ComponentType } from 'react';
 import styled from '../../styled-components';
 import { noop } from '../../utils';
