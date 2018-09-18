@@ -6,26 +6,74 @@
 
 import { ENTITY_NAME } from '@/store';
 import { getEntity }  from '@/store/utils';
-import { observable, action } from 'mobx';
+import { observable, action, autorun } from 'mobx';
 import PersonModel from '../../store/models/Person';
+import { isOnlyLetterOrNumbers } from '@/utils';
+import defaultAvatar from './singleavatar.svg';
+import getAvatarColors from './colors';
 
 class ViewModel {
   constructor() {}
   @observable person: PersonModel;
+  @observable uId = 0;
   @action.bound
   public async getPersonInfo (uId: number) {
     this.person = await getEntity(ENTITY_NAME.PERSON, uId) as PersonModel;
+    this.uId = uId;
+    autorun(() => {
+      this.handleAvatar();
+    });
     console.log(this.person);
   }
-  @action.bound
-  public async handleUserName() {
-    // headShot有值直接用，
-    const { firstName, lastName, headshot } = await this.person;
-    if (headshot) {
-      return headshot;
+  private _handleUid() {
+    const UID = String(this.uId);
+    let hash = 0;
+    for (const i of UID) {
+      hash = hash + Number(i);
     }
-    const userName = `${firstName} ${lastName}`;
-    return userName;
+    if (hash < 0) {
+      hash = -hash;
+    }
+    return hash % 10;
+  }
+  private _handleLetter(name: string) {
+    return name.slice(0, 1).toUpperCase();
+  }
+  @action.bound
+  public handleAvatar() {
+    const { firstName, lastName, headshot } = this.person;
+    console.log(firstName);
+    console.log(lastName);
+    console.log('handleAvatar');
+    console.log(this.person);
+    if (headshot && headshot.url) {
+      return headshot.url;
+    }
+    // handle only letter or numbers
+    if (isOnlyLetterOrNumbers(firstName) && isOnlyLetterOrNumbers(lastName)) {
+      const bgColor = getAvatarColors(this._handleUid());
+      const firstLetter = this._handleLetter(firstName!);
+      const lastLetter = this._handleLetter(lastName!);
+      const abbreviationName = firstLetter + lastLetter;
+      return {
+        bgColor,
+        name: abbreviationName,
+      };
+    }
+    if ((!firstName && lastName) || (firstName && !lastName)) {
+      ((firstName, lastName) => {
+        const bgColor = getAvatarColors(this._handleUid());
+        const names = !!firstName && firstName.split(/\s+/) || !!lastName && lastName.split(/\s+/);
+        const firstLetter = this._handleLetter(names[0]);
+        const lastLetter = this._handleLetter(names[1]);
+        const abbreviationName = firstLetter + lastLetter;
+        return {
+          bgColor,
+          name: abbreviationName,
+        };
+      })(firstName, lastName);
+    }
+    return defaultAvatar;
   }
 }
 export default ViewModel;

@@ -30,7 +30,7 @@ class Avatar extends React.Component<TAvatarProps, TAvatarState> {
   componentWillMount() {
     const { uId } = this.props;
     this._vm.getPersonInfo(uId);
-    const userInfo = this._vm.handleUserName();
+    const userInfo = this._vm.handleAvatar();
     console.log(userInfo);
   }
   render() {
