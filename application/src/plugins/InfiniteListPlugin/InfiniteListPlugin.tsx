@@ -11,6 +11,7 @@ import {
   ILoadingMoreViewModel,
   onScrollToTop,
   onScrollToBottom,
+  LoadingMorePluginOptions,
 } from '../LoadingMorePlugin';
 
 interface IInfiniteListViewModel
@@ -20,14 +21,18 @@ interface IInfiniteListViewModel
   onScrollBottom(): void;
 }
 
+type InfiniteListPluginOptions = LoadingMorePluginOptions;
+
 class InfiniteListPlugin implements IPlugin {
   private _loadingPlugin: LoadingPlugin;
   private _loadingMorePlugin: LoadingMorePlugin;
+  private _options: InfiniteListPluginOptions;
 
-  constructor() {
+  constructor(options?: InfiniteListPluginOptions) {
+    this._options = options || {};
     // TODO Child for AbstractPlugin that automatically apply child plugins.
     this._loadingPlugin = new LoadingPlugin();
-    this._loadingMorePlugin = new LoadingMorePlugin();
+    this._loadingMorePlugin = new LoadingMorePlugin(this._options);
   }
 
   install(vm: IInfiniteListViewModel): void {

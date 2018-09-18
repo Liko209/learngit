@@ -5,7 +5,9 @@
  */
 import { ComponentLifecycle } from 'react';
 
-interface IViewModel extends ComponentLifecycle<any, any, any> {
+interface IViewModel<P = {}, S = {}, SS = any>
+  extends ComponentLifecycle<P, S, SS> {
+  ready?(): void;
   extendProps<T extends Object>(props: T): this & T;
 }
 

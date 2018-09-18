@@ -15,29 +15,40 @@ type BuildContainerOptions<T> = {
   plugins?: IPlugin[];
 };
 
-function buildContainer<T = {}, S = {}, SS = any>({
+function buildContainer<P = {}, S = {}, SS = any>({
   View,
   ViewModel,
   plugins = [],
-}: BuildContainerOptions<T>) {
+}: BuildContainerOptions<P>) {
   @observer
-  class Container extends Component<T, S, SS> {
+  class Container extends Component<P, S, SS> {
     @observable
     vm: IViewModel;
     View = View;
 
-    constructor(props: any) {
+    constructor(props: P) {
       super(props);
       this.vm = new ViewModel(this.props);
       plugins.forEach((plugin: IPlugin) => {
         plugin.install(this.vm);
         this.View = plugin.wrapView(this.View);
       });
+      this.vm.ready && this.vm.ready();
     }
 
     componentDidMount() {
       this.vm.componentDidMount &&
         this.vm.componentDidMount.apply(this.vm, arguments);
+    }
+
+    getSnapshotBeforeUpdate(
+      prevProps: Readonly<P>,
+      prevState: Readonly<S>,
+    ): SS | null {
+      return (
+        this.vm.getSnapshotBeforeUpdate &&
+        this.vm.getSnapshotBeforeUpdate.apply(this.vm, arguments)
+      );
     }
 
     componentWillUnmount() {

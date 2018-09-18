@@ -40,7 +40,7 @@ export class ConversationCard extends React.Component<IProps> {
         <JuiConversationCard Avatar={avatar}>
           <JuiConversationCardHeader
             name={creator.displayName}
-            time={moment(createdAt).format('hh:mm A')}
+            time={moment(createdAt).format('YYYY-MM-DD hh:mm A')}
           />
           {/* todo: content */}
           <div

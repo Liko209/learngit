@@ -7,6 +7,8 @@ import React, { Component, ComponentType } from 'react';
 import styled from '../../styled-components';
 import { noop } from '../../utils';
 
+type StickType = 'top' | 'bottom';
+
 type ScrollerProps = {
   /**
    * The distance in pixels before the end of the items
@@ -14,17 +16,31 @@ type ScrollerProps = {
    */
   threshold: number;
   initialScrollTop: number;
-  stickTo: 'top' | 'bottom';
+  stickTo: StickType;
   onScrollToTop: (event: UIEvent) => void;
   onScrollToBottom: (event: UIEvent) => void;
 };
 type WithScrollerProps = ScrollerProps;
-
 type ScrollerStates = {};
 
-const StyledScroller = styled.div`
+const stickToBottomStyle = `
+  display: flex;
+  flex-direction: column-reverse;
+  && > div:nth-child(1) {
+    order: 3;
+  }
+  && > div:nth-child(2) {
+    order: 2;
+  }
+  && > div:nth-child(3) {
+    order: 1;
+  }
+`;
+
+const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
   overflow: auto;
   height: 100%;
+  ${({ stickTo }) => (stickTo === 'bottom' ? stickToBottomStyle : null)};
 `;
 
 function withScroller(Comp: ComponentType<any>) {
@@ -38,8 +54,6 @@ function withScroller(Comp: ComponentType<any>) {
     };
     private _atTop = false;
     private _atBottom = false;
-    private _atAbsoluteBottomBeforeUpdate = false;
-    private _scrollHeightBeforeUpdate = 0;
     private _scrollElRef: React.RefObject<HTMLElement> = React.createRef();
 
     private get _scrollEl() {
@@ -49,7 +63,10 @@ function withScroller(Comp: ComponentType<any>) {
 
     render() {
       return (
-        <StyledScroller innerRef={this._scrollElRef}>
+        <StyledScroller
+          innerRef={this._scrollElRef}
+          stickTo={this.props.stickTo}
+        >
           <Comp {...this.props} />
         </StyledScroller>
       );
@@ -62,15 +79,7 @@ function withScroller(Comp: ComponentType<any>) {
       this.attachScrollListener();
     }
 
-    componentWillUpdate() {
-      this._scrollHeightBeforeUpdate = this._scrollEl.scrollHeight;
-      this._atAbsoluteBottomBeforeUpdate = this._isAtBottom(0);
-      this._atTop = this._isAtTop();
-      this._atBottom = this._isAtBottom();
-    }
-
     componentDidUpdate() {
-      this._handleStickTo();
       this.attachScrollListener();
     }
 
@@ -84,18 +93,6 @@ function withScroller(Comp: ComponentType<any>) {
 
     detachScrollListener() {
       this._scrollEl.removeEventListener('scroll', this._handleScroll, false);
-    }
-
-    private _handleStickTo() {
-      //
-      // The default behavior of browser is stick to top, not stick to bottom.
-      // When user want stick to bottom, we need to control the scrollTop
-      //
-      if (this._shouldStickToBottom()) {
-        const scrollEl = this._scrollEl;
-        const delta = scrollEl.scrollHeight - this._scrollHeightBeforeUpdate;
-        scrollEl.scrollBy(0, delta);
-      }
     }
 
     private _handleScroll = (event: UIEvent) => {
@@ -112,12 +109,6 @@ function withScroller(Comp: ComponentType<any>) {
 
       this._atTop = this._isAtTop();
       this._atBottom = this._isAtBottom();
-    }
-
-    private _shouldStickToBottom() {
-      return (
-        this.props.stickTo === 'bottom' && this._atAbsoluteBottomBeforeUpdate
-      );
     }
 
     private _isAtTop(threshold = this.props.threshold) {

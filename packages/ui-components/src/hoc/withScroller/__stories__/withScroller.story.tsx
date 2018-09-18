@@ -71,9 +71,10 @@ storiesOf('HoC/withScroller', module)
 
       private _addItem = () => {
         const { items } = this.state;
-        const newItem = items.length;
+        const newItemPrev = items[0] - 1;
+        const newItem = items[items.length - 1] + 1;
         this.setState({
-          items: [...items, newItem],
+          items: [newItemPrev, ...items, newItem],
         });
       }
     }

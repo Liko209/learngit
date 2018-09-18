@@ -13,7 +13,12 @@ import { InfiniteListDemoProps } from './types';
 const InfiniteListDemo = buildContainer<InfiniteListDemoProps>({
   ViewModel: InfiniteListDemoViewModel,
   View: InfiniteListDemoView,
-  plugins: [new InfiniteListPlugin(), new ErrorHandlerPlugin()],
+  plugins: [
+    new InfiniteListPlugin({
+      stickTo: 'bottom',
+    }),
+    new ErrorHandlerPlugin(),
+  ],
 });
 
 export { InfiniteListDemo, InfiniteListDemoProps };

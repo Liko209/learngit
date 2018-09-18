@@ -2,18 +2,18 @@ import _ from 'lodash';
 import { BaseModel } from 'sdk/models';
 
 import storeManager from './StoreManager';
-import BaseNotificationSubscribable from './BaseNotificationSubscribable';
 
 import { IEntity, IIncomingData } from '../store';
 import { ENTITY_NAME } from '../constants';
 import ListStore from '@/store/base/ListStore';
+import StoreViewModel from '@/store/ViewModel';
 const DEFAULT_PAGE_SIZE = 20;
 
 export default abstract class ListHandler<
   T extends BaseModel,
   I,
   S extends ListStore<I>
-> extends BaseNotificationSubscribable {
+> extends StoreViewModel {
   protected _pageSize: number = DEFAULT_PAGE_SIZE;
   protected _store: S;
 

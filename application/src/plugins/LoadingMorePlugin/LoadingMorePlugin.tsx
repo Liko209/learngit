@@ -22,34 +22,45 @@ interface ILoadingMoreViewModel extends IViewModel, WithScrollerProps {
   loadingBottom: boolean;
 }
 
+type LoadingMorePluginOptions = {
+  initialScrollTop?: number;
+  stickTo?: 'bottom' | 'top';
+};
+
 class LoadingMorePlugin implements IPlugin {
+  private _options: LoadingMorePluginOptions;
+
+  constructor(options?: LoadingMorePluginOptions) {
+    this._options = options || {};
+  }
+
   install(_vm: IViewModel): void {
     const vm = _vm.extendProps({
       loadingTop: false,
       loadingBottom: false,
       onScrollToTop: () => {},
       onScrollToBottom: () => {},
+      ...this._options,
     });
-
     if (vm[topListeners]) {
-      vm.onScrollToTop = action(async () => {
+      vm.onScrollToTop = action(async (...args: any[]) => {
         if (vm.loadingTop) return;
 
         vm.loadingTop = true;
         await Promise.all(
-          vm[topListeners].map((fn: Function) => fn.apply(vm, arguments)),
+          vm[topListeners].map((fn: Function) => fn.apply(vm, args)),
         );
         vm.loadingTop = false;
       });
     }
 
     if (vm[bottomListeners]) {
-      vm.onScrollToBottom = action(async () => {
+      vm.onScrollToBottom = action(async (...args: any[]) => {
         if (vm.loadingBottom) return;
 
         vm.loadingBottom = true;
         await Promise.all(
-          vm[bottomListeners].map((fn: Function) => fn.apply(vm, arguments)),
+          vm[bottomListeners].map((fn: Function) => fn.apply(vm, args)),
         );
         vm.loadingBottom = false;
       });
@@ -93,4 +104,5 @@ export {
   ILoadingMoreViewModel,
   onScrollToTop,
   onScrollToBottom,
+  LoadingMorePluginOptions,
 };
