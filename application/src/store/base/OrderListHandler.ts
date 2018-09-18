@@ -68,7 +68,7 @@ export default class OrderListHandler<
 
   handleIncomingData(
     entityName: ENTITY_NAME,
-    { type, entities }: IIncomingData<T>,
+    { type, entities }: IIncomingData<T | { id: number; data: T }>,
   ) {
     if (!entities.size && type !== EVENT_TYPES.REPLACE_ALL) {
       return;
@@ -76,13 +76,17 @@ export default class OrderListHandler<
     const existKeys = this._store.getIds();
     const keys = _.map(
       Array.from(entities.values()).filter(entity =>
-        this._isMatchedFunc(entity),
+        this._isMatchedFunc(
+          type === EVENT_TYPES.REPLACE
+            ? (entity as { id: number; data: T }).data
+            : entity,
+        ),
       ),
       'id',
     );
     const matchedKeys = _.intersection(keys, existKeys);
     // prettier-ignore
-    const { deleted, updated, updateEntity } = this._handleIncomingDataByType[type]<T>(
+    const { deleted, updated, updateEntity } = this._handleIncomingDataByType[type]<T | { id: number; data: T; }>(
       matchedKeys,
       entities,
       this._transformFunc,

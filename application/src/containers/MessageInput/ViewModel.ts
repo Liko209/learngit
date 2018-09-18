@@ -62,7 +62,7 @@ class ViewModel {
 
   @action.bound
   async sendPost(groupId: number) {
-    this.draft = '';
+    this.changeDraft('', this._editor);
     const text = markdownFromDelta(this._editor.getContents());
     await this._postService.sendPost({
       groupId,
