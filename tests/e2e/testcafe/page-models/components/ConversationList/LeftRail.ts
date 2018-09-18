@@ -29,6 +29,17 @@ class LeftRail extends BaseComponent {
     return this.checkExisted(section);
   }
 
+  selectRandomConversation(): this {
+    return this.chain(async (t, h) => {
+      const cells = ReactSelector('ConversationListItemCell');
+      const count = await cells.count;
+      const n = Math.floor(Math.random() * count);
+      h.log(`selecting ${n + 1}th cell`);
+      const randomCell = cells.nth(n);
+      return t.click(randomCell);
+    });
+  }
+
   protected waitFor(selector: Selector) {
     return this.chain(async (t) => {
       await selector;

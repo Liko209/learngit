@@ -11,6 +11,7 @@ mkdir -p $project/lint
 hasLintError=0
 
 lintFolder=lint/$subDomain/$BUILD_NUMBER
+converageFolder=coverage/$subDomain/$BUILD_NUMBER
 
 applicationLintError=$(<lint/application.txt)
 if [ "$applicationLintError" ]; then
