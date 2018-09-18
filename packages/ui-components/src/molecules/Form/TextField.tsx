@@ -13,6 +13,12 @@ const TextField = styled(MuiTextField)`
   && {
     margin: 0 0 ${({ theme }) => spacing(2)} 0;
   }
+  && {
+    .input-label-shrink {
+      color: ${({ theme }) => palette('primary', 'main')};
+    }
+  }
+
   .underline {
     &:after {
       border-bottom-color: ${({ theme }) => palette('primary', 'main')};
@@ -27,6 +33,11 @@ const JuiTextField = (props: IProps) => {
   return (
     <TextField
       {...rest}
+      InputLabelProps={{
+        classes: {
+          shrink: 'input-label-shrink',
+        },
+      }}
       InputProps={{
         classes: {
           underline: 'underline',

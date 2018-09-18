@@ -50,11 +50,17 @@ class CreateTeam extends React.Component<IProps, IState> {
   }
 
   handleChange = (item: IListToggleItemProps, checked: boolean) => {
-    const items = [...this.state.items];
-    const oldIndex = items.findIndex(oldItem => oldItem.text === item.text);
-    items[oldIndex].checked = checked;
+    const newItems = this.state.items.map((oldItem: IListToggleItemProps) => {
+      if (oldItem.text === item.text) {
+        return {
+          ...oldItem,
+          checked,
+        };
+      }
+      return oldItem;
+    });
     this.setState({
-      items,
+      items: newItems,
     });
   }
 
