@@ -9,5 +9,9 @@
   "team_plural": "teams",
   "mention": "mention",
   "mention_plural": "mentions",
-  "unread": "unread"
+  "unread": "unread",
+  "deletePostTitle": "Delete Post?",
+  "deletePostContent": "Are you sure you want to delete this post?",
+  "deletePostOk": "Yes, Delete it",
+  "deletePostCancel": "Cancel"
 }

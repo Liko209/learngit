@@ -18,7 +18,6 @@ import { PostStatusHandler } from './postStatusHandler';
 import { POST_STATUS } from '../constants';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
-import { ErrorParser } from '../../utils/error';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
 export interface IPostResult {
@@ -186,13 +185,11 @@ export default class PostService extends BaseService<Post> {
   }
 
   async reSendPost(postId: number): Promise<PostData[] | null> {
-    if (postId < 0) {
-      const dao = daoManager.getDao(PostDao);
-      let post = await dao.get(postId);
-      if (post) {
-        post = PostServiceHandler.buildResendPostInfo(post);
-        return this.innerSendPost(post);
-      }
+    const dao = daoManager.getDao(PostDao);
+    let post = await dao.get(postId);
+    if (post) {
+      post = PostServiceHandler.buildResendPostInfo(post);
+      return this.innerSendPost(post);
     }
     return null;
   }
@@ -215,7 +212,7 @@ export default class PostService extends BaseService<Post> {
       } catch (e) {
         mainLogger.warn('crash of innerSendPost()');
         this.handleSendPostFail(preInsertId);
-        throw ErrorParser.parse(e);
+        // Don't throw error, because support for pre-insertion.
       }
     }
     return null;

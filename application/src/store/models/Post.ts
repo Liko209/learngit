@@ -8,6 +8,7 @@ export default class PostModel extends Base<Post> {
   text: string;
   @observable
   creatorId: number;
+  @observable
   status?: POST_STATUS;
   constructor(data: Post) {
     super(data);
