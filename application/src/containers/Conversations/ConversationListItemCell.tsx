@@ -20,7 +20,7 @@ import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import NavPresenter from '../Home/NavPresenter';
+import navPresenter, { NavPresenter } from '../Home/NavPresenter';
 
 const { GroupService } = service;
 type IProps = IInjectedStoreProps<VM> &
@@ -36,7 +36,7 @@ interface IState {}
 
 @observer
 class ConversationListItemCell extends React.Component<IProps, IState>{
-  private navPresenter: any;
+  private navPresenter: NavPresenter;
   static defaultProps = {
     isFavorite: false,
   };
@@ -83,7 +83,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     this._onClick = this._onClick.bind(this);
     this.isFavorite = !!props.isFavorite;
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
-    this.navPresenter = NavPresenter;
+    this.navPresenter = navPresenter;
 
     autorun(() => {
       this.getDataFromStore();
