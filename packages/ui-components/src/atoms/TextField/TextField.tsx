@@ -6,7 +6,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
-
 import { spacing, palette } from '../../utils/styles';
 
 const TextField = styled(MuiTextField)`
@@ -31,26 +30,36 @@ type IProps = TextFieldProps;
 const JuiTextField = (props: IProps) => {
   const { innerRef, ...textFieldRest } = props;
   const { InputLabelProps, InputProps, ...rest } = textFieldRest;
-  const inputLabelPropsDefault = {
-    classes: {
-      shrink: 'input-label-shrink',
-    },
-  };
-  const inputPropsDefault = {
-    classes: {
-      underline: 'underline',
-    },
-  };
+  let inputPropsClasses;
+  let inputPropsRest;
+  let inputLabelClasses;
+  let inputLabelRest;
+  if (InputProps) {
+    const { classes, ...InputPropsRest } = InputProps;
+    inputPropsClasses = classes;
+    inputPropsRest = InputPropsRest;
+  }
+  if (InputLabelProps) {
+    const { classes, ...InputLabelPropsRest } = InputLabelProps;
+    inputLabelClasses = classes;
+    inputLabelRest = InputLabelPropsRest;
+  }
   return (
     <TextField
       {...rest}
       InputLabelProps={{
-        ...inputLabelPropsDefault,
-        ...InputLabelProps,
+        classes: {
+          shrink: 'input-label-shrink',
+          ...inputLabelClasses,
+        },
+        ...inputLabelRest,
       }}
       InputProps={{
-        ...inputPropsDefault,
-        ...InputProps,
+        classes: {
+          underline: 'underline',
+          ...inputPropsClasses,
+        },
+        ...inputPropsRest,
       }}
     />
   );

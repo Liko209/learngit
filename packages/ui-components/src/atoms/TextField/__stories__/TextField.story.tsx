@@ -9,7 +9,7 @@ import { boolean } from '@storybook/addon-knobs/react';
 
 import TextField from '../TextField';
 
-storiesOf('Atoms/Forms', module).addWithJSX('TextField', () => {
+storiesOf('Atoms/TextField', module).addWithJSX('TextField', () => {
   return (
     <TextField
       id="Team name"
@@ -17,11 +17,6 @@ storiesOf('Atoms/Forms', module).addWithJSX('TextField', () => {
       fullWidth={true}
       inputProps={{
         maxLength: 200,
-      }}
-      InputProps={{
-        classes: {
-          underline: 'underline',
-        },
       }}
       helperText={'Team name required'}
     />

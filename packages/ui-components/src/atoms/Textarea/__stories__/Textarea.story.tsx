@@ -9,6 +9,11 @@ import { boolean } from '@storybook/addon-knobs/react';
 
 import Textarea from '../Textarea';
 
-storiesOf('Atoms/Forms', module).addWithJSX('Textarea', () => {
-  return <Textarea placeholder="sdfsdf" fullWidth={true} />;
+storiesOf('Atoms/Textarea', module).addWithJSX('Textarea', () => {
+  const onChange = (e: React.ChangeEvent) => {
+    console.log(e);
+  };
+  return (
+    <Textarea placeholder="placeholder" fullWidth={true} onChange={onChange} />
+  );
 });
