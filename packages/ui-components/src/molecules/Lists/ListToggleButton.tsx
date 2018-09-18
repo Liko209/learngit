@@ -75,7 +75,7 @@ export default class JuiListToggleButton extends Component<IProps, {}> {
     return (
       <List dense={true}>
         {items.map(toggleItem => (
-          <ListItem dense={true}>
+          <ListItem key={toggleItem.text} dense={true}>
             <ListItemText>{toggleItem.text}</ListItemText>
             <ListItemSecondaryAction>
               <JuiToggleButton

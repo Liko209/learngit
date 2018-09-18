@@ -5,6 +5,8 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
+import { TranslationFunction, i18n } from 'i18next';
+import { translate } from 'react-i18next';
 import JuiDialog from 'ui-components/atoms/Dialog';
 import JuiDialogTitle from 'ui-components/atoms/DialogTitle';
 import JuiDialogContent from 'ui-components/atoms/DialogContent';
@@ -19,6 +21,8 @@ import HomePresenter from '../Home/HomePresenter';
 
 interface IProps {
   homePresenter: HomePresenter;
+  i18n: i18n;
+  t: TranslationFunction;
 }
 interface IState {
   disabledOkBtn: boolean;
@@ -73,6 +77,7 @@ class CreateTeam extends React.Component<IProps, IState> {
   handleNameChange = () => {};
   render() {
     const { disabledOkBtn, nameError, items } = this.state;
+    const { t } = this.props;
 
     return (
       <JuiDialog
@@ -80,22 +85,22 @@ class CreateTeam extends React.Component<IProps, IState> {
         size={'medium'}
         scroll="paper"
       >
-        <JuiDialogTitle>New Team</JuiDialogTitle>
+        <JuiDialogTitle>{t('Create Team')}</JuiDialogTitle>
         <JuiDialogContent>
           <JuiTextField
-            id="Team name"
-            label="Team name"
+            id={t('Team Name')}
+            label={t('Team Name')}
             fullWidth={true}
             error={nameError}
             inputProps={{
               maxLength: 200,
             }}
-            helperText={nameError && 'Team name required'}
+            helperText={nameError && t('Team name required')}
             onChange={this.handleNameChange}
           />
           <JuiTextField
-            id="Team Description"
-            label="Team Description"
+            id={t('Team Description')}
+            label={t('Team Description')}
             fullWidth={true}
             onChange={this.handleNameChange}
           />
@@ -104,8 +109,8 @@ class CreateTeam extends React.Component<IProps, IState> {
             TypographyProps={{
               align: 'center',
             }}
-            text="You are an admin to this team."
-            linkText="Learn about team administration"
+            text={t('tips')}
+            linkText={t('linkTips')}
             href=""
           />
         </JuiDialogContent>
@@ -117,7 +122,7 @@ class CreateTeam extends React.Component<IProps, IState> {
             variant="text"
             autoFocus={true}
           >
-            {'Cancel'}
+            {t('OK')}
           </JuiButton>
           <JuiButton
             onClick={this.onClose}
@@ -126,7 +131,7 @@ class CreateTeam extends React.Component<IProps, IState> {
             autoFocus={true}
             disabled={disabledOkBtn}
           >
-            {'Ok'}
+            {t('Cancel')}
           </JuiButton>
         </JuiDialogActions>
       </JuiDialog>
@@ -134,4 +139,4 @@ class CreateTeam extends React.Component<IProps, IState> {
   }
 }
 
-export default CreateTeam;
+export default translate('team')(CreateTeam);

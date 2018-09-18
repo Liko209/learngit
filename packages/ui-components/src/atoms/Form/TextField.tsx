@@ -29,19 +29,28 @@ const TextField = styled(MuiTextField)`
 type IProps = TextFieldProps;
 
 const JuiTextField = (props: IProps) => {
-  const { innerRef, ...rest } = props;
+  const { innerRef, ...textFieldRest } = props;
+  const { InputLabelProps, InputProps, ...rest } = textFieldRest;
+  const inputLabelPropsDefault = {
+    classes: {
+      shrink: 'input-label-shrink',
+    },
+  };
+  const inputPropsDefault = {
+    classes: {
+      underline: 'underline',
+    },
+  };
   return (
     <TextField
       {...rest}
       InputLabelProps={{
-        classes: {
-          shrink: 'input-label-shrink',
-        },
+        ...inputLabelPropsDefault,
+        ...InputLabelProps,
       }}
       InputProps={{
-        classes: {
-          underline: 'underline',
-        },
+        ...inputPropsDefault,
+        ...InputProps,
       }}
     />
   );

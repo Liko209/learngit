@@ -9,14 +9,14 @@ import { boolean } from '@storybook/addon-knobs/react';
 
 import TextField from '../TextField';
 
-storiesOf('Molecules/Forms', module).addWithJSX('TextField', () => {
+storiesOf('Atoms/Forms', module).addWithJSX('TextField', () => {
   return (
     <TextField
       id="Team name"
       label="Team name"
       fullWidth={true}
       inputProps={{
-        maxlength: 200,
+        maxLength: 200,
       }}
       InputProps={{
         classes: {
