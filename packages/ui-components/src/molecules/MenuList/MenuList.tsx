@@ -24,16 +24,15 @@ const MenuListCompositionWrapper = styled.div`
 `;
 
 const MenuWrapper = styled(Popper)`
-  position: absolute;
-  top: 40px;
-  left: 6px;
+  margin-top: ${({ theme }) => theme.spacing.unit * 10}px;
+  margin-left: ${({ theme }) => theme.spacing.unit * 2}px;
 `;
 const StyledMenuItem = styled(MenuItem)`
   && {
-    font-size: 12px;
+    font-size: ${({ theme }) => `${theme.typography.caption2.fontSize}`};
     padding-top: 0;
     padding-bottom: 0;
-    height: 32px;
+    height: ${({ theme }) => theme.size.height * 8}px;
   }
 `;
 class MenuListPanel extends React.Component<TIconMore> {
