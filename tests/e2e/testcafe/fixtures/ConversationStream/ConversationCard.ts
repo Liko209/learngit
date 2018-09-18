@@ -10,6 +10,7 @@ import { setupSDK } from '../../utils/setupSDK';
 import { LeftRail } from '../../page-models/components/ConversationList/LeftRail';
 import { ConversationStream } from '../../page-models/components/ConversationStream/ConversationStream';
 import { PersonAPI } from '../../libs/sdk';
+import { TestHelper } from './../../libs/helpers';
 
 declare var test: TestFn;
 fixture('ConversationCard')
@@ -52,6 +53,12 @@ test(
   ),
   async (t: TestController) => {
     await setupSDK(t);
+    const helper = new TestHelper(t);
+    helper.log('make sure user name is in initial state');
+    await (PersonAPI as any).putDataById(Number(helper.users.user701.glip_id), {
+      first_name: 'John',
+      last_name: 'Doe701',
+    });
     const postContent = `some random text post ${Date.now()}`;
     const changedName = `Random ${Date.now()}`;
     await prepare(t, postContent)
@@ -85,32 +92,33 @@ test(
   async (t: TestController) => {
     await setupSDK(t);
     const postContent = `some random text post ${Date.now()}`;
+    const helper = new TestHelper(t);
+    helper.log('set user away status to "in the meeting"');
+    await (PersonAPI as any).putDataById(Number(helper.users.user701.glip_id), {
+      away_status: 'In a meeting',
+    });
     await prepare(t, postContent)
-      .log('6. check current user name without away status')
-      .checkNameOnPost('John Doe701')
-      .log('7. set user away status to "in the meeting"')
-      .chain(async (t, h) => {
-        await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
-          away_status: 'in a meeting',
-        });
-      })
-      .log('8. title should be updated with away status')
-      .checkNameOnPost('John Doe701 in a meeting')
-      .log('9. set user away status to "content of user modify"')
+      .log('6. check title with away status right after user name')
+      .checkNameOnPost('John Doe701 In a meeting')
+      .log('7. set user away status to "content of user modify"')
       .chain(async (t, h) => {
         await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
           away_status: 'content of user modify',
         });
       })
-      .log('10. title should be updated with away status')
+      .log('8. title should be updated with away status')
       .checkNameOnPost('John Doe701 content of user modify')
-      .log('11. delete user away status')
+      .log('9. delete user away status')
       .chain(async (t, h) => {
-        await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
-          away_status: null,
-        });
+        const resp = await (PersonAPI as any).putDataById(
+          Number(h.users.user701.glip_id),
+          {
+            away_status: null,
+          },
+        );
+        console.log(resp);
       })
-      .log('12. title should be updated to without away status')
+      .log('10. title should be updated to without away status')
       .checkNameOnPost('John Doe701');
   },
 );

@@ -23,7 +23,7 @@ export default class PersonModel extends Base<Person> {
   @observable
   glipUserId?: number;
   @observable
-  awayStatus?: string;
+  awayStatus?: string | null;
 
   constructor(data: Person) {
     super(data);
@@ -46,7 +46,7 @@ export default class PersonModel extends Base<Person> {
     this.rcPhoneNumbers = rc_phone_numbers;
     this.isPseudoUser = is_pseudo_user;
     this.glipUserId = glip_user_id;
-    this.awayStatus = away_status || undefined;
+    this.awayStatus = away_status;
   }
 
   static fromJS(data: Person) {
