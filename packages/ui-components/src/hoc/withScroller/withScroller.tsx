@@ -9,6 +9,7 @@ type ScrollerProps = {
    */
   threshold: number;
   initialScrollTop: number;
+  stickTo: 'top' | 'bottom';
   onScrollToTop: (event: UIEvent) => void;
   onScrollToBottom: (event: UIEvent) => void;
 };
@@ -26,23 +27,25 @@ function withScroller(Comp: ComponentType<any>) {
     static defaultProps = {
       threshold: 100,
       initialScrollTop: 0,
+      stickTo: 'top',
       onScrollToTop: noop,
       onScrollToBottom: noop,
     };
-    atTop = false;
-    atBottom = false;
+    private _atTop = false;
+    private _atBottom = false;
+    private _atAbsoluteTopBeforeUpdate = false;
+    private _atAbsoluteBottomBeforeUpdate = false;
     private _scrollHeightBeforeUpdate = 0;
-
-    scrollElRef: React.RefObject<HTMLElement> = React.createRef();
+    private _scrollElRef: React.RefObject<HTMLElement> = React.createRef();
 
     private get _scrollEl() {
-      if (!this.scrollElRef.current) throw new Error();
-      return this.scrollElRef.current;
+      if (!this._scrollElRef.current) throw new Error();
+      return this._scrollElRef.current;
     }
 
     render() {
       return (
-        <StyledScroller innerRef={this.scrollElRef}>
+        <StyledScroller innerRef={this._scrollElRef}>
           <Comp {...this.props} />
         </StyledScroller>
       );
@@ -50,22 +53,21 @@ function withScroller(Comp: ComponentType<any>) {
 
     componentDidMount() {
       this._scrollEl.scrollTop = this.props.initialScrollTop;
-      this.atTop = this._isAtTop();
-      this.atBottom = this._isAtBottom();
+      this._atTop = this._isAtTop();
+      this._atBottom = this._isAtBottom();
       this.attachScrollListener();
     }
 
     componentWillUpdate() {
       this._scrollHeightBeforeUpdate = this._scrollEl.scrollHeight;
-      console.log('componentWillUpdate', this._scrollEl.scrollHeight);
+      this._atAbsoluteBottomBeforeUpdate = this._isAtBottom(0);
+      this._atAbsoluteTopBeforeUpdate = this._isAtTop(0);
+      this._atTop = this._isAtTop();
+      this._atBottom = this._isAtBottom();
     }
 
     componentDidUpdate() {
-      console.log('componentDidUpdate', this._scrollEl.scrollHeight);
-      console.log(
-        'componentWillUnmount',
-        this._scrollEl.scrollHeight - this._scrollHeightBeforeUpdate,
-      );
+      this._handleStickTo();
       this.attachScrollListener();
     }
 
@@ -81,9 +83,21 @@ function withScroller(Comp: ComponentType<any>) {
       this._scrollEl.removeEventListener('scroll', this._handleScroll, false);
     }
 
+    private _handleStickTo() {
+      //
+      // The default behavior of browser is stick to top, not stick to bottom.
+      // When user want stick to bottom, we need to control the scrollTop
+      //
+      if (this._shouldStickToBottom()) {
+        const scrollEl = this._scrollEl;
+        const delta = scrollEl.scrollHeight - this._scrollHeightBeforeUpdate;
+        scrollEl.scrollBy(0, delta);
+      }
+    }
+
     private _handleScroll = (event: UIEvent) => {
-      const prevAtTop = this.atTop;
-      const prevAtBottom = this.atBottom;
+      const prevAtTop = this._atTop;
+      const prevAtBottom = this._atBottom;
       const atTop = this._isAtTop();
       const atBottom = this._isAtBottom();
 
@@ -93,19 +107,32 @@ function withScroller(Comp: ComponentType<any>) {
         this.props.onScrollToBottom && this.props.onScrollToBottom(event);
       }
 
-      this.atTop = this._isAtTop();
-      this.atBottom = this._isAtBottom();
+      this._atTop = this._isAtTop();
+      this._atBottom = this._isAtBottom();
     }
 
-    private _isAtTop() {
-      return this._scrollEl.scrollTop <= this.props.threshold;
+    private _shouldStickToBottom() {
+      return (
+        this.props.stickTo === 'bottom' && this._atAbsoluteBottomBeforeUpdate
+      );
     }
 
-    private _isAtBottom() {
+    private _shouldMoveDelta() {
+      return this.props.stickTo === 'bottom' && this._atAbsoluteTopBeforeUpdate;
+    }
+
+    private _isAtTop(threshold = this.props.threshold) {
+      return this._scrollEl.scrollTop <= threshold;
+    }
+
+    private _isAtBottom(threshold = this.props.threshold) {
       const scrollEl = this._scrollEl;
       return (
-        scrollEl.scrollTop >=
-        scrollEl.scrollHeight - scrollEl.clientHeight - this.props.threshold
+        0 >=
+        scrollEl.scrollHeight -
+          scrollEl.clientHeight -
+          scrollEl.scrollTop -
+          threshold
       );
     }
   };
