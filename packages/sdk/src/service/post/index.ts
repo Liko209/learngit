@@ -14,7 +14,10 @@ import ProfileService from '../../service/profile';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
 import { Post, Profile, Item, Raw } from '../../models';
-import { ESendStatus, PostSendStatusHandler } from '../../service/post/postSendStatusHandler';
+import {
+  ESendStatus,
+  PostSendStatusHandler,
+} from '../../service/post/postSendStatusHandler';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
 import { ErrorParser } from '../../utils/error';
@@ -62,9 +65,17 @@ export default class PostService extends BaseService<Post> {
     this.postSendStatusHandler = new PostSendStatusHandler();
   }
 
-  async getPostsFromLocal({ groupId, offset, limit }: IPostQuery): Promise<IPostResult> {
+  async getPostsFromLocal({
+    groupId,
+    offset,
+    limit,
+  }: IPostQuery): Promise<IPostResult> {
     const postDao = daoManager.getDao(PostDao);
-    const posts: Post[] = await postDao.queryPostsByGroupId(groupId, offset, limit);
+    const posts: Post[] = await postDao.queryPostsByGroupId(
+      groupId,
+      offset,
+      limit,
+    );
     const result: IPostResult = {
       posts: [],
       items: [],
@@ -82,14 +93,19 @@ export default class PostService extends BaseService<Post> {
         }
       });
       const itemDao = daoManager.getDao(ItemDao);
-      result.items = await itemDao.getItemsByIds([...Array.from(new Set(itemIds))]);
+      result.items = await itemDao.getItemsByIds([
+        ...Array.from(new Set(itemIds)),
+      ]);
     }
     return result;
   }
 
-  async getPostsFromRemote(
-    { groupId, postId, limit, direction }: IPostQuery,
-  ): Promise<IRawPostResult> {
+  async getPostsFromRemote({
+    groupId,
+    postId,
+    limit,
+    direction,
+  }: IPostQuery): Promise<IRawPostResult> {
     const params: any = {
       limit,
       direction,
@@ -115,9 +131,12 @@ export default class PostService extends BaseService<Post> {
     return result;
   }
 
-  async getPostsByGroupId(
-    { groupId, offset = 0, postId = 0, limit = 20 }: IPostQuery,
-  ): Promise<IPostResult> {
+  async getPostsByGroupId({
+    groupId,
+    offset = 0,
+    postId = 0,
+    limit = 20,
+  }: IPostQuery): Promise<IPostResult> {
     try {
       const result = await this.getPostsFromLocal({
         groupId,
@@ -148,7 +167,6 @@ export default class PostService extends BaseService<Post> {
         items,
         hasMore: remoteResult.hasMore,
       };
-
     } catch (e) {
       mainLogger.error(e);
       return {
@@ -166,7 +184,9 @@ export default class PostService extends BaseService<Post> {
     };
   }
 
-  async isVersionInPreInsert(version: number): Promise<{ existed: boolean; id: number }> {
+  async isVersionInPreInsert(
+    version: number,
+  ): Promise<{ existed: boolean; id: number }> {
     return this.postSendStatusHandler.isVersionInPreInsert(version);
   }
 
@@ -206,13 +226,11 @@ export default class PostService extends BaseService<Post> {
 
         // error, notifiy, should add error handle after IResponse give back error info
         return this.handleSendPostFail(id, info.version);
-
       } catch (e) {
         mainLogger.warn('crash of innerSendPost()');
         this.handleSendPostFail(id, info.version);
         throw ErrorParser.parse(e);
       }
-
     }
     return null;
   }
@@ -230,7 +248,10 @@ export default class PostService extends BaseService<Post> {
     await dao.put(postInfo);
   }
 
-  async handleSendPostSuccess(data: Raw<Post>, oldPost: Post): Promise<PostData[]> {
+  async handleSendPostSuccess(
+    data: Raw<Post>,
+    oldPost: Post,
+  ): Promise<PostData[]> {
     this.postSendStatusHandler.removeVersion(oldPost.version);
     const post = transform<Post>(data);
     const obj: PostData = {
@@ -328,7 +349,11 @@ export default class PostService extends BaseService<Post> {
     return null;
   }
 
-  async likePost(postId: number, personId: number, toLike: boolean): Promise<Post | null> {
+  async likePost(
+    postId: number,
+    personId: number,
+    toLike: boolean,
+  ): Promise<Post | null> {
     if (postId < 0) {
       return null;
     }
@@ -370,7 +395,10 @@ export default class PostService extends BaseService<Post> {
   async bookmarkPost(postId: number, toBook: boolean): Promise<Profile | null> {
     // favorite_post_ids in profile
     const profileService: ProfileService = ProfileService.getInstance();
-    const profile: Profile | null = await profileService.putFavoritePost(postId, toBook);
+    const profile: Profile | null = await profileService.putFavoritePost(
+      postId,
+      toBook,
+    );
     return profile;
   }
 
