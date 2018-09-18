@@ -1,0 +1,32 @@
+pipeline {
+    agent {
+        label 'centos'
+    }
+    environment { 
+        SITE_URL = "${SITE_URL}"
+        SELENIUM_SERVER = "${SELENIUM_SERVER}"
+        BROWSERS = "${BROWSERS}"
+        RC_PLATFORM_APP_KEY = "${RC_PLATFORM_APP_KEY}"
+        RC_PLATFORM_APP_SECRET = "${RC_PLATFORM_APP_SECRET}"
+        ACTION = "${ACTION}"
+        BRANCH = "${BRANCH}"
+        PATH = "/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:$PATH"
+    }      
+    stages{
+        stage("run testcafe test"){
+            steps{
+                sh '''
+                git clean -xdf
+                cd tests/e2e/testcafe/
+                npm install && npm install socket.io-client && npm install localforage
+                npm run e2e
+                '''
+            }
+            post{
+                always{
+                    allure includeProperties: false, jdk: '', results: [[path: 'tests/e2e/testcafe/allure/allure-results']]
+                }  
+            }
+        }     
+    }  
+}
