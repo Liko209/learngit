@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BaseNotificationSubscribable from '../BaseNotificationSubscribable';
-import { service } from 'sdk';
+import { notificationCenter } from 'sdk/service';
 
-const { notificationCenter } = service;
 // Using manual mock to improve mock priority.
 jest.mock('sdk', () => jest.genMockFromModule<any>('sdk'));
 

@@ -45,33 +45,57 @@ Quill.register({
 interface IProps {
   value: string | Delta;
   onChange: Function;
+  keyboardEvent: {};
+  setEditor: (editor: Quill) => void;
 }
 interface IState {}
 
 class JuiMessageInput extends React.Component<IProps, IState> {
+  private _reactQuillRef: React.RefObject<ReactQuill>;
+  private _quill: Quill;
   constructor(props: IProps) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
+    this.onChange = this.onChange.bind(this);
+
+    this._reactQuillRef = React.createRef();
   }
 
-  handleChange(content: string, delta: Delta, source: Sources) {
+  onChange(content: string, delta: Delta, source: Sources, editor: any) {
     if (source === 'api') {
       return;
     }
     const { onChange } = this.props;
-    onChange(content);
+    onChange(content, editor);
+  }
+
+  private _attachQuill = () => {
+    if (this._reactQuillRef.current) {
+      this._quill = this._reactQuillRef.current.getEditor();
+    }
+  }
+
+  componentDidMount() {
+    this._attachQuill();
+    const { setEditor } = this.props;
+
+    setEditor(this._quill);
   }
 
   render() {
+    const { value, keyboardEvent } = this.props;
     const modules = {
       markdownShortcuts: {},
       toolbar: false,
+      keyboard: {
+        bindings: keyboardEvent,
+      },
       // toolbarEmoji: true,
     };
     return (
       <ReactQuill
-        value={this.props.value}
-        onChange={this.handleChange}
+        ref={this._reactQuillRef}
+        value={value}
+        onChange={this.onChange}
         placeholder="Type new message"
         modules={modules}
       />
