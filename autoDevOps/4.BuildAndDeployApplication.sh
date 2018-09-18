@@ -13,7 +13,9 @@ if [ $? -eq 0 ]; then
     else
         echo "Not need to update linked Domain"
     fi
-    git push --no-verify
+    if [ "$gitlabActionType" == 'MERGE' ]; then
+        git checkout $gitlabSourceBranch && git stash pop && git commit -m "feat(CICD): raised coverage test threshold" && git push
+    fi
 else
     echo "Not need to update linked Domain"
 fi
