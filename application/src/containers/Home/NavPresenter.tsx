@@ -9,6 +9,7 @@ import React from 'react';
 const SS = window.sessionStorage;
 const parse = JSON.parse;
 const stringify = JSON.stringify;
+const TITLE_LENGTH = 52;
 class NavPresenter {
   getItem = (key: string) => {
     return SS.getItem(key) || '[]';
@@ -76,7 +77,8 @@ class NavPresenter {
       const REMOVED_ITEM = removedArr.shift(); // out stack
       REMOVED_ITEM && addArr.push(currentItem);
       action();
-      this.state.title = REMOVED_ITEM!.title; // set title
+      const itemTitle = REMOVED_ITEM!.title;
+      this.state.title = itemTitle.length > TITLE_LENGTH ? `${itemTitle.slice(0, TITLE_LENGTH + 2)}...` : itemTitle; // set title
       this.forwardNavArray = dir === 'forward' ? removedArr.reverse() : addArr;
       this.backNavArray = dir === 'forward' ? addArr : removedArr.reverse(); // reversed
       this.setItem('backNavArray', stringify(removedArr));
@@ -185,7 +187,8 @@ class NavPresenter {
         }
         state.showRightPanel = false;
       }
-      this.state.title = REMOVE_ITEM[0]!.title; // set title
+      const itemTitle = REMOVE_ITEM && REMOVE_ITEM![0].title;
+      this.state.title = itemTitle.length > TITLE_LENGTH ? `${itemTitle.slice(0, TITLE_LENGTH + 2)}...` : itemTitle; // set title
       this.setItem('backNavArray', stringify(backNavArray));
       this.setItem('forwardNavArray', stringify(forwardNavArray));
       this.menuClicked = true;
@@ -201,7 +204,7 @@ class NavPresenter {
   // handle without click
   @action
   handleTitle = (title: string) => {
-    this.state.title = title;
+    this.state.title = title.length > TITLE_LENGTH ? `${title.slice(0, TITLE_LENGTH + 2)}...` : title ;
   }
   @action
   handleRouterChange = () => {
@@ -214,3 +217,4 @@ class NavPresenter {
   }
 }
 export default new NavPresenter();
+export { NavPresenter };
