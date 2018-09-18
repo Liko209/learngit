@@ -20,6 +20,8 @@ import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import navPresenter, { NavPresenter } from '../Home/NavPresenter';
+
 const { GroupService } = service;
 type IProps = IInjectedStoreProps<VM> &
   RouteComponentProps<{}> & {
@@ -33,7 +35,8 @@ type IProps = IInjectedStoreProps<VM> &
 interface IState {}
 
 @observer
-class ConversationListItemCell extends React.Component<IProps, IState> {
+class ConversationListItemCell extends React.Component<IProps, IState>{
+  private navPresenter: NavPresenter;
   static defaultProps = {
     isFavorite: false,
   };
@@ -80,12 +83,22 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this._onClick = this._onClick.bind(this);
     this.isFavorite = !!props.isFavorite;
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
+    this.navPresenter = navPresenter;
 
     autorun(() => {
       this.getDataFromStore();
     });
   }
-
+  componentDidMount() {
+    this.props.history.listen(() => {
+      const pathname = window.location.pathname;
+      const uIdIndex = pathname.lastIndexOf('/');
+      const uid = pathname.slice(uIdIndex + 1);
+      if (+uid === this.id) {
+        this.navPresenter.handleTitle(this.displayName);
+      }
+    });
+  }
   getDataFromStore() {
     const { getEntity } = this.props;
     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
@@ -160,6 +173,8 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   private _jump2Conversation(id: number) {
     const { history } = this.props;
     history.push(`/messages/${id}`);
+    this.navPresenter.handleRouterChange();
+    this.navPresenter.handleTitle(this.displayName);
   }
   @action
   private _toggleFavorite() {
