@@ -7,16 +7,16 @@ import { action, computed } from 'mobx';
 
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { getGlobalValue } from '@/store/utils';
-
 import config from '@/config';
 
 import { service } from 'sdk';
 import betaUsers from '@/config/whitelist.json';
 
 const { AccountService, AuthService, SERVICE } = service;
-const APP_NAME = 'RingCentral';
 
+console.log(process.env.APP_NAME);
 export default class HomePresenter extends BaseNotificationSubscribable {
+  private appName = process.env.APP_NAME as string;
   private userId: number | null;
   constructor() {
     super();
@@ -55,8 +55,8 @@ export default class HomePresenter extends BaseNotificationSubscribable {
     const appUmi = getGlobalValue('UMI.app');
     console.log('UMI.app', appUmi);
     if (appUmi) {
-      return `(${appUmi}) ${APP_NAME}`;
+      return `(${appUmi}) ${this.appName}`;
     }
-    return APP_NAME;
+    return this.appName;
   }
 }
