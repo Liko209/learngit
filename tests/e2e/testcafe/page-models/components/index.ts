@@ -5,3 +5,4 @@
  */
 export * from './ConversationList';
 export * from './Home';
+export * from './MessageInput';

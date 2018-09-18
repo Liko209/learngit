@@ -21,16 +21,20 @@ import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 const { GroupService } = service;
-type IProps = IInjectedStoreProps<VM> &
-  RouteComponentProps<{}> & {
-    id: number;
-    key: number;
-    entityName: string;
-    isFavorite?: boolean;
-    currentUserId?: number;
-  };
 
-interface IState {}
+type IRouterParams = {
+  id: string;
+};
+
+type IProps = IInjectedStoreProps<VM> & RouteComponentProps<IRouterParams> & {
+  id: number;
+  key: number;
+  entityName: string;
+  isFavorite?: boolean;
+  currentUserId?: number;
+};
+
+interface IState { }
 
 @observer
 class ConversationListItemCell extends React.Component<IProps, IState> {
@@ -67,6 +71,9 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     return !!this.anchorEl;
   }
 
+  @observable
+  showDraftTag: boolean;
+
   constructor(props: IProps) {
     super(props);
     this.id = props.id;
@@ -92,6 +99,9 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     const { currentUserId } = this.props;
     this.displayName = getGroupName(getEntity, group, currentUserId);
     this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
+    const currentGroupId = parseInt(this.props.match.params.id, 10);
+    this.showDraftTag = currentGroupId !== this.id && !!group.draft; // except oneself
+    // this.showDraftTag = !!group.draft; // except oneself
     if (currentUserId) {
       let targetPresencePersonId: number | undefined;
       const otherMembers = _.difference(group.members, [currentUserId]);
@@ -111,6 +121,21 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     }
   }
 
+  // componentDidUpdate(prevProps: IProps) {
+  //   if (this.props.match.params.id !== prevProps.match.params.id) {
+  //     const { getEntity } = this.props;
+  //     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
+  //     const currentGroupId = parseInt(this.props.match.params.id, 10);
+  //     this.showDraftTag = currentGroupId !== this.id && !!group.draft; // except oneself
+  //     this.forceUpdate();
+  //   }
+  // }
+
+  // static getDerivedStateFromProps(props: IProps, state: IState) {
+  //   console.log('`````````````', props.match.params.id);
+  //   return null;
+  // }
+
   render() {
     return (
       <React.Fragment>
@@ -124,6 +149,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
           onMoreClick={this._openMenu}
           onClick={this._onClick}
           status={this.status}
+          showDraftTag={this.showDraftTag}
         />
         <Menu
           id="render-props-menu"
@@ -150,7 +176,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this.anchorEl = null;
   }
 
-  @action
+  @action.bound
   private _onClick() {
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.clickGroup(this.id);

@@ -46,7 +46,7 @@ interface IProps {
   value: string | Delta;
   onChange: Function;
 }
-interface IState {}
+interface IState { }
 
 class JuiMessageInput extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -56,6 +56,10 @@ class JuiMessageInput extends React.Component<IProps, IState> {
 
   handleChange(value: string) {
     const { onChange } = this.props;
+    if (value === '<p><br></p>') {
+      onChange('');
+      return;
+    }
     onChange(value);
   }
 
