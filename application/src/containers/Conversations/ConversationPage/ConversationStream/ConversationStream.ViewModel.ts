@@ -68,7 +68,7 @@ class ConversationStreamViewModel extends TransformHandler<PostModel, Post> {
   @onScrollToTop
   async loadPrevPosts() {
     if (!this.store.hasMore) return;
-    this.loadPosts(this.groupId);
+    await this.loadPosts(this.groupId);
   }
 
   @action
