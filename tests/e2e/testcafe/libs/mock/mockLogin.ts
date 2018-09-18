@@ -3,13 +3,11 @@
  * @Date: 2018-09-16 20:51:19
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { BlankPage } from '../page-models/pages/BlankPage';
-import { AuthInfo } from './login';
-import { SITE_URL } from '../config';
 import { requestMock } from './requestMock';
+import { AuthInfo, go2PageWithAuth } from '../../utils';
+import { SITE_URL } from '../../config';
 
-async function mockRequest(t: TestController, account: string = 'default') {
+function mockLoginRequest(account: string = 'default'): RequestMock {
   const accountFolder = account;
   const mock = requestMock([
     {
@@ -56,15 +54,12 @@ async function mockRequest(t: TestController, account: string = 'default') {
       statusCode: 200,
     },
   ]);
-  await t.addRequestHooks(mock);
+
+  return mock;
 }
 
-function go2Home(t: TestController) {
-  return new BlankPage(t).chain(async (t: TestController) => {
-    await t.navigateTo(
-      `${SITE_URL}?state=%2F&code=U0pDQ2g1LTIzQkowVzdjV3lCQXxBQQ`,
-    );
-  });
+function directLogin(t: TestController, authInfo?: AuthInfo) {
+  return go2PageWithAuth(t, `${SITE_URL}?state=%2F&code=authcode`);
 }
 
-export { go2Home, mockRequest };
+export { mockLoginRequest, directLogin };

@@ -98,6 +98,12 @@ function interactiveLogin(t: TestController, authInfo?: AuthInfo) {
     .expectExistComponent();
 }
 
+function go2PageWithAuth(t: TestController, urlWithAuthCode: string) {
+  return new BlankPage(t).chain(async (t: TestController) => {
+    await t.navigateTo(urlWithAuthCode);
+  });
+}
+
 function directLogin(t: TestController, authInfo?: AuthInfo) {
   let credential: string = '';
   let extension: string = '';
@@ -125,4 +131,4 @@ function directLogin(t: TestController, authInfo?: AuthInfo) {
     .shouldNavigateTo(TokenGetterPage);
 }
 
-export { AuthInfo, interactiveLogin, createRole, directLogin };
+export { AuthInfo, interactiveLogin, createRole, directLogin, go2PageWithAuth };

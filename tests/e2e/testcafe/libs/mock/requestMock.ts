@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RequestMock } from 'testcafe';
-import { SITE_URL } from '../config';
+import { SITE_URL } from '../../config';
 const fs = require('fs');
 
 interface IRequestMockData {
@@ -25,7 +25,6 @@ const defaultHeaders = {
 function requestMock(data: IRequestMockData[]): RequestMock {
   let requestMock = RequestMock();
 
-  // const responseHeader = defaultHeaders;
   data.forEach((item: IRequestMockData) => {
     const rawData = fs.readFileSync(item.responseFile);
     const jsonData = JSON.parse(rawData);
