@@ -14,7 +14,8 @@ import ProfileService from '../../service/profile';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
 import { Post, Profile, Item, Raw } from '../../models';
-import { ESendStatus, PostSendStatusHandler } from '../../service/post/postSendStatusHandler';
+import { PostStatusHandler } from './postStatusHandler';
+import { POST_STATUS } from '../constants';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
 import { ErrorParser } from '../../utils/error';
@@ -47,24 +48,32 @@ export type PostData = {
 
 export type PostSendData = {
   id: number;
-  status: ESendStatus;
+  status: POST_STATUS;
 };
 
 export default class PostService extends BaseService<Post> {
   static serviceName = 'PostService';
 
-  private postSendStatusHandler: PostSendStatusHandler;
+  private _postStatusHandler: PostStatusHandler;
   constructor() {
     const subscriptions = {
       [SOCKET.POST]: handleDataFromSexio,
     };
     super(PostDao, PostAPI, baseHandleData, subscriptions);
-    this.postSendStatusHandler = new PostSendStatusHandler();
+    this._postStatusHandler = new PostStatusHandler();
   }
 
-  async getPostsFromLocal({ groupId, offset, limit }: IPostQuery): Promise<IPostResult> {
+  async getPostsFromLocal({
+    groupId,
+    offset,
+    limit,
+  }: IPostQuery): Promise<IPostResult> {
     const postDao = daoManager.getDao(PostDao);
-    const posts: Post[] = await postDao.queryPostsByGroupId(groupId, offset, limit);
+    const posts: Post[] = await postDao.queryPostsByGroupId(
+      groupId,
+      offset,
+      limit,
+    );
     const result: IPostResult = {
       posts: [],
       items: [],
@@ -82,14 +91,19 @@ export default class PostService extends BaseService<Post> {
         }
       });
       const itemDao = daoManager.getDao(ItemDao);
-      result.items = await itemDao.getItemsByIds([...Array.from(new Set(itemIds))]);
+      result.items = await itemDao.getItemsByIds([
+        ...Array.from(new Set(itemIds)),
+      ]);
     }
     return result;
   }
 
-  async getPostsFromRemote(
-    { groupId, postId, limit, direction }: IPostQuery,
-  ): Promise<IRawPostResult> {
+  async getPostsFromRemote({
+    groupId,
+    postId,
+    limit,
+    direction,
+  }: IPostQuery): Promise<IRawPostResult> {
     const params: any = {
       limit,
       direction,
@@ -115,9 +129,12 @@ export default class PostService extends BaseService<Post> {
     return result;
   }
 
-  async getPostsByGroupId(
-    { groupId, offset = 0, postId = 0, limit = 20 }: IPostQuery,
-  ): Promise<IPostResult> {
+  async getPostsByGroupId({
+    groupId,
+    offset = 0,
+    postId = 0,
+    limit = 20,
+  }: IPostQuery): Promise<IPostResult> {
     try {
       const result = await this.getPostsFromLocal({
         groupId,
@@ -130,7 +147,6 @@ export default class PostService extends BaseService<Post> {
 
       // should try to get more posts from server
       mainLogger.debug(
-        // tslint:disable-next-line:max-line-length
         `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`,
       );
 
@@ -148,7 +164,6 @@ export default class PostService extends BaseService<Post> {
         items,
         hasMore: remoteResult.hasMore,
       };
-
     } catch (e) {
       mainLogger.error(e);
       return {
@@ -159,22 +174,15 @@ export default class PostService extends BaseService<Post> {
     }
   }
 
-  async getPostSendStatus(id: number): Promise<PostSendData> {
-    return {
-      id,
-      status: await this.postSendStatusHandler.getStatus(id),
-    };
-  }
-
-  async isVersionInPreInsert(version: number): Promise<{ existed: boolean; id: number }> {
-    return this.postSendStatusHandler.isVersionInPreInsert(version);
+  isInPreInsert(id: number) {
+    return this._postStatusHandler.isInPreInsert(id);
   }
 
   async sendPost(params: RawPostInfo): Promise<PostData[] | null> {
     // handle params, if has file item, should send file first then send post
-    mainLogger.info('start to send log');
-    const info: Post = PostServiceHandler.buildPostInfo(params);
-    return this.innerSendPost(info);
+    mainLogger.info('start to send post log');
+    const buildPost: Post = PostServiceHandler.buildPostInfo(params);
+    return this.innerSendPost(buildPost);
   }
 
   async reSendPost(postId: number): Promise<PostData[] | null> {
@@ -189,70 +197,64 @@ export default class PostService extends BaseService<Post> {
     return null;
   }
 
-  async innerSendPost(info: Post): Promise<PostData[] | null> {
-    if (info) {
-      await this.handlePreInsertProcess(info);
-      const id = info.id;
-      delete info.id;
+  async innerSendPost(buildPost: Post): Promise<PostData[] | null> {
+    if (buildPost) {
+      await this.handlePreInsertProcess(buildPost);
+      const { id: preInsertId } = buildPost;
+      delete buildPost.id;
+      delete buildPost.status;
 
       try {
-        const resp = await PostAPI.sendPost(info);
-
-        if (resp && resp.data) {
-          info.id = id;
-          return this.handleSendPostSuccess(resp.data, info);
-          // resp = await baseHandleData(resp.data);
+        const resp = await PostAPI.sendPost(buildPost);
+        if (resp && !resp.data.error) {
+          return this.handleSendPostSuccess(resp.data, preInsertId);
         }
 
         // error, notifiy, should add error handle after IResponse give back error info
-        return this.handleSendPostFail(id, info.version);
-
+        return this.handleSendPostFail(preInsertId);
       } catch (e) {
         mainLogger.warn('crash of innerSendPost()');
-        this.handleSendPostFail(id, info.version);
+        this.handleSendPostFail(preInsertId);
         throw ErrorParser.parse(e);
       }
-
     }
     return null;
   }
 
-  async handlePreInsertProcess(postInfo: Post): Promise<void> {
-    this.postSendStatusHandler.addIdAndVersion(postInfo.id, postInfo.version);
-    notificationCenter.emitEntityPut(ENTITY.POST, [postInfo]);
-    notificationCenter.emitEntityPut(ENTITY.POST_SENT_STATUS, [
-      {
-        id: postInfo.id,
-        status: ESendStatus.INPROGRESS,
-      },
-    ]);
+  async handlePreInsertProcess(buildPost: Post): Promise<void> {
+    this._postStatusHandler.setPreInsertId(buildPost.id);
+    notificationCenter.emitEntityPut(ENTITY.POST, [buildPost]);
     const dao = daoManager.getDao(PostDao);
-    await dao.put(postInfo);
+    await dao.put(buildPost);
   }
 
-  async handleSendPostSuccess(data: Raw<Post>, oldPost: Post): Promise<PostData[]> {
-    this.postSendStatusHandler.removeVersion(oldPost.version);
+  async handleSendPostSuccess(
+    data: Raw<Post>,
+    preInsertId: number,
+  ): Promise<PostData[]> {
+    this._postStatusHandler.removePreInsertId(preInsertId);
     const post = transform<Post>(data);
     const obj: PostData = {
-      id: oldPost.id,
+      id: preInsertId,
       data: post,
     };
     const result = [obj];
     notificationCenter.emitEntityReplace(ENTITY.POST, result);
     const dao = daoManager.getDao(PostDao);
-    await dao.delete(oldPost.id);
+    await dao.delete(preInsertId);
     await dao.put(post);
     return result;
   }
 
-  async handleSendPostFail(id: number, version: number) {
-    this.postSendStatusHandler.removeVersion(version);
-    notificationCenter.emitEntityPut(ENTITY.POST_SENT_STATUS, [
-      {
-        id,
-        status: ESendStatus.FAIL,
-      },
-    ]);
+  async handleSendPostFail(preInsertId: number) {
+    this._postStatusHandler.setPreInsertId(preInsertId, POST_STATUS.FAIL);
+    const dao = daoManager.getDao(PostDao);
+    const updateData = {
+      id: preInsertId,
+      status: POST_STATUS.FAIL,
+    };
+    dao.update(updateData);
+    notificationCenter.emitEntityUpdate(ENTITY.POST, [updateData]);
     return [];
   }
 
@@ -328,7 +330,11 @@ export default class PostService extends BaseService<Post> {
     return null;
   }
 
-  async likePost(postId: number, personId: number, toLike: boolean): Promise<Post | null> {
+  async likePost(
+    postId: number,
+    personId: number,
+    toLike: boolean,
+  ): Promise<Post | null> {
     if (postId < 0) {
       return null;
     }
@@ -370,7 +376,10 @@ export default class PostService extends BaseService<Post> {
   async bookmarkPost(postId: number, toBook: boolean): Promise<Profile | null> {
     // favorite_post_ids in profile
     const profileService: ProfileService = ProfileService.getInstance();
-    const profile: Profile | null = await profileService.putFavoritePost(postId, toBook);
+    const profile: Profile | null = await profileService.putFavoritePost(
+      postId,
+      toBook,
+    );
     return profile;
   }
 

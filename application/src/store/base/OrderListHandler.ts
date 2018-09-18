@@ -5,8 +5,19 @@ import { service } from 'sdk';
 import storeManager from './StoreManager';
 import BaseNotificationSubscribable from './BaseNotificationSubscribable';
 import OrderListStore from './OrderListStore';
-import { handleDelete, handleReplace, handleReplaceAll, handleUpdateAndPut } from './handleIncomingDataByType';
-import { IEntity, IIDSortKey, IIncomingData, ISortFunc, IHandleIncomingDataByType } from '../store';
+import {
+  handleDelete,
+  handleReplace,
+  handleReplaceAll,
+  handleUpdateAndPut,
+} from './handleIncomingDataByType';
+import {
+  IEntity,
+  IIDSortKey,
+  IIncomingData,
+  ISortFunc,
+  IHandleIncomingDataByType,
+} from '../store';
 import { defaultSortFunc } from '../utils';
 import { ENTITY_NAME } from '../constants';
 
@@ -16,7 +27,10 @@ enum BIND_EVENT {
   'DATA_CHANGE' = 'DATA_CHANGE',
 }
 
-export default class OrderListHandler<T extends BaseModel, K extends IEntity> extends BaseNotificationSubscribable {
+export default class OrderListHandler<
+  T extends BaseModel,
+  K extends IEntity
+> extends BaseNotificationSubscribable {
   private _store: OrderListStore;
   private _hasBigger: boolean;
   private _hasSmaller: boolean;
@@ -52,18 +66,36 @@ export default class OrderListHandler<T extends BaseModel, K extends IEntity> ex
     this._pageSize = pageSize;
   }
 
-  handleIncomingData(entityName: ENTITY_NAME, { type, entities }: IIncomingData<T>) {
+  handleIncomingData(
+    entityName: ENTITY_NAME,
+    { type, entities }: IIncomingData<T | { id: number; data: T }>,
+  ) {
     if (!entities.size && type !== EVENT_TYPES.REPLACE_ALL) {
       return;
     }
     const existKeys = this._store.getIds();
-    const keys = _.map(Array.from(entities.values()).filter(entity => this._isMatchedFunc(entity)), 'id');
+    const keys = _.map(
+      Array.from(entities.values()).filter(entity =>
+        this._isMatchedFunc(
+          type === EVENT_TYPES.REPLACE
+            ? (entity as { id: number; data: T }).data
+            : entity,
+        ),
+      ),
+      'id',
+    );
     const matchedKeys = _.intersection(keys, existKeys);
-    const { deleted, updated, updateEntity } = this._handleIncomingDataByType[type]<T>(matchedKeys, entities, this._transformFunc, this._store);
+    // prettier-ignore
+    const { deleted, updated, updateEntity } = this._handleIncomingDataByType[type]<T | { id: number; data: T; }>(
+      matchedKeys,
+      entities,
+      this._transformFunc,
+      this._store,
+    );
 
     if (type !== EVENT_TYPES.DELETE) {
       const differentKeys = _.difference(keys, existKeys);
-      differentKeys.forEach((key) => {
+      differentKeys.forEach((key: number) => {
         const model = entities.get(key) as T;
         const idSortKey = this._transformFunc(model);
         if (this.isInRange(idSortKey.sortKey)) {
@@ -89,8 +121,8 @@ export default class OrderListHandler<T extends BaseModel, K extends IEntity> ex
       inRange = sortKey >= smallest.sortKey && sortKey <= biggest.sortKey;
       if (!inRange) {
         inRange =
-            (sortKey < smallest.sortKey && !this._hasSmaller) ||
-            (sortKey > biggest.sortKey && !this._hasBigger);
+          (sortKey < smallest.sortKey && !this._hasSmaller) ||
+          (sortKey > biggest.sortKey && !this._hasBigger);
       }
     } else {
       inRange = !(this._hasBigger && this._hasSmaller);
@@ -103,7 +135,11 @@ export default class OrderListHandler<T extends BaseModel, K extends IEntity> ex
     return this._store;
   }
 
-  handlePageData(entityName: ENTITY_NAME, dataModels: IEntity[], isBigger: boolean) {
+  handlePageData(
+    entityName: ENTITY_NAME,
+    dataModels: IEntity[],
+    isBigger: boolean,
+  ) {
     if (!dataModels.length) {
       return;
     }
@@ -119,7 +155,7 @@ export default class OrderListHandler<T extends BaseModel, K extends IEntity> ex
     }
     this.updateEntityStore(entityName, dataModels);
     this._store.batchSet(handledData);
-      // this._store.dump();
+    // this._store.dump();
   }
 
   updateEntityStore(entityName: ENTITY_NAME, entities: IEntity[]) {

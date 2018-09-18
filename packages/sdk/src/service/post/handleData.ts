@@ -9,7 +9,11 @@ import { ENTITY } from '../../service/eventKey';
 import GroupService from '../../service/group';
 import IncomingPostHandler from '../../service/post/incomingPostHandler';
 import GroupDao from '../../dao/group';
-import { transform, baseHandleData as utilsBaseHandleData, isIEOrEdge } from '../utils';
+import {
+  transform,
+  baseHandleData as utilsBaseHandleData,
+  isIEOrEdge,
+} from '../utils';
 import { Post, Group, Raw } from '../../models';
 import PostService from '.';
 import { mainLogger } from 'foundation';
@@ -27,7 +31,9 @@ const handlePostsOverflow = async (newReceivedPosts: Post[]) => {
   mainLogger.info(`Total post count in indexedDB ${totalPostCount}`);
 
   const occupation = await daoManager.getStorageQuotaOccupation();
-  mainLogger.info(`Estimated storage quota occupation ${Number(occupation) * 100}%`);
+  mainLogger.info(
+    `Estimated storage quota occupation ${Number(occupation) * 100}%`,
+  );
 
   // When there are more than 300000 posts in indexedDB in total, or when more than 80% of
   // the local persist storage quota is used, the following code will remove posts
@@ -40,10 +46,14 @@ const handlePostsOverflow = async (newReceivedPosts: Post[]) => {
 };
 
 function transformData(data: Raw<Post>[] | Raw<Post>): Post[] {
-  return ([] as Raw<Post>[]).concat(data).map((item: Raw<Post>) => transform<Post>(item));
+  return ([] as Raw<Post>[])
+    .concat(data)
+    .map((item: Raw<Post>) => transform<Post>(item));
 }
 
-export async function checkIncompletePostsOwnedGroups(posts: Post[]): Promise<Group[]> {
+export async function checkIncompletePostsOwnedGroups(
+  posts: Post[],
+): Promise<Group[]> {
   if (posts.length) {
     const groupIds: number[] = [];
     posts.forEach(post => groupIds.push(post.group_id));
@@ -54,7 +64,9 @@ export async function checkIncompletePostsOwnedGroups(posts: Post[]): Promise<Gr
   return [];
 }
 
-export async function handleDeactivedAndNormalPosts(posts: Post[]): Promise<Post[]> {
+export async function handleDeactivedAndNormalPosts(
+  posts: Post[],
+): Promise<Post[]> {
   const postDao = daoManager.getDao(PostDao);
   // const postService = serviceManager.getInstance(PostService);
   // handle deactivated data and normal data
@@ -77,9 +89,10 @@ export async function handleDataFromSexio(data: Raw<Post>[]): Promise<void> {
   }
   const transformedData: Post[] = transformData(data);
   // handle edited posts not in local db
-  const validPosts: Post[] = await IncomingPostHandler
-    .handleGroupPostsDiscontinuousCausedByModificationTimeChange(transformedData);
-  await handlePreInstedPosts(validPosts);
+  const validPosts: Post[] = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
+    transformedData,
+  );
+  await handlePreInsertPosts(validPosts);
   if (validPosts.length) {
     handleDeactivedAndNormalPosts(validPosts);
   }
@@ -95,16 +108,16 @@ export async function handleDataFromIndex(
   const transformedData = transformData(data);
 
   // handle max exceeded
-  const exceedPostsHandled = await IncomingPostHandler
-    .handelGroupPostsDiscontinuousCasuedByOverThreshold(
-      transformedData,
-      maxPostsExceed,
+  const exceedPostsHandled = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(
+    transformedData,
+    maxPostsExceed,
   );
-  await handlePreInstedPosts(exceedPostsHandled);
+  await handlePreInsertPosts(exceedPostsHandled);
 
   // handle discontinuous by modified
-  const result = await IncomingPostHandler
-    .handleGroupPostsDiscontinuousCausedByModificationTimeChange(exceedPostsHandled);
+  const result = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
+    exceedPostsHandled,
+  );
   handleDeactivedAndNormalPosts(result);
 }
 
@@ -124,20 +137,18 @@ export function baseHandleData(
   return handleDeactivedAndNormalPosts(transformedData);
 }
 
-export async function handlePreInstedPosts(posts: Post[] = []) {
+export async function handlePreInsertPosts(posts: Post[] = []) {
   if (!posts || !posts.length) {
     return [];
   }
   const ids: number[] = [];
   const postService = PostService.getInstance<PostService>();
-  await Promise.all(
-    posts.map(async (element: Post) => {
-      const obj = await postService.isVersionInPreInsert(element.version);
-      if (obj && obj.existed) {
-        ids.push(obj.id);
-      }
-    }),
-  );
+  posts.map(async (post: Post) => {
+    const isInPreInsert = postService.isInPreInsert(post.version);
+    if (isInPreInsert) {
+      ids.push(post.version);
+    }
+  });
 
   if (ids.length) {
     const postDao = daoManager.getDao(PostDao);

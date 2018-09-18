@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import merge from 'lodash/merge';
-import NetworkClient, { INetworkRequests, IResponse } from './NetworkClient';
+import NetworkClient, {
+  INetworkRequests,
+  IResponse,
+  IResponseError,
+} from './NetworkClient';
 import { ApiConfig, HttpConfigType, PartialApiConfig } from '../types';
 import { Throw, ErrorTypes, Aware } from '../utils';
 import { defaultConfig } from './defaultConfig';
@@ -102,7 +106,9 @@ class Api {
   static getDataById<T>(id: number): Promise<IResponse<Raw<T>>> {
     return this.glipNetworkClient.get(`${this.basePath}/${id}`);
   }
-  static postData<T>(data: Partial<T>): Promise<IResponse<Raw<T>>> {
+  static postData<T>(
+    data: Partial<T>,
+  ): Promise<IResponse<Raw<T> & IResponseError>> {
     return this.glipNetworkClient.post(`${this.basePath}`, data);
   }
   static putDataById<T>(
