@@ -46,7 +46,7 @@ class TimerDemoViewModel extends AbstractViewModel
   }
 
   startTimer() {
-    this.timer = setInterval(() => this.updateTime(), 1000);
+    this.timer = setInterval(() => this.updateTimeWithLoading(), 1000);
   }
 
   stopTimer() {
