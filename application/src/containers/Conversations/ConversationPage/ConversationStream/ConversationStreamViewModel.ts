@@ -2,9 +2,10 @@ import OrderListHandler from '@/store/base/OrderListHandler';
 import storeManager, { ENTITY_NAME } from '@/store';
 
 import { Post } from 'sdk/models';
-import PostModel from '@/store/models/Post';
 import { PostService, StateService, ENTITY } from 'sdk/service';
 import { IIncomingData } from '@/store/store';
+import TransformHandler from '@/store/base/TransformHandler';
+import PostModel from '@/store/models/Post';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -14,16 +15,15 @@ const transformFunc = (dataModel: Post) => ({
   sortKey: -dataModel.created_at,
 });
 
-export default class ConversationStreamViewModel extends OrderListHandler<
+export class ConversationStreamViewModel extends TransformHandler<
   PostModel,
   Post
 > {
+  groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   stateService: StateService;
   postService: PostService;
-  groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
-  hasMore: boolean = true;
   constructor(public groupId: number) {
-    super(isMatchedFunc(groupId), transformFunc);
+    super(new OrderListHandler(isMatchedFunc(groupId), transformFunc));
     const postCallback = (params: IIncomingData<PostModel>) => {
       this.handleIncomingData(ENTITY_NAME.POST, params);
     };
@@ -34,15 +34,15 @@ export default class ConversationStreamViewModel extends OrderListHandler<
 
   async loadPosts() {
     this.postService = PostService.getInstance();
-    const offset = this.getStore().getSize();
-    const { id: oldest = 0 } = this.getStore().last() || {};
+    const offset = this.orderListStore.getSize();
+    const { id: oldest = 0 } = this.orderListStore.last() || {};
     const { posts, hasMore } = await this.postService.getPostsByGroupId({
       offset,
       groupId: Number(this.groupId),
       postId: oldest,
     });
     this.handlePageData(ENTITY_NAME.POST, posts, true);
-    this.hasMore = hasMore;
+    this.store.hasMore = hasMore;
   }
 
   markAsRead() {
@@ -54,10 +54,6 @@ export default class ConversationStreamViewModel extends OrderListHandler<
   }
 
   getSize() {
-    return this.getStore().getSize();
-  }
-
-  checkHasMore() {
-    return this.hasMore;
+    return this.store.getSize();
   }
 }
