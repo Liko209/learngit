@@ -46,7 +46,7 @@ const HeaderIconButton = (props: JuiIconButtonProps) => {
   );
 };
 
-const UMI_Count = [0];
+const UMI_COUNT = [0];
 @observer
 class Home extends Component<IProps, IStates>  {
   private homePresenter: HomePresenter;
@@ -198,7 +198,7 @@ class Home extends Component<IProps, IStates>  {
               expanded={expanded}
               id="leftnav"
               icons={this.getIcons()}
-              umiCount={UMI_Count}
+              umiCount={UMI_COUNT}
               handleRouterChange={handleRouterChange}
               handleTitle={handleTitle}
             />

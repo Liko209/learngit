@@ -21,7 +21,6 @@ class NavPresenter {
   @observable menus: string[] = [];
   @observable backNavArray: { title: string }[] = parse(this.getItem('backNavArray'));
   @observable forwardNavArray: { title: string }[] = parse(this.getItem('forwardNavArray'));
-  @observable counts: number = 0;
   @observable menuClicked: boolean = false;
 
   @observable state = {
