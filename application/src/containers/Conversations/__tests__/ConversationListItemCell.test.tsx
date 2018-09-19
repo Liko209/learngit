@@ -10,15 +10,11 @@ import { ConversationListItemCell } from '../ConversationListItemCell';
 const ConversationListItemModule = require.requireActual(
   'ui-components/molecules/ConversationList/ConversationListItem',
 );
-ConversationListItemModule.ConversationListItem = ({
-  title,
-  status,
-  umiVariant,
-}: {
-    title: string;
-    status?: string;
-    umiVariant: string;
-  }) => (
+ConversationListItemModule.ConversationListItem = ({ title, status, umiVariant }: {
+  title: string;
+  status?: string;
+  umiVariant: string;
+}) => (
     <div>
       {status ? <div>{status}</div> : null}
       {`${title}, ${umiVariant}`}
