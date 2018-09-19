@@ -11,15 +11,19 @@ import {
   LoadingMorePlugin,
   onScrollToTop,
   onScrollToBottom,
+  loadingTop,
+  loadingBottom,
 } from '../LoadingMorePlugin';
 
 class MyViewModel extends AbstractViewModel {
   @onScrollToTop
+  @loadingTop
   fetchPrev() {
     return this.sleep(10);
   }
 
   @onScrollToBottom
+  @loadingBottom
   fetchNext() {
     return this.sleep(10);
   }

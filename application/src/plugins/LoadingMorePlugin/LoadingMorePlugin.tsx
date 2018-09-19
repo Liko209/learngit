@@ -73,7 +73,7 @@ class LoadingMorePlugin implements IPlugin {
 }
 
 const onScrollToTop = function (
-  vm: ILoadingMoreViewModel,
+  vm: IViewModel,
   propertyKey: string,
   descriptor: PropertyDescriptor,
 ) {
@@ -83,7 +83,7 @@ const onScrollToTop = function (
 };
 
 const onScrollToBottom = function (
-  vm: ILoadingMoreViewModel,
+  vm: IViewModel,
   propertyKey: string,
   descriptor: PropertyDescriptor,
 ) {
