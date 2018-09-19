@@ -87,6 +87,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this._onClick = this._onClick.bind(this);
     this.isFavorite = !!props.isFavorite;
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
+    this.showDraftTag = false;
 
     autorun(() => {
       this.getDataFromStore();
@@ -181,6 +182,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.clickGroup(this.id);
     this._jump2Conversation(this.id);
+    this.showDraftTag = false;
   }
   private _jump2Conversation(id: number) {
     const { history } = this.props;
