@@ -12,19 +12,15 @@ import {
   ConversationPageHeaderPresenter,
   ConversationTypes,
 } from './ConversationPageHeaderPresenter';
-import { getGroupName } from '@/utils/groupName';
 import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
 import { TranslationFunction } from 'i18next';
 import injectStore, { IInjectedStoreProps } from '@/store/inject';
 import VM from '@/store/ViewModel';
-import { ENTITY_NAME } from '@/store';
-import GroupModel from '@/store/models/Group';
-import { Group } from 'sdk/models';
 import { toTitleCase } from '@/utils';
 
 type ConversationPageHeaderProps = IInjectedStoreProps<VM> & {
-  id?: number;
+  id: number;
   t: TranslationFunction;
 };
 @observer
@@ -32,148 +28,77 @@ class ConversationPageHeaderComponent extends React.Component<
   ConversationPageHeaderProps,
   {}
 > {
-  presenter: ConversationPageHeaderPresenter;
-
   constructor(props: ConversationPageHeaderProps) {
     super(props);
-    this.presenter = new ConversationPageHeaderPresenter();
+    this.rightButtonClickHandler = this.rightButtonClickHandler.bind(this);
   }
+  rightButtonClickHandler(evt: React.SyntheticEvent, name: string) {
+    // console.log(evt, name);
+  }
+
   render() {
-    const { id, t = (str: string) => str, getEntity } = this.props;
-    if (!id) {
-      return null;
-    }
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
-    if (!group.members) {
-      return null;
-    }
-    const groupName = getGroupName(
-      getEntity,
-      group,
-      this.presenter.userId || undefined,
-    );
-    const type = this.presenter.getConversationType(group);
-    const isFavorite = this.presenter.groupIsInFavorites(group);
-    const isPrivate = group.privacy === 'private';
+    const { t = (str: string) => str, id } = this.props;
+    const presenter = new ConversationPageHeaderPresenter(id);
+    const groupName = presenter.getGroupName(t);
+    const type = presenter.getConversationType();
+    const isFavorite = presenter.groupIsInFavorites();
+    const isPrivate = presenter.groupIsPrivate();
 
-    const MarkFavoriteButton = (
-      <JuiCheckboxButton
-        tooltipTitle={
-          isFavorite
-            ? toTitleCase(t('removeFromFavorites'))
-            : toTitleCase(t('addToFavorites'))
-        }
-        checkedIconName="star"
-        iconName="star_border"
-        checked={isFavorite}
-      >
-        star_border
-      </JuiCheckboxButton>
-    );
-
-    const LockButton = (
-      <JuiCheckboxButton
-        tooltipTitle={
-          isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')
-        }
-        checkedIconName="lock"
-        iconName="lock_open"
-        checked={isPrivate}
-      >
-        favorite_border
-      </JuiCheckboxButton>
-    );
-
-    const CallButton = (
-      <JuiIconButton tooltipTitle={toTitleCase(t('startVoiceCall'))}>
-        local_phone
-      </JuiIconButton>
-    );
-    const AudioConferenceButton = (
-      <JuiIconButton tooltipTitle={toTitleCase(t('startConferenceCall'))}>
-        device_hub
-      </JuiIconButton>
-    );
-    const MeetingButton = (
-      <JuiIconButton tooltipTitle={toTitleCase(t('startVideoCall'))}>
-        videocam
-      </JuiIconButton>
-    );
-    const AddMemberButton = (
-      <JuiIconButton tooltipTitle={toTitleCase(t('addMembers'))}>
-        person_add
-      </JuiIconButton>
-    );
-    const MoreButton = (
-      <JuiIconButton tooltipTitle={toTitleCase(t('conversationSettings'))}>
-        settings
-      </JuiIconButton>
-    );
-
-    enum Buttons {
-      MarkFavorite,
-      Lock,
-      Call,
-      AudioConference,
-      Meeting,
-      AddMember,
-      More,
-    }
-
-    const typeIconMap = {
-      [ConversationTypes.TEAM]: [
-        Buttons.MarkFavorite,
-        Buttons.Lock,
-        Buttons.AudioConference,
-        Buttons.Meeting,
-        Buttons.AddMember,
-        Buttons.More,
-      ],
-      [ConversationTypes.ME]: [Buttons.MarkFavorite, Buttons.More],
-      [ConversationTypes.SMS]: [
-        Buttons.MarkFavorite,
-        Buttons.Call,
-        Buttons.Meeting,
-        Buttons.AddMember,
-        Buttons.More,
-      ],
-      [ConversationTypes.NORMAL_ONE_TO_ONE]: [
-        Buttons.MarkFavorite,
-        Buttons.Call,
-        Buttons.Meeting,
-        Buttons.AddMember,
-        Buttons.More,
-      ],
-      [ConversationTypes.NORMAL_GROUP]: [
-        Buttons.MarkFavorite,
-        Buttons.AudioConference,
-        Buttons.Meeting,
-        Buttons.AddMember,
-        Buttons.More,
-      ],
-    };
+    const rightButtons = presenter
+      .getRightButtons()
+      .map(({ name, iconName, tooltip }) =>
+        ((name: string) => {
+          const onRightButtonClick = (e: React.SyntheticEvent) =>
+            this.rightButtonClickHandler(e, name);
+          return (
+            <JuiIconButton
+              key={name}
+              tooltipTitle={toTitleCase(t(tooltip))}
+              onClick={onRightButtonClick}
+            >
+              {iconName}
+            </JuiIconButton>
+          );
+        })(name),
+      );
     return (
       <JuiConversationPageHeader
-        title={
-          groupName + (type === ConversationTypes.SMS ? ` (${t('text')})` : '')}
+        title={groupName}
         SubTitle={
           <JuiButtonBar size="small" overlapping={true}>
-            {typeIconMap[type].includes(Buttons.MarkFavorite)
-              ? MarkFavoriteButton
-              : null}
-            {typeIconMap[type].includes(Buttons.Lock) ? LockButton : null}
+            <JuiCheckboxButton
+              tooltipTitle={
+                isFavorite
+                  ? toTitleCase(t('removeFromFavorites'))
+                  : toTitleCase(t('addToFavorites'))
+              }
+              checkedIconName="star"
+              iconName="star_border"
+              checked={isFavorite}
+            >
+              star_border
+            </JuiCheckboxButton>
+            {type === ConversationTypes.TEAM ? (
+              <JuiCheckboxButton
+                tooltipTitle={
+                  isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')
+                }
+                checkedIconName="lock"
+                iconName="lock_open"
+                checked={isPrivate}
+              >
+                favorite_border
+              </JuiCheckboxButton>
+            ) : null}
           </JuiButtonBar>}
         Right={
           <JuiButtonBar size="medium" overlapping={true}>
-            {typeIconMap[type].includes(Buttons.Call) ? CallButton : null}
-            {typeIconMap[type].includes(Buttons.AudioConference)
-              ? AudioConferenceButton
-              : null}
-            {typeIconMap[type].includes(Buttons.Meeting) ? MeetingButton : null}
-            {typeIconMap[type].includes(Buttons.AddMember)
-              ? AddMemberButton
-              : null}
-            {typeIconMap[type].includes(Buttons.More) ? MoreButton : null}
+            {rightButtons}
+            <JuiIconButton
+              tooltipTitle={toTitleCase(t('conversationSettings'))}
+            >
+              settings
+            </JuiIconButton>
           </JuiButtonBar>}
       />
     );

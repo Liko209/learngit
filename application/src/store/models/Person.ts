@@ -1,8 +1,8 @@
-import storeManager, { ENTITY_NAME } from '@/store';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
 import { Person } from 'sdk/models';
 import Base from './Base';
-import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 
 export default class PersonModel extends Base<Person> {
   id: number;
@@ -22,6 +22,8 @@ export default class PersonModel extends Base<Person> {
   isPseudoUser?: boolean;
   @observable
   glipUserId?: number;
+  @observable
+  awayStatus?: string | null;
 
   constructor(data: Person) {
     super(data);
@@ -34,6 +36,7 @@ export default class PersonModel extends Base<Person> {
       rc_phone_numbers,
       is_pseudo_user,
       glip_user_id,
+      away_status,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -43,6 +46,7 @@ export default class PersonModel extends Base<Person> {
     this.rcPhoneNumbers = rc_phone_numbers;
     this.isPseudoUser = is_pseudo_user;
     this.glipUserId = glip_user_id;
+    this.awayStatus = away_status;
   }
 
   static fromJS(data: Person) {
@@ -53,10 +57,7 @@ export default class PersonModel extends Base<Person> {
   get displayName(): string {
     if (this.isPseudoUser) {
       if (this.glipUserId) {
-        const personStore = storeManager.getEntityMapStore(
-          ENTITY_NAME.PERSON,
-        ) as MultiEntityMapStore<Person, PersonModel>;
-        const linkedUser = personStore.get(this.glipUserId);
+        const linkedUser = getEntity(ENTITY_NAME.PERSON, this.glipUserId);
         if (linkedUser) {
           return linkedUser.displayName;
         }
