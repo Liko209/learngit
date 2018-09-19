@@ -114,7 +114,7 @@ class Api {
   static putDataById<T>(
     id: number,
     data: Partial<T>,
-  ): Promise<IResponse<Raw<T>>> {
+  ): Promise<IResponse<Raw<T> & IResponseError>> {
     return this.glipNetworkClient.put(`${this.basePath}/${id}`, data);
   }
 }

@@ -20,6 +20,7 @@ import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
+import { ErrorParser } from '../../utils/error';
 export interface IPostResult {
   posts: Post[];
   items: Item[];
@@ -185,37 +186,36 @@ export default class PostService extends BaseService<Post> {
   }
 
   async reSendPost(postId: number): Promise<PostData[] | null> {
-    const dao = daoManager.getDao(PostDao);
-    let post = await dao.get(postId);
-    if (post) {
-      post = PostServiceHandler.buildResendPostInfo(post);
-      return this.innerSendPost(post);
+    if (this.isInPreInsert(postId)) {
+      const dao = daoManager.getDao(PostDao);
+      let post = await dao.get(postId);
+      if (post) {
+        post = PostServiceHandler.buildResendPostInfo(post);
+        return this.innerSendPost(post);
+      }
     }
     return null;
   }
 
-  async innerSendPost(buildPost: Post): Promise<PostData[] | null> {
-    if (buildPost) {
-      await this.handlePreInsertProcess(buildPost);
-      const { id: preInsertId } = buildPost;
-      delete buildPost.id;
-      delete buildPost.status;
+  async innerSendPost(buildPost: Post): Promise<PostData[]> {
+    await this.handlePreInsertProcess(buildPost);
+    const { id: preInsertId } = buildPost;
+    delete buildPost.id;
+    delete buildPost.status;
 
-      try {
-        const resp = await PostAPI.sendPost(buildPost);
-        if (resp && !resp.data.error) {
-          return this.handleSendPostSuccess(resp.data, preInsertId);
-        }
-
-        // error, notifiy, should add error handle after IResponse give back error info
-        return this.handleSendPostFail(preInsertId);
-      } catch (e) {
-        mainLogger.warn('crash of innerSendPost()');
-        this.handleSendPostFail(preInsertId);
-        // Don't throw error, because support for pre-insertion.
+    try {
+      const resp = await PostAPI.sendPost(buildPost);
+      if (resp && !resp.data.error) {
+        return this.handleSendPostSuccess(resp.data, preInsertId);
       }
+
+      // error, notifiy, should add error handle after IResponse give back error info
+      throw resp;
+    } catch (e) {
+      mainLogger.warn('crash of innerSendPost()');
+      this.handleSendPostFail(preInsertId);
+      throw ErrorParser.parse(e);
     }
-    return null;
   }
 
   async handlePreInsertProcess(buildPost: Post): Promise<void> {
@@ -302,9 +302,13 @@ export default class PostService extends BaseService<Post> {
     }
   }
 
-  async deletePost(id: number): Promise<Post | null> {
-    if (id < 0) {
-      return null;
+  async deletePost(id: number): Promise<boolean> {
+    if (this.isInPreInsert(id)) {
+      this._postStatusHandler.removePreInsertId(id);
+      notificationCenter.emitEntityDelete(ENTITY.POST, [{ id }]);
+      const dao = daoManager.getDao(PostDao);
+      dao.delete(id);
+      return true;
     }
     const postDao = daoManager.getDao(PostDao);
     const post = await postDao.get(id);
@@ -312,19 +316,17 @@ export default class PostService extends BaseService<Post> {
       post.deactivated = true;
       post._id = post.id;
       delete post.id;
-      const response = await PostAPI.putDataById<Post>(id, post);
-      if (response.data) {
-        const result = await baseHandleData(response.data);
-        if (result && result.length) {
-          return result[0];
+      try {
+        const resp = await PostAPI.putDataById<Post>(id, post);
+        if (resp && !resp.data.error) {
+          return true;
         }
+        throw resp;
+      } catch (e) {
+        throw ErrorParser.parse(e);
       }
-      // error
-      return null;
     }
-
-    // error
-    return null;
+    return false;
   }
 
   async likePost(

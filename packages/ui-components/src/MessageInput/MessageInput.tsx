@@ -3,8 +3,7 @@ import ReactQuill, { Quill } from 'react-quill';
 import { Delta, Sources } from 'quill';
 import { injectGlobal } from 'styled-components';
 import MarkdownShortcuts from './MarkdownShortcuts';
-
-// import toolbarEmoji from 'quill-emoji';
+import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
 
 import 'react-quill/dist/quill.snow.css';
 
@@ -45,59 +44,49 @@ Quill.register({
 interface IProps {
   value: string | Delta;
   onChange: Function;
-  keyboardEvent: {};
-  setEditor: (editor: Quill) => void;
+  keyboardEventHandler: {};
 }
-interface IState {}
+interface IState {
+  modules: {};
+}
 
 class JuiMessageInput extends React.Component<IProps, IState> {
-  private _reactQuillRef: React.RefObject<ReactQuill>;
-  private _quill: Quill;
+  private _modules: {};
   constructor(props: IProps) {
     super(props);
     this.onChange = this.onChange.bind(this);
 
-    this._reactQuillRef = React.createRef();
+    const { keyboardEventHandler } = this.props;
+    this._modules = {
+      markdownShortcuts: {},
+      toolbar: false,
+      keyboard: {
+        bindings: { ...keyboardEventHandler, ...keyboardEventDefaultHandler },
+      },
+    };
   }
 
-  onChange(content: string, delta: Delta, source: Sources, editor: any) {
+  onChange(content: string, delta: Delta, source: Sources) {
     if (source === 'api') {
       return;
     }
     const { onChange } = this.props;
-    onChange(content, editor);
-  }
-
-  private _attachQuill = () => {
-    if (this._reactQuillRef.current) {
-      this._quill = this._reactQuillRef.current.getEditor();
+    if (content === '<p><br></p>') {
+      onChange('');
+      return;
     }
-  }
-
-  componentDidMount() {
-    this._attachQuill();
-    const { setEditor } = this.props;
-
-    setEditor(this._quill);
+    onChange(content);
   }
 
   render() {
-    const { value, keyboardEvent } = this.props;
-    const modules = {
-      markdownShortcuts: {},
-      toolbar: false,
-      keyboard: {
-        bindings: keyboardEvent,
-      },
-      // toolbarEmoji: true,
-    };
+    const { value } = this.props;
+
     return (
       <ReactQuill
-        ref={this._reactQuillRef}
         value={value}
         onChange={this.onChange}
         placeholder="Type new message"
-        modules={modules}
+        modules={this._modules}
       />
     );
   }

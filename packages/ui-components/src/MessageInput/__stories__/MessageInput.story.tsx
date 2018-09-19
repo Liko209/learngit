@@ -14,5 +14,12 @@ import MessageInput from '..';
 storiesOf('MessageInput', module)
   .addDecorator(withInfoDecorator(MessageInput, { inline: true }))
   .addWithJSX('MessageInput', () => {
-    return <MessageInput />;
+    const onChange = () => {};
+    return (
+      <MessageInput
+        value="test"
+        onChange={onChange}
+        keyboardEventHandler={{}}
+      />
+    );
   });
