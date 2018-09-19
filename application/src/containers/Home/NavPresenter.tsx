@@ -43,6 +43,9 @@ class NavPresenter {
     isLongPress: false,
     active: false,
   };
+  private _handleTitleSlice(title: string) {
+    return title.length > TITLE_LENGTH ? `${title.slice(0, TITLE_LENGTH + 2)}...` : title;
+  }
   @action
   private _handleToward = (dir: string) => {
     const state = this.state;
@@ -85,7 +88,7 @@ class NavPresenter {
       REMOVED_ITEM && addArr.push(currentItem);
       action();
       const itemTitle = REMOVED_ITEM!.title;
-      this.state.title = itemTitle.length > TITLE_LENGTH ? `${itemTitle.slice(0, TITLE_LENGTH + 2)}...` : itemTitle; // set title
+      this.state.title = this._handleTitleSlice(itemTitle); // set title
       this.forwardNavArray = dir === FORWARD ? removedArr.reverse() : addArr;
       this.backNavArray = dir === FORWARD ? addArr : removedArr.reverse(); // reversed
       state.pressNav = true;
@@ -117,9 +120,11 @@ class NavPresenter {
       state.isLongPress = true;
       if (nav === BACKWARD) {
         state.showLeftPanel = true;
+        state.showRightPanel = false;
         this.handleMenuItem(backNavArray.reverse());
       }else {
         state.showRightPanel = true;
+        state.showLeftPanel = false;
         this.handleMenuItem(forwardNavArray.reverse());
       }
     },                                        timer);
@@ -132,7 +137,7 @@ class NavPresenter {
   @action
   handleMenuItem = (navArray: {title: string}[]) => {
     const menus = navArray && navArray.map((item) => {
-      return item.title.length > TITLE_LENGTH ? `${item.title.slice(0, TITLE_LENGTH + 2)}...` : item.title;
+      return this._handleTitleSlice(item.title);
     });
     this.menus = menus;
   }
@@ -183,7 +188,7 @@ class NavPresenter {
         state.showRightPanel = false;
       }
       const itemTitle = REMOVE_ITEM && REMOVE_ITEM![0].title;
-      this.state.title = itemTitle.length > TITLE_LENGTH ? `${itemTitle.slice(0, TITLE_LENGTH + 2)}...` : itemTitle; // set title
+      this.state.title = this._handleTitleSlice(itemTitle); // set title
       this.menuClicked = true;
     };
     if (nav === BACKWARD && index !== undefined) {
@@ -197,7 +202,7 @@ class NavPresenter {
   // handle without click
   @action
   handleTitle = (title: string) => {
-    this.state.title = title.length > TITLE_LENGTH ? `${title.slice(0, TITLE_LENGTH + 2)}...` : title ;
+    this.state.title = this._handleTitleSlice(title);
   }
   @action
   handleRouterChange = () => {
