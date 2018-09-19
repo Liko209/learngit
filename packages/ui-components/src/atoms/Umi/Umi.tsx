@@ -11,15 +11,15 @@ import styled, { css } from '../../styled-components';
 import { countToString } from './utils';
 
 const styleHiddenWhenNoCount = css`
-  visibility: ${({ unreadCount }: UmiProps) => unreadCount ? 'visible' : 'hidden'};
+  visibility: ${({ unreadCount }: UmiProps) =>
+    unreadCount ? 'visible' : 'hidden'};
 `;
 
 const styleCount = css`
   font-size: 12px;
   line-height: 18px;
   text-align: center;
-  color: white;
-  ${styleHiddenWhenNoCount}
+  ${styleHiddenWhenNoCount};
 `;
 
 const styleDot = css`
@@ -31,12 +31,11 @@ const styleDot = css`
 `;
 
 const styleAuto = css`
-  ${styleDot}
-  ${styleHiddenWhenNoCount}
+  ${styleDot} ${styleHiddenWhenNoCount}
 
   li:hover > &,
   div:hover > & {
-    ${({ variant }: UmiProps) => variant === 'auto' && styleCount}
+    ${({ variant }: UmiProps) => variant === 'auto' && styleCount};
   }
 `;
 
@@ -47,21 +46,36 @@ const styles = {
 };
 
 const StyledUmi = styled<UmiProps, 'span'>('span').attrs({
-  'aria-hidden': true} as any,
-)`
+  'aria-hidden': true,
+} as any)`
   display: inline-block;
-  width: ${ props => String(props.unreadCount).length === 1 ? '18px' : (String(props.unreadCount).length === 2 ? '22px' : '28px')};
+  width: ${props =>
+    String(props.unreadCount).length === 1
+      ? '18px'
+      : String(props.unreadCount).length === 2
+        ? '22px'
+        : '28px'};
   height: 18px;
-  border-radius: 8px;
+  border: 1px;
+  border-color: ${({ theme }) => {
+    const { common } = theme.palette;
+    return common.white;
+  }};
+  border-radius: 12px;
   margin-right: 2px;
   transition-property: font-size, height, line-height, color;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
-  background: ${ ({ important, theme }) => {
-    const { secondary, accent } = theme.palette;
-    return important ? secondary.main : accent.lake;
+  background: ${({ important, theme }) => {
+    const { secondary, grey } = theme.palette;
+    return important ? secondary.main : grey['200'];
   }};
-  ${({ variant = 'count' }) => styles[variant]}
+  color: ${({ important, theme }) => {
+    const { common, grey } = theme.palette;
+    return important ? common.white : grey['900'];
+  }};
+  ${({ variant = 'count' }) => styles[variant]};
+  ${({ variant = 'count' }) => styles[variant]};
 `;
 
 type UmiVariant = 'count' | 'dot' | 'auto';
@@ -80,12 +94,11 @@ class Umi extends PureComponent<UmiProps> {
   };
 
   render() {
-    const text = this.props.variant === 'dot' ? '1' : countToString(this.props.unreadCount);
-    return (
-      <StyledUmi {...this.props}>
-        {text}
-      </StyledUmi>
-    );
+    const text =
+      this.props.variant === 'dot'
+        ? '1'
+        : countToString(this.props.unreadCount);
+    return <StyledUmi {...this.props}>{text}</StyledUmi>;
   }
 }
 
