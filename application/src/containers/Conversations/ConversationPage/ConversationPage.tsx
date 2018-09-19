@@ -8,7 +8,7 @@ interface IParams {
   id: string;
 }
 
-interface IProps extends RouteComponentProps<IParams> { }
+interface IProps extends RouteComponentProps<IParams> {}
 
 const ConversationPageComponent = ({ match }: IProps) => {
   if (!match.params.id) {
@@ -19,7 +19,7 @@ const ConversationPageComponent = ({ match }: IProps) => {
     <JuiConversationPage>
       <ConversationPageHeader id={id} />
       <JuiDivider />
-      <ConversationStream groupId={id} />
+      <ConversationStream groupId={id} key={id} />
     </JuiConversationPage>
   );
 };

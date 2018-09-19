@@ -10,7 +10,7 @@ import { observer } from 'mobx-react';
 import { autorun, observable } from 'mobx';
 import { ConversationListSection, Icon, ConversationList } from 'ui-components';
 import { toTitleCase } from '@/utils';
-import ConversationListItemCell from '../ConversationListItemCell';
+import { ConversationListItem } from '../ConversationListItem';
 import ConversationSectionPresenter from './ConversationSectionPresenter';
 import {
   arrayMove,
@@ -28,7 +28,7 @@ interface IProps {
 }
 
 const SortableList = SortableContainer(ConversationList);
-const SortableItem = SortableElement(ConversationListItemCell);
+const SortableItem = SortableElement(ConversationListItem);
 
 @observer
 class ConversationSectionComponent extends React.Component<IProps> {
@@ -89,7 +89,7 @@ class ConversationSectionComponent extends React.Component<IProps> {
     return (
       <ConversationList>
         {this.ids.map((id: number) => (
-          <ConversationListItemCell
+          <ConversationListItem
             id={id}
             key={id}
             entityName={entityName}
