@@ -102,7 +102,6 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
     const currentGroupId = parseInt(this.props.match.params.id, 10);
     this.showDraftTag = currentGroupId !== this.id && !!group.draft; // except oneself
-    // this.showDraftTag = !!group.draft; // except oneself
     if (currentUserId) {
       let targetPresencePersonId: number | undefined;
       const otherMembers = _.difference(group.members, [currentUserId]);
@@ -121,21 +120,6 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
       }
     }
   }
-
-  // componentDidUpdate(prevProps: IProps) {
-  //   if (this.props.match.params.id !== prevProps.match.params.id) {
-  //     const { getEntity } = this.props;
-  //     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
-  //     const currentGroupId = parseInt(this.props.match.params.id, 10);
-  //     this.showDraftTag = currentGroupId !== this.id && !!group.draft; // except oneself
-  //     this.forceUpdate();
-  //   }
-  // }
-
-  // static getDerivedStateFromProps(props: IProps, state: IState) {
-  //   console.log('`````````````', props.match.params.id);
-  //   return null;
-  // }
 
   render() {
     return (
