@@ -6,7 +6,7 @@
 import { daoManager, ConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Group, Raw } from '../../models';
+import { Group, Raw, IResponseError } from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -61,11 +61,15 @@ export default class GroupService extends BaseService<Group> {
     let result: Group[] = [];
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
-    if (profile &&
+    if (
+      profile &&
       profile.favorite_group_ids &&
-      profile.favorite_group_ids.length > 0) {
+      profile.favorite_group_ids.length > 0
+    ) {
       const dao = daoManager.getDao(GroupDao);
-      result = (await dao.queryGroupsByIds(profile.favorite_group_ids)) as Group[];
+      result = (await dao.queryGroupsByIds(
+        profile.favorite_group_ids,
+      )) as Group[];
       result = sortFavoriteGroups(profile.favorite_group_ids, result);
     }
     return result;
@@ -84,10 +88,8 @@ export default class GroupService extends BaseService<Group> {
 
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
       result = await this._getFavoriteGroups();
-
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
       result = await dao.queryAllGroups(offset, limit);
-
     } else {
       const profileService: ProfileService = ProfileService.getInstance();
       const profile = await profileService.getProfile();
@@ -201,7 +203,7 @@ export default class GroupService extends BaseService<Group> {
     postId: number,
     groupId: number,
     toPin: boolean,
-  ): Promise<Group | null> {
+  ): Promise<Group | IResponseError | null> {
     const groupDao = daoManager.getDao(GroupDao);
     const group = await groupDao.get(groupId);
     if (group && this.canPinPost(postId, group)) {
@@ -259,7 +261,7 @@ export default class GroupService extends BaseService<Group> {
   async addTeamMembers(
     groupId: number,
     memberIds: number[],
-  ): Promise<Group | null> {
+  ): Promise<Group | IResponseError> {
     const resp = await GroupAPI.addTeamMembers(groupId, memberIds);
     return this.handleResponse(resp);
   }
@@ -328,14 +330,12 @@ export default class GroupService extends BaseService<Group> {
   }
 
   async handleResponse(resp: IResponse<Raw<Group>>) {
-    if (resp && resp.data) {
-      const group = transform<Group>(resp.data);
-      await handleData([resp.data]);
-      return group;
+    if (resp && resp.data.error) {
+      return resp.data;
     }
-
-    // should handle errors when error handling ready
-    return null;
+    const group = transform<Group>(resp.data);
+    await handleData([resp.data]);
+    return group;
   }
 
   async getLeftRailGroups(): Promise<Group[]> {

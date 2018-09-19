@@ -20,6 +20,8 @@ import ListToggleButton, {
 } from 'ui-components/molecules/Lists/ListToggleButton';
 import HomePresenter from '../Home/HomePresenter';
 import SearchContact from '../SearchContact';
+import CreateTeamVM from './createTeamVM';
+import { IResponseError } from 'sdk/models';
 
 interface IProps {
   homePresenter: HomePresenter;
@@ -29,21 +31,26 @@ interface IProps {
 interface IState {
   disabledOkBtn: boolean;
   nameError: boolean;
+  errorMsg: string;
   teamName: string;
+  description: string;
   items: IListToggleItemProps[];
 }
 
 @observer
 class CreateTeam extends React.Component<IProps, IState> {
   private homePresenter: HomePresenter;
-
+  private createTeamVM: CreateTeamVM;
   constructor(props: IProps) {
     super(props);
     this.homePresenter = props.homePresenter;
+    this.createTeamVM = new CreateTeamVM();
     this.state = {
       disabledOkBtn: true,
       nameError: false,
+      errorMsg: '',
       teamName: '',
+      description: '',
       items: [
         {
           type: 'isPublic',
@@ -78,17 +85,42 @@ class CreateTeam extends React.Component<IProps, IState> {
     console.log(item);
   }
 
-  createTeam = () => {
-    const { items, teamName } = this.state;
+  createTeamError(result: IResponseError) {
+    const { t } = this.props;
+    const { teamName } = this.state;
+    const msg = result.error.message;
+    let errorMsg;
+    if (msg.indexOf('already taken') > -1) {
+      errorMsg = t('already token', { name: teamName });
+    }
+    this.setState({
+      errorMsg,
+      nameError: true,
+    });
+  }
+
+  createTeam = async () => {
+    const { items, teamName, description } = this.state;
     const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
     const canPost = items.filter(item => item.type === 'canPost')[0].checked;
     console.log(teamName, isPublic, canPost);
+    const result = await this.createTeamVM.create(teamName, [], description, {
+      isPublic,
+      canPost,
+    });
+    console.log(result);
+    if ((result as IResponseError).error) {
+      this.createTeamError(result as IResponseError);
+      return;
+    }
     this.onClose();
   }
 
   onClose = () => {
     this.homePresenter.handleOpenCreateTeam();
     this.setState({
+      errorMsg: '',
+      nameError: false,
       disabledOkBtn: true,
     });
   }
@@ -100,8 +132,14 @@ class CreateTeam extends React.Component<IProps, IState> {
     });
   }
 
+  handleDescChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      description: e.target.value,
+    });
+  }
+
   render() {
-    const { disabledOkBtn, nameError, items } = this.state;
+    const { disabledOkBtn, nameError, items, errorMsg } = this.state;
     const { t } = this.props;
 
     return (
@@ -120,7 +158,7 @@ class CreateTeam extends React.Component<IProps, IState> {
             inputProps={{
               maxLength: 200,
             }}
-            helperText={nameError && t('Team name required')}
+            helperText={nameError && t(errorMsg)}
             onChange={this.handleNameChange}
           />
           <SearchContact
@@ -131,7 +169,7 @@ class CreateTeam extends React.Component<IProps, IState> {
           <JuiTextarea
             placeholder={t('Team Description')}
             fullWidth={true}
-            onChange={this.handleNameChange}
+            onChange={this.handleDescChange}
           />
           <ListToggleButton
             items={items}
@@ -163,7 +201,7 @@ class CreateTeam extends React.Component<IProps, IState> {
             autoFocus={true}
             disabled={disabledOkBtn}
           >
-            {t('OK')}
+            {t('Create')}
           </JuiButton>
         </JuiDialogActions>
       </JuiDialog>

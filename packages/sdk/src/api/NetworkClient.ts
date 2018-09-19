@@ -51,7 +51,10 @@ export default class NetworkClient {
   networkRequests: INetworkRequests;
   apiPlatform: string;
   apiPlatformVersion: string;
-  apiMap: Map<string, { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]>;
+  apiMap: Map<
+    string,
+    { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]
+  >;
   defaultVia: NETWORK_VIA;
   // todo refactor config
   constructor(
@@ -108,9 +111,22 @@ export default class NetworkClient {
     };
   }
 
-  getRequestByVia<T>(query: IQuery, via: NETWORK_VIA = this.defaultVia): IRequest {
-    const { path, method, data, headers, params, authFree, requestConfig } = query;
-    const versionPath = this.apiPlatformVersion ? `/${this.apiPlatformVersion}` : '';
+  getRequestByVia<T>(
+    query: IQuery,
+    via: NETWORK_VIA = this.defaultVia,
+  ): IRequest {
+    const {
+      path,
+      method,
+      data,
+      headers,
+      params,
+      authFree,
+      requestConfig,
+    } = query;
+    const versionPath = this.apiPlatformVersion
+      ? `/${this.apiPlatformVersion}`
+      : '';
     const finalPath = `${versionPath}${this.apiPlatform}${path}`;
     return new NetworkRequestBuilder()
       .setHost(this.networkRequests.host || '')

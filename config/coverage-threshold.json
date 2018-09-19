@@ -1,15 +1,8 @@
 {
   "global": {
-<<<<<<< HEAD
-    "statements": 77.73,
-    "branches": 66.46000000000001,
-    "lines": 77.3,
-    "functions": 75.4
-=======
     "statements": 77,
     "branches": 65,
     "lines": 77,
     "functions": 75
->>>>>>> develop
   }
 }

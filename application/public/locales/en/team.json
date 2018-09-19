@@ -1,14 +1,15 @@
 {
   "Create Team": "Create Team",
   "Team Name": "Team Name",
-  "Team Description": "Team Description",
+  "Team Description": "Team description",
   "Team name required": "Team name required",
   "tips": "You are an admin to this team.",
-  "linkTips": "Learn about team administration",
-  "OK": "OK",
+  "linkTips": "Learn about team administration.",
+  "Create": "Create",
   "Cancel": "Cancel",
   "Members": "Members",
+  "already token": "The name {{name}} is already taken.",
   "Search Contact Placeholder": "Members (enter names or email addresses)",
-  "Public Team": "Public Team (any co-worker can join)",
-  "Members may post messages": "Members may post messages"
+  "Public Team": "Public Team (visible to any co-worker)",
+  "Members may post messages": "Allow members to post messages"
 }

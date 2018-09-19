@@ -17,12 +17,21 @@ export type ExtendedBaseModel = BaseModel & {
   version: number;
   model_id?: string;
   model_size?: number;
-}
+};
+
+export type IResponseError = {
+  error: {
+    code: string;
+    message: string;
+    validation: boolean;
+  };
+};
 
 export type Raw<T> = Pick<T, Exclude<keyof T, 'id'>> & {
   _id: number;
   id?: number;
-};
+} & IResponseError;
+
 export type PartialWithKey<T> = Pick<T, Extract<keyof T, 'id'>> & Partial<T>;
 
 export type Group = ExtendedBaseModel & {
@@ -54,9 +63,9 @@ export type Group = ExtendedBaseModel & {
   };
   post_cursor?: number;
   drp_post_cursor?: number;
-  trigger_ids?: number[]
+  trigger_ids?: number[];
   deactivated_post_cursor?: number;
-  _delta?: { add?: object, remove?: object, set?: object };
+  _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
 };
@@ -105,7 +114,7 @@ export type State = ExtendedBaseModel & {
   current_group_id: number;
   away_status_history?: string[];
   current_plugin: string;
-  trigger_ids?: number[]
+  trigger_ids?: number[];
 };
 
 export type MyState = State;
@@ -121,7 +130,7 @@ export type GroupState = {
   unread_deactivated_count?: number;
   group_post_cursor?: number;
   group_post_drp_cursor?: number;
-  trigger_ids?: number[]
+  trigger_ids?: number[];
 };
 
 export type Post = ExtendedBaseModel & {
@@ -167,7 +176,7 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
 export type RawPresence = {
   person_id: number;
   presence: 'default' | 'offline' | 'online' | 'away' | undefined;
-}
+};
 
 export type Presence = BaseModel & {
   presence: 'default' | 'offline' | 'online' | 'away' | undefined;
