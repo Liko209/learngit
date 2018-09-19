@@ -1,3 +1,8 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-9-18 9:20:21
+ * Copyright © RingCentral. All rights reserved.
+ */
 import * as React from 'react';
 import { JuiAvatar, TJuiAvatarProps } from 'ui-components/atoms/Avatar';
 import { observer } from 'mobx-react';
@@ -7,36 +12,34 @@ import styled from 'styled-components';
 type TAvatarProps = TJuiAvatarProps & {
   uId: number;
 };
-const StyleAvatar = styled(JuiAvatar)`
-  background-color: #7f7f7f;
-`;
-type TAvatarState = {
-  avatar: string,
-  name: string,
-  bgColor: string,
+type TJuiAvatar = {
+  bgColor?: string|undefined;
+  src?: string;
 };
+const CustomJuiAvatar: React.SFC<TJuiAvatar> = ({ bgColor, ...props }) => {
+  return <JuiAvatar {...props} />;
+};
+const StyleAvatar = styled<TJuiAvatar>(CustomJuiAvatar)`
+  && {
+    background-color: ${props => (props.bgColor ? props.bgColor : '')};
+  }
+`;
+
 @observer
-class Avatar extends React.Component<TAvatarProps, TAvatarState> {
+class Avatar extends React.Component<TAvatarProps> {
   private _vm: ViewModel;
   constructor(props: TAvatarProps) {
     super(props);
     this._vm = new ViewModel();
-    this.state = {
-      avatar: '',
-      name: '',
-      bgColor: '',
-    };
   }
-  componentWillMount() {
+  render() {
     const { uId } = this.props;
     this._vm.getPersonInfo(uId);
     const userInfo = this._vm.handleAvatar();
-    console.log(userInfo);
-  }
-  render() {
-    const { avatar } = this.state;
-    // const { uId, ...rest }: TAvatarProps = this.props;
-    return avatar ? <JuiAvatar /> : <StyleAvatar>ss</StyleAvatar>;
+    const avatar = userInfo.url ? userInfo.url : '';
+    const name = userInfo.name ? userInfo.name : '';
+    const color = userInfo.bgColor ? userInfo.bgColor : '';
+    return avatar ? <StyleAvatar src={avatar} /> : <StyleAvatar bgColor={color}>{name}</StyleAvatar>;
   }
 }
 

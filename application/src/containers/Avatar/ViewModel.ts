@@ -17,13 +17,12 @@ class ViewModel {
   @observable person: PersonModel;
   @observable uId = 0;
   @action.bound
-  public async getPersonInfo (uId: number) {
-    this.person = await getEntity(ENTITY_NAME.PERSON, uId) as PersonModel;
+  public getPersonInfo (uId: number) {
+    this.person = getEntity(ENTITY_NAME.PERSON, uId) as PersonModel;
     this.uId = uId;
     autorun(() => {
       this.handleAvatar();
     });
-    console.log(this.person);
   }
   private _handleUid() {
     const UID = String(this.uId);
@@ -42,12 +41,10 @@ class ViewModel {
   @action.bound
   public handleAvatar() {
     const { firstName, lastName, headshot } = this.person;
-    console.log(firstName);
-    console.log(lastName);
-    console.log('handleAvatar');
-    console.log(this.person);
     if (headshot && headshot.url) {
-      return headshot.url;
+      return {
+        url: headshot.url,
+      };
     }
     // handle only letter or numbers
     if (isOnlyLetterOrNumbers(firstName) && isOnlyLetterOrNumbers(lastName)) {
@@ -73,7 +70,9 @@ class ViewModel {
         };
       })(firstName, lastName);
     }
-    return defaultAvatar;
+    return {
+      url: defaultAvatar,
+    };
   }
 }
 export default ViewModel;
