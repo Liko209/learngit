@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import { Delta, Sources } from 'quill';
-import { injectGlobal } from 'styled-components';
+import styled, { injectGlobal } from '../styled-components';
+import { spacing, typography, palette } from '../utils/styles';
 import MarkdownShortcuts from './MarkdownShortcuts';
 import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
 
@@ -41,10 +42,19 @@ Quill.register({
   // 'modules/toolbarEmoji': toolbarEmoji,
 });
 
+const StyledError = styled('div')`
+  && {
+    ${typography('caption')};
+    color: ${palette('semantic', 'negative')};
+    margin: ${spacing(-2)} ${spacing(4)} ${spacing(2)};
+  }
+`;
+
 interface IProps {
   value: string | Delta;
   onChange: Function;
   keyboardEventHandler: {};
+  error: string;
 }
 interface IState {
   modules: {};
@@ -79,15 +89,18 @@ class JuiMessageInput extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { value } = this.props;
+    const { value, error } = this.props;
 
     return (
-      <ReactQuill
-        value={value}
-        onChange={this.onChange}
-        placeholder="Type new message"
-        modules={this._modules}
-      />
+      <Fragment>
+        <ReactQuill
+          value={value}
+          onChange={this.onChange}
+          placeholder="Type new message"
+          modules={this._modules}
+        />
+        <StyledError>{error}</StyledError>
+      </Fragment>
     );
   }
 }

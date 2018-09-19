@@ -10,5 +10,7 @@
   "mention": "mention",
   "mention_plural": "mentions",
   "unread": "unread",
-  "disabledText": "This team is read-only"
+  "disabledText": "This team is read-only",
+  "contentLength": "'A maximum of 10000 characters can be sent",
+  "contentIllegal": "Javascript not allowed"
 }

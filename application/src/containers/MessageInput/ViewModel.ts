@@ -20,6 +20,14 @@ interface IParams {
 
 type DebounceFunction = (params: IParams) => Promise<boolean>;
 
+const CONTENT_LENGTH = 10000;
+const CONTENT_ILLEGAL = '<script';
+
+enum ERROR_TYPES {
+  CONTENT_LENGTH = 'contentLength',
+  CONTENT_ILLEGAL = 'contentIllegal',
+}
+
 class ViewModel {
   private _groupService: GroupService;
   private _postService: PostService;
@@ -35,6 +43,8 @@ class ViewModel {
   };
   @observable
   draft: string = '';
+  @observable
+  error: string;
 
   constructor() {
     this._groupService = GroupService.getInstance();
@@ -67,6 +77,7 @@ class ViewModel {
 
   @action.bound
   changeDraft(draft: string) {
+    this.error = '';
     this.draft = draft; // UI immediately sync
     this._debounceUpdateGroupDraft({ draft, id: this._id }); // DB sync 500 ms later
   }
@@ -77,11 +88,22 @@ class ViewModel {
     return groupEntity.draft || '';
   }
 
+  @action
   private _enterHandler(vm: ViewModel) {
     return function () {
       // @ts-ignore
       const quill = (this as any).quill;
-      if (quill.getText().trim()) {
+      const content = quill.getText() as string;
+      if (content.length > CONTENT_LENGTH) {
+        vm.error = ERROR_TYPES.CONTENT_LENGTH;
+        return;
+      }
+      if (content.includes(CONTENT_ILLEGAL)) {
+        vm.error = ERROR_TYPES.CONTENT_ILLEGAL;
+        return;
+      }
+      vm.error = '';
+      if (content.trim()) {
         vm.sendPost(quill);
       }
     };
