@@ -15,7 +15,8 @@ import showDialogWithCheckView from '../../Dialog/DialogWithCheckView';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import navPresenter, { NavPresenter } from '../../Home/NavPresenter';
 
-type IProps = ConversationListItemViewProps & RouteComponentProps;
+type IProps = ConversationListItemViewProps &
+  RouteComponentProps<{ id: string }>;
 class ConversationListItemViewComponent extends React.Component<IProps> {
   private navPresenter: NavPresenter;
   constructor(props: IProps) {
@@ -34,6 +35,10 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
       );
     }
     return <React.Fragment />;
+  }
+
+  componentDidUpdate() {
+    console.log('params.id', this.props.match.params.id);
   }
 
   renderMenu() {
@@ -83,50 +88,46 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
   onCloseButtonClick(event: MouseEvent<HTMLElement>) {
     this.props.onMenuClose(event);
     if (this.props.shouldSkipCloseConfirmation) {
-      this._closeConversation(this.props.id, true);
+      this._closeConversation(true);
     } else {
       showDialogWithCheckView({
-        header: 'Close Conversation?',
-        content:
-          'Closing a conversation will remove it from the left pane, but will not delete the contents.',
-        checkBoxContent: "Don't ask me again",
-        okText: 'Close Conversation',
+        header: t('conversationMenuItem:closeConfirmDialogHeader'),
+        content: t('conversationMenuItem:closeConfirmDialogContent'),
+        checkBoxContent: t(
+          'conversationMenuItem:closeConfirmDialogDontAskMeAgain',
+        ),
+        okText: t('conversationMenuItem:Close Conversation'),
         onClose: (isChecked: boolean, event: MouseEvent<HTMLElement>) => {
-          this._closeConversation(this.props.id, isChecked);
+          this._closeConversation(isChecked);
         },
       });
     }
   }
 
-  private async _closeConversation(
-    groupId: number,
-    shouldSkipNextTime: boolean,
-  ) {
-    const result = await this.props.closeConversation(
-      groupId,
-      shouldSkipNextTime,
-    );
+  private async _closeConversation(shouldSkipNextTime: boolean) {
+    const result = await this.props.closeConversation(shouldSkipNextTime);
     this._showErrorAlert(result);
   }
 
   private _showErrorAlert(error: ServiceCommonErrorType) {
     if (error === ServiceCommonErrorType.NONE) {
       // jump to section
-      const { history } = this.props;
-      history.replace('/messages');
+      console.log('id', Number(this.props.match.params.id));
+      if (this.props.id === Number(this.props.match.params.id)) {
+        const { history } = this.props;
+        history.replace('/messages');
+      }
       return;
     }
-    const header = 'Close Conversation Failed';
+    const header = t('conversationMenuItem:closeConversationFail');
     if (error === ServiceCommonErrorType.NETWORK_NOT_AVAILABLE) {
-      const content =
-        'Network disconnected. Please try again when the network is resumed.';
+      const content = t('networkDisconnected');
       showAlert({ header, content });
     } else if (
       error === ServiceCommonErrorType.SERVER_ERROR ||
       error === ServiceCommonErrorType.UNKNOWN_ERROR
     ) {
-      const content =
-        'We are having trouble closing the conversation. Please try again later.';
+      const content = t('conversationMenuItem:havingTroubleCloseConversation');
       showAlert({ header, content });
     }
   }

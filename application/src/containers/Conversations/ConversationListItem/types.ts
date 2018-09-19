@@ -29,7 +29,6 @@ type ConversationListItemViewProps = {
   toggleFavorite: () => void;
   onMenuClose: (event: MouseEvent<HTMLElement>) => void;
   closeConversation: (
-    groupId: number,
     shouldSkipNextTime: boolean,
   ) => Promise<ServiceCommonErrorType>;
 };

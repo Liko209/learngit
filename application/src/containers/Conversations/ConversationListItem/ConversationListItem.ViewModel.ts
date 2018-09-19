@@ -59,8 +59,8 @@ class ConversationListItemViewModel extends AbstractViewModel
 
   onClick = () => this.clickGroup();
   onMenuClose = () => this._onMenuClose();
-  closeConversation = (groupId: number, shouldSkipNextTime: boolean) =>
-    this.hideConversation(groupId, true, shouldSkipNextTime)
+  closeConversation = (shouldSkipNextTime: boolean) =>
+    this.hideConversation(true, shouldSkipNextTime)
 
   onMoreClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -119,13 +119,9 @@ class ConversationListItemViewModel extends AbstractViewModel
     this.groupService.clickGroup(this.id);
   }
 
-  hideConversation(
-    groupId: number,
-    hidden: boolean,
-    shouldSkipNextTime: boolean,
-  ) {
+  hideConversation(hidden: boolean, shouldSkipNextTime: boolean) {
     return this.groupService.hideConversation(
-      groupId,
+      this.id,
       hidden,
       shouldSkipNextTime,
     );

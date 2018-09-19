@@ -1,6 +1,9 @@
 {
+  "closeConfirmDialogHeader": "Close Conversation?",
+  "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
+  "closeConfirmDialogDontAskMeAgain": "Don't ask me again",
+  "closeConversation": "Close Conversation",
   "closeConversationFail": "Close Conversation Failed",
-  "networkDisconnected": "Network disconnected. Please try again when the network is resumed.",
   "havingTroubleCloseConversation": "We are having trouble closing the conversation. Please try again later.",
   "unFavorite": "UnFavorite",
   "favorite": "Favorite",
