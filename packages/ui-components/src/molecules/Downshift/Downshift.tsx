@@ -9,21 +9,22 @@ import Downshift from 'downshift';
 import styled from '../../styled-components';
 import Paper from '@material-ui/core/Paper';
 import JuiSearchItem from '../SearchItem';
-import JuiChip from '../Chip';
+// import JuiChip from '../Chip';
 import JuiSearchItemText from '../../atoms/SearchItemText';
 import JuiAvatar from '../../atoms/Avatar';
 import JuiTextField from '../../atoms/TextField/TextField';
 import { spacing } from '../../utils/styles';
+import differenceBy from 'lodash/differenceBy';
 
 type TJuiDownshiftMultipleState = {
   inputValue: string;
   shrink: boolean;
-  selectedItem: never[];
+  selectedItem: TSuggestion[];
 };
 
 type TSuggestion = {
   label: string;
-  value?: number;
+  id?: number;
   email?: string;
 };
 
@@ -34,6 +35,7 @@ export type TJuiDownshiftMultipleProps = {
   inputChange: (value: string) => void;
   label: string;
   placeholder: string;
+  Chip?: React.ComponentType<any>;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -45,7 +47,7 @@ const StyledPaper = styled(Paper)`
     padding: ${spacing(2)} 0;
     position: absolute;
     left: 0;
-    top: 50px;
+    top: ${spacing(12.5)};
     width: 100%;
     z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
   }
@@ -59,11 +61,11 @@ const StyledTextField = styled(JuiTextField)`
   }
 `;
 
-const StyledChip = styled(JuiChip)`
-  && {
-    margin: ${spacing(1)};
-  }
-`;
+// const StyledChip = styled(JuiChip)`
+//   && {
+//     margin: ${spacing(1)};
+//   }
+// `;
 
 const renderInput = (inputProps: any) => {
   const { InputProps, ref, shrink, label, ...rest } = inputProps;
@@ -85,24 +87,27 @@ const renderInput = (inputProps: any) => {
 
 const renderSuggestion = ({
   suggestion,
-  index,
   itemProps,
   highlightedIndex,
-  selectedItem,
+  index,
 }: any) => {
-  const isHighlighted = highlightedIndex === index;
-  const isSelected = (selectedItem || '').indexOf(suggestion.label) > -1;
+  // debugger;
+  // setItemCount(0);
 
-  console.log('---suggetions---', suggestion);
+  // const hhh = highlightedIndex === null && index === 0 ? 0 : highlightedIndex;
+  const isHighlighted = highlightedIndex === index;
+  // console.log(1111, highlightedIndex);
+  // console.log(2222, index);
+  // const isSelected = (selectedItem.id || '').indexOf(suggestion.id) > -1;
+
+  // console.log('---suggetions---', suggestion);
+  // console.log('------is select---', isSelected);
 
   return (
     <JuiSearchItem
       {...itemProps}
       key={suggestion.label}
       selected={isHighlighted}
-      style={{
-        fontWeight: isSelected ? 500 : 400,
-      }}
     >
       <JuiAvatar />
       <JuiSearchItemText
@@ -113,11 +118,11 @@ const renderSuggestion = ({
   );
 };
 
-class JuiDownshiftMultiple extends React.Component<
+class JuiDownshiftMultiple extends React.PureComponent<
   TJuiDownshiftMultipleProps,
   TJuiDownshiftMultipleState
 > {
-  state = {
+  state: TJuiDownshiftMultipleState = {
     inputValue: '',
     shrink: false,
     selectedItem: [],
@@ -139,16 +144,34 @@ class JuiDownshiftMultiple extends React.Component<
   handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     const emailRegExp = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*\s/;
+    const { selectedItem } = this.state;
+
     this.setState({ inputValue: value });
 
-    if (emailRegExp.test(value)) {
-      this.state.selectedItem.push(value as never);
-      this.setState({ inputValue: '' });
+    if (
+      emailRegExp.test(value) &&
+      selectedItem.findIndex(item => item.email === value) === -1
+    ) {
+      this.setState(
+        {
+          selectedItem: [
+            ...selectedItem,
+            {
+              label: value,
+              email: value,
+            },
+          ],
+          inputValue: '',
+        },
+        () => {
+          this.props.onChange(this.state.selectedItem);
+        },
+      );
     }
     this.props.inputChange(value);
   }
 
-  handleChange = (item: never) => {
+  handleChange = (item: TSuggestion) => {
     let { selectedItem } = this.state;
 
     if (selectedItem.indexOf(item) === -1) {
@@ -166,18 +189,34 @@ class JuiDownshiftMultiple extends React.Component<
     );
   }
 
-  handleDelete = (item: never) => () => {
-    this.setState((state: TJuiDownshiftMultipleState) => {
-      const selectedItem = [...state.selectedItem];
-      selectedItem.splice(selectedItem.indexOf(item), 1);
-      const shrink = selectedItem.length !== 0;
-      return { selectedItem, shrink };
-    });
+  handleDelete = (item: TSuggestion) => () => {
+    this.setState(
+      (state: TJuiDownshiftMultipleState) => {
+        const selectedItem = [...state.selectedItem];
+        selectedItem.splice(selectedItem.indexOf(item), 1);
+        const shrink = selectedItem.length !== 0;
+        return { selectedItem, shrink };
+      },
+      () => {
+        this.props.onChange(this.state.selectedItem);
+      },
+    );
   }
 
+  // onStateChange = (
+  //   a: StateChangeOptions<any>,
+  //   stateAndHelpers: ControllerStateAndHelpers<any>,
+  // ) => {}
+
+  // selectHighlightedItem = (otherStateToSet: object, cb: Function) => {
+  //   console.log(otherStateToSet, '----count');
+  // }
+
   render() {
-    const { suggestions, label, placeholder } = this.props;
+    const { suggestions, label, placeholder, Chip } = this.props;
     const { inputValue, selectedItem, shrink } = this.state;
+
+    const filterSuggestions = differenceBy(suggestions, selectedItem, 'id');
 
     return (
       <Downshift
@@ -185,6 +224,7 @@ class JuiDownshiftMultiple extends React.Component<
         inputValue={inputValue}
         onChange={this.handleChange}
         selectedItem={selectedItem}
+        itemToString={item => (item ? item.label : '')}
       >
         {({
           getRootProps,
@@ -194,59 +234,64 @@ class JuiDownshiftMultiple extends React.Component<
           inputValue,
           selectedItem,
           highlightedIndex,
-        }) => (
-          <StyledDownshiftMultipleWrapper
-            {...getRootProps({ refKey: 'innerRef' })}
-          >
-            {renderInput({
-              shrink,
-              label,
-              fullWidth: true,
-              InputProps: getInputProps({
-                startAdornment: selectedItem.map((item: never) => (
-                  <StyledChip
-                    key={item}
-                    tabIndex={-1}
-                    label={item}
-                    onDelete={this.handleDelete(item)}
-                  />
-                )),
-                onFocus: () => {
-                  this.setState({
-                    shrink: true,
-                  });
-                },
-                onBlur: () => {
-                  this.setState({
-                    shrink:
-                      selectedItem.length !== 0 ||
-                      String(inputValue).length !== 0,
-                  });
-                },
-                onChange: this.handleInputChange,
-                onKeyDown: this.handleKeyDown,
-                classes: {
-                  root: 'input',
-                },
-                placeholder: `${selectedItem.length === 0 ? placeholder : ''}`,
-              } as any), // Downshift startAdornment is not include in getInputProps interface
-            })}
-            {isOpen &&
-            (String(inputValue).length !== 0 || selectedItem.length !== 0) ? (
-              <StyledPaper square={true}>
-                {suggestions.map((suggestion, index) =>
-                  renderSuggestion({
-                    suggestion,
-                    index,
-                    selectedItem,
-                    highlightedIndex,
-                    itemProps: getItemProps({ item: suggestion.label }),
-                  }),
-                )}
-              </StyledPaper>
-            ) : null}
-          </StyledDownshiftMultipleWrapper>
-        )}
+        }) => {
+          return (
+            <StyledDownshiftMultipleWrapper
+              {...getRootProps({ refKey: 'innerRef' })}
+            >
+              {renderInput({
+                shrink,
+                label,
+                fullWidth: true,
+                InputProps: getInputProps({
+                  startAdornment: selectedItem.map(
+                    (item: TSuggestion) =>
+                      Chip ? (
+                        <Chip
+                          key={item.id || item.email}
+                          tabIndex={-1}
+                          label={item.label}
+                          id={item.id}
+                          onDelete={this.handleDelete(item)}
+                        />
+                      ) : null,
+                  ),
+                  onFocus: () => {
+                    this.setState({
+                      shrink: true,
+                    });
+                  },
+                  onBlur: () => {
+                    this.setState({
+                      shrink:
+                        selectedItem.length !== 0 ||
+                        String(inputValue).length !== 0,
+                    });
+                  },
+                  onChange: this.handleInputChange,
+                  onKeyDown: this.handleKeyDown,
+                  classes: {
+                    root: 'input',
+                  },
+                  placeholder: `${selectedItem.length === 0 ? placeholder : ''}`,
+                } as any), // Downshift startAdornment is not include in getInputProps interface
+              })}
+              {isOpen ? (
+                <StyledPaper square={true}>
+                  {filterSuggestions.map((suggestion: TSuggestion, index) =>
+                    renderSuggestion({
+                      suggestion,
+                      index,
+                      selectedItem,
+                      highlightedIndex,
+                      itemProps: getItemProps({ item: suggestion }),
+                    }),
+                  )}
+                </StyledPaper>
+              ) : null}
+            </StyledDownshiftMultipleWrapper>
+          );
+        }}
       </Downshift>
     );
   }

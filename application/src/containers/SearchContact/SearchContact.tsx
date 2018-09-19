@@ -8,6 +8,7 @@ import { translate } from 'react-i18next';
 import { TranslationFunction, i18n } from 'i18next';
 import JuiDownShift from 'ui-components/molecules/Downshift';
 
+import Chip from '../Chip';
 import SearchContactVM from './SearchContactVM';
 import { getName } from '../../utils/getName';
 import { Person } from 'sdk/src/models';
@@ -21,7 +22,7 @@ interface IProps {
 }
 
 interface ISelectedMember {
-  value: number;
+  id: number;
   label: string;
   email: string;
 }
@@ -45,7 +46,7 @@ class SearchContact extends Component<IProps, IStates> {
     this.searchContactVM.fetchSearch(value).then((data: Person[]) => {
       console.log('------data----', data);
       members = data.map(member => ({
-        value: member.id,
+        id: member.id,
         label: getName(member),
         email: member.email,
       }));
@@ -63,6 +64,7 @@ class SearchContact extends Component<IProps, IStates> {
         onChange={onChange}
         label={label}
         placeholder={placeholder}
+        Chip={Chip}
       />
     );
   }

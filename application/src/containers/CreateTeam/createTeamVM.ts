@@ -14,7 +14,7 @@ class CreateTeamVM {
   @action
   async create(
     name: string,
-    memberIds: number[],
+    memberIds: (number | string)[],
     description: string = '',
     options: CreateTeamOptions,
   ) {

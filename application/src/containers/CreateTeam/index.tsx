@@ -35,6 +35,7 @@ interface IState {
   teamName: string;
   description: string;
   items: IListToggleItemProps[];
+  members: (number | string)[];
 }
 
 @observer
@@ -51,6 +52,7 @@ class CreateTeam extends React.Component<IProps, IState> {
       errorMsg: '',
       teamName: '',
       description: '',
+      members: [],
       items: [
         {
           type: 'isPublic',
@@ -81,17 +83,27 @@ class CreateTeam extends React.Component<IProps, IState> {
     });
   }
 
-  handleSearchContactChange = (item: any) => {
-    console.log(item);
+  handleSearchContactChange = (items: any) => {
+    const members = items.map((item: any) => {
+      if (item.id) {
+        return item.id;
+      }
+      return item.email;
+    });
+    console.log('------members---', members);
+    this.setState({ members });
   }
 
   createTeamError(result: IResponseError) {
     const { t } = this.props;
     const { teamName } = this.state;
-    const msg = result.error.message;
+    const code = result.error.code;
     let errorMsg;
-    if (msg.indexOf('already taken') > -1) {
+    if (code === 'already_token') {
       errorMsg = t('already token', { name: teamName });
+    }
+    if (code === 'invalid_field') {
+      // TODO
     }
     this.setState({
       errorMsg,
@@ -100,14 +112,18 @@ class CreateTeam extends React.Component<IProps, IState> {
   }
 
   createTeam = async () => {
-    const { items, teamName, description } = this.state;
+    const { items, teamName, description, members } = this.state;
     const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
     const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    console.log(teamName, isPublic, canPost);
-    const result = await this.createTeamVM.create(teamName, [], description, {
-      isPublic,
-      canPost,
-    });
+    const result = await this.createTeamVM.create(
+      teamName,
+      members,
+      description,
+      {
+        isPublic,
+        canPost,
+      },
+    );
     console.log(result);
     if ((result as IResponseError).error) {
       this.createTeamError(result as IResponseError);

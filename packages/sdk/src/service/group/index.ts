@@ -6,7 +6,7 @@
 import { daoManager, ConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Group, Raw, IResponseError } from '../../models';
+import { Group, GroupApiType, Raw, IResponseError } from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -269,7 +269,7 @@ export default class GroupService extends BaseService<Group> {
   async createTeam(
     name: string,
     creator: number,
-    memberIds: number[],
+    memberIds: (number | string)[],
     description: string,
     options: CreateTeamOptions = {},
   ) {
@@ -292,7 +292,7 @@ export default class GroupService extends BaseService<Group> {
       const userPermissionMask = Permission.createPermissionsMask(
         permissionFlags,
       );
-      const team: Partial<Group> = {
+      const team: Partial<GroupApiType> = {
         privacy,
         description,
         set_abbreviation: name,

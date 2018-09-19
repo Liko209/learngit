@@ -8,7 +8,7 @@ import styled, { IDependencies } from '../../styled-components';
 import MuiChip, { ChipProps } from '@material-ui/core/Chip';
 import JuiAvatar from '../../atoms/Avatar';
 import JuiIconButton from '../IconButton';
-import { width } from '../../utils/styles';
+import { width, spacing, height } from '../../utils/styles';
 
 type TJuiChipProps = {
   Avatar?: React.ComponentType<any>;
@@ -17,7 +17,8 @@ type TJuiChipProps = {
 
 const StyledChip = styled<TJuiChipProps>(MuiChip)`
   && {
-    padding: ${width(1)};
+    margin: ${spacing(1)};
+    padding: ${spacing(1)};
     box-sizing: border-box;
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity * 1};
@@ -29,7 +30,7 @@ const StyledChip = styled<TJuiChipProps>(MuiChip)`
 
   .deleteIcon {
     width: ${width(5)};
-    height: ${width(5)};
+    height: ${height(5)};
   }
 `;
 
