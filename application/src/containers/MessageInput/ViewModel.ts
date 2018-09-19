@@ -5,17 +5,25 @@
  */
 
 import { action, observable, computed, when } from 'mobx';
-import { debounce } from 'lodash';
 import { Quill } from 'quill';
 import { GroupService, PostService } from 'sdk/service';
 import { markdownFromDelta } from 'ui-components/MessageInput';
+import { debounce, Cancelable } from 'lodash';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 
+interface IParams {
+  draft: string;
+  id: number;
+}
+
+type DebounceFunction = (params: IParams) => Promise<boolean>;
+
 class ViewModel {
   private _groupService: GroupService;
   private _postService: PostService;
+  private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
   @observable
   private _id: number;
   private _init: boolean;
@@ -31,6 +39,10 @@ class ViewModel {
   constructor() {
     this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
+    this._debounceUpdateGroupDraft = debounce<DebounceFunction>(
+      this._groupService.updateGroupDraft,
+      500,
+    );
 
     this.sendPost = this.sendPost.bind(this);
 
@@ -56,11 +68,7 @@ class ViewModel {
   @action.bound
   changeDraft(draft: string) {
     this.draft = draft; // UI immediately sync
-    const debounceUpdateGroupDraft = debounce(
-      this._groupService.updateGroupDraft,
-      500,
-    ); // DB sync 500 ms later
-    debounceUpdateGroupDraft({ draft, id: this._id });
+    this._debounceUpdateGroupDraft({ draft, id: this._id }); // DB sync 500 ms later
   }
 
   @computed

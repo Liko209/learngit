@@ -354,7 +354,7 @@ export default class GroupService extends BaseService<Group> {
   }
 
   // update partial group data
-  async updateGroupDraft(params: { id: number, draft: string }) {
+  async updateGroupDraft(params: { id: number, draft: string }): Promise<boolean> {
     try {
       const dao = daoManager.getDao(GroupDao);
       await dao.update(params);
