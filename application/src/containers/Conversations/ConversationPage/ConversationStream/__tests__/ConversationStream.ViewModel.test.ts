@@ -56,36 +56,4 @@ describe('ConversationStreamViewModel', () => {
       expect(stateService.updateLastGroup).toHaveBeenCalled();
     });
   });
-
-  describe('loadInitialPosts()', () => {
-    it('should have loading before finished', async () => {
-      const vm = new ConversationStreamViewModel({ groupId: 1 });
-      postService.getPostsByGroupId.mockResolvedValue({
-        posts: [],
-        hasMore: false,
-      });
-
-      const promise = vm.loadInitialPosts();
-
-      expect(vm).toHaveProperty('loading', true);
-      await promise;
-      expect(vm).toHaveProperty('loading', false);
-    });
-  });
-
-  describe('loadPrevPosts()', () => {
-    it('should have loadingTop before finished', async () => {
-      const vm = new ConversationStreamViewModel({ groupId: 1 });
-      postService.getPostsByGroupId.mockResolvedValue({
-        posts: [],
-        hasMore: false,
-      });
-
-      const promise = vm.loadPrevPosts();
-
-      expect(vm).toHaveProperty('loadingTop', true);
-      await promise;
-      expect(vm).toHaveProperty('loadingTop', false);
-    });
-  });
 });
