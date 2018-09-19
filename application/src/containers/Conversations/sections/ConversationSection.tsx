@@ -46,7 +46,6 @@ class ConversationSectionComponent extends React.Component<IProps> {
     this._handleSortEnd = this._handleSortEnd.bind(this);
     const store = props.presenter.getStore();
     autorun(() => {
-      console.log(store.getIds());
       this.ids = store.getIds();
     });
   }
