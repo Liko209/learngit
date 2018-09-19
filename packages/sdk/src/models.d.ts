@@ -93,6 +93,7 @@ export type Person = ExtendedBaseModel & {
   sanitized_rc_extension?: object;
   is_pseudo_user?: boolean;
   glip_user_id?: number;
+  away_status?: string | null;
 };
 
 export type UserInfo = {
