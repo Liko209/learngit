@@ -3,7 +3,7 @@
  * @Date: 2018-09-10 17:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { action, observable } from 'mobx';
+import { action, observable, computed } from 'mobx';
 import React from 'react';
 
 // const SS = window.sessionStorage;
@@ -212,6 +212,49 @@ class NavPresenter {
       this.forwardNavArray = [];
       this.state.forwardDisabled = true;
     }
+  }
+  @action
+  handlePushRouter = () => {
+    const state = this.state;
+    const { title, showLeftPanel, showRightPanel, pressNav } = state;
+    const backNavArray = this.backNavArray;
+    const menuClicked = this.menuClicked;
+    const forwardNavArray = this.forwardNavArray;
+    if (!showLeftPanel && !showRightPanel && !pressNav && !menuClicked) {
+      backNavArray.push({ title });
+      this.backNavArray = backNavArray;
+    }
+    this.menuClicked = false;
+    if (backNavArray.length > 10) {
+      backNavArray.shift();
+    }
+    if (forwardNavArray.length > 10) {
+      forwardNavArray.shift();
+    }
+    if (backNavArray.length) {
+      this.state.backDisabled = false;
+    }
+  }
+  @computed
+  get handleButtonState() {
+    const forwardNavArray = this.forwardNavArray;
+    const backNavArray = this.backNavArray;
+    if (forwardNavArray.length) {
+      return {
+        forwardDisabled: false,
+        backDisabled: this.state.backDisabled,
+      };
+    }
+    if (backNavArray.length) {
+      return {
+        backDisabled: false,
+        forwardDisabled: this.state.forwardDisabled,
+      };
+    }
+    return {
+      backDisabled: this.state.backDisabled,
+      forwardDisabled: this.state.forwardDisabled,
+    };
   }
 }
 export default new NavPresenter();

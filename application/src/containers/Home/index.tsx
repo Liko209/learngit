@@ -78,38 +78,10 @@ class Home extends Component<IProps, IStates>  {
       window.location.href = '/';
     });
   }
-  componentWillReceiveProps(nextProps: IProps) {
-    const state = this._navPresenter.state;
-    const { forwardNavArray, backNavArray } = this._navPresenter;
-    if (forwardNavArray.length) {
-      state.forwardDisabled = false;
-    }
-    if (backNavArray.length) {
-      state.backDisabled = false;
-    }
-  }
   componentDidMount() {
     this.props.history.listen((route) => {
       // get previous title
-      const state = this._navPresenter.state;
-      const { title, showLeftPanel, showRightPanel, pressNav } = state;
-      setTimeout(() => {
-        const { backNavArray, menuClicked, forwardNavArray } = this._navPresenter;
-        if (!showLeftPanel && !showRightPanel && !pressNav && !menuClicked) {
-          backNavArray.push({ title });
-          this._navPresenter.backNavArray = backNavArray;
-        }
-        this._navPresenter.menuClicked = false;
-        if (backNavArray.length > 10) {
-          backNavArray.shift();
-        }
-        if (forwardNavArray.length > 10) {
-          forwardNavArray.shift();
-        }
-        if (backNavArray.length) {
-          this._navPresenter.state.backDisabled = false;
-        }
-      });
+      this._navPresenter.handlePushRouter();
     });
   }
   handleExpand = () => {
@@ -146,7 +118,8 @@ class Home extends Component<IProps, IStates>  {
   render() {
     const { expanded } = this.state;
     const { t } = this.props;
-    const { forwardDisabled, showLeftPanel, showRightPanel, backDisabled } = this._navPresenter.state;
+    const { showLeftPanel, showRightPanel } = this._navPresenter.state;
+    const { forwardDisabled, backDisabled } = this._navPresenter.handleButtonState;
     const {
       menus,
       handleRouterChange,
