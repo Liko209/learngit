@@ -242,7 +242,6 @@ class NavPresenter {
   @computed
   get title() {
     const appUmi = getGlobalValue('UMI.app');
-    console.log('UMI.app', appUmi);
     if (appUmi) {
       return `(${appUmi}) ${this.state.title}`;
     }

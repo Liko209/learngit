@@ -90,7 +90,6 @@ class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
       },
     );
 
-    console.log(`UMI.${this.queryType}`, unreadCount);
     this.globalStore.set(`UMI.${this.queryType}`, unreadCount);
     return { important, unreadCount };
   }
