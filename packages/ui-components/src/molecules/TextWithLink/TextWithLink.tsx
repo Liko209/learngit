@@ -14,6 +14,9 @@ const TipsText = styled(MuiTypography)`
   && {
     color: ${grey('700')};
     ${typography('caption')};
+    * {
+      ${typography('caption')};
+    }
   }
 `;
 

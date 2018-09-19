@@ -27,9 +27,11 @@ const Textarea = styled<ITextarea>(WrapperTextField)`
   && {
     background: ${props => (props.hasValue ? '#fff' : grey('100'))};
     padding: ${({ theme }) => spacing(2)};
+    margin: ${spacing(2)} 0 0 0;
     box-sizing: border-box;
     border-radius: ${({ theme }) => theme.shape.borderRadius}px;
-    ${props => (props.hasValue ? border('type1') : null)};
+    ${props =>
+      props.hasValue ? border('type1') : 'border:1px solid transparent'};
   }
   .input-root {
     padding: 0;

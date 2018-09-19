@@ -20,7 +20,7 @@ import { spacing, grey, typography } from '../../utils/styles';
 const List = styled(MuiList)`
   && {
     padding: 0;
-    margin: ${({ theme }) => spacing(3)} 0 ${({ theme }) => spacing(5)};
+    margin: ${({ theme }) => spacing(5)} 0;
   }
 `;
 
@@ -47,6 +47,7 @@ const ListItemText = styled(MuiListItemText)`
 interface IListToggleItemProps {
   text: string;
   checked: boolean;
+  [propName: string]: any;
 }
 
 type IProps = {

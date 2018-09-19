@@ -6,5 +6,9 @@
   "tips": "You are an admin to this team.",
   "linkTips": "Learn about team administration",
   "OK": "OK",
-  "Cancel": "Cancel"
+  "Cancel": "Cancel",
+  "Members": "Members",
+  "Search Contact Placeholder": "Members (enter names or email addresses)",
+  "Public Team": "Public Team (any co-worker can join)",
+  "Members may post messages": "Members may post messages"
 }

@@ -14,5 +14,7 @@
   "Tasks": "任务",
   "Notes": "笔记",
   "Files": "文件",
-  "Settings": "设置"
+  "Settings": "设置",
+  "SignOut": "退出",
+  "CreateTeam": "新建组"
 }

@@ -107,18 +107,19 @@ class Home extends Component<IProps, IStates> {
           AvatarWithPresence={AvatarWithPresence}
           avatarMenuItems={[
             {
-              label: 'signOut',
+              label: t('SignOut'),
               onClick: this.handleSignOutClick,
             },
           ]}
           HeaderIconButton={HeaderIconButton}
           headerMenuItems={[
             {
-              label: 'Create Team',
+              label: t('CreateTeam'),
               onClick: this.handleCreateTeam,
             },
           ]}
           onLeftNavExpand={this.handleLeftNavExpand}
+          headerLogo="RingCentral"
         />
         <Bottom>
           <LeftNav

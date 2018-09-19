@@ -23,6 +23,7 @@ type TTopBarProps = {
   avatarMenuItems: TMenuItems;
   onLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
   headerMenuItems: TMenuItems;
+  headerLogo: string;
 };
 
 type TTopBarState = {
@@ -42,7 +43,7 @@ const StyledTopBar = styled(AppBar).attrs({ position: 'static' })`
     box-shadow: none;
     border-bottom: 1px solid
       rgba(0, 0, 0, ${({ theme }) => `${theme.palette.action.hoverOpacity}`});
-    z-index: ${({ theme }) => `${theme.zIndex.tooltip}`};
+    z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
   }
 `;
 const TopBarWrapper = styled(Toolbar)`
@@ -196,6 +197,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
       AvatarWithPresence,
       HeaderIconButton,
       onLeftNavExpand,
+      headerLogo,
     } = this.props;
     const isElectron =
       navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
@@ -216,7 +218,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               >
                 format_list_bulleted
               </JuiIconButton>
-              <TopLogo variant="headline">RingCentral</TopLogo>
+              <TopLogo variant="headline">{headerLogo}</TopLogo>
             </MenuWithLogo>
             <BackForward invisible={!isElectron}>
               <JuiIconButton

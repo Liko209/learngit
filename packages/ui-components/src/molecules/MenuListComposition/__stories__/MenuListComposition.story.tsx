@@ -6,13 +6,33 @@
 /// <reference path="../../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfo } from '@storybook/addon-info';
 
 import MenuListComposition from '..';
+import JuiAvatarWithPresence, {
+  TJuiAvatarWithPresenceProps,
+} from '../../../molecules/AvatarWithPresence';
 import { withInfoDecorator } from '../../../utils/decorators';
+
+import avatar from '../../../atoms/Avatar/__stories__/img/avatar.jpg';
+
+const avatarMenuItems = [
+  {
+    label: 'signOut',
+    onClick: this.handleSignOutClick,
+  },
+];
+
+const AvatarWithPresence = (props: TJuiAvatarWithPresenceProps) => {
+  return <JuiAvatarWithPresence presence="online" src={avatar} {...props} />;
+};
 
 storiesOf('Molecules/MenuListComposition 🔜', module)
   .addDecorator(withInfoDecorator(MenuListComposition, { inline: true }))
-  .addWithJSX('MenuListComposition', () => {
-    return <MenuListComposition />;
+  .addWithJSX('MenuListComposition with Avatar', () => {
+    return (
+      <MenuListComposition
+        menuItems={avatarMenuItems}
+        MenuExpandTrigger={AvatarWithPresence}
+      />
+    );
   });

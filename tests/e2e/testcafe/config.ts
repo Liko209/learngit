@@ -18,8 +18,8 @@ const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
 
 const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
 const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
-const DEBUG = (process.env.DEBUG === 'true');
-const QUARANTINEMODE = ((process.env.QUARANTINEMODE || 'true') === 'true');
+const DEBUG = !(process.env.DEBUG === 'false');
+const QUARANTINEMODE = (process.env.QUARANTINEMODE === 'true');
 
 const ENV = {
   'XMN-UP': {

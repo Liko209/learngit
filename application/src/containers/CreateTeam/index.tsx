@@ -12,12 +12,14 @@ import JuiDialogTitle from 'ui-components/atoms/DialogTitle';
 import JuiDialogContent from 'ui-components/atoms/DialogContent';
 import JuiDialogActions from 'ui-components/atoms/DialogActions';
 import JuiButton from 'ui-components/atoms/Button';
-import JuiTextField from 'ui-components/molecules/Form/TextField';
+import JuiTextField from 'ui-components/atoms/TextField';
+import JuiTextarea from 'ui-components/atoms/Textarea';
 import TextWithLink from 'ui-components/molecules/TextWithLink/TextWithLink';
 import ListToggleButton, {
   IListToggleItemProps,
 } from 'ui-components/molecules/Lists/ListToggleButton';
 import HomePresenter from '../Home/HomePresenter';
+import SearchContact from '../SearchContact';
 
 interface IProps {
   homePresenter: HomePresenter;
@@ -27,6 +29,7 @@ interface IProps {
 interface IState {
   disabledOkBtn: boolean;
   nameError: boolean;
+  teamName: string;
   items: IListToggleItemProps[];
 }
 
@@ -40,20 +43,23 @@ class CreateTeam extends React.Component<IProps, IState> {
     this.state = {
       disabledOkBtn: true,
       nameError: false,
+      teamName: '',
       items: [
         {
-          text: '123123123',
+          type: 'isPublic',
+          text: props.t('Public Team'),
           checked: false,
         },
         {
-          text: '22222222222',
+          type: 'canPost',
+          text: props.t('Members may post messages'),
           checked: true,
         },
       ],
     };
   }
 
-  handleChange = (item: IListToggleItemProps, checked: boolean) => {
+  handleSwitchChange = (item: IListToggleItemProps, checked: boolean) => {
     const newItems = this.state.items.map((oldItem: IListToggleItemProps) => {
       if (oldItem.text === item.text) {
         return {
@@ -68,13 +74,32 @@ class CreateTeam extends React.Component<IProps, IState> {
     });
   }
 
-  onCancel = () => {
-    this.homePresenter.handleOpenCreateTeam();
+  handleSearchContactChange = (item: any) => {
+    console.log(item);
   }
+
+  createTeam = () => {
+    const { items, teamName } = this.state;
+    const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
+    const canPost = items.filter(item => item.type === 'canPost')[0].checked;
+    console.log(teamName, isPublic, canPost);
+    this.onClose();
+  }
+
   onClose = () => {
     this.homePresenter.handleOpenCreateTeam();
+    this.setState({
+      disabledOkBtn: true,
+    });
   }
-  handleNameChange = () => {};
+
+  handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      teamName: e.target.value,
+      disabledOkBtn: e.target.value === '',
+    });
+  }
+
   render() {
     const { disabledOkBtn, nameError, items } = this.state;
     const { t } = this.props;
@@ -83,7 +108,7 @@ class CreateTeam extends React.Component<IProps, IState> {
       <JuiDialog
         open={this.homePresenter.openCreateTeam}
         size={'medium'}
-        scroll="paper"
+        scroll="body"
       >
         <JuiDialogTitle>{t('Create Team')}</JuiDialogTitle>
         <JuiDialogContent>
@@ -98,13 +123,20 @@ class CreateTeam extends React.Component<IProps, IState> {
             helperText={nameError && t('Team name required')}
             onChange={this.handleNameChange}
           />
-          <JuiTextField
-            id={t('Team Description')}
-            label={t('Team Description')}
+          <SearchContact
+            onChange={this.handleSearchContactChange}
+            label={t('Members')}
+            placeholder={t('Search Contact Placeholder')}
+          />
+          <JuiTextarea
+            placeholder={t('Team Description')}
             fullWidth={true}
             onChange={this.handleNameChange}
           />
-          <ListToggleButton items={items} toggleChange={this.handleChange} />
+          <ListToggleButton
+            items={items}
+            toggleChange={this.handleSwitchChange}
+          />
           <TextWithLink
             TypographyProps={{
               align: 'center',
@@ -117,21 +149,21 @@ class CreateTeam extends React.Component<IProps, IState> {
 
         <JuiDialogActions>
           <JuiButton
-            onClick={this.onCancel}
+            onClick={this.onClose}
             color="primary"
             variant="text"
             autoFocus={true}
           >
-            {t('OK')}
+            {t('Cancel')}
           </JuiButton>
           <JuiButton
-            onClick={this.onClose}
+            onClick={this.createTeam}
             color="primary"
             variant="contained"
             autoFocus={true}
             disabled={disabledOkBtn}
           >
-            {t('Cancel')}
+            {t('OK')}
           </JuiButton>
         </JuiDialogActions>
       </JuiDialog>
