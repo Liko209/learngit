@@ -36,11 +36,6 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
     }
     return <React.Fragment />;
   }
-
-  componentDidUpdate() {
-    console.log('params.id', this.props.match.params.id);
-  }
-
   renderMenu() {
     return (
       <Menu
@@ -112,8 +107,8 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
   private _showErrorAlert(error: ServiceCommonErrorType) {
     if (error === ServiceCommonErrorType.NONE) {
       // jump to section
-      console.log('id', Number(this.props.match.params.id));
-      if (this.props.id === Number(this.props.match.params.id)) {
+      const match = /messages\/(\d+)/.exec(window.location.href);
+      if (match && this.props.id === Number(match[1])) {
         const { history } = this.props;
         history.replace('/messages');
       }
