@@ -56,7 +56,7 @@ const StyledUmi = styled<UmiProps, 'span'>('span').attrs({
         ? '22px'
         : '28px'};
   height: 18px;
-  border: 1px;
+  border: 1px solid;
   border-color: ${({ theme }) => {
     const { common } = theme.palette;
     return common.white;
