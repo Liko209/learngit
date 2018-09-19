@@ -79,11 +79,7 @@ class Home extends Component<IProps, IStates> {
 
   handleSignOutClick = () => {
     const { handleSignOutClick } = this.homePresenter;
-    handleSignOutClick().then(() => {
-      sessionStorage.removeItem('backNavArray');
-      sessionStorage.removeItem('forwardNavArray');
-      window.location.href = '/';
-    });
+    handleSignOutClick();
   }
   componentWillReceiveProps(nextProps: IProps) {
     const state = this.navPresenter.state;
