@@ -96,4 +96,5 @@ class ConversationStreamViewModel extends TransformHandler<PostModel, Post> {
     this.stateService.updateLastGroup(this.groupId);
   }
 }
+
 export { ConversationStreamViewModel };
