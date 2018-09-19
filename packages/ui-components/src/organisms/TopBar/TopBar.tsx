@@ -33,8 +33,8 @@ type TTopBarProps = {
   handleNavClose: ((event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index: number) => void);
   handleBackWard: ((event: React.MouseEvent<HTMLSpanElement>) => void);
   handleForward: ((event: React.MouseEvent<HTMLSpanElement>) => void);
-  handleButtonPress: ((event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
-  handleButtonRelease: ((nav: string, event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
+  handleButtonPress: ((nav: string, event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
+  handleButtonRelease: ((event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
 };
 
 type TTopBarState = {
@@ -88,7 +88,7 @@ const MenuWithLogo = styled.div`
 const BackForward: any = styled.div`
   display: flex;
   visibility: ${(props: { invisible: boolean }) =>
-    props.invisible ? 'hidden' : 'visible'};
+  props.invisible ? 'hidden' : 'visible'};
 `;
 
 const StyledAvatarMenuComposition = styled(MenuListComposition)``;
@@ -252,10 +252,10 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
                   awake={topBarState === 'hover'}
                   onClick={handleBackWard}
                   disabled={backDisabled}
-                  onTouchStart={handleButtonPress}
-                  onTouchEnd={handleButtonRelease.bind(this, 'backward')}
-                  onMouseDown={handleButtonPress}
-                  onMouseUp={handleButtonRelease.bind(this, 'backward')}
+                  onTouchStart={handleButtonPress!.bind(this, 'backward')}
+                  onTouchEnd={handleButtonRelease}
+                  onMouseDown={handleButtonPress!.bind(this, 'backward')}
+                  onMouseUp={handleButtonRelease}
                 >
                   chevron_left
                 </JuiIconButton>
@@ -271,10 +271,10 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
                   awake={topBarState === 'hover'}
                   onClick={handleForward}
                   disabled={forwardDisabled}
-                  onTouchStart={handleButtonPress}
-                  onTouchEnd={handleButtonRelease.bind(this,  'forward')}
-                  onMouseDown={handleButtonPress}
-                  onMouseUp={handleButtonRelease.bind(this, 'forward')}
+                  onTouchStart={handleButtonPress!.bind(this,  'forward')}
+                  onTouchEnd={handleButtonRelease}
+                  onMouseDown={handleButtonPress!.bind(this, 'forward')}
+                  onMouseUp={handleButtonRelease}
                 >
                   chevron_right
                 </JuiIconButton>
