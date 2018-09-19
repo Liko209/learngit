@@ -81,7 +81,10 @@ export class ConversationCard extends React.Component<IProps, IStates> {
                 status === POST_STATUS.FAIL &&
                 <JuiIconButton variant="plain" tooltipTitle="resend" color="secondary" onClick={this.resend}>refresh</JuiIconButton>
               }
-              <JuiIconButton variant="plain" tooltipTitle="delete" onClick={this.delete}>delete</JuiIconButton>
+              {
+                status !== POST_STATUS.INPROGRESS &&
+                <JuiIconButton variant="plain" tooltipTitle="delete" onClick={this.delete}>delete</JuiIconButton>
+              }
             </JuiButtonBar>
           </JuiConversationCardHeader>
           {/* todo: content */}
