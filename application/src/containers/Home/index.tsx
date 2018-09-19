@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import DocumentTitle from 'react-document-title';
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 import { LeftNav, JuiIconButtonProps } from 'ui-components';
@@ -23,7 +22,6 @@ import JuiIconButton from 'ui-components/molecules/IconButton';
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
 import NavPresenter from './NavPresenter';
-import { isElectron } from '@/utils';
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -77,8 +75,6 @@ class Home extends Component<IProps, IStates>  {
   handleSignOutClick = () => {
     const { handleSignOutClick } = this.homePresenter;
     handleSignOutClick().then(() => {
-      sessionStorage.removeItem('backNavArray');
-      sessionStorage.removeItem('forwardNavArray');
       window.location.href = '/';
     });
   }
@@ -112,7 +108,6 @@ class Home extends Component<IProps, IStates>  {
         }
         if (backNavArray.length) {
           this._NavPresenter.state.backDisabled = false;
-          isElectron && this._NavPresenter.setItem('backNavArray', JSON.stringify(backNavArray));
         }
       });
     });
@@ -151,7 +146,7 @@ class Home extends Component<IProps, IStates>  {
   render() {
     const { expanded } = this.state;
     const { t } = this.props;
-    const { title, forwardDisabled, showLeftPanel, showRightPanel, backDisabled } = this._NavPresenter.state;
+    const { forwardDisabled, showLeftPanel, showRightPanel, backDisabled } = this._NavPresenter.state;
     const {
       menus,
       handleRouterChange,
@@ -193,16 +188,14 @@ class Home extends Component<IProps, IStates>  {
           handleButtonRelease={handleButtonRelease}
         />
         <Bottom>
-          <DocumentTitle title={title}>
-            <LeftNav
-              expanded={expanded}
-              id="leftnav"
-              icons={this.getIcons()}
-              umiCount={UMI_Count}
-              handleRouterChange={handleRouterChange}
-              handleTitle={handleTitle}
-            />
-          </DocumentTitle>
+          <LeftNav
+            expanded={expanded}
+            id="leftnav"
+            icons={this.getIcons()}
+            umiCount={UMI_Count}
+            handleRouterChange={handleRouterChange}
+            handleTitle={handleTitle}
+          />
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />

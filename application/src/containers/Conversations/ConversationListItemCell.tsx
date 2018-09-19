@@ -173,8 +173,8 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   private _jump2Conversation(id: number) {
     const { history } = this.props;
     history.push(`/messages/${id}`);
-    this.navPresenter.handleRouterChange();
-    this.navPresenter.handleTitle(this.displayName);
+    this.navPresenter.handleRouterChange(this.id);
+    // this.navPresenter.handleTitle(this.displayName);
   }
   @action
   private _toggleFavorite() {
