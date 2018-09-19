@@ -15,15 +15,15 @@ ConversationListItemModule.ConversationListItem = ({
   status,
   umiVariant,
 }: {
-  title: string;
-  status?: string;
-  umiVariant: string;
-}) => (
-  <div>
-    {status ? <div>{status}</div> : null}
-    {`${title}, ${umiVariant}`}
-  </div>
-);
+    title: string;
+    status?: string;
+    umiVariant: string;
+  }) => (
+    <div>
+      {status ? <div>{status}</div> : null}
+      {`${title}, ${umiVariant}`}
+    </div>
+  );
 jest.doMock(
   'ui-components/molecules/ConversationList/ConversationListItem',
   ConversationListItemModule,
@@ -33,9 +33,9 @@ jest.mock('../../../utils/groupName', () => ({
   getGroupName: jest.fn().mockReturnValue('some group name'),
 }));
 
-const testFunction = () => {};
+const testFunction = () => { };
 describe('ConversationListItemCell', () => {
-  beforeAll(() => {});
+  beforeAll(() => { });
 
   it('ConversationListItem should receive title from getGroupName', () => {
     const mockGetEntity = () => ({
@@ -51,9 +51,9 @@ describe('ConversationListItemCell', () => {
           entityName={'group'}
           history={{} as any}
           location={{} as any}
-          match={{} as any}
+          match={{ params: {} } as any}
           getEntity={mockGetEntity as any}
-          vm={{ dispose: () => {} }}
+          vm={{ dispose: () => { } }}
           getSingleEntity={testFunction as any}
           getGlobalValue={testFunction as any}
         />,
@@ -87,9 +87,9 @@ describe('ConversationListItemCell', () => {
           currentUserId={1}
           history={{} as any}
           location={{} as any}
-          match={{} as any}
+          match={{ params: {} } as any}
           getEntity={mockGetEntity as any}
-          vm={{ dispose: () => {} }}
+          vm={{ dispose: () => { } }}
           getSingleEntity={testFunction as any}
           getGlobalValue={testFunction as any}
         />,
@@ -122,9 +122,9 @@ describe('ConversationListItemCell', () => {
           entityName={'group'}
           history={{} as any}
           location={{} as any}
-          match={{} as any}
+          match={{ params: {} } as any}
           getEntity={mockGetEntity as any}
-          vm={{ dispose: () => {} }}
+          vm={{ dispose: () => { } }}
           getSingleEntity={testFunction as any}
           getGlobalValue={testFunction as any}
         />,
