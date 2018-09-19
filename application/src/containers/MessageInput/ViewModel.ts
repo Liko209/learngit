@@ -6,7 +6,7 @@
 
 import { action, observable, computed, when } from 'mobx';
 import { debounce } from 'lodash';
-import { Quill } from 'react-quill';
+import { Quill } from 'quill';
 import { GroupService, PostService } from 'sdk/service';
 import { markdownFromDelta } from 'ui-components/MessageInput';
 import { getEntity } from '@/store/utils';
@@ -16,31 +16,46 @@ import GroupModel from '@/store/models/Group';
 class ViewModel {
   private _groupService: GroupService;
   private _postService: PostService;
+  @observable
   private _id: number;
-  private _editor: Quill;
+  private _init: boolean;
+  keyboardEventHandler = {
+    enter: {
+      key: 13,
+      handler: this._enterHandler(this),
+    },
+  };
   @observable
   draft: string = '';
 
-  constructor(id: number) {
+  constructor() {
     this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
-    this._id = id;
-    when(
-      () => !!this.initDraft,
-      () => {
-        this.draft = this.initDraft;
-      },
-    );
 
-    this._enterHandler = this._enterHandler.bind(this);
-    this.setEditor = this.setEditor.bind(this);
-    this.getKeyboardEvent = this.getKeyboardEvent.bind(this);
+    this.sendPost = this.sendPost.bind(this);
+
+    this._init = false;
+  }
+
+  @action
+  init(id: number) {
+    this._id = id;
+    if (this._init) {
+      this.draft = this.initDraft;
+    } else {
+      this._init = true;
+      when(
+        () => !!this.initDraft,
+        () => {
+          this.draft = this.initDraft;
+        },
+      );
+    }
   }
 
   @action.bound
-  changeDraft(draft: string, editor: any) {
+  changeDraft(draft: string) {
     this.draft = draft; // UI immediately sync
-    this._editor = editor;
     const debounceUpdateGroupDraft = debounce(
       this._groupService.updateGroupDraft,
       500,
@@ -54,33 +69,23 @@ class ViewModel {
     return groupEntity.draft || '';
   }
 
-  private _enterHandler(groupId: number) {
-    if (this.draft) {
-      this.sendPost(groupId);
-    }
-  }
-
-  @action.bound
-  async sendPost(groupId: number) {
-    this.changeDraft('', this._editor);
-    const text = markdownFromDelta(this._editor.getContents());
-    await this._postService.sendPost({
-      groupId,
-      text,
-    });
-  }
-
-  getKeyboardEvent(groupId: number) {
-    return {
-      enter: {
-        key: 13,
-        handler: () => this._enterHandler(groupId),
-      },
+  private _enterHandler(vm: ViewModel) {
+    return function () {
+      // @ts-ignore
+      const quill = (this as any).quill;
+      if (quill.getText().trim()) {
+        vm.sendPost(quill);
+      }
     };
   }
 
-  setEditor(editor: Quill) {
-    this._editor = editor;
+  async sendPost(quill: Quill) {
+    const text = markdownFromDelta(quill.getContents());
+    this.changeDraft('');
+    await this._postService.sendPost({
+      text,
+      groupId: this._id,
+    });
   }
 }
 

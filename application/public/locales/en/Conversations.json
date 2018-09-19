@@ -9,5 +9,6 @@
   "team_plural": "teams",
   "mention": "mention",
   "mention_plural": "mentions",
-  "unread": "unread"
+  "unread": "unread",
+  "disabledText": "This team is read-only"
 }

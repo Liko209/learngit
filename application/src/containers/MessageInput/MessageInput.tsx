@@ -15,43 +15,31 @@ interface IProps {
 
 @observer
 class MessageInput extends Component<IProps> {
-  private _vm: ViewModel;
-  private _keyboardEvent: {};
+  private _vm: ViewModel = new ViewModel();
 
   constructor(props: IProps) {
     super(props);
-    this._updateKeyboardEvent = this._updateKeyboardEvent.bind(this);
-    this._handleChange = this._handleChange.bind(this);
-
-    this._vm = new ViewModel(props.id);
-    this._updateKeyboardEvent();
+    this._onChange = this._onChange.bind(this);
+    this._vm.init(props.id);
   }
 
   componentDidUpdate(prevProps: IProps) {
     if (this.props.id !== prevProps.id) {
-      this._vm = new ViewModel(this.props.id);
-      this._updateKeyboardEvent();
-      this.forceUpdate();
+      this._vm.init(this.props.id);
     }
   }
 
-  private _updateKeyboardEvent() {
-    const { getKeyboardEvent } = this._vm;
-    this._keyboardEvent = getKeyboardEvent(this.props.id);
-  }
-
-  private _handleChange = (value: any, editor: any) => {
-    this._vm.changeDraft(value, editor);
+  private _onChange = (value: any) => {
+    this._vm.changeDraft(value);
   }
 
   render() {
-    const { draft, setEditor } = this._vm;
+    const { draft, keyboardEventHandler } = this._vm;
     return (
       <JuiMessageInput
         value={draft}
-        onChange={this._handleChange}
-        keyboardEvent={this._keyboardEvent}
-        setEditor={setEditor}
+        onChange={this._onChange}
+        keyboardEventHandler={keyboardEventHandler}
       />
     );
   }
