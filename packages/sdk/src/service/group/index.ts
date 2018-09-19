@@ -261,7 +261,7 @@ export default class GroupService extends BaseService<Group> {
   async addTeamMembers(
     groupId: number,
     memberIds: number[],
-  ): Promise<Group | IResponseError> {
+  ): Promise<Group | IResponseError | null> {
     const resp = await GroupAPI.addTeamMembers(groupId, memberIds);
     return this.handleResponse(resp);
   }
@@ -330,7 +330,7 @@ export default class GroupService extends BaseService<Group> {
   }
 
   async handleResponse(resp: IResponse<Raw<Group>>) {
-    if (resp && resp.data.error) {
+    if (resp && resp.data && resp.data.error) {
       return resp.data;
     }
     const group = transform<Group>(resp.data);
