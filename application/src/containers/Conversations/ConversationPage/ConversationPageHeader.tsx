@@ -35,6 +35,7 @@ class ConversationPageHeaderComponent extends React.Component<
   rightButtonClickHandler(evt: React.SyntheticEvent, name: string) {
     // console.log(evt, name);
   }
+
   render() {
     const { t = (str: string) => str, id } = this.props;
     const presenter = new ConversationPageHeaderPresenter(id);

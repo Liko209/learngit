@@ -4,11 +4,11 @@ import { storiesOf } from '@storybook/react';
 import { withState } from '@dump247/storybook-state';
 import { JuiChatView } from '..';
 
-storiesOf('Atoms/ChatBox', module)
+storiesOf('Atoms/ChatView', module)
   .addDecorator((storyFn) => {
     return <div style={{ textAlign: 'center' }}>{storyFn()}</div>;
   })
-  .addWithJSX('atoms/ChatBox', withState({ list: [1, 323, 234325, 43534, 123, 34324, 23432, 234234, 2342] })(
+  .addWithJSX('atoms/ChatView', withState({ list: [1, 323, 234325, 43534, 123, 34324, 23432, 234234, 2342] })(
     (({ store }) => {
       const loadMore = async (append?: boolean) => {
         const sleep = new Promise((resolve) => {
