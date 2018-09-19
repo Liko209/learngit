@@ -115,7 +115,7 @@ class NavPresenter {
       state.nav = nav;
       state.time = 0;
       state.isLongPress = true;
-      if (nav === 'backward') {
+      if (nav === BACKWARD) {
         state.showLeftPanel = true;
         this.handleMenuItem(backNavArray.reverse());
       }else {
@@ -132,7 +132,7 @@ class NavPresenter {
   @action
   handleMenuItem = (navArray: {title: string}[]) => {
     const menus = navArray && navArray.map((item) => {
-      return item.title.length > 52 ? `${item.title.slice(0, 54)}...` : item.title;
+      return item.title.length > TITLE_LENGTH ? `${item.title.slice(0, TITLE_LENGTH + 2)}...` : item.title;
     });
     this.menus = menus;
   }
@@ -210,3 +210,4 @@ class NavPresenter {
   }
 }
 export default new NavPresenter();
+export { NavPresenter };

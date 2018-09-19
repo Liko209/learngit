@@ -27,18 +27,17 @@ type TTopBarProps = {
   onLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
   headerMenuItems: TMenuItems;
   headerLogo: string;
-  menuItems?: any[];
-  forwardDisabled?: boolean;
-  backDisabled?: boolean;
-  handleNavClose?: ((event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index: number) => void);
-  handleBackWard?: ((event: React.MouseEvent<HTMLSpanElement>) => void);
-  handleForward?: ((event: React.MouseEvent<HTMLSpanElement>) => void);
-  handleButtonPress?: ((event: React.TouchEvent|React.MouseEvent<HTMLElement>, nav: string) => void);
-  handleButtonRelease?: ((event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
+  menuItems: {}[];
+  forwardDisabled: boolean;
+  backDisabled: boolean;
+  handleNavClose: ((event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index: number) => void);
+  handleBackWard: ((event: React.MouseEvent<HTMLSpanElement>) => void);
+  handleForward: ((event: React.MouseEvent<HTMLSpanElement>) => void);
+  handleButtonPress: ((nav: string, event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
+  handleButtonRelease: ((event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
 };
 
 type TTopBarState = {
-  open?: boolean;
   topBarState: 'resting' | 'hover';
   isShowSearchBar: boolean;
 };
@@ -89,7 +88,7 @@ const MenuWithLogo = styled.div`
 const BackForward: any = styled.div`
   display: flex;
   visibility: ${(props: { invisible: boolean }) =>
-    props.invisible ? 'hidden' : 'visible'};
+  props.invisible ? 'hidden' : 'visible'};
 `;
 
 const StyledAvatarMenuComposition = styled(MenuListComposition)``;
@@ -173,7 +172,6 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
   constructor(props: TTopBarProps) {
     super(props);
     this.state = {
-      open: false,
       topBarState: 'resting',
       isShowSearchBar: false,
     };
@@ -246,7 +244,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               <MenuListPanel
                 items={menuItems}
                 open={showLeftPanel}
-                handleClose={handleNavClose!}
+                handleClose={handleNavClose}
               >
                 <JuiIconButton
                   tooltipTitle="Backward"
@@ -265,7 +263,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               <MenuListPanel
                 items={menuItems}
                 open={showRightPanel}
-                handleClose={handleNavClose!}
+                handleClose={handleNavClose}
               >
                 <JuiIconButton
                   tooltipTitle="Forward"
