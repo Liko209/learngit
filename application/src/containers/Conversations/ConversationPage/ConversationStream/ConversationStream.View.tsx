@@ -5,7 +5,6 @@
  */
 import React, { PureComponent } from 'react';
 import ConversationCard from '../ConversationCard';
-import _ from 'lodash';
 
 type ConversationStreamViewProps = {
   postIds: number[];
@@ -15,10 +14,9 @@ class ConversationStreamView extends PureComponent<
   ConversationStreamViewProps
 > {
   render() {
-    const { postIds } = this.props;
     return (
       <div>
-        {postIds.map((id: number) => (
+        {this.props.postIds.map((id: number) => (
           <ConversationCard id={id} key={id} />
         ))}
       </div>
