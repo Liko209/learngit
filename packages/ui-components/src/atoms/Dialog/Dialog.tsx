@@ -22,33 +22,37 @@ const Dialog = styled(({ size = 'small', ...restProps }: IDialogProps) => {
       restProps.fullScreen = true;
       break;
   }
-  const classes = { root: 'root', paperWidthXs: 'sm', paperWidthSm: 'md', paperWidthMd: 'lg' };
-  return (
-    <MuiDialog
-      classes={classes}
-      {...restProps}
-    />
-  );
+  const classes = {
+    root: 'root',
+    paper: 'paper',
+    paperWidthXs: 'sm',
+    paperWidthSm: 'md',
+    paperWidthMd: 'lg',
+  };
+  return <MuiDialog classes={classes} {...restProps} />;
 })`
-&.root {
-  padding:0;
-  min-height: 120px;
-}
-& .sm{
-  max-width:400px;
-}
-& .md{
-  max-width:640px;
-}
-& .lg{
-  max-width:800px;
-}
-& .paperScrollPaper{
-  max-height: ${() => 0.72 * window.innerHeight % 8 * 8}px;
-}
-& .paperFullScreen{
-  max-width: 100%;
-}
+  &.root {
+    padding: 0;
+    min-height: 120px;
+  }
+  & .paper {
+    max-width: inherit;
+  }
+  & .sm {
+    width: 400px;
+  }
+  & .md {
+    width: 640px;
+  }
+  & .lg {
+    width: 800px;
+  }
+  & .paperScrollPaper {
+    max-height: ${() => ((0.72 * window.innerHeight) % 8) * 8}px;
+  }
+  & .paperFullScreen {
+    width: 100%;
+  }
 `;
 
 export default Dialog;

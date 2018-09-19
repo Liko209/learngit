@@ -1,0 +1,39 @@
+/*
+ * @Author: Shining Miao (shining.miao@ringcentral.com)
+ * @Date: 2018-09-15 13:13:45
+ * Copyright © RingCentral. All rights reserved.
+ */
+import React from 'react';
+import styled from '../../styled-components';
+import ListItemText, {
+  ListItemTextProps,
+} from '@material-ui/core/ListItemText';
+import { typography, height, spacing } from '../../utils/styles';
+
+const StyledListItemText = styled(ListItemText)`
+  && {
+    padding-left: ${spacing(3)};
+  }
+  .primary {
+    ${typography('body1')};
+    height: ${height(5)};
+  }
+  .secondary {
+    ${typography('caption1')};
+    height: ${height(4)};
+  }
+`;
+
+const JuiSearchItemText: React.SFC<ListItemTextProps> = (
+  props: ListItemTextProps,
+) => {
+  const { innerRef, ...rest } = props;
+  return (
+    <StyledListItemText
+      classes={{ primary: 'primary', secondary: 'secondary' }}
+      {...rest}
+    />
+  );
+};
+
+export default JuiSearchItemText;

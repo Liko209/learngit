@@ -22,18 +22,19 @@ interface IProps extends IDialogProps {
 
 const Alert = ({ open, size, header, okText, onClose, children }: IProps) => {
   return (
-    <JuiDialog
-      open={open}
-      size={size || 'small'}
-    >
+    <JuiDialog open={open} size={size || 'small'}>
       <JuiDialogTitle>{header}</JuiDialogTitle>
       <JuiDialogContent>
-        <JuiDialogContentText>
-          {children}
-        </JuiDialogContentText>
+        <JuiDialogContentText>{children}</JuiDialogContentText>
       </JuiDialogContent>
       <JuiDialogActions>
-        <JuiButton onClick={onClose} color="primary" variant="text" autoFocus={true}>
+        <JuiButton
+          onClick={onClose}
+          color="primary"
+          variant="text"
+          disabled={true}
+          autoFocus={true}
+        >
           {okText || 'Ok'}
         </JuiButton>
       </JuiDialogActions>

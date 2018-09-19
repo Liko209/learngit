@@ -12,7 +12,7 @@ import { width } from '../../utils/styles';
 
 type TJuiChipProps = {
   Avatar?: React.ComponentType<any>;
-  onDeleteClick?: () => void;
+  onDelete?: (event: any) => void;
 } & ChipProps;
 
 const StyledChip = styled<TJuiChipProps>(MuiChip)`
@@ -36,11 +36,11 @@ const StyledChip = styled<TJuiChipProps>(MuiChip)`
 const JuiChip: React.SFC<TJuiChipProps> & IDependencies = (
   props: TJuiChipProps,
 ) => {
-  const { innerRef, onDeleteClick, Avatar, ...rest } = props;
+  const { innerRef, onDelete, Avatar, ...rest } = props;
   return (
     <StyledChip
       {...rest}
-      onDelete={onDeleteClick}
+      onDelete={onDelete}
       classes={{ deleteIcon: 'deleteIcon' }}
       avatar={Avatar ? <Avatar size="small" /> : undefined}
       deleteIcon={

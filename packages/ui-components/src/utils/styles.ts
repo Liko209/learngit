@@ -90,11 +90,16 @@ function grey(sub: string) {
  */
 function typography(name: string) {
   return css`
-    font-size: ${({ theme }: { theme: Theme }) => theme.typography[name].fontSize};
-    font-weight: ${({ theme }: { theme: Theme }) => theme.typography[name].fontWeight};
-    font-family: ${({ theme }: { theme: Theme }) => theme.typography[name].fontFamily};
-    line-height: ${({ theme }: { theme: Theme }) => theme.typography[name].lineHeight || ''};
-    letter-spacing: ${({ theme }: { theme: Theme }) => theme.typography[name].letterSpacing || ''};
+    font-size: ${({ theme }: { theme: Theme }) =>
+      theme.typography[name].fontSize};
+    font-weight: ${({ theme }: { theme: Theme }) =>
+      theme.typography[name].fontWeight};
+    font-family: ${({ theme }: { theme: Theme }) =>
+      theme.typography[name].fontFamily};
+    line-height: ${({ theme }: { theme: Theme }) =>
+      theme.typography[name].lineHeight || ''};
+    letter-spacing: ${({ theme }: { theme: Theme }) =>
+      theme.typography[name].letterSpacing || ''};
   `;
 }
 
@@ -109,4 +114,26 @@ function ellipsis() {
   `;
 }
 
-export { spacing, width, height, palette, cssValue, primary, secondary, grey, typography, ellipsis };
+/**
+ * border type
+ * @param name
+ */
+function border(name: string) {
+  return css`
+    border: ${({ theme }: { theme: Theme }) => theme.border[name]};
+  `;
+}
+
+export {
+  spacing,
+  width,
+  height,
+  palette,
+  cssValue,
+  primary,
+  secondary,
+  grey,
+  typography,
+  ellipsis,
+  border,
+};

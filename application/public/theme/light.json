@@ -51,6 +51,9 @@
       "active": "#EBF6FA"
     }
   },
+  "border": {
+    "type1": "1px solid rgba(0, 0, 0, 0.36)"
+  },
   "shape": {
     "borderRadius": 4
   },

@@ -1,5 +1,5 @@
 import React, { MouseEvent } from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 
 interface IInternalPorps {
   offset: number;
@@ -16,13 +16,13 @@ const Wrapper = styled.div`
   top: 0;
   bottom: 0;
   right: auto;
-  z-index: 8888;
+  z-index: ${({ theme }) => theme.zIndex.supernatant};
   background-color: red;
   width: 10px;
   height: 20px;
   cursor: pointer;
   left: ${(props: IInternalPorps) => `${props.offset}px`};
-  display: ${(props: IInternalPorps) => props.show ? 'block' : 'none'};
+  display: ${(props: IInternalPorps) => (props.show ? 'block' : 'none')};
 `;
 
 const Button = ({ offset, show, onClick }: IExternalPorps) => {

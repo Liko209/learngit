@@ -19,7 +19,7 @@ const Avatar = (props: TJuiAvatarProps) => {
 
 const handleDelete = () => {};
 
-storiesOf('Atoms/Chip', module)
+storiesOf('Molecules/Chip', module)
   .addDecorator(withInfoDecorator(JuiChip, { inline: true }))
   .addWithJSX('with nothing', () => {
     return <JuiChip label="Basic Chip" />;

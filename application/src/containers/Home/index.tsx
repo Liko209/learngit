@@ -20,6 +20,7 @@ import JuiIconButton from 'ui-components/molecules/IconButton';
 
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
+import CreateTeam from '../CreateTeam';
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -76,7 +77,9 @@ class Home extends Component<IProps, IStates> {
     });
   }
 
-  handleCreateTeam = () => {};
+  handleCreateTeam = () => {
+    this.homePresenter.handleOpenCreateTeam();
+  }
 
   render() {
     const { t } = this.props;
@@ -136,6 +139,7 @@ class Home extends Component<IProps, IStates> {
             </Switch>
           </Main>
         </Bottom>
+        <CreateTeam homePresenter={this.homePresenter} />
       </Wrapper>
     );
   }
