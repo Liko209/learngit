@@ -12,7 +12,7 @@ import { MenuItem } from 'ui-components/atoms/MenuItem';
 
 import { ENTITY_NAME } from '../../store';
 import injectStore, { IInjectedStoreProps } from '@/store/inject';
-import VM from '@/store/ViewModel';
+import StoreViewModel from '@/store/ViewModel';
 import GroupModel from '../../store/models/Group';
 import { observer } from 'mobx-react';
 import { getGroupName } from '../../utils/groupName';
@@ -29,7 +29,7 @@ import { Profile } from 'sdk/models';
 import navPresenter, { NavPresenter } from '../Home/NavPresenter';
 
 const { GroupService } = service;
-type IProps = IInjectedStoreProps<VM> &
+type IProps = IInjectedStoreProps<StoreViewModel> &
   RouteComponentProps<{}> & {
     id: number;
     key: number;
@@ -272,5 +272,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   }
 }
 
-export default withRouter(injectStore(VM)(ConversationListItemCell));
+export default withRouter(
+  injectStore(StoreViewModel)(ConversationListItemCell),
+);
 export { ConversationListItemCell };

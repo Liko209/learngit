@@ -24,7 +24,7 @@
     "lint-all": "tslint -p application && tslint -p packages/foundation && tslint -p packages/sdk && tslint -p packages/ui-components",
     "publish": "npm run clean:build && npm run build && lerna publish --silent",
     "watch": "node scripts/watch.js",
-    "prepush": "npm run lint-all",
+    "prepush": "npm run lint-all && npm run test:cover",
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",
     "commitmsg": "node scripts/validate-commit-msg.js",

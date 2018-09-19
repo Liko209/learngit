@@ -6,10 +6,17 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { ConversationListItemCell } from '../ConversationListItemCell';
+import StoreViewModel from '@/store/ViewModel';
 
 const ConversationListItemModule = require.requireActual(
   'ui-components/molecules/ConversationList/ConversationListItem',
 );
+
+const vmStub = {
+  dispose: () => {},
+  extendProps: (props: any) => props,
+} as StoreViewModel;
+
 ConversationListItemModule.ConversationListItem = ({
   title,
   status,
@@ -53,7 +60,7 @@ describe('ConversationListItemCell', () => {
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
-          vm={{ dispose: () => {} }}
+          vm={vmStub}
           getSingleEntity={testFunction as any}
           getGlobalValue={testFunction as any}
         />,
@@ -89,7 +96,7 @@ describe('ConversationListItemCell', () => {
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
-          vm={{ dispose: () => {} }}
+          vm={vmStub}
           getSingleEntity={testFunction as any}
           getGlobalValue={testFunction as any}
         />,
@@ -124,7 +131,7 @@ describe('ConversationListItemCell', () => {
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
-          vm={{ dispose: () => {} }}
+          vm={vmStub}
           getSingleEntity={testFunction as any}
           getGlobalValue={testFunction as any}
         />,

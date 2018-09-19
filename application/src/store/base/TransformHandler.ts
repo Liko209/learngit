@@ -24,7 +24,6 @@ export default class TransformHandler<
   T extends BaseModel,
   K extends IEntity
 > extends ListHandler<T, IIDSortKey, ListStore<IIDSortKey>> {
-  protected _store: ListStore<IIDSortKey>;
   constructor(private _orderListHandler: OrderListHandler<T, K>) {
     super();
     this.subscribeModification();
@@ -47,9 +46,6 @@ export default class TransformHandler<
 
   get orderListStore(): OrderListStore {
     return this._orderListHandler.store;
-  }
-  get items() {
-    return this.store.getItems();
   }
 
   modificationHandler = (delta: TDelta) => {
