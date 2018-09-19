@@ -36,7 +36,7 @@ export class ConversationCard extends React.Component<IProps> {
     }
 
     const avatar = (
-      <Avatar uId={creator.id} size="medium">
+      <Avatar uid={creator.id} size="medium">
         SH
       </Avatar>
     );

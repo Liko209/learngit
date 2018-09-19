@@ -10,7 +10,7 @@ import ViewModel from './ViewModel';
 import styled from 'styled-components';
 
 type TAvatarProps = TJuiAvatarProps & {
-  uId: number;
+  uid: number;
 };
 type TJuiAvatar = {
   bgColor?: string;
@@ -33,8 +33,8 @@ class Avatar extends React.Component<TAvatarProps> {
     this._vm = new ViewModel();
   }
   render() {
-    const { uId } = this.props;
-    this._vm.getPersonInfo(uId);
+    const { uid } = this.props;
+    this._vm.getPersonInfo(uid);
     const userInfo = this._vm.handleAvatar();
     const avatar = userInfo.url ? userInfo.url : '';
     const name = userInfo.name ? userInfo.name : '';
