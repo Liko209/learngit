@@ -3,24 +3,22 @@
 * @Date: 2018-09-19 14:19:09
 * Copyright © RingCentral. All rights reserved.
 */
-import { MouseEvent } from 'react';
-import { observable, autorun } from 'mobx';
+import { observable, autorun, action } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import {
   ConversationListItemProps,
   ConversationListItemViewProps,
 } from './types';
 import { service } from 'sdk';
-import showDialogWithCheckView from '../../Dialog/DialogWithCheckView';
 const { GroupService } = service;
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { getEntity } from '@/store/utils';
+import { getEntity, getSingleEntity } from '@/store/utils';
 import { getGroupName } from '@/utils/groupName';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import PresenceModel from '../../../store/models/Presence';
-import { Presence } from 'sdk/models';
+import { Presence, Profile } from 'sdk/models';
+import ProfileModel from '@/store/models/Profile';
 
 class ConversationListItemViewModel extends AbstractViewModel
   implements ConversationListItemViewProps {
@@ -29,9 +27,6 @@ class ConversationListItemViewModel extends AbstractViewModel
 
   @observable
   currentUserId?: number;
-
-  @observable
-  group: GroupModel;
 
   @observable
   displayName: string;
@@ -57,15 +52,23 @@ class ConversationListItemViewModel extends AbstractViewModel
   @observable
   menuOpen: boolean;
 
+  @observable
+  shouldSkipCloseConfirmation: boolean;
+
   groupService: service.GroupService;
 
   onClick = () => this.clickGroup();
+  onMenuClose = () => this._onMenuClose();
+  closeConversation = (groupId: number, shouldSkipNextTime: boolean) =>
+    this.hideConversation(groupId, true, shouldSkipNextTime)
 
   onMoreClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     const { currentTarget } = event;
     this.anchorEl = currentTarget;
   }
+
+  toggleFavorite = () => this._toggleFavorite();
 
   constructor(props: ConversationListItemProps) {
     super();
@@ -75,6 +78,7 @@ class ConversationListItemViewModel extends AbstractViewModel
     this.unreadCount = 0;
     this.umiVariant = 'count';
     this.status = undefined;
+    this.isFavorite = props.isFavorite || false;
     this.favoriteText = this.isFavorite ? 'unFavorite' : 'favorite';
     this.groupService = GroupService.getInstance();
     autorun(() => {
@@ -83,14 +87,12 @@ class ConversationListItemViewModel extends AbstractViewModel
   }
 
   getData() {
-    this.group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
-    this.displayName = getGroupName(getEntity, this.group, this.currentUserId);
-    this.umiVariant = this.group.isTeam ? 'auto' : 'count'; // || at_mentions
+    const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
+    this.displayName = getGroupName(getEntity, group, this.currentUserId);
+    this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
     if (this.currentUserId) {
       let targetPresencePersonId: number | undefined;
-      const otherMembers = _.difference(this.group.members, [
-        this.currentUserId,
-      ]);
+      const otherMembers = _.difference(group.members, [this.currentUserId]);
       if (otherMembers.length === 0) {
         targetPresencePersonId = this.currentUserId;
       } else if (otherMembers.length === 1) {
@@ -107,73 +109,36 @@ class ConversationListItemViewModel extends AbstractViewModel
     }
 
     this.menuOpen = !!this.anchorEl;
+    this.shouldSkipCloseConfirmation = getSingleEntity<Profile, ProfileModel>(
+      ENTITY_NAME.PROFILE,
+      'skipCloseConversationConfirmation',
+    );
   }
 
   clickGroup() {
     this.groupService.clickGroup(this.id);
   }
 
-  onFavoriteTogglerClick() {
-    this.groupService.markGroupAsFavorite(this.id, !this.isFavorite);
-    this.onMenuClose();
-  }
-
-  onMenuClose() {
-    this.anchorEl = null;
-  }
-
-  onCloseClick() {
-    this.onMenuClose();
-    const shouldSkipCloseConfirmation = true;
-    if (shouldSkipCloseConfirmation) {
-      this._closeConversation(this.id, true, true);
-    } else {
-      showDialogWithCheckView({
-        header: 'Close Conversation?',
-        content:
-          'Closing a conversation will remove it from the left pane, but will not delete the contents.',
-        checkBoxContent: "Don't ask me again",
-        okText: 'Close Conversation',
-        onClose: (isChecked: boolean, event: MouseEvent<HTMLElement>) => {
-          this._closeConversation(this.id, true, isChecked);
-        },
-      });
-    }
-  }
-
-  private async _closeConversation(
+  hideConversation(
     groupId: number,
     hidden: boolean,
     shouldSkipNextTime: boolean,
   ) {
-    const result = await this.groupService.hideConversation(
+    return this.groupService.hideConversation(
       groupId,
       hidden,
       shouldSkipNextTime,
     );
-    this._showErrorAlert(result);
   }
 
-  private _showErrorAlert(error: ServiceCommonErrorType) {
-    // if (error === ServiceCommonErrorType.NONE) {
-    //   // jump to section
-    //   const { history } = this.props;
-    //   history.replace('/messages');
-    //   return;
-    // }
-    // const header = 'Close Conversation Failed';
-    // if (error === ServiceCommonErrorType.NETWORK_NOT_AVAILABLE) {
-    //   const content =
-    //     'Network disconnected. Please try again when the network is resumed.';
-    //   showAlert({ header, content });
-    // } else if (
-    //   error === ServiceCommonErrorType.SERVER_ERROR ||
-    //   error === ServiceCommonErrorType.UNKNOWN_ERROR
-    // ) {
-    //   const content =
-    //     'We are having trouble closing the conversation. Please try again later.';
-    //   showAlert({ header, content });
-    // }
+  @action
+  private _onMenuClose() {
+    this.anchorEl = null;
+  }
+
+  private _toggleFavorite() {
+    this.groupService.markGroupAsFavorite(this.id, !this.isFavorite);
+    this._onMenuClose();
   }
 }
 

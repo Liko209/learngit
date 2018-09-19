@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { MouseEvent } from 'react';
-import GroupModel from '@/store/models/Group';
+import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 type ConversationListItemProps = {
   id: number;
   key: number;
@@ -15,7 +15,6 @@ type ConversationListItemProps = {
 
 type ConversationListItemViewProps = {
   id: number;
-  group: GroupModel;
   displayName: string;
   unreadCount: number;
   umiVariant: 'count' | 'dot' | 'auto';
@@ -24,11 +23,15 @@ type ConversationListItemViewProps = {
   isFavorite: boolean;
   favoriteText: string;
   menuOpen: boolean;
+  shouldSkipCloseConfirmation: boolean;
   onClick: (event: MouseEvent<HTMLElement>) => void;
   onMoreClick: (event: MouseEvent<HTMLElement>) => void;
-  onFavoriteTogglerClick: (event: MouseEvent<HTMLElement>) => void;
-  onCloseClick: (event: MouseEvent<HTMLElement>) => void;
+  toggleFavorite: () => void;
   onMenuClose: (event: MouseEvent<HTMLElement>) => void;
+  closeConversation: (
+    groupId: number,
+    shouldSkipNextTime: boolean,
+  ) => Promise<ServiceCommonErrorType>;
 };
 
 export { ConversationListItemProps, ConversationListItemViewProps };
