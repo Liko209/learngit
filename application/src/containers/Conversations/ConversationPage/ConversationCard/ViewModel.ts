@@ -15,12 +15,20 @@ class ViewModel {
     this._postService = service.PostService.getInstance();
   }
 
-  resend() {
-    this._postService.reSendPost(this._id);
+  async resend() {
+    try {
+      await this._postService.reSendPost(this._id);
+    } catch (e) {
+      // todo use Toast component display code 5000 error
+    }
   }
 
-  delete() {
-    this._postService.deletePost(this._id);
+  async delete() {
+    try {
+      await this._postService.deletePost(this._id);
+    } catch (e) {
+      // todo use Toast component display code 5000 error
+    }
   }
 }
 

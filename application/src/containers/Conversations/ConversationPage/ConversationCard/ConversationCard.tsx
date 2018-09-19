@@ -52,6 +52,7 @@ export class ConversationCard extends React.Component<IProps, IStates> {
 
   onOkDelete = () => {
     this._vm.delete();
+    this.onCloseDelete();
   }
 
   onCloseDelete = () => {
