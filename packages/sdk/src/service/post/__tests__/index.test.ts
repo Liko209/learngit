@@ -251,6 +251,7 @@ describe('PostService', () => {
       expect(PostServiceHandler.buildPostInfo).toHaveBeenCalledWith({
         text: 'test',
       });
+      postService.innerSendPost.mockRestore();
     });
 
     it('should throw error', async () => {
@@ -264,7 +265,7 @@ describe('PostService', () => {
         postService.sendPost({
           text: response.data.text,
         }),
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
     });
 
     it('should send post success', async () => {
@@ -277,6 +278,7 @@ describe('PostService', () => {
       PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
       PostAPI.sendPost.mockResolvedValueOnce(response);
       const results = await postService.sendPost({ text: 'abc' });
+      console.log(response, info, results);
       expect(results[0].id).toEqual(-1);
       expect(results[0].data.id).toEqual(99999);
       expect(results[0].data.text).toEqual('abc');
@@ -286,9 +288,7 @@ describe('PostService', () => {
       const info = _.cloneDeep(postMockInfo);
       PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
       PostAPI.sendPost.mockResolvedValueOnce({ data: { error: {} } });
-      await expect(
-        postService.sendPost({ text: 'abc' }),
-      ).rejects.toThrowError();
+      await expect(postService.sendPost({ text: 'abc' })).rejects.toThrow();
     });
   });
   describe('sendItemFile()', () => {
