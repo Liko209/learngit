@@ -46,6 +46,9 @@ export default class LeftNavViewModel extends BaseNotificationSubscribe {
   appUmi() {
     const appUmi = this.messageUmi;
     storeManager.getGlobalStore().set('UMI.app', appUmi);
+    if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
+      window.jupiterElectron.setBadgeCount(appUmi);
+    }
     return appUmi;
   }
 }
