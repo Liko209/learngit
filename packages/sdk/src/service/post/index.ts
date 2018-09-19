@@ -169,11 +169,7 @@ export default class PostService extends BaseService<Post> {
       };
     } catch (e) {
       mainLogger.error(e);
-      return {
-        posts: [],
-        items: [],
-        hasMore: true,
-      };
+      throw ErrorParser.parse(e);
     }
   }
 

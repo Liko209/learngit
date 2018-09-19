@@ -13,6 +13,7 @@ import {
   loadingTop,
 } from '@/plugins/InfiniteListPlugin';
 import { ConversationStreamProps } from './types';
+import { ErrorTypes } from 'sdk/utils';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -82,13 +83,21 @@ class ConversationStreamViewModel extends TransformHandler<PostModel, Post> {
     this.postService = PostService.getInstance();
     const offset = this.orderListStore.getSize();
     const { id: oldest = 0 } = this.orderListStore.last() || {};
-    const { posts, hasMore } = await this.postService.getPostsByGroupId({
-      offset,
-      groupId,
-      postId: oldest,
-    });
-    this.handlePageData(ENTITY_NAME.POST, posts, true);
-    this.store.hasMore = hasMore;
+    try {
+      const { posts, hasMore } = await this.postService.getPostsByGroupId({
+        offset,
+        groupId,
+        postId: oldest,
+      });
+      this.handlePageData(ENTITY_NAME.POST, posts, true);
+      this.store.hasMore = hasMore;
+    } catch (err) {
+      if (err.code === ErrorTypes.NETWORK) {
+        alert(
+          'Loading Failed Network disconnected. Please try again when the network is resumed.',
+        );
+      }
+    }
   }
 
   private _afterRendered() {
