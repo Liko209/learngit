@@ -57,16 +57,32 @@ class ConversationListItemViewModel extends AbstractViewModel
   @observable
   menuOpen: boolean;
 
+  groupService: service.GroupService;
+
+  onClick = () => this.clickGroup();
+
+  onMoreClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    const { currentTarget } = event;
+    this.anchorEl = currentTarget;
+  }
+
   constructor(props: ConversationListItemProps) {
     super();
     this.id = props.id;
     this.currentUserId = props.currentUserId;
+    this.displayName = '';
+    this.unreadCount = 0;
+    this.umiVariant = 'count';
+    this.status = undefined;
+    this.favoriteText = this.isFavorite ? 'unFavorite' : 'favorite';
+    this.groupService = GroupService.getInstance();
     autorun(() => {
-      this.getDataFromStore();
+      this.getData();
     });
   }
 
-  getDataFromStore() {
+  getData() {
     this.group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
     this.displayName = getGroupName(getEntity, this.group, this.currentUserId);
     this.umiVariant = this.group.isTeam ? 'auto' : 'count'; // || at_mentions
@@ -89,22 +105,16 @@ class ConversationListItemViewModel extends AbstractViewModel
         this.status = presence && presence.presence;
       }
     }
+
+    this.menuOpen = !!this.anchorEl;
   }
 
-  onClick() {
-    const groupService: service.GroupService = GroupService.getInstance();
-    groupService.clickGroup(this.id);
-  }
-
-  onMoreClick(event: React.MouseEvent<HTMLElement>) {
-    event.stopPropagation();
-    const { currentTarget } = event;
-    this.anchorEl = currentTarget;
+  clickGroup() {
+    this.groupService.clickGroup(this.id);
   }
 
   onFavoriteTogglerClick() {
-    const groupService: service.GroupService = GroupService.getInstance();
-    groupService.markGroupAsFavorite(this.id, !this.isFavorite);
+    this.groupService.markGroupAsFavorite(this.id, !this.isFavorite);
     this.onMenuClose();
   }
 
@@ -136,8 +146,7 @@ class ConversationListItemViewModel extends AbstractViewModel
     hidden: boolean,
     shouldSkipNextTime: boolean,
   ) {
-    const groupService: service.GroupService = GroupService.getInstance();
-    const result = await groupService.hideConversation(
+    const result = await this.groupService.hideConversation(
       groupId,
       hidden,
       shouldSkipNextTime,

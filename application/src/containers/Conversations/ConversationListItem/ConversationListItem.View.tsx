@@ -9,7 +9,12 @@ import { Menu } from 'ui-components/atoms/Menu';
 import { MenuItem } from 'ui-components/atoms/MenuItem';
 import { ConversationListItemViewProps } from './types';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-type IProps = ConversationListItemViewProps & RouteComponentProps;
+import { translate } from 'react-i18next';
+import { TranslationFunction } from 'i18next';
+type IProps = ConversationListItemViewProps &
+  RouteComponentProps & {
+    t: TranslationFunction;
+  };
 class ConversationListItemViewComponent extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
@@ -31,7 +36,7 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
         onClose={this.props.onMenuClose}
       >
         <MenuItem onClick={this.props.onFavoriteTogglerClick}>
-          {this.props.favoriteText}
+          {this.props.t(this.props.favoriteText)}
         </MenuItem>
         {this.renderCloseMenuItem()}
       </Menu>
@@ -58,7 +63,6 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
   }
 
   onClick(event: MouseEvent<HTMLElement>) {
-    console.log(this.props);
     this.props.onClick(event);
     this._jump2Conversation(this.props.id);
   }
@@ -70,5 +74,7 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
     // this.navPresenter.handleTitle(this.displayName);
   }
 }
-const ConversationListItemView = withRouter(ConversationListItemViewComponent);
+const ConversationListItemView = withRouter(
+  translate('conversationMenuItem')(ConversationListItemViewComponent),
+);
 export { ConversationListItemView };

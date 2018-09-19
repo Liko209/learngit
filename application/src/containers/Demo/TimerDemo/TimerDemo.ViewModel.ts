@@ -32,13 +32,13 @@ class TimerDemoViewModel extends AbstractViewModel
     this.updateTime();
   }
 
-  @action.bound
+  @action
   async updateTime() {
     await this.wait(500);
     this.now = Date.now();
   }
 
-  @action.bound
+  @action
   @loading
   async updateTimeWithLoading() {
     await this.wait(500);

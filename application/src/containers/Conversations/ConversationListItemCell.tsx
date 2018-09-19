@@ -41,7 +41,7 @@ type IProps = IInjectedStoreProps<StoreViewModel> &
 interface IState {}
 
 @observer
-class ConversationListItemCell extends React.Component<IProps, IState>{
+class ConversationListItemCell extends React.Component<IProps, IState> {
   private navPresenter: NavPresenter;
   static defaultProps = {
     isFavorite: false,

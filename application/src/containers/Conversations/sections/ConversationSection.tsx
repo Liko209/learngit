@@ -14,8 +14,8 @@ import { ConversationListItem } from '../ConversationListItem';
 import ConversationSectionPresenter from './ConversationSectionPresenter';
 import {
   arrayMove,
-  SortableContainer,
-  SortableElement,
+  // SortableContainer,
+  // SortableElement,
 } from 'react-sortable-hoc';
 
 interface IProps {
@@ -27,8 +27,8 @@ interface IProps {
   presenter: ConversationSectionPresenter;
 }
 
-const SortableList = SortableContainer(ConversationList);
-const SortableItem = SortableElement(ConversationListItem);
+// const SortableList = SortableContainer(ConversationList);
+// const SortableItem = SortableElement(ConversationListItem);
 
 @observer
 class ConversationSectionComponent extends React.Component<IProps> {
@@ -61,30 +61,30 @@ class ConversationSectionComponent extends React.Component<IProps> {
   }
 
   renderList() {
-    const { presenter, sortable } = this.props;
+    const { presenter } = this.props;
     const currentUserId = presenter.getCurrentUserId() || undefined;
     const entityName = presenter.entityName;
-    if (sortable) {
-      const distance = 1;
-      return (
-        <SortableList
-          distance={distance}
-          onSortEnd={this._handleSortEnd}
-          lockAxis="y"
-        >
-          {this.ids.map((id: number, index: number) => (
-            <SortableItem
-              id={id}
-              key={id}
-              index={index}
-              entityName={entityName}
-              isFavorite={true}
-              currentUserId={currentUserId}
-            />
-          ))}
-        </SortableList>
-      );
-    }
+    // if (sortable) {
+    //   const distance = 1;
+    //   return (
+    //     <SortableList
+    //       distance={distance}
+    //       onSortEnd={this._handleSortEnd}
+    //       lockAxis="y"
+    //     >
+    //       {this.ids.map((id: number, index: number) => (
+    //         <SortableItem
+    //           id={id}
+    //           key={id}
+    //           index={index}
+    //           entityName={entityName}
+    //           isFavorite={true}
+    //           currentUserId={currentUserId}
+    //         />
+    //       ))}
+    //     </SortableList>
+    //   );
+    // }
 
     return (
       <ConversationList>
