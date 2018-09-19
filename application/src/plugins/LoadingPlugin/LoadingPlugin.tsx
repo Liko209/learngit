@@ -7,7 +7,7 @@ import { ComponentType } from 'react';
 import { withLoading, WithLoadingProps } from 'ui-components';
 import { IViewModel } from '@/base/IViewModel';
 import { IPlugin } from '@/base/IPlugin';
-import { createFunctionWrapDecorator } from '../utils';
+import { createLoadingStateDecorator } from '../utils';
 
 interface ILoadingViewModel extends IViewModel, WithLoadingProps {}
 
@@ -20,14 +20,6 @@ class LoadingPlugin implements IPlugin {
     return withLoading(View);
   }
 }
-
-const loading = createFunctionWrapDecorator({
-  before(vm: ILoadingViewModel) {
-    vm.loading = true;
-  },
-  after(vm: ILoadingViewModel) {
-    vm.loading = false;
-  },
-});
+const loading = createLoadingStateDecorator('loading');
 
 export { LoadingPlugin, ILoadingViewModel, loading };

@@ -12,7 +12,7 @@ import {
 } from 'ui-components';
 import { IPlugin } from '@/base/IPlugin';
 import { IViewModel } from '@/base/IViewModel';
-import { createFunctionWrapDecorator } from '../utils';
+import { createLoadingStateDecorator } from '../utils';
 
 const topListeners = Symbol('topListeners');
 const bottomListeners = Symbol('bottomListeners');
@@ -92,23 +92,8 @@ const onScrollToBottom = function (
   return descriptor;
 };
 
-const loadingTop = createFunctionWrapDecorator({
-  before(vm: ILoadingMoreViewModel) {
-    vm.loadingTop = true;
-  },
-  after(vm: ILoadingMoreViewModel) {
-    vm.loadingTop = false;
-  },
-});
-
-const loadingBottom = createFunctionWrapDecorator({
-  before(vm: ILoadingMoreViewModel) {
-    vm.loadingBottom = true;
-  },
-  after(vm: ILoadingMoreViewModel) {
-    vm.loadingBottom = false;
-  },
-});
+const loadingTop = createLoadingStateDecorator('loadingTop');
+const loadingBottom = createLoadingStateDecorator('loadingBottom');
 
 export {
   LoadingMorePlugin,
