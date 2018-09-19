@@ -9,7 +9,7 @@ import { getEntity }  from '@/store/utils';
 import { observable, action, autorun } from 'mobx';
 import PersonModel from '../../store/models/Person';
 import { isOnlyLetterOrNumbers } from '@/utils';
-import defaultAvatar from './singleavatar.svg';
+import defaultAvatar from './defaultAvatar.svg';
 import getAvatarColors from './colors';
 
 class ViewModel {

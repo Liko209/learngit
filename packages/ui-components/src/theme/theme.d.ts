@@ -113,6 +113,18 @@ type ITheme = {
       lineHeight: string,
     },
   },
+  avatar: {
+    'tomato': string,
+    'blueberry': string,
+    'oasis': string,
+    'gold': string,
+    'sage': string,
+    'ash': string,
+    'persimmon': string,
+    'pear': string,
+    'brass': string,
+    'lake': string,
+  },
 };
 
 type ThemeProps = StyledThemeProps<ITheme & MuiTheme>;

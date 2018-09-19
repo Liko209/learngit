@@ -1,27 +1,27 @@
 function getAvatarColors(type: number) {
   switch (type) {
     case 0:
-      return '#F95B5C';
+      return 'tomato';
     case 1:
-      return '#6E6EC0';
+      return 'blueberry';
     case 2:
-      return '#5E95C8';
+      return 'oasis';
     case 3:
-      return '#FFBF2A';
+      return 'gold';
     case 4:
-      return '#7EB57F';
+      return 'sage';
     case 5:
-      return '#666666';
+      return 'ash';
     case 6:
-      return '#FF8800';
+      return 'persimmon';
     case 7:
-      return '#5FB95C';
+      return 'pear';
     case 8:
-      return '#CC9922';
+      return 'brass';
     case 9:
-      return '#6FAFEB';
+      return 'lake';
     default:
-      return '#5E95C8';
+      return 'tomato';
   }
 }
 export default getAvatarColors;

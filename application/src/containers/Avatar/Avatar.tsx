@@ -13,7 +13,7 @@ type TAvatarProps = TJuiAvatarProps & {
   uId: number;
 };
 type TJuiAvatar = {
-  bgColor?: string|undefined;
+  bgColor?: string;
   src?: string;
 };
 const CustomJuiAvatar: React.SFC<TJuiAvatar> = ({ bgColor, ...props }) => {
@@ -21,7 +21,7 @@ const CustomJuiAvatar: React.SFC<TJuiAvatar> = ({ bgColor, ...props }) => {
 };
 const StyleAvatar = styled<TJuiAvatar>(CustomJuiAvatar)`
   && {
-    background-color: ${props => (props.bgColor ? props.bgColor : '')};
+    background-color: ${({ theme, bgColor }) => (bgColor ? theme.avatar[bgColor] : '')};
   }
 `;
 
