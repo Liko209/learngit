@@ -6,7 +6,6 @@
 import { ComponentType } from 'react';
 import { IViewModel } from '@/base/IViewModel';
 import { IPlugin } from '@/base/IPlugin';
-import { createFunctionDecorator } from '../utils';
 import { ErrorHandlerFactory } from './ErrorHandlerFactory';
 interface IErrorHandlerViewModel extends IViewModel {}
 
@@ -24,24 +23,22 @@ class ErrorHandlerPlugin implements IPlugin {
   }
 }
 
-const handleError = createFunctionDecorator({
-  install(
-    vm: IErrorHandlerViewModel,
-    propertyKey: string,
-    descriptor: PropertyDescriptor,
-  ) {
-    const originalFn = descriptor.value;
-    descriptor.value = async function (...args: any[]) {
-      try {
-        await originalFn.apply(this, args);
-      } catch (err) {
-        const handler = errorHandlerFactory.build(err.handler);
-        if (!handler) throw err;
-        handler.handle(err, vm);
-      }
-    };
-    return descriptor;
-  },
-});
+const handleError = function (
+  vm: IErrorHandlerViewModel,
+  propertyKey: string,
+  descriptor: PropertyDescriptor,
+) {
+  const originalFn = descriptor.value;
+  descriptor.value = async function (...args: any[]) {
+    try {
+      await originalFn.apply(this, args);
+    } catch (err) {
+      const handler = errorHandlerFactory.build(err.handler);
+      if (!handler) throw err;
+      handler.handle(err, vm);
+    }
+  };
+  return descriptor;
+};
 
 export { ErrorHandlerPlugin, IErrorHandlerViewModel, handleError };

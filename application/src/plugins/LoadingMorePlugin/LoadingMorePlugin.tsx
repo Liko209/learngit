@@ -12,7 +12,7 @@ import {
 } from 'ui-components';
 import { IPlugin } from '@/base/IPlugin';
 import { IViewModel } from '@/base/IViewModel';
-import { createFunctionDecorator, createFunctionWrapDecorator } from '../utils';
+import { createFunctionWrapDecorator } from '../utils';
 
 const topListeners = Symbol('topListeners');
 const bottomListeners = Symbol('bottomListeners');
@@ -72,29 +72,25 @@ class LoadingMorePlugin implements IPlugin {
   }
 }
 
-const onScrollToTop = createFunctionDecorator({
-  install(
-    vm: ILoadingMoreViewModel,
-    propertyKey: string,
-    descriptor: PropertyDescriptor,
-  ) {
-    vm[topListeners] = vm[topListeners] || [];
-    vm[topListeners].push(descriptor.value);
-    return descriptor;
-  },
-});
+const onScrollToTop = function (
+  vm: ILoadingMoreViewModel,
+  propertyKey: string,
+  descriptor: PropertyDescriptor,
+) {
+  vm[topListeners] = vm[topListeners] || [];
+  vm[topListeners].push(descriptor.value);
+  return descriptor;
+};
 
-const onScrollToBottom = createFunctionDecorator({
-  install(
-    vm: ILoadingMoreViewModel,
-    propertyKey: string,
-    descriptor: PropertyDescriptor,
-  ) {
-    vm[bottomListeners] = vm[bottomListeners] || [];
-    vm[bottomListeners].push(descriptor.value);
-    return descriptor;
-  },
-});
+const onScrollToBottom = function (
+  vm: ILoadingMoreViewModel,
+  propertyKey: string,
+  descriptor: PropertyDescriptor,
+) {
+  vm[bottomListeners] = vm[bottomListeners] || [];
+  vm[bottomListeners].push(descriptor.value);
+  return descriptor;
+};
 
 const loadingTop = createFunctionWrapDecorator({
   before(vm: ILoadingMoreViewModel) {
