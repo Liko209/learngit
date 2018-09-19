@@ -9,14 +9,18 @@ import { JuiCircularProgress } from 'ui-components';
 import { AbstractViewModel } from '../../../base/AbstractViewModel';
 import { LoadingPlugin, loading } from '../LoadingPlugin';
 
+function sleep(time: number) {
+  return new Promise((resolve: Function) => {
+    setTimeout(() => {
+      resolve();
+    },         time);
+  });
+}
+
 class MyViewModel extends AbstractViewModel {
   @loading
-  async sleep(time: number) {
-    return new Promise((resolve: Function) => {
-      setTimeout(() => {
-        resolve();
-      },         time);
-    });
+  sleep(time: number) {
+    return sleep(time);
   }
 }
 
@@ -43,12 +47,18 @@ describe('LoadingPlugin', () => {
 
   describe('decorator/loading', () => {
     it('should control loading state', async () => {
+      jest.useFakeTimers();
+
       const vm = new MyViewModel();
 
-      expect.assertions(2);
-      const promise = vm.sleep(1);
+      expect.assertions(3);
+      const promise = vm.sleep(1000);
+      expect(vm).not.toHaveProperty('loading', false);
 
+      jest.advanceTimersByTime(500);
       expect(vm).toHaveProperty('loading', true);
+
+      jest.advanceTimersByTime(500);
       await promise;
       expect(vm).toHaveProperty('loading', false);
     });

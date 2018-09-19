@@ -15,16 +15,21 @@ import {
   loadingBottom,
 } from '../LoadingMorePlugin';
 
+const fetchPrevSpy = jest.fn().mockName('fetchPrevSpy');
+const fetchNextSpy = jest.fn().mockName('fetchNextSpy');
+
 class MyViewModel extends AbstractViewModel {
   @onScrollToTop
   @loadingTop
   fetchPrev() {
+    fetchPrevSpy();
     return this.sleep(10);
   }
 
   @onScrollToBottom
   @loadingBottom
   fetchNext() {
+    fetchNextSpy();
     return this.sleep(10);
   }
 
@@ -38,6 +43,10 @@ class MyViewModel extends AbstractViewModel {
 }
 
 describe('LoadingMorePlugin', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('install()', () => {
     it('should add loadingTop/LoadingBottom property to vm', () => {
       const plugin = new LoadingMorePlugin();
@@ -65,36 +74,28 @@ describe('LoadingMorePlugin', () => {
   });
 
   describe('decorator/onScrollToTop', () => {
-    it('should call the function when scroll bar at top', async () => {
+    it('should call the function when scroll bar at top', () => {
       const plugin = new LoadingMorePlugin();
       const vm = new MyViewModel();
       const View = plugin.wrapView(() => <div>Hello World</div>);
-
       plugin.install(vm);
       const wrapper = mount(<View {...vm} />);
 
-      expect.assertions(2);
-      const promise = wrapper.prop('onScrollToTop')();
-      expect(vm).toHaveProperty('loadingTop', true);
-      await promise;
-      expect(vm).toHaveProperty('loadingTop', false);
+      wrapper.prop('onScrollToTop')();
+      expect(fetchPrevSpy).toHaveBeenCalled();
     });
   });
 
   describe('decorator/onScrollToBottom', () => {
-    it('should call the function when scroll bar at bottom', async () => {
+    it('should call the function when scroll bar at bottom', () => {
       const plugin = new LoadingMorePlugin();
       const vm = new MyViewModel();
       const View = plugin.wrapView(() => <div>Hello World</div>);
-
       plugin.install(vm);
       const wrapper = mount(<View {...vm} />);
 
-      expect.assertions(2);
-      const promise = wrapper.prop('onScrollToBottom')();
-      expect(vm).toHaveProperty('loadingBottom', true);
-      await promise;
-      expect(vm).toHaveProperty('loadingBottom', false);
+      wrapper.prop('onScrollToBottom')();
+      expect(fetchNextSpy).toHaveBeenCalled();
     });
   });
 });
