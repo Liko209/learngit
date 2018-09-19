@@ -32,7 +32,7 @@ jest.doMock(
 jest.mock('../../../utils/groupName', () => ({
   getGroupName: jest.fn().mockReturnValue('some group name'),
 }));
-
+const listen = () => {};
 const testFunction = () => {};
 describe('ConversationListItemCell', () => {
   beforeAll(() => {});
@@ -49,7 +49,7 @@ describe('ConversationListItemCell', () => {
           id={1}
           key={1}
           entityName={'group'}
-          history={{} as any}
+          history={{ listen } as any}
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
@@ -85,7 +85,7 @@ describe('ConversationListItemCell', () => {
           key={1}
           entityName={'group'}
           currentUserId={1}
-          history={{} as any}
+          history={{ listen } as any}
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}
@@ -120,7 +120,7 @@ describe('ConversationListItemCell', () => {
           id={1}
           key={1}
           entityName={'group'}
-          history={{} as any}
+          history={{ listen } as any}
           location={{} as any}
           match={{} as any}
           getEntity={mockGetEntity as any}

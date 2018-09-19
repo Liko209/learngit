@@ -1,4 +1,4 @@
-import HomePresenter from '../HomePresenter';
+import { NavPresenter } from '../NavPresenter';
 import { getGlobalValue } from '@/store/utils';
 
 jest.mock('@/config', () => {
@@ -11,16 +11,16 @@ jest.mock('@/store/utils', () => {
   };
 });
 
-describe('HomePresenter', () => {
-  const homePresenter = new HomePresenter();
-  homePresenter.appName = 'a';
+describe('NavPresenter', () => {
+  const navPresenter = new NavPresenter();
+
   describe('title', () => {
     it('should return umi with app name if umi > 0', () => {
-      expect(homePresenter.title).toEqual('(1) a');
+      expect(navPresenter.title).toEqual('(1) ');
     });
     it('should return umi with app name if umi = 0', () => {
       (getGlobalValue as jest.Mock).mockReturnValue(0);
-      expect(homePresenter.title).toEqual('a');
+      expect(navPresenter.title).toEqual('');
     });
   });
 });

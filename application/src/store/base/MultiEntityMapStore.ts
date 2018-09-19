@@ -13,7 +13,10 @@ import { ENTITY_NAME } from '../constants';
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
 
-export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity> extends BaseStore {
+export default class MultiEntityMapStore<
+  T extends BaseModel,
+  K extends IEntity
+> extends BaseStore {
   private _data: { [id: number]: K } = {};
   private _atom: { [id: number]: IAtom } = {};
   private _usedIds: Set<number> = new Set();
@@ -22,7 +25,10 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
   private _maxCacheCount: number;
   private _service: BaseService<T>;
 
-  constructor(entityName: ENTITY_NAME, { service, event, cacheCount }: IEntitySetting) {
+  constructor(
+    entityName: ENTITY_NAME,
+    { service, event, cacheCount }: IEntitySetting,
+  ) {
     super(entityName);
 
     this._getService = service;
@@ -41,11 +47,14 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
       return;
     }
     const existKeys: number[] = Object.keys(this._data).map(Number);
-    const matchedKeys: number[] = _.intersection(Array.from(entities.keys()), existKeys);
+    const matchedKeys: number[] = _.intersection(
+      Array.from(entities.keys()),
+      existKeys,
+    );
     if (type === EVENT_TYPES.DELETE) {
       this.batchRemove(matchedKeys);
     } else {
-      const matchedEntities: (T | { id: number, data: T })[] = [];
+      const matchedEntities: (T | { id: number; data: T })[] = [];
       matchedKeys.forEach((key: number) => {
         const entity = entities.get(key);
         if (entity) {
@@ -57,7 +66,7 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
         return;
       }
       if (type === EVENT_TYPES.REPLACE) {
-        this.batchReplace(matchedEntities as { id: number, data: T }[]);
+        this.batchReplace(matchedEntities as { id: number; data: T }[]);
         return;
       }
       this.batchSet(matchedEntities as T[]);
@@ -77,7 +86,7 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
     if (!entities.length) {
       return;
     }
-    entities.forEach((entity) => {
+    entities.forEach((entity: T) => {
       this.set(entity);
     });
   }
@@ -86,7 +95,7 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
     if (!entities.length) {
       return;
     }
-    entities.forEach((entity) => {
+    entities.forEach((entity: T) => {
       const { id } = entity;
       const obs = this.get(id);
       const model = _.merge(obs, this.createModel(entity));
@@ -95,11 +104,11 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
     });
   }
 
-  batchReplace(entities: { id: number, data: T }[]) {
+  batchReplace(entities: { id: number; data: T }[]) {
     if (!entities.length) {
       return;
     }
-    entities.forEach((entity) => {
+    entities.forEach((entity: { id: number; data: T }) => {
       const { id, data } = entity;
       this.remove(id);
       this.set(data);
@@ -115,7 +124,7 @@ export default class MultiEntityMapStore<T extends BaseModel, K extends IEntity>
   }
 
   batchRemove(ids: number[]) {
-    ids.forEach((id) => {
+    ids.forEach((id: number) => {
       this.remove(id);
     });
   }

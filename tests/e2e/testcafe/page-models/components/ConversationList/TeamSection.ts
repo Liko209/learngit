@@ -19,7 +19,7 @@ class TeamSection extends BaseComponent {
     return this.teamSection.findReact('ConversationListItem');
   }
   public shouldBeTeam() {
-    return this.chain(async t => {
+    return this.chain(async (t: TestController) => {
       await t
         .expect(this.team0.exists)
         .ok('Fail to find the team, probably caused by long-time loading');
@@ -30,7 +30,7 @@ class TeamSection extends BaseComponent {
   }
 
   public teamNameShouldBe(name) {
-    return this.chain(async t => {
+    return this.chain(async (t: TestController) => {
       const text = () => this.team0.findReact('Typography').innerText;
       return await t.expect(text()).eql(name, 'wrong name');
     });
@@ -57,7 +57,7 @@ class TeamSection extends BaseComponent {
   }
 
   modifyTeamName(name) {
-    return this.chain(async t => {
+    return this.chain(async (t: TestController) => {
       await t
         .expect(this.team0.exists)
         .ok('Fail to find the team, probably caused by long-time loading');
@@ -66,7 +66,7 @@ class TeamSection extends BaseComponent {
     });
   }
   checkTeamIndex(id: number, i: number) {
-    return this.chain(async t => {
+    return this.chain(async (t: TestController) => {
       await this.teams();
       const component = await this.teams.nth(i).getReact();
       await t.expect(component.key).eql(id);
