@@ -197,28 +197,25 @@ export default class PostService extends BaseService<Post> {
     return null;
   }
 
-  async innerSendPost(buildPost: Post): Promise<PostData[] | null> {
-    if (buildPost) {
-      await this.handlePreInsertProcess(buildPost);
-      const { id: preInsertId } = buildPost;
-      delete buildPost.id;
-      delete buildPost.status;
+  async innerSendPost(buildPost: Post): Promise<PostData[]> {
+    await this.handlePreInsertProcess(buildPost);
+    const { id: preInsertId } = buildPost;
+    delete buildPost.id;
+    delete buildPost.status;
 
-      try {
-        const resp = await PostAPI.sendPost(buildPost);
-        if (resp && !resp.data.error) {
-          return this.handleSendPostSuccess(resp.data, preInsertId);
-        }
-
-        // error, notifiy, should add error handle after IResponse give back error info
-        throw ErrorParser.parse(resp.data.error);
-      } catch (e) {
-        mainLogger.warn('crash of innerSendPost()');
-        this.handleSendPostFail(preInsertId);
-        throw ErrorParser.parse(e);
+    try {
+      const resp = await PostAPI.sendPost(buildPost);
+      if (resp && !resp.data.error) {
+        return this.handleSendPostSuccess(resp.data, preInsertId);
       }
+
+      // error, notifiy, should add error handle after IResponse give back error info
+      throw resp;
+    } catch (e) {
+      mainLogger.warn('crash of innerSendPost()');
+      this.handleSendPostFail(preInsertId);
+      throw ErrorParser.parse(e);
     }
-    return null;
   }
 
   async handlePreInsertProcess(buildPost: Post): Promise<void> {
@@ -305,13 +302,13 @@ export default class PostService extends BaseService<Post> {
     }
   }
 
-  async deletePost(id: number): Promise<Post | null> {
+  async deletePost(id: number): Promise<boolean> {
     if (this.isInPreInsert(id)) {
       this._postStatusHandler.removePreInsertId(id);
       notificationCenter.emitEntityDelete(ENTITY.POST, [{ id }]);
       const dao = daoManager.getDao(PostDao);
       dao.delete(id);
-      return null;
+      return true;
     }
     const postDao = daoManager.getDao(PostDao);
     const post = await postDao.get(id);
@@ -322,19 +319,14 @@ export default class PostService extends BaseService<Post> {
       try {
         const resp = await PostAPI.putDataById<Post>(id, post);
         if (resp && !resp.data.error) {
-          const result = await baseHandleData(resp.data);
-          if (result && result.length) {
-            return result[0];
-          }
+          return true;
         }
-        throw ErrorParser.parse(resp.data.error);
+        throw resp;
       } catch (e) {
         throw ErrorParser.parse(e);
       }
     }
-
-    // error
-    return null;
+    return false;
   }
 
   async likePost(
