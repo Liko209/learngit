@@ -32,13 +32,16 @@ class ViewModel {
       () => !!this.initDraft,
       () => { this.draft = this.initDraft; },
     );
-
   }
 
   @action.bound
   changeDraft(draft: string) {
     this.draft = draft; // UI immediately sync
     this._debounceUpdateGroupDraft({ draft, id: this._id }); // DB sync 500 ms later
+  }
+
+  forceSaveDraft() {
+    this._groupService.updateGroupDraft({ draft: this.draft, id: this._id }); // immediately save
   }
 
   @computed

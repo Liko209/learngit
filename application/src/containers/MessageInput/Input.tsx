@@ -29,13 +29,16 @@ class Input extends Component<IProps> {
     }
   }
 
+  componentWillUnmount() {
+    this._vm.forceSaveDraft();
+  }
+
   handleChange = (value: any) => {
     this._vm.changeDraft(value);
   }
 
   render() {
     const { draft } = this._vm;
-    console.log(draft);
     return <MessageInput value={draft} onChange={this.handleChange} />;
   }
 }
