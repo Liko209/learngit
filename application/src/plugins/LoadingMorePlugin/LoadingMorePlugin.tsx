@@ -12,7 +12,7 @@ import {
 } from 'ui-components';
 import { IPlugin } from '@/base/IPlugin';
 import { IViewModel } from '@/base/IViewModel';
-import { createFunctionDecorator } from '../utils';
+import { createFunctionDecorator, createFunctionWrapDecorator } from '../utils';
 
 const topListeners = Symbol('topListeners');
 const bottomListeners = Symbol('bottomListeners');
@@ -42,27 +42,24 @@ class LoadingMorePlugin implements IPlugin {
       onScrollToBottom: () => {},
       ...this._options,
     });
+
+    // Call decorated function when scrollToTop
     if (vm[topListeners]) {
       vm.onScrollToTop = action(async (...args: any[]) => {
         if (vm.loadingTop) return;
-
-        vm.loadingTop = true;
         await Promise.all(
           vm[topListeners].map((fn: Function) => fn.apply(vm, args)),
         );
-        vm.loadingTop = false;
       });
     }
 
+    // Call decorated function when scrollToBottom
     if (vm[bottomListeners]) {
       vm.onScrollToBottom = action(async (...args: any[]) => {
         if (vm.loadingBottom) return;
-
-        vm.loadingBottom = true;
         await Promise.all(
           vm[bottomListeners].map((fn: Function) => fn.apply(vm, args)),
         );
-        vm.loadingBottom = false;
       });
     }
   }
@@ -99,10 +96,30 @@ const onScrollToBottom = createFunctionDecorator({
   },
 });
 
+const loadingTop = createFunctionWrapDecorator({
+  before(vm: ILoadingMoreViewModel) {
+    vm.loadingTop = true;
+  },
+  after(vm: ILoadingMoreViewModel) {
+    vm.loadingTop = false;
+  },
+});
+
+const loadingBottom = createFunctionWrapDecorator({
+  before(vm: ILoadingMoreViewModel) {
+    vm.loadingBottom = true;
+  },
+  after(vm: ILoadingMoreViewModel) {
+    vm.loadingBottom = false;
+  },
+});
+
 export {
   LoadingMorePlugin,
   ILoadingMoreViewModel,
   onScrollToTop,
+  loadingTop,
+  loadingBottom,
   onScrollToBottom,
   LoadingMorePluginOptions,
 };

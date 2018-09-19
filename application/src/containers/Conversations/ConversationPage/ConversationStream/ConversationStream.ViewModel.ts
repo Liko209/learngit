@@ -7,7 +7,11 @@ import storeManager, { ENTITY_NAME } from '@/store';
 import { IIncomingData } from '@/store/store';
 import TransformHandler from '@/store/base/TransformHandler';
 import PostModel from '@/store/models/Post';
-import { onScrollToTop, loading } from '@/plugins/InfiniteListPlugin';
+import {
+  onScrollToTop,
+  loading,
+  loadingTop,
+} from '@/plugins/InfiniteListPlugin';
 import { ConversationStreamProps } from './types';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
@@ -61,18 +65,18 @@ class ConversationStreamViewModel extends TransformHandler<PostModel, Post> {
   }
 
   @loading
-  async loadInitialPosts() {
-    return this.loadPosts(this.groupId);
+  loadInitialPosts() {
+    return this._loadPosts(this.groupId);
   }
 
   @onScrollToTop
-  async loadPrevPosts() {
-    if (!this.store.hasMore) return;
-    await this.loadPosts(this.groupId);
+  @loadingTop
+  loadPrevPosts() {
+    return this._loadPosts(this.groupId);
   }
 
   @action
-  async loadPosts(groupId: number) {
+  private async _loadPosts(groupId: number) {
     if (!this.store.hasMore) return;
 
     this.postService = PostService.getInstance();
@@ -85,10 +89,6 @@ class ConversationStreamViewModel extends TransformHandler<PostModel, Post> {
     });
     this.handlePageData(ENTITY_NAME.POST, posts, true);
     this.store.hasMore = hasMore;
-  }
-
-  getSize() {
-    return this.store.getSize();
   }
 
   private _afterRendered() {

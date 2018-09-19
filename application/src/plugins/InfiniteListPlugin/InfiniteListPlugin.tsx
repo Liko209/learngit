@@ -11,6 +11,8 @@ import {
   ILoadingMoreViewModel,
   onScrollToTop,
   onScrollToBottom,
+  loadingTop,
+  loadingBottom,
   LoadingMorePluginOptions,
 } from '../LoadingMorePlugin';
 
@@ -54,4 +56,6 @@ export {
   loading,
   onScrollToTop,
   onScrollToBottom,
+  loadingTop,
+  loadingBottom,
 };
