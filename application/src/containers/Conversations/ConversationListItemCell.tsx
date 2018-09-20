@@ -18,6 +18,8 @@ import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import navPresenter, { NavPresenter } from '../Home/NavPresenter';
+
 const { GroupService } = service;
 
 type IRouterParams = {
@@ -37,14 +39,16 @@ interface IState {
 }
 
 @observer
-class ConversationListItemCell extends React.Component<IProps, IState> {
+class ConversationListItemCell extends React.Component<IProps, IState>{
+  private navPresenter: NavPresenter;
   static defaultProps = {
     isFavorite: false,
   };
 
   @observable
   id: number;
-
+  @observable
+  count: number = 0;
   @observable
   displayName: string;
 
@@ -90,12 +94,22 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this.draft = '';
 
     this.state = { currentGroupId: 0 };
+    this.navPresenter = navPresenter;
 
     autorun(() => {
       this.getDataFromStore();
     });
   }
-
+  componentDidMount() {
+    this.props.history.listen(() => {
+      const pathname = window.location.pathname;
+      const uIdIndex = pathname.lastIndexOf('/');
+      const uid = pathname.slice(uIdIndex + 1);
+      if (+uid === this.id) {
+        this.navPresenter.handleTitle(this.displayName);
+      }
+    });
+  }
   getDataFromStore() {
     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
     const { currentUserId } = this.props;
@@ -162,6 +176,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
 
   @action
   private _openMenu(event: React.MouseEvent<HTMLElement>) {
+    event.stopPropagation();
     const { currentTarget } = event;
     this.anchorEl = currentTarget;
   }
@@ -180,7 +195,11 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   }
   private _jump2Conversation(id: number) {
     const { history } = this.props;
-    history.push(`/messages/${id}`);
+    if (id === this.id) {
+      this.count = ++this.count;
+      this.count === 1 ? history.push(`/messages/${id}`) : null;
+    }
+    this.navPresenter.handleRouterChange();
   }
   @action
   private _toggleFavorite() {

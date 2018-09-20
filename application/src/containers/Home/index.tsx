@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
+import { observer } from 'mobx-react';
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 import { LeftNav, JuiIconButtonProps } from 'ui-components';
@@ -20,6 +21,7 @@ import JuiIconButton from 'ui-components/molecules/IconButton';
 
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
+import navPresenter, { NavPresenter } from './NavPresenter';
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -29,8 +31,6 @@ interface IProps extends RouteComponentProps<any> {
 interface IStates {
   expanded: boolean;
 }
-
-const UMI_Count = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 const AvatarWithPresence = (props: TJuiAvatarWithPresenceProps) => {
   return <JuiAvatarWithPresence presence="online" src={avatar} {...props} />;
@@ -44,8 +44,11 @@ const HeaderIconButton = (props: JuiIconButtonProps) => {
   );
 };
 
-class Home extends Component<IProps, IStates> {
+const UMI_Count = [0];
+@observer
+class Home extends Component<IProps, IStates>  {
   private homePresenter: HomePresenter;
+  private _navPresenter: NavPresenter;
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -55,8 +58,8 @@ class Home extends Component<IProps, IStates> {
           : JSON.parse(String(localStorage.getItem('expanded'))),
     };
     this.homePresenter = new HomePresenter();
+    this._navPresenter = navPresenter;
   }
-
   handleLeftNavExpand = () => {
     this.setState({ expanded: !this.state.expanded });
     localStorage.setItem('expanded', JSON.stringify(!this.state.expanded));
@@ -75,13 +78,27 @@ class Home extends Component<IProps, IStates> {
       window.location.href = '/';
     });
   }
-
-  handleCreateTeam = () => {};
-
-  render() {
+  componentDidMount() {
+    this.props.history.listen((route) => {
+      // get previous title
+      this._navPresenter.handlePushRouter();
+    });
+  }
+  handleExpand = () => {
+    this.setState({
+      expanded: !this.state.expanded,
+    });
+    localStorage.setItem('expanded', JSON.stringify(!this.state.expanded));
+    const { location, history } = this.props;
+    history.push({
+      pathname: location.pathname,
+      search: `?leftnav=${!this.state.expanded}`,
+    });
+  }
+  handleCreateTeam = () => { };
+  getIcons() {
     const { t } = this.props;
-
-    const Icons = [
+    return [
       [
         { icon: 'Dashboard', title: t('Dashboard') },
         { icon: 'Messages', title: t('Messages') },
@@ -97,7 +114,22 @@ class Home extends Component<IProps, IStates> {
         { icon: 'Settings', title: t('Settings') },
       ],
     ];
+  }
+  render() {
     const { expanded } = this.state;
+    const { t } = this.props;
+    const { showLeftPanel, showRightPanel } = this._navPresenter.state;
+    const { forwardDisabled, backDisabled } = this._navPresenter.handleButtonState;
+    const {
+      menus,
+      handleRouterChange,
+      handleTitle,
+      handleButtonRelease,
+      handleButtonPress,
+      handleForward,
+      handleBackWard,
+      handleNavClose,
+    } = this._navPresenter;
     return (
       <Wrapper>
         <TopBar
@@ -117,13 +149,25 @@ class Home extends Component<IProps, IStates> {
           ]}
           onLeftNavExpand={this.handleLeftNavExpand}
           headerLogo="RingCentral"
+          menuItems={menus}
+          handleNavClose={handleNavClose}
+          showLeftPanel={showLeftPanel}
+          showRightPanel={showRightPanel}
+          forwardDisabled={forwardDisabled}
+          backDisabled={backDisabled}
+          handleBackWard={handleBackWard}
+          handleForward={handleForward}
+          handleButtonPress={handleButtonPress}
+          handleButtonRelease={handleButtonRelease}
         />
         <Bottom>
           <LeftNav
             expanded={expanded}
             id="leftnav"
-            icons={Icons}
+            icons={this.getIcons()}
             umiCount={UMI_Count}
+            handleRouterChange={handleRouterChange}
+            handleTitle={handleTitle}
           />
           <Main>
             <Switch>
