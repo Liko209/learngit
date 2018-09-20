@@ -83,7 +83,7 @@ export class ConversationCard extends React.Component<IProps, IStates> {
                 <JuiIconButton variant="plain" tooltipTitle={t('resendPost')} color="secondary" onClick={this.resend}>refresh</JuiIconButton>
               }
               {
-                status !== POST_STATUS.INPROGRESS &&
+                status === POST_STATUS.FAIL &&
                 <JuiIconButton variant="plain" tooltipTitle={t('deletePost')} onClick={this.delete}>delete</JuiIconButton>
               }
             </JuiButtonBar>
