@@ -12,6 +12,7 @@ import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
 import { ErrorParser, BaseError } from '../../../utils';
+import notificationCenter from '../../notificationCenter';
 
 jest.mock('../../../dao');
 // jest.mock('../../utils');
@@ -19,6 +20,7 @@ jest.mock('../handleData');
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
+jest.mock('../../notificationCenter');
 const profileService = new ProfileService();
 const personService = new PersonService();
 const accountService = new AccountService();
@@ -193,6 +195,24 @@ describe('GroupService', () => {
     daoManager.get.mockReturnValueOnce(1394810883);
     const result = await groupService.hasPermissionWithGroupId(group_id, type);
     expect(result).toBe(true);
+  });
+
+  it('updateGroupDraf({id, draft}) is update success', async () => {
+    const result = await groupService.updateGroupDraft({
+      id: 1,
+      draft: 'draft',
+    });
+    expect(result).toEqual(true);
+    expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  it('updateGroupDraf({id, draft}) is update error', async () => {
+    daoManager.getDao.mockReturnValueOnce(groupDao);
+    groupDao.update.mockRejectedValue(new Error());
+    await expect(
+      groupService.updateGroupDraft({ id: NaN, draft: 'draft' }),
+    ).rejects.toThrow();
   });
 
   // it('levelToPermissionArray(level)', () => {

@@ -92,6 +92,7 @@ class BaseDao<T extends {}> {
         const array = item;
         await this.bulkUpdate(array);
       } else {
+        this._validateItem(item, true);
         await this.db.ensureDBOpened();
         const primKey = this.collection.primaryKeyName();
         const saved = await this.get(item[primKey]);
@@ -146,7 +147,7 @@ class BaseDao<T extends {}> {
   createEmptyQuery() {
     return new Query(this.collection, this.db).limit(0);
   }
-  private _validateItem(item: T, withPrimaryKey: boolean): void {
+  private _validateItem(item: Partial<T>, withPrimaryKey: boolean): void {
     if (!_.isObjectLike(item)) {
       Throw(ErrorTypes.DB_INVALID_USAGE_ERROR, `Item should be an object. Received ${item}`);
     }

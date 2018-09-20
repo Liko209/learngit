@@ -391,4 +391,19 @@ export default class GroupService extends BaseService<Group> {
     }
     return ServiceCommonErrorType.NONE;
   }
+
+  // update partial group data
+  async updateGroupDraft(params: {
+    id: number;
+    draft: string;
+  }): Promise<boolean> {
+    try {
+      const dao = daoManager.getDao(GroupDao);
+      await dao.update(params);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]);
+      return true;
+    } catch (error) {
+      throw ErrorParser.parse(error);
+    }
+  }
 }

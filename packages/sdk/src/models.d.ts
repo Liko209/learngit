@@ -59,6 +59,7 @@ export type Group = ExtendedBaseModel & {
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
+  draft?: string;
 };
 
 export type Profile = ExtendedBaseModel & {

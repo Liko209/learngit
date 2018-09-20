@@ -99,6 +99,7 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
   }
 
   private async _closeConversation(shouldSkipNextTime: boolean) {
+    console.log('isChecked', shouldSkipNextTime);
     const result = await this.props.closeConversation(shouldSkipNextTime);
     this._handleResult(result);
   }

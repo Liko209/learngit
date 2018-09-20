@@ -44,6 +44,11 @@ class NotificationCenter extends EventEmitter2 {
     });
   }
 
+  /**
+   * emit event for ui layer of store entity update partial data
+   * @param {string} key
+   * @param {array} entities
+   */
   emitEntityUpdate(key: string, entities: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.UPDATE,

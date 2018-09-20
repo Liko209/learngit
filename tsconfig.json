@@ -7,12 +7,7 @@
     "esModuleInterop": true,
     "module": "commonjs",
     "target": "es5",
-    "lib": [
-      "es2015",
-      "es2016",
-      "es2017",
-      "dom"
-    ],
+    "lib": ["es2015", "es2016", "es2017", "dom"],
     "sourceMap": true,
     "jsx": "react",
     "moduleResolution": "node",
@@ -30,6 +25,8 @@
     "./typings/images.d.ts",
     "./typings/chat-view.d.ts",
     "./typings/string-natural-compare.d.ts",
-    "./typings/glipdown.d.ts"
+    "./typings/glipdown.d.ts",
+    "./typings/quill-emoji.d.ts",
+    "./typings/quill-markdown-shortcuts.d.ts"
   ]
 }
