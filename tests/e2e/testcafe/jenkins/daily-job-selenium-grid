@@ -2,6 +2,16 @@ pipeline {
     agent {
         label 'centos'
     }
+    parameters {
+        string(name: 'SITE_URL', defaultValue: 'https://develop.fiji.gliprc.com/', description: '' )
+        string(name: 'SELENIUM_SERVER', defaultValue: 'http://xmn145.rcoffice.ringcentral.com:4444/wd/hub', description: '' )
+        string(name: 'BROWSERS', defaultValue: 'selenium:chrome,selenium:firefox', description: 'selenium:chrome,selenium:firefox,selenium:internet explorer,selenium:MicrosoftEdge' )
+        string(name: 'RC_PLATFORM_APP_KEY', defaultValue: 'MkCdlSVqQ06H6i7KYcv9bg', description: '' )
+        string(name: 'RC_PLATFORM_APP_SECRET', defaultValue: '5_tFBXBQTLWaVcPF61LUGgngBfc8KGQCaZ0_UTw80vsw', description: '' )
+        string(name: 'ACTION', defaultValue: 'on_merge', description: '' )
+        string(name: 'BRANCH', defaultValue: 'develop', description: '' )
+        string(name: 'DEBUG', defaultValue: 'false', description: '' )
+    }
     environment { 
         SITE_URL = "${SITE_URL}"
         SELENIUM_SERVER = "${SELENIUM_SERVER}"
@@ -10,6 +20,7 @@ pipeline {
         RC_PLATFORM_APP_SECRET = "${RC_PLATFORM_APP_SECRET}"
         ACTION = "${ACTION}"
         BRANCH = "${BRANCH}"
+        DEBUG = "${DEBUG}"
         PATH = "/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:$PATH"
     }      
     stages{
