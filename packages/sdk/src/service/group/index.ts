@@ -37,9 +37,9 @@ import { mainLogger } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
-import { notificationCenter } from '../';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
+import notificationCenter from '../notificationCenter';
 
 export type CreateTeamOptions = {
   isPublic?: boolean;
