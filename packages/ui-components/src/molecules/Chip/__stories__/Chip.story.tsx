@@ -26,16 +26,12 @@ storiesOf('Molecules/Chip', module)
   })
   .addWithJSX('with Avatar & DeleteIcon', () => {
     return (
-      <JuiChip
-        label="Basic Chip"
-        Avatar={Avatar}
-        onDeleteClick={handleDelete}
-      />
+      <JuiChip label="Basic Chip" Avatar={Avatar} onDelete={handleDelete} />
     );
   })
   .addWithJSX('with Avatar', () => {
     return <JuiChip label="Basic Chip" Avatar={Avatar} />;
   })
   .addWithJSX('with DeleteIcon', () => {
-    return <JuiChip label="Basic Chip" onDeleteClick={handleDelete} />;
+    return <JuiChip label="Basic Chip" onDelete={handleDelete} />;
   });

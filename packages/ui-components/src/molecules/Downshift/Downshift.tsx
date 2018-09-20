@@ -8,10 +8,10 @@ import keycode from 'keycode';
 import Downshift from 'downshift';
 import styled from '../../styled-components';
 import Paper from '@material-ui/core/Paper';
-import JuiSearchItem from '../SearchItem';
+// import JuiSearchItem from '../SearchItem';
 // import JuiChip from '../Chip';
-import JuiSearchItemText from '../../atoms/SearchItemText';
-import JuiAvatar from '../../atoms/Avatar';
+// import JuiSearchItemText from '../../atoms/SearchItemText';
+// import JuiAvatar from '../../atoms/Avatar';
 import JuiTextField from '../../atoms/TextField/TextField';
 import { spacing } from '../../utils/styles';
 import differenceBy from 'lodash/differenceBy';
@@ -36,6 +36,7 @@ export type TJuiDownshiftMultipleProps = {
   label: string;
   placeholder: string;
   Chip?: React.ComponentType<any>;
+  SearchContactItem?: React.ComponentType<any>;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -86,6 +87,7 @@ const renderInput = (inputProps: any) => {
 };
 
 const renderSuggestion = ({
+  SearchContactItem,
   suggestion,
   itemProps,
   highlightedIndex,
@@ -103,19 +105,14 @@ const renderSuggestion = ({
   // console.log('---suggetions---', suggestion);
   // console.log('------is select---', isSelected);
 
-  return (
-    <JuiSearchItem
+  return SearchContactItem ? (
+    <SearchContactItem
       {...itemProps}
-      key={suggestion.label}
-      selected={isHighlighted}
-    >
-      <JuiAvatar />
-      <JuiSearchItemText
-        primary={suggestion.label}
-        secondary={suggestion.email}
-      />
-    </JuiSearchItem>
-  );
+      isHighlighted={isHighlighted}
+      suggestion={suggestion}
+      index={index}
+    />
+  ) : null;
 };
 
 class JuiDownshiftMultiple extends React.PureComponent<
@@ -213,7 +210,13 @@ class JuiDownshiftMultiple extends React.PureComponent<
   // }
 
   render() {
-    const { suggestions, label, placeholder, Chip } = this.props;
+    const {
+      suggestions,
+      label,
+      placeholder,
+      Chip,
+      SearchContactItem,
+    } = this.props;
     const { inputValue, selectedItem, shrink } = this.state;
 
     const filterSuggestions = differenceBy(suggestions, selectedItem, 'id');
@@ -245,10 +248,10 @@ class JuiDownshiftMultiple extends React.PureComponent<
                 fullWidth: true,
                 InputProps: getInputProps({
                   startAdornment: selectedItem.map(
-                    (item: TSuggestion) =>
+                    (item: TSuggestion, index: number) =>
                       Chip ? (
                         <Chip
-                          key={item.id || item.email}
+                          key={index}
                           tabIndex={-1}
                           label={item.label}
                           id={item.id}
@@ -280,6 +283,7 @@ class JuiDownshiftMultiple extends React.PureComponent<
                 <StyledPaper square={true}>
                   {filterSuggestions.map((suggestion: TSuggestion, index) =>
                     renderSuggestion({
+                      SearchContactItem,
                       suggestion,
                       index,
                       selectedItem,

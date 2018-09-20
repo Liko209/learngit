@@ -6,9 +6,10 @@
 import React, { Component } from 'react';
 import { translate } from 'react-i18next';
 import { TranslationFunction, i18n } from 'i18next';
-import JuiDownShift from 'ui-components/molecules/Downshift';
+import JuiDownshiftMultiple from 'ui-components/molecules/Downshift';
 
 import Chip from '../Chip';
+import SearchContactItem from './SearchContactItem';
 import SearchContactVM from './SearchContactVM';
 import { getName } from '../../utils/getName';
 import { Person } from 'sdk/src/models';
@@ -58,13 +59,14 @@ class SearchContact extends Component<IProps, IStates> {
     const { onChange, label, placeholder } = this.props;
     const { suggestions } = this.state;
     return (
-      <JuiDownShift
+      <JuiDownshiftMultiple
         inputChange={this.handleInputChange}
         suggestions={suggestions}
         onChange={onChange}
         label={label}
         placeholder={placeholder}
         Chip={Chip}
+        SearchContactItem={SearchContactItem}
       />
     );
   }
