@@ -47,21 +47,15 @@ class NetworkManager {
   }
 
   pause() {
-    this.handlers.forEach(handler => {
-      handler.pause();
-    });
+    this.handlers.forEach(handler => handler.pause());
   }
 
   resume() {
-    this.handlers.forEach(handler => {
-      handler.resume();
-    });
+    this.handlers.forEach(handler => handler.resume());
   }
 
   cancelAll() {
-    this.handlers.forEach(handler => {
-      handler.cancelAll();
-    });
+    this.handlers.forEach(handler => handler.cancelAll());
   }
 
   cancelRequest(request: IRequest) {
