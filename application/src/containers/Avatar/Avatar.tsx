@@ -36,6 +36,7 @@ class Avatar extends React.Component<TAvatarProps> {
     const { uid } = this.props;
     this._vm.getPersonInfo(uid);
     const userInfo = this._vm.handleAvatar();
+    console.log(userInfo);
     const avatar = userInfo.url ? userInfo.url : '';
     const name = userInfo.name ? userInfo.name : '';
     const color = userInfo.bgColor ? userInfo.bgColor : '';

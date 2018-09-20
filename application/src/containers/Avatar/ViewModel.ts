@@ -35,8 +35,8 @@ class ViewModel {
     }
     return hash % 10;
   }
-  private _handleLetter(name: string) {
-    return name.slice(0, 1).toUpperCase();
+  private _handleLetter(name: string|undefined) {
+    return name && name.slice(0, 1).toUpperCase() || '';
   }
   @action.bound
   public handleAvatar() {
@@ -58,17 +58,15 @@ class ViewModel {
       };
     }
     if ((!firstName && lastName) || (firstName && !lastName)) {
-      ((firstName, lastName) => {
-        const bgColor = getAvatarColors(this._handleUid());
-        const names = !!firstName && firstName.split(/\s+/) || !!lastName && lastName.split(/\s+/);
-        const firstLetter = this._handleLetter(names[0]);
-        const lastLetter = this._handleLetter(names[1]);
-        const abbreviationName = firstLetter + lastLetter;
-        return {
-          bgColor,
-          name: abbreviationName,
-        };
-      })(firstName, lastName);
+      const bgColor = getAvatarColors(this._handleUid());
+      const names = !!firstName && firstName!.split(/\s+/) || !!lastName && lastName!.split(/\s+/);
+      const firstLetter = this._handleLetter(names[0]);
+      const lastLetter = this._handleLetter(names[1]);
+      const abbreviationName = firstLetter + lastLetter;
+      return {
+        bgColor,
+        name: abbreviationName,
+      };
     }
     return {
       url: defaultAvatar,
