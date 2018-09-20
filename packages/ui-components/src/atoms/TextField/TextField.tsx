@@ -13,7 +13,7 @@ const TextField = styled(MuiTextField)`
     margin: 0 0 ${({ theme }) => spacing(2)} 0;
   }
   && {
-    .input-label-shrink {
+    .form-label-focused:not(.form-label-error) {
       color: ${({ theme }) => palette('primary', 'main')};
     }
   }
@@ -32,7 +32,7 @@ const JuiTextField = (props: IProps) => {
   const { InputLabelProps, InputProps, ...rest } = textFieldRest;
   let inputPropsClasses;
   let inputPropsRest;
-  let inputLabelClasses;
+  let formLabelClasses;
   let inputLabelRest;
   if (InputProps) {
     const { classes, ...InputPropsRest } = InputProps;
@@ -40,17 +40,18 @@ const JuiTextField = (props: IProps) => {
     inputPropsRest = InputPropsRest;
   }
   if (InputLabelProps) {
-    const { classes, ...InputLabelPropsRest } = InputLabelProps;
-    inputLabelClasses = classes;
+    const { FormLabelClasses, ...InputLabelPropsRest } = InputLabelProps;
+    formLabelClasses = FormLabelClasses;
     inputLabelRest = InputLabelPropsRest;
   }
   return (
     <TextField
       {...rest}
       InputLabelProps={{
-        classes: {
-          shrink: 'input-label-shrink',
-          ...inputLabelClasses,
+        FormLabelClasses: {
+          error: 'form-label-error',
+          focused: 'form-label-focused',
+          ...formLabelClasses,
         },
         ...inputLabelRest,
       }}
