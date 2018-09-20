@@ -353,8 +353,30 @@ export default class GroupService extends BaseService<Group> {
     return result;
   }
 
-  // update partial group data
+  // update partial group data, for message draft
   async updateGroupDraft(params: { id: number, draft: string }): Promise<boolean> {
+    try {
+      const dao = daoManager.getDao(GroupDao);
+      await dao.update(params);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]);
+      return true;
+    } catch (error) {
+      throw ErrorParser.parse(error);
+    }
+  }
+
+  // get group data, for send failure post ids
+  async getGroupSendFailurePostIds(id: number): Promise<number[]> {
+    try {
+      const group = await this.getGroupById(id) as Group;
+      return group.send_failure_post_ids || [];
+    } catch (error) {
+      throw ErrorParser.parse(error);
+    }
+  }
+
+  // update partial group data, for send failure post ids
+  async updateGroupSendFailurePostIds(params: { id: number, send_failure_post_ids: number[] }): Promise<boolean> {
     try {
       const dao = daoManager.getDao(GroupDao);
       await dao.update(params);

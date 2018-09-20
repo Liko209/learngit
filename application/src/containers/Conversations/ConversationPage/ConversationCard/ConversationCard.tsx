@@ -76,7 +76,7 @@ export class ConversationCard extends React.Component<IProps, IStates> {
             <JuiButtonBar size="small">
               {
                 status === POST_STATUS.INPROGRESS &&
-                <JuiIconButton variant="plain" tooltipTitle={t('sendingPost')} color="secondary">3d_rotation</JuiIconButton>
+                <JuiIconButton variant="plain" tooltipTitle={t('sendingPost')} color="secondary">autorenew</JuiIconButton>
               }
               {
                 status === POST_STATUS.FAIL &&
