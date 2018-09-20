@@ -29,6 +29,8 @@ export interface IPostResult {
   posts: Post[];
   items: Item[];
   hasMore: boolean;
+  offset?: number;
+  limit?: number;
 }
 
 export interface IRawPostResult {
@@ -79,6 +81,8 @@ export default class PostService extends BaseService<Post> {
       limit,
     );
     const result: IPostResult = {
+      offset,
+      limit,
       posts: [],
       items: [],
       hasMore: true,
@@ -141,6 +145,9 @@ export default class PostService extends BaseService<Post> {
         result.hasMore = true;
       }
     }
+    // if (!result.hasMore) {
+    //   await groupService.markAsNoPost(groupId);
+    // }
     return result;
   }
 
@@ -176,6 +183,8 @@ export default class PostService extends BaseService<Post> {
       const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
       const items = (await itemHandleData(remoteResult.items)) || [];
       return {
+        offset,
+        limit,
         posts,
         items,
         hasMore: remoteResult.hasMore,
@@ -183,6 +192,8 @@ export default class PostService extends BaseService<Post> {
     } catch (e) {
       mainLogger.error(e);
       return {
+        offset,
+        limit,
         posts: [],
         items: [],
         hasMore: true,

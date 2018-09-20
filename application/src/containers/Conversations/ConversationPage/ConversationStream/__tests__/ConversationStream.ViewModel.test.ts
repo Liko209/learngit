@@ -51,9 +51,23 @@ describe('ConversationStreamViewModel', () => {
   describe('componentDidUpdate()', () => {
     it('should mark as read & update last group', () => {
       const vm = new ConversationStreamViewModel({ groupId: 1 });
+
       vm.componentDidUpdate();
+
       expect(stateService.markAsRead).toHaveBeenCalled();
       expect(stateService.updateLastGroup).toHaveBeenCalled();
+    });
+  });
+
+  describe('loadInitialPosts()', () => {
+    it('should have loading before finished', async () => {
+      const vm = new ConversationStreamViewModel({ groupId: 1 });
+
+      const promise = vm.loadInitialPosts();
+
+      expect(vm).toHaveProperty('loading', true);
+      await promise;
+      expect(vm).toHaveProperty('loading', false);
     });
   });
 });

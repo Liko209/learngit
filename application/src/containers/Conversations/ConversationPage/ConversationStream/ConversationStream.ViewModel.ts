@@ -67,8 +67,11 @@ class ConversationStreamViewModel extends TransformHandler<PostModel, Post> {
   }
 
   @loading
-  loadInitialPosts() {
-    return this._loadPosts(this.groupId);
+  async loadInitialPosts() {
+    const { hasMore, limit, posts } = await this._loadPosts(this.groupId);
+    if (hasMore && limit && posts.length < limit) {
+      this.loadPrevPosts();
+    }
   }
 
   @onScrollToTop
@@ -79,24 +82,44 @@ class ConversationStreamViewModel extends TransformHandler<PostModel, Post> {
 
   @action
   private async _loadPosts(groupId: number) {
-    if (!this.store.hasMore) return;
+    if (!this.store.hasMore) {
+      return {
+        hasMore: false,
+        posts: [],
+      };
+    }
 
     this.postService = PostService.getInstance();
     const offset = this.orderListStore.getSize();
     const { id: oldest = 0 } = this.orderListStore.last() || {};
     try {
-      const { posts, hasMore } = await this.postService.getPostsByGroupId({
+      const {
+        posts,
+        hasMore,
+        limit,
+      } = await this.postService.getPostsByGroupId({
         offset,
         groupId,
         postId: oldest,
       });
+
       this.handlePageData(ENTITY_NAME.POST, posts, true);
       this.store.hasMore = hasMore;
+      return {
+        hasMore,
+        limit,
+        posts,
+      };
     } catch (err) {
       if (err.code === ErrorTypes.NETWORK) {
         // TODO error handle
       }
     }
+
+    return {
+      hasMore: false,
+      posts: [],
+    };
   }
 
   private _afterRendered() {

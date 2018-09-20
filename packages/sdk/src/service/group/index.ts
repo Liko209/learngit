@@ -391,4 +391,16 @@ export default class GroupService extends BaseService<Group> {
     }
     return ServiceCommonErrorType.NONE;
   }
+
+  /**
+   * TODO Mark the group as no more post.
+   */
+  // async markAsNoPost(groupId: number) {
+  //   const dao: GroupDao = daoManager.getDao(GroupDao);
+  //   const group = await dao.get(groupId);
+  //   if (group) {
+  //     group.has_no_more_post = true;
+  //     await dao.update(group);
+  //   }
+  // }
 }
