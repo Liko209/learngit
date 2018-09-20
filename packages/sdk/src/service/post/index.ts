@@ -11,6 +11,7 @@ import PostServiceHandler from '../../service/post/postServiceHandler';
 import ItemService from '../../service/item';
 import itemHandleData from '../../service/item/handleData';
 import ProfileService from '../../service/profile';
+import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
 import { Post, Profile, Item, Raw } from '../../models';
@@ -245,13 +246,23 @@ export default class PostService extends BaseService<Post> {
 
   async handleSendPostFail(preInsertId: number) {
     this._postStatusHandler.setPreInsertId(preInsertId, POST_STATUS.FAIL);
-    const dao = daoManager.getDao(PostDao);
+    const postDao = daoManager.getDao(PostDao);
+    const post = (await postDao.get(preInsertId)) as Post;
     const updateData = {
       id: preInsertId,
       status: POST_STATUS.FAIL,
     };
-    dao.update(updateData);
+    postDao.update(updateData);
     notificationCenter.emitEntityUpdate(ENTITY.POST, [updateData]);
+
+    const groupService: GroupService = GroupService.getInstance();
+    const failIds = await groupService.getGroupSendFailurePostIds(
+      post.group_id,
+    );
+    groupService.updateGroupSendFailurePostIds({
+      id: post.group_id,
+      send_failure_post_ids: [...new Set([...failIds, preInsertId])],
+    });
     return [];
   }
 
@@ -304,12 +315,25 @@ export default class PostService extends BaseService<Post> {
 
   async deletePost(id: number): Promise<boolean> {
     const postDao = daoManager.getDao(PostDao);
-    const post = await postDao.get(id);
+    const post = (await postDao.get(id)) as Post;
 
     if (this.isInPreInsert(id)) {
       this._postStatusHandler.removePreInsertId(id);
       notificationCenter.emitEntityDelete(ENTITY.POST, [post]);
       postDao.delete(id);
+
+      const groupService: GroupService = GroupService.getInstance();
+      const failIds = await groupService.getGroupSendFailurePostIds(
+        post.group_id,
+      );
+      const index = failIds.indexOf(id);
+      if (index > -1) {
+        failIds.splice(index, 1);
+        groupService.updateGroupSendFailurePostIds({
+          id: post.group_id,
+          send_failure_post_ids: failIds,
+        });
+      }
       return true;
     }
 

@@ -6,15 +6,18 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { translate } from 'react-i18next';
+import { TranslationFunction } from 'i18next';
 import JuiMessageInput from 'ui-components/MessageInput';
 import ViewModel from './ViewModel';
 
 interface IProps {
   id: number; // group id
+  t: TranslationFunction;
 }
 
 @observer
-class MessageInput extends Component<IProps> {
+class MessageInputComponent extends Component<IProps> {
   private _vm: ViewModel = new ViewModel();
 
   constructor(props: IProps) {
@@ -34,15 +37,19 @@ class MessageInput extends Component<IProps> {
   }
 
   render() {
-    const { draft, keyboardEventHandler } = this._vm;
+    const { draft, keyboardEventHandler, error } = this._vm;
+    const { t } = this.props;
     return (
       <JuiMessageInput
         value={draft}
         onChange={this._onChange}
         keyboardEventHandler={keyboardEventHandler}
+        error={error ? t(error) : error}
       />
     );
   }
 }
+
+const MessageInput = translate('Conversations')(MessageInputComponent);
 
 export { MessageInput };
