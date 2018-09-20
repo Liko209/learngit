@@ -5,7 +5,7 @@
  */
 import { IResponse } from '../NetworkClient';
 import Api from '../api';
-import { Group, Raw } from '../../models';
+import { Group, GroupApiType, Raw } from '../../models';
 
 class GroupAPI extends Api {
   /**
@@ -40,7 +40,9 @@ class GroupAPI extends Api {
     });
   }
 
-  static createTeam(data: Partial<Group>): Promise<IResponse<Raw<Group>>> {
+  static createTeam(
+    data: Partial<GroupApiType>,
+  ): Promise<IResponse<Raw<Group>>> {
     return this.glipNetworkClient.post('/team', data);
   }
 }

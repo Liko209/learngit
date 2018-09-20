@@ -34,8 +34,7 @@ export type Raw<T> = Pick<T, Exclude<keyof T, 'id'>> & {
 
 export type PartialWithKey<T> = Pick<T, Extract<keyof T, 'id'>> & Partial<T>;
 
-export type Group = ExtendedBaseModel & {
-  members: number[];
+export type GroupCommon = {
   company_id: number;
   set_abbreviation: string;
   email_friendly_abbreviation: string;
@@ -69,6 +68,14 @@ export type Group = ExtendedBaseModel & {
   is_public?: boolean;
   description?: string;
 };
+
+export type Group = ExtendedBaseModel & {
+  members: number[];
+} & GroupCommon;
+
+export type GroupApiType = ExtendedBaseModel & {
+  members: (number | string)[];
+} & GroupCommon;
 
 export type Profile = ExtendedBaseModel & {
   person_id?: number;
