@@ -25,7 +25,7 @@ export default class HomePresenter extends BaseNotificationSubscribable {
     this.subscribeNotificationOnce(SERVICE.FETCH_INDEX_DATA_DONE, () =>
       this.handleHasLogin(),
     );
-    this.openCreateTeam = true;
+    this.openCreateTeam = false;
   }
 
   @action

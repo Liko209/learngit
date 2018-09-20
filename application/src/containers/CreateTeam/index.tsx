@@ -99,7 +99,7 @@ class CreateTeam extends React.Component<IProps, IState> {
     const { teamName } = this.state;
     const code = result.error.code;
     let errorMsg;
-    if (code === 'already_token') {
+    if (code === 'already_taken') {
       errorMsg = t('already token', { name: teamName });
     }
     if (code === 'invalid_field') {
