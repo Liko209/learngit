@@ -25,12 +25,13 @@ function createFunctionWrapDecorator(options: FunctionWrapDecoratorOptions) {
 
       // After function call
       if (result instanceof Promise) {
-        result.then(() => {
-          options.after && options.after.apply(this, [this, args]);
+        // originalFn is async
+        return result.then(() => {
+          return options.after && options.after.apply(this, [this, args]);
         });
-      } else {
-        options.after && options.after.apply(this, [this, args]);
       }
+      // originalFn is sync
+      options.after && options.after.apply(this, [this, args]);
 
       return result;
     };

@@ -19,6 +19,7 @@ type ScrollerProps = {
   stickTo: StickType;
   onScrollToTop: () => void;
   onScrollToBottom: () => void;
+  triggerScrollToOnMount: boolean;
 };
 type WithScrollerProps = ScrollerProps;
 type ScrollerStates = {};
@@ -51,6 +52,7 @@ function withScroller(Comp: ComponentType<any>) {
       stickTo: 'top',
       onScrollToTop: noop,
       onScrollToBottom: noop,
+      triggerScrollToOnMount: false,
     };
     private _atTop = false;
     private _atBottom = false;
@@ -74,7 +76,7 @@ function withScroller(Comp: ComponentType<any>) {
 
     componentDidMount() {
       this._scrollEl.scrollTop = this.props.initialScrollTop;
-      this._handleScroll();
+      this.props.triggerScrollToOnMount && this._handleScroll();
       this._atTop = this._isAtTop();
       this._atBottom = this._isAtBottom();
       this.attachScrollListener();

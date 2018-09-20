@@ -23,17 +23,17 @@ class MyViewModel extends AbstractViewModel {
   @loadingTop
   fetchPrev() {
     fetchPrevSpy();
-    return this.sleep(10);
+    return this.sleep(1);
   }
 
   @onScrollToBottom
   @loadingBottom
   fetchNext() {
     fetchNextSpy();
-    return this.sleep(10);
+    return this.sleep(1);
   }
 
-  async sleep(time: number) {
+  sleep(time: number) {
     return new Promise((resolve: Function) => {
       setTimeout(() => {
         resolve();
@@ -96,8 +96,8 @@ describe('LoadingMorePlugin', () => {
       const View = plugin.wrapView(() => <div>Hello World</div>);
       plugin.install(vm);
       const wrapper = mount(<View {...vm} />);
-
       const promise = wrapper.prop('onScrollToBottom')();
+
       expect(fetchNextSpy).toHaveBeenCalled();
       expect(vm).toHaveProperty('loadingBottom', true);
       await promise;
