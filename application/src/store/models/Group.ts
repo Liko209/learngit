@@ -16,6 +16,8 @@ export default class GroupModel extends Base<Group> {
   pinnedPostIds?: number[];
   @observable
   privacy?: string;
+  @observable
+  draft?: string;
 
   constructor(data: Group) {
     super(data);
@@ -26,6 +28,7 @@ export default class GroupModel extends Base<Group> {
       description,
       pinned_post_ids,
       privacy,
+      draft,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -34,6 +37,7 @@ export default class GroupModel extends Base<Group> {
     this.isTeam = is_team;
     this.pinnedPostIds = pinned_post_ids;
     this.privacy = privacy;
+    this.draft = draft;
   }
 
   static fromJS(data: Group) {
