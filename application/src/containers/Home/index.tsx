@@ -21,7 +21,7 @@ import JuiIconButton from 'ui-components/molecules/IconButton';
 
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
-import navPresenter, { NavPresenter } from './NavPresenter';
+import navPresenter, { NavPresenter } from '../BackNForward/ViewModel';
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;

@@ -6,13 +6,13 @@
 
 import { ENTITY_NAME } from '@/store';
 import { getEntity }  from '@/store/utils';
-import { observable, action, autorun } from 'mobx';
+import { observable, action, autorun, computed } from 'mobx';
 import PersonModel from '../../store/models/Person';
 import { isOnlyLetterOrNumbers } from '@/utils';
 import defaultAvatar from './defaultAvatar.svg';
 import getAvatarColors from './colors';
 
-class ViewModel {
+class AvatarViewModel {
   @observable person: PersonModel;
   @observable uId = 0;
   constructor(uid: number) {
@@ -21,9 +21,8 @@ class ViewModel {
   @action.bound
   public getPersonInfo () {
     const uid = this.uId;
-    this.person = getEntity(ENTITY_NAME.PERSON, uid) as PersonModel;
     autorun(() => {
-      this.handleAvatar();
+      this.person = getEntity(ENTITY_NAME.PERSON, uid) as PersonModel;
     });
   }
   private _handleUid() {
@@ -40,10 +39,9 @@ class ViewModel {
   private _handleLetter(name: string|undefined) {
     return name && name.slice(0, 1).toUpperCase() || '';
   }
-  @action.bound
-  public handleAvatar() {
-    const { firstName, lastName, headshot } = this.person;
-    console.log(this.person);
+  @computed
+  get handleAvatar() {
+    const { firstName = '', lastName = '', headshot = '' } = this.person || {};
     if (headshot && headshot.url) {
       return {
         url: headshot.url,
@@ -76,4 +74,4 @@ class ViewModel {
     };
   }
 }
-export default ViewModel;
+export default AvatarViewModel;

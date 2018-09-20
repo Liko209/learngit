@@ -24,7 +24,6 @@ const StyleAvatar = styled<TJuiAvatar>(CustomJuiAvatar)`
     background-color: ${({ theme, bgColor }) => (bgColor ? theme.avatar[bgColor] : '')};
   }
 `;
-
 @observer
 class Avatar extends React.Component<TAvatarProps> {
   private _vm: ViewModel;
@@ -32,9 +31,11 @@ class Avatar extends React.Component<TAvatarProps> {
     super(props);
     this._vm = new ViewModel(props.uid);
   }
-  render() {
+  componentWillMount() {
     this._vm.getPersonInfo();
-    const userInfo = this._vm.handleAvatar();
+  }
+  render() {
+    const userInfo = this._vm.handleAvatar;
     const avatar = userInfo.url ? userInfo.url : '';
     const name = userInfo.name ? userInfo.name : '';
     const color = userInfo.bgColor ? userInfo.bgColor : '';
