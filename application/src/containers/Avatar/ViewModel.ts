@@ -13,13 +13,15 @@ import defaultAvatar from './defaultAvatar.svg';
 import getAvatarColors from './colors';
 
 class ViewModel {
-  constructor() {}
   @observable person: PersonModel;
   @observable uId = 0;
+  constructor(uid: number) {
+    this.uId = uid;
+  }
   @action.bound
-  public getPersonInfo (uId: number) {
-    this.person = getEntity(ENTITY_NAME.PERSON, uId) as PersonModel;
-    this.uId = uId;
+  public getPersonInfo () {
+    const uid = this.uId;
+    this.person = getEntity(ENTITY_NAME.PERSON, uid) as PersonModel;
     autorun(() => {
       this.handleAvatar();
     });
@@ -41,6 +43,7 @@ class ViewModel {
   @action.bound
   public handleAvatar() {
     const { firstName, lastName, headshot } = this.person;
+    console.log(this.person);
     if (headshot && headshot.url) {
       return {
         url: headshot.url,

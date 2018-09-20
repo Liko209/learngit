@@ -30,11 +30,10 @@ class Avatar extends React.Component<TAvatarProps> {
   private _vm: ViewModel;
   constructor(props: TAvatarProps) {
     super(props);
-    this._vm = new ViewModel();
+    this._vm = new ViewModel(props.uid);
   }
   render() {
-    const { uid } = this.props;
-    this._vm.getPersonInfo(uid);
+    this._vm.getPersonInfo();
     const userInfo = this._vm.handleAvatar();
     const avatar = userInfo.url ? userInfo.url : '';
     const name = userInfo.name ? userInfo.name : '';
