@@ -21,6 +21,7 @@ class NetworkSetup {
   static setup(
     types: IHandleType[],
     networkManager: NetworkManager = NetworkManager.Instance,
+    oAuthTokenManager: OAuthTokenManager = OAuthTokenManager.Instance,
   ) {
     types.forEach((type: IHandleType) => {
       const tokenHandler = new OAuthTokenHandler(
@@ -49,7 +50,7 @@ class NetworkSetup {
       );
       tokenHandler.listener = new TokenRefreshListener(tokenHandler, handler);
       tokenHandler.basic = type.basic();
-      OAuthTokenManager.Instance.addOAuthTokenHandler(tokenHandler);
+      oAuthTokenManager.addOAuthTokenHandler(tokenHandler);
     });
   }
 }
