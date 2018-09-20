@@ -28,7 +28,7 @@ class ViewModel {
     const UID = String(this.uId);
     let hash = 0;
     for (const i of UID) {
-      hash = hash + Number(i);
+      hash = hash + String(i).charCodeAt(0);
     }
     if (hash < 0) {
       hash = -hash;
