@@ -156,4 +156,18 @@ describe('AvatarViewModel', () => {
       bgColor: 'persimmon',
     });
   });
+  it('firstName=,sd,lastName=alvin, should return A1', () => {
+    mockGetEntity(ENTITY_NAME.PERSON, () => personModelFactory.build({
+      firstName: ',sd',
+      lastName: 'alvin',
+      headshot: {
+        url: '',
+      },
+    }));
+    initVM();
+    VM.getPersonInfo();
+    expect(VM.handleAvatar).toMatchObject({
+      name: ',A',
+    });
+  });
 });

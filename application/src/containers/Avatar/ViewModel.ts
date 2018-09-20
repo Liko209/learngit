@@ -48,7 +48,7 @@ class AvatarViewModel {
       };
     }
     // handle only letter or numbers
-    if (isOnlyLetterOrNumbers(firstName) && isOnlyLetterOrNumbers(lastName)) {
+    if ((isOnlyLetterOrNumbers(firstName) && isOnlyLetterOrNumbers(lastName))) {
       const bgColor = getAvatarColors(this._handleUid());
       const firstLetter = this._handleLetter(firstName!);
       const lastLetter = this._handleLetter(lastName!);
