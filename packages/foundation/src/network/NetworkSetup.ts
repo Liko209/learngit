@@ -18,7 +18,10 @@ import OAuthTokenManager from './OAuthTokenManager';
 import NetworkRequestHandler from './NetworkRequestHandler';
 
 class NetworkSetup {
-  static setup(types: IHandleType[]) {
+  static setup(
+    types: IHandleType[],
+    networkManager: NetworkManager = NetworkManager.Instance,
+  ) {
     types.forEach((type: IHandleType) => {
       const tokenHandler = new OAuthTokenHandler(
         type,
@@ -35,7 +38,7 @@ class NetworkSetup {
         }(),
       );
       const decoration = type.requestDecoration(tokenHandler);
-      const handler = NetworkManager.Instance.initNetworkRequestBaseHandler(
+      const handler = networkManager.initNetworkRequestBaseHandler(
         type,
         type.survivalModeSupportable,
         new class implements IRequestDecoration {
