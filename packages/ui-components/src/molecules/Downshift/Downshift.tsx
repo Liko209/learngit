@@ -48,7 +48,8 @@ const StyledPaper = styled(Paper)`
     padding: ${spacing(2)} 0;
     position: absolute;
     left: 0;
-    top: ${spacing(12.5)};
+    bottom: 0;
+    transform: translateY(100%);
     width: 100%;
     z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
   }
@@ -86,39 +87,11 @@ const renderInput = (inputProps: any) => {
   );
 };
 
-const renderSuggestion = ({
-  SearchContactItem,
-  suggestion,
-  itemProps,
-  highlightedIndex,
-  index,
-}: any) => {
-  // debugger;
-  // setItemCount(0);
-
-  // const hhh = highlightedIndex === null && index === 0 ? 0 : highlightedIndex;
-  const isHighlighted = highlightedIndex === index;
-  // console.log(1111, highlightedIndex);
-  // console.log(2222, index);
-  // const isSelected = (selectedItem.id || '').indexOf(suggestion.id) > -1;
-
-  // console.log('---suggetions---', suggestion);
-  // console.log('------is select---', isSelected);
-
-  return SearchContactItem ? (
-    <SearchContactItem
-      {...itemProps}
-      isHighlighted={isHighlighted}
-      suggestion={suggestion}
-      index={index}
-    />
-  ) : null;
-};
-
 class JuiDownshiftMultiple extends React.PureComponent<
   TJuiDownshiftMultipleProps,
   TJuiDownshiftMultipleState
 > {
+  setHightLightedIndex: Function;
   state: TJuiDownshiftMultipleState = {
     inputValue: '',
     shrink: false,
@@ -138,6 +111,31 @@ class JuiDownshiftMultiple extends React.PureComponent<
     }
   }
 
+  renderSuggestion = ({
+    SearchContactItem,
+    suggestion,
+    itemProps,
+    highlightedIndex,
+    index,
+  }: any) => {
+    const hhh = highlightedIndex === null && index === 0 ? 0 : highlightedIndex;
+    const isHighlighted = hhh === index;
+    // console.log(1111, highlightedIndex);
+    // console.log(2222, index);
+    // const isSelected = (selectedItem.id || '').indexOf(suggestion.id) > -1;
+
+    // console.log('---suggetions---', suggestion);
+    // console.log('------is select---', isSelected);
+
+    return SearchContactItem ? (
+      <SearchContactItem
+        {...itemProps}
+        isHighlighted={isHighlighted}
+        suggestion={suggestion}
+        index={index}
+      />
+    ) : null;
+  }
   handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     const emailRegExp = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*\s/;
@@ -199,15 +197,6 @@ class JuiDownshiftMultiple extends React.PureComponent<
       },
     );
   }
-
-  // onStateChange = (
-  //   a: StateChangeOptions<any>,
-  //   stateAndHelpers: ControllerStateAndHelpers<any>,
-  // ) => {}
-
-  // selectHighlightedItem = (otherStateToSet: object, cb: Function) => {
-  //   console.log(otherStateToSet, '----count');
-  // }
 
   render() {
     const {
@@ -279,10 +268,10 @@ class JuiDownshiftMultiple extends React.PureComponent<
                   placeholder: `${selectedItem.length === 0 ? placeholder : ''}`,
                 } as any), // Downshift startAdornment is not include in getInputProps interface
               })}
-              {isOpen ? (
+              {isOpen && filterSuggestions.length ? (
                 <StyledPaper square={true}>
                   {filterSuggestions.map((suggestion: TSuggestion, index) =>
-                    renderSuggestion({
+                    this.renderSuggestion({
                       SearchContactItem,
                       suggestion,
                       index,
