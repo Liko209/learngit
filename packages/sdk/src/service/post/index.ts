@@ -239,6 +239,19 @@ export default class PostService extends BaseService<Post> {
     const result = [obj];
     notificationCenter.emitEntityReplace(ENTITY.POST, result);
     const dao = daoManager.getDao(PostDao);
+
+    const groupService: GroupService = GroupService.getInstance();
+    const failIds = await groupService.getGroupSendFailurePostIds(
+      post.group_id,
+    );
+    const index = failIds.indexOf(preInsertId);
+    if (index > -1) {
+      failIds.splice(index, 1);
+      groupService.updateGroupSendFailurePostIds({
+        id: post.group_id,
+        send_failure_post_ids: failIds,
+      });
+    }
     await dao.delete(preInsertId);
     await dao.put(post);
     return result;
