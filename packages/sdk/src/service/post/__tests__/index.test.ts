@@ -7,6 +7,7 @@ import ItemService from '../../item';
 import PostService from '../index';
 import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
+import GroupService from '../../group';
 import { ESendStatus } from '../postSendStatusHandler';
 import _ from 'lodash';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
@@ -19,11 +20,13 @@ jest.mock('../../item');
 jest.mock('../postServiceHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
+jest.mock('../../group');
 // PostAPI.getDataById = jest.fn();
 PostAPI.putDataById = jest.fn();
 
 describe('PostService', () => {
   const postService = new PostService();
+  const groupService = new GroupService();
   const itemService = new ItemService();
   const profileService = new ProfileService();
   const postDao = new PostDao(null);
@@ -47,6 +50,7 @@ describe('PostService', () => {
     jest.resetAllMocks();
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     daoManager.getDao.mockReturnValueOnce(postDao);
     daoManager.getDao.mockReturnValueOnce(itemDao);
   });
@@ -58,7 +62,11 @@ describe('PostService', () => {
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemDao.getItemsByIds.mockResolvedValue(mockItems);
 
-      const result = await postService.getPostsFromLocal({ groupId: 1, offset: 0, limit: 20 });
+      const result = await postService.getPostsFromLocal({
+        groupId: 1,
+        offset: 0,
+        limit: 20,
+      });
 
       expect(result).toEqual({
         hasMore: true,
@@ -73,7 +81,11 @@ describe('PostService', () => {
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemDao.getItemsByIds.mockResolvedValue(mockItems);
 
-      const result = await postService.getPostsFromLocal({ groupId: 1, offset: 0, limit: 20 });
+      const result = await postService.getPostsFromLocal({
+        groupId: 1,
+        offset: 0,
+        limit: 20,
+      });
 
       expect(result).toEqual({ hasMore: true, items: [], posts: [] });
     });
@@ -88,6 +100,7 @@ describe('PostService', () => {
         },
       };
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
+      groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const result = await postService.getPostsFromRemote({
         groupId: 1,
         postId: 11,
@@ -109,6 +122,7 @@ describe('PostService', () => {
         },
       };
       PostAPI.requestPosts.mockResolvedValue(mockHasMore);
+      groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultHasMore = await postService.getPostsFromRemote({
         groupId: 1,
         postId: 11,
@@ -131,6 +145,7 @@ describe('PostService', () => {
         },
       };
       PostAPI.requestPosts.mockResolvedValue(mockNotPostId);
+      groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultNotPostId = await postService.getPostsFromRemote({
         groupId: 1,
         offset: 0,
@@ -145,6 +160,7 @@ describe('PostService', () => {
 
     it('should return [] when no matched', async () => {
       PostAPI.requestPosts.mockResolvedValue(null);
+      groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultNull = await postService.getPostsFromRemote({
         groupId: 1,
         offset: 0,
@@ -155,6 +171,18 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
+    });
+
+    it('should not send request if the group had no post', async () => {
+      groupService.getById.mockResolvedValue({
+        most_recent_post_id: undefined,
+      });
+      await postService.getPostsFromRemote({
+        groupId: 1,
+        offset: 0,
+        limit: 2,
+      });
+      expect(PostAPI.requestPosts).not.toHaveBeenCalled();
     });
   });
 
@@ -174,11 +202,21 @@ describe('PostService', () => {
         items: [],
         hasMore: true,
       });
-      const resultEmpty = await postService.getPostsByGroupId({ groupId: 1, offset: 0 });
+      const resultEmpty = await postService.getPostsByGroupId({
+        groupId: 1,
+        offset: 0,
+      });
 
-      expect(postService.getPostsFromLocal)
-        .toHaveBeenCalledWith({ groupId: 1, limit: 20, offset: 0 });
-      expect(resultEmpty).toEqual({ hasMore: true, items: [], posts: [{ id: 1 }, { id: 2 }] });
+      expect(postService.getPostsFromLocal).toHaveBeenCalledWith({
+        groupId: 1,
+        limit: 20,
+        offset: 0,
+      });
+      expect(resultEmpty).toEqual({
+        hasMore: true,
+        items: [],
+        posts: [{ id: 1 }, { id: 2 }],
+      });
     });
 
     it('should return remote data', async () => {
@@ -196,7 +234,11 @@ describe('PostService', () => {
       baseHandleData.mockResolvedValue([{ id: 1 }, { id: 2 }]);
       itemHandleData.mockResolvedValue([]);
 
-      const result = await postService.getPostsByGroupId({ groupId: 1, offset: 0, limit: 20 });
+      const result = await postService.getPostsByGroupId({
+        groupId: 1,
+        offset: 0,
+        limit: 20,
+      });
       expect(result).toEqual({
         posts: [{ id: 1 }, { id: 2 }],
         items: [],
@@ -206,7 +248,11 @@ describe('PostService', () => {
 
     it('should error case', async () => {
       postDao.queryPostsByGroupId.mockResolvedValue(null);
-      const result = await postService.getPostsByGroupId({ groupId: 1, offset: 0, limit: 20 });
+      const result = await postService.getPostsByGroupId({
+        groupId: 1,
+        offset: 0,
+        limit: 20,
+      });
       expect(result).toEqual({
         posts: [],
         items: [],
@@ -218,7 +264,9 @@ describe('PostService', () => {
   describe('sendPost()', () => {
     it('should send', async () => {
       await postService.sendPost({ text: 'test' });
-      expect(PostServiceHandler.buildPostInfo).toHaveBeenCalledWith({ text: 'test' });
+      expect(PostServiceHandler.buildPostInfo).toHaveBeenCalledWith({
+        text: 'test',
+      });
     });
 
     it('should throw error', async () => {
@@ -228,7 +276,9 @@ describe('PostService', () => {
         id: 1,
         text: 'abc',
       });
-      const resultError = await postService.sendPost({ text: response.data.text });
+      const resultError = await postService.sendPost({
+        text: response.data.text,
+      });
       expect(resultError).toEqual([]);
     });
 
@@ -262,20 +312,26 @@ describe('PostService', () => {
       baseHandleData.mockResolvedValueOnce([{ id: 1 }]);
       PostServiceHandler.buildPostInfo.mockResolvedValue({ id: -123 });
 
-      const result = await postService.sendItemFile({ groupId: 1, file: new FormData(), text: '' });
+      const result = await postService.sendItemFile({
+        groupId: 1,
+        file: new FormData(),
+        text: '',
+      });
 
-      expect(PostServiceHandler.buildPostInfo)
-        .toHaveBeenCalledWith({
-          groupId: 1,
-          itemIds: [1],
-          text: '',
-        });
+      expect(PostServiceHandler.buildPostInfo).toHaveBeenCalledWith({
+        groupId: 1,
+        itemIds: [1],
+        text: '',
+      });
 
       expect(result).toEqual({ id: 1 });
     });
 
     it('should return null when no groupId', async () => {
-      const result = await postService.sendItemFile({ file: new FormData(), text: 'abc' });
+      const result = await postService.sendItemFile({
+        file: new FormData(),
+        text: 'abc',
+      });
       expect(result).toBeNull();
     });
 
@@ -319,7 +375,9 @@ describe('PostService', () => {
     it('should return post with likes', async () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       postDao.get.mockResolvedValueOnce({ id: 100, likes: [] });
-      PostAPI.putDataById.mockResolvedValueOnce({ data: { _id: 100, likes: [101] } });
+      PostAPI.putDataById.mockResolvedValueOnce({
+        data: { _id: 100, likes: [101] },
+      });
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
       expect(result.likes).toEqual([101]);
@@ -340,7 +398,9 @@ describe('PostService', () => {
     it('should return new post if person id is in post likes when to unlike', async () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       postDao.get.mockResolvedValueOnce({ id: 100, likes: [101, 102] });
-      PostAPI.putDataById.mockResolvedValueOnce({ data: { _id: 100, likes: [102] } });
+      PostAPI.putDataById.mockResolvedValueOnce({
+        data: { _id: 100, likes: [102] },
+      });
 
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [102] }]);
       const result = await postService.likePost(100, 101, false);
@@ -350,7 +410,9 @@ describe('PostService', () => {
     it('should return new post if person id is in post likes when to unlike', async () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       postDao.get.mockResolvedValueOnce({ id: 100, likes: [101, 102] });
-      PostAPI.putDataById.mockResolvedValueOnce({ error: { _id: 100, likes: [102] } });
+      PostAPI.putDataById.mockResolvedValueOnce({
+        error: { _id: 100, likes: [102] },
+      });
       const result = await postService.likePost(100, 101, false);
       expect(result).toBeNull();
     });
@@ -367,7 +429,9 @@ describe('PostService', () => {
       postDao.get.mockResolvedValueOnce({
         id: 100,
       });
-      PostAPI.putDataById.mockResolvedValueOnce({ data: { id: 100, deactivated: true } });
+      PostAPI.putDataById.mockResolvedValueOnce({
+        data: { id: 100, deactivated: true },
+      });
       baseHandleData.mockResolvedValueOnce([{ id: 100, deactivated: true }]);
       const result = await postService.deletePost(100);
       expect(result).toEqual({ id: 100, deactivated: true });
@@ -402,11 +466,15 @@ describe('PostService', () => {
   describe('getPostSendStatus()', () => {
     it('get psot status without postitive id in it should be success', async () => {
       const status = await postService.getPostSendStatus(1);
-      expect(status).toEqual(expect.objectContaining({ id: 1, status: ESendStatus.SUCCESS }));
+      expect(status).toEqual(
+        expect.objectContaining({ id: 1, status: ESendStatus.SUCCESS }),
+      );
     });
     it('get psot status without negative id in it should be success', async () => {
       const status = await postService.getPostSendStatus(-11);
-      expect(status).toEqual(expect.objectContaining({ id: -11, status: ESendStatus.FAIL }));
+      expect(status).toEqual(
+        expect.objectContaining({ id: -11, status: ESendStatus.FAIL }),
+      );
     });
   });
 
@@ -423,7 +491,9 @@ describe('PostService', () => {
 
     it('negative id with post should resend success', async () => {
       jest.spyOn(postService, 'innerSendPost');
-      postService.innerSendPost.mockResolvedValueOnce([{ id: 10, data: 'good' }]);
+      postService.innerSendPost.mockResolvedValueOnce([
+        { id: 10, data: 'good' },
+      ]);
       postDao.get.mockResolvedValueOnce({ id: -1, text: 'good' });
       const result = await postService.reSendPost(-1);
       expect(result[0].data).toBe('good');
@@ -443,5 +513,4 @@ describe('PostService', () => {
       expect(result).toBe(false);
     });
   });
-
 });

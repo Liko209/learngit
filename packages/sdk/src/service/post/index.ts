@@ -11,6 +11,7 @@ import PostServiceHandler from '../../service/post/postServiceHandler';
 import ItemService from '../../service/item';
 import itemHandleData from '../../service/item/handleData';
 import ProfileService from '../../service/profile';
+import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
 import { Post, Profile, Item, Raw } from '../../models';
@@ -23,6 +24,7 @@ import { transform } from '../utils';
 import { ErrorParser } from '../../utils/error';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
+
 export interface IPostResult {
   posts: Post[];
   items: Item[];
@@ -106,6 +108,17 @@ export default class PostService extends BaseService<Post> {
     limit,
     direction,
   }: IPostQuery): Promise<IRawPostResult> {
+    const groupService: GroupService = GroupService.getInstance();
+    const group = await groupService.getById(groupId);
+    if (!group.most_recent_post_id) {
+      // The group has no post
+      return {
+        posts: [],
+        items: [],
+        hasMore: false,
+      };
+    }
+
     const params: any = {
       limit,
       direction,
