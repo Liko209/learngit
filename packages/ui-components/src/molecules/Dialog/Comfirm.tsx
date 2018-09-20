@@ -15,17 +15,26 @@ import JuiButton from '../../atoms/Button';
 interface IProps extends IDialogProps {
   open: boolean;
   okText?: string;
+  closeText?: string;
+  onOk(event: MouseEvent<HTMLElement>): void;
   onClose(event: MouseEvent<HTMLElement>): void;
   header: JSX.Element | string;
   children: JSX.Element | string; // content
 }
 
-const Alert = ({ open = false, size = 'small', header, okText, onClose, children }: IProps) => {
+const Comfirm = (props: IProps) => {
+  const {
+    open = false,
+    size = 'small',
+    header,
+    okText,
+    closeText,
+    onOk,
+    onClose,
+    children,
+  } = props;
   return (
-    <JuiDialog
-      open={open}
-      size={size}
-    >
+    <JuiDialog open={open} size={size}>
       <JuiDialogTitle>{header}</JuiDialogTitle>
       <JuiDialogContent>
         <JuiDialogContentText>
@@ -33,12 +42,15 @@ const Alert = ({ open = false, size = 'small', header, okText, onClose, children
         </JuiDialogContentText>
       </JuiDialogContent>
       <JuiDialogActions>
-        <JuiButton onClick={onClose} color="primary" variant="text" autoFocus={true}>
+        <JuiButton onClick={onOk} color="primary" variant="text" autoFocus={true}>
           {okText || 'Ok'}
+        </JuiButton>
+        <JuiButton onClick={onClose} color="primary" variant="text">
+          {closeText || 'Close'}
         </JuiButton>
       </JuiDialogActions>
     </JuiDialog>
   );
 };
 
-export default Alert;
+export default Comfirm;

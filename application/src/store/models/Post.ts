@@ -7,10 +7,13 @@ export default class PostModel extends Base<Post> {
   @observable
   text: string;
   @observable
+  creatorId: number;
+  @observable
   status?: POST_STATUS;
   constructor(data: Post) {
     super(data);
     this.createdAt = data.created_at;
+    this.creatorId = data.creator_id;
     this.text = data.text;
     this.status = data.status;
   }

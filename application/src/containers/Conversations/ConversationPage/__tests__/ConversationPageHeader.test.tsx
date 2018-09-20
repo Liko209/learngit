@@ -31,12 +31,12 @@ ConversationPageHeaderModule.JuiConversationPageHeader = ({
   SubTitle,
   Right,
 }: any) => (
-  <div>
-    {title}
-    {SubTitle}
-    {Right}
-  </div>
-);
+    <div>
+      {title}
+      {SubTitle}
+      {Right}
+    </div>
+  );
 jest.doMock(
   'ui-components/molecules/ConversationPageHeader',
   ConversationPageHeaderModule,
@@ -58,8 +58,8 @@ CheckboxButtonModule.JuiCheckboxButton = ({
   checkedIconName,
   checked,
 }: any) => (
-  <div className="checkbox-btn">{checked ? checkedIconName : iconName}</div>
-);
+    <div className="checkbox-btn">{checked ? checkedIconName : iconName}</div>
+  );
 jest.doMock('ui-components/molecules/CheckboxButton', CheckboxButtonModule);
 
 const IconButtonModule = require.requireActual(
@@ -70,10 +70,6 @@ IconButtonModule.JuiIconButton = ({ children }: any) => (
 );
 jest.doMock('ui-components/molecules/IconButton', IconButtonModule);
 
-jest.mock('../../../../utils/groupName', () => ({
-  getGroupName: jest.fn().mockReturnValue('some group name'),
-}));
-
 const groupStore = {
   get: jest.fn().mockReturnValue({
     id: 1,
@@ -83,11 +79,14 @@ const groupStore = {
   addUsedIds: jest.fn(),
 };
 
-const mockPresenter = (type = ConversationTypes.TEAM, isFavorite = false) => {
+const mockPresenter = (type = ConversationTypes.TEAM, isFavorite = false, buttons: any[] = [], isPrivate: boolean = false, groupName = 'some group name') => {
   (ConversationPageHeaderPresenter as any).mockImplementation(() => ({
     getConversationType: jest.fn().mockReturnValue(type),
     getOtherMember: jest.fn().mockReturnValue({}),
     groupIsInFavorites: jest.fn().mockReturnValue(isFavorite),
+    getRightButtons: jest.fn().mockReturnValue(buttons),
+    groupIsPrivate: jest.fn().mockReturnValue(isPrivate),
+    getGroupName: jest.fn().mockReturnValue(groupName),
   }));
 };
 describe('ConversationPageHeader', () => {
@@ -110,14 +109,12 @@ describe('ConversationPageHeader', () => {
     expect(html.includes('settings')).toBe(true);
   });
 
-  it('should render title (text) for SMS conversation', () => {
-    mockPresenter(ConversationTypes.SMS);
-    const html = mount(<ConversationPageHeader id={1} />).html();
-    expect(html.includes('some group name (text)')).toBe(true);
-  });
-
   it('should render correct icons for Team conversation', () => {
-    mockPresenter(ConversationTypes.TEAM);
+    mockPresenter(ConversationTypes.TEAM, true, [
+      { iconName: 'device_hub', tooltip: '' },
+      { iconName: 'videocam', tooltip: '' },
+      { iconName: 'person_add', tooltip: '' },
+    ]);
     const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('star')).toBe(true);
     expect(html.includes('lock')).toBe(true);
@@ -138,39 +135,6 @@ describe('ConversationPageHeader', () => {
     expect(html.includes('person_add')).not.toBe(true);
   });
 
-  it('should render correct icons for one to one conversation', () => {
-    mockPresenter(ConversationTypes.NORMAL_ONE_TO_ONE);
-    const html = mount(<ConversationPageHeader id={1} />).html();
-    expect(html.includes('star')).toBe(true);
-    expect(html.includes('lock')).not.toBe(true);
-    expect(html.includes('local_phone')).toBe(true);
-    expect(html.includes('device_hub')).not.toBe(true);
-    expect(html.includes('videocam')).toBe(true);
-    expect(html.includes('person_add')).toBe(true);
-  });
-
-  it('should render correct icons for sms conversation', () => {
-    mockPresenter(ConversationTypes.SMS);
-    const html = mount(<ConversationPageHeader id={1} />).html();
-    expect(html.includes('star')).toBe(true);
-    expect(html.includes('lock')).not.toBe(true);
-    expect(html.includes('local_phone')).toBe(true);
-    expect(html.includes('device_hub')).not.toBe(true);
-    expect(html.includes('videocam')).toBe(true);
-    expect(html.includes('person_add')).toBe(true);
-  });
-
-  it('should render correct icons for group conversation', () => {
-    mockPresenter(ConversationTypes.NORMAL_GROUP);
-    const html = mount(<ConversationPageHeader id={1} />).html();
-    expect(html.includes('star')).toBe(true);
-    expect(html.includes('lock')).not.toBe(true);
-    expect(html.includes('local_phone')).not.toBe(true);
-    expect(html.includes('device_hub')).toBe(true);
-    expect(html.includes('videocam')).toBe(true);
-    expect(html.includes('person_add')).toBe(true);
-  });
-
   it('should render checked lock icon for private team', () => {
     groupStore.get.mockReturnValue({
       id: 1,
@@ -178,7 +142,7 @@ describe('ConversationPageHeader', () => {
       privacy: 'private',
       members: [1],
     });
-    mockPresenter(ConversationTypes.TEAM);
+    mockPresenter(ConversationTypes.TEAM, false, [], true);
 
     const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('lock')).toBe(true);
@@ -192,7 +156,7 @@ describe('ConversationPageHeader', () => {
       privacy: 'public',
       members: [1],
     });
-    mockPresenter(ConversationTypes.TEAM);
+    mockPresenter(ConversationTypes.TEAM, false, [], false);
 
     const html = mount(<ConversationPageHeader id={1} />).html();
     expect(html.includes('lock_open')).toBe(true);

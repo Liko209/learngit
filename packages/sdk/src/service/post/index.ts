@@ -18,9 +18,9 @@ import { PostStatusHandler } from './postStatusHandler';
 import { POST_STATUS } from '../constants';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
-import { ErrorParser } from '../../utils/error';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
+import { ErrorParser } from '../../utils/error';
 export interface IPostResult {
   posts: Post[];
   items: Item[];
@@ -303,15 +303,16 @@ export default class PostService extends BaseService<Post> {
   }
 
   async deletePost(id: number): Promise<boolean> {
-    if (this.isInPreInsert(id)) {
-      this._postStatusHandler.removePreInsertId(id);
-      notificationCenter.emitEntityDelete(ENTITY.POST, [{ id }]);
-      const dao = daoManager.getDao(PostDao);
-      dao.delete(id);
-      return true;
-    }
     const postDao = daoManager.getDao(PostDao);
     const post = await postDao.get(id);
+
+    if (this.isInPreInsert(id)) {
+      this._postStatusHandler.removePreInsertId(id);
+      notificationCenter.emitEntityDelete(ENTITY.POST, [post]);
+      postDao.delete(id);
+      return true;
+    }
+
     if (post) {
       post.deactivated = true;
       post._id = post.id;

@@ -112,10 +112,14 @@ class ViewModel {
   async sendPost(quill: Quill) {
     const text = markdownFromDelta(quill.getContents());
     this.changeDraft('');
-    await this._postService.sendPost({
-      text,
-      groupId: this._id,
-    });
+    try {
+      await this._postService.sendPost({
+        text,
+        groupId: this._id,
+      });
+    } catch (e) {
+      // You do not need to handle the error because the message will display a resend
+    }
   }
 }
 

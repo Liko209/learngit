@@ -62,6 +62,7 @@ export type Group = ExtendedBaseModel & {
   is_public?: boolean;
   description?: string;
   draft?: string;
+  send_failure_post_ids?: number[];
 };
 
 export type Profile = ExtendedBaseModel & {

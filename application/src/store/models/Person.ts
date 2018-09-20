@@ -1,8 +1,8 @@
-import storeManager, { ENTITY_NAME } from '@/store';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
 import { Person } from 'sdk/models';
 import Base from './Base';
-import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 
 export default class PersonModel extends Base<Person> {
   id: number;
@@ -53,10 +53,7 @@ export default class PersonModel extends Base<Person> {
   get displayName(): string {
     if (this.isPseudoUser) {
       if (this.glipUserId) {
-        const personStore = storeManager.getEntityMapStore(
-          ENTITY_NAME.PERSON,
-        ) as MultiEntityMapStore<Person, PersonModel>;
-        const linkedUser = personStore.get(this.glipUserId);
+        const linkedUser = getEntity(ENTITY_NAME.PERSON, this.glipUserId);
         if (linkedUser) {
           return linkedUser.displayName;
         }

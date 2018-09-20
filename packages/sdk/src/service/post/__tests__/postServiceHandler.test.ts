@@ -8,6 +8,7 @@ import { daoManager, AccountDao, PostDao } from '../../../dao';
 import PostServiceHandler from '../postServiceHandler';
 import { randomInt, versionHash } from '../../../utils/mathUtils';
 import { postFactory } from '../../../__tests__/factories';
+import { POST_STATUS } from '../../constants';
 
 jest.mock('../../../dao');
 jest.mock('../../../utils/mathUtils');
@@ -188,8 +189,7 @@ describe('PostServiceHandler', () => {
       });
 
       model = PostServiceHandler.buildResendPostInfo(model);
-      expect(model.created_at).not.toBe(0);
-      expect(model.version).not.toBe(0);
+      expect(model.status).toBe(POST_STATUS.INPROGRESS);
     });
   });
 });
