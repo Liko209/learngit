@@ -17,8 +17,13 @@ import {
   SortableContainer,
   SortableElement,
 } from 'react-sortable-hoc';
+import { withRouter, RouteComponentProps } from 'react-router';
 
-interface IProps {
+type IRouterParams = {
+  id: string;
+};
+
+interface IProps extends RouteComponentProps<IRouterParams> {
   t: TranslationFunction;
   title: string;
   iconName: string;
@@ -61,8 +66,9 @@ class ConversationSectionComponent extends React.Component<IProps> {
   }
 
   renderList() {
-    const { presenter, sortable } = this.props;
+    const { presenter, sortable, match } = this.props;
     const currentUserId = presenter.getCurrentUserId() || undefined;
+    const currentGroupId = parseInt(match.params.id, 10);
     const entityName = presenter.entityName;
     if (sortable) {
       const distance = 1;
@@ -80,6 +86,7 @@ class ConversationSectionComponent extends React.Component<IProps> {
               entityName={entityName}
               isFavorite={true}
               currentUserId={currentUserId}
+              currentGroupId={currentGroupId}
             />
           ))}
         </SortableList>
@@ -94,6 +101,7 @@ class ConversationSectionComponent extends React.Component<IProps> {
             key={id}
             entityName={entityName}
             currentUserId={currentUserId}
+            currentGroupId={currentGroupId}
           />
         ))}
       </ConversationList>
@@ -118,7 +126,7 @@ class ConversationSectionComponent extends React.Component<IProps> {
 }
 
 const ConversationSection = translate('Conversations')(
-  ConversationSectionComponent,
+  withRouter(ConversationSectionComponent),
 );
 export { ConversationSection };
 export default ConversationSection;

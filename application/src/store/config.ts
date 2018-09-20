@@ -19,6 +19,7 @@ const ENTITY_SETTING = {
       ENTITY.FAVORITE_GROUPS,
       ENTITY.TEAM_GROUPS,
       ENTITY.PEOPLE_GROUPS,
+      ENTITY.GROUP,
     ],
     service: () => GroupService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,

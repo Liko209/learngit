@@ -60,6 +60,7 @@ export type Group = ExtendedBaseModel & {
   is_public?: boolean;
   description?: string;
   has_no_more_post?: boolean;
+  draft?: string;
 };
 
 export type Profile = ExtendedBaseModel & {

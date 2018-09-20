@@ -37,9 +37,9 @@ import { mainLogger } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
-import { notificationCenter } from '../';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
+import notificationCenter from '../notificationCenter';
 
 export type CreateTeamOptions = {
   isPublic?: boolean;
@@ -403,4 +403,18 @@ export default class GroupService extends BaseService<Group> {
   //     await dao.update(group);
   //   }
   // }
+  // update partial group data
+  async updateGroupDraft(params: {
+    id: number;
+    draft: string;
+  }): Promise<boolean> {
+    try {
+      const dao = daoManager.getDao(GroupDao);
+      await dao.update(params);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]);
+      return true;
+    } catch (error) {
+      throw ErrorParser.parse(error);
+    }
+  }
 }

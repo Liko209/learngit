@@ -16,8 +16,7 @@ import { getGroupName } from '@/utils/groupName';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
-import PresenceModel from '../../../store/models/Presence';
-import { Presence, Profile } from 'sdk/models';
+import { Profile } from 'sdk/models';
 import ProfileModel from '@/store/models/Profile';
 
 class ConversationListItemViewModel extends AbstractViewModel
@@ -27,6 +26,9 @@ class ConversationListItemViewModel extends AbstractViewModel
 
   @observable
   currentUserId?: number;
+
+  @observable
+  currentGroupId?: number;
 
   @observable
   displayName: string;
@@ -55,6 +57,9 @@ class ConversationListItemViewModel extends AbstractViewModel
   @observable
   shouldSkipCloseConfirmation: boolean;
 
+  @observable
+  draft: string | undefined;
+
   groupService: service.GroupService;
 
   onClick = () => this.clickGroup();
@@ -74,6 +79,7 @@ class ConversationListItemViewModel extends AbstractViewModel
     super();
     this.id = props.id;
     this.currentUserId = props.currentUserId;
+    this.currentGroupId = props.currentGroupId;
     this.displayName = '';
     this.unreadCount = 0;
     this.umiVariant = 'count';
@@ -81,6 +87,8 @@ class ConversationListItemViewModel extends AbstractViewModel
     this.isFavorite = props.isFavorite || false;
     this.favoriteText = this.isFavorite ? 'unFavorite' : 'favorite';
     this.groupService = GroupService.getInstance();
+    this.draft = '';
+
     autorun(() => {
       this.getData();
     });
@@ -90,23 +98,24 @@ class ConversationListItemViewModel extends AbstractViewModel
     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
     this.displayName = getGroupName(getEntity, group, this.currentUserId);
     this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
-    if (this.currentUserId) {
-      let targetPresencePersonId: number | undefined;
-      const otherMembers = _.difference(group.members, [this.currentUserId]);
-      if (otherMembers.length === 0) {
-        targetPresencePersonId = this.currentUserId;
-      } else if (otherMembers.length === 1) {
-        targetPresencePersonId = otherMembers[0];
-      }
+    this.draft = group.draft;
+    // if (this.currentUserId) {
+    //   let targetPresencePersonId: number | undefined;
+    //   const otherMembers = _.difference(group.members, [this.currentUserId]);
+    //   if (otherMembers.length === 0) {
+    //     targetPresencePersonId = this.currentUserId;
+    //   } else if (otherMembers.length === 1) {
+    //     targetPresencePersonId = otherMembers[0];
+    //   }
 
-      if (targetPresencePersonId) {
-        const presence = getEntity<Presence, PresenceModel>(
-          ENTITY_NAME.PRESENCE,
-          targetPresencePersonId,
-        );
-        this.status = presence && presence.presence;
-      }
-    }
+    //   if (targetPresencePersonId) {
+    //     const presence = getEntity<Presence, PresenceModel>(
+    //       ENTITY_NAME.PRESENCE,
+    //       targetPresencePersonId,
+    //     );
+    //     this.status = presence && presence.presence;
+    //   }
+    // }
 
     this.menuOpen = !!this.anchorEl;
     this.shouldSkipCloseConfirmation = getSingleEntity<Profile, ProfileModel>(
