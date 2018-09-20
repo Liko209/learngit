@@ -8,9 +8,14 @@ import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
 export function setUp(accountType: string) {
   return async (t: TestController) => {
     const helper = TestHelper.from(t);
-    await setupSDK(t);
     helper.setupGlipApiManager();
     await helper.checkOutAccounts(accountType);
+    try {
+      await setupSDK(t);
+    } catch (error) {
+      await helper.checkInAccounts();
+      throw new Error("Fail to initialize glip 1.0 sdk");
+    }
   };
 }
 
