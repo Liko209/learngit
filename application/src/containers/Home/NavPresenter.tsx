@@ -7,26 +7,33 @@ import { action, observable, computed } from 'mobx';
 import React from 'react';
 import { getGlobalValue } from '@/store/utils';
 
-const SS = window.sessionStorage;
-const parse = JSON.parse;
-const stringify = JSON.stringify;
+// const SS = window.sessionStorage;
+// const parse = JSON.parse;
+// const stringify = JSON.stringify;
 const TITLE_LENGTH = 52;
+const FORWARD = 'forward';
+const BACKWARD = 'backward';
+const BACK_DISABLED = 'backDisabled';
+const FORWARD_DISABLED = 'forwardDisabled';
+
 class NavPresenter {
+  // @action
+  // getItem = (key: string) => {
+  //   return SS.getItem(key) || '[]';
+  // }
+  // @action
+  // setItem = (key: string, value: any) => {
+  //   return SS.setItem(key, value);
+  // }
   private appName = process.env.APP_NAME || '';
-  getItem = (key: string) => {
-    return SS.getItem(key) || '[]';
-  }
-  setItem = (key: string, value: any) => {
-    return SS.setItem(key, value);
-  }
   @observable
   buttonPressTimer: number = 0;
   @observable
   menus: string[] = [];
   @observable
-  backNavArray: { title: string }[] = parse(this.getItem('backNavArray'));
+  backNavArray: { title: string }[] = [];
   @observable
-  forwardNavArray: { title: string }[] = parse(this.getItem('forwardNavArray'));
+  forwardNavArray: { title: string }[] = [];
   @observable
   menuClicked: boolean = false;
 
@@ -42,7 +49,13 @@ class NavPresenter {
     showLeftPanel: false,
     showRightPanel: false,
     isLongPress: false,
+    active: false,
   };
+  private _handleTitleSlice(title: string) {
+    return title.length > TITLE_LENGTH
+      ? `${title.slice(0, TITLE_LENGTH + 2)}...`
+      : title;
+  }
   @action
   private _handleToward = (dir: string) => {
     const state = this.state;
@@ -58,7 +71,7 @@ class NavPresenter {
     let disableType;
     let emptyDisable;
     if (!isLongPress) {
-      if (dir === 'forward') {
+      if (dir === FORWARD) {
         // disable = forwardDisabled;
         removedArr = (function () {
           return forwardNavArray.reverse();
@@ -67,8 +80,8 @@ class NavPresenter {
         action = () => {
           return window.history.go(1);
         };
-        disableType = 'backDisabled';
-        emptyDisable = 'forwardDisabled';
+        disableType = BACK_DISABLED;
+        emptyDisable = FORWARD_DISABLED;
       } else {
         // disable = backDisabled;
         removedArr = (function () {
@@ -78,21 +91,16 @@ class NavPresenter {
         action = () => {
           return window.history.back();
         };
-        disableType = 'forwardDisabled';
-        emptyDisable = 'backDisabled';
+        disableType = FORWARD_DISABLED;
+        emptyDisable = BACK_DISABLED;
       }
       const REMOVED_ITEM = removedArr.shift(); // out stack
       REMOVED_ITEM && addArr.push(currentItem);
       action();
       const itemTitle = REMOVED_ITEM!.title;
-      this.state.title =
-        itemTitle.length > TITLE_LENGTH
-          ? `${itemTitle.slice(0, TITLE_LENGTH + 2)}...`
-          : itemTitle; // set title
-      this.forwardNavArray = dir === 'forward' ? removedArr.reverse() : addArr;
-      this.backNavArray = dir === 'forward' ? addArr : removedArr.reverse(); // reversed
-      this.setItem('backNavArray', stringify(removedArr));
-      this.setItem('forwardNavArray', stringify(addArr));
+      this.state.title = this._handleTitleSlice(itemTitle); // set title
+      this.forwardNavArray = dir === FORWARD ? removedArr.reverse() : addArr;
+      this.backNavArray = dir === FORWARD ? addArr : removedArr.reverse(); // reversed
       state.pressNav = true;
       state[disableType] = false;
       if (!removedArr.length) {
@@ -104,54 +112,46 @@ class NavPresenter {
   }
   @action
   handleForward = () => {
-    this._handleToward('forward');
+    this._handleToward(FORWARD);
   }
   @action
   handleBackWard = () => {
-    this._handleToward('backward');
+    this._handleToward(BACKWARD);
   }
   @action
-  handleButtonPress = () => {
+  handleButtonPress = (nav: string) => {
     const timer = 300;
     this.buttonPressTimer = window.setTimeout(() => {
-      this.state.time = timer;
-    },                                        timer);
-  }
-  @action
-  handleButtonRelease = (nav: string) => {
-    // click will trigger also
-    window.clearTimeout(this.buttonPressTimer);
-    const state = this.state;
-    const time = state.time;
-    if (time > 200) {
+      const state = this.state;
       const backNavArray = this.backNavArray; // get sequence list
       const forwardNavArray = this.forwardNavArray;
       state.nav = nav;
       state.time = 0;
       state.isLongPress = true;
-      if (nav === 'backward') {
+      if (nav === BACKWARD) {
         state.showLeftPanel = true;
+        state.showRightPanel = false;
         this.handleMenuItem(backNavArray.reverse());
-        this.setItem('backNavArray', stringify(backNavArray));
       } else {
         state.showRightPanel = true;
+        state.showLeftPanel = false;
         this.handleMenuItem(forwardNavArray.reverse());
-        this.setItem('forwardNavArray', stringify(forwardNavArray));
       }
-    } else {
-      state.showRightPanel = false;
-      state.showLeftPanel = false;
-      state.isLongPress = false;
-    }
+    },                                        timer);
+  }
+  @action
+  handleButtonRelease = (
+    event: React.TouchEvent | React.MouseEvent<HTMLElement>,
+  ) => {
+    event.preventDefault();
+    window.clearTimeout(this.buttonPressTimer);
   }
   @action
   handleMenuItem = (navArray: { title: string }[]) => {
     const menus =
       navArray &&
-      navArray.map((item: any) => {
-        return item.title.length > 52
-          ? `${item.title.slice(0, 54)}...`
-          : item.title;
+      navArray.map(({ title }) => {
+        return this._handleTitleSlice(title);
       });
     this.menus = menus;
   }
@@ -173,7 +173,7 @@ class NavPresenter {
     ) => {
       const toContracts = currents.splice(0, index! + 1); // delete current and before
       const REMOVE_ITEM = toContracts.splice(toContracts.length - 1, 1); // delete click items
-      if (dir === 'backward') {
+      if (dir === BACKWARD) {
         forwardNavArray = toContracts
           .reverse()
           .concat({ title })
@@ -215,17 +215,12 @@ class NavPresenter {
         state.showRightPanel = false;
       }
       const itemTitle = REMOVE_ITEM && REMOVE_ITEM![0].title;
-      this.state.title =
-        itemTitle.length > TITLE_LENGTH
-          ? `${itemTitle.slice(0, TITLE_LENGTH + 2)}...`
-          : itemTitle; // set title
-      this.setItem('backNavArray', stringify(backNavArray));
-      this.setItem('forwardNavArray', stringify(forwardNavArray));
+      this.state.title = this._handleTitleSlice(itemTitle); // set title
       this.menuClicked = true;
     };
-    if (nav === 'backward' && index !== undefined) {
+    if (nav === BACKWARD && index !== undefined) {
       handleCommon(nav, backNavArray, forwardNavArray);
-    } else if (nav === 'forward' && index !== undefined) {
+    } else if (nav === FORWARD && index !== undefined) {
       handleCommon(nav, forwardNavArray, backNavArray);
     }
     state.showRightPanel = false;
@@ -243,9 +238,9 @@ class NavPresenter {
   get title() {
     const appUmi = getGlobalValue('UMI.app');
     if (appUmi) {
-      return `(${appUmi}) ${this.state.title}`;
+      return `(${appUmi}) ${this.appName}`;
     }
-    return this.state.title;
+    return this.appName;
   }
   @action
   handleRouterChange = () => {
@@ -255,6 +250,49 @@ class NavPresenter {
       this.forwardNavArray = [];
       this.state.forwardDisabled = true;
     }
+  }
+  @action
+  handlePushRouter = () => {
+    const state = this.state;
+    const { title, showLeftPanel, showRightPanel, pressNav } = state;
+    const backNavArray = this.backNavArray;
+    const menuClicked = this.menuClicked;
+    const forwardNavArray = this.forwardNavArray;
+    if (!showLeftPanel && !showRightPanel && !pressNav && !menuClicked) {
+      backNavArray.push({ title });
+      this.backNavArray = backNavArray;
+    }
+    this.menuClicked = false;
+    if (backNavArray.length > 10) {
+      backNavArray.shift();
+    }
+    if (forwardNavArray.length > 10) {
+      forwardNavArray.shift();
+    }
+    if (backNavArray.length) {
+      this.state.backDisabled = false;
+    }
+  }
+  @computed
+  get handleButtonState() {
+    const forwardNavArray = this.forwardNavArray;
+    const backNavArray = this.backNavArray;
+    if (forwardNavArray.length) {
+      return {
+        forwardDisabled: false,
+        backDisabled: this.state.backDisabled,
+      };
+    }
+    if (backNavArray.length) {
+      return {
+        backDisabled: false,
+        forwardDisabled: this.state.forwardDisabled,
+      };
+    }
+    return {
+      backDisabled: this.state.backDisabled,
+      forwardDisabled: this.state.forwardDisabled,
+    };
   }
 }
 export default new NavPresenter();

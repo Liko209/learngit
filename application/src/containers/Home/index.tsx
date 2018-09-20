@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { RouteComponentProps, Switch, Route, Redirect } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import DocumentTitle from 'react-document-title';
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 import { LeftNav, JuiIconButtonProps } from 'ui-components';
@@ -24,7 +23,6 @@ import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
 import LeftNavViewModel from './LeftNav/LeftNavViewModel';
 import navPresenter, { NavPresenter } from './NavPresenter';
-import { isElectron } from '@/utils';
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -81,47 +79,10 @@ class Home extends Component<IProps, IStates> {
     const { handleSignOutClick } = this.homePresenter;
     handleSignOutClick();
   }
-  componentWillReceiveProps(nextProps: IProps) {
-    const state = this.navPresenter.state;
-    const { forwardNavArray, backNavArray } = this.navPresenter;
-    if (forwardNavArray.length) {
-      state.forwardDisabled = false;
-    }
-    if (backNavArray.length) {
-      state.backDisabled = false;
-    }
-  }
   componentDidMount() {
     this.props.history.listen((route: any) => {
       // get previous title
-      const state = this.navPresenter.state;
-      const { title, showLeftPanel, showRightPanel, pressNav } = state;
-      setTimeout(() => {
-        const {
-          backNavArray,
-          menuClicked,
-          forwardNavArray,
-        } = this.navPresenter;
-        if (!showLeftPanel && !showRightPanel && !pressNav && !menuClicked) {
-          backNavArray.push({ title });
-          this.navPresenter.backNavArray = backNavArray;
-        }
-        this.navPresenter.menuClicked = false;
-        if (backNavArray.length > 10) {
-          backNavArray.shift();
-        }
-        if (forwardNavArray.length > 10) {
-          forwardNavArray.shift();
-        }
-        if (backNavArray.length) {
-          this.navPresenter.state.backDisabled = false;
-          isElectron &&
-            this.navPresenter.setItem(
-              'backNavArray',
-              JSON.stringify(backNavArray),
-            );
-        }
-      });
+      this.navPresenter.handlePushRouter();
     });
   }
   handleExpand = () => {
@@ -157,19 +118,19 @@ class Home extends Component<IProps, IStates> {
     ];
   }
   render() {
+    const title = this.navPresenter.title;
+    document.title = title;
     const { t } = this.props;
     const UMI_COUNT = [
       [0, this.leftNavViewModel.messageUmi, 0, 0],
       [0, 0, 0, 0, 0, 0],
     ];
     const { expanded } = this.state;
+    const { showLeftPanel, showRightPanel } = this.navPresenter.state;
     const {
       forwardDisabled,
-      showLeftPanel,
-      showRightPanel,
       backDisabled,
-    } = this.navPresenter.state;
-    const title = this.navPresenter.title;
+    } = this.navPresenter.handleButtonState;
     const {
       menus,
       handleRouterChange,
@@ -211,16 +172,14 @@ class Home extends Component<IProps, IStates> {
           handleButtonRelease={handleButtonRelease}
         />
         <Bottom>
-          <DocumentTitle title={title}>
-            <LeftNav
-              expanded={expanded}
-              id="leftnav"
-              icons={this.getIcons()}
-              umiCount={UMI_COUNT}
-              handleRouterChange={handleRouterChange}
-              handleTitle={handleTitle}
-            />
-          </DocumentTitle>
+          <LeftNav
+            expanded={expanded}
+            id="leftnav"
+            icons={this.getIcons()}
+            umiCount={UMI_COUNT}
+            handleRouterChange={handleRouterChange}
+            handleTitle={handleTitle}
+          />
           <Main>
             <Switch>
               <Redirect exact={true} from="/" to="/messages" />

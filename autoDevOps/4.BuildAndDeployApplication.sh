@@ -22,7 +22,7 @@ if [ $? -eq 0 ]; then
         npm run raise-coverage
         if [ "$(git diff ${project}/config)" ]; then
             git add $project/config
-            git commit -m "feat(CICD): raised coverage test threshold" && git push
+            git commit -m "feat(CICD): raised coverage test threshold" && git push --no-verify
         fi
     fi
 else
