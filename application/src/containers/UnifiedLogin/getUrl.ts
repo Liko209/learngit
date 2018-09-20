@@ -9,6 +9,21 @@ import { stringify } from 'qs';
 import config from '@/config';
 import getLanguage from '@/utils/getLanguage';
 
+const defaultOptions = {
+  response_type: 'code',
+  brand_id: '1210',
+  force: true,
+  endpointId: '',
+  display: 'touch',
+  prompt: 'login sso',
+  scope: '',
+  ui_options: 'external_popup remember_me_on show_back_to_app',
+  hideNavigationBar: true,
+  glip_auth: true,
+  response_hint: 'remember_me+login_type',
+  title_bar: true,
+};
+
 const getUrl = (location: History.LocationState) => {
   const { glip2 } = config.get('api');
   const url = `${glip2.server}${glip2.apiPlatform}/oauth/authorize`;
@@ -16,27 +31,17 @@ const getUrl = (location: History.LocationState) => {
   const { pathname = '/', search = '', hash = '' } = from;
   const state = pathname + search.replace('&', '$') + hash;
   const redirect_uri = window.location.origin; // The URI must match exactly with the sandbox configuration
-  const params = {
+  const options = {
     redirect_uri,
     state,
-    response_type: 'code',
     client_id: glip2.clientId,
-    brand_id: '1210',
     ui_locales: getLanguage(), // default en_US
-    force: true,
-    endpointId: '',
-    display: 'touch',
-    prompt: 'login sso',
-    scope: '',
-    ui_options: 'external_popup remember_me_on show_back_to_app',
-    hideNavigationBar: true,
-    glip_auth: true,
-    response_hint: 'remember_me+login_type',
-    title_bar: true,
   };
+  const params = { ...defaultOptions, ...options };
   return `${url}?${stringify(params)}`;
 };
 
+export { defaultOptions };
 export default getUrl;
 
 // Auth wiki

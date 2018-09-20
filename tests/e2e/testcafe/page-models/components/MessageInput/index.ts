@@ -1,8 +1,7 @@
-
 /*
  * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-09-11 10:21:46
+ * @Date: 2018-09-17 16:26:48
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './Alert';
+export * from './Draft';

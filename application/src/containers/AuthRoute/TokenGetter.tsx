@@ -11,17 +11,18 @@ import { translate } from 'react-i18next';
 
 import ViewModel from './ViewModel';
 import ContentLoader from 'ui-components/organisms/ContentLoader';
-import Alert from 'ui-components/molecules/Dialog/Alert';
+import Alert from 'ui-components/molecules/Dialog/Modal';
 import { observer } from 'mobx-react';
+import { reaction, IReactionDisposer } from 'mobx';
 
 interface IProps extends RouteComponentProps<{}> {
   t: TranslationFunction;
 }
 
 @observer
-class TokenGetter extends Component<IProps>  {
+class TokenGetter extends Component<IProps> {
   private _vm: ViewModel;
-
+  private _observer: IReactionDisposer;
   constructor(props: IProps) {
     super(props);
     this._vm = new ViewModel();
@@ -34,6 +35,18 @@ class TokenGetter extends Component<IProps>  {
     // http://localhost:3000/?state=STATE&id_token=TOKEN
     const { location, history } = this.props;
     this._vm.unifiedLogin(location, history);
+    this._observer = reaction(
+      () => {
+        const { offline, open } = this._vm;
+        return { offline, open };
+      },
+      ({ offline, open }) => {
+        this.showAlert(offline, open);
+      },
+    );
+  }
+  componentWillUnmount() {
+    this._observer();
   }
 
   onClose = () => {
@@ -41,21 +54,27 @@ class TokenGetter extends Component<IProps>  {
     this._vm.onClose(location, history);
   }
 
-  render() {
+  showAlert(offline: any, open: any) {
     const { t } = this.props;
-    const { offline, open } = this._vm;
+    if (open) {
+      Alert.alert(
+        {
+          header: t('signInFailedTitle'),
+          onOK: () => {
+            this.onClose();
+          },
+          children: t(
+            offline ? 'signInFailedContentNetwork' : 'signInFailedContent',
+          ),
+        },
+        this,
+      );
+    }
+  }
+  render() {
     return (
       <React.Fragment>
         <ContentLoader />
-        {
-          offline ?
-            <Alert open={true} header={t('signInFailedTitle')} onClose={this.onClose}>
-              {t('signInFailedContentNetwork')}
-            </Alert> :
-            <Alert open={open} header={t('signInFailedTitle')} onClose={this.onClose}>
-              {t('signInFailedContent')}
-            </Alert>
-        }
       </React.Fragment>
     );
   }
