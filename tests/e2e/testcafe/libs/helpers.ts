@@ -8,9 +8,9 @@ import { RC_PLATFORM_APP_KEY, RC_PLATFORM_APP_SECRET, ENV } from '../config';
 export function setUp(accountType: string) {
   return async (t: TestController) => {
     const helper = TestHelper.from(t);
-    await helper.checkOutAccounts(accountType);
-    helper.setupGlipApiManager();
     await setupSDK(t);
+    helper.setupGlipApiManager();
+    await helper.checkOutAccounts(accountType);
   };
 }
 
