@@ -9,13 +9,11 @@ import GroupService, { CreateTeamOptions } from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
 
 class CreateTeamVM {
-  constructor() {}
-
   @action
   async create(
     name: string,
     memberIds: number[],
-    description: string = '',
+    description: string,
     options: CreateTeamOptions,
   ) {
     const { isPublic, canPost } = options;
