@@ -354,7 +354,7 @@ export default class GroupService extends BaseService<Group> {
   }
 
   // update partial group data
-  async updateGroupPartialData(params: object) {
+  async updateGroupPartialData(params: object): Promise<boolean> {
     try {
       const dao = daoManager.getDao(GroupDao);
       await dao.update(params);
@@ -367,12 +367,14 @@ export default class GroupService extends BaseService<Group> {
 
   // update partial group data, for message draft
   async updateGroupDraft(params: { id: number, draft: string }): Promise<boolean> {
-    return this.updateGroupPartialData(params);
+    const result = await this.updateGroupPartialData(params);
+    return result;
   }
 
   // update partial group data, for send failure post ids
   async updateGroupSendFailurePostIds(params: { id: number, send_failure_post_ids: number[] }): Promise<boolean> {
-    return this.updateGroupPartialData(params);
+    const result = await this.updateGroupPartialData(params);
+    return result;
   }
 
   // get group data, for send failure post ids

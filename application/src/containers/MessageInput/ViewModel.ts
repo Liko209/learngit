@@ -50,7 +50,7 @@ class ViewModel {
     this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
     this._debounceUpdateGroupDraft = debounce<DebounceFunction>(
-      this._groupService.updateGroupDraft,
+      this._groupService.updateGroupDraft.bind(this._groupService),
       500,
     );
 
@@ -121,6 +121,11 @@ class ViewModel {
       // You do not need to handle the error because the message will display a resend
     }
   }
+
+  forceSaveDraft() {
+    this._groupService.updateGroupDraft({ draft: this.draft, id: this._id }); // immediately save
+  }
+
 }
 
 export default ViewModel;

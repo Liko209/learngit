@@ -32,6 +32,10 @@ class MessageInputComponent extends Component<IProps> {
     }
   }
 
+  componentWillUnmount() {
+    this._vm.forceSaveDraft();
+  }
+
   private _onChange = (value: any) => {
     this._vm.changeDraft(value);
   }

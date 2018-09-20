@@ -51,15 +51,25 @@ type ListItemProps = {
   umiVariant?: 'count' | 'dot' | 'auto';
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
+  showDraftTag?: boolean;
+  showSendMsgFailureTag?: boolean;
 } & MuiMenuItemProps;
 
 type IConversationListItem = { dependencies?: React.ComponentType[] } & React.SFC<ListItemProps>;
 
 const ConversationListItem: IConversationListItem = (props: ListItemProps) => {
   const { title, status, unreadCount, important,
-    onClick, onMoreClick, umiVariant, component, selected } = props;
+    onClick, onMoreClick, umiVariant, component, selected, showDraftTag, showSendMsgFailureTag } = props;
 
   const fontWeight = unreadCount ? 'bold' : 'normal';
+
+  let tag = '';
+  if (showDraftTag) {
+    tag = '[Draft]';
+  }
+  if (showSendMsgFailureTag) {
+    tag = '[Failure]'; // only show one
+  }
 
   return (
     <StyledListItem
@@ -68,7 +78,7 @@ const ConversationListItem: IConversationListItem = (props: ListItemProps) => {
       selected={selected}
     >
       <Presence presence={status} />
-      <ItemText style={{ fontWeight }}>{title}</ItemText>
+      <ItemText style={{ fontWeight }}>{tag} {title}</ItemText>
       <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
       <Icon onClick={onMoreClick}>more_vert</Icon>
     </StyledListItem>
