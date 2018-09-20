@@ -82,6 +82,10 @@ class ViewModel {
     this._debounceUpdateGroupDraft({ draft, id: this._id }); // DB sync 500 ms later
   }
 
+  forceSaveDraft() {
+    this._groupService.updateGroupDraft({ draft: this.draft, id: this._id }); // immediately save
+  }
+
   @computed
   get initDraft() {
     const groupEntity = getEntity(ENTITY_NAME.GROUP, this._id) as GroupModel;
