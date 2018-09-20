@@ -229,10 +229,7 @@ class NavPresenter {
   // handle without click
   @action
   handleTitle = (title: string) => {
-    this.state.title =
-      title.length > TITLE_LENGTH
-        ? `${title.slice(0, TITLE_LENGTH + 2)}...`
-        : title;
+    this.state.title = this._handleTitleSlice(title);
   }
   @computed
   get title() {
