@@ -200,11 +200,11 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   }
   private _jump2Conversation(id: number) {
     const { history } = this.props;
-    history.push(`/messages/${this.id}`);
-    // if (id === this.id) {
-    //   this.count = ++this.count;
-    //   this.count === 1 ? history.push(`/messages/${id}`) : null;
-    // }
+    if (id === this.id) {
+      this.count = ++this.count;
+      this.count === 1 ? history.push(`/messages/${id}`) : null;
+      this.count = 0;
+    }
     this.navPresenter.handleRouterChange();
   }
   @action
