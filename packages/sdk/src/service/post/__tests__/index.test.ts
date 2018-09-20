@@ -7,6 +7,7 @@ import ItemService from '../../item';
 import PostService from '../index';
 import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
+import GroupService from '../../group';
 import _ from 'lodash';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 
@@ -47,6 +48,10 @@ describe('PostService', () => {
     jest.resetAllMocks();
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+    GroupService.getInstance = jest.fn().mockReturnValue({
+      getGroupSendFailurePostIds: jest.fn().mockReturnValue([]),
+      updateGroupSendFailurePostIds: jest.fn(),
+    });
     daoManager.getDao.mockReturnValueOnce(postDao);
     daoManager.getDao.mockReturnValueOnce(itemDao);
   });
