@@ -73,29 +73,35 @@ describe('LoadingMorePlugin', () => {
     });
   });
 
-  describe('decorator/onScrollToTop', () => {
-    it('should call the function when scroll bar at top', () => {
+  describe('decorator/onScrollToTop+loadingTop', () => {
+    it('should call the function when scroll bar at top', async () => {
       const plugin = new LoadingMorePlugin();
       const vm = new MyViewModel();
       const View = plugin.wrapView(() => <div>Hello World</div>);
       plugin.install(vm);
       const wrapper = mount(<View {...vm} />);
 
-      wrapper.prop('onScrollToTop')();
+      const promise = wrapper.prop('onScrollToTop')();
       expect(fetchPrevSpy).toHaveBeenCalled();
+      expect(vm).toHaveProperty('loadingTop', true);
+      await promise;
+      expect(vm).toHaveProperty('loadingTop', false);
     });
   });
 
-  describe('decorator/onScrollToBottom', () => {
-    it('should call the function when scroll bar at bottom', () => {
+  describe('decorator/onScrollToBottom+loadingBottom', () => {
+    it('should call the function when scroll bar at bottom', async () => {
       const plugin = new LoadingMorePlugin();
       const vm = new MyViewModel();
       const View = plugin.wrapView(() => <div>Hello World</div>);
       plugin.install(vm);
       const wrapper = mount(<View {...vm} />);
 
-      wrapper.prop('onScrollToBottom')();
+      const promise = wrapper.prop('onScrollToBottom')();
       expect(fetchNextSpy).toHaveBeenCalled();
+      expect(vm).toHaveProperty('loadingBottom', true);
+      await promise;
+      expect(vm).toHaveProperty('loadingBottom', false);
     });
   });
 });

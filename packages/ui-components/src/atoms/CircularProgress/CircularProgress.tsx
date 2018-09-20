@@ -6,13 +6,14 @@ import styled, { IDependencies } from '../../styled-components';
 
 const StyledCircularProgress = styled(MuiCircularProgress)``;
 
-type IJuiCircularProgress = StatelessComponent<CircularProgressProps> &
+type JuiCircularProgressProps = CircularProgressProps;
+type IJuiCircularProgress = StatelessComponent<JuiCircularProgressProps> &
   IDependencies;
 
 const JuiCircularProgress: IJuiCircularProgress = ({
   innerRef,
   ...rest
-}: CircularProgressProps) => <StyledCircularProgress {...rest} />;
+}: JuiCircularProgressProps) => <StyledCircularProgress {...rest} />;
 
 JuiCircularProgress.defaultProps = {
   size: 24,
@@ -20,4 +21,4 @@ JuiCircularProgress.defaultProps = {
 
 JuiCircularProgress.dependencies = [MuiCircularProgress];
 
-export { JuiCircularProgress };
+export { JuiCircularProgress, JuiCircularProgressProps };

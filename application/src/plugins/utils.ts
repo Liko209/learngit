@@ -38,28 +38,13 @@ function createFunctionWrapDecorator(options: FunctionWrapDecoratorOptions) {
   };
 }
 
-function createLoadingStateDecorator<VM extends IViewModel>(
-  loading: string,
-  delay = 500,
-) {
-  const loadingFinished = `${loading}_finished`;
-
-  function setLoading(vm: VM) {
-    if (vm[loadingFinished]) return;
-    vm[loading] = true;
-  }
-
-  function setLoadingFinished(vm: VM) {
-    vm[loading] = false;
-    vm[loadingFinished] = true;
-  }
-
+function createLoadingStateDecorator<VM extends IViewModel>(loading: string) {
   return createFunctionWrapDecorator({
     before(vm: VM) {
-      setTimeout(() => setLoading(vm), delay);
+      vm[loading] = true;
     },
     after(vm: VM) {
-      setLoadingFinished(vm);
+      vm[loading] = false;
     },
   });
 }

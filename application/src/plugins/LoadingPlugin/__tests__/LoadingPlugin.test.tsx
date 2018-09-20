@@ -47,18 +47,11 @@ describe('LoadingPlugin', () => {
 
   describe('decorator/loading', () => {
     it('should control loading state', async () => {
-      jest.useFakeTimers();
-
       const vm = new MyViewModel();
 
-      expect.assertions(3);
-      const promise = vm.sleep(1000);
-      expect(vm).not.toHaveProperty('loading', false);
-
-      jest.advanceTimersByTime(500);
+      expect.assertions(2);
+      const promise = vm.sleep(1);
       expect(vm).toHaveProperty('loading', true);
-
-      jest.advanceTimersByTime(500);
       await promise;
       expect(vm).toHaveProperty('loading', false);
     });
