@@ -72,6 +72,8 @@ describe('PostService', () => {
         hasMore: true,
         items: mockItems,
         posts: mockPosts,
+        limit: 20,
+        offset: 0,
       });
     });
 
@@ -87,7 +89,13 @@ describe('PostService', () => {
         limit: 20,
       });
 
-      expect(result).toEqual({ hasMore: true, items: [], posts: [] });
+      expect(result).toEqual({
+        hasMore: true,
+        items: [],
+        posts: [],
+        offset: 0,
+        limit: 20,
+      });
     });
   });
 
@@ -243,6 +251,8 @@ describe('PostService', () => {
         posts: [{ id: 1 }, { id: 2 }],
         items: [],
         hasMore: false,
+        offset: 0,
+        limit: 20,
       });
     });
 
@@ -257,6 +267,8 @@ describe('PostService', () => {
         posts: [],
         items: [],
         hasMore: true,
+        offset: 0,
+        limit: 20,
       });
     });
   });
