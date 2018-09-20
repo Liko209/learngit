@@ -2,4 +2,8 @@ type ConversationStreamProps = {
   groupId: number;
 };
 
-export { ConversationStreamProps };
+type ConversationStreamViewProps = {
+  postIds: number[];
+};
+
+export { ConversationStreamProps, ConversationStreamViewProps };

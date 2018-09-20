@@ -5,10 +5,7 @@
  */
 import React, { PureComponent } from 'react';
 import ConversationCard from '../ConversationCard';
-
-type ConversationStreamViewProps = {
-  postIds: number[];
-};
+import { ConversationStreamViewProps } from './types';
 
 class ConversationStreamView extends PureComponent<
   ConversationStreamViewProps

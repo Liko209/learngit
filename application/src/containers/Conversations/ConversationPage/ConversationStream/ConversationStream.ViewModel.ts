@@ -27,6 +27,7 @@ class ConversationStreamViewModel extends TransformHandler<PostModel, Post> {
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   stateService: StateService;
   postService: PostService;
+
   @observable
   groupId: number;
   @observable
@@ -93,9 +94,7 @@ class ConversationStreamViewModel extends TransformHandler<PostModel, Post> {
       this.store.hasMore = hasMore;
     } catch (err) {
       if (err.code === ErrorTypes.NETWORK) {
-        alert(
-          'Loading Failed Network disconnected. Please try again when the network is resumed.',
-        );
+        // TODO error handle
       }
     }
   }
