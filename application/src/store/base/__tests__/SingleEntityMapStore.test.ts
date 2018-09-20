@@ -16,7 +16,7 @@ jest.mock('../ModelProvider');
 jest.mock('../BaseStore');
 
 let instance: SingleEntityMapStore<any, any>;
-const getService = () => { };
+const getService = () => {};
 const getEntity: (i?: number) => IEntity = (i?: number) => ({
   id: i || faker.random.number(10),
 });
@@ -31,7 +31,10 @@ beforeAll(() => {
   ENTITY_SETTING['name'] = {};
   ENTITY_SETTING['name'].event = ['DELETE', 'PUT', 'UPDATE'];
   ENTITY_SETTING['name'].service = getService;
-  instance = new SingleEntityMapStore('name' as ENTITY_NAME, ENTITY_SETTING['name']);
+  instance = new SingleEntityMapStore(
+    'name' as ENTITY_NAME,
+    ENTITY_SETTING['name'],
+  );
 });
 
 describe('SingleEntityMapStore constructor', () => {
@@ -246,7 +249,7 @@ describe('get()', () => {
   it('should init if this.init is not true', () => {
     instance.init = false;
     instance.get('id');
-    expect(instance.init).toBe(true);
+    expect(instance.init).toBe(false);
     expect(instance.getByService).toHaveBeenCalledTimes(1);
     expect(instance.data.get).toHaveBeenCalledTimes(1);
   });
@@ -316,7 +319,7 @@ describe('createModel()', () => {
     };
     const modelProvider: ModelProvider = (ModelProvider as jest.Mock<
       ModelProvider
-      >).mock.instances[0];
+    >).mock.instances[0];
     jest
       .spyOn(modelProvider, 'getModelCreator')
       .mockImplementation(() => Model);
