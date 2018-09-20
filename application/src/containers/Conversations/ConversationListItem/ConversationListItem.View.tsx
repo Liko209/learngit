@@ -3,7 +3,6 @@
  * @Date: 2018-09-19 13:53:48
  * Copyright © RingCentral. All rights reserved.
  */
-import showAlert from '../../Dialog/ShowAlert';
 import React, { MouseEvent } from 'react';
 import { ConversationListItem } from 'ui-components/molecules/ConversationList/ConversationListItem';
 import { Menu } from 'ui-components/atoms/Menu';
@@ -101,10 +100,10 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
 
   private async _closeConversation(shouldSkipNextTime: boolean) {
     const result = await this.props.closeConversation(shouldSkipNextTime);
-    this._showErrorAlert(result);
+    this._handleResult(result);
   }
 
-  private _showErrorAlert(error: ServiceCommonErrorType) {
+  private _handleResult(error: ServiceCommonErrorType) {
     if (error === ServiceCommonErrorType.NONE) {
       // jump to section
       const match = /messages\/(\d+)/.exec(window.location.href);
@@ -113,17 +112,6 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
         history.replace('/messages');
       }
       return;
-    }
-    const header = t('conversationMenuItem:closeConversationFail');
-    if (error === ServiceCommonErrorType.NETWORK_NOT_AVAILABLE) {
-      const content = t('networkDisconnected');
-      showAlert({ header, content });
-    } else if (
-      error === ServiceCommonErrorType.SERVER_ERROR ||
-      error === ServiceCommonErrorType.UNKNOWN_ERROR
-    ) {
-      const content = t('conversationMenuItem:havingTroubleCloseConversation');
-      showAlert({ header, content });
     }
   }
 
