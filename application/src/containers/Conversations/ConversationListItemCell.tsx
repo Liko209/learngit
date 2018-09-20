@@ -176,6 +176,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     if (id === this.id) {
       this.count = ++this.count;
       this.count === 1 ? history.push(`/messages/${id}`) : null;
+      this.count = 0;
     }
     this.navPresenter.handleRouterChange();
   }
