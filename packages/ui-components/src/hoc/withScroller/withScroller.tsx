@@ -17,8 +17,8 @@ type ScrollerProps = {
   threshold: number;
   initialScrollTop: number;
   stickTo: StickType;
-  onScrollToTop: (event: UIEvent) => void;
-  onScrollToBottom: (event: UIEvent) => void;
+  onScrollToTop: () => void;
+  onScrollToBottom: () => void;
 };
 type WithScrollerProps = ScrollerProps;
 type ScrollerStates = {};
@@ -74,6 +74,7 @@ function withScroller(Comp: ComponentType<any>) {
 
     componentDidMount() {
       this._scrollEl.scrollTop = this.props.initialScrollTop;
+      this._handleScroll();
       this._atTop = this._isAtTop();
       this._atBottom = this._isAtBottom();
       this.attachScrollListener();
@@ -95,16 +96,18 @@ function withScroller(Comp: ComponentType<any>) {
       this._scrollEl.removeEventListener('scroll', this._handleScroll, false);
     }
 
-    private _handleScroll = (event: UIEvent) => {
+    private _handleScroll = () => {
       const prevAtTop = this._atTop;
       const prevAtBottom = this._atBottom;
       const atTop = this._isAtTop();
       const atBottom = this._isAtBottom();
 
       if (atTop && !prevAtTop) {
-        this.props.onScrollToTop && this.props.onScrollToTop(event);
-      } else if (atBottom && !prevAtBottom) {
-        this.props.onScrollToBottom && this.props.onScrollToBottom(event);
+        this.props.onScrollToTop && this.props.onScrollToTop();
+      }
+
+      if (atBottom && !prevAtBottom) {
+        this.props.onScrollToBottom && this.props.onScrollToBottom();
       }
 
       this._atTop = this._isAtTop();
