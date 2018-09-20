@@ -5,7 +5,12 @@
  */
 import { ComponentType } from 'react';
 import { IPlugin } from '@/base/IPlugin';
-import { LoadingPlugin, ILoadingViewModel, loading } from '../LoadingPlugin';
+import {
+  LoadingPlugin,
+  LoadingPluginOptions,
+  ILoadingViewModel,
+  loading,
+} from '../LoadingPlugin';
 import {
   LoadingMorePlugin,
   ILoadingMoreViewModel,
@@ -23,7 +28,8 @@ interface IInfiniteListViewModel
   onScrollBottom(): void;
 }
 
-type InfiniteListPluginOptions = LoadingMorePluginOptions;
+type InfiniteListPluginOptions = LoadingPluginOptions &
+  LoadingMorePluginOptions;
 
 class InfiniteListPlugin implements IPlugin {
   private _loadingPlugin: LoadingPlugin;
@@ -35,9 +41,6 @@ class InfiniteListPlugin implements IPlugin {
     // TODO Child for AbstractPlugin that automatically apply child plugins.
     this._loadingPlugin = new LoadingPlugin();
     this._loadingMorePlugin = new LoadingMorePlugin({
-      // InfiniteList should trigger onScrollToTop/onScrollToBottom
-      // event when mount
-      triggerScrollToOnMount: true,
       ...this._options,
     });
   }

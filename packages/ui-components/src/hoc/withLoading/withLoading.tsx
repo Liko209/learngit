@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { ComponentType } from 'react';
+import styled from '../../styled-components';
 import { JuiCircularProgress } from '../../atoms/CircularProgress';
 import { JuiFade } from '../../atoms/Fade';
-import styled from '../../styled-components';
 
 type WithLoadingProps = {
   loading: boolean;
-  delay?: number;
+  transitionDelay?: number;
   variant?: 'circular';
 };
 
@@ -24,7 +24,9 @@ const StyledLoading = styled.div`
 
 const DefaultLoading = () => (
   <StyledLoading>
-    <JuiCircularProgress />
+    <JuiFade in={true} style={{ transitionDelay: '500ms' }}>
+      <JuiCircularProgress />
+    </JuiFade>
   </StyledLoading>
 );
 
@@ -36,16 +38,17 @@ const withLoading = <P extends object>(
   Component: ComponentType<P>,
   CustomizedLoading?: ComponentType<any>,
 ): React.SFC<P & WithLoadingProps> => {
-  return ({ loading, variant, delay = 0, ...props }: WithLoadingProps) => {
+  return ({
+    loading,
+    variant,
+    transitionDelay = 0,
+    ...props
+  }: WithLoadingProps) => {
     if (!loading) return <Component {...props} />;
 
     const Loading = CustomizedLoading || MAP[variant || 'circular'];
 
-    return (
-      <JuiFade in={true} style={{ transitionDelay: `${delay}ms` }}>
-        <Loading />
-      </JuiFade>
-    );
+    return <Loading transitionDelay={transitionDelay} />;
   };
 };
 

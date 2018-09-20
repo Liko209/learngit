@@ -11,7 +11,14 @@ import { createLoadingStateDecorator } from '../utils';
 
 interface ILoadingViewModel extends IViewModel, WithLoadingProps {}
 
+type LoadingPluginOptions = {};
+
 class LoadingPlugin implements IPlugin {
+  _options: LoadingPluginOptions;
+  constructor(options?: LoadingPluginOptions) {
+    this._options = options || {};
+  }
+
   install(vm: IViewModel): void {
     vm.extendProps({ loading: false });
   }
@@ -22,4 +29,4 @@ class LoadingPlugin implements IPlugin {
 }
 const loading = createLoadingStateDecorator('loading');
 
-export { LoadingPlugin, ILoadingViewModel, loading };
+export { LoadingPlugin, LoadingPluginOptions, ILoadingViewModel, loading };

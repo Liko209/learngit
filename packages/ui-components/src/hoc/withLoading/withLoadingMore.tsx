@@ -7,7 +7,6 @@ import React, { ComponentType, Fragment } from 'react';
 import styled from '../../styled-components';
 import { spacing } from '../../utils/styles';
 import { JuiCircularProgress } from '../../atoms/CircularProgress';
-import { JuiFade } from '../../atoms/Fade';
 
 type WithLoadingMoreProps = {
   loadingTop: boolean;
@@ -33,22 +32,18 @@ const withLoadingMore = (
   Component: ComponentType<any>,
   CustomizedLoading?: ComponentType<any>,
 ) => {
-  return class LoadingMoreComponent extends React.Component<any> {
+  return class LoadingMoreComponent extends React.Component<
+    WithLoadingMoreProps
+  > {
     render() {
-      const { loadingTop, loadingBottom, delay = 0, ...rest } = this.props;
+      const { loadingTop, loadingBottom, ...rest } = this.props;
       const LoadingMore = CustomizedLoading || DefaultLoadingMore;
-
-      const DelayedLoading = () => (
-        <JuiFade in={true} style={{ transitionDelay: `${delay}ms` }}>
-          <LoadingMore />
-        </JuiFade>
-      );
 
       return (
         <Fragment>
-          {loadingTop ? <DelayedLoading /> : null}
+          {loadingTop ? <LoadingMore /> : null}
           <Component {...rest}>{rest.children}</Component>
-          {loadingBottom ? <DelayedLoading /> : null}
+          {loadingBottom ? <LoadingMore /> : null}
         </Fragment>
       );
     }
