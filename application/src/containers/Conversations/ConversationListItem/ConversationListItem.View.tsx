@@ -14,9 +14,20 @@ import showDialogWithCheckView from '../../Dialog/DialogWithCheckView';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import navPresenter, { NavPresenter } from '../../Home/NavPresenter';
 
-type IProps = ConversationListItemViewProps &
-  RouteComponentProps<{ id: string }>;
-class ConversationListItemViewComponent extends React.Component<IProps> {
+type IRouterParams = {
+  id: string;
+};
+
+type IProps = RouteComponentProps<IRouterParams> &
+  ConversationListItemViewProps;
+interface IState {
+  currentGroupId: number;
+}
+
+class ConversationListItemViewComponent extends React.Component<
+  IProps,
+  IState
+> {
   private navPresenter: NavPresenter;
   constructor(props: IProps) {
     super(props);
@@ -24,6 +35,17 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
     this.onCloseButtonClick = this.onCloseButtonClick.bind(this);
     this.onFavoriteTogglerClick = this.onFavoriteTogglerClick.bind(this);
     this.navPresenter = navPresenter;
+    this.state = { currentGroupId: 0 };
+  }
+  componentDidMount() {
+    this.props.history.listen(() => {
+      const pathname = window.location.pathname;
+      const uIdIndex = pathname.lastIndexOf('/');
+      const uid = pathname.slice(uIdIndex + 1);
+      if (+uid === this.props.id) {
+        this.navPresenter.handleTitle(this.props.displayName);
+      }
+    });
   }
   renderCloseMenuItem() {
     if (this.props.unreadCount === 0) {
@@ -50,8 +72,16 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
       </Menu>
     );
   }
-
+  static getDerivedStateFromProps(props: IProps, state: IState) {
+    const currentGroupId = parseInt(props.match.params.id, 10);
+    if (currentGroupId !== state.currentGroupId) {
+      return { currentGroupId };
+    }
+    return null;
+  }
   render() {
+    const { currentGroupId } = this.state;
+    const showDraftTag = currentGroupId !== this.props.id && !!this.props.draft; // except oneself
     return (
       <React.Fragment>
         <ConversationListItem
@@ -64,6 +94,7 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
           onMoreClick={this.props.onMoreClick}
           onClick={this.onClick}
           status={this.props.status}
+          showDraftTag={showDraftTag}
         />
         {this.renderMenu()}
       </React.Fragment>
@@ -99,7 +130,6 @@ class ConversationListItemViewComponent extends React.Component<IProps> {
   }
 
   private async _closeConversation(shouldSkipNextTime: boolean) {
-    console.log('isChecked', shouldSkipNextTime);
     const result = await this.props.closeConversation(shouldSkipNextTime);
     this._handleResult(result);
   }

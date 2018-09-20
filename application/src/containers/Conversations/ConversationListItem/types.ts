@@ -11,6 +11,7 @@ type ConversationListItemProps = {
   entityName: string;
   isFavorite?: boolean;
   currentUserId?: number;
+  currentGroupId?: number;
 };
 
 type ConversationListItemViewProps = {
@@ -24,6 +25,7 @@ type ConversationListItemViewProps = {
   favoriteText: string;
   menuOpen: boolean;
   shouldSkipCloseConfirmation: boolean;
+  draft?: string;
   onClick: (event: MouseEvent<HTMLElement>) => void;
   onMoreClick: (event: MouseEvent<HTMLElement>) => void;
   toggleFavorite: () => void;

@@ -20,7 +20,7 @@ const ConversationPageComponent = ({ match }: IProps) => {
     <JuiConversationPage>
       <ConversationPageHeader id={id} />
       <JuiDivider />
-      <ConversationStream groupId={id} />
+      <ConversationStream groupId={id} key={id} />
       <Input id={id} />
     </JuiConversationPage>
   );
