@@ -25,17 +25,16 @@ type IDefaultProps = {
   cancelText: string;
 };
 
-type IJuiModal = IDialogProps &
-  Partial<IDefaultProps> & {
-    onOK(event?: React.MouseEvent): void;
-    onCancel?: (event?: React.MouseEvent) => void;
-    header: JSX.Element | string;
-    children: JSX.Element | string;
-    okCancel?: boolean;
-    cancelText?: string;
-    theme?: MuiTheme;
-    afterClosed?: Function;
-  };
+type IJuiModal = IDialogProps & Partial<IDefaultProps> & {
+  onOK(event?: React.MouseEvent): void;
+  onCancel?: (event?: React.MouseEvent) => void;
+  header: JSX.Element | string;
+  children: JSX.Element | string;
+  okCancel?: boolean;
+  cancelText?: string;
+  theme?: MuiTheme;
+  afterClosed?: Function;
+};
 
 type TOnDestroyArgs = {
   triggerCancel?: boolean;
@@ -46,7 +45,7 @@ type DynamicModalProps = Overwrite<
   {
     open?: boolean;
   }
->;
+  >;
 
 type TModalFunc = (
   props: DynamicModalProps,
@@ -146,7 +145,7 @@ const modal: TModalFunc = function (
   const render = ({
     onOK: _onOK,
     onCancel: _onCancel,
-    ...props,
+    ...props
   }: DynamicModalProps) => {
     const onOK = () => {
       close();
