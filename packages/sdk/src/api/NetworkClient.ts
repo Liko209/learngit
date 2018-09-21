@@ -65,18 +65,21 @@ export default class NetworkClient {
     { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]
   >;
   defaultVia: NETWORK_VIA;
+  networkManager: NetworkManager;
   // todo refactor config
   constructor(
     networkRequests: INetworkRequests,
     apiPlatform: string,
     defaultVia: NETWORK_VIA,
     apiPlatformVersion: string = '',
+    networkManager: NetworkManager = NetworkManager.Instance,
   ) {
     this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;
     this.apiPlatformVersion = apiPlatformVersion;
     this.apiMap = new Map();
     this.defaultVia = defaultVia;
+    this.networkManager = networkManager;
   }
 
   request<T>(query: IQuery): Promise<IResponse<T>> {
@@ -92,7 +95,7 @@ export default class NetworkClient {
       if (!duplicate) {
         const request = this.getRequestByVia<T>(query, via);
         request.callback = this.buildCallback<T>(apiMapKey);
-        NetworkManager.Instance.addApiRequest(request);
+        this.networkManager.addApiRequest(request);
       }
     });
   }
@@ -148,6 +151,7 @@ export default class NetworkClient {
       .setAuthfree(authFree || false)
       .setRequestConfig(requestConfig || {})
       .setVia(via)
+      .setNetworkManager(this.networkManager)
       .build();
   }
 

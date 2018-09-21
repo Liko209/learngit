@@ -27,10 +27,11 @@ class NetworkManager {
   handlers: Map<IHandleType, NetworkRequestHandler>;
   tokenManager?: OAuthTokenManager;
   decorator?: NetworkRequestDecorator;
-  private constructor() {
+
+  constructor(oauthTokenManager = OAuthTokenManager.Instance) {
     this.clientManager = new ClientManager();
     this.handlers = new Map<IHandleType, NetworkRequestHandler>();
-    this.tokenManager = OAuthTokenManager.Instance;
+    this.tokenManager = oauthTokenManager;
   }
 
   public static get Instance() {
@@ -46,21 +47,15 @@ class NetworkManager {
   }
 
   pause() {
-    this.handlers.forEach((handler) => {
-      handler.pause();
-    });
+    this.handlers.forEach(handler => handler.pause());
   }
 
   resume() {
-    this.handlers.forEach((handler) => {
-      handler.resume();
-    });
+    this.handlers.forEach(handler => handler.resume());
   }
 
   cancelAll() {
-    this.handlers.forEach((handler) => {
-      handler.cancelAll();
-    });
+    this.handlers.forEach(handler => handler.cancelAll());
   }
 
   cancelRequest(request: IRequest) {
