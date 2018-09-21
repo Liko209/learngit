@@ -6,20 +6,21 @@
 
 const { execSync } = require("child_process");
 const chalk = require("chalk");
-
 let currentBranch = execSync("git rev-parse --abbrev-ref HEAD")
   .toString()
   .match(/[\w/\-.]*/i)[0];
 
-const isChange = execSync(
-  `git diff origin/${currentBranch} -- config/coverage-threshold.json`
-).toString();
+const thresholdFromDev = JSON.parse(
+  execSync(`git show origin/develop:config/coverage-threshold.json`).toString()
+).global;
 
-if (isChange) {
-  console.warn(
-    chalk.blue.bgRed.white(
-      "Found changes on config/coverage-threshold.json, Cheating on threshold is not allowed"
-    )
-  );
+const localThreshold = require("../config/coverage-threshold.json").global;
+
+const hasLoweredLocally = Object.keys(thresholdFromDev).some(
+  (criteria) => localThreshold[criteria] < thresholdFromDev[criteria]
+);
+
+if (hasLoweredLocally) {
+  console.log(chalk.red("You have your local coverage threshold lowered"));
   process.exit(1);
 }
