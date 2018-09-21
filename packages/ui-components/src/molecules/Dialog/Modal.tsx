@@ -146,7 +146,7 @@ const modal: TModalFunc = function (
   const render = ({
     onOK: _onOK,
     onCancel: _onCancel,
-    ...props
+    ...props,
   }: DynamicModalProps) => {
     const onOK = () => {
       close();
