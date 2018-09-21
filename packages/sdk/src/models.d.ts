@@ -59,6 +59,7 @@ export type Group = ExtendedBaseModel & {
   _delta?: { add?: object, remove?: object, set?: object };
   is_public?: boolean;
   description?: string;
+  draft?: string;
 };
 
 export type Profile = ExtendedBaseModel & {
@@ -91,6 +92,7 @@ export type Person = ExtendedBaseModel & {
   sanitized_rc_extension?: object;
   is_pseudo_user?: boolean;
   glip_user_id?: number;
+  away_status?: string | null;
 };
 
 export type UserInfo = {

@@ -16,14 +16,25 @@ import MenuListComposition, {
 } from '../../molecules/MenuListComposition';
 import { spacing, width } from '../../utils';
 import { TJuiAvatarWithPresenceProps } from '../../molecules/AvatarWithPresence';
+import MenuListPanel from '../../molecules/MenuList';
 
 type TTopBarProps = {
+  showLeftPanel: boolean;
+  showRightPanel: boolean;
   AvatarWithPresence: React.SFC<TJuiAvatarWithPresenceProps>;
   HeaderIconButton: React.SFC<JuiIconButtonProps>;
   avatarMenuItems: TMenuItems;
   onLeftNavExpand: ((event: React.MouseEvent<HTMLInputElement>) => void);
   headerMenuItems: TMenuItems;
   headerLogo: string;
+  menuItems: {}[];
+  forwardDisabled: boolean;
+  backDisabled: boolean;
+  handleNavClose: ((event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index: number) => void);
+  handleBackWard: ((event: React.MouseEvent<HTMLSpanElement>) => void);
+  handleForward: ((event: React.MouseEvent<HTMLSpanElement>) => void);
+  handleButtonPress: ((nav: string, event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
+  handleButtonRelease: ((event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
 };
 
 type TTopBarState = {
@@ -77,7 +88,7 @@ const MenuWithLogo = styled.div`
 const BackForward: any = styled.div`
   display: flex;
   visibility: ${(props: { invisible: boolean }) =>
-    props.invisible ? 'hidden' : 'visible'};
+  props.invisible ? 'hidden' : 'visible'};
 `;
 
 const StyledAvatarMenuComposition = styled(MenuListComposition)``;
@@ -188,7 +199,6 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
       isShowSearchBar,
     });
   }
-
   render() {
     const { topBarState, isShowSearchBar } = this.state;
     const {
@@ -198,6 +208,16 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
       HeaderIconButton,
       onLeftNavExpand,
       headerLogo,
+      handleBackWard,
+      handleForward,
+      menuItems,
+      showLeftPanel,
+      showRightPanel,
+      backDisabled,
+      forwardDisabled,
+      handleNavClose,
+      handleButtonPress,
+      handleButtonRelease,
     } = this.props;
     const isElectron =
       navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
@@ -221,20 +241,44 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
               <TopLogo variant="headline">{headerLogo}</TopLogo>
             </MenuWithLogo>
             <BackForward invisible={!isElectron}>
-              <JuiIconButton
-                tooltipTitle="Backward"
-                size="small"
-                awake={topBarState === 'hover'}
+              <MenuListPanel
+                items={menuItems}
+                open={showLeftPanel}
+                handleClose={handleNavClose}
               >
-                chevron_left
-              </JuiIconButton>
-              <JuiIconButton
-                tooltipTitle="Forward"
-                size="small"
-                awake={topBarState === 'hover'}
+                <JuiIconButton
+                  tooltipTitle="Backward"
+                  size="small"
+                  awake={topBarState === 'hover'}
+                  onClick={handleBackWard}
+                  disabled={backDisabled}
+                  onTouchStart={handleButtonPress!.bind(this, 'backward')}
+                  onTouchEnd={handleButtonRelease}
+                  onMouseDown={handleButtonPress!.bind(this, 'backward')}
+                  onMouseUp={handleButtonRelease}
+                >
+                  chevron_left
+                </JuiIconButton>
+              </MenuListPanel>
+              <MenuListPanel
+                items={menuItems}
+                open={showRightPanel}
+                handleClose={handleNavClose}
               >
-                chevron_right
-              </JuiIconButton>
+                <JuiIconButton
+                  tooltipTitle="Forward"
+                  size="small"
+                  awake={topBarState === 'hover'}
+                  onClick={handleForward}
+                  disabled={forwardDisabled}
+                  onTouchStart={handleButtonPress!.bind(this,  'forward')}
+                  onTouchEnd={handleButtonRelease}
+                  onMouseDown={handleButtonPress!.bind(this, 'forward')}
+                  onMouseUp={handleButtonRelease}
+                >
+                  chevron_right
+                </JuiIconButton>
+              </MenuListPanel>
             </BackForward>
             <StyledSearchBar setSearchBarState={this.setSearchBarState} />
             <StyledIconSearch

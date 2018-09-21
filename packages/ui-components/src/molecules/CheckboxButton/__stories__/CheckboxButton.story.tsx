@@ -6,6 +6,7 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs/react';
+import { action } from '@storybook/addon-actions';
 import { withInfoDecorator, alignCenterDecorator } from '../../../utils/decorators';
 import { JuiCheckboxButton } from '..';
 import styled from '../../../styled-components';
@@ -58,6 +59,7 @@ storiesOf('Molecules/CheckboxButton', module)
     return (
       <Wrapper>
         <JuiCheckboxButton
+          onClick={action('clicked')}
           className="checkboxButtonWrapper"
           iconName="favorite_border"
           checkedIconName="favorite"
@@ -65,6 +67,7 @@ storiesOf('Molecules/CheckboxButton', module)
           {...rest}
         />
         <JuiCheckboxButton
+          onClick={action('clicked')}
           className="checkboxButtonWrapper"
           iconName="lock_open"
           checkedIconName="lock"
@@ -72,6 +75,7 @@ storiesOf('Molecules/CheckboxButton', module)
           {...rest}
         />
         <JuiCheckboxButton
+          onClick={action('clicked')}
           className="checkboxButtonWrapper"
           iconName="star_border"
           checkedIconName="star"

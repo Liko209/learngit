@@ -6,7 +6,9 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs/react';
+import { action } from '@storybook/addon-actions';
 import { withInfoDecorator, alignCenterDecorator } from '../../../utils/decorators';
+
 import { JuiButton } from '../';
 
 function getKnobs() {
@@ -44,6 +46,7 @@ storiesOf('Atoms/Button', module)
     return (
       <div>
         <JuiButton
+          onClick={action('clicked')}
           variant="contained"
           {...rest}
         >
@@ -57,6 +60,7 @@ storiesOf('Atoms/Button', module)
     return (
       <div>
         <JuiButton
+          onClick={action('clicked')}
           variant="text"
           {...rest}
         >

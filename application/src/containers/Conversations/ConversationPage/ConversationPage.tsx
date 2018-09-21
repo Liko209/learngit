@@ -3,6 +3,7 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { JuiConversationPage, JuiDivider } from 'ui-components';
 import { ConversationPageHeader } from './ConversationPageHeader';
 import { ConversationStream } from './ConversationStream';
+import { Input } from '@/containers/MessageInput';
 
 interface IParams {
   id: string;
@@ -20,6 +21,7 @@ const ConversationPageComponent = ({ match }: IProps) => {
       <ConversationPageHeader id={id} />
       <JuiDivider />
       <ConversationStream groupId={id} />
+      <Input id={id} />
     </JuiConversationPage>
   );
 };

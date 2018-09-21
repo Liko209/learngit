@@ -29,17 +29,22 @@ export class ConversationCard extends React.Component<IProps> {
       post.creatorId,
     );
     const { text, createdAt } = post;
+    const { displayName, awayStatus } = creator;
+    let nameWithStatus = displayName;
+    if (awayStatus) {
+      nameWithStatus += ` ${awayStatus}`;
+    }
+
     const avatar = (
-      <Avatar uId={id} size="medium">
+      <Avatar uId={creator.id} size="medium">
         SH
       </Avatar>
     );
-    console.log(JuiConversationCardHeader);
     return (
       <React.Fragment>
         <JuiConversationCard Avatar={avatar}>
           <JuiConversationCardHeader
-            name={creator.displayName}
+            name={nameWithStatus}
             time={moment(createdAt).format('hh:mm A')}
           />
           {/* todo: content */}
