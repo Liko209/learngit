@@ -20,7 +20,6 @@ const HandleByGlip = new class extends AbstractHandleType {
         if (handler && handler.isOAuthTokenAvailable()) {
           request.params = {
             ...request.params,
-            tk: handler.accessToken(),
           };
           request.headers = {
             ...request.headers,
