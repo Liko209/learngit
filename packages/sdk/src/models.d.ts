@@ -69,6 +69,7 @@ export type Profile = ExtendedBaseModel & {
   person_id?: number;
   favorite_group_ids: number[];
   favorite_post_ids: number[];
+  me_tab: boolean;
 };
 
 export type Company = ExtendedBaseModel & {
@@ -80,6 +81,7 @@ export type Company = ExtendedBaseModel & {
 export type Person = ExtendedBaseModel & {
   company_id: number;
   email: string;
+  me_group_id: number;
   is_webmail?: boolean;
   first_user?: boolean;
   externally_registered?: boolean;
