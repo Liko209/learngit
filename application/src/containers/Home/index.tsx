@@ -22,7 +22,7 @@ import JuiIconButton from 'ui-components/molecules/IconButton';
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
 import LeftNavViewModel from './LeftNav/LeftNavViewModel';
-import navPresenter, { NavPresenter } from './NavPresenter';
+import navPresenter, { NavPresenter } from '../BackNForward/ViewModel';
 import DocumentTitle from 'react-document-title';
 
 interface IProps extends RouteComponentProps<any> {

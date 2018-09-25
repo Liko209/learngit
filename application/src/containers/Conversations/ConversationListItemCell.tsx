@@ -21,7 +21,7 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import GroupStateModel from '@/store/models/GroupState';
 import MyStateModel from '@/store/models/MyState';
 import { MyState } from 'sdk/src/models';
-import navPresenter, { NavPresenter } from '../Home/NavPresenter';
+import navPresenter, { NavPresenter } from '../BackNForward/ViewModel';
 
 const { GroupService } = service;
 
@@ -50,8 +50,6 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
 
   @observable
   id: number;
-  @observable
-  count: number = 0;
   @observable
   displayName: string;
 
@@ -231,11 +229,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   }
   private _jump2Conversation(id: number) {
     const { history } = this.props;
-    if (id === this.id) {
-      this.count = ++this.count;
-      this.count === 1 ? history.push(`/messages/${id}`) : null;
-      this.count = 0;
-    }
+    history.push(`/messages/${id}`);
     this.navPresenter.handleRouterChange();
   }
   @action

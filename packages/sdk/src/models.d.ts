@@ -90,7 +90,9 @@ export type Person = ExtendedBaseModel & {
   first_name?: string;
   last_name?: string;
   display_name?: string;
-  headshot?: string;
+  headshot?: {
+    url: string,
+  };
   locked?: boolean;
   inviter_id?: number;
   rc_phone_numbers?: object[];

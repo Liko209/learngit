@@ -65,7 +65,7 @@ export class ConversationCard extends React.Component<IProps, IStates> {
     const post = getEntity<Post, PostModel>(ENTITY_NAME.POST, id);
     const creator = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, post.creatorId);
     const { text, createdAt, status = POST_STATUS.SUCCESS } = post;
-    const avatar = (<Avatar uId={id} size="medium">SH</Avatar>);
+    const avatar = (<Avatar uid={creator.id} size="medium" />);
     return (
       <React.Fragment>
         <JuiConversationCard Avatar={avatar}>
