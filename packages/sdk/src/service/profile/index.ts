@@ -118,16 +118,16 @@ export default class ProfileService extends BaseService<Profile> {
     }
     return null;
   }
-  async markMeConversationAsFav(): Promise<Profile | undefined> {
+  async markMeConversationAsFav(): Promise<Profile | null> {
     const { me_tab = false } = (await this.getProfile()) || {};
     if (me_tab) {
-      return;
+      return null;
     }
     const accountService = await AccountService.getInstance<AccountService>();
     const currentId = accountService.getCurrentUserId();
     if (!currentId) {
       console.warn('please make sure that currentId is avaliable');
-      return;
+      return null;
     }
     const personService = await PersonService.getInstance<PersonService>();
     const { me_group_id } = await personService.getById(currentId);
@@ -136,6 +136,7 @@ export default class ProfileService extends BaseService<Profile> {
       profile.me_tab = true;
       return this._putProfileAndHandle(profile, 'me_tab', false);
     }
+    return null;
   }
   async putFavoritePost(
     postId: number,

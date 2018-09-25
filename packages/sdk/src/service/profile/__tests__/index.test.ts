@@ -204,7 +204,7 @@ describe('ProfileService', () => {
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
       profileService.getById = jest.fn().mockImplementation(() => profile);
       const result = await profileService.markMeConversationAsFav();
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
   });
 });

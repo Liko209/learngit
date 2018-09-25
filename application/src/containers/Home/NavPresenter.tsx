@@ -5,6 +5,7 @@
  */
 import { action, observable, computed } from 'mobx';
 import React from 'react';
+import { getGlobalValue } from '@/store/utils';
 
 // const SS = window.sessionStorage;
 // const parse = JSON.parse;
@@ -24,14 +25,21 @@ class NavPresenter {
   // setItem = (key: string, value: any) => {
   //   return SS.setItem(key, value);
   // }
-  @observable buttonPressTimer: number = 0;
-  @observable menus: string[] = [];
-  @observable backNavArray: { title: string }[] = [];
-  @observable forwardNavArray: { title: string }[] = [];
-  @observable menuClicked: boolean = false;
+  private appName = process.env.APP_NAME || '';
+  @observable
+  buttonPressTimer: number = 0;
+  @observable
+  menus: string[] = [];
+  @observable
+  backNavArray: { title: string }[] = [];
+  @observable
+  forwardNavArray: { title: string }[] = [];
+  @observable
+  menuClicked: boolean = false;
 
-  @observable state = {
-    title: 'Jupiter',
+  @observable
+  state = {
+    title: this.appName,
     time: 0,
     forwardDisabled: true,
     backDisabled: true,
@@ -44,7 +52,9 @@ class NavPresenter {
     active: false,
   };
   private _handleTitleSlice(title: string) {
-    return title.length > TITLE_LENGTH ? `${title.slice(0, TITLE_LENGTH + 2)}...` : title;
+    return title.length > TITLE_LENGTH
+      ? `${title.slice(0, TITLE_LENGTH + 2)}...`
+      : title;
   }
   @action
   private _handleToward = (dir: string) => {
@@ -122,7 +132,7 @@ class NavPresenter {
         state.showLeftPanel = true;
         state.showRightPanel = false;
         this.handleMenuItem(backNavArray.reverse());
-      }else {
+      } else {
         state.showRightPanel = true;
         state.showLeftPanel = false;
         this.handleMenuItem(forwardNavArray.reverse());
@@ -130,30 +140,44 @@ class NavPresenter {
     },                                        timer);
   }
   @action
-  handleButtonRelease = (event: React.TouchEvent|React.MouseEvent<HTMLElement>) => {
+  handleButtonRelease = (
+    event: React.TouchEvent | React.MouseEvent<HTMLElement>,
+  ) => {
     event.preventDefault();
     window.clearTimeout(this.buttonPressTimer);
   }
   @action
-  handleMenuItem = (navArray: {title: string}[]) => {
-    const menus = navArray && navArray.map((item) => {
-      return this._handleTitleSlice(item.title);
-    });
+  handleMenuItem = (navArray: { title: string }[]) => {
+    const menus =
+      navArray &&
+      navArray.map(({ title }) => {
+        return this._handleTitleSlice(title);
+      });
     this.menus = menus;
   }
   @action
-  handleNavClose = (event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index: number|undefined) => {
+  handleNavClose = (
+    event: React.ChangeEvent | React.TouchEvent | React.MouseEvent<HTMLElement>,
+    index: number | undefined,
+  ) => {
     // click outside will invoke
     const state = this.state;
     const { nav, title } = state;
     // current title
     let backNavArray = this.backNavArray.reverse();
     let forwardNavArray = this.forwardNavArray.reverse();
-    const handleCommon = (dir: string, currents: { title: string }[], contracts: { title: string }[]) => {
+    const handleCommon = (
+      dir: string,
+      currents: { title: string }[],
+      contracts: { title: string }[],
+    ) => {
       const toContracts = currents.splice(0, index! + 1); // delete current and before
       const REMOVE_ITEM = toContracts.splice(toContracts.length - 1, 1); // delete click items
       if (dir === BACKWARD) {
-        forwardNavArray = toContracts.reverse().concat({ title }).concat(contracts);
+        forwardNavArray = toContracts
+          .reverse()
+          .concat({ title })
+          .concat(contracts);
         const length = forwardNavArray.length;
         if (length > 10) {
           forwardNavArray.splice(0, length - 10);
@@ -170,7 +194,10 @@ class NavPresenter {
         }
         state.showLeftPanel = false;
       } else {
-        backNavArray = toContracts.reverse().concat({ title }).concat(contracts);
+        backNavArray = toContracts
+          .reverse()
+          .concat({ title })
+          .concat(contracts);
         const length = backNavArray.length;
         if (length > 10) {
           backNavArray.splice(0, length - 10);
@@ -203,6 +230,14 @@ class NavPresenter {
   @action
   handleTitle = (title: string) => {
     this.state.title = this._handleTitleSlice(title);
+  }
+  @computed
+  get title() {
+    const appUmi = getGlobalValue('UMI.app');
+    if (appUmi) {
+      return `(${appUmi}) ${this.appName}`;
+    }
+    return this.appName;
   }
   @action
   handleRouterChange = () => {

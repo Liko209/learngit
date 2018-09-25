@@ -171,19 +171,12 @@ export const groupState1 = {
 };
 
 export const groupStateResult1 = {
-  deactivated_post_cursor: 9,
-  group_missed_calls_count: 0,
   group_post_cursor: 2073,
-  group_tasks_count: 0,
   id: 532486,
-  last_read_through: 528793604,
-  marked_as_unread: true,
   post_cursor: 2073,
-  previous_post_cursor: 1747,
   read_through: 533078020,
   unread_count: 0,
   unread_deactivated_count: 0,
-  unread_mentions_count: 0,
 };
 
 export const groupState2 = {
@@ -193,19 +186,11 @@ export const groupState2 = {
 };
 
 export const groupStateResult2 = {
-  deactivated_post_cursor: 9,
-  group_missed_calls_count: 0,
   group_post_cursor: 2074,
-  group_tasks_count: 0,
   id: 532486,
-  last_read_through: 528793604,
-  marked_as_unread: true,
   post_cursor: 2072,
-  previous_post_cursor: 1747,
-  read_through: 533078020,
   unread_count: 2,
   unread_deactivated_count: 0,
-  unread_mentions_count: 0,
 };
 
 export const groupState3 = {
@@ -219,25 +204,16 @@ export const groupStateResultNoOrigin3 = {
   group_post_cursor: 2076,
   group_post_drp_cursor: 1,
   id: 532486,
-  trigger_ids: [1409027],
   unread_count: 2077,
 };
 
 export const groupStateResult3 = {
-  deactivated_post_cursor: 9,
-  group_missed_calls_count: 0,
   group_post_cursor: 2076,
   group_post_drp_cursor: 1,
-  group_tasks_count: 0,
   id: 532486,
-  last_read_through: 528793604,
-  marked_as_unread: true,
   post_cursor: 2072,
-  previous_post_cursor: 1747,
-  read_through: 533078020,
   unread_count: 5,
   unread_deactivated_count: 0,
-  unread_mentions_count: 0,
 };
 
 export const groupState4 = {
@@ -254,20 +230,12 @@ export const groupState5 = {
 };
 
 export const groupStateResult5 = {
-  deactivated_post_cursor: 9,
-  group_missed_calls_count: 0,
   group_post_cursor: 2074,
   group_post_drp_cursor: 1,
-  group_tasks_count: 0,
   id: 532486,
-  last_read_through: 528793604,
-  marked_as_unread: true,
   post_cursor: 2072,
-  previous_post_cursor: 1747,
-  read_through: 533078020,
   unread_count: 3,
   unread_deactivated_count: 0,
-  unread_mentions_count: 0,
 };
 
 export const groupState6 = {
@@ -277,20 +245,12 @@ export const groupState6 = {
 };
 
 export const groupStateResult6 = {
-  deactivated_post_cursor: 9,
-  group_missed_calls_count: 0,
   group_post_cursor: 2073,
   group_post_drp_cursor: 1,
-  group_tasks_count: 0,
   id: 532486,
-  last_read_through: 528793604,
-  marked_as_unread: true,
   post_cursor: 2072,
-  previous_post_cursor: 1747,
-  read_through: 533078020,
   unread_count: 2,
   unread_deactivated_count: 0,
-  unread_mentions_count: 0,
 };
 
 export const groupState7 = {
@@ -300,19 +260,12 @@ export const groupState7 = {
 };
 
 export const groupStateResult7 = {
-  deactivated_post_cursor: 9,
-  group_missed_calls_count: 0,
   group_post_cursor: 2073,
-  group_tasks_count: 0,
   id: 532486,
-  last_read_through: 528793604,
   marked_as_unread: true,
   post_cursor: 2071,
-  previous_post_cursor: 1747,
-  read_through: 533078020,
   unread_count: 2,
   unread_deactivated_count: 0,
-  unread_mentions_count: 0,
 };
 
 export const groupState8 = {
@@ -322,19 +275,11 @@ export const groupState8 = {
 };
 
 export const groupStateResult8 = {
-  deactivated_post_cursor: 9,
-  group_missed_calls_count: 0,
   group_post_cursor: 2073,
-  group_tasks_count: 0,
   id: 532486,
-  last_read_through: 528793604,
-  marked_as_unread: true,
   post_cursor: 2073,
-  previous_post_cursor: 1747,
-  read_through: 533078020,
   unread_count: 0,
   unread_deactivated_count: 1,
-  unread_mentions_count: 0,
 };
 
 export const groupState9 = {

@@ -77,7 +77,9 @@
     "tslint-config-airbnb": "5.11.0",
     "tslint-react": "3.6.0",
     "typescript": "3.0.3",
-    "uuid": "3.3.2"
+    "uuid": "3.3.2",
+    "react-document-title": "2.0.3",
+    "@types/react-document-title": "2.0.3"
   },
   "dependencies": {}
 }

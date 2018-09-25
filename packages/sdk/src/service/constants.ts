@@ -38,6 +38,12 @@ enum POST_STATUS {
 }
 
 const SHOULD_UPDATE_NETWORK_TOKEN = 'should_update_network_token';
+const UMI_METRICS = [
+  'group_post_drp_cursor',
+  'group_post_cursor',
+  'post_cursor',
+  'unread_deactivated_count',
+];
 
 export {
   GROUP_QUERY_TYPE,
@@ -45,4 +51,5 @@ export {
   PERMISSION_ENUM,
   SHOULD_UPDATE_NETWORK_TOKEN,
   POST_STATUS,
+  UMI_METRICS,
 };

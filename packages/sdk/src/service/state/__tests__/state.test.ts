@@ -29,11 +29,15 @@ import {
   groupState9,
   groupState10,
 } from './dummy';
+import notificationCenter from '../../../service/notificationCenter';
 
 jest.mock('../../../dao');
 jest.mock('../../post');
 jest.mock('../../../api/glip/state');
-
+jest.mock('../../../service/notificationCenter', () => ({
+  emitEntityUpdate: jest.fn(),
+  emitEntityPut: jest.fn(),
+}));
 describe('StateService', () => {
   const stateService: StateService = new StateService();
 
@@ -60,7 +64,7 @@ describe('StateService', () => {
 
   describe('updateState()', () => {
     beforeEach(() => {
-      daoManager.getDao.mockImplementation((arg) => {
+      daoManager.getDao.mockImplementation(arg => {
         if (arg === GroupStateDao) {
           return groupStateDao;
         }
@@ -125,11 +129,13 @@ describe('StateService', () => {
       stateService.getMyState.mockResolvedValueOnce({ id: 1 });
 
       await stateService.markAsRead(1);
+      expect(notificationCenter.emitEntityUpdate).toBeCalled();
 
       expect(StateAPI.saveStatePartial).toHaveBeenCalledWith(1, {
         'marked_as_unread:1': false,
         'read_through:1': 1,
         'unread_count:1': 0,
+        'unread_deactivated_count:1': 0,
         'unread_mentions_count:1': 0,
       });
     });
@@ -154,11 +160,9 @@ describe('StateService', () => {
 
       await stateService.updateLastGroup(1);
 
-      expect(StateAPI.saveStatePartial)
-        .toHaveBeenCalledWith(1, {
-          last_group_id: 1,
-          'last_read_through:1': 1,
-        });
+      expect(StateAPI.saveStatePartial).toHaveBeenCalledWith(1, {
+        last_group_id: 1,
+      });
     });
   });
 
@@ -186,7 +190,6 @@ describe('StateService', () => {
   });
 
   describe('calculateUMI', () => {
-
     beforeEach(() => {
       jest.clearAllMocks();
     });

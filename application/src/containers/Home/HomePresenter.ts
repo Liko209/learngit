@@ -6,7 +6,6 @@
 import { action } from 'mobx';
 
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
-
 import config from '@/config';
 
 import { service } from 'sdk';
@@ -46,6 +45,12 @@ export default class HomePresenter extends BaseNotificationSubscribable {
   @action
   public async handleSignOutClick() {
     const authService: service.AuthService = AuthService.getInstance();
-    return authService.logout();
+    await authService.logout();
+    if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
+      window.jupiterElectron.setBadgeCount(0);
+    }
+    sessionStorage.removeItem('backNavArray');
+    sessionStorage.removeItem('forwardNavArray');
+    window.location.href = '/';
   }
 }

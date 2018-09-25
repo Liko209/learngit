@@ -10,7 +10,7 @@ import { ConversationListItem } from 'ui-components/molecules/ConversationList/C
 import { Menu } from 'ui-components/atoms/Menu';
 import { MenuItem } from 'ui-components/atoms/MenuItem';
 import { ENTITY_NAME } from '../../store';
-import { getEntity } from '@/store/utils';
+import { getEntity, getSingleEntity } from '@/store/utils';
 import GroupModel from '../../store/models/Group';
 import { observer } from 'mobx-react';
 import { getGroupName } from '../../utils/groupName';
@@ -18,6 +18,9 @@ import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import GroupStateModel from '@/store/models/GroupState';
+import MyStateModel from '@/store/models/MyState';
+import { MyState } from 'sdk/src/models';
 import navPresenter, { NavPresenter } from '../Home/NavPresenter';
 
 const { GroupService } = service;
@@ -39,7 +42,7 @@ interface IState {
 }
 
 @observer
-class ConversationListItemCell extends React.Component<IProps, IState>{
+class ConversationListItemCell extends React.Component<IProps, IState> {
   private navPresenter: NavPresenter;
   static defaultProps = {
     isFavorite: false,
@@ -59,6 +62,9 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   umiVariant: 'count' | 'dot' | 'auto';
 
   @observable
+  important: boolean;
+
+  @observable
   status: 'default' | 'offline' | 'online' | 'away' | undefined;
 
   @observable
@@ -69,6 +75,9 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
 
   @observable
   favoriteText: string;
+
+  @observable
+  umiHint: boolean;
 
   @observable
   draft: string;
@@ -116,9 +125,29 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   }
   getDataFromStore() {
     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
+    const lastGroup = getSingleEntity<MyState, MyStateModel>(
+      ENTITY_NAME.MY_STATE,
+      'lastGroupId',
+    ) as number;
+    const groupState = getEntity(
+      ENTITY_NAME.GROUP_STATE,
+      this.id,
+    ) as GroupStateModel;
+
     const { currentUserId } = this.props;
+    const isCurrentGroup = lastGroup && lastGroup === this.id;
+
+    this.umiHint = !!(!isCurrentGroup && groupState.unreadCount);
+    this.unreadCount = isCurrentGroup
+      ? 0
+      : (!group.isTeam && (groupState.unreadCount || 0)) ||
+        Math.min(
+          groupState.unreadCount || 0,
+          groupState.unreadMentionsCount || 0,
+        );
+    this.important = !!groupState.unreadMentionsCount;
     this.displayName = getGroupName(getEntity, group, currentUserId);
-    this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
+    this.umiVariant = 'count'; // || at_mentions
     this.draft = group.draft || '';
     this.sendFailurePostIds = group.sendFailurePostIds || [];
     if (currentUserId) {
@@ -158,8 +187,10 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
           aria-haspopup="true"
           key={this.id}
           title={this.displayName || ''}
+          umiHint={this.umiHint}
           unreadCount={this.unreadCount}
           umiVariant={this.umiVariant}
+          important={this.important}
           onMoreClick={this._openMenu}
           onClick={this._onClick}
           status={this.status}
@@ -176,7 +207,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
             {this.favoriteText}
           </MenuItem>
         </Menu>
-      </React.Fragment >
+      </React.Fragment>
     );
   }
 

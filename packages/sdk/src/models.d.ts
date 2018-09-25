@@ -111,6 +111,7 @@ export type State = ExtendedBaseModel & {
   away_status_history?: string[];
   current_plugin: string;
   trigger_ids?: number[];
+  last_group_id: number;
 };
 
 export type MyState = State;
