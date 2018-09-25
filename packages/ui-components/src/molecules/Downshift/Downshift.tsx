@@ -118,8 +118,8 @@ class JuiDownshiftMultiple extends React.PureComponent<
     highlightedIndex,
     index,
   }: any) => {
-    const hhh = highlightedIndex === null && index === 0 ? 0 : highlightedIndex;
-    const isHighlighted = hhh === index;
+    // const hhh = highlightedIndex === null && index === 0 ? 0 : highlightedIndex;
+    const isHighlighted = highlightedIndex === index;
     // console.log(1111, highlightedIndex);
     // console.log(2222, index);
     // const isSelected = (selectedItem.id || '').indexOf(suggestion.id) > -1;
