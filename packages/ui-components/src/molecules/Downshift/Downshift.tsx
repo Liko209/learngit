@@ -216,6 +216,7 @@ class JuiDownshiftMultiple extends React.PureComponent<
         inputValue={inputValue}
         onChange={this.handleChange}
         selectedItem={selectedItem}
+        defaultHighlightedIndex={0}
         itemToString={item => (item ? item.label : '')}
       >
         {({
