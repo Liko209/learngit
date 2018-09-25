@@ -47,24 +47,39 @@ export interface IResponseRejectFn {
   (value: object | PromiseLike<object>): void;
 }
 
+export interface IResponseError {
+  error: {
+    code: string;
+    http_status_code: number;
+    message: string;
+  };
+  id: number;
+}
+
 export default class NetworkClient {
   networkRequests: INetworkRequests;
   apiPlatform: string;
   apiPlatformVersion: string;
-  apiMap: Map<string, { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]>;
+  apiMap: Map<
+    string,
+    { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]
+  >;
   defaultVia: NETWORK_VIA;
+  networkManager: NetworkManager;
   // todo refactor config
   constructor(
     networkRequests: INetworkRequests,
     apiPlatform: string,
     defaultVia: NETWORK_VIA,
     apiPlatformVersion: string = '',
+    networkManager: NetworkManager = NetworkManager.Instance,
   ) {
     this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;
     this.apiPlatformVersion = apiPlatformVersion;
     this.apiMap = new Map();
     this.defaultVia = defaultVia;
+    this.networkManager = networkManager;
   }
 
   request<T>(query: IQuery): Promise<IResponse<T>> {
@@ -80,7 +95,7 @@ export default class NetworkClient {
       if (!duplicate) {
         const request = this.getRequestByVia<T>(query, via);
         request.callback = this.buildCallback<T>(apiMapKey);
-        NetworkManager.Instance.addApiRequest(request);
+        this.networkManager.addApiRequest(request);
       }
     });
   }
@@ -108,9 +123,22 @@ export default class NetworkClient {
     };
   }
 
-  getRequestByVia<T>(query: IQuery, via: NETWORK_VIA = this.defaultVia): IRequest {
-    const { path, method, data, headers, params, authFree, requestConfig } = query;
-    const versionPath = this.apiPlatformVersion ? `/${this.apiPlatformVersion}` : '';
+  getRequestByVia<T>(
+    query: IQuery,
+    via: NETWORK_VIA = this.defaultVia,
+  ): IRequest {
+    const {
+      path,
+      method,
+      data,
+      headers,
+      params,
+      authFree,
+      requestConfig,
+    } = query;
+    const versionPath = this.apiPlatformVersion
+      ? `/${this.apiPlatformVersion}`
+      : '';
     const finalPath = `${versionPath}${this.apiPlatform}${path}`;
     return new NetworkRequestBuilder()
       .setHost(this.networkRequests.host || '')
@@ -123,6 +151,7 @@ export default class NetworkClient {
       .setAuthfree(authFree || false)
       .setRequestConfig(requestConfig || {})
       .setVia(via)
+      .setNetworkManager(this.networkManager)
       .build();
   }
 

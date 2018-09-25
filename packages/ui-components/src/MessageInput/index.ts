@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './MessageInput';
+export * from './markdown';
 export { default } from './MessageInput';

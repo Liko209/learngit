@@ -3,6 +3,8 @@
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
  */
+import { POST_STATUS } from './service';
+
 export type BaseModel = {
   id: number;
   _id?: number;
@@ -17,7 +19,7 @@ export type ExtendedBaseModel = BaseModel & {
   version: number;
   model_id?: string;
   model_size?: number;
-}
+};
 
 export type Raw<T> = Pick<T, Exclude<keyof T, 'id'>> & {
   _id: number;
@@ -54,18 +56,20 @@ export type Group = ExtendedBaseModel & {
   };
   post_cursor?: number;
   drp_post_cursor?: number;
-  trigger_ids?: number[]
+  trigger_ids?: number[];
   deactivated_post_cursor?: number;
-  _delta?: { add?: object, remove?: object, set?: object };
+  _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
   draft?: string;
+  send_failure_post_ids?: number[];
 };
 
 export type Profile = ExtendedBaseModel & {
   person_id?: number;
   favorite_group_ids: number[];
   favorite_post_ids: number[];
+  me_tab: boolean;
 };
 
 export type Company = ExtendedBaseModel & {
@@ -77,6 +81,7 @@ export type Company = ExtendedBaseModel & {
 export type Person = ExtendedBaseModel & {
   company_id: number;
   email: string;
+  me_group_id: number;
   is_webmail?: boolean;
   first_user?: boolean;
   externally_registered?: boolean;
@@ -94,7 +99,6 @@ export type Person = ExtendedBaseModel & {
   sanitized_rc_extension?: object;
   is_pseudo_user?: boolean;
   glip_user_id?: number;
-  away_status?: string | null;
 };
 
 export type UserInfo = {
@@ -108,7 +112,8 @@ export type State = ExtendedBaseModel & {
   current_group_id: number;
   away_status_history?: string[];
   current_plugin: string;
-  trigger_ids?: number[]
+  trigger_ids?: number[];
+  last_group_id: number;
 };
 
 export type MyState = State;
@@ -124,7 +129,7 @@ export type GroupState = {
   unread_deactivated_count?: number;
   group_post_cursor?: number;
   group_post_drp_cursor?: number;
-  trigger_ids?: number[]
+  trigger_ids?: number[];
 };
 
 export type Post = ExtendedBaseModel & {
@@ -141,6 +146,7 @@ export type Post = ExtendedBaseModel & {
   from_group_id?: number;
   links?: object[];
   items?: object[];
+  status?: POST_STATUS;
 };
 
 export type Item = ExtendedBaseModel & {
@@ -170,7 +176,7 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
 export type RawPresence = {
   person_id: number;
   presence: 'default' | 'offline' | 'online' | 'away' | undefined;
-}
+};
 
 export type Presence = BaseModel & {
   presence: 'default' | 'offline' | 'online' | 'away' | undefined;

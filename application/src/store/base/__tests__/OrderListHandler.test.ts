@@ -46,15 +46,12 @@ describe('OrderListHandler', () => {
         type: 'put',
         entities: new Map([[111, { name: 'alan', id: 111 }]]),
       });
-      expect(handler.updateEntityStore).toHaveBeenCalledWith(
-        ENTITY_NAME.PRESENCE,
-        [
-          {
-            name: 'alan',
-            id: 111,
-          },
-        ],
-      );
+      expect(handler.updateEntityStore).toHaveBeenCalledWith(ENTITY_NAME.PRESENCE, [
+        {
+          name: 'alan',
+          id: 111,
+        },
+      ]);
       expect(orderListStore.batchSet).toHaveBeenCalledWith([
         { id: 111, sortKey: 222 },
       ]);
@@ -85,10 +82,7 @@ describe('OrderListHandler', () => {
         type: 'put',
         entities: new Map([[111, { name: 'alan', id: 111 }]]),
       });
-      expect(handler.updateEntityStore).toHaveBeenCalledWith(
-        ENTITY_NAME.PRESENCE,
-        [{ name: 'alan', id: 111 }],
-      );
+      expect(handler.updateEntityStore).toHaveBeenCalledWith(ENTITY_NAME.PRESENCE, [{ name: 'alan', id: 111 }]);
       expect(orderListStore.batchSet).toHaveBeenCalledWith([
         { id: 111, sortKey: 222 },
       ]);
@@ -109,15 +103,12 @@ describe('OrderListHandler', () => {
         type: 'put',
         entities: new Map([[1, { name: 'tom', id: 1 }]]),
       });
-      expect(handler.updateEntityStore).toHaveBeenCalledWith(
-        ENTITY_NAME.PRESENCE,
-        [
-          {
-            name: 'tom',
-            id: 1,
-          },
-        ],
-      );
+      expect(handler.updateEntityStore).toHaveBeenCalledWith(ENTITY_NAME.PRESENCE, [
+        {
+          name: 'tom',
+          id: 1,
+        },
+      ]);
       expect(orderListStore.batchSet).toHaveBeenCalledWith([
         { id: 111, sortKey: 222 },
       ]);
@@ -135,26 +126,21 @@ describe('OrderListHandler', () => {
     });
     it('store should not be batch set with handleData', () => {
       handler.handlePageData(ENTITY_NAME.GROUP, [], true);
-      expect(handler.updateEntityStore).not.toHaveBeenCalledWith(
-        ENTITY_NAME.GROUP,
-        [],
-      );
+      expect(handler.updateEntityStore).not.toHaveBeenCalledWith(ENTITY_NAME.GROUP, []);
       // expect(orderListStore.batchSet).not.toHaveBeenCalledWith([]);
     });
     it('store should be batch set with handleData by isBigger as true', () => {
       handler.handlePageData(ENTITY_NAME.GROUP, [{ id: 222 }], true);
-      expect(handler.updateEntityStore).toHaveBeenCalledWith(
-        ENTITY_NAME.GROUP,
-        [{ id: 222 }],
-      );
+      expect(handler.updateEntityStore).toHaveBeenCalledWith(ENTITY_NAME.GROUP, [
+        { id: 222 },
+      ]);
       expect(orderListStore.batchSet).toHaveBeenCalledWith([]);
     });
     it('store should be batch set with handleData by isBigger as false', () => {
       handler.handlePageData(ENTITY_NAME.GROUP, [{ id: 222 }], false);
-      expect(handler.updateEntityStore).toHaveBeenCalledWith(
-        ENTITY_NAME.GROUP,
-        [{ id: 222 }],
-      );
+      expect(handler.updateEntityStore).toHaveBeenCalledWith(ENTITY_NAME.GROUP, [
+        { id: 222 },
+      ]);
       expect(orderListStore.batchSet).toHaveBeenCalledWith([]);
     });
   });

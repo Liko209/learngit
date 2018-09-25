@@ -34,6 +34,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
   priority: REQUEST_PRIORITY = REQUEST_PRIORITY.NORMAL;
   via: NETWORK_VIA = NETWORK_VIA.HTTP;
   method: NETWORK_METHOD = NETWORK_METHOD.GET;
+  networkManager: NetworkManager = NetworkManager.Instance;
 
   options(options: IRequestBuilderOption) {
     const {
@@ -177,6 +178,11 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
     return this;
   }
 
+  public setNetworkManager(networkManager: NetworkManager) {
+    this.networkManager = networkManager;
+    return this;
+  }
+
   build(): BaseRequest {
     switch (this.via) {
       case NETWORK_VIA.SOCKET:
@@ -187,7 +193,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
         return new HttpRequest(this);
       case NETWORK_VIA.ALL:
       default:
-        this.via = NetworkManager.Instance.clientManager.getAvailableClientType();
+        this.via = this.networkManager.clientManager.getAvailableClientType();
         return this.build();
     }
   }

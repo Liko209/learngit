@@ -46,13 +46,18 @@
       "persimmon": "#ff793d",
       "tomato": "#ff3737"
     },
+    "background": {
+      "disabled": "rgba(255,55,55,.05)"
+    },
     "action": {
       "hoverOpacity": 0.12,
       "active": "#EBF6FA"
     }
   },
   "shape": {
-    "borderRadius": 4
+    "borderRadius": 4,
+    "border1": "1px solid rgba(255,55,55,.1)",
+    "border2": "1px solid #dbdbdb"
   },
   "spacing": {
     "unit": 4

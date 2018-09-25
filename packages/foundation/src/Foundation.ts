@@ -3,7 +3,6 @@
  * @Date: 2018-06-04 15:41:12
  * Copyright © RingCentral. All rights reserved.
  */
-// import { NetworkManager } from './network';
 import config, { IFoundationConfig } from './config';
 
 class Foundation {
@@ -22,7 +21,6 @@ class Foundation {
       config.survivalModeUris = newConfig.survivalModeUris;
     }
     config.dbAdapter = newConfig.dbAdapter;
-    // NetworkManager.Instance.init();
   }
 }
 export default Foundation;

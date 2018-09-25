@@ -152,9 +152,15 @@ module.exports = {
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
       '@': paths.appSrc,
-      'ui-components': path.resolve(paths.appNodeModules, './ui-components/src'),
+      'ui-components': path.resolve(
+        paths.appNodeModules,
+        './ui-components/src'
+      ),
       sdk: path.resolve(paths.appNodeModules, './sdk/src'),
-      foundation: path.resolve(paths.appNodeModules, './sdk/node_modules/foundation/src'),
+      foundation: path.resolve(
+        paths.appNodeModules,
+        './sdk/node_modules/foundation/src'
+      )
     },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).
@@ -283,6 +289,7 @@ module.exports = {
     // Generates an `index.html` file with the <script> injected.
     new HtmlWebpackPlugin({
       inject: true,
+      title: 'RingCentral',
       template: paths.appHtml
     }),
     // Add module names to factory functions so they appear in browser profiler.
@@ -292,7 +299,8 @@ module.exports = {
     new webpack.DefinePlugin({
       ...env.stringified,
       'process.env.APP_VERSION': JSON.stringify(appPackage.version),
-      'process.env.BUILD_TIME': Date.now()
+      'process.env.BUILD_TIME': Date.now(),
+      'process.env.APP_NAME': JSON.stringify(env.appName || 'RingCentral')
     }),
     // This is necessary to emit hot updates (currently CSS only):
     new webpack.HotModuleReplacementPlugin(),
@@ -326,13 +334,13 @@ module.exports = {
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-        dllPath =>
-          new AddAssetHtmlPlugin({
-            filepath: dllPath,
-            includeSourcemap: false
-          })
-      )
-      : [() => { }])
+          dllPath =>
+            new AddAssetHtmlPlugin({
+              filepath: dllPath,
+              includeSourcemap: false
+            })
+        )
+      : [() => {}])
   ]),
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

@@ -3,23 +3,23 @@
  * @Date: 2018-08-30 11:01:59
  * Copyright © RingCentral. All rights reserved.
  */
-"use strict";
+'use strict';
 
-const autoprefixer = require("autoprefixer");
-const path = require("path");
-const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const ManifestPlugin = require("webpack-manifest-plugin");
-const InterpolateHtmlPlugin = require("react-dev-utils/InterpolateHtmlPlugin");
-const ModuleScopePlugin = require("react-dev-utils/ModuleScopePlugin");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const autoprefixer = require('autoprefixer');
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
+const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
+const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const { GenerateSW } = require('workbox-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const paths = require("./paths");
-const getClientEnvironment = require("./env");
+const paths = require('./paths');
+const getClientEnvironment = require('./env');
 const appPackage = require(paths.appPackageJson);
 
 const argv = process.argv;
@@ -28,9 +28,9 @@ const argv = process.argv;
 const publicPath = paths.servedPath;
 // Some apps do not use client-side routing with pushState.
 // For these, "homepage" can be set to "." to enable relative asset paths.
-const shouldUseRelativeAssetPaths = publicPath === "./";
+const shouldUseRelativeAssetPaths = publicPath === './';
 // Source maps are resource heavy and can cause out of memory issue for large source files.
-const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
+const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
@@ -40,12 +40,12 @@ const env = getClientEnvironment(publicUrl);
 
 // Assert this just to be safe.
 // Development builds of React are slow and not intended for production.
-if (env.stringified["process.env"].NODE_ENV !== '"production"') {
-  throw new Error("Production builds must have NODE_ENV=production.");
+if (env.stringified['process.env'].NODE_ENV !== '"production"') {
+  throw new Error('Production builds must have NODE_ENV=production.');
 }
 
 // Note: defined here because it will be used more than once.
-const cssFilename = "static/css/[name].[contenthash:8].css";
+const cssFilename = 'static/css/[name].[contenthash:8].css';
 
 // ExtractTextPlugin expects the build output to be flat.
 // (See https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/27)
@@ -53,7 +53,7 @@ const cssFilename = "static/css/[name].[contenthash:8].css";
 // To have this structure working with relative paths, we have to use custom options.
 const extractTextPluginOptions = shouldUseRelativeAssetPaths
   ? // Making sure that the publicPath goes back to to build folder.
-  { publicPath: Array(cssFilename.split("/").length).join("../") }
+    { publicPath: Array(cssFilename.split('/').length).join('../') }
   : {};
 
 // This is the production configuration.
@@ -64,29 +64,29 @@ module.exports = {
   bail: true,
   // We generate sourcemaps in production. This is slow but gives good results.
   // You can exclude the *.map files from the build during deployment.
-  devtool: shouldUseSourceMap ? "source-map" : false,
+  devtool: shouldUseSourceMap ? 'source-map' : false,
   // In production, we only want to load the polyfills and the app code.
-  entry: [require.resolve("./polyfills"), paths.appIndexJs],
+  entry: [require.resolve('./polyfills'), paths.appIndexJs],
   output: {
     // The build folder.
     path: paths.appBuild,
     // Generated JS file names (with nested folders).
     // There will be one main bundle, and one file per asynchronous chunk.
     // We don't currently advertise code splitting but Webpack supports it.
-    filename: "static/js/[name].[chunkhash:8].js",
-    chunkFilename: "static/js/[name].[chunkhash:8].chunk.js",
+    filename: 'static/js/[name].[chunkhash:8].js',
+    chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',
     // We inferred the "public path" (such as / or /my-project) from homepage.
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
-      path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, "/")
+      path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/')
   },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
     // We placed these paths second because we want `node_modules` to "win"
     // if there are any conflicts. This matches Node resolution mechanism.
     // https://github.com/facebookincubator/create-react-app/issues/253
-    modules: ["node_modules", paths.appNodeModules].concat(
+    modules: ['node_modules', paths.appNodeModules].concat(
       // It is guaranteed to exist because we tweak it in `env.js`
       process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
     ),
@@ -97,25 +97,31 @@ module.exports = {
     // `web` extension prefixes have been added for better support
     // for React Native Web.
     extensions: [
-      ".mjs",
-      ".web.ts",
-      ".ts",
-      ".web.tsx",
-      ".tsx",
-      ".web.js",
-      ".js",
-      ".json",
-      ".web.jsx",
-      ".jsx"
+      '.mjs',
+      '.web.ts',
+      '.ts',
+      '.web.tsx',
+      '.tsx',
+      '.web.js',
+      '.js',
+      '.json',
+      '.web.jsx',
+      '.jsx'
     ],
     alias: {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-      "react-native": "react-native-web",
+      'react-native': 'react-native-web',
       '@': paths.appSrc,
-      'ui-components': path.resolve(paths.appNodeModules, './ui-components/src'),
+      'ui-components': path.resolve(
+        paths.appNodeModules,
+        './ui-components/src'
+      ),
       sdk: path.resolve(paths.appNodeModules, './sdk/src'),
-      foundation: path.resolve(paths.appNodeModules, './sdk/node_modules/foundation/src'),
+      foundation: path.resolve(
+        paths.appNodeModules,
+        './sdk/node_modules/foundation/src'
+      )
     },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).
@@ -135,8 +141,8 @@ module.exports = {
       // { parser: { requireEnsure: false } },
       {
         test: /\.(js|jsx|mjs)$/,
-        loader: require.resolve("source-map-loader"),
-        enforce: "pre",
+        loader: require.resolve('source-map-loader'),
+        enforce: 'pre',
         include: paths.appSrc
       },
       {
@@ -148,10 +154,10 @@ module.exports = {
           // assets smaller than specified size as data URLs to avoid requests.
           {
             test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-            loader: require.resolve("url-loader"),
+            loader: require.resolve('url-loader'),
             options: {
               limit: 10000,
-              name: "static/media/[name].[hash:8].[ext]"
+              name: 'static/media/[name].[hash:8].[ext]'
             }
           },
           // Compile .tsx?
@@ -159,7 +165,7 @@ module.exports = {
             test: /\.(js|jsx|ts|tsx)$/,
             use: [
               {
-                loader: require.resolve("ts-loader"),
+                loader: require.resolve('ts-loader'),
                 options: {
                   // disable type checker - we will use it in fork plugin
                   transpileOnly: true,
@@ -186,14 +192,14 @@ module.exports = {
               Object.assign(
                 {
                   fallback: {
-                    loader: require.resolve("style-loader"),
+                    loader: require.resolve('style-loader'),
                     options: {
                       hmr: false
                     }
                   },
                   use: [
                     {
-                      loader: require.resolve("css-loader"),
+                      loader: require.resolve('css-loader'),
                       options: {
                         importLoaders: 1,
                         minimize: true,
@@ -201,21 +207,21 @@ module.exports = {
                       }
                     },
                     {
-                      loader: require.resolve("postcss-loader"),
+                      loader: require.resolve('postcss-loader'),
                       options: {
                         // Necessary for external CSS imports to work
                         // https://github.com/facebookincubator/create-react-app/issues/2677
-                        ident: "postcss",
+                        ident: 'postcss',
                         plugins: () => [
-                          require("postcss-flexbugs-fixes"),
+                          require('postcss-flexbugs-fixes'),
                           autoprefixer({
                             browsers: [
-                              ">1%",
-                              "last 4 versions",
-                              "Firefox ESR",
-                              "not ie < 9" // React doesn't support IE8 anyway
+                              '>1%',
+                              'last 4 versions',
+                              'Firefox ESR',
+                              'not ie < 9' // React doesn't support IE8 anyway
                             ],
-                            flexbox: "no-2009"
+                            flexbox: 'no-2009'
                           })
                         ]
                       }
@@ -232,14 +238,14 @@ module.exports = {
           // This loader doesn't use a "test" so it will catch all modules
           // that fall through the other loaders.
           {
-            loader: require.resolve("file-loader"),
+            loader: require.resolve('file-loader'),
             // Exclude `js` files to keep "css" loader working as it injects
             // it's runtime that would otherwise processed through "file" loader.
             // Also exclude `html` and `json` extensions so they get processed
             // by webpack internal loaders.
             exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
             options: {
-              name: "static/media/[name].[hash:8].[ext]"
+              name: 'static/media/[name].[hash:8].[ext]'
             }
           }
           // ** STOP ** Are you adding a new loader?
@@ -257,6 +263,7 @@ module.exports = {
     new InterpolateHtmlPlugin(env.raw),
     // Generates an `index.html` file with the <script> injected.
     new HtmlWebpackPlugin({
+      title: 'RingCentral',
       inject: true,
       template: paths.appHtml,
       minify: {
@@ -279,7 +286,8 @@ module.exports = {
     new webpack.DefinePlugin({
       ...env.stringified,
       'process.env.APP_VERSION': JSON.stringify(appPackage.version),
-      'process.env.BUILD_TIME': Date.now()
+      'process.env.BUILD_TIME': Date.now(),
+      'process.env.APP_NAME': JSON.stringify(env.appName || 'RingCentral')
     }),
     // Minify the code.
     new UglifyJsPlugin({
@@ -323,7 +331,7 @@ module.exports = {
     // to their corresponding output file so that tools can pick it up without
     // having to parse `index.html`.
     new ManifestPlugin({
-      fileName: "asset-manifest.json"
+      fileName: 'asset-manifest.json'
     }),
     // Moment.js is an extremely popular library that bundles large locale files
     // by default due to how Webpack interprets its code. This is a practical
@@ -346,16 +354,16 @@ module.exports = {
       globPatterns: ['theme/**/*.json', 'locales/**/*.json']
     }),
     ...[
-      argv.indexOf('--analyze') !== -1 ? new BundleAnalyzerPlugin() : () => { }
+      argv.indexOf('--analyze') !== -1 ? new BundleAnalyzerPlugin() : () => {}
     ]
   ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
   node: {
-    dgram: "empty",
-    fs: "empty",
-    net: "empty",
-    tls: "empty",
-    child_process: "empty"
+    dgram: 'empty',
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    child_process: 'empty'
   }
 };

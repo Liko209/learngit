@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
-import { Delta } from 'quill';
-import { injectGlobal } from 'styled-components';
+import { Delta, Sources } from 'quill';
+import styled, { injectGlobal } from '../styled-components';
+import { spacing, typography, palette } from '../utils/styles';
 import MarkdownShortcuts from './MarkdownShortcuts';
-
-// import toolbarEmoji from 'quill-emoji';
+import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
 
 import 'react-quill/dist/quill.snow.css';
 
@@ -42,40 +42,65 @@ Quill.register({
   // 'modules/toolbarEmoji': toolbarEmoji,
 });
 
+const StyledError = styled('div')`
+  && {
+    ${typography('caption')};
+    color: ${palette('semantic', 'negative')};
+    margin: ${spacing(-2)} ${spacing(4)} ${spacing(2)};
+  }
+`;
+
 interface IProps {
   value: string | Delta;
   onChange: Function;
+  keyboardEventHandler: {};
+  error: string;
 }
-interface IState { }
+interface IState {
+  modules: {};
+}
 
 class JuiMessageInput extends React.Component<IProps, IState> {
+  private _modules: {};
   constructor(props: IProps) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
+    this.onChange = this.onChange.bind(this);
+
+    const { keyboardEventHandler } = this.props;
+    this._modules = {
+      markdownShortcuts: {},
+      toolbar: false,
+      keyboard: {
+        bindings: { ...keyboardEventHandler, ...keyboardEventDefaultHandler },
+      },
+    };
   }
 
-  handleChange(value: string) {
+  onChange(content: string, delta: Delta, source: Sources) {
+    if (source === 'api') {
+      return;
+    }
     const { onChange } = this.props;
-    if (value === '<p><br></p>') {
+    if (content === '<p><br></p>') {
       onChange('');
       return;
     }
-    onChange(value);
+    onChange(content);
   }
 
   render() {
-    const modules = {
-      markdownShortcuts: {},
-      toolbar: false,
-      // toolbarEmoji: true,
-    };
+    const { value, error } = this.props;
+
     return (
-      <ReactQuill
-        value={this.props.value}
-        onChange={this.handleChange}
-        placeholder="Type new message"
-        modules={modules}
-      />
+      <Fragment>
+        <ReactQuill
+          value={value}
+          onChange={this.onChange}
+          placeholder="Type new message"
+          modules={this._modules}
+        />
+        <StyledError>{error}</StyledError>
+      </Fragment>
     );
   }
 }

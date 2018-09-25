@@ -14,7 +14,7 @@ type TIconMore = {
     top?: number;
     right?: number
   };
-  handleClose: ((event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index?: number) => void);
+  handleClose: ((event: React.ChangeEvent | React.TouchEvent | React.MouseEvent<HTMLElement>, index?: number) => void);
 };
 
 const MenuListCompositionWrapper = styled.div`

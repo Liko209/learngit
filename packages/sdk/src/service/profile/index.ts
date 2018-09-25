@@ -11,6 +11,7 @@ import handleData from './handleData';
 import { Profile, Raw } from '../../models';
 import { SOCKET } from '../eventKey';
 import _ from 'lodash';
+import PersonService from '../person';
 
 export default class ProfileService extends BaseService<Profile> {
   static serviceName = 'ProfileService';
@@ -30,7 +31,11 @@ export default class ProfileService extends BaseService<Profile> {
     return this.getById(profileId);
   }
 
-  private _reorderFavoriteGroupIds(oldIndex: number, newIndex: number, ids: number[]): number[] {
+  private _reorderFavoriteGroupIds(
+    oldIndex: number,
+    newIndex: number,
+    ids: number[],
+  ): number[] {
     const newOrder = _.cloneDeep(ids);
     const id = newOrder[oldIndex];
     if (oldIndex > newIndex) {
@@ -46,12 +51,17 @@ export default class ProfileService extends BaseService<Profile> {
     return newOrder;
   }
 
-  private async _putProfileAndHandle(profile: Profile,
-                                     oldKey: string, oldValue: any): Promise<Profile | null> {
-
+  private async _putProfileAndHandle(
+    profile: Profile,
+    oldKey: string,
+    oldValue: any,
+  ): Promise<Profile | null> {
     profile._id = profile.id;
     delete profile.id;
-    const response = await ProfileAPI.putDataById<Profile>(profile._id, profile);
+    const response = await ProfileAPI.putDataById<Profile>(
+      profile._id,
+      profile,
+    );
     let result: Profile[] | null;
     if (response.data) {
       result = await handleData([response.data]);
@@ -70,9 +80,17 @@ export default class ProfileService extends BaseService<Profile> {
     const profile = await this.getProfile();
     if (profile) {
       const oldFavGroupIds = profile.favorite_group_ids || [];
-      const newFavGroupIds = this._reorderFavoriteGroupIds(oldIndex, newIndex, oldFavGroupIds);
+      const newFavGroupIds = this._reorderFavoriteGroupIds(
+        oldIndex,
+        newIndex,
+        oldFavGroupIds,
+      );
       profile.favorite_group_ids = newFavGroupIds;
-      return this._putProfileAndHandle(profile, 'favorite_group_ids', oldFavGroupIds);
+      return this._putProfileAndHandle(
+        profile,
+        'favorite_group_ids',
+        oldFavGroupIds,
+      );
     }
     return null;
   }
@@ -100,8 +118,30 @@ export default class ProfileService extends BaseService<Profile> {
     }
     return null;
   }
-
-  async putFavoritePost(postId: number, toBook: boolean): Promise<Profile | null> {
+  async markMeConversationAsFav(): Promise<Profile | null> {
+    const { me_tab = false } = (await this.getProfile()) || {};
+    if (me_tab) {
+      return null;
+    }
+    const accountService = await AccountService.getInstance<AccountService>();
+    const currentId = accountService.getCurrentUserId();
+    if (!currentId) {
+      console.warn('please make sure that currentId is avaliable');
+      return null;
+    }
+    const personService = await PersonService.getInstance<PersonService>();
+    const { me_group_id } = await personService.getById(currentId);
+    const profile = await this.markGroupAsFavorite(me_group_id, true);
+    if (profile) {
+      profile.me_tab = true;
+      return this._putProfileAndHandle(profile, 'me_tab', false);
+    }
+    return null;
+  }
+  async putFavoritePost(
+    postId: number,
+    toBook: boolean,
+  ): Promise<Profile | null> {
     const profile = await this.getProfile();
 
     if (profile) {
@@ -115,14 +155,17 @@ export default class ProfileService extends BaseService<Profile> {
         }
       } else {
         if (oldFavPostIds.indexOf(postId) !== -1) {
-          newFavPostIds = oldFavPostIds
-            .filter((id: number) => id !== postId);
+          newFavPostIds = oldFavPostIds.filter((id: number) => id !== postId);
         } else {
           return profile;
         }
       }
       profile.favorite_post_ids = newFavPostIds;
-      return this._putProfileAndHandle(profile, 'favorite_post_ids', oldFavPostIds);
+      return this._putProfileAndHandle(
+        profile,
+        'favorite_post_ids',
+        oldFavPostIds,
+      );
     }
     // error
     return null;

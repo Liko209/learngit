@@ -9,8 +9,12 @@ import { BaseModel } from 'sdk/models';
 
 const modelProvider = new ModelProvider();
 
-export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity> extends BaseStore {
-  @observable data: ObservableMap = new ObservableMap<keyof IEntity, any>();
+export default class SingleEntityMapStore<
+  T extends BaseModel,
+  K extends IEntity
+> extends BaseStore {
+  @observable
+  data: ObservableMap = new ObservableMap<keyof IEntity, any>();
   init: boolean;
   getService: Function;
   service: BaseService<T>;
@@ -82,17 +86,17 @@ export default class SingleEntityMapStore<T extends BaseModel, K extends IEntity
 
   @action
   batchRemove(properties: (keyof IEntity)[]) {
-    properties.forEach((property) => {
+    properties.forEach((property: any) => {
       this.remove(property);
     });
   }
 
   get(property: keyof K) {
     if (!this.init) {
-      this.init = true;
       this.getByService().then((data: any) => {
         if (data) {
           this.batchSet(data);
+          this.init = true;
         }
       });
     }

@@ -7,7 +7,6 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select } from '@storybook/addon-knobs/react';
-import { action } from '@storybook/addon-actions';
 import { alignCenterDecorator, withInfoDecorator } from '../../../utils/decorators';
 
 import JuiIconButton from '..';
@@ -49,7 +48,6 @@ storiesOf('Molecules/IconButton', module)
       <Wrapper>
         <JuiIconButton
           className="iconButtonWrapper"
-          onClick={action('clicked')}
           variant="plain"
           color={knobs.color()}
           size={knobs.size()}
@@ -62,7 +60,6 @@ storiesOf('Molecules/IconButton', module)
         </JuiIconButton>
         <JuiIconButton
           className="iconButtonWrapper"
-          onClick={action('clicked')}
           variant="plain"
           color={knobs.color()}
           size={knobs.size()}
@@ -75,7 +72,6 @@ storiesOf('Molecules/IconButton', module)
         </JuiIconButton>
         <JuiIconButton
           className="iconButtonWrapper"
-          onClick={action('clicked')}
           variant="plain"
           color={knobs.color()}
           size={knobs.size()}
@@ -88,7 +84,6 @@ storiesOf('Molecules/IconButton', module)
         </JuiIconButton>
         <JuiIconButton
           className="iconButtonWrapper"
-          onClick={action('clicked')}
           variant="plain"
           color={knobs.color()}
           size={knobs.size()}
@@ -107,7 +102,6 @@ storiesOf('Molecules/IconButton', module)
       <Wrapper>
         <JuiIconButton
           className="iconButtonWrapper"
-          onClick={action('clicked')}
           variant="round"
           color={knobs.color()}
           size={knobs.size()}
@@ -120,7 +114,6 @@ storiesOf('Molecules/IconButton', module)
         </JuiIconButton>
         <JuiIconButton
           className="iconButtonWrapper"
-          onClick={action('clicked')}
           variant="round"
           color={knobs.color()}
           size={knobs.size()}
@@ -133,7 +126,6 @@ storiesOf('Molecules/IconButton', module)
         </JuiIconButton>
         <JuiIconButton
           className="iconButtonWrapper"
-          onClick={action('clicked')}
           variant="round"
           color={knobs.color()}
           size={knobs.size()}
@@ -146,7 +138,6 @@ storiesOf('Molecules/IconButton', module)
         </JuiIconButton>
         <JuiIconButton
           className="iconButtonWrapper"
-          onClick={action('clicked')}
           variant="round"
           color={knobs.color()}
           size={knobs.size()}

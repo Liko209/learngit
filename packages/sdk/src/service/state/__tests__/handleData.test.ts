@@ -7,9 +7,17 @@ import notificationCenter from '../../../service/notificationCenter';
 import handleData, {
   transform,
   getStates,
-  TransformedState, handlePartialData, handleGroupChange,
+  TransformedState,
+  handlePartialData,
+  handleGroupChange,
 } from '../../../service/state/handleData';
-import { sample, transformedGroupState, transformedMyState, sample2, partialSample } from './dummy';
+import {
+  sample,
+  transformedGroupState,
+  transformedMyState,
+  sample2,
+  partialSample,
+} from './dummy';
 import { rawMyStateFactory, groupFactory } from '../../../__tests__/factories';
 import StateService from '..';
 
@@ -26,7 +34,9 @@ jest.mock('../../../dao', () => {
 
 jest.mock('..', () => ({
   getInstance: jest.fn().mockReturnThis(),
-  calculateUMI: jest.fn().mockImplementation((groupState) => { return groupState; }),
+  calculateUMI: jest.fn().mockImplementation(groupState => {
+    return groupState;
+  }),
 }));
 jest.mock('../../../service/notificationCenter', () => ({
   emitEntityUpdate: jest.fn(),
@@ -73,17 +83,18 @@ describe('stateHandleData()', () => {
     expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(0);
   });
   it('should save to db', async () => {
-    await expect(handleData([sample])).resolves;
+    await handleData([sample]);
     expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(2);
   });
+
   it('should run for partial data', async () => {
     await expect(handleData([sample2])).resolves;
   });
 });
 describe('handlePartialData', () => {
-  it('should save to db', async () => {
+  it('should save to db if umi related metrics change', async () => {
     jest.clearAllMocks();
     await handlePartialData([partialSample]);
     expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);

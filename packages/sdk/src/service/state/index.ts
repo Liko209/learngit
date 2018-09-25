@@ -8,9 +8,12 @@ import StateAPI from '../../api/glip/state';
 import BaseService from '../BaseService';
 import PostService from '../post';
 import { SOCKET, SERVICE } from '../eventKey';
+import { ENTITY } from '../../service/eventKey';
 import handleData, { handlePartialData, handleGroupChange } from './handleData';
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
+import { UMI_METRICS } from '../constants';
+import notificationCenter from '../notificationCenter';
 
 export default class StateService extends BaseService<GroupState> {
   static serviceName = 'StateService';
@@ -28,15 +31,15 @@ export default class StateService extends BaseService<GroupState> {
     return {
       [`unread_count:${groupId}`]: 0,
       [`unread_mentions_count:${groupId}`]: 0,
+      [`unread_deactivated_count:${groupId}`]: 0,
       [`read_through:${groupId}`]: lastPostId,
       [`marked_as_unread:${groupId}`]: false,
     };
   }
 
-  static buildUpdateStateParam(groupId: number, lastPostId: number) {
+  static buildUpdateStateParam(groupId: number) {
     return {
       last_group_id: groupId,
-      [`last_read_through:${groupId}`]: lastPostId,
     };
   }
 
@@ -56,11 +59,24 @@ export default class StateService extends BaseService<GroupState> {
   }
 
   async markAsRead(groupId: number): Promise<void> {
+    notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [
+      {
+        id: groupId,
+        unread_count: 0,
+        unread_mentions_count: 0,
+      },
+    ]);
     return this.updateState(groupId, StateService.buildMarkAsReadParam);
   }
 
   async updateLastGroup(groupId: number): Promise<void> {
-    return this.updateState(groupId, StateService.buildUpdateStateParam);
+    const currentState = await this.getMyState();
+    if (currentState) {
+      await StateAPI.saveStatePartial(
+        currentState.id,
+        StateService.buildUpdateStateParam(groupId),
+      );
+    }
   }
 
   getAllGroupStatesFromLocal(): Promise<GroupState[]> {
@@ -74,8 +90,17 @@ export default class StateService extends BaseService<GroupState> {
     const groupStateDao = daoManager.getDao(GroupStateDao);
     const state = await groupStateDao.get(groupId);
 
-    if (currentState && lastPost && !!state && state.unread_count && state.unread_count > 0) {
-      await StateAPI.saveStatePartial(currentState.id, paramBuilder(groupId, lastPost.id));
+    if (
+      currentState &&
+      lastPost &&
+      !!state &&
+      state.unread_count &&
+      state.unread_count > 0
+    ) {
+      await StateAPI.saveStatePartial(
+        currentState.id,
+        paramBuilder(groupId, lastPost.id),
+      );
     }
   }
 
@@ -94,79 +119,120 @@ export default class StateService extends BaseService<GroupState> {
     return result;
   }
 
+  async umiMetricChanged(groupState: GroupState) {
+    const myState = await this.getMyState();
+    const currentPersonId = myState && myState.person_id;
+    const isSelf =
+      groupState.trigger_ids &&
+      currentPersonId &&
+      groupState.trigger_ids.includes(currentPersonId);
+    const hasUmiMetric = _.some(UMI_METRICS, (umiMetric: string) => {
+      return _.has(groupState, umiMetric);
+    });
+    return !isSelf && hasUmiMetric;
+  }
+
   async calculateUMI(groupStates: GroupState[]) {
     if (!groupStates.length) {
       mainLogger.info('[State Service]: empty new umis to calculate');
       return [];
     }
-    const myState = await this.getMyState();
-    const currentPersonId = myState && myState.person_id;
-    const resultGroupStates = await Promise.all(groupStates.map(async (updatedGroupState) => {
-      const isSelf = updatedGroupState.trigger_ids && currentPersonId && updatedGroupState.trigger_ids.includes(currentPersonId);
-      let originGroupState = await this.getByIdFromDao(updatedGroupState.id);
-      if (originGroupState) {
-        // 1. UMI related check
-        if (updatedGroupState.group_post_cursor && updatedGroupState.group_post_drp_cursor) {
-          if ((updatedGroupState.group_post_cursor + updatedGroupState.group_post_drp_cursor) >=
-            ((originGroupState.group_post_cursor || 0) + (originGroupState.group_post_drp_cursor || 0))) {
-            originGroupState.group_post_cursor = updatedGroupState.group_post_cursor;
-            originGroupState.group_post_drp_cursor = updatedGroupState.group_post_drp_cursor;
-          } else {
-            mainLogger.info('[State service]: invalid group_post_cursor and group_post_drp_cursor change');
+    const resultGroupStates = await Promise.all(
+      groupStates.map(async (updatedGroupState: GroupState) => {
+        if (!(await this.umiMetricChanged(updatedGroupState))) {
+          return updatedGroupState;
+        }
+        const originGroupState = _.pick(
+          await this.getByIdFromDao(updatedGroupState.id),
+          UMI_METRICS,
+        );
+
+        if (originGroupState) {
+          // 1. UMI related check
+          if (
+            updatedGroupState.group_post_cursor &&
+            updatedGroupState.group_post_drp_cursor
+          ) {
+            if (
+              updatedGroupState.group_post_cursor +
+                updatedGroupState.group_post_drp_cursor <
+              (originGroupState.group_post_cursor || 0) +
+                (originGroupState.group_post_drp_cursor || 0)
+            ) {
+              mainLogger.info(
+                '[State service]: invalid group_post_cursor and group_post_drp_cursor change',
+              );
+              return;
+            }
+          } else if (updatedGroupState.group_post_cursor) {
+            if (
+              updatedGroupState.group_post_cursor <
+              (originGroupState.group_post_cursor || 0)
+            ) {
+              mainLogger.info(
+                '[State service]: invalid group_post_cursor change',
+              );
+              return;
+            }
+          }
+
+          if (updatedGroupState.post_cursor) {
+            const cursorIncrease =
+              updatedGroupState.post_cursor >
+              (originGroupState.post_cursor || 0);
+            const markAsUnread = updatedGroupState.marked_as_unread;
+            if (!cursorIncrease && !markAsUnread) {
+              mainLogger.info(
+                `[State service]: invalid state_post_cursor change: ${updatedGroupState}`,
+              );
+              return;
+            }
+          }
+          if (
+            updatedGroupState.unread_deactivated_count &&
+            originGroupState.unread_deactivated_count &&
+            updatedGroupState.unread_deactivated_count <
+              originGroupState.unread_deactivated_count
+          ) {
+            mainLogger.info(
+              '[State service]: invalid unread_deactivated_count change',
+            );
             return;
           }
-        } else if (updatedGroupState.group_post_cursor) {
-          if (updatedGroupState.group_post_cursor >= (originGroupState.group_post_cursor || 0)) {
-            originGroupState.group_post_cursor = updatedGroupState.group_post_cursor;
-          } else {
-            mainLogger.info('[State service]: invalid group_post_cursor change');
-            return;
-          }
-        } else if (updatedGroupState.group_post_drp_cursor) {
-          originGroupState.group_post_drp_cursor = updatedGroupState.group_post_drp_cursor;
+          // End of UMI related check
         }
 
-        if (updatedGroupState.post_cursor) {
-          const cursorIncrease = updatedGroupState.post_cursor > (originGroupState.post_cursor || 0);
-          const markAsUnread = updatedGroupState.marked_as_unread;
-          if (cursorIncrease || markAsUnread) {
-            originGroupState.post_cursor = updatedGroupState.post_cursor;
-          } else {
-            mainLogger.info(`[State service]: invalid state_post_cursor change: ${updatedGroupState}`);
-            return;
-          }
-        }
-        if (updatedGroupState.unread_deactivated_count) {
-          originGroupState.unread_deactivated_count = updatedGroupState.unread_deactivated_count;
-        }
-        // End of UMI related check
-        // Start calculate umi if not self message
-        if (!isSelf) {
-          const group_cursor = (originGroupState.group_post_cursor || 0) + (originGroupState.group_post_drp_cursor || 0);
-          const state_cursor = (originGroupState.post_cursor || 0) + (originGroupState.unread_deactivated_count || 0);
-          originGroupState.unread_count = Math.max(group_cursor - state_cursor, 0);
-          mainLogger.info(`[State service]: umi change by: ' ${JSON.stringify(updatedGroupState)}`);
-          mainLogger.info(`[State service]: originGroupState: ${JSON.stringify(originGroupState)}`);
-          mainLogger.info(`[State service]: unread_count: ' ${originGroupState.unread_count}`);
-        }
+        const resultGroupState = _.merge(
+          {},
+          originGroupState,
+          updatedGroupState,
+        );
+        mainLogger.info(
+          `[State service]: resultGroupState ${JSON.stringify(
+            resultGroupState,
+          )}`,
+        );
+        mainLogger.info(
+          `[State service]: originGroupState ${JSON.stringify(
+            originGroupState,
+          )}`,
+        );
 
-        if (originGroupState.unread_count) {
-          originGroupState.marked_as_unread = true;
-        }
-        if (updatedGroupState.read_through) {
-          originGroupState.read_through = updatedGroupState.read_through;
-        }
-      } else {
         // Calculate unread and update group state directly
-        originGroupState = updatedGroupState;
-        if (!isSelf) {
-          const group_cursor = (originGroupState.group_post_cursor || 0) + (originGroupState.group_post_drp_cursor || 0);
-          const state_cursor = (originGroupState.post_cursor || 0) + (originGroupState.unread_deactivated_count || 0);
-          originGroupState.unread_count = Math.max(group_cursor - state_cursor, 0);
-        }
-      }
-      return originGroupState;
-    }));
+        const group_cursor =
+          (resultGroupState.group_post_cursor || 0) +
+          (resultGroupState.group_post_drp_cursor || 0);
+        const state_cursor =
+          (resultGroupState.post_cursor || 0) +
+          (resultGroupState.unread_deactivated_count || 0);
+        resultGroupState.unread_count = Math.max(
+          group_cursor - state_cursor,
+          0,
+        );
+        delete resultGroupState.trigger_ids;
+        return resultGroupState;
+      }),
+    );
 
     return _.compact(resultGroupStates);
   }

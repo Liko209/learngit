@@ -21,4 +21,3 @@ echo "linkDomain: $linkDomain"
 addEnv SAResult='Not Lint yet'
 addEnv UTResult='Not UT yet'
 addEnv E2EResult='Not E2E yet'
-addEnv BuildResult='Not Build yet'
