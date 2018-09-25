@@ -17,8 +17,9 @@ import {
   SortableContainer,
   SortableElement,
 } from 'react-sortable-hoc';
+import { withRouter, RouteComponentProps } from 'react-router';
 
-interface IProps {
+interface IProps extends RouteComponentProps {
   t: TranslationFunction;
   title: string;
   iconName: string;
@@ -49,10 +50,7 @@ class ConversationSectionComponent extends React.Component<IProps> {
     });
   }
 
-  private _handleSortEnd({
-    oldIndex,
-    newIndex,
-  }: {
+  private _handleSortEnd({ oldIndex, newIndex }: {
     oldIndex: number;
     newIndex: number;
   }) {
@@ -124,7 +122,7 @@ class ConversationSectionComponent extends React.Component<IProps> {
 }
 
 const ConversationSection = translate('Conversations')(
-  ConversationSectionComponent,
+  withRouter(ConversationSectionComponent) ,
 );
 export { ConversationSection };
 export default ConversationSection;

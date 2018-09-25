@@ -30,11 +30,11 @@ type TTopBarProps = {
   menuItems: {}[];
   forwardDisabled: boolean;
   backDisabled: boolean;
-  handleNavClose: ((event: React.ChangeEvent|React.TouchEvent|React.MouseEvent<HTMLElement>, index: number) => void);
+  handleNavClose: ((event: React.ChangeEvent | React.TouchEvent | React.MouseEvent<HTMLElement>, index: number) => void);
   handleBackWard: ((event: React.MouseEvent<HTMLSpanElement>) => void);
   handleForward: ((event: React.MouseEvent<HTMLSpanElement>) => void);
-  handleButtonPress: ((nav: string, event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
-  handleButtonRelease: ((event: React.TouchEvent|React.MouseEvent<HTMLElement>) => void);
+  handleButtonPress: ((nav: string, event: React.TouchEvent | React.MouseEvent<HTMLElement>) => void);
+  handleButtonRelease: ((event: React.TouchEvent | React.MouseEvent<HTMLElement>) => void);
 };
 
 type TTopBarState = {
@@ -88,7 +88,7 @@ const MenuWithLogo = styled.div`
 const BackForward: any = styled.div`
   display: flex;
   visibility: ${(props: { invisible: boolean }) =>
-  props.invisible ? 'hidden' : 'visible'};
+    props.invisible ? 'hidden' : 'visible'};
 `;
 
 const StyledAvatarMenuComposition = styled(MenuListComposition)``;
@@ -271,7 +271,7 @@ class TopBar extends React.Component<TTopBarProps, TTopBarState> {
                   awake={topBarState === 'hover'}
                   onClick={handleForward}
                   disabled={forwardDisabled}
-                  onTouchStart={handleButtonPress!.bind(this,  'forward')}
+                  onTouchStart={handleButtonPress!.bind(this, 'forward')}
                   onTouchEnd={handleButtonRelease}
                   onMouseDown={handleButtonPress!.bind(this, 'forward')}
                   onMouseUp={handleButtonRelease}

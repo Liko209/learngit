@@ -1,13 +1,9 @@
-/*
- * @Author: Andy Hu
- * @Date: 2018-09-17 14:00:51
- * Copyright © RingCentral. All rights reserved.
- */
 import _ from 'lodash';
 import { BaseModel } from 'sdk/models';
 import { service } from 'sdk';
 
 import storeManager from './StoreManager';
+import BaseNotificationSubscribable from './BaseNotificationSubscribable';
 import OrderListStore from './OrderListStore';
 import {
   handleDelete,
@@ -24,24 +20,21 @@ import {
 } from '../store';
 import { defaultSortFunc } from '../utils';
 import { ENTITY_NAME } from '../constants';
-import ListHandler from '@/store/base/ListHandler';
 
+const { EVENT_TYPES } = service;
+const DEFAULT_PAGE_SIZE = 20;
 enum BIND_EVENT {
   'DATA_CHANGE' = 'DATA_CHANGE',
 }
-enum DIRECTION {
-  'OLDER' = 'older',
-  'NEWER' = 'newer',
-}
-
-const { EVENT_TYPES } = service;
 
 export default class OrderListHandler<
   T extends BaseModel,
   K extends IEntity
-> extends ListHandler<T, IIDSortKey, OrderListStore> {
+> extends BaseNotificationSubscribable {
+  private _store: OrderListStore;
   private _hasBigger: boolean;
   private _hasSmaller: boolean;
+  private _pageSize: number;
   private _isMatchedFunc: Function;
   private _transformFunc: Function;
   private _handleIncomingDataByType: IHandleIncomingDataByType;
@@ -53,8 +46,10 @@ export default class OrderListHandler<
   ) {
     super();
     this._store = new OrderListStore(sortFunc);
+
     this._hasBigger = false;
     this._hasSmaller = false;
+    this._pageSize = DEFAULT_PAGE_SIZE;
     this._isMatchedFunc = isMatchedFunc;
     this._transformFunc = transformFunc;
 
@@ -73,7 +68,7 @@ export default class OrderListHandler<
 
   handleIncomingData(
     entityName: ENTITY_NAME,
-    { type, entities }: IIncomingData<T>,
+    { type, entities }: IIncomingData<T | { id: number; data: T }>,
   ) {
     if (!entities.size && type !== EVENT_TYPES.REPLACE_ALL) {
       return;
@@ -81,18 +76,22 @@ export default class OrderListHandler<
     const existKeys = this._store.getIds();
     const keys = _.map(
       Array.from(entities.values()).filter(entity =>
-        this._isMatchedFunc(entity),
+        this._isMatchedFunc(
+          type === EVENT_TYPES.REPLACE
+            ? (entity as { id: number; data: T }).data
+            : entity,
+        ),
       ),
       'id',
     );
     const matchedKeys = _.intersection(keys, existKeys);
-    const delta = this._handleIncomingDataByType[type]<T>(
+    // prettier-ignore
+    const { deleted, updated, updateEntity } = this._handleIncomingDataByType[type]<T | { id: number; data: T; }>(
       matchedKeys,
       entities,
       this._transformFunc,
       this._store,
     );
-    const { deleted, updated, updateEntity } = delta;
 
     if (type !== EVENT_TYPES.DELETE) {
       const differentKeys = _.difference(keys, existKeys);
@@ -109,16 +108,13 @@ export default class OrderListHandler<
     this.updateEntityStore(entityName, updateEntity);
     this._store.batchRemove(deleted);
     this._store.batchSet(updated);
-    this.emit(BIND_EVENT.DATA_CHANGE, {
-      deleted,
-      updated,
-      direction: DIRECTION.NEWER,
-    });
+    this.emit(BIND_EVENT.DATA_CHANGE, { deleted, updated });
+    // this._store.dump();
   }
 
   isInRange(sortKey: number) {
     let inRange = false;
-    const idArray = this._store.getItems();
+    const idArray = this._store.getIdArray();
     if (idArray && idArray.length > 0) {
       const smallest = idArray[0];
       const biggest = idArray[idArray.length - 1];
@@ -147,7 +143,6 @@ export default class OrderListHandler<
     if (!dataModels.length) {
       return;
     }
-
     const handledData: IIDSortKey[] = [];
     dataModels.forEach((item, index) => {
       handledData.push(this._transformFunc(item, index));
@@ -160,12 +155,7 @@ export default class OrderListHandler<
     }
     this.updateEntityStore(entityName, dataModels);
     this._store.batchSet(handledData);
-    this.emit(BIND_EVENT.DATA_CHANGE, {
-      updated: handledData,
-      deleted: [],
-      // TODO: scroll up and scroll down
-      direction: DIRECTION.OLDER,
-    });
+    // this._store.dump();
   }
 
   updateEntityStore(entityName: ENTITY_NAME, entities: IEntity[]) {
@@ -174,5 +164,8 @@ export default class OrderListHandler<
     }
     storeManager.dispatchUpdatedDataModels(entityName, entities);
   }
+
+  dispose() {
+    super.dispose();
+  }
 }
-export { BIND_EVENT, OrderListHandler, DIRECTION };

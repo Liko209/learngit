@@ -33,8 +33,10 @@ import handleData, {
 import Permission from './permission';
 import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
-import { SOCKET, SERVICE } from '../eventKey';
+import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
+
+import notificationCenter from '../notificationCenter';
 
 export type CreateTeamOptions = {
   isPublic?: boolean;
@@ -349,5 +351,39 @@ export default class GroupService extends BaseService<Group> {
     groups = await this.getGroupsByType(GROUP_QUERY_TYPE.TEAM);
     result = result.concat(groups);
     return result;
+  }
+
+  // update partial group data
+  async updateGroupPartialData(params: object): Promise<boolean> {
+    try {
+      const dao = daoManager.getDao(GroupDao);
+      await dao.update(params);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]);
+      return true;
+    } catch (error) {
+      throw ErrorParser.parse(error);
+    }
+  }
+
+  // update partial group data, for message draft
+  async updateGroupDraft(params: { id: number, draft: string }): Promise<boolean> {
+    const result = await this.updateGroupPartialData(params);
+    return result;
+  }
+
+  // update partial group data, for send failure post ids
+  async updateGroupSendFailurePostIds(params: { id: number, send_failure_post_ids: number[] }): Promise<boolean> {
+    const result = await this.updateGroupPartialData(params);
+    return result;
+  }
+
+  // get group data, for send failure post ids
+  async getGroupSendFailurePostIds(id: number): Promise<number[]> {
+    try {
+      const group = await this.getGroupById(id) as Group;
+      return group.send_failure_post_ids || [];
+    } catch (error) {
+      throw ErrorParser.parse(error);
+    }
   }
 }

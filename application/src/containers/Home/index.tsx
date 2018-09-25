@@ -98,7 +98,6 @@ class Home extends Component<IProps, IStates> {
     });
   }
   handleCreateTeam = () => {};
-
   getIcons() {
     const { t } = this.props;
     return [

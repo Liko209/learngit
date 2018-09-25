@@ -59,6 +59,19 @@ describe('OrderListStore', () => {
       store.batchSet([idSortKey2, idSortKey3]);
       expect(store.getIdArray()).not.toEqual(expectIdArray);
     });
+    it('first()', () => {
+      expect(store.first()).toEqual({
+        id: 2,
+        sortKey: 1111,
+      });
+    });
+
+    it('last()', () => {
+      expect(store.last()).toEqual({
+        id: 3,
+        sortKey: 3333,
+      });
+    });
   });
 
   describe('batchRemove()', () => {
@@ -74,9 +87,30 @@ describe('OrderListStore', () => {
       expect(store.getIds()).toEqual([3]);
     });
   });
+  describe('getSize()', () => {
+    it('store should be get idArray length', () => {
+      expect(store.getSize()).toEqual(1);
+    });
+  });
   describe('get()', () => {
     it('store should be get specific idArray by id', () => {
       expect(store.get(3)).toEqual({ id: 3, sortKey: 3333 });
+    });
+  });
+  describe('dump()', () => {
+    it('should return dump log', () => {
+      jest.spyOn(console, 'log');
+      store.dump(1);
+      expect(console.log).toHaveBeenCalledWith(
+        '===> dump: [{"id":3,"sortKey":3333}]',
+        [1],
+      );
+    });
+  });
+  describe('clearAll()', () => {
+    it('store should be clear', () => {
+      store.clearAll();
+      expect(store.getIdArray()).toHaveLength(0);
     });
   });
 });

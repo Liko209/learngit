@@ -55,6 +55,8 @@ type ListItemProps = {
   umiVariant?: 'count' | 'dot' | 'auto';
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
+  showDraftTag?: boolean;
+  showSendMsgFailureTag?: boolean;
 } & MuiMenuItemProps;
 
 type IConversationListItem = {
@@ -72,15 +74,27 @@ const ConversationListItem: IConversationListItem = (props: ListItemProps) => {
     umiVariant,
     component,
     selected,
+    showDraftTag,
+    showSendMsgFailureTag,
     umiHint,
   } = props;
 
   const fontWeight = umiHint ? 'bold' : 'normal';
 
+  let tag = '';
+  if (showDraftTag) {
+    tag = '[Draft]';
+  }
+  if (showSendMsgFailureTag) {
+    tag = '[Failure]'; // only show one
+  }
+
   return (
     <StyledListItem onClick={onClick} component={component} selected={selected}>
       <Presence presence={status} />
-      <ItemText style={{ fontWeight }}>{title}</ItemText>
+      <ItemText style={{ fontWeight }}>
+        {tag} {title}
+      </ItemText>
       <Umi
         variant={umiVariant}
         important={important}

@@ -25,8 +25,8 @@ type ConversationPageHeaderProps = IInjectedStoreProps<VM> & {
 };
 @observer
 class ConversationPageHeaderComponent extends React.Component<
-  ConversationPageHeaderProps,
-  {}
+ConversationPageHeaderProps,
+{}
 > {
   constructor(props: ConversationPageHeaderProps) {
     super(props);
@@ -35,7 +35,6 @@ class ConversationPageHeaderComponent extends React.Component<
   rightButtonClickHandler(evt: React.SyntheticEvent, name: string) {
     // console.log(evt, name);
   }
-
   render() {
     const { t = (str: string) => str, id } = this.props;
     const presenter = new ConversationPageHeaderPresenter(id);
@@ -44,23 +43,14 @@ class ConversationPageHeaderComponent extends React.Component<
     const isFavorite = presenter.groupIsInFavorites();
     const isPrivate = presenter.groupIsPrivate();
 
-    const rightButtons = presenter
-      .getRightButtons()
-      .map(({ name, iconName, tooltip }) =>
-        ((name: string) => {
-          const onRightButtonClick = (e: React.SyntheticEvent) =>
-            this.rightButtonClickHandler(e, name);
-          return (
-            <JuiIconButton
-              key={name}
-              tooltipTitle={toTitleCase(t(tooltip))}
-              onClick={onRightButtonClick}
-            >
-              {iconName}
-            </JuiIconButton>
-          );
-        })(name),
+    const rightButtons = presenter.getRightButtons().map(({ name, iconName, tooltip }) => ((name: string) => {
+      const onRightButtonClick = (e: React.SyntheticEvent) => this.rightButtonClickHandler(e, name);
+      return (
+        <JuiIconButton key={name} tooltipTitle={toTitleCase(t(tooltip))} onClick={onRightButtonClick}>
+          {iconName}
+        </JuiIconButton>
       );
+    })(name));
     return (
       <JuiConversationPageHeader
         title={groupName}
@@ -94,9 +84,7 @@ class ConversationPageHeaderComponent extends React.Component<
         Right={
           <JuiButtonBar size="medium" overlapping={true}>
             {rightButtons}
-            <JuiIconButton
-              tooltipTitle={toTitleCase(t('conversationSettings'))}
-            >
+            <JuiIconButton tooltipTitle={toTitleCase(t('conversationSettings'))}>
               settings
             </JuiIconButton>
           </JuiButtonBar>}

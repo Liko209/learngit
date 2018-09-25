@@ -1,23 +1,20 @@
-/*
- * @Author: Andy Hu
- * @Date: 2018-09-17 14:01:06
- * Copyright © RingCentral. All rights reserved.
- */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import ConversationThreadsManager from './ConversationStreamManager';
-import ConversationCard from '@/containers/Conversations/ConversationPage/ConversationCard';
+import  ConversationCard  from '@/containers/Conversations/ConversationPage/ConversationCard';
 import { JuiChatView } from 'ui-components';
-import _ from 'lodash';
+import { observable } from 'mobx';
 
 interface IProps {
   groupId: number;
 }
 
 @observer
-class ConversationStream extends Component<IProps> {
+class ConversationStream extends Component<IProps>{
   public manager: ConversationThreadsManager = new ConversationThreadsManager();
   public scrollable: any = {};
+  public firstPost: React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
+  @observable hasMore: boolean = true;
   constructor(props: IProps) {
     super(props);
     this.scrollable = {};
@@ -55,18 +52,16 @@ class ConversationStream extends Component<IProps> {
   hasMorePost = () => {
     const groupId = this.props.groupId;
     const conversationThread = this.manager.getConversationThread(groupId);
-    return conversationThread.store.hasMore;
+    return conversationThread.checkHasMore();
   }
 
   render() {
     const id = this.props.groupId;
-    const vm = this.manager.getConversationThread(id);
-    if (!vm) {
+    const store = this.manager.getStore(id);
+    if (!store) {
       return null;
     }
-    const postIds = _(vm.items)
-      .map('id')
-      .value();
+    const postIds = store.getIds();
     return (
       <JuiChatView
         flipped={true}
@@ -74,9 +69,7 @@ class ConversationStream extends Component<IProps> {
         onInfiniteLoad={this.loadPosts}
         shouldTriggerLoad={this.hasMorePost}
       >
-        {postIds.reverse().map((id: number) => (
-          <ConversationCard id={id} key={id} />
-        ))}
+        {postIds.reverse().map(id => <ConversationCard id={id} key={id} />)}
       </JuiChatView>
     );
   }

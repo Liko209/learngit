@@ -10,8 +10,9 @@ import config from '@/config';
 
 import { service } from 'sdk';
 import betaUsers from '@/config/whitelist.json';
+import { ProfileService as IProfileService } from 'sdk/src/service';
 
-const { AccountService, AuthService, SERVICE } = service;
+const { AccountService, AuthService, SERVICE, ProfileService } = service;
 
 export default class HomePresenter extends BaseNotificationSubscribable {
   private userId: number | null;
@@ -28,7 +29,7 @@ export default class HomePresenter extends BaseNotificationSubscribable {
     const accountService: service.AccountService = AccountService.getInstance();
     const env = config.getEnv() || 'XMN-Stable';
     this.userId = accountService.getCurrentUserId();
-
+    ProfileService.getInstance<IProfileService>().markMeConversationAsFav();
     if (
       env === 'production' &&
       !betaUsers.betaUserIdList.some(

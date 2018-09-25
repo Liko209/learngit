@@ -22,14 +22,16 @@ interface IThemeProviderPropsState {
   theme: MuiTheme | null;
 }
 
-class ThemeProvider extends Component<IThemeProviderProps, IThemeProviderPropsState> {
+class ThemeProvider extends Component<
+  IThemeProviderProps,
+  IThemeProviderPropsState
+> {
   private _mounted: boolean;
   constructor(props: IThemeProviderProps) {
     super(props);
     this.state = {
       theme: null,
     };
-
     this.onThemeChanged = this.onThemeChanged.bind(this);
   }
 
@@ -75,8 +77,4 @@ class ThemeProvider extends Component<IThemeProviderProps, IThemeProviderPropsSt
 type Theme = MuiTheme & ITheme;
 type CustomPalette = IPalette;
 
-export {
-  Theme,
-  CustomPalette,
-  ThemeProvider,
-};
+export { Theme, CustomPalette, ThemeProvider };
