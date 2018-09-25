@@ -17,7 +17,7 @@ const thresholdFromDev = JSON.parse(
 const localThreshold = require("../config/coverage-threshold.json").global;
 
 const hasLoweredLocally = Object.keys(thresholdFromDev).some(
-  (criteria) => localThreshold[criteria] < thresholdFromDev[criteria] - 0.25
+  (criteria) => localThreshold[criteria] < thresholdFromDev[criteria] - 0.40
 );
 
 if (hasLoweredLocally) {
