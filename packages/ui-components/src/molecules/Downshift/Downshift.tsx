@@ -34,6 +34,8 @@ export type TJuiDownshiftMultipleProps = {
   placeholder: string;
   Chip?: React.ComponentType<any>;
   SearchContactItem?: React.ComponentType<any>;
+  error?: boolean;
+  helperText?: string;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -68,12 +70,16 @@ const renderInput = (inputProps: any) => {
     label,
     placeholder,
     showPlaceholder,
+    error,
+    helperText,
     ...rest
   } = inputProps;
   return (
     <StyledTextField
       label={showPlaceholder ? placeholder : label}
       fullWidth={true}
+      error={error}
+      helperText={error && helperText}
       InputProps={{
         inputRef: ref,
         ...InputProps,
@@ -198,6 +204,8 @@ class JuiDownshiftMultiple extends React.PureComponent<
       placeholder,
       Chip,
       SearchContactItem,
+      error,
+      helperText,
     } = this.props;
     const { inputValue, selectedItem, shrink, showPlaceholder } = this.state;
 
@@ -230,6 +238,8 @@ class JuiDownshiftMultiple extends React.PureComponent<
                 label,
                 placeholder,
                 showPlaceholder,
+                error,
+                helperText,
                 fullWidth: true,
                 InputProps: getInputProps({
                   startAdornment: selectedItem.map(

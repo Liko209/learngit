@@ -31,6 +31,7 @@ interface IProps {
 interface IState {
   disabledOkBtn: boolean;
   nameError: boolean;
+  emailError: boolean;
   errorMsg: string;
   teamName: string;
   description: string;
@@ -49,6 +50,7 @@ class CreateTeam extends React.Component<IProps, IState> {
     this.state = {
       disabledOkBtn: true,
       nameError: false,
+      emailError: false,
       errorMsg: '',
       teamName: '',
       description: '',
@@ -155,7 +157,13 @@ class CreateTeam extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { disabledOkBtn, nameError, items, errorMsg } = this.state;
+    const {
+      disabledOkBtn,
+      nameError,
+      emailError,
+      items,
+      errorMsg,
+    } = this.state;
     const { t } = this.props;
 
     return (
@@ -181,6 +189,8 @@ class CreateTeam extends React.Component<IProps, IState> {
             onChange={this.handleSearchContactChange}
             label={t('Members')}
             placeholder={t('Search Contact Placeholder')}
+            error={emailError}
+            helperText={emailError && t(errorMsg)}
           />
           <JuiTextarea
             placeholder={t('Team Description')}

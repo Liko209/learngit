@@ -20,6 +20,8 @@ interface IProps {
   onChange: (item: any) => void;
   label: string;
   placeholder: string;
+  error: boolean;
+  helperText: string;
 }
 
 interface ISelectedMember {
@@ -56,7 +58,7 @@ class SearchContact extends Component<IProps, IStates> {
     });
   }
   render() {
-    const { onChange, label, placeholder } = this.props;
+    const { onChange, label, placeholder, error, helperText } = this.props;
     const { suggestions } = this.state;
     return (
       <JuiDownshiftMultiple
@@ -67,6 +69,8 @@ class SearchContact extends Component<IProps, IStates> {
         placeholder={placeholder}
         Chip={Chip}
         SearchContactItem={SearchContactItem}
+        error={error}
+        helperText={helperText}
       />
     );
   }
