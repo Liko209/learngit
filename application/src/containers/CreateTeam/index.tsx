@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import styled from 'ui-components/styled-components';
 import { observer } from 'mobx-react';
 import { TranslationFunction, i18n } from 'i18next';
 import { translate } from 'react-i18next';
@@ -39,6 +40,12 @@ interface IState {
   items: IListToggleItemProps[];
   members: (number | string)[];
 }
+
+const LeftJuiButton = styled(JuiButton)`
+  && {
+    margin-right: ${({ theme }) => theme.spacing.unit * 2}px;
+  }
+`;
 
 @observer
 class CreateTeam extends React.Component<IProps, IState> {
@@ -150,6 +157,8 @@ class CreateTeam extends React.Component<IProps, IState> {
     this.setState({
       teamName: e.target.value,
       disabledOkBtn: e.target.value === '',
+      errorMsg: '',
+      nameError: false,
     });
   }
 
@@ -216,14 +225,14 @@ class CreateTeam extends React.Component<IProps, IState> {
         </JuiDialogContent>
 
         <JuiDialogActions>
-          <JuiButton
+          <LeftJuiButton
             onClick={this.onClose}
             color="primary"
             variant="text"
             autoFocus={true}
           >
             {t('Cancel')}
-          </JuiButton>
+          </LeftJuiButton>
           <JuiButton
             onClick={this.createTeam}
             color="primary"

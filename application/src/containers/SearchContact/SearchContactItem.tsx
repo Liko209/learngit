@@ -8,13 +8,14 @@ import { observer } from 'mobx-react';
 import JuiSearchItem from 'ui-components/molecules/SearchItem';
 import JuiSearchItemText from 'ui-components/atoms/SearchItemText';
 
-import JuiAvatar from 'ui-components/atoms/Avatar';
+// import JuiAvatar from 'ui-components/atoms/Avatar';
+import Avatar from '../Avatar';
 
 const SearchContactItem = (props: any) => {
   const { suggestion, isHighlighted, ...rest } = props;
   return suggestion ? (
     <JuiSearchItem {...rest} selected={isHighlighted}>
-      <JuiAvatar />
+      <Avatar uid={rest.uid} />
       <JuiSearchItemText
         primary={suggestion.label}
         secondary={suggestion.email}

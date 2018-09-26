@@ -39,6 +39,9 @@ const StyledChip = styled(MuiChip)`
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .avatar {
+    color: ${({ theme }) => theme.palette.common.white};
+  }
 `;
 
 const JuiChip: React.SFC<TJuiChipProps> & IDependencies = (
@@ -54,7 +57,7 @@ const JuiChip: React.SFC<TJuiChipProps> & IDependencies = (
       {...rest}
       onDelete={onDelete}
       avatar={avatar}
-      classes={{ deleteIcon: 'deleteIcon', label: 'label' }}
+      classes={{ deleteIcon: 'deleteIcon', label: 'label', avatar: 'avatar' }}
       deleteIcon={
         <JuiIconButton variant="plain" tooltipTitle="remove">
           cancel

@@ -14,7 +14,11 @@ import Avatar from '../Avatar';
 // import { Person } from 'sdk/src/models';
 
 const Chip = (props: any) => {
-  return <JuiChip ChipAvatar={Avatar} {...props} />;
+  return props.uid ? (
+    <JuiChip ChipAvatar={Avatar} {...props} />
+  ) : (
+    <JuiChip {...props} />
+  );
 };
 
 export default observer(Chip);

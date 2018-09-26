@@ -132,6 +132,7 @@ class JuiDownshiftMultiple extends React.PureComponent<
         isHighlighted={isHighlighted}
         suggestion={suggestion}
         key={index}
+        uid={suggestion.id}
       />
     ) : null;
   }
