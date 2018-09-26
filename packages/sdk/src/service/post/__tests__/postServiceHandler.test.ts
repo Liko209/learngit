@@ -8,6 +8,7 @@ import { daoManager, AccountDao, PostDao } from '../../../dao';
 import PostServiceHandler from '../postServiceHandler';
 import { randomInt, versionHash } from '../../../utils/mathUtils';
 import { postFactory } from '../../../__tests__/factories';
+import { POST_STATUS } from '../../constants';
 
 jest.mock('../../../dao');
 jest.mock('../../../utils/mathUtils');
@@ -30,7 +31,8 @@ describe('PostServiceHandler', () => {
         ],
       });
       expect(ret).toEqual({
-        text: '<a class=\'at_mention_compose\' rel=\'{"id":1}\'>@display (xxx)</a>',
+        text:
+          "<a class='at_mention_compose' rel='{\"id\":1}'>@display (xxx)</a>",
         at_mention_non_item_ids: [1],
       });
     });
@@ -52,7 +54,7 @@ describe('PostServiceHandler', () => {
       randomInt.mockReturnValue(1000);
     });
     const expectData = (hasItemIds: boolean) => ({
-      id: -1000,
+      id: 'versionHash',
       created_at: 123123,
       modified_at: 123123,
       creator_id: 123,
@@ -70,6 +72,7 @@ describe('PostServiceHandler', () => {
       links: [],
       company_id: 123,
       deactivated: false,
+      status: 2,
     });
     beforeEach(() => {
       Date.now = jest.fn().mockReturnValue(123123);
@@ -186,8 +189,7 @@ describe('PostServiceHandler', () => {
       });
 
       model = PostServiceHandler.buildResendPostInfo(model);
-      expect(model.created_at).not.toBe(0);
-      expect(model.version).not.toBe(0);
+      expect(model.status).toBe(POST_STATUS.INPROGRESS);
     });
   });
 });

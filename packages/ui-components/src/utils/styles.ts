@@ -18,6 +18,20 @@ function spacing(...values: number[]) {
 }
 
 /**
+ * shape
+ * @param value
+ */
+function shape(key: string) {
+  return ({ theme }: { theme: Theme }): string => {
+    const value = theme.shape[key];
+    if (typeof value === 'number') {
+      return cssValue(value);
+    }
+    return value;
+  };
+}
+
+/**
  * width
  * @param values
  */
@@ -126,6 +140,7 @@ function border(name: string) {
 
 export {
   spacing,
+  shape,
   width,
   height,
   palette,

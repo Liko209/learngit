@@ -4,15 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { service } from 'sdk';
+import { notificationCenter } from 'sdk/service';
 import { Listener, EventEmitter2 } from 'eventemitter2';
 
-const { notificationCenter } = service;
-
 export default class BaseNotificationSubscribe extends EventEmitter2 {
-  private _notificationObservers: {[eventName: string]: Listener[]} = {};
+  private _notificationObservers: { [eventName: string]: Listener[] } = {};
 
-  private _setNotificationObservers(eventName: string, notificationCallback: Listener) {
+  private _setNotificationObservers(
+    eventName: string,
+    notificationCallback: Listener,
+  ) {
     let listeners = this._notificationObservers[eventName];
     if (!listeners) {
       listeners = [];
@@ -36,8 +37,8 @@ export default class BaseNotificationSubscribe extends EventEmitter2 {
   }
 
   dispose() {
-    Object.keys(this._notificationObservers).forEach((eventName) => {
-      this._notificationObservers[eventName].forEach((listener) => {
+    Object.keys(this._notificationObservers).forEach((eventName: string) => {
+      this._notificationObservers[eventName].forEach((listener: Listener) => {
         notificationCenter.removeListener(eventName, listener);
       });
     });

@@ -24,7 +24,7 @@
     "lint-all": "tslint -p application && tslint -p packages/foundation && tslint -p packages/sdk && tslint -p packages/ui-components",
     "publish": "npm run clean:build && npm run build && lerna publish --silent",
     "watch": "node scripts/watch.js",
-    "prepush": "node ./scripts/check-coverage && npm run lint-all && npm run test:cover",
+    "prepush": "npm run lint-all && npm run test:cover",
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",
     "commitmsg": "node scripts/validate-commit-msg.js",
@@ -77,7 +77,9 @@
     "tslint-config-airbnb": "5.11.0",
     "tslint-react": "3.6.0",
     "typescript": "3.0.3",
-    "uuid": "3.3.2"
+    "uuid": "3.3.2",
+    "react-document-title": "2.0.3",
+    "@types/react-document-title": "2.0.3"
   },
   "dependencies": {
     "downshift": "2.2.2"

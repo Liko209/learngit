@@ -1,8 +1,3 @@
-/*
- * @Author: Andy Hu
- * @Date: 2018-09-17 14:02:23
- * Copyright © RingCentral. All rights reserved.
- */
 import GlobalStore from '../GlobalStore';
 
 describe('GlobalStore', () => {

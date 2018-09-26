@@ -53,6 +53,9 @@ type IPalette = {
     persimmon: string;
     tomato: string;
   };
+  background: {
+    disabled: string;
+  };
   action: {
     hoverOpacity: number;
     active: string;
@@ -69,6 +72,8 @@ type ITheme = {
   };
   shape: {
     borderRadius: number;
+    border1: string;
+    border2: string;
   };
   spacing: {
     unit: number;

@@ -11,11 +11,12 @@ import JuiIconButton from '../IconButton';
 import { width, spacing, height } from '../../utils/styles';
 
 type TJuiChipProps = {
-  Avatar?: React.ComponentType<any>;
+  uid: number;
+  ChipAvatar?: React.ComponentType<any>;
   onDelete?: (event: any) => void;
 } & ChipProps;
 
-const StyledChip = styled<TJuiChipProps>(MuiChip)`
+const StyledChip = styled(MuiChip)`
   && {
     margin: ${spacing(1)};
     padding: ${spacing(1)};
@@ -43,13 +44,17 @@ const StyledChip = styled<TJuiChipProps>(MuiChip)`
 const JuiChip: React.SFC<TJuiChipProps> & IDependencies = (
   props: TJuiChipProps,
 ) => {
-  const { innerRef, onDelete, Avatar, ...rest } = props;
+  const { innerRef, onDelete, ChipAvatar, ...rest } = props;
+  const avatar: any = ChipAvatar ? (
+    <ChipAvatar size="small" uid={rest.uid} />
+  ) : null;
+
   return (
     <StyledChip
       {...rest}
       onDelete={onDelete}
+      avatar={avatar}
       classes={{ deleteIcon: 'deleteIcon', label: 'label' }}
-      avatar={Avatar ? <Avatar size="small" /> : undefined}
       deleteIcon={
         <JuiIconButton variant="plain" tooltipTitle="remove">
           cancel

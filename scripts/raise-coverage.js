@@ -27,7 +27,7 @@ function raiseCoverage(summaryPath, thresholdPath) {
   log('Current threshold: \n');
 
   Object.entries(threshold.global).forEach(([key, oldThreshold]) => {
-    const newThreshold = Math.floor(summary.total[key].pct - ALLOW_RANGE);
+    const newThreshold = summary.total[key].pct - ALLOW_RANGE;
 
     if (newThreshold > oldThreshold) {
       threshold.global[key] = newThreshold;

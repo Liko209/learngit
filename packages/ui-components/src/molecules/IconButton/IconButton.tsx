@@ -10,6 +10,7 @@ import MuiIconButton, {
 } from '@material-ui/core/IconButton';
 import MuiIcon from '@material-ui/core/Icon';
 import MuiTooltip from '@material-ui/core/Tooltip';
+import { ArrowTip } from '../../atoms/Tooltip';
 import { palette, grey, width } from '../../utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme } from '../../theme';
@@ -132,7 +133,7 @@ const JuiIconButton: IJuiIconButton = (props: JuiIconButtonProps) => {
   const { className, children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
   return (
-    <MuiTooltip title={tooltipTitle}>
+    <ArrowTip title={tooltipTitle}>
       <WrapperForTooltip
         className={className}
         innerRef={innerRef}
@@ -151,7 +152,7 @@ const JuiIconButton: IJuiIconButton = (props: JuiIconButtonProps) => {
           </StyledIcon>
         </StyledIconButton>
       </WrapperForTooltip>
-    </MuiTooltip>
+    </ArrowTip>
   );
 };
 

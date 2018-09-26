@@ -249,7 +249,7 @@ class JuiDownshiftMultiple extends React.PureComponent<
                           key={index}
                           tabIndex={-1}
                           label={item.label}
-                          id={item.id}
+                          uid={item.id}
                           onDelete={this.handleDelete(item)}
                         />
                       ) : null,

@@ -14,8 +14,8 @@ type JuiConversationPageProps = {
 const StyledDiv = styled<JuiConversationPageProps, 'div'>('div')`
   background-color: white;
   height: 100%;
-  display:flex;
-  flex-direction:column;
+  display: flex;
+  flex-direction: column;
 `;
 
 const JuiConversationPage = (props: JuiConversationPageProps) => (

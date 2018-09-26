@@ -2,7 +2,7 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-03-05 13:29:50
  */
-import { IResponse } from '../NetworkClient';
+import { IResponse, IResponseError } from '../NetworkClient';
 import Api from '../api';
 import { Post, Item, Raw } from '../../models';
 
@@ -30,8 +30,10 @@ class PostAPI extends Api {
   /**
    *  /api/post
    */
-  static sendPost(data: object): Promise<IResponse<Raw<Post>>> {
-    return this.postData(data);
+  static sendPost(
+    data: object,
+  ): Promise<IResponse<Raw<Post> & IResponseError>> {
+    return this.postData<Post>(data);
   }
 
   static requestById(id: number): Promise<IResponse<Raw<Post>>> {

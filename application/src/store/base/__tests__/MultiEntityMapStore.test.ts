@@ -10,7 +10,7 @@ import BaseStore from '../BaseStore';
 import { ENTITY_SETTING } from '../../config';
 import { ENTITY_NAME } from '../../constants';
 import { IEntity, IIncomingData } from '../../store';
-import { BaseModel } from 'sdk/src/models';
+import { BaseModel } from 'sdk/models';
 const { EVENT_TYPES } = service;
 
 // jest.mock('../ModelProvider');

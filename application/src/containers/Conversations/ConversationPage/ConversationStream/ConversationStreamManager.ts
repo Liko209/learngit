@@ -1,46 +1,43 @@
-import { ConversationStreamViewModel } from './ConversationStreamViewModel';
+import ConversationThreadPresenter from './ConversationStreamViewModel';
 
 const MAX_CONVERSATION_THREAD = 5;
 
 export default class ConversationThreadsManager {
-  ConversationStreamViewModels: Map<
-    number,
-    ConversationStreamViewModel
-  > = new Map();
+  conversationThreadPresenters: Map<number, ConversationThreadPresenter> = new Map();
   addConversationThread(groupId: number) {
-    this.ConversationStreamViewModels.set(
+    this.conversationThreadPresenters.set(
       groupId,
-      new ConversationStreamViewModel(groupId),
+      new ConversationThreadPresenter(groupId),
     );
     return this.getConversationThread(groupId);
   }
 
   delConversationThread(groupId: number) {
-    const conversationThread = this.ConversationStreamViewModels.get(groupId);
+    const conversationThread = this.conversationThreadPresenters.get(groupId);
     conversationThread && conversationThread.dispose();
-    this.ConversationStreamViewModels.delete(groupId);
+    this.conversationThreadPresenters.delete(groupId);
   }
 
-  getConversationThread(groupId: number): ConversationStreamViewModel {
-    let conversationThread = this.ConversationStreamViewModels.get(groupId);
+  getConversationThread(groupId: number): ConversationThreadPresenter {
+    let conversationThread = this.conversationThreadPresenters.get(groupId);
     if (!conversationThread) {
       conversationThread = this.addConversationThread(groupId);
       this.checkCache();
     } else {
-      this.ConversationStreamViewModels.delete(groupId);
-      this.ConversationStreamViewModels.set(groupId, conversationThread);
+      this.conversationThreadPresenters.delete(groupId);
+      this.conversationThreadPresenters.set(groupId, conversationThread);
     }
     return conversationThread;
   }
 
   removeFirstConversationThread() {
-    const firstKey = this.ConversationStreamViewModels.keys().next().value;
+    const firstKey = this.conversationThreadPresenters.keys().next().value;
     return this.delConversationThread(firstKey);
   }
 
   loadPosts(groupId: number) {
-    const ConversationStreamViewModel = this.getConversationThread(groupId);
-    ConversationStreamViewModel && ConversationStreamViewModel.loadPosts();
+    const conversationThreadPresenter = this.getConversationThread(groupId);
+    conversationThreadPresenter && conversationThreadPresenter.loadPosts();
   }
 
   checkCache() {
@@ -51,29 +48,25 @@ export default class ConversationThreadsManager {
   }
 
   getStore(groupId: number) {
-    const ConversationStreamViewModel = this.getConversationThread(groupId);
-    if (ConversationStreamViewModel) {
-      return ConversationStreamViewModel.store;
+    const conversationThreadPresenter = this.getConversationThread(groupId);
+    if (conversationThreadPresenter) {
+      return conversationThreadPresenter.getStore();
     }
     return null;
   }
 
   dispose(groupId: number) {
     if (groupId) {
-      const ConversationStreamViewModel = this.getConversationThread(groupId);
-      ConversationStreamViewModel.dispose();
+      const conversationThreadPresenter = this.getConversationThread(groupId);
+      conversationThreadPresenter.dispose();
     } else {
-      this.ConversationStreamViewModels.forEach(
-        (vm: ConversationStreamViewModel) => {
-          vm.dispose();
-        },
-      );
+      this.conversationThreadPresenters.forEach((presenter: ConversationThreadPresenter) => {
+        presenter.dispose();
+      });
     }
   }
 
   getSize() {
-    return this.ConversationStreamViewModels.size;
+    return this.conversationThreadPresenters.size;
   }
 }
-
-export { ConversationThreadsManager };

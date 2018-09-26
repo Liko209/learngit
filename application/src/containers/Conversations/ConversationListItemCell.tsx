@@ -9,10 +9,8 @@ import _ from 'lodash';
 import { ConversationListItem } from 'ui-components/molecules/ConversationList/ConversationListItem';
 import { Menu } from 'ui-components/atoms/Menu';
 import { MenuItem } from 'ui-components/atoms/MenuItem';
-
 import { ENTITY_NAME } from '../../store';
-import injectStore, { IInjectedStoreProps } from '@/store/inject';
-import VM from '@/store/ViewModel';
+import { getEntity, getSingleEntity } from '@/store/utils';
 import GroupModel from '../../store/models/Group';
 import { observer } from 'mobx-react';
 import { getGroupName } from '../../utils/groupName';
@@ -20,22 +18,31 @@ import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import navPresenter, { NavPresenter } from '../Home/NavPresenter';
+import GroupStateModel from '@/store/models/GroupState';
+import MyStateModel from '@/store/models/MyState';
+import { MyState } from 'sdk/src/models';
+import navPresenter, { NavPresenter } from '../BackNForward/ViewModel';
 
 const { GroupService } = service;
-type IProps = IInjectedStoreProps<VM> &
-  RouteComponentProps<{}> & {
-    id: number;
-    key: number;
-    entityName: string;
-    isFavorite?: boolean;
-    currentUserId?: number;
-  };
 
-interface IState {}
+type IRouterParams = {
+  id: string;
+};
+
+type IProps = RouteComponentProps<IRouterParams> & {
+  id: number;
+  key: number;
+  entityName: string;
+  isFavorite?: boolean;
+  currentUserId?: number;
+};
+
+interface IState {
+  currentGroupId: number;
+}
 
 @observer
-class ConversationListItemCell extends React.Component<IProps, IState>{
+class ConversationListItemCell extends React.Component<IProps, IState> {
   private navPresenter: NavPresenter;
   static defaultProps = {
     isFavorite: false,
@@ -44,8 +51,6 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   @observable
   id: number;
   @observable
-  count: number = 0;
-  @observable
   displayName: string;
 
   @observable
@@ -53,6 +58,9 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
 
   @observable
   umiVariant: 'count' | 'dot' | 'auto';
+
+  @observable
+  important: boolean;
 
   @observable
   status: 'default' | 'offline' | 'online' | 'away' | undefined;
@@ -65,6 +73,15 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
 
   @observable
   favoriteText: string;
+
+  @observable
+  umiHint: boolean;
+
+  @observable
+  draft: string;
+
+  @observable
+  sendFailurePostIds: number[];
 
   @computed
   get menuOpen() {
@@ -84,6 +101,10 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     this._onClick = this._onClick.bind(this);
     this.isFavorite = !!props.isFavorite;
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
+    this.draft = '';
+    this.sendFailurePostIds = [];
+
+    this.state = { currentGroupId: 0 };
     this.navPresenter = navPresenter;
 
     autorun(() => {
@@ -101,11 +122,32 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     });
   }
   getDataFromStore() {
-    const { getEntity } = this.props;
     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
+    const lastGroup = getSingleEntity<MyState, MyStateModel>(
+      ENTITY_NAME.MY_STATE,
+      'lastGroupId',
+    ) as number;
+    const groupState = getEntity(
+      ENTITY_NAME.GROUP_STATE,
+      this.id,
+    ) as GroupStateModel;
+
     const { currentUserId } = this.props;
+    const isCurrentGroup = lastGroup && lastGroup === this.id;
+
+    this.umiHint = !!(!isCurrentGroup && groupState.unreadCount);
+    this.unreadCount = isCurrentGroup
+      ? 0
+      : (!group.isTeam && (groupState.unreadCount || 0)) ||
+        Math.min(
+          groupState.unreadCount || 0,
+          groupState.unreadMentionsCount || 0,
+        );
+    this.important = !!groupState.unreadMentionsCount;
     this.displayName = getGroupName(getEntity, group, currentUserId);
-    this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
+    this.umiVariant = 'count'; // || at_mentions
+    this.draft = group.draft || '';
+    this.sendFailurePostIds = group.sendFailurePostIds || [];
     if (currentUserId) {
       let targetPresencePersonId: number | undefined;
       const otherMembers = _.difference(group.members, [currentUserId]);
@@ -125,7 +167,17 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     }
   }
 
+  static getDerivedStateFromProps(props: IProps, state: IState) {
+    const currentGroupId = parseInt(props.match.params.id, 10);
+    if (currentGroupId !== state.currentGroupId) {
+      return { currentGroupId };
+    }
+    return null;
+  }
+
   render() {
+    const { currentGroupId } = this.state;
+    const showDraftTag = currentGroupId !== this.id && !!this.draft; // except oneself
     return (
       <React.Fragment>
         <ConversationListItem
@@ -133,11 +185,15 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
           aria-haspopup="true"
           key={this.id}
           title={this.displayName || ''}
+          umiHint={this.umiHint}
           unreadCount={this.unreadCount}
           umiVariant={this.umiVariant}
+          important={this.important}
           onMoreClick={this._openMenu}
           onClick={this._onClick}
           status={this.status}
+          showDraftTag={showDraftTag}
+          showSendMsgFailureTag={this.sendFailurePostIds.length > 0}
         />
         <Menu
           id="render-props-menu"
@@ -165,7 +221,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
     this.anchorEl = null;
   }
 
-  @action
+  @action.bound
   private _onClick() {
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.clickGroup(this.id);
@@ -173,10 +229,7 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   }
   private _jump2Conversation(id: number) {
     const { history } = this.props;
-    if (id === this.id) {
-      this.count = ++this.count;
-      this.count === 1 ? history.push(`/messages/${id}`) : null;
-    }
+    history.push(`/messages/${id}`);
     this.navPresenter.handleRouterChange();
   }
   @action
@@ -187,5 +240,5 @@ class ConversationListItemCell extends React.Component<IProps, IState>{
   }
 }
 
-export default withRouter(injectStore(VM)(ConversationListItemCell));
+export default withRouter(ConversationListItemCell);
 export { ConversationListItemCell };

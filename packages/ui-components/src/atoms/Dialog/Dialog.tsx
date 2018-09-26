@@ -52,6 +52,7 @@ const Dialog = styled(({ size = 'small', ...restProps }: IDialogProps) => {
   }
   & .paperFullScreen {
     width: 100%;
+    max-width: 100%;
   }
 `;
 

@@ -6,17 +6,15 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import JuiChip from 'ui-components/molecules/Chip';
+import Avatar from '../Avatar';
+
 // import { ENTITY_NAME } from '@/store';
 // import { getEntity } from '@/store/utils';
 // import PersonModel from '@/store/models/Person';
 // import { Person } from 'sdk/src/models';
 
-// interface IProps {
-//   id: number;
-// }
-
 const Chip = (props: any) => {
-  return <JuiChip {...props} />;
+  return <JuiChip ChipAvatar={Avatar} {...props} />;
 };
 
 export default observer(Chip);

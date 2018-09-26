@@ -3,6 +3,8 @@
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
  */
+import { POST_STATUS } from './service';
+
 export type BaseModel = {
   id: number;
   _id?: number;
@@ -67,6 +69,8 @@ export type GroupCommon = {
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
+  draft?: string;
+  send_failure_post_ids?: number[];
 };
 
 export type Group = ExtendedBaseModel & {
@@ -81,6 +85,7 @@ export type Profile = ExtendedBaseModel & {
   person_id?: number;
   favorite_group_ids: number[];
   favorite_post_ids: number[];
+  me_tab: boolean;
 };
 
 export type Company = ExtendedBaseModel & {
@@ -92,6 +97,7 @@ export type Company = ExtendedBaseModel & {
 export type Person = ExtendedBaseModel & {
   company_id: number;
   email: string;
+  me_group_id: number;
   is_webmail?: boolean;
   first_user?: boolean;
   externally_registered?: boolean;
@@ -100,14 +106,15 @@ export type Person = ExtendedBaseModel & {
   first_name?: string;
   last_name?: string;
   display_name?: string;
-  headshot?: string;
+  headshot?: {
+    url: string;
+  };
   locked?: boolean;
   inviter_id?: number;
   rc_phone_numbers?: object[];
   sanitized_rc_extension?: object;
   is_pseudo_user?: boolean;
   glip_user_id?: number;
-  away_status?: string | null;
 };
 
 export type UserInfo = {
@@ -122,6 +129,7 @@ export type State = ExtendedBaseModel & {
   away_status_history?: string[];
   current_plugin: string;
   trigger_ids?: number[];
+  last_group_id: number;
 };
 
 export type MyState = State;
@@ -154,6 +162,7 @@ export type Post = ExtendedBaseModel & {
   from_group_id?: number;
   links?: object[];
   items?: object[];
+  status?: POST_STATUS;
 };
 
 export type Item = ExtendedBaseModel & {
