@@ -8,7 +8,7 @@ import styled from '../../styled-components';
 import MuiAvatar, {
   AvatarProps as MuiAvatarProps,
 } from '@material-ui/core/Avatar';
-import { width, height, typography, palette } from '../../utils/styles';
+import { width, height, typography } from '../../utils/styles';
 
 type TJuiAvatarProps = {
   size?: 'small' | 'medium' | 'large' | 'xlarge';
@@ -34,7 +34,6 @@ const StyledAvatar = styled<TJuiAvatarProps>(MuiAvatar)`
     width: ${({ size = 'medium', theme }) => width(sizes[size])({ theme })};
     height: ${({ size = 'medium', theme }) => height(sizes[size])({ theme })};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    background-color: ${({ color = 'lake' }) => palette('accent', color)}
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;

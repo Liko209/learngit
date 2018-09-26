@@ -106,5 +106,17 @@
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
       "lineHeight": "16px"
     }
+  },
+  "avatar": {
+    "tomato": "#F95B5C",
+    "blueberry": "#6E6EC0",
+    "oasis": "#5E95C8",
+    "gold": "#FFBF2A",
+    "sage": "#7EB57F",
+    "ash": "#666666",
+    "persimmon": "#FF8800",
+    "pear": "#5FB95C",
+    "brass": "#CC9922",
+    "lake": "#6FAFEB"
   }
 }

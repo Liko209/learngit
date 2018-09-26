@@ -22,6 +22,10 @@ const HandleByUpload = new class extends AbstractHandleType {
           request.params = {
             ...request.params,
           };
+          request.headers = {
+            ...request.headers,
+            Authorization: `Bearer ${handler.accessToken()}`,
+          };
         }
       }
       return request;

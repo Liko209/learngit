@@ -12,8 +12,12 @@ jest.mock('foundation');
 
 describe('Socket FSM', async () => {
   const serverUrl = 'aws13-g04-uds02.asialab.glip.net:11904';
+  const glipToken =
+    // tslint:disable-next-line:max-line-length
+    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9pZCI6MTUyOTI0OTk1OTAyNCwidHlwZSI6IndlYiIsInVpZCI6MTIyMDYxMSwiaWF0IjoxNTI5MjQ5OTU5LCJpc3MiOiJhd3MxMy1nMDQtdWRzMDIuYXNpYWxhYi5nbGlwLm5ldCIsInN1YiI6ImdsaXAifQ.0OHMMja3JnEskNxZLFw86CaV-Ph-SyZETQetLqDqLXRKBu0vI5u1_2l-dTP4eNxKHHq3nAeqUVB1IYwjCxXNzA';
+
   function fsmCreate() {
-    const fsm = new SocketFSM(serverUrl, (name, state) => {
+    const fsm = new SocketFSM(serverUrl, glipToken, (name, state) => {
     });
     return fsm;
   }

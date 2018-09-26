@@ -5,11 +5,7 @@
  */
 
 import * as assert from 'assert';
-import { AccountOperationsApi as AccountPoolApi } from 'account-pool-ts-api';
-import {
-  AccountLockApi,
-  AccountLockAcquire,
-} from 'glip-account-pool-client';
+import { AccountLockApi, AccountLockAcquire } from 'glip-account-pool-client';
 
 import { ENV, DEBUG } from '../config';
 interface IAccountPoolClient {
@@ -17,12 +13,6 @@ interface IAccountPoolClient {
   envName: string;
   checkOutAccounts(accountType: string): Promise<any>;
   checkInAccounts(data: any): Promise<any>;
-}
-
-function releaseCommandBuilder(url: string, accountLockId: string) {
-  return (
-    `curl -X DELETE "${url}/accountLocks/${accountLockId}" -H "accept: application/json"`
-  );
 }
 
 class AccountPoolClient implements IAccountPoolClient {
@@ -37,18 +27,21 @@ class AccountPoolClient implements IAccountPoolClient {
     const accountLockAcquireBody = new AccountLockAcquire();
     accountLockAcquireBody.envName = this.envName;
     accountLockAcquireBody.accountType = accountType;
-    const acquiredAccount = await this.accountLockApi.accountLocksPost(accountLockAcquireBody);
+    const acquiredAccount = await this.accountLockApi.accountLocksPost(
+      accountLockAcquireBody,
+    );
     return acquiredAccount.body;
   }
 
   async checkInAccounts(data: any) {
-    const res = await this.accountLockApi.accountLocksAccountLockIdDelete(data.accountLockId);
+    const res = await this.accountLockApi.accountLocksAccountLockIdDelete(
+      data.accountLockId,
+    );
     return res.body;
   }
 }
 
 class AccountPoolManager implements IAccountPoolClient {
-
   availableAccounts: any;
   allAccounts: any[];
   baseUrl: string;
@@ -71,8 +64,6 @@ class AccountPoolManager implements IAccountPoolClient {
     }
     const data = await this.accountPoolClient.checkOutAccounts(accountType);
     this.allAccounts.push(data);
-    console.log('Account Pool: in case of unexpected error, you can use following command to reclaim account');
-    console.log(releaseCommandBuilder(this.baseUrl, data.accountLockId));
     return data;
   }
 
@@ -82,18 +73,44 @@ class AccountPoolManager implements IAccountPoolClient {
   }
 
   async checkInAll() {
-    console.log('Account Pool: following accounts are used in this run:');
-    console.log(JSON.stringify(this.allAccounts));
     for (const data of this.allAccounts) {
       const ret = await this.accountPoolClient.checkInAccounts(data);
-      console.log('release result:', ret);
-      console.log(`Account Pool: success to reclaim account: ${data.companyEmailDomain}`);
+      console.log(
+        `Account Pool: success to reclaim account: ${data.companyEmailDomain}`,
+      );
     }
   }
 }
 
-const _accountPoolUrl = DEBUG ? ENV.ACCOUNT_POOL_FOR_DEBUG_BASE_URL : ENV.ACCOUNT_POOL_BASE_URL;
-const _accountPoolClient = new AccountPoolClient(_accountPoolUrl, ENV.ACCOUNT_POOL_ENV);
+const _accountPoolUrl = DEBUG
+  ? ENV.ACCOUNT_POOL_FOR_DEBUG_BASE_URL
+  : ENV.ACCOUNT_POOL_BASE_URL;
+const _accountPoolClient = new AccountPoolClient(
+  _accountPoolUrl,
+  ENV.ACCOUNT_POOL_ENV,
+);
 const accountPoolClient = new AccountPoolManager(_accountPoolClient);
+
+// ensure account release on exit
+const events: { name; exitCode }[] = [
+  { name: 'beforeExit', exitCode: 0 },
+  { name: 'uncaughtException', exitCode: 1 },
+  { name: 'SIGINT', exitCode: 130 },
+  { name: 'SIGTERM', exitCode: 143 },
+];
+
+events.forEach(e => {
+  process.on(e.name, () => {
+    console.log('start to release account');
+    accountPoolClient
+      .checkInAll()
+      .then(() => {
+        process.exit(e.exitCode);
+      })
+      .catch(err => {
+        process.exit(e.exitCode);
+      });
+  });
+});
 
 export { accountPoolClient };

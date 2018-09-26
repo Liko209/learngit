@@ -1,4 +1,4 @@
-import { NavPresenter } from '../NavPresenter';
+import { NavPresenter } from '../../BackNForward/ViewModel';
 import { getGlobalValue } from '@/store/utils';
 
 jest.mock('@/config', () => {

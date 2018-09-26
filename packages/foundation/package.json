@@ -12,7 +12,7 @@
     "lodash": "4.17.10",
     "lokijs": "1.5.5",
     "reflect-metadata": "0.1.12",
-    "socket.io-client": "2.1.1"
+    "socket.io-client": "git+ssh://git@git.ringcentral.com:Fiji/FIJI-socket.io-client.git#Jupiter-2.1.101"
   },
   "devDependencies": {
     "@types/lodash": "*",
