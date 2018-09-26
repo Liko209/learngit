@@ -11,9 +11,9 @@ import JuiSearchItemText from 'ui-components/atoms/SearchItemText';
 import JuiAvatar from 'ui-components/atoms/Avatar';
 
 const SearchContactItem = (props: any) => {
-  const { suggestion, isHighlighted, index, ...rest } = props;
+  const { suggestion, isHighlighted, ...rest } = props;
   return suggestion ? (
-    <JuiSearchItem {...rest} selected={isHighlighted} key={index}>
+    <JuiSearchItem {...rest} selected={isHighlighted}>
       <JuiAvatar />
       <JuiSearchItemText
         primary={suggestion.label}
