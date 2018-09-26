@@ -101,7 +101,7 @@ const ListLink = styled(NavLink)`
   &&&:active {
     opacity: ${({ theme }) => 1 - 2 * theme.palette.action.hoverOpacity};
     span,
-    .nav-icon {
+    .nav-icon, .nav-text span {
       color: ${({ theme }) => theme.palette.primary.main}; // RC Blue
     }
   }
