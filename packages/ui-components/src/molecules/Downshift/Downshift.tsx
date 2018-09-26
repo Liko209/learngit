@@ -8,16 +8,13 @@ import keycode from 'keycode';
 import Downshift from 'downshift';
 import styled from '../../styled-components';
 import Paper from '@material-ui/core/Paper';
-// import JuiSearchItem from '../SearchItem';
-// import JuiChip from '../Chip';
-// import JuiSearchItemText from '../../atoms/SearchItemText';
-// import JuiAvatar from '../../atoms/Avatar';
 import JuiTextField from '../../atoms/TextField/TextField';
 import { spacing } from '../../utils/styles';
 import differenceBy from 'lodash/differenceBy';
 
 type TJuiDownshiftMultipleState = {
   inputValue: string;
+  showPlaceholder: boolean;
   shrink: boolean;
   selectedItem: TSuggestion[];
 };
@@ -37,6 +34,8 @@ export type TJuiDownshiftMultipleProps = {
   placeholder: string;
   Chip?: React.ComponentType<any>;
   SearchContactItem?: React.ComponentType<any>;
+  error?: boolean;
+  helperText?: string;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -63,18 +62,24 @@ const StyledTextField = styled(JuiTextField)`
   }
 `;
 
-// const StyledChip = styled(JuiChip)`
-//   && {
-//     margin: ${spacing(1)};
-//   }
-// `;
-
 const renderInput = (inputProps: any) => {
-  const { InputProps, ref, shrink, label, ...rest } = inputProps;
+  const {
+    InputProps,
+    ref,
+    shrink,
+    label,
+    placeholder,
+    showPlaceholder,
+    error,
+    helperText,
+    ...rest
+  } = inputProps;
   return (
     <StyledTextField
-      label={label}
+      label={showPlaceholder ? placeholder : label}
       fullWidth={true}
+      error={error}
+      helperText={error && helperText}
       InputProps={{
         inputRef: ref,
         ...InputProps,
@@ -94,6 +99,7 @@ class JuiDownshiftMultiple extends React.PureComponent<
   setHightLightedIndex: Function;
   state: TJuiDownshiftMultipleState = {
     inputValue: '',
+    showPlaceholder: true,
     shrink: false,
     selectedItem: [],
   };
@@ -118,21 +124,14 @@ class JuiDownshiftMultiple extends React.PureComponent<
     highlightedIndex,
     index,
   }: any) => {
-    // const hhh = highlightedIndex === null && index === 0 ? 0 : highlightedIndex;
     const isHighlighted = highlightedIndex === index;
-    // console.log(1111, highlightedIndex);
-    // console.log(2222, index);
-    // const isSelected = (selectedItem.id || '').indexOf(suggestion.id) > -1;
-
-    // console.log('---suggetions---', suggestion);
-    // console.log('------is select---', isSelected);
 
     return SearchContactItem ? (
       <SearchContactItem
         {...itemProps}
         isHighlighted={isHighlighted}
         suggestion={suggestion}
-        index={index}
+        key={index}
       />
     ) : null;
   }
@@ -205,8 +204,10 @@ class JuiDownshiftMultiple extends React.PureComponent<
       placeholder,
       Chip,
       SearchContactItem,
+      error,
+      helperText,
     } = this.props;
-    const { inputValue, selectedItem, shrink } = this.state;
+    const { inputValue, selectedItem, shrink, showPlaceholder } = this.state;
 
     const filterSuggestions = differenceBy(suggestions, selectedItem, 'id');
 
@@ -235,6 +236,10 @@ class JuiDownshiftMultiple extends React.PureComponent<
               {renderInput({
                 shrink,
                 label,
+                placeholder,
+                showPlaceholder,
+                error,
+                helperText,
                 fullWidth: true,
                 InputProps: getInputProps({
                   startAdornment: selectedItem.map(
@@ -251,11 +256,13 @@ class JuiDownshiftMultiple extends React.PureComponent<
                   ),
                   onFocus: () => {
                     this.setState({
+                      showPlaceholder: false,
                       shrink: true,
                     });
                   },
                   onBlur: () => {
                     this.setState({
+                      showPlaceholder: true,
                       shrink:
                         selectedItem.length !== 0 ||
                         String(inputValue).length !== 0,
@@ -266,7 +273,11 @@ class JuiDownshiftMultiple extends React.PureComponent<
                   classes: {
                     root: 'input',
                   },
-                  placeholder: `${selectedItem.length === 0 ? placeholder : ''}`,
+                  placeholder: `${
+                    selectedItem.length === 0 && showPlaceholder
+                      ? placeholder
+                      : ''
+                  }`,
                 } as any), // Downshift startAdornment is not include in getInputProps interface
               })}
               {isOpen && filterSuggestions.length ? (
