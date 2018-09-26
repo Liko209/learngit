@@ -33,6 +33,7 @@ interface IState {
   nameError: boolean;
   emailError: boolean;
   errorMsg: string;
+  emailErrorMsg: string;
   teamName: string;
   description: string;
   items: IListToggleItemProps[];
@@ -52,6 +53,7 @@ class CreateTeam extends React.Component<IProps, IState> {
       nameError: false,
       emailError: false,
       errorMsg: '',
+      emailErrorMsg: '',
       teamName: '',
       description: '',
       members: [],
@@ -106,7 +108,7 @@ class CreateTeam extends React.Component<IProps, IState> {
       });
     } else if (type === 'invalid_email') {
       this.setState({
-        errorMsg: t(msg),
+        emailErrorMsg: t(msg),
         emailError: true,
       });
     }
@@ -162,6 +164,7 @@ class CreateTeam extends React.Component<IProps, IState> {
       disabledOkBtn,
       nameError,
       emailError,
+      emailErrorMsg,
       items,
       errorMsg,
     } = this.state;
@@ -191,7 +194,7 @@ class CreateTeam extends React.Component<IProps, IState> {
             label={t('Members')}
             placeholder={t('Search Contact Placeholder')}
             error={emailError}
-            helperText={emailError && t(errorMsg)}
+            helperText={emailError && t(emailErrorMsg)}
           />
           <JuiTextarea
             placeholder={t('Team Description')}

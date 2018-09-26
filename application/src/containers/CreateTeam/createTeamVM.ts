@@ -39,13 +39,13 @@ class CreateTeamVM {
     console.log(result);
 
     if (result && (result as IResponseError).error) {
-      throw this.createErrorHandle(result as IResponseError);
+      throw this.createErrorHandler(result as IResponseError);
     }
 
     return result;
   }
 
-  createErrorHandle(result: IResponseError): errorTips {
+  createErrorHandler(result: IResponseError): errorTips {
     const code = result.error.code;
     let errorMsg: errorTips = {
       type: '',
