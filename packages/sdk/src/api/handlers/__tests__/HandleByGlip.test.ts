@@ -30,7 +30,7 @@ describe('HandleByGlip', () => {
       jest.clearAllMocks();
     });
 
-    it('should not add tk to params if needAuth is false', () => {
+    it('should not add tk to headers if needAuth is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');
       const decoration = HandleByGlip.requestDecoration(handler);
@@ -38,10 +38,11 @@ describe('HandleByGlip', () => {
       request.needAuth = jest.fn().mockImplementation(() => false);
       const decoratedRequest = decoration(request);
       expect(decoratedRequest.params.tk).toBeUndefined();
+      expect(decoratedRequest.headers.Authorization).toBeUndefined();
       expect(decoratedRequest).toEqual(request);
     });
 
-    it('should not add tk to params if needAuth is true ', () => {
+    it('should add tk to headers if needAuth is true ', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');
       const decoration = HandleByGlip.requestDecoration(handler);
@@ -49,9 +50,10 @@ describe('HandleByGlip', () => {
       request.needAuth = jest.fn().mockImplementation(() => true);
       const decoratedRequest = decoration(request);
       expect(decoratedRequest.params.tk).toBeUndefined();
+      expect(decoratedRequest.headers.Authorization).not.toBeUndefined();
     });
 
-    it('should not add tk to params if isOAuthTokenAvailable is false ', () => {
+    it('should not add tk to headers if isOAuthTokenAvailable is false ', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');
       const decoration = HandleByGlip.requestDecoration(handler);
@@ -59,6 +61,7 @@ describe('HandleByGlip', () => {
       request.needAuth = jest.fn().mockImplementation(() => true);
       const decoratedRequest = decoration(request);
       expect(request.params.tk).toBeUndefined();
+      expect(request.headers.Authorization).toBeUndefined();
       expect(decoratedRequest).toEqual(request);
     });
 
