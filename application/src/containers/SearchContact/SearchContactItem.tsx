@@ -12,17 +12,15 @@ import JuiAvatar from 'ui-components/atoms/Avatar';
 
 const SearchContactItem = (props: any) => {
   const { suggestion, isHighlighted, index, ...rest } = props;
-  return (
-    suggestion && (
-      <JuiSearchItem {...rest} selected={isHighlighted} key={index}>
-        <JuiAvatar />
-        <JuiSearchItemText
-          primary={suggestion.label}
-          secondary={suggestion.email}
-        />
-      </JuiSearchItem>
-    )
-  );
+  return suggestion ? (
+    <JuiSearchItem {...rest} selected={isHighlighted} key={index}>
+      <JuiAvatar />
+      <JuiSearchItemText
+        primary={suggestion.label}
+        secondary={suggestion.email}
+      />
+    </JuiSearchItem>
+  ) : null;
 };
 
 export default observer(SearchContactItem);

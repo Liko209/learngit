@@ -20,6 +20,7 @@ const StyledChip = styled<TJuiChipProps>(MuiChip)`
     margin: ${spacing(1)};
     padding: ${spacing(1)};
     box-sizing: border-box;
+    overflow: hidden;
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity * 1};
     }
@@ -32,6 +33,11 @@ const StyledChip = styled<TJuiChipProps>(MuiChip)`
     width: ${width(5)};
     height: ${height(5)};
   }
+  .label {
+    display: inline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 
 const JuiChip: React.SFC<TJuiChipProps> & IDependencies = (
@@ -42,7 +48,7 @@ const JuiChip: React.SFC<TJuiChipProps> & IDependencies = (
     <StyledChip
       {...rest}
       onDelete={onDelete}
-      classes={{ deleteIcon: 'deleteIcon' }}
+      classes={{ deleteIcon: 'deleteIcon', label: 'label' }}
       avatar={Avatar ? <Avatar size="small" /> : undefined}
       deleteIcon={
         <JuiIconButton variant="plain" tooltipTitle="remove">
