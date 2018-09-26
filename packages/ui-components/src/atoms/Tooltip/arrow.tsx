@@ -33,11 +33,11 @@ const styles = createStyles({
     },
     '&[x-placement*="right"] $arrowArrow': {
       left: 0,
-      marginLeft: '-0.9em',
-      height: '3em',
+      marginLeft: '-0.8em',
+      height: '1.8em',
       width: '1em',
       '&::before': {
-        borderWidth: '1em 1em 1em 0',
+        borderWidth: '0.6em 0.6em 0.6em 0',
         borderColor: 'transparent #616161 transparent transparent',
       },
     },
