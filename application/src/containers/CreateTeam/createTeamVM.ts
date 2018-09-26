@@ -7,6 +7,7 @@ import { action } from 'mobx';
 
 import GroupService, { CreateTeamOptions } from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
+import { IResponseError } from 'sdk/models';
 
 class CreateTeamVM {
   @action
@@ -30,7 +31,22 @@ class CreateTeamVM {
         canPost,
       },
     );
+    console.log(result);
+
+    if ((result as IResponseError).error) {
+      return this.createErrorHandle(result as IResponseError);
+    }
+
     return result;
+  }
+
+  createErrorHandle(result: IResponseError): string {
+    const code = result.error.code;
+    let errorMsg;
+    if (code === 'already_taken') {
+      errorMsg = 'already taken';
+    }
+    return errorMsg ? errorMsg : result.error.message;
   }
 }
 

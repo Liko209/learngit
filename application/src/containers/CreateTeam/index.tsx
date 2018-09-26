@@ -21,7 +21,6 @@ import ListToggleButton, {
 import HomePresenter from '../Home/HomePresenter';
 import SearchContact from '../SearchContact';
 import CreateTeamVM from './createTeamVM';
-import { IResponseError } from 'sdk/models';
 
 interface IProps {
   homePresenter: HomePresenter;
@@ -94,19 +93,10 @@ class CreateTeam extends React.Component<IProps, IState> {
     this.setState({ members });
   }
 
-  createTeamError(result: IResponseError) {
+  createTeamError(errorMsg: string) {
     const { t } = this.props;
-    const { teamName } = this.state;
-    const code = result.error.code;
-    let errorMsg;
-    if (code === 'already_taken') {
-      errorMsg = t('already token', { name: teamName });
-    }
-    if (code === 'invalid_field') {
-      // TODO
-    }
     this.setState({
-      errorMsg,
+      errorMsg: t(errorMsg),
       nameError: true,
     });
   }
@@ -124,9 +114,8 @@ class CreateTeam extends React.Component<IProps, IState> {
         canPost,
       },
     );
-    console.log(result);
-    if ((result as IResponseError).error) {
-      this.createTeamError(result as IResponseError);
+    if (typeof result === 'string') {
+      this.createTeamError(result);
       return;
     }
     this.onClose();

@@ -8,7 +8,7 @@
   "Create": "创建",
   "Cancel": "取消",
   "Members": "组员",
-  "already token": "该群名 {{name}} 已被使用",
+  "already taken": "该群名 {{name}} 已被使用",
   "Search Contact Placeholder": "组员 (请输入名字或者邮箱)",
   "Public Team": "公开的群组 (任何同事都可见)",
   "Members may post messages": "允许成员发消息"

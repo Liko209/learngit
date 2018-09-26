@@ -32,7 +32,7 @@ describe('CreateTeamVM', () => {
     accountService.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => creatorId);
-    const spy = jest.spyOn(groupService, 'createTeam');
+    groupService.createTeam = jest.fn().mockImplementation(() => ({}));
 
     const name = 'name';
     const memberIds = [1, 2];
@@ -42,12 +42,21 @@ describe('CreateTeamVM', () => {
       canPost: true,
     };
     await createTeamVM.create(name, memberIds, description, options);
-    expect(spy).toHaveBeenCalledWith(
+    expect(groupService.createTeam).toHaveBeenCalledWith(
       name,
       creatorId,
       memberIds,
       description,
       options,
     );
+  });
+
+  it('createErrorHandle()', () => {
+    const errorMsg = createTeamVM.createErrorHandle({
+      error: {
+        code: 'already_taken',
+      },
+    });
+    expect(errorMsg).toBe('already taken');
   });
 });

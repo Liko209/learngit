@@ -1,6 +1,6 @@
 {
   "Create Team": "Create Team",
-  "Team Name": "Team Name",
+  "Team Name": "Team name",
   "Team Description": "Team description",
   "Team name required": "Team name required",
   "tips": "You are an admin to this team.",
@@ -8,7 +8,7 @@
   "Create": "Create",
   "Cancel": "Cancel",
   "Members": "Members",
-  "already token": "The name {{name}} is already taken.",
+  "already taken": "The name is already taken, please choose another one.",
   "Search Contact Placeholder": "Members (enter names or email addresses)",
   "Public Team": "Public Team (visible to any co-worker)",
   "Members may post messages": "Allow members to post messages"
