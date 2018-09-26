@@ -5,7 +5,9 @@
  */
 import React from 'react';
 
-import MuiMenuItem, { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
+import MuiMenuItem, {
+  MenuItemProps as MuiMenuItemProps,
+} from '@material-ui/core/MenuItem';
 
 import styled from '../../styled-components';
 import { spacing, grey } from '../../utils';
@@ -13,34 +15,35 @@ import { Presence, Umi, Icon, PresenceProps } from '../../atoms';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
 const StyledListItem = styled(MuiMenuItem)`
-&& {
-  white-space: nowrap;
-  background: white;
-  padding: ${spacing(2, 4, 2, 3)};
-  color: ${grey('900')};
-  /**
+  && {
+    white-space: nowrap;
+    background: white;
+    padding: ${spacing(2, 4, 2, 3)};
+    color: ${grey('900')};
+    /**
    * Workaround to resolve transition conflicts with react-sortable-hoc
    * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
    */
-  transition: transform 0s ease, background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-}
+    transition: transform 0s ease,
+      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  }
 
-&&:hover {
-  background: ${grey('100')};
-}
+  &&:hover {
+    background: ${grey('100')};
+  }
 
-&&:focus {
-  background: ${grey('300')};
-}
+  &&:focus {
+    background: ${grey('300')};
+  }
 
-&& ${Icon} {
-  opacity: 0;
-  transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-}
+  && ${Icon} {
+    opacity: 0;
+    transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  }
 
-&&:hover ${Icon} {
-  opacity: 1;
-}
+  &&:hover ${Icon} {
+    opacity: 1;
+  }
 `;
 
 type ListItemProps = {
@@ -48,29 +51,55 @@ type ListItemProps = {
   status?: PresenceProps['presence'];
   unreadCount?: number;
   important?: boolean;
+  umiHint?: boolean;
   umiVariant?: 'count' | 'dot' | 'auto';
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
-  showDraftTag: boolean;
+  showDraftTag?: boolean;
+  showSendMsgFailureTag?: boolean;
 } & MuiMenuItemProps;
 
-type IConversationListItem = { dependencies?: React.ComponentType[] } & React.SFC<ListItemProps>;
+type IConversationListItem = {
+  dependencies?: React.ComponentType[];
+} & React.SFC<ListItemProps>;
 
 const ConversationListItem: IConversationListItem = (props: ListItemProps) => {
-  const { title, status, unreadCount, important,
-    onClick, onMoreClick, umiVariant, component, selected, showDraftTag } = props;
+  const {
+    title,
+    status,
+    unreadCount,
+    important,
+    onClick,
+    onMoreClick,
+    umiVariant,
+    component,
+    selected,
+    showDraftTag,
+    showSendMsgFailureTag,
+    umiHint,
+  } = props;
 
-  const fontWeight = unreadCount ? 'bold' : 'normal';
+  const fontWeight = umiHint ? 'bold' : 'normal';
+
+  let tag = '';
+  if (showDraftTag) {
+    tag = '[Draft]';
+  }
+  if (showSendMsgFailureTag) {
+    tag = '[Failure]'; // only show one
+  }
 
   return (
-    <StyledListItem
-      onClick={onClick}
-      component={component}
-      selected={selected}
-    >
+    <StyledListItem onClick={onClick} component={component} selected={selected}>
       <Presence presence={status} />
-      <ItemText style={{ fontWeight }}>{showDraftTag && '[Draft]'} {title}</ItemText>
-      <Umi variant={umiVariant} important={important} unreadCount={unreadCount} />
+      <ItemText style={{ fontWeight }}>
+        {tag} {showDraftTag && '[Draft]'} {title}
+      </ItemText>
+      <Umi
+        variant={umiVariant}
+        important={important}
+        unreadCount={unreadCount}
+      />
       <Icon onClick={onMoreClick}>more_vert</Icon>
     </StyledListItem>
   );

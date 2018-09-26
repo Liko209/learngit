@@ -7,14 +7,17 @@
 import { postFactory, rawPostFactory } from '../../../__tests__/factories';
 import { daoManager } from '../../../dao';
 import IncomingPostHandler from '../../../service/post/incomingPostHandler';
-import { baseHandleData as utilsBaseHandleData, transform } from '../../../service/utils';
+import {
+  baseHandleData as utilsBaseHandleData,
+  transform,
+} from '../../../service/utils';
 import PostService from '../../post';
 import GroupService from '../../group';
 import PostDao from '../../../dao/post/index';
 import handleData, {
   baseHandleData,
   handleDataFromSexio,
-  handlePreInstedPosts,
+  handlePreInsertPosts,
 } from '../handleData';
 
 jest.mock('../../post');
@@ -54,13 +57,17 @@ describe('Post service handleData', () => {
     daoManager.getDao(PostDao).createQuery.mockImplementation(() => ({
       count: jest.fn().mockReturnValue(300001),
     }));
-    jest.spyOn(require('../handleData'), 'handlePreInstedPosts').mockResolvedValueOnce([]);
+    jest
+      .spyOn(require('../handleData'), 'handlePreInsertPosts')
+      .mockResolvedValueOnce([]);
 
     await handleData([rawPostFactory.build({ _id: 1 })], false);
-    expect(IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold)
-      .toHaveBeenCalled();
-    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange)
-      .toHaveBeenCalled();
+    expect(
+      IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold,
+    ).toHaveBeenCalled();
+    expect(
+      IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
+    ).toHaveBeenCalled();
   });
 
   it('maxPostsExceed = true', async () => {
@@ -76,31 +83,36 @@ describe('handleDataFromSexio', () => {
   it('empty array', async () => {
     const ret = await handleDataFromSexio([]);
     expect(ret).toBeUndefined();
-    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange)
-      .not.toHaveBeenCalled();
+    expect(
+      IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
+    ).not.toHaveBeenCalled();
   });
 
   it('default data', async () => {
     // jest.spyOn(service, 'isVersionInPreInsert').mockReturnValue();
-    IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange
-      .mockReturnValue([{}, {}]);
+    IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange.mockReturnValue(
+      [{}, {}],
+    );
     await handleDataFromSexio([rawPostFactory.build({ _id: 1 })]);
-    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange)
-      .toHaveBeenCalled();
+    expect(
+      IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
+    ).toHaveBeenCalled();
     expect(utilsBaseHandleData).toHaveBeenCalled();
   });
   it('default data', async () => {
-    IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange
-      .mockReturnValue([]);
+    IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange.mockReturnValue(
+      [],
+    );
     await handleDataFromSexio([rawPostFactory.build({ _id: 1 })]);
-    expect(IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange)
-      .toHaveBeenCalled();
+    expect(
+      IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
+    ).toHaveBeenCalled();
     expect(utilsBaseHandleData).not.toHaveBeenCalled();
   });
 });
 
 describe('baseHandleData', () => {
-  beforeEach(() => { });
+  beforeEach(() => {});
   it('false', async () => {
     const ret = await baseHandleData([], false);
     expect(ret).toEqual([]);
@@ -133,12 +145,12 @@ describe('handlePreInstedPosts', () => {
   });
 
   it('handlePreInstedPosts should be [] with invalid parameters', async () => {
-    const result = await handlePreInstedPosts([]);
+    const result = await handlePreInsertPosts([]);
     expect(result.length).toBe(0);
   });
 
   it('handlePreInstedPosts should be [] with valid parameter', async () => {
-    const result = await handlePreInstedPosts([
+    const result = await handlePreInsertPosts([
       postFactory.build({
         id: 1,
         version: 100,
@@ -153,11 +165,8 @@ describe('handlePreInstedPosts', () => {
   });
 
   it('handlePreInstedPosts should be [1] with valid parameter', async () => {
-    postService.isVersionInPreInsert.mockResolvedValueOnce({
-      existed: true,
-      id: -100,
-    });
-    const result = await handlePreInstedPosts([
+    postService.isInPreInsert.mockResolvedValueOnce(true);
+    const result = await handlePreInsertPosts([
       postFactory.build({
         id: 1,
         version: 100,
@@ -169,6 +178,6 @@ describe('handlePreInstedPosts', () => {
       }),
     ]);
 
-    expect(result[0]).toBe(-100);
+    expect(result[0]).toBe(100);
   });
 });

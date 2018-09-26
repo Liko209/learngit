@@ -54,10 +54,7 @@ class ConversationSectionComponent extends React.Component<IProps> {
     });
   }
 
-  private _handleSortEnd({
-    oldIndex,
-    newIndex,
-  }: {
+  private _handleSortEnd({ oldIndex, newIndex }: {
     oldIndex: number;
     newIndex: number;
   }) {
@@ -110,13 +107,18 @@ class ConversationSectionComponent extends React.Component<IProps> {
 
   render() {
     const { t, title, iconName, expanded } = this.props;
+    const { presenter } = this.props;
+
+    const { important, unreadCount } = presenter.calculateUmi();
+
     return (
       <div>
         <ConversationListSection
           icon={<Icon>{iconName}</Icon>}
           title={toTitleCase(t(title))}
-          important={true}
+          important={important}
           expanded={expanded}
+          unreadCount={unreadCount}
         >
           {this.renderList()}
         </ConversationListSection>

@@ -57,6 +57,14 @@ class ConversationListItemViewComponent extends React.Component<
     }
     return <React.Fragment />;
   }
+  static getDerivedStateFromProps(props: IProps, state: IState) {
+    const currentGroupId = parseInt(props.match.params.id, 10);
+    if (currentGroupId !== state.currentGroupId) {
+      return { currentGroupId };
+    }
+    return null;
+  }
+
   renderMenu() {
     return (
       <Menu
@@ -72,13 +80,7 @@ class ConversationListItemViewComponent extends React.Component<
       </Menu>
     );
   }
-  static getDerivedStateFromProps(props: IProps, state: IState) {
-    const currentGroupId = parseInt(props.match.params.id, 10);
-    if (currentGroupId !== state.currentGroupId) {
-      return { currentGroupId };
-    }
-    return null;
-  }
+
   render() {
     const { currentGroupId } = this.state;
     const showDraftTag = currentGroupId !== this.props.id && !!this.props.draft; // except oneself
@@ -89,12 +91,15 @@ class ConversationListItemViewComponent extends React.Component<
           aria-haspopup="true"
           key={this.props.id}
           title={this.props.displayName || ''}
+          umiHint={this.props.umiHint}
           unreadCount={this.props.unreadCount}
           umiVariant={this.props.umiVariant}
+          important={this.props.important}
           onMoreClick={this.props.onMoreClick}
           onClick={this.onClick}
           status={this.props.status}
           showDraftTag={showDraftTag}
+          showSendMsgFailureTag={this.props.sendFailurePostIds.length > 0}
         />
         {this.renderMenu()}
       </React.Fragment>

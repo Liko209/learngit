@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import merge from 'lodash/merge';
-import NetworkClient, { INetworkRequests, IResponse } from './NetworkClient';
+import NetworkClient, {
+  INetworkRequests,
+  IResponse,
+  IResponseError,
+} from './NetworkClient';
 import { ApiConfig, HttpConfigType, PartialApiConfig } from '../types';
 import { Throw, ErrorTypes, Aware } from '../utils';
 import { defaultConfig } from './defaultConfig';
@@ -33,10 +37,12 @@ class Api {
     Api.setupHandlers();
   }
 
-  static setupHandlers() {
+  static setupHandlers(
+    networkManager: NetworkManager = NetworkManager.Instance,
+  ) {
     NetworkSetup.setup(types);
     // This explicit set rc handler accessToken as the RC token provider for glip handler
-    const tokenManager = NetworkManager.Instance.getTokenManager();
+    const tokenManager = networkManager.getTokenManager();
     const rcTokenHandler =
       tokenManager && tokenManager.getOAuthTokenHandler(HandleByRingCentral);
     HandleByGlip.rcTokenProvider =
@@ -58,6 +64,7 @@ class Api {
   static getNetworkClient(
     name: HttpConfigType,
     type: IHandleType,
+    networkManager: NetworkManager = NetworkManager.Instance,
   ): NetworkClient {
     if (!this._httpConfig) Throw(ErrorTypes.HTTP, 'Api not initialized');
 
@@ -73,6 +80,7 @@ class Api {
         currentConfig.apiPlatform,
         type.defaultVia,
         currentConfig.apiPlatformVersion,
+        networkManager,
       );
       this.httpSet.set(name, networkClient);
     }
@@ -102,13 +110,15 @@ class Api {
   static getDataById<T>(id: number): Promise<IResponse<Raw<T>>> {
     return this.glipNetworkClient.get(`${this.basePath}/${id}`);
   }
-  static postData<T>(data: Partial<T>): Promise<IResponse<Raw<T>>> {
+  static postData<T>(
+    data: Partial<T>,
+  ): Promise<IResponse<Raw<T> & IResponseError>> {
     return this.glipNetworkClient.post(`${this.basePath}`, data);
   }
   static putDataById<T>(
     id: number,
     data: Partial<T>,
-  ): Promise<IResponse<Raw<T>>> {
+  ): Promise<IResponse<Raw<T> & IResponseError>> {
     return this.glipNetworkClient.put(`${this.basePath}/${id}`, data);
   }
 }

@@ -12,6 +12,7 @@ import { Profile, Raw } from '../../models';
 import { SOCKET } from '../eventKey';
 import _ from 'lodash';
 import { BaseError, ErrorParser } from '../../utils';
+import PersonService from '../person';
 
 export default class ProfileService extends BaseService<Profile> {
   static serviceName = 'ProfileService';
@@ -118,7 +119,26 @@ export default class ProfileService extends BaseService<Profile> {
     }
     return null;
   }
-
+  async markMeConversationAsFav(): Promise<Profile | null> {
+    const { me_tab = false } = (await this.getProfile()) || {};
+    if (me_tab) {
+      return null;
+    }
+    const accountService = await AccountService.getInstance<AccountService>();
+    const currentId = accountService.getCurrentUserId();
+    if (!currentId) {
+      console.warn('please make sure that currentId is avaliable');
+      return null;
+    }
+    const personService = await PersonService.getInstance<PersonService>();
+    const { me_group_id } = await personService.getById(currentId);
+    const profile = await this.markGroupAsFavorite(me_group_id, true);
+    if (profile) {
+      profile.me_tab = true;
+      return this._putProfileAndHandle(profile, 'me_tab', false);
+    }
+    return null;
+  }
   async putFavoritePost(
     postId: number,
     toBook: boolean,

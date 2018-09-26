@@ -19,6 +19,9 @@ import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
 import showAlert from '../Dialog/ShowAlert';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import GroupStateModel from '@/store/models/GroupState';
+import MyStateModel from '@/store/models/MyState';
+import { MyState } from 'sdk/src/models';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import showDialogWithCheckView from '../Dialog/DialogWithCheckView';
 import ProfileModel from '@/store/models/Profile';
@@ -64,6 +67,9 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   umiVariant: 'count' | 'dot' | 'auto';
 
   @observable
+  important: boolean;
+
+  @observable
   status: 'default' | 'offline' | 'online' | 'away' | undefined;
 
   @observable
@@ -80,6 +86,12 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
 
   closeText: string;
   draft: string | undefined;
+
+  @observable
+  umiHint: boolean;
+
+  @observable
+  sendFailurePostIds: number[];
 
   @computed
   get menuOpen() {
@@ -100,6 +112,10 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this._toggleCloseConversation = this._toggleCloseConversation.bind(this);
     this.isFavorite = !!props.isFavorite;
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
+    this.draft = '';
+    this.sendFailurePostIds = [];
+
+    this.state = { currentGroupId: 0 };
     this.shouldSkipCloseConfirmation = getSingleEntity<Profile, ProfileModel>(
       ENTITY_NAME.PROFILE,
       'skipCloseConversationConfirmation',
@@ -126,10 +142,31 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   }
   getDataFromStore() {
     const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
+    const lastGroup = getSingleEntity<MyState, MyStateModel>(
+      ENTITY_NAME.MY_STATE,
+      'lastGroupId',
+    ) as number;
+    const groupState = getEntity(
+      ENTITY_NAME.GROUP_STATE,
+      this.id,
+    ) as GroupStateModel;
+
     const { currentUserId } = this.props;
+    const isCurrentGroup = lastGroup && lastGroup === this.id;
+
+    this.umiHint = !!(!isCurrentGroup && groupState.unreadCount);
+    this.unreadCount = isCurrentGroup
+      ? 0
+      : (!group.isTeam && (groupState.unreadCount || 0)) ||
+        Math.min(
+          groupState.unreadCount || 0,
+          groupState.unreadMentionsCount || 0,
+        );
+    this.important = !!groupState.unreadMentionsCount;
     this.displayName = getGroupName(getEntity, group, currentUserId);
-    this.umiVariant = group.isTeam ? 'auto' : 'count'; // || at_mentions
-    this.draft = group.draft;
+    this.umiVariant = 'count';
+    this.draft = group.draft || '';
+    this.sendFailurePostIds = group.sendFailurePostIds || [];
     if (currentUserId) {
       let targetPresencePersonId: number | undefined;
       const otherMembers = _.difference(group.members, [currentUserId]);
@@ -149,6 +186,14 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     }
   }
 
+  static getDerivedStateFromProps(props: IProps, state: IState) {
+    const currentGroupId = parseInt(props.match.params.id, 10);
+    if (currentGroupId !== state.currentGroupId) {
+      return { currentGroupId };
+    }
+    return null;
+  }
+
   renderCloseMenuItem() {
     if (this.unreadCount === 0) {
       return (
@@ -158,28 +203,6 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
       );
     }
     return <React.Fragment />;
-  }
-
-  renderMenu() {
-    return (
-      <Menu
-        id="render-props-menu"
-        anchorEl={this.anchorEl}
-        open={this.menuOpen}
-        onClose={this._handleClose}
-      >
-        <MenuItem onClick={this._toggleFavorite}>{this.favoriteText}</MenuItem>
-        {this.renderCloseMenuItem()}
-      </Menu>
-    );
-  }
-
-  static getDerivedStateFromProps(props: IProps, state: IState) {
-    const currentGroupId = parseInt(props.match.params.id, 10);
-    if (currentGroupId !== state.currentGroupId) {
-      return { currentGroupId };
-    }
-    return null;
   }
 
   render() {
@@ -192,14 +215,16 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
           aria-haspopup="true"
           key={this.id}
           title={this.displayName || ''}
+          umiHint={this.umiHint}
           unreadCount={this.unreadCount}
           umiVariant={this.umiVariant}
+          important={this.important}
           onMoreClick={this._openMenu}
           onClick={this._onClick}
           status={this.status}
           showDraftTag={showDraftTag}
+          showSendMsgFailureTag={this.sendFailurePostIds.length > 0}
         />
-        {this.renderMenu()}
         <Menu
           id="render-props-menu"
           anchorEl={this.anchorEl}

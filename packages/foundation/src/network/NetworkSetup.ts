@@ -18,7 +18,11 @@ import OAuthTokenManager from './OAuthTokenManager';
 import NetworkRequestHandler from './NetworkRequestHandler';
 
 class NetworkSetup {
-  static setup(types: IHandleType[]) {
+  static setup(
+    types: IHandleType[],
+    networkManager: NetworkManager = NetworkManager.Instance,
+    oAuthTokenManager: OAuthTokenManager = OAuthTokenManager.Instance,
+  ) {
     types.forEach((type: IHandleType) => {
       const tokenHandler = new OAuthTokenHandler(
         type,
@@ -35,7 +39,7 @@ class NetworkSetup {
         }(),
       );
       const decoration = type.requestDecoration(tokenHandler);
-      const handler = NetworkManager.Instance.initNetworkRequestBaseHandler(
+      const handler = networkManager.initNetworkRequestBaseHandler(
         type,
         type.survivalModeSupportable,
         new class implements IRequestDecoration {
@@ -46,7 +50,7 @@ class NetworkSetup {
       );
       tokenHandler.listener = new TokenRefreshListener(tokenHandler, handler);
       tokenHandler.basic = type.basic();
-      OAuthTokenManager.Instance.addOAuthTokenHandler(tokenHandler);
+      oAuthTokenManager.addOAuthTokenHandler(tokenHandler);
     });
   }
 }

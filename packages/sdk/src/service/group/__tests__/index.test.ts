@@ -197,22 +197,56 @@ describe('GroupService', () => {
     expect(result).toBe(true);
   });
 
-  it('updateGroupDraf({id, draft}) is update success', async () => {
-    const result = await groupService.updateGroupDraft({
-      id: 1,
-      draft: 'draft',
-    });
+  it('updateGroupPartialData(object) is update success', async () => {
+    daoManager.getDao.mockReturnValueOnce(groupDao);
+    const result = await groupService.updateGroupPartialData({ id: 1, abc: '123' });
     expect(result).toEqual(true);
     expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
   });
 
+  it('updateGroupPartialData(object) is update error', async () => {
+    daoManager.getDao.mockReturnValueOnce(groupDao);
+    groupDao.update.mockRejectedValueOnce(new Error());
+    await expect(groupService.updateGroupPartialData({ id: 1, abc: '123' })).rejects.toThrow();
+  });
+
+  it('updateGroupDraf({id, draft}) is update success', async () => {
+    daoManager.getDao.mockReturnValueOnce(groupDao);
+    const result = await groupService.updateGroupDraft({ id: 1, draft: 'draft' });
+    expect(result).toEqual(true);
+  });
+
   it('updateGroupDraf({id, draft}) is update error', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
-    groupDao.update.mockRejectedValue(new Error());
-    await expect(
-      groupService.updateGroupDraft({ id: NaN, draft: 'draft' }),
-    ).rejects.toThrow();
+    groupDao.update.mockRejectedValueOnce(new Error());
+    await expect(groupService.updateGroupDraft({ id: NaN, draft: 'draft' })).rejects.toThrow();
+  });
+
+  it('updateGroupSendFailurePostIds({id, send_failure_post_ids}) is update success', async () => {
+    daoManager.getDao.mockReturnValueOnce(groupDao);
+    const result = await groupService.updateGroupSendFailurePostIds({ id: 123, send_failure_post_ids: [12, 13] });
+    expect(result).toEqual(true);
+  });
+
+  it('updateGroupSendFailurePostIds({id, send_failure_post_ids}) is update error', async () => {
+    daoManager.getDao.mockReturnValueOnce(groupDao);
+    groupDao.update.mockRejectedValueOnce(new Error());
+    await expect(groupService.updateGroupSendFailurePostIds({ id: NaN, send_failure_post_ids: [12, 13] })).rejects.toThrow();
+  });
+
+  it('getGroupSendFailurePostIds(id) will be return number array', async () => {
+    const mock = { id: 1, send_failure_post_ids: [12, 13] };
+    daoManager.getDao.mockReturnValueOnce(groupDao);
+    groupDao.get.mockResolvedValueOnce(mock);
+    const result = await groupService.getGroupSendFailurePostIds(1);
+    expect(result).toEqual(mock.send_failure_post_ids);
+  });
+
+  it('getGroupSendFailurePostIds(id) will be return error', async () => {
+    daoManager.getDao.mockReturnValueOnce(groupDao);
+    groupDao.get.mockRejectedValueOnce(new Error());
+    await expect(groupService.getGroupSendFailurePostIds(1)).rejects.toThrow();
   });
 
   // it('levelToPermissionArray(level)', () => {

@@ -25,13 +25,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-import Quill, { QuillOptionsStatic } from 'quill';
+import Quill, { QuillOptionsStatic, RangeStatic } from 'quill';
 import HorizontalRule from './formats/hr';
 
 type IMatches = {
   name: string;
   pattern: RegExp;
-  action: (text: any, selection: any, pattern: any, lineStart: any) => void;
+  action: (
+    text: any,
+    selection: RangeStatic,
+    pattern: any,
+    lineStart: number,
+  ) => void;
 }[];
 
 Quill.register('formats/horizontal', HorizontalRule);
@@ -174,7 +179,10 @@ export default class MarkdownShortcuts {
             this.quill.deleteText(startIndex, annotatedText.length);
             this.quill.insertText(startIndex, matchedText, { code: true });
             this.quill.format('code', false);
-            // this.quill.insertText(this.quill.getSelection(), ' ');
+            this.quill.insertText(
+              (this.quill.getSelection() as RangeStatic).index,
+              ' ',
+            );
           },         0);
         },
       },
@@ -188,7 +196,7 @@ export default class MarkdownShortcuts {
 
             this.quill.insertEmbed(startIndex + 1, 'hr', true, 'user');
             this.quill.insertText(startIndex + 2, '\n', 'silent');
-            // this.quill.setSelection(startIndex + 2, 'silent');
+            this.quill.setSelection(startIndex + 2, 0, 'silent');
           },         0);
         },
       },
@@ -274,7 +282,6 @@ export default class MarkdownShortcuts {
         const matchedText = text.match(match.pattern);
         if (matchedText) {
           // We need to replace only matched text not the whole line
-          console.log('matched', match.name, text);
           match.action(text, selection, match.pattern, lineStart);
           return;
         }
@@ -294,7 +301,6 @@ export default class MarkdownShortcuts {
       for (const match of this.matches) {
         const matchedText = text.match(match.pattern);
         if (matchedText) {
-          console.log('matched', match.name, text);
           match.action(text, selection, match.pattern, lineStart);
           return;
         }

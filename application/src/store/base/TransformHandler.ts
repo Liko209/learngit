@@ -8,10 +8,7 @@ import _ from 'lodash';
 import { BaseModel } from 'sdk/models';
 import { IEntity, IIDSortKey, IIncomingData } from '../store';
 import ListHandler from '@/store/base/ListHandler';
-import OrderListHandler, {
-  BIND_EVENT,
-  DIRECTION,
-} from '@/store/base/OrderListHandler';
+import OrderListHandler, { BIND_EVENT, DIRECTION } from './OrderListHandler';
 import OrderListStore from '@/store/base/OrderListStore';
 import { ENTITY_NAME } from '@/store/constants';
 type TDelta = {
@@ -45,7 +42,7 @@ export default class TransformHandler<
   }
 
   get orderListStore(): OrderListStore {
-    return this._orderListHandler.store;
+    return this._orderListHandler.getStore();
   }
 
   modificationHandler = (delta: TDelta) => {

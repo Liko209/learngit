@@ -6,7 +6,6 @@
 /// <reference path="../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { select } from '@storybook/addon-knobs/react';
 import { withInfoDecorator } from '../../utils/decorators';
 
 import MessageInput from '..';
@@ -14,5 +13,12 @@ import MessageInput from '..';
 storiesOf('MessageInput', module)
   .addDecorator(withInfoDecorator(MessageInput, { inline: true }))
   .addWithJSX('MessageInput', () => {
-    return <MessageInput />;
+    const onChange = () => {};
+    return (
+      <MessageInput
+        value="test"
+        onChange={onChange}
+        keyboardEventHandler={{}}
+      />
+    );
   });

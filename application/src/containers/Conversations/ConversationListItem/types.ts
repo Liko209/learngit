@@ -25,7 +25,10 @@ type ConversationListItemViewProps = {
   favoriteText: string;
   menuOpen: boolean;
   shouldSkipCloseConfirmation: boolean;
+  umiHint?: boolean;
+  important?: boolean;
   draft?: string;
+  sendFailurePostIds: number[];
   onClick: (event: MouseEvent<HTMLElement>) => void;
   onMoreClick: (event: MouseEvent<HTMLElement>) => void;
   toggleFavorite: () => void;

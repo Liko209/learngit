@@ -22,8 +22,6 @@ export default class PersonModel extends Base<Person> {
   isPseudoUser?: boolean;
   @observable
   glipUserId?: number;
-  @observable
-  awayStatus?: string | null;
 
   constructor(data: Person) {
     super(data);
@@ -36,7 +34,6 @@ export default class PersonModel extends Base<Person> {
       rc_phone_numbers,
       is_pseudo_user,
       glip_user_id,
-      away_status,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -46,7 +43,6 @@ export default class PersonModel extends Base<Person> {
     this.rcPhoneNumbers = rc_phone_numbers;
     this.isPseudoUser = is_pseudo_user;
     this.glipUserId = glip_user_id;
-    this.awayStatus = away_status;
   }
 
   static fromJS(data: Person) {

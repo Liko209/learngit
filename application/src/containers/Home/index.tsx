@@ -21,7 +21,9 @@ import JuiIconButton from 'ui-components/molecules/IconButton';
 
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
+import LeftNavViewModel from './LeftNav/LeftNavViewModel';
 import navPresenter, { NavPresenter } from './NavPresenter';
+import DocumentTitle from 'react-document-title';
 
 interface IProps extends RouteComponentProps<any> {
   i18n: i18n;
@@ -44,11 +46,12 @@ const HeaderIconButton = (props: JuiIconButtonProps) => {
   );
 };
 
-const UMI_Count = [0];
 @observer
-class Home extends Component<IProps, IStates>  {
+class Home extends Component<IProps, IStates> {
   private homePresenter: HomePresenter;
-  private _navPresenter: NavPresenter;
+  private navPresenter: NavPresenter;
+  private leftNavViewModel: LeftNavViewModel;
+
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -58,7 +61,8 @@ class Home extends Component<IProps, IStates>  {
           : JSON.parse(String(localStorage.getItem('expanded'))),
     };
     this.homePresenter = new HomePresenter();
-    this._navPresenter = navPresenter;
+    this.leftNavViewModel = new LeftNavViewModel();
+    this.navPresenter = navPresenter;
   }
   handleLeftNavExpand = () => {
     this.setState({ expanded: !this.state.expanded });
@@ -74,14 +78,12 @@ class Home extends Component<IProps, IStates>  {
 
   handleSignOutClick = () => {
     const { handleSignOutClick } = this.homePresenter;
-    handleSignOutClick().then(() => {
-      window.location.href = '/';
-    });
+    handleSignOutClick();
   }
   componentDidMount() {
-    this.props.history.listen((route) => {
+    this.props.history.listen((route: any) => {
       // get previous title
-      this._navPresenter.handlePushRouter();
+      this.navPresenter.handlePushRouter();
     });
   }
   handleExpand = () => {
@@ -116,10 +118,17 @@ class Home extends Component<IProps, IStates>  {
     ];
   }
   render() {
-    const { expanded } = this.state;
     const { t } = this.props;
-    const { showLeftPanel, showRightPanel } = this._navPresenter.state;
-    const { forwardDisabled, backDisabled } = this._navPresenter.handleButtonState;
+    const UMI_COUNT = [
+      [0, this.leftNavViewModel.messageUmi, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
+    const { expanded } = this.state;
+    const { showLeftPanel, showRightPanel } = this.navPresenter.state;
+    const {
+      forwardDisabled,
+      backDisabled,
+    } = this.navPresenter.handleButtonState;
     const {
       menus,
       handleRouterChange,
@@ -129,58 +138,60 @@ class Home extends Component<IProps, IStates>  {
       handleForward,
       handleBackWard,
       handleNavClose,
-    } = this._navPresenter;
+    } = this.navPresenter;
     return (
-      <Wrapper>
-        <TopBar
-          AvatarWithPresence={AvatarWithPresence}
-          avatarMenuItems={[
-            {
-              label: t('SignOut'),
-              onClick: this.handleSignOutClick,
-            },
-          ]}
-          HeaderIconButton={HeaderIconButton}
-          headerMenuItems={[
-            {
-              label: t('CreateTeam'),
-              onClick: this.handleCreateTeam,
-            },
-          ]}
-          onLeftNavExpand={this.handleLeftNavExpand}
-          headerLogo="RingCentral"
-          menuItems={menus}
-          handleNavClose={handleNavClose}
-          showLeftPanel={showLeftPanel}
-          showRightPanel={showRightPanel}
-          forwardDisabled={forwardDisabled}
-          backDisabled={backDisabled}
-          handleBackWard={handleBackWard}
-          handleForward={handleForward}
-          handleButtonPress={handleButtonPress}
-          handleButtonRelease={handleButtonRelease}
-        />
-        <Bottom>
-          <LeftNav
-            expanded={expanded}
-            id="leftnav"
-            icons={this.getIcons()}
-            umiCount={UMI_Count}
-            handleRouterChange={handleRouterChange}
-            handleTitle={handleTitle}
+      <DocumentTitle title={this.navPresenter.title}>
+        <Wrapper>
+          <TopBar
+            AvatarWithPresence={AvatarWithPresence}
+            avatarMenuItems={[
+              {
+                label: t('SignOut'),
+                onClick: this.handleSignOutClick,
+              },
+            ]}
+            HeaderIconButton={HeaderIconButton}
+            headerMenuItems={[
+              {
+                label: t('CreateTeam'),
+                onClick: this.handleCreateTeam,
+              },
+            ]}
+            onLeftNavExpand={this.handleLeftNavExpand}
+            headerLogo="RingCentral"
+            menuItems={menus}
+            handleNavClose={handleNavClose}
+            showLeftPanel={showLeftPanel}
+            showRightPanel={showRightPanel}
+            forwardDisabled={forwardDisabled}
+            backDisabled={backDisabled}
+            handleBackWard={handleBackWard}
+            handleForward={handleForward}
+            handleButtonPress={handleButtonPress}
+            handleButtonRelease={handleButtonRelease}
           />
-          <Main>
-            <Switch>
-              <Redirect exact={true} from="/" to="/messages" />
-              <Route path="/messages/:id?" component={Conversations} />
-              <Route path="/calls" component={Calls} />
-              <Route path="/meetings" component={Meetings} />
-              <Route path="/settings" component={Settings} />
-              <Route component={NotFound} />
-            </Switch>
-          </Main>
-        </Bottom>
-      </Wrapper>
+          <Bottom>
+            <LeftNav
+              expanded={expanded}
+              id="leftnav"
+              icons={this.getIcons()}
+              umiCount={UMI_COUNT}
+              handleRouterChange={handleRouterChange}
+              handleTitle={handleTitle}
+            />
+            <Main>
+              <Switch>
+                <Redirect exact={true} from="/" to="/messages" />
+                <Route path="/messages/:id?" component={Conversations} />
+                <Route path="/calls" component={Calls} />
+                <Route path="/meetings" component={Meetings} />
+                <Route path="/settings" component={Settings} />
+                <Route component={NotFound} />
+              </Switch>
+            </Main>
+          </Bottom>
+        </Wrapper>
+      </DocumentTitle>
     );
   }
 }

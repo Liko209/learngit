@@ -31,6 +31,25 @@ enum PERMISSION_ENUM {
   TEAM_ADMIN = 16,
 }
 
-const SHOULD_UPDATE_NETWORK_TOKEN = 'should_update_network_token';
+enum POST_STATUS {
+  SUCCESS,
+  FAIL,
+  INPROGRESS,
+}
 
-export { GROUP_QUERY_TYPE, EVENT_TYPES, PERMISSION_ENUM, SHOULD_UPDATE_NETWORK_TOKEN };
+const SHOULD_UPDATE_NETWORK_TOKEN = 'should_update_network_token';
+const UMI_METRICS = [
+  'group_post_drp_cursor',
+  'group_post_cursor',
+  'post_cursor',
+  'unread_deactivated_count',
+];
+
+export {
+  GROUP_QUERY_TYPE,
+  EVENT_TYPES,
+  PERMISSION_ENUM,
+  SHOULD_UPDATE_NETWORK_TOKEN,
+  POST_STATUS,
+  UMI_METRICS,
+};
