@@ -1,4 +1,3 @@
-
 /*
  * @Author: Henry Xu(henry.xu@ringcentral.com)
  * @Date: 2018-08-08 13:16:21
@@ -17,10 +16,7 @@ export abstract class BaseUI {
   protected _chain: Promise<any>;
   public then: any;
 
-  constructor(
-    t: TestController,
-    chain?: Promise<any>,
-  ) {
+  constructor(t: TestController, chain?: Promise<any>) {
     this._t = t;
     this._helper = new TestHelper(t);
     this._chain = chain || Promise.resolve();
@@ -50,8 +46,16 @@ export abstract class BaseUI {
     startTime?: number,
     endTime?: number,
   ) {
-    return this.chain(async t =>
-      await this._helper.log(message, status, takeScreen, startTime, endTime, undefined),
+    return this.chain(
+      async t =>
+        await this._helper.log(
+          message,
+          status,
+          takeScreen,
+          startTime,
+          endTime,
+          undefined,
+        ),
     );
   }
 
@@ -75,14 +79,15 @@ export abstract class BaseUI {
     return this.chain(async t => await t.click(el));
   }
 
-  shouldNavigateTo<T extends BaseUI>(
-    uiClass: { new(t: TestController, chain?: Promise<any>): T }): T {
+  shouldNavigateTo<T extends BaseUI>(uiClass: {
+    new (t: TestController, chain?: Promise<any>): T;
+  }): T {
     const ui = new uiClass(this._t, this._chain);
     return ui;
   }
 
   checkExisted(selector: Selector) {
-    return this.chain(async (t) => {
+    return this.chain(async t => {
       await t.expect(selector.exists).ok();
     });
   }
@@ -92,27 +97,29 @@ export abstract class BaseUI {
     const str = this.constructor.toString();
     const selectorNames: string[] = [];
     let match;
-    while (match = re.exec(str)) {
+    while ((match = re.exec(str))) {
       selectorNames.push(match[1]);
     }
 
-    return this.chain(async (t) => {
+    return this.chain(async t => {
       for (const selectorName of selectorNames) {
         const selector = this[selectorName];
         await selector;
-        await t.expect(selector.exists).ok(`Selector "${selectorName}" can not match any component`);
+        await t
+          .expect(selector.exists)
+          .ok(`Selector "${selectorName}" can not match any component`);
       }
     });
   }
 
   useRole(role) {
-    return this.chain(async (t) => {
+    return this.chain(async t => {
       await t.useRole(role);
     });
   }
 
   reload() {
-    return this.chain(async (t) => {
+    return this.chain(async t => {
       await t.navigateTo(SITE_URL);
     });
   }
@@ -120,7 +127,7 @@ export abstract class BaseUI {
 
 export abstract class BaseComponent extends BaseUI {
   waitForReact() {
-    return this.chain(async (t) => {
+    return this.chain(async t => {
       await waitForReact();
     });
   }
@@ -128,8 +135,9 @@ export abstract class BaseComponent extends BaseUI {
 
 export abstract class BasePage extends BaseUI {
   navigateTo(url: string) {
-    return this.chain(async (t) => {
+    return this.chain(async t => {
       await t.navigateTo(url);
+      await waitForReact();
     });
   }
 }
