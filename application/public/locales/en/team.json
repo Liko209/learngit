@@ -9,6 +9,7 @@
   "Cancel": "Cancel",
   "Members": "Members",
   "already taken": "The name is already taken, please choose another one.",
+  "Invalid Email": "Invalid Email",
   "Search Contact Placeholder": "Members (enter names or email addresses)",
   "Public Team": "Public Team (visible to any co-worker)",
   "Members may post messages": "Allow members to post messages"

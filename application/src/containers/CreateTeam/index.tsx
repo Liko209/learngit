@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { TranslationFunction, i18n } from 'i18next';
 import { translate } from 'react-i18next';
@@ -20,9 +21,9 @@ import ListToggleButton, {
 } from 'ui-components/molecules/Lists/ListToggleButton';
 import HomePresenter from '../Home/HomePresenter';
 import SearchContact from '../SearchContact';
-import CreateTeamVM from './createTeamVM';
+import CreateTeamVM, { errorTips } from './createTeamVM';
 
-interface IProps {
+interface IProps extends RouteComponentProps {
   homePresenter: HomePresenter;
   i18n: i18n;
   t: TranslationFunction;
@@ -30,6 +31,7 @@ interface IProps {
 interface IState {
   disabledOkBtn: boolean;
   nameError: boolean;
+  emailError: boolean;
   errorMsg: string;
   teamName: string;
   description: string;
@@ -48,6 +50,7 @@ class CreateTeam extends React.Component<IProps, IState> {
     this.state = {
       disabledOkBtn: true,
       nameError: false,
+      emailError: false,
       errorMsg: '',
       teamName: '',
       description: '',
@@ -89,36 +92,47 @@ class CreateTeam extends React.Component<IProps, IState> {
       }
       return item.email;
     });
-    console.log('------members---', members);
     this.setState({ members });
   }
 
-  createTeamError(errorMsg: string) {
+  createTeamError(errorTips: errorTips) {
     const { t } = this.props;
-    this.setState({
-      errorMsg: t(errorMsg),
-      nameError: true,
-    });
+    const { type, msg } = errorTips;
+
+    if (type === 'already_taken') {
+      this.setState({
+        errorMsg: t(msg),
+        nameError: true,
+      });
+    } else if (type === 'invalid_email') {
+      this.setState({
+        errorMsg: t(msg),
+        emailError: true,
+      });
+    }
   }
 
   createTeam = async () => {
     const { items, teamName, description, members } = this.state;
+    const { history } = this.props;
     const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
     const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    const result = await this.createTeamVM.create(
-      teamName,
-      members,
-      description,
-      {
-        isPublic,
-        canPost,
-      },
-    );
-    if (typeof result === 'string') {
-      this.createTeamError(result);
-      return;
+    try {
+      const result = await this.createTeamVM.create(
+        teamName,
+        members,
+        description,
+        {
+          isPublic,
+          canPost,
+        },
+      );
+      history.push(`/messages/${result.id}`);
+      this.onClose();
+    } catch (err) {
+      console.log(err, '------errr');
+      this.createTeamError(err);
     }
-    this.onClose();
   }
 
   onClose = () => {
@@ -214,4 +228,4 @@ class CreateTeam extends React.Component<IProps, IState> {
   }
 }
 
-export default translate('team')(CreateTeam);
+export default translate('team')(withRouter(CreateTeam));

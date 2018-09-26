@@ -9,6 +9,11 @@ import GroupService, { CreateTeamOptions } from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
 import { IResponseError } from 'sdk/models';
 
+export type errorTips = {
+  type: string;
+  msg: string;
+};
+
 class CreateTeamVM {
   @action
   async create(
@@ -33,20 +38,33 @@ class CreateTeamVM {
     );
     console.log(result);
 
-    if ((result as IResponseError).error) {
-      return this.createErrorHandle(result as IResponseError);
+    if (result && (result as IResponseError).error) {
+      throw this.createErrorHandle(result as IResponseError);
     }
 
     return result;
   }
 
-  createErrorHandle(result: IResponseError): string {
+  createErrorHandle(result: IResponseError): errorTips {
     const code = result.error.code;
-    let errorMsg;
+    let errorMsg: errorTips = {
+      type: '',
+      msg: '',
+    };
+
     if (code === 'already_taken') {
-      errorMsg = 'already taken';
+      errorMsg = {
+        type: 'already_taken',
+        msg: 'already taken',
+      };
     }
-    return errorMsg ? errorMsg : result.error.message;
+    if (code === 'invalid_field') {
+      errorMsg = {
+        type: 'invalid_email',
+        msg: 'Invalid Email',
+      };
+    }
+    return errorMsg;
   }
 }
 
