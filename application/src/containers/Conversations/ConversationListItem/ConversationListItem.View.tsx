@@ -48,7 +48,7 @@ class ConversationListItemViewComponent extends React.Component<
     });
   }
   renderCloseMenuItem() {
-    if (this.props.unreadCount === 0) {
+    if (!this.props.umiHint) {
       return (
         <MenuItem onClick={this.onCloseButtonClick}>
           {t('conversationMenuItem:close')}
