@@ -193,7 +193,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   }
 
   renderCloseMenuItem() {
-    if (this.unreadCount === 0) {
+    if (this.umiHint) {
       return (
         <MenuItem onClick={this._toggleCloseConversation}>
           {this.closeText}
