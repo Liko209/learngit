@@ -13,9 +13,15 @@ class LeftRail extends BaseComponent {
       .withProps('title', title);
   }
 
-  checkSectionsOrder(unread: string, mentions: string, bookmarks: string, favorites: string, dm: string, teams: string): this {
-    return this
-      .waitFor(this.sections)
+  checkSectionsOrder(
+    unread: string,
+    mentions: string,
+    bookmarks: string,
+    favorites: string,
+    dm: string,
+    teams: string,
+  ): this {
+    return this.waitFor(this.sections)
       .checkSectionIndex(unread, 0)
       .checkSectionIndex(mentions, 1)
       .checkSectionIndex(bookmarks, 2)
@@ -31,7 +37,7 @@ class LeftRail extends BaseComponent {
 
   selectRandomConversation(): this {
     return this.chain(async (t, h) => {
-      const cells = ReactSelector('ConversationListItemCell');
+      const cells = ReactSelector('ConversationListItemViewComponent');
       const count = await cells.count;
       const n = Math.floor(Math.random() * count);
       h.log(`selecting ${n + 1}th cell`);
@@ -41,7 +47,7 @@ class LeftRail extends BaseComponent {
   }
 
   protected waitFor(selector: Selector) {
-    return this.chain(async (t) => {
+    return this.chain(async (t: TestController) => {
       await selector;
     });
   }

@@ -17,5 +17,6 @@
   "Settings": "Settings",
   "SignIn": "Sign in",
   "SignOut": "Sign out",
-  "CreateTeam": "Create Team"
+  "CreateTeam": "Create Team",
+  "networkDisconnected": "Network disconnected. Please try again when the network is resumed."
 }

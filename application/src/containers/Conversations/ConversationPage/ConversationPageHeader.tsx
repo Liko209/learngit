@@ -16,10 +16,10 @@ import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
 import { TranslationFunction } from 'i18next';
 import injectStore, { IInjectedStoreProps } from '@/store/inject';
-import VM from '@/store/ViewModel';
+import StoreViewModel from '@/store/ViewModel';
 import { toTitleCase } from '@/utils';
 
-type ConversationPageHeaderProps = IInjectedStoreProps<VM> & {
+type ConversationPageHeaderProps = IInjectedStoreProps<StoreViewModel> & {
   id: number;
   t: TranslationFunction;
 };
@@ -94,6 +94,6 @@ ConversationPageHeaderProps,
 }
 
 const ConversationPageHeader = translate('ConversationPageHeader')(
-  injectStore(VM)(ConversationPageHeaderComponent),
+  injectStore(StoreViewModel)(ConversationPageHeaderComponent),
 );
 export { ConversationPageHeader, ConversationPageHeaderProps };

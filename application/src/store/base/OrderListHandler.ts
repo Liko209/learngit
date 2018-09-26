@@ -26,7 +26,10 @@ const DEFAULT_PAGE_SIZE = 20;
 enum BIND_EVENT {
   'DATA_CHANGE' = 'DATA_CHANGE',
 }
-
+enum DIRECTION {
+  'OLDER' = 'older',
+  'NEWER' = 'newer',
+}
 export default class OrderListHandler<
   T extends BaseModel,
   K extends IEntity
@@ -108,8 +111,11 @@ export default class OrderListHandler<
     this.updateEntityStore(entityName, updateEntity);
     this._store.batchRemove(deleted);
     this._store.batchSet(updated);
-    this.emit(BIND_EVENT.DATA_CHANGE, { deleted, updated });
-    // this._store.dump();
+    this.emit(BIND_EVENT.DATA_CHANGE, {
+      deleted,
+      updated,
+      direction: DIRECTION.NEWER,
+    });
   }
 
   isInRange(sortKey: number) {
@@ -155,7 +161,12 @@ export default class OrderListHandler<
     }
     this.updateEntityStore(entityName, dataModels);
     this._store.batchSet(handledData);
-    // this._store.dump();
+    this.emit(BIND_EVENT.DATA_CHANGE, {
+      updated: handledData,
+      deleted: [],
+      // TODO: scroll up and scroll down
+      direction: DIRECTION.OLDER,
+    });
   }
 
   updateEntityStore(entityName: ENTITY_NAME, entities: IEntity[]) {
@@ -169,3 +180,5 @@ export default class OrderListHandler<
     super.dispose();
   }
 }
+
+export { BIND_EVENT, OrderListHandler, DIRECTION };

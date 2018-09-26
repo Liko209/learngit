@@ -82,6 +82,10 @@ class ViewModel {
     this._debounceUpdateGroupDraft({ draft, id: this._id }); // DB sync 500 ms later
   }
 
+  forceSaveDraft() {
+    this._groupService.updateGroupDraft({ draft: this.draft, id: this._id }); // immediately save
+  }
+
   @computed
   get initDraft() {
     const groupEntity = getEntity(ENTITY_NAME.GROUP, this._id) as GroupModel;
@@ -121,11 +125,6 @@ class ViewModel {
       // You do not need to handle the error because the message will display a resend
     }
   }
-
-  forceSaveDraft() {
-    this._groupService.updateGroupDraft({ draft: this.draft, id: this._id }); // immediately save
-  }
-
 }
 
 export default ViewModel;

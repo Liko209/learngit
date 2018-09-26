@@ -55,7 +55,7 @@ class ConversationPageComponent extends Component<IProps, IState> {
       <JuiConversationPage>
         <ConversationPageHeader id={id} />
         <JuiDivider />
-        <ConversationStream groupId={id} />
+        <ConversationStream groupId={id} key={id} />
         {this._vm.canPost ? (
           <MessageInput id={id} />
         ) : (

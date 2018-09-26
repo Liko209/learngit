@@ -22,16 +22,16 @@ const rollupTslint = require('rollup-plugin-tslint');
 const dtsGenerator = require('dts-generator');
 
 const filenameToMid = (function () {
-	if (path.sep === '/') {
-		return function (filename) {
-			return filename;
-		};
-	} else {
-		const separatorExpression = new RegExp(path.sep.replace('\\', '\\\\'), 'g');
-		return function (filename) {
-			return filename.replace(separatorExpression, '/');
-		};
-	}
+  if (path.sep === '/') {
+    return function (filename) {
+      return filename;
+    };
+  } else {
+    const separatorExpression = new RegExp(path.sep.replace('\\', '\\\\'), 'g');
+    return function (filename) {
+      return filename.replace(separatorExpression, '/');
+    };
+  }
 })();
 
 function browserBuild(p, pkgName, entryPath, destination, format = 'umd', multipleEntry = false) {

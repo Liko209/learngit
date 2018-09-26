@@ -6,7 +6,6 @@
 /// <reference path="../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { select } from '@storybook/addon-knobs/react';
 import { withInfoDecorator } from '../../utils/decorators';
 
 import MessageInput from '..';

@@ -20,6 +20,7 @@ interface IProps extends IDialogProps {
   onClose(event: MouseEvent<HTMLElement>): void;
   header: JSX.Element | string;
   children: JSX.Element | string; // content
+  others?: JSX.Element;
 }
 
 const Comfirm = (props: IProps) => {
@@ -32,17 +33,22 @@ const Comfirm = (props: IProps) => {
     onOk,
     onClose,
     children,
+    others,
   } = props;
   return (
     <JuiDialog open={open} size={size}>
       <JuiDialogTitle>{header}</JuiDialogTitle>
       <JuiDialogContent>
-        <JuiDialogContentText>
-          {children}
-        </JuiDialogContentText>
+        <JuiDialogContentText>{children}</JuiDialogContentText>
+        {others}
       </JuiDialogContent>
       <JuiDialogActions>
-        <JuiButton onClick={onOk} color="primary" variant="text" autoFocus={true}>
+        <JuiButton
+          onClick={onOk}
+          color="primary"
+          variant="text"
+          autoFocus={true}
+        >
           {okText || 'Ok'}
         </JuiButton>
         <JuiButton onClick={onClose} color="primary" variant="text">

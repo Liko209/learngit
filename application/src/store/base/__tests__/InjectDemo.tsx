@@ -1,13 +1,13 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { ENTITY_NAME } from '@/store';
-import inject, { IVM, IInjectedStoreProps } from '@/store/inject';
+import inject, { IStoreViewModel, IInjectedStoreProps } from '@/store/inject';
 
 type IProps = {
   id: number;
 } & IInjectedStoreProps<VM>;
 
-class VM implements IVM {
+class VM implements IStoreViewModel {
   dispose() {}
 }
 

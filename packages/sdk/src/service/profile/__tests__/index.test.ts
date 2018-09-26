@@ -6,6 +6,7 @@
 import ProfileService from '../../../service/profile';
 import ProfileAPI from '../../../api/glip/profile';
 import handleData from '../../profile/handleData';
+import { BaseError } from '../../../utils';
 
 const profileService = new ProfileService();
 
@@ -42,15 +43,16 @@ ProfileAPI.getDataById = jest.fn();
 ProfileAPI.putDataById = jest.fn();
 
 describe('ProfileService', () => {
-  beforeEach(() => {
-    mockAccountService.getCurrentUserProfileId.mockClear();
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('getProfile()', () => {
     it('should return current user profile', async () => {
       // await profileDao.bulkPut({ id: 1 }, { id: 2 });
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
-      profileService.getById = jest.fn().mockImplementation(id => id);
+      jest.spyOn(profileService, 'getById').mockImplementation(id => id);
 
       const result = await profileService.getProfile();
       expect(result).toEqual(2);
@@ -58,7 +60,7 @@ describe('ProfileService', () => {
 
     it('should return null when no current user', async () => {
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => null);
-      profileService.getById = jest.fn();
+      jest.spyOn(profileService, 'getById');
       const result = await profileService.getProfile();
       expect(result).toBeNull();
     });
@@ -179,12 +181,13 @@ describe('ProfileService', () => {
       ProfileAPI.putDataById.mockResolvedValueOnce({
         data: profile,
       });
-      profileService.markGroupAsFavorite = jest
-        .fn()
+      jest
+        .spyOn(profileService, 'markGroupAsFavorite')
         .mockImplementationOnce(() => profile);
+      jest.spyOn(profileService, 'getById').mockImplementation(() => profile);
+
       handleData.mockResolvedValueOnce([{ favorite_group_ids: [2] }]);
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
-      profileService.getById = jest.fn().mockImplementation(() => profile);
       const result = await profileService.markMeConversationAsFav();
       expect(result.favorite_group_ids).toEqual([2]);
     });
@@ -194,17 +197,65 @@ describe('ProfileService', () => {
         favorite_group_ids: [2],
         me_tab: true,
       };
-      ProfileAPI.putDataById.mockResolvedValueOnce({
+      ProfileAPI.putDataById.mockResolvedValue({
         data: profile,
       });
-      profileService.markGroupAsFavorite = jest
-        .fn()
-        .mockImplementationOnce(() => profile);
-      handleData.mockResolvedValueOnce([{ favorite_group_ids: [2] }]);
+
+      jest.spyOn(profileService, 'markGroupAsFavorite');
+      jest.spyOn(profileService, 'getById').mockImplementation(() => profile);
+
+      handleData.mockResolvedValue([{ favorite_group_ids: [2] }]);
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
-      profileService.getById = jest.fn().mockImplementation(() => profile);
       const result = await profileService.markMeConversationAsFav();
       expect(result).toBeNull();
+    });
+  });
+  describe('hideConversation()', () => {
+    it('hideConversation, hidden === true, success', async () => {
+      const profile = {
+        id: 2,
+      };
+      jest
+        .spyOn(profileService, 'getProfile')
+        .mockImplementationOnce(() => profile);
+      const returnValue = {
+        id: 2,
+        hide_group_222233333: true,
+        skip_close_conversation_confirmation: true,
+      };
+      ProfileAPI.putDataById.mockResolvedValueOnce({
+        data: returnValue,
+      });
+      handleData.mockResolvedValueOnce([returnValue]);
+      const result = await profileService.hideConversation(
+        222233333,
+        true,
+        false,
+      );
+      expect(result['hide_group_222233333']).toBe(true);
+      expect(result['skip_close_conversation_confirmation']).toBe(true);
+    });
+    it('hideConversation, none profile', async () => {
+      jest.spyOn(profileService, 'getById').mockImplementation(id => null);
+      const result = await profileService.hideConversation(1, true, false);
+      expect(result instanceof BaseError).toBe(true);
+    });
+    it('hideConversation, network error', async () => {
+      const profile = {
+        id: 2,
+      };
+      jest
+        .spyOn(profileService, 'getProfile')
+        .mockImplementationOnce(() => profile);
+      ProfileAPI.putDataById.mockResolvedValueOnce({
+        status: 403,
+      });
+      const result = await profileService.hideConversation(1, true, false);
+      if (result instanceof BaseError) {
+        expect(result.code).toBe(1403);
+      } else {
+        expect(false).toBe(true);
+      }
     });
   });
 });

@@ -6,9 +6,11 @@
 import { BaseComponent } from '../..';
 
 class DirectMessageSection extends BaseComponent {
-
   get section(): Selector {
-    return this.selectComponent('ConversationListSection').withProps('title', 'Direct Messages');
+    return this.selectComponent('ConversationListSection').withProps(
+      'title',
+      'Direct Messages',
+    );
   }
 
   get collapse(): Selector {
@@ -16,13 +18,17 @@ class DirectMessageSection extends BaseComponent {
   }
 
   public shouldExpand() {
-    return this.chain(async (t) => {
+    return this.chain(async (t: TestController) => {
       await t.expect(this.collapse.clientHeight).gt(0);
     });
   }
 
   public shouldShowConversation(id) {
-    return this.checkExisted(this.collapse.findReact('ConversationListItemCell').withProps('id', +id));
+    return this.checkExisted(
+      this.collapse
+        .findReact('ConversationListItemViewComponent')
+        .withProps('id', +id),
+    );
   }
 }
 

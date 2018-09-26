@@ -7,4 +7,5 @@ export * from './theme';
 export * from './atoms';
 export * from './molecules';
 export * from './organisms';
+export * from './hoc';
 export { default as styled } from './styled-components';

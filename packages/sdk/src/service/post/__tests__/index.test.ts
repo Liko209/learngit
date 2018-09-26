@@ -20,11 +20,13 @@ jest.mock('../postServiceHandler');
 jest.mock('../postStatusHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
+jest.mock('../../group');
 // PostAPI.getDataById = jest.fn();
 PostAPI.putDataById = jest.fn();
 
 describe('PostService', () => {
   const postService = new PostService();
+  const groupService = new GroupService();
   const itemService = new ItemService();
   const profileService = new ProfileService();
   const postDao = new PostDao(null);
@@ -48,10 +50,7 @@ describe('PostService', () => {
     jest.resetAllMocks();
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-    GroupService.getInstance = jest.fn().mockReturnValue({
-      getGroupSendFailurePostIds: jest.fn().mockReturnValue([]),
-      updateGroupSendFailurePostIds: jest.fn(),
-    });
+    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     daoManager.getDao.mockReturnValueOnce(postDao);
     daoManager.getDao.mockReturnValueOnce(itemDao);
   });
@@ -73,6 +72,8 @@ describe('PostService', () => {
         hasMore: true,
         items: mockItems,
         posts: mockPosts,
+        limit: 20,
+        offset: 0,
       });
     });
 
@@ -88,7 +89,13 @@ describe('PostService', () => {
         limit: 20,
       });
 
-      expect(result).toEqual({ hasMore: true, items: [], posts: [] });
+      expect(result).toEqual({
+        hasMore: true,
+        items: [],
+        posts: [],
+        offset: 0,
+        limit: 20,
+      });
     });
   });
 
@@ -101,6 +108,7 @@ describe('PostService', () => {
         },
       };
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
+      groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const result = await postService.getPostsFromRemote({
         groupId: 1,
         postId: 11,
@@ -122,6 +130,7 @@ describe('PostService', () => {
         },
       };
       PostAPI.requestPosts.mockResolvedValue(mockHasMore);
+      groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultHasMore = await postService.getPostsFromRemote({
         groupId: 1,
         postId: 11,
@@ -144,6 +153,7 @@ describe('PostService', () => {
         },
       };
       PostAPI.requestPosts.mockResolvedValue(mockNotPostId);
+      groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultNotPostId = await postService.getPostsFromRemote({
         groupId: 1,
         offset: 0,
@@ -158,6 +168,7 @@ describe('PostService', () => {
 
     it('should return [] when no matched', async () => {
       PostAPI.requestPosts.mockResolvedValue(null);
+      groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultNull = await postService.getPostsFromRemote({
         groupId: 1,
         offset: 0,
@@ -168,6 +179,18 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
+    });
+
+    it('should not send request if the group had no post', async () => {
+      groupService.getById.mockResolvedValue({
+        most_recent_post_id: undefined,
+      });
+      await postService.getPostsFromRemote({
+        groupId: 1,
+        offset: 0,
+        limit: 2,
+      });
+      expect(PostAPI.requestPosts).not.toHaveBeenCalled();
     });
   });
 
@@ -228,6 +251,8 @@ describe('PostService', () => {
         posts: [{ id: 1 }, { id: 2 }],
         items: [],
         hasMore: false,
+        offset: 0,
+        limit: 20,
       });
     });
 
@@ -242,6 +267,8 @@ describe('PostService', () => {
         posts: [],
         items: [],
         hasMore: true,
+        offset: 0,
+        limit: 20,
       });
     });
   });
@@ -282,6 +309,8 @@ describe('PostService', () => {
       };
       PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
       PostAPI.sendPost.mockResolvedValueOnce(response);
+      groupService.getGroupSendFailurePostIds.mockResolvedValue([]);
+
       const results = await postService.sendPost({ text: 'abc' });
       console.log(response, info, results);
       expect(results[0].id).toEqual(-1);
