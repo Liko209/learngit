@@ -11,6 +11,7 @@ import handleData from './handleData';
 import { Profile, Raw } from '../../models';
 import { SOCKET } from '../eventKey';
 import _ from 'lodash';
+import { BaseError, ErrorParser } from '../../utils';
 import PersonService from '../person';
 
 export default class ProfileService extends BaseService<Profile> {
@@ -169,5 +170,49 @@ export default class ProfileService extends BaseService<Profile> {
     }
     // error
     return null;
+  }
+
+  async hideConversation(
+    groupId: number,
+    hidden: boolean,
+    shouldUpdateSkipConfirmation: boolean,
+  ): Promise<Profile | BaseError> {
+    const profile = await this.getProfile();
+    if (profile) {
+      const key = `hide_group_${groupId}`;
+      const newProfile = _.cloneDeep(profile);
+      newProfile[key] = hidden;
+      /**tslint:disable-next-line  */
+      if (
+        newProfile.skip_close_conversation_confirmation !==
+        shouldUpdateSkipConfirmation
+      ) {
+        /**tslint:disable-next-line  */
+        newProfile.skip_close_conversation_confirmation = shouldUpdateSkipConfirmation;
+      }
+
+      return this._putProfile(newProfile);
+    }
+    return ErrorParser.parse('none profile error');
+  }
+
+  private async _putProfile(newProfile: Profile): Promise<Profile | BaseError> {
+    newProfile._id = newProfile.id;
+    delete newProfile.id;
+    try {
+      const response = await ProfileAPI.putDataById<Profile>(
+        newProfile._id,
+        newProfile,
+      );
+      if (response.data) {
+        const result = await handleData([response.data]);
+        if (result && result.length) {
+          return result[0];
+        }
+      }
+      return ErrorParser.parse(response);
+    } catch (e) {
+      return ErrorParser.parse(e);
+    }
   }
 }

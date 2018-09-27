@@ -17,7 +17,7 @@ import {
 
 class ErrorParser {
   static parse(err: any) {
-    // need refactor
+    // need refactor ** +1
     // if (!err) return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Server Crash');
     if (err instanceof DBCriticalError) {
       return new BaseError(ErrorTypes.DB_CRITICAL_ERROR, err.message);
@@ -32,8 +32,15 @@ class ErrorParser {
     if (err instanceof BaseResponse) {
       return ErrorParser.http(err);
     }
+    if (err.status) {
+      return ErrorParser.iResponse(err);
+    }
 
     return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Undefined error!');
+  }
+
+  static iResponse(err: any) {
+    return new BaseError(err.status + ErrorTypes.HTTP, '');
   }
 
   static http(err: any) {

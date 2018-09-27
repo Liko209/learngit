@@ -11,7 +11,7 @@ interface IParams {
   id: string;
 }
 
-interface IProps extends RouteComponentProps<IParams> { }
+interface IProps extends RouteComponentProps<IParams> {}
 
 interface IStates {
   leftNavWidth: number;
@@ -36,7 +36,9 @@ class Conversation extends Component<IProps, IStates> {
 
   componentDidUpdate(prevProps: IProps) {
     if (this.props.location.search !== prevProps.location.search) {
-      const parsed = parse(this.props.location.search, { ignoreQueryPrefix: true });
+      const parsed = parse(this.props.location.search, {
+        ignoreQueryPrefix: true,
+      });
       let leftNavWidth = 0;
       if (parsed.leftnav === 'true') {
         leftNavWidth = 200;
@@ -48,26 +50,6 @@ class Conversation extends Component<IProps, IStates> {
       }
     }
   }
-
-  // static getDerivedStateFromProps(props: IProps, state: IStates) {
-  //   // nextProps.location.search = ?leftnav=true
-  //   const parsed = parse(props.location.search, { ignoreQueryPrefix: true });
-  //   let leftNavWidth = 0;
-  //   if (parsed.leftnav === 'true') {
-  //     leftNavWidth = 200;
-  //   } else if (parsed.leftnav === 'false') {
-  //     leftNavWidth = 72;
-  //   } else {
-  //     const leftnav = document.getElementById('leftnav');
-  //     if (leftnav) {
-  //       leftNavWidth = leftnav.getBoundingClientRect().width;
-  //     }
-  //   }
-  //   if (state.leftNavWidth === leftNavWidth) {
-  //     return null;
-  //   }
-  //   return { leftNavWidth };
-  // }
 
   render() {
     const { leftNavWidth } = this.state;

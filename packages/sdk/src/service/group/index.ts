@@ -22,12 +22,13 @@ import GroupAPI from '../../api/glip/group';
 
 import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
-import { ErrorParser } from '../../utils/error';
+import { ErrorParser, BaseError } from '../../utils/error';
 import handleData, {
   handlePartialData,
   filterGroups,
   handleGroupMostRecentPostChanged,
   handleFavoriteGroupsChanged,
+  handleHiddenGroupsChanged,
   sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
@@ -35,7 +36,9 @@ import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
-
+import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
+import { extractHiddenGroupIds } from '../profile/handleData';
+import _ from 'lodash';
 import notificationCenter from '../notificationCenter';
 
 export type CreateTeamOptions = {
@@ -55,6 +58,7 @@ export default class GroupService extends BaseService<Group> {
       [SOCKET.PARTIAL_GROUP]: handlePartialData,
       [SOCKET.POST]: handleGroupMostRecentPostChanged,
       [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
+      [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
   }
@@ -68,11 +72,12 @@ export default class GroupService extends BaseService<Group> {
       profile.favorite_group_ids &&
       profile.favorite_group_ids.length > 0
     ) {
+      let favorite_group_ids = profile.favorite_group_ids;
+      const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
+      favorite_group_ids = _.difference(favorite_group_ids, hiddenIds);
       const dao = daoManager.getDao(GroupDao);
-      result = (await dao.queryGroupsByIds(
-        profile.favorite_group_ids,
-      )) as Group[];
-      result = sortFavoriteGroups(profile.favorite_group_ids, result);
+      result = (await dao.queryGroupsByIds(favorite_group_ids)) as Group[];
+      result = sortFavoriteGroups(favorite_group_ids, result);
     }
     return result;
   }
@@ -97,12 +102,14 @@ export default class GroupService extends BaseService<Group> {
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
+      const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
+      const excludeIds = favoriteGroupIds.concat(hiddenIds);
 
       result = await dao.queryGroups(
         offset,
         Infinity,
         groupType === GROUP_QUERY_TYPE.TEAM,
-        favoriteGroupIds,
+        excludeIds,
       );
       result = await filterGroups(result, limit);
     }
@@ -353,6 +360,48 @@ export default class GroupService extends BaseService<Group> {
     return result;
   }
 
+  async hideConversation(
+    groupId: number,
+    hidden: boolean,
+    shouldUpdateSkipConfirmation: boolean,
+  ): Promise<ServiceCommonErrorType> {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const result = await profileService.hideConversation(
+      groupId,
+      hidden,
+      shouldUpdateSkipConfirmation,
+    );
+
+    if (result instanceof BaseError) {
+      // rollback
+      const group = await this.getById(groupId);
+      notificationCenter.emitEntityPut(
+        group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS,
+        [group],
+      );
+      if (result.code === 5000) {
+        return ServiceCommonErrorType.NETWORK_NOT_AVAILABLE;
+      }
+      if (result.code > 5300) {
+        return ServiceCommonErrorType.SERVER_ERROR;
+      }
+      return ServiceCommonErrorType.UNKNOWN_ERROR;
+    }
+    return ServiceCommonErrorType.NONE;
+  }
+
+  /**
+   * TODO Mark the group as no more post.
+   */
+  // async markAsNoPost(groupId: number) {
+  //   const dao: GroupDao = daoManager.getDao(GroupDao);
+  //   const group = await dao.get(groupId);
+  //   if (group) {
+  //     group.has_no_more_post = true;
+  //     await dao.update(group);
+  //   }
+  // }
+
   // update partial group data
   async updateGroupPartialData(params: object): Promise<boolean> {
     try {
@@ -366,13 +415,19 @@ export default class GroupService extends BaseService<Group> {
   }
 
   // update partial group data, for message draft
-  async updateGroupDraft(params: { id: number, draft: string }): Promise<boolean> {
+  async updateGroupDraft(params: {
+    id: number;
+    draft: string;
+  }): Promise<boolean> {
     const result = await this.updateGroupPartialData(params);
     return result;
   }
 
   // update partial group data, for send failure post ids
-  async updateGroupSendFailurePostIds(params: { id: number, send_failure_post_ids: number[] }): Promise<boolean> {
+  async updateGroupSendFailurePostIds(params: {
+    id: number;
+    send_failure_post_ids: number[];
+  }): Promise<boolean> {
     const result = await this.updateGroupPartialData(params);
     return result;
   }
@@ -380,7 +435,7 @@ export default class GroupService extends BaseService<Group> {
   // get group data, for send failure post ids
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
-      const group = await this.getGroupById(id) as Group;
+      const group = (await this.getGroupById(id)) as Group;
       return group.send_failure_post_ids || [];
     } catch (error) {
       throw ErrorParser.parse(error);

@@ -12,10 +12,35 @@ import AccountService from '../account';
 import { Profile, Raw } from '../../models';
 import { mainLogger } from 'foundation';
 
+function extractHiddenGroupIds(profile: Profile): number[] {
+  const clone = Object.assign({}, profile);
+  const result: number[] = [];
+  Object.keys(clone).forEach((key) => {
+    if (clone[key] === true) {
+      const m = key.match(new RegExp(`(${'hide_group'})_(\\d+)`));
+      if (m) {
+        result.push(Number(m[2]));
+      }
+    }
+  });
+  return result;
+}
+
+function hiddenGroupsChange(localProfile: Profile | null, transformedData: Profile[]) {
+  if (localProfile && transformedData.length) {
+    const localHiddenGroupIds = extractHiddenGroupIds(localProfile).sort();
+    const remoteHiddenGroupIds = extractHiddenGroupIds(transformedData[0]).sort();
+    if (localHiddenGroupIds.toString() !== remoteHiddenGroupIds.toString()) {
+      notificationCenter.emit(SERVICE.PROFILE_HIDDEN_GROUP, localHiddenGroupIds, remoteHiddenGroupIds);
+    }
+  }
+}
+
 function doNotification(localProfile: Profile | null, transformedData: Profile[]) {
   if (localProfile && transformedData.length && transformedData[0].id === localProfile.id) {
     notificationCenter.emit(SERVICE.PROFILE_FAVORITE, localProfile, transformedData[0]);
   }
+  hiddenGroupsChange(localProfile, transformedData);
 }
 
 const profileHandleData = async (profile: Raw<Profile>[]): Promise<Profile[] | null> => {
@@ -42,3 +67,4 @@ const profileHandleData = async (profile: Raw<Profile>[]): Promise<Profile[] | n
 };
 
 export default profileHandleData;
+export { extractHiddenGroupIds };

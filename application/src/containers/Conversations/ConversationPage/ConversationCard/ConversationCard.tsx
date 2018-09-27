@@ -6,7 +6,7 @@ import { JuiButtonBar } from 'ui-components/molecules/ButtonBar';
 import { JuiIconButton } from 'ui-components/molecules/IconButton';
 import { POST_STATUS } from 'sdk/service';
 import injectStore, { IInjectedStoreProps } from '@/store/inject';
-import VM from '@/store/ViewModel';
+import StoreViewModel from '@/store/ViewModel';
 import PostModel from '@/store/models/Post';
 import {
   JuiConversationCard,
@@ -23,7 +23,7 @@ import Comfirm from 'ui-components/molecules/Dialog/Comfirm';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
 
-interface IProps extends IInjectedStoreProps<VM> {
+interface IProps extends IInjectedStoreProps<StoreViewModel> {
   id: number;
   t: TranslationFunction;
 }
@@ -117,4 +117,4 @@ export class ConversationCard extends React.Component<IProps, IStates> {
 }
 
 /* this should be removed once conversation card developed*/
-export default translate('Conversations')(injectStore(VM)(ConversationCard));
+export default translate('Conversations')(injectStore(StoreViewModel)(ConversationCard));

@@ -22,10 +22,13 @@ import { transform } from '../utils';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
 import { ErrorParser } from '../../utils/error';
+
 export interface IPostResult {
   posts: Post[];
   items: Item[];
   hasMore: boolean;
+  offset?: number;
+  limit?: number;
 }
 
 export interface IRawPostResult {
@@ -76,6 +79,8 @@ export default class PostService extends BaseService<Post> {
       limit,
     );
     const result: IPostResult = {
+      offset,
+      limit,
       posts: [],
       items: [],
       hasMore: true,
@@ -105,6 +110,17 @@ export default class PostService extends BaseService<Post> {
     limit,
     direction,
   }: IPostQuery): Promise<IRawPostResult> {
+    const groupService: GroupService = GroupService.getInstance();
+    const group = await groupService.getById(groupId);
+    if (!group.most_recent_post_id) {
+      // The group has no post
+      return {
+        posts: [],
+        items: [],
+        hasMore: false,
+      };
+    }
+
     const params: any = {
       limit,
       direction,
@@ -127,6 +143,9 @@ export default class PostService extends BaseService<Post> {
         result.hasMore = true;
       }
     }
+    // if (!result.hasMore) {
+    //   await groupService.markAsNoPost(groupId);
+    // }
     return result;
   }
 
@@ -161,6 +180,8 @@ export default class PostService extends BaseService<Post> {
       const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
       const items = (await itemHandleData(remoteResult.items)) || [];
       return {
+        offset,
+        limit,
         posts,
         items,
         hasMore: remoteResult.hasMore,
@@ -168,6 +189,8 @@ export default class PostService extends BaseService<Post> {
     } catch (e) {
       mainLogger.error(e);
       return {
+        offset,
+        limit,
         posts: [],
         items: [],
         hasMore: true,
@@ -221,7 +244,11 @@ export default class PostService extends BaseService<Post> {
 
   async handlePreInsertProcess(buildPost: Post): Promise<void> {
     this._postStatusHandler.setPreInsertId(buildPost.id);
-    notificationCenter.emitEntityPut(ENTITY.POST, [buildPost]);
+    try {
+      notificationCenter.emitEntityPut(ENTITY.POST, [buildPost]);
+    } catch (err) {
+      debugger; // eslint-disable-line
+    }
     const dao = daoManager.getDao(PostDao);
     await dao.put(buildPost);
   }

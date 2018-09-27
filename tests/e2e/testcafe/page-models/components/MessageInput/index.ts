@@ -5,5 +5,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './Alert';
-export * from './Comfirm';
+export * from './Draft';

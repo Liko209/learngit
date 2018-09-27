@@ -8,7 +8,7 @@ type Omit<T, K extends keyof T> = Pick<
     { [P in K]: never } & { [x: string]: never })[keyof T]
 >;
 
-export interface IVM {
+export interface IStoreViewModel {
   dispose?: () => void;
 }
 
@@ -21,7 +21,7 @@ export interface IInjectedStoreProps<VM> {
 
 const getDisplayName = (name: string) => `ViewModel(${name})`;
 
-export default function inject(VM: new () => IVM) {
+export default function inject(VM: new () => IStoreViewModel) {
   const vm = new VM();
   return <P extends IInjectedStoreProps<typeof vm>>(
     WrappedComponent: ComponentType<P>,

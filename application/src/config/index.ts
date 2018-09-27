@@ -18,28 +18,30 @@ function parseConfigFiles() {
   };
 
   function clean(path: string) {
-    return path.split('.')[1].split('/').slice(1);
+    return path
+      .split('.')[1]
+      .split('/')
+      .slice(1);
   }
 }
 
 function loadFileConfigs(env: string) {
   const { keys, modules } = parseConfigFiles();
-  const config = keys
-    .reduce((config, names: string[], currentIndex) => {
-      const value = modules[currentIndex];
-      const name = names[0];
-      if (names.length === 2) {
-        if (['default', env].includes(names[1])) {
-          config[name] =
-            names[1] === 'default'
-              ? merge(value, config[name])
-              : merge(config[name], value);
-        }
-      } else {
-        config[name] = value;
+  const config = keys.reduce((config, names: string[], currentIndex) => {
+    const value = modules[currentIndex];
+    const name = names[0];
+    if (names.length === 2) {
+      if (['default', env].includes(names[1])) {
+        config[name] =
+          names[1] === 'default'
+            ? merge(value, config[name])
+            : merge(config[name], value);
       }
-      return config;
-    },      {});
+    } else {
+      config[name] = value;
+    }
+    return config;
+  },                         {});
 
   return buildConfig(config, { deployHost });
 }
@@ -106,8 +108,8 @@ class Config {
   }
 
   getAllEnv() {
-    return parseConfigFiles().keys
-      .filter(arr => arr[0] === 'api')
+    return parseConfigFiles()
+      .keys.filter(arr => arr[0] === 'api')
       .map(arr => arr[1]);
   }
 

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import _ from 'lodash';
 import { ConversationListItem } from 'ui-components/molecules/ConversationList/ConversationListItem';
 import { Menu } from 'ui-components/atoms/Menu';
@@ -17,10 +17,15 @@ import { getGroupName } from '../../utils/groupName';
 import { observable, computed, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import PresenceModel from '../../store/models/Presence';
+import showAlert from '../Dialog/ShowAlert';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import GroupStateModel from '@/store/models/GroupState';
 import MyStateModel from '@/store/models/MyState';
 import { MyState } from 'sdk/src/models';
+import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
+import showDialogWithCheckView from '../Dialog/DialogWithCheckView';
+import ProfileModel from '@/store/models/Profile';
+import { Profile } from 'sdk/models';
 import navPresenter, { NavPresenter } from '../BackNForward/ViewModel';
 
 const { GroupService } = service;
@@ -75,10 +80,13 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   favoriteText: string;
 
   @observable
-  umiHint: boolean;
+  shouldSkipCloseConfirmation: boolean;
+
+  closeText: string;
+  draft: string | undefined;
 
   @observable
-  draft: string;
+  umiHint: boolean;
 
   @observable
   sendFailurePostIds: number[];
@@ -99,10 +107,19 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this._toggleFavorite = this._toggleFavorite.bind(this);
     this._handleClose = this._handleClose.bind(this);
     this._onClick = this._onClick.bind(this);
+    this._toggleCloseConversation = this._toggleCloseConversation.bind(this);
     this.isFavorite = !!props.isFavorite;
     this.favoriteText = this.isFavorite ? 'UnFavorite' : 'Favorite';
     this.draft = '';
     this.sendFailurePostIds = [];
+
+    this.state = { currentGroupId: 0 };
+    this.shouldSkipCloseConfirmation = getSingleEntity<Profile, ProfileModel>(
+      ENTITY_NAME.PROFILE,
+      'skipCloseConversationConfirmation',
+    );
+    this.closeText = 'Close';
+    this.draft = '';
 
     this.state = { currentGroupId: 0 };
     this.navPresenter = navPresenter;
@@ -145,7 +162,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
         );
     this.important = !!groupState.unreadMentionsCount;
     this.displayName = getGroupName(getEntity, group, currentUserId);
-    this.umiVariant = 'count'; // || at_mentions
+    this.umiVariant = 'count';
     this.draft = group.draft || '';
     this.sendFailurePostIds = group.sendFailurePostIds || [];
     if (currentUserId) {
@@ -173,6 +190,17 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
       return { currentGroupId };
     }
     return null;
+  }
+
+  renderCloseMenuItem() {
+    if (!this.umiHint) {
+      return (
+        <MenuItem onClick={this._toggleCloseConversation}>
+          {this.closeText}
+        </MenuItem>
+      );
+    }
+    return <React.Fragment />;
   }
 
   render() {
@@ -226,6 +254,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.clickGroup(this.id);
     this._jump2Conversation(this.id);
+    // this.showDraftTag = false;
   }
   private _jump2Conversation(id: number) {
     const { history } = this.props;
@@ -237,6 +266,61 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     const groupService: service.GroupService = GroupService.getInstance();
     groupService.markGroupAsFavorite(this.id, !this.isFavorite);
     this._handleClose();
+  }
+  @action
+  private async _toggleCloseConversation() {
+    this._handleClose();
+    if (this.shouldSkipCloseConfirmation) {
+      this._closeConversation(this.id, true, true);
+    } else {
+      showDialogWithCheckView({
+        header: 'Close Conversation?',
+        content:
+          'Closing a conversation will remove it from the left pane, but will not delete the contents.',
+        checkBoxContent: "Don't ask me again",
+        okText: 'Close Conversation',
+        onClose: (isChecked: boolean, event: MouseEvent<HTMLElement>) => {
+          this._closeConversation(this.id, true, isChecked);
+        },
+      });
+    }
+  }
+
+  private async _closeConversation(
+    groupId: number,
+    hidden: boolean,
+    shouldSkipNextTime: boolean,
+  ) {
+    const groupService: service.GroupService = GroupService.getInstance();
+    const result = await groupService.hideConversation(
+      groupId,
+      hidden,
+      shouldSkipNextTime,
+    );
+    this._showErrorAlert(result);
+  }
+
+  private _showErrorAlert(error: ServiceCommonErrorType) {
+    if (error === ServiceCommonErrorType.NONE) {
+      // jump to section
+      const { history } = this.props;
+      history.replace('/messages');
+      return;
+    }
+
+    const header = 'Close Conversation Failed';
+    if (error === ServiceCommonErrorType.NETWORK_NOT_AVAILABLE) {
+      const content =
+        'Network disconnected. Please try again when the network is resumed.';
+      showAlert({ header, content });
+    } else if (
+      error === ServiceCommonErrorType.SERVER_ERROR ||
+      error === ServiceCommonErrorType.UNKNOWN_ERROR
+    ) {
+      const content =
+        'We are having trouble closing the conversation. Please try again later.';
+      showAlert({ header, content });
+    }
   }
 }
 

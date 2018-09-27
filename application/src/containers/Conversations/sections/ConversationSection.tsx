@@ -10,7 +10,7 @@ import { observer } from 'mobx-react';
 import { autorun, observable } from 'mobx';
 import { ConversationListSection, Icon, ConversationList } from 'ui-components';
 import { toTitleCase } from '@/utils';
-import ConversationListItemCell from '../ConversationListItemCell';
+import { ConversationListItem } from '../ConversationListItem';
 import ConversationSectionPresenter from './ConversationSectionPresenter';
 import {
   arrayMove,
@@ -19,7 +19,11 @@ import {
 } from 'react-sortable-hoc';
 import { withRouter, RouteComponentProps } from 'react-router';
 
-interface IProps extends RouteComponentProps {
+type IRouterParams = {
+  id: string;
+};
+
+interface IProps extends RouteComponentProps<IRouterParams> {
   t: TranslationFunction;
   title: string;
   iconName: string;
@@ -29,7 +33,7 @@ interface IProps extends RouteComponentProps {
 }
 
 const SortableList = SortableContainer(ConversationList);
-const SortableItem = SortableElement(ConversationListItemCell);
+const SortableItem = SortableElement(ConversationListItem);
 
 @observer
 class ConversationSectionComponent extends React.Component<IProps> {
@@ -59,10 +63,10 @@ class ConversationSectionComponent extends React.Component<IProps> {
   }
 
   renderList() {
-    const { presenter, sortable } = this.props;
+    const { presenter, sortable, match } = this.props;
     const currentUserId = presenter.getCurrentUserId() || undefined;
+    const currentGroupId = parseInt(match.params.id, 10);
     const entityName = presenter.entityName;
-
     if (sortable) {
       const distance = 1;
       return (
@@ -79,6 +83,7 @@ class ConversationSectionComponent extends React.Component<IProps> {
               entityName={entityName}
               isFavorite={true}
               currentUserId={currentUserId}
+              currentGroupId={currentGroupId}
             />
           ))}
         </SortableList>
@@ -88,11 +93,12 @@ class ConversationSectionComponent extends React.Component<IProps> {
     return (
       <ConversationList>
         {this.ids.map((id: number) => (
-          <ConversationListItemCell
+          <ConversationListItem
             id={id}
             key={id}
             entityName={entityName}
             currentUserId={currentUserId}
+            currentGroupId={currentGroupId}
           />
         ))}
       </ConversationList>
@@ -122,7 +128,7 @@ class ConversationSectionComponent extends React.Component<IProps> {
 }
 
 const ConversationSection = translate('Conversations')(
-  withRouter(ConversationSectionComponent) ,
+  withRouter(ConversationSectionComponent),
 );
 export { ConversationSection };
 export default ConversationSection;

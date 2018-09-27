@@ -14,7 +14,7 @@ import GroupStateModel from '@/store/models/GroupState';
 import { MyState } from 'sdk/src/models';
 import _ from 'lodash';
 
-const { GroupService, AccountService } = service;
+const { GroupService, AccountService, ProfileService } = service;
 
 interface IConversationSectionPresenterOptions {
   entity: string;
@@ -56,6 +56,11 @@ class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
   getCurrentUserId() {
     const accountService = AccountService.getInstance<service.AccountService>();
     return accountService.getCurrentUserId();
+  }
+
+  getProfile() {
+    const profileService = ProfileService.getInstance<service.ProfileService>();
+    return profileService.getProfile();
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {

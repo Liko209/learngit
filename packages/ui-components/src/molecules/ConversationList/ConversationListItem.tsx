@@ -93,7 +93,7 @@ const ConversationListItem: IConversationListItem = (props: ListItemProps) => {
     <StyledListItem onClick={onClick} component={component} selected={selected}>
       <Presence presence={status} />
       <ItemText style={{ fontWeight }}>
-        {tag} {title}
+        {tag} {showDraftTag && '[Draft]'} {title}
       </ItemText>
       <Umi
         variant={umiVariant}

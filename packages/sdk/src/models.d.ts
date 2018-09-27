@@ -69,6 +69,7 @@ export type GroupCommon = {
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
+  has_no_more_post?: boolean;
   draft?: string;
   send_failure_post_ids?: number[];
 };
@@ -85,6 +86,7 @@ export type Profile = ExtendedBaseModel & {
   person_id?: number;
   favorite_group_ids: number[];
   favorite_post_ids: number[];
+  skip_close_conversation_confirmation?: boolean;
   me_tab: boolean;
 };
 

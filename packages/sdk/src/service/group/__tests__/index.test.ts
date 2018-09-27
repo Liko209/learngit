@@ -10,6 +10,8 @@ import { Group } from '../../../models';
 import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
+import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
+import { ErrorParser, BaseError } from '../../../utils';
 import notificationCenter from '../../notificationCenter';
 
 jest.mock('../../../dao');
@@ -197,38 +199,58 @@ describe('GroupService', () => {
 
   it('updateGroupPartialData(object) is update success', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
-    const result = await groupService.updateGroupPartialData({ id: 1, abc: '123' });
+    const result = await groupService.updateGroupPartialData({
+      id: 1,
+      abc: '123',
+    });
     expect(result).toEqual(true);
+    expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
   });
 
   it('updateGroupPartialData(object) is update error', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
     groupDao.update.mockRejectedValueOnce(new Error());
-    await expect(groupService.updateGroupPartialData({ id: 1, abc: '123' })).rejects.toThrow();
+    await expect(
+      groupService.updateGroupPartialData({ id: 1, abc: '123' }),
+    ).rejects.toThrow();
   });
 
   it('updateGroupDraf({id, draft}) is update success', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
-    const result = await groupService.updateGroupDraft({ id: 1, draft: 'draft' });
+    const result = await groupService.updateGroupDraft({
+      id: 1,
+      draft: 'draft',
+    });
     expect(result).toEqual(true);
   });
 
   it('updateGroupDraf({id, draft}) is update error', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
     groupDao.update.mockRejectedValueOnce(new Error());
-    await expect(groupService.updateGroupDraft({ id: NaN, draft: 'draft' })).rejects.toThrow();
+    await expect(
+      groupService.updateGroupDraft({ id: NaN, draft: 'draft' }),
+    ).rejects.toThrow();
   });
 
   it('updateGroupSendFailurePostIds({id, send_failure_post_ids}) is update success', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
-    const result = await groupService.updateGroupSendFailurePostIds({ id: 123, send_failure_post_ids: [12, 13] });
+    const result = await groupService.updateGroupSendFailurePostIds({
+      id: 123,
+      send_failure_post_ids: [12, 13],
+    });
     expect(result).toEqual(true);
   });
 
   it('updateGroupSendFailurePostIds({id, send_failure_post_ids}) is update error', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
     groupDao.update.mockRejectedValueOnce(new Error());
-    await expect(groupService.updateGroupSendFailurePostIds({ id: NaN, send_failure_post_ids: [12, 13] })).rejects.toThrow();
+    await expect(
+      groupService.updateGroupSendFailurePostIds({
+        id: NaN,
+        send_failure_post_ids: [12, 13],
+      }),
+    ).rejects.toThrow();
   });
 
   it('getGroupSendFailurePostIds(id) will be return number array', async () => {
@@ -442,7 +464,7 @@ describe('GroupService', () => {
       );
     });
 
-    it('should call dependecy apis with correct data', async () => {
+    it('should call dependency apis with correct data', async () => {
       GroupAPI.createTeam.mockResolvedValueOnce({ data: 122 });
       jest
         .spyOn(require('../../utils'), 'transform')
@@ -483,6 +505,38 @@ describe('GroupService', () => {
       groupDao.queryGroups.mockResolvedValueOnce([{ id: 4 }]);
       const groups = await groupService.getLeftRailGroups();
       expect(groups.length).toBe(2);
+    });
+  });
+
+  describe('hideConversation', () => {
+    it('hideConversation, success', async () => {
+      profileService.hideConversation.mockResolvedValueOnce({
+        id: 1,
+        hide_group_123: true,
+      });
+      const result = await groupService.hideConversation(1, false, true);
+      expect(result).toBe(ServiceCommonErrorType.NONE);
+    });
+    it('hideConversation, network not available', async () => {
+      profileService.hideConversation.mockResolvedValueOnce(
+        new BaseError(5000, ''),
+      );
+      const result = await groupService.hideConversation(1, false, true);
+      expect(result).toBe(ServiceCommonErrorType.NETWORK_NOT_AVAILABLE);
+    });
+    it('hideConversation, server error', async () => {
+      profileService.hideConversation.mockResolvedValueOnce(
+        new BaseError(5403, ''),
+      );
+      const result = await groupService.hideConversation(1, false, true);
+      expect(result).toBe(ServiceCommonErrorType.SERVER_ERROR);
+    });
+    it('hideConversation, unknown error', async () => {
+      profileService.hideConversation.mockResolvedValueOnce(
+        ErrorParser.parse({ status: 280 }),
+      );
+      const result = await groupService.hideConversation(1, false, true);
+      expect(result).toBe(ServiceCommonErrorType.UNKNOWN_ERROR);
     });
   });
 });

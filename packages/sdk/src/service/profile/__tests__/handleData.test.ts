@@ -5,7 +5,7 @@
  */
 
 import { daoManager, ProfileDao } from '../../../dao';
-import handleData from '../handleData';
+import handleData, { extractHiddenGroupIds } from '../handleData';
 import { profileFactory } from '../../../__tests__/factories';
 
 jest.mock('../../../dao', () => {
@@ -56,5 +56,13 @@ describe('handleData()', () => {
     } catch (e) {
       expect(e).toEqual(new Error('error'));
     }
+  });
+  describe('extractHiddenGroupIds()', () => {
+    const profile = profileFactory.build({ _id: 1 });
+    profile['hide_group_111'] = false;
+    profile['hide_group_113'] = true;
+    profile['hide_group_112'] = true;
+    const result = extractHiddenGroupIds(profile);
+    expect(result.sort()).toEqual([112, 113]);
   });
 });
