@@ -5,8 +5,9 @@
  */
 import { ThemeProps as StyledThemeProps } from 'styled-components';
 import { Theme as MuiTheme } from '@material-ui/core/styles/createMuiTheme';
+import { Palette as MuiPalette } from '@material-ui/core/styles/createPalette';
 
-type IPalette = {
+type Palette = {
   primary: {
     light: string;
     main: string;
@@ -60,10 +61,10 @@ type IPalette = {
     hoverOpacity: number;
     active: string;
   };
-};
+} & MuiPalette;
 
-type ITheme = {
-  palette: IPalette;
+type Theme = {
+  palette: Palette;
 
   shape: {
     borderRadius: number;
@@ -118,8 +119,8 @@ type ITheme = {
       lineHeight: string;
     };
   };
-};
+} & MuiTheme;
 
-type ThemeProps = StyledThemeProps<ITheme & MuiTheme>;
+type ThemeProps = StyledThemeProps<Theme & MuiTheme>;
 
-export { IPalette, ITheme, ThemeProps };
+export { Palette, Theme, ThemeProps };

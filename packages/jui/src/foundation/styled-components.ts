@@ -12,7 +12,7 @@
 import { ComponentClass } from 'react';
 
 import * as styledComponents from 'styled-components';
-import { Theme } from './theme';
+import { Theme } from './theme/theme';
 
 // Helper type operators
 type KeyofBase = keyof any;
@@ -22,17 +22,19 @@ type DiffBetween<T, U> = Pick<T, Diff<keyof T, keyof U>> &
   Pick<U, Diff<keyof U, keyof T>>;
 type Omit<T, K extends keyof T> = Pick<T, Diff<keyof T, K>>;
 type WithOptionalTheme<P extends { theme?: T }, T> = Omit<P, 'theme'> & {
-  theme?: T,
+  theme?: T;
 };
 
 type Attrs<P, A extends Partial<P>, T> = {
-  [K in keyof A]: ((props: styledComponents.ThemedStyledProps<P, T>) => A[K]) | A[K]
+  [K in keyof A]:
+    | ((props: styledComponents.ThemedStyledProps<P, T>) => A[K])
+    | A[K]
 };
 
 type ThemedStyledComponentFactories<T> = {
   [TTag in keyof JSX.IntrinsicElements]: styledComponents.ThemedStyledFunction<
-  JSX.IntrinsicElements[TTag],
-  T
+    JSX.IntrinsicElements[TTag],
+    T
   >
 };
 
@@ -43,13 +45,15 @@ type IDependencies = {
 interface IThemedStyledFunction<P, T, O = P> {
   (
     strings: TemplateStringsArray,
-    ...interpolations: styledComponents.Interpolation<styledComponents.ThemedStyledProps<P, T>>[] // tslint:disable-line
+    ...interpolations: styledComponents.Interpolation<
+      styledComponents.ThemedStyledProps<P, T>
+    >[] // tslint:disable-line
   ): styledComponents.StyledComponentClass<P, T, O> & IDependencies;
   <U>(
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P & U, T>
-      >[] // tslint:disable-line
+    >[] // tslint:disable-line
   ): styledComponents.StyledComponentClass<P & U, T, O & U> & IDependencies;
   attrs<U, A extends Partial<P & U> = {}>(
     attrs: Attrs<P & U, A, T>,
@@ -61,8 +65,9 @@ interface IThemedBaseStyledInterface<T>
   <P, TTag extends keyof JSX.IntrinsicElements>(
     tag: TTag,
   ): IThemedStyledFunction<P, T, P & JSX.IntrinsicElements[TTag]>;
-  <P, O>(component: styledComponents.StyledComponentClass<P, T, O>):
-    IThemedStyledFunction<P, T, O>;
+  <P, O>(
+    component: styledComponents.StyledComponentClass<P, T, O>,
+  ): IThemedStyledFunction<P, T, O>;
   <P extends { [prop: string]: any; theme?: T }>(
     component: React.ComponentType<P>,
   ): IThemedStyledFunction<P, T, WithOptionalTheme<P, T>>;
