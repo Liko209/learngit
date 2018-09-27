@@ -16,7 +16,7 @@ const DialogActions = styled(({ ...props }: DialogActionsProps) => {
 })`
   &.root {
     padding: ${spacing(2, 6, 6)};
-    margin: 0px;
+    margin: 0;
   }
 `;
 

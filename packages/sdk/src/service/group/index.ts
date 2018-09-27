@@ -6,7 +6,7 @@
 import { daoManager, ConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Group, Raw } from '../../models';
+import { Group, GroupApiType, Raw, IResponseError } from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -212,7 +212,7 @@ export default class GroupService extends BaseService<Group> {
     postId: number,
     groupId: number,
     toPin: boolean,
-  ): Promise<Group | null> {
+  ): Promise<Group | IResponseError | null> {
     const groupDao = daoManager.getDao(GroupDao);
     const group = await groupDao.get(groupId);
     if (group && this.canPinPost(postId, group)) {
@@ -270,7 +270,7 @@ export default class GroupService extends BaseService<Group> {
   async addTeamMembers(
     groupId: number,
     memberIds: number[],
-  ): Promise<Group | null> {
+  ): Promise<Group | IResponseError | null> {
     const resp = await GroupAPI.addTeamMembers(groupId, memberIds);
     return this.handleResponse(resp);
   }
@@ -278,7 +278,7 @@ export default class GroupService extends BaseService<Group> {
   async createTeam(
     name: string,
     creator: number,
-    memberIds: number[],
+    memberIds: (number | string)[],
     description: string,
     options: CreateTeamOptions = {},
   ) {
@@ -301,7 +301,7 @@ export default class GroupService extends BaseService<Group> {
       const userPermissionMask = Permission.createPermissionsMask(
         permissionFlags,
       );
-      const team: Partial<Group> = {
+      const team: Partial<GroupApiType> = {
         privacy,
         description,
         set_abbreviation: name,
@@ -339,14 +339,12 @@ export default class GroupService extends BaseService<Group> {
   }
 
   async handleResponse(resp: IResponse<Raw<Group>>) {
-    if (resp && resp.data) {
-      const group = transform<Group>(resp.data);
-      await handleData([resp.data]);
-      return group;
+    if (resp && resp.data && resp.data.error) {
+      return resp.data;
     }
-
-    // should handle errors when error handling ready
-    return null;
+    const group = transform<Group>(resp.data);
+    await handleData([resp.data]);
+    return group;
   }
 
   async getLeftRailGroups(): Promise<Group[]> {

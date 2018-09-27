@@ -54,7 +54,7 @@ const StyledTopBar = styled(AppBar).attrs({ position: 'static' })`
     box-shadow: none;
     border-bottom: 1px solid
       rgba(0, 0, 0, ${({ theme }) => `${theme.palette.action.hoverOpacity}`});
-    z-index: ${({ theme }) => `${theme.zIndex.tooltip}`};
+    z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
   }
 `;
 const TopBarWrapper = styled(Toolbar)`

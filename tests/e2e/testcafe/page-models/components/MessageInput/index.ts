@@ -6,5 +6,3 @@
  */
 
 export * from './Draft';
-export * from './Alert';
-export * from './Comfirm';

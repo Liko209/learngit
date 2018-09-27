@@ -9,19 +9,22 @@ import { observer } from 'mobx-react';
 import ViewModel from './ViewModel';
 import styled from 'styled-components';
 
-type TAvatarProps = TJuiAvatarProps & {
-  uid: number;
-};
 type TJuiAvatar = {
   bgColor?: string;
   src?: string;
+  uid: number;
 };
+type TAvatarProps = TJuiAvatarProps & {
+  uid: number;
+} & TJuiAvatar;
+
 const CustomJuiAvatar: React.SFC<TJuiAvatar> = ({ bgColor, ...props }) => {
   return <JuiAvatar {...props} />;
 };
-const StyleAvatar = styled<TJuiAvatar>(CustomJuiAvatar)`
+const StyleAvatar = styled<TAvatarProps>(CustomJuiAvatar)`
   && {
-    background-color: ${({ theme, bgColor }) => (bgColor ? theme.avatar[bgColor] : '')};
+    background-color: ${({ theme, bgColor }) =>
+      bgColor ? theme.avatar[bgColor] : ''};
   }
 `;
 @observer
@@ -39,7 +42,14 @@ class Avatar extends React.Component<TAvatarProps> {
     const avatar = userInfo.url ? userInfo.url : '';
     const name = userInfo.name ? userInfo.name : '';
     const color = userInfo.bgColor ? userInfo.bgColor : '';
-    return avatar ? <StyleAvatar src={avatar} /> : <StyleAvatar bgColor={color}>{name}</StyleAvatar>;
+    const { innerRef, ...rest } = this.props;
+    return avatar ? (
+      <StyleAvatar src={avatar} {...rest} />
+    ) : (
+      <StyleAvatar bgColor={color} {...rest}>
+        {name}
+      </StyleAvatar>
+    );
   }
 }
 
