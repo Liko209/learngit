@@ -56,8 +56,8 @@ const top = css`
 `;
 
 const right = css`
-  left: 0;
-  top: 0;
+  left: 0 !important;
+  top: 0.8em;
   margin-left: -0.8em;
   height: 1.8em;
   width: 1em;
