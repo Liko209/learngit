@@ -6,7 +6,7 @@
 import React from 'react';
 import { SwitchProps } from '@material-ui/core/Switch';
 // import MuiTooltip from '@material-ui/core/Tooltip';
-import * as Jui from './style';
+import { ToggleButton } from './styled';
 
 type IProps = {
   checked: boolean;
@@ -22,7 +22,7 @@ const JuiToggleButton: React.SFC<SwitchProps> = (props: IProps) => {
 
   return (
     // <MuiTooltip title={tooltipTitle}>
-    <Jui.ToggleButton
+    <ToggleButton
       classes={{
         root: 'custom-root',
         switchBase: 'custom-switchBase',

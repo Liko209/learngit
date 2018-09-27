@@ -4,19 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { RefObject } from 'react';
-import styled, {
-  keyframes,
-  IDependencies,
-} from '../../../foundation/styled-components';
 import MuiIconButton, {
   IconButtonProps as MuiIconButtonProps,
 } from '@material-ui/core/IconButton';
-import MuiIcon from '@material-ui/core/Icon';
+import MuiIcon, { IconProps as MuiIconProps } from '@material-ui/core/Icon';
 import MuiTooltip from '@material-ui/core/Tooltip';
-import { ArrowTip } from '../../Tooltip';
-import { palette, grey, width } from '../../../foundation/utils/styles';
 import tinycolor from 'tinycolor2';
-import { Theme } from '../../../foundation/theme';
+import styled, {
+  keyframes,
+  Dependencies,
+} from '../../../foundation/styled-components';
+import { JuiArrowTip } from '../../Tooltip/ArrowTip';
+import { palette, grey, width } from '../../../foundation/utils/styles';
+import { Theme } from '../../../foundation/theme/theme';
 
 type JuiIconButtonProps = {
   tooltipTitle?: string;
@@ -26,7 +26,8 @@ type JuiIconButtonProps = {
   size?: 'small' | 'medium' | 'large';
   color?: 'primary' | 'secondary';
   innerRef?: RefObject<HTMLElement>;
-} & MuiIconButtonProps;
+} & MuiIconButtonProps &
+  MuiIconProps;
 
 const iconSizes = {
   large: 6,
@@ -130,13 +131,13 @@ const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
   font-size: 0;
 `;
 
-type IJuiIconButton = React.SFC<JuiIconButtonProps> & IDependencies;
-
-const JuiIconButton: IJuiIconButton = (props: JuiIconButtonProps) => {
+export const JuiIconButton: React.SFC<JuiIconButtonProps> & Dependencies = (
+  props: JuiIconButtonProps,
+) => {
   const { className, children, tooltipTitle, innerRef, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
   return (
-    <ArrowTip title={tooltipTitle}>
+    <JuiArrowTip title={tooltipTitle}>
       <WrapperForTooltip
         className={className}
         innerRef={innerRef}
@@ -155,7 +156,7 @@ const JuiIconButton: IJuiIconButton = (props: JuiIconButtonProps) => {
           </StyledIcon>
         </StyledIconButton>
       </WrapperForTooltip>
-    </ArrowTip>
+    </JuiArrowTip>
   );
 };
 
@@ -168,6 +169,3 @@ JuiIconButton.defaultProps = {
 };
 
 JuiIconButton.dependencies = [MuiIconButton, MuiIcon, MuiTooltip];
-
-export { JuiIconButton, JuiIconButtonProps };
-export default JuiIconButton;
