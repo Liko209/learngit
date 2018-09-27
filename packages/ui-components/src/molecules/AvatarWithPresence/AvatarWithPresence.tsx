@@ -9,10 +9,10 @@ import styled from '../../styled-components';
 import JuiAvatar from '../../atoms/Avatar';
 import { AvatarPresence, PresenceProps } from '../../atoms/Presence';
 
-type TJuiAvatarWithPresenceProps = {
+export type TJuiAvatarWithPresenceProps = {
   src?: string;
   innerRef?: RefObject<HTMLElement>;
-  onClick: () => void;
+  onClick?: () => void;
 } & PresenceProps;
 
 const StyledAvatarWithPresence = styled.div`
@@ -36,7 +36,5 @@ const JuiAvatarWithPresence: React.SFC<TJuiAvatarWithPresenceProps> = (
     </StyledAvatarWithPresence>
   );
 };
-
-export { TJuiAvatarWithPresenceProps };
 
 export default JuiAvatarWithPresence;

@@ -8,17 +8,20 @@ import styled, { IDependencies } from '../../styled-components';
 import MuiChip, { ChipProps } from '@material-ui/core/Chip';
 import JuiAvatar from '../../atoms/Avatar';
 import JuiIconButton from '../IconButton';
-import { width } from '../../utils/styles';
+import { width, spacing, height } from '../../utils/styles';
 
 type TJuiChipProps = {
-  Avatar?: React.ComponentType<any>;
-  onDeleteClick?: () => void;
+  uid: number;
+  ChipAvatar?: React.ComponentType<any>;
+  onDelete?: (event: any) => void;
 } & ChipProps;
 
-const StyledChip = styled<TJuiChipProps>(MuiChip)`
+const StyledChip = styled(MuiChip)`
   && {
-    padding: ${width(1)};
+    margin: ${spacing(1)};
+    padding: ${spacing(1)};
     box-sizing: border-box;
+    overflow: hidden;
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity * 1};
     }
@@ -29,20 +32,32 @@ const StyledChip = styled<TJuiChipProps>(MuiChip)`
 
   .deleteIcon {
     width: ${width(5)};
-    height: ${width(5)};
+    height: ${height(5)};
+  }
+  .label {
+    display: inline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .avatar {
+    color: ${({ theme }) => theme.palette.common.white};
   }
 `;
 
 const JuiChip: React.SFC<TJuiChipProps> & IDependencies = (
   props: TJuiChipProps,
 ) => {
-  const { innerRef, onDeleteClick, Avatar, ...rest } = props;
+  const { innerRef, onDelete, ChipAvatar, ...rest } = props;
+  const avatar: any = ChipAvatar ? (
+    <ChipAvatar size="small" uid={rest.uid} />
+  ) : null;
+
   return (
     <StyledChip
       {...rest}
-      onDelete={onDeleteClick}
-      classes={{ deleteIcon: 'deleteIcon' }}
-      avatar={Avatar ? <Avatar size="small" /> : undefined}
+      onDelete={onDelete}
+      avatar={avatar}
+      classes={{ deleteIcon: 'deleteIcon', label: 'label', avatar: 'avatar' }}
       deleteIcon={
         <JuiIconButton variant="plain" tooltipTitle="remove">
           cancel

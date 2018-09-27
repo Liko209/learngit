@@ -21,14 +21,22 @@ export type ExtendedBaseModel = BaseModel & {
   model_size?: number;
 };
 
+export type IResponseError = {
+  error: {
+    code: string;
+    message: string;
+    validation: boolean;
+  };
+};
+
 export type Raw<T> = Pick<T, Exclude<keyof T, 'id'>> & {
   _id: number;
   id?: number;
-};
+} & IResponseError;
+
 export type PartialWithKey<T> = Pick<T, Extract<keyof T, 'id'>> & Partial<T>;
 
-export type Group = ExtendedBaseModel & {
-  members: number[];
+export type GroupCommon = {
   company_id: number;
   set_abbreviation: string;
   email_friendly_abbreviation: string;
@@ -66,6 +74,14 @@ export type Group = ExtendedBaseModel & {
   send_failure_post_ids?: number[];
 };
 
+export type Group = ExtendedBaseModel & {
+  members: number[];
+} & GroupCommon;
+
+export type GroupApiType = ExtendedBaseModel & {
+  members: (number | string)[];
+} & GroupCommon;
+
 export type Profile = ExtendedBaseModel & {
   person_id?: number;
   favorite_group_ids: number[];
@@ -93,7 +109,7 @@ export type Person = ExtendedBaseModel & {
   last_name?: string;
   display_name?: string;
   headshot?: {
-    url: string,
+    url: string;
   };
   locked?: boolean;
   inviter_id?: number;

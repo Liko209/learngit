@@ -128,6 +128,16 @@ function ellipsis() {
   `;
 }
 
+/**
+ * border type
+ * @param name
+ */
+function border(name: string) {
+  return css`
+    border: ${({ theme }: { theme: Theme }) => theme.border[name]};
+  `;
+}
+
 export {
   spacing,
   shape,
@@ -140,4 +150,5 @@ export {
   grey,
   typography,
   ellipsis,
+  border,
 };

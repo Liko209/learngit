@@ -5,7 +5,7 @@
  */
 import { IResponse } from '../NetworkClient';
 import Api from '../api';
-import { Group, Raw } from '../../models';
+import { Group, GroupApiType, Raw } from '../../models';
 
 class GroupAPI extends Api {
   /**
@@ -18,21 +18,31 @@ class GroupAPI extends Api {
     return this.getDataById(id);
   }
 
-  static requestNewGroup(options: Partial<Group>): Promise<IResponse<Raw<Group>>> {
+  static requestNewGroup(
+    options: Partial<Group>,
+  ): Promise<IResponse<Raw<Group>>> {
     return this.postData(options);
   }
 
-  static pinPost(path: string, options: object): Promise<IResponse<Raw<Group>>> {
+  static pinPost(
+    path: string,
+    options: object,
+  ): Promise<IResponse<Raw<Group>>> {
     return this.glipNetworkClient.put(path, options);
   }
 
-  static addTeamMembers(groupId: number, memberIds: number[]): Promise<IResponse<Raw<Group>>> {
+  static addTeamMembers(
+    groupId: number,
+    memberIds: number[],
+  ): Promise<IResponse<Raw<Group>>> {
     return this.glipNetworkClient.put(`/add_team_members/${groupId}`, {
       members: memberIds,
     });
   }
 
-  static createTeam(data: Partial<Group>): Promise<IResponse<Raw<Group>>> {
+  static createTeam(
+    data: Partial<GroupApiType>,
+  ): Promise<IResponse<Raw<Group>>> {
     return this.glipNetworkClient.post('/team', data);
   }
 }

@@ -22,6 +22,7 @@ import JuiIconButton from 'ui-components/molecules/IconButton';
 import avatar from './avatar.jpg';
 import { parse, stringify } from 'qs';
 import LeftNavViewModel from './LeftNav/LeftNavViewModel';
+import CreateTeam from '../CreateTeam';
 import navPresenter, { NavPresenter } from '../BackNForward/ViewModel';
 import DocumentTitle from 'react-document-title';
 
@@ -97,7 +98,10 @@ class Home extends Component<IProps, IStates> {
       search: `?leftnav=${!this.state.expanded}`,
     });
   }
-  handleCreateTeam = () => {};
+  handleCreateTeam = () => {
+    this.homePresenter.handleOpenCreateTeam();
+  }
+
   getIcons() {
     const { t } = this.props;
     return [
@@ -190,6 +194,7 @@ class Home extends Component<IProps, IStates> {
               </Switch>
             </Main>
           </Bottom>
+          <CreateTeam homePresenter={this.homePresenter} />
         </Wrapper>
       </DocumentTitle>
     );

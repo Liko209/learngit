@@ -52,6 +52,14 @@ class MenuListComposition extends React.Component<
     this.setState({ open: false });
   }
 
+  handleMenuItemClick = (
+    menuItemEvent: () => void,
+    event: React.MouseEvent<HTMLElement>,
+  ) => {
+    this.handleClose(event);
+    menuItemEvent();
+  }
+
   render() {
     const { open } = this.state;
     const { MenuExpandTrigger, menuItems } = this.props;
@@ -81,7 +89,13 @@ class MenuListComposition extends React.Component<
                   <MenuList>
                     {menuItems.map((item, index) => {
                       return (
-                        <MenuItem key={index} onClick={item.onClick}>
+                        <MenuItem
+                          key={index}
+                          onClick={this.handleMenuItemClick.bind(
+                            this,
+                            item.onClick,
+                          )}
+                        >
                           {item.label}
                         </MenuItem>
                       );

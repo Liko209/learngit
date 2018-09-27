@@ -199,7 +199,10 @@ describe('GroupService', () => {
 
   it('updateGroupPartialData(object) is update success', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
-    const result = await groupService.updateGroupPartialData({ id: 1, abc: '123' });
+    const result = await groupService.updateGroupPartialData({
+      id: 1,
+      abc: '123',
+    });
     expect(result).toEqual(true);
     expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
@@ -208,31 +211,46 @@ describe('GroupService', () => {
   it('updateGroupPartialData(object) is update error', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
     groupDao.update.mockRejectedValueOnce(new Error());
-    await expect(groupService.updateGroupPartialData({ id: 1, abc: '123' })).rejects.toThrow();
+    await expect(
+      groupService.updateGroupPartialData({ id: 1, abc: '123' }),
+    ).rejects.toThrow();
   });
 
   it('updateGroupDraf({id, draft}) is update success', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
-    const result = await groupService.updateGroupDraft({ id: 1, draft: 'draft' });
+    const result = await groupService.updateGroupDraft({
+      id: 1,
+      draft: 'draft',
+    });
     expect(result).toEqual(true);
   });
 
   it('updateGroupDraf({id, draft}) is update error', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
     groupDao.update.mockRejectedValueOnce(new Error());
-    await expect(groupService.updateGroupDraft({ id: NaN, draft: 'draft' })).rejects.toThrow();
+    await expect(
+      groupService.updateGroupDraft({ id: NaN, draft: 'draft' }),
+    ).rejects.toThrow();
   });
 
   it('updateGroupSendFailurePostIds({id, send_failure_post_ids}) is update success', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
-    const result = await groupService.updateGroupSendFailurePostIds({ id: 123, send_failure_post_ids: [12, 13] });
+    const result = await groupService.updateGroupSendFailurePostIds({
+      id: 123,
+      send_failure_post_ids: [12, 13],
+    });
     expect(result).toEqual(true);
   });
 
   it('updateGroupSendFailurePostIds({id, send_failure_post_ids}) is update error', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
     groupDao.update.mockRejectedValueOnce(new Error());
-    await expect(groupService.updateGroupSendFailurePostIds({ id: NaN, send_failure_post_ids: [12, 13] })).rejects.toThrow();
+    await expect(
+      groupService.updateGroupSendFailurePostIds({
+        id: NaN,
+        send_failure_post_ids: [12, 13],
+      }),
+    ).rejects.toThrow();
   });
 
   it('getGroupSendFailurePostIds(id) will be return number array', async () => {
@@ -341,7 +359,8 @@ describe('GroupService', () => {
 
       GroupAPI.pinPost.mockResolvedValueOnce({ error: {} });
       const pinResult = await groupService.pinPost(11, 1, true);
-      expect(pinResult).toBe(null);
+
+      expect(pinResult).toBe(undefined);
 
       jest.clearAllMocks();
     });
@@ -362,11 +381,17 @@ describe('GroupService', () => {
     });
 
     it('should return null if request failed', async () => {
+      jest.spyOn(groupService, 'handleResponse');
+      groupService.handleResponse.mockImplementationOnce(() => {});
       GroupAPI.addTeamMembers.mockResolvedValueOnce(null);
-      await expect(groupService.addTeamMembers(1, [])).resolves.toBeNull();
+
+      await groupService.addTeamMembers(1, []);
+      expect(groupService.handleResponse).toHaveBeenCalledWith(null);
 
       GroupAPI.addTeamMembers.mockResolvedValueOnce({ data: null });
-      await expect(groupService.addTeamMembers(1, [])).resolves.toBeNull();
+
+      await groupService.addTeamMembers(1, []);
+      expect(groupService.handleResponse).toHaveBeenCalledWith({ data: null });
     });
   });
 
@@ -391,6 +416,8 @@ describe('GroupService', () => {
     });
 
     it('privacy should be protected if it is public', async () => {
+      jest.spyOn(groupService, 'handleResponse');
+      groupService.handleResponse.mockImplementationOnce(() => {});
       await groupService.createTeam('some team', 1323, [], 'abc', {
         isPublic: true,
       });
@@ -408,9 +435,12 @@ describe('GroupService', () => {
           },
         }),
       );
+      expect(groupService.handleResponse).toHaveBeenCalled();
     });
 
     it('data should have correct permission level if passed in options', async () => {
+      jest.spyOn(groupService, 'handleResponse');
+      groupService.handleResponse.mockImplementationOnce(() => {});
       await groupService.createTeam('some team', 1323, [], 'abc', {
         isPublic: true,
         canAddIntegrations: true,
@@ -453,16 +483,17 @@ describe('GroupService', () => {
       });
     });
 
-    it('should return null if request failed', async () => {
-      GroupAPI.createTeam.mockResolvedValueOnce(null);
-      await expect(
-        groupService.createTeam('some team', 1323, [], 'abc'),
-      ).resolves.toBeNull();
-
-      GroupAPI.createTeam.mockResolvedValueOnce({ data: null });
-      await expect(
-        groupService.createTeam('some team', 1323, [], 'abc'),
-      ).resolves.toBeNull();
+    it('should return error object if duplicate name', async () => {
+      const error = {
+        message: 'duplicate name',
+      };
+      GroupAPI.createTeam.mockResolvedValueOnce({
+        data: {
+          error,
+        },
+      });
+      const ret = await groupService.createTeam('some team', 1323, [], 'abc');
+      expect(ret).toEqual({ error });
     });
   });
 

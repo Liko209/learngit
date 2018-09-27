@@ -3,7 +3,7 @@
  * @Date: 2018-08-30 11:21:18
  * Copyright © RingCentral. All rights reserved.
  */
-import { action } from 'mobx';
+import { action, observable } from 'mobx';
 
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import config from '@/config';
@@ -16,12 +16,16 @@ const { AccountService, AuthService, SERVICE, ProfileService } = service;
 
 export default class HomePresenter extends BaseNotificationSubscribable {
   private userId: number | null;
+  @observable
+  openCreateTeam: boolean;
+
   constructor() {
     super();
 
     this.subscribeNotificationOnce(SERVICE.FETCH_INDEX_DATA_DONE, () =>
       this.handleHasLogin(),
     );
+    this.openCreateTeam = false;
   }
 
   @action
@@ -52,5 +56,10 @@ export default class HomePresenter extends BaseNotificationSubscribable {
     sessionStorage.removeItem('backNavArray');
     sessionStorage.removeItem('forwardNavArray');
     window.location.href = '/';
+  }
+
+  @action
+  public handleOpenCreateTeam() {
+    this.openCreateTeam = !this.openCreateTeam;
   }
 }

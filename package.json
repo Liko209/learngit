@@ -81,5 +81,7 @@
     "react-document-title": "2.0.3",
     "@types/react-document-title": "2.0.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "downshift": "2.2.2"
+  }
 }

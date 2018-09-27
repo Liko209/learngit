@@ -65,6 +65,11 @@ type IPalette = {
 type ITheme = {
   palette: IPalette;
 
+  border: {
+    type1: {
+      border: string;
+    };
+  };
   shape: {
     borderRadius: number;
     border1: string;

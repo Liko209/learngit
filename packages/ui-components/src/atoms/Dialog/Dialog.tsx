@@ -24,6 +24,7 @@ const Dialog = styled(({ size = 'small', ...restProps }: IDialogProps) => {
   }
   const classes = {
     root: 'root',
+    paper: 'paper',
     paperWidthXs: 'sm',
     paperWidthSm: 'md',
     paperWidthMd: 'lg',
@@ -34,19 +35,23 @@ const Dialog = styled(({ size = 'small', ...restProps }: IDialogProps) => {
     padding: 0;
     min-height: 120px;
   }
+  & .paper {
+    max-width: inherit;
+  }
   & .sm {
-    max-width: 400px;
+    width: 400px;
   }
   & .md {
-    max-width: 640px;
+    width: 640px;
   }
   & .lg {
-    max-width: 800px;
+    width: 800px;
   }
   & .paperScrollPaper {
     max-height: ${() => ((0.72 * window.innerHeight) % 8) * 8}px;
   }
   & .paperFullScreen {
+    width: 100%;
     max-width: 100%;
   }
 `;
