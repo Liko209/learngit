@@ -86,7 +86,7 @@ function primary(sub: string) {
  * @param sub
  */
 function secondary(sub: string) {
-  return palette('primary', sub);
+  return palette('secondary', sub);
 }
 
 /**
