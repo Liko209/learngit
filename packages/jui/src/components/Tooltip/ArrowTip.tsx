@@ -4,13 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import MuiTooltip, { TooltipProps as MuiTooltipProps } from '@material-ui/core/Tooltip';
+import MuiTooltip, {
+  TooltipProps as MuiTooltipProps,
+} from '@material-ui/core/Tooltip';
 import styled, { css } from '../../foundation/styled-components';
 import { palette } from '../../foundation/utils/styles';
 
-type JuiTooltipProps = MuiTooltipProps;
+type JuiTooltipProps = {
+  placement?: string;
+} & MuiTooltipProps;
 
-const TooltipArrow = styled.span`
+const TooltipArrow = styled.span<JuiTooltipProps>`
   position: absolute;
   font-size: 7px;
   width: 3em;
@@ -23,7 +27,7 @@ const TooltipArrow = styled.span`
      height: 0;
      border-style: solid;
    }
-   ${({ placement }) => arrowStyles[placement]}
+   ${({ placement }) => arrowStyles[placement!]}
 `;
 const bottom = css`
   top: 0;
@@ -33,9 +37,12 @@ const bottom = css`
   height: 1em;
   &::before {
     border-width: 0 1em 1em 1em;
-    border-color: transparent transparent ${palette('tooltip', 'dark')} transparent;
+    border-color: transparent transparent ${palette(
+      'tooltip',
+      'dark',
+    )} transparent;
   },
-`
+`;
 const top = css`
   bottom: -1em;
   left: 0;
@@ -46,7 +53,7 @@ const top = css`
     border-width: 1em 1em 1em;
     border-color: ${palette('tooltip', 'dark')} transparent transparent;
   },
-`
+`;
 
 const right = css`
   left: 0;
@@ -56,26 +63,31 @@ const right = css`
   width: 1em;
   &::before {
     border-width: 0.6em 0.6em 0.6em 0;
-    border-color: transparent ${palette('tooltip', 'dark')} transparent transparent;
+    border-color: transparent ${palette(
+      'tooltip',
+      'dark',
+    )} transparent transparent;
   },
-`
+`;
 const left = css`
-  right: 0;
-  top: 0;
-  margin-left: -0.8em;
-  height: 1.8em;
-  width: 1em;
+  left: 0;
+  margin-left: 0em;
+  height: 0em;
+  width: 23em;
   &::before {
     border-width: 1em 0 1em 1em;
-    border-color: transparent  transparent transparent ${palette('tooltip', 'dark')};
+    border-color: transparent  transparent transparent ${palette(
+      'tooltip',
+      'dark',
+    )};
   },
-`
+`;
 const arrowStyles = {
   bottom,
   top,
   right,
   left,
-}
+};
 class JuiArrowTip extends React.Component<JuiTooltipProps> {
   static dependencies = [MuiTooltip];
 
@@ -89,7 +101,6 @@ class JuiArrowTip extends React.Component<JuiTooltipProps> {
   }
   render() {
     const { title, children, placement, ...rest } = this.props;
-    console.log(placement);
     return (
       <MuiTooltip
         {...rest}
