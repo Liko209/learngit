@@ -78,6 +78,7 @@ class AccountPoolManager implements IAccountPoolClient {
   }
 
   async checkInAll() {
+    // this method should never fail!
     for (const data of this.allAccounts) {
       try {
         const ret = await this.accountPoolClient.checkInAccounts(data);
@@ -96,14 +97,13 @@ const _accountPoolClient = new AccountPoolClient(
 );
 const accountPoolClient = new AccountPoolManager(_accountPoolClient);
 
-// ensure account release on exit
-const events: any[] = ['uncaughtException', 'SIGINT', 'SIGTERM',];
-events.forEach(e => {
-  process.on(e, () => {
-    logger.info(`release account on ${e}`);
-    accountPoolClient
-      .checkInAll();
-  });
-});
+// ensure account release on normal exit
+process.on('exit', (exitCode) => {
+    logger.info(`release account on exit`);
+    accountPoolClient.checkInAll()
+      .then(() => {
+        process.exit(exitCode);
+      });
+})
 
 export { accountPoolClient };

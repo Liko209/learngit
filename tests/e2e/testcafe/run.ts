@@ -3,12 +3,10 @@
  * @Date: 2018-08-15 17:20:19
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { filterByTags } from './libs/filter';
 import { getLogger } from 'log4js';
 
+import { filterByTags } from './libs/filter';
 import { RUNNER_OPTS } from './config';
-import { accountPoolClient } from './libs/accounts';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -18,15 +16,17 @@ const createTestCafe = require('testcafe');
 async function runTests(runnerOpts) {
   let failed = 0;
   const testCafe = await createTestCafe();
-
-  // ensure testcafe exit on abnormal exit
-  const events: any[] = ['uncaughtException', 'SIGINT', 'SIGTERM',];
-  events.forEach(e => {
-    process.on(e, () => {
-      logger.info(`close testcafe on ${e}`);
-      testCafe.close();
+  // ensure close testcafe on exit
+  process.on('exit', (exitCode) => {
+    logger.info(`ensure close testcafe on exit`);
+    testCafe.close()
+    .then(() => {
+      process.exit(exitCode);
+    })
+    .catch((err) => {
+      process.exit(exitCode);
     });
-  });
+  })
 
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
@@ -58,6 +58,5 @@ async function runTests(runnerOpts) {
     logger.error(err);
     exitCode = 127;
   }
-  await accountPoolClient.checkInAll();
   process.exit(exitCode);
 })();
