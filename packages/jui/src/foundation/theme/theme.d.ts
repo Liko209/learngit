@@ -61,6 +61,9 @@ type Palette = {
     hoverOpacity: number;
     active: string;
   };
+  tooltip: {
+    dark: '#616161';
+  }
 } & MuiPalette;
 
 type Theme = {
@@ -75,7 +78,8 @@ type Theme = {
     unit: number;
   };
   zIndex: {
-    supernatant: number;
+    reponsePanel: number;
+    reponseResizer: number;
   };
   size: {
     width: number;

@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   top: 0;
   bottom: 0;
   right: auto;
-  z-index: ${({ theme }) => theme.zIndex.supernatant};
+  z-index: ${({ theme }) => theme.zIndex.reponse};
   margin-left: ${({ theme }) => -theme.spacing.unit}px;
   padding: ${({ theme }) => theme.spacing.unit}px;
   cursor: col-resize;
