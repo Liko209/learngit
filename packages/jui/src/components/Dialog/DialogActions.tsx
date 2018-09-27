@@ -1,9 +1,9 @@
 import React from 'react';
-import styled from '../../styled-components';
+import styled from '../../foundation/styled-components';
 import MuiDialogActions, {
   DialogActionsProps,
 } from '@material-ui/core/DialogActions';
-import { spacing } from '../../utils/styles';
+import { spacing } from '../../foundation/utils/styles';
 
 const DialogActions = styled(({ ...props }: DialogActionsProps) => {
   return (

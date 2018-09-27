@@ -1,15 +1,16 @@
 import React from 'react';
-import MuiDialogContent, { DialogContentProps } from '@material-ui/core/DialogContent';
-import styled from '../../styled-components';
-import { Theme } from '../../theme';
-import { spacing } from '../../utils/styles';
+import MuiDialogContent, {
+  DialogContentProps,
+} from '@material-ui/core/DialogContent';
+import styled from '../../foundation/styled-components';
+import { Theme } from '../../foundation/theme/theme';
+import { spacing } from '../../foundation/utils/styles';
 
-interface IDialogContentProps extends DialogContentProps
-{
-  fullWidth?:boolean;
+interface IDialogContentProps extends DialogContentProps {
+  fullWidth?: boolean;
 }
 
-const fullWidthStyle = (theme:Theme, fullWidth?:boolean) => {
+const fullWidthStyle = (theme: Theme, fullWidth?: boolean) => {
   if (fullWidth) {
     return `
     margin:${spacing(0, 6, 5)};
@@ -21,12 +22,12 @@ const fullWidthStyle = (theme:Theme, fullWidth?:boolean) => {
 `;
 };
 
-const DialogContent = styled(({ fullWidth, ...props }:IDialogContentProps) => {
-  return <MuiDialogContent {...props} classes={{ root:'root' }} />;
+const DialogContent = styled(({ fullWidth, ...props }: IDialogContentProps) => {
+  return <MuiDialogContent {...props} classes={{ root: 'root' }} />;
 })`
-& .root {
-  ${({ theme, fullWidth }) => fullWidthStyle(theme, fullWidth)}
-}
+  & .root {
+    ${({ theme, fullWidth }) => fullWidthStyle(theme, fullWidth)};
+  }
 `;
 
 export default DialogContent;
