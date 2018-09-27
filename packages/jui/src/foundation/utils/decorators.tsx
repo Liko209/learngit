@@ -9,7 +9,7 @@ import createDependencies from './createDependenciesDoc';
 import { RenderFunction } from '@storybook/react';
 import { StyledComponentClass } from 'styled-components';
 import { IDependencies } from '../styled-components';
-import { Theme } from '../theme';
+import { Theme } from '../theme/theme';
 
 export const alignCenterDecorator = (story: RenderFunction) => {
   return <div style={{ textAlign: 'center' }}>{story()}</div>;

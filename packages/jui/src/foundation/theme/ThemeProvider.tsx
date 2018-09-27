@@ -11,7 +11,6 @@ import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import themeHandler from './ThemeHandler';
 import option from './options.json';
-import { ITheme, IPalette } from './theme';
 
 interface IThemeProviderProps {
   themeName: string;
@@ -74,7 +73,4 @@ class ThemeProvider extends Component<
   }
 }
 
-type Theme = MuiTheme & ITheme;
-type CustomPalette = IPalette;
-
-export { Theme, CustomPalette, ThemeProvider };
+export { ThemeProvider };
