@@ -97,13 +97,15 @@ const _accountPoolClient = new AccountPoolClient(
 );
 const accountPoolClient = new AccountPoolManager(_accountPoolClient);
 
-// ensure account release on normal exit
-process.on('exit', (exitCode) => {
-    logger.info(`release account on exit`);
+// ensure account release on signal
+['SIGINT', 'SIGTERM',].forEach((e: any) => {
+  process.on(e, () => {
+    logger.info(`release account on ${e}`);
     accountPoolClient.checkInAll()
       .then(() => {
-        process.exit(exitCode);
+        logger.info('release account done');
       });
-})
+  });
+});
 
 export { accountPoolClient };
