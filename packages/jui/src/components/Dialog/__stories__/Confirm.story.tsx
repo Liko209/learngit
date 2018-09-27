@@ -5,7 +5,7 @@ import Dialog from '../Dialog';
 import JuiComfirm from '../Confirm';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
-storiesOf('Component/Dialog 🔜', module)
+storiesOf('Components/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(Dialog))
   .addWithJSX('Confirm', () => {
     const open = boolean('open', true);

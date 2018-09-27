@@ -5,7 +5,7 @@ import Dialog from '../Dialog';
 import JuiModal from '../Modal';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
-storiesOf('Component/Dialog 🔜', module)
+storiesOf('Components/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(Dialog))
   .addWithJSX('Alert', () => {
     const open = boolean('open', true);

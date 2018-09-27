@@ -6,7 +6,7 @@ import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiButton } from '../../Buttons/Button';
 
-storiesOf('Component/Dialog 🔜', module)
+storiesOf('Components/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(Dialog))
   .addWithJSX('Dynamic Modal', () => {
     class Conversation extends React.Component {
