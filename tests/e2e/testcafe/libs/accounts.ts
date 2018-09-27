@@ -5,9 +5,14 @@
  */
 
 import * as assert from 'assert';
-import { AccountLockApi, AccountLockAcquire } from 'glip-account-pool-client';
+import { getLogger } from 'log4js';
 
-import { ENV, DEBUG } from '../config';
+import { AccountLockApi, AccountLockAcquire } from 'glip-account-pool-client';
+import { ENV_OPTS, DEBUG_MODE } from '../config';
+
+const logger = getLogger(__filename);
+logger.level = 'info';
+
 interface IAccountPoolClient {
   baseUrl: string;
   envName: string;
@@ -73,44 +78,32 @@ class AccountPoolManager implements IAccountPoolClient {
   }
 
   async checkInAll() {
+    // this method should never fail!
     for (const data of this.allAccounts) {
-      const ret = await this.accountPoolClient.checkInAccounts(data);
-      console.log(
-        `Account Pool: success to reclaim account: ${data.companyEmailDomain}`,
-      );
+      try {
+        const ret = await this.accountPoolClient.checkInAccounts(data);
+        logger.info(`success to reclaim account: ${data.companyEmailDomain}`);
+      } catch (err) { }
     }
   }
 }
 
-const _accountPoolUrl = DEBUG
-  ? ENV.ACCOUNT_POOL_FOR_DEBUG_BASE_URL
-  : ENV.ACCOUNT_POOL_BASE_URL;
+const _accountPoolUrl = DEBUG_MODE
+  ? ENV_OPTS.ACCOUNT_POOL_FOR_DEBUG_BASE_URL
+  : ENV_OPTS.ACCOUNT_POOL_BASE_URL;
 const _accountPoolClient = new AccountPoolClient(
   _accountPoolUrl,
-  ENV.ACCOUNT_POOL_ENV,
+  ENV_OPTS.ACCOUNT_POOL_ENV,
 );
 const accountPoolClient = new AccountPoolManager(_accountPoolClient);
 
-// ensure account release on exit
-const events: { name; exitCode }[] = [
-  { name: 'beforeExit', exitCode: 0 },
-  { name: 'uncaughtException', exitCode: 1 },
-  { name: 'SIGINT', exitCode: 130 },
-  { name: 'SIGTERM', exitCode: 143 },
-];
-
-events.forEach(e => {
-  process.on(e.name, () => {
-    console.log('start to release account');
-    accountPoolClient
-      .checkInAll()
+// ensure account release on normal exit
+process.on('exit', (exitCode) => {
+    logger.info(`release account on exit`);
+    accountPoolClient.checkInAll()
       .then(() => {
-        process.exit(e.exitCode);
-      })
-      .catch(err => {
-        process.exit(e.exitCode);
+        process.exit(exitCode);
       });
-  });
-});
+})
 
 export { accountPoolClient };

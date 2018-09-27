@@ -3,6 +3,10 @@ import * as G from 'glob';
 import * as path from 'path';
 import * as fs from 'fs';
 
+import { getLogger } from 'log4js';
+const logger = getLogger(__filename);
+logger.level = 'info';
+
 export function parseArgs(argsString: string) {
   return argsString.split(',').filter(Boolean).map(s => s.trim());
 }
@@ -11,26 +15,20 @@ export function flattenGlobs(globs: string[]): string[] {
   return _(globs).flatMap(g => G.sync(g)).uniq().value();
 }
 
-export class ExecutionStrategiesHelper {
+export class ConfigLoader {
 
-  static VALID_ACTIONS = ['on_push', 'on_merge'];
+  static ACTIONS = ['on_push', 'on_merge', 'on_debug'];
 
   config: any;
 
-  loadConfig() {
-    const default_path = path.join(this.configsDir, `${this.defaultBranch}.json`);
-    const config_path  = path.join(this.configsDir, `${this.branch}.json`);
-    this.config = require(default_path);
-    console.log(`Execution Strategy: branch: ${this.branch || 'default'}`);
-    console.log(`Execution Strategy: action: ${this.action || 'on_push'}`);
-    if (fs.existsSync(config_path)) {
-      console.log(`Execution Strategy: found configuration file for branch ${this.branch}`);
-      _.merge(this.config, require(config_path));
-    } else {
-      console.log(`Execution Strategy: specific configuration is not found, default configuration will be used`);
+  load() {
+    const defaultConfigFile = path.join(this.configsDir, `${this.defaultBranch}.json`);
+    const configFile  = path.join(this.configsDir, `${this.branch}.json`);
+    this.config = require(defaultConfigFile);
+    if (fs.existsSync(configFile)) {
+      logger.info(`load custom configuration from ${configFile}`);
+      _.merge(this.config, require(configFile));
     }
-    console.log(`Execution Strategy: following options are loaded:`);
-    console.log(this.config);
   }
 
   constructor(
@@ -43,7 +41,7 @@ export class ExecutionStrategiesHelper {
   }
 
   private _isValidAction() {
-    return ExecutionStrategiesHelper.VALID_ACTIONS.indexOf(this.action) >= 0;
+    return ConfigLoader.ACTIONS.indexOf(this.action) >= 0;
   }
 
   private _getActionOrElseDefault(): string {
