@@ -23,14 +23,19 @@ interface IConversationSectionPresenterOptions {
   maxLimit?: number;
 }
 
-class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
+class ConversationSectionPresenter {
   public entityName: ENTITY_NAME = ENTITY_NAME.GROUP;
   private entity: string;
   private queryType?: service.GROUP_QUERY_TYPE;
   private globalStore = storeManager.getGlobalStore();
 
+  private orderListHandler: OrderListHandler<Group, GroupModel>;
+
   constructor(options: IConversationSectionPresenterOptions) {
-    super(() => true, options.transformFunc);
+    this.orderListHandler = new OrderListHandler<Group, GroupModel>(
+      () => true,
+      options.transformFunc,
+    );
     this.entity = options.entity;
     this.queryType = options.queryType;
     this.init();
@@ -41,7 +46,15 @@ class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
 
     // When groups change, fetch data from service again
     this.entity &&
-      this.subscribeNotification(this.entity, () => this.fetchData());
+      this.orderListHandler.subscribeNotification(
+        this.entity,
+        ({ type, entities }) => {
+          this.orderListHandler.handleIncomingData(ENTITY_NAME.GROUP, {
+            type,
+            entities,
+          });
+        },
+      );
   }
 
   async fetchData() {
@@ -50,7 +63,7 @@ class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
     const groups = await groupService.getGroupsByType(this.queryType);
     const store = this.getStore();
     store.clearAll();
-    this.handlePageData(this.entityName, groups, true);
+    this.orderListHandler.handlePageData(this.entityName, groups, true);
   }
 
   getCurrentUserId() {
@@ -61,6 +74,10 @@ class ConversationSectionPresenter extends OrderListHandler<Group, GroupModel> {
   getProfile() {
     const profileService = ProfileService.getInstance<service.ProfileService>();
     return profileService.getProfile();
+  }
+
+  getStore() {
+    return this.orderListHandler.getStore();
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
