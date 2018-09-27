@@ -20,7 +20,7 @@ storiesOf('Components/Tooltip', module)
     },                       'bottom');
     return (
       <div>
-        <JuiArrowTip title="I am arrow tip" placement={placement} leaveDelay={99999999}>
+        <JuiArrowTip title="I am arrow tip" placement={placement}>
           <button>Arrow tool tip sssssssssssss</button>
         </JuiArrowTip>
       </div>
