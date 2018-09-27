@@ -61,6 +61,9 @@ type Palette = {
     hoverOpacity: number;
     active: string;
   };
+  tooltip: {
+    dark: '#616161';
+  }
 } & MuiPalette;
 
 type Theme = {

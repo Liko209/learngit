@@ -5,3 +5,5 @@
  */
 export * from './Lists';
 export * from './Menus';
+export * from './Avatar';
+export * from './Tooltip';
