@@ -1,5 +1,4 @@
-import { Palette } from '@material-ui/core/styles/createPalette';
-import { Theme, CustomPalette } from '../theme';
+import { Theme, Palette } from '../theme/theme';
 import { css } from '../../foundation/styled-components';
 
 /********************************************
@@ -70,7 +69,7 @@ function cssValue(...values: number[]): string {
  * @param name
  * @param sub
  */
-function palette(name: keyof Palette | keyof CustomPalette, sub: string) {
+function palette(name: keyof Palette, sub: string) {
   return ({ theme }: { theme: Theme }) => theme.palette[name][sub];
 }
 
