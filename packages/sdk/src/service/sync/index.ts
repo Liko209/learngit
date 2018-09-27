@@ -60,10 +60,10 @@ export default class SyncService extends BaseService {
       const currentTime = Date.now();
       let result = await fetchInitialData(currentTime);
       this.onDataLoaded && (await this.onDataLoaded());
-      handleData(result);
+      await handleData(result);
       result = await fetchRemainingData(currentTime);
       this.onDataLoaded && (await this.onDataLoaded());
-      handleData(result);
+      await handleData(result);
     } catch (e) {
       mainLogger.error('fetch initial data or remaining data error');
       notificationCenter.emitService(SERVICE.DO_SIGN_OUT);
@@ -73,6 +73,6 @@ export default class SyncService extends BaseService {
     // 5 minutes ago to ensure data is correct
     const result = await fetchIndexData(String(timeStamp - 300000));
     this.onDataLoaded && (await this.onDataLoaded());
-    handleData(result);
+    await handleData(result);
   }
 }
