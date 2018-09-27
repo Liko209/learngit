@@ -11,7 +11,7 @@ dotenv.config();
 const APP_ROOT = __dirname;
 const CONFIGS_ROOT = path.join(APP_ROOT, 'configs');
 
-import { ExecutionStrategiesHelper } from './libs/utils';
+import { ConfigLoader } from './libs/utils';
 
 const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
 const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
@@ -66,12 +66,12 @@ const SDK_ENV = {
   },
 }[SITE_ENV];
 
-const EXECUTION_STRATEGIES_HELPER = new ExecutionStrategiesHelper(
+const EXECUTION_STRATEGIES_HELPER = new ConfigLoader(
   process.env.BRANCH || '',
   process.env.ACTION || '',
   CONFIGS_ROOT,
 );
-EXECUTION_STRATEGIES_HELPER.loadConfig();
+EXECUTION_STRATEGIES_HELPER.load();
 
 export {
   APP_ROOT,
