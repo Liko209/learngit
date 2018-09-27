@@ -52,6 +52,9 @@
     "action": {
       "hoverOpacity": 0.12,
       "active": "#EBF6FA"
+    },
+    "tooltip": {
+      "dark": "#616161"
     }
   },
   "shape": {
@@ -64,7 +67,8 @@
     "unit": 4
   },
   "zIndex": {
-    "supernatant": 2
+    "reponsePanel": 1,
+    "reponseResizer": 2
   },
   "size": {
     "width": 4,

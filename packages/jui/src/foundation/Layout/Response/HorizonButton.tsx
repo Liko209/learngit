@@ -1,14 +1,20 @@
+/*
+ * @Author: Devin Lin (devin.lin@ringcentral.com)
+ * @Date: 2018-09-27 16:28:48
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import React, { MouseEvent } from 'react';
 import styled from '../../styled-components';
 
-interface IInternalPorps {
+type InternalPorps = {
   offset: number;
   show: boolean;
-}
+};
 
-interface IExternalPorps extends IInternalPorps {
+type ExternalPorps = InternalPorps & {
   onClick: (e: MouseEvent) => void;
-}
+};
 
 // todo: have not UX design
 const Wrapper = styled.div`
@@ -21,12 +27,12 @@ const Wrapper = styled.div`
   width: 10px;
   height: 20px;
   cursor: pointer;
-  left: ${(props: IInternalPorps) => `${props.offset}px`};
-  display: ${(props: IInternalPorps) => (props.show ? 'block' : 'none')};
+  left: ${(props: InternalPorps) => `${props.offset}px`};
+  display: ${(props: InternalPorps) => (props.show ? 'block' : 'none')};
 `;
 
-const Button = ({ offset, show, onClick }: IExternalPorps) => {
+const JuiHorizonButton = ({ offset, show, onClick }: ExternalPorps) => {
   return <Wrapper onClick={onClick} offset={offset} show={show} />;
 };
 
-export default Button;
+export default JuiHorizonButton;

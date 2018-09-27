@@ -75,7 +75,6 @@ const StyledUmi = styled<UmiProps, 'span'>('span').attrs({
     return important ? common.white : grey['900'];
   }};
   ${({ variant = 'count' }) => styles[variant]};
-  ${({ variant = 'count' }) => styles[variant]};
 `;
 
 type UmiVariant = 'count' | 'dot' | 'auto';
