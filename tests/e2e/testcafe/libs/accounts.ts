@@ -79,8 +79,10 @@ class AccountPoolManager implements IAccountPoolClient {
 
   async checkInAll() {
     for (const data of this.allAccounts) {
-      const ret = await this.accountPoolClient.checkInAccounts(data);
-      logger.info(`success to reclaim account: ${data.companyEmailDomain}`);
+      try {
+        const ret = await this.accountPoolClient.checkInAccounts(data);
+        logger.info(`success to reclaim account: ${data.companyEmailDomain}`);
+      } catch (err) { }
     }
   }
 }
@@ -95,25 +97,12 @@ const _accountPoolClient = new AccountPoolClient(
 const accountPoolClient = new AccountPoolManager(_accountPoolClient);
 
 // ensure account release on exit
-const events: { name; exitCode }[] = [
-  { name: 'beforeExit', exitCode: 0 },
-  { name: 'uncaughtException', exitCode: 1 },
-  { name: 'SIGINT', exitCode: 130 },
-  { name: 'SIGTERM', exitCode: 143 },
-];
-
+const events: any[] = ['uncaughtException', 'SIGINT', 'SIGTERM',];
 events.forEach(e => {
-  process.on(e.name, () => {
-    logger.info('start to release account');
+  process.on(e, () => {
+    logger.info(`release account on ${e}`);
     accountPoolClient
-      .checkInAll()
-      .then(() => {
-        process.exit(e.exitCode);
-      })
-      .catch(err => {
-        logger.error(err);
-        process.exit(e.exitCode);
-      });
+      .checkInAll();
   });
 });
 

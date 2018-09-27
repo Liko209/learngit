@@ -5,8 +5,10 @@
  */
 
 import { filterByTags } from './libs/filter';
-import { RUNNER_OPTS } from './config';
 import { getLogger } from 'log4js';
+
+import { RUNNER_OPTS } from './config';
+import { accountPoolClient } from './libs/accounts';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -16,6 +18,16 @@ const createTestCafe = require('testcafe');
 async function runTests(runnerOpts) {
   let failed = 0;
   const testCafe = await createTestCafe();
+
+  // ensure testcafe exit on abnormal exit
+  const events: any[] = ['uncaughtException', 'SIGINT', 'SIGTERM',];
+  events.forEach(e => {
+    process.on(e, () => {
+      logger.info(`close testcafe on ${e}`);
+      testCafe.close();
+    });
+  });
+
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
 
@@ -28,6 +40,7 @@ async function runTests(runnerOpts) {
     .screenshots(runnerOpts.SCREENSHOTS_PATH, runnerOpts.SCREENSHOT_ON_FAIL)
     .concurrency(runnerOpts.CONCURRENCY);
 
+
   try {
     failed = await runner.run({ quarantineMode: runnerOpts.QUARANTINE_MODE });
   } finally {
@@ -37,11 +50,14 @@ async function runTests(runnerOpts) {
 }
 
 (async function cli() {
+  let exitCode = 0;
   try {
     const failed = await runTests(RUNNER_OPTS);
-    process.exit(failed > 0 ? 1 : 0);
+    exitCode = failed > 0 ? 1 : 0;
   } catch (err) {
     logger.error(err);
-    process.exit(127);
+    exitCode = 127;
   }
+  await accountPoolClient.checkInAll();
+  process.exit(exitCode);
 })();
