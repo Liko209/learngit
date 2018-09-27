@@ -79,7 +79,8 @@ type ITheme = {
     unit: number;
   };
   zIndex: {
-    supernatant: number;
+    reponsePanel: number;
+    reponseResizer: number;
   };
   size: {
     width: number;

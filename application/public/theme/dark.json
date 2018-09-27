@@ -58,7 +58,8 @@
     "unit": 4
   },
   "zIndex": {
-    "supernatant": 2
+    "reponsePanel": 1,
+    "reponseResizer": 2
   },
   "size": {
     "width": 4,
