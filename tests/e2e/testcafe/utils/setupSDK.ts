@@ -1,4 +1,4 @@
-import { SDK_ENV } from '../config';
+import { JUPITER_SDK_OPTS } from '../config';
 import { SDK } from '../libs/sdk';
 import { TestHelper } from '../libs/helpers';
 
@@ -15,5 +15,5 @@ export async function setupSDK(t:TestController, userId :number= 701) {
     password:helper.users[`user${userId}`].password,
     extension:helper.users[`user${userId}`].extension,
   };
-  return new SDK(SDK_ENV).platform().login(userCredentials);
+  return new SDK(JUPITER_SDK_OPTS).platform().login(userCredentials);
 }

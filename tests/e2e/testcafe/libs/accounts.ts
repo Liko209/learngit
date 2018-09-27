@@ -5,9 +5,14 @@
  */
 
 import * as assert from 'assert';
-import { AccountLockApi, AccountLockAcquire } from 'glip-account-pool-client';
+import { getLogger } from 'log4js';
 
-import { ENV, DEBUG } from '../config';
+import { AccountLockApi, AccountLockAcquire } from 'glip-account-pool-client';
+import { ENV_OPTS, DEBUG_MODE } from '../config';
+
+const logger = getLogger(__filename);
+logger.level = 'info';
+
 interface IAccountPoolClient {
   baseUrl: string;
   envName: string;
@@ -75,19 +80,17 @@ class AccountPoolManager implements IAccountPoolClient {
   async checkInAll() {
     for (const data of this.allAccounts) {
       const ret = await this.accountPoolClient.checkInAccounts(data);
-      console.log(
-        `Account Pool: success to reclaim account: ${data.companyEmailDomain}`,
-      );
+      logger.info(`success to reclaim account: ${data.companyEmailDomain}`);
     }
   }
 }
 
-const _accountPoolUrl = DEBUG
-  ? ENV.ACCOUNT_POOL_FOR_DEBUG_BASE_URL
-  : ENV.ACCOUNT_POOL_BASE_URL;
+const _accountPoolUrl = DEBUG_MODE
+  ? ENV_OPTS.ACCOUNT_POOL_FOR_DEBUG_BASE_URL
+  : ENV_OPTS.ACCOUNT_POOL_BASE_URL;
 const _accountPoolClient = new AccountPoolClient(
   _accountPoolUrl,
-  ENV.ACCOUNT_POOL_ENV,
+  ENV_OPTS.ACCOUNT_POOL_ENV,
 );
 const accountPoolClient = new AccountPoolManager(_accountPoolClient);
 
@@ -101,13 +104,14 @@ const events: { name; exitCode }[] = [
 
 events.forEach(e => {
   process.on(e.name, () => {
-    console.log('start to release account');
+    logger.info('start to release account');
     accountPoolClient
       .checkInAll()
       .then(() => {
         process.exit(e.exitCode);
       })
       .catch(err => {
+        logger.error(err);
         process.exit(e.exitCode);
       });
   });

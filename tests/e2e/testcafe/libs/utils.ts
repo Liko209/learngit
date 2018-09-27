@@ -38,8 +38,6 @@ export class ConfigLoader {
     private defaultBranch: string = 'default',
     private defaultAction: string = 'on_debug',
   ) {
-    logger.info(`branch: ${branch}`);
-    logger.info(`action: ${action}`);
   }
 
   private _isValidAction() {
