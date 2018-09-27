@@ -39,7 +39,7 @@ function getKnobs() {
   };
 }
 
-storiesOf('Buttons/Button', module)
+storiesOf('Components/Buttons', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiButton, { inline: true }))
   .addWithJSX('Contained Button', () => {

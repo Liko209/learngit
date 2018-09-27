@@ -5,23 +5,31 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { JuiArrowTip } from '../index';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { select } from '@storybook/addon-knobs/react';
+import { JuiArrowTip } from '..';
+import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 
 storiesOf('Components/Tooltip', module)
   .addDecorator(withInfoDecorator(JuiArrowTip, { inline: true }))
   .add('ArrowTip', () => {
-    const placement = select('placement', {
-      top: 'top',
-      right: 'right',
-      bottom: 'bottom',
-      left: 'left',
-    },                       'bottom');
+    const placement = select(
+      'placement',
+      {
+        top: 'top',
+        right: 'right',
+        bottom: 'bottom',
+        left: 'left',
+      },
+      'bottom',
+    );
     return (
       <div>
-        <JuiArrowTip title="I am arrow tip" placement={placement}>
-          <button>Arrow tool tip sssssssssssss</button>
+        <JuiArrowTip
+          title="I am arrow tip"
+          placement={placement}
+          leaveDelay={99999999}
+        >
+          <button>Arrow tool tip</button>
         </JuiArrowTip>
       </div>
     );

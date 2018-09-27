@@ -4,4 +4,3 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './Button';
-export { default } from './Button';
