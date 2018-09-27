@@ -16,7 +16,7 @@ const Wrapper = styled.div`
   top: 0;
   bottom: 0;
   right: auto;
-  z-index: ${({ theme }) => theme.zIndex.supernatant};
+  z-index: ${({ theme }) => theme.zIndex.reponseResizer};
   background-color: red;
   width: 10px;
   height: 20px;

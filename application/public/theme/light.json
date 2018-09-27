@@ -57,19 +57,18 @@
       "dark": "#616161"
     }
   },
-  "border": {
-    "type1": "1px solid rgba(0, 0, 0, 0.36)"
-  },
   "shape": {
     "borderRadius": 4,
     "border1": "1px solid rgba(255,55,55,.1)",
-    "border2": "1px solid #dbdbdb"
+    "border2": "1px solid #dbdbdb",
+    "border3": "1px solid rgba(0, 0, 0, 0.36)"
   },
   "spacing": {
     "unit": 4
   },
   "zIndex": {
-    "supernatant": 2
+    "reponsePanel": 1,
+    "reponseResizer": 2
   },
   "size": {
     "width": 4,
