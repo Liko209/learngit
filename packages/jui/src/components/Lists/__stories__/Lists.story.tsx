@@ -6,6 +6,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
+import { JuiIconography } from '../../../foundation/Iconography';
+import { JuiDivider } from '../../Divider';
 import {
   JuiList,
   JuiListItem,
@@ -16,12 +18,29 @@ import {
 storiesOf('Components/Lists', module)
   .addDecorator(withInfoDecorator(JuiList, { inline: true }))
   .add('Simple List', () => (
-    <JuiList>
-      <JuiListItem button={true}>
-        <JuiListItemText primary="Inbox" />
-      </JuiListItem>
-      <JuiListItem button={true}>
-        <JuiListItemText primary="Drafts" />
-      </JuiListItem>
-    </JuiList>
+    <div>
+      <JuiList>
+        <JuiListItem button={true}>
+          <JuiListItemIcon>
+            <JuiIconography>inbox</JuiIconography>
+          </JuiListItemIcon>
+          <JuiListItemText primary="Inbox" />
+        </JuiListItem>
+        <JuiListItem button={true}>
+          <JuiListItemIcon>
+            <JuiIconography>drafts</JuiIconography>
+          </JuiListItemIcon>
+          <JuiListItemText primary="Drafts" />
+        </JuiListItem>
+      </JuiList>
+      <JuiDivider />
+      <JuiList>
+        <JuiListItem button={true}>
+          <JuiListItemText primary="Trash" />
+        </JuiListItem>
+        <JuiListItem button={true}>
+          <JuiListItemText primary="Spam" />
+        </JuiListItem>
+      </JuiList>
+    </div>
   ));
