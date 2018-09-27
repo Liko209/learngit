@@ -6,20 +6,22 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiList, JuiListItem, JuiListItemText } from '..';
+import {
+  JuiList,
+  JuiListItem,
+  JuiListItemIcon,
+  JuiListItemText,
+} from '../index';
 
-storiesOf('Components/List', module)
+storiesOf('Components/Lists', module)
   .addDecorator(withInfoDecorator(JuiList, { inline: true }))
   .add('Simple List', () => (
     <JuiList>
       <JuiListItem button={true}>
-        <JuiListItemText primary="text 1" />
+        <JuiListItemText primary="Inbox" />
       </JuiListItem>
       <JuiListItem button={true}>
-        <JuiListItemText primary="text 2" />
-      </JuiListItem>
-      <JuiListItem button={true}>
-        <JuiListItemText primary="text 3" />
+        <JuiListItemText primary="Drafts" />
       </JuiListItem>
     </JuiList>
   ));
