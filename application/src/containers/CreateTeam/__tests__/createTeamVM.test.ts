@@ -52,11 +52,23 @@ describe('CreateTeamVM', () => {
   });
 
   it('createErrorHandle()', () => {
-    const errorMsg = createTeamVM.createErrorHandle({
+    const errorMsg = createTeamVM.createErrorHandler({
       error: {
         code: 'already_taken',
       },
     });
-    expect(errorMsg).toBe('already taken');
+    expect(errorMsg).toEqual({
+      type: 'already_taken',
+      msg: 'already taken',
+    });
+    const errorMsg2 = createTeamVM.createErrorHandler({
+      error: {
+        code: 'invalid_field',
+      },
+    });
+    expect(errorMsg2).toEqual({
+      type: 'invalid_email',
+      msg: 'Invalid Email',
+    });
   });
 });
