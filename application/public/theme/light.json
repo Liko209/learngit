@@ -54,13 +54,11 @@
       "active": "#EBF6FA"
     }
   },
-  "border": {
-    "type1": "1px solid rgba(0, 0, 0, 0.36)"
-  },
   "shape": {
     "borderRadius": 4,
     "border1": "1px solid rgba(255,55,55,.1)",
-    "border2": "1px solid #dbdbdb"
+    "border2": "1px solid #dbdbdb",
+    "border3": "1px solid rgba(0, 0, 0, 0.36)"
   },
   "spacing": {
     "unit": 4
