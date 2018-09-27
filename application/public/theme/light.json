@@ -52,6 +52,9 @@
     "action": {
       "hoverOpacity": 0.12,
       "active": "#EBF6FA"
+    },
+    "tooltip": {
+      "dark": "#616161"
     }
   },
   "border": {
