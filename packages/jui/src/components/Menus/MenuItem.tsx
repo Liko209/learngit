@@ -6,7 +6,7 @@
 import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
-import styled from '../../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 
 type JuiMenuItemProps = MuiMenuItemProps;
 

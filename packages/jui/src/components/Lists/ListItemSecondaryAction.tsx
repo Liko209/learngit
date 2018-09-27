@@ -6,7 +6,7 @@
 import MuiListItemSecondaryAction, {
   ListItemSecondaryActionProps as MuiListItemSecondaryActionProps,
 } from '@material-ui/core/ListItemSecondaryAction';
-import styled from '../../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 
 type JuiListItemSecondaryActionProps = MuiListItemSecondaryActionProps;
 

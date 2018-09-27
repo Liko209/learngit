@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import MuiList, { ListProps as MuiListProps } from '@material-ui/core/List';
-import styled from '../../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 
 type JuiListProps = MuiListProps;
 

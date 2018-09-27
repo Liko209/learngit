@@ -6,7 +6,7 @@
 import MuiListItem, {
   ListItemProps as MuiListItemProps,
 } from '@material-ui/core/ListItem';
-import styled from '../../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 
 type JuiListItemProps = MuiListItemProps;
 

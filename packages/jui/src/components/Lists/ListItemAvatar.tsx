@@ -6,7 +6,7 @@
 import MuiListItemAvatar, {
   ListItemAvatarProps as MuiListItemAvatarProps,
 } from '@material-ui/core/ListItemAvatar';
-import styled from '../../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 
 type JuiListItemAvatarProps = MuiListItemAvatarProps;
 

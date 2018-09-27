@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import MuiMenu, { MenuProps as MuiMenuProps } from '@material-ui/core/Menu';
-import styled from '../../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 
 type JuiMenuProps = MuiMenuProps;
 

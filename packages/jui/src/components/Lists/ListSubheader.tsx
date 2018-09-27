@@ -6,7 +6,7 @@
 import MuiListSubheader, {
   ListSubheaderProps as MuiListSubheaderProps,
 } from '@material-ui/core/ListSubheader';
-import styled from '../../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 
 type JuiListSubheaderProps = MuiListSubheaderProps;
 

@@ -6,8 +6,7 @@
 import MuiMenuList, {
   MenuListProps as MuiMenuListProps,
 } from '@material-ui/core/MenuList';
-
-import styled from '../../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 
 type JuiMenuListProps = MuiMenuListProps;
 
