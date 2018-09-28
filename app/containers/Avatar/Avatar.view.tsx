@@ -1,0 +1,28 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-9-18 9:20:21
+ * Copyright © RingCentral. All rights reserved.
+ */
+import * as React from 'react';
+import { JuiAvatar } from 'ui-components/atoms/Avatar';
+import { observer } from 'mobx-react';
+import { AvatarProps } from './types';
+
+@observer
+class AvatarView extends React.Component<AvatarProps> {
+  constructor(props: AvatarProps) {
+    super(props);
+  }
+  render() {
+    const { innerRef, bgColor, name, ...rest } = this.props;
+    return url ? (
+      <JuiAvatar src={url} {...rest} bgcolor={bgColor} />
+    ) : (
+      <JuiAvatar bgcolor={bgColor} {...rest}>
+        {name}
+      </JuiAvatar>
+    );
+  }
+}
+
+export { AvatarView };
