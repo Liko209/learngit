@@ -13,7 +13,7 @@ import { width, height, typography } from '../../utils/styles';
 type TJuiAvatarProps = {
   size?: 'small' | 'medium' | 'large' | 'xlarge';
   color?: string;
-  bgColor?: string;
+  bgcolor?: string;
 } & MuiAvatarProps;
 
 const sizes = {
@@ -35,8 +35,8 @@ const StyledAvatar = styled<TJuiAvatarProps>(MuiAvatar)`
     width: ${({ size = 'medium', theme }) => width(sizes[size])({ theme })};
     height: ${({ size = 'medium', theme }) => height(sizes[size])({ theme })};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    background-color: ${({ theme, bgColor }) =>
-  bgColor ? theme.avatar[bgColor] : ''};
+    background-color: ${({ theme, bgcolor }) =>
+  bgcolor ? theme.avatar[bgcolor] : ''};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;

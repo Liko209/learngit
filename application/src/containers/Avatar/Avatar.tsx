@@ -24,9 +24,9 @@ class Avatar extends React.Component<TAvatarProps> {
     const { url = '', name = '', bgColor = '' } : {url?: string, name?: string, bgColor?: string} = userInfo;
     const { innerRef, ...rest } = this.props;
     return url ? (
-      <JuiAvatar src={url} {...rest} bgColor={bgColor} />
+      <JuiAvatar src={url} {...rest} bgcolor={bgColor} />
     ) : (
-      <JuiAvatar bgColor={bgColor} {...rest}>
+      <JuiAvatar bgcolor={bgColor} {...rest}>
         {name}
       </JuiAvatar>
     );
