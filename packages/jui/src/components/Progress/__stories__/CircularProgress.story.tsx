@@ -23,6 +23,6 @@ storiesOf('Components/Progress', module)
     <Wrapper>
       <JuiCircularProgress />
       <JuiCircularProgress size={32} color="secondary" />
-      <JuiCircularProgress size={40} color="grey" />
+      {/* <JuiCircularProgress size={40} color="grey" /> */}
     </Wrapper>
   ));
