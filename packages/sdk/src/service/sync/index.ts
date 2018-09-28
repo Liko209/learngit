@@ -58,12 +58,16 @@ export default class SyncService extends BaseService {
   private async _firstLogin() {
     try {
       const currentTime = Date.now();
+      console.time('_firstLogin: fetchInitialData');
       let result = await fetchInitialData(currentTime);
       this.onDataLoaded && (await this.onDataLoaded());
       await handleData(result);
+      console.timeEnd('_firstLogin: fetchInitialData');
+      console.time('_firstLogin: fetchRemainingData');
       result = await fetchRemainingData(currentTime);
       this.onDataLoaded && (await this.onDataLoaded());
       await handleData(result);
+      console.timeEnd('_firstLogin: fetchRemainingData');
     } catch (e) {
       mainLogger.error('fetch initial data or remaining data error');
       notificationCenter.emitService(SERVICE.DO_SIGN_OUT);

@@ -25,8 +25,13 @@ class PreloadPostsProcessor implements IProcessor {
 
   async process(): Promise<boolean> {
     try {
+      if (true) {
+        return true;
+      }
       const needPreload = await this._needPreload();
-      mainLogger.info(`group id: ${this._group.id}, needPreload: ${needPreload}`);
+      mainLogger.info(
+        `group id: ${this._group.id}, needPreload: ${needPreload}`,
+      );
       if (needPreload) {
         const params: any = {
           limit: DEFAULT_LIMIT,
