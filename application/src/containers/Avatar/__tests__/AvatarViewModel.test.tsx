@@ -24,12 +24,12 @@ let VM: ViewModel;
 function initVM(uid: number = 123) {
   VM = new ViewModel(uid);
 }
-type userInfo = {
+type UserInfo = {
   firstName?: string;
   lastName?: string;
   url?: string;
 };
-type matchObj = {
+type MatchObj = {
   name?: string;
   bgColor?: string;
   url?: string;
@@ -48,7 +48,7 @@ function getMatchObj(name = '', bgColor = '', url = '') {
     url,
   };
 }
-function handleCommonMock(userInfo: userInfo, matchObj: matchObj, uid = 123) {
+function handleCommonMock(userInfo: UserInfo, matchObj: MatchObj, uid = 123) {
   mockGetEntity(ENTITY_NAME.PERSON, () => personModelFactory.build({
     firstName: userInfo!.firstName || '',
     lastName: userInfo!.lastName || '',
@@ -66,7 +66,7 @@ function handleCommonMock(userInfo: userInfo, matchObj: matchObj, uid = 123) {
 }
 const avatarUrl = 'image.file';
 describe('AvatarViewModel', () => {
-  it('firstName=alvin,lastName=huang,should return name=AH,bgColor=tomato', () => {
+  it('firstName=alvin,lastName=huang,should return name=AH', () => {
     handleCommonMock(getUserInfo('alvin', 'huang'),
                      getMatchObj('AH', 'tomato'));
   });
