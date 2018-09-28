@@ -165,7 +165,7 @@ class JuiTreeColumnResponse extends Component<Props, States> {
     // const nav = leftnav || document.getElementById('leftnav')!.getBoundingClientRect().width;
     const nav = leftNavWidth;
     const max = 1920;
-    const windowWidth = window.innerWidth;
+    const windowWidth = document.body.getBoundingClientRect().width;
     const body = windowWidth > max ? max : windowWidth;
     // const element = ReactDOM.findDOMNode(this.refLayout.current!) as Element;
     // const layoutWidth = element.parentElement!.getBoundingClientRect().width;
