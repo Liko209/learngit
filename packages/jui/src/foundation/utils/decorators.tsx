@@ -8,7 +8,7 @@ import { withInfo, Options as WithInfoOptions } from '@storybook/addon-info';
 import createDependencies from './createDependenciesDoc';
 import { RenderFunction } from '@storybook/react';
 import { StyledComponentClass } from 'styled-components';
-import { IDependencies } from '../styled-components';
+import { Dependencies } from '../styled-components';
 import { Theme } from '../theme/theme';
 
 export const alignCenterDecorator = (story: RenderFunction) => {
@@ -19,7 +19,7 @@ export const withInfoDecorator = (
   Component: (
     | React.ComponentType<any>
     | StyledComponentClass<any, Theme, any>) &
-    IDependencies,
+    Dependencies,
   options?: WithInfoOptions,
 ) => (story: RenderFunction, context: object) =>
   withInfo({

@@ -7,27 +7,27 @@ import React from 'react';
 import MuiTooltip, {
   TooltipProps as MuiTooltipProps,
 } from '@material-ui/core/Tooltip';
-import styled, { css } from '../../foundation/styled-components';
-import { palette } from '../../foundation/utils/styles';
+import styled, { css } from '../../../foundation/styled-components';
+import { palette } from '../../../foundation/utils/styles';
 
 type JuiTooltipProps = {
   placement?: string;
 } & MuiTooltipProps;
 
-const TooltipArrow = styled.span<JuiTooltipProps>`
+const TooltipArrow = styled.span<{ placement?: string }>`
   position: absolute;
   font-size: 7px;
   width: 3em;
   height: 3em;
-   &::before {
-     content: "";
-     margin: auto;
-     display: block;
-     width: 0;
-     height: 0;
-     border-style: solid;
-   }
-   ${({ placement }) => arrowStyles[placement!]}
+  &::before {
+    content: "";
+    margin: auto;
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+  ${({ placement }) => arrowStyles[placement!]};
 `;
 const bottom = css`
   top: 0;
@@ -56,8 +56,8 @@ const top = css`
 `;
 
 const right = css`
-  left: 0 !important;
-  top: 0.8em;
+  left: 0;
+  top: 0;
   margin-left: -0.8em;
   height: 1.8em;
   width: 1em;
@@ -71,8 +71,8 @@ const right = css`
 `;
 const left = css`
   left: 0;
-  margin-left: 0;
-  height: 0;
+  margin-left: 0em;
+  height: 0em;
   width: 23em;
   &::before {
     border-width: 1em 0 1em 1em;
@@ -88,17 +88,12 @@ const arrowStyles = {
   right,
   left,
 };
-class JuiArrowTip extends React.Component<JuiTooltipProps> {
+
+export class JuiArrowTip extends React.Component<JuiTooltipProps> {
   static dependencies = [MuiTooltip];
 
-  state = {
-    arrowRef: null,
-  };
-  handleArrowRef = (ele: HTMLSpanElement) => {
-    this.setState({
-      arrowRef: ele,
-    });
-  }
+  arrowRef = React.createRef<any>();
+
   render() {
     const { title, children, placement, ...rest } = this.props;
     return (
@@ -107,7 +102,7 @@ class JuiArrowTip extends React.Component<JuiTooltipProps> {
         title={
           <React.Fragment>
             {title}
-            <TooltipArrow placement={placement} ref={this.handleArrowRef} />
+            <TooltipArrow placement={placement} ref={this.arrowRef} />
           </React.Fragment>
         }
         classes={{
@@ -117,8 +112,8 @@ class JuiArrowTip extends React.Component<JuiTooltipProps> {
           popperOptions: {
             modifiers: {
               arrow: {
-                enabled: Boolean(this.state.arrowRef),
-                element: this.state.arrowRef,
+                enabled: Boolean(this.arrowRef.current),
+                element: this.arrowRef.current,
               },
             },
           },
@@ -129,5 +124,3 @@ class JuiArrowTip extends React.Component<JuiTooltipProps> {
     );
   }
 }
-
-export { JuiArrowTip };

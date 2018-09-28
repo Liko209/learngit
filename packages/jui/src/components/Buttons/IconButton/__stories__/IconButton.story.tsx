@@ -12,7 +12,7 @@ import {
   withInfoDecorator,
 } from '../../../../foundation/utils/decorators';
 
-import JuiIconButton from '..';
+import { JuiIconButton } from '..';
 import styled from '../../../../foundation/styled-components';
 
 const Wrapper = styled.div`
@@ -45,7 +45,7 @@ const knobs = {
   awake: () => boolean('awake', true),
   disabled: () => boolean('disabled', false),
 };
-storiesOf('Buttons/IconButton', module)
+storiesOf('Components/Buttons/IconButtons', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiIconButton, { inline: true }))
   .addWithJSX('plain', () => {

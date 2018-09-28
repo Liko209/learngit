@@ -38,43 +38,42 @@ type ThemedStyledComponentFactories<T> = {
   >
 };
 
-type IDependencies = {
+type Dependencies = {
   dependencies?: (React.ComponentType | ((props: any) => JSX.Element))[];
 };
 
-interface IThemedStyledFunction<P, T, O = P> {
+type ThemedStyledFunction<P, T, O = P> = {
   (
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P, T>
     >[] // tslint:disable-line
-  ): styledComponents.StyledComponentClass<P, T, O> & IDependencies;
+  ): styledComponents.StyledComponentClass<P, T, O> & Dependencies;
   <U>(
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P & U, T>
     >[] // tslint:disable-line
-  ): styledComponents.StyledComponentClass<P & U, T, O & U> & IDependencies;
+  ): styledComponents.StyledComponentClass<P & U, T, O & U> & Dependencies;
   attrs<U, A extends Partial<P & U> = {}>(
     attrs: Attrs<P & U, A, T>,
-  ): IThemedStyledFunction<DiffBetween<A, P & U>, T, DiffBetween<A, O & U>>;
-}
+  ): ThemedStyledFunction<DiffBetween<A, P & U>, T, DiffBetween<A, O & U>>;
+};
 
-interface IThemedBaseStyledInterface<T>
-  extends ThemedStyledComponentFactories<T> {
+type ThemedBaseStyledInterface<T> = ThemedStyledComponentFactories<T> & {
   <P, TTag extends keyof JSX.IntrinsicElements>(
     tag: TTag,
-  ): IThemedStyledFunction<P, T, P & JSX.IntrinsicElements[TTag]>;
+  ): ThemedStyledFunction<P, T, P & JSX.IntrinsicElements[TTag]>;
   <P, O>(
     component: styledComponents.StyledComponentClass<P, T, O>,
-  ): IThemedStyledFunction<P, T, O>;
+  ): ThemedStyledFunction<P, T, O>;
   <P extends { [prop: string]: any; theme?: T }>(
     component: React.ComponentType<P>,
-  ): IThemedStyledFunction<P, T, WithOptionalTheme<P, T>>;
-}
+  ): ThemedStyledFunction<P, T, WithOptionalTheme<P, T>>;
+};
 
-interface IThemedStyledComponentsModule<T> {
-  default: IThemedBaseStyledInterface<T>;
+type ThemedStyledComponentsModule<T> = {
+  default: ThemedBaseStyledInterface<T>;
   css: styledComponents.ThemedCssFunction<T>;
   keyframes(
     strings: TemplateStringsArray,
@@ -89,7 +88,7 @@ interface IThemedStyledComponentsModule<T> {
   ): ComponentClass<WithOptionalTheme<P, T>>;
 
   ThemeProvider: styledComponents.ThemeProviderComponent<T>;
-}
+};
 
 const {
   default: styled,
@@ -97,17 +96,17 @@ const {
   injectGlobal,
   keyframes,
   ThemeProvider,
-} = styledComponents as IThemedStyledComponentsModule<Theme>;
+} = styledComponents as ThemedStyledComponentsModule<Theme>;
 
 export {
   css,
   injectGlobal,
   keyframes,
   ThemeProvider,
-  IThemedStyledFunction,
-  IThemedBaseStyledInterface,
-  IThemedStyledComponentsModule,
-  IDependencies,
+  ThemedStyledFunction,
+  ThemedBaseStyledInterface,
+  ThemedStyledComponentsModule,
+  Dependencies,
   WithOptionalTheme,
 };
 export default styled;
