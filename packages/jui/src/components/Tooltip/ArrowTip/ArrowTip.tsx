@@ -91,18 +91,24 @@ const arrowStyles = {
 
 export class JuiArrowTip extends React.Component<JuiTooltipProps> {
   static dependencies = [MuiTooltip];
-
-  arrowRef = React.createRef<any>();
+  state = {
+    arrowRef: null,
+  };
+  handleArrowRef = (ele: HTMLSpanElement) => {
+    this.setState({
+      arrowRef: ele,
+    });
+  }
 
   render() {
-    const { title, children, placement, ...rest } = this.props;
+    const { title, children, placement = 'bottom', ...rest } = this.props;
     return (
       <MuiTooltip
         {...rest}
         title={
           <React.Fragment>
             {title}
-            <TooltipArrow placement={placement} ref={this.arrowRef} />
+            <TooltipArrow placement={placement} ref={this.handleArrowRef} />
           </React.Fragment>
         }
         classes={{
@@ -112,8 +118,8 @@ export class JuiArrowTip extends React.Component<JuiTooltipProps> {
           popperOptions: {
             modifiers: {
               arrow: {
-                enabled: Boolean(this.arrowRef.current),
-                element: this.arrowRef.current,
+                enabled: Boolean(this.state.arrowRef),
+                element: this.state.arrowRef,
               },
             },
           },
