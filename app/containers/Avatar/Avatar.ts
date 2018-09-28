@@ -13,4 +13,4 @@ const Avatar = buildContainer<AvatarProps>({
   View: AvatarView,
 });
 
-export { Avatar };
+export { Avatar, AvatarProps };
