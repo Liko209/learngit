@@ -16,7 +16,7 @@ import {
 import handleData from './handleData';
 import { mainLogger } from 'foundation';
 import { notificationCenter } from '..';
-import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
+// import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 
 export default class SyncService extends BaseService {
   private isLoading: boolean;
@@ -47,13 +47,13 @@ export default class SyncService extends BaseService {
       await this._firstLogin();
     }
     this.isLoading = false;
-    this._preloadPosts();
+    // this._preloadPosts();
   }
 
-  private async _preloadPosts() {
-    const handler = new PreloadPostsForGroupHandler();
-    handler.preloadPosts();
-  }
+  // private async _preloadPosts() {
+  //   const handler = new PreloadPostsForGroupHandler();
+  //   handler.preloadPosts();
+  // }
 
   private async _firstLogin() {
     try {
