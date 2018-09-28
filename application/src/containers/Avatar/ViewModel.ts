@@ -65,7 +65,7 @@ class AvatarViewModel {
     };
   }
   @computed
-  get AvatarInfo() {
+  get avatarInfo() {
     const { firstName = '', lastName = '', headshot = '' } = this.person || {};
     if (headshot && headshot.url) {
       return {

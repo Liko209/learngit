@@ -20,7 +20,7 @@ class Avatar extends React.Component<TAvatarProps> {
     this._vm = new ViewModel(props.uid);
   }
   render() {
-    const userInfo = this._vm.AvatarInfo;
+    const userInfo = this._vm.avatarInfo;
     const { url = '', name = '', bgColor = '' } : {url?: string, name?: string, bgColor?: string} = userInfo;
     const { innerRef, ...rest } = this.props;
     return url ? (

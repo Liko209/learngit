@@ -24,12 +24,12 @@ let VM: ViewModel;
 function initVM(uid: number = 123) {
   VM = new ViewModel(uid);
 }
-type TUserInfo = {
+type userInfo = {
   firstName?: string;
   lastName?: string;
   url?: string;
 };
-type TMatchObj = {
+type matchObj = {
   name?: string;
   bgColor?: string;
   url?: string;
@@ -48,7 +48,7 @@ function getMatchObj(name = '', bgColor = '', url = '') {
     url,
   };
 }
-function handleCommonMock(userInfo: TUserInfo, matchObj: TMatchObj, uid = 123) {
+function handleCommonMock(userInfo: userInfo, matchObj: matchObj, uid = 123) {
   mockGetEntity(ENTITY_NAME.PERSON, () => personModelFactory.build({
     firstName: userInfo!.firstName || '',
     lastName: userInfo!.lastName || '',
@@ -62,7 +62,7 @@ function handleCommonMock(userInfo: TUserInfo, matchObj: TMatchObj, uid = 123) {
   url ?  obj['url'] = url : null;
   name ? obj['name'] = name : null;
   bgColor ? obj['bgColor'] = bgColor : null;
-  expect(VM.AvatarInfo).toMatchObject(obj);
+  expect(VM.avatarInfo).toMatchObject(obj);
 }
 const avatarUrl = 'image.file';
 describe('AvatarViewModel', () => {
@@ -99,12 +99,12 @@ describe('AvatarViewModel', () => {
       },
     }));
     initVM(99999);
-    expect(VM.AvatarInfo).toMatchObject({
+    expect(VM.avatarInfo).toMatchObject({
       name: 'AH',
       bgColor: 'ash',
     });
     initVM(99999);
-    expect(VM.AvatarInfo).toMatchObject({
+    expect(VM.avatarInfo).toMatchObject({
       name: 'AH',
       bgColor: 'ash',
     });
