@@ -6,7 +6,7 @@
 import { URL } from 'url';
 import axios from 'axios';
 import { Role } from 'testcafe';
-import { SITE_URL, ENV } from '../config';
+import { SITE_URL, ENV_OPTS } from '../config';
 import { BlankPage } from '../page-models/pages/BlankPage';
 import { RingcentralSignInNavigationPage } from '../page-models/pages/RingcentralSignInNavigationPage';
 import { RingcentralSignInPage } from '../page-models/pages/RingcentralSignInPage';
@@ -31,8 +31,8 @@ function urlToRedirectUriAndState(url: URL) {
 async function getUrlWithAuthCode(
   redirectUrl: string,
   authInfo: AuthInfo,
-  authUrl: string = ENV.AUTH_URL,
-  appClientId: string = ENV.JUPITER_APP_KEY,
+  authUrl: string = ENV_OPTS.AUTH_URL,
+  appClientId: string = ENV_OPTS.JUPITER_APP_KEY,
 ) {
   const { state, redirectUri } = urlToRedirectUriAndState(new URL(redirectUrl));
   const data = {

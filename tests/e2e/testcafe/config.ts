@@ -5,23 +5,24 @@
  */
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import {getLogger} from 'log4js';
+
+import { flattenGlobs, parseArgs, ConfigLoader} from './libs/utils';
+
+const logger = getLogger(__filename);
+logger.level = 'info';
 
 dotenv.config();
 
 const APP_ROOT = __dirname;
 const CONFIGS_ROOT = path.join(APP_ROOT, 'configs');
 
-import { ExecutionStrategiesHelper } from './libs/utils';
-
-const RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
-const RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
-
 const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
 const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
-const DEBUG = !(process.env.DEBUG === 'false');
-const QUARANTINEMODE = (process.env.QUARANTINEMODE === 'true');
+const DEBUG_MODE = !(process.env.DEBUG_MODE === 'false');
+const QUARANTINE_MODE = (process.env.QUARANTINE_MODE === 'true');
 
-const ENV = {
+const ENV_OPTS = {
   'XMN-UP': {
     ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9997',
     ACCOUNT_POOL_FOR_DEBUG_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9998',
@@ -33,7 +34,10 @@ const ENV = {
   },
 }[SITE_ENV];
 
-const SDK_ENV = {
+ENV_OPTS.RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
+ENV_OPTS.RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
+
+const JUPITER_SDK_OPTS = {
   'XMN-UP': {
     rc: {
       server: 'https://api-xmnup.lab.nordigy.ru',
@@ -66,23 +70,42 @@ const SDK_ENV = {
   },
 }[SITE_ENV];
 
-const EXECUTION_STRATEGIES_HELPER = new ExecutionStrategiesHelper(
+const configLoader = new ConfigLoader(
   process.env.BRANCH || '',
   process.env.ACTION || '',
   CONFIGS_ROOT,
 );
-EXECUTION_STRATEGIES_HELPER.loadConfig();
+
+configLoader.load();
+
+const REPORTER = process.env.REPORTER || 'allure-lazy';
+const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
+const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
+const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
+const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures);
+const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : configLoader.browsers;
+const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : configLoader.includeTags;
+const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : configLoader.excludeTags;
+
+const RUNNER_OPTS = {
+  REPORTER,
+  SCREENSHOT_ON_FAIL,
+  SCREENSHOTS_PATH,
+  CONCURRENCY,
+  FIXTURES,
+  BROWSERS,
+  INCLUDE_TAGS,
+  EXCLUDE_TAGS,
+  QUARANTINE_MODE,
+}
 
 export {
   APP_ROOT,
   CONFIGS_ROOT,
-  RC_PLATFORM_APP_KEY,
-  RC_PLATFORM_APP_SECRET,
+  DEBUG_MODE,
   SITE_ENV,
   SITE_URL,
-  ENV,
-  SDK_ENV,
-  EXECUTION_STRATEGIES_HELPER,
-  DEBUG,
-  QUARANTINEMODE,
+  JUPITER_SDK_OPTS,
+  ENV_OPTS,
+  RUNNER_OPTS,
 };
