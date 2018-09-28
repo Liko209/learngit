@@ -66,11 +66,11 @@ function handleCommonMock(userInfo: userInfo, matchObj: matchObj, uid = 123) {
 }
 const avatarUrl = 'image.file';
 describe('AvatarViewModel', () => {
-  it('firstName=alvin,lastName=huang,should return AH', () => {
+  it('firstName=alvin,lastName=huang,should return name=AH,bgColor=tomato', () => {
     handleCommonMock(getUserInfo('alvin', 'huang'),
                      getMatchObj('AH', 'tomato'));
   });
-  it('firstName=alvin,lastname=,no custom avatar,should return A', () => {
+  it('firstName=alvin,lastname=,no custom avatar,should return name=A,bgColor=tomato', () => {
     handleCommonMock(getUserInfo('alvin', ''),
                      getMatchObj('A', 'tomato'));
   });
@@ -109,16 +109,16 @@ describe('AvatarViewModel', () => {
       bgColor: 'ash',
     });
   });
-  it('firstName=alvin 1huang,lastName=, should return A1', () => {
+  it('firstName=alvin 1huang,lastName=, should return name=A1,bgColor=tomato', () => {
     handleCommonMock(getUserInfo('alvin 1huang', ''),
                      getMatchObj('A1', 'tomato'));
   });
-  it('firstName=,lastName=2alvin huang, should return 2H', () => {
+  it('firstName=,lastName=2alvin huang, should return name=2H,bgColor=persimmon', () => {
     handleCommonMock(getUserInfo('', '2alvin huang'),
                      getMatchObj('2H', 'persimmon'), 91);
   });
-  it('firstName=,sd,lastName=alvin, should return ,A', () => {
+  it('firstName=,sd,lastName=alvin, should return name=,A,bgColor=tomato', () => {
     handleCommonMock(getUserInfo(',sd', 'alvin'),
-                     getMatchObj(',A'));
+                     getMatchObj(',A', 'tomato'));
   });
 });
