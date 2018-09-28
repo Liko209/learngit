@@ -8,7 +8,7 @@ import { JuiAvatar, TJuiAvatarProps } from 'ui-components/atoms/Avatar';
 type AvatarProps = TJuiAvatarProps & {
   uid: number;
 };
-type AvatarViewProps = {
+type AvatarViewProps = TJuiAvatarProps & {
   name?: string;
   url?: string;
   bgColor?: string;

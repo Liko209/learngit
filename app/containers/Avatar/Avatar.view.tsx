@@ -6,11 +6,11 @@
 import * as React from 'react';
 import { JuiAvatar } from 'ui-components/atoms/Avatar';
 import { observer } from 'mobx-react';
-import { AvatarProps } from './types';
+import { AvatarViewProps } from './types';
 
 @observer
-class AvatarView extends React.Component<AvatarProps> {
-  constructor(props: AvatarProps) {
+class AvatarView extends React.Component<AvatarViewProps> {
+  constructor(props: AvatarViewProps) {
     super(props);
   }
   render() {
