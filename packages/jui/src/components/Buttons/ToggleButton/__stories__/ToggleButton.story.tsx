@@ -7,7 +7,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs/react';
 
-import JuiToggleButton from '../';
+import { JuiToggleButton } from '../';
 
 function getKnobs() {
   const disabled = boolean('disabled', false);

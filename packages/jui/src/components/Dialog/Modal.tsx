@@ -11,7 +11,7 @@ import JuiDialogTitle from './DialogTitle';
 import JuiDialogContent from './DialogContent';
 import JuiDialogContentText from './DialogContentText';
 import JuiDialogActions from './DialogActions';
-import JuiButton from '../Buttons/Button';
+import { JuiButton } from '../Buttons/Button';
 import styled from '../../foundation/styled-components';
 import { DialogActionsProps } from '@material-ui/core/DialogActions';
 import { spacing } from '../../foundation/utils';

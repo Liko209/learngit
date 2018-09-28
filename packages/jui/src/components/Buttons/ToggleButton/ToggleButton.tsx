@@ -17,7 +17,7 @@ type IProps = {
   disabled?: boolean;
 };
 
-const JuiToggleButton: React.SFC<SwitchProps> = (props: IProps) => {
+export const JuiToggleButton: React.SFC<SwitchProps> = (props: IProps) => {
   const { disabled, onChange, checked } = props;
 
   return (
@@ -40,5 +40,3 @@ const JuiToggleButton: React.SFC<SwitchProps> = (props: IProps) => {
     // </MuiTooltip>
   );
 };
-
-export default JuiToggleButton;
