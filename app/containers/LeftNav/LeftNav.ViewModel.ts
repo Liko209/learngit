@@ -16,7 +16,7 @@ const MessageTypes = [
   service.GROUP_QUERY_TYPE.TEAM,
 ];
 
-export default class LeftNavViewModel extends AbstractViewModel {
+class LeftNavViewModel extends AbstractViewModel {
   private messageUmiChannels: string[];
   constructor() {
     super();
@@ -52,3 +52,5 @@ export default class LeftNavViewModel extends AbstractViewModel {
     return appUmi;
   }
 }
+
+export { LeftNavViewModel };

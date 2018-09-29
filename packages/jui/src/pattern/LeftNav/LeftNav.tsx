@@ -36,7 +36,7 @@ const Left = styled<LeftNavProps>(CustomLeftNav)`
     justify-content: space-between;
     padding: ${spacing(6)} 0;
     box-sizing: border-box;
-    transition: all 0.3s cubic-bezier(.25,.1,.25,1.0);
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     // this group btns will awake
     &:hover {
       .nav-icon {
@@ -70,7 +70,8 @@ const StyledListItem = styled(JuiListItem)`
     }
   }
   &&:hover {
-    background-color: ${({ theme, active }) => active ? theme.palette.action.active : grey('100')};
+    background-color: ${({ theme, active }) =>
+      active ? theme.palette.action.active : grey('100')};
     opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
     .nav-icon {
       color: ${grey('500')}; // 500
@@ -80,11 +81,12 @@ const StyledListItem = styled(JuiListItem)`
 const StyledListItemText = styled(JuiListItemText)`
   && {
     color: ${grey('500')}; // 500
-    transition: transform 0.3s cubic-bezier(.25,.1,.25,1.0), opacity 0.3s cubic-bezier(.25,.1,.25,1.0);
+    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+      opacity 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     padding: 0;
     span {
       color: ${palette('accent', 'ash')}; // Aah
-      transition: color 0.3s cubic-bezier(.25,.1,.25,1.0);
+      transition: color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
       font-size: ${({ theme }) => `${theme.typography.fontSize}px`};
     }
   }
@@ -96,13 +98,14 @@ const ListLink = styled(NavLink)`
   height: 100%;
   padding: 0 ${spacing(5)};
   width: 100%;
-  margin-left: ${({ theme }) => `${theme.spacing.unit * 6 / 4}px`};
+  margin-left: ${({ theme }) => `${(theme.spacing.unit * 6) / 4}px`};
   align-items: center;
   text-decoration: none;
   &&&:active {
     opacity: ${({ theme }) => 1 - 2 * theme.palette.action.hoverOpacity};
     span,
-    .nav-icon, .nav-text span {
+    .nav-icon,
+    .nav-text span {
       color: ${palette('primary', 'main')}; // RC Blue
     }
   }
@@ -126,7 +129,7 @@ type TUMIProps = {
   important: boolean;
   variant: 'count' | 'dot' | 'auto';
 };
-const CustomUMI: React.SFC<TUMIProps> = (props) => {
+const CustomUMI: React.SFC<TUMIProps> = props => {
   return <JuiUmi {...props} />;
 };
 const UMI = styled<TUMIProps>(CustomUMI)`
@@ -135,7 +138,7 @@ const UMI = styled<TUMIProps>(CustomUMI)`
     top: ${props => (!props.expand ? spacing(1) : '')};
     left: ${props => (!props.expand ? spacing(8) : '')};
     border-radius: ${({ theme }) => `${theme.shape.borderRadius * 6}px`};
-    transition: opacity 0.3s cubic-bezier(.25,.1,.25,1.0);
+    transition: opacity 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     transform: scale(0.85);
     color: #fff !important;
   }
@@ -149,14 +152,9 @@ type TNavProps = {
   }[][];
   handleRouterChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
 };
-class LeftNav extends PureComponent<TNavProps> {
+class JuiLeftNav extends PureComponent<TNavProps> {
   render() {
-    const {
-      icons,
-      expand,
-      unreadCount,
-      handleRouterChange,
-    } = this.props;
+    const { icons, expand, unreadCount, handleRouterChange } = this.props;
     return (
       <Left
         expand={expand}
@@ -167,50 +165,58 @@ class LeftNav extends PureComponent<TNavProps> {
         {icons.map((arr, idx) => {
           return (
             <MuiList component="nav" disablePadding={true} key={idx}>
-              {
-                arr.map((item, index) => {
-                  const navUrl = item.icon.toLocaleLowerCase();
-                  const pathname = window.location.pathname;
-                  const actIndex = pathname.lastIndexOf('/');
-                  const pathSlice = actIndex
-                    ? pathname.slice(1, actIndex)
-                    : pathname.slice(1);
-                  const isActive = pathSlice === navUrl;
-                  const unread = unreadCount[idx][index];
-                  const NavItem = (
-                    <StyledListItem
-                      button={true}
-                      key={index}
-                      active={isActive}
-                      disableRipple={true}
-                      focusVisibleClassName={'left-item-focus'}
-                      disableGutters={true}
+              {arr.map((item, index) => {
+                const navUrl = item.icon.toLocaleLowerCase();
+                const pathname = window.location.pathname;
+                const actIndex = pathname.lastIndexOf('/');
+                const pathSlice = actIndex
+                  ? pathname.slice(1, actIndex)
+                  : pathname.slice(1);
+                const isActive = pathSlice === navUrl;
+                const unread = unreadCount[idx][index];
+                const NavItem = (
+                  <StyledListItem
+                    button={true}
+                    key={index}
+                    active={isActive}
+                    disableRipple={true}
+                    focusVisibleClassName={'left-item-focus'}
+                    disableGutters={true}
+                  >
+                    <ListLink
+                      to={`/${navUrl}`}
+                      className={'left-link'}
+                      onClick={handleRouterChange}
                     >
-                      <ListLink to={`/${navUrl}`} className={'left-link'} onClick={handleRouterChange}>
-                        <JuiListItemIcon className={'nav-icon'}>
-                          <JuiIconography>{item.icon}</JuiIconography>
-                        </JuiListItemIcon>
-                        <StyledListItemText primary={item.title} className={'nav-text'} />
-                        <UMI
-                          unreadCount={unread}
-                          important={true}
-                          expand={expand}
-                          variant="count"
-                        />
-                      </ListLink>
-                    </StyledListItem>
-                  );
-                  return !expand ?
-                    <JuiArrowTip
-                      title={item.title}
-                      key={index}
-                      enterDelay={400}
-                      placement="bottom"
-                    >
-                      {NavItem}
-                    </JuiArrowTip> : NavItem;
-                })
-              }
+                      <JuiListItemIcon className={'nav-icon'}>
+                        <JuiIconography>{item.icon}</JuiIconography>
+                      </JuiListItemIcon>
+                      <StyledListItemText
+                        primary={item.title}
+                        className={'nav-text'}
+                      />
+                      <UMI
+                        unreadCount={unread}
+                        important={true}
+                        expand={expand}
+                        variant="count"
+                      />
+                    </ListLink>
+                  </StyledListItem>
+                );
+                return !expand ? (
+                  <JuiArrowTip
+                    title={item.title}
+                    key={index}
+                    enterDelay={400}
+                    placement="bottom"
+                  >
+                    {NavItem}
+                  </JuiArrowTip>
+                ) : (
+                  NavItem
+                );
+              })}
             </MuiList>
           );
         })}
@@ -218,4 +224,5 @@ class LeftNav extends PureComponent<TNavProps> {
     );
   }
 }
-export { LeftNav };
+
+export { JuiLeftNav };
