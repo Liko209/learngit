@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import { JuiAvatar } from 'ui-components/atoms/Avatar';
+import { JuiAvatar } from 'jui/components/Avatar';
 import { observer } from 'mobx-react';
 import { AvatarViewProps } from './types';
 
