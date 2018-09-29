@@ -56,19 +56,16 @@ function withScroller(Comp: ComponentType<any>) {
     };
     private _atTop = false;
     private _atBottom = false;
-    private _scrollElRef: React.RefObject<HTMLElement> = React.createRef();
+    private _scrollElRef: React.RefObject<any> = React.createRef();
 
-    private get _scrollEl() {
+    private get _scrollEl(): HTMLElement {
       if (!this._scrollElRef.current) throw new Error();
       return this._scrollElRef.current;
     }
 
     render() {
       return (
-        <StyledScroller
-          innerRef={this._scrollElRef}
-          stickTo={this.props.stickTo}
-        >
+        <StyledScroller ref={this._scrollElRef} stickTo={this.props.stickTo}>
           <Comp {...this.props} />
         </StyledScroller>
       );
