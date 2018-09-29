@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { Profile, Group } from 'sdk/models';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
@@ -13,9 +13,11 @@ import { ENTITY_NAME } from '@/store';
 import { CONVERSATION_TYPES } from '@/constants';
 
 class HeaderViewModel {
+  @observable
   private _id: number;
 
-  constructor(id: number) {
+  @action
+  onReceiveProps({ id }) {
     this._id = id;
   }
 
