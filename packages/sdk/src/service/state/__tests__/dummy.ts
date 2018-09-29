@@ -147,21 +147,23 @@ export const partialSample = {
 };
 
 export const originState = () => {
-  return {
-    id: 532486,
-    post_cursor: 2072,
-    read_through: 533078020,
-    last_read_through: 528793604,
-    unread_mentions_count: 0,
-    marked_as_unread: true,
-    deactivated_post_cursor: 9,
-    group_missed_calls_count: 0,
-    group_tasks_count: 0,
-    unread_deactivated_count: 0,
-    previous_post_cursor: 1747,
-    unread_count: 0,
-    group_post_cursor: 2073,
-  };
+  return [
+    {
+      id: 532486,
+      post_cursor: 2072,
+      read_through: 533078020,
+      last_read_through: 528793604,
+      unread_mentions_count: 0,
+      marked_as_unread: true,
+      deactivated_post_cursor: 9,
+      group_missed_calls_count: 0,
+      group_tasks_count: 0,
+      unread_deactivated_count: 0,
+      previous_post_cursor: 1747,
+      unread_count: 0,
+      group_post_cursor: 2073,
+    },
+  ];
 };
 
 export const groupState1 = {

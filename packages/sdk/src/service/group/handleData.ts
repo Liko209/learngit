@@ -235,6 +235,8 @@ async function saveDataAndDoNotification(groups: Group[]) {
 }
 
 export default async function handleData(groups: Raw<Group>[]) {
+  console.time('grouphandleData');
+
   if (groups.length === 0) {
     return;
   }
@@ -254,6 +256,7 @@ export default async function handleData(groups: Raw<Group>[]) {
   // if (shouldCheckIncompleteMembers) {
   //   await checkIncompleteGroupsMembers(normalGroups);
   // }
+  console.timeEnd('grouphandleData');
 }
 
 async function doFavoriteGroupsNotification(favIds: number[]) {
@@ -396,8 +399,9 @@ function hasUnread(groupState: GroupState) {
 }
 
 async function getUnreadGroupIds(groups: Group[]) {
+  const ids = _.map(groups, 'id');
   const stateService: StateService = StateService.getInstance();
-  const states = (await stateService.getAllGroupStatesFromLocal()) || [];
+  const states = (await stateService.getAllGroupStatesFromLocal(ids)) || [];
   return states.filter(hasUnread).map(state => state.id);
 }
 
