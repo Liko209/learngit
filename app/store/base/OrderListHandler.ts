@@ -3,7 +3,6 @@ import { BaseModel } from 'sdk/models';
 import { service } from 'sdk';
 
 import storeManager from './StoreManager';
-import BaseNotificationSubscribable from './BaseNotificationSubscribable';
 import OrderListStore from './OrderListStore';
 import {
   handleDelete,
@@ -20,6 +19,7 @@ import {
 } from '../store';
 import { defaultSortFunc } from '../utils';
 import { ENTITY_NAME } from '../constants';
+import { StoreViewModel } from '../ViewModel';
 
 const { EVENT_TYPES } = service;
 const DEFAULT_PAGE_SIZE = 20;
@@ -33,7 +33,7 @@ enum DIRECTION {
 export default class OrderListHandler<
   T extends BaseModel,
   K extends IEntity
-> extends BaseNotificationSubscribable {
+> extends StoreViewModel {
   private _store: OrderListStore;
   private _hasBigger: boolean;
   private _hasSmaller: boolean;
