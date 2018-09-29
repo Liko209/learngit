@@ -70,17 +70,18 @@ class SectionViewModel extends OrderListHandler<Group, GroupModel> {
     return this.handleSortEnd(oldIndex, newIndex);
   }
 
-  constructor(props: SectionProps) {
+  constructor() {
     super(() => true, DEFAULT_TRANSFORM);
-    this._type = props.type;
-    this._config = SECTION_CONFIGS[this._type];
-    this._init();
   }
 
-  private async _init() {
+  async onReceiveProps(props: SectionProps) {
+    if (this._type === props.type) return;
+
+    this._type = props.type;
+    this._config = SECTION_CONFIGS[this._type];
+
     await this.fetchGroups();
 
-    // When groups change, fetch data from service again
     if (this._config.entity) {
       this.subscribeNotification(this._config.entity, () => this.fetchGroups());
     }

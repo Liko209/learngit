@@ -5,9 +5,8 @@ import storeManager, { ENTITY_NAME } from '@/store';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import PersonModel from '@/store/models/Person';
 import CompanyModel from '@/store/models/Company';
-import { ConversationListSectionModel } from './types';
-import { ConversationSectionPresenter } from '../sections';
 import { AbstractViewModel } from '@/base/AbstractViewModel';
+import { SECTION_TYPE } from './Section/constants';
 
 class LeftRailViewModel extends AbstractViewModel {
   @observable
@@ -42,60 +41,14 @@ class LeftRailViewModel extends AbstractViewModel {
     );
   }
   @computed
-  get sections(): ConversationListSectionModel[] {
+  get sections(): SECTION_TYPE[] {
     return [
-      {
-        title: 'unread',
-        iconName: 'fiber_new',
-      },
-      {
-        title: 'mention_plural',
-        iconName: 'alternate_email',
-      },
-      {
-        title: 'bookmark_plural',
-        iconName: 'bookmark',
-      },
-      {
-        title: 'favorite_plural',
-        iconName: 'start',
-        sortable: true,
-        expanded: true,
-        presenter: new ConversationSectionPresenter({
-          entity: ENTITY.FAVORITE_GROUPS,
-          queryType: GROUP_QUERY_TYPE.FAVORITE,
-          transformFunc: (dataModel: Group, index: number) => ({
-            id: dataModel.id,
-            sortKey: index,
-          }),
-        }),
-      },
-      {
-        title: 'directMessage_plural',
-        iconName: 'people',
-        expanded: true,
-        presenter: new ConversationSectionPresenter({
-          entity: ENTITY.PEOPLE_GROUPS,
-          queryType: GROUP_QUERY_TYPE.GROUP,
-          transformFunc: (dataModel: Group, index: number) => ({
-            id: dataModel.id,
-            sortKey: index,
-          }),
-        }),
-      },
-      {
-        title: 'team_plural',
-        iconName: 'people',
-        expanded: true,
-        presenter: new ConversationSectionPresenter({
-          entity: ENTITY.TEAM_GROUPS,
-
-          transformFunc: (dataModel: Group, index: number) => ({
-            id: dataModel.id,
-            sortKey: index,
-          }),
-        }),
-      },
+      SECTION_TYPE.UNREAD,
+      SECTION_TYPE.AT_MENTION,
+      SECTION_TYPE.BOOKMARK,
+      SECTION_TYPE.FAVORITE,
+      SECTION_TYPE.DIRECT_MESSAGE,
+      SECTION_TYPE.TEAM,
     ];
   }
 }

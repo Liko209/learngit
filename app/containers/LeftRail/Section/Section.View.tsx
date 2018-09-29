@@ -6,16 +6,22 @@
 import React from 'react';
 import { translate } from 'react-i18next';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
-import { ConversationListSection, Icon, ConversationList } from 'ui-components';
+import { JuiIconography } from 'jui/foundation';
+import { JuiListSection, JuiList } from 'jui/components';
 import { toTitleCase } from '@/utils';
 import { SectionViewProps } from './types';
 
 // TODO remove Stubs here
-const Umi = (props: any) => <div />;
-const ConversationListItem = (props: any) => <div />;
+const Umi = (props: any) => <div {...props} />;
+const ListItem = (props: any) => <div {...props} />;
+const JuiListSectionHeader = (props: any) => <div {...props} />;
+const JuiListSectionContent = (props: any) => <div {...props} />;
+const JuiListSectionHeaderIcon = (props: any) => <div {...props} />;
+const JuiListSectionHeaderText = (props: any) => <div {...props} />;
+const JuiListSectionHeaderUmi = (props: any) => <div {...props} />;
 
-const SortableList = SortableContainer(ConversationList);
-const SortableItem = SortableElement(ConversationListItem);
+const SortableList = SortableContainer(JuiList);
+const SortableItem = SortableElement(ListItem);
 
 class SectionViewComponent extends React.Component<SectionViewProps> {
   static defaultProps = {
@@ -37,26 +43,32 @@ class SectionViewComponent extends React.Component<SectionViewProps> {
     }
 
     return (
-      <ConversationList>
+      <JuiList>
         {this.props.groupIds.map((id: number) => (
-          <ConversationListItem id={id} key={id} />
+          <ListItem id={id} key={id} />
         ))}
-      </ConversationList>
+      </JuiList>
     );
   }
 
   render() {
-    const { t, title, iconName, expanded } = this.props;
+    const { t, title, groupIds, iconName, expanded } = this.props;
     return (
       <div>
-        <ConversationListSection
-          icon={<Icon>{iconName}</Icon>}
-          title={toTitleCase(t(title))}
-          umi={<Umi groupIds={groupIds} />}
-          expanded={expanded}
-        >
-          {this.renderList()}
-        </ConversationListSection>
+        <JuiListSection expanded={expanded}>
+          <JuiListSectionHeader>
+            <JuiListSectionHeaderIcon>
+              <JuiIconography>{iconName}</JuiIconography>
+            </JuiListSectionHeaderIcon>
+            <JuiListSectionHeaderText>
+              {toTitleCase(t(title))}
+            </JuiListSectionHeaderText>
+            <JuiListSectionHeaderUmi>
+              <Umi groupIds={groupIds} />
+            </JuiListSectionHeaderUmi>
+          </JuiListSectionHeader>
+          <JuiListSectionContent>{this.renderList()}</JuiListSectionContent>
+        </JuiListSection>
       </div>
     );
   }
