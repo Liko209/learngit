@@ -152,7 +152,7 @@ type TNavProps = {
   }[][];
   handleRouterChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
 };
-class JuiLeftNav extends PureComponent<TNavProps> {
+export class JuiLeftNav extends PureComponent<TNavProps> {
   render() {
     const { icons, expand, unreadCount, handleRouterChange } = this.props;
     return (
@@ -224,5 +224,3 @@ class JuiLeftNav extends PureComponent<TNavProps> {
     );
   }
 }
-
-export { JuiLeftNav };

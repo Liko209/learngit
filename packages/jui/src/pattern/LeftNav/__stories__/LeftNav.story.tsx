@@ -7,7 +7,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs/react';
 import { BrowserRouter } from 'react-router-dom';
-import { LeftNav } from '../index';
+import { JuiLeftNav } from '../index';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 const UMI_COUNT = [
   [0, 999, 30, 2],
@@ -29,13 +29,13 @@ const icons = [
     { icon: 'settings', title: 'Settings' },
   ],
 ];
-storiesOf('pattern/LeftNav', module)
-  .addDecorator(withInfoDecorator(LeftNav, { inline: true }))
-  .add('LeftNav', () => {
+storiesOf('Pattern/LeftNav', module)
+  .addDecorator(withInfoDecorator(JuiLeftNav, { inline: true }))
+  .add('JuiLeftNav', () => {
     const isExpand = boolean('expand', false);
     return (
       <BrowserRouter>
-        <LeftNav icons={icons} expand={isExpand} unreadCount={UMI_COUNT}/>
+        <JuiLeftNav icons={icons} expand={isExpand} unreadCount={UMI_COUNT}/>
       </BrowserRouter>
     );
   });
