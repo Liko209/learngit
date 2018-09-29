@@ -19,7 +19,7 @@ import PersonModel from '@/store/models/Person';
 import { getEntity } from '@/store/utils';
 import { Avatar } from '../../../Avatar/Avatar';
 import ViewModel from './ViewModel';
-import Comfirm from 'ui-components/molecules/Dialog/Comfirm';
+import Confirm from 'ui-components/molecules/Dialog/Confirm';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
 
@@ -100,7 +100,7 @@ export class ConversationCard extends React.Component<IProps, IStates> {
           </JuiConversationCardFooter>
         </JuiConversationCard>
         <JuiDivider />
-        <Comfirm
+        <Confirm
           open={open}
           size="medium"
           header={t('deletePostTitle')}
@@ -110,7 +110,7 @@ export class ConversationCard extends React.Component<IProps, IStates> {
           onClose={this.onCloseDelete}
         >
           {t('deletePostContent')}
-        </Comfirm>
+        </Confirm>
       </React.Fragment>
     );
   }

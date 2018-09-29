@@ -8,7 +8,7 @@ import styled, { keyframes, IDependencies } from '../../styled-components';
 import MuiIconButton, {
   IconButtonProps as MuiIconButtonProps,
 } from '@material-ui/core/IconButton';
-import MuiIcon from '@material-ui/core/Icon';
+import MuiIcon, { IconProps } from '@material-ui/core/Icon';
 import MuiTooltip from '@material-ui/core/Tooltip';
 import { ArrowTip } from '../../atoms/Tooltip';
 import { palette, grey, width } from '../../utils/styles';
@@ -31,7 +31,7 @@ const iconSizes = {
   small: 4,
 };
 
-const WrappedMuiIcon = ({ invisible, awake, ...rest }: JuiIconButtonProps) => (
+const WrappedMuiIcon = ({ ...rest }: IconProps) => (
   <MuiIcon {...rest} />
 );
 const StyledIcon = styled<JuiIconButtonProps>(WrappedMuiIcon)``;
