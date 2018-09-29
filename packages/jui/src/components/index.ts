@@ -13,3 +13,4 @@ export * from './Menus';
 export * from './Paper';
 export * from './Progress';
 export * from './Tooltip';
+export * from './Umi';

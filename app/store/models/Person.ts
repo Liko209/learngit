@@ -3,7 +3,11 @@ import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
 import { Person } from 'sdk/models';
 import Base from './Base';
-import { isOnlyLetterOrNumbers } from '@/utils';
+import {
+  isOnlyLetterOrNumbers,
+  handleOnlyLetterOrNumbers,
+  handleOneOfName,
+} from '@/utils/helper';
 
 export default class PersonModel extends Base<Person> {
   id: number;
@@ -15,7 +19,7 @@ export default class PersonModel extends Base<Person> {
   lastName?: string;
   @observable
   headshot?: {
-    url: string,
+    url: string;
   };
   @observable
   email: string;
@@ -80,29 +84,20 @@ export default class PersonModel extends Base<Person> {
 
     return dName;
   }
-  private _handleLetter(name: string | undefined) {
-    return (name && name.slice(0, 1).toUpperCase()) || '';
-  }
-  private _handleOnlyLetterOrNumbers() {
-    const firstLetter = this._handleLetter(this.firstName!);
-    const lastLetter = this._handleLetter(this.lastName!);
-    return firstLetter + lastLetter;
-  }
-  private _handleOneOfName() {
-    const names =
-      (!!this.firstName && this.firstName!.split(/\s+/)) ||
-      (!!this.lastName && this.lastName!.split(/\s+/));
-    const firstLetter = this._handleLetter(names[0]);
-    const lastLetter = this._handleLetter(names[1]);
-    return  firstLetter + lastLetter;
-  }
+
   @computed
-  public get shortName() {
-    if (isOnlyLetterOrNumbers(this.firstName) && isOnlyLetterOrNumbers(this.lastName)) {
-      return this._handleOnlyLetterOrNumbers();
+  get shortName() {
+    if (
+      isOnlyLetterOrNumbers(this.firstName) &&
+      isOnlyLetterOrNumbers(this.lastName)
+    ) {
+      return handleOnlyLetterOrNumbers(this.firstName, this.lastName);
     }
-    if ((!this.firstName && this.lastName) || (this.firstName && !this.lastName)) {
-      return this._handleOneOfName();
+    if (
+      (!this.firstName && this.lastName) ||
+      (this.firstName && !this.lastName)
+    ) {
+      return handleOneOfName(this.firstName, this.lastName);
     }
     return '';
   }

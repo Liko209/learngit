@@ -37,4 +37,34 @@ function toTitleCase(input: string) {
     .join('');
 }
 
-export { compareName, toTitleCase };
+function isOnlyLetterOrNumbers(value: string) {
+  const REG_NUM_LETTER = /^[0-9A-Za-z\s\-~`!@#$%^&*()-_+=\[\]{};:"',<.>\/?，。？￥！……【】’“；《》（）]+$/;
+  return REG_NUM_LETTER.test(value);
+}
+
+function toUpperCase(name: string | undefined) {
+  return (name && name.slice(0, 1).toUpperCase()) || '';
+}
+
+function handleOnlyLetterOrNumbers(firstName, lastName) {
+  const firstLetter = toUpperCase(firstName!);
+  const lastLetter = toUpperCase(lastName!);
+  return `${firstLetter}${lastLetter}`;
+}
+
+function handleOneOfName(firstName, lastName) {
+  const names =
+    (!!firstName && firstName!.split(/\s+/)) ||
+    (!!lastName && lastName!.split(/\s+/));
+  const firstLetter = toUpperCase(names[0]);
+  const lastLetter = toUpperCase(names[1]);
+  return `${firstLetter}${lastLetter}`;
+}
+
+export {
+  compareName,
+  toTitleCase,
+  isOnlyLetterOrNumbers,
+  handleOnlyLetterOrNumbers,
+  handleOneOfName,
+};

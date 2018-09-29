@@ -28,7 +28,7 @@ storiesOf('Components/Tooltip', module)
           title="I am arrow tip"
           placement={placement}
         >
-          <button>Arrow tool tip and some test</button>
+          <button style={{ marginLeft: 120 }}>Arrow tool tip and some test</button>
         </JuiArrowTip>
       </div>
     );

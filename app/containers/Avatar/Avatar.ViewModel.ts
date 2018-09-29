@@ -7,59 +7,62 @@
 import { AbstractViewModel } from '@/base';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { observable, autorun, computed } from 'mobx';
-import { isOnlyLetterOrNumbers } from '@/utils';
-import PersonModel from '../../store/models/Person';
+import { computed } from 'mobx';
 import defaultAvatar from './defaultAvatar.svg';
 import { AvatarProps, AvatarViewProps } from './types';
 
-const AVATAR_COLORS = ['tomato', 'blueberry', 'oasis', 'gold', 'sage', 'ash', 'persimmon', 'pear', 'brass', 'lake'];
-class AvatarViewModel extends AbstractViewModel implements AvatarViewProps{
-  @observable
-  person: PersonModel;
-  @observable
-  uId = 0;
-  @observable
-  hash = 0;
+const AVATAR_COLORS = [
+  'tomato',
+  'blueberry',
+  'oasis',
+  'gold',
+  'sage',
+  'ash',
+  'persimmon',
+  'pear',
+  'brass',
+  'lake',
+];
+class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
+  private _uId = 0;
+
   constructor({ uid }: AvatarProps) {
-    this.uId = uid;
-    const UID = String(this.uId);
+    super();
+    this._uId = uid;
+  }
+
+  private get _hash() {
     let hash = 0;
-    for (const i of UID) {
+    for (const i of `${this._uId}`) {
       hash = hash + String(i).charCodeAt(0);
     }
     if (hash < 0) {
-      hash = - hash;
+      hash = -hash;
     }
-    this.hash = hash % 10;
-    autorun(() => {
-      this.person = getEntity(ENTITY_NAME.PERSON, this.uId) as PersonModel;
-    });
+    return hash % 10;
   }
+
   @computed
-  get avatarInfo() {
-    const { firstName = '', lastName = '', headshot = '' } = this.person || {};
-    const hash = this.hash;
-    const bgColor = AVATAR_COLORS[hash];
-    const pm = PersonModel.fromJS({
-      id: this.uId,
-    });
+  private get _person() {
+    return getEntity(ENTITY_NAME.PERSON, this._uId);
+  }
+
+  get bgColor() {
+    const hash = this._hash;
+    return AVATAR_COLORS[hash];
+  }
+
+  @computed
+  get name() {
+    return this._person.shortName;
+  }
+
+  @computed
+  get url() {
+    const { headshot } = this._person;
     if (headshot && headshot.url) {
       return {
         url: headshot.url,
-      };
-    }
-    // handle only letter or numbers
-    if (isOnlyLetterOrNumbers(firstName) && isOnlyLetterOrNumbers(lastName)) {
-      return {
-        bgColor,
-        name: pm.shortName,
-      };
-    }
-    if ((!firstName && lastName) || (firstName && !lastName)) {
-      return {
-        bgColor,
-        name: pm.shortName,
       };
     }
     return {
@@ -67,4 +70,5 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps{
     };
   }
 }
+
 export { AvatarViewModel };
