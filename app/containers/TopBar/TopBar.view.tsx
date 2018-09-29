@@ -26,7 +26,7 @@ class TopBar extends React.Component<TopBarProps> {
     super(props);
   }
 
-  private _createAvatar() {
+  private _createAvatar(avatarProps) {
     const { signOut, t } = this.props;
     return (
       <JuiAvatar
@@ -37,11 +37,12 @@ class TopBar extends React.Component<TopBarProps> {
           },
         ]}
         MenuExpandTrigger={Avatar}
+        {...avatarProps}
       />
     );
   }
 
-  private _createMainMenu() {
+  private _createMainMenu(mainMenuProps) {
     const { updateLeftNavState, t } = this.props;
     return (
       <JuiIconButton
@@ -49,6 +50,7 @@ class TopBar extends React.Component<TopBarProps> {
         size="medium"
         onClick={updateLeftNavState}
         data-anchor="expandButton"
+        {...mainMenuProps}
       >
         format_list_bulleted
       </JuiIconButton>
@@ -60,7 +62,7 @@ class TopBar extends React.Component<TopBarProps> {
     return <JuiLogo variant="headline">{brandName}</JuiLogo>;
   }
 
-  private _createMenu() {
+  private _createMenu(menuProps) {
     const { updateCreateTeamDialogState, t } = this.props;
 
     return (
@@ -75,17 +77,20 @@ class TopBar extends React.Component<TopBarProps> {
           <JuiIconButton size="medium" tooltipTitle={t('plus')}>
             add_circle
           </JuiIconButton>}
+        {...menuProps}
       />
     );
   }
 
   render() {
-    const Avatar = this._createAvatar();
-    const MainMenu = this._createMainMenu();
     const Logo = this._createLogo();
-    const Menu = this._createMenu();
     return (
-      <JuiTopBar MainMenu={MainMenu} Avatar={Avatar} Logo={Logo} Menu={Menu} />
+      <JuiTopBar
+        MainMenu={this._createMainMenu}
+        Avatar={this._createAvatar}
+        Menu={this._createMenu}
+        Logo={Logo}
+      />
     );
   }
 }
