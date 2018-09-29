@@ -2,7 +2,7 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-28 00:00:57
  */
-import { DBManager, KVStorageManager, DexieDB } from 'foundation';
+import { DBManager, KVStorageManager, DexieDB, DatabaseType } from 'foundation';
 import BaseDao from './base/BaseDao'; // eslint-disable-line
 import BaseKVDao from './base/BaseKVDao'; // eslint-disable-line
 import schema from './schema';
@@ -22,10 +22,15 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   async initDatabase(): Promise<void> {
-    this.dbManager.initDatabase(schema);
+    this.dbManager.initDatabase(schema, DatabaseType.DexieDB);
 
     if (!this._isSchemaCompatible()) {
-      await this.dbManager.deleteDatabase();
+      try {
+        await this.dbManager.deleteDatabase();
+      } catch (error) {
+        this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
+        await this.dbManager.deleteDatabase();
+      }
       this.getKVDao(ConfigDao).remove(LAST_INDEX_TIMESTAMP);
     }
 

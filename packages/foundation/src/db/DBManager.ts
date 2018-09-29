@@ -1,14 +1,24 @@
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-27 23:10:56
+ * Copyright © RingCentral. All rights reserved.
  */
-import { DexieDB } from './adapter';
+import { DexieDB, LokiDB } from './adapter';
 import { DatabaseType } from './enums';
 import { ISchema } from './../db';
 class DBManager {
-  private db!: DexieDB;
+  private db!: DexieDB | LokiDB;
   initDatabase(schema: ISchema, type?: DatabaseType): void {
-    this.db = new DexieDB(schema);
+    switch (type) {
+      case DatabaseType.LokiDB:
+        this.db = new LokiDB(schema);
+        break;
+
+      case DatabaseType.DexieDB:
+      default:
+        this.db = new DexieDB(schema);
+        break;
+    }
   }
 
   async openDatabase(): Promise<void> {
@@ -27,7 +37,7 @@ class DBManager {
     return this.db && this.db.isOpen();
   }
 
-  getDatabase(): DexieDB {
+  getDatabase(): DexieDB | LokiDB {
     return this.db;
   }
 }
