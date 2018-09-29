@@ -9,7 +9,7 @@ import { withInfo } from '@storybook/addon-info';
 import { number, boolean, select } from '@storybook/addon-knobs/react';
 import { JuiUmi } from '..';
 
-storiesOf('Pattern', module).add(
+storiesOf('Components/UMI', module).add(
   'Umi',
   withInfo({ inline: true })(() => {
     return (
