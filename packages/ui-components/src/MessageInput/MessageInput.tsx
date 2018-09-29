@@ -1,14 +1,14 @@
 import React, { Fragment } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import { Delta, Sources } from 'quill';
-import styled, { injectGlobal } from '../styled-components';
+import styled, { createGlobalStyle } from '../styled-components';
 import { spacing, typography, palette } from '../utils/styles';
 import MarkdownShortcuts from './MarkdownShortcuts';
 import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
 
 import 'react-quill/dist/quill.snow.css';
 
-injectGlobal`
+const GlobalStyle = createGlobalStyle`
   .quill {
     width: 100%;
     align-self: flex-end;
@@ -100,6 +100,7 @@ class JuiMessageInput extends React.Component<IProps, IState> {
           modules={this._modules}
         />
         <StyledError>{error}</StyledError>
+        <GlobalStyle />
       </Fragment>
     );
   }
