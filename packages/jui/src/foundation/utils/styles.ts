@@ -1,5 +1,5 @@
 import { Theme, Palette } from '../theme/theme';
-import { css } from '../../foundation/styled-components';
+import { css } from '../styled-components';
 
 /********************************************
  *               Dimensions                 *
@@ -20,11 +20,11 @@ function spacing(...values: number[]) {
  * shape
  * @param value
  */
-function shape(key: string) {
+function shape(key: string, times: number = 1) {
   return ({ theme }: { theme: Theme }): string => {
     const value = theme.shape[key];
     if (typeof value === 'number') {
-      return cssValue(value);
+      return cssValue(value * times);
     }
     return value;
   };

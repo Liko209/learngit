@@ -14,6 +14,21 @@ import { ComponentClass } from 'react';
 import * as styledComponents from 'styled-components';
 import { Theme } from './theme/theme';
 
+declare module 'styled-components' {
+  // tslint:disable-next-line
+  export interface ThemedStyledComponentsModule<T> {
+    createGlobalStyle(
+      strings: TemplateStringsArray,
+      ...interpolations: styledComponents.SimpleInterpolation[]
+    ): React.ComponentClass;
+  }
+
+  export function createGlobalStyle(
+    strings: TemplateStringsArray,
+    ...interpolations: styledComponents.SimpleInterpolation[]
+  ): React.ComponentClass;
+}
+
 // Helper type operators
 type KeyofBase = keyof any;
 type Diff<T extends KeyofBase, U extends KeyofBase> = ({ [P in T]: P } &
@@ -38,75 +53,80 @@ type ThemedStyledComponentFactories<T> = {
   >
 };
 
-type Dependencies = {
+type IDependencies = {
   dependencies?: (React.ComponentType | ((props: any) => JSX.Element))[];
 };
 
-type ThemedStyledFunction<P, T, O = P> = {
+interface IThemedStyledFunction<P, T, O = P> {
   (
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P, T>
     >[] // tslint:disable-line
-  ): styledComponents.StyledComponentClass<P, T, O> & Dependencies;
+  ): styledComponents.StyledComponentClass<P, T, O> & IDependencies;
   <U>(
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P & U, T>
     >[] // tslint:disable-line
-  ): styledComponents.StyledComponentClass<P & U, T, O & U> & Dependencies;
+  ): styledComponents.StyledComponentClass<P & U, T, O & U> & IDependencies;
   attrs<U, A extends Partial<P & U> = {}>(
     attrs: Attrs<P & U, A, T>,
-  ): ThemedStyledFunction<DiffBetween<A, P & U>, T, DiffBetween<A, O & U>>;
-};
+  ): IThemedStyledFunction<DiffBetween<A, P & U>, T, DiffBetween<A, O & U>>;
+}
 
-type ThemedBaseStyledInterface<T> = ThemedStyledComponentFactories<T> & {
+interface IThemedBaseStyledInterface<T>
+  extends ThemedStyledComponentFactories<T> {
   <P, TTag extends keyof JSX.IntrinsicElements>(
     tag: TTag,
-  ): ThemedStyledFunction<P, T, P & JSX.IntrinsicElements[TTag]>;
+  ): IThemedStyledFunction<P, T, P & JSX.IntrinsicElements[TTag]>;
   <P, O>(
     component: styledComponents.StyledComponentClass<P, T, O>,
-  ): ThemedStyledFunction<P, T, O>;
+  ): IThemedStyledFunction<P, T, O>;
   <P extends { [prop: string]: any; theme?: T }>(
     component: React.ComponentType<P>,
-  ): ThemedStyledFunction<P, T, WithOptionalTheme<P, T>>;
-};
+  ): IThemedStyledFunction<P, T, WithOptionalTheme<P, T>>;
+}
 
-type ThemedStyledComponentsModule<T> = {
-  default: ThemedBaseStyledInterface<T>;
+interface IThemedStyledComponentsModule<T> {
+  default: IThemedBaseStyledInterface<T>;
   css: styledComponents.ThemedCssFunction<T>;
   keyframes(
     strings: TemplateStringsArray,
-    ...interpolations: styledComponents.SimpleInterpolation[] // tslint:disable-line
+    ...interpolations: styledComponents.SimpleInterpolation[]
   ): string;
   injectGlobal(
     strings: TemplateStringsArray,
-    ...interpolations: styledComponents.SimpleInterpolation[] // tslint:disable-line
+    ...interpolations: styledComponents.SimpleInterpolation[]
   ): void;
+  createGlobalStyle(
+    strings: TemplateStringsArray,
+    ...interpolations: styledComponents.SimpleInterpolation[]
+  ): React.ComponentClass;
   withTheme<P extends { theme?: T }>(
     component: React.ComponentType<P>,
   ): ComponentClass<WithOptionalTheme<P, T>>;
 
   ThemeProvider: styledComponents.ThemeProviderComponent<T>;
-};
+}
 
 const {
   default: styled,
   css,
-  injectGlobal,
+  createGlobalStyle,
   keyframes,
   ThemeProvider,
-} = styledComponents as ThemedStyledComponentsModule<Theme>;
+} = styledComponents as IThemedStyledComponentsModule<Theme>;
 
 export {
   css,
-  injectGlobal,
+  createGlobalStyle,
   keyframes,
   ThemeProvider,
-  ThemedStyledFunction,
-  ThemedBaseStyledInterface,
-  ThemedStyledComponentsModule,
-  Dependencies,
+  IThemedStyledFunction,
+  IThemedBaseStyledInterface,
+  IThemedStyledComponentsModule,
+  IDependencies,
   WithOptionalTheme,
 };
 export default styled;

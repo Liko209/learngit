@@ -4,35 +4,35 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { observable, autorun, IReactionDisposer } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { IndicatorProps, IndicatorViewProps } from './types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import GroupModel from '@/store/models/Group';
 
-class IndicatorViewModel extends AbstractViewModel implements IndicatorViewProps {
-  _disposer: IReactionDisposer;
-  @observable id: number; // group id
-  @observable draft: string = '';
-  @observable sendFailurePostIds: number[] = [];
+class IndicatorViewModel extends AbstractViewModel
+  implements IndicatorViewProps {
+  @observable
+  _id: number; // group id
 
-  constructor(props: IndicatorProps) {
-    super(props);
-    this.id = props.id;
-    this._disposer = autorun(() => {
-      this.getData();
-    });
+  @action
+  onReceiveProps({ id }: IndicatorProps) {
+    this._id = id;
   }
 
-  getData() {
-    const group = getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
-    this.draft = group.draft || '';
-    this.sendFailurePostIds = group.sendFailurePostIds || [];
+  @computed
+  get _group() {
+    return getEntity(ENTITY_NAME.GROUP, this._id);
   }
 
-  disposer() {
-    this._disposer();
+  @computed
+  get draft() {
+    return this._group.draft;
+  }
+
+  @computed
+  get sendFailurePostIds() {
+    return this._group.sendFailurePostIds || [];
   }
 }
 export { IndicatorViewModel };
