@@ -42,7 +42,7 @@ async function runTests(runnerOpts) {
     .concurrency(runnerOpts.CONCURRENCY);
 
   try {
-    failed = await runner.run({ quarantineMode: runnerOpts.QUARANTINE_MODE });
+    failed = await runner.run({ quarantineMode: runnerOpts.QUARANTINE_MODE, skipUncaughtErrors: false });
   } finally {
     await testCafe.close();
   }

@@ -199,8 +199,7 @@ test(
       .log('16.Click close button')
       .clickCloseButton()
       .log('17.Check display the confirm dialog')
-      .expectDialog(title, content, checkboxLabel, button)
-      .expectNoDialogTitle(title);
+      .expectDialog(title, content, checkboxLabel, button);
   },
 );
 
