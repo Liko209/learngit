@@ -27,7 +27,7 @@ const TooltipArrow = styled.span<{ placement?: string }>`
     height: 0;
     border-style: solid;
   }
-  ${({ placement }) => arrowStyles[placement!]};
+  ${({ placement }) => arrowStyles[placement]};
 `;
 const bottom = css`
   top: 0;
@@ -57,7 +57,6 @@ const top = css`
 
 const right = css`
   left: 0;
-  top: 0;
   margin-left: -0.8em;
   height: 1.8em;
   width: 1em;
@@ -71,8 +70,8 @@ const right = css`
 `;
 const left = css`
   left: 0;
-  margin-left: 0em;
-  height: 0em;
+  margin-left: 0;
+  height: 0;
   width: 23em;
   &::before {
     border-width: 1em 0 1em 1em;
