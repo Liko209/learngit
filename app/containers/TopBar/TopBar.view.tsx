@@ -26,7 +26,7 @@ class TopBar extends React.Component<TopBarProps> {
     super(props);
   }
 
-  private _createAvatar(avatarProps) {
+  private _Avatar(avatarProps) {
     const { signOut, t } = this.props;
     return (
       <JuiAvatar
@@ -42,7 +42,7 @@ class TopBar extends React.Component<TopBarProps> {
     );
   }
 
-  private _createMainMenu(mainMenuProps) {
+  private _MainMenu(mainMenuProps) {
     const { updateLeftNavState, t } = this.props;
     return (
       <JuiIconButton
@@ -57,12 +57,12 @@ class TopBar extends React.Component<TopBarProps> {
     );
   }
 
-  private _createLogo() {
+  private _Logo() {
     const { brandName } = this.props;
     return <JuiLogo variant="headline">{brandName}</JuiLogo>;
   }
 
-  private _createMenu(menuProps) {
+  private _Menu(menuProps) {
     const { updateCreateTeamDialogState, t } = this.props;
 
     return (
@@ -83,13 +83,12 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
-    const Logo = this._createLogo();
     return (
       <JuiTopBar
-        MainMenu={this._createMainMenu}
-        Avatar={this._createAvatar}
-        Menu={this._createMenu}
-        Logo={Logo}
+        MainMenu={this._MainMenu}
+        Avatar={this._Avatar}
+        Menu={this._Menu}
+        Logo={this._Logo}
       />
     );
   }

@@ -35,7 +35,7 @@ class Header extends Component<HeaderProps> {
     // console.log(evt, name);
   }
 
-  private _createActionButtons() {
+  private _ActionButtons() {
     const { actions, t } = this.props;
     const actionButtons = actions.map(({ name, iconName, tooltip }) =>
       ((name: string) => {
@@ -64,7 +64,7 @@ class Header extends Component<HeaderProps> {
     );
   }
 
-  private _createSubTitle() {
+  private _SubTitle() {
     const { t, isFavorite, type, isPrivate } = this.props;
     return (
       <JuiButtonBar size="small" overlapping={true}>
@@ -99,14 +99,11 @@ class Header extends Component<HeaderProps> {
   render() {
     const { title } = this.props;
 
-    const actionButtons = this._createActionButtons();
-    const subTitle = this._createSubTitle();
-
     return (
       <JuiConversationPageHeader
         title={title}
-        SubTitle={subTitle}
-        Right={actionButtons}
+        SubTitle={this._SubTitle}
+        Right={this._ActionButtons}
       />
     );
   }
