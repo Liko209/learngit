@@ -147,6 +147,7 @@ type TNavProps = {
     icon: string;
     title: string;
   }[][];
+  handleRouterChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
 };
 class LeftNav extends PureComponent<TNavProps> {
   render() {
@@ -154,6 +155,7 @@ class LeftNav extends PureComponent<TNavProps> {
       icons,
       expand,
       unreadCount,
+      handleRouterChange,
     } = this.props;
     return (
       <Left
@@ -184,7 +186,7 @@ class LeftNav extends PureComponent<TNavProps> {
                       focusVisibleClassName={'left-item-focus'}
                       disableGutters={true}
                     >
-                      <ListLink to={`/${navUrl}`} className={'left-link'}>
+                      <ListLink to={`/${navUrl}`} className={'left-link'} onClick={handleRouterChange}>
                         <JuiListItemIcon className={'nav-icon'}>
                           <JuiIconography>{item.icon}</JuiIconography>
                         </JuiListItemIcon>
