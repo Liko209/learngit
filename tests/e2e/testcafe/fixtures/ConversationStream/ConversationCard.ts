@@ -58,7 +58,13 @@ test(
     const postContent = `some random text post ${Date.now()}`;
     const changedName = `Random ${Date.now()}`;
     await prepare(t, postContent)
-      .log('6. check current user name')
+      .log('6.1 reset current user name to John Doe701 through api request')
+      .chain(async (t, h) => {
+        await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
+          first_name: 'John',
+        });
+      })
+      .log('6.2 check current user name')
       .checkNameOnPost('John Doe701')
       .log('7. modify user name through api request')
       .chain(async (t, h) => {
@@ -66,7 +72,13 @@ test(
           first_name: changedName,
         });
       })
-      .log('8. name should be updated')
-      .checkNameOnPost(`${changedName} Doe701`);
+      .log('8.1 name should be updated')
+      .checkNameOnPost(`${changedName} Doe701`)
+      .log('8.2 reset current user name to John Doe701 for reset dirty user data')
+      .chain(async (t, h) => {
+        await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
+          first_name: 'John',
+        });
+      });
   },
 );

@@ -199,7 +199,8 @@ test(
       .log('16.Click close button')
       .clickCloseButton()
       .log('17.Check display the confirm dialog')
-      .expectDialog(title, content, checkboxLabel, button);
+      .expectDialog(title, content, checkboxLabel, button)
+      .expectNoDialogTitle(title);
   },
 );
 
@@ -229,7 +230,7 @@ test(
       .log('17.Click close button')
       .clickCloseButton()
       .log('18.Check no confirm dialog')
-      .expectNoDialog();
+      .expectNoDialogTitle(title);
   },
 );
 
