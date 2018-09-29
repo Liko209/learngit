@@ -229,7 +229,7 @@ test(
       .log('17.Click close button')
       .clickCloseButton()
       .log('18.Check no confirm dialog')
-      .expectNoDialog();
+      .expectNoDialogTitle(title);
   },
 );
 

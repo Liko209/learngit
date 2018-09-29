@@ -178,6 +178,13 @@ class CloseConversation extends BaseComponent {
         .notOk("Check doesn't exist dialog", { timeout: 60000 });
     });
   }
+  expectNoDialogTitle(title: string): this {
+    return this.chain(async (t: TestController) => {
+      await t
+        .expect(this.dialogTitle.withProps('children',title).exists)
+        .notOk("Check doesn't exist dialog", { timeout: 60000 });
+    });
+  }
   clickDialogCloseButton(): this {
     return this.chain(async (t: TestController) => {
       await t.click(this.dialogButton).wait(1000);
