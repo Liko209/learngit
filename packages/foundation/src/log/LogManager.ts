@@ -14,7 +14,7 @@ class LogManager {
     this._loggers = new Map();
     this.initMainLogger();
 
-    window.onerror = this.windowError;
+    window.onerror = this.windowError.bind(this);
     window.addEventListener('beforeunload', (event) => {
       this.doAppend();
     });
