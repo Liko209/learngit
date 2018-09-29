@@ -58,7 +58,12 @@ export abstract class BaseUI {
         ),
     );
   }
-
+  debug(){
+    return this.chain(
+      async t =>
+        await t.debug()
+    )
+  }
   selectComponent(str: string) {
     return ReactSelector(str);
   }

@@ -9,6 +9,5 @@ const writeElectronConfigFile = ()=> {
     };
     fs.writeFileSync('.testcafe-electron-rc', JSON.stringify(electronRunConfig, null, 4));
 };
-console.log(process.env.MAIN_WINDOW_URL, "xxxx")
 writeElectronConfigFile();
 
