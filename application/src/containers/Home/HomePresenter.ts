@@ -35,7 +35,7 @@ export default class HomePresenter extends BaseNotificationSubscribable {
     this.userId = accountService.getCurrentUserId();
     ProfileService.getInstance<IProfileService>().markMeConversationAsFav();
     if (
-      env === 'production' &&
+      env === 'jupiter' &&
       !betaUsers.betaUserIdList.some(
         (username: string) => String(this.userId).indexOf(username) > -1,
       )
