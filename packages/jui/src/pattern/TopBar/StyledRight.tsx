@@ -10,7 +10,7 @@ import { width } from '../../foundation/utils';
 import { JuiAvatar } from './Avatar';
 import { StyledMoreIconButton } from './StyledMoreIconButton';
 
-const StyledRight = styled.div`
+const StyledRight = styled('div')`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -39,5 +39,8 @@ const StyledRight = styled.div`
     }
   }
 `;
+
+StyledRight.displayName = 'StyledRight';
+StyledRight.dependencies = [];
 
 export { StyledRight };

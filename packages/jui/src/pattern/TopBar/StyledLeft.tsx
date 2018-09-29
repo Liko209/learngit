@@ -46,4 +46,7 @@ const StyledLeft = styled<Props, 'div'>('div')`
   }
 `;
 
+StyledLeft.displayName = 'StyledLeft';
+StyledLeft.dependencies = [];
+
 export { StyledLeft };

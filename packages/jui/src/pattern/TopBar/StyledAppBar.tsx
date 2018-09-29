@@ -18,4 +18,7 @@ const StyledAppBar = styled(JuiAppBar).attrs({ position: 'static' })`
   }
 `;
 
+StyledAppBar.displayName = 'StyledAppBar';
+StyledAppBar.dependencies = [];
+
 export { StyledAppBar };

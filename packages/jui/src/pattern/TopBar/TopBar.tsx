@@ -92,4 +92,7 @@ class JuiTopBar extends React.Component<Props, States> {
   }
 }
 
+// JuiTopBar.displayName = 'JuiTopBar';
+// JuiTopBar.dependencies = [];
+
 export { JuiTopBar };

@@ -9,4 +9,7 @@ import { JuiMenuListComposition } from '../MenuListComposition';
 
 const JuiMenu = styled(JuiMenuListComposition)``;
 
+JuiMenu.displayName = 'JuiMenu';
+JuiMenu.dependencies = [];
+
 export { JuiMenu };

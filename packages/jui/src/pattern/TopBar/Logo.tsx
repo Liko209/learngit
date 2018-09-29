@@ -18,4 +18,7 @@ const JuiLogo = styled(JuiTypography)`
   }
 `;
 
+JuiLogo.displayName = 'JuiLogo';
+JuiLogo.dependencies = [];
+
 export { JuiLogo };

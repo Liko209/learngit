@@ -8,4 +8,7 @@ import styled from '../../foundation/styled-components';
 
 const StyledSearchBar = styled(JuiSearchBar)``;
 
+StyledSearchBar.displayName = 'StyledSearchBar';
+StyledSearchBar.dependencies = [];
+
 export { StyledSearchBar };

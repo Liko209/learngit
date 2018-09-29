@@ -6,9 +6,12 @@
 
 import styled from '../../foundation/styled-components';
 
-const StyledMenuWithLogo = styled.div`
+const StyledMenuWithLogo = styled('div')`
   display: flex;
   align-items: center;
 `;
+
+StyledMenuWithLogo.displayName = 'StyledMenuWithLogo';
+StyledMenuWithLogo.dependencies = [];
 
 export { StyledMenuWithLogo };
