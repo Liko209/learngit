@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './Avatar';
+export * from './AvatarMenu';
 export * from './Logo';
-export * from './Menu';
+export * from './AddMenu';
 export * from './TopBar';

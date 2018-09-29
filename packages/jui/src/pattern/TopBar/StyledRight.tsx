@@ -7,7 +7,7 @@
 import styled from '../../foundation/styled-components';
 import { width } from '../../foundation/utils';
 
-import { JuiAvatar } from './Avatar';
+import { JuiAvatarMenu } from './AvatarMenu';
 import { StyledMoreIconButton } from './StyledMoreIconButton';
 
 const StyledRight = styled('div')`
@@ -28,7 +28,7 @@ const StyledRight = styled('div')`
   }
 
   @media (max-width: 600px) {
-    ${JuiAvatar} {
+    ${JuiAvatarMenu} {
       display: none;
       color: red;
     }
