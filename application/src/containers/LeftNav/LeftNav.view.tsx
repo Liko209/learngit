@@ -3,18 +3,19 @@
  * @Date: 2018-09-29 18:37:31
  * Copyright © RingCentral. All rights reserved.
  */
-import { Component } from 'react';
-import { TranslationFunction, i18n } from 'i18next';
+import React, { Component } from 'react';
+import { TranslationFunction } from 'i18next';
+import { translate } from 'react-i18next';
 import { JuiLeftNav } from 'jui/pattern/LeftNav';
 import { LeftNavViewProps } from './types';
 
-type Props = {
-  i18n: i18n;
+type LeftNavProps = {
+  isLeftNavOpen: boolean;
   t: TranslationFunction;
 } & LeftNavViewProps;
 
-class LeftNavView extends Component<Props> {
-  constructor(props: Props) {
+class LeftNav extends Component<LeftNavProps> {
+  constructor(props: LeftNavProps) {
     super(props);
   }
 
@@ -40,11 +41,19 @@ class LeftNavView extends Component<Props> {
   }
 
   render() {
-    const { messageUmi } = this.props;
+    const { messageUmi, isLeftNavOpen } = this.props;
     const UMI_COUNT = [[0, messageUmi, 0, 0], [0, 0, 0, 0, 0, 0]];
 
-    return <JuiLeftNav icons={this.getIcons()} unreadCount={UMI_COUNT} />;
+    return (
+      <JuiLeftNav
+        icons={this.getIcons()}
+        unreadCount={UMI_COUNT}
+        expand={isLeftNavOpen}
+      />
+    );
   }
 }
+
+const LeftNavView = translate('translations')(LeftNav);
 
 export { LeftNavView };

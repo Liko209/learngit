@@ -5,9 +5,9 @@
  */
 import { computed, autorun } from 'mobx';
 import _ from 'lodash';
+import { service } from 'sdk';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
-import { service } from 'sdk';
 import storeManager from '@/store';
 
 const MessageTypes = [
@@ -32,6 +32,11 @@ class LeftNavViewModel extends AbstractViewModel {
         return `UMI.${channel}`;
       },
     );
+  }
+
+  @computed
+  get isLeftNavOpen() {
+    return getGlobalValue('isLeftNavOpen');
   }
 
   @computed
