@@ -112,16 +112,18 @@ export default class GroupModel extends Base<Group> {
   get type(): CONVERSATION_TYPES {
     const currentUserId = getGlobalValue('currentUserId');
 
+    const members = this.members || [];
+
     if (this.isTeam) {
       return CONVERSATION_TYPES.TEAM;
     }
 
-    if (this.members.length === 1 && this.members[0] === currentUserId) {
+    if (members.length === 1 && members[0] === currentUserId) {
       return CONVERSATION_TYPES.ME;
     }
 
-    if (this.members.length === 2) {
-      const otherId = _.difference(this.members, [currentUserId])[0];
+    if (members.length === 2) {
+      const otherId = _.difference(members, [currentUserId])[0];
       const otherMember = getEntity(ENTITY_NAME.PERSON, otherId);
       if (otherMember && otherMember.isPseudoUser) {
         return CONVERSATION_TYPES.SMS;

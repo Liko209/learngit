@@ -6,7 +6,11 @@
 
 import React, { Component } from 'react';
 import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
-import { JuiButtonBar, JuiCheckboxButton, JuiIconButton } from 'jui/components';
+import {
+  JuiButtonBar,
+  JuiCheckboxButton,
+  JuiIconButton,
+} from 'jui/components/Buttons';
 
 import { observer } from 'mobx-react';
 import { translate, InjectedTranslateProps } from 'react-i18next';

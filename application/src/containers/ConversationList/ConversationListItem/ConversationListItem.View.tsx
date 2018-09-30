@@ -75,6 +75,7 @@ class ConversationListItemViewComponent extends React.Component<
         umi={this._umi}
         indicator={this._indicator}
         onMoreClick={this.props.onMoreClick}
+        onClick={this.onClick}
         title={this.props.displayName}
       />
     );

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { parse } from 'qs';
 import { JuiTreeColumnResponse } from 'jui/foundation/Layout/Response/ThreeColumnResponse';
-// import { ConversationPage } from '@/containers/ConversationPage';
+import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
 import { RightRail } from '@/containers/RightRail';
 
@@ -28,7 +28,9 @@ class MessagesViewComponent extends Component<
     }
   }
 
-  componentDidUpdate(prevProps: MessagesViewProps) {
+  componentDidUpdate(
+    prevProps: MessagesViewProps & RouteComponentProps<{ id: string }>,
+  ) {
     if (this.props.location.search !== prevProps.location.search) {
       const parsed = parse(this.props.location.search, {
         ignoreQueryPrefix: true,
@@ -47,11 +49,11 @@ class MessagesViewComponent extends Component<
 
   render() {
     const { leftNavWidth } = this.state;
+    const currentGroupId = Number(this.props.match.params.id);
     return (
       <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
         <LeftRail />
-        <div />
-        {/* <ConversationPage /> */}
+        {currentGroupId ? <ConversationPage id={currentGroupId} /> : null}
         <RightRail />
       </JuiTreeColumnResponse>
     );

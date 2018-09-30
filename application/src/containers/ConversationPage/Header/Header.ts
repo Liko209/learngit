@@ -7,7 +7,7 @@ import { buildContainer } from '@/base';
 import { HeaderView } from './Header.View';
 import { HeaderViewModel } from './Header.ViewModel';
 
-const Header = buildContainer({
+const Header = buildContainer<{ id: number }>({
   View: HeaderView,
   ViewModel: HeaderViewModel,
 });

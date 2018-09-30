@@ -10,14 +10,15 @@ import { getEntity, getSingleEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
 import { ENTITY_NAME } from '@/store';
+import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
 
-class HeaderViewModel {
+class HeaderViewModel extends AbstractViewModel {
   @observable
   private _id: number;
 
   @action
-  onReceiveProps({ id }) {
+  onReceiveProps({ id }: { id: number }) {
     this._id = id;
   }
 

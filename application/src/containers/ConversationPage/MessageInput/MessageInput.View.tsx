@@ -9,7 +9,7 @@ import { translate } from 'react-i18next';
 import { MessageInputViewProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
 
-class MessageInputViewComponent extends Component<MessageInputViewProps> {
+class MessageInput extends Component<MessageInputViewProps> {
   componentWillUnmount() {
     this.props.forceSaveDraft();
   }
@@ -27,6 +27,6 @@ class MessageInputViewComponent extends Component<MessageInputViewProps> {
   }
 }
 
-const MessageInputView = translate('Conversations')(MessageInputViewComponent);
+const MessageInputView = translate('Conversations')(MessageInput);
 
 export { MessageInputView };

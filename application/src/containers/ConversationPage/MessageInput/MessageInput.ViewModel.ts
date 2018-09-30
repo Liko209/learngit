@@ -27,8 +27,7 @@ enum ERROR_TYPES {
   CONTENT_ILLEGAL = 'contentIllegal',
 }
 
-class MessageInputViewModel extends AbstractViewModel
-  implements MessageInputViewProps {
+class MessageInputViewModel extends AbstractViewModel {
   private _groupService: GroupService;
   private _postService: PostService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
