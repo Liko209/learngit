@@ -15,7 +15,6 @@ type MessageInputViewProps = {
   draft: string;
   error: string;
   t?: TranslationFunction;
-  init(id: number): void;
   forceSaveDraft(): void;
   changeDraft(value: any): void;
   keyboardEventHandler: {
@@ -23,7 +22,7 @@ type MessageInputViewProps = {
       key: number;
       handler: () => void;
     };
-  }
+  };
 };
 
 export { MessageInputProps, MessageInputViewProps };
