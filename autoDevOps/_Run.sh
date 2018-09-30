@@ -20,8 +20,8 @@ if [ "$hasLintError" != 1 ]; then
     . $autoDevOps/4.BuildAndDeployApplication.sh
   fi
 
-  # # 5. E2E
-  # . $autoDevOps/5.E2E.sh
+  # 5. E2E
+  . $autoDevOps/5.E2E.sh
 
   # # 6. Puppeteer
   # . $autoDevOps/6.Puppeteer.sh
