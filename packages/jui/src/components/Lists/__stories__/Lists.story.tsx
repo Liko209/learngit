@@ -8,11 +8,13 @@ import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconography } from '../../../foundation/Iconography';
 import { JuiDivider } from '../../Divider';
+import { JuiIconButton } from '../../Buttons/IconButton';
 import {
   JuiList,
   JuiListItem,
   JuiListItemIcon,
   JuiListItemText,
+  JuiListItemSecondaryAction,
 } from '../index';
 
 storiesOf('Components/Lists', module)
@@ -41,6 +43,22 @@ storiesOf('Components/Lists', module)
         <JuiListItem button={true}>
           <JuiListItemText primary="Spam" />
         </JuiListItem>
+      </JuiList>
+    </div>
+  ))
+  .add('List Controls', () => (
+    <div>
+      <JuiList>
+        {[0, 1, 2, 3].map(value => (
+          <JuiListItem key={value} button={true}>
+            <JuiListItemText primary={`Line item ${value + 1}`} />
+            <JuiListItemSecondaryAction>
+              <JuiIconButton size="small" aria-label="Comments">
+                inbox
+              </JuiIconButton>
+            </JuiListItemSecondaryAction>
+          </JuiListItem>
+        ))}
       </JuiList>
     </div>
   ));
