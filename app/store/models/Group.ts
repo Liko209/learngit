@@ -69,22 +69,23 @@ export default class GroupModel extends Base<Group> {
       if (person.displayName) {
         return `${person.displayName} (me)`;
       }
+      return '';
     }
 
-    if (
-      this.type === CONVERSATION_TYPES.SMS ||
-      this.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE
-    ) {
-      // 1 other member, 1:1 conversation
+    if (this.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE) {
       const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
-      if (this.type === CONVERSATION_TYPES.SMS && person.displayName) {
-        return `${person.displayName} (SNS)`;
-      }
       return person.displayName;
     }
 
+    if (this.type === CONVERSATION_TYPES.SMS) {
+      const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
+      if (person.displayName) {
+        return `${person.displayName} (SNS)`;
+      }
+      return '';
+    }
+
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
-      // more than one members, group conversation
       const names: string[] = [];
       const emails: string[] = [];
       diffMembers

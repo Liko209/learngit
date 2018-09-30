@@ -7,9 +7,9 @@
 import styled from '../../foundation/styled-components';
 import { JuiMenuListComposition } from '../MenuListComposition';
 
-const JuiAvatar = styled(JuiMenuListComposition)``;
+const JuiAvatarMenu = styled(JuiMenuListComposition)``;
 
-JuiAvatar.displayName = 'JuiAvatar';
-JuiAvatar.dependencies = [];
+JuiAvatarMenu.displayName = 'JuiAvatarMenu';
+JuiAvatarMenu.dependencies = [];
 
-export { JuiAvatar };
+export { JuiAvatarMenu };

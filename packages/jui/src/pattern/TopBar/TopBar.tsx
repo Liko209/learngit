@@ -20,8 +20,8 @@ type Props = {
   MainMenu: ComponentType<JuiIconButtonProps>,
   Logo: ComponentType,
   // Search: ComponentType,
-  Menu: ComponentType<any>, // ComponentType<MenuListCompositionProps>
-  Avatar: ComponentType<any>, // ComponentType<MenuListCompositionProps>
+  AddMenu: ComponentType<any>, // ComponentType<MenuListCompositionProps>
+  AvatarMenu: ComponentType<any>, // ComponentType<MenuListCompositionProps>
 };
 
 type States = {
@@ -56,7 +56,7 @@ class JuiTopBar extends React.Component<Props, States> {
 
   render() {
     const { topBarState, isShowSearchBar } = this.state;
-    const { MainMenu, Logo, Menu, Avatar } = this.props;
+    const { MainMenu, Logo, AddMenu, AvatarMenu } = this.props;
     return (
       <StyledAppBar>
         <StyledToolbar onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
@@ -76,8 +76,8 @@ class JuiTopBar extends React.Component<Props, States> {
             </StyledSearchIconButton>
           </StyledLeft>
           <StyledRight>
-            <Menu awake={topBarState === 'hover'} />
-            <Avatar awake={topBarState === 'hover'} />
+            <AddMenu awake={topBarState === 'hover'} />
+            <AvatarMenu awake={topBarState === 'hover'} />
             <StyledMoreIconButton
               awake={topBarState === 'hover'}
               tooltipTitle="More"

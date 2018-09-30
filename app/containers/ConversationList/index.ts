@@ -5,4 +5,3 @@
  */
 
 export * from './Indicator';
-export * from './MessageInput';

@@ -1,44 +1,65 @@
-import { IStoreViewModel } from '@/store/inject';
-import { AbstractViewModel } from '@/base/AbstractViewModel';
+import {
+  extendObservable,
+  autorun,
+  reaction,
+  when,
+  IReactionDisposer,
+  IReactionPublic,
+  IAutorunOptions,
+  IReactionOptions,
+  Lambda,
+  IWhenOptions,
+} from 'mobx';
+import { IViewModel } from '@/base/IViewModel';
 import BaseNotificationSubscribable from './base/BaseNotificationSubscribable';
-import { Listener } from 'eventemitter2';
 
-export default class StoreViewModel extends AbstractViewModel
-  implements IStoreViewModel {
-  subscribable: BaseNotificationSubscribable;
+class StoreViewModel extends BaseNotificationSubscribable
+  implements IViewModel {
+  private _reactionDisposers: IReactionDisposer[] = [];
 
-  constructor() {
-    super();
-    this.subscribable = new BaseNotificationSubscribable();
+  protected autorun(view: (r: IReactionPublic) => any, opts?: IAutorunOptions) {
+    const disposer = autorun(view, opts);
+    this._reactionDisposers.push(disposer);
+    return disposer;
   }
 
-  on(event: string | string[], listener: Listener) {
-    return this.subscribable.on(event, listener);
+  protected reaction<T>(
+    expression: (r: IReactionPublic) => T,
+    effect: (arg: T, r: IReactionPublic) => void,
+    opts?: IReactionOptions,
+  ) {
+    const disposer = reaction(expression, effect, opts);
+    this._reactionDisposers.push(disposer);
+    return disposer;
   }
 
-  emit(event: string | string[], ...values: any[]) {
-    return this.subscribable.emit(event, ...values);
+  protected when(
+    predicate: () => boolean,
+    opts?: IWhenOptions,
+  ): Promise<void> & {
+    cancel(): void;
+  };
+  protected when(
+    predicate: () => boolean,
+    effect: Lambda,
+    opts?: IWhenOptions,
+  ): IReactionDisposer;
+  protected when(arg0, arg1?, arg2?) {
+    if (arguments.length === 2) {
+      return when(arg0, arg1);
+    }
+    return when(arg0, arg1, arg2);
   }
 
-  subscribeNotificationOnce(eventName: string, notificationCallback: Listener) {
-    return this.subscribable.subscribeNotificationOnce(
-      eventName,
-      notificationCallback,
-    );
-  }
-
-  subscribeNotification(eventName: string, notificationCallback: Listener) {
-    return this.subscribable.subscribeNotification(
-      eventName,
-      notificationCallback,
-    );
-  }
-
-  getNotificationObservers() {
-    return this.subscribable.getNotificationObservers();
+  extendProps<T extends Object>(props: T): this & T {
+    return extendObservable(this, props);
   }
 
   dispose() {
-    this.subscribable.dispose();
+    super.dispose();
+    this._reactionDisposers.forEach(disposer => disposer());
   }
 }
+
+export default StoreViewModel;
+export { StoreViewModel };

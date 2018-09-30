@@ -7,7 +7,7 @@
 import { AbstractViewModel } from '@/base';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { computed } from 'mobx';
+import { observable, computed } from 'mobx';
 import defaultAvatar from './defaultAvatar.svg';
 import { AvatarProps, AvatarViewProps } from './types';
 
@@ -24,6 +24,7 @@ const AVATAR_COLORS = [
   'lake',
 ];
 class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
+  @observable
   private _uId = 0;
 
   constructor({ uid }: AvatarProps) {
@@ -31,6 +32,7 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
     this._uId = uid;
   }
 
+  @computed
   private get _hash() {
     let hash = 0;
     for (const i of `${this._uId}`) {

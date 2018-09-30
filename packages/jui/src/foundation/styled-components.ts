@@ -28,6 +28,7 @@ declare module 'styled-components' {
     ...interpolations: styledComponents.SimpleInterpolation[]
   ): React.ComponentClass;
 }
+
 // Helper type operators
 type KeyofBase = keyof any;
 type Diff<T extends KeyofBase, U extends KeyofBase> = ({ [P in T]: P } &
@@ -56,7 +57,7 @@ type Dependencies = {
   dependencies?: (React.ComponentType | ((props: any) => JSX.Element))[];
 };
 
-type ThemedStyledFunction<P, T, O = P> = {
+interface IThemedStyledFunction<P, T, O = P> {
   (
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<
@@ -71,31 +72,32 @@ type ThemedStyledFunction<P, T, O = P> = {
   ): styledComponents.StyledComponentClass<P & U, T, O & U> & Dependencies;
   attrs<U, A extends Partial<P & U> = {}>(
     attrs: Attrs<P & U, A, T>,
-  ): ThemedStyledFunction<DiffBetween<A, P & U>, T, DiffBetween<A, O & U>>;
-};
+  ): IThemedStyledFunction<DiffBetween<A, P & U>, T, DiffBetween<A, O & U>>;
+}
 
-type ThemedBaseStyledInterface<T> = ThemedStyledComponentFactories<T> & {
+interface IThemedBaseStyledInterface<T>
+  extends ThemedStyledComponentFactories<T> {
   <P, TTag extends keyof JSX.IntrinsicElements>(
     tag: TTag,
-  ): ThemedStyledFunction<P, T, P & JSX.IntrinsicElements[TTag]>;
+  ): IThemedStyledFunction<P, T, P & JSX.IntrinsicElements[TTag]>;
   <P, O>(
     component: styledComponents.StyledComponentClass<P, T, O>,
-  ): ThemedStyledFunction<P, T, O>;
+  ): IThemedStyledFunction<P, T, O>;
   <P extends { [prop: string]: any; theme?: T }>(
     component: React.ComponentType<P>,
-  ): ThemedStyledFunction<P, T, WithOptionalTheme<P, T>>;
-};
+  ): IThemedStyledFunction<P, T, WithOptionalTheme<P, T>>;
+}
 
-type ThemedStyledComponentsModule<T> = {
-  default: ThemedBaseStyledInterface<T>;
+interface IThemedStyledComponentsModule<T> {
+  default: IThemedBaseStyledInterface<T>;
   css: styledComponents.ThemedCssFunction<T>;
   keyframes(
     strings: TemplateStringsArray,
-    ...interpolations: styledComponents.SimpleInterpolation[] // tslint:disable-line
+    ...interpolations: styledComponents.SimpleInterpolation[]
   ): string;
   injectGlobal(
     strings: TemplateStringsArray,
-    ...interpolations: styledComponents.SimpleInterpolation[] // tslint:disable-line
+    ...interpolations: styledComponents.SimpleInterpolation[]
   ): void;
   createGlobalStyle(
     strings: TemplateStringsArray,
@@ -106,26 +108,24 @@ type ThemedStyledComponentsModule<T> = {
   ): ComponentClass<WithOptionalTheme<P, T>>;
 
   ThemeProvider: styledComponents.ThemeProviderComponent<T>;
-};
+}
 
 const {
   default: styled,
   css,
   createGlobalStyle,
-  injectGlobal,
   keyframes,
   ThemeProvider,
-} = styledComponents as ThemedStyledComponentsModule<Theme>;
+} = styledComponents as IThemedStyledComponentsModule<Theme>;
 
 export {
   css,
   createGlobalStyle,
-  injectGlobal,
   keyframes,
   ThemeProvider,
-  ThemedStyledFunction,
-  ThemedBaseStyledInterface,
-  ThemedStyledComponentsModule,
+  IThemedStyledFunction,
+  IThemedBaseStyledInterface,
+  IThemedStyledComponentsModule,
   Dependencies,
   WithOptionalTheme,
 };

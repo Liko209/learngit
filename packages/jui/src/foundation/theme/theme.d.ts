@@ -62,8 +62,8 @@ type Palette = {
     active: string;
   };
   tooltip: {
-    dark: '#616161';
-  }
+    dark: string;
+  };
 } & MuiPalette;
 
 type Theme = {
@@ -73,6 +73,7 @@ type Theme = {
     borderRadius: number;
     border1: string;
     border2: string;
+    border3: string;
   };
   spacing: {
     unit: number;
