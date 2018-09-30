@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
-import Dialog from '../Dialog';
-import JuiModal from '../Modal';
+import { JuiDialog } from '../Dialog';
+import { JuiModal } from '../Modal';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 storiesOf('Components/Dialog 🔜', module)
-  .addDecorator(withInfoDecorator(Dialog))
+  .addDecorator(withInfoDecorator(JuiDialog))
   .addWithJSX('Alert', () => {
     const open = boolean('open', true);
     const onCancel = () => {

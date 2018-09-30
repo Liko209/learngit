@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import Dialog from '../Dialog';
-import JuiModal, { TDynamicModal } from '../Modal';
+import { JuiDialog } from '../Dialog';
+import { JuiModal } from '../Modal';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiButton } from '../../Buttons/Button';
 
 storiesOf('Components/Dialog 🔜', module)
-  .addDecorator(withInfoDecorator(Dialog))
+  .addDecorator(withInfoDecorator(JuiDialog))
   .addWithJSX('Dynamic Modal', () => {
     class Conversation extends React.Component {
       toggleAlert = () => {
-        const alert = JuiModal.alert(
+        JuiModal.alert(
           {
             okText: 'I know it!',
             children: 'hi',
