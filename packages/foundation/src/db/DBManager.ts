@@ -5,9 +5,9 @@
  */
 import { DexieDB, LokiDB } from './adapter';
 import { DatabaseType } from './enums';
-import { ISchema } from './../db';
+import { ISchema, IDatabase } from './../db';
 class DBManager {
-  private db!: DexieDB | LokiDB;
+  private db!: IDatabase;
   initDatabase(schema: ISchema, type?: DatabaseType): void {
     switch (type) {
       case DatabaseType.LokiDB:
@@ -37,7 +37,7 @@ class DBManager {
     return this.db && this.db.isOpen();
   }
 
-  getDatabase(): DexieDB | LokiDB {
+  getDatabase(): IDatabase {
     return this.db;
   }
 }
