@@ -12,7 +12,7 @@ const Wrapper = styled.div`
   }
 `;
 
-storiesOf('Atoms/Progress', module)
+storiesOf('Components/Progress', module)
   .addDecorator(withInfoDecorator(JuiCircularProgress, { inline: true }))
   .addWithJSX('Circular', () => (
     <Wrapper>
