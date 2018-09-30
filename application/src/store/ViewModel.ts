@@ -35,27 +35,16 @@ class StoreViewModel extends BaseNotificationSubscribable
 
   protected when(
     predicate: () => boolean,
-    effect?: Lambda,
-    opts?: IWhenOptions,
-  ) {
-    if (effect) {
-      return when(predicate, effect, opts);
-    }
-    return when(predicate, opts);
-  }
-
-  protected when2(
-    predicate: () => boolean,
     opts?: IWhenOptions,
   ): Promise<void> & {
     cancel(): void;
   };
-  protected when2(
+  protected when(
     predicate: () => boolean,
     effect: Lambda,
     opts?: IWhenOptions,
   ): IReactionDisposer;
-  protected when2(arg0: any, arg1?: any, arg2?: any) {
+  protected when(arg0: any, arg1?: any, arg2?: any) {
     if (arguments.length === 2) {
       return when(arg0, arg1);
     }
