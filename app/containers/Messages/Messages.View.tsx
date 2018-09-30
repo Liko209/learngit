@@ -24,7 +24,7 @@ class MessagesView extends Component<MessagesViewProps, MessagesViewStates> {
     }
   }
 
-  componentDidUpdate(prevProps: IProps) {
+  componentDidUpdate(prevProps: MessagesViewProps) {
     if (this.props.location.search !== prevProps.location.search) {
       const parsed = parse(this.props.location.search, {
         ignoreQueryPrefix: true,

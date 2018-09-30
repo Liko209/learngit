@@ -73,7 +73,6 @@ export default class GroupModel extends Base<Group> {
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE) {
-      // 1 other member, 1:1 conversation
       const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
       return person.displayName;
     }
@@ -87,7 +86,6 @@ export default class GroupModel extends Base<Group> {
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
-      // more than one members, group conversation
       const names: string[] = [];
       const emails: string[] = [];
       diffMembers
