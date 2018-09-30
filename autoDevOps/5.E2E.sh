@@ -13,8 +13,13 @@ echo $BROWSERS
 echo $RC_PLATFORM_APP_KEY
 echo $RC_PLATFORM_APP_SECRET
 echo $SITE_URL
+echo $ACTION
+echo $BRANCH
 
-npm run e2e
+mkdir -p ./screenshots
+SCREENSHOTS_PATH=./screenshots npx ts-node multi-run.ts
+rm -r ./screenshots
+
 e2eResult=$?
 
 xmlResult=$project/tests/e2e/testcafe/allure/allure-results

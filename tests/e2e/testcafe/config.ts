@@ -73,8 +73,8 @@ const JUPITER_SDK_OPTS = {
 }[SITE_ENV];
 
 const configLoader = new ConfigLoader(
-  process.env.BRANCH || '',
-  process.env.ACTION || '',
+  (process.env.BRANCH || '').toLocaleLowerCase(),
+  (process.env.ACTION || '').toLocaleLowerCase(),
   CONFIGS_ROOT,
 );
 
