@@ -35,7 +35,7 @@ export class ConfigLoader {
     private branch: string,
     private action: string,
     private configsDir: string,
-    private defaultBranch: string = 'default',
+    private defaultBranch: string = 'develop',
     private defaultAction: string = 'on_debug',
   ) {
   }
