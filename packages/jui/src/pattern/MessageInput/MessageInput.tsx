@@ -6,7 +6,6 @@ import {
   spacing,
   typography,
   palette,
-  shape,
 } from '../../foundation/utils/styles';
 import MarkdownShortcuts from './MarkdownShortcuts';
 import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';

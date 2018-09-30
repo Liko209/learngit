@@ -12,6 +12,7 @@ import { palette } from '../../../foundation/utils/styles';
 
 type JuiTooltipProps = {
   placement?: string;
+  show?: boolean;
 } & MuiTooltipProps;
 
 const TooltipArrow = styled.span<{ placement: string }>`
