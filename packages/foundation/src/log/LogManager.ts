@@ -46,7 +46,7 @@ class LogManager {
       logger = new Logger(categoryName);
       logger.setDateFormatter(this._dateFormatter);
       logger.addAppender('browserConsole', new BrowserConsoleAppender());
-      // logger.addAppender('persistentLog', new PersistentLogAppender());
+      logger.addAppender('persistentLog', new PersistentLogAppender());
       this._loggers.set(categoryName, logger);
     }
 
