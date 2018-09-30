@@ -1,17 +1,17 @@
 import React, { ReactElement } from 'react';
 import styled from '../../foundation/styled-components';
-import { DialogTitleProps, DialogTitle } from './DialogTitle';
+import { JuiDialogTitleProps, JuiDialogTitle } from './DialogTitle';
 import { spacing } from '../../foundation/utils/styles';
 
-interface IDialogTitleProps extends DialogTitleProps {
-  titleComp?: ReactElement<DialogTitleProps>;
-}
+type JuiDialogHeaderProps = JuiDialogTitleProps & {
+  titleComp?: ReactElement<JuiDialogTitleProps>;
+};
 
-const DialogHeader = styled(
-  ({ children, titleComp, className, ...props }: IDialogTitleProps) => {
+const JuiDialogHeader = styled(
+  ({ children, titleComp, className }: JuiDialogHeaderProps) => {
     return (
       <div className={className}>
-        {titleComp && titleComp.type === DialogTitle && titleComp}
+        {titleComp && titleComp.type === JuiDialogTitle && titleComp}
         {children}
       </div>
     );
@@ -29,5 +29,4 @@ const DialogHeader = styled(
   }
 `;
 
-export default DialogHeader;
-export { DialogHeader };
+export { JuiDialogHeader };

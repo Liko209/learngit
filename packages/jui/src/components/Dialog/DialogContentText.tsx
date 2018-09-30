@@ -5,12 +5,14 @@
  */
 
 import React from 'react';
-import MuiDialogContentText, { DialogContentTextProps } from '@material-ui/core/DialogContentText';
+import MuiDialogContentText, {
+  DialogContentTextProps as MuiDialogContentTextProps,
+} from '@material-ui/core/DialogContentText';
 
-interface IProps extends DialogContentTextProps { }
+type JuiDialogContentTextProps = MuiDialogContentTextProps;
 
-const JuiDialogContentText = (props: IProps) => {
+const JuiDialogContentText = (props: JuiDialogContentTextProps) => {
   return <MuiDialogContentText {...props} />;
 };
 
-export default JuiDialogContentText;
+export { JuiDialogContentText };

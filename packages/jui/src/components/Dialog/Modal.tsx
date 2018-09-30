@@ -6,11 +6,11 @@
 
 import React from 'react';
 import * as ReactDOM from 'react-dom';
-import JuiDialog, { IDialogProps } from './Dialog';
-import JuiDialogTitle from './DialogTitle';
-import JuiDialogContent from './DialogContent';
-import JuiDialogContentText from './DialogContentText';
-import JuiDialogActions from './DialogActions';
+import { JuiDialog, JuiDialogProps } from './Dialog';
+import { JuiDialogTitle } from './DialogTitle';
+import { JuiDialogContent } from './DialogContent';
+import { JuiDialogContentText } from './DialogContentText';
+import { JuiDialogActions } from './DialogActions';
 import { JuiButton } from '../Buttons/Button';
 import styled from '../../foundation/styled-components';
 import { DialogActionsProps } from '@material-ui/core/DialogActions';
@@ -18,15 +18,15 @@ import { spacing } from '../../foundation/utils';
 import { Overwrite } from '@material-ui/core';
 import { Theme as MuiTheme } from '@material-ui/core/styles/createMuiTheme';
 
-type IDefaultProps = {
-  size: IDialogProps['size'];
+type DefaultProps = {
+  size: JuiDialogProps['size'];
   open: boolean;
   okText: string;
   cancelText: string;
 };
 
-type IJuiModal = IDialogProps &
-  Partial<IDefaultProps> & {
+type JuiModalProps = JuiDialogProps &
+  Partial<DefaultProps> & {
     onOK(event?: React.MouseEvent): void;
     onCancel?: (event?: React.MouseEvent) => void;
     header: JSX.Element | string;
@@ -37,24 +37,24 @@ type IJuiModal = IDialogProps &
     afterClosed?: Function;
   };
 
-type TOnDestroyArgs = {
+type OnDestroyArgs = {
   triggerCancel?: boolean;
 };
 
 type DynamicModalProps = Overwrite<
-  IJuiModal,
+  JuiModalProps,
   {
     open?: boolean;
   }
 >;
 
-type TModalFunc = (
+type ModalFunc = (
   props: DynamicModalProps,
   context: React.Component,
-) => TDynamicModal;
+) => DynamicModal;
 
-type TDynamicModal = {
-  destroy: (args?: TOnDestroyArgs) => void;
+type DynamicModal = {
+  destroy: (args?: OnDestroyArgs) => void;
 };
 
 const StyledActions = styled<DialogActionsProps>(JuiDialogActions)`
@@ -62,21 +62,21 @@ const StyledActions = styled<DialogActionsProps>(JuiDialogActions)`
     margin-left: ${spacing(2)};
   }
 `;
-class JuiModal extends React.PureComponent<IJuiModal> {
-  static alert: TModalFunc = function (props: DynamicModalProps, context) {
+class JuiModal extends React.PureComponent<JuiModalProps> {
+  static alert: ModalFunc = function (props: DynamicModalProps, context) {
     const config = {
       okCancel: false,
       ...props,
     };
     return modal(config, context);
   };
-  static defaultProps: IDefaultProps = {
+  static defaultProps: DefaultProps = {
     open: false,
     size: 'small',
     okText: 'Ok',
     cancelText: 'Cancel',
   };
-  componentDidUpdate(preProps: IJuiModal) {
+  componentDidUpdate(preProps: JuiModalProps) {
     const { afterClosed, open } = this.props;
     if (preProps.open && !open && afterClosed) {
       setTimeout(afterClosed, 2000);
@@ -119,13 +119,13 @@ class JuiModal extends React.PureComponent<IJuiModal> {
     );
   }
 }
-const modal: TModalFunc = function (
+const modal: ModalFunc = function (
   config: DynamicModalProps,
   context: React.Component,
 ) {
   const div = document.createElement('div');
   document.body.appendChild(div);
-  const destroy = ({ triggerCancel, ...onCancelArgs }: TOnDestroyArgs = {}) => {
+  const destroy = ({ triggerCancel, ...onCancelArgs }: OnDestroyArgs = {}) => {
     const unmountResult = ReactDOM.unmountComponentAtNode(div);
     if (unmountResult && div.parentNode) {
       div.parentNode.removeChild(div);
@@ -163,7 +163,7 @@ const modal: TModalFunc = function (
     );
   };
 
-  const close = (args?: TOnDestroyArgs) => {
+  const close = (args?: OnDestroyArgs) => {
     currentConfig = {
       ...currentConfig,
       afterClosed: destroy,
@@ -180,5 +180,4 @@ const modal: TModalFunc = function (
   };
 };
 
-export default JuiModal;
-export { JuiModal, IJuiModal, TDynamicModal };
+export { JuiModal, JuiModalProps, DynamicModal };
