@@ -70,8 +70,8 @@ const StyledListItem = styled(JuiListItem)`
     }
   }
   &&:hover {
-    background-color: ${({ theme, active }) =>
-      active ? theme.palette.action.active : grey('100')};
+    background-color: ${({ theme, selected }) =>
+      selected ? theme.palette.action.active : grey('100')};
     opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
     .nav-icon {
       color: ${grey('500')}; // 500
@@ -173,13 +173,13 @@ export class JuiLeftNav extends PureComponent<TNavProps> {
                 const pathSlice = actIndex
                   ? pathname.slice(1, actIndex)
                   : pathname.slice(1);
-                const isActive = pathSlice === navUrl;
+                const selected = pathSlice === navUrl;
                 const unread = unreadCount[idx][index];
                 const NavItem = (
                   <StyledListItem
                     button={true}
                     key={index}
-                    active={isActive}
+                    selected={selected}
                     disableRipple={true}
                     focusVisibleClassName={'left-item-focus'}
                     disableGutters={true}
