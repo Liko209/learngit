@@ -14,7 +14,7 @@ type JuiTooltipProps = {
   placement?: string;
 } & MuiTooltipProps;
 
-const TooltipArrow = styled.span<{ placement?: string }>`
+const TooltipArrow = styled.span<{ placement: string }>`
   position: absolute;
   font-size: 7px;
   width: 3em;
@@ -84,13 +84,13 @@ const GlobalToolTip = createGlobalStyle`
   .popper .tooltipPlacementTop {
     margin: '16px 0'
   }
-`
+`;
 export class JuiArrowTip extends React.Component<JuiTooltipProps> {
   static dependencies = [MuiTooltip];
   state = {
     arrowRef: null,
   };
-  handleArrowRef = (ele: HTMLSpanElement) => {
+  handleArrowRef = (ele: any) => {
     this.setState({
       arrowRef: ele,
     });
