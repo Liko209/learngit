@@ -23,15 +23,11 @@ const MyView = ({ id, text }: MyViewProps) => (
     <BadChild />
   </div>
 );
-const componentDidMount = jest.fn().mockName('componentDidMount');
-const componentWillUnmount = jest.fn().mockName('componentWillUnmount');
-const componentDidUpdate = jest.fn().mockName('componentDidUpdate');
-const componentDidCatch = jest.fn().mockName('componentDidCatch');
+const onReceiveProps = jest.fn().mockName('onReceiveProps');
+const dispose = jest.fn().mockName('dispose');
 class MyViewModel extends AbstractViewModel implements MyViewProps {
-  componentDidMount = componentDidMount;
-  componentWillUnmount = componentWillUnmount;
-  componentDidUpdate = componentDidUpdate;
-  componentDidCatch = componentDidCatch;
+  onReceiveProps = onReceiveProps;
+  dispose = dispose;
 
   @observable
   id: number;
@@ -60,17 +56,19 @@ describe('buildContainer()', () => {
     expect(wrapper2.text()).toBe('text 2');
   });
 
-  it('should invoke lifecycle of ViewModel', () => {
+  it('should call onReceiveProps() of ViewModel when props change', () => {
     const wrapper = mount(<MyContainer id={1} />);
-    expect(componentDidMount).toHaveBeenCalled();
+    expect(onReceiveProps).toHaveBeenCalledWith({ id: 1 });
 
     wrapper.setProps({ id: 2 });
-    expect(componentDidUpdate).toHaveBeenCalled();
+    expect(onReceiveProps).toHaveBeenCalledWith({ id: 2 });
+  });
+
+  it('should call dispose() of ViewModel when unmount', () => {
+    const wrapper = mount(<MyContainer id={1} />);
 
     wrapper.unmount();
-    expect(componentWillUnmount).toHaveBeenCalled();
 
-    // TODO test componentDidCatch
-    // expect(componentDidCatch).toHaveBeenCalled();
+    expect(dispose).toHaveBeenCalled();
   });
 });

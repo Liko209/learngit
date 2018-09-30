@@ -3,6 +3,11 @@ import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
 import { Person } from 'sdk/models';
 import Base from './Base';
+import {
+  isOnlyLetterOrNumbers,
+  handleOnlyLetterOrNumbers,
+  handleOneOfName,
+} from '@/utils/helper';
 
 export default class PersonModel extends Base<Person> {
   id: number;
@@ -14,8 +19,8 @@ export default class PersonModel extends Base<Person> {
   lastName?: string;
   @observable
   headshot?: {
-    url: string,
-  } | string;
+    url: string;
+  };
   @observable
   email: string;
   @observable
@@ -78,5 +83,24 @@ export default class PersonModel extends Base<Person> {
     }
 
     return dName;
+  }
+
+  @computed
+  get shortName() {
+    if (
+      this.firstName &&
+      isOnlyLetterOrNumbers(this.firstName) &&
+      this.lastName &&
+      isOnlyLetterOrNumbers(this.lastName)
+    ) {
+      return handleOnlyLetterOrNumbers(this.firstName, this.lastName);
+    }
+    if (
+      (!this.firstName && this.lastName) ||
+      (this.firstName && !this.lastName)
+    ) {
+      return handleOneOfName(this.firstName, this.lastName);
+    }
+    return '';
   }
 }

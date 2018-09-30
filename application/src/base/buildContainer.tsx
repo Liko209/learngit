@@ -6,6 +6,7 @@
 import React, { Component, ComponentType } from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
+import _ from 'lodash';
 import { IPlugin } from './IPlugin';
 import { IViewModel } from './IViewModel';
 
@@ -28,47 +29,37 @@ function buildContainer<P = {}, S = {}, SS = any>({
 
     constructor(props: P) {
       super(props);
-      this.vm = new ViewModel(this.props);
+      this.vm = new ViewModel();
       plugins.forEach((plugin: IPlugin) => {
         plugin.install(this.vm);
         this.View = plugin.wrapView(this.View);
       });
-      this.vm.ready && this.vm.ready();
-    }
-
-    componentDidMount() {
-      this.vm.componentDidMount &&
-        this.vm.componentDidMount.apply(this.vm, arguments);
-    }
-
-    getSnapshotBeforeUpdate(
-      prevProps: Readonly<P>,
-      prevState: Readonly<S>,
-    ): SS | null {
-      return (
-        this.vm.getSnapshotBeforeUpdate &&
-        this.vm.getSnapshotBeforeUpdate.apply(this.vm, arguments)
-      );
+      this.vm.onReceiveProps && this.vm.onReceiveProps(props);
     }
 
     componentWillUnmount() {
-      this.vm.componentWillUnmount &&
-        this.vm.componentWillUnmount.apply(this.vm, arguments);
+      this.vm.dispose && this.vm.dispose();
     }
 
-    componentDidUpdate() {
-      this.vm.componentDidUpdate &&
-        this.vm.componentDidUpdate.apply(this.vm, arguments);
-    }
-
-    componentDidCatch() {
-      this.vm.componentDidCatch &&
-        this.vm.componentDidCatch.apply(this.vm, arguments);
+    componentDidUpdate(props: P) {
+      this.vm.onReceiveProps && this.vm.onReceiveProps(props);
     }
 
     render() {
       const View = this.View;
-      return <View {...this.vm} />;
+
+      const descriptors = Object.getOwnPropertyDescriptors(this.vm);
+      console.log(descriptors);
+      const props: any = {};
+      Object.keys(descriptors)
+        .filter(
+          key => !/^\$|_/.test(key), // Start with _ or $
+        )
+        .forEach((key: string) => {
+          props[key] = this.vm[key];
+        });
+
+      return <View {...props} />;
     }
   }
 

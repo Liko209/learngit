@@ -9,10 +9,7 @@ import { boolean } from '@storybook/addon-knobs/react';
 import { BrowserRouter } from 'react-router-dom';
 import { JuiLeftNav } from '../index';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-const UMI_COUNT = [
-  [0, 999, 30, 2],
-  [2, 10, 88, 0, 0, 1],
-];
+const UMI_COUNT = [[0, 999, 30, 2], [2, 10, 88, 0, 0, 1]];
 const icons = [
   [
     { icon: 'dashboard', title: 'Dashboard' },
@@ -35,7 +32,7 @@ storiesOf('Pattern/LeftNav', module)
     const isExpand = boolean('expand', false);
     return (
       <BrowserRouter>
-        <JuiLeftNav icons={icons} expand={isExpand} unreadCount={UMI_COUNT}/>
+        <JuiLeftNav icons={icons} expand={isExpand} unreadCount={UMI_COUNT} />
       </BrowserRouter>
     );
   });

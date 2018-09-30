@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import { ThemeProvider as UIThemeProvider } from 'ui-components/theme';
+import { ThemeProvider as JuiThemeProvider } from 'jui/foundation/theme';
 import detectTheme from '@/theme';
 
 interface IProps {
@@ -23,7 +23,7 @@ class ThemeProvider extends React.PureComponent<IProps, IState> {
   }
 
   async componentDidMount() {
-    const theme = await detectTheme() as {default: string};
+    const theme = (await detectTheme()) as { default: string };
     this.setState({
       defaultTheme: theme.default,
     });
@@ -35,7 +35,9 @@ class ThemeProvider extends React.PureComponent<IProps, IState> {
     if (!defaultTheme) {
       return null;
     }
-    return <UIThemeProvider themeName={defaultTheme}>{children}</UIThemeProvider>;
+    return (
+      <JuiThemeProvider themeName={defaultTheme}>{children}</JuiThemeProvider>
+    );
   }
 }
 

@@ -20,9 +20,15 @@ export async function initAll() {
   });
 
   // subscribe service notification to global store
-  const { notificationCenter, SOCKET } = service;
+  const { notificationCenter, AccountService, SOCKET, SERVICE } = service;
   const globalStore = storeManager.getGlobalStore();
-  notificationCenter.on(SOCKET.NETWORK_CHANGE, (data) => {
+  const accountService: service.AccountService = AccountService.getInstance();
+  notificationCenter.on(SOCKET.NETWORK_CHANGE, (data: any) => {
     globalStore.set('network', data.state);
+  });
+  notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+    const currentUserId = accountService.getCurrentUserId();
+    console.log(currentUserId);
+    globalStore.set('currentUserId', currentUserId);
   });
 }

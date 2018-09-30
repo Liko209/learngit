@@ -1,16 +1,13 @@
 import React, { ComponentType, createElement, ComponentClass } from 'react';
 import hoistStatics from 'hoist-non-react-statics';
 import { getEntity, getSingleEntity, getGlobalValue } from './utils';
+import { StoreViewModel } from './ViewModel';
 
 type Omit<T, K extends keyof T> = Pick<
   T,
   ({ [P in keyof T]: P } &
     { [P in K]: never } & { [x: string]: never })[keyof T]
 >;
-
-export interface IStoreViewModel {
-  dispose?: () => void;
-}
 
 export interface IInjectedStoreProps<VM> {
   vm: VM;
@@ -21,7 +18,7 @@ export interface IInjectedStoreProps<VM> {
 
 const getDisplayName = (name: string) => `ViewModel(${name})`;
 
-export default function inject(VM: new () => IStoreViewModel) {
+export default function inject(VM: new () => StoreViewModel) {
   const vm = new VM();
   return <P extends IInjectedStoreProps<typeof vm>>(
     WrappedComponent: ComponentType<P>,

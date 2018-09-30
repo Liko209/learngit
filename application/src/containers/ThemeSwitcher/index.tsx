@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import { themeHandler } from 'ui-components/theme';
+import { themeHandler } from 'jui/foundation/theme';
 import detectTheme from '@/theme';
 
 interface IProps {}
@@ -22,7 +22,7 @@ class ThemeSwitcher extends React.PureComponent<IProps, IState> {
   }
 
   async componentDidMount() {
-    const theme = await detectTheme() as {themes: string[]};
+    const theme = (await detectTheme()) as { themes: string[] };
     this.setState({
       themes: theme.themes,
     });
@@ -40,7 +40,9 @@ class ThemeSwitcher extends React.PureComponent<IProps, IState> {
       return null;
     }
     return themes.map(theme => (
-      <button id={theme} onClick={this.applyTheme(theme)}>{theme}</button>
+      <button id={theme} onClick={this.applyTheme(theme)}>
+        {theme}
+      </button>
     ));
   }
 }

@@ -3,12 +3,14 @@
  * @Date: 2018-09-04 11:01:19
  * Copyright © RingCentral. All rights reserved.
  */
-import { detect } from 'ui-components/theme';
+import { detect } from 'jui/foundation/theme';
 
-let theme: {
-  default: string;
-  themes: string[];
-} | undefined;
+let theme:
+  | {
+    default: string;
+    themes: string[];
+  }
+  | undefined;
 
 async function detectTheme() {
   if (theme) return theme;

@@ -6,7 +6,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import JuiChip from 'ui-components/molecules/Chip';
-import Avatar from '../Avatar';
+import { Avatar } from '../Avatar';
 
 // import { ENTITY_NAME } from '@/store';
 // import { getEntity } from '@/store/utils';

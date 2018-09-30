@@ -1,5 +1,6 @@
 import Factory from 'factory.ts';
 import faker from 'faker';
+import { CONVERSATION_TYPES } from '@/constants';
 import PersonModel from '../store/models/Person';
 import GroupModel from '../store/models/Group';
 
@@ -19,6 +20,7 @@ const personModelFactory = Factory.makeFactory<PersonModel>({
   firstName: faker.name.findName(),
   lastName: faker.name.findName(),
   displayName: '',
+  shortName: '',
 });
 
 personModelFactory.withDerivation(
@@ -31,6 +33,8 @@ const groupModelFactory = Factory.makeFactory<GroupModel>({
   ...base,
   setAbbreviation: faker.company.companyName(),
   members: [faker.random.number(100000000)],
+  type: CONVERSATION_TYPES.NORMAL_GROUP,
+  displayName: '',
 });
 
 export { personModelFactory, groupModelFactory };

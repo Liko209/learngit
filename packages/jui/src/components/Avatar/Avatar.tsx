@@ -7,10 +7,15 @@ import styled from '../../foundation/styled-components';
 import MuiAvatar, {
   AvatarProps as MuiAvatarProps,
 } from '@material-ui/core/Avatar';
-import { width, height, typography, palette } from '../../foundation/utils/styles';
+import {
+  width,
+  height,
+  typography,
+  palette,
+} from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 
-type TJuiAvatarProps = {
+type JuiAvatarProps = {
   size?: 'small' | 'medium' | 'large' | 'xlarge';
   color?: string;
 } & Omit<MuiAvatarProps, 'innerRef'>;
@@ -29,7 +34,7 @@ const fonts = {
   small: 'caption2',
 };
 
-const JuiAvatar = styled<TJuiAvatarProps>(MuiAvatar)`
+const JuiAvatar = styled<JuiAvatarProps>(MuiAvatar)`
   && {
     width: ${({ size = 'medium', theme }) => width(sizes[size])({ theme })};
     height: ${({ size = 'medium', theme }) => height(sizes[size])({ theme })};
@@ -51,4 +56,4 @@ JuiAvatar.defaultProps = {
 };
 JuiAvatar.displayName = 'JuiAvatar';
 JuiAvatar.dependencies = [MuiAvatar];
-export { TJuiAvatarProps, JuiAvatar };
+export { JuiAvatarProps, JuiAvatar };

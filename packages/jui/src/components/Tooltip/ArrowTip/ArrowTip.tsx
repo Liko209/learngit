@@ -7,14 +7,17 @@ import React from 'react';
 import MuiTooltip, {
   TooltipProps as MuiTooltipProps,
 } from '@material-ui/core/Tooltip';
-import styled, { css, createGlobalStyle } from '../../../foundation/styled-components';
+import styled, {
+  css,
+  createGlobalStyle,
+} from '../../../foundation/styled-components';
 import { palette } from '../../../foundation/utils/styles';
 
 type JuiTooltipProps = {
   placement?: string;
 } & MuiTooltipProps;
 
-const TooltipArrow = styled.span<{ placement?: string }>`
+const TooltipArrow = styled.span<{ placement: string }>`
   position: absolute;
   font-size: 7px;
   width: 3em;
@@ -84,16 +87,21 @@ const GlobalToolTip = createGlobalStyle`
   .popper .tooltipPlacementTop {
     margin: '16px 0'
   }
-`
+`;
 export class JuiArrowTip extends React.Component<JuiTooltipProps> {
   static dependencies = [MuiTooltip];
   state = {
     arrowRef: null,
   };
-  handleArrowRef = (ele: HTMLSpanElement) => {
-    this.setState({
-      arrowRef: ele,
-    });
+  arrowRef = React.createRef<any>();
+
+  componentDidMount() {
+    const { current } = this.arrowRef;
+    if (current) {
+      this.setState({
+        arrowRef: current,
+      });
+    }
   }
 
   render() {
@@ -106,7 +114,7 @@ export class JuiArrowTip extends React.Component<JuiTooltipProps> {
           title={
             <React.Fragment>
               {title}
-              <TooltipArrow placement={placement} ref={this.handleArrowRef} />
+              <TooltipArrow placement={placement} ref={this.arrowRef} />
             </React.Fragment>
           }
           classes={{

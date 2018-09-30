@@ -2,12 +2,7 @@ import React, { Fragment } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import { Delta, Sources } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
-import {
-  spacing,
-  typography,
-  palette,
-  shape,
-} from '../../foundation/utils/styles';
+import { spacing, typography, palette } from '../../foundation/utils/styles';
 import MarkdownShortcuts from './MarkdownShortcuts';
 import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
 
