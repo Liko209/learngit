@@ -23,9 +23,9 @@ const StyledListItem = styled(MuiMenuItem)`
     padding: ${spacing(2, 4, 2, 3)};
     color: ${grey('900')};
     /**
-   * Workaround to resolve transition conflicts with react-sortable-hoc
-   * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
-   */
+     * Workaround to resolve transition conflicts with react-sortable-hoc
+     * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
+     */
     transition: transform 0s ease,
       background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   }
@@ -52,6 +52,7 @@ type ListItemProps = {
   title: string;
   presence?: JSX.Element;
   umi?: JSX.Element;
+  indicator?: JSX.Element;
   fontWeight?: 'bold' | 'normal';
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
@@ -64,6 +65,7 @@ type IConversationListItem = {
 const ConversationListItem: IConversationListItem = (props: ListItemProps) => {
   const {
     title,
+    indicator,
     presence,
     umi,
     onClick,
@@ -76,7 +78,9 @@ const ConversationListItem: IConversationListItem = (props: ListItemProps) => {
   return (
     <StyledListItem onClick={onClick} component={component} selected={selected}>
       {presence}
-      <ItemText style={{ fontWeight }}>{title}</ItemText>
+      <ItemText style={{ fontWeight }}>
+        {title} {indicator}
+      </ItemText>
       {umi}
       <StyledIconography onClick={onMoreClick}>more_vert</StyledIconography>
     </StyledListItem>
