@@ -62,14 +62,13 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   @computed
   get url() {
     const { headshot } = this._person;
-    if (headshot && headshot.url) {
-      return {
-        url: headshot.url,
-      };
+    if (typeof headshot === 'string') {
+      return headshot;
     }
-    return {
-      url: defaultAvatar,
-    };
+    if (headshot && headshot.url) {
+      return headshot.url;
+    }
+    return defaultAvatar;
   }
 }
 
