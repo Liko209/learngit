@@ -13,6 +13,7 @@ import MenuList from '@material-ui/core/MenuList';
 import { TowardIcons } from './TowardIcons';
 import { IconsProps } from './types';
 import styled from '../../foundation/styled-components';
+import { height, spacing, ellipsis, width } from '../../foundation/utils/styles';
 
 type TowardsProps = IconsProps & {
   menuItems: string[];
@@ -23,19 +24,23 @@ type TowardsProps = IconsProps & {
 const MenuListCompositionWrapper = styled.div`
   position: relative;
   display: flex;
-  margin-right: ${({ theme }) => `${1 * theme.spacing.unit}px`};
+  margin-right: ${spacing(1)};
 `;
 
 const MenuWrapper = styled(Popper)`
-  margin-top: ${({ theme }) => theme.spacing.unit * 10}px;
-  margin-left: ${({ theme }) => theme.spacing.unit * 2}px;
+  margin-top: ${spacing(10)};
+  margin-left: ${spacing(2)};
 `;
 const StyledMenuItem = styled(MenuItem)`
   && {
-    font-size: ${({ theme }) => `${theme.typography.caption2.fontSize}`};
+    max-width: ${width(72)};
+    ${ellipsis()};
+    display: block;
+    line-height: ${height(8)};
+    font-size: ${({ theme }) => theme.typography.caption2.fontSize};
     padding-top: 0;
     padding-bottom: 0;
-    height: ${({ theme }) => theme.size.height * 8}px;
+    height: ${height(8)};
   }
 `;
 
