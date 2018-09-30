@@ -5,6 +5,8 @@
  */
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { writeFileSync } from 'fs';
+
 import {getLogger} from 'log4js';
 
 import { flattenGlobs, parseArgs, ConfigLoader} from './libs/utils';
@@ -98,6 +100,17 @@ const RUNNER_OPTS = {
   EXCLUDE_TAGS,
   QUARANTINE_MODE,
 }
+
+// create electron configuration file
+const electronRunConfig = {
+  mainWindowUrl: process.env.MAIN_WINDOW_URL || SITE_URL,
+  electronPath: process.env.ELECTRON_PATH || '/Applications/Jupiter.app/Contents/MacOS/Jupiter'
+};
+const testcafeElectronRcFilename = '.testcafe-electron-rc';
+const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
+writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
+logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
+
 
 export {
   APP_ROOT,
