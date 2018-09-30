@@ -36,7 +36,7 @@ const Left = styled<LeftNavProps>(CustomLeftNav)`
     justify-content: space-between;
     padding: ${spacing(6)} 0;
     box-sizing: border-box;
-    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     // this group btns will awake
     &:hover {
       .nav-icon {
@@ -70,8 +70,8 @@ const StyledListItem = styled(JuiListItem)`
     }
   }
   &&:hover {
-    background-color: ${({ theme, active }) =>
-      active ? theme.palette.action.active : grey('100')};
+    background-color: ${({ theme, selected }) =>
+      selected ? theme.palette.action.active : grey('100')};
     opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
     .nav-icon {
       color: ${grey('500')}; // 500
@@ -81,12 +81,9 @@ const StyledListItem = styled(JuiListItem)`
 const StyledListItemText = styled(JuiListItemText)`
   && {
     color: ${grey('500')}; // 500
-    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
-      opacity 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     padding: 0;
     span {
       color: ${palette('accent', 'ash')}; // Aah
-      transition: color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
       font-size: ${({ theme }) => `${theme.typography.fontSize}px`};
     }
   }
@@ -138,7 +135,6 @@ const UMI = styled<TUMIProps>(CustomUMI)`
     top: ${props => (!props.expand ? spacing(1) : '')};
     left: ${props => (!props.expand ? spacing(8) : '')};
     border-radius: ${({ theme }) => `${theme.shape.borderRadius * 6}px`};
-    transition: opacity 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     transform: scale(0.85);
     color: #fff !important;
   }
@@ -152,75 +148,79 @@ type TNavProps = {
   }[][];
   handleRouterChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
 };
+
 export class JuiLeftNav extends PureComponent<TNavProps> {
+  renderNavItems = () => {
+    const { icons, unreadCount, handleRouterChange, expand } = this.props;
+    return icons.map((arr, idx) => {
+      return (
+        <MuiList component="nav" disablePadding={true} key={idx}>
+          {arr.map((item, index) => {
+            const navUrl = item.icon.toLocaleLowerCase();
+            const pathname = window.location.pathname;
+            const actIndex = pathname.lastIndexOf('/');
+            const pathSlice = actIndex
+              ? pathname.slice(1, actIndex)
+              : pathname.slice(1);
+            const selected = pathSlice === navUrl;
+            const unread = unreadCount[idx][index];
+            const NavItem = (
+              <StyledListItem
+                button={true}
+                key={index}
+                selected={selected}
+                disableRipple={true}
+                focusVisibleClassName={'left-item-focus'}
+                disableGutters={true}
+              >
+                <ListLink
+                  to={`/${navUrl}`}
+                  className={'left-link'}
+                  onClick={handleRouterChange}
+                >
+                  <JuiListItemIcon className={'nav-icon'}>
+                    <JuiIconography>{item.icon}</JuiIconography>
+                  </JuiListItemIcon>
+                  <StyledListItemText
+                    primary={item.title}
+                    className={'nav-text'}
+                  />
+                  <UMI
+                    unreadCount={unread}
+                    important={true}
+                    expand={expand}
+                    variant="count"
+                  />
+                </ListLink>
+              </StyledListItem>
+            );
+            return !expand ? (
+              <JuiArrowTip
+                title={item.title}
+                key={index}
+                enterDelay={400}
+                placement="right"
+              >
+                {NavItem}
+              </JuiArrowTip>
+            ) : (
+              NavItem
+            );
+          })}
+        </MuiList>
+      );
+    });
+  }
   render() {
-    const { icons, expand, unreadCount, handleRouterChange } = this.props;
+    const { expand } = this.props;
     return (
       <Left
         expand={expand}
         variant="permanent"
         classes={{ paper: 'left-paper' }}
-        data-anchor="left-panel"
         open={expand}
       >
-        {icons.map((arr, idx) => {
-          return (
-            <MuiList component="nav" disablePadding={true} key={idx}>
-              {arr.map((item, index) => {
-                const navUrl = item.icon.toLocaleLowerCase();
-                const pathname = window.location.pathname;
-                const actIndex = pathname.lastIndexOf('/');
-                const pathSlice = actIndex
-                  ? pathname.slice(1, actIndex)
-                  : pathname.slice(1);
-                const isActive = pathSlice === navUrl;
-                const unread = unreadCount[idx][index];
-                const NavItem = (
-                  <StyledListItem
-                    button={true}
-                    key={index}
-                    active={isActive}
-                    disableRipple={true}
-                    focusVisibleClassName={'left-item-focus'}
-                    disableGutters={true}
-                  >
-                    <ListLink
-                      to={`/${navUrl}`}
-                      className={'left-link'}
-                      onClick={handleRouterChange}
-                    >
-                      <JuiListItemIcon className={'nav-icon'}>
-                        <JuiIconography>{item.icon}</JuiIconography>
-                      </JuiListItemIcon>
-                      <StyledListItemText
-                        primary={item.title}
-                        className={'nav-text'}
-                      />
-                      <UMI
-                        unreadCount={unread}
-                        important={true}
-                        expand={expand}
-                        variant="count"
-                      />
-                    </ListLink>
-                  </StyledListItem>
-                );
-                return !expand ? (
-                  <JuiArrowTip
-                    title={item.title}
-                    key={index}
-                    enterDelay={400}
-                    placement="right"
-                  >
-                    {NavItem}
-                  </JuiArrowTip>
-                ) : (
-                  NavItem
-                );
-              })}
-            </MuiList>
-          );
-        })}
+        {this.renderNavItems()}
       </Left>
     );
   }

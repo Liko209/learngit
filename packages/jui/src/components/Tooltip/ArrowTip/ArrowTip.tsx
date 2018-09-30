@@ -15,6 +15,7 @@ import { palette } from '../../../foundation/utils/styles';
 
 type JuiTooltipProps = {
   placement?: string;
+  show?: boolean;
 } & MuiTooltipProps;
 
 const TooltipArrow = styled.span<{ placement: string }>`
@@ -93,15 +94,10 @@ export class JuiArrowTip extends React.Component<JuiTooltipProps> {
   state = {
     arrowRef: null,
   };
-  arrowRef = React.createRef<any>();
-
-  componentDidMount() {
-    const { current } = this.arrowRef;
-    if (current) {
-      this.setState({
-        arrowRef: current,
-      });
-    }
+  handleArrowRef = (ele: any) => {
+    this.setState({
+      arrowRef: ele,
+    });
   }
 
   render() {
@@ -114,7 +110,7 @@ export class JuiArrowTip extends React.Component<JuiTooltipProps> {
           title={
             <React.Fragment>
               {title}
-              <TooltipArrow placement={placement} ref={this.arrowRef} />
+              <TooltipArrow placement={placement} ref={this.handleArrowRef} />
             </React.Fragment>
           }
           classes={{

@@ -68,3 +68,4 @@ class UmiViewModel extends AbstractViewModel implements UmiViewProps {
     throw new Error('Method not implemented.');
   }
 }
+export { UmiViewModel };
