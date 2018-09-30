@@ -1,7 +1,6 @@
 /*
  * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
- * @Date: 2018-09-13 15:50:25
+ * @Date: 2018-09-30 14:13:04
  * Copyright © RingCentral. All rights reserved.
  */
-export * from './MessageInput';
-export * from './markdown';
+export * from './AuthRoute';

@@ -5,7 +5,7 @@ import MuiDialogActions, {
 } from '@material-ui/core/DialogActions';
 import { spacing } from '../../foundation/utils/styles';
 
-const DialogActions = styled(({ ...props }: DialogActionsProps) => {
+const JuiDialogActions = styled(({ ...props }: DialogActionsProps) => {
   return (
     <MuiDialogActions
       {...props}
@@ -20,5 +20,4 @@ const DialogActions = styled(({ ...props }: DialogActionsProps) => {
   }
 `;
 
-export default DialogActions;
-export { DialogActions };
+export { JuiDialogActions };
