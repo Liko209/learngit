@@ -161,6 +161,7 @@ export class JuiLeftNav extends PureComponent<TNavProps> {
         variant="permanent"
         classes={{ paper: 'left-paper' }}
         data-anchor="left-panel"
+        open={expand}
       >
         {icons.map((arr, idx) => {
           return (
@@ -209,7 +210,7 @@ export class JuiLeftNav extends PureComponent<TNavProps> {
                     title={item.title}
                     key={index}
                     enterDelay={400}
-                    placement="bottom"
+                    placement="right"
                   >
                     {NavItem}
                   </JuiArrowTip>

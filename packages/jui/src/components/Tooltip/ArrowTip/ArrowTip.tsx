@@ -7,7 +7,7 @@ import React from 'react';
 import MuiTooltip, {
   TooltipProps as MuiTooltipProps,
 } from '@material-ui/core/Tooltip';
-import styled, { css } from '../../../foundation/styled-components';
+import styled, { css, createGlobalStyle } from '../../../foundation/styled-components';
 import { palette } from '../../../foundation/utils/styles';
 
 type JuiTooltipProps = {
@@ -56,6 +56,7 @@ const top = css`
 `;
 
 const right = css`
+  top: 0;
   left: 0;
   margin-left: -0.8em;
   height: 1.8em;
@@ -68,26 +69,22 @@ const right = css`
     )} transparent transparent;
   },
 `;
-const left = css`
-  left: 0;
-  margin-left: 0;
-  height: 0;
-  width: 23em;
-  &::before {
-    border-width: 1em 0 1em 1em;
-    border-color: transparent  transparent transparent ${palette(
-      'tooltip',
-      'dark',
-    )};
-  },
-`;
 const arrowStyles = {
   bottom,
   top,
   right,
-  left,
 };
-
+const GlobalToolTip = createGlobalStyle`
+  .popper .tooltipPlacementRight {
+    margin: 0 2px;
+  }
+  .popper .tooltipPlacementBottom {
+    margin: '12px 0',
+  }
+  .popper .tooltipPlacementTop {
+    margin: '16px 0'
+  }
+`
 export class JuiArrowTip extends React.Component<JuiTooltipProps> {
   static dependencies = [MuiTooltip];
   state = {
@@ -102,30 +99,37 @@ export class JuiArrowTip extends React.Component<JuiTooltipProps> {
   render() {
     const { title, children, placement = 'bottom', ...rest } = this.props;
     return (
-      <MuiTooltip
-        {...rest}
-        title={
-          <React.Fragment>
-            {title}
-            <TooltipArrow placement={placement} ref={this.handleArrowRef} />
-          </React.Fragment>
-        }
-        classes={{
-          popper: 'popper',
-        }}
-        PopperProps={{
-          popperOptions: {
-            modifiers: {
-              arrow: {
-                enabled: Boolean(this.state.arrowRef),
-                element: this.state.arrowRef,
+      <React.Fragment>
+        <MuiTooltip
+          {...rest}
+          placement={placement}
+          title={
+            <React.Fragment>
+              {title}
+              <TooltipArrow placement={placement} ref={this.handleArrowRef} />
+            </React.Fragment>
+          }
+          classes={{
+            popper: 'popper',
+            tooltipPlacementRight: 'tooltipPlacementRight',
+            tooltipPlacementBottom: 'tooltipPlacementBottom',
+            tooltipPlacementTop: 'tooltipPlacementTop',
+          }}
+          PopperProps={{
+            popperOptions: {
+              modifiers: {
+                arrow: {
+                  enabled: Boolean(this.state.arrowRef),
+                  element: this.state.arrowRef,
+                },
               },
             },
-          },
-        }}
-      >
-        {children}
-      </MuiTooltip>
+          }}
+        >
+          {children}
+        </MuiTooltip>
+        <GlobalToolTip />
+      </React.Fragment>
     );
   }
 }

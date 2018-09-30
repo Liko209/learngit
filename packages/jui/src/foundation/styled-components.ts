@@ -14,6 +14,20 @@ import { ComponentClass } from 'react';
 import * as styledComponents from 'styled-components';
 import { Theme } from './theme/theme';
 
+declare module 'styled-components' {
+  // tslint:disable-next-line
+  export interface ThemedStyledComponentsModule<T> {
+    createGlobalStyle(
+      strings: TemplateStringsArray,
+      ...interpolations: styledComponents.SimpleInterpolation[]
+    ): React.ComponentClass;
+  }
+
+  export function createGlobalStyle(
+    strings: TemplateStringsArray,
+    ...interpolations: styledComponents.SimpleInterpolation[]
+  ): React.ComponentClass;
+}
 // Helper type operators
 type KeyofBase = keyof any;
 type Diff<T extends KeyofBase, U extends KeyofBase> = ({ [P in T]: P } &
@@ -83,6 +97,10 @@ type ThemedStyledComponentsModule<T> = {
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.SimpleInterpolation[] // tslint:disable-line
   ): void;
+  createGlobalStyle(
+    strings: TemplateStringsArray,
+    ...interpolations: styledComponents.SimpleInterpolation[]
+  ): React.ComponentClass;
   withTheme<P extends { theme?: T }>(
     component: React.ComponentType<P>,
   ): ComponentClass<WithOptionalTheme<P, T>>;
@@ -93,6 +111,7 @@ type ThemedStyledComponentsModule<T> = {
 const {
   default: styled,
   css,
+  createGlobalStyle,
   injectGlobal,
   keyframes,
   ThemeProvider,
@@ -100,6 +119,7 @@ const {
 
 export {
   css,
+  createGlobalStyle,
   injectGlobal,
   keyframes,
   ThemeProvider,
