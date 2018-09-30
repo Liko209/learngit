@@ -16,7 +16,7 @@ import {
 import handleData from './handleData';
 import { mainLogger } from 'foundation';
 import { notificationCenter } from '..';
-import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
+// import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 
 export default class SyncService extends BaseService {
   private isLoading: boolean;
@@ -47,23 +47,27 @@ export default class SyncService extends BaseService {
       await this._firstLogin();
     }
     this.isLoading = false;
-    this._preloadPosts();
+    // this._preloadPosts();
   }
 
-  private async _preloadPosts() {
-    const handler = new PreloadPostsForGroupHandler();
-    handler.preloadPosts();
-  }
+  // private async _preloadPosts() {
+  //   const handler = new PreloadPostsForGroupHandler();
+  //   handler.preloadPosts();
+  // }
 
   private async _firstLogin() {
     try {
       const currentTime = Date.now();
+      console.time('_firstLogin: fetchInitialData');
       let result = await fetchInitialData(currentTime);
       this.onDataLoaded && (await this.onDataLoaded());
       await handleData(result);
+      console.timeEnd('_firstLogin: fetchInitialData');
+      console.time('_firstLogin: fetchRemainingData');
       result = await fetchRemainingData(currentTime);
       this.onDataLoaded && (await this.onDataLoaded());
       await handleData(result);
+      console.timeEnd('_firstLogin: fetchRemainingData');
     } catch (e) {
       mainLogger.error('fetch initial data or remaining data error');
       notificationCenter.emitService(SERVICE.DO_SIGN_OUT);

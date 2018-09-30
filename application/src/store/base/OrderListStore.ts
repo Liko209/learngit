@@ -1,3 +1,9 @@
+/*
+ * @Author: Steve Chen (steve.chen@ringcentral.com)
+ * @Date: 2018-09-27 13:33:35
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { createAtom, IAtom } from 'mobx';
 import _ from 'lodash';
 
