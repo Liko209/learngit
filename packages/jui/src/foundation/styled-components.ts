@@ -53,7 +53,7 @@ type ThemedStyledComponentFactories<T> = {
   >
 };
 
-type IDependencies = {
+type Dependencies = {
   dependencies?: (React.ComponentType | ((props: any) => JSX.Element))[];
 };
 
@@ -63,13 +63,13 @@ interface IThemedStyledFunction<P, T, O = P> {
     ...interpolations: styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P, T>
     >[] // tslint:disable-line
-  ): styledComponents.StyledComponentClass<P, T, O> & IDependencies;
+  ): styledComponents.StyledComponentClass<P, T, O> & Dependencies;
   <U>(
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P & U, T>
     >[] // tslint:disable-line
-  ): styledComponents.StyledComponentClass<P & U, T, O & U> & IDependencies;
+  ): styledComponents.StyledComponentClass<P & U, T, O & U> & Dependencies;
   attrs<U, A extends Partial<P & U> = {}>(
     attrs: Attrs<P & U, A, T>,
   ): IThemedStyledFunction<DiffBetween<A, P & U>, T, DiffBetween<A, O & U>>;
@@ -126,7 +126,7 @@ export {
   IThemedStyledFunction,
   IThemedBaseStyledInterface,
   IThemedStyledComponentsModule,
-  IDependencies,
+  Dependencies,
   WithOptionalTheme,
 };
 export default styled;

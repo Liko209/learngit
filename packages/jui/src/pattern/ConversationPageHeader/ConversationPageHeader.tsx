@@ -154,4 +154,3 @@ class JuiConversationPageHeader
 }
 
 export { JuiConversationPageHeader, JuiConversationPageHeaderProps };
-export default JuiConversationPageHeader;
