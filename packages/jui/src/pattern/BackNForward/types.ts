@@ -6,13 +6,13 @@
 import React from 'react';
 
 type IconsProps = {
-  types: 'backward' | 'forward';
+  types: string;
   forwardDisabled?: boolean;
   backDisabled?: boolean;
   onBackWard?: ((event: React.MouseEvent<HTMLSpanElement>) => void);
-  onForward?: ((event: React.MouseEvent<HTMLSpanElement>) => void);
-  onButtonPress?: ((nav: string, event: React.TouchEvent | React.MouseEvent<HTMLElement>) => void);
-  onButtonRelease?: ((event: React.TouchEvent | React.MouseEvent<HTMLElement>) => void);
+  onForWard?: ((event: React.MouseEvent<HTMLSpanElement>) => void);
+  onButtonPress: ((nav: string, event: React.TouchEvent | React.MouseEvent<HTMLElement>) => void);
+  onButtonRelease: ((event: React.TouchEvent | React.MouseEvent<HTMLElement>) => void);
 };
 
 export { IconsProps };

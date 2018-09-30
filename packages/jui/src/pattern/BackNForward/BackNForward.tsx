@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from '../../foundation/styled-components';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
@@ -13,12 +12,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import { TowardIcons } from './TowardIcons';
 import { IconsProps } from './types';
+import styled from '../../foundation/styled-components';
 
-type TIconMore = {
-  menuItems?: string[];
-  open?: boolean;
-  onClose?: ((event: React.ChangeEvent | React.TouchEvent | React.MouseEvent<HTMLElement>, index?: number) => void);
-} & IconsProps;
+type TowardsProps = IconsProps & {
+  menuItems: string[];
+  open: boolean;
+  onClose: ((event: React.ChangeEvent<{}> | React.TouchEvent | React.MouseEvent<HTMLElement>, index?: number) => void);
+};
 
 const MenuListCompositionWrapper = styled.div`
   position: relative;
@@ -38,20 +38,10 @@ const StyledMenuItem = styled(MenuItem)`
     height: ${({ theme }) => theme.size.height * 8}px;
   }
 `;
-enum ICON_TYPES {
-  LEFT = 'backward',
-  RIGHT = 'forward',
-}
-export class BackNForward extends React.Component<TIconMore> {
-  constructor(props: TIconMore) {
+
+export class JuiBackNForward extends React.Component<TowardsProps> {
+  constructor(props: TowardsProps) {
     super(props);
-  }
-  componentWillReceiveProps(nextProps: TIconMore) {
-    if (this.props.open !== nextProps.open) {
-      this.setState({
-        open: nextProps.open,
-      });
-    }
   }
   anchorEl = React.createRef<Element>();
 
@@ -67,8 +57,6 @@ export class BackNForward extends React.Component<TIconMore> {
       onButtonPress,
       onButtonRelease,
       types,
-    } : {
-      types: ICON_TYPES,
     } = this.props;
     return (
       <MenuListCompositionWrapper>
@@ -99,8 +87,8 @@ export class BackNForward extends React.Component<TIconMore> {
                 <ClickAwayListener onClickAway={onClose}>
                   <MenuList>
                     {
-                      menuItems.map((item, index) => {
-                        return (<StyledMenuItem onClick={onClose!.bind(this, event, index)} key={index}>{item}</StyledMenuItem>);
+                      menuItems.map((item: string, index: number) => {
+                        return (<StyledMenuItem onClick={onClose.bind(this, event, index)} key={index}>{item}</StyledMenuItem>);
                       })
                     }
                   </MenuList>

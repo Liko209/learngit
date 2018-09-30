@@ -12,7 +12,7 @@ enum ICON_TYPES {
   RIGHT = 'forward',
 }
 class TowardIcons extends PureComponent<IconsProps> {
-  constructor(props) {
+  constructor(props: IconsProps) {
     super(props);
   }
   render() {
@@ -41,12 +41,12 @@ class TowardIcons extends PureComponent<IconsProps> {
       <JuiIconButton
         tooltipTitle={types}
         size="small"
-        // onClick={handleClick}
+        onClick={handleClick}
         disabled={disabled}
-        // onTouchStart={onButtonPress!.bind(this, types)}
-        // onTouchEnd={onButtonRelease}
-        // onMouseDown={onButtonPress!.bind(this, types)}
-        // onMouseUp={onButtonRelease}
+        onTouchStart={onButtonPress && onButtonPress!.bind(this, types)}
+        onTouchEnd={onButtonRelease}
+        onMouseDown={onButtonPress && onButtonPress!.bind(this, types)}
+        onMouseUp={onButtonRelease}
       >
         {iconDirection}
       </JuiIconButton>
