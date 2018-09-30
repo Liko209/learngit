@@ -51,13 +51,23 @@ function buildContainer<P = {}, S = {}, SS = any>({
     }
 
     private get _vmProps() {
+      // const props: any = {};
+      // for (const key in this.vm) {
+      //   if (!/^\$|_/.test(key)) {
+      //     // Not start with _ or $
+      //     props[key] = this.vm[key];
+      //   }
+      // }
+      // return props;
+      const descriptors = Object.getOwnPropertyDescriptors(this.vm);
       const props: any = {};
-      for (const key in this.vm) {
-        if (!/^\$|_/.test(key)) {
-          // Not start with _ or $
+      Object.keys(descriptors)
+        .filter(
+          key => !/^\$|_/.test(key), // Start with _ or $
+        )
+        .forEach((key: string) => {
           props[key] = this.vm[key];
-        }
-      }
+        });
       return props;
     }
   }
