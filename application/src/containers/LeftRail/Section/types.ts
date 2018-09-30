@@ -1,5 +1,4 @@
 import { SortEndHandler } from 'react-sortable-hoc';
-import { TranslationFunction } from 'i18next';
 import { GROUP_QUERY_TYPE } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
 import { SECTION_TYPE } from './constants';
@@ -9,8 +8,7 @@ type SectionProps = {
 };
 
 type SectionViewProps = {
-  t: TranslationFunction;
-  groupIds: [];
+  groupIds: number[];
   sortable: boolean;
   expanded: boolean;
   iconName: string;

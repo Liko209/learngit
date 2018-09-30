@@ -16,13 +16,18 @@ type SectionProps = {
   onExpand?: Function;
   onCollapse?: Function;
   umi?: JSX.Element;
+  icon?: JSX.Element;
+  title: string;
 } & SectionHeaderProps;
 
 type SectionStates = {
   expanded: boolean;
 };
 
-class ConversationListSection extends Component<SectionProps, SectionStates> {
+class JuiConversationListSection extends Component<
+  SectionProps,
+  SectionStates
+> {
   static defaultProps = {
     onExpand: noop,
     onCollapse: noop,
@@ -68,5 +73,5 @@ class ConversationListSection extends Component<SectionProps, SectionStates> {
     }
   }
 }
-export { ConversationListSection };
-export default ConversationListSection;
+export { JuiConversationListSection };
+export default JuiConversationListSection;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from 'jui/foundation';
+import styled from 'jui/foundation/styled-components';
 import { JuiDivider } from 'jui/components/Divider';
 
 import { Section } from './Section';

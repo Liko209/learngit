@@ -4,26 +4,29 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
-import { JuiIconography } from 'jui/foundation';
-import { JuiListSection, JuiList } from 'jui/components';
+import { JuiIconography } from 'jui/foundation/Iconography';
+import {
+  JuiConversationList,
+  JuiConversationListSection,
+} from 'jui/pattern/ConversationList';
+import { ConversationListItem } from '@/containers/ConversationList/ConversationListItem';
 import { toTitleCase } from '@/utils';
 import { SectionViewProps } from './types';
 
 // TODO remove Stubs here
 const Umi = (props: any) => <div {...props} />;
-const ListItem = (props: any) => <div {...props} />;
-const JuiListSectionHeader = (props: any) => <div {...props} />;
-const JuiListSectionContent = (props: any) => <div {...props} />;
-const JuiListSectionHeaderIcon = (props: any) => <div {...props} />;
-const JuiListSectionHeaderText = (props: any) => <div {...props} />;
-const JuiListSectionHeaderUmi = (props: any) => <div {...props} />;
 
-const SortableList = SortableContainer(JuiList);
-const SortableItem = SortableElement(ListItem);
+const SortableList = SortableContainer(JuiConversationList);
+const SortableItem = SortableElement(ConversationListItem);
 
-class SectionViewComponent extends React.Component<SectionViewProps> {
+class SectionViewComponent extends React.Component<
+  SectionViewProps & {
+    t: TranslationFunction;
+  }
+> {
   static defaultProps = {
     expanded: true,
     sortable: false,
@@ -36,18 +39,18 @@ class SectionViewComponent extends React.Component<SectionViewProps> {
       return (
         <SortableList distance={5} lockAxis="y" onSortEnd={onSortEnd}>
           {this.props.groupIds.map((id: number, index: number) => (
-            <SortableItem id={id} key={id} index={index} />
+            <SortableItem groupId={id} key={id} index={index} />
           ))}
         </SortableList>
       );
     }
 
     return (
-      <JuiList>
+      <JuiConversationList>
         {this.props.groupIds.map((id: number) => (
-          <ListItem id={id} key={id} />
+          <ConversationListItem groupId={id} key={id} />
         ))}
-      </JuiList>
+      </JuiConversationList>
     );
   }
 
@@ -55,20 +58,14 @@ class SectionViewComponent extends React.Component<SectionViewProps> {
     const { t, title, groupIds, iconName, expanded } = this.props;
     return (
       <div>
-        <JuiListSection expanded={expanded}>
-          <JuiListSectionHeader>
-            <JuiListSectionHeaderIcon>
-              <JuiIconography>{iconName}</JuiIconography>
-            </JuiListSectionHeaderIcon>
-            <JuiListSectionHeaderText>
-              {toTitleCase(t(title))}
-            </JuiListSectionHeaderText>
-            <JuiListSectionHeaderUmi>
-              <Umi groupIds={groupIds} />
-            </JuiListSectionHeaderUmi>
-          </JuiListSectionHeader>
-          <JuiListSectionContent>{this.renderList()}</JuiListSectionContent>
-        </JuiListSection>
+        <JuiConversationListSection
+          title={toTitleCase(t(title))}
+          icon={<JuiIconography>{iconName}</JuiIconography>}
+          umi={<Umi groupIds={groupIds} />}
+          expanded={expanded}
+        >
+          {this.renderList()}
+        </JuiConversationListSection>
       </div>
     );
   }

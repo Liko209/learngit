@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { parse } from 'qs';
-import ThreeLayout from 'jui/foundation/Layout/ThreeLayout';
-import { ConversationPage } from '@/containers/ConversationPage';
+import { JuiTreeColumnResponse } from 'jui/foundation/Layout/Response/ThreeColumnResponse';
+// import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
 import { RightRail } from '@/containers/RightRail';
 
 import { MessagesViewProps, MessagesViewStates } from './types';
 
-class MessagesView extends Component<MessagesViewProps, MessagesViewStates> {
-  constructor(props: MessagesViewProps) {
+class MessagesViewComponent extends Component<
+  MessagesViewProps & RouteComponentProps<{ id: string }>,
+  MessagesViewStates
+> {
+  constructor(props: MessagesViewProps & RouteComponentProps<{ id: string }>) {
     super(props);
     this.state = { leftNavWidth: 0 };
   }
@@ -44,13 +48,16 @@ class MessagesView extends Component<MessagesViewProps, MessagesViewStates> {
   render() {
     const { leftNavWidth } = this.state;
     return (
-      <ThreeLayout tag="conversation" leftNavWidth={leftNavWidth}>
+      <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
         <LeftRail />
-        <ConversationPage />
+        <div />
+        {/* <ConversationPage /> */}
         <RightRail />
-      </ThreeLayout>
+      </JuiTreeColumnResponse>
     );
   }
 }
+
+const MessagesView = withRouter(MessagesViewComponent);
 
 export { MessagesView };

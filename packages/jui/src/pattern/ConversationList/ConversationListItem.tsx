@@ -48,7 +48,7 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 `;
 
-type ListItemProps = {
+type JuiConversationListItemProps = {
   title: string;
   presence?: JSX.Element;
   umi?: JSX.Element;
@@ -60,9 +60,11 @@ type ListItemProps = {
 
 type IConversationListItem = {
   dependencies?: React.ComponentType[];
-} & React.SFC<ListItemProps>;
+} & React.SFC<JuiConversationListItemProps>;
 
-const ConversationListItem: IConversationListItem = (props: ListItemProps) => {
+const JuiConversationListItem: IConversationListItem = (
+  props: JuiConversationListItemProps,
+) => {
   const {
     title,
     indicator,
@@ -87,8 +89,8 @@ const ConversationListItem: IConversationListItem = (props: ListItemProps) => {
   );
 };
 
-ConversationListItem.defaultProps = { fontWeight: 'normal' };
-ConversationListItem.dependencies = [ItemText, JuiIconography];
+JuiConversationListItem.defaultProps = { fontWeight: 'normal' };
+JuiConversationListItem.dependencies = [ItemText, JuiIconography];
 
-export default ConversationListItem;
-export { ListItemProps, ConversationListItem };
+export default JuiConversationListItem;
+export { JuiConversationListItemProps, JuiConversationListItem };

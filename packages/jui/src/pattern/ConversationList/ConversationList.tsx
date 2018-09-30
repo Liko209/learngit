@@ -16,15 +16,15 @@ const StyledList = styled(MuiMenuList)`
   }
 `;
 
-type ListProps = {
+type JuiConversationListProps = {
   className?: string;
   onClick?: Function;
   onChange?: Function;
 };
 
-class ConversationList extends PureComponent<ListProps> {
+class JuiConversationList extends PureComponent<JuiConversationListProps> {
   static dependencies: React.ComponentType[];
-  constructor(props: ListProps) {
+  constructor(props: JuiConversationListProps) {
     super(props);
 
     this._handleChange = this._handleChange.bind(this);
@@ -60,7 +60,7 @@ class ConversationList extends PureComponent<ListProps> {
   }
 }
 
-ConversationList.dependencies = [MuiMenuList];
+JuiConversationList.dependencies = [MuiMenuList];
 
-export default ConversationList;
-export { ListProps, ConversationList };
+export default JuiConversationList;
+export { JuiConversationList, JuiConversationListProps };

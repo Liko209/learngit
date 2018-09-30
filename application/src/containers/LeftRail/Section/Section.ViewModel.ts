@@ -3,7 +3,7 @@
  * @Date: 2018-08-22 15:21:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
 import { Group } from 'sdk/models';
@@ -11,7 +11,12 @@ import { ENTITY_NAME } from '@/store';
 import OrderListHandler from '@/store/base/OrderListHandler';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
-import { SectionProps, SectionConfig, SectionConfigs } from './types';
+import {
+  SectionProps,
+  SectionConfig,
+  SectionConfigs,
+  SectionViewProps,
+} from './types';
 import { SECTION_TYPE } from './constants';
 
 const { GroupService } = service;
@@ -57,16 +62,39 @@ const SECTION_CONFIGS: SectionConfigs = {
   },
 };
 
-class SectionViewModel extends OrderListHandler<Group, GroupModel> {
+class SectionViewModel extends OrderListHandler<Group, GroupModel>
+  implements SectionViewProps {
+  @observable
   private _type: SECTION_TYPE;
+
+  @observable
   private _config: SectionConfig;
+
+  @computed
+  get iconName() {
+    return this._config.iconName;
+  }
+
+  @computed
+  get title() {
+    return this._config.title;
+  }
 
   @computed
   get groupIds() {
     return this.getStore().getIds();
   }
 
-  onSortEnd = (oldIndex: number, newIndex: number) => {
+  sortable: boolean = false;
+  expanded: boolean = false;
+
+  onSortEnd = ({
+    oldIndex,
+    newIndex,
+  }: {
+    oldIndex: number;
+    newIndex: number;
+  }) => {
     return this.handleSortEnd(oldIndex, newIndex);
   }
 
