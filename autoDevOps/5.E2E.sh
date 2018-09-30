@@ -18,7 +18,7 @@ echo $BRANCH
 echo $SCREENSHOTS_PATH
 
 mkdir -p $SCREENSHOTS_PATH
-ts-node multi-run.ts
+npx ts-node multi-run.ts
 rm -r $SCREENSHOTS_PATH
 
 e2eResult=$?
