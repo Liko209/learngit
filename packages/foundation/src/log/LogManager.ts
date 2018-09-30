@@ -15,7 +15,7 @@ class LogManager {
     this.initMainLogger();
 
     window.onerror = this.windowError.bind(this);
-    window.addEventListener('beforeunload', (event) => {
+    window.addEventListener('beforeunload', (event: any) => {
       this.doAppend();
     });
   }
@@ -27,7 +27,7 @@ class LogManager {
 
   async doAppend(overThreshold: boolean = false) {
     const doAppends: Promise<void>[] = [];
-    this._loggers.forEach((logger) => {
+    this._loggers.forEach((logger: Logger) => {
       doAppends.push(logger.doAppend());
     });
 
@@ -67,13 +67,14 @@ class LogManager {
   }
 
   setAllLoggerLevel(level: LOG_LEVEL) {
-    this._loggers.forEach((logger) => {
+    this._loggers.forEach((logger: Logger) => {
       logger.setLevel(level);
     });
   }
 
   windowError(msg: string, url: string, line: number) {
-    const message = `Error in ('${(url || window.location)}) on line ${line} with message (${msg})`;
+    const message = `Error in ('${url ||
+      window.location}) on line ${line} with message (${msg})`;
     this.getMainLogger().fatal(message);
   }
 
@@ -82,19 +83,21 @@ class LogManager {
 
     const handleCategorys = categorys || Array.from(this._loggers.keys());
 
-    handleCategorys.map(name => this._loggers.get(name)).forEach((logger) => {
-      if (logger) {
-        logger.getAppenders().forEach((apppender) => {
-          if (apppender instanceof PersistentLogAppender) {
-            iterable.push(apppender.getLogs());
-          }
-        });
-      }
-    });
+    handleCategorys
+      .map(name => this._loggers.get(name))
+      .forEach((logger: Logger) => {
+        if (logger) {
+          logger.getAppenders().forEach((apppender: any) => {
+            if (apppender instanceof PersistentLogAppender) {
+              iterable.push(apppender.getLogs());
+            }
+          });
+        }
+      });
 
-    return Promise.all(iterable).then((res) => {
+    return Promise.all(iterable).then((res: any) => {
       const logs = {};
-      res.forEach((value, index) => {
+      res.forEach((value: any, index: number) => {
         logs[handleCategorys[index]] = [].concat.apply([], value);
       });
       return logs;
@@ -106,15 +109,17 @@ class LogManager {
 
     const handleCategorys = categorys || Array.from(this._loggers.keys());
 
-    handleCategorys.map(name => this._loggers.get(name)).forEach((logger) => {
-      if (logger) {
-        logger.getAppenders().forEach((apppender) => {
-          if (apppender instanceof PersistentLogAppender) {
-            iterable.push(apppender.doClear());
-          }
-        });
-      }
-    });
+    handleCategorys
+      .map(name => this._loggers.get(name))
+      .forEach((logger: Logger) => {
+        if (logger) {
+          logger.getAppenders().forEach((apppender: any) => {
+            if (apppender instanceof PersistentLogAppender) {
+              iterable.push(apppender.doClear());
+            }
+          });
+        }
+      });
 
     return Promise.all(iterable);
   }

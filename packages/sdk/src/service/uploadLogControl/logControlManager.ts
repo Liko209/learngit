@@ -36,7 +36,6 @@ class LogControlManager {
     logManager.setOverThresholdCallback(() => {
       this.doUpload();
     });
-
   }
 
   public static instance(): LogControlManager {
@@ -114,8 +113,10 @@ class LogControlManager {
   private _updateLogSystemLevel() {
     // set log level to log system
     // TODO let it all level now, should reset to above code after implement service framework
-    mainLogger.info(`_isDebugMode : ${this._isDebugMode} _enabledLog: ${this._enabledLog}`);
-    const level: LOG_LEVEL = LOG_LEVEL.ALL;
+    mainLogger.info(
+      `_isDebugMode : ${this._isDebugMode} _enabledLog: ${this._enabledLog}`,
+    );
+    const level: LOG_LEVEL = LOG_LEVEL.WARN;
     logManager.setAllLoggerLevel(level);
   }
 }

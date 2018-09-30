@@ -52,7 +52,7 @@ class NavPresenter {
     active: false,
   };
   private _handleTitleSlice(title: string) {
-    return title.length > TITLE_LENGTH
+    return title && title.length > TITLE_LENGTH
       ? `${title.slice(0, TITLE_LENGTH + 2)}...`
       : title;
   }
