@@ -3,5 +3,4 @@
  * @Date: 2018-09-29 18:19:15
  * Copyright © RingCentral. All rights reserved.
  */
-export * from './Header';
-export * from './MessageInput';
+export * from './ConversationPage';

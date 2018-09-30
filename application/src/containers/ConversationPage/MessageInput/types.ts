@@ -14,7 +14,7 @@ type MessageInputViewProps = {
   id: number;
   draft: string;
   error: string;
-  t?: TranslationFunction;
+  t: TranslationFunction;
   forceSaveDraft(): void;
   changeDraft(value: any): void;
   keyboardEventHandler: {
