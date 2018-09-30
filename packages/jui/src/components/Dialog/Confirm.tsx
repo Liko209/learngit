@@ -5,14 +5,14 @@
  */
 
 import React, { MouseEvent } from 'react';
-import JuiDialog, { IDialogProps } from './Dialog';
-import JuiDialogTitle from './DialogTitle';
-import JuiDialogContent from './DialogContent';
-import JuiDialogContentText from './DialogContentText';
-import JuiDialogActions from './DialogActions';
+import { JuiDialog, JuiDialogProps } from './Dialog';
+import { JuiDialogTitle } from './DialogTitle';
+import { JuiDialogContent } from './DialogContent';
+import { JuiDialogContentText } from './DialogContentText';
+import { JuiDialogActions } from './DialogActions';
 import { JuiButton } from '../Buttons/Button';
 
-interface IProps extends IDialogProps {
+type JuiComfirmProps = JuiDialogProps & {
   open: boolean;
   okText?: string;
   closeText?: string;
@@ -21,9 +21,9 @@ interface IProps extends IDialogProps {
   header: JSX.Element | string;
   children: JSX.Element | string; // content
   others?: JSX.Element;
-}
+};
 
-const Comfirm = (props: IProps) => {
+const JuiComfirm = (props: JuiComfirmProps) => {
   const {
     open = false,
     size = 'small',
@@ -59,4 +59,4 @@ const Comfirm = (props: IProps) => {
   );
 };
 
-export default Comfirm;
+export { JuiComfirm };

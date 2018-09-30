@@ -10,7 +10,11 @@ import styled from '../../foundation/styled-components';
 
 type JuiListItemIconProps = MuiListItemIconProps;
 
-const JuiListItemIcon = styled(MuiListItemIcon)``;
+const JuiListItemIcon = styled(MuiListItemIcon)`
+  && {
+    color: inherit;
+  }
+`;
 
 JuiListItemIcon.displayName = 'JuiListItemIcon';
 JuiListItemIcon.dependencies = [MuiListItemIcon];

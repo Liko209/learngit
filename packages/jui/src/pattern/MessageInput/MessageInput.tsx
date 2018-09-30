@@ -112,5 +112,3 @@ class JuiMessageInput extends React.Component<IProps, IState> {
 }
 
 export { JuiMessageInput, IProps };
-
-export default JuiMessageInput;

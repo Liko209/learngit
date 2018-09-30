@@ -1,12 +1,14 @@
 import React from 'react';
-import MuiDialog, { DialogProps } from '@material-ui/core/Dialog';
+import MuiDialog, {
+  DialogProps as MuiDialogProps,
+} from '@material-ui/core/Dialog';
 import styled from 'styled-components';
 
-export interface IDialogProps extends DialogProps {
+type JuiDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
-}
+};
 
-const Dialog = styled(({ size = 'small', ...restProps }: IDialogProps) => {
+const JuiDialog = styled(({ size = 'small', ...restProps }: JuiDialogProps) => {
   switch (size) {
     case 'small':
       restProps.maxWidth = 'xs';
@@ -56,5 +58,4 @@ const Dialog = styled(({ size = 'small', ...restProps }: IDialogProps) => {
   }
 `;
 
-export default Dialog;
-export { Dialog };
+export { JuiDialog, JuiDialogProps };

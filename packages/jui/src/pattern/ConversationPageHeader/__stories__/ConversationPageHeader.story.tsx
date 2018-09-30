@@ -8,11 +8,11 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import backgrounds from '@storybook/addon-backgrounds';
 import { text } from '@storybook/addon-knobs/react';
-import { JuiIconButton } from '../../IconButton';
-import { withInfoDecorator } from '../../../utils/decorators';
-import JuiConversationPageHeader from '../ConversationPageHeader';
-import JuiButtonBar from '../../../molecules/ButtonBar/ButtonBar';
-import { JuiCheckboxButton } from '../../CheckboxButton';
+import { JuiIconButton } from '../../../components/Buttons/IconButton';
+import { withInfoDecorator } from '../../../foundation/utils/decorators';
+import { JuiConversationPageHeader } from '../ConversationPageHeader';
+import { JuiButtonBar } from '../../../components/Buttons/ButtonBar';
+import { JuiCheckboxButton } from '../../../components/Buttons/CheckboxButton';
 
 const getTitleKnob = () => text('title', 'Global UXD');
 storiesOf('Molecules/ConversationPageHeader', module)
@@ -26,14 +26,32 @@ storiesOf('Molecules/ConversationPageHeader', module)
         title={getTitleKnob()}
         SubTitle={
           <JuiButtonBar size="small" overlapping={true}>
-            <JuiCheckboxButton tooltipTitle="Add to Favorite" checkedIconName="star" iconName="star_border">star_border</JuiCheckboxButton>
-            <JuiCheckboxButton tooltipTitle="This is a public team" checkedIconName="lock" iconName="lock_open">favorite_border</JuiCheckboxButton>
+            <JuiCheckboxButton
+              tooltipTitle="Add to Favorite"
+              checkedIconName="star"
+              iconName="star_border"
+            >
+              star_border
+            </JuiCheckboxButton>
+            <JuiCheckboxButton
+              tooltipTitle="This is a public team"
+              checkedIconName="lock"
+              iconName="lock_open"
+            >
+              favorite_border
+            </JuiCheckboxButton>
           </JuiButtonBar>}
         Right={
           <JuiButtonBar size="medium" overlapping={true}>
-            <JuiIconButton tooltipTitle="Start Conference Call">local_phone</JuiIconButton>
-            <JuiIconButton tooltipTitle="Start Video Call">videocam</JuiIconButton>
-            <JuiIconButton tooltipTitle="Conversation Settings">settings</JuiIconButton>
+            <JuiIconButton tooltipTitle="Start Conference Call">
+              local_phone
+            </JuiIconButton>
+            <JuiIconButton tooltipTitle="Start Video Call">
+              videocam
+            </JuiIconButton>
+            <JuiIconButton tooltipTitle="Conversation Settings">
+              settings
+            </JuiIconButton>
           </JuiButtonBar>}
       />
     );
