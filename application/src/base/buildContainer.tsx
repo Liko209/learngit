@@ -47,19 +47,18 @@ function buildContainer<P = {}, S = {}, SS = any>({
 
     render() {
       const View = this.View;
+      return <View {...this._vmProps} />;
+    }
 
-      const descriptors = Object.getOwnPropertyDescriptors(this.vm);
-      console.log(descriptors);
+    private get _vmProps() {
       const props: any = {};
-      Object.keys(descriptors)
-        .filter(
-          key => !/^\$|_/.test(key), // Start with _ or $
-        )
-        .forEach((key: string) => {
+      for (const key in this.vm) {
+        if (!/^\$|_/.test(key)) {
+          // Not start with _ or $
           props[key] = this.vm[key];
-        });
-
-      return <View {...props} />;
+        }
+      }
+      return props;
     }
   }
 

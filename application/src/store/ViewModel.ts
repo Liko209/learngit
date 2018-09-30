@@ -44,6 +44,24 @@ class StoreViewModel extends BaseNotificationSubscribable
     return when(predicate, opts);
   }
 
+  protected when2(
+    predicate: () => boolean,
+    opts?: IWhenOptions,
+  ): Promise<void> & {
+    cancel(): void;
+  };
+  protected when2(
+    predicate: () => boolean,
+    effect: Lambda,
+    opts?: IWhenOptions,
+  ): IReactionDisposer;
+  protected when2(arg0: any, arg1?: any, arg2?: any) {
+    if (arguments.length === 2) {
+      return when(arg0, arg1);
+    }
+    return when(arg0, arg1, arg2);
+  }
+
   extendProps<T extends Object>(props: T): this & T {
     return extendObservable(this, props);
   }
