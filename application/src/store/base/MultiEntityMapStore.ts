@@ -98,8 +98,7 @@ export default class MultiEntityMapStore<
     entities.forEach((entity: T) => {
       const { id } = entity;
       const obs = this.get(id);
-      const model = _.merge(obs, this.createModel(entity));
-      this._data[id] = model;
+      _.merge(obs, this.createModel(entity));
       this._atom[id].reportChanged();
     });
   }
