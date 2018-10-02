@@ -12,7 +12,7 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { t } from 'i18next'; // use external instead of injected due to incompatible with SortableElement
 import showDialogWithCheckView from '../../Dialog/DialogWithCheckView';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import navPresenter, { NavPresenter } from '../../BackNForward/ViewModel';
+// import navPresenter, { NavPresenter } from '../../BackNForward/ViewModel';
 
 type IRouterParams = {
   id: string;

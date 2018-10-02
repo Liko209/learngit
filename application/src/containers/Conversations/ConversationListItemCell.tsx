@@ -26,7 +26,7 @@ import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import showDialogWithCheckView from '../Dialog/DialogWithCheckView';
 import ProfileModel from '@/store/models/Profile';
 import { Profile } from 'sdk/models';
-import navPresenter, { NavPresenter } from '../BackNForward/ViewModel';
+// import navPresenter, { NavPresenter } from '../BackNForward/ViewModel';
 
 const { GroupService } = service;
 
@@ -48,7 +48,7 @@ interface IState {
 
 @observer
 class ConversationListItemCell extends React.Component<IProps, IState> {
-  private navPresenter: NavPresenter;
+  // private navPresenter: NavPresenter;
   static defaultProps = {
     isFavorite: false,
   };
@@ -122,7 +122,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
     this.draft = '';
 
     this.state = { currentGroupId: 0 };
-    this.navPresenter = navPresenter;
+    // this.navPresenter = navPresenter;
 
     autorun(() => {
       this.getDataFromStore();
@@ -134,7 +134,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
       const uIdIndex = pathname.lastIndexOf('/');
       const uid = pathname.slice(uIdIndex + 1);
       if (+uid === this.id) {
-        this.navPresenter.handleTitle(this.displayName);
+        // this.navPresenter.handleTitle(this.displayName);
       }
     });
   }
@@ -259,7 +259,7 @@ class ConversationListItemCell extends React.Component<IProps, IState> {
   private _jump2Conversation(id: number) {
     const { history } = this.props;
     history.push(`/messages/${id}`);
-    this.navPresenter.handleRouterChange();
+    // this.navPresenter.handleRouterChange();
   }
   @action
   private _toggleFavorite() {

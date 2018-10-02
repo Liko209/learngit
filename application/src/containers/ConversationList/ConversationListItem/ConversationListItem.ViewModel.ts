@@ -11,7 +11,7 @@ import {
 import { service } from 'sdk';
 const { GroupService } = service;
 import { getEntity, getSingleEntity } from '@/store/utils';
-import { getGroupName } from '@/utils/groupName';
+// import { getGroupName } from '@/utils/groupName';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';

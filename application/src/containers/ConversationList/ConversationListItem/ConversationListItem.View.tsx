@@ -7,7 +7,7 @@ import React, { MouseEvent } from 'react';
 import { Menu } from 'ui-components/atoms/Menu';
 import { ConversationListItemViewProps } from './types';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import navPresenter, { NavPresenter } from '../../BackNForward/ViewModel';
+// import navPresenter, { NavPresenter } from '../../BackNForward/ViewModel';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
 
 // TODO remove Stubs here
@@ -30,24 +30,24 @@ class ConversationListItemViewComponent extends React.Component<
   IProps,
   IState
 > {
-  private navPresenter: NavPresenter;
+  // private navPresenter: NavPresenter;
   constructor(props: IProps) {
     super(props);
     this.onClick = this.onClick.bind(this);
-    this.navPresenter = navPresenter;
+    // this.navPresenter = navPresenter;
     this.state = { currentGroupId: 0 };
   }
 
-  componentDidMount() {
-    this.props.history.listen(() => {
-      const pathname = window.location.pathname;
-      const uIdIndex = pathname.lastIndexOf('/');
-      const uid = pathname.slice(uIdIndex + 1);
-      if (+uid === this.props.groupId) {
-        this.navPresenter.handleTitle(this.props.displayName);
-      }
-    });
-  }
+  // componentDidMount() {
+  //   this.props.history.listen(() => {
+  //     const pathname = window.location.pathname;
+  //     const uIdIndex = pathname.lastIndexOf('/');
+  //     const uid = pathname.slice(uIdIndex + 1);
+  //     if (+uid === this.props.groupId) {
+  //       this.navPresenter.handleTitle(this.props.displayName);
+  //     }
+  //   });
+  // }
 
   static getDerivedStateFromProps(props: IProps, state: IState) {
     const currentGroupId = parseInt(props.match.params.id, 10);
@@ -89,8 +89,8 @@ class ConversationListItemViewComponent extends React.Component<
   private _jump2Conversation(id: number) {
     const { history, displayName } = this.props;
     history.push(`/messages/${id}`);
-    this.navPresenter.handleRouterChange();
-    this.navPresenter.handleTitle(displayName);
+    // this.navPresenter.handleRouterChange();
+    // this.navPresenter.handleTitle(displayName);
   }
 }
 const ConversationListItemView = withRouter(ConversationListItemViewComponent);
