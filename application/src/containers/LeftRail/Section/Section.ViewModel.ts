@@ -21,30 +21,39 @@ import { SECTION_TYPE } from './constants';
 
 const { GroupService } = service;
 
-const DEFAULT_TRANSFORM = (dataModel: Group, index: number) => ({
+const indexTransformFun = (dataModel: Group, index: number) => ({
+  id: dataModel.id,
+  sortKey: index,
+});
+
+const mostRecentGroupTransformFun = (dataModel: Group, index: number) => ({
   id: dataModel.id,
   sortKey: -(dataModel.most_recent_post_created_at || dataModel.created_at),
 });
 
 const SECTION_CONFIGS: SectionConfigs = {
-  [SECTION_TYPE.UNREAD]: {
-    title: 'unread',
-    iconName: 'fiber_new',
-  },
-  [SECTION_TYPE.AT_MENTION]: {
-    title: 'mention_plural',
-    iconName: 'alternate_email',
-  },
-  [SECTION_TYPE.BOOKMARK]: {
-    title: 'bookmark_plural',
-    iconName: 'bookmark',
-  },
+  // [SECTION_TYPE.UNREAD]: {
+  //   title: 'unread',
+  //   iconName: 'fiber_new',
+  // },
+  // [SECTION_TYPE.AT_MENTION]: {
+  //   title: 'mention_plural',
+  //   iconName: 'alternate_email',
+  // },
+  // [SECTION_TYPE.BOOKMARK]: {
+  //   title: 'bookmark_plural',
+  //   iconName: 'bookmark',
+  // },
   [SECTION_TYPE.FAVORITE]: {
     title: 'favorite_plural',
     iconName: 'start',
     entity: ENTITY.FAVORITE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.FAVORITE,
+    transformFun: indexTransformFun,
+    isMatchFun: (model: Group) => {
+      return false;
+    },
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
     title: 'directMessage_plural',
@@ -52,6 +61,10 @@ const SECTION_CONFIGS: SectionConfigs = {
     entity: ENTITY.PEOPLE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.GROUP,
+    transformFun: mostRecentGroupTransformFun,
+    isMatchFun: (model: Group) => {
+      return !model.is_team;
+    },
   },
   [SECTION_TYPE.TEAM]: {
     title: 'team_plural',
@@ -59,6 +72,10 @@ const SECTION_CONFIGS: SectionConfigs = {
     entity: ENTITY.TEAM_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.TEAM,
+    transformFun: mostRecentGroupTransformFun,
+    isMatchFun: (model: Group) => {
+      return model.is_team;
+    },
   },
 };
 
@@ -99,17 +116,16 @@ class SectionViewModel implements SectionViewProps {
     return this.handleSortEnd(oldIndex, newIndex);
   }
 
-  constructor() {
-    // super(() => true, DEFAULT_TRANSFORM);
-  }
-
   async onReceiveProps(props: SectionProps) {
     if (this._type === props.type) return;
 
-    this._listHandler = new OrderListHandler(() => true, DEFAULT_TRANSFORM);
-
     this._type = props.type;
     this._config = SECTION_CONFIGS[this._type];
+
+    this._listHandler = new OrderListHandler(
+      () => true,
+      this._config.transformFun || indexTransformFun,
+    );
 
     await this.fetchGroups();
 

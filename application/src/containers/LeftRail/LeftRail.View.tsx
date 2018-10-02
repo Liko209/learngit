@@ -1,3 +1,9 @@
+/*
+ * @Author: Steve Chen (steve.chen@ringcentral.com)
+ * @Date: 2018-10-02 15:46:28
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import React from 'react';
 import styled from 'jui/foundation/styled-components';
 import { JuiDivider } from 'jui/components/Divider';

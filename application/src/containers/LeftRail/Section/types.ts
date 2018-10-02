@@ -1,3 +1,9 @@
+/*
+ * @Author: Steve Chen (steve.chen@ringcentral.com)
+ * @Date: 2018-10-02 15:46:13
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { SortEndHandler } from 'react-sortable-hoc';
 import { GROUP_QUERY_TYPE } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
@@ -22,6 +28,8 @@ type SectionConfig = {
   entity?: string;
   entityName?: ENTITY_NAME;
   queryType?: GROUP_QUERY_TYPE;
+  transformFun?: Function;
+  isMatchFun?: Function;
 };
 
 type SectionConfigs = { [key in SECTION_TYPE]: SectionConfig };
