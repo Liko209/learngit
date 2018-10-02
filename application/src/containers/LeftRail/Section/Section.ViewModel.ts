@@ -23,7 +23,7 @@ const { GroupService } = service;
 
 const DEFAULT_TRANSFORM = (dataModel: Group, index: number) => ({
   id: dataModel.id,
-  sortKey: index,
+  sortKey: -(dataModel.most_recent_post_created_at || dataModel.created_at),
 });
 
 const SECTION_CONFIGS: SectionConfigs = {
@@ -42,16 +42,16 @@ const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
     title: 'favorite_plural',
     iconName: 'start',
-    entity: ENTITY.GROUP,
+    entity: ENTITY.FAVORITE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.FAVORITE,
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
     title: 'directMessage_plural',
     iconName: 'people',
-    entity: ENTITY.GROUP,
+    entity: ENTITY.PEOPLE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
-    queryType: GROUP_QUERY_TYPE.TEAM,
+    queryType: GROUP_QUERY_TYPE.GROUP,
   },
   [SECTION_TYPE.TEAM]: {
     title: 'team_plural',
@@ -62,8 +62,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   },
 };
 
-class SectionViewModel extends OrderListHandler<Group, GroupModel>
-  implements SectionViewProps {
+class SectionViewModel implements SectionViewProps {
   @observable
   private _type: SECTION_TYPE;
 
@@ -82,8 +81,10 @@ class SectionViewModel extends OrderListHandler<Group, GroupModel>
 
   @computed
   get groupIds() {
-    return this.getStore().getIds();
+    return this._listHandler.getStore().getIds();
   }
+
+  private _listHandler: OrderListHandler<Group, GroupModel>;
 
   sortable: boolean = false;
   expanded: boolean = false;
@@ -99,11 +100,13 @@ class SectionViewModel extends OrderListHandler<Group, GroupModel>
   }
 
   constructor() {
-    super(() => true, DEFAULT_TRANSFORM);
+    // super(() => true, DEFAULT_TRANSFORM);
   }
 
   async onReceiveProps(props: SectionProps) {
     if (this._type === props.type) return;
+
+    this._listHandler = new OrderListHandler(() => true, DEFAULT_TRANSFORM);
 
     this._type = props.type;
     this._config = SECTION_CONFIGS[this._type];
@@ -111,7 +114,15 @@ class SectionViewModel extends OrderListHandler<Group, GroupModel>
     await this.fetchGroups();
 
     if (this._config.entity) {
-      this.subscribeNotification(this._config.entity, () => this.fetchGroups());
+      this._listHandler.subscribeNotification(
+        this._config.entity,
+        ({ type, entities }) => {
+          this._listHandler.handleIncomingData(ENTITY_NAME.GROUP, {
+            type,
+            entities,
+          });
+        },
+      );
     }
   }
 
@@ -121,10 +132,10 @@ class SectionViewModel extends OrderListHandler<Group, GroupModel>
       const groups = await groupService.getGroupsByType(this._config.queryType);
 
       // TODO dont clear all
-      const store = this.getStore();
+      const store = this._listHandler.getStore();
       store.clearAll();
 
-      this.handlePageData(this._config.entityName, groups, true);
+      this._listHandler.handlePageData(this._config.entityName, groups, true);
     }
   }
 
