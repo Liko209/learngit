@@ -14,6 +14,7 @@ interface IConversationListSectionModel {
   sortable?: boolean;
   expanded?: boolean;
   transformFunc?: Function;
+  isMatchFun: Function;
 }
 
 class LeftRailPresenter {
@@ -49,21 +50,6 @@ class LeftRailPresenter {
   get sections(): IConversationListSectionModel[] {
     return [
       {
-        title: 'unread',
-        iconName: 'fiber_new',
-        entity: '', // TODO
-      },
-      {
-        title: 'mention_plural',
-        iconName: 'alternate_email',
-        entity: '', // TODO
-      },
-      {
-        title: 'bookmark_plural',
-        iconName: 'bookmark',
-        entity: '', // TODO
-      },
-      {
         title: 'favorite_plural',
         iconName: 'start',
         queryType: GROUP_QUERY_TYPE.FAVORITE,
@@ -74,6 +60,9 @@ class LeftRailPresenter {
           id: dataModel.id,
           sortKey: index,
         }),
+        isMatchFun: () => {
+          return false;
+        },
       },
       {
         title: 'directMessage_plural',
@@ -81,6 +70,16 @@ class LeftRailPresenter {
         queryType: GROUP_QUERY_TYPE.GROUP,
         entity: ENTITY.PEOPLE_GROUPS,
         expanded: true,
+        transformFunc: (dataModel: Group, index: number) => ({
+          id: dataModel.id,
+          sortKey: -(
+            dataModel.most_recent_post_created_at || dataModel.created_at
+          ),
+        }),
+
+        isMatchFun: (model: Group) => {
+          return !model.is_team;
+        },
       },
       {
         title: 'team_plural',
@@ -88,6 +87,15 @@ class LeftRailPresenter {
         queryType: GROUP_QUERY_TYPE.TEAM,
         entity: ENTITY.TEAM_GROUPS,
         expanded: true,
+        transformFunc: (dataModel: Group, index: number) => ({
+          id: dataModel.id,
+          sortKey: -(
+            dataModel.most_recent_post_created_at || dataModel.created_at
+          ),
+        }),
+        isMatchFun: (model: Group) => {
+          return model.is_team;
+        },
       },
     ];
   }

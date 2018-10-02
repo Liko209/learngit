@@ -19,6 +19,7 @@ const { GroupService, AccountService, ProfileService } = service;
 interface IConversationSectionPresenterOptions {
   entity: string;
   transformFunc: Function;
+  isMatchFun: Function;
   queryType?: service.GROUP_QUERY_TYPE;
   maxLimit?: number;
 }
@@ -33,7 +34,7 @@ class ConversationSectionPresenter {
 
   constructor(options: IConversationSectionPresenterOptions) {
     this.orderListHandler = new OrderListHandler<Group, GroupModel>(
-      () => true,
+      options.isMatchFun,
       options.transformFunc,
     );
     this.entity = options.entity;
