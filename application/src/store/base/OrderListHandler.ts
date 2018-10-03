@@ -78,12 +78,14 @@ export default class OrderListHandler<
     }
     const existKeys = this._store.getIds();
     const keys = _.map(
-      Array.from(entities.values()).filter(entity =>
-        this._isMatchedFunc(
-          type === EVENT_TYPES.REPLACE
-            ? (entity as { id: number; data: T }).data
-            : entity,
-        ),
+      Array.from(entities.values()).filter(
+        entity =>
+          type === EVENT_TYPES.DELETE ||
+          this._isMatchedFunc(
+            type === EVENT_TYPES.REPLACE
+              ? (entity as { id: number; data: T }).data
+              : entity,
+          ),
       ),
       'id',
     );

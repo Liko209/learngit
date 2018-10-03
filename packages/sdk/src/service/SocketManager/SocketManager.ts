@@ -13,7 +13,7 @@ import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
 import { SOCKET_SERVER_HOST } from '../../dao/config/constants';
 import { mainLogger } from 'foundation';
 
-const SOCKET_LOGGER = 'SOCKET_LOGGER';
+const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
   private static instance: SocketManager;
   activeFSM: any = null;

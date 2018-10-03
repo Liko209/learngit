@@ -17,6 +17,11 @@ class GroupStateDao extends BaseDao<GroupState> {
   getAll(): Promise<GroupState[]> {
     return this.createQuery().toArray();
   }
+  getByIds(ids: number[]) {
+    return this.createQuery()
+      .anyOf('id', ids)
+      .toArray();
+  }
 }
 
 export default GroupStateDao;

@@ -25,9 +25,11 @@ type ConversationPageHeaderProps = IInjectedStoreProps<StoreViewModel> & {
 };
 @observer
 class ConversationPageHeaderComponent extends React.Component<
-ConversationPageHeaderProps,
-{}
+  ConversationPageHeaderProps,
+  {}
 > {
+  private presenter: ConversationPageHeaderPresenter;
+
   constructor(props: ConversationPageHeaderProps) {
     super(props);
     this.rightButtonClickHandler = this.rightButtonClickHandler.bind(this);
@@ -36,21 +38,34 @@ ConversationPageHeaderProps,
     // console.log(evt, name);
   }
   render() {
+    if (this.presenter) {
+      this.presenter.dispose();
+    }
     const { t = (str: string) => str, id } = this.props;
-    const presenter = new ConversationPageHeaderPresenter(id);
-    const groupName = presenter.getGroupName(t);
-    const type = presenter.getConversationType();
-    const isFavorite = presenter.groupIsInFavorites();
-    const isPrivate = presenter.groupIsPrivate();
+    this.presenter = new ConversationPageHeaderPresenter(id);
 
-    const rightButtons = presenter.getRightButtons().map(({ name, iconName, tooltip }) => ((name: string) => {
-      const onRightButtonClick = (e: React.SyntheticEvent) => this.rightButtonClickHandler(e, name);
-      return (
-        <JuiIconButton key={name} tooltipTitle={toTitleCase(t(tooltip))} onClick={onRightButtonClick}>
-          {iconName}
-        </JuiIconButton>
+    const groupName = this.presenter.getGroupName(t);
+    const type = this.presenter.getConversationType();
+    const isFavorite = this.presenter.groupIsInFavorites();
+    const isPrivate = this.presenter.groupIsPrivate();
+
+    const rightButtons = this.presenter
+      .getRightButtons()
+      .map(({ name, iconName, tooltip }) =>
+        ((name: string) => {
+          const onRightButtonClick = (e: React.SyntheticEvent) =>
+            this.rightButtonClickHandler(e, name);
+          return (
+            <JuiIconButton
+              key={name}
+              tooltipTitle={toTitleCase(t(tooltip))}
+              onClick={onRightButtonClick}
+            >
+              {iconName}
+            </JuiIconButton>
+          );
+        })(name),
       );
-    })(name));
     return (
       <JuiConversationPageHeader
         title={groupName}
@@ -84,7 +99,9 @@ ConversationPageHeaderProps,
         Right={
           <JuiButtonBar size="medium" overlapping={true}>
             {rightButtons}
-            <JuiIconButton tooltipTitle={toTitleCase(t('conversationSettings'))}>
+            <JuiIconButton
+              tooltipTitle={toTitleCase(t('conversationSettings'))}
+            >
               settings
             </JuiIconButton>
           </JuiButtonBar>}

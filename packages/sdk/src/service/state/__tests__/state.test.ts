@@ -5,7 +5,7 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 
 import StateService from '..';
-import { daoManager, StateDao, GroupStateDao } from '../../../dao';
+import { daoManager, StateDao, GroupStateDao, AccountDao } from '../../../dao';
 import PostService from '../../post';
 import StateAPI from '../../../api/glip/state';
 import {
@@ -17,7 +17,6 @@ import {
   groupState3,
   groupStateResult3,
   groupStateResultNoOrigin3,
-  groupState4,
   groupState5,
   groupStateResult5,
   groupState6,
@@ -44,6 +43,7 @@ describe('StateService', () => {
   const postService = new PostService();
   const groupStateDao = new GroupStateDao(null);
   const stateDao = new StateDao(null);
+  const accountDao = new AccountDao(null);
   PostService.getInstance = jest.fn().mockReturnValue(postService);
 
   afterEach(() => {
@@ -178,87 +178,92 @@ describe('StateService', () => {
     });
   });
 
-  describe('getAllGroupStatesFromLocal()', () => {
-    it('should return all data from GroupStateDao', async () => {
-      daoManager.getDao.mockReturnValueOnce(groupStateDao);
-      groupStateDao.getAll.mockReturnValueOnce([{ data: 'test' }]);
-
-      const resp = await stateService.getAllGroupStatesFromLocal();
-
-      expect(resp).toEqual([{ data: 'test' }]);
-    });
-  });
-
   describe('calculateUMI', () => {
     beforeEach(() => {
+      daoManager.getKVDao.mockReturnValueOnce(accountDao);
+      accountDao.get.mockReturnValueOnce(1);
       jest.clearAllMocks();
     });
     it('should return empty', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
+      stateService.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([]);
       expect(resp).toEqual([]);
     });
 
     it('should calculate state cursor change UMI', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
+      stateService.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([groupState1]);
       expect(resp).toEqual([groupStateResult1]);
     });
 
     it('should calculate group cursor change UMI: case 1', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
+      stateService.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([groupState2]);
       expect(resp).toEqual([groupStateResult2]);
     });
 
     it('should calculate group cursor change UMI: case 2', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
+      stateService.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([groupState3]);
       expect(resp).toEqual([groupStateResult3]);
     });
 
     it('should not calculate group cursor change UMI: case 3', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
+      stateService.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([groupState5]);
       expect(resp).toEqual([groupStateResult5]);
     });
     it('should not calculate group cursor change UMI: case 4', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
+      stateService.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([groupState6]);
       expect(resp).toEqual([groupStateResult6]);
     });
 
     it('should calculate group cursor change UMI when origin state not exist', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(null);
+      stateService.getAllGroupStatesFromLocal = jest.fn().mockReturnValue(null);
       const resp = await stateService.calculateUMI([groupState3]);
       expect(resp).toEqual([groupStateResultNoOrigin3]);
     });
 
-    it('should not calculate UMI when group cursor decrease', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
-      const resp = await stateService.calculateUMI([groupState4]);
-      expect(resp).toEqual([]);
-    });
-
     it('should not calculate UMI when group cursor decrease : case 2', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
+      stateService.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([groupState10]);
       expect(resp).toEqual([]);
     });
 
     it('should calculate UMI when state cursor decrease and mark as unread', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
+      stateService.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([groupState7]);
       expect(resp).toEqual([groupStateResult7]);
     });
 
     it('should calculate UMI when unread_deactivated_count change', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
+      stateService.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([groupState8]);
       expect(resp).toEqual([groupStateResult8]);
     });
     it('should not calculate UMI when state cursor decrease and not mark as unread', async () => {
-      stateService.getByIdFromDao = jest.fn().mockReturnValue(originState());
+      stateService.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([groupState9]);
       expect(resp).toEqual([]);
     });

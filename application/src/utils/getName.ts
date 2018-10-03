@@ -13,8 +13,13 @@ export const getName = (item: Person) => {
     return `${item.first_name} ${item.last_name}`;
   }
   const name = item.email.split('@')[0];
-  const firstUpperCase = (parseString: string) =>
-    parseString[0].toUpperCase().concat(parseString.slice(1));
+  const firstUpperCase = (parseString: string) => {
+    if (!parseString[0]) {
+      return '';
+    }
+    return parseString[0].toUpperCase().concat(parseString.slice(1));
+  };
+
   return name
     .split('.')
     .map((v: string) => firstUpperCase(v))

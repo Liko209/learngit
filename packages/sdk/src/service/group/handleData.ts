@@ -11,6 +11,7 @@ import { ACCOUNT_USER_ID } from '../../dao/account/constants';
 import notificationCenter from '../notificationCenter';
 import { ENTITY, SERVICE } from '../../service/eventKey';
 import ProfileService from '../../service/profile';
+import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
 import { transform } from '../utils';
 import {
@@ -235,6 +236,8 @@ async function saveDataAndDoNotification(groups: Group[]) {
 }
 
 export default async function handleData(groups: Raw<Group>[]) {
+  console.time('grouphandleData');
+
   if (groups.length === 0) {
     return;
   }
@@ -254,14 +257,20 @@ export default async function handleData(groups: Raw<Group>[]) {
   // if (shouldCheckIncompleteMembers) {
   //   await checkIncompleteGroupsMembers(normalGroups);
   // }
+  console.timeEnd('grouphandleData');
 }
 
 async function doFavoriteGroupsNotification(favIds: number[]) {
   mainLogger.debug('-------doFavoriteGroupsNotification--------');
   if (favIds.length) {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const profile = await profileService.getProfile();
+    const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
+    const validFavIds = _.difference(favIds, hiddenIds);
     const dao = daoManager.getDao(GroupDao);
-    let groups = await dao.queryGroupsByIds(favIds);
-    groups = sortFavoriteGroups(favIds, groups);
+    let groups = await dao.queryGroupsByIds(validFavIds);
+    groups = sortFavoriteGroups(validFavIds, groups);
+
     notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, groups);
   } else {
     notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, []);
@@ -396,8 +405,9 @@ function hasUnread(groupState: GroupState) {
 }
 
 async function getUnreadGroupIds(groups: Group[]) {
+  const ids = _.map(groups, 'id');
   const stateService: StateService = StateService.getInstance();
-  const states = (await stateService.getAllGroupStatesFromLocal()) || [];
+  const states = (await stateService.getAllGroupStatesFromLocal(ids)) || [];
   return states.filter(hasUnread).map(state => state.id);
 }
 

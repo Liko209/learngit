@@ -47,4 +47,5 @@ test(formalName('Drag & Drop', ['JPT-10', 'P2', 'ConversationList']), async (t) 
     .shouldNavigateTo(FavoriteSection)
     .log('2. Drag & drop conversation')
     .dragListItem(LAST, FIRST);
+
 });

@@ -14,7 +14,7 @@ class ConversationPageViewModel {
   private _permissions: PERMISSION_ENUM[] = [];
 
   constructor() {
-    this._groupService = new GroupService();
+    this._groupService = GroupService.getInstance();
   }
 
   @action

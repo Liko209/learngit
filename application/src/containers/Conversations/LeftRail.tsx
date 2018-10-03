@@ -29,27 +29,37 @@ class LeftRail extends Component<IProps> {
   constructor(props: IProps) {
     super(props);
     this.presenter = new LeftRailPresenter();
-    this.sections = this.presenter.sections.map(({ entity, queryType, transformFunc, ...rest }) => ({
-      presenter: new ConversationSectionPresenter({
-        entity,
-        queryType,
-        transformFunc: transformFunc || transformGroupSortKey,
+    this.sections = this.presenter.sections.map(
+      ({ entity, queryType, transformFunc, isMatchFun, ...rest }) => ({
+        presenter: new ConversationSectionPresenter({
+          entity,
+          queryType,
+          isMatchFun,
+          transformFunc: transformFunc || transformGroupSortKey,
+        }),
+        ...rest,
       }),
-      ...rest,
-    }));
+    );
   }
 
   render() {
     return (
       <Container>
-        {this.sections.map(({ title, iconName, sortable, presenter }, index) => [
-          index ? <JuiDivider key="divider" /> : null,
-          <ConversationSection key="section" title={title} iconName={iconName} sortable={sortable} presenter={presenter} />,
-        ])}
+        {this.sections.map(
+          ({ title, iconName, sortable, presenter }, index) => [
+            index ? <JuiDivider key="divider" /> : null,
+            <ConversationSection
+              key="section"
+              title={title}
+              iconName={iconName}
+              sortable={sortable}
+              presenter={presenter}
+            />,
+          ],
+        )}
       </Container>
     );
   }
-
 }
 
 export default withRouter(LeftRail);

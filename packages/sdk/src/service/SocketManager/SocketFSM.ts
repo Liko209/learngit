@@ -9,7 +9,7 @@ import { mainLogger, SocketClient } from 'foundation';
 import StateMachine from 'ts-javascript-state-machine';
 import dataDispatcher from '../../component/DataDispatcher';
 
-const SOCKET_LOGGER = 'SOCKET_LOGGER';
+const SOCKET_LOGGER = 'SOCKET';
 
 type StateHandler = (name: string, state: string) => any;
 export class SocketFSM extends StateMachine {

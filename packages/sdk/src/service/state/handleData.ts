@@ -80,11 +80,11 @@ export async function getPartialStates(state: Partial<Raw<State>>[]) {
     const transformed: TransformedState = transform(item);
     transformedData.push(transformed);
     const { groupState, ...rest } = transformed;
-    const groupStateDao = daoManager.getDao(GroupStateDao);
-    _.map(groupState, async (state: GroupState) => {
-      const originState = await groupStateDao.get(state.id);
-      return originState;
-    });
+    // const groupStateDao = daoManager.getDao(GroupStateDao);
+    // _.map(groupState, async (state: GroupState) => {
+    //   const originState = await groupStateDao.get(state.id);
+    //   return originState;
+    // });
     groupStates = groupStates.concat(groupState);
 
     if (Object.keys(rest).length) {
@@ -113,11 +113,14 @@ export function getStates(state: Raw<State>[]) {
 }
 
 export default async function stateHandleData(state: Raw<State>[]) {
+  console.time('stateHandleData');
+
   if (state.length === 0) {
     return;
   }
   const { myState, groupStates } = getStates(state);
   await operateDaoAndDoNotification(myState, groupStates);
+  console.timeEnd('stateHandleData');
 }
 
 async function operateDaoAndDoNotification(
@@ -132,9 +135,15 @@ async function operateDaoAndDoNotification(
   }
   if (groupStates) {
     const stateService: StateService = StateService.getInstance();
+    console.time('calculateUMI');
     const result = await stateService.calculateUMI(groupStates);
+    console.timeEnd('calculateUMI');
+
     if (result.length) {
+      console.time(`result.length ${result.length}`);
       await groupStateDao.bulkUpdate(result);
+      console.timeEnd(`result.length ${result.length}`);
+
       notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, result);
     }
   }

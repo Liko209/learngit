@@ -17,6 +17,7 @@ describe('ConversationSectionPresenter', () => {
       queryType: GROUP_QUERY_TYPE.GROUP,
       entity: ENTITY.PEOPLE_GROUPS,
       transformFunc: transformGroupSortKey,
+      isMatchFun: () => true,
     });
   });
   describe('calculateUmi', () => {

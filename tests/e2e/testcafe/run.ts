@@ -42,7 +42,7 @@ async function runTests(runnerOpts) {
     .concurrency(runnerOpts.CONCURRENCY);
 
   try {
-    failed = await runner.run({ quarantineMode: runnerOpts.QUARANTINE_MODE });
+    failed = await runner.run({ quarantineMode: runnerOpts.QUARANTINE_MODE, skipUncaughtErrors: true, skipJsErrors: true });
   } finally {
     await testCafe.close();
   }
@@ -52,10 +52,10 @@ async function runTests(runnerOpts) {
 (async function cli() {
   try {
     const failed = await runTests(RUNNER_OPTS);
-    process.exitCode = failed > 0 ? 1 : 0;
+    process.exitCode = failed > 0 ? 3 : 0;
   } catch (err) {
     logger.error(err);
-    process.exitCode = 127;
+    process.exitCode = 1;
   }
   await accountPoolClient.checkInAll();
   process.exit(process.exitCode);
