@@ -4,65 +4,92 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { createAtom, IAtom } from 'mobx';
-import _, { ListIteratee } from 'lodash';
+import _ from 'lodash';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';
 
 export default class ListStore<T> extends BaseNotificationSubscribe {
-  items: T[] = [];
+  _items: T[] = [];
   _hasMore: boolean = true;
-  atom: IAtom = createAtom(`list: ${Math.random()}`);
+  _atom: IAtom = createAtom(`list: ${Math.random()}`);
 
-  append(...newItems: T[]) {
-    this.items.push(...newItems);
-    return this.atom.reportChanged();
+  append(newItems: T[], inFront: boolean = false) {
+    if (inFront) {
+      this._items.unshift(...newItems);
+    } else {
+      this._items.push(...newItems);
+    }
+    this._atom.reportChanged();
   }
 
-  prepend(...newItems: T[]) {
-    this.items.unshift(...newItems);
-    return this.atom.reportChanged();
+  replaceAt(index: number, newItem: T) {
+    this._items[index] = newItem;
+    return this._atom.reportChanged();
   }
 
-  replace(index: number, newItem: T) {
-    this.items[index] = newItem;
-    return this.atom.reportChanged();
-  }
   replaceAll(newItems: T[]) {
-    this.items = newItems;
-    this.atom.reportChanged();
+    this._items = newItems;
+    this._atom.reportChanged();
   }
 
-  delete(predicate?: ListIteratee<T>) {
-    _(this.items)
-      .remove(predicate)
-      .value();
-    this.atom.reportChanged();
+  remove(element: T) {
+    const index = this._items.indexOf(element);
+    this.removeAt(index);
   }
 
-  clearAll() {
-    this.items = [];
-    this.atom.reportChanged();
+  removeAt(index: number) {
+    if (index !== -1) {
+      this._items.splice(index, 1);
+    }
+    this._atom.reportChanged();
+  }
+
+  // delete(predicate?: ListIteratee<T>) {
+  //   _(this._items)
+  //     .remove(predicate)
+  //     .value();
+  //   this._atom.reportChanged();
+  // }
+
+  clear() {
+    this._items = [];
+    this._atom.reportChanged();
   }
 
   getItems() {
-    this.atom.reportObserved();
-    return this.items;
+    this._atom.reportObserved();
+    return this._items;
   }
 
   getSize() {
-    return _(this.items).size();
+    return _(this._items).size();
   }
 
   first() {
-    return _(this.items).first();
+    return _(this._items).first();
   }
 
   last() {
-    return _(this.items).last();
+    return _(this._items).last();
   }
 
   dump(...args: any[]) {
-    console.log(`===> dump: ${JSON.stringify(this.items)}`, args);
+    console.log(`===> dump: ${JSON.stringify(this._items)}`, args);
   }
+
+  // push(...newItems: T[]) {
+  //   this._items.push(...newItems);
+  //   this._atom.reportChanged();
+  // }
+
+  // append(...newItems: T[]) {
+  //   this._items.push(...newItems);
+  //   return this._atom.reportChanged();
+  // }
+
+  // prepend(...newItems: T[]) {
+  //   this._items.unshift(...newItems);
+  //   return this._atom.reportChanged();
+  // }
 
   get hasMore() {
     return this._hasMore;
