@@ -1,3 +1,9 @@
+/*
+ * @Author: Steve Chen (steve.chen@ringcentral.com)
+ * @Date: 2018-10-06 19:14:28
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import _ from 'lodash';
 import { BaseModel } from 'sdk/models';
 import { service } from 'sdk';

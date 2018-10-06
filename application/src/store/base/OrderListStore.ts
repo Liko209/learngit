@@ -4,85 +4,62 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { createAtom, IAtom } from 'mobx';
 import _ from 'lodash';
 
 import { IIDSortKey, ISortFunc } from '../store';
+import ListStore from './ListStore';
 
 const defaultSortFunc = (
   IdSortKeyPrev: IIDSortKey,
   IdSortKeyNext: IIDSortKey,
 ) => IdSortKeyPrev.sortKey - IdSortKeyNext.sortKey;
 
-export default class OrderListStore {
-  idArray: IIDSortKey[] = [];
-  idsAtom: IAtom;
-
+export default class OrderListStore extends ListStore<IIDSortKey> {
   sortFunc: (IdSortKeyPrev: IIDSortKey, IdSortKeyNext: IIDSortKey) => number;
 
   constructor(sortFunc: ISortFunc = defaultSortFunc) {
+    super();
     this.sortFunc = sortFunc;
-    this.idsAtom = createAtom(`orderList: ${Math.random()}`);
   }
 
-  set({ id, sortKey }: IIDSortKey) {
-    this.batchSet([{ id, sortKey }]);
-  }
-
-  batchSet(idArray: IIDSortKey[]) {
-    if (!idArray.length) {
-      return;
-    }
-    const unionAndSortIds = _.unionBy(idArray, this.idArray, 'id').sort(
+  upsert(idArray: IIDSortKey[]) {
+    const unionAndSortIds = _.unionBy(idArray, this.getItems(), 'id').sort(
       this.sortFunc,
     );
 
-    this.idArray = unionAndSortIds;
-    this.idsAtom.reportChanged();
+    this.replaceAll(unionAndSortIds);
   }
 
-  remove(id: number) {
-    _.remove(this.idArray, { id });
-    this.idsAtom.reportChanged();
-  }
+  // set({ id, sortKey }: IIDSortKey) {
+  //   this.batchSet([{ id, sortKey }]);
+  // }
 
-  batchRemove(ids: number[]) {
+  // batchSet(idArray: IIDSortKey[]) {
+  //   if (!idArray.length) {
+  //     return;
+  //   }
+  //   const unionAndSortIds = _.unionBy(idArray, this.getItems(), 'id').sort(
+  //     this.sortFunc,
+  //   );
+
+  //   this.replaceAll(unionAndSortIds);
+  // }
+
+  removeById(ids: number[]) {
     ids.forEach((id: number) => {
-      this.remove(id);
+      _.remove(this.getItems(), { id });
     });
-  }
 
-  clearAll() {
-    this.idArray = [];
-    this.idsAtom.reportChanged();
-  }
-
-  getIdArray() {
-    return this.idArray;
+    this._atom.reportChanged();
   }
 
   getIds() {
-    this.idsAtom.reportObserved();
-    return _.map(this.idArray, 'id');
+    this._atom.reportObserved();
+    return _.map(this.getItems(), 'id');
   }
 
-  getSize() {
-    return this.idArray.length;
-  }
-
-  get(id: number) {
-    return _.find(this.idArray, { id });
-  }
-
-  first() {
-    return this.idArray[0];
-  }
-
-  last() {
-    return this.idArray[this.getSize() - 1];
-  }
-
-  dump(...args: any[]) {
-    console.log(`===> dump: ${JSON.stringify(this.idArray)}`, args);
+  getById(id: number) {
+    this._atom.reportObserved();
+    return _.find(this.getItems(), { id });
   }
 }

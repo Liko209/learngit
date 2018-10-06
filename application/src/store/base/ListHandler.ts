@@ -1,3 +1,9 @@
+/*
+ * @Author: Steve Chen (steve.chen@ringcentral.com)
+ * @Date: 2018-10-06 19:14:37
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import _ from 'lodash';
 import { BaseModel } from 'sdk/models';
 
@@ -21,10 +27,12 @@ export default abstract class ListHandler<
     super();
     this._store = new ListStore<I>() as S;
   }
+
   abstract handleIncomingData(
     entityName: ENTITY_NAME,
     { type, entities }: IIncomingData<T>,
   ): void;
+
   abstract handlePageData(
     entityName: ENTITY_NAME,
     dataModels: IEntity[],

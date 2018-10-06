@@ -1,18 +1,11 @@
-import ListStore from '@/store/base/ListStore';
-import { autorun } from 'mobx';
-import { number } from '@storybook/addon-knobs/react';
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-10-05 13:53:30
  * Copyright © RingCentral. All rights reserved.
  */
-
-const _checkListItems = (
-  listStore: ListStore<number>,
-  expectData: number[],
-) => {
-  expect(listStore.getItems()).toEqual(expectData);
-};
+import ListStore from '../ListStore';
+import { autorun } from 'mobx';
+import checkListStore from './checkListStore';
 
 describe('List Store', () => {
   let listStore: ListStore<number>;
@@ -34,33 +27,33 @@ describe('List Store', () => {
     expect(listStore.getSize()).toEqual(1);
 
     listStore.append([2]);
-    _checkListItems(listStore, [1, 2]);
+    checkListStore(listStore, [1, 2]);
 
     listStore.append([3], true);
-    _checkListItems(listStore, [3, 1, 2]);
+    checkListStore(listStore, [3, 1, 2]);
   });
 
   it('replaceAt', () => {
     listStore.append([1, 2, 3]);
     listStore.replaceAt(0, 2);
-    _checkListItems(listStore, [2, 2, 3]);
+    checkListStore(listStore, [2, 2, 3]);
 
     listStore.replaceAll([1, 2]);
-    _checkListItems(listStore, [1, 2]);
+    checkListStore(listStore, [1, 2]);
   });
 
   it('remove', () => {
     listStore.append([1, 2, 3]);
     listStore.remove(1);
-    _checkListItems(listStore, [2, 3]);
+    checkListStore(listStore, [2, 3]);
     listStore.removeAt(1);
-    _checkListItems(listStore, [2]);
+    checkListStore(listStore, [2]);
   });
 
   it('clear', () => {
     listStore.append([1, 2, 3]);
     listStore.clear();
-    _checkListItems(listStore, []);
+    checkListStore(listStore, []);
   });
 
   it('first/last', () => {

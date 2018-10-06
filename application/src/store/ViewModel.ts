@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-10-06 19:12:01
+ * Copyright © RingCentral. All rights reserved.
+ */
 import {
   extendObservable,
   autorun,

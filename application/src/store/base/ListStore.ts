@@ -13,11 +13,16 @@ export default class ListStore<T> extends BaseNotificationSubscribe {
   _atom: IAtom = createAtom(`list: ${Math.random()}`);
 
   append(newItems: T[], inFront: boolean = false) {
+    if (newItems.length <= 0) {
+      return;
+    }
+
     if (inFront) {
       this._items.unshift(...newItems);
     } else {
       this._items.push(...newItems);
     }
+
     this._atom.reportChanged();
   }
 
@@ -32,15 +37,15 @@ export default class ListStore<T> extends BaseNotificationSubscribe {
   }
 
   remove(element: T) {
-    const index = this._items.indexOf(element);
+    const index = _(this._items).indexOf(element);
     this.removeAt(index);
   }
 
   removeAt(index: number) {
     if (index !== -1) {
-      this._items.splice(index, 1);
+      _(this._items).splice(index, 1);
+      this._atom.reportChanged();
     }
-    this._atom.reportChanged();
   }
 
   // delete(predicate?: ListIteratee<T>) {
@@ -65,11 +70,15 @@ export default class ListStore<T> extends BaseNotificationSubscribe {
   }
 
   first() {
-    return _(this._items).first();
+    const item = _(this._items).first();
+    this._atom.reportObserved();
+    return item;
   }
 
   last() {
-    return _(this._items).last();
+    const item = _(this._items).last();
+    this._atom.reportObserved();
+    return item;
   }
 
   dump(...args: any[]) {
