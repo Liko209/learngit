@@ -87,13 +87,6 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   }
 }
 
-const sortFunc: ISortFunc<ISortableModel<Group>> = (
-  first: ISortableModel<Group>,
-  second: ISortableModel<Group>,
-) => first.sortValue - second.sortValue;
-
-// const isMatchFunc: IMatchFunc<Group> = (model: Group) => true;
-
 class SectionViewModel implements SectionViewProps {
   private _listHandler: FetchSortableDataListHandler<Group>;
 
@@ -134,13 +127,16 @@ class SectionViewModel implements SectionViewProps {
   async onReceiveProps(props: SectionProps) {
     if (this._type === props.type) return;
 
+    if (this._listHandler) {
+      this._listHandler.dispose();
+    }
+
     this._type = props.type;
     this._config = SECTION_CONFIGS[this._type];
 
     const dataProvider = new GroupDataProvider(this._config.queryType);
 
     this._listHandler = new FetchSortableDataListHandler(dataProvider, {
-      sortFunc,
       isMatchFunc: this._config.isMatchFun,
       transformFunc: groupTransformFunc,
       entityName: ENTITY_NAME.GROUP,

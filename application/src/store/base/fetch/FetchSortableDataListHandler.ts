@@ -29,7 +29,7 @@ export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
   isMatchFunc: IMatchFunc<T>;
   transformFunc: ITransformFunc<T>;
-  sortFunc: ISortFunc<ISortableModel<T>>;
+  sortFunc?: ISortFunc<ISortableModel<T>>;
   eventName?: string;
 }
 export interface IFetchSortableDataProvider<T> {
