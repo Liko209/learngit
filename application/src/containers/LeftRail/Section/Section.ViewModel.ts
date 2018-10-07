@@ -8,8 +8,6 @@ import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
 import { Group } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
-import OrderListHandler from '@/store/base/OrderListHandler';
-import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import {
   SectionProps,
@@ -18,39 +16,32 @@ import {
   SectionViewProps,
 } from './types';
 import { SECTION_TYPE } from './constants';
+import ISortableModel from '../../../store/base/fetch/ISortableModel';
+
+import { FetchDataDirection } from '../../../store/base/fetch/constants';
+import { ISortFunc } from '../../../store/base/fetch/SortableListStore';
+
+import FetchSortableDataListHandler, {
+  IFetchSortableDataProvider,
+} from '../../../store/base/fetch/FetchSortableDataListHandler';
 
 const { GroupService } = service;
 
-const indexTransformFun = (dataModel: Group, index: number) => ({
-  id: dataModel.id,
-  sortKey: index,
-});
-
-const mostRecentGroupTransformFun = (dataModel: Group, index: number) => ({
-  id: dataModel.id,
-  sortKey: -(dataModel.most_recent_post_created_at || dataModel.created_at),
-});
+function groupTransformFunc(data: Group): ISortableModel<Group> {
+  return {
+    id: data.id,
+    sortValue: -(data.most_recent_post_created_at || data.created_at),
+  };
+}
 
 const SECTION_CONFIGS: SectionConfigs = {
-  // [SECTION_TYPE.UNREAD]: {
-  //   title: 'unread',
-  //   iconName: 'fiber_new',
-  // },
-  // [SECTION_TYPE.AT_MENTION]: {
-  //   title: 'mention_plural',
-  //   iconName: 'alternate_email',
-  // },
-  // [SECTION_TYPE.BOOKMARK]: {
-  //   title: 'bookmark_plural',
-  //   iconName: 'bookmark',
-  // },
   [SECTION_TYPE.FAVORITE]: {
     title: 'favorite_plural',
     iconName: 'start',
     entity: ENTITY.FAVORITE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.FAVORITE,
-    transformFun: indexTransformFun,
+    transformFun: groupTransformFunc,
     isMatchFun: (model: Group) => {
       return false;
     },
@@ -61,7 +52,7 @@ const SECTION_CONFIGS: SectionConfigs = {
     entity: ENTITY.PEOPLE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.GROUP,
-    transformFun: mostRecentGroupTransformFun,
+    transformFun: groupTransformFunc,
     isMatchFun: (model: Group) => {
       return !model.is_team;
     },
@@ -72,14 +63,40 @@ const SECTION_CONFIGS: SectionConfigs = {
     entity: ENTITY.TEAM_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.TEAM,
-    transformFun: mostRecentGroupTransformFun,
+    transformFun: groupTransformFunc,
     isMatchFun: (model: Group) => {
-      return model.is_team;
+      return model.is_team || false;
     },
   },
 };
 
+class GroupDataProvider implements IFetchSortableDataProvider<Group> {
+  private _queryType: GROUP_QUERY_TYPE;
+  constructor(queryType: GROUP_QUERY_TYPE) {
+    this._queryType = queryType;
+  }
+
+  fetchData(
+    offset: number,
+    direction: FetchDataDirection,
+    pageSize: number,
+    anchor: ISortableModel<Group> | null,
+  ): Promise<Group[]> {
+    const groupService = GroupService.getInstance<service.GroupService>();
+    return groupService.getGroupsByType(this._queryType);
+  }
+}
+
+const sortFunc: ISortFunc<ISortableModel<Group>> = (
+  first: ISortableModel<Group>,
+  second: ISortableModel<Group>,
+) => first.sortValue - second.sortValue;
+
+// const isMatchFunc: IMatchFunc<Group> = (model: Group) => true;
+
 class SectionViewModel implements SectionViewProps {
+  private _listHandler: FetchSortableDataListHandler<Group>;
+
   @observable
   private _type: SECTION_TYPE;
 
@@ -98,10 +115,8 @@ class SectionViewModel implements SectionViewProps {
 
   @computed
   get groupIds() {
-    return this._listHandler.getStore().getIds();
+    return this._listHandler.sortableListStore.getIds();
   }
-
-  private _listHandler: OrderListHandler<Group, GroupModel>;
 
   sortable: boolean = false;
   expanded: boolean = false;
@@ -122,37 +137,20 @@ class SectionViewModel implements SectionViewProps {
     this._type = props.type;
     this._config = SECTION_CONFIGS[this._type];
 
-    this._listHandler = new OrderListHandler(
-      () => true,
-      this._config.transformFun || indexTransformFun,
-    );
+    const dataProvider = new GroupDataProvider(this._config.queryType);
 
+    this._listHandler = new FetchSortableDataListHandler(dataProvider, {
+      sortFunc,
+      isMatchFunc: this._config.isMatchFun,
+      transformFunc: groupTransformFunc,
+      entityName: ENTITY_NAME.GROUP,
+      eventName: this._config.entity,
+    });
     await this.fetchGroups();
-
-    if (this._config.entity) {
-      this._listHandler.subscribeNotification(
-        this._config.entity,
-        ({ type, entities }) => {
-          this._listHandler.handleIncomingData(ENTITY_NAME.GROUP, {
-            type,
-            entities,
-          });
-        },
-      );
-    }
   }
 
   async fetchGroups() {
-    if (this._config.queryType && this._config.entityName) {
-      const groupService = GroupService.getInstance<service.GroupService>();
-      const groups = await groupService.getGroupsByType(this._config.queryType);
-
-      // TODO dont clear all
-      const store = this._listHandler.getStore();
-      store.clearAll();
-
-      this._listHandler.handlePageData(this._config.entityName, groups, true);
-    }
+    await this._listHandler.fetchData(FetchDataDirection.DOWN);
   }
 
   handleSortEnd(oldIndex: number, newIndex: number) {

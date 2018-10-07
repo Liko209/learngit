@@ -8,6 +8,11 @@ import { SortEndHandler } from 'react-sortable-hoc';
 import { GROUP_QUERY_TYPE } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
 import { SECTION_TYPE } from './constants';
+import {
+  IMatchFunc,
+  ITransformFunc,
+} from '../../../store/base/fetch/FetchSortableDataListHandler';
+import { Group } from '../../../../../packages/sdk/src/models';
 
 type SectionProps = {
   type: SECTION_TYPE;
@@ -27,9 +32,9 @@ type SectionConfig = {
   iconName: string;
   entity?: string;
   entityName?: ENTITY_NAME;
-  queryType?: GROUP_QUERY_TYPE;
-  transformFun?: Function;
-  isMatchFun?: Function;
+  queryType: GROUP_QUERY_TYPE;
+  transformFun: ITransformFunc<Group>;
+  isMatchFun: IMatchFunc<Group>;
 };
 
 type SectionConfigs = { [key in SECTION_TYPE]: SectionConfig };
