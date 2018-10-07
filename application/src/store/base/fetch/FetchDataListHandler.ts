@@ -7,6 +7,8 @@
 import IFetchDataProvider from './IFetchDataProvider';
 import { FetchDataDirection } from './constants';
 import ListStore from './ListStore';
+import { ENTITY_NAME } from '@/store/constants';
+import storeManager from '@/store';
 
 const PAGE_SIZE = 20;
 
@@ -14,6 +16,7 @@ export interface IFetchDataListHandlerOptions {
   pageSize?: number;
   hasMoreUp?: boolean;
   hasMoreDown?: boolean;
+  entityName?: ENTITY_NAME;
 }
 
 export default class FetchDataListHandler<T> {
@@ -22,6 +25,7 @@ export default class FetchDataListHandler<T> {
   private _pageSize: number;
   private _hasMoreUp = false;
   private _hasMoreDown = false;
+  private _entityName?: ENTITY_NAME;
 
   constructor(
     dataProvider: IFetchDataProvider<T>,
@@ -33,6 +37,7 @@ export default class FetchDataListHandler<T> {
     this._pageSize = options.pageSize ? options.pageSize : PAGE_SIZE;
     this._hasMoreDown = options.hasMoreDown ? options.hasMoreDown : false;
     this._hasMoreUp = options.hasMoreUp ? options.hasMoreUp : false;
+    this._entityName = options.entityName;
   }
 
   get listStore() {
@@ -75,6 +80,16 @@ export default class FetchDataListHandler<T> {
 
     if (result.length > 0) {
       this._listStore.append(result, inFront);
+      this.updateEntityStore(result);
+    }
+  }
+
+  protected updateEntityStore(entities: T[]) {
+    if (!entities.length) {
+      return;
+    }
+    if (this._entityName) {
+      storeManager.dispatchUpdatedDataModels(this._entityName, entities);
     }
   }
 }

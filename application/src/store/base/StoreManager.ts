@@ -9,7 +9,7 @@ import GlobalStore from './GlobalStore';
 
 import { HANDLER_TYPE, ENTITY_NAME } from '../constants';
 import { ENTITY_SETTING } from '../config';
-import { IEntity, IEntitySetting } from '../store';
+import { IEntitySetting } from '../store';
 
 enum STORE_TYPE {
   ENTITY,
@@ -17,7 +17,11 @@ enum STORE_TYPE {
 }
 
 interface IStores {
-  [STORE_TYPE.ENTITY]: {[storeName: string]: MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>};
+  [STORE_TYPE.ENTITY]: {
+    [storeName: string]:
+      | MultiEntityMapStore<any, any>
+      | SingleEntityMapStore<any, any>;
+  };
   [STORE_TYPE.GLOBAL]: GlobalStore;
 }
 class StoreManager {
@@ -33,7 +37,7 @@ class StoreManager {
   injectStores(
     stores: (MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>)[],
   ) {
-    stores.forEach((store) => {
+    stores.forEach(store => {
       this.injectStore(store);
     });
   }
@@ -56,7 +60,7 @@ class StoreManager {
   removeStores(
     stores: (MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>)[],
   ) {
-    stores.forEach((store) => {
+    stores.forEach(store => {
       this.removeStore(store);
     });
   }
@@ -73,18 +77,16 @@ class StoreManager {
   }
 
   getEntityMapStore(entityStoreName: ENTITY_NAME) {
-    let store = this.getStore(STORE_TYPE.ENTITY, entityStoreName) as MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>;
+    let store = this.getStore(STORE_TYPE.ENTITY, entityStoreName) as
+      | MultiEntityMapStore<any, any>
+      | SingleEntityMapStore<any, any>;
     if (!store) {
       if (ENTITY_SETTING[entityStoreName].type === HANDLER_TYPE.MULTI_ENTITY) {
-        store = new MultiEntityMapStore(
-          entityStoreName,
-          ENTITY_SETTING[entityStoreName] as IEntitySetting,
-        );
+        store = new MultiEntityMapStore(entityStoreName, ENTITY_SETTING[ entityStoreName
+] as IEntitySetting);
       } else {
-        store = new SingleEntityMapStore(
-          entityStoreName,
-          ENTITY_SETTING[entityStoreName] as IEntitySetting,
-        );
+        store = new SingleEntityMapStore(entityStoreName, ENTITY_SETTING[ entityStoreName
+] as IEntitySetting);
       }
       this.injectStore(store);
     }
@@ -99,7 +101,7 @@ class StoreManager {
     return this._stores[STORE_TYPE.ENTITY];
   }
 
-  dispatchUpdatedDataModels(entityStoreName: ENTITY_NAME, entities: IEntity[]) {
+  dispatchUpdatedDataModels(entityStoreName: ENTITY_NAME, entities: any[]) {
     const store = this.getEntityMapStore(
       entityStoreName,
     ) as MultiEntityMapStore<any, any>;
@@ -109,4 +111,4 @@ class StoreManager {
 
 export { StoreManager };
 
-export default new StoreManager;
+export default new StoreManager();

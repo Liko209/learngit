@@ -14,6 +14,11 @@ import { ISortFunc } from '../SortableListStore';
 import checkListStore from './checkListStore';
 
 import { service } from 'sdk';
+import { Group } from 'sdk/models';
+import storeManager from '../../../index';
+import { ENTITY_NAME } from '@/store';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import GroupModel from '@/store/models/Group';
 const { EVENT_TYPES } = service;
 
 class TestFetchSortableDataHandler<T> extends AbstractFetchSortableDataHandler<
@@ -203,5 +208,50 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
       sortableTransformFunc(buildSortableNumber(3)),
       sortableTransformFunc(buildSortableNumber(6)),
     ]);
+  });
+});
+
+describe('FetchSortableDataListHandler - updateEntityStore', () => {
+  function groupTransformFunc(model: Group): ISortableModel {
+    return { id: model.id, sortValue: model.most_recent_post_created_at };
+  }
+
+  const group: Group = {
+    id: 123,
+    most_recent_post_created_at: 1000,
+  };
+
+  let fetchSortableDataHandler: FetchSortableDataListHandler<Group>;
+  let dataProvider: TestFetchSortableDataHandler<Group>;
+
+  const transformFunc: ITransformFunc<Group> = groupTransformFunc;
+  const sortFunc: ISortFunc<any> = (
+    first: ISortableModel,
+    second: ISortableModel,
+  ) => first.sortValue - second.sortValue;
+
+  const isMatchFunc: IMatchFunc<Group> = matchFunc;
+  beforeEach(async () => {
+    dataProvider = new TestFetchSortableDataHandler(transformFunc);
+    dataProvider.mockData = [group];
+
+    fetchSortableDataHandler = new FetchSortableDataListHandler<Group>(
+      dataProvider,
+      {
+        isMatchFunc,
+        transformFunc,
+        sortFunc,
+        pageSize: 2,
+        entityName: ENTITY_NAME.GROUP,
+      },
+    );
+    await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
+  });
+
+  it('should have the group in group store', () => {
+    const groupStore = storeManager.getEntityMapStore(
+      ENTITY_NAME.GROUP,
+    ) as MultiEntityMapStore<Group, GroupModel>;
+    expect(groupStore.get(group.id)).toEqual(GroupModel.fromJS(group));
   });
 });
