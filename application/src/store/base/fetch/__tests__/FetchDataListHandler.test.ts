@@ -5,8 +5,8 @@
  */
 import FetchDataListHandler from '../FetchDataListHandler';
 import IFetchDataProvider from '../IFetchDataProvider';
-import { FetchDataDirection } from '../../constants';
-import checkListStore from '../../__tests__/checkListStore';
+import { FetchDataDirection } from '../constants';
+import checkListStore from './checkListStore';
 
 class TestFetchDataProvider implements IFetchDataProvider<number> {
   fetchData(

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { FetchDataDirection } from '../constants';
+import { FetchDataDirection } from './constants';
 
 export default interface IFetchDataProvider<T> {
   fetchData(

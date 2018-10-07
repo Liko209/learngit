@@ -3,26 +3,25 @@
  * @Date: 2018-10-07 00:11:41
  * Copyright © RingCentral. All rights reserved.
  */
-import ListStore from '../ListStore';
+import ListStore from './ListStore';
 import ISortableModel from './ISortableModel';
 import _ from 'lodash';
 
-export type ISortFunc = <T>(
-  first: ISortableModel<T>,
-  second: ISortableModel<T>,
-) => number;
+export interface ISortFunc<T> {
+  (first: T, second: T): number;
+}
 
-const defaultSortFunc: ISortFunc = <T>(
-  first: ISortableModel<T>,
-  second: ISortableModel<T>,
+const defaultSortFunc: ISortFunc<ISortableModel> = (
+  first: ISortableModel,
+  second: ISortableModel,
 ) => first.sortValue - second.sortValue;
 
 export default class SortableListStore<T = any> extends ListStore<
   ISortableModel<T>
 > {
-  private _sortFunc: ISortFunc;
+  private _sortFunc: ISortFunc<ISortableModel<T>>;
 
-  constructor(sortFunc: ISortFunc = defaultSortFunc) {
+  constructor(sortFunc: ISortFunc<ISortableModel<T>> = defaultSortFunc) {
     super();
     this._sortFunc = sortFunc;
   }
@@ -35,7 +34,7 @@ export default class SortableListStore<T = any> extends ListStore<
     this.replaceAll(unionAndSortIds);
   }
 
-  removeById(ids: number[]) {
+  removeByIds(ids: number[]) {
     ids.forEach((id: number) => {
       _.remove(this.getItems(), { id });
     });

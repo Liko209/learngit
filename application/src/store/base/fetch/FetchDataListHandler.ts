@@ -5,8 +5,8 @@
  */
 
 import IFetchDataProvider from './IFetchDataProvider';
-import { FetchDataDirection } from '../constants';
-import ListStore from '../ListStore';
+import { FetchDataDirection } from './constants';
+import ListStore from './ListStore';
 
 const PAGE_SIZE = 20;
 

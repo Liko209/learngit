@@ -5,7 +5,7 @@
  */
 import SortableListStore from '../SortableListStore';
 import { autorun } from 'mobx';
-import checkListStore from '../../__tests__/checkListStore';
+import checkListStore from './checkListStore';
 
 describe('SortableListStore', () => {
   let listStore: SortableListStore<number>;
@@ -46,7 +46,7 @@ describe('SortableListStore', () => {
   });
 
   it('removeById', () => {
-    listStore.removeById([1]);
+    listStore.removeByIds([1]);
     checkListStore(listStore, [{ id: 2, sortValue: 2 }]);
   });
 
