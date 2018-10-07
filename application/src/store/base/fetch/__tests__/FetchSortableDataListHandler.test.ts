@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import FetchSortableDataListHandler, {
-  AbstractFetchSortableDataHandler,
+  IFetchSortableDataProvider,
   ITransformFunc,
   IMatchFunc,
 } from '../FetchSortableDataListHandler';
@@ -19,20 +19,17 @@ import storeManager from '../../../index';
 import { ENTITY_NAME } from '@/store';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import GroupModel from '@/store/models/Group';
+import { ENTITY, GROUP_QUERY_TYPE, notificationCenter } from 'sdk/service';
 const { EVENT_TYPES } = service;
 
-class TestFetchSortableDataHandler<T> extends AbstractFetchSortableDataHandler<
-  T
-> {
+class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
   mockData: T[] = [];
-  constructor(transformFunc: ITransformFunc<T>) {
-    super(transformFunc);
-  }
-  protected fetchDataImpl(
+
+  fetchData(
     offset: number,
     direction: FetchDataDirection,
     pageSize: number,
-    anchor: ISortableModel<T> | null,
+    anchor: ISortableModel<T>,
   ): Promise<T[]> {
     return Promise.resolve(this.mockData);
   }
@@ -66,7 +63,7 @@ describe('FetchSortableDataListHandler - fetchData', () => {
   const isMatchFunc: IMatchFunc<number> = notMatchFunc;
 
   beforeEach(() => {
-    dataProvider = new TestFetchSortableDataHandler(transformFunc);
+    dataProvider = new TestFetchSortableDataHandler();
     dataProvider.mockData = [1, 2];
     fetchSortableDataHandler = new FetchSortableDataListHandler<number>(
       dataProvider,
@@ -136,7 +133,7 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
   }
 
   beforeEach(async () => {
-    dataProvider = new TestFetchSortableDataHandler(transformFunc);
+    dataProvider = new TestFetchSortableDataHandler();
     dataProvider.mockData = [buildSortableNumber(3), buildSortableNumber(6)];
 
     fetchSortableDataHandler = new FetchSortableDataListHandler<SortableNumber>(
@@ -232,7 +229,7 @@ describe('FetchSortableDataListHandler - updateEntityStore', () => {
 
   const isMatchFunc: IMatchFunc<Group> = matchFunc;
   beforeEach(async () => {
-    dataProvider = new TestFetchSortableDataHandler(transformFunc);
+    dataProvider = new TestFetchSortableDataHandler();
     dataProvider.mockData = [group];
 
     fetchSortableDataHandler = new FetchSortableDataListHandler<Group>(
@@ -241,8 +238,9 @@ describe('FetchSortableDataListHandler - updateEntityStore', () => {
         isMatchFunc,
         transformFunc,
         sortFunc,
-        pageSize: 2,
+        pageSize: 1,
         entityName: ENTITY_NAME.GROUP,
+        eventName: ENTITY.GROUP,
       },
     );
     await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
@@ -253,5 +251,30 @@ describe('FetchSortableDataListHandler - updateEntityStore', () => {
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
     expect(groupStore.get(group.id)).toEqual(GroupModel.fromJS(group));
+  });
+
+  it('handle the group updated', () => {
+    group.most_recent_post_created_at = 1001;
+    notificationCenter.emitEntityUpdate(ENTITY.GROUP, [group]);
+    const groupStore = storeManager.getEntityMapStore(
+      ENTITY_NAME.GROUP,
+    ) as MultiEntityMapStore<Group, GroupModel>;
+    console.log(JSON.stringify(groupStore.get(group.id)));
+    expect(groupStore.get(group.id)).toEqual(GroupModel.fromJS(group));
+
+    let newGroup: Group = { id: 456, most_recent_post_created_at: 99 };
+    notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
+
+    expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      456,
+      123,
+    ]);
+
+    newGroup = { id: 789, most_recent_post_created_at: 1002 };
+    notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
+    expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      456,
+      123,
+    ]);
   });
 });

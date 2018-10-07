@@ -7,7 +7,7 @@ import ISortableModel from './ISortableModel';
 import FetchDataListHandler, {
   IFetchDataListHandlerOptions,
 } from './FetchDataListHandler';
-import IFetchDataProvider from './IFetchDataProvider';
+
 import SortableListStore, { ISortFunc } from './SortableListStore';
 import { FetchDataDirection } from './constants';
 
@@ -30,36 +30,10 @@ export interface IFetchSortableDataListHandlerOptions<T>
   isMatchFunc: IMatchFunc<T>;
   transformFunc: ITransformFunc<T>;
   sortFunc: ISortFunc<ISortableModel<T>>;
+  eventName?: string;
 }
-
-export abstract class AbstractFetchSortableDataHandler<T>
-  implements IFetchDataProvider<ISortableModel<T>> {
-  protected _transformFunc: ITransformFunc<T>;
-  constructor(transformFunc: ITransformFunc<T>) {
-    this._transformFunc = transformFunc;
-  }
-
-  async fetchData(
-    offset: number,
-    direction: FetchDataDirection,
-    pageSize: number,
-    anchor: ISortableModel<T> | null,
-  ): Promise<ISortableModel<T>[]> {
-    const result = await this.fetchDataImpl(
-      offset,
-      direction,
-      pageSize,
-      anchor,
-    );
-    const transformedData: ISortableModel<T>[] = [];
-    result.forEach((item, index) => {
-      transformedData.push(this._transformFunc(item));
-    });
-
-    return Promise.resolve(transformedData);
-  }
-
-  protected abstract fetchDataImpl(
+export interface IFetchSortableDataProvider<T> {
+  fetchData(
     offset: number,
     direction: FetchDataDirection,
     pageSize: number,
@@ -72,18 +46,46 @@ export default class FetchSortableDataListHandler<
 > extends FetchDataListHandler<ISortableModel<T>> {
   private _isMatchFunc: IMatchFunc<T>;
   private _transformFunc: ITransformFunc<T>;
+  private _sortableDataProvider: IFetchSortableDataProvider<T>;
 
   constructor(
-    dataProvider: AbstractFetchSortableDataHandler<T>,
+    dataProvider: IFetchSortableDataProvider<T>,
     options: IFetchSortableDataListHandlerOptions<T>,
   ) {
-    super(dataProvider, options, new SortableListStore<T>(options.sortFunc));
+    super(null, options, new SortableListStore<T>(options.sortFunc));
     this._isMatchFunc = options.isMatchFunc;
     this._transformFunc = options.transformFunc;
+    this._sortableDataProvider = dataProvider;
+
+    if (options.eventName) {
+      this.subscribeNotification(options.eventName, ({ type, entities }) => {
+        this.onDataChanged({ type, entities });
+      });
+    }
   }
 
   get sortableListStore() {
     return this.listStore as SortableListStore<T>;
+  }
+
+  protected async fetchDataInternal(
+    offset: number,
+    direction: FetchDataDirection,
+    pageSize: number,
+    anchor: ISortableModel<T> | null,
+  ) {
+    const result = await this._sortableDataProvider.fetchData(
+      offset,
+      direction,
+      pageSize,
+      anchor,
+    );
+    const sortableResult: ISortableModel<T>[] = [];
+    result.forEach((element: T) => {
+      sortableResult.push(this._transformFunc(element));
+    });
+    this.updateEntityStore(result);
+    this.handlePageData(sortableResult, direction);
   }
 
   onDataChanged({ type, entities }: IIncomingData<T>) {
@@ -120,7 +122,7 @@ export default class FetchSortableDataListHandler<
           }
         }
       });
-
+      this.updateEntityStore(matchedEntities);
       this.sortableListStore.removeByIds(notMatchedKeys);
       this.sortableListStore.upsert(matchedSortableModels);
     }
