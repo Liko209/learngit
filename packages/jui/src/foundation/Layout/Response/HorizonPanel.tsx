@@ -5,7 +5,7 @@
  */
 
 import React, { ReactNode, MouseEvent } from 'react';
-import styled, { css } from 'styled-components';
+import styled, { css } from '../../styled-components';
 
 type Position = 'left' | 'right';
 
