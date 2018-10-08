@@ -39,6 +39,7 @@ type SectionConfig = {
   queryType: GROUP_QUERY_TYPE;
   transformFun: ITransformFunc<Group>;
   isMatchFun: IMatchFunc<Group>;
+  sortable?: boolean;
 };
 
 type SectionConfigs = { [key in SECTION_TYPE]: SectionConfig };
