@@ -50,7 +50,7 @@ class MessagesViewComponent extends Component<
     const currentGroupId = Number(this.props.match.params.id);
     return (
       <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
-        <LeftRail />
+        <LeftRail currentGroupId={currentGroupId} />
         {currentGroupId ? <ConversationPage groupId={currentGroupId} /> : null}
         <RightRail />
       </JuiTreeColumnResponse>

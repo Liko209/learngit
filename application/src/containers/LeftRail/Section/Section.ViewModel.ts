@@ -103,6 +103,9 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
   @observable
   private _config: SectionConfig;
 
+  @observable
+  currentGroupId: number;
+
   @computed
   get iconName() {
     return this._config.iconName;
@@ -132,6 +135,10 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
   }
 
   async onReceiveProps(props: SectionProps) {
+    if (this.currentGroupId !== props.currentGroupId) {
+      this.currentGroupId = props.currentGroupId;
+    }
+
     if (this._type === props.type) return;
 
     if (this._listHandler) {

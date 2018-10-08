@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
@@ -22,11 +23,11 @@ import { Umi } from '../../Umi';
 const SortableList = SortableContainer(JuiConversationList);
 const SortableItem = SortableElement(ConversationListItem);
 
-class SectionViewComponent extends React.Component<
-  SectionViewProps & {
-    t: TranslationFunction;
-  }
-> {
+type Props = SectionViewProps & {
+  t: TranslationFunction;
+} & RouteComponentProps<{ id: string }>;
+
+class SectionViewComponent extends React.Component<Props> {
   static defaultProps = {
     expanded: true,
     sortable: false,
@@ -39,16 +40,27 @@ class SectionViewComponent extends React.Component<
       return (
         <SortableList distance={5} lockAxis="y" onSortEnd={onSortEnd}>
           {this.props.groupIds.map((id: number, index: number) => (
-            <SortableItem groupId={id} key={id} index={index} />
+            <SortableItem
+              key={id}
+              groupId={id}
+              selected={this.props.currentGroupId === id}
+              index={index}
+            />
           ))}
         </SortableList>
       );
     }
 
+    console.log('this.props.currentGroupId: ', this.props.currentGroupId);
+    console.log('this.props.groupIds: ', this.props.groupIds);
     return (
       <JuiConversationList>
         {this.props.groupIds.map((id: number) => (
-          <ConversationListItem groupId={id} key={id} />
+          <ConversationListItem
+            key={id}
+            groupId={id}
+            selected={this.props.currentGroupId === id}
+          />
         ))}
       </JuiConversationList>
     );
@@ -71,7 +83,9 @@ class SectionViewComponent extends React.Component<
   }
 }
 
-const SectionView = translate('Conversations')(SectionViewComponent);
+const SectionView = translate('Conversations')(
+  withRouter(SectionViewComponent),
+);
 
 export { SectionView };
 export default SectionView;
