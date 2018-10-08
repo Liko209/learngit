@@ -1,7 +1,7 @@
 import React, { MouseEvent, ReactNode } from 'react';
 import styled from 'styled-components';
 
-interface IExternalPorps {
+interface IExternalProps {
   onClick?: (e: MouseEvent) => void;
   children: ReactNode[];
   // ref?: React.RefObject<HTMLDivElement>;
@@ -19,7 +19,7 @@ const Wrapper = styled.div`
   display: flex;
 `;
 
-const Layout = ({ onClick, children }: IExternalPorps) => {
+const Layout = ({ onClick, children }: IExternalProps) => {
   return (
     <Wrapper onClick={onClick}>
       {children}

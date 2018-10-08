@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import ConversationCard from '@/containers/ConversationCard';
+import { ConversationCard } from '@/containers/ConversationCard';
 import { StreamViewProps } from './types';
 
 class StreamView extends PureComponent<StreamViewProps> {
