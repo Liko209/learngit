@@ -6,7 +6,6 @@
 import React, { PureComponent } from 'react';
 import MuiList from '@material-ui/core/List/index';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
-import { NavLink } from 'react-router-dom';
 import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
 import { JuiUmi, JuiArrowTip } from '../../components/index';
@@ -88,7 +87,7 @@ const StyledListItemText = styled(JuiListItemText)`
     }
   }
 `;
-const ListLink = styled(NavLink)`
+const ListLink = styled.a`
   position: relative;
   outline: none;
   display: flex;
@@ -126,7 +125,7 @@ type TUMIProps = {
   important: boolean;
   variant: 'count' | 'dot' | 'auto';
 };
-const CustomUMI: React.SFC<TUMIProps> = props => {
+const CustomUMI: React.SFC<TUMIProps> = (props: TUMIProps) => {
   return <JuiUmi {...props} />;
 };
 const UMI = styled<TUMIProps>(CustomUMI)`
@@ -146,17 +145,20 @@ type TNavProps = {
     icon: string;
     title: string;
   }[][];
-  handleRouterChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
 };
 
 export class JuiLeftNav extends PureComponent<TNavProps> {
+  onRouteChange(url) {
+    const { onRouteChange } = this.props;
+    onRouteChange(url);
+  }
   renderNavItems = () => {
-    const { icons, unreadCount, handleRouterChange, expand } = this.props;
+    const { icons, unreadCount, expand } = this.props;
     return icons.map((arr, idx) => {
       return (
         <MuiList component="nav" disablePadding={true} key={idx}>
           {arr.map((item, index) => {
-            const navUrl = item.icon.toLocaleLowerCase();
+            const navUrl = item.url;
             const pathname = window.location.pathname;
             const actIndex = pathname.lastIndexOf('/');
             const pathSlice = actIndex
@@ -174,9 +176,8 @@ export class JuiLeftNav extends PureComponent<TNavProps> {
                 disableGutters={true}
               >
                 <ListLink
-                  to={`/${navUrl}`}
                   className={'left-link'}
-                  onClick={handleRouterChange}
+                  onClick={this.onRouteChange.bind(this, navUrl)}
                 >
                   <JuiListItemIcon className={'nav-icon'}>
                     <JuiIconography>{item.icon}</JuiIconography>

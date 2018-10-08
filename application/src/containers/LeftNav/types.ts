@@ -14,7 +14,7 @@ type LeftNavViewProps = {
   umiCount: number[][];
   messageUmi: number;
   handleTitle?: Function;
-  handleRouterChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
+  onRouteChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
   icons: {
     icon: string;
     title: string;
