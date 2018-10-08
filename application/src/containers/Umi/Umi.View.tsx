@@ -1,7 +1,7 @@
+import React, { Component } from 'react';
 import { UmiViewProps } from './types';
-import { Component } from 'react';
 import { observer } from 'mobx-react';
-import { JuiUmi } from 'jui/patterns';
+import { JuiUmi } from 'jui/components';
 
 @observer
 class UmiView extends Component<UmiViewProps> {

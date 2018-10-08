@@ -7,12 +7,15 @@
 import { SortEndHandler } from 'react-sortable-hoc';
 import { GROUP_QUERY_TYPE } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
-import { SECTION_TYPE } from './constants';
-import {
-  IMatchFunc,
-  ITransformFunc,
-} from '../../../store/base/fetch/FetchSortableDataListHandler';
-import { Group } from '../../../../../packages/sdk/src/models';
+
+import { IMatchFunc, ITransformFunc } from '@/store/base/fetch';
+import { Group } from 'sdk/src/models';
+
+enum SECTION_TYPE {
+  FAVORITE = 'favorites',
+  DIRECT_MESSAGE = 'direct_messages',
+  TEAM = 'teams',
+}
 
 type SectionProps = {
   type: SECTION_TYPE;
@@ -30,7 +33,7 @@ type SectionViewProps = {
 type SectionConfig = {
   title: string;
   iconName: string;
-  entity?: string;
+  eventName?: string;
   entityName?: ENTITY_NAME;
   queryType: GROUP_QUERY_TYPE;
   transformFun: ITransformFunc<Group>;
@@ -39,4 +42,10 @@ type SectionConfig = {
 
 type SectionConfigs = { [key in SECTION_TYPE]: SectionConfig };
 
-export { SectionProps, SectionViewProps, SectionConfig, SectionConfigs };
+export {
+  SectionProps,
+  SectionViewProps,
+  SectionConfig,
+  SectionConfigs,
+  SECTION_TYPE,
+};

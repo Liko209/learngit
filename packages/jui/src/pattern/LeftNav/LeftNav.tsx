@@ -6,7 +6,6 @@
 import React, { PureComponent } from 'react';
 import MuiList from '@material-ui/core/List/index';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
-import { NavLink } from 'react-router-dom';
 import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
 import { JuiUmi, JuiArrowTip } from '../../components/index';
@@ -58,7 +57,13 @@ const StyledListItem = styled(JuiListItem)`
     height: ${height(11)};
     outline: none;
   }
+  &&.selected {
+    background: transparent;
+  }
   // In order to make sure use tab switch nav
+  &&.selected.left-item-focus {
+    background: ${({ theme }) => theme.palette.action.active};
+  }
   &&.left-item-focus {
     .left-link {
       span {
@@ -69,7 +74,7 @@ const StyledListItem = styled(JuiListItem)`
       }
     }
   }
-  &&:hover {
+  &&&:hover {
     background-color: ${({ theme, selected }) =>
       selected ? theme.palette.action.active : grey('100')};
     opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
@@ -88,7 +93,7 @@ const StyledListItemText = styled(JuiListItemText)`
     }
   }
 `;
-const ListLink = styled(NavLink)`
+const ListLink = styled.a`
   position: relative;
   outline: none;
   display: flex;
@@ -126,7 +131,7 @@ type TUMIProps = {
   important: boolean;
   variant: 'count' | 'dot' | 'auto';
 };
-const CustomUMI: React.SFC<TUMIProps> = props => {
+const CustomUMI: React.SFC<TUMIProps> = (props: TUMIProps) => {
   return <JuiUmi {...props} />;
 };
 const UMI = styled<TUMIProps>(CustomUMI)`
@@ -143,40 +148,47 @@ type TNavProps = {
   expand: boolean;
   unreadCount: number[][];
   icons: {
+    url: string;
     icon: string;
     title: string;
   }[][];
-  handleRouterChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
+  onRouteChange: Function;
 };
 
 export class JuiLeftNav extends PureComponent<TNavProps> {
+  onRouteChange(url: string) {
+    const { onRouteChange } = this.props;
+    onRouteChange(url);
+    this.forceUpdate();
+  }
+
   renderNavItems = () => {
-    const { icons, unreadCount, handleRouterChange, expand } = this.props;
+    const { icons, unreadCount, expand } = this.props;
     return icons.map((arr, idx) => {
       return (
         <MuiList component="nav" disablePadding={true} key={idx}>
           {arr.map((item, index) => {
-            const navUrl = item.icon.toLocaleLowerCase();
+            const navUrl = item.url;
             const pathname = window.location.pathname;
             const actIndex = pathname.lastIndexOf('/');
             const pathSlice = actIndex
               ? pathname.slice(1, actIndex)
               : pathname.slice(1);
-            const selected = pathSlice === navUrl;
+            const selected = pathSlice === navUrl.substr(1);
             const unread = unreadCount[idx][index];
             const NavItem = (
               <StyledListItem
                 button={true}
                 key={index}
                 selected={selected}
+                classes={{ selected: 'selected' }}
                 disableRipple={true}
                 focusVisibleClassName={'left-item-focus'}
                 disableGutters={true}
               >
                 <ListLink
-                  to={`/${navUrl}`}
-                  className={'left-link'}
-                  onClick={handleRouterChange}
+                  className={`left-link ${selected ? 'active' : ''}`}
+                  onClick={this.onRouteChange.bind(this, navUrl)}
                 >
                   <JuiListItemIcon className={'nav-icon'}>
                     <JuiIconography>{item.icon}</JuiIconography>

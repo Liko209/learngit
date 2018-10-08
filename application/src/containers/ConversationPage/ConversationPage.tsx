@@ -7,8 +7,9 @@
 import { buildContainer } from '@/base';
 import { ConversationPageView } from './ConversationPage.View';
 import { ConversationPageViewModel } from './ConversationPage.ViewModel';
+import { ConversationPageProps } from './types';
 
-const ConversationPage = buildContainer<{ id: number }>({
+const ConversationPage = buildContainer<ConversationPageProps>({
   View: ConversationPageView,
   ViewModel: ConversationPageViewModel,
 });
