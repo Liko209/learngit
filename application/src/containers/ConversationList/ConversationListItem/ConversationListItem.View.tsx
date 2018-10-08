@@ -9,9 +9,8 @@ import { ConversationListItemViewProps } from './types';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 // import navPresenter, { NavPresenter } from '../../BackNForward/ViewModel';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
-
+import { Umi } from '../../Umi';
 // TODO remove Stubs here
-const Umi = (props: any) => <div {...props} />;
 const Presence = (props: any) => <div {...props} />;
 const Indicator = (props: any) => <div {...props} />;
 const Menu = (props: any) => <div {...props} />;
