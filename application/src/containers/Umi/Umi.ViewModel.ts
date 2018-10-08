@@ -5,7 +5,7 @@
  */
 import { observable, autorun, action } from 'mobx';
 
-import { AbstractViewModel } from '@/base';
+import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import { MyState, Profile } from 'sdk/models';
 import MyStateModel from '@/store/models/MyState';
@@ -16,7 +16,7 @@ import GroupModel from '@/store/models/Group';
 
 import _ from 'lodash';
 
-class UmiViewModel extends AbstractViewModel implements UmiViewProps {
+class UmiViewModel extends StoreViewModel implements UmiViewProps {
   @observable
   ids: number[];
 
@@ -32,11 +32,14 @@ class UmiViewModel extends AbstractViewModel implements UmiViewProps {
   @observable
   important?: boolean;
 
-  constructor(props: UmiProps) {
+  constructor() {
     super();
-    this.ids = props.ids;
+  }
 
-    autorun(() => {
+  @action
+  onReceiveProps(props: UmiProps) {
+    this.ids = props.ids;
+    this.autorun(() => {
       this.calculateUmi();
     });
   }
@@ -64,7 +67,8 @@ class UmiViewModel extends AbstractViewModel implements UmiViewProps {
     this.umiVariant = 'count';
   }
 
-  _getAllGroupIds(): any {
+  private _getAllGroupIds(): any {
     throw new Error('Method not implemented.');
   }
 }
+export { UmiViewModel };

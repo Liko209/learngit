@@ -34,6 +34,13 @@ function groupTransformFunc(data: Group): ISortableModel<Group> {
   };
 }
 
+function favGroupTransformFunc(data: Group): ISortableModel<Group> {
+  return {
+    id: data.id,
+    sortValue: 0,
+  };
+}
+
 const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
     title: 'favorite_plural',
@@ -41,7 +48,7 @@ const SECTION_CONFIGS: SectionConfigs = {
     eventName: ENTITY.FAVORITE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.FAVORITE,
-    transformFun: groupTransformFunc,
+    transformFun: favGroupTransformFunc,
     isMatchFun: (model: Group) => {
       return true;
     },

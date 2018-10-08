@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
-import { Route, withRouter, RouteComponentProps } from 'react-router-dom';
+import {
+  Route,
+  Switch,
+  Redirect,
+  withRouter,
+  RouteComponentProps,
+} from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { TopBar } from '@/containers/TopBar';
 import { Messages } from '@/containers/Messages';
 import { LeftNav } from '@/containers/LeftNav';
+import NotFound from '@/containers/NotFound';
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 
@@ -15,7 +22,11 @@ class HomeComponent extends Component<RouteComponentProps> {
         <TopBar />
         <Bottom>
           <LeftNav />
-          <Route path="/messages/:id" component={Messages} />
+          <Switch>
+            <Redirect exact={true} from="/" to="/messages" />
+            <Route path="/messages/:id?" component={Messages} />
+            <Route component={NotFound} />
+          </Switch>
         </Bottom>
       </Wrapper>
     );
