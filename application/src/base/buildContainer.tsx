@@ -41,8 +41,8 @@ function buildContainer<P = {}, S = {}, SS = any>({
       this.vm.dispose && this.vm.dispose();
     }
 
-    componentDidUpdate(props: P) {
-      this.vm.onReceiveProps && this.vm.onReceiveProps(props);
+    componentDidUpdate() {
+      this.vm.onReceiveProps && this.vm.onReceiveProps(this.props);
     }
 
     render() {

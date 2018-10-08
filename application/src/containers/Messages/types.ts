@@ -1,6 +1,8 @@
+import { RouteComponentProps } from 'react-router-dom';
+
 type MessagesProps = {};
 
-type MessagesViewProps = {};
+type MessagesViewProps = {} & RouteComponentProps<{ id: string }>;
 
 type MessagesViewStates = {
   leftNavWidth: number;

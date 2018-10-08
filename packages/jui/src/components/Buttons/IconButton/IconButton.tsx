@@ -76,6 +76,7 @@ const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
       })};
     color: ${({ awake }) => (awake ? grey('500') : palette('accent', 'ash'))};
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
+    padding: 0;
     ${StyledIcon} {
       font-size: ${({ size = 'medium', theme }) =>
         width(iconSizes[size])({ theme })};
