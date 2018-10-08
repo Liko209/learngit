@@ -5,14 +5,14 @@
  */
 
 import React, { MouseEvent } from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 
-type InternalPorps = {
+type InternalProps = {
   offset: number;
   show: boolean;
 };
 
-type ExternalPorps = InternalPorps & {
+type ExternalProps = InternalProps & {
   onMouseDown: (e: MouseEvent) => void;
 };
 
@@ -26,11 +26,11 @@ const Wrapper = styled.div`
   z-index: ${({ theme }) => theme.zIndex.reponseResizer};
   margin-left: ${({ theme }) => -theme.spacing.unit}px;
   padding: ${({ theme }) => theme.spacing.unit}px;
-  left: ${({ offset }: InternalPorps) => `${offset}px`};
-  display: ${({ show }: InternalPorps) => show ? 'block' : 'none'};
+  left: ${({ offset }: InternalProps) => `${offset}px`};
+  display: ${({ show }: InternalProps) => show ? 'block' : 'none'};
 `;
 
-const JuiHorizonResizer = ({ offset, show, onMouseDown }: ExternalPorps) => {
+const JuiHorizonResizer = ({ offset, show, onMouseDown }: ExternalProps) => {
   return <Wrapper onMouseDown={onMouseDown} offset={offset} show={show} />;
 };
 

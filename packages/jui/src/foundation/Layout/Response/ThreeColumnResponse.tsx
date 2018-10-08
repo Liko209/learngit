@@ -70,7 +70,7 @@ class JuiTreeColumnResponse extends Component<Props, States> {
 
   componentDidUpdate(prevProps: Props) {
     if (this.props.leftNavWidth !== prevProps.leftNavWidth) {
-      this.onResize(this.props.leftNavWidth); // need to recalculate
+      this.onResize(); // need to recalculate
     }
   }
 
@@ -150,7 +150,7 @@ class JuiTreeColumnResponse extends Component<Props, States> {
     }
   }
 
-  onResize(leftnav?: number) {
+  onResize() {
     let {
       left,
       middle,
@@ -162,7 +162,7 @@ class JuiTreeColumnResponse extends Component<Props, States> {
     } = this.state;
     const { localLeftPanelWidth, localRightPanelWidth } = this.state;
     const { leftNavWidth } = this.props;
-    // const nav = leftnav || document.getElementById('leftnav')!.getBoundingClientRect().width;
+    // const nav = leftNav || document.getElementById('leftNav')!.getBoundingClientRect().width;
     const nav = leftNavWidth;
     const max = 1920;
     const windowWidth = document.body.getBoundingClientRect().width;

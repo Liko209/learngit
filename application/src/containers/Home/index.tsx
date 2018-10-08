@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import {
+  Route,
+  Switch,
+  Redirect,
+  withRouter,
+  RouteComponentProps,
+} from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { TopBar } from '@/containers/TopBar';
 import { Messages } from '@/containers/Messages';
@@ -10,7 +16,7 @@ import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 
 @observer
-class Home extends Component<{}> {
+class HomeComponent extends Component<RouteComponentProps> {
   render() {
     return (
       <Wrapper>
@@ -28,5 +34,7 @@ class Home extends Component<{}> {
     );
   }
 }
+
+const Home = withRouter(HomeComponent);
 
 export default Home;

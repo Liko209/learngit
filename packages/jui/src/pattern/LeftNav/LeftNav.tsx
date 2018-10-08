@@ -27,7 +27,7 @@ const CustomLeftNav: React.SFC<LeftNavProps> = ({ expand, ...props }) => {
 };
 const Left = styled<LeftNavProps>(CustomLeftNav)`
   .left-paper {
-    position: absolute;
+    position: relative;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;

@@ -5,27 +5,21 @@
  */
 
 import React, { MouseEvent, ReactNode } from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 
-type ExternalPorps = {
+type ExternalProps = {
   onClick?: (e: MouseEvent) => void;
   children: ReactNode[];
   // ref?: React.RefObject<HTMLDivElement>;
 };
 
 const Wrapper = styled.div`
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  bottom:0;
-  right: 0;
-  left: 0;
-  overflow: hidden;
+  flex: 1;
   display: flex;
+  position: relative;
 `;
 
-const JuiResponse = ({ onClick, children }: ExternalPorps) => {
+const JuiResponse = ({ onClick, children }: ExternalProps) => {
   return (
     <Wrapper onClick={onClick}>
       {children}

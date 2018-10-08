@@ -8,20 +8,21 @@ import { action, observable, computed } from 'mobx';
 import { GroupService, PERMISSION_ENUM } from 'sdk/service';
 import { Group } from 'sdk/models';
 import { AbstractViewModel } from '@/base';
+import { ConversationPageProps } from './types';
 
 class ConversationPageViewModel extends AbstractViewModel {
   private _groupService: GroupService = new GroupService();
   @observable
   private _permissions: PERMISSION_ENUM[] = [];
   @observable
-  id: number;
+  groupId: number;
 
   @action
-  async onReceiveProps({ id }: { id: number }) {
-    if (id !== this.id && id) {
-      const group = (await this._groupService.getById(id)) as Group;
+  async onReceiveProps({ groupId }: ConversationPageProps) {
+    if (groupId !== this.groupId && groupId) {
+      const group = (await this._groupService.getById(groupId)) as Group;
       this._permissions = this._groupService.getPermissions(group);
-      this.id = id;
+      this.groupId = groupId;
     }
   }
 

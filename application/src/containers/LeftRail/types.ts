@@ -3,12 +3,14 @@
  * @Date: 2018-10-02 15:46:41
  * Copyright © RingCentral. All rights reserved.
  */
+import { SECTION_TYPE } from './Section/types';
 
-import { SECTION_TYPE } from './Section/constants';
-
-type LeftRailProps = {};
+type LeftRailProps = {
+  currentGroupId: number;
+};
 
 type LeftRailViewProps = {
+  currentGroupId: number;
   sections: SECTION_TYPE[];
 };
 

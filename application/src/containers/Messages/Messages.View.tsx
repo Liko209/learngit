@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { parse } from 'qs';
 import { JuiTreeColumnResponse } from 'jui/foundation/Layout/Response/ThreeColumnResponse';
 import { ConversationPage } from '@/containers/ConversationPage';
@@ -9,10 +9,10 @@ import { RightRail } from '@/containers/RightRail';
 import { MessagesViewProps, MessagesViewStates } from './types';
 
 class MessagesViewComponent extends Component<
-  MessagesViewProps & RouteComponentProps<{ id: string }>,
+  MessagesViewProps,
   MessagesViewStates
 > {
-  constructor(props: MessagesViewProps & RouteComponentProps<{ id: string }>) {
+  constructor(props: MessagesViewProps) {
     super(props);
     this.state = { leftNavWidth: 0 };
   }
@@ -28,9 +28,7 @@ class MessagesViewComponent extends Component<
     }
   }
 
-  componentDidUpdate(
-    prevProps: MessagesViewProps & RouteComponentProps<{ id: string }>,
-  ) {
+  componentDidUpdate(prevProps: MessagesViewProps) {
     if (this.props.location.search !== prevProps.location.search) {
       const parsed = parse(this.props.location.search, {
         ignoreQueryPrefix: true,
@@ -52,8 +50,8 @@ class MessagesViewComponent extends Component<
     const currentGroupId = Number(this.props.match.params.id);
     return (
       <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
-        <LeftRail />
-        {currentGroupId ? <ConversationPage id={currentGroupId} /> : null}
+        <LeftRail currentGroupId={currentGroupId} />
+        {currentGroupId ? <ConversationPage groupId={currentGroupId} /> : null}
         <RightRail />
       </JuiTreeColumnResponse>
     );

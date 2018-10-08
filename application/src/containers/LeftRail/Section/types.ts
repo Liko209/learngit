@@ -3,7 +3,6 @@
  * @Date: 2018-10-02 15:46:13
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { SortEndHandler } from 'react-sortable-hoc';
 import { GROUP_QUERY_TYPE } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
@@ -19,9 +18,11 @@ enum SECTION_TYPE {
 
 type SectionProps = {
   type: SECTION_TYPE;
+  currentGroupId: number;
 };
 
 type SectionViewProps = {
+  currentGroupId: number;
   groupIds: number[];
   sortable: boolean;
   expanded: boolean;
