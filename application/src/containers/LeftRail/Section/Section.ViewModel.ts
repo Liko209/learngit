@@ -16,13 +16,13 @@ import {
   SectionViewProps,
 } from './types';
 import { SECTION_TYPE } from './constants';
-import ISortableModel from '../../../store/base/fetch/ISortableModel';
 
-import { FetchDataDirection } from '../../../store/base/fetch/constants';
-
-import FetchSortableDataListHandler, {
+import {
+  FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-} from '../../../store/base/fetch/FetchSortableDataListHandler';
+  FetchDataDirection,
+  ISortableModel,
+} from '@/store/base/fetch';
 
 const { GroupService } = service;
 
