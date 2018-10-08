@@ -20,6 +20,7 @@ test(formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']), async 
     .log('1. Navigate to Messages')
     .shouldNavigateTo(MaxConversation)
     .waitForSections()
+    .chain(t => t.wait(2000))
     .getConversationCount(SECTION));
   console.log("init conversation teams count:",cc)
   await page
