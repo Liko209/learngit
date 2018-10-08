@@ -44,7 +44,8 @@ class LeftNav extends Component<LeftNavProps> {
   }
 
   onRouteChange(url: string) {
-    const { history } = this.props;
+    const { history, location } = this.props;
+    if (url === location.pathname) return;
     history.push(url);
   }
 
