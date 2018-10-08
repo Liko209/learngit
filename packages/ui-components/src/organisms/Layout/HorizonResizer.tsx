@@ -1,12 +1,12 @@
 import React, { MouseEvent } from 'react';
 import styled from 'styled-components';
 
-interface IInternalPorps {
+interface IInternalProps {
   offset: number;
   show: boolean;
 }
 
-interface IExternalPorps extends IInternalPorps {
+interface IExternalProps extends IInternalProps {
   onMouseDown: (e: MouseEvent) => void;
 }
 
@@ -20,15 +20,15 @@ const Wrapper = styled.div`
   padding: ${({ theme }) => theme.spacing.unit}px;
   cursor: col-resize;
   background-color: transparent;
-  left: ${(props: IInternalPorps) => `${props.offset}px`};
-  display: ${(props: IInternalPorps) => props.show ? 'block' : 'none'};
+  left: ${(props: IInternalProps) => `${props.offset}px`};
+  display: ${(props: IInternalProps) => props.show ? 'block' : 'none'};
   /* &:hover {
     background-color: #999;
     transition: all 0.5s ease;
   } */
 `;
 
-const Resizer = ({ offset, show, onMouseDown }: IExternalPorps) => {
+const Resizer = ({ offset, show, onMouseDown }: IExternalProps) => {
   return <Wrapper onMouseDown={onMouseDown} offset={offset} show={show} />;
 };
 

@@ -7,12 +7,12 @@
 import React, { MouseEvent } from 'react';
 import styled from '../../styled-components';
 
-type InternalPorps = {
+type InternalProps = {
   offset: number;
   show: boolean;
 };
 
-type ExternalPorps = InternalPorps & {
+type ExternalProps = InternalProps & {
   onClick: (e: MouseEvent) => void;
 };
 
@@ -22,16 +22,16 @@ const Wrapper = styled.div`
   top: 0;
   bottom: 0;
   right: auto;
-  z-index: ${({ theme }) => theme.zIndex.reponseResizer};
-  background-color: red;
   width: 10px;
   height: 20px;
   cursor: pointer;
-  left: ${(props: InternalPorps) => `${props.offset}px`};
-  display: ${(props: InternalPorps) => (props.show ? 'block' : 'none')};
+  background-color: red;
+  z-index: ${({ theme }) => theme.zIndex.reponseResizer};
+  left: ${(props: InternalProps) => `${props.offset}px`};
+  display: ${(props: InternalProps) => (props.show ? 'block' : 'none')};
 `;
 
-const JuiHorizonButton = ({ offset, show, onClick }: ExternalPorps) => {
+const JuiHorizonButton = ({ offset, show, onClick }: ExternalProps) => {
   return <Wrapper onClick={onClick} offset={offset} show={show} />;
 };
 

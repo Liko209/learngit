@@ -1,12 +1,12 @@
 import React, { MouseEvent } from 'react';
 import styled from '../../styled-components';
 
-interface IInternalPorps {
+interface IInternalProps {
   offset: number;
   show: boolean;
 }
 
-interface IExternalPorps extends IInternalPorps {
+interface IExternalProps extends IInternalProps {
   onClick: (e: MouseEvent) => void;
 }
 
@@ -21,11 +21,11 @@ const Wrapper = styled.div`
   width: 10px;
   height: 20px;
   cursor: pointer;
-  left: ${(props: IInternalPorps) => `${props.offset}px`};
-  display: ${(props: IInternalPorps) => (props.show ? 'block' : 'none')};
+  left: ${(props: IInternalProps) => `${props.offset}px`};
+  display: ${(props: IInternalProps) => (props.show ? 'block' : 'none')};
 `;
 
-const Button = ({ offset, show, onClick }: IExternalPorps) => {
+const Button = ({ offset, show, onClick }: IExternalProps) => {
   return <Wrapper onClick={onClick} offset={offset} show={show} />;
 };
 
