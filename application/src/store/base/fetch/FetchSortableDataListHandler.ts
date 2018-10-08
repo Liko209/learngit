@@ -91,12 +91,16 @@ export default class FetchSortableDataListHandler<
   onDataChanged({ type, entities }: IIncomingData<T>) {
     const existKeys = this.sortableListStore.getIds();
     const keys = Array.from(entities.keys());
-    const matchedKeys = _.intersection(keys, existKeys);
+    let matchedKeys = _.intersection(keys, existKeys);
     const differentKeys = _.difference(keys, existKeys);
 
     if (type === EVENT_TYPES.DELETE) {
       this.sortableListStore.removeByIds(matchedKeys);
     } else {
+      if (type === EVENT_TYPES.REPLACE_ALL) {
+        matchedKeys = keys;
+        this.sortableListStore.clear();
+      }
       const matchedSortableModels: ISortableModel<T>[] = [];
       const matchedEntities: T[] = [];
       const notMatchedKeys: number[] = [];

@@ -19,7 +19,6 @@ import { SECTION_TYPE } from './constants';
 import ISortableModel from '../../../store/base/fetch/ISortableModel';
 
 import { FetchDataDirection } from '../../../store/base/fetch/constants';
-import { ISortFunc } from '../../../store/base/fetch/SortableListStore';
 
 import FetchSortableDataListHandler, {
   IFetchSortableDataProvider,
@@ -43,7 +42,7 @@ const SECTION_CONFIGS: SectionConfigs = {
     queryType: GROUP_QUERY_TYPE.FAVORITE,
     transformFun: groupTransformFunc,
     isMatchFun: (model: Group) => {
-      return false;
+      return true;
     },
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
