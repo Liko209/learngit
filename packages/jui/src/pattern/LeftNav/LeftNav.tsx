@@ -57,7 +57,13 @@ const StyledListItem = styled(JuiListItem)`
     height: ${height(11)};
     outline: none;
   }
+  &&.selected {
+    background: transparent;
+  }
   // In order to make sure use tab switch nav
+  &&.selected.left-item-focus {
+    background: ${({ theme }) => theme.palette.action.active};
+  }
   &&.left-item-focus {
     .left-link {
       span {
@@ -68,7 +74,7 @@ const StyledListItem = styled(JuiListItem)`
       }
     }
   }
-  &&:hover {
+  &&&:hover {
     background-color: ${({ theme, selected }) =>
       selected ? theme.palette.action.active : grey('100')};
     opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
@@ -142,16 +148,20 @@ type TNavProps = {
   expand: boolean;
   unreadCount: number[][];
   icons: {
+    url: string;
     icon: string;
     title: string;
   }[][];
+  onRouteChange: Function;
 };
 
 export class JuiLeftNav extends PureComponent<TNavProps> {
-  onRouteChange(url) {
+  onRouteChange(url: string) {
     const { onRouteChange } = this.props;
     onRouteChange(url);
+    this.forceUpdate();
   }
+
   renderNavItems = () => {
     const { icons, unreadCount, expand } = this.props;
     return icons.map((arr, idx) => {
@@ -164,19 +174,20 @@ export class JuiLeftNav extends PureComponent<TNavProps> {
             const pathSlice = actIndex
               ? pathname.slice(1, actIndex)
               : pathname.slice(1);
-            const selected = pathSlice === navUrl;
+            const selected = pathSlice === navUrl.substr(1);
             const unread = unreadCount[idx][index];
             const NavItem = (
               <StyledListItem
                 button={true}
                 key={index}
                 selected={selected}
+                classes={{ selected: 'selected' }}
                 disableRipple={true}
                 focusVisibleClassName={'left-item-focus'}
                 disableGutters={true}
               >
                 <ListLink
-                  className={'left-link'}
+                  className={`left-link ${selected ? 'active' : ''}`}
                   onClick={this.onRouteChange.bind(this, navUrl)}
                 >
                   <JuiListItemIcon className={'nav-icon'}>

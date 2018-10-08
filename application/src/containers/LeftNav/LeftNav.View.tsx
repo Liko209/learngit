@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
 import { JuiLeftNav } from 'jui/pattern/LeftNav';
@@ -13,7 +13,8 @@ import { LeftNavViewProps } from './types';
 type LeftNavProps = {
   isLeftNavOpen: boolean;
   t: TranslationFunction;
-} & LeftNavViewProps;
+} & LeftNavViewProps &
+  RouteComponentProps;
 
 class LeftNav extends Component<LeftNavProps> {
   constructor(props: LeftNavProps) {
@@ -42,7 +43,7 @@ class LeftNav extends Component<LeftNavProps> {
     ];
   }
 
-  onRouteChange(url) {
+  onRouteChange(url: string) {
     const { history } = this.props;
     history.push(url);
   }
