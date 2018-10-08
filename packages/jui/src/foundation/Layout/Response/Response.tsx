@@ -5,7 +5,7 @@
  */
 
 import React, { MouseEvent, ReactNode } from 'react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 
 type ExternalProps = {
   onClick?: (e: MouseEvent) => void;
