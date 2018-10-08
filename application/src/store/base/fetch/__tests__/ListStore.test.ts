@@ -3,7 +3,7 @@
  * @Date: 2018-10-05 13:53:30
  * Copyright © RingCentral. All rights reserved.
  */
-import ListStore from '../ListStore';
+import { ListStore } from '../ListStore';
 import { autorun } from 'mobx';
 import checkListStore from './checkListStore';
 

@@ -3,22 +3,16 @@
  * @Date: 2018-10-07 00:11:41
  * Copyright © RingCentral. All rights reserved.
  */
-import ListStore from './ListStore';
-import ISortableModel from './ISortableModel';
+import { ListStore } from './ListStore';
+import { ISortableModel, ISortFunc } from './types';
 import _ from 'lodash';
-
-export interface ISortFunc<T> {
-  (first: T, second: T): number;
-}
 
 const defaultSortFunc: ISortFunc<ISortableModel> = (
   first: ISortableModel,
   second: ISortableModel,
 ) => first.sortValue - second.sortValue;
 
-export default class SortableListStore<T = any> extends ListStore<
-  ISortableModel<T>
-> {
+export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
   private _sortFunc: ISortFunc<ISortableModel<T>>;
 
   constructor(sortFunc: ISortFunc<ISortableModel<T>> = defaultSortFunc) {

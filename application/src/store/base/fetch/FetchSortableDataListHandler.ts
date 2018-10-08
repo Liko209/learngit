@@ -3,27 +3,25 @@
  * @Date: 2018-10-07 00:50:11
  * Copyright © RingCentral. All rights reserved.
  */
-import ISortableModel from './ISortableModel';
-import FetchDataListHandler, {
+import {
+  ISortableModel,
+  FetchDataDirection,
+  IMatchFunc,
+  ITransformFunc,
+  ISortFunc,
+} from './types';
+import {
+  FetchDataListHandler,
   IFetchDataListHandlerOptions,
 } from './FetchDataListHandler';
 
-import SortableListStore, { ISortFunc } from './SortableListStore';
-import { FetchDataDirection } from './constants';
+import { SortableListStore } from './SortableListStore';
 
 import { service } from 'sdk';
 import { IIncomingData } from '../../store';
 import _ from 'lodash';
 
 const { EVENT_TYPES } = service;
-
-export interface IMatchFunc<T> {
-  (model: T): boolean;
-}
-
-export interface ITransformFunc<T> {
-  (model: T): ISortableModel<T>;
-}
 
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
@@ -41,9 +39,9 @@ export interface IFetchSortableDataProvider<T> {
   ): Promise<T[]>;
 }
 
-export default class FetchSortableDataListHandler<
-  T
-> extends FetchDataListHandler<ISortableModel<T>> {
+export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
+  ISortableModel<T>
+> {
   private _isMatchFunc: IMatchFunc<T>;
   private _transformFunc: ITransformFunc<T>;
   private _sortableDataProvider: IFetchSortableDataProvider<T>;

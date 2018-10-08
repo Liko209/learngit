@@ -7,7 +7,7 @@ import { createAtom, IAtom } from 'mobx';
 import _ from 'lodash';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';
 
-export default class ListStore<T> extends BaseNotificationSubscribe {
+export class ListStore<T> extends BaseNotificationSubscribe {
   _items: T[] = [];
   _hasMore: boolean = true;
   _atom: IAtom = createAtom(`list: ${Math.random()}`);
@@ -85,21 +85,6 @@ export default class ListStore<T> extends BaseNotificationSubscribe {
     console.log(`===> dump: ${JSON.stringify(this._items)}`, args);
   }
 
-  // push(...newItems: T[]) {
-  //   this._items.push(...newItems);
-  //   this._atom.reportChanged();
-  // }
-
-  // append(...newItems: T[]) {
-  //   this._items.push(...newItems);
-  //   return this._atom.reportChanged();
-  // }
-
-  // prepend(...newItems: T[]) {
-  //   this._items.unshift(...newItems);
-  //   return this._atom.reportChanged();
-  // }
-
   get hasMore() {
     return this._hasMore;
   }
@@ -107,5 +92,3 @@ export default class ListStore<T> extends BaseNotificationSubscribe {
     this._hasMore = hasMore;
   }
 }
-
-export { ListStore };

@@ -3,14 +3,17 @@
  * @Date: 2018-10-07 00:58:02
  * Copyright © RingCentral. All rights reserved.
  */
-import FetchSortableDataListHandler, {
+import {
+  FetchSortableDataListHandler,
   IFetchSortableDataProvider,
+} from '../FetchSortableDataListHandler';
+import {
+  FetchDataDirection,
+  ISortableModel,
   ITransformFunc,
   IMatchFunc,
-} from '../FetchSortableDataListHandler';
-import { FetchDataDirection } from '../constants';
-import ISortableModel from '../ISortableModel';
-import { ISortFunc } from '../SortableListStore';
+  ISortFunc,
+} from '../types';
 import checkListStore from './checkListStore';
 
 import { service } from 'sdk';
