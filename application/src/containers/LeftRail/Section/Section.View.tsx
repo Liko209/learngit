@@ -15,9 +15,9 @@ import {
 import { ConversationListItem } from '@/containers/ConversationList/ConversationListItem';
 import { toTitleCase } from '@/utils';
 import { SectionViewProps } from './types';
+import { Umi } from '../../Umi';
 
 // TODO remove Stubs here
-const Umi = (props: any) => <div {...props} />;
 
 const SortableList = SortableContainer(JuiConversationList);
 const SortableItem = SortableElement(ConversationListItem);
@@ -61,7 +61,7 @@ class SectionViewComponent extends React.Component<
         <JuiConversationListSection
           title={toTitleCase(t(title))}
           icon={<JuiIconography>{iconName}</JuiIconography>}
-          umi={<Umi groupIds={groupIds} />}
+          umi={<Umi ids={groupIds} />}
           expanded={expanded}
         >
           {this.renderList()}
