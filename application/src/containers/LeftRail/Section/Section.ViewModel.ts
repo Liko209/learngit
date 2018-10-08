@@ -49,6 +49,7 @@ const SECTION_CONFIGS: SectionConfigs = {
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.FAVORITE,
     transformFun: favGroupTransformFunc,
+    sortable: true,
     isMatchFun: (model: Group) => {
       return true;
     },
@@ -109,8 +110,10 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
   @observable
   expanded: boolean = true;
 
-  @observable
-  sortable: boolean = false;
+  @computed
+  get sortable() {
+    return this._config.sortable || false;
+  }
 
   @computed
   get iconName() {
