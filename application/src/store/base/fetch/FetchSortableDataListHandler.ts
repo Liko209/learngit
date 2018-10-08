@@ -126,7 +126,12 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       });
       this.updateEntityStore(matchedEntities);
       this.sortableListStore.removeByIds(notMatchedKeys);
-      this.sortableListStore.upsert(matchedSortableModels);
+
+      if (type === EVENT_TYPES.REPLACE_ALL) {
+        this.sortableListStore.replaceAll(matchedSortableModels);
+      } else {
+        this.sortableListStore.upsert(matchedSortableModels);
+      }
     }
   }
 
