@@ -112,7 +112,13 @@ export default class OrderListHandler<
 
     this.updateEntityStore(entityName, updateEntity);
     this._store.batchRemove(deleted);
-    this._store.batchSet(updated);
+
+    if (type === EVENT_TYPES.REPLACE_ALL) {
+      this._store.replaceAll(updated);
+    } else {
+      this._store.batchSet(updated);
+    }
+
     this.emit(BIND_EVENT.DATA_CHANGE, {
       deleted,
       updated,
