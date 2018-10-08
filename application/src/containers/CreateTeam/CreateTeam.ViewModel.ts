@@ -8,20 +8,21 @@ import { action } from 'mobx';
 import GroupService, { CreateTeamOptions } from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
 import { IResponseError } from 'sdk/models';
+import { AbstractViewModel } from '@/base';
 
 type errorTips = {
   type: string;
   msg: string;
 };
 
-class CreateTeamViewModel {
+class CreateTeamViewModel extends AbstractViewModel {
   @action
-  async create(
+  create = async (
     name: string,
     memberIds: (number | string)[],
     description: string,
     options: CreateTeamOptions,
-  ) {
+  ) => {
     const { isPublic, canPost } = options;
     const groupService: GroupService = GroupService.getInstance();
     const accountService: AccountService = AccountService.getInstance();
