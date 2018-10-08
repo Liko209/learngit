@@ -14,15 +14,16 @@ import {
   SectionConfig,
   SectionConfigs,
   SectionViewProps,
+  SECTION_TYPE,
 } from './types';
-import { SECTION_TYPE } from './constants';
-import ISortableModel from '../../../store/base/fetch/ISortableModel';
+import { AbstractViewModel } from '@/base';
 
-import { FetchDataDirection } from '../../../store/base/fetch/constants';
-
-import FetchSortableDataListHandler, {
+import {
+  FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-} from '../../../store/base/fetch/FetchSortableDataListHandler';
+  FetchDataDirection,
+  ISortableModel,
+} from '@/store/base/fetch';
 
 const { GroupService } = service;
 
@@ -37,7 +38,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
     title: 'favorite_plural',
     iconName: 'start',
-    entity: ENTITY.FAVORITE_GROUPS,
+    eventName: ENTITY.FAVORITE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.FAVORITE,
     transformFun: groupTransformFunc,
@@ -48,7 +49,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.DIRECT_MESSAGE]: {
     title: 'directMessage_plural',
     iconName: 'people',
-    entity: ENTITY.PEOPLE_GROUPS,
+    eventName: ENTITY.PEOPLE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.GROUP,
     transformFun: groupTransformFunc,
@@ -59,7 +60,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.TEAM]: {
     title: 'team_plural',
     iconName: 'people',
-    entity: ENTITY.TEAM_GROUPS,
+    eventName: ENTITY.TEAM_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.TEAM,
     transformFun: groupTransformFunc,
@@ -86,7 +87,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   }
 }
 
-class SectionViewModel implements SectionViewProps {
+class SectionViewModel extends AbstractViewModel implements SectionViewProps {
   private _listHandler: FetchSortableDataListHandler<Group>;
 
   @observable
@@ -137,9 +138,9 @@ class SectionViewModel implements SectionViewProps {
 
     this._listHandler = new FetchSortableDataListHandler(dataProvider, {
       isMatchFunc: this._config.isMatchFun,
-      transformFunc: groupTransformFunc,
+      transformFunc: this._config.transformFun,
       entityName: ENTITY_NAME.GROUP,
-      eventName: this._config.entity,
+      eventName: this._config.eventName,
     });
     await this.fetchGroups();
   }

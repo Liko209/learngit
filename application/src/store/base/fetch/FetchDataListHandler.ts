@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import IFetchDataProvider from './IFetchDataProvider';
-import { FetchDataDirection } from './constants';
-import ListStore from './ListStore';
+import { FetchDataDirection } from './types';
+import { ListStore } from './ListStore';
 import { ENTITY_NAME } from '@/store/constants';
 import storeManager from '@/store';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
@@ -19,9 +18,17 @@ export interface IFetchDataListHandlerOptions {
   hasMoreDown?: boolean;
   entityName?: ENTITY_NAME;
 }
-export default class FetchDataListHandler<
-  T
-> extends BaseNotificationSubscribable {
+
+export interface IFetchDataProvider<T> {
+  fetchData(
+    offset: number,
+    direction: FetchDataDirection,
+    pageSize: number,
+    anchor: T | null,
+  ): Promise<T[]>;
+}
+
+export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
   private _fetchDataProvider: IFetchDataProvider<T> | null;
   private _listStore: ListStore<T>;
   private _pageSize: number;
