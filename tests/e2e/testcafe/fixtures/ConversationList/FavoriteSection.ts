@@ -32,7 +32,7 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
     .checkExpanded();
 });
 
-test(formalName('Drag & Drop', ['JPT-10', 'P2', 'ConversationList']), async (t) => {
+test.skip(formalName('Drag & Drop', ['JPT-10', 'P2', 'ConversationList']), async (t) => {
   // XIA-UP
   const authInfo = {
     credential: 'system@tarcnonbetauser1487802163099530.com',
@@ -47,5 +47,4 @@ test(formalName('Drag & Drop', ['JPT-10', 'P2', 'ConversationList']), async (t) 
     .shouldNavigateTo(FavoriteSection)
     .log('2. Drag & drop conversation')
     .dragListItem(LAST, FIRST);
-
 });
