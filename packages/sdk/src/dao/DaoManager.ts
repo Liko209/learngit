@@ -22,7 +22,8 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   async initDatabase(): Promise<void> {
-    this.dbManager.initDatabase(schema, DatabaseType.DexieDB);
+    const dbType = this.kvStorageManager.isLocalStorageSupported() ? DatabaseType.DexieDB : DatabaseType.LokiDB;
+    this.dbManager.initDatabase(schema, dbType);
 
     if (!this._isSchemaCompatible()) {
       try {
