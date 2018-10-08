@@ -3,7 +3,7 @@
 * @Date: 2018-09-19 14:19:09
 * Copyright © RingCentral. All rights reserved.
 */
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import {
   ConversationListItemProps,
   ConversationListItemViewProps,
@@ -37,9 +37,6 @@ class ConversationListItemViewModel extends StoreViewModel
   currentGroupId?: number;
 
   @observable
-  displayName: string = '';
-
-  @observable
   anchorEl: HTMLElement | null = null;
 
   @observable
@@ -62,13 +59,24 @@ class ConversationListItemViewModel extends StoreViewModel
     this.groupService = GroupService.getInstance();
   }
 
+  @computed
+  get displayName() {
+    return this._group.displayName;
+  }
+
+  @computed
+  get _group() {
+    return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
+  }
+
   onReceiveProps(props: ConversationListItemProps) {
-    this.groupId = props.groupId;
-    this.getData();
+    if (this.groupId !== props.groupId) {
+      this.groupId = props.groupId;
+      this.getData();
+    }
   }
 
   getData() {
-    const group = getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
     const lastGroup = getSingleEntity<MyState, MyStateModel>(
       ENTITY_NAME.MY_STATE,
       'lastGroupId',
@@ -81,8 +89,6 @@ class ConversationListItemViewModel extends StoreViewModel
     const isCurrentGroup = lastGroup && lastGroup === this.groupId;
 
     this.umiHint = !!(!isCurrentGroup && groupState.unreadCount);
-
-    this.displayName = group.displayName;
   }
 
   clickGroup() {

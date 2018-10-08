@@ -58,6 +58,7 @@ const StyledCheckboxButton = styled<JuiCheckboxButtonProps>(
   WrappedMuiCheckboxButton,
 )`
   && {
+    padding: 0;
     width: ${({ size = 'medium', theme }) =>
       width(iconSizes[size] * 2)({ theme })};
     height: ${({ size = 'medium', theme }) =>

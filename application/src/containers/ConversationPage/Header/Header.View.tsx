@@ -57,7 +57,10 @@ class Header extends Component<HeaderProps> {
       })(name),
     );
     actionButtons.push(
-      <JuiIconButton tooltipTitle={toTitleCase(t('conversationSettings'))}>
+      <JuiIconButton
+        key="setting"
+        tooltipTitle={toTitleCase(t('conversationSettings'))}
+      >
         settings
       </JuiIconButton>,
     );
@@ -106,8 +109,8 @@ class Header extends Component<HeaderProps> {
     return (
       <JuiConversationPageHeader
         title={title}
-        SubTitle={this._SubTitle}
-        Right={this._ActionButtons}
+        SubTitle={this._SubTitle()}
+        Right={this._ActionButtons()}
       />
     );
   }

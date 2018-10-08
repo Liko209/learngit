@@ -87,18 +87,22 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
   }
 
   onDataChanged({ type, entities }: IIncomingData<T>) {
-    const existKeys = this.sortableListStore.getIds();
     const keys = Array.from(entities.keys());
-    let matchedKeys = _.intersection(keys, existKeys);
-    const differentKeys = _.difference(keys, existKeys);
-
     if (type === EVENT_TYPES.DELETE) {
-      this.sortableListStore.removeByIds(matchedKeys);
+      this.sortableListStore.removeByIds(keys);
     } else {
+      const existKeys = this.sortableListStore.getIds();
+
+      let matchedKeys: number[] = [];
+      let differentKeys: number[] = [];
       if (type === EVENT_TYPES.REPLACE_ALL) {
         matchedKeys = keys;
         this.sortableListStore.clear();
+      } else {
+        matchedKeys = _.intersection(keys, existKeys);
+        differentKeys = _.difference(keys, existKeys);
       }
+
       const matchedSortableModels: ISortableModel<T>[] = [];
       const matchedEntities: T[] = [];
       const notMatchedKeys: number[] = [];
