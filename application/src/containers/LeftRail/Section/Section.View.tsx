@@ -28,11 +28,6 @@ type Props = SectionViewProps & {
 } & RouteComponentProps<{ id: string }>;
 
 class SectionViewComponent extends React.Component<Props> {
-  static defaultProps = {
-    expanded: true,
-    sortable: false,
-  };
-
   renderList() {
     const { sortable, onSortEnd } = this.props;
 
@@ -51,8 +46,6 @@ class SectionViewComponent extends React.Component<Props> {
       );
     }
 
-    console.log('this.props.currentGroupId: ', this.props.currentGroupId);
-    console.log('this.props.groupIds: ', this.props.groupIds);
     return (
       <JuiConversationList>
         {this.props.groupIds.map((id: number) => (

@@ -106,6 +106,12 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
   @observable
   currentGroupId: number;
 
+  @observable
+  expanded: boolean = true;
+
+  @observable
+  sortable: boolean = false;
+
   @computed
   get iconName() {
     return this._config.iconName;
@@ -120,9 +126,6 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
   get groupIds() {
     return this._listHandler.sortableListStore.getIds();
   }
-
-  sortable: boolean = false;
-  expanded: boolean = false;
 
   onSortEnd = ({
     oldIndex,

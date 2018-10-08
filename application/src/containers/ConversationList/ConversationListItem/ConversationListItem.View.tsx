@@ -46,8 +46,6 @@ class ConversationListItemViewComponent extends React.Component<
   }
 
   render() {
-    console.log('this.props.selected: ', this.props.selected);
-
     return (
       <JuiConversationListItem
         presence={this._presence}
