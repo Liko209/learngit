@@ -30,10 +30,15 @@ type HeaderProps = {
 } & InjectedTranslateProps;
 
 @observer
-class Header extends Component<HeaderProps> {
+class Header extends Component<HeaderProps, { awake: boolean }> {
   constructor(props: HeaderProps) {
     super(props);
+    this.state = {
+      awake: false,
+    };
     this.rightButtonClickHandler = this.rightButtonClickHandler.bind(this);
+    this._onHover = this._onHover.bind(this);
+    this._onUnhover = this._onUnhover.bind(this);
   }
   rightButtonClickHandler(evt: React.SyntheticEvent, name: string) {
     // console.log(evt, name);
@@ -65,7 +70,7 @@ class Header extends Component<HeaderProps> {
       </JuiIconButton>,
     );
     return (
-      <JuiButtonBar size="medium" overlapping={true}>
+      <JuiButtonBar size="medium" overlapping={true} awake={this.state.awake}>
         {actionButtons}
       </JuiButtonBar>
     );
@@ -103,6 +108,18 @@ class Header extends Component<HeaderProps> {
     );
   }
 
+  private _onHover() {
+    this.setState({
+      awake: true,
+    });
+  }
+
+  private _onUnhover() {
+    this.setState({
+      awake: false,
+    });
+  }
+
   render() {
     const { title } = this.props;
 
@@ -111,6 +128,8 @@ class Header extends Component<HeaderProps> {
         title={title}
         SubTitle={this._SubTitle()}
         Right={this._ActionButtons()}
+        onMouseEnter={this._onHover}
+        onMouseLeave={this._onUnhover}
       />
     );
   }
