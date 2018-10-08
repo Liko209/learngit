@@ -7,6 +7,7 @@ import { MouseEvent } from 'react';
 
 type ConversationListItemProps = {
   groupId: number;
+  selected: boolean;
 };
 
 type ConversationListItemViewProps = {
@@ -16,6 +17,7 @@ type ConversationListItemViewProps = {
   anchorEl: HTMLElement | null;
   umiHint?: boolean;
   important?: boolean;
+  selected: boolean;
   draft?: string;
   sendFailurePostIds: number[];
   onMenuClose: (event: MouseEvent<HTMLElement>) => void;

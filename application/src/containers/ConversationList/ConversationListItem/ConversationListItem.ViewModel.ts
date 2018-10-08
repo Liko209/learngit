@@ -40,7 +40,10 @@ class ConversationListItemViewModel extends StoreViewModel
   anchorEl: HTMLElement | null = null;
 
   @observable
-  umiHint: boolean;
+  umiHint: boolean = false;
+
+  @observable
+  selected: boolean = false;
 
   groupService: service.GroupService;
 
@@ -70,6 +73,10 @@ class ConversationListItemViewModel extends StoreViewModel
   }
 
   onReceiveProps(props: ConversationListItemProps) {
+    if (this.selected !== props.selected) {
+      this.selected = props.selected;
+    }
+
     if (this.groupId !== props.groupId) {
       this.groupId = props.groupId;
       this.getData();

@@ -14,7 +14,6 @@ class ConversationPageViewComponent extends Component<
 > {
   render() {
     const { t, groupId, canPost } = this.props;
-    console.log('ConversationPageView groupId: ', groupId);
     if (!groupId) {
       return null;
     }

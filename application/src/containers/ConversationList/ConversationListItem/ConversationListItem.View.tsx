@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { MouseEvent } from 'react';
-import { Menu } from 'ui-components/atoms/Menu';
 import { ConversationListItemViewProps } from './types';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 // import navPresenter, { NavPresenter } from '../../BackNForward/ViewModel';
@@ -29,31 +28,10 @@ class ConversationListItemViewComponent extends React.Component<
   IProps,
   IState
 > {
-  // private navPresenter: NavPresenter;
   constructor(props: IProps) {
     super(props);
     this.onClick = this.onClick.bind(this);
-    // this.navPresenter = navPresenter;
     this.state = { currentGroupId: 0 };
-  }
-
-  // componentDidMount() {
-  //   this.props.history.listen(() => {
-  //     const pathname = window.location.pathname;
-  //     const uIdIndex = pathname.lastIndexOf('/');
-  //     const uid = pathname.slice(uIdIndex + 1);
-  //     if (+uid === this.props.groupId) {
-  //       this.navPresenter.handleTitle(this.props.displayName);
-  //     }
-  //   });
-  // }
-
-  static getDerivedStateFromProps(props: IProps, state: IState) {
-    const currentGroupId = parseInt(props.match.params.id, 10);
-    if (currentGroupId !== state.currentGroupId) {
-      return { currentGroupId };
-    }
-    return null;
   }
 
   private get _umi() {
@@ -76,6 +54,7 @@ class ConversationListItemViewComponent extends React.Component<
         onMoreClick={this.props.onMoreClick}
         onClick={this.onClick}
         title={this.props.displayName}
+        selected={this.props.selected}
       />
     );
   }
@@ -92,5 +71,6 @@ class ConversationListItemViewComponent extends React.Component<
     // this.navPresenter.handleTitle(displayName);
   }
 }
+
 const ConversationListItemView = withRouter(ConversationListItemViewComponent);
 export { ConversationListItemView };
