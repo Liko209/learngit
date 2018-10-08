@@ -65,6 +65,7 @@ const WrappedMuiIconButton = ({
 );
 const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
   && {
+    padding: 0;
     width: ${({ variant, size = 'medium', theme }) =>
       width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
         theme,
