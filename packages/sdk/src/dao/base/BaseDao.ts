@@ -1,9 +1,10 @@
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-23 23:29:52
+ * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { DexieDB, IDatabaseCollection, IDatabase } from 'foundation';
+import { DexieDB, LokiDB, IDatabaseCollection, IDatabase } from 'foundation';
 import Query from './Query';
 import { ErrorTypes, Throw } from '../../utils';
 import { errorHandler } from '../errors/handler';
@@ -138,6 +139,10 @@ class BaseDao<T extends {}> {
 
   isDexieDB(): boolean {
     return this.db instanceof DexieDB;
+  }
+
+  isLokiDB(): boolean {
+    return this.db instanceof LokiDB;
   }
 
   createQuery() {
