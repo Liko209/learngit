@@ -14,7 +14,7 @@ import { observer } from 'mobx-react';
 import { observable, computed } from 'mobx';
 
 // TODO remove Stubs here
-const Presence = (props: any) => <div {...props} />;
+const Presence = (props: any) => <span {...props} />;
 
 type IRouterParams = {
   id: string;
@@ -39,16 +39,18 @@ class ConversationListItemViewComponent extends React.Component<
     return !!this.menuAnchorEl;
   }
 
+  private _umiIds: number[];
   constructor(props: IProps) {
     super(props);
     this._handleClick = this._handleClick.bind(this);
     this._handleMoreClick = this._handleMoreClick.bind(this);
     this._closeMenu = this._closeMenu.bind(this);
     this.state = { currentGroupId: 0 };
+    this._umiIds = [this.props.groupId];
   }
 
   private get _umi() {
-    return <Umi ids={[this.props.groupId]} />;
+    return <Umi ids={this._umiIds} />;
   }
 
   private get _presence() {
@@ -91,8 +93,6 @@ class ConversationListItemViewComponent extends React.Component<
   private _jump2Conversation(id: number) {
     const { history } = this.props;
     history.push(`/messages/${id}`);
-    // this.navPresenter.handleRouterChange();
-    // this.navPresenter.handleTitle(displayName);
   }
 
   private _handleMoreClick(event: React.MouseEvent<HTMLElement>) {

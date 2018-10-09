@@ -8,7 +8,7 @@ import MuiList from '@material-ui/core/List/index';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
-import { JuiUmi, JuiArrowTip } from '../../components/index';
+import { JuiArrowTip } from '../../components/index';
 import { height, grey, palette, spacing } from '../../foundation/utils/styles';
 
 import {
@@ -125,32 +125,20 @@ const ListLink = styled.a`
     color: ${palette('accent', 'ash')};
   }
 `;
-type TUMIProps = {
-  expand: boolean;
-  unreadCount: number;
-  important: boolean;
-  variant: 'count' | 'dot' | 'auto';
-};
-const CustomUMI: React.SFC<TUMIProps> = (props: TUMIProps) => {
-  return <JuiUmi {...props} />;
-};
-const UMI = styled<TUMIProps>(CustomUMI)`
-  && {
-    position: ${props => (!props.expand ? 'absolute' : 'static')};
-    top: ${props => (!props.expand ? spacing(1) : '')};
-    left: ${props => (!props.expand ? spacing(8) : '')};
-    border-radius: ${({ theme }) => `${theme.shape.borderRadius * 6}px`};
-    transform: scale(0.85);
-    color: #fff !important;
-  }
+
+const UmiWrapper = styled<{ expand: boolean }, 'div'>('div')`
+  position: ${props => (!props.expand ? 'absolute' : 'static')};
+  top: ${props => (!props.expand ? spacing(1) : '')};
+  left: ${props => (!props.expand ? spacing(8) : '')};
 `;
+
 type TNavProps = {
   expand: boolean;
-  unreadCount: number[][];
   icons: {
     url: string;
     icon: string;
     title: string;
+    umi: React.ComponentType<any>;
   }[][];
   onRouteChange: Function;
 };
@@ -163,7 +151,7 @@ export class JuiLeftNav extends PureComponent<TNavProps> {
   }
 
   renderNavItems = () => {
-    const { icons, unreadCount, expand } = this.props;
+    const { icons, expand } = this.props;
     return icons.map((arr, idx) => {
       return (
         <MuiList component="nav" disablePadding={true} key={idx}>
@@ -175,7 +163,6 @@ export class JuiLeftNav extends PureComponent<TNavProps> {
               ? pathname.slice(1, actIndex)
               : pathname.slice(1);
             const selected = pathSlice === navUrl.substr(1);
-            const unread = unreadCount[idx][index];
             const NavItem = (
               <StyledListItem
                 button={true}
@@ -197,12 +184,7 @@ export class JuiLeftNav extends PureComponent<TNavProps> {
                     primary={item.title}
                     className={'nav-text'}
                   />
-                  <UMI
-                    unreadCount={unread}
-                    important={true}
-                    expand={expand}
-                    variant="count"
-                  />
+                  <UmiWrapper expand={expand}>{item.umi}</UmiWrapper>
                 </ListLink>
               </StyledListItem>
             );
