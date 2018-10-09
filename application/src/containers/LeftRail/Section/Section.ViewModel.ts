@@ -88,7 +88,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     offset: number,
     direction: FetchDataDirection,
     pageSize: number,
-    anchor: ISortableModel<Group> | null,
+    anchor: ISortableModel<Group>,
   ): Promise<Group[]> {
     const groupService = GroupService.getInstance<service.GroupService>();
     return groupService.getGroupsByType(this._queryType);

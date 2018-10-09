@@ -35,7 +35,7 @@ export interface IFetchSortableDataProvider<T> {
     offset: number,
     direction: FetchDataDirection,
     pageSize: number,
-    anchor: ISortableModel<T> | null,
+    anchor?: ISortableModel<T>,
   ): Promise<T[]>;
 }
 
@@ -70,7 +70,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     offset: number,
     direction: FetchDataDirection,
     pageSize: number,
-    anchor: ISortableModel<T> | null,
+    anchor: ISortableModel<T>,
   ) {
     const result = await this._sortableDataProvider.fetchData(
       offset,
@@ -84,6 +84,12 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     });
     this.updateEntityStore(result);
     this.handlePageData(sortableResult, direction);
+    this._dataChangeCallBack &&
+      this._dataChangeCallBack({
+        updated: sortableResult,
+        direction,
+        deleted: [],
+      });
   }
 
   onDataChanged({ type, entities }: IIncomingData<T>) {
@@ -92,7 +98,6 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       this.sortableListStore.removeByIds(keys);
     } else {
       const existKeys = this.sortableListStore.getIds();
-
       let matchedKeys: number[] = [];
       let differentKeys: number[] = [];
       if (type === EVENT_TYPES.REPLACE_ALL) {
@@ -134,14 +139,24 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       if (type === EVENT_TYPES.REPLACE_ALL) {
         this.sortableListStore.replaceAll(matchedSortableModels);
       } else {
-        this.sortableListStore.upsert(matchedSortableModels);
+        this.sortableListStore.upInsert(matchedSortableModels);
       }
+      if (type === EVENT_TYPES.REPLACE) {
+        notMatchedKeys.push(...keys);
+        this.sortableListStore.removeByIds(keys);
+      }
+      this._dataChangeCallBack &&
+        this._dataChangeCallBack({
+          updated: matchedSortableModels,
+          deleted: notMatchedKeys,
+          direction: FetchDataDirection.DOWN,
+        });
     }
   }
 
   private _isInRange(sortValue: number) {
     let inRange = false;
-    const idArray = this.sortableListStore.getItems();
+    const idArray = this.sortableListStore.items;
     if (idArray && idArray.length > 0) {
       const smallest = idArray[0];
       const biggest = idArray[idArray.length - 1];
@@ -160,7 +175,6 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
         this.hasMore(FetchDataDirection.UP)
       );
     }
-
     return inRange;
   }
 }

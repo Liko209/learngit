@@ -5,9 +5,10 @@
  */
 import { observable, computed } from 'mobx';
 import _ from 'lodash';
-import { Group } from 'sdk/models';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { Group, Profile } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
+import ProfileModel from '@/store/models/Profile';
+import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 import { compareName } from '@/utils/helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import Base from './Base';
@@ -52,6 +53,17 @@ export default class GroupModel extends Base<Group> {
     this.privacy = privacy;
     this.draft = draft;
     this.sendFailurePostIds = send_failure_post_ids;
+  }
+
+  @computed
+  get isFavorite() {
+    const favoriteGroupIds: number[] =
+      getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'favoriteGroupIds',
+      ) || [];
+
+    return favoriteGroupIds.some(groupId => groupId === this.id);
   }
 
   @computed
