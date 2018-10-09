@@ -11,7 +11,7 @@ import { Indicator } from '@/containers/ConversationList/Indicator';
 import { Menu } from '../Menu';
 import { ConversationListItemViewProps } from './types';
 import { observer } from 'mobx-react';
-import { observable, computed } from 'mobx';
+import { observable } from 'mobx';
 
 // TODO remove Stubs here
 const Presence = (props: any) => <span {...props} />;

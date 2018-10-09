@@ -22,7 +22,8 @@ class TopBarViewModel extends AbstractViewModel {
   }
 
   @action
-  updateCreateTeamDialogState() {
+  updateCreateTeamDialogState = () => {
+    console.log('open,-------------');
     const globalStore = storeManager.getGlobalStore();
     const isShowCreateTeamDialog = !globalStore.get('isShowCreateTeamDialog');
     globalStore.set('isShowCreateTeamDialog', isShowCreateTeamDialog);
