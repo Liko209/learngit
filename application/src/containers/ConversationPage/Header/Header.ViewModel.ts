@@ -5,10 +5,9 @@
  */
 
 import { observable, computed, action } from 'mobx';
-import { Profile, Group } from 'sdk/models';
-import { getEntity, getSingleEntity } from '@/store/utils';
+import { Group } from 'sdk/models';
+import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
-import ProfileModel from '@/store/models/Profile';
 import { ENTITY_NAME } from '@/store';
 import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
@@ -36,12 +35,8 @@ class HeaderViewModel extends AbstractViewModel {
 
   @computed
   get isFavorite() {
-    const favoriteGroupIds =
-      getSingleEntity<Profile, ProfileModel>(
-        ENTITY_NAME.PROFILE,
-        'favoriteGroupIds',
-      ) || [];
-    return favoriteGroupIds.indexOf(this._id) >= 0;
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
+    return group.isFavorite;
   }
 
   @computed
