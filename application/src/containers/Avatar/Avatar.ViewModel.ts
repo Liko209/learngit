@@ -9,7 +9,7 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { observable, computed, action } from 'mobx';
 import defaultAvatar from './defaultAvatar.svg';
-import { AvatarProps, AvatarViewProps } from './types';
+import { AvatarViewProps } from './types';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -56,13 +56,11 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
 
   @computed
   get name() {
-    console.log(this._person);
     return this._person.shortName;
   }
 
   @computed
   get url() {
-    console.log(this._person);
     const { headshot } = this._person;
     if (typeof headshot === 'string') {
       return headshot;

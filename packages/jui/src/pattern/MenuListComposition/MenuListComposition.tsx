@@ -37,7 +37,10 @@ const MenuListCompositionWrapper = styled.div`
 
 const MenuWrapper = styled(Popper)``;
 
-class JuiMenuListComposition extends React.Component<MenuListCompositionProps, { open: boolean }> {
+class JuiMenuListComposition extends React.Component<
+  MenuListCompositionProps,
+  { open: boolean }
+> {
   state = {
     open: false,
   };
@@ -116,4 +119,9 @@ class JuiMenuListComposition extends React.Component<MenuListCompositionProps, {
   }
 }
 
-export { JuiMenuListComposition, MenuItems, MenuExpandTrigger, MenuListCompositionProps };
+export {
+  JuiMenuListComposition,
+  MenuItems,
+  MenuExpandTrigger,
+  MenuListCompositionProps,
+};

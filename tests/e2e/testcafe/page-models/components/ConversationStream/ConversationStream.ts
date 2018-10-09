@@ -16,11 +16,13 @@ class ConversationStream extends BaseComponent {
   get conversationCard() {
     return ReactSelector('ConversationCard');
   }
-
+  
   get groupId() {
     return this.team.getReact().key;
   }
-
+  get juiConversationCardHeader(){
+    return ReactSelector('JuiConversationCardHeader');
+  }
   public clickFirstGroup() {
     return this.clickElement(this.team);
   }
@@ -52,13 +54,17 @@ class ConversationStream extends BaseComponent {
 
   public expectRightOrder(...sequence) {
     return this.chain(async (t: TestController) => {
-      const length = sequence.length;
+      const length = await this.juiConversationCardHeader.count
       for (const i in sequence) {
         await t
-          .expect(this.conversationCard.nth(length - Number(i)).textContent)
+          .expect(this._getRightOrderTextContent(length,sequence.length,Number(i)))
           .contains(sequence[i]);
-      }
+      };
     });
+  }
+
+  private _getRightOrderTextContent(length,sequenceLength,i){
+    return  this.juiConversationCardHeader.nth(length - sequenceLength + i).nextSibling('div').textContent;
   }
 
   public expectLastConversationToBe(text: string) {
@@ -97,7 +103,7 @@ class ConversationStream extends BaseComponent {
       const targetPost = this.targetPost
         .findReact('JuiConversationCardHeader')
         .withProps({
-          name,
+          'name': name,
         });
       await t.expect(targetPost.exists).ok();
     });

@@ -141,7 +141,7 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
   }
 
   async onReceiveProps(props: SectionProps) {
-    if (this.currentGroupId !== props.currentGroupId) {
+    if (props.currentGroupId && this.currentGroupId !== props.currentGroupId) {
       this.currentGroupId = props.currentGroupId;
     }
 

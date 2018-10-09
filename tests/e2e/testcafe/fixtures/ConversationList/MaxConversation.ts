@@ -14,11 +14,16 @@ test(formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']), async 
   const SECTION = 'Teams';
   const TYPE = 'Team';
   const teamNames = [];
+  let page;
 
-  await directLogin(t)
+  const cc = await (page = directLogin(t)
     .log('1. Navigate to Messages')
     .shouldNavigateTo(MaxConversation)
     .waitForSections()
+    .chain(t => t.wait(2000))
+    .getConversationCount(SECTION));
+  console.log("init conversation teams count:",cc)
+  await page
     .log(`2.1 Create ${MAX_NUMBER} conversations`)
     .chain(async (t, h) => {
       await t.wait(2000);
@@ -37,5 +42,5 @@ test(formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']), async 
     .log('2.2 Display recent conversations')
     .checkConversationListItems(SECTION, teamNames)
     .log(`2.3 Conversation max count is ${MAX_NUMBER}`)
-    .checkConversationCount(SECTION, MAX_NUMBER);
+    .checkConversationCount(SECTION, MAX_NUMBER+(+cc));
 });

@@ -101,7 +101,7 @@ const action1 = (t: TestController) =>
     .log('9.Check display of the confirm dialog')
     .expectDialog(title, content, checkboxLabel, button);
 
-test(
+test.skip(
   formalName(
     'Close current conversation directly, and navigate to blank page (without UMI)',
     ['JPT-135', 'JPT-130', 'P1', 'ConversationList'],
@@ -133,7 +133,7 @@ test(
   },
 );
 
-test(
+test.skip(
   formalName(
     'Close other conversation in confirm alert,and still focus on user veiwing conversation(without UMI)',
     ['JPT-137', 'JPT-130', 'P1', 'ConversationList'],
@@ -173,7 +173,7 @@ test(
   },
 );
 
-test(
+test.skip(
   formalName('Close current conversation in confirm alert(without UMI)', [
     'JPT-134',
     'JPT-130',
@@ -203,7 +203,7 @@ test(
   },
 );
 
-test(
+test.skip(
   formalName(
     `Tap ${checkboxLabel} checkbox,then close current conversation in confirm alert(without UMI)`,
     ['JPT-134', 'JPT-130', 'P2', 'ConversationList'],
