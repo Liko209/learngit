@@ -76,7 +76,6 @@ class FlagCalculator implements IFlagCalculator {
   }
 
   private _checkFeatureStatus(statusName: string, next: Next) {
-    console.log('andy', statusName);
     if (this._flags.hasOwnProperty(statusName)) {
       return this._flags[statusName];
     }

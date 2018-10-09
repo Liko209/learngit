@@ -14,7 +14,7 @@ describe('List Store', () => {
   beforeEach(() => {
     listStore = new ListStore<number>();
     disposer = autorun(() => {
-      console.log(`========> ${listStore.getItems()}`);
+      console.log(`========> ${listStore.items}`);
     });
   });
 
@@ -24,7 +24,7 @@ describe('List Store', () => {
 
   it('Append/Append in front', () => {
     listStore.append([1]);
-    expect(listStore.getSize()).toEqual(1);
+    expect(listStore.size).toEqual(1);
 
     listStore.append([2]);
     checkListStore(listStore, [1, 2]);
