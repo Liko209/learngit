@@ -135,13 +135,17 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
   ) as Group[];
 }
 
-async function doNotification(deactivatedData: Group[], normalData: Group[]) {
+async function doNotification(deactivatedData: Group[], groups: Group[]) {
   const accountService: AccountService = AccountService.getInstance();
+  const profileService: ProfileService = ProfileService.getInstance();
+  const profile = await profileService.getProfile();
+  const hiddenGroupIds = profile ? extractHiddenGroupIds(profile) : [];
+  const normalData = groups.filter(
+    (group: Group) => hiddenGroupIds.indexOf(group.id) === -1,
+  );
 
   notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
 
-  const profileService: ProfileService = ProfileService.getInstance();
-  const profile = await profileService.getProfile();
   const favIds = (profile && profile.favorite_group_ids) || [];
 
   /**
