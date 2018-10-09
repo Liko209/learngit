@@ -11,13 +11,13 @@ type LeftNavProps = {
 type LeftNavViewProps = {
   expanded: boolean;
   id: string;
-  umiCount: number[][];
-  messageUmi: number;
   handleTitle?: Function;
   onRouteChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
   icons: {
+    url: string;
     icon: string;
     title: string;
+    umi: React.Component;
   }[][];
 };
 
