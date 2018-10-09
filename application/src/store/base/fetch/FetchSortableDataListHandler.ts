@@ -94,8 +94,12 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
 
   onDataChanged({ type, entities }: IIncomingData<T>) {
     const keys = Array.from(entities.keys());
+    const matchedSortableModels: ISortableModel<T>[] = [];
+    const matchedEntities: T[] = [];
+    const notMatchedKeys: number[] = [];
     if (type === EVENT_TYPES.DELETE) {
       this.sortableListStore.removeByIds(keys);
+      notMatchedKeys.push(...keys);
     } else {
       const existKeys = this.sortableListStore.getIds();
       let matchedKeys: number[] = [];
@@ -107,10 +111,6 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
         matchedKeys = _.intersection(keys, existKeys);
         differentKeys = _.difference(keys, existKeys);
       }
-
-      const matchedSortableModels: ISortableModel<T>[] = [];
-      const matchedEntities: T[] = [];
-      const notMatchedKeys: number[] = [];
 
       matchedKeys.forEach((key: number) => {
         const model = entities.get(key) as T;
@@ -145,13 +145,13 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
         notMatchedKeys.push(...keys);
         this.sortableListStore.removeByIds(keys);
       }
-      this._dataChangeCallBack &&
-        this._dataChangeCallBack({
-          updated: matchedSortableModels,
-          deleted: notMatchedKeys,
-          direction: FetchDataDirection.DOWN,
-        });
     }
+    this._dataChangeCallBack &&
+      this._dataChangeCallBack({
+        updated: matchedSortableModels,
+        deleted: notMatchedKeys,
+        direction: FetchDataDirection.DOWN,
+      });
   }
 
   private _isInRange(sortValue: number) {

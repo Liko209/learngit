@@ -100,12 +100,7 @@ export class ConversationCard extends React.Component<IProps, IStates> {
           </JuiConversationCardFooter>
         </JuiConversationCard>
         <JuiDivider />
-<<<<<<< HEAD
         <JuiConfirm
-=======
-        {/* todo replace js invoke */}
-        <Confirm
->>>>>>> 2806e10bc47deb754d071473c84b6c05baea2147
           open={open}
           size="medium"
           header={t('deletePostTitle')}
