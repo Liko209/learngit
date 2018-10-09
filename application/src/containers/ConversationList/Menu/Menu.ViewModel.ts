@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { MouseEvent } from 'react';
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import _ from 'lodash';
 import { service } from 'sdk';
 import { MyState, Profile } from 'sdk/models';
@@ -25,69 +25,39 @@ import ProfileModel from '@/store/models/Profile';
 const { GroupService } = service;
 
 class MenuViewModel extends StoreViewModel implements MenuViewProps {
+  private _groupService: service.GroupService = GroupService.getInstance();
+
   @observable
   groupId: number;
 
   @observable
-  anchorEl: HTMLElement | null;
+  anchorEl: HTMLElement | null = null;
 
-  @observable
-  isFavorite: boolean;
-
-  @observable
-  favoriteText: string;
-
-  @observable
-  open: boolean;
-
-  @observable
-  onClose: (event: MouseEvent<HTMLElement>) => void;
-
-  @observable
-  shouldSkipCloseConfirmation: boolean;
-
-  @observable
-  umiHint: boolean;
-
-  toggleFavorite = () => {
-    this.groupService.markGroupAsFavorite(this.groupId, !this.isFavorite);
+  @computed
+  get open() {
+    return !!this.anchorEl;
   }
 
-  closeConversation = (shouldSkipNextTime: boolean) => {
-    return this.groupService.hideConversation(
-      this.groupId,
-      true,
-      shouldSkipNextTime,
+  @computed
+  get isFavorite() {
+    return this._group.isFavorite;
+  }
+
+  @computed
+  get favoriteText() {
+    return this.isFavorite ? 'unFavorite' : 'favorite';
+  }
+
+  @computed
+  get shouldSkipCloseConfirmation() {
+    return getSingleEntity<Profile, ProfileModel>(
+      ENTITY_NAME.PROFILE,
+      'skipCloseConversationConfirmation',
     );
   }
 
-  groupService: service.GroupService;
-  constructor() {
-    super();
-    this.groupService = GroupService.getInstance();
-  }
-
-  onReceiveProps(props: MenuProps) {
-    if (this.groupId !== props.groupId) {
-      this.groupId = props.groupId;
-      this.getData();
-    }
-
-    if (this.open !== props.open) {
-      this.open = props.open;
-    }
-
-    if (this.onClose !== props.onMenuClose) {
-      this.onClose = props.onMenuClose;
-    }
-
-    if (this.anchorEl !== props.anchorEl) {
-      this.anchorEl = props.anchorEl;
-    }
-  }
-
-  getData() {
-    const group = getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
+  @computed
+  get umiHint() {
     const lastGroup = getSingleEntity<MyState, MyStateModel>(
       ENTITY_NAME.MY_STATE,
       'lastGroupId',
@@ -99,14 +69,40 @@ class MenuViewModel extends StoreViewModel implements MenuViewProps {
 
     const isCurrentGroup = lastGroup && lastGroup === this.groupId;
 
-    this.umiHint = !!(!isCurrentGroup && groupState.unreadCount);
+    return !!(!isCurrentGroup && groupState.unreadCount);
+  }
 
-    this.isFavorite = group.isFavorite;
-    this.favoriteText = this.isFavorite ? 'unFavorite' : 'favorite';
-    this.shouldSkipCloseConfirmation = getSingleEntity<Profile, ProfileModel>(
-      ENTITY_NAME.PROFILE,
-      'skipCloseConversationConfirmation',
+  @computed
+  private get _group() {
+    return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
+  }
+
+  toggleFavorite = () => {
+    this._groupService.markGroupAsFavorite(this.groupId, !this.isFavorite);
+  }
+
+  closeConversation = (shouldSkipNextTime: boolean) => {
+    return this._groupService.hideConversation(
+      this.groupId,
+      true,
+      shouldSkipNextTime,
     );
+  }
+
+  onClose: (event: MouseEvent<HTMLElement>) => void;
+
+  onReceiveProps(props: MenuProps) {
+    if (this.groupId !== props.groupId) {
+      this.groupId = props.groupId;
+    }
+
+    if (this.onClose !== props.onClose) {
+      this.onClose = props.onClose;
+    }
+
+    if (this.anchorEl !== props.anchorEl) {
+      this.anchorEl = props.anchorEl;
+    }
   }
 }
 export { MenuViewModel };
