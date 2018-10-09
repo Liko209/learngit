@@ -34,11 +34,6 @@ class ConversationListItemViewComponent extends React.Component<
   @observable
   menuAnchorEl: HTMLElement | null = null;
 
-  @computed
-  get menuOpen() {
-    return !!this.menuAnchorEl;
-  }
-
   private _umiIds: number[];
   constructor(props: IProps) {
     super(props);
@@ -78,8 +73,7 @@ class ConversationListItemViewComponent extends React.Component<
         <Menu
           groupId={this.props.groupId}
           anchorEl={this.menuAnchorEl}
-          open={this.menuOpen}
-          onMenuClose={this._closeMenu}
+          onClose={this._closeMenu}
         />
       </Fragment>
     );
