@@ -34,20 +34,20 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
 
   constructor() {
     super();
+    this.autorun(() => {
+      this.calculateUmi();
+    });
   }
 
-  // @action
-  // onReceiveProps(props: UmiProps) {
-  //   if (this.ids !== props.ids) {
-  //     this.ids = props.ids;
-  //   }
-  //   // this.autorun(() => {
-  //   //   this.calculateUmi();
-  //   // });
-  // }
+  @action
+  onReceiveProps(props: UmiProps) {
+    if (this.ids !== props.ids) {
+      this.ids = props.ids;
+    }
+  }
 
   calculateUmi() {
-    const groupIds = this.ids || this._getAllGroupIds();
+    const groupIds = this.ids;
     const lastGroupId = getSingleEntity<MyState, MyStateModel>(
       ENTITY_NAME.MY_STATE,
       'lastGroupId',
@@ -67,10 +67,6 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
       return unreadCount;
     });
     this.umiVariant = 'count';
-  }
-
-  private _getAllGroupIds(): any {
-    throw new Error('Method not implemented.');
   }
 }
 export { UmiViewModel };

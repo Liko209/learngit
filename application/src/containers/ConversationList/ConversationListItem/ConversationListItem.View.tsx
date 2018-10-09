@@ -28,14 +28,16 @@ class ConversationListItemViewComponent extends React.Component<
   IProps,
   IState
 > {
+  private _umiIds: number[];
   constructor(props: IProps) {
     super(props);
     this.onClick = this.onClick.bind(this);
     this.state = { currentGroupId: 0 };
+    this._umiIds = [this.props.groupId];
   }
 
   private get _umi() {
-    return <Umi ids={[this.props.groupId]} />;
+    return <Umi ids={this._umiIds} />;
   }
 
   private get _presence() {
@@ -65,10 +67,8 @@ class ConversationListItemViewComponent extends React.Component<
   }
 
   private _jump2Conversation(id: number) {
-    const { history, displayName } = this.props;
+    const { history } = this.props;
     history.push(`/messages/${id}`);
-    // this.navPresenter.handleRouterChange();
-    // this.navPresenter.handleTitle(displayName);
   }
 }
 
