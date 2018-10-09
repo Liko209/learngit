@@ -1,6 +1,7 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-03-01 14:31:21
+ * Copyright © RingCentral. All rights reserved.
  */
 import { DBManager, IDatabase } from 'foundation';
 import BaseDao from '../BaseDao';

@@ -27,7 +27,6 @@ class StoreViewModel extends BaseNotificationSubscribable
     this._reactionDisposers.push(disposer);
     return disposer;
   }
-
   protected reaction<T>(
     expression: (r: IReactionPublic) => T,
     effect: (arg: T, r: IReactionPublic) => void,

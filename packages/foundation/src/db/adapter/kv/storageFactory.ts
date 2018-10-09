@@ -12,34 +12,34 @@ function storageFactory(storage: IStorage) {
   let inMemoryStorage = {};
   // let length: number = 0;
 
-  function isSupported(): boolean {
-    try {
-      const randomKey = '__some_random_key_you_are_not_going_to_use__';
-      storage.setItem(randomKey, randomKey);
-      storage.removeItem(randomKey);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   return {
+    isSupported(): boolean {
+      try {
+        const randomKey = '__some_random_key_you_are_not_going_to_use__';
+        storage.setItem(randomKey, randomKey);
+        storage.removeItem(randomKey);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+
     // get length(): number {
-    //   if (isSupported()) {
+    //   if (this.isSupported()) {
     //     return storage.length;
     //   }
     //   return length;
     // },
 
     getItem(key: string): string | null {
-      if (isSupported()) {
+      if (this.isSupported()) {
         return storage.getItem(key);
       }
       return inMemoryStorage[key] || null;
     },
 
     setItem(key: string, value: any): void {
-      if (isSupported()) {
+      if (this.isSupported()) {
         storage.setItem(key, value);
       } else {
         inMemoryStorage[key] = `${value}`;
@@ -48,7 +48,7 @@ function storageFactory(storage: IStorage) {
     },
 
     removeItem(key: string): void {
-      if (isSupported()) {
+      if (this.isSupported()) {
         storage.removeItem(key);
       } else {
         delete inMemoryStorage[key];
@@ -57,7 +57,7 @@ function storageFactory(storage: IStorage) {
     },
 
     clear(): void {
-      if (isSupported()) {
+      if (this.isSupported()) {
         storage.clear();
       } else {
         inMemoryStorage = {};
@@ -66,7 +66,7 @@ function storageFactory(storage: IStorage) {
     },
 
     // key(n: number): string | null {
-    //   if (isSupported()) {
+    //   if (this.isSupported()) {
     //     return storage.key(n);
     //   }
     //   return Object.keys(inMemoryStorage)[n] || null;

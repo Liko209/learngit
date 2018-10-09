@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { JuiDivider } from 'ui-components/atoms/Divider';
-import { JuiButtonBar } from 'ui-components/molecules/ButtonBar';
-import { JuiIconButton } from 'ui-components/molecules/IconButton';
+import { JuiDivider } from 'jui/components/Divider';
+import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
+import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { POST_STATUS } from 'sdk/service';
 import {
   JuiConversationCard,
@@ -56,6 +56,7 @@ export class ConversationCard extends React.Component<IProps, IStates> {
       <React.Fragment>
         <JuiConversationCard Avatar={avatar}>
           <JuiConversationCardHeader name={displayTitle} time={createTime}>
+            {/* todo replace self maintenance Actions component */}
             <JuiButtonBar size="small">
               {status === POST_STATUS.INPROGRESS && (
                 <JuiIconButton
@@ -99,7 +100,12 @@ export class ConversationCard extends React.Component<IProps, IStates> {
           </JuiConversationCardFooter>
         </JuiConversationCard>
         <JuiDivider />
+<<<<<<< HEAD
         <JuiConfirm
+=======
+        {/* todo replace js invoke */}
+        <Confirm
+>>>>>>> 2806e10bc47deb754d071473c84b6c05baea2147
           open={open}
           size="medium"
           header={t('deletePostTitle')}
