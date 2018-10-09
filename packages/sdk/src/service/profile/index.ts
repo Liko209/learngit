@@ -190,6 +190,11 @@ export default class ProfileService extends BaseService<Profile> {
         /**tslint:disable-next-line  */
         newProfile.skip_close_conversation_confirmation = shouldUpdateSkipConfirmation;
       }
+      if (hidden) {
+        let favIds = newProfile.favorite_group_ids || [];
+        favIds = favIds.filter((id: number) => id !== groupId);
+        newProfile.favorite_group_ids = favIds;
+      }
 
       return this._putProfile(newProfile);
     }

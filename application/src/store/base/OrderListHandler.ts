@@ -78,12 +78,14 @@ export default class OrderListHandler<
     }
     const existKeys = this._store.getIds();
     const keys = _.map(
-      Array.from(entities.values()).filter(entity =>
-        this._isMatchedFunc(
-          type === EVENT_TYPES.REPLACE
-            ? (entity as { id: number; data: T }).data
-            : entity,
-        ),
+      Array.from(entities.values()).filter(
+        entity =>
+          type === EVENT_TYPES.DELETE ||
+          this._isMatchedFunc(
+            type === EVENT_TYPES.REPLACE
+              ? (entity as { id: number; data: T }).data
+              : entity,
+          ),
       ),
       'id',
     );
@@ -110,7 +112,13 @@ export default class OrderListHandler<
 
     this.updateEntityStore(entityName, updateEntity);
     this._store.batchRemove(deleted);
-    this._store.batchSet(updated);
+
+    if (type === EVENT_TYPES.REPLACE_ALL) {
+      this._store.replaceAll(updated);
+    } else {
+      this._store.batchSet(updated);
+    }
+
     this.emit(BIND_EVENT.DATA_CHANGE, {
       deleted,
       updated,

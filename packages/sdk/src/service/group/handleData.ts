@@ -11,6 +11,7 @@ import { ACCOUNT_USER_ID } from '../../dao/account/constants';
 import notificationCenter from '../notificationCenter';
 import { ENTITY, SERVICE } from '../../service/eventKey';
 import ProfileService from '../../service/profile';
+import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
 import { transform } from '../utils';
 import {
@@ -134,13 +135,17 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
   ) as Group[];
 }
 
-async function doNotification(deactivatedData: Group[], normalData: Group[]) {
+async function doNotification(deactivatedData: Group[], groups: Group[]) {
   const accountService: AccountService = AccountService.getInstance();
+  const profileService: ProfileService = ProfileService.getInstance();
+  const profile = await profileService.getProfile();
+  const hiddenGroupIds = profile ? extractHiddenGroupIds(profile) : [];
+  const normalData = groups.filter(
+    (group: Group) => hiddenGroupIds.indexOf(group.id) === -1,
+  );
 
   notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
 
-  const profileService: ProfileService = ProfileService.getInstance();
-  const profile = await profileService.getProfile();
   const favIds = (profile && profile.favorite_group_ids) || [];
 
   /**
@@ -262,9 +267,14 @@ export default async function handleData(groups: Raw<Group>[]) {
 async function doFavoriteGroupsNotification(favIds: number[]) {
   mainLogger.debug('-------doFavoriteGroupsNotification--------');
   if (favIds.length) {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const profile = await profileService.getProfile();
+    const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
+    const validFavIds = _.difference(favIds, hiddenIds);
     const dao = daoManager.getDao(GroupDao);
-    let groups = await dao.queryGroupsByIds(favIds);
-    groups = sortFavoriteGroups(favIds, groups);
+    let groups = await dao.queryGroupsByIds(validFavIds);
+    groups = sortFavoriteGroups(validFavIds, groups);
+
     notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, groups);
   } else {
     notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, []);
