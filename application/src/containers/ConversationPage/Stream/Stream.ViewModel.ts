@@ -1,13 +1,9 @@
-import { computed } from 'mobx';
 /*
  * @Author: Andy Hu
  * @Date: 2018-10-08 18:18:39
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  ISortableModel,
-  FetchDataDirection,
-} from './../../../store/base/fetch/types';
+import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
 import _ from 'lodash';
 import { observable, action } from 'mobx';
 import { Post } from 'sdk/models';
@@ -66,6 +62,7 @@ class StreamViewModel extends StoreViewModel {
 
   onReceiveProps(props: StreamProps) {
     if (this.groupId === props.groupId) return;
+
     this.groupId = props.groupId;
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (offset: number, direction, pageSize, anchor) => {
@@ -93,9 +90,9 @@ class StreamViewModel extends StoreViewModel {
     const orderListHandler = new FetchSortableDataListHandler(
       postDataProvider,
       {
+        transformFunc,
         hasMoreUp: true,
         isMatchFunc: isMatchedFunc(props.groupId),
-        transformFunc,
         entityName: ENTITY_NAME.POST,
         eventName: ENTITY.POST,
         dataChangeCallBack: () => {},
@@ -103,15 +100,10 @@ class StreamViewModel extends StoreViewModel {
     );
 
     this._transformHandler = new PostTransformHandler(orderListHandler);
-
-    computed(() => {
-      console.log(this._transformHandler.listStore.items.length);
-      return _(this._transformHandler.listStore.items)
+    this.autorun(() => {
+      this.postIds = _(this._transformHandler.listStore.items)
         .map('id')
         .value();
-    }).observe(({ newValue }) => {
-      this.postIds = newValue;
-      console.log(newValue.length);
     });
     this.loadInitialPosts();
   }
