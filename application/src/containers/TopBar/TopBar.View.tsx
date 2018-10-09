@@ -6,7 +6,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { translate, InjectedTranslateProps } from 'react-i18next';
-import { JuiIconButton } from 'jui/components/Buttons';
+import { JuiIconButton, JuiIconButtonProps } from 'jui/components/Buttons';
 import {
   JuiLogo,
   JuiTopBar,
@@ -36,12 +36,14 @@ class TopBar extends React.Component<TopBarProps> {
     this._AvatarMenuTrigger = this._AvatarMenuTrigger.bind(this);
   }
 
-  private _AvatarMenuTrigger() {
+  private _AvatarMenuTrigger(avatarMenuTriggerProps: JuiIconButtonProps) {
     const { currentUserId } = this.props;
     if (!currentUserId) {
       return null;
     }
-    return <Avatar uid={currentUserId} />;
+    return (
+      <Avatar uid={currentUserId} size="large" {...avatarMenuTriggerProps} />
+    );
   }
 
   private _AvatarMenu(avatarProps: MenuListCompositionProps) {
@@ -80,11 +82,15 @@ class TopBar extends React.Component<TopBarProps> {
     return <JuiLogo variant="headline">{brandName}</JuiLogo>;
   }
 
-  private _AddMenuTrigger() {
+  private _AddMenuTrigger(addMenuTriggerProps: JuiIconButtonProps) {
     const { t } = this.props;
 
     return (
-      <JuiIconButton size="medium" tooltipTitle={t('plus')}>
+      <JuiIconButton
+        size="medium"
+        tooltipTitle={t('Plus')}
+        {...addMenuTriggerProps}
+      >
         add_circle
       </JuiIconButton>
     );

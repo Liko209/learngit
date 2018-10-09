@@ -11,7 +11,7 @@ import { JuiConversationListItem } from 'jui/pattern/ConversationList';
 import { Umi } from '../../Umi';
 // TODO remove Stubs here
 const Presence = (props: any) => <div {...props} />;
-const Indicator = (props: any) => <div {...props} />;
+const Indicator = (props: any) => <span {...props} />;
 const Menu = (props: any) => <div {...props} />;
 
 type IRouterParams = {
