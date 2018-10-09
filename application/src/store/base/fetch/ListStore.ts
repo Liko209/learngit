@@ -1,15 +1,21 @@
+import { observable, action } from 'mobx';
 /*
  * @Author: Andy Hu
  * @Date: 2018-09-17 14:00:44
  * Copyright © RingCentral. All rights reserved.
  */
 import { createAtom, IAtom } from 'mobx';
-import _ from 'lodash';
+import _, { ListIteratee } from 'lodash';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';
 
 export class ListStore<T> extends BaseNotificationSubscribe {
   _items: T[] = [];
-  _hasMore: boolean = true;
+
+  @observable
+  _hasMoreUp: boolean = false;
+  @observable
+  _hasMoreDown: boolean = false;
+
   _atom: IAtom = createAtom(`list: ${Math.random()}`);
 
   append(newItems: T[], inFront: boolean = false) {
@@ -48,24 +54,24 @@ export class ListStore<T> extends BaseNotificationSubscribe {
     }
   }
 
-  // delete(predicate?: ListIteratee<T>) {
-  //   _(this._items)
-  //     .remove(predicate)
-  //     .value();
-  //   this._atom.reportChanged();
-  // }
+  delete(predicate?: ListIteratee<T>) {
+    _(this._items)
+      .remove(predicate)
+      .value();
+    this._atom.reportChanged();
+  }
 
   clear() {
     this._items = [];
     this._atom.reportChanged();
   }
 
-  getItems() {
+  get items() {
     this._atom.reportObserved();
     return this._items;
   }
 
-  getSize() {
+  get size() {
     return _(this._items).size();
   }
 
@@ -85,10 +91,12 @@ export class ListStore<T> extends BaseNotificationSubscribe {
     console.log(`===> dump: ${JSON.stringify(this._items)}`, args);
   }
 
-  get hasMore() {
-    return this._hasMore;
-  }
-  set hasMore(hasMore: boolean) {
-    this._hasMore = hasMore;
+  @action
+  setHasMore(value: boolean, up?: boolean) {
+    if (up) {
+      this._hasMoreUp = value;
+    } else {
+      this._hasMoreDown = value;
+    }
   }
 }

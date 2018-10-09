@@ -154,6 +154,7 @@ export default class PostService extends BaseService<Post> {
     offset = 0,
     postId = 0,
     limit = 20,
+    direction = 'older',
   }: IPostQuery): Promise<IPostResult> {
     try {
       const result = await this.getPostsFromLocal({
@@ -174,7 +175,7 @@ export default class PostService extends BaseService<Post> {
         groupId,
         postId,
         limit,
-        direction: 'older',
+        direction,
       });
 
       const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
@@ -246,9 +247,7 @@ export default class PostService extends BaseService<Post> {
     this._postStatusHandler.setPreInsertId(buildPost.id);
     try {
       notificationCenter.emitEntityPut(ENTITY.POST, [buildPost]);
-    } catch (err) {
-      debugger; // eslint-disable-line
-    }
+    } catch (err) {}
     const dao = daoManager.getDao(PostDao);
     await dao.put(buildPost);
   }
