@@ -3,7 +3,7 @@
  * @Date: 2018-09-29 18:56:22
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { t } from 'i18next'; // use external instead of injected due to incompatible with SortableElement
@@ -18,7 +18,7 @@ type Props = MenuViewProps & RouteComponentProps;
 class MenuViewComponent extends Component<Props> {
   constructor(props: Props) {
     super(props);
-    this._toggleFavorite = this._toggleFavorite.bind(this);
+    this._handleToggleFavorite = this._handleToggleFavorite.bind(this);
     this._handleCloseConversation = this._handleCloseConversation.bind(this);
   }
 
@@ -30,7 +30,7 @@ class MenuViewComponent extends Component<Props> {
         </JuiMenuItem>
       );
     }
-    return <React.Fragment />;
+    return null;
   }
 
   render() {
@@ -42,7 +42,7 @@ class MenuViewComponent extends Component<Props> {
         open={open}
         onClose={this.props.onClose}
       >
-        <JuiMenuItem onClick={this._toggleFavorite}>
+        <JuiMenuItem onClick={this._handleToggleFavorite}>
           {t(`conversationMenuItem:${this.props.favoriteText}`)}
         </JuiMenuItem>
         {this.renderCloseMenuItem()}
@@ -50,11 +50,13 @@ class MenuViewComponent extends Component<Props> {
     );
   }
 
-  private _toggleFavorite() {
+  private _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
+    this.props.onClose(event);
     this.props.toggleFavorite();
   }
 
-  private _handleCloseConversation() {
+  private _handleCloseConversation(event: MouseEvent<HTMLElement>) {
+    this.props.onClose(event);
     if (this.props.shouldSkipCloseConfirmation) {
       this._closeConversation(true);
     } else {

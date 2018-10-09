@@ -5,7 +5,7 @@
  */
 import { observable, computed } from 'mobx';
 import _ from 'lodash';
-import { Group } from 'sdk/models';
+import { Group, Profile } from 'sdk/models';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { compareName } from '@/utils/helper';
@@ -56,8 +56,12 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get isFavorite() {
-    // TODO
-    return true;
+    const currentUserId = getGlobalValue('currentUserId');
+    const profile = getEntity(ENTITY_NAME.PROFILE, currentUserId) as Profile;
+
+    if (!profile || !profile.favorite_group_ids) return false;
+
+    return profile.favorite_group_ids.some(groupId => groupId === this.id);
   }
 
   @computed
