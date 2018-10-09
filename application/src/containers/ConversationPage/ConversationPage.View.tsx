@@ -6,7 +6,7 @@ import { translate } from 'react-i18next';
 import { Header } from './Header';
 import { Stream } from './Stream';
 import { MessageInput } from './MessageInput';
-import { JuiDisabledInput } from 'jui/components/DisabledInput';
+import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 import { ConversationPageViewProps } from './types';
 
 @observer

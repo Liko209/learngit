@@ -33,5 +33,3 @@ class JuiDisabledInput extends PureComponent<IProps> {
 }
 
 export { JuiDisabledInput };
-
-export default JuiDisabledInput;
