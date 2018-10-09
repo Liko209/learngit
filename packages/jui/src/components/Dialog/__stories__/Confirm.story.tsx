@@ -2,7 +2,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
 import { JuiDialog } from '../Dialog';
-import { JuiComfirm } from '../Confirm';
+import { JuiConfirm } from '../Confirm';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 storiesOf('Components/Dialog 🔜', module)
@@ -12,13 +12,13 @@ storiesOf('Components/Dialog 🔜', module)
     const onOk = () => {};
     const onClose = () => {};
     return (
-      <JuiComfirm
+      <JuiConfirm
         open={open}
-        header="Comfirm header"
+        header="Confirm header"
         onOk={onOk}
         onClose={onClose}
       >
         Are you sure delete it?
-      </JuiComfirm>
+      </JuiConfirm>
     );
   });

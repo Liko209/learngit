@@ -18,7 +18,8 @@ import PersonModel from '@/store/models/Person';
 import { PostService } from 'sdk/service';
 class ConversationCardViewModel extends AbstractViewModel
   implements ConversationCardViewProps {
-  @observable private _id: number;
+  @observable
+  private _id: number;
   private _postService: PostService = PostService.getInstance();
 
   @action
@@ -26,6 +27,8 @@ class ConversationCardViewModel extends AbstractViewModel
     if (this._id !== props.id) {
       this._id = props.id;
     }
+    this.resend = this.resend.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   @computed
