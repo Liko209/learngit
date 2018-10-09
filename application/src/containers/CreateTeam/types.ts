@@ -11,6 +11,8 @@ type ViewProps = {
   create: Function;
   i18n: i18n;
   t: TranslationFunction;
+  isOpen: boolean;
+  updateCreateTeamDialogState: () => void;
 } & RouteComponentProps;
 
 export { ViewProps };
