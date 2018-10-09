@@ -3,7 +3,7 @@
 * @Date: 2018-09-19 14:19:09
 * Copyright © RingCentral. All rights reserved.
 */
-import { observable, action, computed } from 'mobx';
+import { observable, computed } from 'mobx';
 import {
   ConversationListItemProps,
   ConversationListItemViewProps,
@@ -37,30 +37,10 @@ class ConversationListItemViewModel extends StoreViewModel
   currentGroupId?: number;
 
   @observable
-  anchorEl: HTMLElement | null = null;
-
-  @observable
   umiHint: boolean = false;
 
   @observable
   selected: boolean = false;
-
-  groupService: service.GroupService;
-
-  onClick = () => this.clickGroup();
-
-  onMoreClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    const { currentTarget } = event;
-    this.anchorEl = currentTarget;
-  }
-
-  onMenuClose = () => this._onMenuClose();
-
-  constructor() {
-    super();
-    this.groupService = GroupService.getInstance();
-  }
 
   @computed
   get displayName() {
@@ -70,6 +50,17 @@ class ConversationListItemViewModel extends StoreViewModel
   @computed
   get _group() {
     return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
+  }
+
+  onClick = () => {
+    this.groupService.clickGroup(this.groupId);
+  }
+
+  groupService: service.GroupService;
+
+  constructor() {
+    super();
+    this.groupService = GroupService.getInstance();
   }
 
   onReceiveProps(props: ConversationListItemProps) {
@@ -96,15 +87,6 @@ class ConversationListItemViewModel extends StoreViewModel
     const isCurrentGroup = lastGroup && lastGroup === this.groupId;
 
     this.umiHint = !!(!isCurrentGroup && groupState.unreadCount);
-  }
-
-  clickGroup() {
-    this.groupService.clickGroup(this.groupId);
-  }
-
-  @action
-  private _onMenuClose() {
-    this.anchorEl = null;
   }
 }
 
