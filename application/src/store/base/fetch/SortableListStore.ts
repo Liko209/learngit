@@ -20,8 +20,8 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
     this._sortFunc = sortFunc;
   }
 
-  upsert(idArray: ISortableModel<T>[]) {
-    const unionAndSortIds = _.unionBy(idArray, this.getItems(), 'id').sort(
+  upInsert(idArray: ISortableModel<T>[]) {
+    const unionAndSortIds = _.unionBy(idArray, this.items, 'id').sort(
       this._sortFunc,
     );
 
@@ -30,7 +30,7 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
 
   removeByIds(ids: number[]) {
     ids.forEach((id: number) => {
-      _.remove(this.getItems(), { id });
+      _.remove(this.items, { id });
     });
 
     this._atom.reportChanged();
@@ -38,11 +38,11 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
 
   getIds() {
     this._atom.reportObserved();
-    return _.map(this.getItems(), 'id');
+    return _.map(this.items, 'id');
   }
 
   getById(id: number) {
     this._atom.reportObserved();
-    return _.find(this.getItems(), { id });
+    return _.find(this.items, { id });
   }
 }

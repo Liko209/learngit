@@ -6,6 +6,6 @@
 import { ListStore } from '../index';
 
 const checkListStore = <T>(listStore: ListStore<T>, expectData: T[]) => {
-  expect(listStore.getItems()).toEqual(expectData);
+  expect(listStore.items).toEqual(expectData);
 };
 export default checkListStore;

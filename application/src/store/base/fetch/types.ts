@@ -30,3 +30,9 @@ export interface ITransformFunc<T> {
 export interface ISortFunc<T> {
   (first: T, second: T): number;
 }
+
+export type TDelta = {
+  updated: ISortableModel[];
+  deleted: number[];
+  direction: FetchDataDirection;
+};

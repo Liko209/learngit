@@ -3,8 +3,8 @@
  * @Date: 2018-10-06 20:39:29
  * Copyright © RingCentral. All rights reserved.
  */
+import { IFetchDataProvider } from './../FetchDataListHandler';
 import { FetchDataListHandler } from '../FetchDataListHandler';
-import { IFetchDataProvider } from '../IFetchDataProvider';
 import { FetchDataDirection } from '../types';
 import checkListStore from './checkListStore';
 
