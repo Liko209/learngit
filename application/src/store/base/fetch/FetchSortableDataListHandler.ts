@@ -22,7 +22,10 @@ import { IIncomingData } from '../../store';
 import _ from 'lodash';
 
 const { EVENT_TYPES } = service;
-
+type TReplacedData<T> = {
+  id: number;
+  data: T;
+};
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
   isMatchFunc: IMatchFunc<T>;
@@ -92,11 +95,12 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       });
   }
 
-  onDataChanged({ type, entities }: IIncomingData<T>) {
+  onDataChanged({ type, entities }: IIncomingData<T | TReplacedData<T>>) {
     const keys = Array.from(entities.keys());
     const matchedSortableModels: ISortableModel<T>[] = [];
     const matchedEntities: T[] = [];
     const notMatchedKeys: number[] = [];
+
     if (type === EVENT_TYPES.DELETE) {
       this.sortableListStore.removeByIds(keys);
       notMatchedKeys.push(...keys);
@@ -113,7 +117,12 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       }
 
       matchedKeys.forEach((key: number) => {
-        const model = entities.get(key) as T;
+        let model: T;
+        if (type === EVENT_TYPES.REPLACE) {
+          model = (entities.get(key) as TReplacedData<T>).data as T;
+        } else {
+          model = entities.get(key) as T;
+        }
         if (this._isMatchFunc(model)) {
           const sortableModel = this._transformFunc(model);
           matchedSortableModels.push(sortableModel);
@@ -136,14 +145,15 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       this.updateEntityStore(matchedEntities);
       this.sortableListStore.removeByIds(notMatchedKeys);
 
+      if (type === EVENT_TYPES.REPLACE) {
+        notMatchedKeys.push(...keys);
+        this.sortableListStore.removeByIds(keys);
+      }
+
       if (type === EVENT_TYPES.REPLACE_ALL) {
         this.sortableListStore.replaceAll(matchedSortableModels);
       } else {
         this.sortableListStore.upInsert(matchedSortableModels);
-      }
-      if (type === EVENT_TYPES.REPLACE) {
-        notMatchedKeys.push(...keys);
-        this.sortableListStore.removeByIds(keys);
       }
     }
     this._dataChangeCallBack &&
