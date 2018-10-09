@@ -3,16 +3,18 @@
  * @Date: 2018-09-19 13:53:48
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { MouseEvent } from 'react';
-import { ConversationListItemViewProps } from './types';
+import React, { MouseEvent, Fragment } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-// import navPresenter, { NavPresenter } from '../../BackNForward/ViewModel';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
-import { Umi } from '../../Umi';
+import { Umi } from '@/containers/Umi';
+import { Menu } from '../Menu';
+import { ConversationListItemViewProps } from './types';
+import { observer } from 'mobx-react';
+import { observable, computed } from 'mobx';
+
 // TODO remove Stubs here
 const Presence = (props: any) => <div {...props} />;
 const Indicator = (props: any) => <div {...props} />;
-const Menu = (props: any) => <div {...props} />;
 
 type IRouterParams = {
   id: string;
@@ -24,13 +26,24 @@ interface IState {
   currentGroupId: number;
 }
 
+@observer
 class ConversationListItemViewComponent extends React.Component<
   IProps,
   IState
 > {
+  @observable
+  menuAnchorEl: HTMLElement | null = null;
+
+  @computed
+  get menuOpen() {
+    return !!this.menuAnchorEl;
+  }
+
   constructor(props: IProps) {
     super(props);
-    this.onClick = this.onClick.bind(this);
+    this._handleClick = this._handleClick.bind(this);
+    this._handleMoreClick = this._handleMoreClick.bind(this);
+    this._closeMenu = this._closeMenu.bind(this);
     this.state = { currentGroupId: 0 };
   }
 
@@ -47,28 +60,45 @@ class ConversationListItemViewComponent extends React.Component<
 
   render() {
     return (
-      <JuiConversationListItem
-        presence={this._presence}
-        umi={this._umi}
-        indicator={this._indicator}
-        onMoreClick={this.props.onMoreClick}
-        onClick={this.onClick}
-        title={this.props.displayName}
-        selected={this.props.selected}
-      />
+      <Fragment>
+        <JuiConversationListItem
+          presence={this._presence}
+          umi={this._umi}
+          indicator={this._indicator}
+          onMoreClick={this._handleMoreClick}
+          onClick={this._handleClick}
+          title={this.props.displayName}
+          selected={this.props.selected}
+        />
+        <Menu
+          groupId={this.props.groupId}
+          anchorEl={this.menuAnchorEl}
+          open={this.menuOpen}
+          onMenuClose={this._closeMenu}
+        />
+      </Fragment>
     );
   }
 
-  onClick(event: MouseEvent<HTMLElement>) {
+  private _handleClick(event: MouseEvent<HTMLElement>) {
     this.props.onClick(event);
     this._jump2Conversation(this.props.groupId);
   }
 
   private _jump2Conversation(id: number) {
-    const { history, displayName } = this.props;
+    const { history } = this.props;
     history.push(`/messages/${id}`);
     // this.navPresenter.handleRouterChange();
     // this.navPresenter.handleTitle(displayName);
+  }
+
+  private _handleMoreClick(event: React.MouseEvent<HTMLElement>) {
+    event.stopPropagation();
+    this.menuAnchorEl = event.currentTarget;
+  }
+
+  private _closeMenu() {
+    this.menuAnchorEl = null;
   }
 }
 

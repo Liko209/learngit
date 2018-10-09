@@ -55,6 +55,12 @@ export default class GroupModel extends Base<Group> {
   }
 
   @computed
+  get isFavorite() {
+    // TODO
+    return true;
+  }
+
+  @computed
   get displayName(): string {
     if (this.type === CONVERSATION_TYPES.TEAM) {
       return this.setAbbreviation;

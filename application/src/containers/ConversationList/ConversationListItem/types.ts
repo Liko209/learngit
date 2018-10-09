@@ -14,15 +14,12 @@ type ConversationListItemViewProps = {
   groupId: number;
   displayName: string;
   unreadCount: number;
-  anchorEl: HTMLElement | null;
   umiHint?: boolean;
   important?: boolean;
   selected: boolean;
   draft?: string;
   sendFailurePostIds: number[];
-  onMenuClose: (event: MouseEvent<HTMLElement>) => void;
   onClick: (event: MouseEvent<HTMLElement>) => void;
-  onMoreClick: (event: MouseEvent<HTMLElement>) => void;
 };
 
 export { ConversationListItemProps, ConversationListItemViewProps };
