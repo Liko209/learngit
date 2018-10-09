@@ -29,6 +29,11 @@ export default class OrderListStore {
     this.batchSet([{ id, sortKey }]);
   }
 
+  replaceAll(idArray: IIDSortKey[]) {
+    this.idArray = idArray;
+    this.idsAtom.reportChanged();
+  }
+
   batchSet(idArray: IIDSortKey[]) {
     if (!idArray.length) {
       return;

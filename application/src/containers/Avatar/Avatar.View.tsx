@@ -17,9 +17,9 @@ class AvatarView extends React.Component<AvatarViewProps> {
     const { bgColor, name, url, ...rest } = this.props;
 
     return url ? (
-      <JuiAvatar src={url} color={bgColor} {...rest} size="large" />
+      <JuiAvatar src={url} color={bgColor} {...rest} />
     ) : (
-      <JuiAvatar color={bgColor} {...rest} size="large">
+      <JuiAvatar color={bgColor} {...rest}>
         {name}
       </JuiAvatar>
     );

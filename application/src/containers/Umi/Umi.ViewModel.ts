@@ -36,13 +36,15 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
     super();
   }
 
-  @action
-  onReceiveProps(props: UmiProps) {
-    this.ids = props.ids;
-    this.autorun(() => {
-      this.calculateUmi();
-    });
-  }
+  // @action
+  // onReceiveProps(props: UmiProps) {
+  //   if (this.ids !== props.ids) {
+  //     this.ids = props.ids;
+  //   }
+  //   // this.autorun(() => {
+  //   //   this.calculateUmi();
+  //   // });
+  // }
 
   calculateUmi() {
     const groupIds = this.ids || this._getAllGroupIds();

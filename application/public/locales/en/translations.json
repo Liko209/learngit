@@ -18,5 +18,7 @@
   "SignIn": "Sign in",
   "SignOut": "Sign out",
   "CreateTeam": "Create Team",
-  "networkDisconnected": "Network disconnected. Please try again when the network is resumed."
+  "networkDisconnected": "Network disconnected. Please try again when the network is resumed.",
+  "Plus": "Plus",
+  "Menu": "Menu"
 }
