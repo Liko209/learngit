@@ -12,17 +12,16 @@ import { ENTITY_NAME } from '@/store';
 
 class IndicatorViewModel extends AbstractViewModel
   implements IndicatorViewProps {
-  @observable
-  _id: number; // group id
+  @observable id: number; // group id
 
   @action
   onReceiveProps({ id }: IndicatorProps) {
-    this._id = id;
+    this.id = id;
   }
 
   @computed
   get _group() {
-    return getEntity(ENTITY_NAME.GROUP, this._id);
+    return getEntity(ENTITY_NAME.GROUP, this.id);
   }
 
   @computed
