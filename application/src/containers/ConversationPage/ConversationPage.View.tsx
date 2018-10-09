@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { JuiConversationPage, JuiDivider } from 'ui-components';
+import { JuiConversationPage } from 'jui/pattern/ConversationPage';
+import { JuiDivider } from 'jui/components/Divider';
 import { translate } from 'react-i18next';
 import { Header } from './Header';
 import { Stream } from './Stream';
 import { MessageInput } from './MessageInput';
-import DisabledInput from 'ui-components/DisabledInput';
+import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 import { ConversationPageViewProps } from './types';
 
 @observer
 class ConversationPageViewComponent extends Component<
-ConversationPageViewProps
+  ConversationPageViewProps
 > {
   render() {
     const { t, groupId, canPost } = this.props;
@@ -25,8 +26,8 @@ ConversationPageViewProps
         {canPost ? (
           <MessageInput id={groupId} />
         ) : (
-            <DisabledInput text={t('disabledText')} />
-          )}
+          <JuiDisabledInput text={t('disabledText')} />
+        )}
       </JuiConversationPage>
     );
   }

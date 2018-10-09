@@ -62,7 +62,6 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
   }
 
   onDeleted(deletedItems: number[]) {
-    debugger;
     this.listStore.delete((item: TTransformedElement) =>
       deletedItems.includes(item.value as number),
     );
@@ -125,7 +124,7 @@ class StreamViewModel extends StoreViewModel {
     this.autorun(() => {
       this.postIds = _(this._transformHandler.listStore.items)
         .map('value')
-        .value();
+        .value() as number[];
     });
     this.loadInitialPosts();
   }
