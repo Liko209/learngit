@@ -17,6 +17,7 @@ const Wrapper = styled.div`
   flex: 1;
   display: flex;
   position: relative;
+  overflow: hidden;
 `;
 
 const JuiResponse = ({ onClick, children }: ExternalProps) => {
