@@ -11,7 +11,7 @@ import { Indicator } from '@/containers/ConversationList/Indicator';
 import { Menu } from '../Menu';
 import { ConversationListItemViewProps } from './types';
 import { observer } from 'mobx-react';
-import { observable, computed } from 'mobx';
+import { observable } from 'mobx';
 
 // TODO remove Stubs here
 const Presence = (props: any) => <span {...props} />;
@@ -33,11 +33,6 @@ class ConversationListItemViewComponent extends React.Component<
 > {
   @observable
   menuAnchorEl: HTMLElement | null = null;
-
-  @computed
-  get menuOpen() {
-    return !!this.menuAnchorEl;
-  }
 
   private _umiIds: number[];
   constructor(props: IProps) {
@@ -78,8 +73,7 @@ class ConversationListItemViewComponent extends React.Component<
         <Menu
           groupId={this.props.groupId}
           anchorEl={this.menuAnchorEl}
-          open={this.menuOpen}
-          onMenuClose={this._closeMenu}
+          onClose={this._closeMenu}
         />
       </Fragment>
     );

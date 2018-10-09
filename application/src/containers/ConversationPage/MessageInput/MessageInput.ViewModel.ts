@@ -17,27 +17,21 @@ import GroupModel from '@/store/models/Group';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
-
-type DebounceFunction = {
-  (params: MessageInputViewProps): Promise<boolean>;
-};
-
 enum ERROR_TYPES {
   CONTENT_LENGTH = 'contentLength',
   CONTENT_ILLEGAL = 'contentIllegal',
 }
 
-class MessageInputViewModel extends AbstractViewModel {
+type DebounceFunction = (params: { id: number, draft: string }) => Promise<boolean>;
+
+class MessageInputViewModel extends AbstractViewModel implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
   private _isInit: boolean;
-  @observable
-  _id: number;
-  @observable
-  draft: string = '';
-  @observable
-  error: string = '';
+  @observable _id: number;
+  @observable draft: string = '';
+  @observable error: string = '';
   keyboardEventHandler = {
     enter: {
       key: 13,
@@ -79,18 +73,24 @@ class MessageInputViewModel extends AbstractViewModel {
     }
   }
 
-  @action.bound
-  changeDraft(draft: string) {
+  @action
+  changeDraft = (draft: string) => {
     this.error = '';
-    this.draft = draft; // UI immediately sync
+    // UI immediately sync
+    this.draft = draft;
+    // DB sync 500 ms later
     this._debounceUpdateGroupDraft({
       draft,
       id: this._id,
-    } as MessageInputViewProps); // DB sync 500 ms later
+    });
   }
 
-  forceSaveDraft() {
-    this._groupService.updateGroupDraft({ draft: this.draft, id: this._id }); // immediately save
+  forceSaveDraft = () => {
+    // immediately save
+    this._groupService.updateGroupDraft({
+      draft: this.draft,
+      id: this._id,
+    });
   }
 
   @computed

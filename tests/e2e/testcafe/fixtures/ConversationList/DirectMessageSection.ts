@@ -23,39 +23,33 @@ test(
     await setupSDK(t);
     let id1: number;
     let id2: number;
-
-    const page = directLogin(t);
-    await page
-      .chain(t => t.wait(10000))
-      .log('1. should create conversations')
-      .chain(async (t, h) => {
-        await t.wait(4000);
-        const client701 = await h.glipApiManager.getClient(
-          h.users.user701,
-          h.companyNumber,
-        );
-        const privateChat = await client701.createGroup({
-          type: 'PrivateChat',
-          isPublic: true,
-          description: 'test',
-          members: [h.users.user701.rc_id, h.users.user702.rc_id],
-        });
-        h.log(`Private chat ${privateChat.data.id} is created.`);
-        const group = await client701.createGroup({
-          type: 'Group',
-          isPublic: true,
-          description: 'test',
-          members: [
-            h.users.user701.rc_id,
-            h.users.user702.rc_id,
-            h.users.user703.rc_id,
-          ],
-        });
-        h.log(`Group chat ${group.data.id} is created.`);
-        id1 = privateChat.data.id;
-        id2 = group.data.id;
-      });
-    await page
+    const h = new TestHelper(t);
+    await h.log('1. should create conversations');
+    const client701 = await h.glipApiManager.getClient(
+      h.users.user701,
+      h.companyNumber,
+    );
+    const privateChat = await client701.createGroup({
+      type: 'PrivateChat',
+      isPublic: true,
+      description: 'test',
+      members: [h.users.user701.rc_id, h.users.user702.rc_id],
+    });
+    h.log(`Private chat ${privateChat.data.id} is created.`);
+    const group = await client701.createGroup({
+      type: 'Group',
+      isPublic: true,
+      description: 'test',
+      members: [
+        h.users.user701.rc_id,
+        h.users.user702.rc_id,
+        h.users.user703.rc_id,
+      ],
+    });
+    h.log(`Group chat ${group.data.id} is created.`);
+    id1 = privateChat.data.id;
+    id2 = group.data.id;
+    await directLogin(t)
       .log('2. should navigate to Direct Messages Section')
       .shouldNavigateTo(DirectMessageSection)
       .log('3. should expand the collapse')

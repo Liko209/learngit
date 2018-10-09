@@ -8,9 +8,9 @@ import {
   JuiConversationCard,
   JuiConversationCardHeader,
   JuiConversationCardFooter,
-} from 'ui-components/organisms/ConversationCard';
+} from 'jui/pattern/ConversationCard';
 import { Avatar } from '@/containers/Avatar';
-import Confirm from 'ui-components/molecules/Dialog/Confirm';
+import { JuiConfirm } from 'jui/components/Dialog/Confirm';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
@@ -100,8 +100,7 @@ export class ConversationCard extends React.Component<IProps, IStates> {
           </JuiConversationCardFooter>
         </JuiConversationCard>
         <JuiDivider />
-        {/* todo replace js invoke */}
-        <Confirm
+        <JuiConfirm
           open={open}
           size="medium"
           header={t('deletePostTitle')}
@@ -111,7 +110,7 @@ export class ConversationCard extends React.Component<IProps, IStates> {
           onClose={this.onCloseDelete}
         >
           {t('deletePostContent')}
-        </Confirm>
+        </JuiConfirm>
       </React.Fragment>
     );
   }

@@ -23,7 +23,7 @@ interface IProps extends IDialogProps {
   others?: JSX.Element;
 }
 
-const Comfirm = (props: IProps) => {
+const Confirm = (props: IProps) => {
   const {
     open = false,
     size = 'small',
@@ -59,4 +59,4 @@ const Comfirm = (props: IProps) => {
   );
 };
 
-export default Comfirm;
+export default Confirm;

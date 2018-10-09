@@ -3,12 +3,14 @@
  * @Date: 2018-09-19 14:12:28
  * Copyright © RingCentral. All rights reserved.
  */
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 
 import GroupService, { CreateTeamOptions } from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
 import { IResponseError } from 'sdk/models';
 import { AbstractViewModel } from '@/base';
+import { getGlobalValue } from '@/store/utils';
+import storeManager from '@/store';
 
 type errorTips = {
   type: string;
@@ -16,6 +18,18 @@ type errorTips = {
 };
 
 class CreateTeamViewModel extends AbstractViewModel {
+  @computed
+  get isOpen() {
+    return getGlobalValue('isShowCreateTeamDialog');
+  }
+
+  @action
+  updateCreateTeamDialogState = () => {
+    const globalStore = storeManager.getGlobalStore();
+    const isShowCreateTeamDialog = !globalStore.get('isShowCreateTeamDialog');
+    globalStore.set('isShowCreateTeamDialog', isShowCreateTeamDialog);
+  }
+
   @action
   create = async (
     name: string,

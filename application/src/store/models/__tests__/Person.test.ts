@@ -10,7 +10,11 @@ type UserInfo = {
   lastName?: string;
   email?: string;
 };
-function getUserInfo(firstName? = 'John', lastName? = 'Doe', email? = 'john.doe@ringcentral.com') {
+function getUserInfo(
+  firstName = 'John',
+  lastName = 'Doe',
+  email = 'john.doe@ringcentral.com',
+) {
   return {
     firstName,
     lastName,

@@ -8,9 +8,8 @@ import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 
 type MenuProps = {
   groupId: number;
-  open: boolean;
   anchorEl: HTMLElement | null;
-  onMenuClose: (event: MouseEvent<HTMLElement>) => void;
+  onClose: (event: MouseEvent<HTMLElement>) => void;
 };
 
 type MenuViewProps = {

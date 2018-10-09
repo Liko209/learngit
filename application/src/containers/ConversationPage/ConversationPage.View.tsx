@@ -4,7 +4,7 @@ import { JuiConversationPage, JuiDivider } from 'ui-components';
 import { translate } from 'react-i18next';
 import { Header } from './Header';
 import { Stream } from './Stream';
-import { MessageInput } from '@/containers/MessageInput';
+import { MessageInput } from './MessageInput';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 import { ConversationPageViewProps } from './types';
 

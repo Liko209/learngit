@@ -135,7 +135,8 @@ class CreateTeam extends React.Component<ViewProps, IState> {
   }
 
   onClose = () => {
-    // this.homePresenter.handleOpenCreateTeam();
+    const { updateCreateTeamDialogState } = this.props;
+    updateCreateTeamDialogState();
     this.setState({
       errorMsg: '',
       nameError: false,
@@ -167,10 +168,10 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       items,
       errorMsg,
     } = this.state;
-    const { t } = this.props;
+    const { t, isOpen } = this.props;
 
     return (
-      <JuiDialog open={false} size={'medium'} scroll="body">
+      <JuiDialog open={isOpen} size={'medium'} scroll="body">
         <JuiDialogTitle>{t('Create Team')}</JuiDialogTitle>
         <JuiDialogContent>
           <JuiTextField
