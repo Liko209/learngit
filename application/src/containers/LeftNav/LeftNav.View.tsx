@@ -8,6 +8,7 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
 import { JuiLeftNav } from 'jui/pattern/LeftNav';
+import { Umi } from '../Umi';
 import { LeftNavViewProps } from './types';
 
 type LeftNavProps = {
@@ -27,18 +28,68 @@ class LeftNav extends Component<LeftNavProps> {
 
     return [
       [
-        { url: '/dashboard', icon: 'dashboard', title: t('Dashboard') },
-        { url: '/messages', icon: 'message', title: t('Messages') },
-        { url: '/phone', icon: 'phone', title: t('Phone') },
-        { url: '/meetings', icon: 'videocam', title: t('Meetings') },
+        {
+          url: '/dashboard',
+          icon: 'dashboard',
+          title: t('Dashboard'),
+          umi: <Umi ids={[1, 2]} />,
+        },
+        {
+          url: '/messages',
+          icon: 'message',
+          title: t('Messages'),
+          umi: <Umi ids={[1, 2]} />,
+        },
+        {
+          url: '/phone',
+          icon: 'phone',
+          title: t('Phone'),
+          umi: <Umi ids={[1, 2]} />,
+        },
+        {
+          url: '/meetings',
+          icon: 'videocam',
+          title: t('Meetings'),
+          umi: <Umi ids={[1, 2]} />,
+        },
       ],
       [
-        { url: '/contacts', icon: 'contacts', title: t('Contacts') },
-        { url: '/calendar', icon: 'date_range', title: t('Calendar') },
-        { url: '/tasks', icon: 'assignment_turned_in', title: t('Tasks') },
-        { url: '/notes', icon: 'library_books', title: t('Notes') },
-        { url: '/files', icon: 'file_copy', title: t('Files') },
-        { url: '/settings', icon: 'settings', title: t('Settings') },
+        {
+          url: '/contacts',
+          icon: 'contacts',
+          title: t('Contacts'),
+          umi: <Umi ids={[1, 2]} />,
+        },
+        {
+          url: '/calendar',
+          icon: 'date_range',
+          title: t('Calendar'),
+          umi: <Umi ids={[1, 2]} />,
+        },
+        {
+          url: '/tasks',
+          icon: 'assignment_turned_in',
+          title: t('Tasks'),
+          umi: <Umi ids={[1, 2]} />,
+        },
+        {
+          url: '/notes',
+          icon: 'library_books',
+          title: t('Notes'),
+          umi: <Umi ids={[1, 2]} />,
+        },
+        {
+          url: '/files',
+          icon: 'file_copy',
+          title: t('Files'),
+          umi: <Umi ids={[1, 2]} />,
+        },
+        {
+          url: '/settings',
+          icon: 'settings',
+          title: t('Settings'),
+          umi: <Umi ids={[1, 2]} />,
+        },
       ],
     ];
   }
@@ -50,13 +101,11 @@ class LeftNav extends Component<LeftNavProps> {
   }
 
   render() {
-    const { messageUmi, isLeftNavOpen } = this.props;
-    const UMI_COUNT = [[0, messageUmi, 0, 0], [0, 0, 0, 0, 0, 0]];
+    const { isLeftNavOpen } = this.props;
 
     return (
       <JuiLeftNav
         icons={this.getIcons()}
-        unreadCount={UMI_COUNT}
         expand={isLeftNavOpen}
         onRouteChange={this.onRouteChange}
       />

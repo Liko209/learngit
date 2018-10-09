@@ -10,10 +10,10 @@ import styled from '../../foundation/styled-components';
 import { observer } from 'mobx-react';
 import { TranslationFunction, i18n } from 'i18next';
 import { translate } from 'react-i18next';
-import JuiDialog from '../../components/Dialog/Dialog';
-import JuiDialogTitle from '../../components/Dialog/DialogTitle';
-import JuiDialogContent from '../../components/Dialog/DialogContent';
-import JuiDialogActions from '../../components/Dialog/DialogActions';
+import { JuiDialog } from '../../components/Dialog/Dialog';
+import { JuiDialogTitle } from '../../components/Dialog/DialogTitle';
+import { JuiDialogContent } from '../../components/Dialog/DialogContent';
+import { JuiDialogActions } from '../../components/Dialog/DialogActions';
 import { JuiButton } from '../../components/Buttons/Button';
 import { JuiTextField } from '../../components/Forms/TextField';
 import { JuiTextarea } from '../../components/Forms/Textarea';
@@ -23,11 +23,11 @@ import {
   JuiListToggleItemProps,
 } from '../ListToggleButton';
 // import HomePresenter from '../Home/HomePresenter';
-import SearchContact from '../SearchContact';
-import CreateTeamVM, { errorTips } from './createTeamVM';
+// import SearchContact from '../SearchContact';
+// import CreateTeamVM, { errorTips } from './createTeamVM';
 
 interface IProps extends RouteComponentProps {
-  homePresenter: HomePresenter;
+  // homePresenter: HomePresenter;
   i18n: i18n;
   t: TranslationFunction;
 }
@@ -51,12 +51,12 @@ const LeftJuiButton = styled(JuiButton)`
 
 @observer
 class CreateTeam extends React.Component<IProps, IState> {
-  private homePresenter: HomePresenter;
-  private createTeamVM: CreateTeamVM;
+  // private homePresenter: HomePresenter;
+  // private createTeamVM: CreateTeamVM;
   constructor(props: IProps) {
     super(props);
-    this.homePresenter = props.homePresenter;
-    this.createTeamVM = new CreateTeamVM();
+    // this.homePresenter = props.homePresenter;
+    // this.createTeamVM = new CreateTeamVM();
     this.state = {
       disabledOkBtn: true,
       nameError: false,
@@ -106,7 +106,7 @@ class CreateTeam extends React.Component<IProps, IState> {
     this.setState({ members });
   }
 
-  createTeamError(errorTips: errorTips) {
+  createTeamError(errorTips: any) {
     const { t } = this.props;
     const { type, msg } = errorTips;
 
@@ -124,30 +124,30 @@ class CreateTeam extends React.Component<IProps, IState> {
   }
 
   createTeam = async () => {
-    const { items, teamName, description, members } = this.state;
-    const { history } = this.props;
-    const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
-    const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    try {
-      const result = await this.createTeamVM.create(
-        teamName,
-        members,
-        description,
-        {
-          isPublic,
-          canPost,
-        },
-      );
-      history.push(`/messages/${result.id}`);
-      this.onClose();
-    } catch (err) {
-      console.log(err, '------errr');
-      this.createTeamError(err);
-    }
+    // const { items, teamName, description, members } = this.state;
+    // const { history } = this.props;
+    // const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
+    // const canPost = items.filter(item => item.type === 'canPost')[0].checked;
+    // try {
+    //   const result = await this.createTeamVM.create(
+    //     teamName,
+    //     members,
+    //     description,
+    //     {
+    //       isPublic,
+    //       canPost,
+    //     },
+    //   );
+    //   history.push(`/messages/${result.id}`);
+    //   this.onClose();
+    // } catch (err) {
+    //   console.log(err, '------errr');
+    //   this.createTeamError(err);
+    // }
   }
 
   onClose = () => {
-    this.homePresenter.handleOpenCreateTeam();
+    // this.homePresenter.handleOpenCreateTeam();
     this.setState({
       errorMsg: '',
       nameError: false,
@@ -174,19 +174,15 @@ class CreateTeam extends React.Component<IProps, IState> {
     const {
       disabledOkBtn,
       nameError,
-      emailError,
-      emailErrorMsg,
+      // emailError,
+      // emailErrorMsg,
       items,
       errorMsg,
     } = this.state;
     const { t } = this.props;
 
     return (
-      <JuiDialog
-        open={this.homePresenter.openCreateTeam}
-        size={'medium'}
-        scroll="body"
-      >
+      <JuiDialog open={true} size={'medium'} scroll="body">
         <JuiDialogTitle>{t('Create Team')}</JuiDialogTitle>
         <JuiDialogContent>
           <JuiTextField
@@ -200,13 +196,13 @@ class CreateTeam extends React.Component<IProps, IState> {
             helperText={nameError && t(errorMsg)}
             onChange={this.handleNameChange}
           />
-          <SearchContact
+          {/* <SearchContact
             onChange={this.handleSearchContactChange}
             label={t('Members')}
             placeholder={t('Search Contact Placeholder')}
             error={emailError}
             helperText={emailError && t(emailErrorMsg)}
-          />
+          /> */}
           <JuiTextarea
             placeholder={t('Team Description')}
             fullWidth={true}
@@ -236,7 +232,7 @@ class CreateTeam extends React.Component<IProps, IState> {
             {t('Cancel')}
           </LeftJuiButton>
           <JuiButton
-            onClick={this.createTeam}
+            onClick={() => {}}
             color="primary"
             variant="contained"
             autoFocus={true}

@@ -5,15 +5,14 @@
  */
 
 import React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import styled from 'jui/foundation/styled-components';
 import { observer } from 'mobx-react';
-import { TranslationFunction, i18n } from 'i18next';
 import { translate } from 'react-i18next';
-import JuiDialog from 'jui/components/Dialog/Dialog';
-import JuiDialogTitle from 'jui/components/Dialog/DialogTitle';
-import JuiDialogContent from 'jui/components/Dialog/DialogContent';
-import JuiDialogActions from 'jui/components/Dialog/DialogActions';
+import { JuiDialog } from 'jui/components/Dialog/Dialog';
+import { JuiDialogTitle } from 'jui/components/Dialog/DialogTitle';
+import { JuiDialogContent } from 'jui/components/Dialog/DialogContent';
+import { JuiDialogActions } from 'jui/components/Dialog/DialogActions';
 import { JuiButton } from 'jui/components/Buttons/Button';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
@@ -23,7 +22,7 @@ import {
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
 // import HomePresenter from '../Home/HomePresenter'; need global store
-import SearchContact from 'jui/pattern/SearchContact';
+// import SearchContact from 'jui/pattern/SearchContact';
 import { errorTips } from './CreateTeam.ViewModel';
 import { ViewProps } from './types';
 
@@ -163,19 +162,15 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const {
       disabledOkBtn,
       nameError,
-      emailError,
-      emailErrorMsg,
+      // emailError,
+      // emailErrorMsg,
       items,
       errorMsg,
     } = this.state;
     const { t } = this.props;
 
     return (
-      <JuiDialog
-        // open={this.homePresenter.openCreateTeam} need global store
-        size={'medium'}
-        scroll="body"
-      >
+      <JuiDialog open={false} size={'medium'} scroll="body">
         <JuiDialogTitle>{t('Create Team')}</JuiDialogTitle>
         <JuiDialogContent>
           <JuiTextField
@@ -189,13 +184,13 @@ class CreateTeam extends React.Component<ViewProps, IState> {
             helperText={nameError && t(errorMsg)}
             onChange={this.handleNameChange}
           />
-          <SearchContact
+          {/* <SearchContact
             onChange={this.handleSearchContactChange}
             label={t('Members')}
             placeholder={t('Search Contact Placeholder')}
             error={emailError}
             helperText={emailError && t(emailErrorMsg)}
-          />
+          /> */}
           <JuiTextarea
             placeholder={t('Team Description')}
             fullWidth={true}
