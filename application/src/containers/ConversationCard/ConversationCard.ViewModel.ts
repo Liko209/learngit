@@ -14,18 +14,14 @@ import { observable, action, computed } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { Post, Person } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
-import { service } from 'sdk';
 import PersonModel from '@/store/models/Person';
+import { PostService } from 'sdk/service';
 class ConversationCardViewModel extends AbstractViewModel
   implements ConversationCardViewProps {
-  @observable
-  id: number;
-  @observable
-  post: PostModel;
-  @observable
-  creator: PersonModel;
-
-  _postService: service.PostService;
+  @observable id: number;
+  @observable post: PostModel;
+  @observable creator: PersonModel;
+  private _postService: PostService;
 
   @action
   onReceiveProps(props: ConversationCardProps) {
@@ -35,8 +31,7 @@ class ConversationCardViewModel extends AbstractViewModel
       ENTITY_NAME.PERSON,
       this.post.creatorId,
     );
-    this.resend = this.resend.bind(this);
-    this.delete = this.delete.bind(this);
+    this._postService = PostService.getInstance();
   }
 
   @computed
@@ -54,20 +49,14 @@ class ConversationCardViewModel extends AbstractViewModel
     return moment(this.post.createdAt).format('hh:mm A');
   }
 
-  async resend() {
-    try {
-      await this._postService.reSendPost(this.id);
-    } catch (e) {
-      // todo use Toast component display code 5000 error
-    }
+  resend = async () => {
+    await this._postService.reSendPost(this.id);
+    // todo use Toast component display code 5000 error
   }
 
-  async delete() {
-    try {
-      await this._postService.deletePost(this.id);
-    } catch (e) {
-      // todo use Toast component display code 5000 error
-    }
+  delete = async () => {
+    await this._postService.deletePost(this.id);
+    // todo use Toast component display code 5000 error
   }
 }
 
