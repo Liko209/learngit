@@ -10,7 +10,6 @@ type ConversationCardProps = {
 };
 
 type ConversationCardViewProps = {
-  id: number;
   post: PostModel;
   creator: PersonModel;
   resend: Function;
