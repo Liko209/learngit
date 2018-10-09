@@ -8,10 +8,10 @@ import { ConversationListItemViewProps } from './types';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 // import navPresenter, { NavPresenter } from '../../BackNForward/ViewModel';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
-import { Umi } from '../../Umi';
+import { Umi } from '@/containers/Umi';
+import { Indicator } from '@/containers/ConversationList/Indicator';
 // TODO remove Stubs here
 const Presence = (props: any) => <div {...props} />;
-const Indicator = (props: any) => <span {...props} />;
 const Menu = (props: any) => <div {...props} />;
 
 type IRouterParams = {
@@ -44,6 +44,9 @@ class ConversationListItemViewComponent extends React.Component<
     return <Presence id={this.props.groupId} />;
   }
   private get _indicator() {
+    if (this.props.selected) {
+      return null;
+    }
     return <Indicator id={this.props.groupId} />;
   }
 

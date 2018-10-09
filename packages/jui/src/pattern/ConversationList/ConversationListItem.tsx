@@ -52,7 +52,7 @@ type JuiConversationListItemProps = {
   title: string;
   presence?: JSX.Element;
   umi?: JSX.Element;
-  indicator?: JSX.Element;
+  indicator: JSX.Element | null;
   fontWeight?: 'bold' | 'normal';
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
@@ -81,7 +81,7 @@ const JuiConversationListItem: IConversationListItem = (
     <StyledListItem onClick={onClick} component={component} selected={selected}>
       {presence}
       <ItemText style={{ fontWeight }}>
-        {title} {indicator}
+        {indicator} {title}
       </ItemText>
       {umi}
       <StyledIconography onClick={onMoreClick}>more_vert</StyledIconography>
