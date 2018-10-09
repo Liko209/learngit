@@ -14,4 +14,4 @@ const MessageInput = buildContainer<MessageInputProps>({
   ViewModel: MessageInputViewModel,
 });
 
-export { MessageInput, MessageInputProps };
+export { MessageInput };
