@@ -34,16 +34,16 @@ class MenuViewComponent extends Component<Props> {
   }
 
   render() {
-    const { open } = this.props;
+    const { anchorEl, onClose, favoriteText } = this.props;
     return (
       <JuiMenu
         id="render-props-menu"
-        anchorEl={this.props.anchorEl}
-        open={open}
-        onClose={this.props.onClose}
+        anchorEl={anchorEl}
+        open={!!anchorEl}
+        onClose={onClose}
       >
         <JuiMenuItem onClick={this._handleToggleFavorite}>
-          {t(`conversationMenuItem:${this.props.favoriteText}`)}
+          {t(`conversationMenuItem:${favoriteText}`)}
         </JuiMenuItem>
         {this.renderCloseMenuItem()}
       </JuiMenu>

@@ -4,13 +4,13 @@ import { JuiConversationPage, JuiDivider } from 'ui-components';
 import { translate } from 'react-i18next';
 import { Header } from './Header';
 import { Stream } from './Stream';
-import { MessageInput } from '@/containers/MessageInput';
+import { MessageInput } from './MessageInput';
 import DisabledInput from 'ui-components/DisabledInput';
 import { ConversationPageViewProps } from './types';
 
 @observer
 class ConversationPageViewComponent extends Component<
-  ConversationPageViewProps
+ConversationPageViewProps
 > {
   render() {
     const { t, groupId, canPost } = this.props;
@@ -25,8 +25,8 @@ class ConversationPageViewComponent extends Component<
         {canPost ? (
           <MessageInput id={groupId} />
         ) : (
-          <DisabledInput text={t('disabledText')} />
-        )}
+            <DisabledInput text={t('disabledText')} />
+          )}
       </JuiConversationPage>
     );
   }

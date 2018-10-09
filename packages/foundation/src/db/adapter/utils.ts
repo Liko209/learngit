@@ -5,7 +5,7 @@
 */
 import {
   ISchemaVersions,
-  TableSchemaDefinition,
+  ITableSchemaDefinition,
   IParseSchemeCallback,
 } from './../db';
 
@@ -31,9 +31,7 @@ export const parseSchema = (
           .trim()
           .replace('++', '')
           .replace('*', '');
-      const { unique, indices = [] }: TableSchemaDefinition = versions[version][
-        colName
-];
+      const { unique, indices = [] }: ITableSchemaDefinition = versions[version][colName];
       callback({
         version,
         colName,
