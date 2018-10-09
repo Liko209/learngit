@@ -3,6 +3,7 @@
  * @Date: 2018-10-08 18:18:39
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
 import _ from 'lodash';
 import { observable, action } from 'mobx';

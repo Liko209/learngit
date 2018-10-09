@@ -86,8 +86,8 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     this.handlePageData(sortableResult, direction);
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
-        updated: sortableResult,
         direction,
+        updated: sortableResult,
         deleted: [],
       });
   }
