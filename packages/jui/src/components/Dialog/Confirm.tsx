@@ -12,7 +12,7 @@ import { JuiDialogContentText } from './DialogContentText';
 import { JuiDialogActions } from './DialogActions';
 import { JuiButton } from '../Buttons/Button';
 
-type JuiComfirmProps = JuiDialogProps & {
+type JuiConfirmProps = JuiDialogProps & {
   open: boolean;
   okText?: string;
   closeText?: string;
@@ -23,7 +23,7 @@ type JuiComfirmProps = JuiDialogProps & {
   others?: JSX.Element;
 };
 
-const JuiComfirm = (props: JuiComfirmProps) => {
+const JuiConfirm = (props: JuiConfirmProps) => {
   const {
     open = false,
     size = 'small',
@@ -59,4 +59,4 @@ const JuiComfirm = (props: JuiComfirmProps) => {
   );
 };
 
-export { JuiComfirm };
+export { JuiConfirm };

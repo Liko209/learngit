@@ -20,23 +20,26 @@ class ConversationCardViewModel extends AbstractViewModel
   implements ConversationCardViewProps {
   @observable
   id: number;
-  @observable
-  post: PostModel;
-  @observable
-  creator: PersonModel;
-
   _postService: service.PostService;
 
   @action
   onReceiveProps(props: ConversationCardProps) {
     this.id = props.id;
-    this.post = getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
-    this.creator = getEntity<Person, PersonModel>(
+    this.resend = this.resend.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+
+  @computed
+  get post() {
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
+  }
+
+  @computed
+  get creator() {
+    return getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
       this.post.creatorId,
     );
-    this.resend = this.resend.bind(this);
-    this.delete = this.delete.bind(this);
   }
 
   @computed

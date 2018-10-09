@@ -7,7 +7,7 @@ import { BaseComponent } from '../..';
 
 class DirectMessageSection extends BaseComponent {
   get section(): Selector {
-    return this.selectComponent('ConversationListSection').withProps(
+    return this.selectComponent('JuiConversationListSection').withProps(
       'title',
       'Direct Messages',
     );
@@ -27,7 +27,7 @@ class DirectMessageSection extends BaseComponent {
     return this.checkExisted(
       this.collapse
         .findReact('ConversationListItemViewComponent')
-        .withProps('id', +id),
+        .withProps('groupId', +id),
     );
   }
 }
