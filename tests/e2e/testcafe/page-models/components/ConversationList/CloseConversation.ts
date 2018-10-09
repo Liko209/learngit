@@ -69,12 +69,10 @@ class CloseConversation extends BaseComponent {
   }
   expectNoClosedConversation() {
     return this.chain(async (t: TestController) => {
-      console.log('dddddd', conversationId);
       const ele = this.conversationListItemCell.withProps(
         'id',
         +conversationId,
       );
-      console.log('elem', ele);
       await t
         .expect(ele.exists)
         .notOk(`No conversation id: ${conversationId}`, { timeout: 30000 });

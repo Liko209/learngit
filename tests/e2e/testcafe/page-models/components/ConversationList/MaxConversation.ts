@@ -14,11 +14,16 @@ export class MaxConversation extends BaseComponent {
 
   checkConversationCount(section: string, expectCount: number) {
     return this.chain(async (t) => {
-      const items = this._getSectionListItem(section);
-      await items;
+      const items =  await this._getSectionListItem(section);
       await t.expect(items.count).eql(expectCount);
     });
   }
+
+  getConversationCount(section: string){
+    return this.chain(async t => {
+      return await this._getSectionListItem(section).count;
+    });
+  }    
 
   checkConversationListItems(section: string, itemTitles: string[]) {
     return this.chain(async (t, h) => {
