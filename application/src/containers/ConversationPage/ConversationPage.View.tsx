@@ -5,7 +5,7 @@ import { translate } from 'react-i18next';
 import { Header } from './Header';
 import { Stream } from './Stream';
 import { MessageInput } from '@/containers/MessageInput';
-import DisabledInput from 'ui-components/DisabledInput';
+import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 import { ConversationPageViewProps } from './types';
 
 @observer
@@ -25,7 +25,7 @@ class ConversationPageViewComponent extends Component<
         {canPost ? (
           <MessageInput id={groupId} />
         ) : (
-          <DisabledInput text={t('disabledText')} />
+          <JuiDisabledInput text={t('disabledText')} />
         )}
       </JuiConversationPage>
     );
