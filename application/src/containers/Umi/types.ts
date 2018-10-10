@@ -10,8 +10,6 @@ type UmiProps = {
 
 type UmiViewProps = {
   unreadCount: number;
-  umiVariant: 'count' | 'dot' | 'auto';
-  umiHint?: boolean;
   important?: boolean;
 };
 

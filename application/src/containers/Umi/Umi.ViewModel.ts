@@ -3,7 +3,8 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action } from 'mobx';
+import { observable, computed } from 'mobx';
+import _ from 'lodash';
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity, getSingleEntity } from '@/store/utils';
@@ -14,39 +15,12 @@ import { ENTITY_NAME } from '@/store';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 
-import _ from 'lodash';
-
 class UmiViewModel extends StoreViewModel implements UmiViewProps {
   @observable
-  ids: number[];
+  ids: number[] = [];
 
-  @observable
-  unreadCount: number;
-
-  @observable
-  umiVariant: 'count' | 'dot' | 'auto';
-
-  @observable
-  umiHint?: boolean;
-
-  @observable
-  important?: boolean;
-
-  constructor() {
-    super();
-    this.autorun(() => {
-      this.calculateUmi();
-    });
-  }
-
-  @action
-  onReceiveProps(props: UmiProps) {
-    if (this.ids !== props.ids) {
-      this.ids = props.ids;
-    }
-  }
-
-  calculateUmi() {
+  @computed
+  private get _umiObj() {
     const groupIds = this.ids;
     const lastGroupId = getSingleEntity<MyState, MyStateModel>(
       ENTITY_NAME.MY_STATE,
@@ -55,18 +29,37 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
     const groupStates = _.map(groupIds, (groupId: number) => {
       return getEntity(ENTITY_NAME.GROUP_STATE, groupId) as GroupStateModel;
     });
-
-    this.unreadCount = _.sumBy(groupStates, (groupState: GroupStateModel) => {
+    let important = false;
+    const unreadCount = _.sumBy(groupStates, (groupState: GroupStateModel) => {
       const isCurrentGroup = lastGroupId && lastGroupId === groupState.id;
       const group = getEntity(ENTITY_NAME.GROUP, groupState.id) as GroupModel;
       const unreadCount = isCurrentGroup
         ? 0
         : (!group.isTeam && (groupState.unreadCount || 0)) ||
           (groupState.unreadMentionsCount || 0);
-      this.important = this.important || !!groupState.unreadMentionsCount;
+      important = important || !!groupState.unreadMentionsCount;
       return unreadCount;
     });
-    this.umiVariant = 'count';
+    return {
+      unreadCount,
+      important,
+    };
+  }
+
+  @computed
+  get unreadCount() {
+    return this._umiObj.unreadCount;
+  }
+
+  @computed
+  get important() {
+    return this._umiObj.important;
+  }
+
+  onReceiveProps(props: UmiProps) {
+    if (!_.isEqual([...this.ids], props.ids)) {
+      this.ids = props.ids;
+    }
   }
 }
 export { UmiViewModel };
