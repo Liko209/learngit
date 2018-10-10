@@ -9,7 +9,6 @@ import GlobalStore from './GlobalStore';
 
 import { HANDLER_TYPE, ENTITY_NAME } from '../constants';
 import { ENTITY_SETTING } from '../config';
-import { IEntitySetting } from '../store';
 
 enum STORE_TYPE {
   ENTITY,
@@ -37,7 +36,7 @@ class StoreManager {
   injectStores(
     stores: (MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>)[],
   ) {
-    stores.forEach(store => {
+    stores.forEach((store: MultiEntityMapStore<any, any>) => {
       this.injectStore(store);
     });
   }
@@ -60,7 +59,7 @@ class StoreManager {
   removeStores(
     stores: (MultiEntityMapStore<any, any> | SingleEntityMapStore<any, any>)[],
   ) {
-    stores.forEach(store => {
+    stores.forEach((store: MultiEntityMapStore<any, any>) => {
       this.removeStore(store);
     });
   }
@@ -82,11 +81,15 @@ class StoreManager {
       | SingleEntityMapStore<any, any>;
     if (!store) {
       if (ENTITY_SETTING[entityStoreName].type === HANDLER_TYPE.MULTI_ENTITY) {
-        store = new MultiEntityMapStore(entityStoreName, ENTITY_SETTING[ entityStoreName
-] as IEntitySetting);
+        store = new MultiEntityMapStore(
+          entityStoreName,
+          ENTITY_SETTING[entityStoreName],
+        );
       } else {
-        store = new SingleEntityMapStore(entityStoreName, ENTITY_SETTING[ entityStoreName
-] as IEntitySetting);
+        store = new SingleEntityMapStore(
+          entityStoreName,
+          ENTITY_SETTING[entityStoreName],
+        );
       }
       this.injectStore(store);
     }

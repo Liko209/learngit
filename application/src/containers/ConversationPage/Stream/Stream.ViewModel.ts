@@ -3,6 +3,7 @@
  * @Date: 2018-10-08 18:18:39
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
 import _ from 'lodash';
 import { observable, action } from 'mobx';
@@ -14,6 +15,7 @@ import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
 } from '@/store/base/fetch';
+
 import {
   onScrollToTop,
   loading,
@@ -30,23 +32,43 @@ const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,
   sortValue: -dataModel.created_at,
 });
+enum TStreamType {
+  'POST',
+  'GROUPED_POSTS',
+  'TAG',
+}
+type TBaseElement = {
+  type: TStreamType;
+  value: number;
+  meta?: any;
+};
 
-class PostTransformHandler extends TransformHandler<ISortableModel, Post> {
+type TTransformedElement = {
+  type: TStreamType;
+  value: number | TBaseElement[];
+  meta?: any;
+};
+class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
   onAdded(direction: FetchDataDirection, addedItems: ISortableModel[]) {
     const updated = _(addedItems)
-      .differenceBy(this.listStore.items, 'id')
+      .map(item => ({
+        value: item.id,
+      }))
+      .differenceBy(this.listStore.items, 'value')
       .reverse()
+      .map(item => ({ type: TStreamType.POST, value: item.value }))
       .value();
     const inFront = FetchDataDirection.UP === direction;
     this.listStore.append(updated, inFront); // new to old
   }
 
   onDeleted(deletedItems: number[]) {
-    this.listStore.delete((item: ISortableModel) =>
-      deletedItems.includes(item.id),
+    this.listStore.delete((item: TTransformedElement) =>
+      deletedItems.includes(item.value as number),
     );
   }
 }
+
 class StreamViewModel extends StoreViewModel {
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   private _transformHandler: PostTransformHandler;
@@ -102,8 +124,8 @@ class StreamViewModel extends StoreViewModel {
     this._transformHandler = new PostTransformHandler(orderListHandler);
     this.autorun(() => {
       this.postIds = _(this._transformHandler.listStore.items)
-        .map('id')
-        .value();
+        .map('value')
+        .value() as number[];
     });
     this.loadInitialPosts();
   }
@@ -133,11 +155,6 @@ class StreamViewModel extends StoreViewModel {
       posts: [],
     };
   }
-
-  // private _afterRendered() {
-  //   this.stateService.markAsRead(this.groupId);
-  //   this.stateService.updateLastGroup(this.groupId);
-  // }
 }
 
 export { StreamViewModel };

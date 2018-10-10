@@ -3,11 +3,11 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, autorun, action } from 'mobx';
+import { observable, action } from 'mobx';
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity, getSingleEntity } from '@/store/utils';
-import { MyState, Profile } from 'sdk/models';
+import { MyState } from 'sdk/models';
 import MyStateModel from '@/store/models/MyState';
 import { UmiProps, UmiViewProps } from './types';
 import { ENTITY_NAME } from '@/store';
