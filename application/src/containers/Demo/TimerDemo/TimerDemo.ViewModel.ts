@@ -29,10 +29,6 @@ class TimerDemoViewModel extends AbstractViewModel
     }
   }
 
-  componentDidMount() {
-    this.updateTime();
-  }
-
   @action
   async updateTime() {
     await this.wait(500);
