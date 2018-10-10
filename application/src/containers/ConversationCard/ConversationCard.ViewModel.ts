@@ -15,25 +15,19 @@ import { getEntity } from '@/store/utils';
 import { Post, Person } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
-import { PostService } from 'sdk/service';
-class ConversationCardViewModel extends AbstractViewModel
-  implements ConversationCardViewProps {
-  @observable
-  private _id: number;
-  private _postService: PostService = PostService.getInstance();
+class ConversationCardViewModel extends AbstractViewModel implements ConversationCardViewProps {
+  @observable id: number;
 
   @action
   onReceiveProps(props: ConversationCardProps) {
-    if (this._id !== props.id) {
-      this._id = props.id;
+    if (this.id !== props.id) {
+      this.id = props.id;
     }
-    this.resend = this.resend.bind(this);
-    this.delete = this.delete.bind(this);
   }
 
   @computed
   get post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._id);
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
   }
 
   @computed
@@ -57,16 +51,6 @@ class ConversationCardViewModel extends AbstractViewModel
   @computed
   get createTime() {
     return moment(this.post.createdAt).format('hh:mm A');
-  }
-
-  resend = async () => {
-    await this._postService.reSendPost(this._id);
-    // todo use Toast component display code 5000 error
-  }
-
-  delete = async () => {
-    await this._postService.deletePost(this._id);
-    // todo use Toast component display code 5000 error
   }
 }
 
