@@ -23,10 +23,9 @@ const MyView = ({ id, text }: MyViewProps) => (
     <BadChild />
   </div>
 );
-const onReceiveProps = jest.fn().mockName('onReceiveProps');
+const mockOnReceiveProps = jest.fn().mockName('onReceiveProps');
 const dispose = jest.fn().mockName('dispose');
 class MyViewModel extends AbstractViewModel implements MyViewProps {
-  onReceiveProps = onReceiveProps;
   dispose = dispose;
 
   @observable
@@ -34,8 +33,8 @@ class MyViewModel extends AbstractViewModel implements MyViewProps {
   @observable
   text: string;
 
-  constructor(props: MyViewModelProps) {
-    super();
+  onReceiveProps(props: MyViewModelProps) {
+    mockOnReceiveProps(props);
     if (isNaN(props.id)) throw new Error();
     this.id = props.id;
     this.text = 'text';
@@ -58,10 +57,10 @@ describe('buildContainer()', () => {
 
   it('should call onReceiveProps() of ViewModel when props change', () => {
     const wrapper = mount(<MyContainer id={1} />);
-    expect(onReceiveProps).toHaveBeenCalledWith({ id: 1 });
+    expect(mockOnReceiveProps).toHaveBeenCalledWith({ id: 1 });
 
     wrapper.setProps({ id: 2 });
-    expect(onReceiveProps).toHaveBeenCalledWith({ id: 2 });
+    expect(mockOnReceiveProps).toHaveBeenCalledWith({ id: 2 });
   });
 
   it('should call dispose() of ViewModel when unmount', () => {
