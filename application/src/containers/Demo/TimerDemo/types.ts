@@ -6,11 +6,11 @@
 import { MouseEvent } from 'react';
 
 type TimerDemoProps = {
-  id: number;
+  timerId: number;
 };
 
 type TimerDemoViewProps = {
-  id: number;
+  timerId: number;
   text: string;
   now: number;
   onUpdateTimeClick: (event: MouseEvent<HTMLButtonElement>) => void;
