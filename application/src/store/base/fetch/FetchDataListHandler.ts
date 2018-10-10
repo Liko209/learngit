@@ -34,6 +34,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
   private _pageSize: number;
   protected _entityName?: ENTITY_NAME;
   protected _dataChangeCallBack: DeltaDataHandler;
+
   constructor(
     dataProvider: IFetchDataProvider<T> | null,
     options: IFetchDataListHandlerOptions,
