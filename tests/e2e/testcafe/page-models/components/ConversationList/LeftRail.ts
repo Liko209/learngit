@@ -4,7 +4,7 @@ import { BaseComponent } from '../..';
 
 class LeftRail extends BaseComponent {
   get sections() {
-    return ReactSelector('ConversationListSection2');
+    return ReactSelector('ConversationListSection');
   }
 
   private _getSection(title: string, position: number) {
@@ -13,21 +13,13 @@ class LeftRail extends BaseComponent {
       .withProps('title', title);
   }
 
-  checkSectionsOrder(
-    unread: string,
-    mentions: string,
-    bookmarks: string,
-    favorites: string,
-    dm: string,
-    teams: string,
-  ): this {
-    return this.waitFor(this.sections)
-      .checkSectionIndex(unread, 0)
-      .checkSectionIndex(mentions, 1)
-      .checkSectionIndex(bookmarks, 2)
-      .checkSectionIndex(favorites, 3)
-      .checkSectionIndex(dm, 4)
-      .checkSectionIndex(teams, 5);
+  checkSectionsOrder(...sections: string[]): this {
+    const length = sections.length
+    let result = this.waitFor(this.sections)
+    for (let i; i < sections.length; i++){
+      result.checkSectionIndex(sections[i], i)
+    }
+    return result
   }
 
   checkSectionIndex(sectionTitle: string, index: number): this {
