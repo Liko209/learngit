@@ -61,11 +61,12 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   @computed
   get url() {
     const person = this._person;
-    const size = 150;
+    // avatar size crop need to be discussed
+    const SIZE = 150;
     const GLIP_TOKEN = localStorage.getItem('auth/GLIP_TOKEN');
     const { glip } = config.get('api');
     if (person.headshot_version && GLIP_TOKEN) {
-      const headshot = `${glip.cacheServer}/headshot/${this._uid}/${size}/${person.headshot_version}?t=${GLIP_TOKEN}`;
+      const headshot = `${glip.cacheServer}/headshot/${this._uid}/${SIZE}/${person.headshot_version}?t=${GLIP_TOKEN}`;
       return headshot;
     }
     return '';
