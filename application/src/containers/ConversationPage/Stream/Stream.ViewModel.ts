@@ -133,11 +133,6 @@ class StreamViewModel extends StoreViewModel {
       posts: [],
     };
   }
-
-  // private _afterRendered() {
-  //   this.stateService.markAsRead(this.groupId);
-  //   this.stateService.updateLastGroup(this.groupId);
-  // }
 }
 
 export { StreamViewModel };
