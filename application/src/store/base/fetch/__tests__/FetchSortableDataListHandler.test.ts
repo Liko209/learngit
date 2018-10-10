@@ -181,7 +181,7 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     ]);
   });
 
-  it('put an value from matched to unmatched', async () => {
+  it.skip('put an value from matched to unmatched', async () => {
     isMatchFunc = matchInRange;
     fetchSortableDataHandler = new FetchSortableDataListHandler<SortableNumber>(
       dataProvider,
