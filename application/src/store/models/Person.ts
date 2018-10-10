@@ -22,6 +22,8 @@ export default class PersonModel extends Base<Person> {
     url: string;
   };
   @observable
+  headshot_version?: string;
+  @observable
   email: string;
   @observable
   rcPhoneNumbers?: object[];
@@ -44,11 +46,13 @@ export default class PersonModel extends Base<Person> {
       is_pseudo_user,
       glip_user_id,
       away_status,
+      headshot_version,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
     this.lastName = last_name;
     this.headshot = headshot;
+    this.headshot_version = headshot_version;
     this.email = email;
     this.rcPhoneNumbers = rc_phone_numbers;
     this.isPseudoUser = is_pseudo_user;

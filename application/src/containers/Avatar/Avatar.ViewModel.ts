@@ -9,6 +9,7 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { observable, computed, action } from 'mobx';
 import { AvatarViewProps } from './types';
+import config from '@/config';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -57,15 +58,15 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   get name() {
     return this._person.shortName;
   }
-
   @computed
   get url() {
-    const { headshot } = this._person;
-    if (typeof headshot === 'string') {
+    const person = this._person;
+    const size = 150;
+    const GLIP_TOKEN = localStorage.getItem('auth/GLIP_TOKEN');
+    const { glip } = config.get('api');
+    if (person.headshot_version && GLIP_TOKEN) {
+      const headshot = `${glip.cacheServer}/headshot/${this._uid}/${size}/${person.headshot_version}?t=${GLIP_TOKEN}`;
       return headshot;
-    }
-    if (headshot && headshot.url) {
-      return headshot.url;
     }
     return '';
   }
