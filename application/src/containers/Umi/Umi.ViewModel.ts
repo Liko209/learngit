@@ -11,7 +11,7 @@ import { getEntity, getSingleEntity } from '@/store/utils';
 import { MyState } from 'sdk/models';
 import MyStateModel from '@/store/models/MyState';
 import { UmiProps, UmiViewProps } from './types';
-import { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '@/store';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 
@@ -19,6 +19,7 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
   @observable
   ids: number[] = [];
 
+  global?: string;
   @computed
   private get _umiObj() {
     const groupIds = this.ids;
@@ -48,6 +49,10 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
 
   @computed
   get unreadCount() {
+    if (this.global) {
+      console.log('unreadCount');
+      storeManager.getGlobalStore().set(this.global, this._umiObj.unreadCount);
+    }
     return this._umiObj.unreadCount;
   }
 
@@ -59,6 +64,7 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
   onReceiveProps(props: UmiProps) {
     if (!_.isEqual([...this.ids], props.ids)) {
       this.ids = props.ids;
+      this.global = props.global;
     }
   }
 }

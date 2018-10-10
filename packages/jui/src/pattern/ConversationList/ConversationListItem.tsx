@@ -56,6 +56,7 @@ type JuiConversationListItemProps = {
   fontWeight?: 'bold' | 'normal';
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
+  umiHint?: boolean;
 } & MuiMenuItemProps;
 
 type IConversationListItem = {
@@ -74,9 +75,10 @@ const JuiConversationListItem: IConversationListItem = (
     onMoreClick,
     component,
     selected,
-    fontWeight,
+    umiHint,
   } = props;
 
+  const fontWeight = umiHint ? 'bold' : 'normal';
   return (
     <StyledListItem onClick={onClick} component={component} selected={selected}>
       {presence}
@@ -89,7 +91,6 @@ const JuiConversationListItem: IConversationListItem = (
   );
 };
 
-JuiConversationListItem.defaultProps = { fontWeight: 'normal' };
 JuiConversationListItem.dependencies = [ItemText, JuiIconography];
 
 export default JuiConversationListItem;
