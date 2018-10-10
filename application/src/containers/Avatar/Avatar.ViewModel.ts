@@ -26,7 +26,7 @@ const AVATAR_COLORS = [
 class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   @observable
   private _uid = 0;
-
+  @observable GLIP_TOKEN = localStorage.getItem('auth/GLIP_TOKEN') || '';
   @action
   onReceiveProps({ uid }: { uid: number }) {
     this._uid = uid;
@@ -63,7 +63,7 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
     const person = this._person;
     // avatar size crop need to be discussed
     const SIZE = 150;
-    const GLIP_TOKEN = localStorage.getItem('auth/GLIP_TOKEN');
+    const GLIP_TOKEN = this.GLIP_TOKEN.replace(/\"/g, '');
     const { glip } = config.get('api');
     if (person.headshot_version && GLIP_TOKEN) {
       const headshot = `${glip.cacheServer}/headshot/${this._uid}/${SIZE}/${person.headshot_version}?t=${GLIP_TOKEN}`;
