@@ -11,7 +11,7 @@ import { TimerDemoProps, TimerDemoViewProps } from './types';
 class TimerDemoViewModel extends AbstractViewModel
   implements TimerDemoViewProps {
   @observable
-  id: number;
+  timerId: number;
   @observable
   text: string = 'Current Time';
   @observable
@@ -23,13 +23,10 @@ class TimerDemoViewModel extends AbstractViewModel
 
   timer: NodeJS.Timer;
 
-  constructor({ id }: TimerDemoProps) {
-    super();
-    this.id = id;
-  }
-
-  componentDidMount() {
-    this.updateTime();
+  onReceiveProps({ timerId }: TimerDemoProps) {
+    if (this.timerId !== timerId) {
+      this.timerId = timerId;
+    }
   }
 
   @action
@@ -41,12 +38,12 @@ class TimerDemoViewModel extends AbstractViewModel
   @action
   @loading
   async updateTimeWithLoading() {
-    await this.wait(500);
+    await this.wait(1000); // The circular progress shows after 500ms
     this.now = Date.now();
   }
 
   startTimer() {
-    this.timer = setInterval(() => this.updateTimeWithLoading(), 1000);
+    this.timer = setInterval(() => this.updateTimeWithLoading(), 1500);
   }
 
   stopTimer() {
