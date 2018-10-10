@@ -9,7 +9,6 @@ import GlobalStore from './GlobalStore';
 
 import { HANDLER_TYPE, ENTITY_NAME } from '../constants';
 import { ENTITY_SETTING } from '../config';
-import { IEntitySetting } from '../store';
 
 enum STORE_TYPE {
   ENTITY,

@@ -8,7 +8,6 @@ import { AbstractViewModel } from '@/base';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { observable, computed, action } from 'mobx';
-import defaultAvatar from './defaultAvatar.svg';
 import { AvatarViewProps } from './types';
 
 const AVATAR_COLORS = [

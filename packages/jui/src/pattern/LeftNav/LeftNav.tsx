@@ -138,7 +138,7 @@ type TNavProps = {
     url: string;
     icon: string;
     title: string;
-    umi: React.ComponentType<any>;
+    umi: JSX.Element;
   }[][];
   onRouteChange: Function;
 };
