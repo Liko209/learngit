@@ -11,14 +11,22 @@ import { getEntity, getSingleEntity } from '@/store/utils';
 import { MyState } from 'sdk/models';
 import MyStateModel from '@/store/models/MyState';
 import { UmiProps, UmiViewProps } from './types';
-import storeManager, { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '@/store';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 
 class UmiViewModel extends StoreViewModel implements UmiViewProps {
+  constructor() {
+    super();
+    this.autorun(() => {
+      this.appUmi();
+    });
+  }
+  private appName = process.env.APP_NAME || '';
   @observable
   ids: number[] = [];
 
+  @observable
   global?: string;
   @computed
   private get _umiObj() {
@@ -47,12 +55,22 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
     };
   }
 
+  appUmi() {
+    if (this.global) {
+      const appUmi = this.unreadCount;
+      if (appUmi) {
+        document.title = `(${appUmi}) ${this.appName}`;
+        if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
+          window.jupiterElectron.setBadgeCount(appUmi);
+        }
+      } else {
+        document.title = this.appName;
+      }
+    }
+  }
+
   @computed
   get unreadCount() {
-    if (this.global) {
-      console.log('unreadCount');
-      storeManager.getGlobalStore().set(this.global, this._umiObj.unreadCount);
-    }
     return this._umiObj.unreadCount;
   }
 
@@ -64,8 +82,8 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
   onReceiveProps(props: UmiProps) {
     if (!_.isEqual([...this.ids], props.ids)) {
       this.ids = props.ids;
-      this.global = props.global;
     }
+    this.global = props.global;
   }
 }
 export { UmiViewModel };
