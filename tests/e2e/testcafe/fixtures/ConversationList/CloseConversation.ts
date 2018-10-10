@@ -50,6 +50,21 @@ const prepare_1conversationInList = async (t: TestController) => {
     text: `send one post to ${helper.teams.team1_u1_u2.name}`,
   });
 };
+const prepare_api_ = async(t: TestController, skipCloseConfirmButton: boolean) => {
+  const helper = TestHelper.from(t);
+  await helper.log('2.Prepare: show confirmation popup');
+  await setupSDK(t);
+  const id = (await PersonAPI.requestPersonById(helper.users.user701.glip_id))
+    .data.profile_id;
+  let data = (await ProfileAPI.requestProfileById(id)).data;
+  if (data.skip_close_conversation_confirmation != skipCloseConfirmButton) {
+    data = (await (ProfileAPI as any).putDataById(id, {
+      skip_close_conversation_confirmation: skipCloseConfirmButton,
+    })).data;
+  }
+  await helper.log(`2.1 skip_close_conversation_confirmation: ${skipCloseConfirmButton}}`);
+};
+
 // prepare for case JPT-134: expect to show confirmation popup(skip_close_conversation_confirmation should be false or not exist)
 const prepare_api1 = async (t: TestController) => {
   const helper = TestHelper.from(t);
@@ -108,7 +123,7 @@ test(
   ),
   async (t: TestController) => {
     await prepare_1conversationInList(t);
-    await prepare_api2(t);
+    await prepare_api(t,true);
     await directLogin(t)
       .log('3.Should navigate to CloseConversation')
       .shouldNavigateTo(CloseConversation)
@@ -140,7 +155,7 @@ test(
   ),
   async (t: TestController) => {
     await prepare_2conversationInList(t);
-    await prepare_api1(t);
+    await prepare_api(t,false);
     await directLogin(t)
       .shouldNavigateTo(CloseConversation)
       .log('3.Prepare no UMI :Click one conversation c1')
@@ -182,7 +197,7 @@ test(
   ]),
   async (t: TestController) => {
     await prepare_2conversationInList(t);
-    await prepare_api1(t);
+    await prepare_api(t, false);
     await action1(t)
       .log('10.Click close button of the dialog')
       .clickDialogCloseButton()
@@ -210,7 +225,7 @@ test(
   ),
   async (t: TestController) => {
     await prepare_2conversationInList(t);
-    await prepare_api1(t);
+    await prepare_api(t,false);
     await action1(t)
       .log(`10.Tap ${checkboxLabel} checkbox`)
       .clickDialogCheckbox()
