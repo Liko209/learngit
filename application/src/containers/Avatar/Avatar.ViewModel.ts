@@ -9,7 +9,8 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { observable, computed, action } from 'mobx';
 import { AvatarViewProps } from './types';
-import config from '@/config';
+import { PersonService } from 'sdk/service';
+// import config from '@/config';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -26,7 +27,8 @@ const AVATAR_COLORS = [
 class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   @observable
   private _uid = 0;
-  @observable GLIP_TOKEN = localStorage.getItem('auth/GLIP_TOKEN') || '';
+  @observable
+  headshot_version: string;
   @action
   onReceiveProps({ uid }: { uid: number }) {
     this._uid = uid;
@@ -60,16 +62,9 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   }
   @computed
   get url() {
-    const person = this._person;
-    // avatar size crop need to be discussed
-    const SIZE = 150;
-    const GLIP_TOKEN = this.GLIP_TOKEN.replace(/\"/g, '');
-    const { glip } = config.get('api');
-    if (person.headshot_version && GLIP_TOKEN) {
-      const headshot = `${glip.cacheServer}/headshot/${this._uid}/${SIZE}/${person.headshot_version}?t=${GLIP_TOKEN}`;
-      return headshot;
-    }
-    return '';
+    const personService = new PersonService();
+    this.headshot_version = this._person.headShotVersion || '';
+    return personService.getHeadShot(this._uid, this.headshot_version, 150);
   }
 }
 

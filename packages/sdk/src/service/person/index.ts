@@ -7,11 +7,11 @@ import BaseService from '../../service/BaseService';
 import PersonDao from '../../dao/person';
 import PersonAPI from '../../api/glip/person';
 import handleData from './handleData';
-import { daoManager } from '../../dao';
+import { daoManager, AuthDao } from '../../dao';
 import { IPagination } from '../../types';
 import { Person } from '../../models'; // eslint-disable-line
 import { SOCKET } from '../eventKey';
-
+import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
 export default class PersonService extends BaseService<Person> {
   static serviceName = 'PersonService';
 
@@ -60,5 +60,14 @@ export default class PersonService extends BaseService<Person> {
   async getAllCount() {
     const personDao = daoManager.getDao(PersonDao);
     return personDao.getAllCount();
+  }
+  getHeadShot(uid: number, headShotVersion: string, size: number) {
+    const authDao = daoManager.getKVDao(AuthDao);
+    const token = authDao.get(AUTH_GLIP_TOKEN);
+    const glipToken = token.replace(/\"/g, '');
+    if (headShotVersion) {
+      return PersonAPI.getHeadShot(uid, headShotVersion, size, glipToken);
+    }
+    return '';
   }
 }

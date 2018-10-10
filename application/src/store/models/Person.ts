@@ -22,7 +22,7 @@ export default class PersonModel extends Base<Person> {
     url: string;
   };
   @observable
-  headshot_version?: string;
+  headShotVersion?: string;
   @observable
   email: string;
   @observable
@@ -52,7 +52,7 @@ export default class PersonModel extends Base<Person> {
     this.firstName = first_name;
     this.lastName = last_name;
     this.headshot = headshot;
-    this.headshot_version = headshot_version;
+    this.headShotVersion = headshot_version;
     this.email = email;
     this.rcPhoneNumbers = rc_phone_numbers;
     this.isPseudoUser = is_pseudo_user;
