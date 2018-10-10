@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
 import { TranslationFunction } from 'i18next';
 import { ActionsViewProps } from './types';
@@ -18,6 +19,7 @@ type Props = ActionsViewProps & {
   t: TranslationFunction;
 };
 
+@observer
 class ActionsViewComponent extends Component<Props> {
   delete = async () => {
     try {
