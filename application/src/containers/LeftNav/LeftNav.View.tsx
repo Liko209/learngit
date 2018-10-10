@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
-import { JuiLeftNav } from 'jui/pattern/LeftNav';
+import { JuiLeftNav, JuiLeftNavProps } from 'jui/pattern/LeftNav';
 import { Umi } from '../Umi';
 import { LeftNavViewProps } from './types';
 
@@ -23,7 +23,7 @@ class LeftNav extends Component<LeftNavProps> {
     this.onRouteChange = this.onRouteChange.bind(this);
   }
 
-  getIcons() {
+  getIcons(): JuiLeftNavProps['icons'] {
     const { t } = this.props;
 
     return [
