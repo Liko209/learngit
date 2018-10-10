@@ -9,7 +9,7 @@ import JuiSearchItem from 'ui-components/molecules/SearchItem';
 import JuiSearchItemText from 'ui-components/atoms/SearchItemText';
 
 // import JuiAvatar from 'ui-components/atoms/Avatar';
-import Avatar from '../Avatar';
+import { Avatar } from '../Avatar';
 
 const SearchContactItem = (props: any) => {
   const { suggestion, isHighlighted, ...rest } = props;

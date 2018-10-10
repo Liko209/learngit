@@ -1,11 +1,9 @@
-import { TDelta } from './types';
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-10-06 19:39:12
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { FetchDataDirection } from './types';
+import { TDelta, FetchDataDirection } from './types';
 import { ListStore } from './ListStore';
 import { ENTITY_NAME } from '@/store/constants';
 import storeManager from '@/store';

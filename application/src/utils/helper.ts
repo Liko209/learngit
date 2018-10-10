@@ -46,13 +46,13 @@ function toUpperCase(name: string | undefined) {
   return (name && name.slice(0, 1).toUpperCase()) || '';
 }
 
-function handleOnlyLetterOrNumbers(firstName, lastName) {
+function handleOnlyLetterOrNumbers(firstName: string, lastName: string) {
   const firstLetter = toUpperCase(firstName!);
   const lastLetter = toUpperCase(lastName!);
   return `${firstLetter}${lastLetter}`;
 }
 
-function handleOneOfName(firstName, lastName) {
+function handleOneOfName(firstName?: string, lastName?: string) {
   const names =
     (!!firstName && firstName!.split(/\s+/)) ||
     (!!lastName && lastName!.split(/\s+/));
