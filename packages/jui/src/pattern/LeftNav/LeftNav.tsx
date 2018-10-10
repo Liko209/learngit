@@ -138,7 +138,7 @@ type JuiLeftNavProps = {
     url: string;
     icon: string;
     title: string;
-    umi: JSX.Element;
+    umi?: JSX.Element;
   }[][];
   onRouteChange: Function;
 };

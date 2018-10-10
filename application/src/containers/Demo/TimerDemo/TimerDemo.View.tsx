@@ -9,7 +9,7 @@ import { TimerDemoViewProps } from './types';
 const TimerDemoView = (props: TimerDemoViewProps) => {
   return (
     <div>
-      {props.id} - {props.text} : {props.now}
+      {props.timerId} - {props.text} : {props.now}
       <div>
         <button onClick={props.onUpdateTimeClick}>updateTime()</button>
         <button onClick={props.onUpdateTimeWithLoadingClick}>

@@ -5,7 +5,7 @@
  */
 import React, { ComponentType } from 'react';
 import styled from '../../foundation/styled-components';
-import { JuiCircularProgress } from '../../components/CircularProgress';
+import { JuiCircularProgress } from '../../components/Progress';
 import { JuiFade } from '../../components/Fade';
 
 type WithLoadingProps = {

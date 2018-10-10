@@ -10,6 +10,12 @@ import { translate } from 'react-i18next';
 import { JuiLeftNav, JuiLeftNavProps } from 'jui/pattern/LeftNav';
 import { Umi } from '../Umi';
 import { LeftNavViewProps } from './types';
+import storeManager, { ENTITY_NAME } from '@/store';
+import GroupModel from '@/store/models/Group';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import { Group } from 'sdk/models';
+import { computed, observable } from 'mobx';
+import _ from 'lodash';
 
 type LeftNavProps = {
   isLeftNavOpen: boolean;
@@ -18,39 +24,47 @@ type LeftNavProps = {
   RouteComponentProps;
 
 class LeftNav extends Component<LeftNavProps> {
+  @observable
+  private groupStore: any;
   constructor(props: LeftNavProps) {
     super(props);
+    this.groupStore = storeManager.getEntityMapStore(
+      ENTITY_NAME.GROUP,
+    ) as MultiEntityMapStore<Group, GroupModel>;
     this.onRouteChange = this.onRouteChange.bind(this);
   }
 
-  getIcons(): JuiLeftNavProps['icons'] {
+  @computed
+  get icons(): JuiLeftNavProps['icons'] {
     const { t } = this.props;
-
+    const groupIds = _.map(
+      Object.keys(this.groupStore.getData()),
+      (id: string) => {
+        return parseInt(id, 10);
+      },
+    );
     return [
       [
         {
           url: '/dashboard',
           icon: 'dashboard',
           title: t('Dashboard'),
-          umi: <Umi ids={[1, 2]} />,
         },
         {
           url: '/messages',
           icon: 'message',
           title: t('Messages'),
-          umi: <Umi ids={[1, 2]} />,
+          umi: <Umi ids={groupIds} />,
         },
         {
           url: '/phone',
           icon: 'phone',
           title: t('Phone'),
-          umi: <Umi ids={[1, 2]} />,
         },
         {
           url: '/meetings',
           icon: 'videocam',
           title: t('Meetings'),
-          umi: <Umi ids={[1, 2]} />,
         },
       ],
       [
@@ -58,37 +72,31 @@ class LeftNav extends Component<LeftNavProps> {
           url: '/contacts',
           icon: 'contacts',
           title: t('Contacts'),
-          umi: <Umi ids={[1, 2]} />,
         },
         {
           url: '/calendar',
           icon: 'date_range',
           title: t('Calendar'),
-          umi: <Umi ids={[1, 2]} />,
         },
         {
           url: '/tasks',
           icon: 'assignment_turned_in',
           title: t('Tasks'),
-          umi: <Umi ids={[1, 2]} />,
         },
         {
           url: '/notes',
           icon: 'library_books',
           title: t('Notes'),
-          umi: <Umi ids={[1, 2]} />,
         },
         {
           url: '/files',
           icon: 'file_copy',
           title: t('Files'),
-          umi: <Umi ids={[1, 2]} />,
         },
         {
           url: '/settings',
           icon: 'settings',
           title: t('Settings'),
-          umi: <Umi ids={[1, 2]} />,
         },
       ],
     ];
@@ -105,7 +113,7 @@ class LeftNav extends Component<LeftNavProps> {
 
     return (
       <JuiLeftNav
-        icons={this.getIcons()}
+        icons={this.icons}
         expand={isLeftNavOpen}
         onRouteChange={this.onRouteChange}
       />

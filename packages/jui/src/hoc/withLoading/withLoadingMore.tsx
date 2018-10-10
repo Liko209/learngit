@@ -6,7 +6,7 @@
 import React, { ComponentType, Fragment } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils/styles';
-import { JuiCircularProgress } from '../../components/CircularProgress';
+import { JuiCircularProgress } from '../../components/Progress';
 
 type WithLoadingMoreProps = {
   loadingTop: boolean;
