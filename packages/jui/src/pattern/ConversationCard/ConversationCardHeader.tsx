@@ -24,6 +24,7 @@ const StyledTime = styled('div')`
 `;
 const RightSection = styled('div')`
   margin-left: ${spacing(4)};
+  display: inline-flex;
 `;
 const StyledConversationCardHeader = styled('div')`
   padding: ${spacing(4, 4, 2, 0)};

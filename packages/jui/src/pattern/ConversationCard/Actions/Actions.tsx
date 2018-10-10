@@ -6,13 +6,17 @@
 
 import React from 'react';
 import styled from '../../../foundation/styled-components';
+import { spacing, width, height } from '../../../foundation/utils/styles';
 
 type Props = {
   children?: (boolean | JSX.Element)[] | boolean | JSX.Element;
 };
 
 const Wrapper = styled.span`
-  margin: ${({ theme }) => theme.spacing.unit}px;
+  margin: 0 ${spacing(1)};
+  font-size: 0;
+  width: ${width(4)};
+  height: ${height(4)};
 `;
 
 const JuiActions = ({ children }: Props) => {
