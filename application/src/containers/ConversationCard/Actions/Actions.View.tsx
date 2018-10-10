@@ -10,7 +10,7 @@ import { TranslationFunction } from 'i18next';
 import { ActionsViewProps } from './types';
 import { JuiActions } from 'jui/pattern/ConversationCard/Actions';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { JuiCircularProgress } from 'jui/components/CircularProgress';
+import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
 
 import { POST_STATUS } from 'sdk/service';
 
