@@ -44,7 +44,7 @@ async function prepareConversations(t, h) {
     group,
   };
 }
-test.skip(
+test(
   formalName(
     'Show the 1:1 conversation and group conversation in the Direct Message section',
     ['JPT-5', 'P2', 'ConversationList'],
