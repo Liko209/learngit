@@ -64,7 +64,7 @@ export default class PersonService extends BaseService<Person> {
   getHeadShot(uid: number, headShotVersion: string, size: number) {
     const authDao = daoManager.getKVDao(AuthDao);
     const token = authDao.get(AUTH_GLIP_TOKEN);
-    const glipToken = token.replace(/\"/g, '');
+    const glipToken = token && token.replace(/\"/g, '');
     if (headShotVersion) {
       return PersonAPI.getHeadShot({ uid, headShotVersion, size, glipToken });
     }
