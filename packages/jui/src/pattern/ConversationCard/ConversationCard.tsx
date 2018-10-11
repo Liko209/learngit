@@ -22,8 +22,12 @@ const StyledConversationCard = styled('div')`
   display: flex;
 `;
 
-const JuiConversationCard = ({ children, Avatar }: ConversationCardProps) => (
-  <StyledConversationCard>
+const JuiConversationCard = ({
+  children,
+  Avatar,
+  ...rest
+}: ConversationCardProps) => (
+  <StyledConversationCard {...rest}>
     <JuiConversationCardAvatarArea>{Avatar}</JuiConversationCardAvatarArea>
     <StyledRightSection>{children}</StyledRightSection>
   </StyledConversationCard>

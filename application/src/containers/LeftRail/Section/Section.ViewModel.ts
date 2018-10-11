@@ -85,14 +85,18 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     this._queryType = queryType;
   }
 
-  fetchData(
+  async fetchData(
     offset: number,
     direction: FetchDataDirection,
     pageSize: number,
     anchor: ISortableModel<Group>,
   ): Promise<Group[]> {
     const groupService = GroupService.getInstance<service.GroupService>();
-    return groupService.getGroupsByType(this._queryType);
+    const result = await groupService.getGroupsByType(this._queryType);
+    if (this._queryType === GROUP_QUERY_TYPE.FAVORITE) {
+      console.info('dangerous', result);
+    }
+    return result;
   }
 }
 
@@ -179,8 +183,7 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
     await this._listHandler.fetchData(FetchDataDirection.DOWN);
   }
 
-  @action
-  async updateGlobalGroups() {
+  updateGlobalGroups() {
     if (this._config && this._listHandler) {
       storeManager
         .getGlobalStore()
