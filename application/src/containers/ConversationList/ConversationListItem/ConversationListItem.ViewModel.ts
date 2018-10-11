@@ -37,9 +37,6 @@ class ConversationListItemViewModel extends StoreViewModel
   currentGroupId?: number;
 
   @observable
-  umiHint: boolean = false;
-
-  @observable
   selected: boolean = false;
 
   @computed
@@ -70,11 +67,11 @@ class ConversationListItemViewModel extends StoreViewModel
 
     if (this.groupId !== props.groupId) {
       this.groupId = props.groupId;
-      this.getData();
     }
   }
 
-  getData() {
+  @computed
+  get umiHint() {
     const lastGroup = getSingleEntity<MyState, MyStateModel>(
       ENTITY_NAME.MY_STATE,
       'lastGroupId',
@@ -86,7 +83,7 @@ class ConversationListItemViewModel extends StoreViewModel
 
     const isCurrentGroup = lastGroup && lastGroup === this.groupId;
 
-    this.umiHint = !!(!isCurrentGroup && groupState.unreadCount);
+    return !!(!isCurrentGroup && groupState.unreadCount);
   }
 }
 

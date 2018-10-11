@@ -6,6 +6,7 @@
 
 type UmiProps = {
   ids: number[];
+  global?: string;
 };
 
 type UmiViewProps = {

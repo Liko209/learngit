@@ -16,9 +16,18 @@ import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 
 class UmiViewModel extends StoreViewModel implements UmiViewProps {
+  constructor() {
+    super();
+    this.autorun(() => {
+      this.appUmi();
+    });
+  }
+  private appName = process.env.APP_NAME || '';
   @observable
   ids: number[] = [];
 
+  @observable
+  global?: string;
   @computed
   private get _umiObj() {
     const groupIds = this.ids;
@@ -46,6 +55,20 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
     };
   }
 
+  appUmi() {
+    if (this.global) {
+      const appUmi = this.unreadCount;
+      if (appUmi) {
+        document.title = `(${appUmi}) ${this.appName}`;
+        if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
+          window.jupiterElectron.setBadgeCount(appUmi);
+        }
+      } else {
+        document.title = this.appName;
+      }
+    }
+  }
+
   @computed
   get unreadCount() {
     return this._umiObj.unreadCount;
@@ -60,6 +83,7 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
     if (!_.isEqual([...this.ids], props.ids)) {
       this.ids = props.ids;
     }
+    this.global = props.global;
   }
 }
 export { UmiViewModel };
