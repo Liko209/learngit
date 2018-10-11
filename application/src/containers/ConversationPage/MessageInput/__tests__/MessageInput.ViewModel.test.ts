@@ -37,6 +37,9 @@ describe('ActionsViewModel', () => {
     let id = 123;
     messageInputViewModel.onReceiveProps({ id });
     expect(messageInputViewModel._id).toBe(id);
+    id = 123;
+    messageInputViewModel.onReceiveProps({ id });
+    expect(messageInputViewModel._id).toBe(id);
     id = 456;
     messageInputViewModel.onReceiveProps({ id });
     expect(messageInputViewModel.draft).toBe(mockGroupEntityData.draft);
@@ -56,6 +59,11 @@ describe('ActionsViewModel', () => {
   it('get computed _initDraft', () => {
     expect(messageInputViewModel._initDraft).toBe(mockGroupEntityData.draft);
   });
+
+  it('get computed _initDraft is empty', () => {
+    mockGroupEntityData.draft = '';
+    expect(messageInputViewModel._initDraft).toBe(mockGroupEntityData.draft);
+  });
 });
 
 describe('ActionsViewModel send post', () => {
@@ -69,30 +77,49 @@ describe('ActionsViewModel send post', () => {
     return that;
   };
 
+  const enterHandler = messageInputViewModel.keyboardEventHandler.enter.handler;
+
   it('send post should be success', () => {
     const content = 'text';
     const that = mockThis(content);
     // @ts-ignore
     markdownFromDelta = jest.fn().mockReturnValue(content);
-    const handler = messageInputViewModel.keyboardEventHandler.enter.handler.bind(that);
+    const handler = enterHandler.bind(that);
     handler();
     expect(messageInputViewModel.draft).toBe('');
     expect(postService.sendPost).toBeCalled();
   });
 
+  it('send post content is empty should be not send', () => {
+    const content = '';
+    const that = mockThis(content);
+    const handler = enterHandler.bind(that);
+    handler();
+    expect(postService.sendPost).toBeCalledTimes(0);
+  });
+
   it('send post should be illegal error', () => {
     const content = CONTENT_ILLEGAL;
     const that = mockThis(content);
-    const handler = messageInputViewModel.keyboardEventHandler.enter.handler.bind(that);
+    const handler = enterHandler.bind(that);
     handler();
     expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
   });
 
-  it('send post should be length error', () => {
+  it('send post should be over length error', () => {
     const content = _.pad('test', CONTENT_LENGTH + 1);
     const that = mockThis(content);
-    const handler = messageInputViewModel.keyboardEventHandler.enter.handler.bind(that);
+    const handler = enterHandler.bind(that);
     handler();
     expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
+  });
+
+  it('send post should be service error', () => {
+    postService.sendPost = jest.fn().mockRejectedValueOnce(new Error('error'));
+    const content = 'text';
+    const that = mockThis(content);
+    const handler = enterHandler.bind(that);
+    const result = handler();
+    expect(result).toBeUndefined();
   });
 });
