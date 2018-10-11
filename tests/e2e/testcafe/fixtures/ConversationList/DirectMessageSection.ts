@@ -14,7 +14,8 @@ fixture('DirectMessageSection')
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
-test(
+  //bug exist. https://jira.ringcentral.com/browse/FIJI-1202  
+test.skip(
   formalName(
     'Show the 1:1 conversation and group conversation in the Direct Message section',
     ['JPT-5', 'P2', 'ConversationList'],
