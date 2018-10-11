@@ -6,9 +6,9 @@
 import { getEntity } from '../../../store/utils';
 import { AvatarViewModel } from '../Avatar.ViewModel';
 jest.mock('../../../store/utils');
-// import PersonAPI from '../../../../../packages/sdk/src/api/glip/person';
 
 const avatarViewModel = new AvatarViewModel();
+
 describe('AvatarVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
@@ -22,7 +22,6 @@ describe('AvatarVM', () => {
 
   it('name()', () => {
     (getEntity as jest.Mock).mockReturnValue({ shortName: 'AB' });
-    const avatarViewModel = new AvatarViewModel();
     expect(avatarViewModel.name).toBe('AB');
   });
 });

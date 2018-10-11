@@ -64,6 +64,18 @@ type Palette = {
   tooltip: {
     dark: string;
   };
+  avatar: {
+    'tomato': string,
+    'blueberry': string,
+    'oasis': string,
+    'gold': string,
+    'sage': string,
+    'ash': string,
+    'persimmon': string,
+    'pear': string,
+    'brass': string,
+    'lake': string,
+  };
 } & MuiPalette;
 
 type Theme = {
@@ -122,18 +134,6 @@ type Theme = {
       fontWeight: number;
       fontFamily: string;
       lineHeight: string;
-    };
-    avatar: {
-      'tomato': string,
-      'blueberry': string,
-      'oasis': string,
-      'gold': string,
-      'sage': string,
-      'ash': string,
-      'persimmon': string,
-      'pear': string,
-      'brass': string,
-      'lake': string,
     };
   };
 } & MuiTheme;
