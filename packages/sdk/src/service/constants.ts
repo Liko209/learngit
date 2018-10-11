@@ -10,18 +10,18 @@ enum GROUP_QUERY_TYPE {
   FAVORITE = 'favorite',
 }
 
-const EVENT_TYPES = {
-  REPLACE: 'replace',
-  PUT: 'put',
-  UPDATE: 'update',
-  DELETE: 'delete',
-  REPLACE_ALL: 'replaceAll',
+enum EVENT_TYPES {
+  'REPLACE' = 'replace',
+  'PUT' = 'put',
+  'UPDATE' = 'update',
+  'DELETE' = 'delete',
+  'REPLACE_ALL' = 'replaceAll',
   // LOGIN: 'login',
   // LOGOUT: 'logout',
   // INDEX_EXIST: 'fetchIndexDataExist',
   // INDEX_DONE: 'fetchIndexDataDone',
   // INDEX_ERROR: 'fetchIndexDataError',
-};
+}
 
 enum PERMISSION_ENUM {
   TEAM_POST = 1,

@@ -3,11 +3,12 @@
  * @Date: 2018-08-22 15:21:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
 import { Group } from 'sdk/models';
-import { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '@/store';
+
 import _ from 'lodash';
 import {
   SectionProps,
@@ -165,8 +166,15 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
     await this.fetchGroups();
   }
 
+  @action
   async fetchGroups() {
     await this._listHandler.fetchData(FetchDataDirection.DOWN);
+    storeManager
+      .getGlobalStore()
+      .set(
+        this._config.queryType,
+        this._listHandler.sortableListStore.getIds(),
+      );
   }
 
   handleSortEnd(oldIndex: number, newIndex: number) {

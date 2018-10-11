@@ -6,12 +6,11 @@
 
 type UmiProps = {
   ids: number[];
+  global?: string;
 };
 
 type UmiViewProps = {
   unreadCount: number;
-  umiVariant: 'count' | 'dot' | 'auto';
-  umiHint?: boolean;
   important?: boolean;
 };
 

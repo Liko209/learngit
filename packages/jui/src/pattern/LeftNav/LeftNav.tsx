@@ -132,7 +132,7 @@ const UmiWrapper = styled<{ expand: boolean }, 'div'>('div')`
   left: ${props => (!props.expand ? spacing(8) : '')};
 `;
 
-type TNavProps = {
+type JuiLeftNavProps = {
   expand: boolean;
   icons: {
     url: string;
@@ -143,7 +143,7 @@ type TNavProps = {
   onRouteChange: Function;
 };
 
-export class JuiLeftNav extends PureComponent<TNavProps> {
+class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
   onRouteChange(url: string) {
     const { onRouteChange } = this.props;
     onRouteChange(url);
@@ -219,3 +219,5 @@ export class JuiLeftNav extends PureComponent<TNavProps> {
     );
   }
 }
+
+export { JuiLeftNav, JuiLeftNavProps };

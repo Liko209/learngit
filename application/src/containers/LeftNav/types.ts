@@ -9,16 +9,11 @@ type LeftNavProps = {
 };
 
 type LeftNavViewProps = {
+  groupIds: number[];
   expanded: boolean;
   id: string;
   handleTitle?: Function;
   onRouteChange?: ((event: React.MouseEvent<HTMLAnchorElement>) => void);
-  icons: {
-    url: string;
-    icon: string;
-    title: string;
-    umi: React.Component;
-  }[][];
 };
 
 export { LeftNavProps, LeftNavViewProps };

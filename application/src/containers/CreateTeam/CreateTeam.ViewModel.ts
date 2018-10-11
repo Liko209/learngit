@@ -20,7 +20,7 @@ type errorTips = {
 class CreateTeamViewModel extends AbstractViewModel {
   @computed
   get isOpen() {
-    return getGlobalValue('isShowCreateTeamDialog');
+    return getGlobalValue('isShowCreateTeamDialog') || false;
   }
 
   @action
