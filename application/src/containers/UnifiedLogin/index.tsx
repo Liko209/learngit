@@ -14,6 +14,7 @@ import getUrl from './getUrl';
 import EnvSelect from './EnvSelect';
 import Download from './Download';
 import LoginVersionStatus from '../VersionInfo/LoginVersionStatus';
+import { AuthService } from 'sdk/service';
 
 const Form = styled.form`
   width: 300px;
@@ -61,6 +62,15 @@ interface IStates {}
 class UnifiedLogin extends React.Component<IProps, IStates> {
   constructor(props: IProps) {
     super(props);
+    this._checkIfLogin();
+  }
+
+  private _checkIfLogin() {
+    const authService: AuthService = AuthService.getInstance();
+    if (authService.isLoggedIn()) {
+      const { history } = this.props;
+      history.replace('/messages');
+    }
   }
 
   // onChange = (event: React.FormEvent<HTMLSelectElement>) => {
