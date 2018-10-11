@@ -9,7 +9,12 @@ import notificationCenter from '../service/notificationCenter';
 import { GlipAccount, RCAccount } from '../account';
 import { generateCode, oauthTokenViaAuthCode } from '../api/ringcentral/auth';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
-import { setRcToken, setRcAccoutType, setGlipToken, setGlipAccoutType } from './utils';
+import {
+  setRcToken,
+  setRcAccountType,
+  setGlipToken,
+  setGlipAccountType,
+} from './utils';
 
 interface IUnifiedLoginAuthenticateParams extends IAuthParams {
   code?: string;
@@ -17,15 +22,15 @@ interface IUnifiedLoginAuthenticateParams extends IAuthParams {
 }
 
 class UnifiedLoginAuthenticator implements IAuthenticator {
-
   /**
    * should consider 2 cases
    * 1. RC account
    * 2. Glip account
    * we only consider 1 now, will implement case 2 in the future
    */
-  async authenticate(params: IUnifiedLoginAuthenticateParams): Promise<IAuthResponse> {
-
+  async authenticate(
+    params: IUnifiedLoginAuthenticateParams,
+  ): Promise<IAuthResponse> {
     if (params.code) {
       return this._authenticateRC(params.code);
     }
@@ -42,14 +47,16 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
   // glip free user login
   private async _authenticateGlip(token: string): Promise<IAuthResponse> {
-    await setGlipAccoutType();
+    await setGlipAccountType();
     await setGlipToken(token);
     return {
       success: true,
-      accountInfos: [{
-        type: GlipAccount.name,
-        data: token,
-      }],
+      accountInfos: [
+        {
+          type: GlipAccount.name,
+          data: token,
+        },
+      ],
     };
   }
 
@@ -63,7 +70,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
       redirect_uri: window.location.origin,
     });
     await setRcToken(authData.data);
-    await setRcAccoutType();
+    await setRcAccountType();
     notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN);
 
     // fetch new code for glip token
@@ -83,13 +90,16 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
     return {
       success: true,
-      accountInfos: [{
-        type: RCAccount.name,
-        data: authData.data,
-      }, {
-        type: GlipAccount.name,
-        data: glipToken,
-      }],
+      accountInfos: [
+        {
+          type: RCAccount.name,
+          data: authData.data,
+        },
+        {
+          type: GlipAccount.name,
+          data: glipToken,
+        },
+      ],
     };
   }
 }
