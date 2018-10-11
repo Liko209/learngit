@@ -47,7 +47,7 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   private get _person() {
     return getEntity(ENTITY_NAME.PERSON, this._uid);
   }
-
+  @computed
   get bgColor() {
     const hash = this._hash;
     return AVATAR_COLORS[hash];
