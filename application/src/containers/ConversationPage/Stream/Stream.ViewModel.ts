@@ -8,7 +8,7 @@ import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
 import _ from 'lodash';
 import { observable, action } from 'mobx';
 import { Post } from 'sdk/models';
-import { PostService, StateService, ENTITY } from 'sdk/service';
+import { PostService, ENTITY } from 'sdk/service';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { TransformHandler } from '@/store/base/TransformHandler';
 import {
@@ -71,7 +71,6 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
 
 class StreamViewModel extends StoreViewModel {
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
-  private _stateService: StateService = StateService.getInstance();
 
   private _transformHandler: PostTransformHandler;
 
@@ -125,7 +124,6 @@ class StreamViewModel extends StoreViewModel {
 
     this._transformHandler = new PostTransformHandler(orderListHandler);
     this.autorun(() => {
-      this._stateService.markAsRead(props.groupId);
       this.postIds = _(this._transformHandler.listStore.items)
         .map('value')
         .value() as number[];
