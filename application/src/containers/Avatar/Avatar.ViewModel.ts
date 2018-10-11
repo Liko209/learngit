@@ -26,8 +26,6 @@ const AVATAR_COLORS = [
 class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   @observable
   private _uid = 0;
-  @observable
-  headShotVersion: string;
   @action
   onReceiveProps({ uid }: { uid: number }) {
     this._uid = uid;
@@ -62,8 +60,7 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   @computed
   get url() {
     const personService = new PersonService();
-    this.headShotVersion = this._person.headShotVersion || '';
-    return personService.getHeadShot(this._uid, this.headShotVersion, 150);
+    return personService.getHeadShot(this._uid, this._person.headShotVersion || '', 150);
   }
 }
 
