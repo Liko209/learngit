@@ -24,7 +24,7 @@ import stateHandleData from '../state/handleData';
 import { IndexDataModel } from '../../api/glip/user';
 import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
-import featureFlag from '../../component/featureFlag';
+// import featureFlag from '../../component/featureFlag';
 
 const dispatchIncomingData = (data: IndexDataModel) => {
   const {
@@ -40,7 +40,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     teams = [],
     posts = [],
     max_posts_exceeded: maxPostsExceeded = false,
-    client_config: clientConfig = {},
+    // client_config: clientConfig = {},
   } = data;
 
   const arrState: any[] = [];
@@ -63,7 +63,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     itemHandleData(items),
     presenceHandleData(presences),
     stateHandleData(arrState),
-    featureFlag.handleData(clientConfig),
+    // featureFlag.handleData(clientConfig),
   ])
     .then(() => profileHandleData(arrProfile))
     .then(() => personHandleData(people))
@@ -96,7 +96,6 @@ const handleData = async (
     }
 
     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_DONE);
-
   } catch (error) {
     mainLogger.error(error);
     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, {
