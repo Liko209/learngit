@@ -12,6 +12,7 @@ import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 import { compareName } from '@/utils/helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import Base from './Base';
+import { t } from 'i18next';
 
 export default class GroupModel extends Base<Group> {
   id: number;
@@ -79,7 +80,7 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.ME) {
       const person = getEntity(ENTITY_NAME.PERSON, currentUserId);
       if (person.displayName) {
-        return `${person.displayName} (me)`;
+        return `${person.displayName} (${t('me')})`;
       }
       return '';
     }
@@ -92,7 +93,7 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.SMS) {
       const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
       if (person.displayName) {
-        return `${person.displayName} (SNS)`;
+        return `${person.displayName} (${t('text')})`;
       }
       return '';
     }
