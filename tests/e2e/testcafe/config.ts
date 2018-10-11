@@ -7,9 +7,11 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { writeFileSync } from 'fs';
 
-import {getLogger} from 'log4js';
+import { getLogger } from 'log4js';
 
-import { flattenGlobs, parseArgs, ConfigLoader} from './libs/utils';
+import { flattenGlobs, parseArgs, ConfigLoader } from './libs/utils';
+import { BeatsClient, Run, Test, Step, Attachment } from 'bendapi';
+
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -78,6 +80,11 @@ const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
 writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
 logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
 
+// TODO: FILL YOUR ACCOUNT INFO
+// later, would be replaced with the apikey.
+// const username = "";
+// const password = "";
+let beatsClient = new BeatsClient(username, password);
 
 export {
   APP_ROOT,
@@ -87,4 +94,9 @@ export {
   SITE_URL,
   ENV_OPTS,
   RUNNER_OPTS,
+  beatsClient,
+  Run,
+  Test,
+  Step,
+  Attachment
 };

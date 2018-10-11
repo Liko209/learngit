@@ -6,7 +6,7 @@
 import { getLogger } from 'log4js';
 
 import { filterByTags } from './libs/filter';
-import { RUNNER_OPTS } from './config';
+import { RUNNER_OPTS, beatsClient, Run } from './config';
 import { accountPoolClient } from './init';
 
 const logger = getLogger(__filename);
@@ -19,6 +19,7 @@ async function runTests(runnerOpts) {
   const testCafe = await createTestCafe();
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
+  await beatsClient.createRun({ "name": JSON.stringify(runnerOpts, null, 2) } as Run);
 
   runner
     .src(runnerOpts.FIXTURES)

@@ -6,6 +6,9 @@ import { AssertionError } from "assert";
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { Test, beatsClient } from '../config';
+
+
 type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string) => boolean;
 
 export interface INameTags {
@@ -39,6 +42,11 @@ export function formalName(name: string, tags?: string[]): string {
       .map(tag => isValidTag(tag, true) && `[${tag}]`)
       .join('') + ' ' + formalName;
   }
+
+  (async () => {
+    beatsClient.createTest({ "name": formalName } as Test);
+  })()
+
   return formalName;
 }
 
