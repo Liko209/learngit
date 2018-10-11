@@ -28,7 +28,6 @@ export async function initAll() {
   });
   notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
     const currentUserId = accountService.getCurrentUserId();
-    console.log(currentUserId);
     globalStore.set('currentUserId', currentUserId);
   });
 }
