@@ -26,9 +26,9 @@ const icons = [
     { icon: 'settings', title: 'Settings' },
   ],
 ];
-storiesOf('Pattern/LeftNav', module)
+storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiLeftNav, { inline: true }))
-  .add('JuiLeftNav', () => {
+  .add('LeftNav', () => {
     const isExpand = boolean('expand', false);
     return (
       <BrowserRouter>

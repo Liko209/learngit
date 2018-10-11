@@ -7,10 +7,10 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
-import DisabledInput from '..';
+import { JuiDisabledInput } from '..';
 
-storiesOf('DisabledInput', module)
-  .addDecorator(withInfoDecorator(DisabledInput, { inline: true }))
+storiesOf('Pattern', module)
+  .addDecorator(withInfoDecorator(JuiDisabledInput, { inline: true }))
   .addWithJSX('DisabledInput', () => {
-    return <DisabledInput text="This team is read-only" />;
+    return <JuiDisabledInput text="This team is read-only" />;
   });

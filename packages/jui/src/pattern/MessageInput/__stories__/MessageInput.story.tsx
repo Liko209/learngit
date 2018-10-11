@@ -7,14 +7,14 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
-import MessageInput from '..';
+import { JuiMessageInput } from '..';
 
-storiesOf('MessageInput', module)
-  .addDecorator(withInfoDecorator(MessageInput, { inline: true }))
+storiesOf('Pattern', module)
+  .addDecorator(withInfoDecorator(JuiMessageInput, { inline: true }))
   .addWithJSX('MessageInput', () => {
     const onChange = () => {};
     return (
-      <MessageInput
+      <JuiMessageInput
         value="test"
         onChange={onChange}
         keyboardEventHandler={{}}

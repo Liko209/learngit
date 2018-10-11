@@ -40,7 +40,7 @@ function getKnobs() {
   };
 }
 
-storiesOf('Atoms/Link', module)
+storiesOf('Components', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiLink, { inline: true }))
   .addWithJSX('Link', () => {
