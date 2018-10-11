@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { setRcToken, setRcAccoutType, setGlipToken, setGlipAccoutType } from '../utils';
+import {
+  setRcToken,
+  setRcAccountType,
+  setGlipToken,
+  setGlipAccountType,
+} from '../utils';
 
 describe('utils method', () => {
   it('setRcToken method set success should be true', async () => {
@@ -13,9 +18,9 @@ describe('utils method', () => {
     expect(result).toBe(true);
   });
 
-  it('setRcAccoutType method set success should be true', async () => {
+  it('setRcAccountType method set success should be true', async () => {
     const obj = { token: '123' };
-    const result = await setRcAccoutType();
+    const result = await setRcAccountType();
     expect(result).toBe(true);
   });
 
@@ -24,8 +29,8 @@ describe('utils method', () => {
     expect(result).toBe(true);
   });
 
-  it('setGlipAccoutType method set success should be true', async () => {
-    const result = await setGlipAccoutType();
+  it('setGlipAccountType method set success should be true', async () => {
+    const result = await setGlipAccountType();
     expect(result).toBe(true);
   });
 });
