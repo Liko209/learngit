@@ -15,7 +15,7 @@ describe('SortableListStore', () => {
 
   beforeEach(() => {
     listStore = new SortableListStore<number>();
-    listStore.upInsert(preInsertItems);
+    listStore.upsert(preInsertItems);
 
     disposer = autorun(() => {
       const itemStr = JSON.stringify(listStore.items);
@@ -27,17 +27,17 @@ describe('SortableListStore', () => {
     disposer();
   });
 
-  it('upInsert', () => {
+  it('upsert', () => {
     checkListStore(listStore, preInsertItems);
 
-    listStore.upInsert([{ id: 3, sortValue: 1.5 }]);
+    listStore.upsert([{ id: 3, sortValue: 1.5 }]);
     checkListStore(listStore, [
       { id: 1, sortValue: 1 },
       { id: 3, sortValue: 1.5 },
       { id: 2, sortValue: 2 },
     ]);
 
-    listStore.upInsert([{ id: 3, sortValue: 3 }]);
+    listStore.upsert([{ id: 3, sortValue: 3 }]);
     checkListStore(listStore, [
       { id: 1, sortValue: 1 },
       { id: 2, sortValue: 2 },

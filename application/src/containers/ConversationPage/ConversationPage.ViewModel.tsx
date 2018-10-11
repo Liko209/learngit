@@ -36,7 +36,6 @@ class ConversationPageViewModel extends AbstractViewModel {
   }
 
   private _readGroup(groupId: number) {
-    this._stateService.markAsRead(groupId);
     this._stateService.updateLastGroup(groupId);
   }
 }

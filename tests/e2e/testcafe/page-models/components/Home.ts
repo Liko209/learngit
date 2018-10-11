@@ -8,15 +8,16 @@ import { BaseComponent } from '..';
 
 class Home extends BaseComponent {
   get getHomeComponent() {
-    return ReactSelector('Home');
+    return ReactSelector('HomeComponent');
   }
 
   public expectExistComponent() {
-    return this.chain(async (t) => {
-      await t.expect(this.getHomeComponent.count).eql(1, 'expect exist home react component', { timeout: 10000 });
+    return this.chain(async (t: TestController) => {
+      await t
+        .expect(this.getHomeComponent.count)
+        .eql(1, 'expect exist home react component', { timeout: 50000 });
     });
   }
-
 }
 
 export { Home };

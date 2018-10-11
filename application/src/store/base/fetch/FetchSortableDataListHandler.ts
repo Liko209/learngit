@@ -5,9 +5,8 @@
  */
 import {
   handleDelete,
-  handleReplace,
   handleReplaceAll,
-  handleUpdateAndPut,
+  handleUpsert,
   TChangeHandler,
 } from './IncomingDataHandler';
 
@@ -56,10 +55,10 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
   private _sortableDataProvider: IFetchSortableDataProvider<T>;
   protected _handleIncomingDataByType = {
     [EVENT_TYPES.DELETE]: handleDelete,
-    [EVENT_TYPES.REPLACE]: handleReplace,
+    [EVENT_TYPES.REPLACE]: handleUpsert,
     [EVENT_TYPES.REPLACE_ALL]: handleReplaceAll,
-    [EVENT_TYPES.PUT]: handleUpdateAndPut,
-    [EVENT_TYPES.UPDATE]: handleUpdateAndPut,
+    [EVENT_TYPES.PUT]: handleUpsert,
+    [EVENT_TYPES.UPDATE]: handleUpsert,
   };
 
   constructor(
@@ -107,6 +106,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
         deleted: [],
       });
   }
+
   extractModel(
     entities: Map<number, T | TReplacedData<T>>,
     key: number,
@@ -126,50 +126,37 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       type === EVENT_TYPES.REPLACE
         ? (entity as TReplacedData<T>).data
         : (entity as T);
-    // Get incoming data's ids, if the incoming data is wrapped, the server id is preferred.
+
     const keys = _([...entities.values()])
       .filter(entity => this._isMatchFunc(extractModel(type, entity)))
       .map('id')
       .value();
 
-    const existKeys = this.sortableListStore.getIds();
-    const matchedKeys = _.intersection(keys, existKeys);
     const handler = this._handleIncomingDataByType[type] as TChangeHandler<T>;
-
-    const { deleted, updated, updateEntity } = handler(
-      matchedKeys,
+    // tslint:disable-next-line
+    let { deleted, updated, updateEntity, added } = handler(
+      keys,
       entities,
       this._transformFunc,
       this.sortableListStore,
     );
-
-    if (type !== EVENT_TYPES.DELETE) {
-      const differentKeys = _.difference(keys, existKeys);
-      differentKeys.forEach((key: number) => {
-        const model = entities.get(key) as T;
-        const sortable = this._transformFunc(model);
-        if (this._isInRange(sortable.sortValue)) {
-          updated.push(sortable);
-          updateEntity.push(model);
-        }
-      });
-    }
+    added = _(added)
+      .filter(item => this._isInRange(item.sortValue))
+      .value();
 
     this.updateEntityStore(updateEntity);
     this.sortableListStore.removeByIds(deleted);
-    if (type === EVENT_TYPES.REPLACE_ALL) {
-      this.sortableListStore.replaceAll(updated);
-    } else {
-      this.sortableListStore.upInsert(updated);
-    }
+
+    this.sortableListStore.upsert(updated);
+    this.sortableListStore.upsert(added);
+
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
-        updated,
         deleted,
+        updated: [...added, ...updated],
         direction: FetchDataDirection.DOWN,
       });
   }
-
   private _isInRange(sortValue: number) {
     let inRange = false;
     const idArray = this.sortableListStore.items;
@@ -192,5 +179,19 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       );
     }
     return inRange;
+  }
+  protected handlePageData(
+    result: ISortableModel[],
+    direction: FetchDataDirection,
+  ) {
+    let inFront = false;
+    if (direction === FetchDataDirection.UP) {
+      inFront = true;
+    }
+    const hasMore = result.length >= this._pageSize;
+    this.sortableListStore.setHasMore(hasMore, inFront);
+    if (result.length > 0) {
+      this.sortableListStore.upsert(result);
+    }
   }
 }

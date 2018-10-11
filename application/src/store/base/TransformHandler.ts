@@ -12,7 +12,7 @@ abstract class TransformHandler<T, K> {
   fetchData: (direction: FetchDataDirection) => any;
   hasMore: (direction: FetchDataDirection) => boolean;
   constructor(
-    private _orderListHandler: FetchSortableDataListHandler<K>,
+    protected _orderListHandler: FetchSortableDataListHandler<K>,
     public listStore = new ListStore<T>(),
   ) {
     this._orderListHandler.setUpDataChangeCallback(this.modificationHandler);
@@ -28,11 +28,11 @@ abstract class TransformHandler<T, K> {
 
   modificationHandler = (delta: TDelta) => {
     const { updated, deleted, direction } = delta;
-    if (updated.length) {
-      this.onAdded(direction, updated);
-    }
     if (deleted.length) {
       this.onDeleted(deleted);
+    }
+    if (updated.length) {
+      this.onAdded(direction, updated);
     }
   }
 
