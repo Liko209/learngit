@@ -22,7 +22,7 @@ import {
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
 // import HomePresenter from '../Home/HomePresenter'; need global store
-// import SearchContact from 'jui/pattern/SearchContact';
+import { ContactSearch } from '@/containers/ContactSearch';
 import { errorTips } from './CreateTeam.ViewModel';
 import { ViewProps } from './types';
 
@@ -163,8 +163,8 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const {
       disabledOkBtn,
       nameError,
-      // emailError,
-      // emailErrorMsg,
+      emailError,
+      emailErrorMsg,
       items,
       errorMsg,
     } = this.state;
@@ -185,13 +185,13 @@ class CreateTeam extends React.Component<ViewProps, IState> {
             helperText={nameError && t(errorMsg)}
             onChange={this.handleNameChange}
           />
-          {/* <SearchContact
+          <ContactSearch
             onChange={this.handleSearchContactChange}
             label={t('Members')}
             placeholder={t('Search Contact Placeholder')}
             error={emailError}
             helperText={emailError && t(emailErrorMsg)}
-          /> */}
+          />
           <JuiTextarea
             placeholder={t('Team Description')}
             fullWidth={true}

@@ -4,14 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { observer } from 'mobx-react';
 import JuiSearchItem from 'ui-components/molecules/SearchItem';
 import JuiSearchItemText from 'ui-components/atoms/SearchItemText';
 
 // import JuiAvatar from 'ui-components/atoms/Avatar';
 import { Avatar } from '../Avatar';
 
-const SearchContactItem = (props: any) => {
+const ContactSearchItem = (props: any) => {
   const { suggestion, isHighlighted, ...rest } = props;
   return suggestion ? (
     <JuiSearchItem {...rest} selected={isHighlighted}>
@@ -24,4 +23,4 @@ const SearchContactItem = (props: any) => {
   ) : null;
 };
 
-export default observer(SearchContactItem);
+export { ContactSearchItem };

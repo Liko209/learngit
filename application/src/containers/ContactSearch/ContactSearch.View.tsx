@@ -1,28 +1,23 @@
 /*
  * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-09-18 13:46:56
+ * @Date: 2018-10-11 14:31:01
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React from 'react';
 import { translate } from 'react-i18next';
 import { TranslationFunction, i18n } from 'i18next';
-import JuiDownshiftMultiple from 'ui-components/molecules/Downshift';
+import { JuiContactSearch } from 'jui/pattern/ContactSearch';
 
-import Chip from '../Chip';
-import SearchContactItem from './SearchContactItem';
-import SearchContactVM from './SearchContactVM';
+import { Chip } from '@/containers/Chip';
+import { ContactSearchItem } from './ContactSearchItem';
 import { getName } from '../../utils/getName';
 import { Person } from 'sdk/src/models';
+import { ViewProps } from './types';
 
-interface IProps {
+type Props = {
   i18n: i18n;
   t: TranslationFunction;
-  onChange: (item: any) => void;
-  label: string;
-  placeholder: string;
-  error: boolean;
-  helperText: string;
-}
+} & ViewProps;
 
 interface ISelectedMember {
   id: number;
@@ -34,19 +29,18 @@ interface IStates {
   suggestions: ISelectedMember[];
 }
 
-class SearchContact extends Component<IProps, IStates> {
-  searchContactVM: SearchContactVM;
-  constructor(props: IProps) {
+class ContactSearch extends React.Component<Props, IStates> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       suggestions: [],
     };
-    this.searchContactVM = new SearchContactVM();
   }
 
   handleInputChange = (value: string) => {
+    const { fetchSearch } = this.props;
     let members: ISelectedMember[] = [];
-    this.searchContactVM.fetchSearch(value).then((data: Person[]) => {
+    fetchSearch(value).then((data: Person[]) => {
       console.log('------data----', data);
       members = data.map(member => ({
         id: member.id,
@@ -61,14 +55,14 @@ class SearchContact extends Component<IProps, IStates> {
     const { onChange, label, placeholder, error, helperText } = this.props;
     const { suggestions } = this.state;
     return (
-      <JuiDownshiftMultiple
+      <JuiContactSearch
         inputChange={this.handleInputChange}
         suggestions={suggestions}
         onChange={onChange}
         label={label}
         placeholder={placeholder}
         Chip={Chip}
-        SearchContactItem={SearchContactItem}
+        SearchContactItem={ContactSearchItem}
         error={error}
         helperText={helperText}
       />
@@ -76,4 +70,6 @@ class SearchContact extends Component<IProps, IStates> {
   }
 }
 
-export default translate('translations')(SearchContact);
+const ContactSearchView = translate('translations')(ContactSearch);
+
+export { ContactSearchView };
