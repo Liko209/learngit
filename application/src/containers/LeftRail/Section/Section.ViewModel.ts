@@ -179,8 +179,7 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
     await this._listHandler.fetchData(FetchDataDirection.DOWN);
   }
 
-  @action
-  async updateGlobalGroups() {
+  updateGlobalGroups() {
     if (this._config && this._listHandler) {
       storeManager
         .getGlobalStore()
