@@ -85,6 +85,7 @@ class StreamViewModel extends StoreViewModel {
   }
 
   onReceiveProps(props: StreamProps) {
+    this.markAsRead();
     if (this.groupId === props.groupId) return;
 
     this.groupId = props.groupId;
@@ -125,7 +126,6 @@ class StreamViewModel extends StoreViewModel {
 
     this._transformHandler = new PostTransformHandler(orderListHandler);
     this.autorun(() => {
-      this._stateService.markAsRead(props.groupId);
       this.postIds = _(this._transformHandler.listStore.items)
         .map('value')
         .value() as number[];
@@ -144,6 +144,12 @@ class StreamViewModel extends StoreViewModel {
   @loadingTop
   loadPrevPosts() {
     return this._loadPosts(FetchDataDirection.UP);
+  }
+
+  markAsRead() {
+    if (this.groupId) {
+      this._stateService.markAsRead(this.groupId);
+    }
   }
 
   @action
