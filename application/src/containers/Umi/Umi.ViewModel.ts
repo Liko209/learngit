@@ -61,7 +61,7 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
       if (appUmi) {
         document.title = `(${appUmi}) ${this.appName}`;
         if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
-          window.jupiterElectron.setBadgeCount(appUmi);
+          _.debounce(window.jupiterElectron.setBadgeCount(appUmi));
         }
       } else {
         document.title = this.appName;
