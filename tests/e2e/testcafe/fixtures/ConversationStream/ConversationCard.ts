@@ -21,6 +21,7 @@ const prepare = (t: TestController, postContent: string) =>
   directLogin(t)
     .log('1. should navigate to Left Rail')
     .shouldNavigateTo(LeftRail)
+    .chain(t => t.wait(10000))
     .log('2. select any conversation')
     .selectRandomConversation()
     .log('3. navigate to conversation stream')
@@ -84,7 +85,7 @@ test(
   },
 );
 
-test(
+test.skip(
   formalName(
     'When update custom status, can sync dynamically in message metadata.',
     ['JPT-95', 'P2', 'ConversationStream'],
@@ -116,7 +117,6 @@ test(
             away_status: null,
           },
         );
-        console.log(resp);
       })
       .log('10. title should be updated to without away status')
       .checkNameOnPost('John Doe701');

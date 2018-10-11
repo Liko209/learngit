@@ -8,7 +8,7 @@ import { AbstractViewModel } from '@/base';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { observable, computed, action } from 'mobx';
-import { AvatarViewProps } from './types';
+import { AvatarProps, AvatarViewProps } from './types';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -26,9 +26,13 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   @observable
   private _uid = 0;
 
+  size?: 'small' | 'medium' | 'large' | 'xlarge';
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
   @action
-  onReceiveProps({ uid }: { uid: number }) {
+  onReceiveProps({ uid, size, onClick }: AvatarProps) {
     this._uid = uid;
+    this.size = size;
+    this.onClick = onClick;
   }
 
   @computed

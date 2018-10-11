@@ -60,6 +60,8 @@ class ConversationListItemViewComponent extends React.Component<
     return (
       <Fragment>
         <JuiConversationListItem
+          className="conversation-list-item"
+          data-group-id={this.props.groupId}
           presence={this._presence}
           umi={this._umi}
           umiHint={this.props.umiHint}
