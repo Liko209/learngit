@@ -107,6 +107,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
         deleted: [],
       });
   }
+
   extractModel(
     entities: Map<number, T | TReplacedData<T>>,
     key: number,
@@ -126,7 +127,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       type === EVENT_TYPES.REPLACE
         ? (entity as TReplacedData<T>).data
         : (entity as T);
-    // Get incoming data's ids, if the incoming data is wrapped, the server id is preferred.
+
     const keys = _([...entities.values()])
       .filter(entity => this._isMatchFunc(extractModel(type, entity)))
       .map('id')
@@ -169,7 +170,6 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
         direction: FetchDataDirection.DOWN,
       });
   }
-
   private _isInRange(sortValue: number) {
     let inRange = false;
     const idArray = this.sortableListStore.items;
@@ -192,5 +192,19 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       );
     }
     return inRange;
+  }
+  protected handlePageData(
+    result: ISortableModel[],
+    direction: FetchDataDirection,
+  ) {
+    let inFront = false;
+    if (direction === FetchDataDirection.UP) {
+      inFront = true;
+    }
+    const hasMore = result.length >= this._pageSize;
+    this.sortableListStore.setHasMore(hasMore, inFront);
+    if (result.length > 0) {
+      this.sortableListStore.upInsert(result);
+    }
   }
 }
