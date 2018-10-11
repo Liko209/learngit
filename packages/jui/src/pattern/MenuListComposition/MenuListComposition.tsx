@@ -19,8 +19,7 @@ type MenuItems = {
 }[];
 
 type MenuExpandTrigger = React.SFC<{
-  innerRef: React.RefObject<HTMLElement>;
-  onClick: () => void;
+  onClick: (event: React.MouseEvent<HTMLInputElement>) => void;
 }>;
 
 type MenuListCompositionProps = {
@@ -39,25 +38,28 @@ const MenuWrapper = styled(Popper)``;
 
 class JuiMenuListComposition extends React.Component<
   MenuListCompositionProps,
-  { open: boolean }
+  { open: boolean; anchorEl: HTMLElement | null }
 > {
-  state = {
-    open: false,
-  };
+  constructor(props: MenuListCompositionProps) {
+    super(props);
+    this.state = {
+      open: false,
+      anchorEl: null,
+    };
+  }
 
-  anchorEl = React.createRef<HTMLElement>();
-
-  handleToggle = () => {
-    this.setState(state => ({ open: !state.open }));
+  handleToggle = (event: React.MouseEvent<HTMLElement>) => {
+    // this.setState(state => ({ open: !state.open }));
+    this.setState({ open: !this.state.open, anchorEl: event.currentTarget });
   }
 
   handleClose = (event: React.MouseEvent<HTMLElement>) => {
-    const node = this.anchorEl.current;
+    const node = this.state.anchorEl;
     if (node && node.contains(event.currentTarget)) {
       return;
     }
 
-    this.setState({ open: false });
+    this.setState({ open: false, anchorEl: null });
   }
 
   handleMenuItemClick = (
@@ -69,18 +71,14 @@ class JuiMenuListComposition extends React.Component<
   }
 
   render() {
-    const { open } = this.state;
+    const { open, anchorEl } = this.state;
     const { MenuExpandTrigger, menuItems } = this.props;
     return (
       <MenuListCompositionWrapper className={this.props.className}>
-        <MenuExpandTrigger
-          innerRef={this.anchorEl}
-          aria-haspopup="true"
-          onClick={this.handleToggle}
-        />
+        <MenuExpandTrigger aria-haspopup="true" onClick={this.handleToggle} />
         <MenuWrapper
           open={open}
-          anchorEl={this.anchorEl.current}
+          anchorEl={anchorEl}
           transition={true}
           disablePortal={true}
         >
