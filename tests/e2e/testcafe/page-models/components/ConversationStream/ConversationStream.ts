@@ -1,7 +1,7 @@
 import { ReactSelector } from 'testcafe-react-selectors';
 import { PersonAPI } from '../../../libs/sdk';
 import { BaseComponent } from '../..';
-import { ClientFunction } from 'testcafe';
+import { ClientFunction, Selector } from 'testcafe';
 
 class ConversationStream extends BaseComponent {
   targetPost: Selector;
@@ -16,11 +16,11 @@ class ConversationStream extends BaseComponent {
   get conversationCard() {
     return ReactSelector('ConversationCard');
   }
-  
+
   get groupId() {
     return this.team.getReact().key;
   }
-  get juiConversationCardHeader(){
+  get juiConversationCardHeader() {
     return ReactSelector('JuiConversationCardHeader');
   }
   public clickFirstGroup() {
@@ -54,17 +54,21 @@ class ConversationStream extends BaseComponent {
 
   public expectRightOrder(...sequence) {
     return this.chain(async (t: TestController) => {
-      const length = await this.juiConversationCardHeader.count
+      const length = await this.juiConversationCardHeader.count;
       for (const i in sequence) {
         await t
-          .expect(this._getRightOrderTextContent(length,sequence.length,Number(i)))
+          .expect(
+            this._getRightOrderTextContent(length, sequence.length, Number(i)),
+          )
           .contains(sequence[i]);
-      };
+      }
     });
   }
 
-  private _getRightOrderTextContent(length,sequenceLength,i){
-    return  this.juiConversationCardHeader.nth(length - sequenceLength + i).nextSibling('div').textContent;
+  private _getRightOrderTextContent(length, sequenceLength, i) {
+    return this.juiConversationCardHeader
+      .nth(length - sequenceLength + i)
+      .nextSibling('div').textContent;
   }
 
   public expectLastConversationToBe(text: string) {
@@ -90,9 +94,8 @@ class ConversationStream extends BaseComponent {
 
   shouldFindPostById(ctxPost: string) {
     return this.chain(async (t: TestController) => {
-      this.targetPost = ReactSelector('ConversationCard').withProps(
-        'id',
-        Number(t.ctx[ctxPost].id),
+      this.targetPost = Selector(
+        `[data-name='conversation-card'][data-id='${t.ctx[ctxPost].id}']`,
       );
       await t.expect(this.targetPost.exists).ok();
     });
@@ -100,11 +103,7 @@ class ConversationStream extends BaseComponent {
 
   checkNameOnPost(name: string) {
     return this.chain(async (t, h) => {
-      const targetPost = this.targetPost
-        .findReact('JuiConversationCardHeader')
-        .withProps({
-          'name': name,
-        });
+      const targetPost = this.targetPost.child().withText(name);
       await t.expect(targetPost.exists).ok();
     });
   }
@@ -115,12 +114,8 @@ class ConversationStream extends BaseComponent {
         format,
       );
 
-      const targetPost = this.targetPost
-        .findReact('JuiConversationCardHeader')
-        .withProps({
-          time: formatTime,
-        });
-      await t.expect(targetPost.exists).ok();
+      const timeDiv = this.targetPost.child().withText(formatTime);
+      await t.expect(timeDiv.exists).ok();
     });
   }
 

@@ -54,8 +54,16 @@ export class ConversationCard extends React.Component<IProps, IStates> {
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
       <React.Fragment>
-        <JuiConversationCard Avatar={avatar}>
-          <JuiConversationCardHeader name={displayTitle} time={createTime}>
+        <JuiConversationCard
+          data-name="conversation-card"
+          data-id={post.id}
+          Avatar={avatar}
+        >
+          <JuiConversationCardHeader
+            data-name="conversation-card-header"
+            name={displayTitle}
+            time={createTime}
+          >
             {/* todo replace self maintenance Actions component */}
             <JuiButtonBar size="small">
               {status === POST_STATUS.INPROGRESS && (

@@ -75,10 +75,17 @@ const JuiConversationListItem: IConversationListItem = (
     component,
     selected,
     fontWeight,
+    innerRef,
+    ...rest
   } = props;
 
   return (
-    <StyledListItem onClick={onClick} component={component} selected={selected}>
+    <StyledListItem
+      onClick={onClick}
+      component={component}
+      selected={selected}
+      {...rest}
+    >
       {presence}
       <ItemText style={{ fontWeight }}>
         {indicator} {title}
