@@ -18,7 +18,8 @@ class PersonAPI extends Api {
   static requestPersonById(id: number): Promise<IResponse<Raw<Person>>> {
     return this.getDataById(id);
   }
-  static getHeadShot(uid: number, headShotVersion: string, size: number, glipToken: string) {
+  static getHeadShot(headShotParam: {uid: number, headShotVersion: string, size: number, glipToken: string}) {
+    const { uid, headShotVersion, size, glipToken } = headShotParam;
     return `${this.httpConfig.glip.cacheServer}/headshot/${uid}/${size}/${headShotVersion}?t=${glipToken}`;
   }
 }

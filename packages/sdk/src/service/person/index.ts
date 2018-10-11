@@ -66,7 +66,7 @@ export default class PersonService extends BaseService<Person> {
     const token = authDao.get(AUTH_GLIP_TOKEN);
     const glipToken = token.replace(/\"/g, '');
     if (headShotVersion) {
-      return PersonAPI.getHeadShot(uid, headShotVersion, size, glipToken);
+      return PersonAPI.getHeadShot({ uid, headShotVersion, size, glipToken });
     }
     return '';
   }
