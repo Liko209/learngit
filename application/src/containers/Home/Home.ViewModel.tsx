@@ -1,65 +1,62 @@
 /*
- * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-08-30 11:21:18
+ * @Author: Andy Hu
+ * @Date: 2018-10-11 19:12:17
  * Copyright © RingCentral. All rights reserved.
  */
 import { action, observable } from 'mobx';
 
-import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import config from '@/config';
-
+import { StoreViewModel } from '@/store/ViewModel';
 import { service } from 'sdk';
 import betaUsers from '@/config/whitelist.json';
 import { ProfileService as IProfileService } from 'sdk/src/service';
 
 const { AccountService, AuthService, SERVICE, ProfileService } = service;
 
-export default class HomePresenter extends BaseNotificationSubscribable {
+class HomeViewModel extends StoreViewModel {
   private userId: number | null;
   @observable
-  openCreateTeam: boolean;
+  openCreateTeam: boolean = false;
+  @observable
+  invalidUser: boolean = false;
 
   constructor() {
     super();
-
-    this.subscribeNotificationOnce(SERVICE.FETCH_INDEX_DATA_DONE, () =>
-      this.handleHasLogin(),
+    this.subscribeNotificationOnce(
+      SERVICE.FETCH_INDEX_DATA_DONE,
+      this.handleHasLoggedIn,
     );
-    this.openCreateTeam = false;
   }
 
-  @action
-  handleHasLogin() {
+  @action.bound
+  handleHasLoggedIn() {
     const accountService: service.AccountService = AccountService.getInstance();
-    const env = config.getEnv() || 'XMN-Stable';
     this.userId = accountService.getCurrentUserId();
     ProfileService.getInstance<IProfileService>().markMeConversationAsFav();
+    this.checkInvalidUser();
+  }
+
+  checkInvalidUser() {
+    const env = config.getEnv();
     if (
       env === 'jupiter' &&
       !betaUsers.betaUserIdList.some(
         (username: string) => String(this.userId).indexOf(username) > -1,
       )
     ) {
-      alert('Invalid account');
-      this.handleSignOutClick();
-      return;
+      this.invalidUser = true;
+      this.signOut();
     }
   }
 
-  @action
-  public async handleSignOutClick() {
+  public async signOut() {
     const authService: service.AuthService = AuthService.getInstance();
     await authService.logout();
-    if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
-      window.jupiterElectron.setBadgeCount(0);
-    }
-    sessionStorage.removeItem('backNavArray');
-    sessionStorage.removeItem('forwardNavArray');
-    window.location.href = '/';
   }
 
   @action
-  public handleOpenCreateTeam() {
+  public toggleCreateTeam() {
     this.openCreateTeam = !this.openCreateTeam;
   }
 }
+export { HomeViewModel };
