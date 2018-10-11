@@ -20,6 +20,10 @@ class KVStorageManager {
   getStorage(): KVStorage {
     return this.kvStorage;
   }
+
+  isLocalStorageSupported(): boolean {
+    return storageFactory(window.localStorage).isSupported();
+  }
 }
 
 export default KVStorageManager;

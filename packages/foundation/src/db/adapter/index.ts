@@ -6,3 +6,4 @@
 export { default as CriteriaParser } from './CriteriaParser';
 export * from './dexie';
 export * from './kv';
+export * from './loki';
