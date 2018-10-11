@@ -10,7 +10,6 @@ import { getEntity } from '@/store/utils';
 import { observable, computed, action } from 'mobx';
 import { AvatarViewProps } from './types';
 import { PersonService } from 'sdk/service';
-// import config from '@/config';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -28,7 +27,7 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   @observable
   private _uid = 0;
   @observable
-  headshot_version: string;
+  headShotVersion: string;
   @action
   onReceiveProps({ uid }: { uid: number }) {
     this._uid = uid;
@@ -63,8 +62,8 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   @computed
   get url() {
     const personService = new PersonService();
-    this.headshot_version = this._person.headShotVersion || '';
-    return personService.getHeadShot(this._uid, this.headshot_version, 150);
+    this.headShotVersion = this._person.headShotVersion || '';
+    return personService.getHeadShot(this._uid, this.headShotVersion, 150);
   }
 }
 
