@@ -10,9 +10,6 @@ import { AvatarViewProps } from './types';
 
 @observer
 class AvatarView extends React.Component<AvatarViewProps> {
-  constructor(props: AvatarViewProps) {
-    super(props);
-  }
   render() {
     const { bgColor, name, url, ...rest } = this.props;
 

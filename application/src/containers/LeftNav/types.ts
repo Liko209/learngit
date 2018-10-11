@@ -9,6 +9,7 @@ type LeftNavProps = {
 };
 
 type LeftNavViewProps = {
+  groupIds: number[];
   expanded: boolean;
   id: string;
   handleTitle?: Function;

@@ -54,11 +54,6 @@ function handleReplaceAll<T>(
   const updated: IIDSortKey[] = [];
   const updateEntity: T[] = [];
   const deleted: number[] = store.getIds();
-  entities.forEach((entity: T) => {
-    const idSortKey = transformFunc(entity);
-    updated.push(idSortKey);
-    updateEntity.push(entity);
-  });
   return {
     deleted,
     updated,

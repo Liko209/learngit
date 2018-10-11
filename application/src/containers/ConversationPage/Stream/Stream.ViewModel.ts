@@ -30,7 +30,7 @@ const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
 
 const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,
-  sortValue: -dataModel.created_at,
+  sortValue: dataModel.created_at,
 });
 enum TStreamType {
   'POST',
@@ -55,8 +55,8 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
         value: item.id,
       }))
       .differenceBy(this.listStore.items, 'value')
-      .reverse()
       .map(item => ({ type: TStreamType.POST, value: item.value }))
+      .reverse()
       .value();
     const inFront = FetchDataDirection.UP === direction;
     this.listStore.append(updated, inFront); // new to old

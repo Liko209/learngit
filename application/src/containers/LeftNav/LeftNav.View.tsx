@@ -10,11 +10,7 @@ import { translate } from 'react-i18next';
 import { JuiLeftNav, JuiLeftNavProps } from 'jui/pattern/LeftNav';
 import { Umi } from '../Umi';
 import { LeftNavViewProps } from './types';
-import storeManager, { ENTITY_NAME } from '@/store';
-import GroupModel from '@/store/models/Group';
-import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
-import { Group } from 'sdk/models';
-import { computed, observable } from 'mobx';
+import { computed } from 'mobx';
 import _ from 'lodash';
 
 type LeftNavProps = {
@@ -24,25 +20,14 @@ type LeftNavProps = {
   RouteComponentProps;
 
 class LeftNav extends Component<LeftNavProps> {
-  @observable
-  private groupStore: any;
   constructor(props: LeftNavProps) {
     super(props);
-    this.groupStore = storeManager.getEntityMapStore(
-      ENTITY_NAME.GROUP,
-    ) as MultiEntityMapStore<Group, GroupModel>;
     this.onRouteChange = this.onRouteChange.bind(this);
   }
 
   @computed
   get icons(): JuiLeftNavProps['icons'] {
-    const { t } = this.props;
-    const groupIds = _.map(
-      Object.keys(this.groupStore.getData()),
-      (id: string) => {
-        return parseInt(id, 10);
-      },
-    );
+    const { t, groupIds } = this.props;
     return [
       [
         {
@@ -54,7 +39,7 @@ class LeftNav extends Component<LeftNavProps> {
           url: '/messages',
           icon: 'message',
           title: t('Messages'),
-          umi: <Umi ids={groupIds} />,
+          umi: <Umi ids={groupIds} global={'UMI.app'} />,
         },
         {
           url: '/phone',

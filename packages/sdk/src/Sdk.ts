@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import featureFlag from './component/featureFlag';
+// import featureFlag from './component/featureFlag';
 import { Foundation, NetworkManager, Token } from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
@@ -101,7 +101,7 @@ class Sdk {
   async onLogin() {
     this.updateNetworkToken();
     await this.syncService.syncData(async () => {
-      await featureFlag.getServicePermission();
+      // await featureFlag.getServicePermission();
       this.accountManager.updateSupportedServices();
     });
   }

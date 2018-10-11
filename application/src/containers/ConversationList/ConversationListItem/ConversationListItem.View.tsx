@@ -34,18 +34,16 @@ class ConversationListItemViewComponent extends React.Component<
   @observable
   menuAnchorEl: HTMLElement | null = null;
 
-  private _umiIds: number[];
   constructor(props: IProps) {
     super(props);
     this._handleClick = this._handleClick.bind(this);
     this._handleMoreClick = this._handleMoreClick.bind(this);
     this._closeMenu = this._closeMenu.bind(this);
     this.state = { currentGroupId: 0 };
-    this._umiIds = [this.props.groupId];
   }
 
   private get _umi() {
-    return <Umi ids={this._umiIds} />;
+    return <Umi ids={[this.props.groupId]} />;
   }
 
   private get _presence() {
@@ -66,6 +64,7 @@ class ConversationListItemViewComponent extends React.Component<
           data-group-id={this.props.groupId}
           presence={this._presence}
           umi={this._umi}
+          umiHint={this.props.umiHint}
           indicator={this._indicator}
           onMoreClick={this._handleMoreClick}
           onClick={this._handleClick}
