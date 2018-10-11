@@ -30,7 +30,7 @@ const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
 
 const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,
-  sortValue: -dataModel.created_at,
+  sortValue: dataModel.created_at,
 });
 enum TStreamType {
   'POST',

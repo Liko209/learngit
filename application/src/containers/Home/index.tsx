@@ -1,3 +1,9 @@
+/*
+ * @Author: Devin Lin (devin.lin@ringcentral.com)
+ * @Date: 2018-10-11 09:40:36
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import React, { Component } from 'react';
 import {
   Route,
