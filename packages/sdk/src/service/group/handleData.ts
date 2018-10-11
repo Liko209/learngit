@@ -327,13 +327,19 @@ async function handleHiddenGroupsChanged(
     remoteHiddenGroupIds,
     localHiddenGroupIds,
   );
+  const moreOpenIds: number[] = _.difference(
+    localHiddenGroupIds,
+    remoteHiddenGroupIds,
+  );
+  const dao = daoManager.getDao(GroupDao);
   if (moreHiddenIds.length) {
-    const dao = daoManager.getDao(GroupDao);
     const groups = await dao.queryGroupsByIds(moreHiddenIds);
     doNotification(groups, []);
-    // doNonFavoriteGroupsNotification(groups, false);
   }
-  // does not need to handle else
+  if (moreOpenIds.length) {
+    const groups = await dao.queryGroupsByIds(moreOpenIds);
+    doNotification([], groups);
+  }
 }
 
 function doNonFavoriteGroupsNotification(groups: Group[], isPut: boolean) {
