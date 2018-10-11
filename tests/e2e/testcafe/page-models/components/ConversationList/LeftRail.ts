@@ -1,6 +1,7 @@
 // author = 'mia.cai@ringcentral.com'
 import { ReactSelector } from 'testcafe-react-selectors';
 import { BaseComponent } from '../..';
+import { Selector } from 'testcafe';
 
 class LeftRail extends BaseComponent {
   get sections() {
@@ -37,7 +38,7 @@ class LeftRail extends BaseComponent {
 
   selectRandomConversation(): this {
     return this.chain(async (t, h) => {
-      const cells = ReactSelector('ConversationListItemViewComponent');
+      const cells = Selector('.conversation-list-item');
       const count = await cells.count;
       const n = Math.floor(Math.random() * count);
       h.log(`selecting ${n + 1}th cell`);

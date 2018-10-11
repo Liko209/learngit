@@ -33,7 +33,12 @@ class SectionViewComponent extends React.Component<Props> {
 
     if (sortable) {
       return (
-        <SortableList distance={5} lockAxis="y" onSortEnd={onSortEnd}>
+        <SortableList
+          className="conversation-list-section-collapse"
+          distance={5}
+          lockAxis="y"
+          onSortEnd={onSortEnd}
+        >
           {this.props.groupIds.map((id: number, index: number) => (
             <SortableItem
               key={id}
@@ -47,7 +52,7 @@ class SectionViewComponent extends React.Component<Props> {
     }
 
     return (
-      <JuiConversationList>
+      <JuiConversationList className="conversation-list-section-collapse">
         {this.props.groupIds.map((id: number) => (
           <ConversationListItem
             key={id}
@@ -62,7 +67,10 @@ class SectionViewComponent extends React.Component<Props> {
   render() {
     const { t, title, groupIds, iconName, expanded } = this.props;
     return (
-      <div>
+      <div
+        className="conversation-list-section"
+        data-name={toTitleCase(t(title))}
+      >
         <JuiConversationListSection
           title={toTitleCase(t(title))}
           icon={<JuiIconography>{iconName}</JuiIconography>}
