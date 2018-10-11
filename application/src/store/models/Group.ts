@@ -85,17 +85,12 @@ export default class GroupModel extends Base<Group> {
       return '';
     }
 
-    if (this.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE) {
+    if (
+      this.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ||
+      this.type === CONVERSATION_TYPES.SMS
+    ) {
       const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
       return person.displayName;
-    }
-
-    if (this.type === CONVERSATION_TYPES.SMS) {
-      const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
-      if (person.displayName) {
-        return `${person.displayName} (${t('text')})`;
-      }
-      return '';
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
