@@ -15,8 +15,15 @@ import Home from '@/containers/Home';
 import UnifiedLogin from '@/containers/UnifiedLogin';
 import VersionInfo from '@/containers/VersionInfo';
 import { TimerDemo, InfiniteListDemo } from '@/containers/Demo';
+import { JuiModal } from '@/containers/Dialog';
 
 class App extends React.PureComponent {
+  componentWillMount() {
+    JuiModal.alert({
+      title: 'title11',
+      content: 'sdfsfd',
+    });
+  }
   public render() {
     return (
       <ThemeProvider>
