@@ -18,8 +18,8 @@ const StyledList = styled(MuiMenuList)`
 
 type JuiConversationListProps = {
   className?: string;
-  onClick?: Function;
-  onChange?: Function;
+  onClick?: (event: any) => void;
+  onChange?: (event: any, index: number) => void;
 };
 
 class JuiConversationList extends PureComponent<JuiConversationListProps> {
@@ -31,9 +31,10 @@ class JuiConversationList extends PureComponent<JuiConversationListProps> {
   }
 
   render() {
+    const { children, onChange, ...rest } = this.props;
     return (
-      <StyledList component="div" onClick={this._handleChange}>
-        {this.props.children}
+      <StyledList component="div" onClick={this._handleChange} {...rest}>
+        {children}
       </StyledList>
     );
   }

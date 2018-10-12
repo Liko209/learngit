@@ -8,7 +8,7 @@ import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
 import _ from 'lodash';
 import { observable, action } from 'mobx';
 import { Post } from 'sdk/models';
-import { PostService, ENTITY } from 'sdk/service';
+import { PostService, StateService, ENTITY } from 'sdk/service';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { TransformHandler } from '@/store/base/TransformHandler';
 import {
@@ -55,8 +55,8 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
         value: item.id,
       }))
       .differenceBy(this.listStore.items, 'value')
-      .reverse()
       .map(item => ({ type: TStreamType.POST, value: item.value }))
+      .reverse()
       .value();
     const inFront = FetchDataDirection.UP === direction;
     this.listStore.append(updated, inFront); // new to old
@@ -71,6 +71,8 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
 
 class StreamViewModel extends StoreViewModel {
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
+  private _stateService: StateService = StateService.getInstance();
+
   private _transformHandler: PostTransformHandler;
 
   @observable
@@ -83,6 +85,7 @@ class StreamViewModel extends StoreViewModel {
   }
 
   onReceiveProps(props: StreamProps) {
+    this.markAsRead();
     if (this.groupId === props.groupId) return;
 
     this.groupId = props.groupId;
@@ -141,6 +144,12 @@ class StreamViewModel extends StoreViewModel {
   @loadingTop
   loadPrevPosts() {
     return this._loadPosts(FetchDataDirection.UP);
+  }
+
+  markAsRead() {
+    if (this.groupId) {
+      this._stateService.markAsRead(this.groupId);
+    }
   }
 
   @action

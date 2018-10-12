@@ -20,9 +20,9 @@ import { JuiUmi } from '../../../components/Umi';
 import { JuiPresence } from '../../../components/Presence';
 
 import {
-  ConversationList as List,
-  ConversationListItem as ListItem,
-  ConversationListSection as Section,
+  JuiConversationList as List,
+  JuiConversationListItem as ListItem,
+  JuiConversationListSection as Section,
 } from '../';
 
 import StoryWrapper from './StoryWrapper';

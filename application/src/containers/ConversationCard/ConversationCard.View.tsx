@@ -12,7 +12,9 @@ import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
 
 @observer
-export class ConversationCard extends React.Component<ConversationCardViewProps> {
+export class ConversationCard extends React.Component<
+  ConversationCardViewProps
+> {
   constructor(props: ConversationCardViewProps) {
     super(props);
   }
@@ -23,8 +25,16 @@ export class ConversationCard extends React.Component<ConversationCardViewProps>
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
       <React.Fragment>
-        <JuiConversationCard Avatar={avatar}>
-          <JuiConversationCardHeader name={displayTitle} time={createTime}>
+        <JuiConversationCard
+          data-name="conversation-card"
+          data-id={post.id}
+          Avatar={avatar}
+        >
+          <JuiConversationCardHeader
+            data-name="conversation-card-header"
+            name={displayTitle}
+            time={createTime}
+          >
             <Actions id={id} />
           </JuiConversationCardHeader>
           {/* todo: content */}

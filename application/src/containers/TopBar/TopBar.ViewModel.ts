@@ -34,7 +34,8 @@ class TopBarViewModel extends AbstractViewModel {
     return getGlobalValue('currentUserId');
   }
 
-  signOut() {
+  @action
+  signOut = () => {
     const authService: AuthService = AuthService.getInstance();
     authService.logout();
     window.location.href = '/';
