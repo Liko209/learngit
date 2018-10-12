@@ -94,6 +94,9 @@ class StreamViewModel extends StoreViewModel {
 
   onReceiveProps(props: StreamProps) {
     if (this.groupId === props.groupId) return;
+    if (this._transformHandler) {
+      this._transformHandler.dispose();
+    }
     this.groupId = props.groupId;
     this.markAsRead();
     const postDataProvider: IFetchSortableDataProvider<Post> = {

@@ -147,8 +147,8 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     this.updateEntityStore(updateEntity);
     this.sortableListStore.removeByIds(deleted);
 
-    this.sortableListStore.upsert(updated);
-    this.sortableListStore.upsert(added);
+    this.sortableListStore.upsert([...updated, ...added]);
+    // this.sortableListStore.upsert(added);
 
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
