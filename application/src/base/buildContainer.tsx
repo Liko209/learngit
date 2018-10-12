@@ -8,10 +8,10 @@ import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
 import { IPlugin } from './IPlugin';
-import { IViewModel } from './IViewModel';
+import StoreViewModel from '@/store/ViewModel';
 
 type BuildContainerOptions<T> = {
-  ViewModel: new (...args: any[]) => IViewModel;
+  ViewModel: new (...args: any[]) => StoreViewModel;
   View: ComponentType<any>;
   plugins?: IPlugin[];
 };
@@ -24,7 +24,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
   @observer
   class Container extends Component<P, S, SS> {
     @observable
-    vm: IViewModel;
+    vm: StoreViewModel;
     View = View;
 
     constructor(props: P) {
@@ -34,6 +34,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
         plugin.install(this.vm);
         this.View = plugin.wrapView(this.View);
       });
+      this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
       this.vm.onReceiveProps && this.vm.onReceiveProps(props);
     }
 
@@ -42,6 +43,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
     }
 
     componentDidUpdate() {
+      this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
       this.vm.onReceiveProps && this.vm.onReceiveProps(this.props);
     }
 

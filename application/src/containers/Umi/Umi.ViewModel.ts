@@ -3,7 +3,7 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, computed } from 'mobx';
+import { computed } from 'mobx';
 import _ from 'lodash';
 
 import { StoreViewModel } from '@/store/ViewModel';
@@ -15,7 +15,7 @@ import { ENTITY_NAME } from '@/store';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 
-class UmiViewModel extends StoreViewModel implements UmiViewProps {
+class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   constructor() {
     super();
     this.autorun(() => {
@@ -23,11 +23,20 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
     });
   }
   private appName = process.env.APP_NAME || '';
-  @observable
-  ids: number[] = [];
+  // @observable
+  // ids: number[] = [];
+  @computed
+  get ids() {
+    return this.props.ids;
+  }
 
-  @observable
-  global?: string;
+  // @observable
+  // global?: string;
+  @computed
+  get global() {
+    return this.props.global;
+  }
+
   @computed
   private get _umiObj() {
     const groupIds = this.ids;
@@ -79,11 +88,11 @@ class UmiViewModel extends StoreViewModel implements UmiViewProps {
     return this._umiObj.important;
   }
 
-  onReceiveProps(props: UmiProps) {
-    if (!_.isEqual([...this.ids], props.ids)) {
-      this.ids = props.ids;
-    }
-    this.global = props.global;
-  }
+  // onReceiveProps(props: UmiProps) {
+  //   if (!_.isEqual([...this.ids], props.ids)) {
+  //     this.ids = props.ids;
+  //   }
+  //   this.global = props.global;
+  // }
 }
 export { UmiViewModel };

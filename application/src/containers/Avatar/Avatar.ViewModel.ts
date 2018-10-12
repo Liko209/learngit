@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractViewModel } from '@/base';
+import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { observable, computed, action } from 'mobx';
+import { computed } from 'mobx';
 import { AvatarViewProps } from './types';
+import { AvatarProps } from '@/containers/Avatar/Avatar';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -22,13 +23,11 @@ const AVATAR_COLORS = [
   'brass',
   'lake',
 ];
-class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
-  @observable
-  private _uid = 0;
-
-  @action
-  onReceiveProps({ uid }: { uid: number }) {
-    this._uid = uid;
+class AvatarViewModel extends StoreViewModel<AvatarProps>
+  implements AvatarViewProps {
+  @computed
+  private get _uid() {
+    return this.props.uid;
   }
 
   @computed

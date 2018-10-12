@@ -3,18 +3,12 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { MouseEvent } from 'react';
-import { observable, computed } from 'mobx';
 import _ from 'lodash';
+import { computed } from 'mobx';
 import { service } from 'sdk';
 import { MyState, Profile } from 'sdk/models';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import MyStateModel from '@/store/models/MyState';
-/*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-09-29 18:56:22
- * Copyright © RingCentral. All rights reserved.
- */
 import { MenuProps, MenuViewProps } from './types';
 import { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
@@ -24,14 +18,23 @@ import ProfileModel from '@/store/models/Profile';
 
 const { GroupService } = service;
 
-class MenuViewModel extends StoreViewModel implements MenuViewProps {
+class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   private _groupService: service.GroupService = GroupService.getInstance();
 
-  @observable
-  groupId: number;
+  @computed
+  get groupId() {
+    return this.props.groupId;
+  }
 
-  @observable
-  anchorEl: HTMLElement | null = null;
+  @computed
+  get anchorEl() {
+    return this.props.anchorEl;
+  }
+
+  @computed
+  get onClose() {
+    return this.props.onClose;
+  }
 
   @computed
   get open() {
@@ -87,22 +90,6 @@ class MenuViewModel extends StoreViewModel implements MenuViewProps {
       true,
       shouldSkipNextTime,
     );
-  }
-
-  onClose: (event: MouseEvent<HTMLElement>) => void;
-
-  onReceiveProps(props: MenuProps) {
-    if (this.groupId !== props.groupId) {
-      this.groupId = props.groupId;
-    }
-
-    if (this.onClose !== props.onClose) {
-      this.onClose = props.onClose;
-    }
-
-    if (this.anchorEl !== props.anchorEl) {
-      this.anchorEl = props.anchorEl;
-    }
   }
 }
 export { MenuViewModel };
