@@ -65,10 +65,10 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   }
   @computed
   get url() {
-    const personService = new PersonService();
+    const personService = PersonService.getInstance<PersonService>();
     const headShotVersion = this._person.headShotVersion;
     if (headShotVersion) {
-      return personService.getHeadShot(this._uid, this._person.headShotVersion || '', 150);
+      return personService.getHeadShot(this._uid, headShotVersion, 150);
     }
     return defaultAvatar;
   }
