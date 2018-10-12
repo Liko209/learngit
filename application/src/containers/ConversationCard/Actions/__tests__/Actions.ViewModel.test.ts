@@ -42,7 +42,7 @@ describe('ActionsViewModel', () => {
   });
 
   it('delete()', async () => {
-    await actionsViewModel.delete();
+    await actionsViewModel.deletePost();
     expect(postService.deletePost).toBeCalled();
   });
 });
