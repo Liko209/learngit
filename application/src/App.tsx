@@ -54,7 +54,7 @@ class App extends React.PureComponent {
       document.title = this.appName;
     }
     if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
-      _.debounce(window.jupiterElectron.setBadgeCount(appUmi || 0));
+      window.jupiterElectron.setBadgeCount(appUmi || 0);
     }
   }
 }
