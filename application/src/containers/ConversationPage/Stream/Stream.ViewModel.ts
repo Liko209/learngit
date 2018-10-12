@@ -50,7 +50,10 @@ type TTransformedElement = {
 };
 class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
   onAppended: Function;
-  constructor(handler: FetchSortableDataListHandler, onAppended: Function) {
+  constructor(
+    handler: FetchSortableDataListHandler<Post>,
+    onAppended: Function,
+  ) {
     super(handler);
     this.onAppended = onAppended;
   }
