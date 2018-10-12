@@ -28,7 +28,6 @@
     "commits:all": "git add . && git-cz",
     "commitmsg": "node scripts/validate-commit-msg.js",
     "bt": "lerna bootstrap --hoist --no-ci",
-    "prepush": "npm run lint-all && npm run test:cover",
     "raise-coverage": "node scripts/raise-coverage"
   },
   "devDependencies": {
