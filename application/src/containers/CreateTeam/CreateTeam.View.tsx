@@ -6,14 +6,9 @@
 
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import styled from 'jui/foundation/styled-components';
 import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
-import { JuiDialog } from 'jui/components/Dialog/Dialog';
-import { JuiDialogTitle } from 'jui/components/Dialog/DialogTitle';
-import { JuiDialogContent } from 'jui/components/Dialog/DialogContent';
-import { JuiDialogActions } from 'jui/components/Dialog/DialogActions';
-import { JuiButton } from 'jui/components/Buttons/Button';
+import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiTextWithLink } from 'jui/components/TextWithLink';
@@ -21,8 +16,7 @@ import {
   JuiListToggleButton,
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
-// import HomePresenter from '../Home/HomePresenter'; need global store
-// import SearchContact from 'jui/pattern/SearchContact';
+import { ContactSearch } from '@/containers/ContactSearch';
 import { errorTips } from './CreateTeam.ViewModel';
 import { ViewProps } from './types';
 
@@ -37,12 +31,6 @@ interface IState {
   items: JuiListToggleItemProps[];
   members: (number | string)[];
 }
-
-const LeftJuiButton = styled(JuiButton)`
-  && {
-    margin-right: ${({ theme }) => theme.spacing.unit * 2}px;
-  }
-`;
 
 @observer
 class CreateTeam extends React.Component<ViewProps, IState> {
@@ -161,76 +149,63 @@ class CreateTeam extends React.Component<ViewProps, IState> {
 
   render() {
     const {
-      disabledOkBtn,
       nameError,
-      // emailError,
-      // emailErrorMsg,
+      emailError,
+      emailErrorMsg,
       items,
       errorMsg,
+      disabledOkBtn,
     } = this.state;
     const { t, isOpen } = this.props;
 
     return (
-      <JuiDialog open={isOpen} size={'medium'} scroll="body">
-        <JuiDialogTitle>{t('Create Team')}</JuiDialogTitle>
-        <JuiDialogContent>
-          <JuiTextField
-            id={t('Team Name')}
-            label={t('Team Name')}
-            fullWidth={true}
-            error={nameError}
-            inputProps={{
-              maxLength: 200,
-            }}
-            helperText={nameError && t(errorMsg)}
-            onChange={this.handleNameChange}
-          />
-          {/* <SearchContact
-            onChange={this.handleSearchContactChange}
-            label={t('Members')}
-            placeholder={t('Search Contact Placeholder')}
-            error={emailError}
-            helperText={emailError && t(emailErrorMsg)}
-          /> */}
-          <JuiTextarea
-            placeholder={t('Team Description')}
-            fullWidth={true}
-            onChange={this.handleDescChange}
-          />
-          <JuiListToggleButton
-            items={items}
-            toggleChange={this.handleSwitchChange}
-          />
-          <JuiTextWithLink
-            TypographyProps={{
-              align: 'center',
-            }}
-            text={t('tips')}
-            linkText={t('linkTips')}
-            href=""
-          />
-        </JuiDialogContent>
-
-        <JuiDialogActions>
-          <LeftJuiButton
-            onClick={this.onClose}
-            color="primary"
-            variant="text"
-            autoFocus={true}
-          >
-            {t('Cancel')}
-          </LeftJuiButton>
-          <JuiButton
-            onClick={this.createTeam}
-            color="primary"
-            variant="contained"
-            autoFocus={true}
-            disabled={disabledOkBtn}
-          >
-            {t('Create')}
-          </JuiButton>
-        </JuiDialogActions>
-      </JuiDialog>
+      <JuiModal
+        open={isOpen}
+        size={'medium'}
+        modalProps={{ scroll: 'body' }}
+        okBtnProps={{ disabled: disabledOkBtn }}
+        title={t('Create Team')}
+        onCancel={this.onClose}
+        onOK={this.createTeam}
+        okText={t('Create')}
+        cancelText={t('Cancel')}
+      >
+        <JuiTextField
+          id={t('Team Name')}
+          label={t('Team Name')}
+          fullWidth={true}
+          error={nameError}
+          inputProps={{
+            maxLength: 200,
+          }}
+          helperText={nameError && t(errorMsg)}
+          onChange={this.handleNameChange}
+        />
+        <ContactSearch
+          onChange={this.handleSearchContactChange}
+          label={t('Members')}
+          placeholder={t('Search Contact Placeholder')}
+          error={emailError}
+          helperText={emailError && t(emailErrorMsg)}
+        />
+        <JuiTextarea
+          placeholder={t('Team Description')}
+          fullWidth={true}
+          onChange={this.handleDescChange}
+        />
+        <JuiListToggleButton
+          items={items}
+          toggleChange={this.handleSwitchChange}
+        />
+        <JuiTextWithLink
+          TypographyProps={{
+            align: 'center',
+          }}
+          text={t('tips')}
+          linkText={t('linkTips')}
+          href=""
+        />
+      </JuiModal>
     );
   }
 }
