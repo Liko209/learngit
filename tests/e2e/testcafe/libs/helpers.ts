@@ -1,12 +1,12 @@
 import { v4 as uuid } from 'uuid';
 import { RcPlatformManager } from './glip';
 import { Status, AllureStep } from '../libs/report';
-import { accountPoolClient } from '../libs/accounts';
+import { accountPoolClient } from '../init';
 import { setupSDK } from '../utils/setupSDK';
 import { ENV_OPTS } from '../config';
 
 export function setUp(accountType: string) {
-  return async (t: TestController) => {  
+  return async (t: TestController) => {
     await t.maximizeWindow();
     const helper = TestHelper.from(t);
     helper.setupGlipApiManager();
