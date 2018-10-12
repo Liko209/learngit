@@ -9,10 +9,24 @@ import { GroupService, StateService, PERMISSION_ENUM } from 'sdk/service';
 import { Group } from 'sdk/models';
 import { AbstractViewModel } from '@/base';
 import { ConversationPageProps } from './types';
+import _ from 'lodash';
 
 class ConversationPageViewModel extends AbstractViewModel {
   private _groupService: GroupService = GroupService.getInstance();
   private _stateService: StateService = StateService.getInstance();
+
+  private _throttledUpdateLastGroup = _.wrap(
+    _.throttle(
+      (groupId: number) => {
+        this._stateService.updateLastGroup(groupId);
+      },
+      3000,
+      { trailing: true, leading: false },
+    ),
+    (func, groupId: number) => {
+      return func(groupId);
+    },
+  );
 
   @observable
   private _permissions: PERMISSION_ENUM[] = [];
@@ -35,8 +49,8 @@ class ConversationPageViewModel extends AbstractViewModel {
     }
   }
 
-  private _readGroup(groupId: number) {
-    this._stateService.updateLastGroup(groupId);
+  private async _readGroup(groupId: number) {
+    this._throttledUpdateLastGroup(groupId);
   }
 }
 

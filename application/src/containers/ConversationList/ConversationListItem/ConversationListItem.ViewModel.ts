@@ -19,6 +19,7 @@ import { MyState } from 'sdk/models';
 import MyStateModel from '@/store/models/MyState';
 import GroupStateModel from '@/store/models/GroupState';
 import StoreViewModel from '@/store/ViewModel';
+import history from '@/utils/history';
 
 class ConversationListItemViewModel extends StoreViewModel
   implements ConversationListItemViewProps {
@@ -51,6 +52,7 @@ class ConversationListItemViewModel extends StoreViewModel
 
   onClick = () => {
     this.groupService.clickGroup(this.groupId);
+    history.push(`/messages/${this.groupId}`);
   }
 
   groupService: service.GroupService;
