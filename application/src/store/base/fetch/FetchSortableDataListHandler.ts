@@ -26,7 +26,6 @@ import {
 import { SortableListStore } from './SortableListStore';
 import { IIncomingData } from '../../store';
 import _ from 'lodash';
-
 export type TReplacedData<T> = {
   id: number;
   data: T;
@@ -69,6 +68,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     this._isMatchFunc = options.isMatchFunc;
     this._transformFunc = options.transformFunc;
     this._sortableDataProvider = dataProvider;
+    this._entityName = options.entityName;
 
     if (options.eventName) {
       this.subscribeNotification(options.eventName, ({ type, entities }) => {
@@ -193,5 +193,17 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     if (result.length > 0) {
       this.sortableListStore.upsert(result);
     }
+  }
+
+  removeByIds(ids: number[]) {
+    this.sortableListStore.removeByIds(ids);
+  }
+
+  upsert(models: ISortableModel<T>[]) {
+    this.sortableListStore.upsert(models);
+  }
+
+  replaceAll(models: ISortableModel<T>[]) {
+    this.sortableListStore.replaceAll(models);
   }
 }

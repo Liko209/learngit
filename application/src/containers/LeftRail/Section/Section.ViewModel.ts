@@ -3,12 +3,14 @@
  * @Date: 2018-08-22 15:21:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable, action, autorun } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
-import { Group } from 'sdk/models';
+import { Group, Profile } from 'sdk/models';
 import storeManager, { ENTITY_NAME } from '@/store';
-
+import { getSingleEntity, getEntity } from '@/store/utils';
+import ProfileModel from '@/store/models/Profile';
+import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import {
   SectionProps,
@@ -17,7 +19,7 @@ import {
   SectionViewProps,
   SECTION_TYPE,
 } from './types';
-import { AbstractViewModel } from '@/base';
+import { StoreViewModel } from '@/store/ViewModel';
 
 import {
   FetchSortableDataListHandler,
@@ -100,21 +102,24 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   }
 }
 
-class SectionViewModel extends AbstractViewModel implements SectionViewProps {
+class SectionViewModel extends StoreViewModel implements SectionViewProps {
   constructor() {
     super();
-    autorun(() => {
+    this.autorun(() => {
       this.updateGlobalGroups();
     });
+    this.autorun(() => this.profileUpdateFavSection());
+    this.autorun(() => this.profileUpdateGroupSections());
+    this.autorun(() => this.handleProfileUpdateMoreGroups());
   }
 
-  @observable
+  // @observable
   private _listHandler: FetchSortableDataListHandler<Group>;
 
-  @observable
+  // @observable
   private _type: SECTION_TYPE;
 
-  @observable
+  // @observable
   private _config: SectionConfig;
 
   @observable
@@ -122,6 +127,88 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
 
   @observable
   expanded: boolean = true;
+
+  private _oldFavGroupIds: number[] = [];
+
+  @computed
+  get favGroupIds() {
+    return (
+      getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'favoriteGroupIds',
+      ) || []
+    );
+  }
+
+  @observable
+  profileMoreGroupsIds: number[] = [];
+
+  @computed
+  get profileMoreGroups() {
+    const ids = this.profileMoreGroupsIds;
+    return ids.map((id: number) => getEntity(ENTITY_NAME.GROUP, id));
+  }
+
+  profileUpdateFavSection() {
+    const favGroupIds = this.favGroupIds;
+    const condition =
+      this._listHandler &&
+      this._type &&
+      this._type === SECTION_TYPE.FAVORITE &&
+      this._oldFavGroupIds.toString() !== favGroupIds.toString();
+    if (condition) {
+      const newModels = favGroupIds.map((value: number, index: number) => {
+        return {
+          id: value,
+          sortValue: 0,
+        };
+      });
+      this._listHandler.replaceAll(newModels);
+      this._oldFavGroupIds = favGroupIds;
+    }
+  }
+
+  handleProfileUpdateMoreGroups() {
+    const groups = this.profileMoreGroups;
+    if (this._listHandler && this._type && groups.length) {
+      const models = groups
+        .filter((model: GroupModel) => {
+          if (this._type === SECTION_TYPE.TEAM) {
+            return model.isTeam;
+          }
+          return !model.isTeam;
+        })
+        .map((model: GroupModel) => {
+          return {
+            id: model.id,
+            sortValue: -model.latestTime,
+          };
+        });
+      this._listHandler.upsert(models);
+      this.profileMoreGroupsIds = [];
+    }
+  }
+
+  profileUpdateGroupSections() {
+    const newFavIds = this.favGroupIds;
+
+    const condition =
+      this._type &&
+      this._listHandler &&
+      this._type !== SECTION_TYPE.FAVORITE &&
+      newFavIds.sort().toString() !== this._oldFavGroupIds.sort().toString();
+    if (condition) {
+      const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
+      const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
+      if (less.length) {
+        this._listHandler.removeByIds(less);
+      }
+      if (more.length) {
+        this.profileMoreGroupsIds = more;
+      }
+      this._oldFavGroupIds = newFavIds;
+    }
+  }
 
   @computed
   get sortable() {
@@ -158,24 +245,23 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
       this.currentGroupId = props.currentGroupId;
     }
 
-    if (this._type === props.type) return;
+    if (this._type !== props.type) {
+      if (this._listHandler) {
+        this._listHandler.dispose();
+      }
 
-    if (this._listHandler) {
-      this._listHandler.dispose();
+      this._type = props.type;
+      this._config = SECTION_CONFIGS[this._type];
+
+      const dataProvider = new GroupDataProvider(this._config.queryType);
+      this._listHandler = new FetchSortableDataListHandler(dataProvider, {
+        isMatchFunc: this._config.isMatchFun,
+        transformFunc: this._config.transformFun,
+        entityName: ENTITY_NAME.GROUP,
+        eventName: this._config.eventName,
+      });
+      await this.fetchGroups();
     }
-
-    this._type = props.type;
-    this._config = SECTION_CONFIGS[this._type];
-
-    const dataProvider = new GroupDataProvider(this._config.queryType);
-
-    this._listHandler = new FetchSortableDataListHandler(dataProvider, {
-      isMatchFunc: this._config.isMatchFun,
-      transformFunc: this._config.transformFun,
-      entityName: ENTITY_NAME.GROUP,
-      eventName: this._config.eventName,
-    });
-    await this.fetchGroups();
   }
 
   @action

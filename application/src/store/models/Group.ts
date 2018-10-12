@@ -32,6 +32,8 @@ export default class GroupModel extends Base<Group> {
   @observable
   sendFailurePostIds?: number[];
 
+  latestTime: number;
+
   constructor(data: Group) {
     super(data);
     const {
@@ -43,6 +45,8 @@ export default class GroupModel extends Base<Group> {
       privacy,
       draft,
       send_failure_post_ids,
+      most_recent_post_created_at,
+      created_at,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -53,6 +57,9 @@ export default class GroupModel extends Base<Group> {
     this.privacy = privacy;
     this.draft = draft;
     this.sendFailurePostIds = send_failure_post_ids;
+    this.latestTime = most_recent_post_created_at
+      ? most_recent_post_created_at
+      : created_at;
   }
 
   @computed
