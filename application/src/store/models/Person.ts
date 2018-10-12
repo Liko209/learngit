@@ -14,15 +14,15 @@ export default class PersonModel extends Base<Person> {
   @observable
   companyId: number;
   @observable
-  firstName?: string;
+  firstName: string;
   @observable
-  lastName?: string;
+  lastName: string;
   @observable
   headshot?: {
     url: string;
   };
   @observable
-  headShotVersion?: string;
+  headShotVersion?: string|undefined;
   @observable
   email: string;
   @observable
@@ -38,8 +38,8 @@ export default class PersonModel extends Base<Person> {
     super(data);
     const {
       company_id,
-      first_name,
-      last_name,
+      first_name = '',
+      last_name = '',
       headshot,
       email,
       rc_phone_numbers,

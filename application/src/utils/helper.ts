@@ -52,7 +52,10 @@ function handleOnlyLetterOrNumbers(firstName: string, lastName: string) {
   return `${firstLetter}${lastLetter}`;
 }
 
-function handleOneOfName(firstName?: string, lastName?: string) {
+function handleOneOfName(firstName: string, lastName: string) {
+  if (!isOnlyLetterOrNumbers(firstName) || !isOnlyLetterOrNumbers(lastName)) {
+    return '';
+  }
   const names =
     (!!firstName && firstName!.split(/\s+/)) ||
     (!!lastName && lastName!.split(/\s+/));
