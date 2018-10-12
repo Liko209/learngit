@@ -10,7 +10,8 @@
     "clientSecret": "bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ"
   },
   "glip": {
-    "server": "https://xmnup.asialab.glip.net"
+    "server": "https://xmnup.asialab.glip.net",
+    "cacheServer": "https://xmnup.asialab.glip.net:31337"
   },
   "glip_desktop": {
     "server": "https://xmnup.asialab.glip.net",

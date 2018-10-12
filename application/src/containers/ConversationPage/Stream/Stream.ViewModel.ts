@@ -49,6 +49,14 @@ type TTransformedElement = {
   meta?: any;
 };
 class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
+  onAppended: Function;
+  constructor(
+    handler: FetchSortableDataListHandler<Post>,
+    onAppended: Function,
+  ) {
+    super(handler);
+    this.onAppended = onAppended;
+  }
   onAdded(direction: FetchDataDirection, addedItems: ISortableModel[]) {
     const updated = _(addedItems)
       .map(item => ({
@@ -59,6 +67,9 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
       .reverse()
       .value();
     const inFront = FetchDataDirection.UP === direction;
+    if (!inFront) {
+      this.onAppended();
+    }
     this.listStore.append(updated, inFront); // new to old
   }
 
@@ -86,8 +97,11 @@ class StreamViewModel extends StoreViewModel {
 
   onReceiveProps(props: StreamProps) {
     if (this.groupId === props.groupId) return;
-
+    if (this._transformHandler) {
+      this._transformHandler.dispose();
+    }
     this.groupId = props.groupId;
+    this.markAsRead();
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (offset: number, direction, pageSize, anchor) => {
         try {
@@ -123,12 +137,17 @@ class StreamViewModel extends StoreViewModel {
       },
     );
 
-    this._transformHandler = new PostTransformHandler(orderListHandler);
+    this._transformHandler = new PostTransformHandler(
+      orderListHandler,
+      this.markAsRead.bind(this),
+    );
     this.autorun(() => {
-      this._stateService.markAsRead(props.groupId);
-      this.postIds = _(this._transformHandler.listStore.items)
+      const postIds = _(this._transformHandler.listStore.items)
         .map('value')
         .value() as number[];
+      if (!_.isEqual([...this.postIds], postIds)) {
+        this.postIds = postIds;
+      }
     });
     this.loadInitialPosts();
   }
@@ -144,6 +163,12 @@ class StreamViewModel extends StoreViewModel {
   @loadingTop
   loadPrevPosts() {
     return this._loadPosts(FetchDataDirection.UP);
+  }
+
+  markAsRead() {
+    if (this.groupId) {
+      this._stateService.markAsRead(this.groupId);
+    }
   }
 
   @action

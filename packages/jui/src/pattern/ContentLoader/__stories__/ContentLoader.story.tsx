@@ -4,7 +4,7 @@ import { withInfo } from '@storybook/addon-info';
 
 import { JuiContentLoader } from '../';
 
-storiesOf('Organisms', module).addWithJSX(
+storiesOf('Pattern', module).addWithJSX(
   'ContentLoader',
   withInfo('')(() => {
     return <JuiContentLoader />;

@@ -28,11 +28,11 @@ abstract class TransformHandler<T, K> {
 
   modificationHandler = (delta: TDelta) => {
     const { updated, deleted, direction } = delta;
-    if (updated.length) {
-      this.onAdded(direction, updated);
-    }
     if (deleted.length) {
       this.onDeleted(deleted);
+    }
+    if (updated.length) {
+      this.onAdded(direction, updated);
     }
   }
 
@@ -42,6 +42,10 @@ abstract class TransformHandler<T, K> {
   ): any;
 
   abstract onDeleted(deletedItems: number[]): any;
+
+  dispose() {
+    this.orderListStore.dispose();
+  }
 }
 
 export { TransformHandler };

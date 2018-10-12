@@ -19,12 +19,12 @@ import { JuiAvatar } from '../../../components/Avatar';
 import { JuiButtonBar } from '../../../components/Buttons/ButtonBar/ButtonBar';
 import { JuiIconButton } from '../../../components/Buttons/IconButton/IconButton';
 
-storiesOf('Pattern/ConversationCard 🔜', module)
+storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiConversationCard, { inline: true }))
   .addDecorator(
     backgrounds([{ name: 'slide-background', value: '#f3f3f3', default: true }]),
   )
-  .addWithJSX('Metadata', () => {
+  .addWithJSX('ConversationCard', () => {
     const name = text('name', 'John Smith');
     return (
       <JuiConversationCard Avatar={<JuiAvatar size="medium">SH</JuiAvatar>}>

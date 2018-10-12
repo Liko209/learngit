@@ -53,7 +53,7 @@ function getKnobs() {
   };
 }
 
-storiesOf('Molecules/CheckboxButton', module)
+storiesOf('Components/CheckboxButton', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiCheckboxButton, { inline: true }))
   .addWithJSX('CheckboxButton', () => {
