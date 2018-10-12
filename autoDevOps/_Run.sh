@@ -18,7 +18,7 @@ if [ "$hasLintError" != 1 ]; then
         . $autoDevOps/4.BuildAndDeployDemo.sh
     else
         . $autoDevOps/4.BuildAndDeployApplication.sh
-        . $autoDevOps/4.BuildAndDeployStoryBook.sh
+    #    . $autoDevOps/4.BuildAndDeployStoryBook.sh
     fi
     
     # 5. E2E
