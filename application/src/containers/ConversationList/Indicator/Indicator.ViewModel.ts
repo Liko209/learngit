@@ -16,7 +16,9 @@ class IndicatorViewModel extends AbstractViewModel
 
   @action
   onReceiveProps({ id }: IndicatorProps) {
-    this.id = id;
+    if (id !== this.id) {
+      this.id = id;
+    }
   }
 
   @computed
