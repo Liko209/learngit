@@ -11,12 +11,14 @@ storiesOf('Components/Dialog 🔜', module)
   .addWithJSX('Dynamic Modal', () => {
     class Conversation extends React.Component {
       toggleAlert = () => {
+        console.log(this);
         JuiModal.alert(
           {
             okText: 'I know it!',
             children: 'hi',
             header: 'this is an alert',
             size: 'small',
+            open: false,
             onOK: () => {
               console.log('closed');
             },
