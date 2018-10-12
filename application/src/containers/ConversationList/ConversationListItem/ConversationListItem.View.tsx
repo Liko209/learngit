@@ -76,13 +76,7 @@ class ConversationListItemViewComponent extends React.Component<
 
   private _handleClick(event: MouseEvent<HTMLElement>) {
     this.props.onClick(event);
-    // this._jump2Conversation(this.props.groupId);
   }
-
-  // private _jump2Conversation(id: number) {
-  //   const { history } = this.props;
-  //   history.push(`/messages/${id}`);
-  // }
 
   private _handleMoreClick(event: React.MouseEvent<HTMLElement>) {
     event.stopPropagation();
