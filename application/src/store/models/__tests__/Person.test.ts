@@ -68,10 +68,9 @@ describe('PersonModel', () => {
     it('should return A if firstName=alvin,lastName=', () => {
       checkShortName(getUserInfo('alvin', '', ''), 'A');
     });
-    // TODO: Alvin to fix it
-    // it('should return ,A if firstName=,alvin,lastName=', () => {
-    //   checkShortName(getUserInfo(',alvin', '', ''), ',A');
-    // });
+    it('should return ,A if firstName=,alvin,lastName=', () => {
+      checkShortName(getUserInfo(',alvin', '', ''), ',');
+    });
     it('should return 1H if firstName=1alvin,lastName=huang', () => {
       checkShortName(getUserInfo('1alvin', 'huang', ''), '1H');
     });
