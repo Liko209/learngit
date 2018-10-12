@@ -17,7 +17,10 @@ const indicatorViewModel = new IndicatorViewModel();
 
 describe('IndicatorViewModel', () => {
   it('lifecycle onReceiveProps method', () => {
-    const id = 123;
+    let id = 123;
+    indicatorViewModel.onReceiveProps({ id });
+    expect(indicatorViewModel.id).toBe(id);
+    id = 123;
     indicatorViewModel.onReceiveProps({ id });
     expect(indicatorViewModel.id).toBe(id);
   });
@@ -32,5 +35,7 @@ describe('IndicatorViewModel', () => {
 
   it('get computed sendFailurePostIds', () => {
     expect(indicatorViewModel.sendFailurePostIds).toBe(mockGroupEntityData.sendFailurePostIds);
+    mockGroupEntityData.sendFailurePostIds = undefined;
+    expect(indicatorViewModel.sendFailurePostIds).toEqual([]);
   });
 });
