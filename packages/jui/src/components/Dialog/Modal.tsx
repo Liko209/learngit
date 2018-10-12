@@ -24,11 +24,14 @@ const StyledActions = styled<DialogActionsProps>(JuiDialogActions)`
 type JuiModalProps = {
   open?: boolean;
   size?: JuiDialogProps['size'];
+  modalProps?: Object;
   title: string | JSX.Element;
   footer?: string | JSX.Element;
   okText?: string;
   okBtnType?: JuiButtonProps['variant'];
+  okBtnProps?: JuiButtonProps;
   cancelBtnType?: JuiButtonProps['variant'];
+  cancelBtnProps?: JuiButtonProps;
   cancelText?: string;
   onOK?(event?: React.MouseEvent): void;
   onCancel?(event?: React.MouseEvent): void;
@@ -53,6 +56,8 @@ class JuiModal extends Component<JuiModalProps, {}> {
       okText,
       okBtnType = 'contained',
       cancelBtnType = 'text',
+      okBtnProps,
+      cancelBtnProps,
     } = this.props;
     return (
       <>
@@ -62,6 +67,7 @@ class JuiModal extends Component<JuiModalProps, {}> {
             color="primary"
             variant={cancelBtnType}
             autoFocus={true}
+            {...cancelBtnProps}
           >
             {cancelText}
           </JuiButton>
@@ -71,6 +77,7 @@ class JuiModal extends Component<JuiModalProps, {}> {
           color="primary"
           variant={okBtnType}
           autoFocus={true}
+          {...okBtnProps}
         >
           {okText}
         </JuiButton>
@@ -93,10 +100,10 @@ class JuiModal extends Component<JuiModalProps, {}> {
   }
 
   render() {
-    const { open, size = 'medium', title, footer } = this.props;
+    const { open, size = 'medium', title, footer, modalProps } = this.props;
 
     return (
-      <JuiDialog open={open!} size={size}>
+      <JuiDialog open={open!} size={size} {...modalProps}>
         {typeof title === 'string' ? (
           <JuiDialogTitle>{title}</JuiDialogTitle>
         ) : (
