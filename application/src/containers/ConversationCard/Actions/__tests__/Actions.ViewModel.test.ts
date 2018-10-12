@@ -27,7 +27,10 @@ beforeEach(() => {
 
 describe('ActionsViewModel', () => {
   it('lifecycle onReceiveProps method', () => {
-    const id = 123;
+    let id = 123;
+    actionsViewModel.onReceiveProps({ id });
+    expect(actionsViewModel.id).toBe(id);
+    id = 123;
     actionsViewModel.onReceiveProps({ id });
     expect(actionsViewModel.id).toBe(id);
   });
@@ -42,7 +45,7 @@ describe('ActionsViewModel', () => {
   });
 
   it('delete()', async () => {
-    await actionsViewModel.delete();
+    await actionsViewModel.deletePost();
     expect(postService.deletePost).toBeCalled();
   });
 });

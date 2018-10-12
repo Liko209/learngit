@@ -14,7 +14,8 @@ import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
 
 class ActionsViewModel extends AbstractViewModel implements ActionsViewProps {
-  @observable id: number;
+  @observable
+  id: number;
   private _postService: PostService = PostService.getInstance();
 
   constructor() {
@@ -36,7 +37,7 @@ class ActionsViewModel extends AbstractViewModel implements ActionsViewProps {
     await this._postService.reSendPost(this.id);
   }
 
-  delete = async () => {
+  deletePost = async () => {
     await this._postService.deletePost(this.id);
   }
 }

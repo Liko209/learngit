@@ -14,7 +14,7 @@ type ActionsViewProps = {
   id: number;
   post: PostModel;
   resend: Function;
-  delete: Function;
+  deletePost: Function;
 };
 
 export { ActionsProps, ActionsViewProps };
