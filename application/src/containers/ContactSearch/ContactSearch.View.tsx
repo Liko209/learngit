@@ -62,7 +62,7 @@ class ContactSearch extends React.Component<Props, IStates> {
         label={label}
         placeholder={placeholder}
         Chip={Chip}
-        SearchContactItem={ContactSearchItem}
+        ContactSearchItem={ContactSearchItem}
         error={error}
         helperText={helperText}
       />

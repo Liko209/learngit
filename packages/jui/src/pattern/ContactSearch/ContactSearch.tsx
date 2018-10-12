@@ -33,7 +33,7 @@ export type Props = {
   label: string;
   placeholder: string;
   Chip?: React.ComponentType<any>;
-  SearchContactItem?: React.ComponentType<any>;
+  ContactSearchItem?: React.ComponentType<any>;
   error?: boolean;
   helperText?: string;
 };
@@ -115,16 +115,15 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
   }
 
   renderSuggestion = ({
-    SearchContactItem,
+    ContactSearchItem,
     suggestion,
     itemProps,
     highlightedIndex,
     index,
   }: any) => {
     const isHighlighted = highlightedIndex === index;
-
-    return SearchContactItem ? (
-      <SearchContactItem
+    return ContactSearchItem ? (
+      <ContactSearchItem
         {...itemProps}
         isHighlighted={isHighlighted}
         suggestion={suggestion}
@@ -201,7 +200,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       label,
       placeholder,
       Chip,
-      SearchContactItem,
+      ContactSearchItem,
       error,
       helperText,
     } = this.props;
@@ -219,7 +218,6 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
         itemToString={item => (item ? item.label : '')}
       >
         {({
-          getRootProps,
           getInputProps,
           getItemProps,
           isOpen,
@@ -228,71 +226,71 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
           highlightedIndex,
         }) => {
           return (
-            <StyledDownshiftMultipleWrapper
-              {...getRootProps({ refKey: 'innerRef' })}
-            >
-              {renderInput({
-                shrink,
-                label,
-                placeholder,
-                showPlaceholder,
-                error,
-                helperText,
-                fullWidth: true,
-                InputProps: getInputProps({
-                  startAdornment: selectedItem.map(
-                    (item: TSuggestion, index: number) =>
-                      Chip ? (
-                        <Chip
-                          key={index}
-                          tabIndex={-1}
-                          label={item.label}
-                          uid={item.id}
-                          onDelete={this.handleDelete(item)}
-                        />
-                      ) : null,
-                  ),
-                  onFocus: () => {
-                    this.setState({
-                      showPlaceholder: false,
-                      shrink: true,
-                    });
-                  },
-                  onBlur: () => {
-                    this.setState({
-                      showPlaceholder: true,
-                      shrink:
-                        selectedItem.length !== 0 ||
-                        String(inputValue).length !== 0,
-                    });
-                  },
-                  onChange: this.handleInputChange,
-                  onKeyDown: this.handleKeyDown,
-                  classes: {
-                    root: 'input',
-                  },
-                  placeholder: `${
-                    selectedItem.length === 0 && showPlaceholder
-                      ? placeholder
-                      : ''
-                  }`,
-                } as any), // Downshift startAdornment is not include in getInputProps interface
-              })}
-              {isOpen && filterSuggestions.length ? (
-                <StyledPaper square={true}>
-                  {filterSuggestions.map((suggestion: TSuggestion, index) =>
-                    this.renderSuggestion({
-                      SearchContactItem,
-                      suggestion,
-                      index,
-                      selectedItem,
-                      highlightedIndex,
-                      itemProps: getItemProps({ item: suggestion }),
-                    }),
-                  )}
-                </StyledPaper>
-              ) : null}
-            </StyledDownshiftMultipleWrapper>
+            <div>
+              <StyledDownshiftMultipleWrapper>
+                {renderInput({
+                  shrink,
+                  label,
+                  placeholder,
+                  showPlaceholder,
+                  error,
+                  helperText,
+                  fullWidth: true,
+                  InputProps: getInputProps({
+                    startAdornment: selectedItem.map(
+                      (item: TSuggestion, index: number) =>
+                        Chip ? (
+                          <Chip
+                            key={index}
+                            tabIndex={-1}
+                            label={item.label}
+                            uid={item.id}
+                            onDelete={this.handleDelete(item)}
+                          />
+                        ) : null,
+                    ),
+                    onFocus: () => {
+                      this.setState({
+                        showPlaceholder: false,
+                        shrink: true,
+                      });
+                    },
+                    onBlur: () => {
+                      this.setState({
+                        showPlaceholder: true,
+                        shrink:
+                          selectedItem.length !== 0 ||
+                          String(inputValue).length !== 0,
+                      });
+                    },
+                    onChange: this.handleInputChange,
+                    onKeyDown: this.handleKeyDown,
+                    classes: {
+                      root: 'input',
+                    },
+                    placeholder: `${
+                      selectedItem.length === 0 && showPlaceholder
+                        ? placeholder
+                        : ''
+                    }`,
+                  } as any), // Downshift startAdornment is not include in getInputProps interface
+                })}
+                {isOpen && filterSuggestions.length ? (
+                  <StyledPaper square={true}>
+                    {filterSuggestions.map((suggestion: TSuggestion, index) =>
+                      this.renderSuggestion({
+                        ContactSearchItem,
+                        suggestion,
+                        index,
+                        selectedItem,
+                        highlightedIndex,
+                        itemProps: getItemProps({ item: suggestion }),
+                      }),
+                    )}
+                  </StyledPaper>
+                ) : null}
+              </StyledDownshiftMultipleWrapper>
+            </div>
           );
         }}
       </Downshift>

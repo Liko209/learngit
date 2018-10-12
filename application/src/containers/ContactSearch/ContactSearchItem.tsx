@@ -4,10 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import JuiSearchItem from 'ui-components/molecules/SearchItem';
-import JuiSearchItemText from 'ui-components/atoms/SearchItemText';
+import { JuiSearchItem } from 'jui/pattern/ContactSearch/SearchItem';
+import { JuiSearchItemText } from 'jui/pattern/ContactSearch/SearchItemText';
 
-// import JuiAvatar from 'ui-components/atoms/Avatar';
 import { Avatar } from '../Avatar';
 
 const ContactSearchItem = (props: any) => {

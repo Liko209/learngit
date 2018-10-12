@@ -4,3 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './ContactSearch';
+export * from './SearchItem';
+export * from './SearchItemText';
