@@ -99,7 +99,6 @@ class StreamViewModel extends StoreViewModel {
     if (this.groupId === props.groupId) return;
     if (this._transformHandler) {
       this._transformHandler.dispose();
-      this.dispose();
     }
     this.groupId = props.groupId;
     this.markAsRead();
