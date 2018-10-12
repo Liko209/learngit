@@ -6,12 +6,10 @@
 
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs/react';
-import JuiLink from '../../Link';
 
 import { JuiTextWithLink } from '../TextWithLink';
 
-storiesOf('Molecules/TextWithLink', module).addWithJSX('TextWithLink', () => {
+storiesOf('Components', module).addWithJSX('TextWithLink', () => {
   const onChange = (event, checked) => console.log(checked);
   return (
     <JuiTextWithLink

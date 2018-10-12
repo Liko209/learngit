@@ -9,7 +9,7 @@ import { JuiBackNForward } from '../index';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 const items = ['back and forwards', '12345'];
-storiesOf('Pattern/BackNForward', module)
+storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiBackNForward, { inline: true }))
   .add('BackNForward', () => {
     return (
