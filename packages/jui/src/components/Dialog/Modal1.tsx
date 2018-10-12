@@ -13,7 +13,7 @@ import { DialogActionsProps } from '@material-ui/core/DialogActions';
 
 import { spacing } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
-import { JuiButton } from '../Buttons/Button';
+import { JuiButton, JuiButtonProps } from '../Buttons/Button';
 
 const StyledActions = styled<DialogActionsProps>(JuiDialogActions)`
   & button {
@@ -27,6 +27,8 @@ type JuiModalProps = {
   title: string | JSX.Element;
   footer?: string | JSX.Element;
   okText: string;
+  okBtnType?: JuiButtonProps['variant'];
+  cancelBtnType?: JuiButtonProps['variant'];
   cancelText?: string;
   onOK?(event?: React.MouseEvent): void;
   onCancel?(event?: React.MouseEvent): void;
@@ -44,15 +46,21 @@ class JuiModal extends Component<JuiModalProps, {}> {
   static confirm: ModalFunc;
 
   defaultFooter() {
-    const { onCancel, cancelText, onOK, okText } = this.props;
-
+    const {
+      onCancel,
+      cancelText,
+      onOK,
+      okText,
+      okBtnType = 'contained',
+      cancelBtnType = 'text',
+    } = this.props;
     return (
       <>
         {cancelText ? (
           <JuiButton
             onClick={onCancel}
             color="primary"
-            variant="text"
+            variant={cancelBtnType}
             autoFocus={true}
           >
             {cancelText}
@@ -61,7 +69,7 @@ class JuiModal extends Component<JuiModalProps, {}> {
         <JuiButton
           onClick={onOK}
           color="primary"
-          variant="contained"
+          variant={okBtnType}
           autoFocus={true}
         >
           {okText}
