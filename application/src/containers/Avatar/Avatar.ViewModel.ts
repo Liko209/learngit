@@ -9,6 +9,8 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { observable, computed, action } from 'mobx';
 import { AvatarProps, AvatarViewProps } from './types';
+import { PersonService } from 'sdk/service';
+import defaultAvatar from './defaultAvatar.svg';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -51,7 +53,7 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   private get _person() {
     return getEntity(ENTITY_NAME.PERSON, this._uid);
   }
-
+  @computed
   get bgColor() {
     const hash = this._hash;
     return AVATAR_COLORS[hash];
@@ -61,17 +63,14 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   get name() {
     return this._person.shortName;
   }
-
   @computed
   get url() {
-    const { headshot } = this._person;
-    if (typeof headshot === 'string') {
-      return headshot;
+    const personService = new PersonService();
+    const headShotVersion = this._person.headShotVersion;
+    if (headShotVersion) {
+      return personService.getHeadShot(this._uid, this._person.headShotVersion || '', 150);
     }
-    if (headshot && headshot.url) {
-      return headshot.url;
-    }
-    return '';
+    return defaultAvatar;
   }
 }
 
