@@ -15,12 +15,10 @@ class SdkHelper {
     return this.t.ctx.__sdkManager;
   }
 
-
   async setup(key: string, secret: string, platformUrl: string, glipUrl: string) {
     this.sdkManager = new SdkManager(key, secret, platformUrl, glipUrl);
   }
 
-  async teardown() { }
 }
 
 export { SdkHelper };
