@@ -6,8 +6,8 @@
 
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-
-interface IProps extends RouteComponentProps<any> { }
+import { AuthService } from 'sdk/service';
+interface IProps extends RouteComponentProps<any> {}
 
 interface IStates {
   btnDisabled: boolean;
@@ -30,8 +30,16 @@ class Login extends React.Component<IProps, IStates> {
       errors: [],
     };
     this.onClick = this.onClick.bind(this);
+    this._checkIfLogin();
   }
 
+  private _checkIfLogin() {
+    const authService: AuthService = AuthService.getInstance();
+    if (authService.isLoggedIn()) {
+      const { history } = this.props;
+      history.replace('/messages');
+    }
+  }
   onClick() {
     const { location, history } = this.props;
     localStorage.setItem('login', 'true'); // todo

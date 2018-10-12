@@ -38,7 +38,6 @@
     "@types/storybook__addon-info": "*",
     "@types/storybook__addon-knobs": "*",
     "@types/storybook__react": "*",
-    "@types/styled-components": "*",
     "@types/tinycolor2": "*",
     "babel-core": "6.26.3",
     "copy-webpack-plugin": "4.5.2",

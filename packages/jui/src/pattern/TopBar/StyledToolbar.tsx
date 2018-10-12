@@ -6,19 +6,13 @@
 
 import { JuiToolbar } from '../../components/Toolbar';
 import styled from '../../foundation/styled-components';
-import { spacing } from '../../foundation/utils';
+import { height, spacing } from '../../foundation/utils';
 
 const StyledToolbar = styled(JuiToolbar)`
   && {
-    min-height: 64px;
+    min-height: ${height(16)};
     justify-content: space-between;
     padding: 0 ${spacing(4)};
-    &:hover {
-      .react-select__control {
-        background: ${({ theme }) => theme.palette.grey[300]};
-        border: 1px solid ${({ theme }) => theme.palette.grey[300]};
-      }
-    }
   }
 `;
 

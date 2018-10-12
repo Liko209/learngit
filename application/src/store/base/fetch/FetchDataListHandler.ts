@@ -31,9 +31,10 @@ export interface IFetchDataProvider<T> {
 export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
   private _fetchDataProvider: IFetchDataProvider<T> | null;
   private _listStore: ListStore<T>;
-  private _pageSize: number;
+  protected _pageSize: number;
   protected _entityName?: ENTITY_NAME;
   protected _dataChangeCallBack: DeltaDataHandler;
+
   constructor(
     dataProvider: IFetchDataProvider<T> | null,
     options: IFetchDataListHandlerOptions,

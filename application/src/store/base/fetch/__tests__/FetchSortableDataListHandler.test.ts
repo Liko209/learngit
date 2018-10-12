@@ -189,8 +189,8 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     );
     await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
     handleChangeMap(buildSortableNumber(3, 9), EVENT_TYPES.PUT);
-
     checkListStore(fetchSortableDataHandler.listStore, [
+      sortableTransformFunc(buildSortableNumber(3)),
       sortableTransformFunc(buildSortableNumber(6)),
     ]);
   });

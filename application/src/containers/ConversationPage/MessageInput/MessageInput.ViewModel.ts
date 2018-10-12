@@ -134,4 +134,4 @@ class MessageInputViewModel extends AbstractViewModel implements MessageInputVie
   }
 }
 
-export { MessageInputViewModel };
+export { MessageInputViewModel, ERROR_TYPES, CONTENT_ILLEGAL, CONTENT_LENGTH };

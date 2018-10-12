@@ -20,7 +20,7 @@ export interface ISortFunc<T> {
 }
 
 export interface IMatchFunc<T> {
-  (model: T): boolean;
+  (model: T): Boolean;
 }
 
 export interface ITransformFunc<T> {

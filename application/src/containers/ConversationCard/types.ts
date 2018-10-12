@@ -6,14 +6,13 @@
 import PostModel from '@/store/models/Post';
 import PersonModel from '@/store/models/Person';
 type ConversationCardProps = {
-  id: number;
+  id: number; // post id
 };
 
 type ConversationCardViewProps = {
+  id: number;
   post: PostModel;
   creator: PersonModel;
-  resend: Function;
-  delete: Function;
   displayTitle: string;
   createTime: string;
 };
