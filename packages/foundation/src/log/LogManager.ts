@@ -1,7 +1,7 @@
 import Logger from './Logger';
 import BrowserConsoleAppender from './appender/BrowserConsoleAppender';
 import PersistentLogAppender from './appender/PersistentLogAppender';
-import { LOG_LEVEL } from './constants';
+import { LOG_LEVEL, LOG_APPENDER } from './constants';
 import DateFormatter from './DateFormatter';
 
 class LogManager {
@@ -10,7 +10,7 @@ class LogManager {
   private _dateFormatter: DateFormatter = new DateFormatter();
   private _overThresholdCallback: Function | null = null;
 
-  private constructor() {
+  public constructor(public appenders: LOG_APPENDER = LOG_APPENDER.CONSOLE) {
     this._loggers = new Map();
     this.initMainLogger();
 
@@ -45,8 +45,12 @@ class LogManager {
       // Create the logger for this name if it doesn't already exist
       logger = new Logger(categoryName);
       logger.setDateFormatter(this._dateFormatter);
-      logger.addAppender('browserConsole', new BrowserConsoleAppender());
-      logger.addAppender('persistentLog', new PersistentLogAppender());
+      if (this.appenders & LOG_APPENDER.CONSOLE) {
+        logger.addAppender('browserConsole', new BrowserConsoleAppender());
+      }
+      if (this.appenders & LOG_APPENDER.LOCAL_STORAGE) {
+        logger.addAppender('persistentLog', new PersistentLogAppender());
+      }
       this._loggers.set(categoryName, logger);
     }
 
@@ -55,6 +59,10 @@ class LogManager {
 
   getMainLogger() {
     return this.getLogger('MAIN');
+  }
+
+  getNetworkLogger() {
+    return this.getLogger('NETWORK');
   }
 
   initMainLogger() {
