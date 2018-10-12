@@ -17,15 +17,15 @@ export interface IUser {
   password: string;
 }
 
-export interface ICredential {
-  username: string;
-  extension: string;
-  password: string;
-}
-
 export interface IGroup {
   name?: string;
   glipId?: string;
   members: IUser[];
   type: string;
+}
+
+export interface ICredential {
+  username: string;
+  extension: string;
+  password: string;
 }

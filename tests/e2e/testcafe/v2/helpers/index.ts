@@ -1,7 +1,7 @@
 import 'testcafe';
 
 import { DataHelper } from './data-helper'
-
+import { SdkHelper } from "./sdk-helper";
 
 class Helper {
   constructor(private t: TestController) {};
@@ -10,6 +10,9 @@ class Helper {
     return new DataHelper(this.t);
   }
 
+  get sdkHelper(): SdkHelper {
+    return new SdkHelper(this.t);
+  }
 }
 
 function h(t: TestController) {

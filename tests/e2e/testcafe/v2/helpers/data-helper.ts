@@ -1,6 +1,5 @@
 import 'testcafe';
 import { IAccountPoolClient } from '../../libs/accounts';
-
 import { ICompany, IUser, IGroup } from '../models';
 
 interface IRcData {
