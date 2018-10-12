@@ -7,6 +7,8 @@
 import { formalName } from '../libs/filter';
 import { setUp, tearDown, TestHelper } from '../libs/helpers';
 import { directLogin } from '../utils';
+import * as attestCheck from 'attest-testcafe';
+
 
 declare var test: TestFn;
 fixture('Demo')
@@ -15,4 +17,7 @@ fixture('Demo')
 
 test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
   await directLogin(t);
+  await t.wait(10e3);
+  const report = await attestCheck(t, 'wcag2');
+  console.log(JSON.stringify(report, null, 2));
 });
