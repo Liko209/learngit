@@ -10,7 +10,7 @@ type UserInfo = {
   lastName?: string;
   email?: string;
 };
-function getUserInfo(firstName?, lastName?, email? = '') {
+function getUserInfo(firstName?, lastName?, email?) {
   return {
     firstName,
     lastName,
