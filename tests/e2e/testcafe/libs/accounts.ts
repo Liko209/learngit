@@ -110,4 +110,4 @@ function initAccountPoolManager(ENV_OPTS, DEBUG_MODE) {
   return accountPoolClient;
 }
 
-export { initAccountPoolManager };
+export { IAccountPoolClient, initAccountPoolManager };
