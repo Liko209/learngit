@@ -56,8 +56,8 @@ function modal(config: BaseType) {
     ...newConfig,
     isAlert,
     open: true,
-    onOK() {
-      onOK && onOK();
+    async onOK () {
+      onOK && (await onOK());
       destroy();
     },
     onCancel() {
