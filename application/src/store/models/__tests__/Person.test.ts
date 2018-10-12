@@ -18,22 +18,24 @@ function getUserInfo(firstName?, lastName?, email?) {
   };
 }
 function checkDisplayName(userInfo: UserInfo, matchName: string) {
+  const { firstName = '', lastName = '', email = '' } = userInfo;
   const pm = PersonModel.fromJS({
     id: 12,
-    first_name: userInfo && userInfo!.firstName,
-    last_name: userInfo && userInfo!.lastName,
-    email: userInfo && userInfo!.email,
+    first_name: firstName,
+    last_name: lastName,
+    email: email,
   });
   const display = pm.displayName;
   expect(display).toBe(matchName);
 }
 
 function checkShortName(userInfo: UserInfo, matchName: string) {
+  const { firstName = '', lastName = '', email = '' } = userInfo;
   const pm = PersonModel.fromJS({
     id: 12,
-    first_name: userInfo && userInfo!.firstName,
-    last_name: userInfo && userInfo!.lastName,
-    email: userInfo && userInfo!.email,
+    first_name: firstName,
+    last_name: lastName,
+    email: email,
   });
   const display = pm.shortName;
   expect(display).toBe(matchName);
@@ -63,19 +65,19 @@ describe('PersonModel', () => {
 
   describe('short name', () => {
     it('should return AH if firstName=alvin,lastName=huang', () => {
-      checkShortName(getUserInfo('alvin', 'huang', ''), 'AH');
+      checkShortName(getUserInfo('alvin', 'huang'), 'AH');
     });
     it('should return A if firstName=alvin,lastName=', () => {
-      checkShortName(getUserInfo('alvin', '', ''), 'A');
+      checkShortName(getUserInfo('alvin', ''), 'A');
     });
     it('should return ,A if firstName=,alvin,lastName=', () => {
-      checkShortName(getUserInfo(',alvin', '', ''), ',');
+      checkShortName(getUserInfo(',alvin', ''), ',');
     });
     it('should return 1H if firstName=1alvin,lastName=huang', () => {
-      checkShortName(getUserInfo('1alvin', 'huang', ''), '1H');
+      checkShortName(getUserInfo('1alvin', 'huang'), '1H');
     });
     it('should return H if firstName=,lastName=huang', () => {
-      checkShortName(getUserInfo('', 'huang', ''), 'H');
+      checkShortName(getUserInfo('', 'huang'), 'H');
     });
   });
 });

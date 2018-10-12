@@ -54,7 +54,7 @@ function handleUpsert<T>(
     const idSortKey = transformFunc(data);
     updated.push(idSortKey);
     updateEntity.push(data);
-    deleted.push(key);
+    // deleted.push(key);
   });
   differentKeys.forEach((key: number) => {
     const model = entities.get(key) as T;

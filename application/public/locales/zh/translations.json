@@ -16,5 +16,7 @@
   "Files": "文件",
   "Settings": "设置",
   "SignOut": "退出",
-  "CreateTeam": "新建组"
+  "CreateTeam": "新建组",
+  "OK": "好的",
+  "Cancel": "取消"
 }

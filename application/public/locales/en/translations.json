@@ -20,5 +20,7 @@
   "CreateTeam": "Create Team",
   "networkDisconnected": "Network disconnected. Please try again when the network is resumed.",
   "Plus": "Plus",
-  "Menu": "Menu"
+  "Menu": "Menu",
+  "OK": "OK",
+  "Cancel": "Cancel"
 }
