@@ -34,8 +34,8 @@ function formatDate(date: string) {
 }
 class LoginVersionStatus extends React.Component {
   private commitInfo: {
-    currentBranch: string,
-    commitInfo: any[],
+    currentBranch: string;
+    commitInfo: any[];
   };
   constructor(props: any) {
     super(props);
@@ -61,10 +61,6 @@ class LoginVersionStatus extends React.Component {
     return (
       <Wrapper>
         <div>{result}</div>
-        {/* <div>
-          {env}
-          <EnvSelect />
-        </div> */}
         <div>{time}</div>
       </Wrapper>
     );

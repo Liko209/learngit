@@ -25,8 +25,6 @@
     "./typings/images.d.ts",
     "./typings/chat-view.d.ts",
     "./typings/string-natural-compare.d.ts",
-    "./typings/glipdown.d.ts",
-    "./typings/quill-emoji.d.ts",
-    "./typings/quill-markdown-shortcuts.d.ts"
+    "./typings/glipdown.d.ts"
   ]
 }
