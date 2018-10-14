@@ -15,7 +15,6 @@ import Base from './Base';
 import { t } from 'i18next';
 
 export default class GroupModel extends Base<Group> {
-  id: number;
   @observable
   isTeam?: boolean;
   @observable

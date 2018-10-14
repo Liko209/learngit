@@ -22,13 +22,13 @@ dllPlugin = {
      * we need to exclude dependencies which are not intended for the browser
      * by listing them here.
      */
-    exclude: ["sanitize.css", "sdk", "ui-components", "jui"],
+    exclude: ["sdk", "jui"],
 
     /**
      * Specify any additional dependencies here. We include core-js and lodash
      * since a lot of our dependencies depend on them and they get picked up by webpack.
      */
-    include: ["core-js", "babel-polyfill", "lodash"],
+    include: ["core-js", "@babel/polyfill", "lodash"],
 
     // The path where the DLL manifest and bundle will get built
     path: resolve(
