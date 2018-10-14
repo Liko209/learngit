@@ -12,23 +12,35 @@ import { LeftRail } from '@/containers/LeftRail';
 import { RightRail } from '@/containers/RightRail';
 
 import { MessagesViewProps } from './types';
+import { observer } from 'mobx-react';
 
+@observer
 class MessagesViewComponent extends Component<MessagesViewProps> {
   constructor(props: MessagesViewProps) {
     super(props);
   }
 
+  async componentDidMount() {
+    const conversationIdOfUrl = Number(this.props.match.params.id);
+    const groupId = await this.props.getLastGroupId(conversationIdOfUrl);
+    const history = this.props.history;
+    this.props.toConversation(`${groupId}`, history);
+  }
+
   render() {
-    const { isLeftNavOpen, match } = this.props;
+    const { isLeftNavOpen, currentConversationId } = this.props;
+
     let leftNavWidth = 72;
     if (isLeftNavOpen) {
       leftNavWidth = 200;
     }
-    const currentGroupId = Number(match.params.id);
+
     return (
       <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
-        <LeftRail currentGroupId={currentGroupId} />
-        {currentGroupId ? <ConversationPage groupId={currentGroupId} /> : null}
+        <LeftRail currentGroupId={currentConversationId} />
+        {currentConversationId ? (
+          <ConversationPage groupId={currentConversationId} />
+        ) : null}
         <RightRail />
       </JuiTreeColumnResponse>
     );

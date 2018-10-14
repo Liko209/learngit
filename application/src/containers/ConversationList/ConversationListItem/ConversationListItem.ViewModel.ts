@@ -13,17 +13,18 @@ const { GroupService } = service;
 import { getEntity, getSingleEntity } from '@/store/utils';
 // import { getGroupName } from '@/utils/groupName';
 import { ENTITY_NAME } from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import { MyState } from 'sdk/models';
 import MyStateModel from '@/store/models/MyState';
 import GroupStateModel from '@/store/models/GroupState';
 import StoreViewModel from '@/store/ViewModel';
-
 class ConversationListItemViewModel extends StoreViewModel
   implements ConversationListItemViewProps {
   unreadCount: number;
   important?: boolean | undefined;
+
   draft?: string | undefined;
   sendFailurePostIds: number[];
 
@@ -48,9 +49,8 @@ class ConversationListItemViewModel extends StoreViewModel
   get _group() {
     return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
   }
-
   onClick = () => {
-    this.groupService.clickGroup(this.groupId);
+    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
   }
 
   groupService: service.GroupService;

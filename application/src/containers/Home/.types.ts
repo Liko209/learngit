@@ -4,12 +4,13 @@ import { RouteComponentProps } from 'react-router-dom';
 
 type HomeViewProps = {
   canPost: boolean;
-  invalidUser: boolean;
+  validateGroupId: (id: number) => boolean;
   t: TranslationFunction;
+  lastGroupId?: number;
 } & RouteComponentProps;
 
 type HomeProps = {
-  invalidUser: boolean;
+  validateGroupId: (id: number) => boolean;
 };
 
 export { HomeProps, HomeViewProps };

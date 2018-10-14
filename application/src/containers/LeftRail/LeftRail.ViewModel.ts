@@ -11,7 +11,7 @@ import { LeftRailProps, LeftRailViewProps } from './types';
 
 class LeftRailViewModel extends AbstractViewModel implements LeftRailViewProps {
   @observable
-  currentGroupId: number;
+  currentGroupId?: number;
 
   onReceiveProps(props: LeftRailProps) {
     if (this.currentGroupId !== props.currentGroupId) {

@@ -18,18 +18,6 @@ import { HomeViewProps } from './.types';
 
 @observer
 class Home extends Component<HomeViewProps> {
-  public state = {};
-  static getDerivedStateFromProps({ invalidUser }: HomeViewProps) {
-    if (invalidUser) {
-      if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
-        window.jupiterElectron.setBadgeCount(0);
-      }
-      sessionStorage.removeItem('backNavArray');
-      sessionStorage.removeItem('forwardNavArray');
-      window.location.href = '/';
-    }
-    return null;
-  }
   render() {
     return (
       <Wrapper>
@@ -37,7 +25,7 @@ class Home extends Component<HomeViewProps> {
         <Bottom>
           <LeftNav />
           <Switch>
-            <Redirect exact={true} from="/" to="/messages" />
+            <Redirect exact={true} from="/" to="/messages/" />
             <Route path="/messages/:id?" component={Messages} />
             <Route component={NotFound} />
           </Switch>

@@ -115,7 +115,12 @@ export default class GroupService extends BaseService<Group> {
     }
     return result;
   }
-
+  async isFavGroup(groupId: number) {
+    const result = await this._getFavoriteGroups();
+    return _(result)
+      .map('id')
+      .includes(groupId);
+  }
   // this function should refactor with getGroupsByType
   // we should support to get group by paging
   async getLastNGroups(n: number): Promise<Group[]> {
@@ -331,11 +336,6 @@ export default class GroupService extends BaseService<Group> {
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
     const profileService: ProfileService = ProfileService.getInstance();
     profileService.markGroupAsFavorite(groupId, markAsFavorite);
-  }
-
-  clickGroup(groupId: number) {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    configDao.put(LAST_CLICKED_GROUP, groupId);
   }
 
   async handleResponse(resp: IResponse<Raw<Group>>) {

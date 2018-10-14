@@ -5,21 +5,13 @@
  */
 import { action, observable } from 'mobx';
 
-import config from '@/config';
 import { StoreViewModel } from '@/store/ViewModel';
 import { service } from 'sdk';
-import betaUsers from '@/config/whitelist.json';
 import { ProfileService as IProfileService } from 'sdk/src/service';
 
-const { AccountService, AuthService, SERVICE, ProfileService } = service;
+const { SERVICE, ProfileService } = service;
 
 class HomeViewModel extends StoreViewModel {
-  private userId: number | null;
-  @observable
-  openCreateTeam: boolean = false;
-  @observable
-  invalidUser: boolean = false;
-
   constructor() {
     super();
     this.subscribeNotificationOnce(
@@ -28,30 +20,17 @@ class HomeViewModel extends StoreViewModel {
     );
   }
 
+  @observable
+  openCreateTeam: boolean = false;
+  @observable
+  invalidUser: boolean = false;
+
+  validateGroupId(groupId: number) {}
+
   @action.bound
-  handleHasLoggedIn() {
-    const accountService: service.AccountService = AccountService.getInstance();
-    this.userId = accountService.getCurrentUserId();
-    ProfileService.getInstance<IProfileService>().markMeConversationAsFav();
-    this.checkInvalidUser();
-  }
-
-  checkInvalidUser() {
-    const env = config.getEnv();
-    if (
-      env === 'jupiter' &&
-      !betaUsers.betaUserIdList.some(
-        (username: string) => String(this.userId).indexOf(username) > -1,
-      )
-    ) {
-      this.invalidUser = true;
-      this.signOut();
-    }
-  }
-
-  public async signOut() {
-    const authService: service.AuthService = AuthService.getInstance();
-    await authService.logout();
+  async handleHasLoggedIn() {
+    const profileService: IProfileService = ProfileService.getInstance();
+    profileService.markMeConversationAsFav();
   }
 
   @action
