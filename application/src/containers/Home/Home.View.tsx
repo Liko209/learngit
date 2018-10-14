@@ -20,7 +20,6 @@ import { HomeViewProps } from './.types';
 class Home extends Component<HomeViewProps> {
   public state = {};
   static getDerivedStateFromProps({ invalidUser }: HomeViewProps) {
-    debugger;
     if (invalidUser) {
       if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
         window.jupiterElectron.setBadgeCount(0);
