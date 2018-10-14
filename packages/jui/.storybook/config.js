@@ -11,11 +11,14 @@ import "@storybook/addon-console";
 
 import { ThemeProvider } from "../src/foundation/theme/index";
 
-const ThemeDecorator = storyFn => (
-  <ThemeProvider themeName="light">
-    <div style={{ paddingTop: "25px" }}>{storyFn()}</div>
-  </ThemeProvider>
-);
+const ThemeDecorator = storyFn => {
+  console.log(this);
+  return (
+    <ThemeProvider themeName="light">
+      <div style={{ paddingTop: "25px" }}>{storyFn()}</div>
+    </ThemeProvider>
+  );
+};
 
 function requireAll(requireContext) {
   return requireContext.keys().map(requireContext);

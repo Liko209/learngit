@@ -12,6 +12,7 @@ import { Umi } from '../Umi';
 import { LeftNavViewProps } from './types';
 import { computed } from 'mobx';
 import _ from 'lodash';
+import { observer } from 'mobx-react';
 
 type LeftNavProps = {
   isLeftNavOpen: boolean;
@@ -19,6 +20,7 @@ type LeftNavProps = {
 } & LeftNavViewProps &
   RouteComponentProps;
 
+@observer
 class LeftNav extends Component<LeftNavProps> {
   constructor(props: LeftNavProps) {
     super(props);

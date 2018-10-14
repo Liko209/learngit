@@ -5,7 +5,8 @@
  */
 import React from 'react';
 import { mount } from 'enzyme';
-import { ThemeProvider, JuiCircularProgress } from 'ui-components';
+import { JuiCircularProgress } from 'jui/components';
+import { ThemeProvider } from 'jui/foundation/theme';
 import { AbstractViewModel } from '@/base/AbstractViewModel';
 import {
   LoadingMorePlugin,

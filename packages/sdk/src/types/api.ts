@@ -7,6 +7,7 @@
 type BaseConfig = {
   server?: string;
   apiPlatform: string;
+  cacheServer?: string;
   apiPlatformVersion?: string;
 };
 

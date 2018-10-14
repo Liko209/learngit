@@ -42,6 +42,10 @@ abstract class TransformHandler<T, K> {
   ): any;
 
   abstract onDeleted(deletedItems: number[]): any;
+
+  dispose() {
+    this._orderListHandler.dispose();
+  }
 }
 
 export { TransformHandler };

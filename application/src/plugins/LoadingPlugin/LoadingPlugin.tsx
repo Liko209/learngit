@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ComponentType } from 'react';
-import { withLoading, WithLoadingProps } from 'ui-components';
+import { withLoading, WithLoadingProps } from 'jui/hoc';
 import { IViewModel } from '@/base/IViewModel';
 import { IPlugin } from '@/base/IPlugin';
 import { createLoadingStateDecorator } from '../utils';

@@ -11,7 +11,7 @@ import { observer } from 'mobx-react';
 import { reaction, IReactionDisposer } from 'mobx';
 
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
-import { JuiModal } from 'jui/components/Dialog';
+import { JuiModal } from '@/containers/Dialog';
 
 type TokenRouteProps = RouteComponentProps<{}> &
   InjectedTranslateProps & {
@@ -55,18 +55,16 @@ class TokenRoute extends Component<TokenRouteProps> {
   showAlert(offline: any, open: any) {
     const { t } = this.props;
     if (open) {
-      JuiModal.alert(
-        {
-          header: t('signInFailedTitle'),
-          onOK: () => {
-            this.onClose();
-          },
-          children: t(
-            offline ? 'signInFailedContentNetwork' : 'signInFailedContent',
-          ),
+      JuiModal.alert({
+        title: t('signInFailedTitle'),
+        onOK: () => {
+          this.onClose();
         },
-        this,
-      );
+        content: t(
+          offline ? 'signInFailedContentNetwork' : 'signInFailedContent',
+        ),
+        okText: 'OK',
+      });
     }
   }
 
