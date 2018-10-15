@@ -3,10 +3,9 @@
  * @Date: 2018-08-17 14:40:24
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../../.storybook/storybook.d.ts" />
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { select } from '@storybook/addon-knobs/react';
+import { select } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiAvatar } from '..';
@@ -43,10 +42,10 @@ const knobs = {
 };
 storiesOf('Components/Avatar', module)
   .addDecorator(withInfoDecorator(JuiAvatar, { inline: true }))
-  .addWithJSX('Image', () => {
+  .add('Image', () => {
     return <JuiAvatar size={knobs.size()} src={avatar} />;
   })
-  .addWithJSX('Name', () => {
+  .add('Name', () => {
     return (
       <JuiAvatar size={knobs.size()} color={knobs.color()}>
         SH

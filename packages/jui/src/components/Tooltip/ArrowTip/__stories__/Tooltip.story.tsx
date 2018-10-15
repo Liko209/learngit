@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { select } from '@storybook/addon-knobs/react';
+import { select } from '@storybook/addon-knobs';
 import { JuiArrowTip } from '..';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 

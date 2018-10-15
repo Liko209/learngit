@@ -3,10 +3,9 @@
  * @Date: 2018-09-11 10:39:46
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { text } from '@storybook/addon-knobs/react';
+import { text } from '@storybook/addon-knobs';
 import backgrounds from '@storybook/addon-backgrounds';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
@@ -24,7 +23,7 @@ storiesOf('Pattern', module)
   .addDecorator(
     backgrounds([{ name: 'slide-background', value: '#f3f3f3', default: true }]),
   )
-  .addWithJSX('ConversationCard', () => {
+  .add('ConversationCard', () => {
     const name = text('name', 'John Smith');
     return (
       <JuiConversationCard Avatar={<JuiAvatar size="medium">SH</JuiAvatar>}>

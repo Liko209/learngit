@@ -19,7 +19,7 @@ const Wrapper = styled.div`
 
 storiesOf('Components/Progress', module)
   .addDecorator(withInfoDecorator(JuiCircularProgress, { inline: true }))
-  .addWithJSX('CircularProgress', () => (
+  .add('CircularProgress', () => (
     <Wrapper>
       <JuiCircularProgress />
       <JuiCircularProgress size={32} color="secondary" />
