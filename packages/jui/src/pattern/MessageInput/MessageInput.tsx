@@ -118,7 +118,7 @@ class JuiMessageInput extends React.Component<IProps, IState> {
           onChange={this.onChange}
           placeholder="Type new message"
           modules={this._modules}
-          ref={this._inputRef}
+        // ref={this._inputRef}
         />
         <StyledError>{error}</StyledError>
         <GlobalStyle />
