@@ -44,7 +44,7 @@ if [ "$sdkLintError" ]; then
     hasLintError=1
 fi
 
-uiLintError=$(<lint/ui.txt)
+uiLintError=$(<lint/jui.txt)
 if [ "$uiLintError" ]; then
     echo 'UI Has Lint Error'
     echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/ui.txt>UI Lint Result</a><br />" >> $project/lint/index.html

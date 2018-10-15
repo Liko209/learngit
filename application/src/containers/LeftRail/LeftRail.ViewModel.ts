@@ -12,11 +12,6 @@ import StoreViewModel from '@/store/ViewModel';
 class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   implements LeftRailViewProps {
   @computed
-  get currentGroupId() {
-    return this.props.currentGroupId;
-  }
-
-  @computed
   get sections(): SECTION_TYPE[] {
     return [
       SECTION_TYPE.FAVORITE,

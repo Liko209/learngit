@@ -18,11 +18,9 @@ enum SECTION_TYPE {
 
 type SectionProps = {
   type: SECTION_TYPE;
-  currentGroupId?: number;
 };
 
 type SectionViewProps = {
-  currentGroupId?: number;
   groupIds: number[];
   sortable: boolean;
   expanded: boolean;

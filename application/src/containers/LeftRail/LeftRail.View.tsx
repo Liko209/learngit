@@ -18,12 +18,11 @@ const Wrapper = styled.div`
 `;
 
 const LeftRailView = (props: LeftRailViewProps) => {
-  console.log('LeftRailView props: ', props);
   return (
     <Wrapper>
       {props.sections.map((type, index) => [
         index ? <JuiDivider key="divider" /> : null,
-        <Section currentGroupId={props.currentGroupId} key={type} type={type} />,
+        <Section key={type} type={type} />,
       ])}
     </Wrapper>
   );
