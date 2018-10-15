@@ -10,7 +10,6 @@ import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import { StateService } from 'sdk/service';
 import storeManager from '@/store';
-import { History } from 'history';
 
 class MessagesViewModel extends AbstractViewModel {
   @computed
@@ -34,11 +33,10 @@ class MessagesViewModel extends AbstractViewModel {
     return getGlobalValue('isLeftNavOpen');
   }
 
-  toConversation(history: History, id?: number) {
+  toConversation(id?: number) {
     const globalStore = storeManager.getGlobalStore();
     const targetConversationId = id || '';
     globalStore.set('currentConversationId', targetConversationId);
-    history.push(`/messages/${id}`);
   }
 }
 

@@ -40,12 +40,7 @@ class SectionViewComponent extends React.Component<Props> {
           onSortEnd={onSortEnd}
         >
           {this.props.groupIds.map((id: number, index: number) => (
-            <SortableItem
-              key={id}
-              groupId={id}
-              selected={this.props.currentGroupId === id}
-              index={index}
-            />
+            <SortableItem key={id} groupId={id} index={index} />
           ))}
         </SortableList>
       );
@@ -54,11 +49,7 @@ class SectionViewComponent extends React.Component<Props> {
     return (
       <JuiConversationList className="conversation-list-section-collapse">
         {this.props.groupIds.map((id: number) => (
-          <ConversationListItem
-            key={id}
-            groupId={id}
-            selected={this.props.currentGroupId === id}
-          />
+          <ConversationListItem key={id} groupId={id} />
         ))}
       </JuiConversationList>
     );
@@ -66,7 +57,6 @@ class SectionViewComponent extends React.Component<Props> {
 
   render() {
     const { t, title, groupIds, iconName, expanded } = this.props;
-    console.log('SectionViewComponent props: ', this.props.currentGroupId);
     return (
       <div
         className="conversation-list-section"

@@ -7,7 +7,6 @@ import { MouseEvent } from 'react';
 
 type ConversationListItemProps = {
   groupId: number;
-  selected: boolean;
 };
 
 type ConversationListItemViewProps = {

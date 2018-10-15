@@ -22,7 +22,7 @@ const LeftRailView = (props: LeftRailViewProps) => {
     <Wrapper>
       {props.sections.map((type, index) => [
         index ? <JuiDivider key="divider" /> : null,
-        <Section currentGroupId={props.currentGroupId} key={type} type={type} />,
+        <Section key={type} type={type} />,
       ])}
     </Wrapper>
   );
