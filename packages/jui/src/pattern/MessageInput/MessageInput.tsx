@@ -67,7 +67,7 @@ interface IState {
 
 class JuiMessageInput extends React.Component<IProps, IState> {
   private _modules: {};
-  private _inputRef: React.RefObject<ReactQuill>;
+  // private _inputRef: React.RefObject<ReactQuill>;
   constructor(props: IProps) {
     super(props);
     this.onChange = this.onChange.bind(this);
@@ -81,7 +81,7 @@ class JuiMessageInput extends React.Component<IProps, IState> {
       },
     };
 
-    this._inputRef = React.createRef();
+    // this._inputRef = React.createRef();
   }
 
   // componentDidMount() {
