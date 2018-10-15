@@ -13,10 +13,19 @@ const MessageTypes = [
   service.GROUP_QUERY_TYPE.GROUP,
   service.GROUP_QUERY_TYPE.TEAM,
 ];
+import storeManager from '@/store';
 
+const getItem = (item: string) => {
+  return localStorage.getItem(item);
+};
 class LeftNavViewModel extends AbstractViewModel {
   constructor() {
     super();
+    const isLocalExpand = getItem('expanded') === null
+      ? true
+      : JSON.parse(String(getItem('expanded')));
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set('isLeftNavOpen', isLocalExpand);
   }
 
   @computed
@@ -30,7 +39,9 @@ class LeftNavViewModel extends AbstractViewModel {
 
   @computed
   get isLeftNavOpen() {
-    return getGlobalValue('isLeftNavOpen');
+    const isExpand = getGlobalValue('isLeftNavOpen');
+    localStorage.setItem('expanded', JSON.stringify(isExpand));
+    return JSON.parse(getItem('expanded') || 'true');
   }
 }
 

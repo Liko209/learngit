@@ -7,9 +7,9 @@
 
 const fs = require("fs");
 const glob = require("glob");
-const autoprefixer = require("autoprefixer");
 const path = require("path");
 const webpack = require("webpack");
+const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const InterpolateHtmlPlugin = require("react-dev-utils/InterpolateHtmlPlugin");
@@ -18,10 +18,13 @@ const ModuleScopePlugin = require("react-dev-utils/ModuleScopePlugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
-const getClientEnvironment = require("./env");
-const paths = require("./paths");
+const ManifestPlugin = require("webpack-manifest-plugin");
+const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const dllPlugin = require("./dll");
+const getClientEnvironment = require("./env");
+const excludeNodeModulesExcept = require("./excludeNodeModulesExcept");
+const paths = require("./paths");
 const appPackage = require(paths.appPackageJson);
 
 // Webpack uses `publicPath` to determine where the app is being served from.
@@ -79,6 +82,7 @@ function dependencyHandlers() {
 // It is focused on developer experience and fast rebuilds.
 // The production configuration is different and lives in a separate file.
 module.exports = {
+  mode: "development",
   // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
   // See the discussion in https://github.com/facebookincubator/create-react-app/issues/343.
   devtool: "cheap-module-source-map",
@@ -120,6 +124,18 @@ module.exports = {
     devtoolModuleFilenameTemplate: info =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")
   },
+  optimization: {
+    // Automatically split vendor and commons
+    // https://twitter.com/wSokra/status/969633336732905474
+    // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
+    splitChunks: {
+      chunks: "all",
+      name: false
+    },
+    // Keep the runtime chunk seperated to enable long term caching
+    // https://twitter.com/wSokra/status/969679223278505985
+    runtimeChunk: true
+  },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
     // We placed these paths second because we want `node_modules` to "win"
@@ -151,18 +167,12 @@ module.exports = {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       "react-native": "react-native-web",
-      "@": paths.appSrc,
-      "ui-components": path.resolve(
-        paths.appNodeModules,
-        "./ui-components/src"
-      ),
-      sdk: path.resolve(paths.appNodeModules, "./sdk/src"),
-      foundation: path.resolve(
-        paths.appNodeModules,
-        "./sdk/node_modules/foundation/src"
-      )
+      "@": paths.appSrc
     },
     plugins: [
+      // Adds support for installing with Plug'n'Play, leading to faster installs and adding
+      // guards against forgotten dependencies and such.
+      PnpWebpackPlugin,
       // Prevents users from importing files from outside of src/ (or node_modules/).
       // This often causes confusion because we only process files within src/ with babel.
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
@@ -172,19 +182,19 @@ module.exports = {
       new TsconfigPathsPlugin({ configFile: paths.appTsConfig })
     ]
   },
+  resolveLoader: {
+    plugins: [
+      // Also related to Plug'n'Play, but this time it tells Webpack to load its loaders
+      // from the current package.
+      PnpWebpackPlugin.moduleLoader(module)
+    ]
+  },
   module: {
     strictExportPresence: true,
     rules: [
-      // TODO: Disable require.ensure as it's not a standard language feature.
-      // We are waiting for https://github.com/facebookincubator/create-react-app/issues/2176.
+      // Disable require.ensure as it's not a standard language feature.
       // { parser: { requireEnsure: false } },
 
-      {
-        test: /\.(js|jsx|mjs)$/,
-        loader: require.resolve("source-map-loader"),
-        enforce: "pre",
-        include: paths.appSrc
-      },
       {
         // "oneOf" will traverse all following loaders until one will
         // match the requirements. When no loader matches it will fall
@@ -201,25 +211,35 @@ module.exports = {
               name: "static/media/[name].[hash:8].[ext]"
             }
           },
+          {
+            test: /\.mjs$/,
+            type: "javascript/auto"
+          },
           // Compile .tsx?
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            use: [
-              {
-                loader: "babel-loader",
-                options: {
-                  babelrc: false,
-                  plugins: ["react-hot-loader/babel"]
-                }
-              },
-              {
-                loader: require.resolve("ts-loader"),
-                options: {
-                  // disable type checker - we will use it in fork plugin
-                  transpileOnly: true
-                }
+            exclude: excludeNodeModulesExcept(["jui", "sdk", "foundation"]),
+            use: {
+              loader: "babel-loader",
+              options: {
+                cacheDirectory: true,
+                babelrc: false,
+                presets: [
+                  [
+                    "@babel/preset-env",
+                    { targets: { browsers: ["last 2 versions", "ie 11"] } } // or whatever your project requires
+                  ],
+                  "@babel/preset-typescript",
+                  "@babel/preset-react"
+                ],
+                plugins: [
+                  // plugin-proposal-decorators is only needed if you're using experimental decorators in TypeScript
+                  ["@babel/plugin-proposal-decorators", { legacy: true }],
+                  ["@babel/plugin-proposal-class-properties", { loose: true }],
+                  "react-hot-loader/babel"
+                ]
               }
-            ]
+            }
           },
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
@@ -244,14 +264,11 @@ module.exports = {
                   ident: "postcss",
                   plugins: () => [
                     require("postcss-flexbugs-fixes"),
-                    autoprefixer({
-                      browsers: [
-                        ">1%",
-                        "last 4 versions",
-                        "Firefox ESR",
-                        "not ie < 9" // React doesn't support IE8 anyway
-                      ],
-                      flexbox: "no-2009"
+                    require("postcss-preset-env")({
+                      autoprefixer: {
+                        flexbox: "no-2009"
+                      },
+                      stage: 3
                     })
                   ]
                 }
@@ -281,17 +298,20 @@ module.exports = {
     ]
   },
   plugins: dependencyHandlers().concat([
-    // Makes some environment variables available in index.html.
-    // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
-    // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    // In development, this will be an empty string.
-    new InterpolateHtmlPlugin(env.raw),
     // Generates an `index.html` file with the <script> injected.
     new HtmlWebpackPlugin({
       inject: true,
       title: "RingCentral",
       template: paths.appHtml
     }),
+    // Makes some environment variables available in index.html.
+    // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
+    // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    // In development, this will be an empty string.
+    new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
+    // This gives some necessary context to module not found errors, such as
+    // the requesting resource.
+    new ModuleNotFoundPlugin(paths.appPath),
     // Add module names to factory functions so they appear in browser profiler.
     new webpack.NamedModulesPlugin(),
     // Makes some environment variables available to the JS code, for example:
@@ -331,6 +351,13 @@ module.exports = {
       exclude: /node_modules/, // exclude node_modules
       failOnError: false // show a warning when there is a circular dependency
     }),
+    // Generate a manifest file which contains a mapping of all asset filenames
+    // to their corresponding output file so that tools can pick it up without
+    // having to parse `index.html`.
+    new ManifestPlugin({
+      fileName: "asset-manifest.json",
+      publicPath: publicPath
+    }),
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
@@ -351,10 +378,7 @@ module.exports = {
     tls: "empty",
     child_process: "empty"
   },
-  // Turn off performance hints during development because we don't do any
-  // splitting or minification in interest of speed. These warnings become
-  // cumbersome.
-  performance: {
-    hints: false
-  }
+  // Turn off performance processing because we utilize
+  // our own hints via the FileSizeReporter
+  performance: false
 };

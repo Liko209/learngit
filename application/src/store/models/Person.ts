@@ -10,17 +10,18 @@ import {
 } from '@/utils/helper';
 
 export default class PersonModel extends Base<Person> {
-  id: number;
   @observable
   companyId: number;
   @observable
-  firstName?: string;
+  firstName: string;
   @observable
-  lastName?: string;
+  lastName: string;
   @observable
   headshot?: {
     url: string;
   };
+  @observable
+  headShotVersion?: string | undefined;
   @observable
   email: string;
   @observable
@@ -36,19 +37,21 @@ export default class PersonModel extends Base<Person> {
     super(data);
     const {
       company_id,
-      first_name,
-      last_name,
+      first_name = '',
+      last_name = '',
       headshot,
       email,
       rc_phone_numbers,
       is_pseudo_user,
       glip_user_id,
       away_status,
+      headshot_version,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
     this.lastName = last_name;
     this.headshot = headshot;
+    this.headShotVersion = headshot_version;
     this.email = email;
     this.rcPhoneNumbers = rc_phone_numbers;
     this.isPseudoUser = is_pseudo_user;
