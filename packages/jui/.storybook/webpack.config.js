@@ -30,8 +30,24 @@ module.exports = (baseConfig, env, config) => {
       // 3) re-add the loaders you replaced above in #1:
       loaders: [
         {
-          path: "ts-loader",
-          query: { happyPackMode: true }
+          path: "babel-loader",
+          query: {
+            cacheDirectory: true,
+            babelrc: false,
+            presets: [
+              [
+                "@babel/preset-env",
+                { targets: { browsers: ["last 2 versions", "ie 11"] } } // or whatever your project requires
+              ],
+              "@babel/preset-typescript",
+              "@babel/preset-react"
+            ],
+            plugins: [
+              // plugin-proposal-decorators is only needed if you're using experimental decorators in TypeScript
+              ["@babel/plugin-proposal-decorators", { legacy: true }],
+              ["@babel/plugin-proposal-class-properties", { loose: true }]
+            ]
+          }
         },
         {
           path: "react-docgen-typescript-loader"
