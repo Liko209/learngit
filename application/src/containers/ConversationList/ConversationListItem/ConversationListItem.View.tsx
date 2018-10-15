@@ -16,14 +16,14 @@ import { observable } from 'mobx';
 const Presence = (props: any) => <span {...props} />;
 
 type Props = ConversationListItemViewProps;
-interface State {
+interface IState {
   currentGroupId: number;
 }
 
 @observer
 class ConversationListItemViewComponent extends React.Component<
   Props,
-  State
+  IState
 > {
   @observable
   menuAnchorEl: HTMLElement | null = null;
