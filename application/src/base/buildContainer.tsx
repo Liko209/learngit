@@ -71,9 +71,10 @@ function buildContainer<P = {}, S = {}, SS = any>({
     }
 
     private _isViewProp(key: string) {
-      // Props start with _ or $ are private
-      // 'verboseMemoryLeak' is add by EventEmitter2
-      // 'props' is protected
+      // - Props start with _ or $ are private
+      // - 'verboseMemoryLeak' is add by EventEmitter2
+      // - 'props' don't affect View directly, if you want View response 'props',
+      //   you need to setup a observable/computed prop in ViewModel.
       return (
         !/^\$|_/.test(key) && key !== 'verboseMemoryLeak' && key !== 'props'
       );
