@@ -11,6 +11,7 @@ import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
 import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
+import { t } from 'i18next';
 
 class HeaderViewModel extends AbstractViewModel {
   @observable
@@ -24,7 +25,11 @@ class HeaderViewModel extends AbstractViewModel {
   @computed
   get title() {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
-    return group.displayName;
+    let title = group.displayName;
+    if (group.type === CONVERSATION_TYPES.SMS) {
+      title += ` (${t('text')})`;
+    }
+    return title;
   }
 
   @computed

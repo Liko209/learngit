@@ -2,7 +2,7 @@
  * @Author: Shining Miao (shining.miao@ringcentral.com)
  * @Date: 2018-02-05 17:11:17
  * @Last Modified by: Jeffery Huang
- * @Last Modified time: 2018-09-09 14:06:02
+ * @Last Modified time: 2018-10-13 12:28:20
  */
 import { Token, NETWORK_METHOD, NETWORK_VIA } from 'foundation';
 
@@ -10,7 +10,7 @@ import Api from '../api';
 import { IResponse } from '../NetworkClient';
 import { RINGCENTRAL_API } from './constants';
 
-export interface ITokenModel extends Token {
+interface ITokenModel extends Token {
   access_token: string;
   endpoint_id: string;
   expires_in: number;
@@ -27,7 +27,7 @@ export interface ITokenModel extends Token {
  * @param {string} password
  * return authData for glip login by password
  */
-export function loginRCByPassword(data: object): Promise<IResponse<ITokenModel>> {
+function loginRCByPassword(data: object): Promise<IResponse<ITokenModel>> {
   const model = { ...data, grant_type: 'password' };
   const query = {
     path: RINGCENTRAL_API.API_OAUTH_TOKEN,
@@ -45,7 +45,7 @@ export function loginRCByPassword(data: object): Promise<IResponse<ITokenModel>>
  * @param {string} password
  * rc login for glip 2.0 api by password
  */
-export function loginGlip2ByPassword(data: object): Promise<IResponse<ITokenModel>> {
+function loginGlip2ByPassword(data: object): Promise<IResponse<ITokenModel>> {
   const model = { ...data, grant_type: 'password' };
   const query = {
     path: RINGCENTRAL_API.API_OAUTH_TOKEN,
@@ -62,7 +62,7 @@ export function loginGlip2ByPassword(data: object): Promise<IResponse<ITokenMode
  * @param {string} refresh_token
  * @param {string} grant_type
  */
-export function refreshToken(data: object): Promise<IResponse<ITokenModel>> {
+function refreshToken(data: object): Promise<IResponse<ITokenModel>> {
   const model = { ...data, grant_type: 'refresh_token' };
   const query = {
     path: RINGCENTRAL_API.API_REFRESH_TOKEN,
@@ -74,3 +74,5 @@ export function refreshToken(data: object): Promise<IResponse<ITokenModel>> {
 
   return Api.rcNetworkClient.http(query);
 }
+
+export { ITokenModel, loginRCByPassword, loginGlip2ByPassword, refreshToken };

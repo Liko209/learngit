@@ -10,7 +10,6 @@ import {
 } from '@/utils/helper';
 
 export default class PersonModel extends Base<Person> {
-  id: number;
   @observable
   companyId: number;
   @observable
@@ -22,7 +21,7 @@ export default class PersonModel extends Base<Person> {
     url: string;
   };
   @observable
-  headShotVersion?: string|undefined;
+  headShotVersion?: string | undefined;
   @observable
   email: string;
   @observable

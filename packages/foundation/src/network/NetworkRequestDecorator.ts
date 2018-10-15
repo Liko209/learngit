@@ -27,7 +27,7 @@ class NetworkRequestDecorator implements INetworkRequestExecutor {
   }
 
   isPause() {
-    this.executor.isPause();
+    return this.executor.isPause();
   }
 
   getRequest(): IRequest {
