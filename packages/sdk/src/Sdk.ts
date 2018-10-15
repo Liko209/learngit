@@ -100,9 +100,12 @@ class Sdk {
 
   async onLogin() {
     this.updateNetworkToken();
+
     await this.syncService.syncData(async () => {
       // await featureFlag.getServicePermission();
       this.accountManager.updateSupportedServices();
+      const accountService: AccountService = AccountService.getInstance();
+      accountService.onBoardingPreparation();
     });
   }
 

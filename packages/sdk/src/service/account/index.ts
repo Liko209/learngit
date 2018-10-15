@@ -24,6 +24,7 @@ import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware, ErrorTypes } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
 import { GROUP_QUERY_TYPE } from '../constants';
+import ProfileService from '../profile/index';
 
 const DEFAULT_CONVERSATION_LIST_LIMITS = {
   [GROUP_QUERY_TYPE.ALL]: 20,
@@ -110,7 +111,10 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
     try {
       const rcToken = authDao.get(AUTH_RC_TOKEN);
       const { refresh_token, endpoint_id } = rcToken;
-      const refreshedRCAuthData = await refreshToken({ refresh_token, endpoint_id });
+      const refreshedRCAuthData = await refreshToken({
+        refresh_token,
+        endpoint_id,
+      });
       authDao.put(AUTH_RC_TOKEN, refreshedRCAuthData.data);
       notificationCenter.emitConfigPut(AUTH_RC_TOKEN, refreshedRCAuthData.data);
       return refreshedRCAuthData.data;
@@ -131,11 +135,19 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   }
 
   getConversationListLimits(): ConversationListLimits {
-    return this.accountDao.get(ACCOUNT_CONVERSATION_LIST_LIMITS) || DEFAULT_CONVERSATION_LIST_LIMITS;
+    return (
+      this.accountDao.get(ACCOUNT_CONVERSATION_LIST_LIMITS) ||
+      DEFAULT_CONVERSATION_LIST_LIMITS
+    );
   }
 
   getConversationListLimit(type: GROUP_QUERY_TYPE) {
     return this.getConversationListLimits()[type];
+  }
+
+  async onBoardingPreparation() {
+    const profileService: ProfileService = ProfileService.getInstance();
+    await profileService.markMeConversationAsFav();
   }
 }
 

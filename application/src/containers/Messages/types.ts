@@ -5,11 +5,15 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom';
+import { History } from 'history';
 
 type MessagesProps = {};
 
 type MessagesViewProps = {
-  isLeftNavOpen: boolean,
+  toConversation: (history: History, id?: number) => void;
+  isLeftNavOpen: boolean;
+  currentConversationId?: number;
+  getLastGroupId: (groupId?: number) => Promise<number | undefined>;
 } & RouteComponentProps<{ id: string }>;
 
 export { MessagesProps, MessagesViewProps };

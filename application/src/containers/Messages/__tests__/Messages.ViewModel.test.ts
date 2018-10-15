@@ -1,0 +1,26 @@
+import { MessagesViewModel } from '../Messages.ViewModel';
+import storeManager from '../../../store/index';
+jest.mock('../../../store/index');
+describe('Message view model', () => {
+  let vm: MessagesViewModel;
+  let gs: object;
+  let history: History;
+  beforeEach(() => {
+    jest.resetAllMocks();
+    vm = new MessagesViewModel();
+    gs = {
+      set: jest.fn(),
+      get: jest.fn(),
+    };
+    jest.spyOn(storeManager, 'getGlobalStore').mockReturnValue(gs);
+    history = {
+      push: jest.fn(),
+    };
+  });
+  it('should always update the global state and routes when redirect to conversation', () => {
+    vm.toConversation(history, 100);
+    expect(storeManager.getGlobalStore).toBeCalled();
+    expect(gs.set).toBeCalledWith('currentConversationId', 100);
+    expect(history.push).toBeCalledWith('/messages/100');
+  });
+});
