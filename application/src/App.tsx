@@ -11,7 +11,7 @@ import ThemeProvider from '@/containers/ThemeProvider';
 
 import { AuthRoute } from '@/containers/AuthRoute';
 import Login from '@/containers/Login';
-import Home from '@/containers/Home';
+import { Home } from '@/containers/Home';
 import UnifiedLogin from '@/containers/UnifiedLogin';
 import VersionInfo from '@/containers/VersionInfo';
 import { autorun } from 'mobx';

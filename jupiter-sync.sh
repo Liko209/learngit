@@ -27,8 +27,8 @@ case "$1" in
         echo 'Which ID do you want to upload? (Only the number, ${ID})'
         read ID
         echo $ID
-        subDomain=storybooks-$ID
-        cd packages/ui-components && npm run build-storybook
+        subDomain=jui-$ID
+        cd packages/jui && npm run build-storybook
         rsync -azPv \
         --delete --progress \
         ./storybook-static/ $theServer:$theFolder/$subDomain

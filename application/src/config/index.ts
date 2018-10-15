@@ -104,7 +104,7 @@ class Config {
   }
 
   getEnv() {
-    return this._env;
+    return this._env || 'XMN-Stable';
   }
 
   getAllEnv() {

@@ -73,6 +73,7 @@ export default class SyncService extends BaseService {
       notificationCenter.emitService(SERVICE.DO_SIGN_OUT);
     }
   }
+
   private async _syncIndexData(timeStamp: number) {
     // 5 minutes ago to ensure data is correct
     const result = await fetchIndexData(String(timeStamp - 300000));
