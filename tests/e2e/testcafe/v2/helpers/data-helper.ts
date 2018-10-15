@@ -13,7 +13,7 @@ class DataHelper {
     const mainCompany = <ICompany>{
       type: data.accountType,
       brandId: String(data.brandId),
-      number: String(data.mainCompany),
+      number: String(data.mainCompanyNumber),
       domain: data.companyEmailDomain,
     }
     let admin, users;

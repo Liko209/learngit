@@ -2,6 +2,7 @@ import 'testcafe';
 
 import { DataHelper } from './data-helper'
 import { SdkHelper } from "./sdk-helper";
+import { JupiterHelper } from "./jupiter-helper";
 
 class Helper {
   constructor(private t: TestController) {};
@@ -12,6 +13,15 @@ class Helper {
 
   get sdkHelper(): SdkHelper {
     return new SdkHelper(this.t);
+  }
+
+  get jupiterHelper(): JupiterHelper {
+    return new JupiterHelper(this.t);
+  }
+
+  /* delegate following method */
+  get rcData() {
+    return this.dataHelper.rcData;
   }
 }
 

@@ -17,6 +17,10 @@ export function setupCase(accountType: string) {
       ENV_OPTS.RC_PLATFORM_BASE_URL,
       ENV_OPTS.GLIP_SERVER_BASE_URL,
     );
+    await h(t).jupiterHelper.setup(
+      ENV_OPTS.AUTH_URL,
+      ENV_OPTS.JUPITER_APP_KEY,
+    )
   }
 }
 
