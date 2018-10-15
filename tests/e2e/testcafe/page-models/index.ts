@@ -3,12 +3,15 @@
  * @Date: 2018-08-08 13:16:21
  * Copyright © RingCentral. All rights reserved.
  */
+import { getLogger } from "log4js";
 import { Selector } from 'testcafe';
 import { ReactSelector, waitForReact } from 'testcafe-react-selectors';
 
 import { Status } from '../libs/report';
 import { TestHelper } from '../libs/helpers';
 import { SITE_URL } from '../config';
+
+const logger = getLogger(__filename);
 
 export interface UICreator<T> {
   new (t: TestController): T;
@@ -91,7 +94,7 @@ export abstract class BaseUI {
     return this.chain(async t => await t.click(el));
   }
 
-  shouldNavigateTo<T extends BaseUI>(
+  shouldNavigateTo<T>(
     uiCreator: UICreator<T>): T {
     return new uiCreator(this.t);
   }
@@ -144,10 +147,17 @@ export abstract class BaseComponent extends BaseUI {
 }
 
 export abstract class BasePage extends BaseUI {
+
   navigateTo(url: string) {
     return this.chain(async t => {
       await t.navigateTo(url);
       await waitForReact();
-    });
+    }).ensurePageLoaded();
   }
+
+  ensurePageLoaded() {
+    logger.warn('You should overwrite ensurePageLoaded in your page model!');
+    return this;
+  }
+
 }

@@ -15,7 +15,7 @@ fixture('Demo')
 
 test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
   const user = h(t).rcData.mainCompany.users[0];
-  await h(t).jupiterHelper.directLoginWithUser(SITE_URL, user);
+  await h(t).directLoginWithUser(SITE_URL, user);
   await t.wait(10e3);
   const a11yReport = await h(t).a11yHelper.attestCheck();
   console.log(JSON.stringify(a11yReport, null, 2));

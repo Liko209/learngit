@@ -2,6 +2,7 @@ import 'testcafe';
 import axios from 'axios';
 import { URL } from 'url';
 import { IUser } from '../models';
+import { UICreator } from '../../page-models'
 import { BlankPage } from '../../page-models/pages/BlankPage';
 
 export class JupiterHelper {
@@ -70,4 +71,7 @@ export class JupiterHelper {
       });
   }
 
+  fromPage<T>(uiCreator: UICreator<T>) {
+    return new uiCreator(this.t);
+  }
 }

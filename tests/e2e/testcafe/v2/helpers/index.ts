@@ -4,6 +4,8 @@ import { DataHelper } from './data-helper'
 import { SdkHelper } from "./sdk-helper";
 import { JupiterHelper } from "./jupiter-helper";
 import { A11yHelper } from "./a11y-helper";
+import { IUser } from '../models';
+import { UICreator } from '../../page-models';
 
 class Helper {
   constructor(private t: TestController) {};
@@ -28,6 +30,15 @@ class Helper {
   get rcData() {
     return this.dataHelper.rcData;
   }
+
+  directLoginWithUser(url: string, user: IUser) {
+    return this.jupiterHelper.directLoginWithUser(url, user);
+  }
+
+  fromPage<T>(uiCreator: UICreator<T>) {
+    return this.jupiterHelper.fromPage(uiCreator);
+  }
+
 }
 
 function h(t: TestController) {

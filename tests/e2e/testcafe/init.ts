@@ -21,6 +21,7 @@ export function setupCase(accountType: string) {
       ENV_OPTS.AUTH_URL,
       ENV_OPTS.JUPITER_APP_KEY,
     )
+    await t.maximizeWindow();
   }
 }
 
