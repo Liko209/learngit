@@ -62,7 +62,7 @@ describe('getGroupName', () => {
 
   describe('1:1 conversation', () => {
     it('should return displayName of the other member', () => {
-      personStore.get.mockImplementation(id => {
+      personStore.get.mockImplementation((id: number) => {
         if (id === 2) {
           return {
             displayName: 'Jack',
