@@ -3,7 +3,7 @@
 * @Date: 2018-09-19 14:19:09
 * Copyright © RingCentral. All rights reserved.
 */
-import { observable, computed } from 'mobx';
+import { computed } from 'mobx';
 import {
   ConversationListItemProps,
   ConversationListItemViewProps,
@@ -21,24 +21,20 @@ import GroupStateModel from '@/store/models/GroupState';
 import StoreViewModel from '@/store/ViewModel';
 import history from '@/utils/history';
 
-class ConversationListItemViewModel extends StoreViewModel
+class ConversationListItemViewModel
+  extends StoreViewModel<ConversationListItemProps>
   implements ConversationListItemViewProps {
-  unreadCount: number;
-  important?: boolean | undefined;
-  draft?: string | undefined;
-  sendFailurePostIds: number[];
+  groupService: service.GroupService = GroupService.getInstance();
 
-  @observable
-  groupId: number;
+  @computed
+  get groupId() {
+    return this.props.groupId;
+  }
 
-  @observable
-  currentUserId?: number;
-
-  @observable
-  currentGroupId?: number;
-
-  @observable
-  selected: boolean = false;
+  @computed
+  get selected() {
+    return this.props.selected;
+  }
 
   @computed
   get displayName() {
@@ -53,23 +49,6 @@ class ConversationListItemViewModel extends StoreViewModel
   onClick = () => {
     this.groupService.clickGroup(this.groupId);
     history.push(`/messages/${this.groupId}`);
-  }
-
-  groupService: service.GroupService;
-
-  constructor() {
-    super();
-    this.groupService = GroupService.getInstance();
-  }
-
-  onReceiveProps(props: ConversationListItemProps) {
-    if (this.selected !== props.selected) {
-      this.selected = props.selected;
-    }
-
-    if (this.groupId !== props.groupId) {
-      this.groupId = props.groupId;
-    }
   }
 
   @computed

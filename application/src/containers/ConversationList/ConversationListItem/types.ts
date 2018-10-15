@@ -13,12 +13,8 @@ type ConversationListItemProps = {
 type ConversationListItemViewProps = {
   groupId: number;
   displayName: string;
-  unreadCount: number;
-  umiHint?: boolean;
-  important?: boolean;
   selected: boolean;
-  draft?: string;
-  sendFailurePostIds: number[];
+  umiHint?: boolean;
   onClick: (event: MouseEvent<HTMLElement>) => void;
 };
 

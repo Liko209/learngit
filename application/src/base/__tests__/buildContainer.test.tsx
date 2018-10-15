@@ -6,10 +6,10 @@
 import React from 'react';
 import { observable } from 'mobx';
 import { mount } from 'enzyme';
-import { AbstractViewModel } from '@/base/AbstractViewModel';
+import { StoreViewModel } from '@/store/ViewModel';
 import { buildContainer } from '../buildContainer';
 
-type MyViewModelProps = {
+type MyProps = {
   id: number;
 };
 type MyViewProps = {
@@ -25,7 +25,7 @@ const MyView = ({ id, text }: MyViewProps) => (
 );
 const mockOnReceiveProps = jest.fn().mockName('onReceiveProps');
 const dispose = jest.fn().mockName('dispose');
-class MyViewModel extends AbstractViewModel implements MyViewProps {
+class MyViewModel extends StoreViewModel<MyProps> implements MyViewProps {
   dispose = dispose;
 
   @observable
@@ -33,7 +33,7 @@ class MyViewModel extends AbstractViewModel implements MyViewProps {
   @observable
   text: string;
 
-  onReceiveProps(props: MyViewModelProps) {
+  onReceiveProps(props: MyProps) {
     mockOnReceiveProps(props);
     if (isNaN(props.id)) throw new Error();
     this.id = props.id;
@@ -42,7 +42,7 @@ class MyViewModel extends AbstractViewModel implements MyViewProps {
 }
 
 describe('buildContainer()', () => {
-  const MyContainer = buildContainer<MyViewModelProps>({
+  const MyContainer = buildContainer<MyProps>({
     View: MyView,
     ViewModel: MyViewModel,
   });
