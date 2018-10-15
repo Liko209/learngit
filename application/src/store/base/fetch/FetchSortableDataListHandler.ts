@@ -30,6 +30,14 @@ export type TReplacedData<T> = {
   id: number;
   data: T;
 };
+
+const transform2Map = (entities: any[]): Map<number, any> => {
+  const map = new Map();
+  entities.forEach((item: any) => {
+    map.set(item.id, item);
+  });
+  return map;
+};
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
   isMatchFunc: IMatchFunc<T>;
@@ -199,11 +207,17 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     this.sortableListStore.removeByIds(ids);
   }
 
-  upsert(models: ISortableModel<T>[]) {
-    this.sortableListStore.upsert(models);
+  upsert(models: T[]) {
+    this.onDataChanged({
+      type: EVENT_TYPES.PUT,
+      entities: transform2Map(models),
+    });
   }
 
-  replaceAll(models: ISortableModel<T>[]) {
-    this.sortableListStore.replaceAll(models);
+  replaceAll(models: T[]) {
+    this.onDataChanged({
+      type: EVENT_TYPES.REPLACE_ALL,
+      entities: transform2Map(models),
+    });
   }
 }

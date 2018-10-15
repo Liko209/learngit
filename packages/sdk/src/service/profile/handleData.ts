@@ -11,7 +11,7 @@ import { transform } from '../../service/utils';
 import AccountService from '../account';
 import { Profile, Raw } from '../../models';
 import _ from 'lodash';
-import { mainLogger } from 'foundation/src';
+import { mainLogger } from 'foundation';
 
 function extractHiddenGroupIds(profile: Profile): number[] {
   const clone = Object.assign({}, profile);

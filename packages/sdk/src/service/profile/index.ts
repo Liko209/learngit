@@ -13,7 +13,7 @@ import { SOCKET } from '../eventKey';
 import _ from 'lodash';
 import { BaseError, ErrorParser } from '../../utils';
 import PersonService from '../person';
-import { mainLogger } from 'foundation/src';
+import { mainLogger } from 'foundation';
 
 export default class ProfileService extends BaseService<Profile> {
   static serviceName = 'ProfileService';

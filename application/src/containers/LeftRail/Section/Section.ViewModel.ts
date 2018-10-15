@@ -8,9 +8,8 @@ import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
 import { Group, Profile } from 'sdk/models';
 import storeManager, { ENTITY_NAME } from '@/store';
-import { getSingleEntity, getEntity } from '@/store/utils';
+import { getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
-import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import {
   SectionProps,
@@ -108,9 +107,13 @@ class SectionViewModel extends StoreViewModel implements SectionViewProps {
     this.autorun(() => {
       this.updateGlobalGroups();
     });
+    this._oldFavGroupIds =
+      getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'favoriteGroupIds',
+      ) || [];
     this.autorun(() => this.profileUpdateFavSection());
     this.autorun(() => this.profileUpdateGroupSections());
-    this.autorun(() => this.handleProfileUpdateMoreGroups());
   }
 
   // @observable
@@ -140,16 +143,7 @@ class SectionViewModel extends StoreViewModel implements SectionViewProps {
     );
   }
 
-  @observable
-  profileMoreGroupsIds: number[] = [];
-
-  @computed
-  get profileMoreGroups() {
-    const ids = this.profileMoreGroupsIds;
-    return ids.map((id: number) => getEntity(ENTITY_NAME.GROUP, id));
-  }
-
-  profileUpdateFavSection() {
+  async profileUpdateFavSection() {
     const favGroupIds = this.favGroupIds;
     const condition =
       this._listHandler &&
@@ -157,41 +151,17 @@ class SectionViewModel extends StoreViewModel implements SectionViewProps {
       this._type === SECTION_TYPE.FAVORITE &&
       this._oldFavGroupIds.toString() !== favGroupIds.toString();
     if (condition) {
-      const newModels = favGroupIds.map((value: number, index: number) => {
-        return {
-          id: value,
-          sortValue: 0,
-        };
-      });
-      this._listHandler.replaceAll(newModels);
       this._oldFavGroupIds = favGroupIds;
+      const groupService = GroupService.getInstance<service.GroupService>();
+      const result = await groupService.getGroupsByType(
+        GROUP_QUERY_TYPE.FAVORITE,
+      );
+      this._listHandler.replaceAll(result);
     }
   }
 
-  handleProfileUpdateMoreGroups() {
-    const groups = this.profileMoreGroups;
-    if (this._listHandler && this._type && groups.length) {
-      const models = groups
-        .filter((model: GroupModel) => {
-          if (this._type === SECTION_TYPE.TEAM) {
-            return model.isTeam;
-          }
-          return !model.isTeam;
-        })
-        .map((model: GroupModel) => {
-          return {
-            id: model.id,
-            sortValue: -model.latestTime,
-          };
-        });
-      this._listHandler.upsert(models);
-      this.profileMoreGroupsIds = [];
-    }
-  }
-
-  profileUpdateGroupSections() {
+  async profileUpdateGroupSections() {
     const newFavIds = this.favGroupIds;
-
     const condition =
       this._type &&
       this._listHandler &&
@@ -200,13 +170,15 @@ class SectionViewModel extends StoreViewModel implements SectionViewProps {
     if (condition) {
       const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
       const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
+      this._oldFavGroupIds = newFavIds;
       if (less.length) {
         this._listHandler.removeByIds(less);
       }
       if (more.length) {
-        this.profileMoreGroupsIds = more;
+        const groupService = GroupService.getInstance<service.GroupService>();
+        const result = await groupService.getGroupsByIds(more);
+        this._listHandler.upsert(result);
       }
-      this._oldFavGroupIds = newFavIds;
     }
   }
 
@@ -252,6 +224,26 @@ class SectionViewModel extends StoreViewModel implements SectionViewProps {
 
       this._type = props.type;
       this._config = SECTION_CONFIGS[this._type];
+      if (this._type === SECTION_TYPE.FAVORITE) {
+        this._config['isMatchFun'] = (model: Group) => {
+          return this._oldFavGroupIds.indexOf(model.id) !== -1;
+        };
+        this._config['transformFun'] = (model: Group) => {
+          return {
+            id: model.id,
+            sortValue: this._oldFavGroupIds.indexOf(model.id),
+          } as ISortableModel<Group>;
+        };
+      } else {
+        this._config['isMatchFun'] = (model: Group) => {
+          const notInFav = this._oldFavGroupIds.indexOf(model.id) === -1;
+          const isTeamInTeamSection =
+            this._type === SECTION_TYPE.TEAM && model.is_team;
+          const isDirectInDirectSection =
+            this._type === SECTION_TYPE.DIRECT_MESSAGE && !model.is_team;
+          return notInFav && (isTeamInTeamSection || isDirectInDirectSection);
+        };
+      }
 
       const dataProvider = new GroupDataProvider(this._config.queryType);
       this._listHandler = new FetchSortableDataListHandler(dataProvider, {
