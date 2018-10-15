@@ -4,6 +4,7 @@
 * Copyright © RingCentral. All rights reserved.
 */
 import PersonModel from '../../../store/models/Person';
+import { Person } from 'sdk/src/models';
 
 type UserInfo = {
   firstName?: string;
@@ -20,11 +21,11 @@ function getUserInfo(firstName?, lastName?, email?) {
 function checkDisplayName(userInfo: UserInfo, matchName: string) {
   const { firstName = '', lastName = '', email = '' } = userInfo;
   const pm = PersonModel.fromJS({
+    email,
     id: 12,
     first_name: firstName,
     last_name: lastName,
-    email: email,
-  });
+  } as Person);
   const display = pm.displayName;
   expect(display).toBe(matchName);
 }
@@ -32,11 +33,11 @@ function checkDisplayName(userInfo: UserInfo, matchName: string) {
 function checkShortName(userInfo: UserInfo, matchName: string) {
   const { firstName = '', lastName = '', email = '' } = userInfo;
   const pm = PersonModel.fromJS({
+    email,
     id: 12,
     first_name: firstName,
     last_name: lastName,
-    email: email,
-  });
+  } as Person);
   const display = pm.shortName;
   expect(display).toBe(matchName);
 }

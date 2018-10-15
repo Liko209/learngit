@@ -4,19 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable } from 'mobx';
-import { AbstractViewModel } from '@/base/AbstractViewModel';
+import { computed } from 'mobx';
 import { SECTION_TYPE } from './Section/types';
-import { LeftRailProps, LeftRailViewProps } from './types';
+import { LeftRailViewProps, LeftRailProps } from './types';
+import StoreViewModel from '@/store/ViewModel';
 
-class LeftRailViewModel extends AbstractViewModel implements LeftRailViewProps {
-  @observable
-  currentGroupId: number;
-
-  onReceiveProps(props: LeftRailProps) {
-    if (this.currentGroupId !== props.currentGroupId) {
-      this.currentGroupId = props.currentGroupId;
-    }
+class LeftRailViewModel extends StoreViewModel<LeftRailProps>
+  implements LeftRailViewProps {
+  @computed
+  get currentGroupId() {
+    return this.props.currentGroupId;
   }
 
   @computed

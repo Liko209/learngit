@@ -4,15 +4,13 @@
 * Copyright © RingCentral. All rights reserved.
 */
 import { computed } from 'mobx';
-import {
-  ConversationListItemProps,
-  ConversationListItemViewProps,
-} from './types';
+import { ConversationListItemViewProps } from './types';
 import { service } from 'sdk';
 const { GroupService } = service;
 import { getEntity, getSingleEntity } from '@/store/utils';
 // import { getGroupName } from '@/utils/groupName';
 import { ENTITY_NAME } from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import { MyState } from 'sdk/models';
@@ -20,10 +18,14 @@ import MyStateModel from '@/store/models/MyState';
 import GroupStateModel from '@/store/models/GroupState';
 import StoreViewModel from '@/store/ViewModel';
 
-class ConversationListItemViewModel
-  extends StoreViewModel<ConversationListItemProps>
-  implements ConversationListItemViewProps {
+class ConversationListItemViewModel extends StoreViewModel<
+  ConversationListItemViewProps
+> {
+  unreadCount: number;
+  important?: boolean | undefined;
   groupService: service.GroupService = GroupService.getInstance();
+  draft?: string | undefined;
+  sendFailurePostIds: number[];
 
   @computed
   get groupId() {
@@ -44,9 +46,8 @@ class ConversationListItemViewModel
   get _group() {
     return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
   }
-
   onClick = () => {
-    this.groupService.clickGroup(this.groupId);
+    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
   }
 
   @computed

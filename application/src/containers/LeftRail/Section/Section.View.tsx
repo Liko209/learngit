@@ -66,6 +66,7 @@ class SectionViewComponent extends React.Component<Props> {
 
   render() {
     const { t, title, groupIds, iconName, expanded } = this.props;
+    console.log('SectionViewComponent props: ', this.props.currentGroupId);
     return (
       <div
         className="conversation-list-section"

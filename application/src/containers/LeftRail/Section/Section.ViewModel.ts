@@ -11,6 +11,13 @@ import storeManager, { ENTITY_NAME } from '@/store';
 import { getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import _ from 'lodash';
+import StoreViewModel from '@/store/ViewModel';
+import {
+  FetchSortableDataListHandler,
+  IFetchSortableDataProvider,
+  FetchDataDirection,
+  ISortableModel,
+} from '@/store/base/fetch';
 import {
   SectionProps,
   SectionConfig,
@@ -18,14 +25,6 @@ import {
   SectionViewProps,
   SECTION_TYPE,
 } from './types';
-import { StoreViewModel } from '@/store/ViewModel';
-
-import {
-  FetchSortableDataListHandler,
-  IFetchSortableDataProvider,
-  FetchDataDirection,
-  ISortableModel,
-} from '@/store/base/fetch';
 
 const { GroupService } = service;
 
@@ -101,7 +100,8 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   }
 }
 
-class SectionViewModel extends StoreViewModel implements SectionViewProps {
+class SectionViewModel extends StoreViewModel<SectionProps>
+  implements SectionViewProps {
   constructor() {
     super();
     this.autorun(() => {
@@ -125,8 +125,10 @@ class SectionViewModel extends StoreViewModel implements SectionViewProps {
   // @observable
   private _config: SectionConfig;
 
-  @observable
-  currentGroupId: number;
+  @computed
+  get currentGroupId() {
+    return this.props.currentGroupId;
+  }
 
   @observable
   expanded: boolean = true;
@@ -213,10 +215,6 @@ class SectionViewModel extends StoreViewModel implements SectionViewProps {
   }
 
   async onReceiveProps(props: SectionProps) {
-    if (props.currentGroupId && this.currentGroupId !== props.currentGroupId) {
-      // this.currentGroupId = props.currentGroupId; // endless loop waiting for Valor to fix
-    }
-
     if (this._type !== props.type) {
       if (this._listHandler) {
         this._listHandler.dispose();

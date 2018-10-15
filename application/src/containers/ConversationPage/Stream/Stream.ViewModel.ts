@@ -6,7 +6,7 @@
 
 import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
 import _ from 'lodash';
-import { observable, action } from 'mobx';
+import { observable } from 'mobx';
 import { Post } from 'sdk/models';
 import { PostService, StateService, ENTITY } from 'sdk/service';
 import storeManager, { ENTITY_NAME } from '@/store';
@@ -155,8 +155,8 @@ class StreamViewModel extends StoreViewModel {
   @loading
   async loadInitialPosts() {
     await this._loadPosts(FetchDataDirection.UP);
-    const hasMore = this._transformHandler.hasMore(FetchDataDirection.UP);
-    hasMore && this.loadPrevPosts();
+    // const hasMore = this._transformHandler.hasMore(FetchDataDirection.UP);
+    // hasMore && this.loadPrevPosts();
   }
 
   @onScrollToTop
@@ -171,7 +171,6 @@ class StreamViewModel extends StoreViewModel {
     }
   }
 
-  @action
   private async _loadPosts(direction: FetchDataDirection) {
     if (!this._transformHandler.hasMore(direction)) {
       return {

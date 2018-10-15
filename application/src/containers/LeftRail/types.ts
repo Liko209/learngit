@@ -6,11 +6,11 @@
 import { SECTION_TYPE } from './Section/types';
 
 type LeftRailProps = {
-  currentGroupId: number;
+  currentGroupId?: number;
 };
 
 type LeftRailViewProps = {
-  currentGroupId: number;
+  currentGroupId?: number;
   sections: SECTION_TYPE[];
 };
 

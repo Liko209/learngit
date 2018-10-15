@@ -9,17 +9,22 @@ import {
   AccountDao,
   ACCOUNT_USER_ID,
 } from '../../dao';
+import ProfileService from '../profile';
+import { Group } from './../../models.d';
 import { GroupState, MyState, Post } from '../../models';
 import StateAPI from '../../api/glip/state';
+import GroupAPI from '../../api/glip/group';
 import BaseService from '../BaseService';
 import PostService from '../post';
 import { SOCKET, SERVICE } from '../eventKey';
 import { ENTITY } from '../../service/eventKey';
 import handleData, { handlePartialData, handleGroupChange } from './handleData';
-// import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation';
 import _ from 'lodash';
 import { UMI_METRICS } from '../constants';
 import notificationCenter from '../notificationCenter';
+// import AccountService from '../account/index';
+// import PersonService from '../person/index';
 
 export default class StateService extends BaseService<GroupState> {
   static serviceName = 'StateService';
@@ -64,6 +69,58 @@ export default class StateService extends BaseService<GroupState> {
     return result;
   }
 
+  async getLastValidGroupId(assginedId?: number) {
+    let groupId;
+    let lastGroup;
+    if (assginedId) {
+      groupId = assginedId;
+    } else {
+      groupId = (await this.getMyState())!.last_group_id;
+    }
+
+    // if (!groupId) {
+    //   // new user
+    //   const accountService: AccountService = AccountService.getInstance();
+    //   const personService: PersonService = PersonService.getInstance();
+    //   const userId = accountService.getCurrentUserId();
+    //   const { me_group_id } = await personService.getById(userId!);
+    //   return me_group_id;
+    // }
+
+    try {
+      const { data } = await GroupAPI.getDataById<Group>(groupId);
+      lastGroup = data;
+    } catch (e) {
+      mainLogger.warn(`Find Group info failed ${groupId}`);
+      return;
+    }
+
+    if (lastGroup.is_archived) {
+      // archive
+      return;
+    }
+    const profileService = ProfileService.getInstance() as ProfileService;
+    const isHidden = await profileService.isConversationHidden(groupId);
+    if (isHidden) {
+      close;
+      return;
+    }
+    // const groupService = GroupService.getInstance() as GroupService;
+    // if (groupService.isFavGroup(groupId)) {
+    //   return groupId;
+    // }
+    // const queryType = lastGroup.is_team
+    //   ? GROUP_QUERY_TYPE.TEAM
+    //   : GROUP_QUERY_TYPE.GROUP;
+    // const groups = await groupService.getGroupsByType(queryType);
+    // const isIncluded = _(groups)
+    //   .map('id')
+    //   .includes(groupId);
+    // if (isIncluded) {
+    //   return groupId;
+    // }
+    return groupId;
+  }
   async markAsRead(groupId: number): Promise<void> {
     notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [
       {
