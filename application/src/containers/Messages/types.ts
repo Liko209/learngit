@@ -6,12 +6,12 @@
 
 import { RouteComponentProps } from 'react-router-dom';
 
-type MessagesProps = {};
+type MessagesProps = {} & RouteComponentProps<{ id: string }>;
 
 type MessagesViewProps = {
-  toConversation: (id?: number) => void;
   isLeftNavOpen: boolean;
   currentConversationId?: number;
+  setCurrentConversationId: Function;
   getLastGroupId: (groupId?: number) => Promise<number | undefined>;
 } & RouteComponentProps<{ id: string }>;
 
