@@ -45,7 +45,7 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
             this._props[key] = props[key];
           }
         } else if (Array.isArray(props[key])) {
-          const arr: any = this._props[key];
+          const arr: any = this._props[key] || [];
           if (!_.isEqual([...arr], props[key])) {
             this._props[key] = props[key];
           }
