@@ -3,9 +3,14 @@ import 'testcafe';
 import { DataHelper } from './data-helper'
 import { SdkHelper } from "./sdk-helper";
 import { JupiterHelper } from "./jupiter-helper";
+import { A11yHelper } from "./a11y-helper";
 
 class Helper {
   constructor(private t: TestController) {};
+
+  get a11yHelper(): A11yHelper {
+    return new A11yHelper(this.t);
+  }
 
   get dataHelper(): DataHelper {
     return new DataHelper(this.t);
