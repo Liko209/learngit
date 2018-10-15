@@ -106,7 +106,6 @@ class JuiMessageInput extends React.Component<IProps, IState> {
 
   // onFocus(range: RangeStatic, source: Sources, editor: any) {
   //   // debugger;
-  //   // console.log('linbin');
   // }
 
   render() {
