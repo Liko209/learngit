@@ -2,9 +2,9 @@ import { MessagesViewModel } from '../Messages.ViewModel';
 import storeManager from '../../../store/index';
 jest.mock('../../../store/index');
 describe('Message view model', () => {
-  let vm;
-  let gs;
-  let history;
+  let vm: MessagesViewModel;
+  let gs: object;
+  let history: History;
   beforeEach(() => {
     jest.resetAllMocks();
     vm = new MessagesViewModel();

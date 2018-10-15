@@ -55,6 +55,8 @@ describe('CreateTeamVM', () => {
     const errorMsg = createTeamVM.createErrorHandler({
       error: {
         code: 'already_taken',
+        message: '',
+        validation: false,
       },
     });
     expect(errorMsg).toEqual({
@@ -63,6 +65,8 @@ describe('CreateTeamVM', () => {
     });
     const errorMsg2 = createTeamVM.createErrorHandler({
       error: {
+        message: '',
+        validation: true,
         code: 'invalid_field',
       },
     });
