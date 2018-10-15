@@ -31,7 +31,7 @@ const createPrivateChat = async (h: TestHelper, members: any[]) => {
 test(formalName('send', ['P1', 'JPT-77', 'Enter text in the conversation input box']), async (t) => {
   await setupSDK(t);
   let groupId: number;
-  const msg = `${Date.now()}`; // No Spaces
+  const msg = `${Date.now()}`; // Have a trap, no spaces
   await directLogin(t)
     .chain(async (t, h) => {
       h.log('1. create one private chat conversation');
