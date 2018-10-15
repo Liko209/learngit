@@ -3,12 +3,13 @@
  * @Date: 2018-9-17 16:24:02
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { AbstractViewModel } from '@/base';
+import { computed } from 'mobx';
+import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { observable, computed, action } from 'mobx';
 import { AvatarProps, AvatarViewProps } from './types';
+import { PersonService } from 'sdk/service';
+import defaultAvatar from './defaultAvatar.svg';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -22,17 +23,19 @@ const AVATAR_COLORS = [
   'brass',
   'lake',
 ];
-class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
-  @observable
-  private _uid = 0;
+class AvatarViewModel extends StoreViewModel<AvatarProps>
+  implements AvatarViewProps {
+  @computed
+  private get _uid() {
+    return this.props.uid;
+  }
 
-  size?: 'small' | 'medium' | 'large' | 'xlarge';
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-  @action
-  onReceiveProps({ uid, size, onClick }: AvatarProps) {
-    this._uid = uid;
-    this.size = size;
-    this.onClick = onClick;
+  get size() {
+    return this.props.size;
+  }
+
+  get onClick() {
+    return this.props.onClick;
   }
 
   @computed
@@ -51,7 +54,7 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   private get _person() {
     return getEntity(ENTITY_NAME.PERSON, this._uid);
   }
-
+  @computed
   get bgColor() {
     const hash = this._hash;
     return AVATAR_COLORS[hash];
@@ -61,17 +64,14 @@ class AvatarViewModel extends AbstractViewModel implements AvatarViewProps {
   get name() {
     return this._person.shortName;
   }
-
   @computed
   get url() {
-    const { headshot } = this._person;
-    if (typeof headshot === 'string') {
-      return headshot;
+    const personService = PersonService.getInstance<PersonService>();
+    const headShotVersion = this._person.headShotVersion;
+    if (headShotVersion) {
+      return personService.getHeadShot(this._uid, headShotVersion, 150);
     }
-    if (headshot && headshot.url) {
-      return headshot.url;
-    }
-    return '';
+    return defaultAvatar;
   }
 }
 

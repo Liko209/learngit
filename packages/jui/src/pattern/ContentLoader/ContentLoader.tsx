@@ -146,9 +146,9 @@ class ContentLoader extends PureComponent<ThemeProps> {
               }}
             >
               <ReactContentLoader
-                style={{ width: `${18 * width}px` }}
+                style={{ width: `${18 * width}px`, height: `${50 * height}px` }}
                 width={18 * width}
-                height={47 * width}
+                height={50 * height}
               >
                 <rect
                   x={6 * width}
@@ -176,9 +176,9 @@ class ContentLoader extends PureComponent<ThemeProps> {
                 />
               </ReactContentLoader>
               <ReactContentLoader
-                style={{ width: `${18 * width}px` }}
+                style={{ width: `${18 * width}px`, height: `${62 * height}px` }}
                 width={18 * width}
-                height={62 * width}
+                height={62 * height}
               >
                 <rect
                   x={6.5 * width}
@@ -231,9 +231,12 @@ class ContentLoader extends PureComponent<ThemeProps> {
                 }}
               >
                 <ReactContentLoader
-                  style={{ width: `${67 * width}px` }}
+                  style={{
+                    width: `${67 * width}px`,
+                    height: `${70 * height}px`,
+                  }}
                   width={67 * width}
-                  height={70 * width}
+                  height={70 * height}
                 >
                   <rect
                     x={6 * width}
@@ -307,7 +310,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
                 }}
               >
                 <ReactContentLoader
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', height: `${67 * height}px` }}
                   width={67 * width}
                   height={67 * height}
                 >

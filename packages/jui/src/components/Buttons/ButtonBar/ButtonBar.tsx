@@ -131,6 +131,4 @@ JuiButtonBar.defaultProps = {
   invisible: false,
 };
 
-JuiButtonBar.dependencies = [];
-
 export { JuiButtonBar, JuiButtonBarProps };

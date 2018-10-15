@@ -3,31 +3,30 @@
  * @Date: 2018-09-18 10:09:11
  * Copyright © RingCentral. All rights reserved.
  */
-import { action, observable } from 'mobx';
-import { AbstractViewModel } from '@/base';
+import { action, computed, observable } from 'mobx';
+import { StoreViewModel } from '@/store/ViewModel';
 import { loading } from '@/plugins/LoadingPlugin';
 import { TimerDemoProps, TimerDemoViewProps } from './types';
 
-class TimerDemoViewModel extends AbstractViewModel
+class TimerDemoViewModel extends StoreViewModel<TimerDemoProps>
   implements TimerDemoViewProps {
   @observable
-  timerId: number;
-  @observable
   text: string = 'Current Time';
+
   @observable
   now: number = Date.now();
+
+  @computed
+  get timerId() {
+    return this.props.timerId;
+  }
+
   onUpdateTimeClick = () => this.updateTime();
   onUpdateTimeWithLoadingClick = () => this.updateTimeWithLoading();
   onStartTimerClick = () => this.startTimer();
   onStopTimerClick = () => this.stopTimer();
 
   timer: NodeJS.Timer;
-
-  onReceiveProps({ timerId }: TimerDemoProps) {
-    if (this.timerId !== timerId) {
-      this.timerId = timerId;
-    }
-  }
 
   @action
   async updateTime() {

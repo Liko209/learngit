@@ -10,7 +10,7 @@ import { debounce, Cancelable } from 'lodash';
 import { AbstractViewModel } from '@/base';
 import { MessageInputProps, MessageInputViewProps } from './types';
 import { GroupService, PostService } from 'sdk/service';
-import { markdownFromDelta } from 'ui-components/MessageInput';
+import { markdownFromDelta } from 'jui/pattern/MessageInput';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -22,16 +22,22 @@ enum ERROR_TYPES {
   CONTENT_ILLEGAL = 'contentIllegal',
 }
 
-type DebounceFunction = (params: { id: number, draft: string }) => Promise<boolean>;
+type DebounceFunction = (
+  params: { id: number; draft: string },
+) => Promise<boolean>;
 
-class MessageInputViewModel extends AbstractViewModel implements MessageInputViewProps {
+class MessageInputViewModel extends AbstractViewModel
+  implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
   private _isInit: boolean;
-  @observable _id: number;
-  @observable draft: string = '';
-  @observable error: string = '';
+  @observable
+  _id: number;
+  @observable
+  draft: string = '';
+  @observable
+  error: string = '';
   keyboardEventHandler = {
     enter: {
       key: 13,
@@ -134,4 +140,4 @@ class MessageInputViewModel extends AbstractViewModel implements MessageInputVie
   }
 }
 
-export { MessageInputViewModel };
+export { MessageInputViewModel, ERROR_TYPES, CONTENT_ILLEGAL, CONTENT_LENGTH };

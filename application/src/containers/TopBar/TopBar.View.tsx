@@ -70,7 +70,7 @@ class TopBar extends React.Component<TopBarProps> {
         tooltipTitle={t('Menu')}
         size="medium"
         onClick={updateLeftNavState}
-        data-anchor="expandButton"
+        data-test-automation-id="toggleBtn"
         {...mainMenuProps}
       >
         format_list_bulleted

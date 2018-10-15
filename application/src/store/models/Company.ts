@@ -3,7 +3,6 @@ import { Company } from 'sdk/models';
 import Base from './Base';
 
 export default class CompanyModel extends Base<Company> {
-  id: number;
   @observable
   name: string;
 
