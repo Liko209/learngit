@@ -6,7 +6,7 @@
 import storeManager from '../../store';
 import { getGroupName } from '../groupName';
 import { getEntity } from '@/store/utils';
-import { toJS } from 'mobx';
+import GroupModel from '@/store/models/Group';
 const personStore = {
   get: jest.fn(),
 };
@@ -16,31 +16,29 @@ describe('getGroupName', () => {
   });
   describe('team', () => {
     it('should return setAbbreviation of team', () => {
-      expect(
-        getGroupName(getEntity, {
-          id: 1132,
-          members: [1, 2, 3],
-          description: 'llll',
-          pinnedPostIds: [2, 3, 4],
-          isTeam: true,
-          setAbbreviation: 'aaa',
-          toJS: () => {},
-        }),
-      ).toBe('aaa');
+      const group = {
+        id: 1132,
+        members: [1, 2, 3],
+        description: 'llll',
+        pinnedPostIds: [2, 3, 4],
+        isTeam: true,
+        setAbbreviation: 'aaa',
+        toJS: () => {},
+      };
+      expect(getGroupName(getEntity, group as GroupModel)).toBe('aaa');
     });
 
     it('should return setAbbreviation if no currentUserId provided', () => {
-      expect(
-        getGroupName(getEntity, {
-          id: 1132,
-          members: [1, 2, 3],
-          description: 'llll',
-          pinnedPostIds: [2, 3, 4],
-          isTeam: false,
-          setAbbreviation: 'aaa',
-          toJS: () => {},
-        }),
-      ).toBe('aaa');
+      const group = {
+        id: 1132,
+        members: [1, 2, 3],
+        description: 'llll',
+        pinnedPostIds: [2, 3, 4],
+        isTeam: false,
+        setAbbreviation: 'aaa',
+        toJS: () => {},
+      };
+      expect(getGroupName(getEntity, group as GroupModel)).toBe('aaa');
     });
   });
 
@@ -49,27 +47,22 @@ describe('getGroupName', () => {
       personStore.get.mockReturnValue({
         displayName: 'Jack',
       });
-      expect(
-        getGroupName(
-          getEntity,
-          {
-            id: 1132,
-            members: [1],
-            description: 'llll',
-            pinnedPostIds: [2, 3, 4],
-            isTeam: false,
-            setAbbreviation: 'aaa',
-            toJS: () => {},
-          },
-          1,
-        ),
-      ).toBe('Jack (me)');
+      const group = {
+        id: 1132,
+        members: [1],
+        description: 'llll',
+        pinnedPostIds: [2, 3, 4],
+        isTeam: false,
+        setAbbreviation: 'aaa',
+        toJS: () => {},
+      };
+      expect(getGroupName(getEntity, group as GroupModel, 1)).toBe('Jack (me)');
     });
   });
 
   describe('1:1 conversation', () => {
     it('should return displayName of the other member', () => {
-      personStore.get.mockImplementation(id => {
+      personStore.get.mockImplementation((id: number) => {
         if (id === 2) {
           return {
             displayName: 'Jack',
@@ -78,24 +71,20 @@ describe('getGroupName', () => {
         return null;
       });
 
-      expect(
-        getGroupName(
-          getEntity,
-          {
-            id: 1132,
-            members: [1, 2],
-            description: 'llll',
-            pinnedPostIds: [2, 3, 4],
-            isTeam: false,
-            setAbbreviation: 'aaa',
-            toJS: () => {},
-          },
-          1,
-        ),
-      ).toBe('Jack');
+      const group = {
+        id: 1132,
+        members: [1, 2],
+        description: 'llll',
+        pinnedPostIds: [2, 3, 4],
+        isTeam: false,
+        setAbbreviation: 'aaa',
+        toJS: () => {},
+      };
+      expect(getGroupName(getEntity, group as GroupModel, 1)).toBe('Jack');
     });
   });
 
+  /* tslint:disable: align */
   describe('group conversation', () => {
     it(`should return first name if user has first_name and last_name,
     last name if user has only last_name,
@@ -148,21 +137,16 @@ describe('getGroupName', () => {
       };
       personStore.get.mockImplementation(id => people[id]);
 
-      expect(
-        getGroupName(
-          getEntity,
-          {
-            id: 1132,
-            members: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            description: 'llll',
-            pinnedPostIds: [2, 3, 4],
-            isTeam: false,
-            setAbbreviation: 'aaa',
-            toJS: () => {},
-          },
-          1,
-        ),
-      ).toBe(
+      const group = {
+        id: 1132,
+        members: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        description: 'llll',
+        pinnedPostIds: [2, 3, 4],
+        isTeam: false,
+        setAbbreviation: 'aaa',
+        toJS: () => {},
+      };
+      expect(getGroupName(getEntity, group as GroupModel, 1)).toBe(
         'Andy, Hu, Jeffrey, Shining, 01david, +Casey, lip.wang@ringcentral.com, 01david@rc.come, +chris.zhan@ringcentral.com',
       );
     });

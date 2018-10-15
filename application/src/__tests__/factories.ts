@@ -31,6 +31,7 @@ personModelFactory.withDerivation(
 // GroupModel
 const groupModelFactory = Factory.makeFactory<GroupModel>({
   ...base,
+  isFavorite: false,
   setAbbreviation: faker.company.companyName(),
   members: [faker.random.number(100000000)],
   type: CONVERSATION_TYPES.NORMAL_GROUP,
