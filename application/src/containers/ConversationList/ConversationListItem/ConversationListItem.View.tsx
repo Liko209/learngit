@@ -15,20 +15,20 @@ import { observable } from 'mobx';
 // TODO remove Stubs here
 const Presence = (props: any) => <span {...props} />;
 
-type IProps = ConversationListItemViewProps;
-interface IState {
+type Props = ConversationListItemViewProps;
+interface State {
   currentGroupId: number;
 }
 
 @observer
 class ConversationListItemViewComponent extends React.Component<
-  IProps,
-  IState
+  Props,
+  State
 > {
   @observable
   menuAnchorEl: HTMLElement | null = null;
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
     this._handleClick = this._handleClick.bind(this);
     this._handleMoreClick = this._handleMoreClick.bind(this);
