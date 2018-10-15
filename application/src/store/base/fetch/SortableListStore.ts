@@ -29,6 +29,9 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
   }
 
   removeByIds(ids: number[]) {
+    if (!ids.length) {
+      return;
+    }
     ids.forEach((id: number) => {
       _.remove(this.items, { id });
     });

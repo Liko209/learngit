@@ -43,7 +43,7 @@
     "@types/tinycolor2": "*",
     "babel-core": "6.26.3",
     "copy-webpack-plugin": "4.5.2",
-    "fork-ts-checker-webpack-plugin": "0.4.9",
+    "fork-ts-checker-webpack-plugin": "0.4.10",
     "happypack": "5.0.0",
     "prop-types": "15.6.2",
     "react-docgen-typescript-loader": "3.0.0",
@@ -51,6 +51,6 @@
     "storybook-addon-jsx": "5.4.0",
     "ts-loader": "3.5.0",
     "tsconfig-paths-webpack-plugin": "3.2.0",
-    "typescript": "3.0.3"
+    "typescript": "3.1.3"
   }
 }

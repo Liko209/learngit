@@ -111,6 +111,7 @@ export type Person = ExtendedBaseModel & {
   headshot?: {
     url: string;
   };
+  headshot_version?:string;
   locked?: boolean;
   inviter_id?: number;
   rc_phone_numbers?: object[];

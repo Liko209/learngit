@@ -39,7 +39,7 @@ const JuiAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     width: ${({ size = 'medium', theme }) => width(sizes[size])({ theme })};
     height: ${({ size = 'medium', theme }) => height(sizes[size])({ theme })};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    background-color: ${({ color = 'lake' }) => palette('accent', color)};
+    background-color: ${({ color = 'lake' }) => palette('avatar', color)};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;

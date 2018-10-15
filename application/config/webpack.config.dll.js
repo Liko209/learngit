@@ -14,27 +14,28 @@
  * the webpack process.
  */
 
-const { join } = require('path');
-const webpack = require('webpack');
-const getClientEnvironment = require('./env');
-const paths = require('./paths');
-const dllPlugin = require('./dll');
+const { join } = require("path");
+const webpack = require("webpack");
+const getClientEnvironment = require("./env");
+const paths = require("./paths");
+const dllPlugin = require("./dll");
 const appPackage = require(paths.appPackageJson);
 
 const dllConfig = dllPlugin.defaults;
 const outputPath = dllConfig.path;
 
 // Get environment variables to inject into our app.
-const env = getClientEnvironment('');
+const env = getClientEnvironment("");
 
 module.exports = {
+  mode: "development",
   context: process.cwd(),
   entry: dllPlugin.entry(appPackage),
-  devtool: 'eval',
+  devtool: "cheap-module-source-map",
   output: {
-    filename: '[name].dll.js',
+    filename: "[name].dll.js",
     path: outputPath,
-    library: '[name]'
+    library: "[name]"
   },
   plugins: [
     // Add module names to factory functions so they appear in browser profiler.
@@ -43,11 +44,10 @@ module.exports = {
     // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
     new webpack.DefinePlugin(env.stringified),
     new webpack.DllPlugin({
-      name: '[name]',
-      path: join(outputPath, '[name].json')
+      name: "[name]",
+      path: join(outputPath, "[name].json")
     })
   ],
-  target: 'web', // Make web variables accessible to webpack, e.g. window
   performance: {
     hints: false
   }
