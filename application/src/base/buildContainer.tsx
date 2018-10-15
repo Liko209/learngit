@@ -37,7 +37,9 @@ function buildContainer<P = {}, S = {}, SS = any>({
       this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
       if (this.vm.onReceiveProps) {
         console.warn(
-          'You probably no longer need onReceiveProps(), use this.props to get props and it is observable',
+          `[${
+            ViewModel.name
+          }] You probably no longer need onReceiveProps(), use this.props to get props, it is observable`,
         );
       }
       this.vm.onReceiveProps && this.vm.onReceiveProps(props);
