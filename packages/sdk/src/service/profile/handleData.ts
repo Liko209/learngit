@@ -95,10 +95,11 @@ const handlePartialProfileUpdate = async (
             };
             obj[key] = transformedData[key];
             await profileDao.update(obj);
-            // partial update notification
+            notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [obj]);
             hiddenGroupsChange(localProfile, transformedData);
             return transformedData;
           }
+          localProfile && hiddenGroupsChange(localProfile, transformedData);
         }
         await profileDao.put(transformedData);
         notificationCenter.emitEntityPut(ENTITY.PROFILE, [transformedData]);

@@ -214,7 +214,7 @@ class SectionViewModel extends StoreViewModel implements SectionViewProps {
 
   async onReceiveProps(props: SectionProps) {
     if (props.currentGroupId && this.currentGroupId !== props.currentGroupId) {
-      this.currentGroupId = props.currentGroupId;
+      // this.currentGroupId = props.currentGroupId; // endless loop waiting for Valor to fix
     }
 
     if (this._type !== props.type) {
