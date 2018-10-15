@@ -1,29 +1,31 @@
+/*
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2018-10-12 13:49:32
+ * Copyright © RingCentral. All rights reserved.
+ */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs';
+import { boolean, text } from '@storybook/addon-knobs';
 import { JuiDialog } from '../Dialog';
-import { JuiModal } from '../Modal';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
+import { JuiModal } from '../Modal';
 
 storiesOf('Components/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(JuiDialog))
-  .addWithJSX('Alert', () => {
+  .addWithJSX('JuiAlert', () => {
     const open = boolean('open', true);
-    const onCancel = () => {
-      alert('you clicked cancel');
-    };
-    const onOK = () => {
-      alert('you clicked OK');
-    };
+    const title = text('Title', 'Title');
+    const content = text('Content', 'Content');
+    const okText = text('okText', 'OK');
     return (
-      <JuiModal
-        open={open}
-        header="Alert header"
-        okCancel={true}
-        onCancel={onCancel}
-        onOK={onOK}
-      >
-        We are having trouble signing you in. Please try again later.
-      </JuiModal>
+      <div>
+        <JuiModal
+          open={open}
+          content={content}
+          okText={okText}
+          title={title}
+          onOK={() => alert('ok')}
+        />
+      </div>
     );
   });

@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { observer } from 'mobx-react';
-import JuiChip from 'ui-components/molecules/Chip';
-import { Avatar } from '../Avatar';
+import { JuiChip } from 'jui/components/Chip';
+import { Avatar } from '@/containers/Avatar';
 
 // import { ENTITY_NAME } from '@/store';
 // import { getEntity } from '@/store/utils';
@@ -21,4 +20,4 @@ const Chip = (props: any) => {
   );
 };
 
-export default observer(Chip);
+export { Chip };

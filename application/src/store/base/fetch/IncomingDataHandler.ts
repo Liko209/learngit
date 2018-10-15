@@ -54,7 +54,9 @@ function handleUpsert<T>(
     const idSortKey = transformFunc(data);
     updated.push(idSortKey);
     updateEntity.push(data);
-    deleted.push(key);
+    if (entity.data) {
+      deleted.push(key); // special for preinsert post
+    }
   });
   differentKeys.forEach((key: number) => {
     const model = entities.get(key) as T;

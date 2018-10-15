@@ -9,7 +9,7 @@ import {
   withLoadingMore,
   withScroller,
   WithScrollerProps,
-} from 'ui-components';
+} from 'jui/hoc';
 import { IPlugin } from '@/base/IPlugin';
 import { IViewModel } from '@/base/IViewModel';
 import { createLoadingStateDecorator } from '../utils';

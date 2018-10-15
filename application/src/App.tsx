@@ -14,9 +14,12 @@ import Login from '@/containers/Login';
 import Home from '@/containers/Home';
 import UnifiedLogin from '@/containers/UnifiedLogin';
 import VersionInfo from '@/containers/VersionInfo';
-import { TimerDemo, InfiniteListDemo } from '@/containers/Demo';
+import { autorun } from 'mobx';
+import _ from 'lodash';
+import storeManager from '@/store';
 
 class App extends React.PureComponent {
+  private appName = process.env.APP_NAME || '';
   public render() {
     return (
       <ThemeProvider>
@@ -26,13 +29,30 @@ class App extends React.PureComponent {
             <Route path="/version" component={VersionInfo} />
             <Route path="/login" component={Login} />
             <Route path="/unified-login" component={UnifiedLogin} />
-            <Route path="/demo/timer" component={TimerDemo} />
-            <Route path="/demo/infinite-list" component={InfiniteListDemo} />
             <AuthRoute path="/" component={Home} />
           </Switch>
         </Router>
       </ThemeProvider>
     );
+  }
+
+  constructor(props: any) {
+    super(props);
+    autorun(() => {
+      this.updateAppUmi();
+    });
+  }
+
+  updateAppUmi() {
+    const appUmi = storeManager.getGlobalStore().get('app.umi');
+    if (appUmi) {
+      document.title = `(${appUmi}) ${this.appName}`;
+    } else {
+      document.title = this.appName;
+    }
+    if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
+      window.jupiterElectron.setBadgeCount(appUmi || 0);
+    }
   }
 }
 
