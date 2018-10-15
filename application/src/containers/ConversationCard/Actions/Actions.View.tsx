@@ -14,6 +14,7 @@ import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
 
 import { POST_STATUS } from 'sdk/service';
+import { JuiModal } from '@/containers/Dialog';
 
 type Props = ActionsViewProps & {
   t: TranslationFunction;
@@ -21,14 +22,21 @@ type Props = ActionsViewProps & {
 
 @observer
 class ActionsViewComponent extends Component<Props> {
-  delete = async () => {
-    try {
-      // console.log('delete post', this.props.id);
-      // todo confirm ok or cancel
-      await this.props.delete();
-    } catch (e) {
-      // todo Snackbars component
-    }
+  delete = () => {
+    const { deletePost, t } = this.props;
+    JuiModal.confirm({
+      title: t('deletePostTitle'),
+      content: t('deletePostContent'),
+      okText: t('deletePostOk'),
+      cancelText: t('deletePostCancel'),
+      async onOK() {
+        try {
+          await deletePost();
+        } catch (e) {
+          console.log(e);
+        }
+      },
+    });
   }
 
   resend = async () => {
@@ -45,14 +53,27 @@ class ActionsViewComponent extends Component<Props> {
     const { status = POST_STATUS.SUCCESS } = post;
     return (
       <JuiActions>
-        {status === POST_STATUS.INPROGRESS && (
-          <JuiCircularProgress size={12} />
+        {status === POST_STATUS.INPROGRESS && <JuiCircularProgress size={12} />}
+        {status === POST_STATUS.FAIL && (
+          <JuiIconButton
+            variant="plain"
+            tooltipTitle={t('resendPost')}
+            onClick={this.resend}
+            size="small"
+            color="secondary"
+          >
+            refresh
+          </JuiIconButton>
         )}
         {status === POST_STATUS.FAIL && (
-          <JuiIconButton variant="plain" tooltipTitle={t('resendPost')} onClick={this.resend} size="small" color="secondary">refresh</JuiIconButton>
-        )}
-        {status === POST_STATUS.FAIL && (
-          <JuiIconButton variant="plain" tooltipTitle={t('deletePost')} onClick={this.delete} size="small">delete</JuiIconButton>
+          <JuiIconButton
+            variant="plain"
+            tooltipTitle={t('deletePost')}
+            onClick={this.delete}
+            size="small"
+          >
+            delete
+          </JuiIconButton>
         )}
       </JuiActions>
     );

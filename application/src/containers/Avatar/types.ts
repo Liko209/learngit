@@ -8,6 +8,7 @@ import { JuiAvatarProps } from 'jui/components/Avatar';
 type AvatarProps = JuiAvatarProps & {
   uid: number;
 };
+
 type AvatarViewProps = JuiAvatarProps & {
   name?: string;
   url?: string;

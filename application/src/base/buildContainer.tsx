@@ -35,6 +35,11 @@ function buildContainer<P = {}, S = {}, SS = any>({
         this.View = plugin.wrapView(this.View);
       });
       this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
+      if (this.vm.onReceiveProps) {
+        console.warn(
+          'You probably no longer need onReceiveProps(), use this.props to get props and it is observable',
+        );
+      }
       this.vm.onReceiveProps && this.vm.onReceiveProps(props);
     }
 
@@ -49,28 +54,27 @@ function buildContainer<P = {}, S = {}, SS = any>({
 
     render() {
       const View = this.View;
-      return <View {...this._vmProps} />;
+      return <View {...this._viewProps} />;
     }
 
-    private get _vmProps() {
-      // const props: any = {};
-      // for (const key in this.vm) {
-      //   if (!/^\$|_/.test(key)) {
-      //     // Not start with _ or $
-      //     props[key] = this.vm[key];
-      //   }
-      // }
-      // return props;
+    private get _viewProps() {
       const descriptors = Object.getOwnPropertyDescriptors(this.vm);
       const props: any = {};
       Object.keys(descriptors)
-        .filter(
-          key => !/^\$|_/.test(key), // Start with _ or $
-        )
+        .filter(this._isViewProp)
         .forEach((key: string) => {
           props[key] = this.vm[key];
         });
       return props;
+    }
+
+    private _isViewProp(key: string) {
+      // Props start with _ or $ are private
+      // 'verboseMemoryLeak' is add by EventEmitter2
+      // 'props' is protected
+      return (
+        !/^\$|_/.test(key) && key !== 'verboseMemoryLeak' && key !== 'props'
+      );
     }
   }
 

@@ -44,8 +44,10 @@ import { getEntity } from "@/store/utils";
 import { MyProps, MyViewProps } from "./types";
 
 class MyViewModel extends AbstractViewModel implements MyViewProps {
-  @observable
-  myId: number;
+  @computed
+  get myId() {
+    return this.props.myId;
+  }
 
   @computed
   private get _myEntity() {
@@ -55,12 +57,6 @@ class MyViewModel extends AbstractViewModel implements MyViewProps {
   @computed
   get text() {
     return this._myEntity.text;
-  }
-
-  onReceiveProps(props: MyProps) {
-    if (this.myId !== props.myId) {
-      this.myId = props.myId;
-    }
   }
 }
 

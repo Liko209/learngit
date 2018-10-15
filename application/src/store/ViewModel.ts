@@ -29,7 +29,7 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
   private _props: P;
 
   @computed
-  get props() {
+  protected get props() {
     return this._props || {};
   }
 

@@ -15,12 +15,12 @@ import { JuiButtonBar } from '../../../components/Buttons/ButtonBar';
 import { JuiCheckboxButton } from '../../../components/Buttons/CheckboxButton';
 
 const getTitleKnob = () => text('title', 'Global UXD');
-storiesOf('Molecules/ConversationPageHeader', module)
+storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiConversationPageHeader, { inline: true }))
   .addDecorator(
     backgrounds([{ name: 'slide-background', value: '#f3f3f3', default: true }]),
   )
-  .addWithJSX('normal', () => {
+  .addWithJSX('ConversationPageHeader', () => {
     return (
       <JuiConversationPageHeader
         title={getTitleKnob()}
