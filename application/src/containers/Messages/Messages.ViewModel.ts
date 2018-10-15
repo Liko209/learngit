@@ -34,9 +34,10 @@ class MessagesViewModel extends AbstractViewModel {
     return getGlobalValue('isLeftNavOpen');
   }
 
-  toConversation(id: string, history: History) {
+  toConversation(history: History, id?: number) {
     const globalStore = storeManager.getGlobalStore();
-    globalStore.set('currentConversationId', Number(id));
+    const targetConversationId = id || '';
+    globalStore.set('currentConversationId', targetConversationId);
     history.push(`/messages/${id}`);
   }
 }

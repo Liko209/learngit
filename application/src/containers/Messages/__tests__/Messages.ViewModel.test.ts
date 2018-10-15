@@ -18,7 +18,7 @@ describe('Message view model', () => {
     };
   });
   it('should always update the global state and routes when redirect to conversation', () => {
-    vm.toConversation('100', history);
+    vm.toConversation(history, 100);
     expect(storeManager.getGlobalStore).toBeCalled();
     expect(gs.set).toBeCalledWith('currentConversationId', 100);
     expect(history.push).toBeCalledWith('/messages/100');

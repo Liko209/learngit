@@ -14,7 +14,7 @@ import { CreateTeam } from '@/containers/CreateTeam';
 import NotFound from '@/containers/NotFound';
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
-import { HomeViewProps } from './.types';
+import { HomeViewProps } from './types';
 
 @observer
 class Home extends Component<HomeViewProps> {

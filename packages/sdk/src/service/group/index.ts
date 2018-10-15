@@ -115,12 +115,6 @@ export default class GroupService extends BaseService<Group> {
     }
     return result;
   }
-  async isFavGroup(groupId: number) {
-    const result = await this._getFavoriteGroups();
-    return _(result)
-      .map('id')
-      .includes(groupId);
-  }
   // this function should refactor with getGroupsByType
   // we should support to get group by paging
   async getLastNGroups(n: number): Promise<Group[]> {

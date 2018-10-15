@@ -5,4 +5,3 @@
  */
 
 export * from './CheckboxButton';
-export { default } from './CheckboxButton';

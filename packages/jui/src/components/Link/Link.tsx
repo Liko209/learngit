@@ -54,7 +54,5 @@ JuiLink.defaultProps = {
   Component: 'a',
 };
 
-JuiLink.dependencies = [];
-
 export { JuiLink, JuiLinkProps };
 export default JuiLink;

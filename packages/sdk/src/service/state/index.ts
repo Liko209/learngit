@@ -19,12 +19,12 @@ import PostService from '../post';
 import { SOCKET, SERVICE } from '../eventKey';
 import { ENTITY } from '../../service/eventKey';
 import handleData, { handlePartialData, handleGroupChange } from './handleData';
-// import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation';
 import _ from 'lodash';
 import { UMI_METRICS } from '../constants';
 import notificationCenter from '../notificationCenter';
-import AccountService from '../account/index';
-import PersonService from '../person/index';
+// import AccountService from '../account/index';
+// import PersonService from '../person/index';
 
 export default class StateService extends BaseService<GroupState> {
   static serviceName = 'StateService';
@@ -91,7 +91,7 @@ export default class StateService extends BaseService<GroupState> {
       const { data } = await GroupAPI.getDataById<Group>(groupId);
       lastGroup = data;
     } catch (e) {
-      console.warn('Find Group info failed', groupId);
+      mainLogger.warn(`Find Group info failed ${groupId}`);
       return;
     }
 
@@ -102,7 +102,7 @@ export default class StateService extends BaseService<GroupState> {
     const profileService = ProfileService.getInstance() as ProfileService;
     const isHidden = await profileService.isConversationHidden(groupId);
     if (isHidden) {
-      // close
+      close;
       return;
     }
     // const groupService = GroupService.getInstance() as GroupService;

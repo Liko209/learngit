@@ -32,7 +32,7 @@ interface INetworkRequestExecutor {
   execute: () => void;
   getRequest: () => IRequest;
   cancel: () => void;
-  isPause: () => void;
+  isPause: () => boolean;
 }
 
 interface IRequestDecoration {
@@ -76,7 +76,7 @@ interface IResponse {
 
 type Header = {
   Authorization?: string;
-  'X-RC-Access-Token-Data'?: string
+  'X-RC-Access-Token-Data'?: string;
 };
 
 interface IRequest {

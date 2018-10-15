@@ -10,7 +10,7 @@ import { History } from 'history';
 type MessagesProps = {};
 
 type MessagesViewProps = {
-  toConversation: (id: string, history: History) => void;
+  toConversation: (history: History, id?: number) => void;
   isLeftNavOpen: boolean;
   currentConversationId?: number;
   getLastGroupId: (groupId?: number) => Promise<number | undefined>;
