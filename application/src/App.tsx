@@ -14,7 +14,6 @@ import Login from '@/containers/Login';
 import Home from '@/containers/Home';
 import UnifiedLogin from '@/containers/UnifiedLogin';
 import VersionInfo from '@/containers/VersionInfo';
-import { TimerDemo, InfiniteListDemo } from '@/containers/Demo';
 import history from '@/utils/history';
 import { autorun } from 'mobx';
 import _ from 'lodash';
