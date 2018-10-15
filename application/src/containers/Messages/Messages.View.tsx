@@ -23,8 +23,7 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
   async componentDidMount() {
     const conversationIdOfUrl = Number(this.props.match.params.id);
     const groupId = await this.props.getLastGroupId(conversationIdOfUrl);
-    const history = this.props.history;
-    this.props.toConversation(history, groupId);
+    this.props.toConversation(groupId);
   }
 
   render() {
@@ -37,7 +36,7 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
 
     return (
       <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
-        <LeftRail currentGroupId={currentConversationId} />
+        <LeftRail />
         {currentConversationId ? (
           <ConversationPage groupId={currentConversationId} />
         ) : null}

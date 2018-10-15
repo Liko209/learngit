@@ -116,11 +116,6 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   @observable
   private _config: SectionConfig;
 
-  @computed
-  get currentGroupId() {
-    return this.props.currentGroupId;
-  }
-
   @observable
   expanded: boolean = true;
 
