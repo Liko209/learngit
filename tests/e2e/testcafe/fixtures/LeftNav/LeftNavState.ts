@@ -14,7 +14,7 @@ fixture('LeftNavState')
   .afterEach(tearDown());
 
 test(
-  formalName('reload page keep left nav state', ['P2', 'JPT-50', 'left nav state']), async (t) => {
+  formalName('reload page keep left nav state', ['P2', 'JPT-38', 'left nav state']), async (t) => {
     const page = directLogin(t);
     await page.chain(t => t.wait(10000))
       .log('1. Navigate to LeftNavigationPage')
