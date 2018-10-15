@@ -10,8 +10,7 @@ import { JuiContactSearch } from 'jui/pattern/ContactSearch';
 
 import { Chip } from '@/containers/Chip';
 import { ContactSearchItem } from './ContactSearchItem';
-import { getName } from '../../utils/getName';
-import { Person } from 'sdk/src/models';
+
 import { ViewProps } from './types';
 
 type Props = {
@@ -19,44 +18,23 @@ type Props = {
   t: TranslationFunction;
 } & ViewProps;
 
-interface ISelectedMember {
-  id: number;
-  label: string;
-  email: string;
-}
-
-interface IStates {
-  suggestions: ISelectedMember[];
-}
-
-class ContactSearch extends React.Component<Props, IStates> {
+class ContactSearch extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
-    this.state = {
-      suggestions: [],
-    };
-  }
-
-  handleInputChange = (value: string) => {
-    const { fetchSearch } = this.props;
-    let members: ISelectedMember[] = [];
-    fetchSearch(value).then((data: Person[]) => {
-      console.log('------data----', data);
-      members = data.map(member => ({
-        id: member.id,
-        label: getName(member),
-        email: member.email,
-      }));
-      // console.log('------members----', members);
-      this.setState({ suggestions: members });
-    });
   }
   render() {
-    const { onChange, label, placeholder, error, helperText } = this.props;
-    const { suggestions } = this.state;
+    const {
+      onChange,
+      label,
+      placeholder,
+      error,
+      helperText,
+      handleInputChange,
+      suggestions,
+    } = this.props;
     return (
       <JuiContactSearch
-        inputChange={this.handleInputChange}
+        inputChange={handleInputChange}
         suggestions={suggestions}
         onChange={onChange}
         label={label}

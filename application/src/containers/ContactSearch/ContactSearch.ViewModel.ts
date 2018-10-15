@@ -7,12 +7,17 @@ import { observable, action } from 'mobx';
 
 import SearchService from 'sdk/service/search';
 import { Person } from 'sdk/src/models';
-import { AbstractViewModel } from '@/base';
-import { ViewProps, ContactSearchProps } from './types';
+import { StoreViewModel } from '@/store/ViewModel';
+import { ContactSearchProps, ViewProps, SelectedMember } from './types';
+import { getName } from '../../utils/getName';
 
-class ContactSearchViewModel extends AbstractViewModel implements ViewProps {
+class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
+  implements ViewProps {
   @observable
   existMembers: number[] = [];
+
+  @observable
+  suggestions: SelectedMember[] = [];
 
   @observable
   label: string;
@@ -52,6 +57,21 @@ class ContactSearchViewModel extends AbstractViewModel implements ViewProps {
       return !this.existMembers.find(existMember => existMember === member.id);
     });
     return filterMembers;
+  }
+
+  @action
+  handleInputChange = (value: string) => {
+    let members: SelectedMember[] = [];
+    this.fetchSearch(value).then((data: Person[]) => {
+      console.log('------data----', data);
+      members = data.map(member => ({
+        id: member.id,
+        label: getName(member),
+        email: member.email,
+      }));
+      // console.log('------members----', members);
+      this.suggestions = members;
+    });
   }
 }
 
