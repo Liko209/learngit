@@ -21,6 +21,8 @@
   "networkDisconnected": "Network disconnected. Please try again when the network is resumed.",
   "Plus": "Plus",
   "Menu": "Menu",
+  "text": "text",
+  "me": "me",
   "OK": "OK",
   "Cancel": "Cancel"
 }

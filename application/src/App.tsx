@@ -31,8 +31,6 @@ class App extends React.PureComponent {
             <Route path="/version" component={VersionInfo} />
             <Route path="/login" component={Login} />
             <Route path="/unified-login" component={UnifiedLogin} />
-            <Route path="/demo/timer" component={TimerDemo} />
-            <Route path="/demo/infinite-list" component={InfiniteListDemo} />
             <AuthRoute path="/" component={Home} />
           </Switch>
         </Router>
@@ -55,7 +53,7 @@ class App extends React.PureComponent {
       document.title = this.appName;
     }
     if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
-      _.debounce(window.jupiterElectron.setBadgeCount(appUmi || 0));
+      window.jupiterElectron.setBadgeCount(appUmi || 0);
     }
   }
 }

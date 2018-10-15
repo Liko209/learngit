@@ -5,9 +5,14 @@
  */
 
 import { service } from 'sdk';
-import { MessageInputViewModel, ERROR_TYPES, CONTENT_ILLEGAL, CONTENT_LENGTH } from '../MessageInput.ViewModel';
+import {
+  MessageInputViewModel,
+  ERROR_TYPES,
+  CONTENT_ILLEGAL,
+  CONTENT_LENGTH,
+} from '../MessageInput.ViewModel';
 import { getEntity } from '../../../../store/utils';
-import { markdownFromDelta } from '../../../../../../packages/ui-components/src/MessageInput';
+import { markdownFromDelta } from 'jui/pattern/MessageInput';
 import _ from 'lodash';
 
 const { PostService, GroupService } = service;
