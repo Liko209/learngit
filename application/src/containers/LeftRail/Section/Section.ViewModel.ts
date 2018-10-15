@@ -3,13 +3,19 @@
  * @Date: 2018-08-22 15:21:30
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
 import { computed, observable, action, autorun } from 'mobx';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
 import { Group } from 'sdk/models';
 import storeManager, { ENTITY_NAME } from '@/store';
-
-import _ from 'lodash';
+import StoreViewModel from '@/store/ViewModel';
+import {
+  FetchSortableDataListHandler,
+  IFetchSortableDataProvider,
+  FetchDataDirection,
+  ISortableModel,
+} from '@/store/base/fetch';
 import {
   SectionProps,
   SectionConfig,
@@ -17,14 +23,6 @@ import {
   SectionViewProps,
   SECTION_TYPE,
 } from './types';
-import { AbstractViewModel } from '@/base';
-
-import {
-  FetchSortableDataListHandler,
-  IFetchSortableDataProvider,
-  FetchDataDirection,
-  ISortableModel,
-} from '@/store/base/fetch';
 
 const { GroupService } = service;
 
@@ -100,7 +98,8 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   }
 }
 
-class SectionViewModel extends AbstractViewModel implements SectionViewProps {
+class SectionViewModel extends StoreViewModel<SectionProps>
+  implements SectionViewProps {
   constructor() {
     super();
     autorun(() => {
@@ -117,8 +116,10 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
   @observable
   private _config: SectionConfig;
 
-  @observable
-  currentGroupId: number;
+  @computed
+  get currentGroupId() {
+    return this.props.currentGroupId;
+  }
 
   @observable
   expanded: boolean = true;
@@ -154,11 +155,6 @@ class SectionViewModel extends AbstractViewModel implements SectionViewProps {
   }
 
   async onReceiveProps(props: SectionProps) {
-    if (props.currentGroupId && this.currentGroupId !== props.currentGroupId) {
-      console.log('props.currentGroupId: ', props.currentGroupId);
-      this.currentGroupId = props.currentGroupId;
-    }
-
     if (this._type === props.type) return;
 
     if (this._listHandler) {

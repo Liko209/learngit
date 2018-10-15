@@ -8,6 +8,7 @@ import {
   autorun,
   reaction,
   when,
+  set,
   IReactionDisposer,
   IReactionPublic,
   IAutorunOptions,
@@ -36,23 +37,19 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
   onReceiveProps?(props: P): void;
 
   getDerivedProps(props: P) {
-    if (!this._props) {
-      this._props = props;
-    } else {
-      for (const key in props) {
-        if (typeof props[key] !== 'object') {
-          if (this._props[key] !== props[key]) {
-            this._props[key] = props[key];
-          }
-        } else if (Array.isArray(props[key])) {
-          const arr: any = this._props[key] || [];
-          if (!_.isEqual([...arr], props[key])) {
-            this._props[key] = props[key];
-          }
-        } else {
-          if (!_.isEqual(this.props[key], props[key])) {
-            this._props[key] = props[key];
-          }
+    for (const key in props) {
+      if (typeof props[key] !== 'object') {
+        if (this._props[key] !== props[key]) {
+          set(this._props, { [key]: props[key] });
+        }
+      } else if (Array.isArray(props[key])) {
+        const arr: any = this._props[key] || [];
+        if (!_.isEqual([...arr], props[key])) {
+          set(this._props, { [key]: props[key] });
+        }
+      } else {
+        if (!_.isEqual(this.props[key], props[key])) {
+          set(this._props, { [key]: props[key] });
         }
       }
     }

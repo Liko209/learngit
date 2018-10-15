@@ -50,7 +50,6 @@ class SectionViewComponent extends React.Component<Props> {
         </SortableList>
       );
     }
-    console.log('SectionViewComponent props: ', this.props);
 
     return (
       <JuiConversationList className="conversation-list-section-collapse">
@@ -67,6 +66,7 @@ class SectionViewComponent extends React.Component<Props> {
 
   render() {
     const { t, title, groupIds, iconName, expanded } = this.props;
+    console.log('SectionViewComponent props: ', this.props.currentGroupId);
     return (
       <div
         className="conversation-list-section"
