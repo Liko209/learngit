@@ -56,8 +56,11 @@ const StyledPaper = styled(Paper)`
 
 const StyledTextField = styled(JuiTextField)`
   && {
-    .input {
+    .inputRoot {
       flex-wrap: wrap;
+    }
+    .input {
+      flex: 1;
     }
   }
 `;
@@ -272,7 +275,8 @@ class JuiDownshiftMultiple extends React.PureComponent<
                   onChange: this.handleInputChange,
                   onKeyDown: this.handleKeyDown,
                   classes: {
-                    root: 'input',
+                    root: 'inputRoot',
+                    input: 'input',
                   },
                   placeholder: `${
                     selectedItem.length === 0 && showPlaceholder

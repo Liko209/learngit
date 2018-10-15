@@ -13,13 +13,22 @@ import { ViewProps, ContactSearchProps } from './types';
 class ContactSearchViewModel extends AbstractViewModel implements ViewProps {
   @observable
   existMembers: number[] = [];
+
   @observable
   label: string;
+
   @observable
   onChange: (item: any) => void;
+
+  @observable
   placeholder: string;
+
+  @observable
   error: boolean;
+
+  @observable
   helperText: string;
+
   @action
   onReceiveProps({
     label,
