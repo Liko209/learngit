@@ -80,11 +80,11 @@ const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
 writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
 logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
 
-// TODO: FILL YOUR ACCOUNT INFO
-// later, would be replaced with the apikey.
-// const username = "";
-// const password = "";
-let beatsClient = new BeatsClient(username, password);
+//FILL apiKey or YOUR ACCOUNT INFO
+
+const apiKey = process.env.APIKEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
+const baseUrl = process.env.DASHBOARD_URL || "http://xia01-i01-xta05.lab.rcch.ringcentral.com:8000/api/v1";
+let beatsClient = new BeatsClient(apiKey, baseUrl);
 
 export {
   APP_ROOT,
