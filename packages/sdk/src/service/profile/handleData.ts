@@ -11,6 +11,7 @@ import { transform } from '../../service/utils';
 import AccountService from '../account';
 import { Profile, Raw } from '../../models';
 import _ from 'lodash';
+import { mainLogger } from 'foundation/src';
 
 function extractHiddenGroupIds(profile: Profile): number[] {
   const clone = Object.assign({}, profile);
@@ -61,16 +62,15 @@ function hiddenGroupsChange(localProfile: Profile, newProfile: Profile) {
 const profileHandleData = async (
   profile: Raw<Profile> | Raw<Profile> | null,
 ): Promise<Profile | null> => {
+  let result: Profile | null = null;
   if (profile) {
-    let result: Profile | null = null;
     if (_.isArray(profile)) {
       result = await handlePartialProfileUpdate(profile[0], '');
     } else {
       result = await handlePartialProfileUpdate(profile, '');
     }
-    return result;
   }
-  return null;
+  return result;
 };
 
 const handlePartialProfileUpdate = async (
@@ -107,6 +107,7 @@ const handlePartialProfileUpdate = async (
     }
     return null;
   } catch (e) {
+    mainLogger.warn(`handlePartialProfileUpdate error:${e}`);
     return null;
   }
 };
