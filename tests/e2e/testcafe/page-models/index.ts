@@ -91,11 +91,9 @@ export abstract class BaseUI {
     return this.chain(async t => await t.click(el));
   }
 
-  shouldNavigateTo<T extends BaseUI>(uiClass: {
-    new (t: TestController, chain?: Promise<any>): T;
-  }): T {
-    const ui = new uiClass(this.t);
-    return ui;
+  shouldNavigateTo<T extends BaseUI>(
+    uiCreator: UICreator<T>): T {
+    return new uiCreator(this.t);
   }
 
   checkExisted(selector: Selector) {
