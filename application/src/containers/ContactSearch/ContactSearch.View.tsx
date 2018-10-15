@@ -29,12 +29,12 @@ class ContactSearch extends React.Component<Props> {
       placeholder,
       error,
       helperText,
-      handleInputChange,
+      searchMembers,
       suggestions,
     } = this.props;
     return (
       <JuiContactSearch
-        inputChange={handleInputChange}
+        inputChange={searchMembers}
         suggestions={suggestions}
         onChange={onChange}
         label={label}

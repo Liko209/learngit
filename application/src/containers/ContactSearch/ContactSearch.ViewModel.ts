@@ -60,7 +60,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
   }
 
   @action
-  handleInputChange = (value: string) => {
+  searchMembers = (value: string) => {
     let members: SelectedMember[] = [];
     this.fetchSearch(value).then((data: Person[]) => {
       console.log('------data----', data);

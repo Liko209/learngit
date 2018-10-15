@@ -18,7 +18,7 @@ type ContactSearchProps = {
 };
 
 type ViewProps = {
-  handleInputChange: (value: string) => void;
+  searchMembers: (value: string) => void;
   suggestions: SelectedMember[];
   onChange: (item: any) => void;
   label: string;
