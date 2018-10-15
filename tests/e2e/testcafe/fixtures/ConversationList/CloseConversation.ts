@@ -50,40 +50,24 @@ const prepare_1conversationInList = async (t: TestController) => {
     text: `send one post to ${helper.teams.team1_u1_u2.name}`,
   });
 };
-// prepare for case JPT-134: expect to show confirmation popup(skip_close_conversation_confirmation should be false or not exist)
-const prepare_api1 = async (t: TestController) => {
+
+// prepare for case JPT-134: expect to show confirmation popup(skip_close_conversation_confirmation should be false or not exist) 135->true
+const presetWhetherSkipConfirmationPopup = async(t: TestController, skipCloseConfirmButton: boolean = false) => {
   const helper = TestHelper.from(t);
   await helper.log('2.Prepare: show confirmation popup');
   await setupSDK(t);
   const id = (await PersonAPI.requestPersonById(helper.users.user701.glip_id))
     .data.profile_id;
   let data = (await ProfileAPI.requestProfileById(id)).data;
-  if (data.skip_close_conversation_confirmation) {
+  if (data.skip_close_conversation_confirmation != skipCloseConfirmButton) {
     data = (await (ProfileAPI as any).putDataById(id, {
-      skip_close_conversation_confirmation: false,
+      skip_close_conversation_confirmation: skipCloseConfirmButton,
     })).data;
   }
-  await helper.log('2.1 skip_close_conversation_confirmation: false');
+  await helper.log(`2.1 skip_close_conversation_confirmation: ${skipCloseConfirmButton}`);
 };
-// prepare for case JPT-135: expect no confirmation popup(skip_close_conversation_confirmation should be true)
-const prepare_api2 = async (t: TestController) => {
-  const helper = TestHelper.from(t);
-  await helper.log('2.Prepare:no confirmation popup');
-  await setupSDK(t);
-  const id = (await PersonAPI.requestPersonById(helper.users.user701.glip_id))
-    .data.profile_id;
-  let data = (await ProfileAPI.requestProfileById(id)).data;
-  if (!data.skip_close_conversation_confirmation) {
-    data = (await (ProfileAPI as any).putDataById(id, {
-      skip_close_conversation_confirmation: true,
-    })).data;
-  }
-  await helper.log(
-    `2.1 skip_close_conversation_confirmation: ${
-      data.skip_close_conversation_confirmation
-    }`,
-  );
-};
+
+
 const action1 = (t: TestController) =>
   directLogin(t)
     .log('3.Should navigate to CloseConversation')
@@ -101,14 +85,14 @@ const action1 = (t: TestController) =>
     .log('9.Check display of the confirm dialog')
     .expectDialog(title, content, checkboxLabel, button);
 
-test.skip(
+test(
   formalName(
     'Close current conversation directly, and navigate to blank page (without UMI)',
     ['JPT-135', 'JPT-130', 'P1', 'ConversationList'],
   ),
   async (t: TestController) => {
     await prepare_1conversationInList(t);
-    await prepare_api2(t);
+    await presetWhetherSkipConfirmationPopup(t, true);
     await directLogin(t)
       .log('3.Should navigate to CloseConversation')
       .shouldNavigateTo(CloseConversation)
@@ -133,14 +117,14 @@ test.skip(
   },
 );
 
-test.skip(
+test(
   formalName(
     'Close other conversation in confirm alert,and still focus on user veiwing conversation(without UMI)',
     ['JPT-137', 'JPT-130', 'P1', 'ConversationList'],
   ),
   async (t: TestController) => {
     await prepare_2conversationInList(t);
-    await prepare_api1(t);
+    await presetWhetherSkipConfirmationPopup(t,false);
     await directLogin(t)
       .shouldNavigateTo(CloseConversation)
       .log('3.Prepare no UMI :Click one conversation c1')
@@ -173,7 +157,7 @@ test.skip(
   },
 );
 
-test.skip(
+test(
   formalName('Close current conversation in confirm alert(without UMI)', [
     'JPT-134',
     'JPT-130',
@@ -182,7 +166,7 @@ test.skip(
   ]),
   async (t: TestController) => {
     await prepare_2conversationInList(t);
-    await prepare_api1(t);
+    await presetWhetherSkipConfirmationPopup(t, false);
     await action1(t)
       .log('10.Click close button of the dialog')
       .clickDialogCloseButton()
@@ -203,14 +187,14 @@ test.skip(
   },
 );
 
-test.skip(
+test(
   formalName(
     `Tap ${checkboxLabel} checkbox,then close current conversation in confirm alert(without UMI)`,
     ['JPT-134', 'JPT-130', 'P2', 'ConversationList'],
   ),
   async (t: TestController) => {
     await prepare_2conversationInList(t);
-    await prepare_api1(t);
+    await presetWhetherSkipConfirmationPopup(t,false);
     await action1(t)
       .log(`10.Tap ${checkboxLabel} checkbox`)
       .clickDialogCheckbox()

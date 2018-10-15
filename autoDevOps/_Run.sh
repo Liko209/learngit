@@ -12,17 +12,18 @@ echo '====Start Run'
 if [ "$hasLintError" != 1 ]; then
     # # # # 3. UT
     . $autoDevOps/3.UT.sh
-    
+
     # # # 4. Build And Deploy
     if [ "$demoHasUpdate" ]; then
         . $autoDevOps/4.BuildAndDeployDemo.sh
     else
         . $autoDevOps/4.BuildAndDeployApplication.sh
+        . $autoDevOps/4.BuildAndDeployStoryBook.sh
     fi
-    
+
     # 5. E2E
     # . $autoDevOps/5.E2E.sh
-    
+
     # # 6. Puppeteer
     # . $autoDevOps/6.Puppeteer.sh
 else
