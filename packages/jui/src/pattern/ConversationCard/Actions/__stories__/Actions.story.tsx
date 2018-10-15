@@ -6,7 +6,7 @@ import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconBut
 
 storiesOf('Pattern/ConversationCard', module)
   .addDecorator(withInfoDecorator(JuiActions, { inline: true }))
-  .addWithJSX('Actions', () => (
+  .add('Actions', () => (
     <JuiActions>
       <JuiIconButton variant="plain" tooltipTitle="refresh">
         refresh

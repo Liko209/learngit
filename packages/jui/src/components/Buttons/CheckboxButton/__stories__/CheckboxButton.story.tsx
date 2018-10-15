@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, select, text } from '@storybook/addon-knobs/react';
+import { boolean, select, text } from '@storybook/addon-knobs';
 import {
   withInfoDecorator,
   alignCenterDecorator,
@@ -56,7 +56,7 @@ function getKnobs() {
 storiesOf('Components/CheckboxButton', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiCheckboxButton, { inline: true }))
-  .addWithJSX('CheckboxButton', () => {
+  .add('CheckboxButton', () => {
     const { content, ...rest } = getKnobs();
     return (
       <Wrapper>

@@ -5,25 +5,25 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs/react';
+import { boolean } from '@storybook/addon-knobs';
 import { BrowserRouter } from 'react-router-dom';
 import { JuiLeftNav } from '../index';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 const UMI_COUNT = [[0, 999, 30, 2], [2, 10, 88, 0, 0, 1]];
 const icons = [
   [
-    { icon: 'dashboard', title: 'Dashboard' },
-    { icon: 'message', title: 'Messages' },
-    { icon: 'phone', title: 'Phone' },
-    { icon: 'videocam', title: 'Meetings' },
+    { icon: 'dashboard', title: 'Dashboard', url: '' },
+    { icon: 'message', title: 'Messages', url: '' },
+    { icon: 'phone', title: 'Phone', url: '' },
+    { icon: 'videocam', title: 'Meetings', url: '' },
   ],
   [
-    { icon: 'contacts', title: 'Contacts' },
-    { icon: 'date_range', title: 'Calendar' },
-    { icon: 'assignment_turned_in', title: 'Tasks' },
-    { icon: 'library_books', title: 'Notes' },
-    { icon: 'file_copy', title: 'Files' },
-    { icon: 'settings', title: 'Settings' },
+    { icon: 'contacts', title: 'Contacts', url: '' },
+    { icon: 'date_range', title: 'Calendar', url: '' },
+    { icon: 'assignment_turned_in', title: 'Tasks', url: '' },
+    { icon: 'library_books', title: 'Notes', url: '' },
+    { icon: 'file_copy', title: 'Files', url: '' },
+    { icon: 'settings', title: 'Settings', url: '' },
   ],
 ];
 storiesOf('Pattern', module)
@@ -32,7 +32,7 @@ storiesOf('Pattern', module)
     const isExpand = boolean('expand', false);
     return (
       <BrowserRouter>
-        <JuiLeftNav icons={icons} expand={isExpand} unreadCount={UMI_COUNT} />
+        <JuiLeftNav icons={icons} expand={isExpand} onRouteChange={() => {}} />
       </BrowserRouter>
     );
   });

@@ -5,14 +5,14 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs/react';
+import { boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 
 import { JuiTextarea } from '..';
 
 storiesOf('Components/Forms', module)
   .addDecorator(withInfoDecorator(JuiTextarea, { inline: true }))
-  .addWithJSX('Textarea', () => {
+  .add('Textarea', () => {
     const onChange = (e: React.ChangeEvent) => {
       console.log(e);
     };

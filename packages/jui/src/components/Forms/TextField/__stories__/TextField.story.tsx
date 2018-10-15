@@ -5,14 +5,14 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs/react';
+import { boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 
 import { JuiTextField } from '../';
 
 storiesOf('Components/Forms', module)
   .addDecorator(withInfoDecorator(JuiTextField, { inline: true }))
-  .addWithJSX('TextField', () => {
+  .add('TextField', () => {
     return (
       <JuiTextField
         id="Team name"

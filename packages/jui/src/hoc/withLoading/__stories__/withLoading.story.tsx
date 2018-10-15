@@ -5,7 +5,7 @@
  */
 import React, { Fragment, PureComponent } from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs/react';
+import { boolean } from '@storybook/addon-knobs';
 import styled from '../../../foundation/styled-components';
 import { withLoading } from '../withLoading';
 import { withLoadingMore } from '../withLoadingMore';
@@ -51,7 +51,7 @@ type ListProps = {
   children: JSX.Element;
 };
 
-storiesOf('HoC/withLoading', module).addWithJSX('demo', () => {
+storiesOf('HoC/withLoading', module).add('demo', () => {
   const knobLoading = boolean('force loading', false);
 
   const List = (props: ListProps) => {
