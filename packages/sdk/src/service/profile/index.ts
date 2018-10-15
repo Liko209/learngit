@@ -200,7 +200,14 @@ export default class ProfileService extends BaseService<Profile> {
     }
     return ErrorParser.parse('none profile error');
   }
-
+  async isConversationHidden(groupId: number) {
+    const profile = await this.getProfile();
+    if (profile) {
+      const key = `hide_group_${groupId}`;
+      return profile[key];
+    }
+    return false;
+  }
   private async _putProfile(newProfile: Profile): Promise<Profile | BaseError> {
     newProfile._id = newProfile.id;
     delete newProfile.id;

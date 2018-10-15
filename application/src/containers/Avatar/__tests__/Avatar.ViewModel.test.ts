@@ -13,10 +13,9 @@ describe('AvatarVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
   });
+
   it('bgColor()', () => {
-    avatarViewModel.onReceiveProps({
-      uid: 1,
-    });
+    avatarViewModel.props.uid = 1;
     expect(avatarViewModel.bgColor).toBe('lake');
   });
 

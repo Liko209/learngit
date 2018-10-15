@@ -3,16 +3,14 @@
 * @Date: 2018-09-19 14:19:09
 * Copyright © RingCentral. All rights reserved.
 */
-import { observable, computed } from 'mobx';
-import {
-  ConversationListItemProps,
-  ConversationListItemViewProps,
-} from './types';
+import { computed } from 'mobx';
+import { ConversationListItemViewProps } from './types';
 import { service } from 'sdk';
 const { GroupService } = service;
 import { getEntity, getSingleEntity } from '@/store/utils';
 // import { getGroupName } from '@/utils/groupName';
 import { ENTITY_NAME } from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import { MyState } from 'sdk/models';
@@ -20,24 +18,24 @@ import MyStateModel from '@/store/models/MyState';
 import GroupStateModel from '@/store/models/GroupState';
 import StoreViewModel from '@/store/ViewModel';
 
-class ConversationListItemViewModel extends StoreViewModel
-  implements ConversationListItemViewProps {
+class ConversationListItemViewModel extends StoreViewModel<
+  ConversationListItemViewProps
+> {
   unreadCount: number;
   important?: boolean | undefined;
+  groupService: service.GroupService = GroupService.getInstance();
   draft?: string | undefined;
   sendFailurePostIds: number[];
 
-  @observable
-  groupId: number;
+  @computed
+  get groupId() {
+    return this.props.groupId;
+  }
 
-  @observable
-  currentUserId?: number;
-
-  @observable
-  currentGroupId?: number;
-
-  @observable
-  selected: boolean = false;
+  @computed
+  get selected() {
+    return this._currentGroupId === this.groupId;
+  }
 
   @computed
   get displayName() {
@@ -49,25 +47,9 @@ class ConversationListItemViewModel extends StoreViewModel
     return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
   }
 
-  onClick = () => {
-    this.groupService.clickGroup(this.groupId);
-  }
-
-  groupService: service.GroupService;
-
-  constructor() {
-    super();
-    this.groupService = GroupService.getInstance();
-  }
-
-  onReceiveProps(props: ConversationListItemProps) {
-    if (this.selected !== props.selected) {
-      this.selected = props.selected;
-    }
-
-    if (this.groupId !== props.groupId) {
-      this.groupId = props.groupId;
-    }
+  @computed
+  private get _currentGroupId() {
+    return storeManager.getGlobalStore().get('currentConversationId');
   }
 
   @computed
@@ -84,6 +66,10 @@ class ConversationListItemViewModel extends StoreViewModel
     const isCurrentGroup = lastGroup && lastGroup === this.groupId;
 
     return !!(!isCurrentGroup && groupState.unreadCount);
+  }
+
+  onClick = () => {
+    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
   }
 }
 

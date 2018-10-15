@@ -7,18 +7,13 @@ import { MouseEvent } from 'react';
 
 type ConversationListItemProps = {
   groupId: number;
-  selected: boolean;
 };
 
 type ConversationListItemViewProps = {
   groupId: number;
   displayName: string;
-  unreadCount: number;
-  umiHint?: boolean;
-  important?: boolean;
   selected: boolean;
-  draft?: string;
-  sendFailurePostIds: number[];
+  umiHint?: boolean;
   onClick: (event: MouseEvent<HTMLElement>) => void;
 };
 

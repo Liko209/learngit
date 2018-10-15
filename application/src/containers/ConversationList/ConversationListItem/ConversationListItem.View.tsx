@@ -39,7 +39,6 @@ class ConversationListItemViewComponent extends React.Component<
     this._handleClick = this._handleClick.bind(this);
     this._handleMoreClick = this._handleMoreClick.bind(this);
     this._closeMenu = this._closeMenu.bind(this);
-    this.state = { currentGroupId: 0 };
   }
 
   private get _umi() {

@@ -7,7 +7,6 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@babel/runtime": "7.0.0-beta.55",
     "@material-ui/core": "3.1.1",
     "@material-ui/icons": "3.0.1",
     "eventemitter2": "5.0.1",
@@ -20,6 +19,13 @@
     "tinycolor2": "1.4.1"
   },
   "devDependencies": {
+    "@babel/core": "7.1.2",
+    "@babel/plugin-proposal-class-properties": "7.1.0",
+    "@babel/plugin-proposal-decorators": "7.1.2",
+    "@babel/polyfill": "7.0.0",
+    "@babel/preset-env": "7.1.0",
+    "@babel/preset-react": "7.0.0",
+    "@babel/preset-typescript": "7.1.0",
     "@dump247/storybook-state": "1.5.0",
     "@storybook/addon-actions": "3.4.11",
     "@storybook/addon-backgrounds": "3.4.11",
@@ -27,7 +33,7 @@
     "@storybook/addon-info": "3.4.11",
     "@storybook/addon-knobs": "3.4.11",
     "@storybook/addons": "3.4.11",
-    "@storybook/react": "3.4.11",
+    "@storybook/react": "4.0.0-alpha.25",
     "@types/quill": "1.3.10",
     "@types/react": "*",
     "@types/react-content-loader": "*",
@@ -41,7 +47,6 @@
     "@types/storybook__react": "*",
     "@types/styled-components": "3.0.1",
     "@types/tinycolor2": "*",
-    "babel-core": "6.26.3",
     "copy-webpack-plugin": "4.5.2",
     "fork-ts-checker-webpack-plugin": "0.4.10",
     "happypack": "5.0.0",
@@ -49,7 +54,6 @@
     "react-docgen-typescript-loader": "3.0.0",
     "react-sortable-hoc": "0.8.3",
     "storybook-addon-jsx": "5.4.0",
-    "ts-loader": "3.5.0",
     "tsconfig-paths-webpack-plugin": "3.2.0",
     "typescript": "3.1.3"
   }

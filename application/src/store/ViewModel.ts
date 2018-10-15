@@ -8,25 +8,59 @@ import {
   autorun,
   reaction,
   when,
+  set,
   IReactionDisposer,
   IReactionPublic,
   IAutorunOptions,
   IReactionOptions,
   Lambda,
   IWhenOptions,
+  observable,
+  computed,
 } from 'mobx';
 import { IViewModel } from '@/base/IViewModel';
 import BaseNotificationSubscribable from './base/BaseNotificationSubscribable';
+import _ from 'lodash';
 
-class StoreViewModel extends BaseNotificationSubscribable
-  implements IViewModel {
+abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
+  implements IViewModel<P> {
   private _reactionDisposers: IReactionDisposer[] = [];
+
+  @observable
+  private _props: P = {} as P;
+
+  @computed
+  get props(): P {
+    return this._props;
+  }
+
+  onReceiveProps?(props: P): void;
+
+  getDerivedProps(props: P) {
+    for (const key in props) {
+      if (typeof props[key] !== 'object') {
+        if (this._props[key] !== props[key]) {
+          set(this._props, { [key]: props[key] });
+        }
+      } else if (Array.isArray(props[key])) {
+        const arr: any = this._props[key] || [];
+        if (!_.isEqual([...arr], props[key])) {
+          set(this._props, { [key]: props[key] });
+        }
+      } else {
+        if (!_.isEqual(this.props[key], props[key])) {
+          set(this._props, { [key]: props[key] });
+        }
+      }
+    }
+  }
 
   protected autorun(view: (r: IReactionPublic) => any, opts?: IAutorunOptions) {
     const disposer = autorun(view, opts);
     this._reactionDisposers.push(disposer);
     return disposer;
   }
+
   protected reaction<T>(
     expression: (r: IReactionPublic) => T,
     effect: (arg: T, r: IReactionPublic) => void,

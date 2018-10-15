@@ -22,7 +22,8 @@ const PrivateRoute = ({
   component: Component,
 }: PrivateRouteProps) => {
   if (isAuthenticated) {
-    return <Component />;
+    // The location props should be instilled for component could be a container
+    return <Component location={location} />;
   }
 
   const redirectProps = {
