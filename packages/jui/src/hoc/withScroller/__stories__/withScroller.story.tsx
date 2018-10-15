@@ -20,7 +20,7 @@ const DemoWrapper = styled.div`
 `;
 
 storiesOf('HoC/withScroller', module)
-  .addWithJSX('demo', () => {
+  .add('demo', () => {
     const Demo = ({ children }: any) => <ul>{children}</ul>;
 
     const DemoWithScroller = withScroller(Demo);
@@ -39,7 +39,7 @@ storiesOf('HoC/withScroller', module)
       </DemoWrapper>
     );
   })
-  .addWithJSX('stick to bottom', () => {
+  .add('stick to bottom', () => {
     class DemoContent extends Component<any, any> {
       render() {
         const { children } = this.props;

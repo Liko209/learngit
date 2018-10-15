@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, select, text } from '@storybook/addon-knobs/react';
+import { boolean, select, text } from '@storybook/addon-knobs';
 import {
   withInfoDecorator,
   alignCenterDecorator,
@@ -42,7 +42,7 @@ function getKnobs() {
 storiesOf('Components/Buttons', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiButton, { inline: true }))
-  .addWithJSX('Contained Button', () => {
+  .add('Contained Button', () => {
     const { content, ...rest } = getKnobs();
     return (
       <div>
@@ -52,7 +52,7 @@ storiesOf('Components/Buttons', module)
       </div>
     );
   })
-  .addWithJSX('Text Button', () => {
+  .add('Text Button', () => {
     const { content, ...rest } = getKnobs();
     return (
       <div>

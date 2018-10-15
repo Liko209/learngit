@@ -3,10 +3,9 @@
  * @Date: 2018-08-22 15:22:47
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, select } from '@storybook/addon-knobs/react';
+import { boolean, select } from '@storybook/addon-knobs';
 import {
   alignCenterDecorator,
   withInfoDecorator,
@@ -48,7 +47,7 @@ const knobs = {
 storiesOf('Components/Buttons/IconButtons', module)
   .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiIconButton, { inline: true }))
-  .addWithJSX('plain', () => {
+  .add('plain', () => {
     return (
       <Wrapper>
         <JuiIconButton
@@ -102,7 +101,7 @@ storiesOf('Components/Buttons/IconButtons', module)
       </Wrapper>
     );
   })
-  .addWithJSX('round', () => {
+  .add('round', () => {
     return (
       <Wrapper>
         <JuiIconButton
