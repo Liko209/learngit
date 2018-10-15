@@ -3,11 +3,10 @@
  * @Date: 2018-08-22 15:23:24
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import backgrounds from '@storybook/addon-backgrounds';
-import { text } from '@storybook/addon-knobs/react';
+import { text } from '@storybook/addon-knobs';
 import { JuiIconButton } from '../../../components/Buttons/IconButton';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiConversationPageHeader } from '../ConversationPageHeader';
@@ -20,7 +19,7 @@ storiesOf('Pattern', module)
   .addDecorator(
     backgrounds([{ name: 'slide-background', value: '#f3f3f3', default: true }]),
   )
-  .addWithJSX('ConversationPageHeader', () => {
+  .add('ConversationPageHeader', () => {
     return (
       <JuiConversationPageHeader
         title={getTitleKnob()}

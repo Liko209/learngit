@@ -12,7 +12,7 @@ import { JuiTreeColumnResponse } from '..';
 
 storiesOf('Foundation/Layout', module)
   .addDecorator(withInfoDecorator(JuiTreeColumnResponse, { inline: true }))
-  .addWithJSX('Response', () => (
+  .add('Response', () => (
     <div style={{ position: 'relative', height: '100px' }}>
       <JuiTreeColumnResponse tag="conversation" leftNavWidth={0}>
         <div style={{ backgroundColor: 'red', height: '100%' }}>Left rail</div>

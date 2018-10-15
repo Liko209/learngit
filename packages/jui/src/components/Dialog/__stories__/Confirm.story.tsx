@@ -12,7 +12,7 @@ import { JuiDialog } from '../Dialog';
 
 storiesOf('Components/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(JuiDialog))
-  .addWithJSX('JuiConfirm', () => {
+  .add('JuiConfirm', () => {
     const open = boolean('open', true);
     const title = text('Title', 'Delete Post');
     const content = text('Content', 'Are you delete it?');

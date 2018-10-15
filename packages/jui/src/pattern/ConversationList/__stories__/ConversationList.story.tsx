@@ -12,7 +12,7 @@ import {
 
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { select, number, boolean, text } from '@storybook/addon-knobs/react';
+import { select, number, boolean, text } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 
 import { JuiIconography } from '../../../foundation/Iconography';
@@ -59,30 +59,36 @@ storiesOf('Pattern/ConversationList', module)
               title="Matthew"
               presence={<JuiPresence presence="online" />}
               umi={<JuiUmi unreadCount={10} />}
+              indicator={<span />}
             />
             <ListItem
               title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
               presence={<JuiPresence />}
               umi={<JuiUmi unreadCount={12} variant="auto" important={true} />}
+              indicator={<span />}
             />
             <ListItem
               title="Maria"
               presence={<JuiPresence />}
               umi={<JuiUmi unreadCount={9} />}
+              indicator={<span />}
             />
             <ListItem
               title="Jupiter Team"
               presence={<JuiPresence />}
               umi={<JuiUmi unreadCount={0} />}
+              indicator={<span />}
             />
             <ListItem
               title="Michael"
               presence={<JuiPresence presence="away" />}
               umi={<JuiUmi unreadCount={0} />}
+              indicator={<span />}
             />
             <ListItem
               title="Steve"
               presence={<JuiPresence presence="offline" />}
+              indicator={<span />}
             />
           </List>
         </Section>
@@ -99,30 +105,36 @@ storiesOf('Pattern/ConversationList', module)
             title="Matthew"
             presence={<JuiPresence presence="online" />}
             umi={<JuiUmi unreadCount={10} />}
+            indicator={<span />}
           />
           <ListItem
             title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
             presence={<JuiPresence />}
             umi={<JuiUmi unreadCount={12} variant="auto" important={true} />}
+            indicator={<span />}
           />
           <ListItem
             title="Maria"
             presence={<JuiPresence />}
             umi={<JuiUmi unreadCount={9} />}
+            indicator={<span />}
           />
           <ListItem
             title="Jupiter Team"
             presence={<JuiPresence />}
             umi={<JuiUmi unreadCount={0} />}
+            indicator={<span />}
           />
           <ListItem
             title="Michael"
             presence={<JuiPresence presence="away" />}
             umi={<JuiUmi unreadCount={0} />}
+            indicator={<span />}
           />
           <ListItem
             title="Steve"
             presence={<JuiPresence presence="offline" />}
+            indicator={<span />}
           />
         </List>
       </StoryWrapper>
@@ -267,6 +279,7 @@ storiesOf('Pattern/ConversationList', module)
             }
             onClick={action('onClick')}
             onMoreClick={action('onMoreClick')}
+            indicator={<span />}
           />
         </StoryWrapper>
       );

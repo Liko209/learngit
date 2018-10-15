@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs/react';
+import { boolean } from '@storybook/addon-knobs';
 
 import { JuiToggleButton } from '../';
 
@@ -16,7 +16,7 @@ function getKnobs() {
   };
 }
 
-storiesOf('Components/Buttons', module).addWithJSX('ToggleButton', () => {
+storiesOf('Components/Buttons', module).add('ToggleButton', () => {
   const onChange = (event, checked) => console.log(checked);
   return <JuiToggleButton onChange={onChange} disabled={getKnobs().disabled} />;
 });

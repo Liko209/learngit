@@ -12,7 +12,7 @@ import { JuiModal } from '../Modal';
 
 storiesOf('Components/Dialog 🔜', module)
   .addDecorator(withInfoDecorator(JuiDialog))
-  .addWithJSX('JuiAlert', () => {
+  .add('JuiAlert', () => {
     const open = boolean('open', true);
     const title = text('Title', 'Title');
     const content = text('Content', 'Content');

@@ -6,7 +6,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { number, boolean, select } from '@storybook/addon-knobs/react';
+import { number, boolean, select } from '@storybook/addon-knobs';
 import { JuiUmi } from '..';
 
 storiesOf('Components/UMI', module).add(
