@@ -30,4 +30,14 @@ export async function initAll() {
     const currentUserId = accountService.getCurrentUserId();
     globalStore.set('currentUserId', currentUserId);
   });
+  notificationCenter.on(SERVICE.GATE_WAY_504_BEGIN, () => {
+    // 1. show loading
+    globalStore.set('showGlobalLoading', true);
+    // 2. clear store data
+    storeManager.resetStores();
+  });
+  notificationCenter.on(SERVICE.GATE_WAY_504_END, () => {
+    // stop loading
+    globalStore.set('showGlobalLoading', false);
+  });
 }

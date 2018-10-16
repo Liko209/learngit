@@ -5,7 +5,7 @@
  */
 
 import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
-import { IResponse } from '../NetworkClient';
+import { IResponse, IResponseError } from '../NetworkClient';
 import Api from '../api';
 import { GLIP_API } from './constants';
 import {
@@ -39,14 +39,14 @@ export type IndexDataModel = {
   client_config: IFlag;
 };
 
-type IndexResponse = IResponse<IndexDataModel>;
+type IndexResponse = IResponse<IndexDataModel & IResponseError>;
 
 /**
  * @param {string} rcAccessTokenData
  * @param {string} username
  * @param {string} password
  * @param {boolean} mobile(option)
- * get glip 1.0 api's requset header (x-authorization) by authData
+ * get glip 1.0 api's request header (x-authorization) by authData
  */
 function loginGlip(authData: object): Promise<IResponse<Object>> {
   const model = {
@@ -67,25 +67,48 @@ function loginGlip(authData: object): Promise<IResponse<Object>> {
  * @param {string} password
  * index data api
  */
-function indexData(params: object, requestConfig = {}, headers = {}): Promise<IndexResponse> {
-  return Api.glipNetworkClient.get('/index', params, NETWORK_VIA.HTTP, requestConfig, headers);
+function indexData(
+  params: object,
+  requestConfig = {},
+  headers = {},
+): Promise<IResponse<IndexDataModel & IResponseError>> {
+  return Api.glipNetworkClient.get(
+    '/index',
+    params,
+    NETWORK_VIA.HTTP,
+    requestConfig,
+    headers,
+  );
 }
 
-function initialData(params: object, requestConfig = {}, headers = {}): Promise<IndexResponse> {
-  return Api.glipDesktopNetworkClient
-    .get('/initial', params, NETWORK_VIA.HTTP, requestConfig, headers);
+function initialData(
+  params: object,
+  requestConfig = {},
+  headers = {},
+): Promise<IndexResponse> {
+  return Api.glipDesktopNetworkClient.get(
+    '/initial',
+    params,
+    NETWORK_VIA.HTTP,
+    requestConfig,
+    headers,
+  );
 }
 
-function remainingData(params: object, requestConfig = {}, headers = {}): Promise<IndexResponse> {
-  return Api.glipDesktopNetworkClient
-    .get('/remaining', params, NETWORK_VIA.HTTP, requestConfig, headers);
+function remainingData(
+  params: object,
+  requestConfig = {},
+  headers = {},
+): Promise<IndexResponse> {
+  return Api.glipDesktopNetworkClient.get(
+    '/remaining',
+    params,
+    NETWORK_VIA.HTTP,
+    requestConfig,
+    headers,
+  );
 }
 
 // plugins data
 
-export {
-  loginGlip,
-  indexData,
-  initialData,
-  remainingData,
-};
+export { loginGlip, indexData, initialData, remainingData };

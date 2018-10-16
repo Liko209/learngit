@@ -22,7 +22,6 @@ import presenceHandleData from '../presence/handleData';
 import profileHandleData from '../profile/handleData';
 import stateHandleData from '../state/handleData';
 import { IndexDataModel } from '../../api/glip/user';
-import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
 
@@ -73,14 +72,11 @@ const dispatchIncomingData = (data: IndexDataModel) => {
 };
 
 const handleData = async (
-  result: IResponse<IndexDataModel>,
+  result: IndexDataModel,
   shouldSaveScoreboard: boolean = true,
 ) => {
   try {
-    if (!(result instanceof Object) || !(result.data instanceof Object)) {
-      return; // sometimes indexData return false
-    }
-    const { timestamp = null, scoreboard = null } = result.data;
+    const { timestamp = null, scoreboard = null } = result;
     const configDao = daoManager.getKVDao(ConfigDao);
 
     if (scoreboard && shouldSaveScoreboard) {
@@ -88,7 +84,7 @@ const handleData = async (
       notificationCenter.emitConfigPut(CONFIG.SOCKET_SERVER_HOST, scoreboard);
     }
     // logger.time('handle index data');
-    await dispatchIncomingData(result.data);
+    await dispatchIncomingData(result);
     // logger.timeEnd('handle index data');
     if (timestamp) {
       configDao.put(LAST_INDEX_TIMESTAMP, timestamp);

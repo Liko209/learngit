@@ -8,7 +8,7 @@ import { indexData, initialData, remainingData } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
 import { IndexDataModel } from '../../api/glip/user';
-import { IResponse } from '../../api/NetworkClient';
+import { IResponse, IResponseError } from '../../api/NetworkClient';
 import { progressBar } from '../../utils/progress';
 
 interface IParams {
@@ -17,7 +17,7 @@ interface IParams {
 
 const fetchInitialData = async (
   currentTime: number,
-): Promise<IResponse<IndexDataModel>> => {
+): Promise<IResponse<IndexDataModel & IResponseError>> => {
   progressBar.start();
   let result;
   try {
@@ -30,7 +30,7 @@ const fetchInitialData = async (
 
 const fetchRemainingData = async (
   currentTime: number,
-): Promise<IResponse<IndexDataModel>> => {
+): Promise<IResponse<IndexDataModel & IResponseError>> => {
   const result = remainingData({ _: currentTime });
   return result;
 };
@@ -39,7 +39,7 @@ const fetchRemainingData = async (
 
 const fetchIndexData = async (
   timeStamp: string,
-): Promise<IResponse<IndexDataModel>> => {
+): Promise<IResponse<IndexDataModel & IResponseError>> => {
   progressBar.start();
   const params: IParams = { newer_than: timeStamp };
 

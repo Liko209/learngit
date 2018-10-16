@@ -14,24 +14,30 @@ import Login from '@/containers/Login';
 import { Home } from '@/containers/Home';
 import UnifiedLogin from '@/containers/UnifiedLogin';
 import VersionInfo from '@/containers/VersionInfo';
-import { autorun } from 'mobx';
+import { autorun, computed } from 'mobx';
 import _ from 'lodash';
 import storeManager from '@/store';
+import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 
 class App extends React.PureComponent {
   private appName = process.env.APP_NAME || '';
+
   public render() {
     return (
       <ThemeProvider>
-        <Router>
-          <Switch>
-            <Route path="/commit-info" component={VersionInfo} />
-            <Route path="/version" component={VersionInfo} />
-            <Route path="/login" component={Login} />
-            <Route path="/unified-login" component={UnifiedLogin} />
-            <AuthRoute path="/" component={Home} />
-          </Switch>
-        </Router>
+        {this.isLoading ? (
+          <JuiContentLoader />
+        ) : (
+          <Router>
+            <Switch>
+              <Route path="/commit-info" component={VersionInfo} />
+              <Route path="/version" component={VersionInfo} />
+              <Route path="/login" component={Login} />
+              <Route path="/unified-login" component={UnifiedLogin} />
+              <AuthRoute path="/" component={Home} />
+            </Switch>
+          </Router>
+        )}
       </ThemeProvider>
     );
   }
@@ -41,6 +47,11 @@ class App extends React.PureComponent {
     autorun(() => {
       this.updateAppUmi();
     });
+  }
+
+  @computed
+  get isLoading() {
+    return storeManager.getGlobalStore().get('app.showGlobalLoading');
   }
 
   updateAppUmi() {
