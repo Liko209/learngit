@@ -5,7 +5,7 @@
  */
 
 import * as React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Router, Switch, Route } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
 import ThemeProvider from '@/containers/ThemeProvider';
 
@@ -14,6 +14,7 @@ import Login from '@/containers/Login';
 import { Home } from '@/containers/Home';
 import UnifiedLogin from '@/containers/UnifiedLogin';
 import VersionInfo from '@/containers/VersionInfo';
+import history from '@/utils/history';
 import { autorun } from 'mobx';
 import _ from 'lodash';
 import storeManager from '@/store';
@@ -23,7 +24,7 @@ class App extends React.PureComponent {
   public render() {
     return (
       <ThemeProvider>
-        <Router>
+        <Router history={history}>
           <Switch>
             <Route path="/commit-info" component={VersionInfo} />
             <Route path="/version" component={VersionInfo} />
