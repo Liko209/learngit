@@ -6,3 +6,4 @@
 export * from './login';
 export * from './sleep';
 export * from './AnchorSelector';
+export * from './createPrivateChat';
