@@ -17,6 +17,7 @@ import {
   IWhenOptions,
   observable,
   computed,
+  action,
 } from 'mobx';
 import { IViewModel } from '@/base/IViewModel';
 import BaseNotificationSubscribable from './base/BaseNotificationSubscribable';
@@ -36,6 +37,7 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
 
   onReceiveProps?(props: P): void;
 
+  @action
   getDerivedProps(props: P) {
     for (const key in props) {
       if (typeof props[key] !== 'object') {

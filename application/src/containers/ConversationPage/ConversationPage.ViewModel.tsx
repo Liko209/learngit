@@ -15,6 +15,19 @@ class ConversationPageViewModel extends AbstractViewModel {
   private _groupService: GroupService = GroupService.getInstance();
   private _stateService: StateService = StateService.getInstance();
 
+  private _throttledUpdateLastGroup = _.wrap(
+    _.throttle(
+      (groupId: number) => {
+        this._stateService.updateLastGroup(groupId);
+      },
+      3000,
+      { trailing: true, leading: false },
+    ),
+    (func, groupId: number) => {
+      return func(groupId);
+    },
+  );
+
   @observable
   private _permissions: PERMISSION_ENUM[] = [];
 
@@ -23,6 +36,9 @@ class ConversationPageViewModel extends AbstractViewModel {
 
   @computed
   get canPost() {
+    if (this._permissions.length === 0) {
+      return true;
+    }
     return this._permissions.includes(PERMISSION_ENUM.TEAM_POST);
   }
 
@@ -36,8 +52,8 @@ class ConversationPageViewModel extends AbstractViewModel {
     }
   }
 
-  private _readGroup(groupId: number) {
-    this._stateService.updateLastGroup(groupId);
+  private async _readGroup(groupId: number) {
+    this._throttledUpdateLastGroup(groupId);
   }
 }
 
