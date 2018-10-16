@@ -7,13 +7,14 @@ import React, { MouseEvent, Fragment } from 'react';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
 import { Umi } from '@/containers/Umi';
 import { Indicator } from '@/containers/ConversationList/Indicator';
+import { Presence } from '@/containers/Presence';
 import { Menu } from '../Menu';
 import { ConversationListItemViewProps } from './types';
 import { observer } from 'mobx-react';
 import { observable } from 'mobx';
 
 // TODO remove Stubs here
-const Presence = (props: any) => <span {...props} />;
+// const Presence = (props: any) => <span {...props} />;
 
 type Props = ConversationListItemViewProps;
 interface IState {
@@ -21,10 +22,7 @@ interface IState {
 }
 
 @observer
-class ConversationListItemViewComponent extends React.Component<
-  Props,
-  IState
-> {
+class ConversationListItemViewComponent extends React.Component<Props, IState> {
   @observable
   menuAnchorEl: HTMLElement | null = null;
 

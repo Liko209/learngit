@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { createAtom, IAtom } from 'mobx';
+import { createAtom, IAtom, action } from 'mobx';
 import { service } from 'sdk';
 import { BaseService } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
@@ -188,6 +188,29 @@ export default class MultiEntityMapStore<
 
   getUsedIds() {
     return this._usedIds;
+  }
+
+  @action
+  reset() {
+    this._data = {};
+    this._atom = {};
+    // this._usedIds = new Set();
+  }
+
+  @action
+  reload() {
+    this._usedIds.forEach((id: number) => {
+      const res = this.getByService(id);
+      if (res instanceof Promise) {
+        res.then((res: T & { error?: {} }) => {
+          if (res && !res.error) {
+            this.set(res);
+          }
+        });
+      } else {
+        this.set(res as T);
+      }
+    });
   }
 
   private _createAtom(id: number) {
