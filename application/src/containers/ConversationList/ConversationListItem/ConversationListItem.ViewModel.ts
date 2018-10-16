@@ -72,10 +72,6 @@ class ConversationListItemViewModel extends StoreViewModel<
 
     return !!(!isCurrentGroup && groupState.unreadCount);
   }
-
-  onClick = () => {
-    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
-  }
 }
 
 export { ConversationListItemViewModel };

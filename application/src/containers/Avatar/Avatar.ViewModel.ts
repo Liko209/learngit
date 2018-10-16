@@ -71,7 +71,11 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     if (headShotVersion) {
       return personService.getHeadShot(this._uid, headShotVersion, 150);
     }
-    return defaultAvatar;
+    // non-alphabet character
+    if (!this.name) {
+      return defaultAvatar;
+    }
+    return '';
   }
 }
 
