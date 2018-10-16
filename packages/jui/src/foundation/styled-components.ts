@@ -42,14 +42,14 @@ type WithOptionalTheme<P extends { theme?: T }, T> = Omit<P, 'theme'> & {
 
 type Attrs<P, A extends Partial<P>, T> = {
   [K in keyof A]:
-    | ((props: styledComponents.ThemedStyledProps<P, T>) => A[K])
-    | A[K]
+  | ((props: styledComponents.ThemedStyledProps<P, T>) => A[K])
+  | A[K]
 };
 
 type ThemedStyledComponentFactories<T> = {
   [TTag in keyof JSX.IntrinsicElements]: styledComponents.ThemedStyledFunction<
-    JSX.IntrinsicElements[TTag],
-    T
+  JSX.IntrinsicElements[TTag],
+  T
   >
 };
 
@@ -62,13 +62,13 @@ interface IThemedStyledFunction<P, T, O = P> {
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P, T>
-    >[] // tslint:disable-line
+      >[] // tslint:disable-line
   ): styledComponents.StyledComponentClass<P, T, O> & Dependencies;
   <U>(
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.Interpolation<
       styledComponents.ThemedStyledProps<P & U, T>
-    >[] // tslint:disable-line
+      >[] // tslint:disable-line
   ): styledComponents.StyledComponentClass<P & U, T, O & U> & Dependencies;
   attrs<U, A extends Partial<P & U> = {}>(
     attrs: Attrs<P & U, A, T>,
@@ -88,6 +88,19 @@ interface IThemedBaseStyledInterface<T>
   ): IThemedStyledFunction<P, T, WithOptionalTheme<P, T>>;
 }
 
+interface IThemeProps<T> {
+  theme: T;
+}
+
+type ThemedGlobalStyledClassProps<P, T> = {
+  theme?: T;
+};
+
+interface IGlobalStyleClass<P, T>
+  extends React.ComponentClass<ThemedGlobalStyledClassProps<P, T>> { }
+
+type ThemedStyledProps<P, T> = P & IThemeProps<T>;
+
 interface IThemedStyledComponentsModule<T> {
   default: IThemedBaseStyledInterface<T>;
   css: styledComponents.ThemedCssFunction<T>;
@@ -99,10 +112,10 @@ interface IThemedStyledComponentsModule<T> {
     strings: TemplateStringsArray,
     ...interpolations: styledComponents.SimpleInterpolation[]
   ): void;
-  createGlobalStyle(
+  createGlobalStyle<P = {}>(
     strings: TemplateStringsArray,
-    ...interpolations: styledComponents.SimpleInterpolation[]
-  ): React.ComponentClass;
+    ...interpolations: styledComponents.Interpolation<ThemedStyledProps<P, T>>[]
+  ): IGlobalStyleClass<P, T>;
   withTheme<P extends { theme?: T }>(
     component: React.ComponentType<P>,
   ): ComponentClass<WithOptionalTheme<P, T>>;
