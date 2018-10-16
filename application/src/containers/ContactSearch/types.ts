@@ -3,6 +3,11 @@
  * @Date: 2018-10-11 15:04:39
  * Copyright © RingCentral. All rights reserved.
  */
+type SelectedMember = {
+  id: number;
+  label: string;
+  email: string;
+};
 
 type ContactSearchProps = {
   onChange: (item: any) => void;
@@ -13,7 +18,8 @@ type ContactSearchProps = {
 };
 
 type ViewProps = {
-  fetchSearch: Function;
+  searchMembers: (value: string) => void;
+  suggestions: SelectedMember[];
   onChange: (item: any) => void;
   label: string;
   placeholder: string;
@@ -21,4 +27,4 @@ type ViewProps = {
   helperText: string;
 };
 
-export { ViewProps, ContactSearchProps };
+export { ViewProps, ContactSearchProps, SelectedMember };
