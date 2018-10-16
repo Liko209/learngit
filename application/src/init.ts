@@ -5,7 +5,7 @@
 import config from './config';
 import { Sdk, LogControlManager, service } from 'sdk';
 import storeManager from '@/store';
-
+import history from '@/utils/history';
 const api = config.get('api');
 const db = config.get('db');
 // send configs to sdk
@@ -39,5 +39,6 @@ export async function initAll() {
   notificationCenter.on(SERVICE.GATE_WAY_504_END, () => {
     // stop loading
     globalStore.set('showGlobalLoading', false);
+    history.replace('/messages');
   });
 }

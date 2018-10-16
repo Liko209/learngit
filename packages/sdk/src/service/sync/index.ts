@@ -65,11 +65,11 @@ export default class SyncService extends BaseService {
       const currentTime = Date.now();
       let result = await fetchInitialData(currentTime);
       this.onDataLoaded && (await this.onDataLoaded());
-      if (result.data) {
+      if (result && result.data) {
         await handleData(result.data);
         result = await fetchRemainingData(currentTime);
         this.onDataLoaded && (await this.onDataLoaded());
-        if (result.data) {
+        if (result && result.data) {
           await handleData(result.data);
           mainLogger.info('fetch initial data or remaining data success');
           return;
@@ -87,7 +87,7 @@ export default class SyncService extends BaseService {
     // 5 minutes ago to ensure data is correct
     const result = await fetchIndexData(String(timeStamp - 300000));
     this.onDataLoaded && (await this.onDataLoaded());
-    if (result.data) {
+    if (result && result.data) {
       await handleData(result.data);
     } else {
       this._handleSyncIndexError(result);
