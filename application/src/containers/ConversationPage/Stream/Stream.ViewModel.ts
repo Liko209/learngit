@@ -173,8 +173,6 @@ class StreamViewModel extends StoreViewModel {
   }
 
   private async _loadPosts(direction: FetchDataDirection) {
-    console.log('_loadPosts', this._transformHandler.hasMore(direction));
-
     if (!this._transformHandler.hasMore(direction)) return;
     await this._transformHandler.fetchData(direction);
   }
