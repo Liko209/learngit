@@ -61,22 +61,38 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
   }
 
   @computed
-  get name() {
+  get shortName() {
     return this._person.shortName;
   }
+
   @computed
-  get url() {
-    const personService = PersonService.getInstance<PersonService>();
-    const headShotVersion = this._person.headShotVersion;
-    if (headShotVersion) {
-      return personService.getHeadShot(this._uid, headShotVersion, 150);
-    }
-    // non-alphabet character
-    if (!this.name) {
+  get shouldShowShortName() {
+    return !this._person.hasHeadShot && this._person.shortName;
+  }
+
+  @computed
+  get headShotUrl() {
+    if (!this._person.hasHeadShot) {
       return defaultAvatar;
     }
-    return '';
+    let url: string | null = null;
+    const { headShotVersion, headshot } = this._person;
+    if (headShotVersion) {
+      const personService = PersonService.getInstance<PersonService>();
+      url = personService.getHeadShot(this._uid, headShotVersion, 150);
+    } else if (headshot) {
+      if (typeof headshot === 'string') {
+        url = headshot;
+      }
+      if (headshot.url) {
+        url = headshot.url;
+      } else if (headshot.thumbs) {
+        const keys = Object.keys(headshot.thumbs);
+        const str = keys.find(url => url.includes('size=150'));
+        url = str && headshot.thumbs[str];
+      }
+    }
+    return url;
   }
 }
-
 export { AvatarViewModel };
