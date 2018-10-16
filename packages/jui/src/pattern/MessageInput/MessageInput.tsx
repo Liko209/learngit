@@ -32,7 +32,7 @@ const GlobalStyle = createGlobalStyle`
         caret-color: ${primary('700')};
         &::before {
           font-style: normal;
-          color: ${grey('500')};
+          color: ${grey('400')};
         }
         &:hover {
           background-color: ${grey('50')};
