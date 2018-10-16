@@ -5,8 +5,8 @@
  */
 
 import { formalName } from '../../libs/filter';
-import { setUp, tearDown, TestHelper } from '../../libs/helpers';
-import { directLogin } from '../../utils';
+import { setUp, tearDown } from '../../libs/helpers';
+import { directLogin, createPrivateChat } from '../../utils';
 import { setupSDK } from '../../utils/setupSDK';
 import { ProfileAPI, PersonAPI } from '../../libs/sdk';
 import { Send } from '../../page-models/components/MessageInput';
@@ -14,18 +14,6 @@ import { Send } from '../../page-models/components/MessageInput';
 fixture('send messages draft')
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
-
-const createPrivateChat = async (h: TestHelper, members: any[]) => {
-  const client701 = await h.glipApiManager.getClient(h.users.user701, h.companyNumber);
-  const privateChat = await client701.createGroup({
-    members,
-    type: 'PrivateChat',
-    isPublic: true,
-    description: 'test',
-  });
-  // h.log(`   Private chat ${privateChat.data.id} is created.`);
-  return privateChat;
-};
 
 test(formalName('draft', ['P0', 'JPT-139', 'Show massage draft when switching conversation']), async (t) => {
   await setupSDK(t);
