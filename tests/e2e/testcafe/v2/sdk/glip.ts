@@ -5,6 +5,9 @@ import { RcPlatformSdk } from "./platform";
 
 export class GlipSdk {
     axiosClient: AxiosInstance;
+    accessToken: string;
+    headers: object;
+
     constructor(private glipServerUrl: string, private platform: RcPlatformSdk) {
         this.axiosClient = axios.create({
             baseURL: this.glipServerUrl,
@@ -26,4 +29,29 @@ export class GlipSdk {
             }
         });
     }
+
+    async auth(forMobile: boolean = true){
+        const res =  await this.authByRcToken(forMobile)
+        this.accessToken = res["headers"]["x-authorization"]
+        this.headers = {
+            accept: 'application/json',
+            authorization: "Bearer " +this.accessToken,
+            'content-type': 'application/json'
+        }
+    }
+
+    getPerson(personId){
+        const uri = `api/person/${personId}`
+        return this.axiosClient.get(uri, {
+            headers: this.headers,
+        });
+    }
+
+    updatePerson(personId, personDict: object){
+        const uri = `api/person/${personId}`
+        return this.axiosClient.put(uri, personDict, {
+            headers: this.headers,
+        });
+    }
+
 }
