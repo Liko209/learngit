@@ -75,3 +75,5 @@ typings/
 allure
 
 .testcafe-electron-rc
+
+package-lock.json
