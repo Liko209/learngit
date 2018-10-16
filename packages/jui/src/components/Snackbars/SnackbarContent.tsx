@@ -19,6 +19,7 @@ type IconAndColor = {
 type JuiSnackbarsProps = {
   open?: boolean;
   type: JuiSnackbarsType;
+  children: React.ReactNode;
 };
 
 type IconAndColorMap = {
@@ -47,28 +48,27 @@ function getIconAndColor(type: JuiSnackbarsType): IconAndColor {
   return ICON_AND_COLOR[type];
 }
 
-class JuiSnackbarContent extends React.Component<JuiSnackbarsProps> {
-  render() {
-    const { children, type } = this.props;
-    const { icon, color } = getIconAndColor(type);
-    const message = (
-      <Jui.MessageWrapper>
-        {<Jui.SnackbarIcon color={color}>{icon}</Jui.SnackbarIcon>}
-        {children}
-      </Jui.MessageWrapper>
-    );
+const JuiSnackbarContent: React.SFC = (props: JuiSnackbarsProps) => {
+  const { children, type, ...rest } = props;
+  const { icon, color } = getIconAndColor(type);
+  const message = (
+    <Jui.MessageWrapper>
+      {<Jui.SnackbarIcon color={color}>{icon}</Jui.SnackbarIcon>}
+      {children}
+    </Jui.MessageWrapper>
+  );
 
-    return (
-      <Jui.SnackbarContent
-        bgColor={color}
-        classes={{
-          root: 'root',
-          message: 'message',
-        }}
-        message={message}
-      />
-    );
-  }
-}
+  return (
+    <Jui.SnackbarContent
+      bgColor={color}
+      classes={{
+        root: 'root',
+        message: 'message',
+      }}
+      message={message}
+      {...rest}
+    />
+  );
+};
 
 export { JuiSnackbarContent, JuiSnackbarsProps, SnackbarContentColor };
