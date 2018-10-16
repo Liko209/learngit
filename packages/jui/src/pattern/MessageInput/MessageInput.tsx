@@ -30,6 +30,10 @@ const GlobalStyle = createGlobalStyle`
         color: ${grey('700')};
         border: 1px solid ${grey('300')};
         caret-color: ${primary('700')};
+        &::before {
+          font-style: normal;
+          color: ${grey('500')};
+        }
         &:hover {
           background-color: ${grey('50')};
         }
