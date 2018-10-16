@@ -3,6 +3,7 @@
  * @Date: 2018-09-18 10:10:47
  * Copyright © RingCentral. All rights reserved.
  */
+import throttle from 'lodash/throttle';
 import React, { Component, ComponentType } from 'react';
 import styled from '../../foundation/styled-components';
 import { noop } from '../../foundation/utils';
@@ -15,6 +16,7 @@ type ScrollerProps = {
    * that will trigger a scrollTop/scrollBottom event
    */
   threshold: number;
+  throttle: number;
   initialScrollTop: number;
   stickTo: StickType;
   onScrollToTop: () => void;
@@ -48,6 +50,7 @@ function withScroller(Comp: ComponentType<any>) {
   return class Scroller extends Component<ScrollerProps, ScrollerStates> {
     static defaultProps = {
       threshold: 100,
+      throttle: 100,
       initialScrollTop: 0,
       stickTo: 'top',
       onScrollToTop: noop,
@@ -61,6 +64,14 @@ function withScroller(Comp: ComponentType<any>) {
     private get _scrollEl(): HTMLElement {
       if (!this._scrollElRef.current) throw new Error();
       return this._scrollElRef.current;
+    }
+
+    constructor(props: ScrollerProps) {
+      super(props);
+      this._handleScroll = throttle(
+        this._handleScroll.bind(this),
+        props.throttle,
+      );
     }
 
     render() {
@@ -89,13 +100,21 @@ function withScroller(Comp: ComponentType<any>) {
 
     attachScrollListener() {
       this._scrollEl.addEventListener('scroll', this._handleScroll, false);
+      this._scrollEl.addEventListener('mousewheel', this._handleScroll, false);
     }
 
     detachScrollListener() {
       this._scrollEl.removeEventListener('scroll', this._handleScroll, false);
+      this._scrollEl.removeEventListener(
+        'mousewheel',
+        this._handleScroll,
+        false,
+      );
     }
 
-    private _handleScroll = () => {
+    private _handleScroll() {
+      console.log('_handleScroll');
+
       const prevAtTop = this._atTop;
       const prevAtBottom = this._atBottom;
       const atTop = this._isAtTop();
