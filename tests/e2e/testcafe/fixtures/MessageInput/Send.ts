@@ -24,11 +24,11 @@ test(formalName('send', ['P0', 'JPT-77', 'Enter text in the conversation input b
     groupId = privateChat.data.id;
     const profileId = (await PersonAPI.requestPersonById(h.users.user701.glip_id)).data.profile_id;
     await (ProfileAPI as any).putDataById(profileId, { [`hide_group_${groupId}`]: false });
-    h.log(`1. create a private chat conversation ${groupId}, and show to left rail`);
+    h.log(`1. create a private chat conversation id ${groupId}, and show to left rail`);
   });
   await chain;
   await chain.shouldNavigateTo(Send)
-    .log(`2. select this conversation ${groupId}`)
+    .log(`2. select this conversation id ${groupId}`)
     .selectConversation(groupId)
     .log('3. expect editor has existed')
     .expectEditorHasExisted()

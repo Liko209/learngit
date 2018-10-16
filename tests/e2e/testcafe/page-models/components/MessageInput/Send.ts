@@ -48,8 +48,15 @@ class Send extends BaseComponent {
 
   public selectConversation(groupId: number): this {
     return this.chain(async (t) => {
-      const selectorConversation = await Selector(`[data-group-id="${groupId}"]`);
+      const selectorConversation = Selector(`[data-group-id="${groupId}"]`);
       await t.click(selectorConversation);
+    });
+  }
+
+  public expectShowDraftTag(groupId: number): this {
+    return this.chain(async (t) => {
+      const selectorConversation = Selector(`[data-group-id="${groupId}"]`);
+      await t.expect(selectorConversation.textContent).contains('Draft');
     });
   }
 }
