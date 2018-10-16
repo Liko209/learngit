@@ -5,8 +5,6 @@
  */
 import { getEntity } from '../../../store/utils';
 import { AvatarViewModel } from '../Avatar.ViewModel';
-import { Person } from '../../../../../packages/sdk/src/models';
-import PersonModel from '@/store/models/Person';
 jest.mock('../../../store/utils');
 
 const avatarViewModel = new AvatarViewModel();
