@@ -84,7 +84,8 @@ function withScroller(Comp: ComponentType<any>) {
 
     componentDidMount() {
       this._scrollEl.scrollTop = this.props.initialScrollTop;
-      this.props.triggerScrollToOnMount && this._handleScroll();
+      this.props.triggerScrollToOnMount &&
+        this._handleScroll(new WheelEvent('wheel'));
       this._atTop = this._isAtTop();
       this._atBottom = this._isAtBottom();
       this.attachScrollListener();
@@ -100,31 +101,31 @@ function withScroller(Comp: ComponentType<any>) {
 
     attachScrollListener() {
       this._scrollEl.addEventListener('scroll', this._handleScroll, false);
-      this._scrollEl.addEventListener('mousewheel', this._handleScroll, false);
+      this._scrollEl.addEventListener('mousewheel', this._handleScroll, {
+        capture: false,
+        passive: true,
+      });
     }
 
     detachScrollListener() {
       this._scrollEl.removeEventListener('scroll', this._handleScroll, false);
-      this._scrollEl.removeEventListener(
-        'mousewheel',
-        this._handleScroll,
-        false,
-      );
+      this._scrollEl.removeEventListener('mousewheel', this._handleScroll, {
+        capture: false,
+      });
     }
 
-    private _handleScroll() {
-      console.log('_handleScroll');
-
+    private _handleScroll(event: WheelEvent) {
       const prevAtTop = this._atTop;
       const prevAtBottom = this._atBottom;
       const atTop = this._isAtTop();
       const atBottom = this._isAtBottom();
+      const deltaY = event ? event.deltaY : 0;
 
-      if (atTop && !prevAtTop) {
+      if (atTop && (!prevAtTop || deltaY < 0)) {
         this.props.onScrollToTop && this.props.onScrollToTop();
       }
 
-      if (atBottom && !prevAtBottom) {
+      if (atBottom && (!prevAtBottom || deltaY > 0)) {
         this.props.onScrollToBottom && this.props.onScrollToBottom();
       }
 
