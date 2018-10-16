@@ -4,26 +4,32 @@ import { DataHelper } from './data-helper'
 import { SdkHelper } from "./sdk-helper";
 import { JupiterHelper } from "./jupiter-helper";
 import { A11yHelper } from "./a11y-helper";
+import { LogHelper } from './log-helper';
+
 import { IUser } from '../models';
 import { UICreator } from '../../page-models';
 
 class Helper {
   constructor(private t: TestController) {};
 
-  get a11yHelper(): A11yHelper {
+  get a11yHelper() {
     return new A11yHelper(this.t);
   }
 
-  get dataHelper(): DataHelper {
+  get dataHelper() {
     return new DataHelper(this.t);
   }
 
-  get sdkHelper(): SdkHelper {
+  get sdkHelper() {
     return new SdkHelper(this.t);
   }
 
-  get jupiterHelper(): JupiterHelper {
+  get jupiterHelper() {
     return new JupiterHelper(this.t);
+  }
+
+  get logHelper() {
+    return new LogHelper(this.t);
   }
 
   /* delegate following method */
@@ -45,4 +51,4 @@ function h(t: TestController) {
   return new Helper(t);
 }
 
-export {Helper, h};
+export { Helper, h };

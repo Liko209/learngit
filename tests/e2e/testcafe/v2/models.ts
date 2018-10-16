@@ -29,3 +29,20 @@ export interface ICredential {
   extension: string;
   password: string;
 }
+
+export interface IStep {
+  message: string;
+  status: Status;
+  startTime: number;
+  endTime: number;
+  screenshotPath?: string;
+}
+
+
+export enum Status {
+  PASSED = 'passed',
+  PENDING = 'pending',
+  SKIPPED = 'skipped',
+  FAILED = 'failed',
+  BROKEN = 'broken',
+}
