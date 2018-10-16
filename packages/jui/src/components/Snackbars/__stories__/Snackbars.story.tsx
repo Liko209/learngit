@@ -15,16 +15,15 @@ storiesOf('Components/Snackbars', module)
   .add('JuiSnackbars', () => {
     return (
       <div>
-        <JuiSnackbarContent type={'warn'} open={boolean('open', true)}>
-          I'm warn snackbar
-        </JuiSnackbarContent>
-        <JuiSnackbarContent type={'info'} open={boolean('open', true)}>
-          I'm info snackbar
-        </JuiSnackbarContent>
-        <JuiSnackbarContent type={'success'} open={boolean('open', true)}>
+        <JuiSnackbarContent type={'warn'}>I'm warn snackbar</JuiSnackbarContent>
+        <br />
+        <JuiSnackbarContent type={'info'}>I'm info snackbar</JuiSnackbarContent>
+        <br />
+        <JuiSnackbarContent type={'success'}>
           I'm success snackbar
         </JuiSnackbarContent>
-        <JuiSnackbarContent type={'error'} open={boolean('open', true)}>
+        <br />
+        <JuiSnackbarContent type={'error'}>
           I'm error snackbar
         </JuiSnackbarContent>
       </div>

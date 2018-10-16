@@ -65,13 +65,24 @@ function cssValue(...values: number[]): string {
 /********************************************
  *                 Colors                   *
  ********************************************/
+
+function getPalette(name: keyof Palette, sub: string) {
+  return ({ theme }: { theme: Theme }) => theme.palette[name][sub];
+}
+
 /**
  * Palette
  * @param name
  * @param sub
  */
-function palette(name: keyof Palette, sub: string) {
-  return ({ theme }: { theme: Theme }) => theme.palette[name][sub];
+function palette(name: keyof Palette, sub: string, opcity?: number) {
+  if (opcity) {
+    return ({ theme }: { theme: Theme }) =>
+      tinycolor(getPalette(name, sub)({ theme }))
+        .setAlpha(theme.palette.action.hoverOpacity * opcity)
+        .toRgbString();
+  }
+  return getPalette(name, sub);
 }
 
 /**
@@ -96,20 +107,6 @@ function secondary(sub: string) {
  */
 function grey(sub: string) {
   return palette('grey', sub);
-}
-
-/**
- * Background with opcity
- * @param name
- * @param sub
- * @param opcity
- * @return rgba(x, x, x, x)
- */
-function background(name: keyof Palette, sub: string, opcity: number = 1) {
-  return ({ theme }: { theme: Theme }) =>
-    tinycolor(palette(name, sub)({ theme }))
-      .setAlpha(theme.palette.action.hoverOpacity * opcity)
-      .toRgbString();
 }
 
 /**
@@ -154,5 +151,4 @@ export {
   grey,
   typography,
   ellipsis,
-  background,
 };

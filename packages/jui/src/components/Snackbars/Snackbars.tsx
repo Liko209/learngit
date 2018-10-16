@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import * as Jui from './style';
-import { JuiIconography } from '../../foundation/Iconography';
 
 type JuiSnackbarsType = 'warn' | 'success' | 'error' | 'info';
 
@@ -14,36 +13,39 @@ type JuiSnackbarsProps = {
   type: JuiSnackbarsType;
 };
 
-const SnackBarsIcon: React.SFC<{ type: JuiSnackbarsType }> = ({ type }) => {
-  let iconName;
-  switch (type) {
-    case 'warn':
-      iconName = 'warning';
-    case 'success':
-      iconName = 'check_circle';
-    case 'error':
-      iconName = 'error';
-    case 'info':
-      iconName = 'info';
-  }
-  return <JuiIconography>{iconName}</JuiIconography>;
+const iconAndColorType = {
+  warn: {
+    icon: 'warning',
+    color: ['semantic', 'critical'],
+  },
+  success: {
+    icon: 'check_circle',
+    color: ['semantic', 'positive'],
+  },
+  error: {
+    icon: 'warning',
+    color: ['semantic', 'negative'],
+  },
+  info: {
+    icon: 'info',
+    color: ['primary', 'main'],
+  },
 };
 
 class JuiSnackbarContent extends React.Component<JuiSnackbarsProps> {
   render() {
-    const { children, open, type } = this.props;
-    const isOpen: boolean = typeof open === 'undefined' ? true : false;
-    console.log(open);
-    console.log(isOpen);
-    console.log(children);
+    const { children, type } = this.props;
+    const { icon, color } = iconAndColorType[type];
     const message = (
       <Jui.MessageWrapper>
-        {<SnackBarsIcon type={type} />}
+        {<Jui.SnackbarIcon color={color}>{icon}</Jui.SnackbarIcon>}
         {children}
       </Jui.MessageWrapper>
     );
+
     return (
       <Jui.SnackbarContent
+        bgColor={color}
         classes={{
           root: 'root',
           message: 'message',
