@@ -30,12 +30,10 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     return this.props.uid;
   }
 
-  @computed
   get size() {
     return this.props.size;
   }
 
-  @computed
   get onClick() {
     return this.props.onClick;
   }
