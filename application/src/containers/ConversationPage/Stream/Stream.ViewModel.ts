@@ -107,6 +107,7 @@ class StreamViewModel extends StoreViewModel {
         try {
           const {
             posts,
+            hasMore,
           } = await (PostService.getInstance() as PostService).getPostsByGroupId(
             {
               offset,
@@ -115,12 +116,12 @@ class StreamViewModel extends StoreViewModel {
               limit: pageSize,
             },
           );
-          return posts;
+          return { hasMore, data: posts };
         } catch (err) {
           if (err.code === ErrorTypes.NETWORK) {
             // TODO error handle
           }
-          return [];
+          return { data: [], hasMore: true };
         }
       },
     };
@@ -172,6 +173,8 @@ class StreamViewModel extends StoreViewModel {
   }
 
   private async _loadPosts(direction: FetchDataDirection) {
+    console.log('_loadPosts', this._transformHandler.hasMore(direction));
+
     if (!this._transformHandler.hasMore(direction)) return;
     await this._transformHandler.fetchData(direction);
   }
