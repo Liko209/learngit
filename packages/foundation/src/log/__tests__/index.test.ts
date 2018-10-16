@@ -1,4 +1,9 @@
-import { logManager, networkLogger, LOG_LEVEL } from '../index';
+import LogManager from '../LogManager';
+import { LOG_LEVEL, LOG_APPENDER } from '../constants';
+
+const logManager = new LogManager(LOG_APPENDER.ALL);
+const networkLogger = logManager.getNetworkLogger();
+
 
 describe('Log', () => {
   afterEach(() => {

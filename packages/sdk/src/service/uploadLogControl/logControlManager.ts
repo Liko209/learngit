@@ -116,7 +116,7 @@ class LogControlManager {
     mainLogger.info(
       `_isDebugMode : ${this._isDebugMode} _enabledLog: ${this._enabledLog}`,
     );
-    const level: LOG_LEVEL = LOG_LEVEL.WARN;
+    const level: LOG_LEVEL = LOG_LEVEL.ALL;
     logManager.setAllLoggerLevel(level);
   }
 }
