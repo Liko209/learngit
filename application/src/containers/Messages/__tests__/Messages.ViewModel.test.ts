@@ -19,8 +19,7 @@ describe('Message view model', () => {
   });
 
   it('should always update the global state and routes when redirect to conversation', () => {
-    vm.props.match = { params: { id: '200' } } as match<{ id: string }>;
-    vm.updateCurrentConversationId();
-    expect(gs.set).toHaveBeenCalledWith('currentConversationId', 200);
+    vm.updateCurrentConversationId(100);
+    expect(gs.set).toHaveBeenCalledWith('currentConversationId', 100);
   });
 });
