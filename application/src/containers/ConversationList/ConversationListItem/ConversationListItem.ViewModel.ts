@@ -21,7 +21,7 @@ import history from '@/utils/history';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
-> {
+  > {
   unreadCount: number;
   important?: boolean | undefined;
   groupService: service.GroupService = GroupService.getInstance();
@@ -71,10 +71,6 @@ class ConversationListItemViewModel extends StoreViewModel<
     const isCurrentGroup = lastGroup && lastGroup === this.groupId;
 
     return !!(!isCurrentGroup && groupState.unreadCount);
-  }
-
-  onClick = () => {
-    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
   }
 }
 
