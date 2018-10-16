@@ -1,5 +1,6 @@
 import { MessagesViewModel } from '../Messages.ViewModel';
 import storeManager from '../../../store/index';
+import { match } from 'react-router';
 
 jest.mock('../../../store/index');
 
@@ -18,7 +19,8 @@ describe('Message view model', () => {
   });
 
   it('should always update the global state and routes when redirect to conversation', () => {
-    vm.toConversation(100);
-    expect(gs.set).toHaveBeenCalledWith('currentConversationId', 100);
+    vm.props.match = { params: { id: '200' } } as match<{ id: string }>;
+    vm.updateCurrentConversationId();
+    expect(gs.set).toHaveBeenCalledWith('currentConversationId', 200);
   });
 });

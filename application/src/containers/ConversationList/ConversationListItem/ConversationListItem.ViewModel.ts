@@ -17,6 +17,7 @@ import { MyState } from 'sdk/models';
 import MyStateModel from '@/store/models/MyState';
 import GroupStateModel from '@/store/models/GroupState';
 import StoreViewModel from '@/store/ViewModel';
+import history from '@/utils/history';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
@@ -45,6 +46,10 @@ class ConversationListItemViewModel extends StoreViewModel<
   @computed
   get _group() {
     return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
+  }
+  onClick = () => {
+    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
+    history.push(`/messages/${this.groupId}`);
   }
 
   @computed
