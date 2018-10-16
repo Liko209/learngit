@@ -6,13 +6,29 @@
 import serviceManager from '../../service/serviceManager';
 import PresenceService from '../../service/presence/index';
 import notificationCenter from '../../service/notificationCenter';
-import { ENTITY } from '../../service/eventKey';
+import { ENTITY, SERVICE } from '../../service/eventKey';
 import { Presence, RawPresence } from '../../models';
 
-function transform(obj: RawPresence) {
+enum PresenceStatus {
+  offline = 'offline',
+  online = 'online',
+  busy = 'busy',
+}
+
+const statusMap = {
+  Unavailable: PresenceStatus.offline,
+  Available: PresenceStatus.online,
+  OnCall: PresenceStatus.busy,
+  DND: PresenceStatus.busy,
+};
+
+function transform(obj: RawPresence): Presence {
+  const presence = obj.calculatedStatus
+    ? statusMap[obj.calculatedStatus]
+    : 'offline';
   return {
-    id: obj.person_id,
-    presence: obj.presence,
+    presence,
+    id: obj.personId,
   };
 }
 
@@ -20,10 +36,21 @@ const presenceHandleData = async (presences: RawPresence[]) => {
   if (presences.length === 0) {
     return;
   }
-  const transformedData = presences.map(item => transform(item)) as Presence[];
-  notificationCenter.emitEntityPut(ENTITY.PRESENCE, transformedData);
-  const presenceService: PresenceService = serviceManager.getInstance(PresenceService);
+  const transformedData = ([] as RawPresence[])
+    .concat(presences)
+    .map(item => transform(item)) as Presence[];
+  notificationCenter.emitEntityUpdate(ENTITY.PRESENCE, transformedData);
+  const presenceService = serviceManager.getInstance(PresenceService);
   presenceService.saveToMemory(transformedData);
 };
 
-export default presenceHandleData;
+const handleStore = ({ state }: { state: any }) => {
+  if (state === 'connected') {
+    notificationCenter.emitEntityReload(ENTITY.PRESENCE);
+  }
+  if (state === 'disconnected') {
+    notificationCenter.emitEntityReset(ENTITY.PRESENCE);
+  }
+};
+
+export { presenceHandleData, handleStore };
