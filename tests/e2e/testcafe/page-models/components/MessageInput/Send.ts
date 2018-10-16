@@ -16,12 +16,6 @@ class Send extends BaseComponent {
     return Selector('[data-name="conversation-card"]').nth(-1);
   }
 
-  public ensureLoaded() {
-    return this.chain(async (t) => {
-      await t.expect(this.selectorMessageInput.exists).ok('ensure component exist', { timeout: 20000 });
-    });
-  }
-
   public inputMessage(content: string): this {
     return this.chain(async t =>
       await t.typeText(this.selectorMessageInput, content),
@@ -34,9 +28,28 @@ class Send extends BaseComponent {
     );
   }
 
-  public expectShowMessage(msg: string): this {
+  public expectEditorHasExisted() {
+    return this.chain(async (t) => {
+      await t.expect(this.selectorMessageInput.exists).ok('ensure component exist', { timeout: 20000 });
+    });
+  }
+
+  public expectShowMessageInConversationCard(msg: string): this {
     return this.chain(async (t) => {
       await t.expect(this._selectorLastConversationCard.textContent).contains(msg);
+    });
+  }
+
+  public expectShowMessageInMessageInput(msg: string): this {
+    return this.chain(async (t) => {
+      await t.expect(this.selectorMessageInput.textContent).contains(msg);
+    });
+  }
+
+  public selectConversation(groupId: number): this {
+    return this.chain(async (t) => {
+      const selectorConversation = await Selector(`[data-group-id="${groupId}"]`);
+      await t.click(selectorConversation);
     });
   }
 }
