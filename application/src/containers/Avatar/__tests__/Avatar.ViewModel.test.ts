@@ -21,6 +21,6 @@ describe('AvatarVM', () => {
 
   it('name()', () => {
     (getEntity as jest.Mock).mockReturnValue({ shortName: 'AB' });
-    expect(avatarViewModel.name).toBe('AB');
+    expect(avatarViewModel.shortName).toBe('AB');
   });
 });
