@@ -11,13 +11,14 @@ import MuiSnackbarContent, {
 import styled from '../../foundation/styled-components';
 import { spacing, palette, grey } from '../../foundation/utils/styles';
 import { JuiIconography } from '../../foundation/Iconography';
+import { SnackbarContentColor } from './SnackbarContent';
 
 type JuiSnackbarContentProps = {
-  bgColor: string[];
+  bgColor: SnackbarContentColor;
 } & SnackbarContentProps;
 
 type JuiSnackbarIcon = {
-  color: string[];
+  color: SnackbarContentColor;
 };
 
 const WrapperSnackbarIcon = ({ color, ...rest }: JuiSnackbarIcon) => (
@@ -26,7 +27,7 @@ const WrapperSnackbarIcon = ({ color, ...rest }: JuiSnackbarIcon) => (
 
 const SnackbarIcon = styled<JuiSnackbarIcon>(WrapperSnackbarIcon)`
   margin: ${spacing(0, 2, 0, 0)};
-  color: ${(props: any) => palette(props.color[0], props.color[1])};
+  color: ${({ color }) => palette(...color)};
 `;
 
 const WrapperContent = ({ bgColor, ...rest }: JuiSnackbarContentProps) => (
@@ -37,8 +38,7 @@ const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
   && {
     padding: ${spacing(2, 6)};
     color: ${grey('900')};
-    background: ${(props: any) =>
-      palette(props.bgColor[0], props.bgColor[1], 1)};
+    background: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 1)};
     box-shadow: none;
   }
   .message {

@@ -5,37 +5,52 @@
  */
 import React from 'react';
 import * as Jui from './style';
+import { Palette } from '../../foundation/theme/theme';
 
 type JuiSnackbarsType = 'warn' | 'success' | 'error' | 'info';
+
+type SnackbarContentColor = [keyof Palette, string];
+
+type IconAndColor = {
+  icon: string;
+  color: SnackbarContentColor;
+};
 
 type JuiSnackbarsProps = {
   open?: boolean;
   type: JuiSnackbarsType;
 };
 
-const iconAndColorType = {
-  warn: {
-    icon: 'warning',
-    color: ['semantic', 'critical'],
-  },
-  success: {
-    icon: 'check_circle',
-    color: ['semantic', 'positive'],
-  },
-  error: {
-    icon: 'warning',
-    color: ['semantic', 'negative'],
-  },
-  info: {
-    icon: 'info',
-    color: ['primary', 'main'],
-  },
+type IconAndColorMap = {
+  [key: string]: IconAndColor;
 };
+
+function getIconAndColor(type: JuiSnackbarsType): IconAndColor {
+  const ICON_AND_COLOR: IconAndColorMap = {
+    warn: {
+      icon: 'warning',
+      color: ['semantic', 'critical'],
+    },
+    success: {
+      icon: 'check_circle',
+      color: ['semantic', 'positive'],
+    },
+    error: {
+      icon: 'error',
+      color: ['semantic', 'negative'],
+    },
+    info: {
+      icon: 'info',
+      color: ['primary', 'main'],
+    },
+  };
+  return ICON_AND_COLOR[type];
+}
 
 class JuiSnackbarContent extends React.Component<JuiSnackbarsProps> {
   render() {
     const { children, type } = this.props;
-    const { icon, color } = iconAndColorType[type];
+    const { icon, color } = getIconAndColor(type);
     const message = (
       <Jui.MessageWrapper>
         {<Jui.SnackbarIcon color={color}>{icon}</Jui.SnackbarIcon>}
@@ -56,4 +71,4 @@ class JuiSnackbarContent extends React.Component<JuiSnackbarsProps> {
   }
 }
 
-export { JuiSnackbarContent, JuiSnackbarsProps };
+export { JuiSnackbarContent, JuiSnackbarsProps, SnackbarContentColor };
