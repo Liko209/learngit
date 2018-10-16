@@ -7,7 +7,7 @@
 import notificationCenter from '../../service/notificationCenter';
 
 import BaseError from './base';
-import ErrorTypes, { NetworkError } from './types';
+import ErrorTypes, { HttpError } from './types';
 import ErrorParser from './parser';
 
 window.addEventListener('error', (err: any) => {
@@ -22,4 +22,4 @@ const Aware = (code: number, message: string) => {
   notificationCenter.emit('Error', { error: new BaseError(code, message) });
 };
 
-export { BaseError, ErrorTypes, ErrorParser, Throw, Aware, NetworkError };
+export { BaseError, ErrorTypes, ErrorParser, Throw, Aware, HttpError };

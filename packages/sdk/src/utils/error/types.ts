@@ -26,10 +26,9 @@ Object.keys(HttpStatus).forEach((key: string) => {
   ErrorTypes[key] = ErrorTypes.HTTP + HttpStatus[key];
 });
 
-const NetworkError = {
-  NOT_AUTH: 5403,
-  GATE_WAY_504: 5504,
+const HttpError = {
+  GATE_WAY_504: 1504,
 };
 
 export default ErrorTypes;
-export { NetworkError };
+export { HttpError };

@@ -10,6 +10,7 @@ import ConfigDao from '../../dao/config';
 import GroupDao from '../../dao/group';
 import PersonDao from '../../dao/person';
 import PostDao from '../../dao/post';
+import ItemDao from '../../dao/item';
 import { LAST_INDEX_TIMESTAMP } from '../../dao/config/constants';
 import {
   fetchIndexData,
@@ -19,8 +20,7 @@ import {
 import handleData from './handleData';
 import { mainLogger } from 'foundation';
 import { notificationCenter } from '..';
-// import { IResponseError } from '../../api/NetworkClient';
-import { ErrorParser, NetworkError } from '../../utils';
+import { ErrorParser, HttpError } from '../../utils';
 // import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 
 export default class SyncService extends BaseService {
@@ -96,7 +96,7 @@ export default class SyncService extends BaseService {
 
   private async _handleSyncIndexError(result: any) {
     const error = ErrorParser.parse(result);
-    if (error.code === NetworkError.GATE_WAY_504) {
+    if (error.code === HttpError.GATE_WAY_504) {
       notificationCenter.emitService(SERVICE.GATE_WAY_504_BEGIN);
       await this.handle504GateWayError();
       notificationCenter.emitService(SERVICE.GATE_WAY_504_END);
@@ -107,6 +107,8 @@ export default class SyncService extends BaseService {
     // clear data
     const configDao = daoManager.getKVDao(ConfigDao);
     configDao.put(LAST_INDEX_TIMESTAMP, '');
+    const itemDao = daoManager.getDao(ItemDao);
+    await itemDao.clear();
     const postDao = daoManager.getDao(PostDao);
     await postDao.clear();
     const groupDao = daoManager.getDao(GroupDao);

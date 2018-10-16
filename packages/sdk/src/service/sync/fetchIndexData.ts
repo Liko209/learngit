@@ -55,10 +55,11 @@ const fetchIndexData = async (
   // logger.time('fetch index data');
   try {
     result = await indexData(params, requestConfig);
+  } catch (e) {
+    result = e;
   } finally {
     progressBar.stop();
   }
-
   // logger.timeEnd('fetch index data');
   return result;
 };

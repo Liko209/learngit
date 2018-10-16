@@ -9,11 +9,17 @@ import { Container } from 'foundation';
 
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';
-import { IAccountInfo, IAuthenticator, IAuthResponse, ISyncAuthenticator } from './IAuthenticator';
+import {
+  IAccountInfo,
+  IAuthenticator,
+  IAuthResponse,
+  ISyncAuthenticator,
+} from './IAuthenticator';
 
 const EVENT_LOGIN = 'ACCOUNT_MANAGER.EVENT_LOGIN';
 const EVENT_LOGOUT = 'ACCOUNT_MANAGER.EVENT_LOGOUT';
-const EVENT_SUPPORTED_SERVICE_CHANGE = 'ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE';
+const EVENT_SUPPORTED_SERVICE_CHANGE =
+  'ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE';
 
 class AccountManager extends EventEmitter2 {
   static EVENT_LOGIN = EVENT_LOGIN;
@@ -67,7 +73,9 @@ class AccountManager extends EventEmitter2 {
   }
 
   getSupportedServices(): string[] {
-    const servicesArray = this._accounts.map(account => account.getSupportedServices());
+    const servicesArray = this._accounts.map(account =>
+      account.getSupportedServices(),
+    );
     return _.flatten(servicesArray);
   }
 
@@ -97,7 +105,6 @@ class AccountManager extends EventEmitter2 {
     if (!resp.accountInfos || resp.accountInfos.length <= 0) {
       return { success: false, error: new Error('Auth fail') };
     }
-
     this.emit(EVENT_LOGIN, resp.accountInfos);
     this._isLogin = true;
     const accounts = this._createAccounts(resp.accountInfos);
