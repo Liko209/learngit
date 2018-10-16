@@ -48,7 +48,9 @@ function getIconAndColor(type: JuiSnackbarsType): IconAndColor {
   return ICON_AND_COLOR[type];
 }
 
-const JuiSnackbarContent: React.SFC = (props: JuiSnackbarsProps) => {
+const JuiSnackbarContent: React.SFC<JuiSnackbarsProps> = (
+  props: JuiSnackbarsProps,
+) => {
   const { children, type, ...rest } = props;
   const { icon, color } = getIconAndColor(type);
   const message = (
