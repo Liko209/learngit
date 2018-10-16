@@ -6,7 +6,7 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 
-import { select } from '@storybook/addon-knobs/react';
+import { select } from '@storybook/addon-knobs';
 
 const StoryWrapper = (props: any) => {
   const Container = styled.div`

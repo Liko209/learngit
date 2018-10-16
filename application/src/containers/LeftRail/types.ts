@@ -5,12 +5,9 @@
  */
 import { SECTION_TYPE } from './Section/types';
 
-type LeftRailProps = {
-  currentGroupId?: number;
-};
+type LeftRailProps = {};
 
 type LeftRailViewProps = {
-  currentGroupId?: number;
   sections: SECTION_TYPE[];
 };
 

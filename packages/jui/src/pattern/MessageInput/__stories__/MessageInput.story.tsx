@@ -11,7 +11,7 @@ import { JuiMessageInput } from '..';
 
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiMessageInput, { inline: true }))
-  .addWithJSX('MessageInput', () => {
+  .add('MessageInput', () => {
     const onChange = () => {};
     return (
       <JuiMessageInput

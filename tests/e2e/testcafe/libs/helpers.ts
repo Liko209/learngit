@@ -6,7 +6,8 @@ import { setupSDK } from '../utils/setupSDK';
 import { ENV_OPTS } from '../config';
 
 export function setUp(accountType: string) {
-  return async (t: TestController) => {
+  return async (t: TestController) => {  
+    await t.maximizeWindow();
     const helper = TestHelper.from(t);
     helper.setupGlipApiManager();
     await helper.checkOutAccounts(accountType);

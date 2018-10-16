@@ -11,7 +11,7 @@
 /packages/*/build-es/
 /packages/*/coverage/
 /packages/*/node_modules/
-/packages/ui-components/storybook-static
+/packages/jui/storybook-static
 /application/node_modules/
 /application/build/
 /application/build-es/

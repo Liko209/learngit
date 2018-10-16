@@ -34,7 +34,7 @@ class ConversationListItemViewModel extends StoreViewModel<
 
   @computed
   get selected() {
-    return this.props.selected;
+    return this._currentGroupId === this.groupId;
   }
 
   @computed
@@ -46,8 +46,10 @@ class ConversationListItemViewModel extends StoreViewModel<
   get _group() {
     return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
   }
-  onClick = () => {
-    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
+
+  @computed
+  private get _currentGroupId() {
+    return storeManager.getGlobalStore().get('currentConversationId');
   }
 
   @computed
@@ -64,6 +66,10 @@ class ConversationListItemViewModel extends StoreViewModel<
     const isCurrentGroup = lastGroup && lastGroup === this.groupId;
 
     return !!(!isCurrentGroup && groupState.unreadCount);
+  }
+
+  onClick = () => {
+    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
   }
 }
 

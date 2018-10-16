@@ -26,7 +26,7 @@ test(
       .log('4. Send post 3 to first group')
       .sendPost2Group('3')
       .log('5. Click First Group')
-      .chain(t => t.wait(2000))
+      .chain(t => t.wait(4000))
       .clickFirstGroup()
       .log('6. Expect the right order')
       .expectRightOrder(1, 2, 3);

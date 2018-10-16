@@ -3,7 +3,6 @@
  * @Date: 2018-09-11 15:39:52
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../../.storybook/storybook.d.ts" />
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
@@ -11,9 +10,9 @@ import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiChip } from '..';
 
 import avatar from '../../Avatar/__stories__/img/avatar.jpg';
-import { JuiAvatar, TJuiAvatarProps } from '../../Avatar';
+import { JuiAvatar, JuiAvatarProps } from '../../Avatar';
 
-const Avatar = (props: TJuiAvatarProps) => {
+const Avatar = (props: JuiAvatarProps) => {
   return <JuiAvatar src={avatar} {...props} />;
 };
 
@@ -21,17 +20,17 @@ const handleDelete = () => {};
 
 storiesOf('Components/Chip', module)
   .addDecorator(withInfoDecorator(JuiChip, { inline: true }))
-  .addWithJSX('with nothing', () => {
+  .add('with nothing', () => {
     return <JuiChip label="Basic Chip" />;
   })
-  .addWithJSX('with Avatar & DeleteIcon', () => {
+  .add('with Avatar & DeleteIcon', () => {
     return (
       <JuiChip label="Basic Chip" ChipAvatar={Avatar} onDelete={handleDelete} />
     );
   })
-  .addWithJSX('with Avatar', () => {
+  .add('with Avatar', () => {
     return <JuiChip label="Basic Chip" ChipAvatar={Avatar} />;
   })
-  .addWithJSX('with DeleteIcon', () => {
+  .add('with DeleteIcon', () => {
     return <JuiChip label="Basic Chip" onDelete={handleDelete} />;
   });

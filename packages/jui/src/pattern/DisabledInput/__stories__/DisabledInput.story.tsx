@@ -11,6 +11,6 @@ import { JuiDisabledInput } from '..';
 
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiDisabledInput, { inline: true }))
-  .addWithJSX('DisabledInput', () => {
+  .add('DisabledInput', () => {
     return <JuiDisabledInput text="This team is read-only" />;
   });
