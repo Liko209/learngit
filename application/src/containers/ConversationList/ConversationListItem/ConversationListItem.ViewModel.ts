@@ -21,7 +21,7 @@ import history from '@/utils/history';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
-> {
+  > {
   unreadCount: number;
   important?: boolean | undefined;
   groupService: service.GroupService = GroupService.getInstance();
