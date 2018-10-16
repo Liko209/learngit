@@ -12,7 +12,7 @@ import SubscribeHandler from './subscribeHandler';
 export default class PresenceService extends BaseService {
   static key = 'PresenceService';
 
-  public caches: Map<number, Presence>; // <id, { id, 'online' | 'offline' | 'busy' }>
+  public caches: Map<number, Presence>; // <id, RawPresence['calculatedStatus']>
   public subscribeHandler: SubscribeHandler;
   constructor(threshold: number, interval: number = 200) {
     // channel presence_unified threshold interval
@@ -49,7 +49,7 @@ export default class PresenceService extends BaseService {
     this.subscribeHandler.appendId(id);
     return {
       id,
-      presence: 'offline',
+      presence: 'not_ready',
     };
   }
 
@@ -67,6 +67,7 @@ export default class PresenceService extends BaseService {
   }
 
   unsubscribe(id: number) {
+    this.caches.delete(id);
     this.subscribeHandler.removeId(id);
   }
 

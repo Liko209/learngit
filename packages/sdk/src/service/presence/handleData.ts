@@ -6,26 +6,11 @@
 import serviceManager from '../../service/serviceManager';
 import PresenceService from '../../service/presence/index';
 import notificationCenter from '../../service/notificationCenter';
-import { ENTITY, SERVICE } from '../../service/eventKey';
+import { ENTITY } from '../../service/eventKey';
 import { Presence, RawPresence } from '../../models';
 
-enum PresenceStatus {
-  offline = 'offline',
-  online = 'online',
-  busy = 'busy',
-}
-
-const statusMap = {
-  Unavailable: PresenceStatus.offline,
-  Available: PresenceStatus.online,
-  OnCall: PresenceStatus.busy,
-  DND: PresenceStatus.busy,
-};
-
 function transform(obj: RawPresence): Presence {
-  const presence = obj.calculatedStatus
-    ? statusMap[obj.calculatedStatus]
-    : 'offline';
+  const presence = obj.calculatedStatus;
   return {
     presence,
     id: obj.personId,

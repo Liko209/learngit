@@ -195,9 +195,15 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
 
 export type RawPresence = {
   personId: number;
-  calculatedStatus?: 'Unavailable' | 'Available' | 'OnCall' | 'DND';
+  calculatedStatus?:
+    | 'Unavailable'
+    | 'Available'
+    | 'OnCall'
+    | 'DND'
+    | 'not_ready'
+    | 'InMeeting';
 };
 
 export type Presence = BaseModel & {
-  presence: 'online' | 'offline' | 'busy';
+  presence: RawPresence['calculatedStatus'];
 };

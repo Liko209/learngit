@@ -36,7 +36,7 @@ describe('presence handleData', () => {
     expect(instance.saveToMemory).toHaveBeenCalledWith([
       {
         id: 1,
-        presence: 'online',
+        presence: 'Available',
       },
     ]);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledWith(
@@ -44,7 +44,7 @@ describe('presence handleData', () => {
       [
         {
           id: 1,
-          presence: 'online',
+          presence: 'Available',
         },
       ],
     );
