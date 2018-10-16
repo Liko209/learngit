@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, computed } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { AuthService } from 'sdk/service';
 
 import { AbstractViewModel } from '@/base';
@@ -13,7 +13,8 @@ import { getGlobalValue } from '@/store/utils';
 
 class TopBarViewModel extends AbstractViewModel {
   brandName: string = 'RingCentral';
-
+  @observable
+  isShowDialog: boolean = false;
   @action
   updateLeftNavState = () => {
     const globalStore = storeManager.getGlobalStore();
@@ -39,6 +40,15 @@ class TopBarViewModel extends AbstractViewModel {
     const authService: AuthService = AuthService.getInstance();
     authService.logout();
     window.location.href = '/';
+  }
+  @action
+  handleAboutPage = () => {
+    this.isShowDialog = !this.isShowDialog;
+  }
+  @computed
+  get dialogStatus() {
+    console.log('this.isShowDialog');
+    return this.isShowDialog;
   }
 }
 

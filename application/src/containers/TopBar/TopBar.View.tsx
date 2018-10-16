@@ -7,6 +7,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { translate, InjectedTranslateProps } from 'react-i18next';
 import { JuiIconButton, JuiIconButtonProps } from 'jui/components/Buttons';
+import { JuiModal } from 'jui/components/Dialog';
 import {
   JuiLogo,
   JuiTopBar,
@@ -15,6 +16,7 @@ import {
 } from 'jui/pattern/TopBar';
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
+import pkg from '../../../package.json';
 
 type TopBarProps = InjectedTranslateProps & {
   signOut: Function;
@@ -22,6 +24,8 @@ type TopBarProps = InjectedTranslateProps & {
   updateCreateTeamDialogState: Function;
   brandName: string;
   currentUserId: number;
+  handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
+  dialogStatus: boolean;
 };
 
 @observer
@@ -48,10 +52,14 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   private _AvatarMenu(avatarProps: MenuListCompositionProps) {
-    const { signOut, t } = this.props;
+    const { signOut, t, handleAboutPage } = this.props;
     return (
       <JuiAvatarMenu
         menuItems={[
+          {
+            label: t('About RingCentral'),
+            onClick: handleAboutPage,
+          },
           {
             label: t('SignOut'),
             onClick: signOut,
@@ -115,13 +123,28 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
+    const { dialogStatus, t, handleAboutPage } = this.props;
+    if (window.jupiterElectron && window.jupiterElectron.handleAboutPage) {
+      window.jupiterElectron.handleAboutPage();
+    }
     return (
-      <JuiTopBar
-        MainMenu={this._MainMenu}
-        AvatarMenu={this._AvatarMenu}
-        AddMenu={this._AddMenu}
-        Logo={this._Logo}
-      />
+      <React.Fragment>
+        <JuiTopBar
+          MainMenu={this._MainMenu}
+          AvatarMenu={this._AvatarMenu}
+          AddMenu={this._AddMenu}
+          Logo={this._Logo}
+        />
+        <JuiModal
+          open={dialogStatus}
+          title={t('About RingCentral')}
+          okText={t('ok')}
+          onOK={handleAboutPage}
+        >
+          <p>Version: {pkg.version}</p>
+          <p>© 1999-2017 RingCentral, Inc. All rights reserved</p>
+        </JuiModal>
+      </React.Fragment>
     );
   }
 }
