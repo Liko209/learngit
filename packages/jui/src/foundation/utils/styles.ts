@@ -1,3 +1,4 @@
+import tinycolor from 'tinycolor2';
 import { Theme, Palette } from '../theme/theme';
 import { css } from '../styled-components';
 
@@ -98,6 +99,20 @@ function grey(sub: string) {
 }
 
 /**
+ * Background with opcity
+ * @param name
+ * @param sub
+ * @param opcity
+ * @return rgba(x, x, x, x)
+ */
+function background(name: keyof Palette, sub: string, opcity: number = 1) {
+  return ({ theme }: { theme: Theme }) =>
+    tinycolor(palette(name, sub)({ theme }))
+      .setAlpha(theme.palette.action.hoverOpacity * opcity)
+      .toRgbString();
+}
+
+/**
  * typography
  * @param name
  */
@@ -139,4 +154,5 @@ export {
   grey,
   typography,
   ellipsis,
+  background,
 };
