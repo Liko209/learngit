@@ -20,6 +20,7 @@
     "@types/node": "^10.7.0",
     "@types/uuid": "^3.4.3",
     "allure-js-commons": "^1.3.2",
+    "attest-testcafe": "http://xmn145.rcoffice.ringcentral.com:9003/packages/attest-testcafe-1.0.0.tgz",
     "axios": "0.18.0",
     "btoa": "^1.2.1",
     "cross-env": "^5.2.0",
