@@ -22,10 +22,12 @@ class MessagesViewModel extends AbstractViewModel<MessagesProps> {
     this.autorun(this.updateCurrentConversationId);
   }
   updateCurrentConversationId = () => {
-    const currentConversationId = Number(this.props.match.params.id);
-    storeManager
-      .getGlobalStore()
-      .set('currentConversationId', currentConversationId);
+    if (this.props.match) {
+      const currentConversationId = Number(this.props.match.params.id);
+      storeManager
+        .getGlobalStore()
+        .set('currentConversationId', currentConversationId);
+    }
   }
   getLastGroupId = (id?: number) => {
     const stateService: StateService = StateService.getInstance();
