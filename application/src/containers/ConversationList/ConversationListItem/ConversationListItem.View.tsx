@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { MouseEvent, Fragment } from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
 import { Umi } from '@/containers/Umi';
 import { Indicator } from '@/containers/ConversationList/Indicator';
@@ -16,25 +15,20 @@ import { observable } from 'mobx';
 // TODO remove Stubs here
 const Presence = (props: any) => <span {...props} />;
 
-type IRouterParams = {
-  id: string;
-};
-
-type IProps = RouteComponentProps<IRouterParams> &
-  ConversationListItemViewProps;
+type Props = ConversationListItemViewProps;
 interface IState {
   currentGroupId: number;
 }
 
 @observer
 class ConversationListItemViewComponent extends React.Component<
-  IProps,
+  Props,
   IState
 > {
   @observable
   menuAnchorEl: HTMLElement | null = null;
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
     this._handleClick = this._handleClick.bind(this);
     this._handleMoreClick = this._handleMoreClick.bind(this);
@@ -81,12 +75,6 @@ class ConversationListItemViewComponent extends React.Component<
 
   private _handleClick(event: MouseEvent<HTMLElement>) {
     this.props.onClick(event);
-    this._jump2Conversation(this.props.groupId);
-  }
-
-  private _jump2Conversation(id: number) {
-    const { history } = this.props;
-    history.push(`/messages/${id}`);
   }
 
   private _handleMoreClick(event: React.MouseEvent<HTMLElement>) {
@@ -99,5 +87,5 @@ class ConversationListItemViewComponent extends React.Component<
   }
 }
 
-const ConversationListItemView = withRouter(ConversationListItemViewComponent);
+const ConversationListItemView = ConversationListItemViewComponent;
 export { ConversationListItemView };
