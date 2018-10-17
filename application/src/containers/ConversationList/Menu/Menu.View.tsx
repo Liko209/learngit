@@ -66,7 +66,7 @@ class MenuViewComponent extends Component<Props, State> {
         content: (
           <>
             <JuiTypography>
-              {t('conversationMenuItem:closeConfirmDialogDontAskMeAgain')}
+              {t('conversationMenuItem:closeConfirmDialogContent')}
             </JuiTypography>
             <JuiCheckboxLabel
               label={t('conversationMenuItem:closeConfirmDialogDontAskMeAgain')}
