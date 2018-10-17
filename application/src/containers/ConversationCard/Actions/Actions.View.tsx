@@ -60,7 +60,7 @@ class ActionsViewComponent extends Component<Props> {
             tooltipTitle={t('resendPost')}
             onClick={this.resend}
             size="small"
-            color="secondary"
+            color="semantic.negative"
           >
             refresh
           </JuiIconButton>
