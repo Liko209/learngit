@@ -35,7 +35,7 @@ class BackNForwardViewModel extends StoreViewModel {
 
   @computed
   get backRecord() {
-    const backRecord = historyStack.backRecord;
+    const backRecord = historyStack.backRecord.slice(-10);
     return backRecord.map((pathname: string) => ({
       pathname,
       title: getDocTitle(pathname),
@@ -44,7 +44,7 @@ class BackNForwardViewModel extends StoreViewModel {
 
   @computed
   get forwardRecord() {
-    const forwardRecord = historyStack.forwardRecord;
+    const forwardRecord = historyStack.forwardRecord.slice(0, 10);
     return forwardRecord.map((pathname: string) => ({
       pathname,
       title: getDocTitle(pathname),

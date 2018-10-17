@@ -54,6 +54,12 @@ class HistoryStack {
   getCurrentPathname() {
     return this._stack[this._cursor];
   }
+
+  @action
+  clear() {
+    this._cursor = -1;
+    this._stack = [];
+  }
 }
 
 export default new HistoryStack();
