@@ -1,0 +1,30 @@
+{
+  "function() {}": {
+    "prefix": "f",
+    "body": ["function() {", "  $1", "}"]
+  },
+  "function() {},": {
+    "prefix": "f,",
+    "body": ["function() {", "  $1", "},"]
+  },
+  "function name() {}": {
+    "prefix": "fn",
+    "body": ["function ${1:name}(){", "  $2", "}"]
+  },
+  "(function () {})()": {
+    "prefix": "fc",
+    "body": ["(function (){", "  $2", "})()"]
+  },
+  "class function": {
+    "prefix": "cf",
+    "body": ["${1:name}() {", "  $2", "}"]
+  },
+  "() => $1": {
+    "prefix": ">",
+    "body": "($1) => $2"
+  },
+  "() => {$1}": {
+    "prefix": ">{",
+    "body": ["($1) => {", "  $2", "}"]
+  }
+}
