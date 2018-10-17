@@ -7,8 +7,7 @@ import { getLogger } from 'log4js';
 
 import { filterByTags } from './libs/filter';
 import { RUNNER_OPTS } from './config';
-
-import { accountPoolClient } from './libs/accounts';
+import { accountPoolClient } from './init';
 
 const logger = getLogger(__filename);
 logger.level = 'info';

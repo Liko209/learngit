@@ -3,39 +3,49 @@
  * @Date: 2018-08-08 13:16:21
  * Copyright © RingCentral. All rights reserved.
  */
+import { getLogger } from "log4js";
 import { Selector } from 'testcafe';
 import { ReactSelector, waitForReact } from 'testcafe-react-selectors';
+
 import { Status } from '../libs/report';
 import { TestHelper } from '../libs/helpers';
 import { SITE_URL } from '../config';
 
-export abstract class BaseUI {
-  protected _t: TestController;
-  protected _helper: TestHelper;
+const logger = getLogger(__filename);
 
-  protected _chain: Promise<any>;
+export interface UICreator<T> {
+  new (t: TestController): T;
+}
+
+export abstract class BaseUI {
+
+  protected _helper: TestHelper;
   public then: any;
 
-  constructor(t: TestController, chain?: Promise<any>) {
-    this._t = t;
+  constructor(public t: TestController) {
     this._helper = new TestHelper(t);
-    this._chain = chain || Promise.resolve();
-    if (chain !== undefined) {
-      this._forwardThen();
-    }
+    this._delegateThen();
   }
 
-  private _forwardThen() {
+  get _chain(): Promise<any> {
+    return this.t.ctx.__chain || Promise.resolve();
+  }
+
+  set _chain(promise: Promise<any>) {
+    this.t.ctx.__chain = promise;
+  }
+
+  private _delegateThen() {
     this.then = function () {
       const promise = this._chain;
-      this._chain = Promise.resolve();
+      this._chain = undefined;
       return promise.then.apply(promise, arguments);
     };
   }
 
   chain(cb: (t: TestController, h?: TestHelper, value?: any) => Promise<any>) {
-    this._chain = this._chain.then(value => cb(this._t, this._helper, value));
-    this._forwardThen();
+    this._chain = this._chain.then(value => cb(this.t, this._helper, value));
+    this._delegateThen();
     return this;
   }
 
@@ -84,11 +94,9 @@ export abstract class BaseUI {
     return this.chain(async t => await t.click(el));
   }
 
-  shouldNavigateTo<T extends BaseUI>(uiClass: {
-    new (t: TestController, chain?: Promise<any>): T;
-  }): T {
-    const ui = new uiClass(this._t, this._chain);
-    return ui;
+  shouldNavigateTo<T>(
+    uiCreator: UICreator<T>): T {
+    return new uiCreator(this.t);
   }
 
   checkExisted(selector: Selector) {
@@ -139,10 +147,17 @@ export abstract class BaseComponent extends BaseUI {
 }
 
 export abstract class BasePage extends BaseUI {
+
   navigateTo(url: string) {
     return this.chain(async t => {
       await t.navigateTo(url);
       await waitForReact();
-    });
+    }).ensurePageLoaded();
   }
+
+  ensurePageLoaded() {
+    logger.warn('You should overwrite ensurePageLoaded in your page model!');
+    return this;
+  }
+
 }
