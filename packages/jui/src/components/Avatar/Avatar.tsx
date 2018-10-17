@@ -30,7 +30,7 @@ const sizes = {
 const fonts = {
   xlarge: 'title2',
   large: 'title2',
-  medium: 'subheading2',
+  medium: 'subheading3',
   small: 'caption2',
 };
 
@@ -39,7 +39,6 @@ const JuiAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     width: ${({ size = 'medium', theme }) => width(sizes[size])({ theme })};
     height: ${({ size = 'medium', theme }) => height(sizes[size])({ theme })};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    font-weight: ${({ theme }) => theme.typography.display4.fontWeight};
     background-color: ${({ color = 'lake' }) => palette('avatar', color)};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
