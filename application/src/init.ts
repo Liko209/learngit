@@ -14,11 +14,11 @@ export async function initAll() {
     process.env.NODE_ENV === 'development',
   );
 
-  const { protocol, host, search } = window.location;
+  const { search } = window.location;
   const { state } = parse(search, { ignoreQueryPrefix: true });
   if (state && state.length) {
-    const dummyURL = new URL(`${protocol}//${host}${state}`);
-    const { env } = parse(dummyURL.search, { ignoreQueryPrefix: true });
+    const stateSearch = state.substring(state.indexOf('?'));
+    const { env } = parse(stateSearch, { ignoreQueryPrefix: true });
     if (env && env.length) {
       const configService: service.ConfigService = service.ConfigService.getInstance();
       const envChanged = await configService.switchEnv(env);
