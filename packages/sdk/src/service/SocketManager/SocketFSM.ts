@@ -3,8 +3,6 @@
  * @Date: 2018-06-22 15:18:29
  * Copyright © RingCentral. All rights reserved.
  */
-import notificationCenter from '../../service/notificationCenter';
-import { SOCKET } from '../../service/eventKey';
 import { mainLogger, SocketClient } from 'foundation';
 import StateMachine from 'ts-javascript-state-machine';
 import dataDispatcher from '../../component/DataDispatcher';
@@ -21,14 +19,22 @@ export class SocketFSM extends StateMachine {
 
   private logPrefix: string = '';
 
-  constructor(public serverUrl: string, public glipToken: string, public stateHandler: StateHandler) {
+  constructor(
+    public serverUrl: string,
+    public glipToken: string,
+    public stateHandler: StateHandler,
+  ) {
     super({
       transitions: [
         { name: 'init', from: 'none', to: 'idle' },
         { name: 'start', from: 'idle', to: 'connecting' },
         { name: 'stop', from: 'disconnected', to: 'disconnected' },
         { name: 'stop', from: 'disconnecting', to: 'disconnecting' },
-        { name: 'stop', from: ['connecting', 'connected'], to: 'disconnecting' },
+        {
+          name: 'stop',
+          from: ['connecting', 'connected'],
+          to: 'disconnecting',
+        },
         { name: 'finishConnect', from: 'connecting', to: 'connected' },
         { name: 'failConnect', from: 'connecting', to: 'disconnected' },
         {
@@ -84,9 +90,7 @@ export class SocketFSM extends StateMachine {
           });
         },
 
-        onFinishConnect() {
-
-        },
+        onFinishConnect() {},
 
         onFireDisconnect() {
           if (this.isStopped) {
@@ -114,6 +118,10 @@ export class SocketFSM extends StateMachine {
 
   public error(message: string) {
     mainLogger.error(`${this.logPrefix} ${message}`);
+  }
+
+  public isConnected() {
+    return this.state === 'connected';
   }
 
   cleanup() {
@@ -149,6 +157,7 @@ export class SocketFSM extends StateMachine {
     this.socketClient.socket.on('disconnect', (data: any) => {
       this.info(`socket-> disconnect. ${data || ''}`);
       this.fireDisconnect();
+      dataDispatcher.onDataArrived(data);
     });
 
     this.socketClient.socket.on('error', (data: any) => {
@@ -157,7 +166,7 @@ export class SocketFSM extends StateMachine {
 
     this.socketClient.socket.on('reconnect', (data: any) => {
       this.info(`socket-> reconnect. ${data || ''}`);
-      notificationCenter.emit(SOCKET.RECONNECT, data);
+      dataDispatcher.onDataArrived(data);
     });
 
     this.socketClient.socket.on('reconnect_attempt', (data: any) => {
@@ -187,7 +196,7 @@ export class SocketFSM extends StateMachine {
       this.info(`latestPongTime ${this.latestPongTime}`);
     });
 
-    this.socketClient.socket.on('presense', (data: any) => {
+    this.socketClient.socket.on('presence_unified', (data: any) => {
       this.info(`socket-> presense. ${data || ''}`);
       dataDispatcher.onDataArrived(data);
     });
