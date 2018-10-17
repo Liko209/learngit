@@ -8,7 +8,6 @@ import * as assert from 'assert';
 import { getLogger } from 'log4js';
 
 import { AccountLockApi, AccountLockAcquire } from 'glip-account-pool-client';
-import { ENV_OPTS, DEBUG_MODE } from '../config';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -88,24 +87,27 @@ class AccountPoolManager implements IAccountPoolClient {
   }
 }
 
-const _accountPoolUrl = DEBUG_MODE
-  ? ENV_OPTS.ACCOUNT_POOL_FOR_DEBUG_BASE_URL
-  : ENV_OPTS.ACCOUNT_POOL_BASE_URL;
-const _accountPoolClient = new AccountPoolClient(
-  _accountPoolUrl,
-  ENV_OPTS.ACCOUNT_POOL_ENV,
-);
-const accountPoolClient = new AccountPoolManager(_accountPoolClient);
+function initAccountPoolManager(ENV_OPTS, DEBUG_MODE) {
+  const _accountPoolUrl = DEBUG_MODE
+    ? ENV_OPTS.ACCOUNT_POOL_FOR_DEBUG_BASE_URL
+    : ENV_OPTS.ACCOUNT_POOL_BASE_URL;
+  const _accountPoolClient = new AccountPoolClient(
+    _accountPoolUrl,
+    ENV_OPTS.ACCOUNT_POOL_ENV,
+  );
+  const accountPoolClient = new AccountPoolManager(_accountPoolClient);
 
-// ensure account release on signal
-['SIGINT', 'SIGTERM',].forEach((e: any) => {
-  process.on(e, () => {
-    logger.info(`release account on ${e}`);
-    accountPoolClient.checkInAll()
-      .then(() => {
-        logger.info('release account done');
-      });
+  // ensure account pool clean up on key interrupt
+  ['SIGINT', 'SIGTERM',].forEach((e: any) => {
+    process.on(e, () => {
+      logger.info(`release account on ${e}`);
+      accountPoolClient.checkInAll()
+        .then(() => {
+          logger.info('release account done');
+        });
+    });
   });
-});
+  return accountPoolClient;
+}
 
-export { accountPoolClient };
+export { IAccountPoolClient, initAccountPoolManager };
