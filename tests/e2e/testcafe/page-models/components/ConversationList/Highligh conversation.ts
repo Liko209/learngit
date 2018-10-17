@@ -1,9 +1,6 @@
-import { GroupAPI } from '../../../libs/sdk';
 import { BaseComponent } from '../../../page-models/index';
-import { SITE_URL } from '../../../config';
 import { Selector, ClientFunction } from 'testcafe';
 
-const url = [];
 let conversationId = undefined;
 
 class HighlighConversation extends BaseComponent {
@@ -30,7 +27,6 @@ class HighlighConversation extends BaseComponent {
       const getLocation = ClientFunction(() => window.location.href);
       const url = await getLocation();
       const str = url.toString().split('messages/');
-      console.log('str', str);
       conversationId = str[1];
     });
   }
@@ -57,9 +53,9 @@ class HighlighConversation extends BaseComponent {
       await t.expect(pElemStyle['color']).eql('rgb(6, 132, 189)');
     });
   }
+
   checkOpenedConversation() {
     return this.chain(async (t: TestController) => {
-      // await t.expect(this.ConversationContent.filter(`[data-group-id="${conversationId}"]`);
       await t.expect(
         Selector(`.conversation-page[data-group-id="${conversationId}"]`),
       );

@@ -23,7 +23,6 @@ test(
       h.users.user701,
       h.companyNumber,
     );
-    h.log('creating group');
     const group = await client701.createGroup({
       type: 'Group',
       isPublic: true,
@@ -34,12 +33,10 @@ test(
         h.users.user703.rc_id,
       ],
     });
-    h.log('group', group);
     h.log(`Group chat ${group.data.id} is created.`);
     const groupId = group.data.id;
     const person = (await PersonAPI.requestPersonById(h.users.user701.glip_id))
       .data;
-    h.log('person', person.state_id);
     const profileId = person.profile_id;
     await (ProfileAPI as any).putDataById(profileId, {
       [`hide_group_${groupId}`]: false,
