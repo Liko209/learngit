@@ -22,6 +22,7 @@ type Props = {
   // Search: ComponentType,
   AddMenu: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   AvatarMenu: ComponentType<any>; // ComponentType<MenuListCompositionProps>
+  BackNForward: ComponentType<any>;
 };
 
 type States = {
@@ -54,7 +55,7 @@ class JuiTopBar extends React.Component<Props, States> {
 
   render() {
     const { isShowSearchBar } = this.state;
-    const { MainMenu, Logo, AddMenu, AvatarMenu } = this.props;
+    const { MainMenu, Logo, AddMenu, AvatarMenu, BackNForward } = this.props;
     return (
       <StyledAppBar>
         <StyledToolbar>
@@ -63,6 +64,7 @@ class JuiTopBar extends React.Component<Props, States> {
               <MainMenu />
               <Logo />
             </StyledMenuWithLogo>
+            <BackNForward />
             <StyledSearchBar setSearchBarState={this.setSearchBarState} />
             <StyledSearchIconButton
               onClick={this.showSearchBar}

@@ -2,9 +2,9 @@
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-03-07 17:42:10
  */
-import config from './config';
 import { Sdk, LogControlManager, service } from 'sdk';
 import storeManager from '@/store';
+import config from './config';
 
 const api = config.get('api');
 const db = config.get('db');
@@ -18,7 +18,6 @@ export async function initAll() {
     api,
     db,
   });
-
   // subscribe service notification to global store
   const { notificationCenter, AccountService, SOCKET, SERVICE } = service;
   const globalStore = storeManager.getGlobalStore();
