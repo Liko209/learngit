@@ -10,7 +10,6 @@ import Worker from './subscribeWorker';
 const RETRY_COUNT = 2;
 
 class SubscribeHandler {
-  public subscribeSuccess: Function;
   public queue: number[];
   public worker: Worker;
   public subscribeIds: Function;
@@ -18,12 +17,11 @@ class SubscribeHandler {
 
   constructor(
     threshold: number,
-    subscribeSuccess: Function,
+    public subscribeSuccess: Function,
     interval: number = 200,
   ) {
     this.queue = [];
     this.failIds = new Map();
-    this.subscribeSuccess = subscribeSuccess;
     this.worker = new Worker(this.workerSuccess, this.workerFail);
     this.subscribeIds = debounce(async () => {
       const ids: number[] = this.queue.splice(-threshold, threshold);

@@ -7,24 +7,22 @@ import PresenceAPI from '../../api/glip/presence';
 import socketManager from '../SocketManager';
 
 class SubscribeWorker {
-  public successCallback: Function;
-  public failCallback: Function;
-
-  constructor(successCallback: Function, failCallback: Function) {
-    this.successCallback = successCallback;
-    this.failCallback = failCallback;
-  }
+  constructor(
+    public successCallback: Function,
+    public failCallback: Function,
+  ) {}
 
   async execute(ids: number[]) {
     if (!socketManager.isConnected()) return;
-
+    let requestResult;
     try {
-      const requestResult = await PresenceAPI.requestPresenceByIds(ids);
-      const { data } = requestResult;
-      this.successCallback(data);
+      requestResult = await PresenceAPI.requestPresenceByIds(ids);
     } catch (err) {
       this.failCallback(ids);
+      return;
     }
+    const { data } = requestResult;
+    this.successCallback(data);
   }
 }
 
