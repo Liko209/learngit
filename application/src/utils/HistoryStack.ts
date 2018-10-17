@@ -7,44 +7,44 @@ import { action, observable, computed } from 'mobx';
 
 class HistoryStack {
   @observable
-  private _pointer: number = -1;
+  private _cursor: number = -1;
   @observable
   private _stack: string[] = [];
 
   @action
   push(pathname: string) {
-    if (this._stack.length !== this._pointer + 1) {
-      this._stack.length = this._pointer + 1;
+    if (this._stack.length !== this._cursor + 1) {
+      this._stack.length = this._cursor + 1;
     }
     this._stack.push(pathname);
-    this._pointer += 1;
+    this._cursor += 1;
   }
 
   @action
   replace(pathname: string) {
-    if (this._pointer < 0) {
-      this._pointer = 0;
+    if (this._cursor < 0) {
+      this._cursor = 0;
     }
-    this._stack[this._pointer] = pathname;
+    this._stack[this._cursor] = pathname;
   }
 
   @action
-  setPointer(pointer: number) {
-    this._pointer = pointer;
+  setCursor(pointer: number) {
+    this._cursor = pointer;
   }
 
   @computed
   get backRecord() {
-    return this._stack.slice(0, this._pointer);
+    return this._stack.slice(0, this._cursor);
   }
 
   @computed
   get forwardRecord() {
-    return this._stack.slice(this._pointer + 1);
+    return this._stack.slice(this._cursor + 1);
   }
 
-  getPointer() {
-    return this._pointer;
+  getCursor() {
+    return this._cursor;
   }
 
   getStack() {
@@ -52,7 +52,7 @@ class HistoryStack {
   }
 
   getCurrentPathname() {
-    return this._stack[this._pointer];
+    return this._stack[this._cursor];
   }
 }
 
