@@ -17,6 +17,7 @@ import {
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
 import pkg from '../../../package.json';
+import { grey } from 'jui/foundation/utils/styles';
 import styled from 'jui/foundation/styled-components';
 
 type TopBarProps = InjectedTranslateProps & {
@@ -29,7 +30,8 @@ type TopBarProps = InjectedTranslateProps & {
   dialogStatus: boolean;
 };
 const Param = styled.p`
-  color: #616161;
+  color: ${grey('700')};
+  font-size: ${({ theme }) => theme.typography.body2.fontSize};;
 `;
 @observer
 class TopBar extends React.Component<TopBarProps> {
