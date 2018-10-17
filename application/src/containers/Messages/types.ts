@@ -11,7 +11,7 @@ type MessagesProps = {} & RouteComponentProps<{ id: string }>;
 type MessagesViewProps = {
   isLeftNavOpen: boolean;
   currentConversationId?: number;
-  setCurrentConversationId: Function;
+  updateCurrentConversationId: (id?: number) => void;
   getLastGroupId: (groupId?: number) => Promise<number | undefined>;
 } & RouteComponentProps<{ id: string }>;
 

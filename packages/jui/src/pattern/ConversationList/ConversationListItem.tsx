@@ -51,7 +51,7 @@ const StyledListItem = styled(MuiMenuItem)`
   &&.selected {
     background: ${grey('300')};
   }
-  &&.selected p{
+  &&.selected p {
     color: ${palette('primary', 'main')};
   }
 `;
