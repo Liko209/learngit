@@ -38,10 +38,8 @@ const JuiAvatar = styled<JuiAvatarProps>(MuiAvatar)`
   && {
     width: ${({ size = 'medium', theme }) => width(sizes[size])({ theme })};
     height: ${({ size = 'medium', theme }) => height(sizes[size])({ theme })};
-    & {
-      font-weight: 300;
-    }
     ${({ size = 'medium' }) => typography(fonts[size])};
+    font-weight: ${({ theme }) => theme.typography.display4.fontWeight};
     background-color: ${({ color = 'lake' }) => palette('avatar', color)};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
