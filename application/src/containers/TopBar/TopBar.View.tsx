@@ -142,7 +142,7 @@ class TopBar extends React.Component<TopBarProps> {
           onOK={handleAboutPage}
         >
           <p>Version: {pkg.version}</p>
-          <p>© 1999-2017 RingCentral, Inc. All rights reserved</p>
+          <p>Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All rights reserved.</p>
         </JuiModal>
       </React.Fragment>
     );
