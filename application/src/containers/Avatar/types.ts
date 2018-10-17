@@ -10,8 +10,9 @@ type AvatarProps = JuiAvatarProps & {
 };
 
 type AvatarViewProps = JuiAvatarProps & {
-  name?: string;
-  url?: string;
+  shortName?: string;
+  headShotUrl?: string;
   bgColor?: string;
+  shouldShowShortName?: string;
 };
 export { AvatarProps, AvatarViewProps };

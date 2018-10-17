@@ -9,21 +9,21 @@ export class MaxConversation extends BaseComponent {
   }
 
   waitForSections() {
-    return this.chain(async t => await this.sections);
+    return this.chain(async (t: TestController) => await this.sections);
   }
 
   checkConversationCount(section: string, expectCount: number) {
-    return this.chain(async (t) => {
-      const items =  await this._getSectionListItem(section);
+    return this.chain(async (t: TestController) => {
+      const items = await this._getSectionListItem(section);
       await t.expect(items.count).eql(expectCount);
     });
   }
 
-  getConversationCount(section: string){
-    return this.chain(async t => {
+  getConversationCount(section: string) {
+    return this.chain(async (t: TestController) => {
       return await this._getSectionListItem(section).count;
     });
-  }    
+  }
 
   checkConversationListItems(section: string, itemTitles: string[]) {
     return this.chain(async (t, h) => {
