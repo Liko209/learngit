@@ -83,6 +83,7 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
 class StreamViewModel extends StoreViewModel {
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   private _stateService: StateService = StateService.getInstance();
+  private _postService: PostService = PostService.getInstance();
 
   private _transformHandler: PostTransformHandler;
 
@@ -105,17 +106,12 @@ class StreamViewModel extends StoreViewModel {
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (offset: number, direction, pageSize, anchor) => {
         try {
-          const {
-            posts,
-            hasMore,
-          } = await (PostService.getInstance() as PostService).getPostsByGroupId(
-            {
-              offset,
-              groupId: props.groupId,
-              postId: anchor && anchor.id,
-              limit: pageSize,
-            },
-          );
+          const { posts, hasMore } = await this._postService.getPostsByGroupId({
+            offset,
+            groupId: props.groupId,
+            postId: anchor && anchor.id,
+            limit: pageSize,
+          });
           return { hasMore, data: posts };
         } catch (err) {
           if (err.code === ErrorTypes.NETWORK) {
@@ -156,8 +152,6 @@ class StreamViewModel extends StoreViewModel {
   @loading
   async loadInitialPosts() {
     await this._loadPosts(FetchDataDirection.UP);
-    // const hasMore = this._transformHandler.hasMore(FetchDataDirection.UP);
-    // hasMore && this.loadPrevPosts();
   }
 
   @onScrollToTop
