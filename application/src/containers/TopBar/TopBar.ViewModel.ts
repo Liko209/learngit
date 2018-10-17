@@ -3,7 +3,7 @@
  * @Date: 2018-09-28 17:23:20
  * Copyright © RingCentral. All rights reserved.
  */
-
+import React from 'react';
 import { action, computed, observable } from 'mobx';
 import { AuthService } from 'sdk/service';
 
@@ -15,6 +15,10 @@ class TopBarViewModel extends AbstractViewModel {
   brandName: string = 'RingCentral';
   @observable
   isShowDialog: boolean = false;
+  @observable
+  hash = '';
+  @observable
+  version = 0;
   @action
   updateLeftNavState = () => {
     const globalStore = storeManager.getGlobalStore();
@@ -42,12 +46,23 @@ class TopBarViewModel extends AbstractViewModel {
     window.location.href = '/';
   }
   @action
-  handleAboutPage = () => {
+  handleAboutPage = (event: React.MouseEvent<HTMLElement>, hash?: string|undefined, version?: number|undefined) => {
+    this.hash = hash || '';
+    this.version = version || 0;
+    console.log(hash);
     this.isShowDialog = !this.isShowDialog;
   }
   @computed
   get dialogStatus() {
     return this.isShowDialog;
+  }
+  @computed
+  get commitHash() {
+    return this.hash;
+  }
+  @computed
+  get electronVersion() {
+    return this.version;
   }
 }
 

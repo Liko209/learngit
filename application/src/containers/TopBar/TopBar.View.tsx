@@ -28,6 +28,8 @@ type TopBarProps = InjectedTranslateProps & {
   currentUserId: number;
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
   dialogStatus: boolean;
+  commitHash: string;
+  electronVersion: number;
 };
 const Param = styled.p`
   color: ${grey('700')};
@@ -131,7 +133,7 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
-    const { dialogStatus, t, handleAboutPage } = this.props;
+    const { dialogStatus, t, handleAboutPage, commitHash, electronVersion } = this.props;
     return (
       <React.Fragment>
         <JuiTopBar
@@ -146,7 +148,8 @@ class TopBar extends React.Component<TopBarProps> {
           okText={t('done')}
           onOK={handleAboutPage}
         >
-          <Param>Version: {pkg.version}</Param>
+          <Param>Version: {pkg.version} {electronVersion ? `(E. ${electronVersion})` : null}</Param>
+          {commitHash ? <Param>Build: {commitHash}</Param> : null}
           <Param>Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All rights reserved.</Param>
         </JuiModal>
       </React.Fragment>
