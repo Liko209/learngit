@@ -22,7 +22,7 @@ type Props = {
   // Search: ComponentType,
   AddMenu: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   AvatarMenu: ComponentType<any>; // ComponentType<MenuListCompositionProps>
-  BackNForward: ComponentType<any>;
+  BackNForward?: ComponentType<any>;
 };
 
 type States = {
@@ -64,7 +64,7 @@ class JuiTopBar extends React.Component<Props, States> {
               <MainMenu />
               <Logo />
             </StyledMenuWithLogo>
-            <BackNForward />
+            {BackNForward ? <BackNForward /> : null}
             <StyledSearchBar setSearchBarState={this.setSearchBarState} />
             <StyledSearchIconButton
               onClick={this.showSearchBar}

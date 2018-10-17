@@ -16,6 +16,7 @@ import {
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
 import { BackNForward } from '@/containers/BackNForward';
+import { isElectron } from '@/utils';
 
 type TopBarProps = InjectedTranslateProps & {
   signOut: Function;
@@ -122,7 +123,7 @@ class TopBar extends React.Component<TopBarProps> {
         AvatarMenu={this._AvatarMenu}
         AddMenu={this._AddMenu}
         Logo={this._Logo}
-        BackNForward={BackNForward}
+        BackNForward={isElectron ? BackNForward : undefined}
       />
     );
   }
