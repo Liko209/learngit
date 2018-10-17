@@ -32,8 +32,7 @@ const presenceHandleData = async (presences: RawPresence[]) => {
 const handleStore = ({ state }: { state: any }) => {
   if (state === 'connected') {
     notificationCenter.emitEntityReload(ENTITY.PRESENCE);
-  }
-  if (state === 'disconnected') {
+  } else if (state === 'disconnected') {
     notificationCenter.emitEntityReset(ENTITY.PRESENCE);
   }
 };
