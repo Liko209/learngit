@@ -41,7 +41,6 @@ class App extends React.PureComponent {
     super(props);
     autorun(() => {
       this.updateAppUmi();
-      this.handleAboutPage();
     });
   }
 
@@ -55,13 +54,6 @@ class App extends React.PureComponent {
     if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
       window.jupiterElectron.setBadgeCount(appUmi || 0);
     }
-  }
-  handleAboutPage() {
-    if (window.jupiterElectron && window.jupiterElectron.handleAboutPage) {
-      // window.jupiterElectron.handleAboutPage();
-      console.log('handleAboutPage11');
-    }
-    console.log('window.jupiterElectron');
   }
 }
 

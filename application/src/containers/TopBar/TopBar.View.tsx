@@ -58,6 +58,9 @@ class TopBar extends React.Component<TopBarProps> {
 
   private _AvatarMenu(avatarProps: MenuListCompositionProps) {
     const { signOut, t, handleAboutPage } = this.props;
+    window.jupiterElectron = {
+      handleAboutPage,
+    };
     return (
       <JuiAvatarMenu
         menuItems={[

@@ -47,7 +47,6 @@ class TopBarViewModel extends AbstractViewModel {
   }
   @computed
   get dialogStatus() {
-    console.log('this.isShowDialog');
     return this.isShowDialog;
   }
 }
