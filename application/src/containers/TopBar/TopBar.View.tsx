@@ -17,6 +17,7 @@ import {
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
 import pkg from '../../../package.json';
+import styled from 'jui/foundation/styled-components';
 
 type TopBarProps = InjectedTranslateProps & {
   signOut: Function;
@@ -27,7 +28,9 @@ type TopBarProps = InjectedTranslateProps & {
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
   dialogStatus: boolean;
 };
-
+const Param = styled.p`
+  color: #616161;
+`;
 @observer
 class TopBar extends React.Component<TopBarProps> {
   constructor(props: TopBarProps) {
@@ -141,8 +144,8 @@ class TopBar extends React.Component<TopBarProps> {
           okText={t('ok')}
           onOK={handleAboutPage}
         >
-          <p>Version: {pkg.version}</p>
-          <p>Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All rights reserved.</p>
+          <Param>Version: {pkg.version}</Param>
+          <Param>Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All rights reserved.</Param>
         </JuiModal>
       </React.Fragment>
     );
