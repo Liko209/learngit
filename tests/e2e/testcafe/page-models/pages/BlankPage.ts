@@ -5,7 +5,6 @@
  */
 
 import { BasePage } from '..';
-import { Status } from '../../libs/report';
 
 export class BlankPage extends BasePage {
 }
