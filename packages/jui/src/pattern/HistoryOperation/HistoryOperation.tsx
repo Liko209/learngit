@@ -103,9 +103,8 @@ export class JuiHistoryOperation extends React.Component<
     type: OPERATION,
     index: number,
   ) => {
-    const { onClickMenu } = this.props;
-
     this.handleClose(event);
+    const { onClickMenu } = this.props;
     onClickMenu(type, index);
   }
 

@@ -5,6 +5,7 @@
  */
 import { action, observable, computed } from 'mobx';
 
+const MAX_RECORD = 11;
 class HistoryStack {
   @observable
   private _cursor: number = -1;
@@ -16,8 +17,14 @@ class HistoryStack {
     if (this._stack.length !== this._cursor + 1) {
       this._stack.length = this._cursor + 1;
     }
-    this._stack.push(pathname);
-    this._cursor += 1;
+    if (this._cursor < MAX_RECORD - 1) {
+      this._stack.push(pathname);
+      this._cursor += 1;
+      return;
+    }
+    const newStack = this._stack.splice(1);
+    newStack.push(pathname);
+    this._stack = newStack;
   }
 
   @action

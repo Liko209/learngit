@@ -137,44 +137,32 @@ describe('backNForward ViewModel', () => {
     const forwardRecord = backNForwardViewModel.forwardRecord;
     expect(forwardRecord).toEqual([
       {
-        pathname: 'text5',
-        title: 'text5',
+        pathname: 'text15',
+        title: 'text15',
       },
       {
-        pathname: 'text6',
-        title: 'text6',
+        pathname: 'text16',
+        title: 'text16',
       },
       {
-        pathname: 'text7',
-        title: 'text7',
+        pathname: 'text17',
+        title: 'text17',
       },
       {
-        pathname: 'text8',
-        title: 'text8',
+        pathname: 'text18',
+        title: 'text18',
       },
       {
-        pathname: 'text9',
-        title: 'text9',
+        pathname: 'text19',
+        title: 'text19',
       },
       {
-        pathname: 'text10',
-        title: 'text10',
+        pathname: 'text20',
+        title: 'text20',
       },
       {
-        pathname: 'text11',
-        title: 'text11',
-      },
-      {
-        pathname: 'text12',
-        title: 'text12',
-      },
-      {
-        pathname: 'text13',
-        title: 'text13',
-      },
-      {
-        pathname: 'text14',
-        title: 'text14',
+        pathname: 'text21',
+        title: 'text21',
       },
     ]);
   });
