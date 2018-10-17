@@ -15,6 +15,9 @@ import historyStack from '@/utils/HistoryStack';
 const { SERVICE, ProfileService } = service;
 
 class HomeViewModel extends StoreViewModel {
+  @observable
+  indexLoaded: boolean = false;
+
   constructor() {
     super();
     this._initHistoryListen();
@@ -34,7 +37,8 @@ class HomeViewModel extends StoreViewModel {
   @action.bound
   async handleHasLoggedIn() {
     const profileService: IProfileService = ProfileService.getInstance();
-    profileService.markMeConversationAsFav();
+    await profileService.markMeConversationAsFav();
+    this.indexLoaded = true;
   }
 
   @action
