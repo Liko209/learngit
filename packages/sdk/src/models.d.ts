@@ -200,7 +200,7 @@ export type RawPresence = {
     | 'Available'
     | 'OnCall'
     | 'DND'
-    | 'not_ready'
+    | 'NotReady'
     | 'InMeeting';
 };
 

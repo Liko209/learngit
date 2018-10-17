@@ -49,7 +49,7 @@ export default class PresenceService extends BaseService {
     this.subscribeHandler.appendId(id);
     return {
       id,
-      presence: 'not_ready',
+      presence: 'NotReady',
     };
   }
 
