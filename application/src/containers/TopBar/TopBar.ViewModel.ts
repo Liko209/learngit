@@ -16,8 +16,6 @@ class TopBarViewModel extends AbstractViewModel {
   @observable
   isShowDialog: boolean = false;
   @observable
-  hash = '';
-  @observable
   version = 0;
   @action
   updateLeftNavState = () => {
@@ -46,19 +44,13 @@ class TopBarViewModel extends AbstractViewModel {
     window.location.href = '/';
   }
   @action
-  handleAboutPage = (event: React.MouseEvent<HTMLElement>, hash?: string|undefined, version?: number|undefined) => {
-    this.hash = hash || '';
+  handleAboutPage = (event: React.MouseEvent<HTMLElement>, version?: number|undefined) => {
     this.version = version || 0;
-    console.log(hash);
     this.isShowDialog = !this.isShowDialog;
   }
   @computed
   get dialogStatus() {
     return this.isShowDialog;
-  }
-  @computed
-  get commitHash() {
-    return this.hash;
   }
   @computed
   get electronVersion() {

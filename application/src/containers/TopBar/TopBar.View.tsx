@@ -19,6 +19,7 @@ import { Avatar } from '@/containers/Avatar';
 import pkg from '../../../package.json';
 import { grey } from 'jui/foundation/utils/styles';
 import styled from 'jui/foundation/styled-components';
+import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
 
 type TopBarProps = InjectedTranslateProps & {
   signOut: Function;
@@ -28,7 +29,6 @@ type TopBarProps = InjectedTranslateProps & {
   currentUserId: number;
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
   dialogStatus: boolean;
-  commitHash: string;
   electronVersion: number;
 };
 const Param = styled.p`
@@ -133,7 +133,8 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
-    const { dialogStatus, t, handleAboutPage, commitHash, electronVersion } = this.props;
+    const { dialogStatus, t, handleAboutPage, electronVersion } = this.props;
+    const commitHash = gitCommitInfo.commitInfo[0].commitHash;
     return (
       <React.Fragment>
         <JuiTopBar
@@ -149,7 +150,7 @@ class TopBar extends React.Component<TopBarProps> {
           onOK={handleAboutPage}
         >
           <Param>Version: {pkg.version} {electronVersion ? `(E. ${electronVersion})` : null}</Param>
-          {commitHash ? <Param>Build: {commitHash}</Param> : null}
+          <Param>Build: {commitHash}</Param>
           <Param>Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All rights reserved.</Param>
         </JuiModal>
       </React.Fragment>
