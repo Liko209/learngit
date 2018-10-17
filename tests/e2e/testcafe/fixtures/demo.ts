@@ -5,19 +5,18 @@
  */
 
 import { formalName } from '../libs/filter';
-import { setUp, tearDown, TestHelper } from '../libs/helpers';
-import { directLogin } from '../utils';
-import * as attestCheck from 'attest-testcafe';
+import { h } from '../v2/helpers'
+import { setupCase, teardownCase } from '../init';
+import { SITE_URL } from '../config';
 
-
-declare var test: TestFn;
 fixture('Demo')
-  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
-  .afterEach(tearDown());
+  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .afterEach(teardownCase());
 
 test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
-  await directLogin(t);
+  const user = h(t).rcData.mainCompany.users[0];
+  await h(t).directLoginWithUser(SITE_URL, user);
   await t.wait(10e3);
-  const report = await attestCheck(t, 'wcag2');
-  console.log(JSON.stringify(report, null, 2));
+  const a11yReport = await h(t).a11yHelper.attestCheck();
+  console.log(JSON.stringify(a11yReport, null, 2));
 });

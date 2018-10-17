@@ -31,11 +31,11 @@ export default class ConfigService extends BaseService {
     return configDao.get(LAST_INDEX_TIMESTAMP);
   }
 
-  async switchEnv(env: string): Promise<void> {
+  async switchEnv(env: string): Promise<boolean> {
     const configDao = daoManager.getKVDao(ConfigDao);
     const oldEnv = configDao.getEnv();
 
-    if (oldEnv === env) return;
+    if (oldEnv === env) return false;
 
     // if oldEnv existed, then logout to clear old data.
     if (oldEnv) {
@@ -44,5 +44,7 @@ export default class ConfigService extends BaseService {
 
     configDao.putEnv(env);
     sessionStorage.setItem('env', env);
+
+    return true;
   }
 }

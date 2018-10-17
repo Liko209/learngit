@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
@@ -25,7 +24,7 @@ const SortableItem = SortableElement(ConversationListItem);
 
 type Props = SectionViewProps & {
   t: TranslationFunction;
-} & RouteComponentProps<{ id: string }>;
+};
 
 class SectionViewComponent extends React.Component<Props> {
   renderList() {
@@ -75,9 +74,7 @@ class SectionViewComponent extends React.Component<Props> {
   }
 }
 
-const SectionView = translate('Conversations')(
-  withRouter(SectionViewComponent),
-);
+const SectionView = translate('Conversations')(SectionViewComponent);
 
 export { SectionView };
 export default SectionView;

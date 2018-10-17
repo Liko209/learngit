@@ -19,7 +19,10 @@ class ConversationPageViewComponent extends Component<
       return null;
     }
     return (
-      <JuiConversationPage>
+      <JuiConversationPage
+        className="conversation-page"
+        data-group-id={groupId}
+      >
         <Header id={groupId} />
         <JuiDivider />
         <Stream groupId={groupId} />

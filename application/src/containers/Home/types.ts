@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router-dom';
 
 type HomeViewProps = {
   canPost: boolean;
+  indexLoaded: boolean;
   t: TranslationFunction;
 } & RouteComponentProps;
 
