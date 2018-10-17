@@ -260,4 +260,41 @@ describe('ProfileService', () => {
       }
     });
   });
+  describe('handleGroupIncomesNewPost()', async () => {
+    it('has hidden group, should open', async () => {
+      const profile = {
+        id: 2,
+        hide_group_222233333: true,
+      };
+      jest
+        .spyOn(profileService, 'getProfile')
+        .mockImplementationOnce(() => profile);
+      const returnValue = {
+        id: 2,
+        hide_group_222233333: false,
+        skip_close_conversation_confirmation: true,
+      };
+      ProfileAPI.putDataById.mockResolvedValueOnce({
+        data: returnValue,
+      });
+      handleData.mockResolvedValueOnce(returnValue);
+      const result = await profileService.handleGroupIncomesNewPost([
+        222233333,
+      ]);
+      expect(result['hide_group_222233333']).toBe(false);
+    });
+    it('has not hidden group, do nothing', async () => {
+      const profile = {
+        id: 2,
+        hide_group_222233333: false,
+      };
+      jest
+        .spyOn(profileService, 'getProfile')
+        .mockImplementationOnce(() => profile);
+      const result = await profileService.handleGroupIncomesNewPost([
+        222233333,
+      ]);
+      expect(result).toBe(null);
+    });
+  });
 });

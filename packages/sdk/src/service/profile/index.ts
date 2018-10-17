@@ -9,17 +9,23 @@ import BaseService from '../../service/BaseService';
 import AccountService from '../account';
 import handleData, { handlePartialProfileUpdate } from './handleData';
 import { Profile, Raw } from '../../models';
-import { SOCKET } from '../eventKey';
+import { SOCKET, SERVICE } from '../eventKey';
 import _ from 'lodash';
 import { BaseError, ErrorParser } from '../../utils';
 import PersonService from '../person';
 import { mainLogger } from 'foundation';
+
+const handleGroupIncomesNewPost = (groupIds: number[]) => {
+  const profileService: ProfileService = ProfileService.getInstance();
+  profileService.handleGroupIncomesNewPost(groupIds);
+};
 
 export default class ProfileService extends BaseService<Profile> {
   static serviceName = 'ProfileService';
   constructor() {
     const subscriptions = {
       [SOCKET.PROFILE]: handleData,
+      [SERVICE.NEW_POST_TO_GROUP]: handleGroupIncomesNewPost,
     };
     super(ProfileDao, ProfileAPI, handleData, subscriptions);
   }
@@ -31,6 +37,25 @@ export default class ProfileService extends BaseService<Profile> {
       return null;
     }
     return this.getById(profileId);
+  }
+
+  async handleGroupIncomesNewPost(groupIds: number[]) {
+    const profile: Profile | null = await this.getProfile();
+    if (profile && groupIds.length) {
+      let changed: boolean = false;
+      groupIds.forEach((id: number) => {
+        const key = `hide_group_${id}`;
+        if (profile[key]) {
+          profile[key] = false;
+          changed = true;
+        }
+      });
+      // open group
+      if (changed) {
+        return this._putProfile(profile);
+      }
+    }
+    return null;
   }
 
   private _reorderFavoriteGroupIds(
