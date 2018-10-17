@@ -28,22 +28,61 @@ const DefaultLoadingMore = () => (
   </StyledLoadingMore>
 );
 
+const withDelay = (Component: ComponentType<any>) => {
+  class ComponentWithDelay extends React.Component<{ delay: number }> {
+    static defaultProps = {
+      delay: 500,
+    };
+
+    state = {
+      visible: false,
+    };
+
+    timer: NodeJS.Timer;
+
+    componentDidMount() {
+      this.timer = setTimeout(() => {
+        this.setState({ visible: true });
+      },                      this.props.delay);
+    }
+
+    componentWillUnmount() {
+      clearTimeout(this.timer);
+    }
+
+    render() {
+      const { delay, ...rest } = this.props;
+      if (!this.state.visible) return null;
+
+      return <Component {...rest} />;
+    }
+  }
+  return ComponentWithDelay;
+};
+
+const DefaultLoadingMoreWithDelay = withDelay(DefaultLoadingMore);
+
 const withLoadingMore = (
   Component: ComponentType<any>,
   CustomizedLoading?: ComponentType<any>,
 ) => {
+  const CustomizedLoadingWithDelay = CustomizedLoading
+    ? withDelay(CustomizedLoading)
+    : null;
+
   return class LoadingMoreComponent extends React.Component<
     WithLoadingMoreProps
   > {
     render() {
       const { loadingTop, loadingBottom, ...rest } = this.props;
-      const LoadingMore = CustomizedLoading || DefaultLoadingMore;
+      const LoadingMoreWithDelay =
+        CustomizedLoadingWithDelay || DefaultLoadingMoreWithDelay;
 
       return (
         <Fragment>
-          {loadingTop ? <LoadingMore /> : null}
+          {loadingTop ? <LoadingMoreWithDelay /> : null}
           <Component {...rest}>{rest.children}</Component>
-          {loadingBottom ? <LoadingMore /> : null}
+          {loadingBottom ? <LoadingMoreWithDelay /> : null}
         </Fragment>
       );
     }

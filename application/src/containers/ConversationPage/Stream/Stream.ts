@@ -14,6 +14,7 @@ const Stream = buildContainer<StreamProps>({
   ViewModel: StreamViewModel,
   plugins: [
     new InfiniteListPlugin({
+      threshold: 600,
       initialScrollTop: 99999,
       stickTo: 'bottom',
     }),

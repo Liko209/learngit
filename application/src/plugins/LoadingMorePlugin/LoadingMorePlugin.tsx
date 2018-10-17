@@ -5,11 +5,7 @@
  */
 import { ComponentType } from 'react';
 import { action } from 'mobx';
-import {
-  withLoadingMore,
-  withScroller,
-  WithScrollerProps,
-} from 'jui/hoc';
+import { withLoadingMore, withScroller, WithScrollerProps } from 'jui/hoc';
 import { IPlugin } from '@/base/IPlugin';
 import { IViewModel } from '@/base/IViewModel';
 import { createLoadingStateDecorator } from '../utils';
@@ -23,6 +19,7 @@ interface ILoadingMoreViewModel extends IViewModel, WithScrollerProps {
 }
 
 type LoadingMorePluginOptions = {
+  threshold?: number;
   initialScrollTop?: number;
   stickTo?: 'bottom' | 'top';
   triggerScrollToOnMount?: boolean;
