@@ -56,7 +56,7 @@ class MenuViewComponent extends Component<Props, State> {
   private _handleCloseConversation(event: MouseEvent<HTMLElement>) {
     this.props.onClose(event);
     if (this.props.shouldSkipCloseConfirmation) {
-      this._closeConversation();
+      this._closeConversationWithoutConfirmDialog();
     } else {
       this.setState({
         checked: false,
@@ -78,15 +78,25 @@ class MenuViewComponent extends Component<Props, State> {
         okText: t('conversationMenuItem:Close Conversation'),
         okBtnType: 'text',
         onOK: () => {
-          this._closeConversation();
+          this._closeConversationWithConfirm();
         },
       });
     }
   }
 
-  private async _closeConversation() {
+  private async _closeConversationWithConfirm() {
     const { checked } = this.state;
-    const result = await this.props.closeConversation(checked);
+    this._closeConversation(checked);
+  }
+
+  private async _closeConversationWithoutConfirmDialog() {
+    this._closeConversation(true);
+  }
+
+  private async _closeConversation(shouldSkipCloseConfirmation: boolean) {
+    const result = await this.props.closeConversation(
+      shouldSkipCloseConfirmation,
+    );
     if (result === ServiceCommonErrorType.NONE) {
       // jump to section
       const match = /messages\/(\d+)/.exec(window.location.href);
