@@ -1,18 +1,35 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-03-07 17:42:10
+ * Copyright © RingCentral. All rights reserved.
  */
 import config from './config';
 import { Sdk, LogControlManager, service } from 'sdk';
 import storeManager from '@/store';
+import { parse } from 'qs';
 
-const api = config.get('api');
-const db = config.get('db');
 // send configs to sdk
 export async function initAll() {
   LogControlManager.instance().setDebugMode(
     process.env.NODE_ENV === 'development',
   );
+
+  const { search } = window.location;
+  const { state } = parse(search, { ignoreQueryPrefix: true });
+  if (state && state.length) {
+    const stateSearch = state.substring(state.indexOf('?'));
+    const { env } = parse(stateSearch, { ignoreQueryPrefix: true });
+    if (env && env.length) {
+      const configService: service.ConfigService = service.ConfigService.getInstance();
+      const envChanged = await configService.switchEnv(env);
+      if (envChanged) {
+        config.loadEnvConfig();
+      }
+    }
+  }
+
+  const api = config.get('api');
+  const db = config.get('db');
 
   await Sdk.init({
     api,

@@ -75,7 +75,11 @@ export default class StateService extends BaseService<GroupState> {
     if (assginedId) {
       groupId = assginedId;
     } else {
-      groupId = (await this.getMyState())!.last_group_id;
+      const myState = await this.getMyState();
+      if (!myState) {
+        return;
+      }
+      groupId = myState.last_group_id;
     }
 
     // if (!groupId) {

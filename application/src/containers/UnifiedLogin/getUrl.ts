@@ -5,7 +5,7 @@
  */
 
 import { History } from 'history';
-import { stringify } from 'qs';
+import { parse, stringify } from 'qs';
 import config from '@/config';
 import getLanguage from '@/utils/getLanguage';
 
@@ -29,7 +29,10 @@ const getUrl = (location: History.LocationState) => {
   const url = `${glip2.server}${glip2.apiPlatform}/oauth/authorize`;
   const { from } = location.state || { from: {} };
   const { pathname = '/', search = '', hash = '' } = from;
-  const state = pathname + search.replace('&', '$') + hash;
+  const parsedSearch = parse(search, { ignoreQueryPrefix: true });
+  parsedSearch.env = config.getEnv();
+  const updatedSearch = `?${stringify(parsedSearch)}`;
+  const state = pathname + updatedSearch.replace('&', '$') + hash;
   const redirect_uri = window.location.origin; // The URI must match exactly with the sandbox configuration
   const options = {
     redirect_uri,

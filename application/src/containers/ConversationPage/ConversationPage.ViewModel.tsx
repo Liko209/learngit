@@ -36,6 +36,9 @@ class ConversationPageViewModel extends AbstractViewModel {
 
   @computed
   get canPost() {
+    if (this._permissions.length === 0) {
+      return true;
+    }
     return this._permissions.includes(PERMISSION_ENUM.TEAM_POST);
   }
 

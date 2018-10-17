@@ -1,0 +1,55 @@
+{
+  "View": {
+    "prefix": ["v", "view"],
+    "body": [
+      "import React, { Component } from 'react';",
+      "import { ${TM_FILENAME_BASE/\\..+//}ViewProps } from './types';",
+
+      "class ${TM_FILENAME_BASE/\\..+//}View extends Component<${TM_FILENAME_BASE/\\..+//}ViewProps> {",
+      "  render() {",
+      "    return <div>View</div>;",
+      "  }",
+      "}",
+      "export { ${TM_FILENAME_BASE/\\..+//}View };"
+    ]
+  },
+  "ViewModel": {
+    "prefix": ["vm", "viewmodel"],
+    "body": [
+      "import { computed } from 'mobx';",
+      "import { StoreViewModel } from '@/store/ViewModel';",
+      "import { ${TM_FILENAME_BASE/\\..+//}Props, ${TM_FILENAME_BASE/\\..+//}ViewProps } from './types';",
+
+      "class ${TM_FILENAME_BASE/\\..+//}ViewModel extends StoreViewModel<${TM_FILENAME_BASE/\\..+//}Props> implements ${TM_FILENAME_BASE/\\..+//}ViewProps {",
+      "  $2",
+      "}",
+
+      "export { ${TM_FILENAME_BASE/\\..+//}ViewModel };"
+    ]
+  },
+  "Types": {
+    "prefix": ["tp", "types"],
+    "body": [
+      "type ${TM_FILENAME_BASE/\\..+//}Props = {};",
+      "type ${TM_FILENAME_BASE/\\..+//}ViewProps = {};",
+      "export { ${TM_FILENAME_BASE/\\..+//}Props, ${TM_FILENAME_BASE/\\..+//}ViewProps }"
+    ]
+  },
+  "Container": {
+    "prefix": ["con", "container"],
+    "body": [
+      "import { buildContainer } from '@/base';",
+      "import { ${TM_FILENAME_BASE/\\..+//}View } from './${TM_FILENAME_BASE/\\..+//}.View';",
+      "import { ${TM_FILENAME_BASE/\\..+//}ViewModel } from './${TM_FILENAME_BASE/\\..+//}.ViewModel';",
+      "import { ${TM_FILENAME_BASE/\\..+//}Props } from './types';",
+
+      "const ${TM_FILENAME_BASE/\\..+//} = buildContainer<${TM_FILENAME_BASE/\\..+//}Props>({",
+      "  displayName: ${TM_FILENAME_BASE/\\..+//}'",
+      "  View: ${TM_FILENAME_BASE/\\..+//}View,",
+      "  ViewModel: ${TM_FILENAME_BASE/\\..+//}ViewModel,",
+      "});",
+
+      "export { ${TM_FILENAME_BASE/\\..+//}, ${TM_FILENAME_BASE/\\..+//}Props };"
+    ]
+  }
+}
