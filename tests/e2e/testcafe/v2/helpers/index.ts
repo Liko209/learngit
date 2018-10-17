@@ -41,8 +41,8 @@ class Helper {
     return this.jupiterHelper.directLoginWithUser(url, user);
   }
 
-  fromPage<T>(uiCreator: UICreator<T>) {
-    return this.jupiterHelper.fromPage(uiCreator);
+  onPage<T>(uiCreator: UICreator<T>) {
+    return this.jupiterHelper.onPage(uiCreator);
   }
 
 }

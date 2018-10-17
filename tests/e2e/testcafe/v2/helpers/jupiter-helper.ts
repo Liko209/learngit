@@ -71,7 +71,7 @@ export class JupiterHelper {
       });
   }
 
-  fromPage<T>(uiCreator: UICreator<T>) {
+  onPage<T>(uiCreator: UICreator<T>) {
     return new uiCreator(this.t);
   }
 }

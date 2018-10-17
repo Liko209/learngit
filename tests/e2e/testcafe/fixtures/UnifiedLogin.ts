@@ -21,7 +21,7 @@ fixture('Unified Login')
 
 test(formalName('Unified Login', ['JPT-67', 'P0', 'Login']), async (t) => {
   const user = h(t).rcData.mainCompany.users[0]
-  await h(t).fromPage(BlankPage)
+  await h(t).onPage(BlankPage)
     .navigateTo(SITE_URL)
     .shouldNavigateTo(UnifiedLoginPage)
     .clickLogin()

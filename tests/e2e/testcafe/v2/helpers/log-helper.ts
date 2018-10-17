@@ -10,6 +10,7 @@ export class LogHelper {
   }
 
   async takeScreenShot() {
+
   }
 
   writeStep(step: IStep) {
