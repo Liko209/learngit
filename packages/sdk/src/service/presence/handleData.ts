@@ -31,9 +31,9 @@ const presenceHandleData = async (presences: RawPresence[]) => {
 
 const handleStore = ({ state }: { state: any }) => {
   if (state === 'connected') {
-    notificationCenter.emitEntityReload(ENTITY.PRESENCE);
     const presenceService = serviceManager.getInstance(PresenceService);
     presenceService.subscribeHandler.reset();
+    notificationCenter.emitEntityReload(ENTITY.PRESENCE);
   } else if (state === 'disconnected') {
     notificationCenter.emitEntityReset(ENTITY.PRESENCE);
   }

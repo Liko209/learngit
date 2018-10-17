@@ -7,6 +7,8 @@ import debounce from 'lodash/debounce';
 import { RawPresence } from '../../models';
 import Worker from './subscribeWorker';
 
+const RETRY_COUNT = 2;
+
 class SubscribeHandler {
   public subscribeSuccess: Function;
   public queue: number[];
@@ -42,14 +44,14 @@ class SubscribeHandler {
       // avoid endless loop request ids
       // id if count > 3  need throw
       let count: number = this.failIds.get(id) || 0;
-      this.failIds.set(id, ++count);
-      if (count >= 3) {
-        const index = this.queue.indexOf(id);
+      const index = this.queue.indexOf(id);
+      if (count >= RETRY_COUNT) {
         if (index > -1) {
           this.queue.splice(index, 1);
         }
       } else {
-        if (this.queue.indexOf(id) < 0) {
+        this.failIds.set(id, ++count);
+        if (index < 0) {
           this.queue.unshift(id);
         }
       }
