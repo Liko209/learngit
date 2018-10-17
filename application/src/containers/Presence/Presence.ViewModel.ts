@@ -20,7 +20,7 @@ class PresenceViewModel extends StoreViewModel<PresenceProps>
 
   @computed
   get presence() {
-    return getEntity<Presence, PresenceModel>(ENTITY_NAME.POST, this._id)
+    return getEntity<Presence, PresenceModel>(ENTITY_NAME.PRESENCE, this._id)
       .presence;
   }
 }

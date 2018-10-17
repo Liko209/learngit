@@ -7,13 +7,22 @@ import React from 'react';
 import styled from '../../foundation/styled-components';
 
 export type PresenceProps = {
-  presence?: 'online' | 'away' | 'offline' | 'default';
+  presence?:
+    | 'Unavailable'
+    | 'Available'
+    | 'OnCall'
+    | 'DND'
+    | 'NotReady'
+    | 'InMeeting';
 } & React.HTMLAttributes<HTMLDivElement>;
 
 const PRESENCE_COLOR_MAP = {
-  online: '#4cd964',
-  away: '#ffd800',
-  offline: '#c7c7c7',
+  Available: '#4cd964',
+  OnCall: '#ffd800',
+  InMeeting: '#ffd800',
+  Unavailable: '#c7c7c7',
+  DND: '#c7c7c7',
+  NotReady: '#c7c7c7',
   default: 'transparent',
 };
 

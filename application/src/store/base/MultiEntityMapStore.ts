@@ -69,6 +69,14 @@ export default class MultiEntityMapStore<
         this.batchReplace(matchedEntities as { id: number; data: T }[]);
         return;
       }
+      if (type === EVENT_TYPES.RELOAD) {
+        this.reload();
+        return;
+      }
+      if (type === EVENT_TYPES.RESET) {
+        this.reset();
+        return;
+      }
       this.batchSet(matchedEntities as T[]);
     }
   }

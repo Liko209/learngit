@@ -14,7 +14,7 @@ export default class PresenceService extends BaseService {
 
   public caches: Map<number, Presence>; // <id, RawPresence['calculatedStatus']>
   public subscribeHandler: SubscribeHandler;
-  constructor(threshold: number, interval: number = 200) {
+  constructor(threshold: number = 30, interval: number = 200) {
     // channel presence_unified threshold interval
     const subscriptions = {
       [SOCKET.PRESENCE]: presenceHandleData,
@@ -23,7 +23,7 @@ export default class PresenceService extends BaseService {
     super(null, null, null, subscriptions);
     this.subscribeHandler = new SubscribeHandler(
       threshold,
-      this.subscribeSuccess,
+      this.subscribeSuccess.bind(this),
       interval,
     );
     // when serviceManager's property "instances" is recycled, it will be destroyed.

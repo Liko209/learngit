@@ -18,11 +18,14 @@ class SubscribeHandler {
   constructor(
     threshold: number,
     public subscribeSuccess: Function,
-    interval: number = 200,
+    interval: number = 1000,
   ) {
     this.queue = [];
     this.failIds = new Map();
-    this.worker = new Worker(this.workerSuccess, this.workerFail);
+    this.worker = new Worker(
+      this.workerSuccess.bind(this),
+      this.workerFail.bind(this),
+    );
     this.subscribeIds = debounce(async () => {
       const ids: number[] = this.queue.splice(-threshold, threshold);
       await this.worker.execute(ids);

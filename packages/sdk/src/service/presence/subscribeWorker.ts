@@ -14,6 +14,8 @@ class SubscribeWorker {
 
   async execute(ids: number[]) {
     if (!socketManager.isConnected()) return;
+    if (ids.length === 0) return;
+
     let requestResult;
     try {
       requestResult = await PresenceAPI.requestPresenceByIds(ids);
