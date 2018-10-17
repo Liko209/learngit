@@ -14,14 +14,15 @@ class SubscribeWorker {
 
   async execute(ids: number[]) {
     if (!socketManager.isConnected()) return;
-
+    let requestResult;
     try {
-      const requestResult = await PresenceAPI.requestPresenceByIds(ids);
-      const { data } = requestResult;
-      this.successCallback(data);
+      requestResult = await PresenceAPI.requestPresenceByIds(ids);
     } catch (err) {
       this.failCallback(ids);
+      return;
     }
+    const { data } = requestResult;
+    this.successCallback(data);
   }
 }
 
