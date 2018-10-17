@@ -17,19 +17,14 @@ class MessagesViewModel extends AbstractViewModel<MessagesProps> {
   get currentConversationId() {
     return storeManager.getGlobalStore().get('currentConversationId');
   }
-  constructor() {
-    super();
-    this.autorun(this.updateCurrentConversationId);
+
+  updateCurrentConversationId = (currentConversationId?: number) => {
+    storeManager
+      .getGlobalStore()
+      .set('currentConversationId', currentConversationId);
   }
-  updateCurrentConversationId = () => {
-    if (this.props.match) {
-      const currentConversationId = Number(this.props.match.params.id);
-      storeManager
-        .getGlobalStore()
-        .set('currentConversationId', currentConversationId);
-    }
-  }
-  getLastGroupId = (id?: number) => {
+
+  getLastGroupId = async (id?: number) => {
     const stateService: StateService = StateService.getInstance();
     return stateService.getLastValidGroupId(id);
   }
