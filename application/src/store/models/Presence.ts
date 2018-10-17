@@ -9,7 +9,7 @@ export default class PresenceModel extends Base<Presence> {
     | 'Available'
     | 'OnCall'
     | 'DND'
-    | 'not_ready'
+    | 'NotReady'
     | 'InMeeting';
 
   constructor(data: Presence) {

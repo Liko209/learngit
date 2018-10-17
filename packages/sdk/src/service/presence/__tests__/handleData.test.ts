@@ -12,14 +12,20 @@ import { ENTITY } from '../../eventKey';
 jest.mock('../../notificationCenter');
 
 jest.mock('../../../service/serviceManager', () => {
-  const instance = { saveToMemory: jest.fn() };
+  const instance = {
+    saveToMemory: jest.fn(),
+    subscribeHandler: { reset: jest.fn() },
+  };
   return {
     getInstance: () => instance,
   };
 });
 
 jest.mock('../../../service/presence/index', () => {
-  const instance = { saveToMemory: jest.fn() };
+  const instance = {
+    saveToMemory: jest.fn(),
+    subscribeHandler: { reset: jest.fn() },
+  };
   return {
     getInstance: () => instance,
   };
@@ -51,9 +57,11 @@ describe('presence handleData', () => {
   });
 
   it('handleStore', () => {
+    const instance = serviceManager.getInstance(PresenceService);
     handleStore({ state: 'connected' });
     handleStore({ state: 'disconnected' });
     expect(notificationCenter.emitEntityReload).toHaveBeenCalled();
+    expect(instance.subscribeHandler.reset).toHaveBeenCalled();
     expect(notificationCenter.emitEntityReset).toHaveBeenCalled();
   });
 });

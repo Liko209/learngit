@@ -101,7 +101,7 @@ describe('Presence service', () => {
   it('getById from api', async () => {
     const id = 1;
     const p = await presenceService.getById(id);
-    expect(p).toEqual({ id, presence: 'not_ready' });
+    expect(p).toEqual({ id, presence: 'NotReady' });
     expect(presenceService.subscribeHandler.appendId).toHaveBeenCalledWith(1);
   });
 

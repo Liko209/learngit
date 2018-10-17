@@ -12,6 +12,7 @@ class SubscribeHandler {
   public queue: number[];
   public worker: Worker;
   public subscribeIds: Function;
+  public failIds: Map<number, number>;
 
   constructor(
     threshold: number,
@@ -19,21 +20,41 @@ class SubscribeHandler {
     interval: number = 200,
   ) {
     this.queue = [];
+    this.failIds = new Map();
     this.subscribeSuccess = subscribeSuccess;
     this.worker = new Worker(this.workerSuccess, this.workerFail);
     this.subscribeIds = debounce(async () => {
-      const ids: number[] = this.queue.splice(threshold, threshold);
+      const ids: number[] = this.queue.splice(-threshold, threshold);
       await this.worker.execute(ids);
     },                           interval);
   }
 
   appendId(id: number) {
     this.queue.push(id);
+    if (this.failIds.has(id)) {
+      this.failIds.set(id, 0);
+    }
     this.subscribeIds();
   }
 
   workerFail(ids: number[]) {
-    this.queue.unshift(...ids);
+    ids.forEach((id: number) => {
+      // avoid endless loop request ids
+      // id if count > 3  need throw
+      let count: number = this.failIds.get(id) || 0;
+      this.failIds.set(id, ++count);
+      if (count >= 3) {
+        const index = this.queue.indexOf(id);
+        if (index > -1) {
+          this.queue.splice(index, 1);
+        }
+      } else {
+        if (this.queue.indexOf(id) < 0) {
+          this.queue.unshift(id);
+        }
+      }
+    });
+    this.subscribeIds();
   }
 
   workerSuccess(RawPresence: RawPresence[]) {
@@ -59,6 +80,7 @@ class SubscribeHandler {
 
   reset() {
     this.queue = [];
+    this.failIds = new Map();
   }
 }
 
