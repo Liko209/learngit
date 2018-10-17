@@ -129,9 +129,6 @@ class TopBar extends React.Component<TopBarProps> {
 
   render() {
     const { dialogStatus, t, handleAboutPage } = this.props;
-    if (window.jupiterElectron && window.jupiterElectron.handleAboutPage) {
-      window.jupiterElectron.handleAboutPage();
-    }
     return (
       <React.Fragment>
         <JuiTopBar
@@ -143,7 +140,7 @@ class TopBar extends React.Component<TopBarProps> {
         <JuiModal
           open={dialogStatus}
           title={t('About RingCentral')}
-          okText={t('ok')}
+          okText={t('done')}
           onOK={handleAboutPage}
         >
           <Param>Version: {pkg.version}</Param>
