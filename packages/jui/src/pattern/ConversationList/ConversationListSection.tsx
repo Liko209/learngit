@@ -60,6 +60,7 @@ class JuiConversationListSection extends Component<
     return (
       <div>
         <StyledSectionHeader
+          className="conversation-list-section-header"
           {...this.props}
           expanded={expanded}
           umi={umi}

@@ -15,12 +15,12 @@ class LeftRail extends BaseComponent {
   }
 
   checkSectionsOrder(...sections: string[]): this {
-    const length = sections.length
-    let result = this.waitFor(this.sections)
-    for (let i; i < sections.length; i++){
-      result.checkSectionIndex(sections[i], i)
+    const length = sections.length;
+    const result = this.waitFor(this.sections);
+    for (let i; i < sections.length; i++) {
+      result.checkSectionIndex(sections[i], i);
     }
-    return result
+    return result;
   }
 
   checkSectionIndex(sectionTitle: string, index: number): this {
