@@ -6,36 +6,10 @@
 import { action, observable } from 'mobx';
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { service } from 'sdk';
-import { ProfileService as IProfileService } from 'sdk/src/service';
-
-const { SERVICE, ProfileService } = service;
 
 class HomeViewModel extends StoreViewModel {
   @observable
-  indexLoaded: boolean = false;
-
-  constructor() {
-    super();
-    this.subscribeNotificationOnce(
-      SERVICE.FETCH_INDEX_DATA_DONE,
-      this.handleHasLoggedIn,
-    );
-  }
-
-  @observable
   openCreateTeam: boolean = false;
-  @observable
-  invalidUser: boolean = false;
-
-  validateGroupId(groupId: number) {}
-
-  @action.bound
-  async handleHasLoggedIn() {
-    const profileService: IProfileService = ProfileService.getInstance();
-    await profileService.markMeConversationAsFav();
-    this.indexLoaded = true;
-  }
 
   @action
   public toggleCreateTeam() {
