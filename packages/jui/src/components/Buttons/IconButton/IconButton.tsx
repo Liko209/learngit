@@ -16,18 +16,18 @@ import styled, {
 } from '../../../foundation/styled-components';
 import { JuiArrowTip } from '../../Tooltip/ArrowTip';
 import { palette, grey, width } from '../../../foundation/utils/styles';
-import { Theme } from '../../../foundation/theme/theme';
-
+import { Theme, Palette } from '../../../foundation/theme/theme';
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type JuiIconButtonProps = {
   tooltipTitle?: string;
   invisible?: boolean;
   awake?: boolean;
   variant?: 'round' | 'plain';
   size?: 'small' | 'medium' | 'large';
-  color?: 'primary' | 'secondary';
+  color?: string;
   innerRef?: RefObject<HTMLElement>;
-} & MuiIconButtonProps &
-  MuiIconProps;
+} & Omit<MuiIconButtonProps, 'color'> &
+  Omit<MuiIconProps, 'color'>;
 
 const iconSizes = {
   large: 6,
@@ -35,9 +35,12 @@ const iconSizes = {
   small: 4,
 };
 
-const WrappedMuiIcon = ({ invisible, awake, ...rest }: JuiIconButtonProps) => (
-  <MuiIcon {...rest} />
-);
+const WrappedMuiIcon = ({
+  invisible,
+  awake,
+  color,
+  ...rest
+}: JuiIconButtonProps) => <MuiIcon {...rest} />;
 const StyledIcon = styled<JuiIconButtonProps>(WrappedMuiIcon)``;
 const rippleEnter = (theme: Theme) => keyframes`
   from {
@@ -55,6 +58,7 @@ const touchRippleClasses = {
 const WrappedMuiIconButton = ({
   invisible,
   awake,
+  color,
   ...rest
 }: JuiIconButtonProps) => (
   <MuiIconButton
@@ -63,7 +67,12 @@ const WrappedMuiIconButton = ({
     TouchRippleProps={{ classes: touchRippleClasses }}
   />
 );
-const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
+
+type StyledIconButtonProps = JuiIconButtonProps & {
+  colorName: string;
+  colorScope: keyof Palette;
+};
+const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
   && {
     padding: 0;
     width: ${({ variant, size = 'medium', theme }) =>
@@ -74,7 +83,10 @@ const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
       width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
         theme,
       })};
-    color: ${({ awake }) => (awake ? grey('500') : palette('accent', 'ash'))};
+    /* color: ${({ awake }) =>
+      awake ? grey('500') : palette('accent', 'ash')}; */
+    color: ${({ theme, colorScope, colorName }) =>
+      palette(colorScope, colorName)({ theme })}
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
     padding: 0;
     ${StyledIcon} {
@@ -82,23 +94,23 @@ const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
         width(iconSizes[size])({ theme })};
     }
     &:hover {
-      background-color: ${({ theme, variant }) =>
+      background-color: ${({ theme, variant, colorScope, colorName }) =>
         variant === 'plain'
           ? 'transparent'
-          : tinycolor(grey('500')({ theme }))
+          : tinycolor(palette(colorScope, colorName)({ theme }))
               .setAlpha(theme.palette.action.hoverOpacity)
               .toRgbString()};
       ${StyledIcon} {
-        color: ${({ theme }) =>
-          tinycolor(grey('500')({ theme }))
+        color: ${({ theme, colorScope, colorName }) =>
+          tinycolor(palette(colorScope, colorName)({ theme }))
             .setAlpha(1 - theme.palette.action.hoverOpacity)
             .toRgbString()};
       }
     }
     &:active {
       ${StyledIcon} {
-        color: ${({ theme, color = 'primary' }) =>
-          palette(color, 'main')({ theme })};
+        color: ${({ theme, colorScope, colorName }) =>
+          palette(colorScope, colorName)({ theme })};
       }
     }
 
@@ -110,8 +122,8 @@ const StyledIconButton = styled<JuiIconButtonProps>(WrappedMuiIconButton)`
     }
 
     .rippleVisible {
-      color: ${({ theme, color = 'primary' }) =>
-        palette(color, 'main')({ theme })};
+      color: ${({ theme, colorScope, colorName }) =>
+        palette(colorScope, colorName)({ theme })};
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
       transform: scale(1);
       animation-name: ${({ theme }) => rippleEnter(theme)};
@@ -136,8 +148,21 @@ const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
 export const JuiIconButton: React.SFC<JuiIconButtonProps> & Dependencies = (
   props: JuiIconButtonProps,
 ) => {
-  const { className, children, tooltipTitle, innerRef, ...rest } = props;
+  const { className, children, tooltipTitle, innerRef, color, ...rest } = props;
   const { size, variant, awake, disabled, invisible } = rest;
+  let colorScope: keyof Palette = 'primary';
+  let colorName: string = 'main';
+  if (color && color.indexOf('.') >= 0) {
+    const array = color.split('.');
+    if (array.length > 1) {
+      colorScope = array[0] as keyof Palette;
+      colorName = array[1];
+    } else {
+      colorScope = array[0] as keyof Palette;
+      colorName = 'main';
+    }
+  }
+
   return (
     <JuiArrowTip title={tooltipTitle}>
       <WrapperForTooltip
@@ -146,7 +171,12 @@ export const JuiIconButton: React.SFC<JuiIconButtonProps> & Dependencies = (
         variant={variant}
         size={size}
       >
-        <StyledIconButton disableRipple={rest.variant === 'plain'} {...rest}>
+        <StyledIconButton
+          disableRipple={rest.variant === 'plain'}
+          colorScope={colorScope}
+          colorName={colorName}
+          {...rest}
+        >
           <StyledIcon
             size={size}
             variant={variant}
@@ -164,7 +194,7 @@ export const JuiIconButton: React.SFC<JuiIconButtonProps> & Dependencies = (
 
 JuiIconButton.defaultProps = {
   variant: 'round',
-  color: 'primary',
+  color: 'grey.500',
   size: 'medium',
   invisible: false,
   tooltipTitle: '',
