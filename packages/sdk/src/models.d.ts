@@ -111,7 +111,7 @@ export type Person = ExtendedBaseModel & {
   headshot?: {
     url: string;
   };
-  headshot_version?:string;
+  headshot_version?: string;
   locked?: boolean;
   inviter_id?: number;
   rc_phone_numbers?: object[];
@@ -194,10 +194,16 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
 };
 
 export type RawPresence = {
-  person_id: number;
-  presence: 'default' | 'offline' | 'online' | 'away' | undefined;
+  personId: number;
+  calculatedStatus?:
+    | 'NotReady'
+    | 'Unavailable'
+    | 'Available'
+    | 'OnCall'
+    | 'DND'
+    | 'InMeeting';
 };
 
 export type Presence = BaseModel & {
-  presence: 'default' | 'offline' | 'online' | 'away' | undefined;
+  presence: RawPresence['calculatedStatus'];
 };
