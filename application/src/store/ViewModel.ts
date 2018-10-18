@@ -28,22 +28,17 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
   private _reactionDisposers: IReactionDisposer[] = [];
 
   @observable
-  private _props: P;
+  private _props = {} as P;
 
   @computed
   get props(): P {
-    return this._props || ({} as P);
+    return this._props;
   }
 
   onReceiveProps?(props: P): void;
 
   @action
-  getDerivedProps(props: P) {
-    if (!this._props) {
-      this._props = props;
-      return;
-    }
-
+  getDerivedProps(props: Partial<P>) {
     for (const key in props) {
       if (typeof props[key] !== 'object') {
         if (this._props[key] !== props[key]) {
