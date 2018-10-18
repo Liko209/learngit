@@ -104,9 +104,6 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   implements SectionViewProps {
   constructor() {
     super();
-    this.autorun(() => {
-      this.updateGlobalGroups();
-    });
     this._oldFavGroupIds =
       getSingleEntity<Profile, ProfileModel>(
         ENTITY_NAME.PROFILE,
@@ -254,17 +251,12 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   @action
   async fetchGroups() {
     await this._listHandler.fetchData(FetchDataDirection.DOWN);
-  }
-
-  updateGlobalGroups() {
-    if (this._config && this._listHandler) {
-      storeManager
-        .getGlobalStore()
-        .set(
-          this._config.queryType,
-          this._listHandler.sortableListStore.getIds(),
-        );
-    }
+    storeManager
+      .getGlobalStore()
+      .set(
+        this._config.queryType,
+        this._listHandler.sortableListStore.getIds(),
+      );
   }
 
   handleSortEnd(oldIndex: number, newIndex: number) {
