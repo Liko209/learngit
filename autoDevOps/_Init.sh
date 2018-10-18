@@ -6,7 +6,6 @@ cd ../
 export project=`pwd`
 export autoDevOps=${project}/autoDevOps
 export application=${project}/application
-export demo=${project}/demo
 
 # # go to the project root first
 cd $project
