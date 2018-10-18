@@ -9,10 +9,11 @@ import notificationCenter from '../../service/notificationCenter';
 import { ENTITY } from '../../service/eventKey';
 import { Presence, RawPresence } from '../../models';
 
-function transform(obj: RawPresence) {
+function transform(obj: RawPresence): Presence {
+  const presence = obj.calculatedStatus;
   return {
-    id: obj.person_id,
-    presence: obj.presence,
+    presence,
+    id: obj.personId,
   };
 }
 
@@ -20,10 +21,22 @@ const presenceHandleData = async (presences: RawPresence[]) => {
   if (presences.length === 0) {
     return;
   }
-  const transformedData = presences.map(item => transform(item)) as Presence[];
-  notificationCenter.emitEntityPut(ENTITY.PRESENCE, transformedData);
-  const presenceService: PresenceService = serviceManager.getInstance(PresenceService);
+  const transformedData = ([] as RawPresence[])
+    .concat(presences)
+    .map(item => transform(item)) as Presence[];
+  notificationCenter.emitEntityUpdate(ENTITY.PRESENCE, transformedData);
+  const presenceService = serviceManager.getInstance(PresenceService);
   presenceService.saveToMemory(transformedData);
 };
 
-export default presenceHandleData;
+const handleStore = ({ state }: { state: any }) => {
+  if (state === 'connected') {
+    const presenceService = serviceManager.getInstance(PresenceService);
+    presenceService.subscribeHandler.reset();
+    notificationCenter.emitEntityReload(ENTITY.PRESENCE);
+  } else if (state === 'disconnected') {
+    notificationCenter.emitEntityReset(ENTITY.PRESENCE);
+  }
+};
+
+export { presenceHandleData, handleStore };

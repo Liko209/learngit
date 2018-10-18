@@ -69,6 +69,10 @@ export class SocketManager {
     return count;
   }
 
+  public isConnected() {
+    return this.activeFSM && this.activeFSM.isConnected();
+  }
+
   private _subscribeExternalEvent() {
     //  TO-DO: to be test. Should get this event once
     // 1. get scoreboard event from IDL
@@ -127,7 +131,11 @@ export class SocketManager {
     const configDao = daoManager.getKVDao(ConfigDao);
     const serverUrl = configDao.get(SOCKET_SERVER_HOST);
     // tslint:disable-next-line:max-line-length
-    this.info(`onServerHostUpdated: ${serverUrl}, hasLoggedIn: ${this.hasLoggedIn}, hasActiveFSM: ${hasActive}`);
+    this.info(
+      `onServerHostUpdated: ${serverUrl}, hasLoggedIn: ${
+        this.hasLoggedIn
+      }, hasActiveFSM: ${hasActive}`,
+    );
     if (!this.hasLoggedIn) {
       this.info('Ignore server updated event due to not logged-in');
       return;
@@ -150,7 +158,9 @@ export class SocketManager {
       const isNewUrl = this.successConnectedUrls.indexOf(serverUrl) === -1;
       if (!hasActive || isNewUrl) {
         // tslint:disable-next-line:max-line-length
-        this.info(`Restart due to serverUrl update. hasActive: ${hasActive}, isNewUrl: ${isNewUrl}`);
+        this.info(
+          `Restart due to serverUrl update. hasActive: ${hasActive}, isNewUrl: ${isNewUrl}`,
+        );
         this._stopActiveFSM();
         this._startFSM();
       } else if (!isNewUrl) {
@@ -207,7 +217,11 @@ export class SocketManager {
     const authDao = daoManager.getKVDao(AuthDao);
     const glipToken = authDao.get(AUTH_GLIP_TOKEN);
     if (serverHost) {
-      this.activeFSM = new SocketFSM(serverHost, glipToken, this._stateHandler.bind(this));
+      this.activeFSM = new SocketFSM(
+        serverHost,
+        glipToken,
+        this._stateHandler.bind(this),
+      );
       this.activeFSM.start();
     }
 
