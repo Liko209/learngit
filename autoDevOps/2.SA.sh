@@ -3,7 +3,6 @@ echo '====Start SA'
 rm -rf $project/lint
 mkdir -p $project/lint
 ./node_modules/.bin/tslint --project $project/application --out $project/lint/application.txt
-# ./node_modules/.bin/tslint --project $project/demo --out $project/lint/demo.txt
 ./node_modules/.bin/tslint --project $project/packages/foundation --out $project/lint/foundation.txt
 ./node_modules/.bin/tslint --project $project/packages/sdk --out $project/lint/sdk.txt
 ./node_modules/.bin/tslint --project $project/packages/jui --out $project/lint/jui.txt
@@ -20,13 +19,6 @@ if [ "$applicationLintError" ]; then
     hasLintError=1
 fi
 
-# demoLintError=$(<lint/demo.txt)
-# if [ "$demoLintError" ]; then
-#   echo 'Demo Has Lint Error'
-#   echo "<a href=https://lint.fiji.gliprc.com/$subDomain/$BUILD_NUMBER/demo.txt>demo Lint Result</a><br />" >> $project/lint/index.html
-#   cat $project/lint/demo.txt >> $project/lint/index.txt
-#   hasLintError=1
-# fi
 
 foundationLintError=$(<lint/foundation.txt)
 if [ "$foundationLintError" ]; then
