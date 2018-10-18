@@ -54,4 +54,43 @@ export class GlipSdk {
         });
     }
 
+    //need system user auth token
+    deactivated(personId){
+        this.updatePerson(personId, { "deactivated": true });
+    }
+
+    getTeams(){
+        const uri = `api/teams`
+        return this.axiosClient.get(uri, {
+            headers: this.headers,
+        });
+    }
+    
+    createTeam(name, memebersByGlipId: number[]){
+        const uri = `api/team`
+        const data = {
+            "is_team": true,
+            "is_public": false,
+            "members": memebersByGlipId,
+            "set_abbreviation": name
+          }
+          return this.axiosClient.post(uri, data, {
+            headers: this.headers,
+        });
+    }
+
+    //bug
+    sendPost(groupId, text){
+        const uri = "api/post"
+        const data = {
+            "group_id": groupId,
+            "is_new": true,
+            "is_sms": true,
+            "source": "api",
+            "text": text
+          }
+          return this.axiosClient.post(uri, data, {
+            headers: this.headers,
+        });
+      }
 }
