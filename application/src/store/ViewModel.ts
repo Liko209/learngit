@@ -40,7 +40,9 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
   @action
   getDerivedProps(props: Partial<P>) {
     for (const key in props) {
-      if (typeof props[key] !== 'object') {
+      if (this._props[key] === undefined && props[key] !== undefined) {
+        set(this._props, { [key]: props[key] });
+      } else if (typeof props[key] !== 'object') {
         if (this._props[key] !== props[key]) {
           set(this._props, { [key]: props[key] });
         }
