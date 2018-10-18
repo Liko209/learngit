@@ -90,13 +90,13 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     direction: FetchDataDirection,
     pageSize: number,
     anchor: ISortableModel<Group>,
-  ): Promise<Group[]> {
+  ): Promise<{ data: Group[]; hasMore: boolean }> {
     const groupService = GroupService.getInstance<service.GroupService>();
     const result = await groupService.getGroupsByType(this._queryType);
     if (this._queryType === GROUP_QUERY_TYPE.FAVORITE) {
       console.info('dangerous', result);
     }
-    return result;
+    return { data: result, hasMore: false };
   }
 }
 

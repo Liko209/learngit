@@ -26,14 +26,14 @@ import { ENTITY, GROUP_QUERY_TYPE, notificationCenter } from 'sdk/service';
 const { EVENT_TYPES } = service;
 
 class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
-  mockData: T[] = [];
+  mockData: { data: T[]; hasMore: boolean } = { data: [], hasMore: true };
 
   fetchData(
     offset: number,
     direction: FetchDataDirection,
     pageSize: number,
     anchor: ISortableModel<T>,
-  ): Promise<T[]> {
+  ): Promise<{ data: T[]; hasMore: boolean }> {
     return Promise.resolve(this.mockData);
   }
 }
@@ -67,7 +67,7 @@ describe('FetchSortableDataListHandler - fetchData', () => {
 
   beforeEach(() => {
     dataProvider = new TestFetchSortableDataHandler();
-    dataProvider.mockData = [1, 2];
+    dataProvider.mockData = { data: [1, 2], hasMore: true };
     fetchSortableDataHandler = new FetchSortableDataListHandler<number>(
       dataProvider,
       { isMatchFunc, transformFunc, sortFunc, pageSize: 2 },
@@ -84,7 +84,7 @@ describe('FetchSortableDataListHandler - fetchData', () => {
       buildNumberSortableModel(1),
       buildNumberSortableModel(2),
     ]);
-    dataProvider.mockData = [3];
+    dataProvider.mockData = { data: [3], hasMore: false };
     await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
     checkListStore(fetchSortableDataHandler.listStore, [
       buildNumberSortableModel(1),
@@ -137,7 +137,10 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
 
   beforeEach(async () => {
     dataProvider = new TestFetchSortableDataHandler();
-    dataProvider.mockData = [buildSortableNumber(3), buildSortableNumber(6)];
+    dataProvider.mockData = {
+      data: [buildSortableNumber(3), buildSortableNumber(6)],
+      hasMore: true,
+    };
 
     fetchSortableDataHandler = new FetchSortableDataListHandler<SortableNumber>(
       dataProvider,
@@ -233,7 +236,7 @@ describe('FetchSortableDataListHandler - updateEntityStore', () => {
   const isMatchFunc: IMatchFunc<Group> = matchFunc;
   beforeEach(async () => {
     dataProvider = new TestFetchSortableDataHandler();
-    dataProvider.mockData = [group];
+    dataProvider.mockData = { data: [group], hasMore: true };
 
     fetchSortableDataHandler = new FetchSortableDataListHandler<Group>(
       dataProvider,

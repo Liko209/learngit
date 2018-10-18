@@ -51,7 +51,7 @@ export interface IFetchSortableDataProvider<T> {
     direction: FetchDataDirection,
     pageSize: number,
     anchor?: ISortableModel<T>,
-  ): Promise<T[]>;
+  ): Promise<{ data: T[]; hasMore: boolean }>;
 }
 
 export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
@@ -95,18 +95,19 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     pageSize: number,
     anchor: ISortableModel<T>,
   ) {
-    const result = await this._sortableDataProvider.fetchData(
+    const { data, hasMore } = await this._sortableDataProvider.fetchData(
       offset,
       direction,
       pageSize,
       anchor,
     );
     const sortableResult: ISortableModel<T>[] = [];
-    result.forEach((element: T) => {
+    data.forEach((element: T) => {
       sortableResult.push(this._transformFunc(element));
     });
-    this.updateEntityStore(result);
-    this.handlePageData(sortableResult, direction);
+    this.updateEntityStore(data);
+    this.handleHasMore(hasMore, direction);
+    this.handlePageData(sortableResult);
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
         direction,
@@ -187,16 +188,16 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     }
     return inRange;
   }
-  protected handlePageData(
-    result: ISortableModel[],
-    direction: FetchDataDirection,
-  ) {
+
+  protected handleHasMore(hasMore: boolean, direction: FetchDataDirection) {
     let inFront = false;
     if (direction === FetchDataDirection.UP) {
       inFront = true;
     }
-    const hasMore = result.length >= this._pageSize;
     this.sortableListStore.setHasMore(hasMore, inFront);
+  }
+
+  protected handlePageData(result: ISortableModel[]) {
     if (result.length > 0) {
       this.sortableListStore.upsert(result);
     }
