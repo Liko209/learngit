@@ -29,13 +29,13 @@ const Download = () => (
     Download:{' '}
     <DownLoadLink
       download={true}
-      href="https://download.fiji.gliprc.com/Jupiter.exe"
+      href="https://download.fiji.gliprc.com/RingCentral.exe"
     >
       Windows
     </DownLoadLink>
     <DownLoadLink
       download={true}
-      href="https://download.fiji.gliprc.com/Jupiter.dmg"
+      href="https://download.fiji.gliprc.com/RingCentral.dmg"
     >
       Mac
     </DownLoadLink>
