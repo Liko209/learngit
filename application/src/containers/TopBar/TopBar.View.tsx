@@ -20,6 +20,7 @@ import pkg from '../../../package.json';
 import { grey } from 'jui/foundation/utils/styles';
 import styled from 'jui/foundation/styled-components';
 import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
+import { isElectron } from '@/utils';
 
 type TopBarProps = InjectedTranslateProps & {
   signOut: Function;
@@ -30,6 +31,7 @@ type TopBarProps = InjectedTranslateProps & {
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
   dialogStatus: boolean;
   electronVersion: number;
+  appVersion: number;
 };
 const Param = styled.p`
   color: ${grey('700')};
@@ -63,18 +65,20 @@ class TopBar extends React.Component<TopBarProps> {
     window.jupiterElectron = {
       handleAboutPage,
     };
+    const menusItemAboutPages = {
+      label: t('About RingCentral'),
+      onClick: handleAboutPage,
+    };
+    const menuItems = [
+      {
+        label: t('SignOut'),
+        onClick: signOut,
+      },
+    ];
+    !isElectron ? menuItems.unshift(menusItemAboutPages) : null;
     return (
       <JuiAvatarMenu
-        menuItems={[
-          {
-            label: t('About RingCentral'),
-            onClick: handleAboutPage,
-          },
-          {
-            label: t('SignOut'),
-            onClick: signOut,
-          },
-        ]}
+        menuItems={menuItems}
         MenuExpandTrigger={this._AvatarMenuTrigger}
         {...avatarProps}
       />
@@ -133,7 +137,7 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
-    const { dialogStatus, t, handleAboutPage, electronVersion } = this.props;
+    const { dialogStatus, t, handleAboutPage, electronVersion, appVersion } = this.props;
     const commitHash = gitCommitInfo.commitInfo[0].commitHash;
     return (
       <React.Fragment>
@@ -149,7 +153,7 @@ class TopBar extends React.Component<TopBarProps> {
           okText={t('done')}
           onOK={handleAboutPage}
         >
-          <Param>Version: {pkg.version} {electronVersion ? `(E. ${electronVersion})` : null}</Param>
+          <Param>Version: {appVersion ? appVersion : pkg.version} {electronVersion ? `(E. ${electronVersion})` : null}</Param>
           <Param>Build: {commitHash}</Param>
           <Param>Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All rights reserved.</Param>
         </JuiModal>

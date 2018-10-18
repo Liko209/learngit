@@ -16,7 +16,9 @@ class TopBarViewModel extends AbstractViewModel {
   @observable
   isShowDialog: boolean = false;
   @observable
-  version = 0;
+  vApp = 0;
+  @observable
+  vElectron = 0;
   @action
   updateLeftNavState = () => {
     const globalStore = storeManager.getGlobalStore();
@@ -44,8 +46,9 @@ class TopBarViewModel extends AbstractViewModel {
     window.location.href = '/';
   }
   @action
-  handleAboutPage = (event: React.MouseEvent<HTMLElement>, version?: number|undefined) => {
-    this.version = version || 0;
+  handleAboutPage = (event: React.MouseEvent<HTMLElement>, appVersion?: number|undefined, electronVersion?: number|undefined) => {
+    this.vApp = appVersion || 0;
+    this.vElectron = electronVersion || 0;
     this.isShowDialog = !this.isShowDialog;
   }
   @computed
@@ -54,7 +57,11 @@ class TopBarViewModel extends AbstractViewModel {
   }
   @computed
   get electronVersion() {
-    return this.version;
+    return this.vElectron;
+  }
+  @computed
+  get appVersion() {
+    return this.vApp;
   }
 }
 
