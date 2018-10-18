@@ -79,18 +79,41 @@ export class GlipSdk {
         });
     }
 
-    //bug
-    sendPost(groupId, text){
-        const uri = "api/post"
+    sendPost(groupId: number, text: string){
+        const uri = `api/post`
         const data = {
             "group_id": groupId,
             "is_new": true,
             "is_sms": true,
-            "source": "api",
             "text": text
           }
           return this.axiosClient.post(uri, data, {
             headers: this.headers,
         });
-      }
+    }
+
+    getProfile(profileId){
+        const uri = `api/profile/${profileId}`
+        return this.axiosClient.get(uri, {
+            headers: this.headers
+        });
+    }
+
+    updateProfile(profileId, data: object){
+        const uri = `api/profile/${profileId}`
+        return this.axiosClient.put(uri, data, {
+            headers: this.headers
+        });
+    }
+
+    async getProfileIdFromPersonId(personId){
+        return (await this.getPerson(personId)).data.profile_id
+    } 
+
+    async skipCloseConversationConfirmation(personId, value: boolean){
+        const profileId = await  this.getProfileIdFromPersonId(personId);
+        const data: object = { "skip_close_conversation_confirmation": value };
+        return this.updateProfile(profileId, data)
+    }
+    
 }
