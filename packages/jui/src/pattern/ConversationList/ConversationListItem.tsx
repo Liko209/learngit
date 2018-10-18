@@ -31,8 +31,11 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 
   &&:active {
-    color: ${palette('primary', 'main')};
     background: ${palette('primary', '50')};
+  }
+
+  &&:active p {
+    color: ${palette('primary', 'main')};
   }
 
   &&:hover {

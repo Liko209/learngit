@@ -110,4 +110,8 @@ export default class PersonModel extends Base<Person> {
     }
     return '';
   }
+  @computed
+  get hasHeadShot() {
+    return this.headShotVersion || this.headshot;
+  }
 }

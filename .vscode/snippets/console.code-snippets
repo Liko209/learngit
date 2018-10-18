@@ -1,0 +1,42 @@
+{
+  "console.log()": {
+    "prefix": "cl",
+    "body": ["console.log($1)", "$2"]
+  },
+  "console.group()": {
+    "prefix": "cg",
+    "body": [
+      "console.group('%c${TM_FILENAME_BASE}', 'background: #20232a; color: #43daf9; padding: 2px 4px; border-radius: 5px;');",
+      "console.log($1)",
+      "console.groupEnd();"
+    ]
+  },
+  "console.log('-----------------------------')": {
+    "prefix": "cl-",
+    "body": [
+      "console.log('-------- [${TM_FILENAME_BASE} Log] --------');",
+      "console.log($1)",
+      "console.log('---------------- [Log End] ----------------');"
+    ]
+  },
+  "console.warn()": {
+    "prefix": "cw",
+    "body": ["console.warn($1)", "$2"]
+  },
+  "console.error()": {
+    "prefix": "ce",
+    "body": ["console.error($1)", "$2"]
+  },
+  "console.debug()": {
+    "prefix": "cd",
+    "body": ["console.debug($1)", "$2"]
+  },
+  "console.info()": {
+    "prefix": "ci",
+    "body": ["console.info($1)", "$2"]
+  },
+  "console.time()": {
+    "prefix": "cti",
+    "body": ["console.time('$1');", "console.timeEnd('$1');"]
+  }
+}

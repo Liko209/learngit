@@ -16,6 +16,8 @@ enum EVENT_TYPES {
   'UPDATE' = 'update',
   'DELETE' = 'delete',
   'REPLACE_ALL' = 'replaceAll',
+  'RELOAD' = 'reload',
+  'RESET' = 'reset',
   // LOGIN: 'login',
   // LOGOUT: 'logout',
   // INDEX_EXIST: 'fetchIndexDataExist',

@@ -7,11 +7,14 @@ import { JuiAvatarProps } from 'jui/components/Avatar';
 
 type AvatarProps = JuiAvatarProps & {
   uid: number;
+  autoMationId?: string;
 };
 
 type AvatarViewProps = JuiAvatarProps & {
-  name?: string;
-  url?: string;
+  shortName?: string;
+  headShotUrl?: string;
   bgColor?: string;
+  shouldShowShortName?: string;
+  autoMationId?: string;
 };
 export { AvatarProps, AvatarViewProps };

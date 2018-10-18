@@ -92,15 +92,19 @@ class Config {
   private _env = '';
 
   private constructor() {
-    const configService: service.ConfigService = ConfigService.getInstance();
-    const value = configService.getEnv() || 'XMN-UP';
-    this._env = value;
-    this._config = loadFileConfigs(value);
+    this.loadEnvConfig();
   }
 
   public static get Instance() {
     this._instance = this._instance || (this._instance = new this());
     return this._instance;
+  }
+
+  loadEnvConfig() {
+    const configService: service.ConfigService = ConfigService.getInstance();
+    const value = configService.getEnv() || 'XMN-UP';
+    this._env = value;
+    this._config = loadFileConfigs(value);
   }
 
   getEnv() {

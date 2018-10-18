@@ -1,31 +1,78 @@
+/*
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2018-08-29 10:00:17
+ * Copyright © RingCentral. All rights reserved.
+ */
 import BaseService from '../../service/BaseService';
-import handleData from './handleData';
-import { SOCKET } from '../eventKey';
-import { Presence } from '../../models';
+import { presenceHandleData, handleStore } from './handleData';
+import { SOCKET, SERVICE } from '../eventKey';
+import { Presence, RawPresence } from '../../models';
+import SubscribeHandler from './subscribeHandler';
 
 export default class PresenceService extends BaseService {
   static key = 'PresenceService';
 
-  public caches: object;
-
-  constructor() {
+  public caches: Map<number, Presence>; // <id, RawPresence['calculatedStatus']>
+  public subscribeHandler: SubscribeHandler;
+  constructor(threshold: number, interval: number = 200) {
+    // channel presence_unified threshold interval
     const subscriptions = {
-      [SOCKET.PRESENCE]: (presence: any) => {
-        handleData([].concat(presence));
-      },
+      [SOCKET.PRESENCE]: presenceHandleData,
+      [SERVICE.SOCKET_STATE_CHANGE]: handleStore,
     };
     super(null, null, null, subscriptions);
+    this.subscribeHandler = new SubscribeHandler(
+      threshold,
+      this.subscribeSuccess,
+      interval,
+    );
     // when serviceManager's property "instances" is recycled, it will be destroyed.
-    this.caches = {};
+    this.reset();
+  }
+
+  private _getPresenceFromCache(id: number) {
+    return this.caches.get(id);
   }
 
   saveToMemory(presences: Presence[]): void {
     presences.forEach((presence: Presence) => {
-      this.caches[presence.id] = presence;
+      this.caches.set(presence.id, presence);
     });
   }
 
-  getById(id: number) {
-    return Promise.resolve(this.caches[id]);
+  async getById(id: number): Promise<Presence> {
+    const presence = this._getPresenceFromCache(id);
+    if (presence) {
+      return presence;
+    }
+
+    this.subscribeHandler.appendId(id);
+    return {
+      id,
+      presence: 'NotReady',
+    };
+  }
+
+  /**
+   * Callback for subscribe handler
+   * If api return presences need filter presences
+   * ensure presence status is latest
+   * @param successPresences
+   */
+  subscribeSuccess(successPresences: RawPresence[]) {
+    const needUpdatePresences = successPresences.filter(
+      (presence: RawPresence) => !this.caches.has(presence.personId),
+    );
+    presenceHandleData(needUpdatePresences);
+  }
+
+  unsubscribe(id: number) {
+    this.caches.delete(id);
+    this.subscribeHandler.removeId(id);
+  }
+
+  reset() {
+    this.caches = new Map();
+    this.subscribeHandler.reset();
   }
 }

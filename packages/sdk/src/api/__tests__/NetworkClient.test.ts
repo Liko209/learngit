@@ -33,6 +33,7 @@ const setup = () => {
       setParams: jest.fn().mockReturnThis(),
       setAuthfree: jest.fn().mockReturnThis(),
       setRequestConfig: jest.fn().mockReturnThis(),
+      setRetryCount: jest.fn().mockReturnThis(),
       setVia: jest.fn().mockReturnThis(),
       build: jest.fn().mockImplementation(() => mockRequest),
     };

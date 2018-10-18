@@ -45,7 +45,7 @@ class TopBar extends React.Component<TopBarProps> {
       return null;
     }
     return (
-      <Avatar uid={currentUserId} size="large" {...avatarMenuTriggerProps} />
+      <Avatar uid={currentUserId} size="large" {...avatarMenuTriggerProps} autoMationId="topBarAvatar" />
     );
   }
 
@@ -57,6 +57,7 @@ class TopBar extends React.Component<TopBarProps> {
           {
             label: t('SignOut'),
             onClick: signOut,
+            automationId: 'signOut',
           },
         ]}
         MenuExpandTrigger={this._AvatarMenuTrigger}

@@ -4,7 +4,7 @@ import Base from './Base';
 
 export default class PresenceModel extends Base<Presence> {
   @observable
-  presence?: 'default' | 'offline' | 'online' | 'away';
+  presence?: Presence['presence'];
 
   constructor(data: Presence) {
     super(data);
