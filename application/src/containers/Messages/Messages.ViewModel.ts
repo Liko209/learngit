@@ -19,7 +19,6 @@ class MessagesViewModel extends AbstractViewModel<MessagesProps> {
   }
 
   updateCurrentConversationId = (currentConversationId?: number) => {
-    debugger;
     storeManager
       .getGlobalStore()
       .set('currentConversationId', currentConversationId);
