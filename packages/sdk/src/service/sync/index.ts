@@ -97,9 +97,9 @@ export default class SyncService extends BaseService {
   private async _handleSyncIndexError(result: any) {
     const error = ErrorParser.parse(result);
     if (error.code === HttpError.GATE_WAY_504) {
-      notificationCenter.emitService(SERVICE.GATE_WAY_504_BEGIN);
+      notificationCenter.emitService(SERVICE.SYNC_SERVICE.START_CLEAR_DATA);
       await this.handle504GateWayError();
-      notificationCenter.emitService(SERVICE.GATE_WAY_504_END);
+      notificationCenter.emitService(SERVICE.SYNC_SERVICE.END_CLEAR_DATA);
     }
   }
 

@@ -48,13 +48,13 @@ export async function initAll() {
     const currentUserId = accountService.getCurrentUserId();
     globalStore.set('currentUserId', currentUserId);
   });
-  notificationCenter.on(SERVICE.GATE_WAY_504_BEGIN, () => {
+  notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
     // 1. show loading
     globalStore.set('app.showGlobalLoading', true);
     // 2. clear store data
     storeManager.resetStores();
   });
-  notificationCenter.on(SERVICE.GATE_WAY_504_END, () => {
+  notificationCenter.on(SERVICE.SYNC_SERVICE.END_CLEAR_DATA, () => {
     // stop loading
     globalStore.set('app.showGlobalLoading', false);
     history.replace('/messages');
