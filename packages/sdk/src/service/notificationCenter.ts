@@ -77,6 +77,18 @@ class NotificationCenter extends EventEmitter2 {
     });
   }
 
+  emitEntityReset(key: string): void {
+    this.trigger(key, {
+      type: EVENT_TYPES.RESET,
+    });
+  }
+
+  emitEntityReload(key: string): void {
+    this.trigger(key, {
+      type: EVENT_TYPES.RELOAD,
+    });
+  }
+
   emitConfigPut(key: string, payload: any): void {
     this.trigger(key, {
       payload,

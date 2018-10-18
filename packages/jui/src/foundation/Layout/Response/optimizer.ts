@@ -4,51 +4,32 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const callbacks: Function[] = [];
-let running = false;
+type ResizeFunction = (evt: Event) => void;
 
-// fired on resize event
-function resize() {
-  if (!running) {
-    running = true;
-    if (window.requestAnimationFrame) {
-      window.requestAnimationFrame(runCallbacks);
-    } else {
-      setTimeout(runCallbacks, 66);
+let callback: ResizeFunction | null;
+let scheduledAnimationFrame = false;
+
+const onResize = (e: UIEvent) => {
+  if (scheduledAnimationFrame) {
+    return;
+  }
+  scheduledAnimationFrame = true;
+  window.requestAnimationFrame(() => {
+    scheduledAnimationFrame = false;
+    if (callback instanceof Function) {
+      callback(e);
     }
-  }
-}
-
-// run the actual callbacks
-function runCallbacks() {
-  callbacks.forEach((callback: Function) => {
-    callback();
   });
-  running = false;
-}
+};
 
-// adds callback to loop
-function addCallback(callback: Function) {
-  if (callback) {
-    callbacks.push(callback);
-  }
-}
-
-// public method to add additional callback
-const addResizeListener = function (callback: Function) {
-  if (callbacks.length === 0) {
-    window.addEventListener('resize', resize);
-  }
-  addCallback(callback);
+const addResizeListener = function (resize: ResizeFunction) {
+  callback = resize;
+  window.addEventListener('resize', onResize);
 };
 
 const removeResizeListener = function () {
-  window.removeEventListener('resize', resize);
+  callback = null;
+  window.removeEventListener('resize', onResize);
 };
 
 export { addResizeListener, removeResizeListener };
-
-// start process
-// optimizer.addResizeListener(function () {
-//   console.log('Resource conscious resize callback!')
-// });

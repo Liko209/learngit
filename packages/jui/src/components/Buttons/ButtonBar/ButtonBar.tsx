@@ -40,12 +40,11 @@ const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
 
 type StyledIconButtonChild = JuiIconButtonProps &
   JuiButtonBarProps & { index?: number; componentName: string };
-type StyledCheckboxButtonChild = JuiCheckboxButtonProps &
-  JuiButtonBarProps & {
-    index?: number;
-    componentName: string;
-    variant?: string;
-  };
+type StyledCheckboxButtonChild = JuiCheckboxButtonProps & JuiButtonBarProps & {
+  index?: number;
+  componentName: string;
+  variant?: string;
+};
 type StyledChild = StyledIconButtonChild | StyledCheckboxButtonChild;
 
 const overlappingSize = {
@@ -126,7 +125,6 @@ JuiButtonBar.defaultProps = {
   overlapping: false,
   direction: 'horizontal',
   size: 'medium',
-  color: 'primary',
   awake: false,
   invisible: false,
 };

@@ -30,7 +30,7 @@ const sizes = {
 const fonts = {
   xlarge: 'title2',
   large: 'title2',
-  medium: 'subheading2',
+  medium: 'subheading3',
   small: 'caption2',
 };
 

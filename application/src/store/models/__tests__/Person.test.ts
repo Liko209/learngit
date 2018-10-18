@@ -81,4 +81,15 @@ describe('PersonModel', () => {
       checkShortName(getUserInfo('', 'huang'), 'H');
     });
   });
+  describe('hasHeadShot', () => {
+    const pm = PersonModel.fromJS({
+      headshot_version: 1234,
+      headshot: {
+        url: 'headshot://xxx',
+      },
+    } as Person);
+    it('should return non false value if headshot_version or headshot has value', () => {
+      expect(!!pm.hasHeadShot).toBe(true);
+    });
+  });
 });

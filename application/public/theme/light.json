@@ -111,6 +111,12 @@
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
       "lineHeight": "24px"
     },
+    "subheading3": {
+      "fontSize": "0.875rem",
+      "fontWeight": 500,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "lineHeight": "24px"
+    },
     "caption1": {
       "fontSize": "0.75rem",
       "fontWeight": 400,

@@ -17,8 +17,7 @@ describe('Socket FSM', async () => {
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9pZCI6MTUyOTI0OTk1OTAyNCwidHlwZSI6IndlYiIsInVpZCI6MTIyMDYxMSwiaWF0IjoxNTI5MjQ5OTU5LCJpc3MiOiJhd3MxMy1nMDQtdWRzMDIuYXNpYWxhYi5nbGlwLm5ldCIsInN1YiI6ImdsaXAifQ.0OHMMja3JnEskNxZLFw86CaV-Ph-SyZETQetLqDqLXRKBu0vI5u1_2l-dTP4eNxKHHq3nAeqUVB1IYwjCxXNzA';
 
   function fsmCreate() {
-    const fsm = new SocketFSM(serverUrl, glipToken, (name, state) => {
-    });
+    const fsm = new SocketFSM(serverUrl, glipToken, (name, state) => {});
     return fsm;
   }
 
@@ -52,6 +51,7 @@ describe('Socket FSM', async () => {
       const fsm = fsmCreate();
       fsm.start();
       expect(fsm.state).toBe('connecting');
+      expect(fsm.isConnected()).toBeFalsy();
     });
 
     it('stop(): state will from: [connecting or connected], to: disconnecting', async () => {
@@ -59,6 +59,7 @@ describe('Socket FSM', async () => {
       fsm.start(); // connecting
       fsm.stop();
       expect(fsm.state).toBe('disconnecting');
+      expect(fsm.isConnected()).toBeFalsy();
     });
 
     it('stop(): state will from: disconnected, to: disconnected', async () => {
@@ -67,6 +68,7 @@ describe('Socket FSM', async () => {
       fsm.failConnect(); // disconnected
       fsm.stop();
       expect(fsm.state).toBe('disconnected');
+      expect(fsm.isConnected()).toBeFalsy();
     });
 
     it('stop(): state will from: disconnecting, to: disconnecting', async () => {
@@ -126,6 +128,7 @@ describe('Socket FSM', async () => {
       emit(fsm, 'reconnect_failed');
       emit(fsm, 'error');
       expect(fsm.state).toBe('connecting');
+      expect(fsm.isConnected()).toBeFalsy();
     });
     it('connect success', () => {
       const fsm = fsmCreate();
@@ -136,7 +139,7 @@ describe('Socket FSM', async () => {
           emit(fsm, 'connect');
           emit(fsm, 'ping');
           emit(fsm, 'pong');
-          emit(fsm, 'presense');
+          emit(fsm, 'presence_unified');
           emit(
             fsm,
             'message',
@@ -165,30 +168,37 @@ describe('Socket FSM', async () => {
           const spy = jest.spyOn(fsm, 'cleanup');
           emit(fsm, 'connecting');
           expect(fsm.state).toBe('connecting');
+          expect(fsm.isConnected()).toBeFalsy();
           emit(fsm, 'connect_timeout');
           emit(fsm, 'connect_error');
           expect(fsm.state).toBe('disconnected');
+          expect(fsm.isConnected()).toBeFalsy();
           expect(spy).toHaveBeenCalledTimes(0);
 
           emit(fsm, 'reconnect_attempt');
           emit(fsm, 'reconnecting');
           expect(fsm.state).toBe('connecting');
+          expect(fsm.isConnected()).toBeFalsy();
           emit(fsm, 'connect_error');
           expect(fsm.state).toBe('disconnected');
+          expect(fsm.isConnected()).toBeFalsy();
 
           emit(fsm, 'reconnect_attempt');
           emit(fsm, 'reconnecting');
           emit(fsm, 'connect');
           expect(fsm.state).toBe('connected');
+          expect(fsm.isConnected()).toBeTruthy();
 
           emit(fsm, 'disconnect');
           expect(fsm.state).toBe('disconnected');
+          expect(fsm.isConnected()).toBeFalsy();
           expect(spy).toHaveBeenCalledTimes(0);
 
           emit(fsm, 'reconnect_attempt');
           emit(fsm, 'reconnecting');
           emit(fsm, 'connect_error');
           expect(fsm.state).toBe('disconnected');
+          expect(fsm.isConnected()).toBeFalsy();
 
           spy.mockReset();
           spy.mockRestore();
