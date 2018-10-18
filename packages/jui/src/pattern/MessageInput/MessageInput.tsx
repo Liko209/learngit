@@ -2,7 +2,14 @@ import React, { Fragment } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import { Delta, Sources } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
-import { spacing, typography, palette, grey, height, primary } from '../../foundation/utils/styles';
+import {
+  spacing,
+  typography,
+  palette,
+  grey,
+  height,
+  primary,
+} from '../../foundation/utils/styles';
 import MarkdownShortcuts from './MarkdownShortcuts';
 import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
 
@@ -70,8 +77,9 @@ interface IState {
 }
 
 class JuiMessageInput extends React.Component<IProps, IState> {
+  private _changeSource: Sources = 'api';
   private _modules: {};
-  // private _inputRef: React.RefObject<ReactQuill>;
+  private _inputRef: React.RefObject<ReactQuill> = React.createRef();
   constructor(props: IProps) {
     super(props);
     this.onChange = this.onChange.bind(this);
@@ -84,37 +92,43 @@ class JuiMessageInput extends React.Component<IProps, IState> {
         bindings: { ...keyboardEventHandler, ...keyboardEventDefaultHandler },
       },
     };
-
-    // this._inputRef = React.createRef();
   }
 
-  // componentDidMount() {
-  //   this._inputRef.current!.focus();
-  // }
+  componentDidMount() {
+    this.focusEditor(false);
+  }
 
-  // componentDidUpdate() {
-  //   this._inputRef.current!.focus();
-  // }
+  componentDidUpdate() {
+    this.focusEditor(true);
+  }
 
-  onChange(content: string, delta: Delta, source: Sources) {
+  focusEditor(checkSource: boolean) {
+    if (checkSource && this._changeSource !== 'api') {
+      return;
+    }
+
+    const reactQull = this._inputRef.current;
+    if (reactQull) {
+      const quill = reactQull.getEditor();
+      requestAnimationFrame(() => quill.setSelection(quill.getLength(), 0));
+    }
+  }
+
+  onChange(content: string, delta: Delta, source: Sources, editor: any) {
+    this._changeSource = source;
     if (source === 'api') {
       return;
     }
     const { onChange } = this.props;
-    if (content === '<p><br></p>') {
+    if (!editor.getText().trim()) {
       onChange('');
       return;
     }
     onChange(content);
   }
 
-  // onFocus(range: RangeStatic, source: Sources, editor: any) {
-  //   // debugger;
-  // }
-
   render() {
     const { value, error } = this.props;
-
     return (
       <Fragment>
         <ReactQuill
@@ -122,7 +136,7 @@ class JuiMessageInput extends React.Component<IProps, IState> {
           onChange={this.onChange}
           placeholder="Type new message"
           modules={this._modules}
-        // ref={this._inputRef}
+          ref={this._inputRef}
         />
         <StyledError>{error}</StyledError>
         <GlobalStyle />
