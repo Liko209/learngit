@@ -41,7 +41,7 @@ const MenuWrapper = styled(Popper)`
 `;
 const StyledMenuItem = styled(MenuItem)`
   && {
-    min-width: ${width(28)};
+    min-width: ${width(20)};
     max-width: ${width(72)};
     ${ellipsis()};
     display: block;

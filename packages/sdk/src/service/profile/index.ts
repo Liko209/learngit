@@ -7,18 +7,25 @@ import ProfileAPI from '../../api/glip/profile';
 
 import BaseService from '../../service/BaseService';
 import AccountService from '../account';
-import handleData from './handleData';
+import handleData, { handlePartialProfileUpdate } from './handleData';
 import { Profile, Raw } from '../../models';
-import { SOCKET } from '../eventKey';
+import { SOCKET, SERVICE } from '../eventKey';
 import _ from 'lodash';
 import { BaseError, ErrorParser } from '../../utils';
 import PersonService from '../person';
+import { mainLogger } from 'foundation';
+
+const handleGroupIncomesNewPost = (groupIds: number[]) => {
+  const profileService: ProfileService = ProfileService.getInstance();
+  profileService.handleGroupIncomesNewPost(groupIds);
+};
 
 export default class ProfileService extends BaseService<Profile> {
   static serviceName = 'ProfileService';
   constructor() {
     const subscriptions = {
       [SOCKET.PROFILE]: handleData,
+      [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: handleGroupIncomesNewPost,
     };
     super(ProfileDao, ProfileAPI, handleData, subscriptions);
   }
@@ -30,6 +37,25 @@ export default class ProfileService extends BaseService<Profile> {
       return null;
     }
     return this.getById(profileId);
+  }
+
+  async handleGroupIncomesNewPost(groupIds: number[]) {
+    const profile: Profile | null = await this.getProfile();
+    if (profile && groupIds.length) {
+      let changed: boolean = false;
+      groupIds.forEach((id: number) => {
+        const key = `hide_group_${id}`;
+        if (profile[key]) {
+          profile[key] = false;
+          changed = true;
+        }
+      });
+      // open group
+      if (changed) {
+        return this._putProfile(profile);
+      }
+    }
+    return null;
   }
 
   private _reorderFavoriteGroupIds(
@@ -63,16 +89,19 @@ export default class ProfileService extends BaseService<Profile> {
       profile._id,
       profile,
     );
-    let result: Profile[] | null;
+    let result: Profile | null;
     if (response.data) {
-      result = await handleData([response.data]);
+      result = await handlePartialProfileUpdate(response.data, oldKey);
     } else {
       // roll back
       profile[oldKey] = oldValue;
-      result = await handleData([profile as Raw<Profile>]);
+      result = await handlePartialProfileUpdate(
+        profile as Raw<Profile>,
+        oldKey,
+      );
     }
-    if (result && result.length) {
-      return result[0];
+    if (result) {
+      return result;
     }
     return null;
   }
@@ -117,7 +146,7 @@ export default class ProfileService extends BaseService<Profile> {
       profile.favorite_group_ids = newIds;
       return this._putProfileAndHandle(profile, 'favorite_group_ids', favIds);
     }
-    return null;
+    return profile;
   }
   async markMeConversationAsFav(): Promise<Profile | null> {
     const { me_tab = false } = (await this.getProfile()) || {};
@@ -127,7 +156,7 @@ export default class ProfileService extends BaseService<Profile> {
     const accountService = await AccountService.getInstance<AccountService>();
     const currentId = accountService.getCurrentUserId();
     if (!currentId) {
-      console.warn('please make sure that currentId is avaliable');
+      mainLogger.warn('please make sure that currentId is available');
       return null;
     }
     const personService = await PersonService.getInstance<PersonService>();
@@ -144,7 +173,6 @@ export default class ProfileService extends BaseService<Profile> {
     toBook: boolean,
   ): Promise<Profile | null> {
     const profile = await this.getProfile();
-
     if (profile) {
       const oldFavPostIds = profile.favorite_post_ids || [];
       let newFavPostIds = oldFavPostIds;
@@ -169,7 +197,7 @@ export default class ProfileService extends BaseService<Profile> {
       );
     }
     // error
-    return null;
+    return profile;
   }
 
   async hideConversation(
@@ -217,9 +245,9 @@ export default class ProfileService extends BaseService<Profile> {
         newProfile,
       );
       if (response.data) {
-        const result = await handleData([response.data]);
-        if (result && result.length) {
-          return result[0];
+        const result = await handleData(response.data);
+        if (result) {
+          return result;
         }
       }
       return ErrorParser.parse(response);
