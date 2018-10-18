@@ -10,7 +10,7 @@ import differenceBy from 'lodash/differenceBy';
 import styled from '../../foundation/styled-components';
 import { JuiPaper } from '../../components/Paper';
 import { JuiTextField } from '../../components/Forms/TextField';
-import { spacing } from '../../foundation/utils/styles';
+import { spacing, height } from '../../foundation/utils/styles';
 
 type State = {
   inputValue: string;
@@ -50,14 +50,19 @@ const StyledPaper = styled(JuiPaper)`
     bottom: 0;
     transform: translateY(100%);
     width: 100%;
+    max-height: ${height(50)};
+    overflow: auto;
     z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
   }
 `;
 
 const StyledTextField = styled(JuiTextField)`
   && {
-    .input {
+    .inputRoot {
       flex-wrap: wrap;
+    }
+    .input {
+      flex: 1;
     }
   }
 `;
@@ -74,6 +79,7 @@ const renderInput = (inputProps: any) => {
     helperText,
     ...rest
   } = inputProps;
+
   return (
     <StyledTextField
       label={showPlaceholder ? placeholder : label}
@@ -242,7 +248,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                         Chip ? (
                           <Chip
                             key={index}
-                            tabIndex={-1}
+                            tabIndex={0}
                             label={item.label}
                             uid={item.id}
                             onDelete={this.handleDelete(item)}
@@ -256,17 +262,21 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                       });
                     },
                     onBlur: () => {
-                      this.setState({
-                        showPlaceholder: true,
-                        shrink:
-                          selectedItem.length !== 0 ||
-                          String(inputValue).length !== 0,
-                      });
+                      if (
+                        String(inputValue).length === 0 &&
+                        selectedItem.length === 0
+                      ) {
+                        this.setState({
+                          showPlaceholder: true,
+                          shrink: false,
+                        });
+                      }
                     },
                     onChange: this.handleInputChange,
                     onKeyDown: this.handleKeyDown,
                     classes: {
-                      root: 'input',
+                      root: 'inputRoot',
+                      input: 'input',
                     },
                     placeholder: `${
                       selectedItem.length === 0 && showPlaceholder

@@ -15,8 +15,9 @@ n_procs=(
 )
 
 # run processes and store pids in array
-for i in $n_procs; do
-    eval $n_procs[${i}] &
+for i in "${!n_procs[@]}"; do
+    echo "${n_procs[i]}"
+    eval "${n_procs[${i}]}" &
     pids[${i}]=$!
 done
 

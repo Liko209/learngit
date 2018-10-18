@@ -25,6 +25,7 @@ export interface IQuery {
   headers?: object;
   params?: object;
   authFree?: boolean;
+  retryCount?: number;
   requestConfig?: object;
 }
 
@@ -135,6 +136,7 @@ export default class NetworkClient {
       params,
       authFree,
       requestConfig,
+      retryCount,
     } = query;
     const versionPath = this.apiPlatformVersion
       ? `/${this.apiPlatformVersion}`
@@ -150,6 +152,7 @@ export default class NetworkClient {
       .setParams(params)
       .setAuthfree(authFree || false)
       .setRequestConfig(requestConfig || {})
+      .setRetryCount(retryCount || 0)
       .setVia(via)
       .setNetworkManager(this.networkManager)
       .build();
@@ -172,6 +175,7 @@ export default class NetworkClient {
     via?: NETWORK_VIA,
     requestConfig?: object,
     headers = {},
+    retryCount?: number,
   ) {
     return this.http<T>({
       path,
@@ -179,6 +183,7 @@ export default class NetworkClient {
       headers,
       via,
       requestConfig,
+      retryCount,
       method: NETWORK_METHOD.GET,
     });
   }

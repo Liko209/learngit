@@ -1,3 +1,4 @@
+import tinycolor from 'tinycolor2';
 import { Theme, Palette } from '../theme/theme';
 import { css } from '../styled-components';
 
@@ -64,13 +65,24 @@ function cssValue(...values: number[]): string {
 /********************************************
  *                 Colors                   *
  ********************************************/
+
+function getPalette(name: keyof Palette, sub: string) {
+  return ({ theme }: { theme: Theme }) => theme.palette[name][sub];
+}
+
 /**
  * Palette
  * @param name
  * @param sub
  */
-function palette(name: keyof Palette, sub: string) {
-  return ({ theme }: { theme: Theme }) => theme.palette[name][sub];
+function palette(name: keyof Palette, sub: string, opcity?: number) {
+  if (opcity) {
+    return ({ theme }: { theme: Theme }) =>
+      tinycolor(getPalette(name, sub)({ theme }))
+        .setAlpha(theme.palette.action.hoverOpacity * opcity)
+        .toRgbString();
+  }
+  return getPalette(name, sub);
 }
 
 /**
