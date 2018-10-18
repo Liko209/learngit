@@ -30,17 +30,12 @@ const StyledListItem = styled(MuiMenuItem)`
       background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   }
 
-  &&:active {
-    background: ${palette('primary', '50')};
-  }
-
   &&:active p {
     color: ${palette('primary', 'main')};
   }
 
-  &&:hover {
-    background-color: ${({ theme, selected }) =>
-      selected ? theme.palette.action.active : grey('50')};
+  &&&:hover {
+    background-color: ${grey('50')};
   }
 
   && ${StyledIconography} {
@@ -51,11 +46,17 @@ const StyledListItem = styled(MuiMenuItem)`
   &&:hover ${StyledIconography} {
     opacity: 1;
   }
+
   &&.selected {
-    background: ${grey('300')};
+    background: white;
   }
+
   &&.selected p {
     color: ${palette('primary', 'main')};
+  }
+
+  .child {
+    background: ${palette('primary', '50')};
   }
 `;
 
@@ -73,6 +74,10 @@ type JuiConversationListItemProps = {
 type IConversationListItem = {
   dependencies?: React.ComponentType[];
 } & React.SFC<JuiConversationListItemProps>;
+
+const touchRippleClasses = {
+  child: 'child',
+};
 
 const JuiConversationListItem: IConversationListItem = (
   props: JuiConversationListItemProps,
@@ -98,6 +103,7 @@ const JuiConversationListItem: IConversationListItem = (
       component={component}
       selected={selected}
       classes={{ selected: 'selected' }}
+      TouchRippleProps={{ classes: touchRippleClasses }}
       {...rest}
     >
       {presence}
