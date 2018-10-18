@@ -109,17 +109,18 @@ class SectionViewModel extends StoreViewModel<SectionProps>
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
+    this.autorun(() => this.updateGlobalGroups());
     this.autorun(() => this.profileUpdateFavSection());
     this.autorun(() => this.profileUpdateGroupSections());
   }
 
-  // @observable
+  @observable
   private _listHandler: FetchSortableDataListHandler<Group>;
 
-  // @observable
+  @observable
   private _type: SECTION_TYPE;
 
-  // @observable
+  @observable
   private _config: SectionConfig;
 
   @observable
@@ -245,18 +246,25 @@ class SectionViewModel extends StoreViewModel<SectionProps>
         eventName: this._config.eventName,
       });
       await this.fetchGroups();
+      this.updateGlobalGroups();
     }
   }
 
   @action
   async fetchGroups() {
     await this._listHandler.fetchData(FetchDataDirection.DOWN);
-    storeManager
-      .getGlobalStore()
-      .set(
-        this._config.queryType,
-        this._listHandler.sortableListStore.getIds(),
-      );
+  }
+
+  @action
+  updateGlobalGroups() {
+    if (this._config && this._listHandler) {
+      storeManager
+        .getGlobalStore()
+        .set(
+          this._config.queryType,
+          this._listHandler.sortableListStore.getIds(),
+        );
+    }
   }
 
   handleSortEnd(oldIndex: number, newIndex: number) {
