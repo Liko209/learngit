@@ -156,7 +156,7 @@ class TopBar extends React.Component<TopBarProps> {
         <JuiModal
           open={dialogStatus}
           title={t('About RingCentral')}
-          okText={t('done')}
+          okText={t('Done')}
           onOK={handleAboutPage}
         >
           <Param>

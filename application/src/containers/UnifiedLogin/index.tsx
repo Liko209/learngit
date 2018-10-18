@@ -147,7 +147,7 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
           <JuiModal
             open={isShowDialog}
             title={t('About RingCentral')}
-            okText={t('done')}
+            okText={t('Done')}
             onOK={this._handleAboutPage}
           >
             <Param>
