@@ -140,11 +140,14 @@ class SectionViewModel extends StoreViewModel<SectionProps>
     );
   }
 
+  private _hasInitiated() {
+    return this._listHandler && this._type;
+  }
+
   async profileUpdateFavSection() {
     const favGroupIds = this.favGroupIds;
     const condition =
-      this._listHandler &&
-      this._type &&
+      this._hasInitiated() &&
       this._type === SECTION_TYPE.FAVORITE &&
       this._oldFavGroupIds.toString() !== favGroupIds.toString();
     if (condition) {
@@ -160,8 +163,7 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   async profileUpdateGroupSections() {
     const newFavIds = this.favGroupIds;
     const condition =
-      this._type &&
-      this._listHandler &&
+      this._hasInitiated() &&
       this._type !== SECTION_TYPE.FAVORITE &&
       newFavIds.sort().toString() !== this._oldFavGroupIds.sort().toString();
     if (condition) {
@@ -218,7 +220,7 @@ class SectionViewModel extends StoreViewModel<SectionProps>
       this._type = props.type;
       this._config = SECTION_CONFIGS[this._type];
       if (this._type === SECTION_TYPE.FAVORITE) {
-        this._config['isMatchFun'] = (model: Group) => {
+        this._config.isMatchFun = (model: Group) => {
           return this._oldFavGroupIds.indexOf(model.id) !== -1;
         };
         this._config['transformFun'] = (model: Group) => {
@@ -228,7 +230,7 @@ class SectionViewModel extends StoreViewModel<SectionProps>
           } as ISortableModel<Group>;
         };
       } else {
-        this._config['isMatchFun'] = (model: Group) => {
+        this._config.isMatchFun = (model: Group) => {
           const notInFav = this._oldFavGroupIds.indexOf(model.id) === -1;
           const isTeamInTeamSection =
             this._type === SECTION_TYPE.TEAM && model.is_team;

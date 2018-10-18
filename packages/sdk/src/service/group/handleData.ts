@@ -406,7 +406,8 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
     validGroups = groups.filter(item => item !== null) as Partial<Raw<Group>>[];
   });
   await handlePartialData(validGroups);
-  ids.length && notificationCenter.emit(SERVICE.NEW_POST_TO_GROUP, ids);
+  ids.length &&
+    notificationCenter.emit(SERVICE.POST_SERVICE.NEW_POST_TO_GROUP, ids);
 }
 
 function getGroupTime(group: Group) {

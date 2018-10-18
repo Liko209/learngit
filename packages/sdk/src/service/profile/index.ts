@@ -25,7 +25,7 @@ export default class ProfileService extends BaseService<Profile> {
   constructor() {
     const subscriptions = {
       [SOCKET.PROFILE]: handleData,
-      [SERVICE.NEW_POST_TO_GROUP]: handleGroupIncomesNewPost,
+      [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: handleGroupIncomesNewPost,
     };
     super(ProfileDao, ProfileAPI, handleData, subscriptions);
   }
