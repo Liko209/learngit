@@ -27,6 +27,8 @@ type JuiModalProps = {
   modalProps?: Object;
   title: string | JSX.Element;
   footer?: string | JSX.Element;
+  contentBefore?: string | JSX.Element | boolean | null;
+  contentAfter?: string | JSX.Element | boolean | null;
   okText?: string;
   okBtnType?: JuiButtonProps['variant'];
   okBtnProps?: JuiButtonProps;
@@ -100,7 +102,15 @@ class JuiModal extends Component<JuiModalProps, {}> {
   }
 
   render() {
-    const { open, size = 'medium', title, footer, modalProps } = this.props;
+    const {
+      open,
+      size = 'medium',
+      title,
+      footer,
+      contentBefore,
+      contentAfter,
+      modalProps,
+    } = this.props;
 
     return (
       <JuiDialog open={open!} size={size} {...modalProps}>
@@ -109,7 +119,9 @@ class JuiModal extends Component<JuiModalProps, {}> {
         ) : (
           title
         )}
+        {contentBefore}
         <JuiDialogContent>{this.renderContent()}</JuiDialogContent>
+        {contentAfter}
         <StyledActions>{footer ? footer : this.defaultFooter()}</StyledActions>
       </JuiDialog>
     );
