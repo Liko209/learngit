@@ -27,6 +27,10 @@ class StoreManager {
   private _stores: IStores;
 
   constructor() {
+    this._init();
+  }
+
+  private _init() {
     this._stores = {
       [STORE_TYPE.ENTITY]: {},
       [STORE_TYPE.GLOBAL]: new GlobalStore(),
@@ -109,6 +113,10 @@ class StoreManager {
       entityStoreName,
     ) as MultiEntityMapStore<any, any>;
     store.batchSet(entities);
+  }
+
+  resetStores() {
+    this._init();
   }
 }
 
