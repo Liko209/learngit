@@ -13,8 +13,9 @@ const StyledAppBar = styled(JuiAppBar).attrs({ position: 'static' })`
     min-width: 400px;
     background-color: ${({ theme }) => `${theme.palette.common.white}`};
     box-shadow: none;
-    border-bottom: 1px solid rgba(0, 0, 0, ${({ theme }) => `${theme.palette.action.hoverOpacity}`});
-    z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
+    border-bottom: 1px solid
+      rgba(0, 0, 0, ${({ theme }) => `${theme.palette.action.hoverOpacity}`});
+    z-index: ${({ theme }) => `${theme.zIndex.drawer + 10}`};
   }
 `;
 

@@ -16,6 +16,7 @@ import {
 } from 'jui/pattern/TopBar';
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
+import { BackNForward } from '@/containers/BackNForward';
 import pkg from '../../../package.json';
 import { grey } from 'jui/foundation/utils/styles';
 import styled from 'jui/foundation/styled-components';
@@ -56,7 +57,12 @@ class TopBar extends React.Component<TopBarProps> {
       return null;
     }
     return (
-      <Avatar uid={currentUserId} size="large" {...avatarMenuTriggerProps} />
+      <Avatar
+        uid={currentUserId}
+        size="large"
+        {...avatarMenuTriggerProps}
+        autoMationId="topBarAvatar"
+      />
     );
   }
 
@@ -152,6 +158,7 @@ class TopBar extends React.Component<TopBarProps> {
           AvatarMenu={this._AvatarMenu}
           AddMenu={this._AddMenu}
           Logo={this._Logo}
+          BackNForward={isElectron ? BackNForward : undefined}
         />
         <JuiModal
           open={dialogStatus}
@@ -165,8 +172,8 @@ class TopBar extends React.Component<TopBarProps> {
           </Param>
           <Param>Build: {commitHash}</Param>
           <Param>
-            Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All
-            rights reserved.
+            Copyright © 1999-
+            {new Date().getFullYear()} RingCentral, Inc. All rights reserved.
           </Param>
         </JuiModal>
       </React.Fragment>
