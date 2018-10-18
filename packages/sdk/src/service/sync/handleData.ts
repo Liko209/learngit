@@ -18,7 +18,7 @@ import itemHandleData from '../item/handleData';
 import notificationCenter from '../notificationCenter';
 import personHandleData from '../person/handleData';
 import postHandleData from '../post/handleData';
-import presenceHandleData from '../presence/handleData';
+import { presenceHandleData } from '../presence/handleData';
 import profileHandleData from '../profile/handleData';
 import stateHandleData from '../state/handleData';
 import { IndexDataModel } from '../../api/glip/user';
