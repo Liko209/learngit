@@ -25,6 +25,7 @@ import { IndexDataModel } from '../../api/glip/user';
 import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
+import { Raw, Profile } from '../../models';
 
 const dispatchIncomingData = (data: IndexDataModel) => {
   const {
@@ -48,9 +49,9 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     arrState.push(state);
   }
 
-  const arrProfile: any[] = [];
+  let transProfile: Raw<Profile> | null = null;
   if (profile && Object.keys(profile).length > 0) {
-    arrProfile.push(profile);
+    transProfile = profile;
   }
 
   return Promise.all([
@@ -65,7 +66,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     stateHandleData(arrState),
     // featureFlag.handleData(clientConfig),
   ])
-    .then(() => profileHandleData(arrProfile))
+    .then(() => profileHandleData(transProfile))
     .then(() => personHandleData(people))
     .then(() => groupHandleData(groups))
     .then(() => groupHandleData(teams))
