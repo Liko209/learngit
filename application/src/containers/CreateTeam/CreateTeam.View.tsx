@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { t } from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { withRouter } from 'react-router-dom';
@@ -43,14 +44,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     };
   }
 
-  componentWillReceiveProps(props: any) {
-    this.setState({
-      items: this.initItems(),
-    });
-  }
-
-  initItems(): JuiListToggleItemProps[] {
-    const { t } = this.props;
+  static get initItems() {
     return [
       {
         type: 'isPublic',
@@ -63,6 +57,20 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         checked: true,
       },
     ];
+  }
+
+  static getDerivedStateFromProps(props: any, state: any) {
+    let items = [];
+    if (props.isOpen) {
+      items = CreateTeam.initItems;
+    }
+    if (state.items.length) {
+      items = state.items;
+    }
+
+    return {
+      items,
+    };
   }
 
   handleSwitchChange = (item: JuiListToggleItemProps, checked: boolean) => {
@@ -111,7 +119,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     updateCreateTeamDialogState();
     inputReset();
     this.setState({
-      items: this.initItems(),
+      items: CreateTeam.initItems,
     });
   }
 
