@@ -29,14 +29,14 @@ class ConversationPageViewModel extends AbstractViewModel {
   );
 
   @observable
-  private _permissions: PERMISSION_ENUM[] = [];
+  private _permissions: null | PERMISSION_ENUM[] = null;
 
   @observable
   groupId: number;
 
   @computed
   get canPost() {
-    if (this._permissions.length === 0) {
+    if (this._permissions === null) {
       return true;
     }
     return this._permissions.includes(PERMISSION_ENUM.TEAM_POST);
