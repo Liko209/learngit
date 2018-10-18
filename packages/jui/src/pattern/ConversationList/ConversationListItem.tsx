@@ -10,7 +10,7 @@ import MuiMenuItem, {
 } from '@material-ui/core/MenuItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey } from '../../foundation/utils';
+import { spacing, grey, palette } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
@@ -30,12 +30,17 @@ const StyledListItem = styled(MuiMenuItem)`
       background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   }
 
-  &&:hover {
-    background: ${grey('100')};
+  &&:active {
+    background: ${palette('primary', '50')};
   }
 
-  &&:focus {
-    background: ${grey('300')};
+  &&:active p {
+    color: ${palette('primary', 'main')};
+  }
+
+  &&:hover {
+    background-color: ${({ theme, selected }) =>
+      selected ? theme.palette.action.active : grey('50')};
   }
 
   && ${StyledIconography} {
@@ -45,6 +50,12 @@ const StyledListItem = styled(MuiMenuItem)`
 
   &&:hover ${StyledIconography} {
     opacity: 1;
+  }
+  &&.selected {
+    background: ${grey('300')};
+  }
+  &&.selected p {
+    color: ${palette('primary', 'main')};
   }
 `;
 
@@ -86,6 +97,7 @@ const JuiConversationListItem: IConversationListItem = (
       onClick={onClick}
       component={component}
       selected={selected}
+      classes={{ selected: 'selected' }}
       {...rest}
     >
       {presence}

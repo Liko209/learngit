@@ -1,0 +1,30 @@
+{
+  "async": {
+    "prefix": "a",
+    "body": "async "
+  },
+  "await": {
+    "prefix": "aw",
+    "body": "await "
+  },
+  "debugger;": {
+    "prefix": "d",
+    "body": "debugger;"
+  },
+  "return": {
+    "prefix": "r",
+    "body": "return $1"
+  },
+  "return $1;": {
+    "prefix": "r;",
+    "body": "return $1;"
+  },
+  "this": {
+    "prefix": "t",
+    "body": "this"
+  },
+  "import Module from 'module'": {
+    "prefix": "imp",
+    "body": "import $2 from '$1'"
+  }
+}

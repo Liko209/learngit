@@ -19,7 +19,7 @@ import { HomeViewProps } from './types';
 @observer
 class Home extends Component<HomeViewProps> {
   render() {
-    return (
+    return this.props.indexLoaded ? (
       <Wrapper>
         <TopBar />
         <Bottom>
@@ -32,7 +32,7 @@ class Home extends Component<HomeViewProps> {
         </Bottom>
         <CreateTeam />
       </Wrapper>
-    );
+    ) : null;
   }
 }
 

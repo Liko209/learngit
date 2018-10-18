@@ -2,7 +2,14 @@ import React, { Fragment } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import { Delta, Sources } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
-import { spacing, typography, palette } from '../../foundation/utils/styles';
+import {
+  spacing,
+  typography,
+  palette,
+  grey,
+  height,
+  primary,
+} from '../../foundation/utils/styles';
 import MarkdownShortcuts from './MarkdownShortcuts';
 import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
 
@@ -12,26 +19,35 @@ const GlobalStyle = createGlobalStyle`
   .quill {
     width: 100%;
     align-self: flex-end;
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.14);
+    z-index: ${({ theme }) => `${theme.zIndex.mobileStepper}`};
   }
   .ql-snow {
-    box-sizing: border-box;
-    border: 1px solid #dbdbdb !important;
-    border-radius: 4px;
-    margin: 16px !important;
-    background: #f5f5f5;
-    .ql-editor {
-      padding: 8px;
-      font-size: 14px;
-      color: #212121;
-      min-height: 36px;
-      max-height: 272px;
-      &::before {
-        font-style: normal !important;
-        color: #9e9e9e !important;
-      }
-      &:focus {
-        background: #fff;
-        border-radius: 4px;
+    &&& {
+      box-sizing: border-box;
+      border: 1px solid transparent;
+      border-radius: ${spacing(1)};
+      margin: ${spacing(4)};
+      .ql-editor {
+        ${typography('body1')};
+        padding: ${spacing(2)};
+        min-height: ${height(9)};
+        max-height: ${height(68)};;
+        border-radius: ${spacing(1)};
+        color: ${grey('700')};
+        border: 1px solid ${grey('300')};
+        caret-color: ${primary('700')};
+        &::before {
+          font-style: normal;
+          color: ${grey('400')};
+        }
+        &:hover {
+          background-color: ${grey('50')};
+        }
+        &:focus {
+          background: ${palette('common', 'white')};
+          border: 1px solid ${grey('400')};
+        }
       }
     }
   }
@@ -61,7 +77,9 @@ interface IState {
 }
 
 class JuiMessageInput extends React.Component<IProps, IState> {
+  private _changeSource: Sources = 'api';
   private _modules: {};
+  private _inputRef: React.RefObject<ReactQuill> = React.createRef();
   constructor(props: IProps) {
     super(props);
     this.onChange = this.onChange.bind(this);
@@ -76,12 +94,33 @@ class JuiMessageInput extends React.Component<IProps, IState> {
     };
   }
 
-  onChange(content: string, delta: Delta, source: Sources) {
+  componentDidMount() {
+    this.focusEditor(false);
+  }
+
+  componentDidUpdate() {
+    this.focusEditor(true);
+  }
+
+  focusEditor(checkSource: boolean) {
+    if (checkSource && this._changeSource !== 'api') {
+      return;
+    }
+
+    const reactQull = this._inputRef.current;
+    if (reactQull) {
+      const quill = reactQull.getEditor();
+      requestAnimationFrame(() => quill.setSelection(quill.getLength(), 0));
+    }
+  }
+
+  onChange(content: string, delta: Delta, source: Sources, editor: any) {
+    this._changeSource = source;
     if (source === 'api') {
       return;
     }
     const { onChange } = this.props;
-    if (content === '<p><br></p>') {
+    if (!editor.getText().trim()) {
       onChange('');
       return;
     }
@@ -90,7 +129,6 @@ class JuiMessageInput extends React.Component<IProps, IState> {
 
   render() {
     const { value, error } = this.props;
-
     return (
       <Fragment>
         <ReactQuill
@@ -98,6 +136,7 @@ class JuiMessageInput extends React.Component<IProps, IState> {
           onChange={this.onChange}
           placeholder="Type new message"
           modules={this._modules}
+          ref={this._inputRef}
         />
         <StyledError>{error}</StyledError>
         <GlobalStyle />

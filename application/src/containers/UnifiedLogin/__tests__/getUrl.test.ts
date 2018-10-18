@@ -16,6 +16,9 @@ jest.mock('../../../config', () => ({
       },
     };
   }),
+  getEnv: jest.fn(() => {
+    return 'test_sandbox';
+  }),
 }));
 
 jest.mock('../../../utils/getLanguage', () => {
@@ -28,7 +31,7 @@ describe('getUrl method', () => {
   it('format url', async () => {
     const options = {
       redirect_uri: window.location.origin,
-      state: '/',
+      state: '/?env=test_sandbox',
       client_id: 'clientId',
       ui_locales: 'en-US',
     };
