@@ -55,12 +55,18 @@ const rippleEnter = (theme: Theme) => keyframes`
 const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
+type StyledIconButtonProps = JuiIconButtonProps & {
+  colorName: string;
+  colorScope: keyof Palette;
+};
 const WrappedMuiIconButton = ({
   invisible,
   awake,
   color,
+  colorName,
+  colorScope,
   ...rest
-}: JuiIconButtonProps) => (
+}: StyledIconButtonProps) => (
   <MuiIconButton
     {...rest}
     classes={{ disabled: 'disabled' }}
@@ -68,10 +74,6 @@ const WrappedMuiIconButton = ({
   />
 );
 
-type StyledIconButtonProps = JuiIconButtonProps & {
-  colorName: string;
-  colorScope: keyof Palette;
-};
 const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
   && {
     padding: 0;
