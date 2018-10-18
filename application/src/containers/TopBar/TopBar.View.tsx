@@ -35,7 +35,7 @@ type TopBarProps = InjectedTranslateProps & {
 };
 const Param = styled.p`
   color: ${grey('700')};
-  font-size: ${({ theme }) => theme.typography.body2.fontSize};;
+  font-size: ${({ theme }) => theme.typography.body2.fontSize};
 `;
 @observer
 class TopBar extends React.Component<TopBarProps> {
@@ -137,7 +137,13 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
-    const { dialogStatus, t, handleAboutPage, electronVersion, appVersion } = this.props;
+    const {
+      dialogStatus,
+      t,
+      handleAboutPage,
+      electronVersion,
+      appVersion,
+    } = this.props;
     const commitHash = gitCommitInfo.commitInfo[0].commitHash;
     return (
       <React.Fragment>
@@ -153,9 +159,15 @@ class TopBar extends React.Component<TopBarProps> {
           okText={t('done')}
           onOK={handleAboutPage}
         >
-          <Param>Version: {appVersion ? appVersion : pkg.version} {electronVersion ? `(E. ${electronVersion})` : null}</Param>
+          <Param>
+            Version: {appVersion ? appVersion : pkg.version}{' '}
+            {electronVersion ? `(E. ${electronVersion})` : null}
+          </Param>
           <Param>Build: {commitHash}</Param>
-          <Param>Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All rights reserved.</Param>
+          <Param>
+            Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All
+            rights reserved.
+          </Param>
         </JuiModal>
       </React.Fragment>
     );

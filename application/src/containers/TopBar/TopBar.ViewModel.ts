@@ -13,12 +13,9 @@ import { getGlobalValue } from '@/store/utils';
 
 class TopBarViewModel extends AbstractViewModel {
   brandName: string = 'RingCentral';
-  @observable
-  isShowDialog: boolean = false;
-  @observable
-  vApp = 0;
-  @observable
-  vElectron = 0;
+  @observable isShowDialog: boolean = false;
+  @observable vApp = '';
+  @observable vElectron = '';
   @action
   updateLeftNavState = () => {
     const globalStore = storeManager.getGlobalStore();
@@ -46,9 +43,13 @@ class TopBarViewModel extends AbstractViewModel {
     window.location.href = '/';
   }
   @action
-  handleAboutPage = (event: React.MouseEvent<HTMLElement>, appVersion?: number|undefined, electronVersion?: number|undefined) => {
-    this.vApp = appVersion || 0;
-    this.vElectron = electronVersion || 0;
+  handleAboutPage = (
+    event: React.MouseEvent<HTMLElement>,
+    appVersion?: string | undefined,
+    electronVersion?: string | undefined,
+  ) => {
+    this.vApp = appVersion || '';
+    this.vElectron = electronVersion || '';
     this.isShowDialog = !this.isShowDialog;
   }
   @computed
