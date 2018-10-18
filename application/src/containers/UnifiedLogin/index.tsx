@@ -15,6 +15,10 @@ import EnvSelect from './EnvSelect';
 import Download from './Download';
 import LoginVersionStatus from '../VersionInfo/LoginVersionStatus';
 import { AuthService } from 'sdk/service';
+import { JuiModal } from 'jui/components/Dialog';
+import { grey } from 'jui/foundation/utils/styles';
+import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
+import { isElectron } from '@/utils';
 
 const Form = styled.form`
   width: 300px;
@@ -52,18 +56,30 @@ const Button = styled.button`
     opacity: 0.65;
   }
 `;
-
+const Param = styled.p`
+  color: ${grey('700')};
+  font-size: ${({ theme }) => theme.typography.body2.fontSize};
+`;
 interface IProps extends RouteComponentProps<{}> {
   t: TranslationFunction;
 }
 
-interface IStates {}
+interface IStates {
+  isShowDialog: boolean;
+  appVersion: string;
+  electronVersion: string;
+}
 
 class UnifiedLogin extends React.Component<IProps, IStates> {
   constructor(props: IProps) {
     super(props);
     this._checkIfLogin();
   }
+  state = {
+    isShowDialog: false,
+    appVersion: '',
+    electronVersion: '',
+  };
 
   private _checkIfLogin() {
     const authService: AuthService = AuthService.getInstance();
@@ -71,6 +87,18 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
       const { history } = this.props;
       history.replace('/messages');
     }
+  }
+  private _handleAboutPage = (
+    event?: React.MouseEvent<HTMLElement>,
+    vApp?: string,
+    vElectron?: string,
+  ) => {
+    const { isShowDialog } = this.state;
+    this.setState({
+      isShowDialog: !isShowDialog,
+      appVersion: vApp || '',
+      electronVersion: vElectron || '',
+    });
   }
 
   // onChange = (event: React.FormEvent<HTMLSelectElement>) => {
@@ -85,6 +113,11 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
 
   render() {
     const { t } = this.props;
+    window.jupiterElectron = {
+      handleAboutPage: this._handleAboutPage,
+    };
+    const { isShowDialog, appVersion, electronVersion } = this.state;
+    const commitHash = gitCommitInfo.commitInfo[0].commitHash;
     return (
       <div>
         <Form onSubmit={this.onSubmit}>
@@ -110,6 +143,23 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
         </Form>
         <LoginVersionStatus />
         <Download />
+        {isElectron ? (
+          <JuiModal
+            open={isShowDialog}
+            title={t('About RingCentral')}
+            okText={t('Done')}
+            onOK={this._handleAboutPage}
+          >
+            <Param>
+              Version: {appVersion} {`(E. ${electronVersion})`}
+            </Param>
+            <Param>Build: {commitHash}</Param>
+            <Param>
+              Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All
+              rights reserved.
+            </Param>
+          </JuiModal>
+        ) : null}
       </div>
     );
   }
