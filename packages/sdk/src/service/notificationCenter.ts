@@ -77,15 +77,17 @@ class NotificationCenter extends EventEmitter2 {
     });
   }
 
-  emitEntityReset(key: string): void {
+  emitEntityReset(key: string, entities: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.RESET,
+      entities: transform2Map(entities),
     });
   }
 
-  emitEntityReload(key: string): void {
+  emitEntityReload(key: string, entities: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.RELOAD,
+      entities: transform2Map(entities),
     });
   }
 
