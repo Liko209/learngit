@@ -36,6 +36,7 @@ const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
     direction === 'vertical' ? 'column' : 'row'};
   white-space: nowrap;
   flex-wrap: nowrap;
+  flex-shrink: 0;
 `;
 
 type StyledIconButtonChild = JuiIconButtonProps &
