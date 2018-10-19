@@ -3,36 +3,33 @@
  * @Date: 2018-08-21 16:35:03
  * Copyright © RingCentral. All rights reserved.
  */
-import { ReactSelector } from 'testcafe-react-selectors';
 import { GroupAPI } from '../../../libs/sdk';
-import { BaseComponent } from '../..';
+import { ConversationSection } from './ConversationSection';
 
-class TeamSection extends BaseComponent {
-  get teamSection() {
-    return ReactSelector('ConversationListSection').withProps('title', 'Teams');
-  }
+class TeamSection extends ConversationSection {
+  public sectionName = 'Teams';
 
   get team0() {
-    return this.teamSection.findReact('ConversationListItem').nth(0);
+    return this.section.find('.conversation-list-item').nth(0);
   }
   get teams() {
-    return this.teamSection.findReact('ConversationListItem');
+    return this.section.find('.conversation-list-item');
   }
   public shouldBeTeam() {
     return this.chain(async (t: TestController) => {
       await t
         .expect(this.team0.exists)
         .ok('Fail to find the team, probably caused by long-time loading');
-      const id = (await this.team0.getReact()).key;
-      const props = await this._getTeamProps(id);
+      const id = await this.team0.getAttribute('data-group-id');
+      const props = await this._getTeamProps(+id);
       return await t.expect(props.is_team).ok(`Team ${id} is not a team`);
     });
   }
 
   public teamNameShouldBe(name) {
     return this.chain(async (t: TestController) => {
-      const text = () => this.team0.findReact('Typography').innerText;
-      return await t.expect(text()).eql(name, 'wrong name');
+      const text = await this.team0.find('p').innerText;
+      return await t.expect(text).eql(name, 'wrong name');
     });
   }
 
@@ -61,15 +58,16 @@ class TeamSection extends BaseComponent {
       await t
         .expect(this.team0.exists)
         .ok('Fail to find the team, probably caused by long-time loading');
-      const id = (await this.team0.getReact()).key;
-      return await GroupAPI.modifyGroupById(id, { set_abbreviation: name });
+      const id = await this.team0.getAttribute('data-group-id');
+      return await GroupAPI.modifyGroupById(+id, { set_abbreviation: name });
     });
   }
   checkTeamIndex(id: number, i: number) {
     return this.chain(async (t: TestController) => {
       await this.teams();
-      const component = await this.teams.nth(i).getReact();
-      await t.expect(component.key).eql(id);
+      const element = this.teams.nth(i);
+      const idAttr = await element.getAttribute('data-group-id');
+      await t.expect(idAttr).eql(id);
     });
   }
 }

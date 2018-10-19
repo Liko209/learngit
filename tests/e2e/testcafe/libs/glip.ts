@@ -18,7 +18,6 @@ export interface IAccount {
 }
 
 export class RcPlatformHelper {
-
   username: string;
   extension: string;
   password: string;
@@ -51,19 +50,28 @@ export class RcPlatformHelper {
 }
 
 export class RcPlatformManager {
-
   clients: object;
 
   constructor(
     private platformKey: string,
     private platformSecret: string,
-    private platformUrl: string) {
+    private platformUrl: string,
+  ) {
     this.clients = {};
   }
 
   createClient(account: IAccount, companyNumber: string): RcPlatformHelper {
-    const sdk = new Ringcentral(this.platformKey, this.platformSecret, this.platformUrl);
-    return new RcPlatformHelper(sdk, companyNumber, account.extension, account.password);
+    const sdk = new Ringcentral(
+      this.platformKey,
+      this.platformSecret,
+      this.platformUrl,
+    );
+    return new RcPlatformHelper(
+      sdk,
+      companyNumber,
+      account.extension,
+      account.password,
+    );
   }
 
   async getClient(account: IAccount, companyNumber: string) {

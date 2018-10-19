@@ -94,7 +94,11 @@ class JuiUmi extends PureComponent<JuiUmiProps> {
       this.props.variant === 'dot'
         ? '1'
         : countToString(this.props.unreadCount);
-    return <StyledUmi {...this.props}>{text}</StyledUmi>;
+    return (
+      <StyledUmi className="umi" {...this.props}>
+        {text}
+      </StyledUmi>
+    );
   }
 }
 

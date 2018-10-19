@@ -14,11 +14,12 @@ test(
     'The posts in the conversation should be displayed in the order of recency (date/time)',
     ['P1', 'JPT-52', 'ConversationStream'],
   ),
-  async t => {
+  async (t: TestController) => {
     await directLogin(t)
       .chain(t => t.wait(10000))
       .log('1. Navigate to ConversationStream')
       .shouldNavigateTo(ConversationStream)
+      .expectExist()
       .log('2. Send post 1 to first group')
       .sendPost2Group('1')
       .log('3. Send post 2 to first group')
@@ -39,17 +40,20 @@ test(
     'JPT-53',
     'ConversationStream',
   ]),
-  async t => {
+  async (t: TestController) => {
     await directLogin(t)
       .chain(t => t.wait(10000))
       .log('1. Navigate to team section')
       .shouldNavigateTo(TeamSection)
+      .expectExist()
       .log('2. Create team')
       .createTeam()
       .log('3. Navigate to Conversation Stream')
       .shouldNavigateTo(ConversationStream)
       .log('4. Click first group')
+      .chain(t => t.wait(3000))
       .clickFirstGroup()
+      .chain(t => t.wait(3000))
       .expectNoPosts();
   },
 );
@@ -59,15 +63,17 @@ test(
     'Should be able to read the newest posts once open a conversation',
     ['P0', 'JPT-65', 'ConversationStream'],
   ),
-  async t => {
+  async (t: TestController) => {
     await directLogin(t)
       .shouldNavigateTo(ConversationStream)
+      .expectExist()
       .log('1. Send post to first group lastPost')
       .sendPost2Group('lastPost')
       .log('2. Reload');
     await directLogin(t)
       .log('3. Navigate to Conversation Stream')
       .shouldNavigateTo(ConversationStream)
+      .expectExist()
       .log('4. Click first group')
       .clickFirstGroup()
       .expectLastConversationToBe('lastPost')

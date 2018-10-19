@@ -266,11 +266,14 @@ export default async function handleData(groups: Raw<Group>[]) {
 
 async function doFavoriteGroupsNotification(favIds: number[]) {
   mainLogger.debug('-------doFavoriteGroupsNotification--------');
-  if (favIds.length) {
+  const filteredFavIds = favIds.filter(
+    id => typeof id === 'number' && !isNaN(id),
+  );
+  if (filteredFavIds.length) {
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
     const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
-    const validFavIds = _.difference(favIds, hiddenIds);
+    const validFavIds = _.difference(filteredFavIds, hiddenIds);
     const dao = daoManager.getDao(GroupDao);
     let groups = await dao.queryGroupsByIds(validFavIds);
     groups = sortFavoriteGroups(validFavIds, groups);

@@ -85,7 +85,7 @@ test(
   },
 );
 
-test.skip(
+test(
   formalName(
     'When update custom status, can sync dynamically in message metadata.',
     ['JPT-95', 'P2', 'ConversationStream'],

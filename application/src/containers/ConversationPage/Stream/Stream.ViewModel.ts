@@ -137,10 +137,10 @@ class StreamViewModel extends StoreViewModel {
       },
     );
 
-    this._transformHandler = new PostTransformHandler(
-      orderListHandler,
-      this.markAsRead.bind(this),
-    );
+    this._transformHandler = new PostTransformHandler(orderListHandler, () => {
+      console.log('on append');
+      this.markAsRead();
+    });
     this.autorun(() => {
       const postIds = _(this._transformHandler.listStore.items)
         .map('value')
