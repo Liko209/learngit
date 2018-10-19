@@ -17,8 +17,7 @@ const { SERVICE, ProfileService } = service;
 
 class TokenRouteViewModel extends StoreViewModel {
   private _authService: AuthService = AuthService.getInstance();
-  @observable
-  isOpen: boolean = false;
+  @observable isError: boolean = false;
 
   constructor() {
     super();
@@ -29,8 +28,8 @@ class TokenRouteViewModel extends StoreViewModel {
   }
 
   @action
-  private _setOpen(open: boolean) {
-    this.isOpen = open;
+  private _setIsError(open: boolean) {
+    this.isError = open;
   }
 
   @computed
@@ -47,15 +46,15 @@ class TokenRouteViewModel extends StoreViewModel {
     this._redirect(state);
   }
 
-  unifiedLogin = () => {
+  unifiedLogin = async () => {
     try {
       const { location } = history;
       const { code, id_token: token } = this._getUrlParams(location);
       if (code || token) {
-        this._authService.unifiedLogin({ code, token });
+        await this._authService.unifiedLogin({ code, token });
       }
     } catch (e) {
-      this._setOpen(true);
+      this._setIsError(true);
     }
   }
 
