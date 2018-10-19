@@ -7,7 +7,7 @@ import { computed } from 'mobx';
 import _ from 'lodash';
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { UmiProps, UmiViewProps } from './types';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
@@ -21,7 +21,6 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       this.autorun(() => this.updateAppUmi());
     }
   }
-  // private appName = process.env.APP_NAME || '';
 
   @computed
   get ids() {
@@ -31,19 +30,13 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   @computed
   private get _umiObj() {
     const groupIds = this.ids;
-    // const lastGroupId = getSingleEntity<MyState, MyStateModel>(
-    //   ENTITY_NAME.MY_STATE,
-    //   'lastGroupId',
-    // ) as number;
-    const lastGroupId = storeManager
-      .getGlobalStore()
-      .get('currentConversationId');
+    const currentGroupId = getGlobalValue('currentConversationId');
     const groupStates = _.map(groupIds, (groupId: number) => {
       return getEntity(ENTITY_NAME.GROUP_STATE, groupId) as GroupStateModel;
     });
     let important = false;
     const unreadCount = _.sumBy(groupStates, (groupState: GroupStateModel) => {
-      const isCurrentGroup = lastGroupId && lastGroupId === groupState.id;
+      const isCurrentGroup = currentGroupId === groupState.id;
       const group = getEntity(ENTITY_NAME.GROUP, groupState.id) as GroupModel;
       const unreadCount = isCurrentGroup
         ? 0
@@ -72,12 +65,5 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   get important() {
     return this._umiObj.important;
   }
-
-  // onReceiveProps(props: UmiProps) {
-  //   if (!_.isEqual([...this.ids], props.ids)) {
-  //     this.ids = props.ids;
-  //   }
-  //   this.global = props.global;
-  // }
 }
 export { UmiViewModel };
