@@ -41,8 +41,10 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
   @computed
   private get _hash() {
     let hash = 0;
-    for (const i of `${this._uid}`) {
-      hash = hash + String(i).charCodeAt(0);
+    if (this._uid) {
+      for (const i of `${this._uid}`) {
+        hash = hash + String(i).charCodeAt(0);
+      }
     }
     if (hash < 0) {
       hash = -hash;
@@ -52,6 +54,7 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
 
   @computed
   private get _person() {
+    if (!this._uid) return null;
     return getEntity(ENTITY_NAME.PERSON, this._uid);
   }
   @computed
@@ -62,17 +65,17 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
 
   @computed
   get shortName() {
-    return this._person.shortName;
+    return this._person && this._person.shortName;
   }
 
   @computed
   get shouldShowShortName() {
-    return !this._person.hasHeadShot && this._person.shortName;
+    return !(this._person && this._person.hasHeadShot) && (this._person && this._person.shortName);
   }
 
   @computed
   get headShotUrl() {
-    if (!this._person.hasHeadShot) {
+    if (!(this._person && this._person.hasHeadShot)) {
       return defaultAvatar;
     }
     let url: string | null = null;
