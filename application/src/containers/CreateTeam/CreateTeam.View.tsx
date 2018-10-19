@@ -14,7 +14,7 @@ import { translate } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
-import { JuiTextWithLink } from 'jui/components/TextWithLink';
+// import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import {
   JuiListToggleButton,
