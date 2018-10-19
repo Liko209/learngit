@@ -31,13 +31,13 @@ class ConversationStream extends BaseComponent {
     return this.clickElement(this.team);
   }
 
-  public sendPost2Group(text: string) {
+  public sendPost2Group(groupId: number, text: string) {
     return this.chain(async (t, h) => {
       const client701 = await h.glipApiManager.getClient(
         h.users.user701,
         h.companyNumber,
       );
-      await client701.sendPost(h.teams.team1_u1_u2.glip_id, { text });
+      await client701.sendPost(groupId, { text });
     });
   }
 

@@ -40,16 +40,23 @@ function parseSocketMessage(message: string | ISystemMessage) {
     return { [type]: data };
   }
 
+  let parsed;
+  try {
+    parsed = JSON.parse(message);
+  } catch (err) {
+    return {};
+  }
+
   const {
     body: { objects, hint },
-  } = JSON.parse(message);
+  } = parsed;
   let post_creator_ids: number[] | undefined;
   if (hint && hint.post_creator_ids) {
-    post_creator_ids = (_.values(hint.post_creator_ids));
+    post_creator_ids = _.values(hint.post_creator_ids);
   }
   const result = {};
   objects.forEach((arr: any[]) => {
-    arr.forEach((obj) => {
+    arr.forEach((obj: any) => {
       if (post_creator_ids) {
         obj.trigger_ids = post_creator_ids;
       }

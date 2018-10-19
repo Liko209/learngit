@@ -47,12 +47,6 @@ class ConversationItemUMI extends BaseComponent {
   //   });
   // }
 
-  public reload() {
-    return this.chain(async (t: TestController) => {
-      await t.navigateTo(SITE_URL);
-    });
-  }
-
   // private async _getGroupProps(id: number) {
   //   return (await GroupAPI.requestGroupById(id)).data;
   // }

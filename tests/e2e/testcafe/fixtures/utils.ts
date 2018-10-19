@@ -1,5 +1,5 @@
-import { TestHelper } from './../../libs/helpers';
-import { ProfileAPI, PersonAPI } from '../../libs/sdk';
+import { TestHelper } from './../libs/helpers';
+import { ProfileAPI, PersonAPI } from '../libs/sdk';
 import * as _ from 'lodash';
 type ConversationParam = {
   type: 'team' | 'privateChat' | 'group';
@@ -128,7 +128,6 @@ async function prepareConversations(
     profileParams['favorite_group_ids'] = finalFavIds.concat(favIds);
   }
   await (ProfileAPI as any).putDataById(profileId, profileParams);
-  h.log('Show the groups again in case it was set hidden before');
   return result;
 }
 

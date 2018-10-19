@@ -46,8 +46,6 @@ class HighlighConversation extends BaseComponent {
       const LastConversationListItem = this.ConversationItem.filter(
         `[data-group-id="${conversationId}"]`,
       );
-      const itemStyle = await LastConversationListItem.style;
-      await t.expect(itemStyle['background-color']).eql('rgb(224, 224, 224)');
       const pElem = LastConversationListItem.find('p');
       const pElemStyle = await pElem.style;
       await t.expect(pElemStyle['color']).eql('rgb(6, 132, 189)');
