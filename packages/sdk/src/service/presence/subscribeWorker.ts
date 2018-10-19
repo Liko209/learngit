@@ -24,6 +24,7 @@ class SubscribeWorker {
       return;
     }
     const { data } = requestResult;
+    console.log(data, '-----presence');
     this.successCallback(data);
   }
 }

@@ -14,7 +14,7 @@ export default class PresenceService extends BaseService {
 
   public caches: Map<number, Presence>; // <id, RawPresence['calculatedStatus']>
   public subscribeHandler: SubscribeHandler;
-  constructor(threshold: number = 30, interval: number = 200) {
+  constructor(threshold: number = 25, interval: number = 200) {
     // channel presence_unified threshold interval
     const subscriptions = {
       [SOCKET.PRESENCE]: presenceHandleData,

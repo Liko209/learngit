@@ -62,6 +62,7 @@ class SubscribeHandler {
 
   workerSuccess(RawPresence: RawPresence[]) {
     const successArr: RawPresence[] = [];
+    console.log('presence', RawPresence);
     RawPresence.forEach((presence: RawPresence) => {
       if (presence.calculatedStatus) {
         successArr.push(presence);

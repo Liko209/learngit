@@ -42,9 +42,7 @@ class TopBar extends React.Component<TopBarProps> {
     if (!currentUserId) {
       return null;
     }
-    return (
-      <Avatar uid={currentUserId} size="large" {...avatarMenuTriggerProps} />
-    );
+    return <Avatar uid={currentUserId} {...avatarMenuTriggerProps} />;
   }
 
   private _AvatarMenu(avatarProps: MenuListCompositionProps) {
