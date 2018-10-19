@@ -184,14 +184,14 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           items={items}
           toggleChange={this.handleSwitchChange}
         />
-        <JuiTextWithLink
+        {/* <JuiTextWithLink
           TypographyProps={{
             align: 'center',
           }}
           text={t('tips')}
           linkText={t('linkTips')}
           href=""
-        />
+        /> */}
       </JuiModal>
     );
   }
