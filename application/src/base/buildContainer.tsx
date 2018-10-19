@@ -29,7 +29,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
 
     constructor(props: P) {
       super(props);
-      this.vm = new ViewModel();
+      this.vm = new ViewModel(props);
       plugins.forEach((plugin: IPlugin) => {
         plugin.install(this.vm);
         this.View = plugin.wrapView(this.View);

@@ -102,27 +102,25 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 
 class SectionViewModel extends StoreViewModel<SectionProps>
   implements SectionViewProps {
-  constructor() {
-    super();
-    this.autorun(() => {
-      this.updateGlobalGroups();
-    });
+  constructor(props: SectionProps) {
+    super(props);
     this._oldFavGroupIds =
       getSingleEntity<Profile, ProfileModel>(
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
+    this.autorun(() => this.updateGlobalGroups());
     this.autorun(() => this.profileUpdateFavSection());
     this.autorun(() => this.profileUpdateGroupSections());
   }
 
-  // @observable
+  @observable
   private _listHandler: FetchSortableDataListHandler<Group>;
 
-  // @observable
+  @observable
   private _type: SECTION_TYPE;
 
-  // @observable
+  @observable
   private _config: SectionConfig;
 
   @observable
@@ -248,6 +246,7 @@ class SectionViewModel extends StoreViewModel<SectionProps>
         eventName: this._config.eventName,
       });
       await this.fetchGroups();
+      this.updateGlobalGroups();
     }
   }
 
@@ -256,6 +255,7 @@ class SectionViewModel extends StoreViewModel<SectionProps>
     await this._listHandler.fetchData(FetchDataDirection.DOWN);
   }
 
+  @action
   updateGlobalGroups() {
     if (this._config && this._listHandler) {
       storeManager

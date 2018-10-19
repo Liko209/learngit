@@ -45,8 +45,8 @@ class MessageInputViewModel extends AbstractViewModel
     },
   };
 
-  constructor() {
-    super();
+  constructor(props: MessageInputProps) {
+    super(props);
     this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
     this._debounceUpdateGroupDraft = debounce<DebounceFunction>(
