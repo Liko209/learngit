@@ -14,16 +14,18 @@ const MessageTypes = [
   service.GROUP_QUERY_TYPE.TEAM,
 ];
 import storeManager from '@/store';
+import { LeftNavProps } from './types';
 
 const getItem = (item: string) => {
   return localStorage.getItem(item);
 };
 class LeftNavViewModel extends AbstractViewModel {
-  constructor() {
-    super();
-    const isLocalExpand = getItem('expanded') === null
-      ? true
-      : JSON.parse(String(getItem('expanded')));
+  constructor(props: LeftNavProps) {
+    super(props);
+    const isLocalExpand =
+      getItem('expanded') === null
+        ? true
+        : JSON.parse(String(getItem('expanded')));
     const globalStore = storeManager.getGlobalStore();
     globalStore.set('isLeftNavOpen', isLocalExpand);
   }

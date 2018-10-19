@@ -16,22 +16,18 @@ import GroupModel from '@/store/models/Group';
 import storeManager, { ENTITY_NAME } from '@/store';
 
 class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
-  constructor() {
-    super();
-    this.autorun(() => {
-      this.appUmi();
-    });
+  constructor(props: UmiProps) {
+    super(props);
+
+    if (props.global) {
+      this.autorun(() => this.updateAppUmi());
+    }
   }
   // private appName = process.env.APP_NAME || '';
 
   @computed
   get ids() {
     return this.props.ids;
-  }
-
-  @computed
-  get global() {
-    return this.props.global;
   }
 
   @computed
@@ -61,11 +57,8 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
     };
   }
 
-  appUmi() {
-    if (this.global) {
-      const appUmi = this.unreadCount;
-      storeManager.getGlobalStore().set('app.umi', appUmi);
-    }
+  updateAppUmi() {
+    storeManager.getGlobalStore().set('app.umi', this.unreadCount);
   }
 
   @computed
