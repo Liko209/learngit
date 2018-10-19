@@ -6,9 +6,6 @@
 import { parsePhoneNumber } from 'libphonenumber-js';
 export default {
   defaultFormat(num: string): string {
-    if (!num) {
-      return '';
-    }
     try {
       const phoneNumber = parsePhoneNumber(num);
       // currently use US phone number format, for other regions, use phoneNumber.formatInternational()
