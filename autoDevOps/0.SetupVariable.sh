@@ -98,7 +98,8 @@ function updateLinkDomainOnServer(){
     echo "=====Start linking domain: "
     echo "serverRootFolder: ${serverRootFolder}"
     echo "$sourceFolder ==> $linkFolder"
-    ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "cd $serverRootFolder; [ -e $linkFolder ] && rm -rf $linkFolder; ln -s $sourceFolder $linkFolder"
+    ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "cd $serverRootFolder; [ -L $linkFolder ] && unlink $linkFolder"
+    ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "cd $serverRootFolder; ln -s $sourceFolder $linkFolder"
     ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "chown -R root:root $serverRootFolder/$linkFolder"
 }
 
