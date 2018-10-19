@@ -40,6 +40,10 @@ const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
     color: ${grey('900')};
     background: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 1)};
     box-shadow: none;
+    width: 100% !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
   }
   .message {
     padding: 0;

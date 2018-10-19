@@ -12,7 +12,19 @@ type ViewProps = {
   i18n: i18n;
   t: TranslationFunction;
   isOpen: boolean;
+  disabledOkBtn: boolean;
+  isOffline: boolean;
+  nameError: boolean;
+  emailError: boolean;
+  errorMsg: string;
+  emailErrorMsg: string;
+  teamName: string;
+  description: string;
+  serverError: boolean;
   updateCreateTeamDialogState: () => void;
+  inputReset: () => void;
+  handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 } & RouteComponentProps;
 
 export { ViewProps };
