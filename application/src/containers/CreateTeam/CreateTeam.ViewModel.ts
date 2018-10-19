@@ -3,7 +3,7 @@
  * @Date: 2018-09-19 14:12:28
  * Copyright © RingCentral. All rights reserved.
  */
-import { action, computed } from 'mobx';
+import { action, computed, observable } from 'mobx';
 
 import GroupService, { CreateTeamOptions } from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
@@ -12,15 +12,32 @@ import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 
-type errorTips = {
-  type: string;
-  msg: string;
-};
-
 class CreateTeamViewModel extends AbstractViewModel {
+  @observable
+  disabledOkBtn: boolean = true;
+  @observable
+  nameError: boolean = false;
+  @observable
+  emailError: boolean = false;
+  @observable
+  errorMsg: string = '';
+  @observable
+  emailErrorMsg: string = '';
+  @observable
+  teamName: string = '';
+  @observable
+  description: string = '';
+  @observable
+  serverError: boolean = false;
+
   @computed
   get isOpen() {
     return getGlobalValue('isShowCreateTeamDialog') || false;
+  }
+
+  @computed
+  get isOffline() {
+    return getGlobalValue('network') === 'offline';
   }
 
   @action
@@ -28,6 +45,26 @@ class CreateTeamViewModel extends AbstractViewModel {
     const globalStore = storeManager.getGlobalStore();
     const isShowCreateTeamDialog = !globalStore.get('isShowCreateTeamDialog');
     globalStore.set('isShowCreateTeamDialog', isShowCreateTeamDialog);
+  }
+
+  @action
+  inputReset = () => {
+    this.errorMsg = '';
+    this.nameError = false;
+    this.disabledOkBtn = true;
+    this.emailError = false;
+    this.serverError = false;
+  }
+
+  handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.teamName = e.target.value;
+    this.disabledOkBtn = e.target.value === '';
+    this.errorMsg = '';
+    this.nameError = false;
+  }
+
+  handleDescChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.description = e.target.value;
   }
 
   @action
@@ -41,17 +78,23 @@ class CreateTeamViewModel extends AbstractViewModel {
     const groupService: GroupService = GroupService.getInstance();
     const accountService: AccountService = AccountService.getInstance();
     const creatorId = Number(accountService.getCurrentUserId());
-    const result = await groupService.createTeam(
-      name,
-      creatorId,
-      memberIds,
-      description,
-      {
-        isPublic,
-        canPost,
-      },
-    );
-    console.log(result);
+    let result;
+    try {
+      result = await groupService.createTeam(
+        name,
+        creatorId,
+        memberIds,
+        description,
+        {
+          isPublic,
+          canPost,
+        },
+      );
+      console.log(result);
+    } catch (err) {
+      this.serverError = true;
+      return;
+    }
 
     if (result && (result as IResponseError).error) {
       throw this.createErrorHandler(result as IResponseError);
@@ -60,27 +103,16 @@ class CreateTeamViewModel extends AbstractViewModel {
     return result;
   }
 
-  createErrorHandler(result: IResponseError): errorTips {
+  createErrorHandler(result: IResponseError) {
     const code = result.error.code;
-    let errorMsg: errorTips = {
-      type: '',
-      msg: '',
-    };
-
     if (code === 'already_taken') {
-      errorMsg = {
-        type: 'already_taken',
-        msg: 'already taken',
-      };
+      this.errorMsg = 'already taken';
+      this.nameError = true;
+    } else if (code === 'invalid_field') {
+      this.emailErrorMsg = 'Invalid Email';
+      this.emailError = true;
     }
-    if (code === 'invalid_field') {
-      errorMsg = {
-        type: 'invalid_email',
-        msg: 'Invalid Email',
-      };
-    }
-    return errorMsg;
   }
 }
 
-export { CreateTeamViewModel, errorTips };
+export { CreateTeamViewModel };

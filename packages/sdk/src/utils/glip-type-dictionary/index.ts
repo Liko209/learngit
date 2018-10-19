@@ -40,16 +40,15 @@ function parseSocketMessage(message: string | ISystemMessage) {
     return { [type]: data };
   }
 
-  let parsed;
+  let parsedMsg;
   try {
-    parsed = JSON.parse(message);
-  } catch (err) {
-    return {};
+    parsedMsg = JSON.parse(message);
+  } catch (e) {
+    return null;
   }
-
   const {
     body: { objects, hint },
-  } = parsed;
+  } = parsedMsg;
   let post_creator_ids: number[] | undefined;
   if (hint && hint.post_creator_ids) {
     post_creator_ids = _.values(hint.post_creator_ids);

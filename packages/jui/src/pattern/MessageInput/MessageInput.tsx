@@ -9,6 +9,7 @@ import {
   grey,
   height,
   primary,
+  ellipsis,
 } from '../../foundation/utils/styles';
 import MarkdownShortcuts from './MarkdownShortcuts';
 import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
@@ -32,7 +33,8 @@ const GlobalStyle = createGlobalStyle`
         ${typography('body1')};
         padding: ${spacing(2)};
         min-height: ${height(9)};
-        max-height: ${height(68)};;
+        max-height: ${height(68)};
+        height: auto;
         border-radius: ${spacing(1)};
         color: ${grey('700')};
         border: 1px solid ${grey('300')};
@@ -40,6 +42,8 @@ const GlobalStyle = createGlobalStyle`
         &::before {
           font-style: normal;
           color: ${grey('400')};
+          ${ellipsis()};
+          width: 80%;
         }
         &:hover {
           background-color: ${grey('50')};

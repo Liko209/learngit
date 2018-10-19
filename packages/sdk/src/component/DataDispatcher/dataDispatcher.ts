@@ -14,6 +14,9 @@ class DataDispatcher extends EventEmitter2 {
 
   async onDataArrived(data: string, partial?: boolean) {
     const entries = parseSocketMessage(data);
+    if (!entries) {
+      return;
+    }
     return Promise.all(
       Object.keys(entries).map((key: string) =>
         this.emitAsync(this._getEmitEvent('SOCKET', key, partial), entries[key]),

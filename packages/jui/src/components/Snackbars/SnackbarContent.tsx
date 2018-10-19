@@ -64,7 +64,6 @@ const JuiSnackbarContent: React.SFC<JuiSnackbarsProps> = (
     <Jui.SnackbarContent
       bgColor={color}
       classes={{
-        root: 'root',
         message: 'message',
       }}
       message={message}
