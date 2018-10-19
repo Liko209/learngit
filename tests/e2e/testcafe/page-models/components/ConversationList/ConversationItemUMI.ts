@@ -1,6 +1,5 @@
 import { Selector } from 'testcafe';
 import { BaseComponent } from '../..';
-import { SITE_URL } from '../../../config';
 class ConversationItemUMI extends BaseComponent {
   get conversationItem() {
     return Selector('.conversation-list-item');

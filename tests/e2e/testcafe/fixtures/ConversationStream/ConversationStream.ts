@@ -1,5 +1,5 @@
 import { formalName } from '../../libs/filter';
-import { setUp, tearDown, TestHelper } from '../../libs/helpers';
+import { setUp, tearDown } from '../../libs/helpers';
 import { directLogin } from '../../utils';
 import { TeamSection } from '../../page-models/components';
 import { ConversationStream } from '../../page-models/components/ConversationStream/ConversationStream';
