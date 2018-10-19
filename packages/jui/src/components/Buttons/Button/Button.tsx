@@ -8,18 +8,15 @@ import tinycolor from 'tinycolor2';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
-import styled, {
-  keyframes,
-  Dependencies,
-} from '../../../foundation/styled-components';
+import styled, { Dependencies } from '../../../foundation/styled-components';
 import {
   typography,
   spacing,
   palette,
   width,
+  rippleEnter,
 } from '../../../foundation/utils/styles';
 import { Omit } from '../../../foundation/utils/typeHelper';
-import { Theme } from '../../../foundation/theme/theme';
 
 export type JuiButtonProps = Omit<MuiButtonProps, 'innerRef'> & {
   size?: 'small' | 'large';
@@ -27,17 +24,6 @@ export type JuiButtonProps = Omit<MuiButtonProps, 'innerRef'> & {
   disabled?: boolean;
   color?: 'primary' | 'secondary';
 };
-
-const rippleEnter = (theme: Theme) => keyframes`
-  from {
-    transform: scale(0);
-    opacity: 0.1;
-  }
-  to {
-    transform: scale(1);
-    opacity: ${theme.palette.action.hoverOpacity * 2};
-  }
-`;
 
 const touchRippleClasses = {
   rippleVisible: 'rippleVisible',

@@ -46,7 +46,9 @@ describe('Socket Manager', () => {
     it('singleton', () => {
       const manager = SocketManager.getInstance();
       expect(manager.hasActiveFSM()).toEqual(socketManager.hasActiveFSM());
-      expect(manager.ongoingFSMCount()).toEqual(socketManager.ongoingFSMCount());
+      expect(manager.ongoingFSMCount()).toEqual(
+        socketManager.ongoingFSMCount(),
+      );
     });
 
     it('login', () => {
@@ -65,8 +67,11 @@ describe('Socket Manager', () => {
       it('online before logged in', () => {
         notificationCenter.emitService(SERVICE.LOGOUT);
         expect(socketManager.hasActiveFSM()).toBeFalsy();
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, { state: 'online' });
+        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+          state: 'online',
+        });
         expect(socketManager.hasActiveFSM()).toBeFalsy();
+        expect(socketManager.isConnected()).toBeFalsy();
       });
 
       it('online after logged in', () => {
@@ -74,32 +79,46 @@ describe('Socket Manager', () => {
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmNameBeforeOnline = socketManager.activeFSM.name;
         expect(!!fsmNameBeforeOnline).toBeTruthy();
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, { state: 'online' });
+        socketManager.activeFSM.finishConnect();
+        expect(socketManager.isConnected()).toBeTruthy();
+        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+          state: 'online',
+        });
         const fsmNameAfterOnline = socketManager.activeFSM.name;
         expect(!!fsmNameAfterOnline).toBeTruthy();
         expect(fsmNameBeforeOnline).not.toEqual(fsmNameAfterOnline);
       });
 
       it('offline', () => {
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, { state: 'offline' });
+        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+          state: 'offline',
+        });
         expect(socketManager.hasActiveFSM()).toBeFalsy();
       });
 
       it('focus', () => {
         notificationCenter.emitService(SERVICE.LOGOUT);
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, { state: 'focus' });
+        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+          state: 'focus',
+        });
         expect(socketManager.hasActiveFSM()).toBeFalsy();
 
         notificationCenter.emitService(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
 
         socketManager.activeFSM.finishConnect();
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, { state: 'focus' });
+        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+          state: 'focus',
+        });
 
         socketManager.activeFSM.fireDisconnect();
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, { state: 'focus' });
+        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+          state: 'focus',
+        });
 
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, { state: 'refresh' });
+        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+          state: 'refresh',
+        });
       });
     });
 
@@ -172,7 +191,9 @@ describe('Socket Manager', () => {
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         // const fsmName1 = socketManager.activeFSM.name;
 
-        notificationCenter.emitService(SOCKET.RECONNECT, { body: { server: 'reconnect_url_a' } });
+        notificationCenter.emitService(SOCKET.RECONNECT, {
+          body: { server: 'reconnect_url_a' },
+        });
       });
     });
   });

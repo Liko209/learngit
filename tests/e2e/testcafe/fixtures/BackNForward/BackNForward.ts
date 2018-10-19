@@ -6,7 +6,7 @@
 import { directLogin } from '../../utils';
 import { setUp, tearDown } from '../../libs/helpers';
 import { formalName } from '../../libs/filter';
-import { BackNForward } from '../../page-models/components/BackNForward/BackNForward';
+import { BackNForward } from '../../page-models/pages/BackNForward';
 import { ClientFunction } from 'testcafe';
 
 declare var test: TestFn;
@@ -21,13 +21,13 @@ test(
       .log('1. Navigate to BackNForward')
       .shouldNavigateTo(BackNForward)
       .log('2. click Phone Nav')
-      .clickLeftNavBtn(2)
+      .clickLeftNavBtn('phone')
       .log('3. click Meetings Nav')
-      .clickLeftNavBtn(3)
+      .clickLeftNavBtn('meetings')
       .log('4. click Contacts Nav')
-      .clickLeftNavBtn(4)
+      .clickLeftNavBtn('contacts')
       .log('5. Click Calendar Nav')
-      .clickLeftNavBtn(5)
+      .clickLeftNavBtn('calendar')
       .log('6. Click backward btn')
       .clickBackwardBtn();
     const getLocation = ClientFunction(() => document.location.pathname);
@@ -59,11 +59,11 @@ test(
       .log('1. Navigate to BackNForward')
       .shouldNavigateTo(BackNForward)
       .log('2. click Phone Nav')
-      .clickLeftNavBtn(2)
+      .clickLeftNavBtn('phone')
       .log('3. click Meetings Nav')
-      .clickLeftNavBtn(3)
+      .clickLeftNavBtn('meetings')
       .log('4. click Contacts Nav')
-      .clickLeftNavBtn(4)
+      .clickLeftNavBtn('contacts')
       .log('5. Click backward btn')
       .clickBackwardBtn()
       .log('6. Reload app');

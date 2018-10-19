@@ -3,4 +3,5 @@
  * @Date: 2018-9-30 13:53:02
  * Copyright © RingCentral. All rights reserved.
  */
-export * from './BackNForward';
+export * from './HistoryOperation';
+export { OPERATION } from './types';
