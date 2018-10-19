@@ -91,10 +91,6 @@ class StreamViewModel extends StoreViewModel {
   @observable
   postIds: number[] = [];
 
-  constructor() {
-    super();
-  }
-
   onReceiveProps(props: StreamProps) {
     if (this.groupId === props.groupId) return;
     if (this._transformHandler) {

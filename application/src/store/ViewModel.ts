@@ -28,11 +28,16 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
   private _reactionDisposers: IReactionDisposer[] = [];
 
   @observable
-  private _props = {} as P;
+  private _props: P;
 
   @computed
   get props(): P {
     return this._props;
+  }
+
+  constructor(props?: P) {
+    super();
+    this._props = props || ({} as P);
   }
 
   onReceiveProps?(props: P): void;

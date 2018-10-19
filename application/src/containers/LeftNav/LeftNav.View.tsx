@@ -41,7 +41,7 @@ class LeftNav extends Component<LeftNavProps> {
           url: '/messages',
           icon: 'message',
           title: t('Messages'),
-          umi: <Umi ids={groupIds} global={'UMI.app'} />,
+          umi: <Umi ids={groupIds} global="UMI.app" />,
         },
         {
           url: '/phone',

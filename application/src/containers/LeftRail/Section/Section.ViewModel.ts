@@ -102,8 +102,8 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 
 class SectionViewModel extends StoreViewModel<SectionProps>
   implements SectionViewProps {
-  constructor() {
-    super();
+  constructor(props: SectionProps) {
+    super(props);
     this._oldFavGroupIds =
       getSingleEntity<Profile, ProfileModel>(
         ENTITY_NAME.PROFILE,
