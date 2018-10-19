@@ -32,7 +32,7 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   renderCloseMenuItem() {
-    if (!this.props.umiHint) {
+    if (this.props.showClose) {
       return (
         <JuiMenuItem onClick={this._handleCloseConversation}>
           {t('conversationMenuItem:close')}

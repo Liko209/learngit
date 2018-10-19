@@ -7,9 +7,7 @@ import { computed } from 'mobx';
 import _ from 'lodash';
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { getEntity, getSingleEntity } from '@/store/utils';
-import { MyState } from 'sdk/models';
-import MyStateModel from '@/store/models/MyState';
+import { getEntity } from '@/store/utils';
 import { UmiProps, UmiViewProps } from './types';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
@@ -33,10 +31,13 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   @computed
   private get _umiObj() {
     const groupIds = this.ids;
-    const lastGroupId = getSingleEntity<MyState, MyStateModel>(
-      ENTITY_NAME.MY_STATE,
-      'lastGroupId',
-    ) as number;
+    // const lastGroupId = getSingleEntity<MyState, MyStateModel>(
+    //   ENTITY_NAME.MY_STATE,
+    //   'lastGroupId',
+    // ) as number;
+    const lastGroupId = storeManager
+      .getGlobalStore()
+      .get('currentConversationId');
     const groupStates = _.map(groupIds, (groupId: number) => {
       return getEntity(ENTITY_NAME.GROUP_STATE, groupId) as GroupStateModel;
     });
@@ -51,6 +52,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       important = important || !!groupState.unreadMentionsCount;
       return unreadCount;
     });
+
     return {
       unreadCount,
       important,
