@@ -79,9 +79,9 @@ export default class PersonModel extends Base<Person> {
         }
       }
       if (!pseudoUserDisplayName) {
-        pseudoUserDisplayName = phoneNumberHelper.defaultFormat(
-          this.pseudoUserPhoneNumber || this.firstName,
-        );
+        pseudoUserDisplayName = this.pseudoUserPhoneNumber
+          ? phoneNumberHelper.defaultFormat(this.pseudoUserPhoneNumber)
+          : this.firstName;
       }
       return pseudoUserDisplayName;
     }
