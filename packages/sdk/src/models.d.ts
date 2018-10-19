@@ -119,6 +119,7 @@ export type Person = ExtendedBaseModel & {
   is_pseudo_user?: boolean;
   glip_user_id?: number;
   away_status?: string;
+  pseudo_user_phone_number?: string;
 };
 
 export type UserInfo = {
