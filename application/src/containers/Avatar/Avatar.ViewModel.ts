@@ -94,5 +94,9 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     }
     return url;
   }
+  @computed
+  get autoMationId() {
+    return this.props.autoMationId;
+  }
 }
 export { AvatarViewModel };

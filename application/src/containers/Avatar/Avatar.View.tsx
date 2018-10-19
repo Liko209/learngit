@@ -11,11 +11,11 @@ import { AvatarViewProps } from './types';
 @observer
 class AvatarView extends React.Component<AvatarViewProps> {
   render() {
-    const { bgColor, headShotUrl, shouldShowShortName, shortName, ...rest } = this.props;
+    const { bgColor, headShotUrl, shouldShowShortName, shortName, autoMationId, ...rest } = this.props;
     return !shouldShowShortName ? (
-      <JuiAvatar src={headShotUrl} {...rest} color="" />
+      <JuiAvatar src={headShotUrl} data-test-automation-id={autoMationId} color="" {...rest}  />
     ) : (
-      <JuiAvatar color={bgColor} {...rest}>
+      <JuiAvatar color={bgColor} data-test-automation-id={autoMationId} {...rest}>
         {shortName}
       </JuiAvatar>
     );

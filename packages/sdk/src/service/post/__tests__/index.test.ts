@@ -205,10 +205,13 @@ describe('PostService', () => {
     });
 
     it('should return local data', async () => {
+      /**
+       * We have 2 posts total at local, 0 at remote.
+       */
       postService.getPostsFromLocal.mockResolvedValueOnce({
         posts: [{ id: 1 }, { id: 2 }],
         items: [],
-        hasMore: true,
+        hasMore: false,
       });
       const resultEmpty = await postService.getPostsByGroupId({
         groupId: 1,
@@ -221,13 +224,18 @@ describe('PostService', () => {
         offset: 0,
       });
       expect(resultEmpty).toEqual({
-        hasMore: true,
         items: [],
         posts: [{ id: 1 }, { id: 2 }],
+        hasMore: false,
+        limit: 20,
+        offset: 0,
       });
     });
 
     it('should return remote data', async () => {
+      /**
+       * 2 posts total, 2 at remote, 0 at local.
+       */
       postService.getPostsFromLocal.mockResolvedValueOnce({
         posts: [],
         items: [],
@@ -253,6 +261,72 @@ describe('PostService', () => {
         hasMore: false,
         offset: 0,
         limit: 20,
+      });
+    });
+
+    it('should return local+remote data when localData + remoteData < pageSize', async () => {
+      /**
+       * 4 posts total, 2 at local, 2 at remote.
+       * When pageSize is 20, it should return all 4 posts.
+       */
+      postService.getPostsFromLocal.mockResolvedValueOnce({
+        posts: [{ id: 1 }, { id: 2 }],
+        items: [],
+        hasMore: true,
+      });
+      postService.getPostsFromRemote.mockResolvedValueOnce({
+        posts: [{ _id: 3 }, { _id: 4 }],
+        items: [],
+        hasMore: false,
+      });
+
+      baseHandleData.mockResolvedValue([{ id: 3 }, { id: 4 }]);
+      itemHandleData.mockResolvedValue([]);
+
+      const result = await postService.getPostsByGroupId({
+        groupId: 1,
+        offset: 0,
+        limit: 20,
+      });
+      expect(result).toEqual({
+        posts: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+        items: [],
+        hasMore: false,
+        offset: 0,
+        limit: 20,
+      });
+    });
+
+    it('should return local+remote data when localData + remoteData > pageSize', async () => {
+      /**
+       * 4 posts total, 2 of them at local, 2 at remote.
+       * When pageSize is 3, it should return 3 posts (2 local + 1 remote).
+       */
+      postService.getPostsFromLocal.mockResolvedValueOnce({
+        posts: [{ id: 1 }, { id: 2 }],
+        items: [],
+        hasMore: true,
+      });
+      postService.getPostsFromRemote.mockResolvedValueOnce({
+        posts: [{ _id: 3 }],
+        items: [],
+        hasMore: false,
+      });
+
+      baseHandleData.mockResolvedValue([{ id: 3 }]);
+      itemHandleData.mockResolvedValue([]);
+
+      const result = await postService.getPostsByGroupId({
+        groupId: 1,
+        offset: 0,
+        limit: 3,
+      });
+      expect(result).toEqual({
+        posts: [{ id: 1 }, { id: 2 }, { id: 3 }],
+        items: [],
+        hasMore: false,
+        offset: 0,
+        limit: 3,
       });
     });
 

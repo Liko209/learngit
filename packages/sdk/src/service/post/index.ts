@@ -3,6 +3,7 @@
  * @Date: 2018-03-05 11:24:40
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
 import { daoManager, ItemDao, PostDao } from '../../dao';
 // import GroupDao from 'dao/group';
 import PostAPI from '../../api/glip/post';
@@ -162,31 +163,37 @@ export default class PostService extends BaseService<Post> {
         offset,
         limit,
       });
-      if (result.posts.length !== 0) {
-        return result;
+
+      if (
+        result.posts.length === 0 ||
+        (result.hasMore && result.posts.length < limit)
+      ) {
+        // should try to get more posts from server
+        mainLogger.debug(
+          `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`,
+        );
+
+        const lastPost = _.last(result.posts);
+
+        const remoteResult = await this.getPostsFromRemote({
+          groupId,
+          direction,
+          postId: lastPost ? lastPost.id : postId,
+          limit: limit - result.posts.length,
+        });
+
+        const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
+        const items = (await itemHandleData(remoteResult.items)) || [];
+
+        result.posts.push(...posts);
+        result.items.push(...items);
+        result.hasMore = remoteResult.hasMore;
       }
 
-      // should try to get more posts from server
-      mainLogger.debug(
-        `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`,
-      );
+      result.limit = limit;
+      result.offset = offset;
 
-      const remoteResult = await this.getPostsFromRemote({
-        groupId,
-        postId,
-        limit,
-        direction,
-      });
-
-      const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
-      const items = (await itemHandleData(remoteResult.items)) || [];
-      return {
-        offset,
-        limit,
-        posts,
-        items,
-        hasMore: remoteResult.hasMore,
-      };
+      return result;
     } catch (e) {
       mainLogger.error(e);
       return {

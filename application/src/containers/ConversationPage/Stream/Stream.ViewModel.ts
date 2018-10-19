@@ -83,6 +83,7 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
 class StreamViewModel extends StoreViewModel {
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   private _stateService: StateService = StateService.getInstance();
+  private _postService: PostService = PostService.getInstance();
 
   private _transformHandler: PostTransformHandler;
 
@@ -105,22 +106,18 @@ class StreamViewModel extends StoreViewModel {
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (offset: number, direction, pageSize, anchor) => {
         try {
-          const {
-            posts,
-          } = await (PostService.getInstance() as PostService).getPostsByGroupId(
-            {
-              offset,
-              groupId: props.groupId,
-              postId: anchor && anchor.id,
-              limit: pageSize,
-            },
-          );
-          return posts;
+          const { posts, hasMore } = await this._postService.getPostsByGroupId({
+            offset,
+            groupId: props.groupId,
+            postId: anchor && anchor.id,
+            limit: pageSize,
+          });
+          return { hasMore, data: posts };
         } catch (err) {
           if (err.code === ErrorTypes.NETWORK) {
             // TODO error handle
           }
-          return [];
+          return { data: [], hasMore: true };
         }
       },
     };
@@ -155,14 +152,12 @@ class StreamViewModel extends StoreViewModel {
   @loading
   async loadInitialPosts() {
     await this._loadPosts(FetchDataDirection.UP);
-    // const hasMore = this._transformHandler.hasMore(FetchDataDirection.UP);
-    // hasMore && this.loadPrevPosts();
   }
 
   @onScrollToTop
   @loadingTop
-  loadPrevPosts() {
-    return this._loadPosts(FetchDataDirection.UP);
+  async loadPrevPosts() {
+    await this._loadPosts(FetchDataDirection.UP);
   }
 
   markAsRead() {
@@ -172,15 +167,8 @@ class StreamViewModel extends StoreViewModel {
   }
 
   private async _loadPosts(direction: FetchDataDirection) {
-    if (!this._transformHandler.hasMore(direction)) {
-      return {
-        posts: [],
-      };
-    }
+    if (!this._transformHandler.hasMore(direction)) return;
     await this._transformHandler.fetchData(direction);
-    return {
-      posts: [],
-    };
   }
 }
 

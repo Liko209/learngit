@@ -10,6 +10,7 @@ import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
 import { JuiArrowTip } from '../../components/index';
 import { height, grey, palette, spacing } from '../../foundation/utils/styles';
+import { History, Location, Action } from 'history';
 
 import {
   JuiListItem,
@@ -141,9 +142,35 @@ type JuiLeftNavProps = {
     umi?: JSX.Element;
   }[][];
   onRouteChange: Function;
+  history: History<any>;
 };
 
-class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
+class JuiLeftNav extends PureComponent<
+  JuiLeftNavProps,
+  { selectedPath: string }
+> {
+  constructor(props: JuiLeftNavProps) {
+    super(props);
+    this.state = {
+      selectedPath: '',
+    };
+  }
+
+  componentDidMount() {
+    const { history } = this.props;
+    history.listen((location: Location, action: Action) => {
+      const { pathname } = location;
+      const actIndex = pathname.lastIndexOf('/');
+      const pathSlice = actIndex
+        ? pathname.slice(1, actIndex)
+        : pathname.slice(1);
+      const selectedPath = pathSlice;
+      this.setState({
+        selectedPath,
+      });
+    });
+  }
+
   onRouteChange(url: string) {
     const { onRouteChange } = this.props;
     onRouteChange(url);
@@ -152,17 +179,23 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
 
   renderNavItems = () => {
     const { icons, expand } = this.props;
+    const { selectedPath } = this.state;
     return icons.map((arr, idx) => {
       return (
         <MuiList component="nav" disablePadding={true} key={idx}>
           {arr.map((item, index) => {
             const navUrl = item.url;
-            const pathname = window.location.pathname;
-            const actIndex = pathname.lastIndexOf('/');
-            const pathSlice = actIndex
-              ? pathname.slice(1, actIndex)
-              : pathname.slice(1);
-            const selected = pathSlice === navUrl.substr(1);
+            let selected;
+            if (selectedPath) {
+              selected = selectedPath === navUrl.substr(1);
+            } else {
+              const pathname = window.location.pathname;
+              const actIndex = pathname.lastIndexOf('/');
+              const pathSlice = actIndex
+                ? pathname.slice(1, actIndex)
+                : pathname.slice(1);
+              selected = pathSlice === navUrl.substr(1);
+            }
             const NavItem = (
               <StyledListItem
                 button={true}

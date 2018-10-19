@@ -15,6 +15,7 @@ import MenuList from '@material-ui/core/MenuList';
 
 type MenuItems = {
   label: string;
+  automationId?: string;
   onClick: (event: React.MouseEvent<HTMLInputElement>) => void;
 }[];
 
@@ -97,6 +98,7 @@ class JuiMenuListComposition extends React.Component<
                       return (
                         <MenuItem
                           key={index}
+                          data-test-automation-id={item.automationId}
                           onClick={this.handleMenuItemClick.bind(
                             this,
                             item.onClick,

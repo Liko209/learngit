@@ -6,6 +6,7 @@
 import config from './config';
 import { Sdk, LogControlManager, service } from 'sdk';
 import storeManager from '@/store';
+import history from '@/utils/history';
 import { parse } from 'qs';
 
 // send configs to sdk
@@ -46,5 +47,16 @@ export async function initAll() {
   notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
     const currentUserId = accountService.getCurrentUserId();
     globalStore.set('currentUserId', currentUserId);
+  });
+  notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
+    // 1. show loading
+    globalStore.set('app.showGlobalLoading', true);
+    // 2. clear store data
+    storeManager.resetStores();
+  });
+  notificationCenter.on(SERVICE.SYNC_SERVICE.END_CLEAR_DATA, () => {
+    // stop loading
+    globalStore.set('app.showGlobalLoading', false);
+    history.replace('/messages');
   });
 }

@@ -13,7 +13,4 @@ function isOnlyLetterOrNumbers(value: any) {
   return false;
 }
 
-export {
-  isElectron,
-  isOnlyLetterOrNumbers,
-};
+export { isElectron, isOnlyLetterOrNumbers };
