@@ -16,7 +16,7 @@
     "i18next-browser-languagedetector": "2.2.3",
     "i18next-xhr-backend": "1.5.1",
     "jui": "0.1.0",
-    "libphonenumber-js": "^1.6.4",
+    "libphonenumber-js": "1.6.4",
     "lodash": "4.17.11",
     "mobx": "4.5.0",
     "mobx-react": "5.2.8",
