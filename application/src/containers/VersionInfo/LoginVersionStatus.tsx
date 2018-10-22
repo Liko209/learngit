@@ -16,7 +16,7 @@ const Wrapper = styled.div`
 `;
 
 function formatDate(date: string) {
-  const d = new Date(date);
+  const d = date ? new Date(date) : new Date();
   let month = String(d.getMonth() + 1);
   let day = String(d.getDate());
   const year = d.getFullYear();
