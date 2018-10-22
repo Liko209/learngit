@@ -10,7 +10,15 @@ import { Avatar } from '@/containers/Avatar';
 import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
+import styled from 'jui/foundation/styled-components';
 
+const StyledPostText = styled.div`
+  font-size: 14px;
+  line-height: 24px;
+  color: #616161;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+`;
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
@@ -22,6 +30,7 @@ export class ConversationCard extends React.Component<
   render() {
     const { id, post, creator, displayTitle, createTime } = this.props;
     const { text } = post;
+    console.log(text);
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
       <React.Fragment>
@@ -38,11 +47,9 @@ export class ConversationCard extends React.Component<
             <Actions id={id} />
           </JuiConversationCardHeader>
           {/* todo: content */}
-          <div
-            style={{ fontSize: '14px', lineHeight: '24px', color: '#616161' }}
-          >
+          <StyledPostText>
             {text}
-          </div>
+          </StyledPostText>
           {/* todo: content */}
           <JuiConversationCardFooter>
             {/* todo: footer */}
