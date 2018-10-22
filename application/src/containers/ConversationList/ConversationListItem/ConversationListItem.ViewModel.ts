@@ -7,21 +7,17 @@ import { computed } from 'mobx';
 import { ConversationListItemViewProps } from './types';
 import { service } from 'sdk';
 const { GroupService } = service;
-import { getEntity, getSingleEntity } from '@/store/utils';
-// import { getGroupName } from '@/utils/groupName';
+import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
-import { MyState } from 'sdk/models';
-import MyStateModel from '@/store/models/MyState';
-import GroupStateModel from '@/store/models/GroupState';
 import StoreViewModel from '@/store/ViewModel';
 import history from '@/utils/history';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
-  > {
+> {
   unreadCount: number;
   important?: boolean | undefined;
   groupService: service.GroupService = GroupService.getInstance();
@@ -59,18 +55,7 @@ class ConversationListItemViewModel extends StoreViewModel<
 
   @computed
   get umiHint() {
-    const lastGroup = getSingleEntity<MyState, MyStateModel>(
-      ENTITY_NAME.MY_STATE,
-      'lastGroupId',
-    ) as number;
-    const groupState = getEntity(
-      ENTITY_NAME.GROUP_STATE,
-      this.groupId,
-    ) as GroupStateModel;
-
-    const isCurrentGroup = lastGroup && lastGroup === this.groupId;
-
-    return !!(!isCurrentGroup && groupState.unreadCount);
+    return this.selected;
   }
 }
 
