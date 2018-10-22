@@ -1,0 +1,23 @@
+{
+  "name": "foundation",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src",
+  "dependencies": {
+    "axios": "0.18.0",
+    "dexie": "3.0.0-alpha.3",
+    "eventemitter2": "5.0.1",
+    "localforage": "1.7.2",
+    "inversify": "4.13.0",
+    "lodash": "4.17.11",
+    "lokijs": "1.5.5",
+    "reflect-metadata": "0.1.12",
+    "socket.io-client": "git+ssh://git@git.ringcentral.com:Fiji/FIJI-socket.io-client.git#Jupiter-2.1.101"
+  },
+  "devDependencies": {
+    "@types/lodash": "*",
+    "@types/lokijs": "*",
+    "@types/socket.io-client": "*",
+    "typescript": "3.1.3"
+  }
+}

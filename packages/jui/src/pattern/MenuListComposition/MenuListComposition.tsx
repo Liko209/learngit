@@ -1,0 +1,127 @@
+/*
+ * @Author: Devin Lin (devin.lin@ringcentral.com)
+ * @Date: 2018-09-29 18:05:01
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import React from 'react';
+import styled from '../../foundation/styled-components';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+
+type MenuItems = {
+  label: string;
+  automationId?: string;
+  onClick: (event: React.MouseEvent<HTMLInputElement>) => void;
+}[];
+
+type MenuExpandTrigger = React.SFC<{
+  onClick: (event: React.MouseEvent<HTMLInputElement>) => void;
+}>;
+
+type MenuListCompositionProps = {
+  awake?: boolean;
+  menuItems: MenuItems;
+  MenuExpandTrigger: MenuExpandTrigger;
+  className?: string;
+};
+
+const MenuListCompositionWrapper = styled.div`
+  display: flex;
+  margin-right: ${({ theme }) => `${1 * theme.spacing.unit}px`};
+`;
+
+const MenuWrapper = styled(Popper)``;
+
+class JuiMenuListComposition extends React.Component<
+  MenuListCompositionProps,
+  { open: boolean; anchorEl: HTMLElement | null }
+> {
+  constructor(props: MenuListCompositionProps) {
+    super(props);
+    this.state = {
+      open: false,
+      anchorEl: null,
+    };
+  }
+
+  handleToggle = (event: React.MouseEvent<HTMLElement>) => {
+    // this.setState(state => ({ open: !state.open }));
+    this.setState({ open: !this.state.open, anchorEl: event.currentTarget });
+  }
+
+  handleClose = (event: React.MouseEvent<HTMLElement>) => {
+    const node = this.state.anchorEl;
+    if (node && node.contains(event.currentTarget)) {
+      return;
+    }
+
+    this.setState({ open: false, anchorEl: null });
+  }
+
+  handleMenuItemClick = (
+    menuItemEvent: () => void,
+    event: React.MouseEvent<HTMLElement>,
+  ) => {
+    this.handleClose(event);
+    menuItemEvent();
+  }
+
+  render() {
+    const { open, anchorEl } = this.state;
+    const { MenuExpandTrigger, menuItems } = this.props;
+    return (
+      <MenuListCompositionWrapper className={this.props.className}>
+        <MenuExpandTrigger aria-haspopup="true" onClick={this.handleToggle} />
+        <MenuWrapper
+          open={open}
+          anchorEl={anchorEl}
+          transition={true}
+          disablePortal={true}
+        >
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{
+                transformOrigin:
+                  placement === 'bottom' ? 'center top' : 'center bottom',
+              }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={this.handleClose}>
+                  <MenuList>
+                    {menuItems.map((item, index) => {
+                      return (
+                        <MenuItem
+                          key={index}
+                          data-test-automation-id={item.automationId}
+                          onClick={this.handleMenuItemClick.bind(
+                            this,
+                            item.onClick,
+                          )}
+                        >
+                          {item.label}
+                        </MenuItem>
+                      );
+                    })}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </MenuWrapper>
+      </MenuListCompositionWrapper>
+    );
+  }
+}
+
+export {
+  JuiMenuListComposition,
+  MenuItems,
+  MenuExpandTrigger,
+  MenuListCompositionProps,
+};

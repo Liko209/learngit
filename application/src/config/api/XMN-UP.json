@@ -1,0 +1,21 @@
+{
+  "rc": {
+    "server": "https://api-xmnup.lab.nordigy.ru",
+    "clientId": "FVKGRbLRTxGxPempqg5f9g",
+    "clientSecret": "bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ"
+  },
+  "glip2": {
+    "server": "https://api-xmnup.lab.nordigy.ru",
+    "clientId": "FVKGRbLRTxGxPempqg5f9g",
+    "clientSecret": "bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ"
+  },
+  "glip": {
+    "server": "https://xmnup.asialab.glip.net",
+    "cacheServer": "https://xmnup.asialab.glip.net:31337"
+  },
+  "glip_desktop": {
+    "server": "https://xmnup.asialab.glip.net",
+    "apiPlatformVersion": "v1.0",
+    "apiPlatform": "/desktop"
+  }
+}

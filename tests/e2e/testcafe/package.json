@@ -1,0 +1,51 @@
+{
+  "name": "jupiter-e2e-tests",
+  "version": "0.0.1",
+  "description": "E2E tests for Jupiter",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "e2e": "ts-node run.ts"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "dependencies": {
+    "@types/allure-js-commons": "0.0.0",
+    "@types/dotenv": "^4.0.3",
+    "@types/glob": "^5.0.35",
+    "@types/lodash": "^4.14.116",
+    "@types/node": "^10.7.0",
+    "@types/uuid": "^3.4.3",
+    "allure-js-commons": "^1.3.2",
+    "attest-testcafe": "http://xmn145.rcoffice.ringcentral.com:9003/packages/attest-testcafe-1.0.0.tgz",
+    "axios": "0.18.0",
+    "btoa": "^1.2.1",
+    "cross-env": "^5.2.0",
+    "dexie": "3.0.0-alpha.2",
+    "dotenv": "^6.0.0",
+    "eventemitter2": "5.0.1",
+    "glip-account-pool-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/glip-account-pool-client-1.0.1.tgz",
+    "glob": "^7.1.2",
+    "http-status-codes": "1.3.0",
+    "localforage": "^1.7.2",
+    "lodash": "^4.17.10",
+    "log4js": "^3.0.5",
+    "ringcentral-js-concise": "^0.5.5",
+    "socket.io-client": "^2.1.1",
+    "string-natural-compare": "2.0.2",
+    "testcafe": "http://xmn145.rcoffice.ringcentral.com:9003/packages/testcafe-0.22.1-alpha.1.tgz",
+    "testcafe-browser-provider-electron": "0.0.6",
+    "testcafe-browser-provider-selenium": "http://xmn145.rcoffice.ringcentral.com:9003/packages/testcafe-browser-provider-selenium-0.2.0.tgz",
+    "testcafe-live": "0.1.3",
+    "testcafe-react-selectors": "^3.0.0",
+    "testcafe-reporter-allure-lazy": "https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/2e736277938715aabc2cf91abcd2d759/testcafe-reporter-allure-lazy-1.0.4.tgz",
+    "ts-node": "^7.0.1",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
+  }
+}

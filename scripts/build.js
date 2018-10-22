@@ -1,0 +1,120 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-08-30 08:44:05
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+
+/**
+ * script to build (transpile) files.
+ * By default it transpiles all files for all packages and writes them
+ * into `build/` directory.
+ * Non-js or files matching IGNORE_PATTERN will be copied without transpiling.
+ *
+ * Example:
+ *  node ./scripts/build.js
+ *  node ./scripts/build.js /users/123/jest/packages/jest-111/src/111.js
+ *
+ * NOTE: this script is node@4 compatible
+ */
+
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const chalk = require('chalk');
+const stringLength = require('string-length');
+const getPackages = require('./getPackages');
+const browserBuild = require('./browserBuild');
+
+const OK = chalk.reset.inverse.bold.green(' DONE ');
+const SRC_DIR = 'src';
+const BUILD_DIR = 'build';
+const PACKAGES_DIR = path.resolve(__dirname, '../packages');
+
+const adjustToTerminalWidth = str => {
+  const columns = process.stdout.columns || 80;
+  const WIDTH = columns - stringLength(OK) + 1;
+  const strings = str.match(new RegExp(`(.{1,${WIDTH}})`, 'g'));
+  let lastString = strings[strings.length - 1];
+  if (lastString.length < WIDTH) {
+    lastString += Array(WIDTH - lastString.length).join(chalk.dim('.'));
+  }
+  return strings
+    .slice(0, -1)
+    .concat(lastString)
+    .join('\n');
+};
+
+function getPackageName(file) {
+  return path.relative(PACKAGES_DIR, file).split(path.sep)[0];
+}
+
+function getBuildPath(file, buildFolder) {
+  const pkgName = getPackageName(file);
+  const pkgSrcPath = path.resolve(PACKAGES_DIR, pkgName, SRC_DIR);
+  const pkgBuildPath = path.resolve(PACKAGES_DIR, pkgName, buildFolder);
+  const relativeToSrcPath = path.relative(pkgSrcPath, file);
+  return path.resolve(pkgBuildPath, relativeToSrcPath);
+}
+
+function buildBrowserPackage(p, multipleEntry = false) {
+  const srcDir = path.resolve(p, SRC_DIR);
+  const pkgJsonPath = path.resolve(p, 'package.json');
+
+  if (!fs.existsSync(pkgJsonPath)) {
+    return;
+  }
+
+  const { main } = require(pkgJsonPath);
+
+  if (!multipleEntry) {
+    if (main.indexOf(BUILD_DIR) !== 0) {
+      throw new Error(
+        `main field for ${pkgJsonPath} should start with "${BUILD_DIR}"`
+      );
+    }
+  }
+
+  return browserBuild(
+    p,
+    p.split('/').pop(),
+    path.resolve(srcDir, 'index.ts'),
+    path.resolve(p, main),
+    'esm',
+    multipleEntry
+  ).then(() => {
+    process.stdout.write(adjustToTerminalWidth(`${path.basename(p)}\n`));
+    process.stdout.write(`${OK}\n`);
+  }).catch(e => {
+    console.error(e);
+    process.exit(1);
+  });
+}
+
+async function build(packages) {
+  for (let i = 0; i < packages.length; i++) {
+    const p = packages[i];
+    if (p.includes('ui-components')) {
+      return;
+    }
+    if (p.includes('ui')) {
+      buildBrowserPackage(p, true)
+    } else {
+     await buildBrowserPackage(p)
+    }
+  }
+}
+
+const packages = getPackages();
+const files = process.argv.slice(2);
+
+if (files.length) {
+  build(packages.filter(p =>
+    files.includes(path.basename(p))
+  ))
+} else {
+  process.stdout.write(chalk.inverse(' Building packages \n'));
+  build(packages);
+}

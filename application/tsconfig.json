@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "build",
+    "rootDir": "src",
+    "target": "es6",
+    "paths": {
+      "@/*": ["src/*"],
+      "sdk/*": ["node_modules/sdk/src/*"],
+      "jui/*": ["node_modules/jui/src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/**/*"]
+}

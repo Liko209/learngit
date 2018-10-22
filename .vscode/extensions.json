@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    "KnisterPeter.vscode-commitizen",
+    "WallabyJs.quokka-vscode",
+    "donjayamanne.githistory",
+    "eamodio.gitlens",
+    "iBotMedia.tstools",
+    "jpoissonnier.vscode-styled-components",
+    "mikey.vscode-fileheader",
+    "streetsidesoftware.code-spell-checker",
+    "wix.vscode-import-cost",
+    "yzhang.markdown-all-in-one",
+    "eg2.tslint",
+    "orta.vscode-jest",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode"
+  ]
+}

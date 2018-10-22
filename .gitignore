@@ -1,0 +1,39 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# testing
+/coverage
+
+# production
+/packages/*/build/
+/packages/*/build-es/
+/packages/*/coverage/
+/packages/*/node_modules/
+/packages/jui/storybook-static
+/application/node_modules/
+/application/build/
+/application/build-es/
+
+# misc
+.DS_Store
+
+lerna-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# vscode
+.vscode/symbols.json
+# vscode history extension
+.history
+.idea/
+# cache
+.rpt2_cache
+
+# lint report folder
+/lint
+# UT error
+/ut
