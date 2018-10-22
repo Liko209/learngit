@@ -9,7 +9,7 @@ import { SOCKET } from '../eventKey';
 import dataDispatcher from '../../component/DataDispatcher/index';
 
 import { BaseModel, Raw } from '../../models'; // eslint-disable-line
-import { BaseError } from '../../utils';
+import { BaseError, ErrorParser } from '../../utils';
 import _ from 'lodash';
 
 jest.mock('../../dao/base/BaseDao');
@@ -196,9 +196,8 @@ describe('BaseService', () => {
         name: 'someone',
       };
 
-      jest
-        .spyOn(service, 'doUpdateModel')
-        .mockResolvedValue({ id: 3, name: 'someone', note: 'a player' });
+      const updateModel = { id: 3, name: 'someone', note: 'a player' };
+      jest.spyOn(service, 'doUpdateModel').mockResolvedValue(updateModel);
 
       jest
         .spyOn(service, 'getById')
@@ -212,7 +211,8 @@ describe('BaseService', () => {
         service.doUpdateModel,
         service.doPartialNotify,
       );
-      expect(resp).toEqual(true);
+
+      expect(resp).toEqual(updateModel);
       expect(service.doPartialNotify).toBeCalledTimes(1);
     });
   });
@@ -243,7 +243,7 @@ describe('BaseService', () => {
         service.doPartialNotify,
       );
 
-      expect(resp).toEqual(false);
+      expect(resp).toEqual(error);
 
       expect(service.doPartialNotify).toBeCalledTimes(2);
     });
@@ -258,10 +258,6 @@ describe('BaseService', () => {
         name: 'someone',
       };
 
-      const error = new BaseError(5000, '');
-
-      jest.spyOn(service, 'doUpdateModel').mockResolvedValue(error);
-
       jest.spyOn(service, 'getById').mockResolvedValue(null);
 
       service.doPartialNotify = jest.fn();
@@ -273,7 +269,7 @@ describe('BaseService', () => {
         service.doPartialNotify,
       );
 
-      expect(resp).toEqual(false);
+      expect(resp).toEqual(ErrorParser.parse('none model error'));
 
       expect(service.doPartialNotify).toBeCalledTimes(0);
     });
@@ -287,13 +283,10 @@ describe('BaseService', () => {
         name: 'trump',
       };
 
-      jest
-        .spyOn(service, 'doUpdateModel')
-        .mockResolvedValue({ id: 3, name: 'trump', note: 'a player' });
+      const originalModel = { id: 3, name: 'trump', note: 'a player' };
+      jest.spyOn(service, 'doUpdateModel').mockResolvedValue(originalModel);
 
-      jest
-        .spyOn(service, 'getById')
-        .mockResolvedValue({ id: 3, name: 'trump', note: 'a player' });
+      jest.spyOn(service, 'getById').mockResolvedValue(originalModel);
 
       service.doPartialNotify = jest.fn();
 
@@ -303,7 +296,7 @@ describe('BaseService', () => {
         service.doUpdateModel,
         service.doPartialNotify,
       );
-      expect(resp).toEqual(true);
+      expect(resp).toEqual(originalModel);
       expect(service.doPartialNotify).toBeCalledTimes(0);
     });
   });

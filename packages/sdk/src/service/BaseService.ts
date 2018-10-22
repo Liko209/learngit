@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { transform, isFunction } from '../service/utils';
-import { BaseError } from '../utils';
+import { BaseError, ErrorParser } from '../utils';
 import { daoManager, DeactivatedDao } from '../dao';
 import { BaseModel, Raw } from '../models'; // eslint-disable-line
 import { mainLogger } from 'foundation';
@@ -130,22 +130,33 @@ class BaseService<
     ) => Partial<Raw<SubModel>>,
     doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
     doPartialNotify?: (partialModels: Partial<Raw<SubModel>>[]) => void,
-  ): Promise<boolean> {
+  ): Promise<SubModel | BaseError> {
     const id: number = partialModel.id
       ? partialModel.id
       : partialModel._id
         ? partialModel._id
         : 0;
-    let result: boolean = false;
+    let result: SubModel | BaseError;
+
     do {
       if (id <= 0) {
         mainLogger.warn('handlePartialUpdate: invalid id');
+        result = ErrorParser.parse('none model error');
         break;
       }
 
       const originalModel = await this.getById(id);
       if (!originalModel) {
         mainLogger.warn('handlePartialUpdate: originalModel is nil');
+        result = ErrorParser.parse('none model error');
+        break;
+      }
+
+      if (!doUpdateModel) {
+        mainLogger.warn(
+          'handlePartialUpdate: doUpdateModel is nil, no updates',
+        );
+        result = originalModel;
         break;
       }
 
@@ -184,18 +195,11 @@ class BaseService<
   private async _handlePartialUpdateWithOriginal(
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
-    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
+    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
     doPartialNotify?: (partialModels: Partial<Raw<SubModel>>[]) => void,
-  ) {
-    let result: boolean = false;
+  ): Promise<SubModel | BaseError> {
+    let result: SubModel | BaseError;
     do {
-      if (!doUpdateModel) {
-        mainLogger.warn(
-          'handlePartialUpdate: doUpdateModel is nil, no updates',
-        );
-        break;
-      }
-
       partialModel.id = originalModel.id;
       if (partialModel._id) {
         delete partialModel._id;
@@ -207,7 +211,7 @@ class BaseService<
       );
 
       if (_.isEqual(partialModel, rollbackPartialModel)) {
-        result = true;
+        result = originalModel;
         mainLogger.warn('handlePartialUpdate: no changes, no need update');
         break;
       }
@@ -222,14 +226,12 @@ class BaseService<
         originalModel,
       );
       const resp = await doUpdateModel(mergedModel);
-
-      const isError: boolean = resp instanceof BaseError;
-      if (isError) {
+      if (resp instanceof BaseError) {
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
         this._doPartialNotify(rollbackPartialModel, doPartialNotify);
       }
 
-      result = !isError;
+      result = resp;
     } while (false);
 
     return result;
