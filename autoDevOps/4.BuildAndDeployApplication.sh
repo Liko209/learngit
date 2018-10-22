@@ -1,7 +1,7 @@
 #!/usr/local/bin/bash
 echo '====Init build version info'
 cd $project/application/src/containers/VersionInfo/
-npx ts-node GitRepo.ts
+ts-node GitRepo.ts
 
 echo '====Start Build application'
 cd $project/application
