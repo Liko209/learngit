@@ -8,6 +8,7 @@ import {
   handleOnlyLetterOrNumbers,
   handleOneOfName,
 } from '@/utils/helper';
+import phoneNumberHelper from '@/utils/phoneNumber';
 
 export default class PersonModel extends Base<Person> {
   @observable
@@ -32,6 +33,8 @@ export default class PersonModel extends Base<Person> {
   glipUserId?: number;
   @observable
   awayStatus?: string;
+  @observable
+  pseudoUserPhoneNumber?: string;
 
   constructor(data: Person) {
     super(data);
@@ -46,6 +49,7 @@ export default class PersonModel extends Base<Person> {
       glip_user_id,
       away_status,
       headshot_version,
+      pseudo_user_phone_number,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -57,6 +61,7 @@ export default class PersonModel extends Base<Person> {
     this.isPseudoUser = is_pseudo_user;
     this.glipUserId = glip_user_id;
     this.awayStatus = away_status;
+    this.pseudoUserPhoneNumber = pseudo_user_phone_number;
   }
 
   static fromJS(data: Person) {
@@ -66,12 +71,19 @@ export default class PersonModel extends Base<Person> {
   @computed
   get displayName(): string {
     if (this.isPseudoUser) {
+      let pseudoUserDisplayName = '';
       if (this.glipUserId) {
         const linkedUser = getEntity(ENTITY_NAME.PERSON, this.glipUserId);
         if (linkedUser) {
-          return linkedUser.displayName;
+          pseudoUserDisplayName = linkedUser.displayName;
         }
       }
+      if (!pseudoUserDisplayName) {
+        pseudoUserDisplayName = this.pseudoUserPhoneNumber
+          ? phoneNumberHelper.defaultFormat(this.pseudoUserPhoneNumber)
+          : this.firstName;
+      }
+      return pseudoUserDisplayName;
     }
     let dName = '';
     if (this.firstName) {

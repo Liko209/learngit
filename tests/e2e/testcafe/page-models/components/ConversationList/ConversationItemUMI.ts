@@ -1,6 +1,5 @@
 import { Selector } from 'testcafe';
 import { BaseComponent } from '../..';
-import { SITE_URL } from '../../../config';
 class ConversationItemUMI extends BaseComponent {
   get conversationItem() {
     return Selector('.conversation-list-item');
@@ -46,12 +45,6 @@ class ConversationItemUMI extends BaseComponent {
   //     await t.expect(this.collapse.clientHeight).eql(0);
   //   });
   // }
-
-  public reload() {
-    return this.chain(async (t: TestController) => {
-      await t.navigateTo(SITE_URL);
-    });
-  }
 
   // private async _getGroupProps(id: number) {
   //   return (await GroupAPI.requestGroupById(id)).data;

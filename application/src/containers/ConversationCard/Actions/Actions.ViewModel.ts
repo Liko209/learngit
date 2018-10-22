@@ -18,10 +18,6 @@ class ActionsViewModel extends AbstractViewModel implements ActionsViewProps {
   id: number;
   private _postService: PostService = PostService.getInstance();
 
-  constructor() {
-    super();
-  }
-
   onReceiveProps({ id }: ActionsProps) {
     if (id !== this.id) {
       this.id = id;

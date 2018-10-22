@@ -21,6 +21,7 @@ const prepare = (t: TestController, postContent: string) =>
   directLogin(t)
     .log('1. should navigate to Left Rail')
     .shouldNavigateTo(LeftRail)
+    .expectExist()
     .chain(t => t.wait(10000))
     .log('2. select any conversation')
     .selectRandomConversation()
@@ -85,7 +86,7 @@ test(
   },
 );
 
-test(
+test.skip(
   formalName(
     'When update custom status, can sync dynamically in message metadata.',
     ['JPT-95', 'P2', 'ConversationStream'],

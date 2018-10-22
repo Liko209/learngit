@@ -8,7 +8,7 @@ import {
 } from '../../page-models/components';
 import { setupSDK } from '../../utils/setupSDK';
 import * as _ from 'lodash';
-import { prepareConversations } from './utils';
+import { prepareConversations } from '../utils';
 
 declare var test: TestFn;
 fixture('ConversationStream/ConversationStream')

@@ -1,8 +1,9 @@
 /*
- * @Author: Valor Lin (valor.lin@ringcentral.com)
- * @Date: 2018-08-21 16:35:03
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-10-19 11:50:16
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { BaseComponent } from '../..';
 import { Selector } from 'testcafe';
 

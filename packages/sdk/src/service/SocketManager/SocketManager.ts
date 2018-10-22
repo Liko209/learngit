@@ -19,7 +19,6 @@ export class SocketManager {
   activeFSM: any = null;
 
   private logPrefix: string;
-  // private activeFSM: any = null;
   private closingFSMs: { [key: string]: SocketFSM } = {};
   private successConnectedUrls: string[] = [];
   private hasLoggedIn: boolean = false;

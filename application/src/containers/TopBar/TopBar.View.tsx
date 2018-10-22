@@ -52,10 +52,6 @@ class TopBar extends React.Component<TopBarProps> {
 
   private _AvatarMenuTrigger(avatarMenuTriggerProps: JuiIconButtonProps) {
     const { currentUserId } = this.props;
-
-    if (!currentUserId) {
-      return null;
-    }
     return (
       <Avatar
         uid={currentUserId}

@@ -106,7 +106,6 @@ export default class StateService extends BaseService<GroupState> {
     const profileService = ProfileService.getInstance() as ProfileService;
     const isHidden = await profileService.isConversationHidden(groupId);
     if (isHidden) {
-      close;
       return;
     }
     // const groupService = GroupService.getInstance() as GroupService;

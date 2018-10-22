@@ -7,43 +7,14 @@ import { formalName } from '../../libs/filter';
 import { setUp, tearDown, TestHelper } from '../../libs/helpers';
 import { directLogin } from '../../utils';
 import { setupSDK } from '../../utils/setupSDK';
-import { ProfileAPI, PersonAPI } from '../../libs/sdk';
 import { DirectMessageSection } from '../../page-models/components';
+import { prepareConversations } from '../utils';
 
 declare var test: TestFn;
 fixture('DirectMessageSection')
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
-async function prepareConversations(t, h) {
-  await h.log('1. should create conversations');
-  const client701 = await h.glipApiManager.getClient(
-    h.users.user701,
-    h.companyNumber,
-  );
-  const privateChat = await client701.createGroup({
-    type: 'PrivateChat',
-    isPublic: true,
-    description: 'test',
-    members: [h.users.user701.rc_id, h.users.user702.rc_id],
-  });
-  h.log(`Private chat ${privateChat.data.id} is created.`);
-  const group = await client701.createGroup({
-    type: 'Group',
-    isPublic: true,
-    description: 'test',
-    members: [
-      h.users.user701.rc_id,
-      h.users.user702.rc_id,
-      h.users.user703.rc_id,
-    ],
-  });
-  h.log(`Group chat ${group.data.id} is created.`);
-  return {
-    privateChat,
-    group,
-  };
-}
 test(
   formalName(
     'Show the 1:1 conversation and group conversation in the Direct Message section',
@@ -52,17 +23,12 @@ test(
   async (t: TestController) => {
     await setupSDK(t);
     const h = new TestHelper(t);
-    const { privateChat, group } = await prepareConversations(t, h);
-    const id1 = privateChat.data.id;
-    const id2 = group.data.id;
-    const profileId = (await PersonAPI.requestPersonById(
-      h.users.user701.glip_id,
-    )).data.profile_id;
-    await (ProfileAPI as any).putDataById(profileId, {
-      [`hide_group_${id1}`]: false,
-      [`hide_group_${id2}`]: false,
-    });
-    h.log('Show the groups again in case it was set hidden before');
+    const { privateChat, group } = await prepareConversations(t, [
+      { type: 'privateChat', identifier: 'privateChat' },
+      { type: 'group', identifier: 'group' },
+    ]);
+    const id1 = privateChat.id;
+    const id2 = group.id;
     await directLogin(t)
       .log('2. should navigate to Direct Messages Section')
       .shouldNavigateTo(DirectMessageSection)
@@ -77,7 +43,7 @@ test(
 );
 
 // skip temporarily due to bug
-test.skip(
+test(
   formalName(
     'New item should appear in the DM list if another user send a message to the current user for the first time',
     ['JPT-5', 'P2', 'ConversationList'],
@@ -85,17 +51,12 @@ test.skip(
   async (t: TestController) => {
     await setupSDK(t);
     const h = new TestHelper(t);
-    const { privateChat, group } = await prepareConversations(t, h);
-    const id1 = privateChat.data.id;
-    const id2 = group.data.id;
-    const profileId = (await PersonAPI.requestPersonById(
-      h.users.user701.glip_id,
-    )).data.profile_id;
-    await (ProfileAPI as any).putDataById(profileId, {
-      [`hide_group_${id1}`]: true,
-      [`hide_group_${id2}`]: true,
-    });
-    h.log('Hide the groups');
+    const { privateChat, group } = await prepareConversations(t, [
+      { type: 'privateChat', identifier: 'privateChat', isHidden: true },
+      { type: 'group', identifier: 'group', isHidden: true },
+    ]);
+    const id1 = privateChat.id;
+    const id2 = group.id;
     await directLogin(t)
       .log('2. should navigate to Direct Messages Section')
       .shouldNavigateTo(DirectMessageSection)
@@ -117,6 +78,7 @@ test.skip(
           text: 'test for direct messages section',
         });
       })
+      .chain(t => t.wait(3000))
       .log('6. should expand the collapse')
       .shouldExpand()
       .log('7. should display 1:1 conversation')

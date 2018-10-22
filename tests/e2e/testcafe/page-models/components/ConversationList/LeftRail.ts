@@ -1,17 +1,22 @@
 // author = 'mia.cai@ringcentral.com'
-import { ReactSelector } from 'testcafe-react-selectors';
 import { BaseComponent } from '../..';
 import { Selector } from 'testcafe';
 
 class LeftRail extends BaseComponent {
   get sections() {
-    return ReactSelector('ConversationListSection');
+    return Selector('.conversation-list-section');
+  }
+
+  public expectExist() {
+    return this.chain(async (t: TestController) => {
+      await t
+        .expect(this.sections.count)
+        .gt(0, 'expect dom node exists', { timeout: 500000 });
+    });
   }
 
   private _getSection(title: string, position: number) {
-    return ReactSelector('ConversationListSection')
-      .nth(position)
-      .withProps('title', title);
+    return this.sections.nth(position).filter(`[data-name="${title}"]`);
   }
 
   checkSectionsOrder(...sections: string[]): this {
