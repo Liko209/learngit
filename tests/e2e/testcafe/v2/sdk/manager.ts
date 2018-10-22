@@ -42,6 +42,7 @@ export class SdkManager {
     let glip: GlipSdk = this.glips[user.rcId];
     if (glip === undefined) {
       glip = await this.createGlip(user);
+      await glip.auth();
       this.glips[user.rcId] = glip;
     }
     return glip
