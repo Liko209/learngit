@@ -162,6 +162,11 @@ class StreamViewModel extends StoreViewModel {
     }
   }
 
+  dispose() {
+    super.dispose();
+    this._transformHandler.dispose();
+  }
+
   private async _loadPosts(direction: FetchDataDirection) {
     if (!this._transformHandler.hasMore(direction)) return;
     await this._transformHandler.fetchData(direction);
