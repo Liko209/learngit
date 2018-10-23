@@ -27,29 +27,47 @@ const Wrapper = styled.div`
   vertical-align: top;
   height: 100%;
   overflow: hidden;
-  display: ${(props: InternalProps) => props.width > 0 ? 'inline-block' : 'none'};
+  display: ${(props: InternalProps) =>
+    props.width > 0 ? 'inline-block' : 'none'};
   background-color: ${({ theme }) => theme.palette.background.paper};
   z-index: ${({ theme }) => theme.zIndex.reponsePanel};
   /* Adaptive width */
-  ${props => props.response ? css`
-    flex: 1; /* Always maintain an adaptive width */
-  ` : css`
-    flex-basis: ${(props: InternalProps) => `${props.width}px`}; /* When hidden, the width is 0 */
-  `};
+  ${props =>
+    props.response
+      ? css`
+          flex: 1; /* Always maintain an adaptive width */
+        `
+      : css`
+          flex-basis: ${(props: InternalProps) =>
+            `${props.width}px`}; /* When hidden, the width is 0 */
+        `};
   /* Floating dock */
-  ${props => props.forceDisplay && css`
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: ${({ theme }) => theme.size.width * 45}px;
-    z-index: ${({ theme }) => theme.zIndex.reponseResizer};
-    left: ${(props: InternalProps) => props.forcePosition === 'left' ? 0 : 'auto'};
-    right: ${(props: InternalProps) => props.forcePosition === 'right' ? 0 : 'auto'};
-  `}
+  ${props =>
+    props.forceDisplay &&
+    css`
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: ${({ theme }) => theme.size.width * 45}px;
+      z-index: ${({ theme }) => theme.zIndex.reponseResizer};
+      left: ${(props: InternalProps) =>
+        props.forcePosition === 'left' ? 0 : 'auto'};
+      right: ${(props: InternalProps) =>
+        props.forcePosition === 'right' ? 0 : 'auto'};
+    `};
 `;
 
-const JuiHorizonPanel = ({ width, minWidth, maxWidth, forceDisplay, forcePosition, onClick, children, response }: ExternalProps) => {
+const JuiHorizonPanel = ({
+  width,
+  minWidth,
+  maxWidth,
+  forceDisplay,
+  forcePosition,
+  onClick,
+  children,
+  response,
+}: ExternalProps) => {
   return (
     <Wrapper
       width={width}
