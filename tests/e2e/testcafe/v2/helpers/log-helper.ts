@@ -6,7 +6,7 @@ export class LogHelper {
   }
 
   async setup() {
-    this.t.ctx.log = [];
+    this.t.ctx.logs = [];
   }
 
   async takeScreenShot() {
@@ -14,10 +14,13 @@ export class LogHelper {
   }
 
   writeStep(step: IStep) {
-    this.t.ctx.log.push(step);
+    this.t.ctx.logs.push(step);
   }
 
-  async logAsync(step: IStep, cb: () => Promise<any>) {
+  async logAsync(step: IStep | string, cb: () => Promise<any>) {
+    if (typeof step == 'string') {
+      step = <IStep>{ message: step }
+    }
     step.startTime = Date.now();
     try {
       const ret = await cb()

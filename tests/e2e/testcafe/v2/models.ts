@@ -32,9 +32,9 @@ export interface ICredential {
 
 export interface IStep {
   message: string;
-  status: Status;
-  startTime: number;
-  endTime: number;
+  status?: Status;
+  startTime?: number;
+  endTime?: number;
   screenshotPath?: string;
 }
 

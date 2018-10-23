@@ -13,8 +13,7 @@ export class JupiterHelper {
     return { state, redirectUri };
   }
 
-  constructor(private t: TestController) {
-   }
+  constructor(private t: TestController) { }
 
   get authUrl(): string {
     return this.t.ctx.__authUrl;

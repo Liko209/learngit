@@ -6,11 +6,12 @@ import { JupiterHelper } from "./jupiter-helper";
 import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
 
-import { IUser } from '../models';
+import { IUser, IStep } from '../models';
 import { UICreator } from '../../page-models';
 
 class Helper {
-  constructor(private t: TestController) {};
+
+  constructor(private t: TestController) { };
 
   get a11yHelper() {
     return new A11yHelper(this.t);
@@ -43,6 +44,19 @@ class Helper {
 
   onPage<T>(uiCreator: UICreator<T>) {
     return this.jupiterHelper.onPage(uiCreator);
+  }
+
+  async mapSelectorsAsync(selector: Selector, cb: (nth: Selector, i?: number) => Promise<any>) {
+    const count = await selector.count;
+    const promises = [];
+    for (let i = 0; i < count; i++) {
+      promises.push(cb(selector.nth(i), i));
+    }
+    return await Promise.all(promises);
+  }
+
+  async logAsync(step: IStep | string, cb: () => Promise<any>) {
+    return await this.logHelper.logAsync(step, cb);
   }
 
 }
