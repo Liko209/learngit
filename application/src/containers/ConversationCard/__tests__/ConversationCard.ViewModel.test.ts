@@ -55,7 +55,7 @@ describe('ConversationCardViewModel', () => {
       id: 1491222532,
     });
   });
-  it('should return title if displayName exist', () => {
+  it('should return title if name exist', () => {
     (getEntity as jest.Mock).mockReturnValue({
       createdAt: 1540279718268,
       creatorId: 107913219,
@@ -63,6 +63,6 @@ describe('ConversationCardViewModel', () => {
       id: 1491222532,
       status: 'online',
     });
-    expect(conversationCardVM.displayTitle).toBe('alvin');
+    expect(conversationCardVM.name).toBe('alvin');
   });
 });
