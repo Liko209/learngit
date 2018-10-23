@@ -26,7 +26,7 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   get filters(): LeftRailFilter[] {
     return [
       {
-        label: 'Filter', // i18n
+        label: 'show_unread',
         value: this._unreadOnly,
         onChange: (evt: any, checked: boolean) => {
           console.log('unreadOnly changed');

@@ -11,6 +11,8 @@ import { JuiConversationListFilter } from 'jui/pattern/ConversationList/Conversa
 
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
+import { TranslationFunction } from 'i18next';
+import { translate } from 'react-i18next';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -18,7 +20,9 @@ const Wrapper = styled.div`
   border-right: 1px solid ${({ theme }) => theme.palette.divider};
 `;
 
-const LeftRailView = (props: LeftRailViewProps) => {
+const LeftRailViewComponent = (
+  props: LeftRailViewProps & { t: TranslationFunction },
+) => {
   return (
     <Wrapper>
       {props.filters.map((filter, index) => [
@@ -26,7 +30,7 @@ const LeftRailView = (props: LeftRailViewProps) => {
         <JuiConversationListFilter
           checked={filter.value}
           key={filter.label}
-          label={filter.label}
+          label={props.t(filter.label)}
           onChange={filter.onChange}
         />,
       ])}
@@ -38,5 +42,7 @@ const LeftRailView = (props: LeftRailViewProps) => {
     </Wrapper>
   );
 };
+
+const LeftRailView = translate('Conversations')(LeftRailViewComponent);
 
 export { LeftRailView };
