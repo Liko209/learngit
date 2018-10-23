@@ -200,6 +200,10 @@ class ConversationListSection extends BaseWebComponent {
     }
 }
 
+class PostItem extends BaseWebComponent {
+
+}
+
 class ConversationSection extends BaseWebComponent {
     get root() {
         return this.getSelector('.conversation-page');
@@ -207,6 +211,10 @@ class ConversationSection extends BaseWebComponent {
 
     get posts() {
         return this.root.find('*[data-name="conversation-card"]');
+    }
+
+    nthPostItem(nth: number) {
+        return this.getComponent(PostItem, this.posts.nth(nth));
     }
 }
 
