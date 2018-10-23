@@ -124,7 +124,7 @@ class ConversationListSection extends BaseWebComponent {
     }
 
     async enterNthConversation(n: number) {
-        return this.click(c => c.nthConversation(n));
+        return this.click(c => c.getNthConversation(n));
     }
 
     async isExpand() {
