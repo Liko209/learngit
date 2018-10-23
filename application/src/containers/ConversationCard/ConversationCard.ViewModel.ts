@@ -15,8 +15,10 @@ import { getEntity } from '@/store/utils';
 import { Post, Person } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
-class ConversationCardViewModel extends AbstractViewModel implements ConversationCardViewProps {
-  @observable id: number;
+class ConversationCardViewModel extends AbstractViewModel
+  implements ConversationCardViewProps {
+  @observable
+  id: number;
 
   @action
   onReceiveProps(props: ConversationCardProps) {
@@ -39,13 +41,13 @@ class ConversationCardViewModel extends AbstractViewModel implements Conversatio
   }
 
   @computed
-  get displayTitle() {
-    let str = this.creator.displayName;
-    if (this.creator.awayStatus) {
-      str += ` ${this.creator.awayStatus}`;
-    }
+  get name() {
+    return this.creator.displayName;
+  }
 
-    return str;
+  @computed
+  get customStatus() {
+    return this.creator.awayStatus;
   }
 
   @computed

@@ -13,7 +13,8 @@ type ConversationCardViewProps = {
   id: number;
   post: PostModel;
   creator: PersonModel;
-  displayTitle: string;
+  name: string;
+  customStatus?: string;
   createTime: string;
 };
 
