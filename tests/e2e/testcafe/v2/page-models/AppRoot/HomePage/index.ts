@@ -131,8 +131,6 @@ class MoreMenu extends BaseWebComponent {
 
 class ConversationEntry extends BaseWebComponent {
 
-
-
     get moreMenuEntry() {
         this.warnFlakySelector();
         return this.root.child().withText('more_vert');
@@ -303,6 +301,10 @@ class AddActionMenu extends BaseWebComponent {
 
 }
 
+class SettingMenu extends BaseWebComponent {
+
+}
+
 class CreateTeamModal extends BaseWebComponent {
     get root() {
         this.warnFlakySelector();
@@ -350,8 +352,11 @@ export class HomePage extends BaseWebComponent {
         return this.getComponent(CreateTeamModal);
     }
 
+    get settingMenu() {
+        return this.getComponent(SettingMenu);
+    }
+
     async openAddActionMenu() {
-        await this.t.click(this.addActionButton);
-        await this.t.hover('html');
+        await this.t.click(this.addActionButton).hover('html');
     }
 }

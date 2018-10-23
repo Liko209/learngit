@@ -27,8 +27,8 @@ export abstract class BaseWebComponent {
             .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
     }
 
-    async exists() {
-        return await this.root.exists;
+    exists() {
+        return this.root.exists;
     }
 
     // testcafe actions
