@@ -124,11 +124,11 @@ class ConversationListSection extends BaseWebComponent {
     }
 
     async enterNthConversation(n: number) {
-        return this.click(c => c.getNthConversation(n));
+        await this.click(c => c.getNthConversation(n));
     }
 
     async isExpand() {
-        return await this.root.child().withText('keyboard_arrow_up').exists;
+        return await this.root.withText('keyboard_arrow_up').exists;
     }
 
     private async toggle(expand: boolean) {
@@ -149,7 +149,7 @@ class ConversationListSection extends BaseWebComponent {
 
 class ConversationSection extends BaseWebComponent {
     get root() {
-        return this.getSelectorByAutomationId('conversation-page');
+        return this.getSelector('.conversation-page');
     }
 
     get posts() {

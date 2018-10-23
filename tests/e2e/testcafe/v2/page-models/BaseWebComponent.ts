@@ -32,6 +32,10 @@ export abstract class BaseWebComponent {
         await this.t.click(cb(this));
     }
 
+    async wait(timeout: number) {
+        await this.t.wait(timeout);
+    }
+
     async navigateTo(url) {
         await this.t.navigateTo(url);
     }

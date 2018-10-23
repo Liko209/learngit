@@ -59,6 +59,24 @@ class Helper {
     return await this.logHelper.logAsync(step, cb);
   }
 
+  async waitUntilExist(selector: Selector, timeout: number = 5e3) {
+    await this.t
+      .expect(selector.exists)
+      .ok(`fail to locate selector ${selector} within ${timeout} ms`, { timeout });
+  }
+
+  async waitUntilNotEmpty(selector: Selector, timeout: number = 5e3) {
+    await this.t
+      .expect(selector.count)
+      .gt(0, `fail to locate selector ${selector} within ${timeout} ms`, { timeout });
+  }
+
+  async waitUntilVisible(selector: Selector, timeout: number = 5e3) {
+    await this.t
+      .expect(selector)
+      .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
+  }
+
 }
 
 function h(t: TestController) {
