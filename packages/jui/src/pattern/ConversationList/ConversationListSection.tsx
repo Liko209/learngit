@@ -7,7 +7,6 @@ import React, { Component } from 'react';
 import Collapse from '@material-ui/core/Collapse';
 import { noop, palette, grey } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
-// import { JuiDivider } from '../../components/Divider';
 import SectionHeader, {
   SectionHeaderProps,
 } from './ConversationListSectionHeader';
