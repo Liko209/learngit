@@ -1,6 +1,6 @@
+import { GLOBAL_KEYS } from '@/store/constants';
 import { MessagesViewModel } from '../Messages.ViewModel';
 import storeManager from '../../../store/index';
-import { match } from 'react-router';
 
 jest.mock('../../../store/index');
 
@@ -20,6 +20,9 @@ describe('Message view model', () => {
 
   it('should always update the global state and routes when redirect to conversation', () => {
     vm.updateCurrentConversationId(100);
-    expect(gs.set).toHaveBeenCalledWith('currentConversationId', 100);
+    expect(gs.set).toHaveBeenCalledWith(
+      GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+      100,
+    );
   });
 });

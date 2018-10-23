@@ -9,6 +9,7 @@ import { service } from 'sdk';
 const { GroupService } = service;
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
@@ -44,13 +45,17 @@ class ConversationListItemViewModel extends StoreViewModel<
     return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
   }
   onClick = () => {
-    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
+    storeManager
+      .getGlobalStore()
+      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, this.groupId);
     history.push(`/messages/${this.groupId}`);
   }
 
   @computed
   private get _currentGroupId() {
-    return storeManager.getGlobalStore().get('currentConversationId');
+    return storeManager
+      .getGlobalStore()
+      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
   }
 
   @computed
