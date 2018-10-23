@@ -3,12 +3,14 @@
  * @Date: 2018-08-22 15:21:30
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
-import { computed, observable, action, autorun } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
-import { Group } from 'sdk/models';
+import { Group, Profile } from 'sdk/models';
 import storeManager, { ENTITY_NAME } from '@/store';
+import { getSingleEntity } from '@/store/utils';
+import ProfileModel from '@/store/models/Profile';
+import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
 import {
   FetchSortableDataListHandler,
@@ -23,6 +25,7 @@ import {
   SectionViewProps,
   SECTION_TYPE,
 } from './types';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 const { GroupService } = service;
 
@@ -47,6 +50,7 @@ const SECTION_CONFIGS: SectionConfigs = {
     eventName: ENTITY.FAVORITE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.FAVORITE,
+    globalKey: GLOBAL_KEYS.GROUP_QUERY_TYPE_FAVORITE_IDS,
     transformFun: favGroupTransformFunc,
     sortable: true,
     isMatchFun: (model: Group) => {
@@ -59,6 +63,7 @@ const SECTION_CONFIGS: SectionConfigs = {
     eventName: ENTITY.PEOPLE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.GROUP,
+    globalKey: GLOBAL_KEYS.GROUP_QUERY_TYPE_GROUP_IDS,
     transformFun: groupTransformFunc,
     isMatchFun: (model: Group) => {
       return !model.is_team;
@@ -70,6 +75,7 @@ const SECTION_CONFIGS: SectionConfigs = {
     eventName: ENTITY.TEAM_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.TEAM,
+    globalKey: GLOBAL_KEYS.GROUP_QUERY_TYPE_TEAM_IDS,
     transformFun: groupTransformFunc,
     isMatchFun: (model: Group) => {
       return model.is_team || false;
@@ -88,23 +94,28 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     direction: FetchDataDirection,
     pageSize: number,
     anchor: ISortableModel<Group>,
-  ): Promise<Group[]> {
+  ): Promise<{ data: Group[]; hasMore: boolean }> {
     const groupService = GroupService.getInstance<service.GroupService>();
     const result = await groupService.getGroupsByType(this._queryType);
     if (this._queryType === GROUP_QUERY_TYPE.FAVORITE) {
       console.info('dangerous', result);
     }
-    return result;
+    return { data: result, hasMore: false };
   }
 }
 
 class SectionViewModel extends StoreViewModel<SectionProps>
   implements SectionViewProps {
-  constructor() {
-    super();
-    autorun(() => {
-      this.updateGlobalGroups();
-    });
+  constructor(props?: SectionProps) {
+    super(props);
+    this._oldFavGroupIds =
+      getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'favoriteGroupIds',
+      ) || [];
+    this.autorun(() => this.updateGlobalGroups());
+    this.autorun(() => this.profileUpdateFavSection());
+    this.autorun(() => this.profileUpdateGroupSections());
   }
 
   @observable
@@ -118,6 +129,59 @@ class SectionViewModel extends StoreViewModel<SectionProps>
 
   @observable
   expanded: boolean = true;
+
+  private _oldFavGroupIds: number[] = [];
+
+  @computed
+  get favGroupIds() {
+    return (
+      getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'favoriteGroupIds',
+      ) || []
+    );
+  }
+
+  private _hasInitiated() {
+    return this._listHandler && this._type;
+  }
+
+  async profileUpdateFavSection() {
+    const favGroupIds = this.favGroupIds;
+    const condition =
+      this._hasInitiated() &&
+      this._type === SECTION_TYPE.FAVORITE &&
+      this._oldFavGroupIds.toString() !== favGroupIds.toString();
+    if (condition) {
+      this._oldFavGroupIds = favGroupIds;
+      const groupService = GroupService.getInstance<service.GroupService>();
+      const result = await groupService.getGroupsByType(
+        GROUP_QUERY_TYPE.FAVORITE,
+      );
+      this._listHandler.replaceAll(result);
+    }
+  }
+
+  async profileUpdateGroupSections() {
+    const newFavIds = this.favGroupIds;
+    const condition =
+      this._hasInitiated() &&
+      this._type !== SECTION_TYPE.FAVORITE &&
+      newFavIds.sort().toString() !== this._oldFavGroupIds.sort().toString();
+    if (condition) {
+      const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
+      const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
+      this._oldFavGroupIds = newFavIds;
+      if (less.length) {
+        this._listHandler.removeByIds(less);
+      }
+      if (more.length) {
+        const groupService = GroupService.getInstance<service.GroupService>();
+        const result = await groupService.getGroupsByIds(more);
+        this._listHandler.upsert(result);
+      }
+    }
+  }
 
   @computed
   get sortable() {
@@ -150,24 +214,44 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   }
 
   async onReceiveProps(props: SectionProps) {
-    if (this._type === props.type) return;
+    if (this._type !== props.type) {
+      if (this._listHandler) {
+        this._listHandler.dispose();
+      }
 
-    if (this._listHandler) {
-      this._listHandler.dispose();
+      this._type = props.type;
+      this._config = SECTION_CONFIGS[this._type];
+      if (this._type === SECTION_TYPE.FAVORITE) {
+        this._config.isMatchFun = (model: Group) => {
+          return this._oldFavGroupIds.indexOf(model.id) !== -1;
+        };
+        this._config['transformFun'] = (model: Group) => {
+          return {
+            id: model.id,
+            sortValue: this._oldFavGroupIds.indexOf(model.id),
+          } as ISortableModel<Group>;
+        };
+      } else {
+        this._config.isMatchFun = (model: Group) => {
+          const notInFav = this._oldFavGroupIds.indexOf(model.id) === -1;
+          const isTeamInTeamSection =
+            this._type === SECTION_TYPE.TEAM && model.is_team;
+          const isDirectInDirectSection =
+            this._type === SECTION_TYPE.DIRECT_MESSAGE && !model.is_team;
+          return notInFav && (isTeamInTeamSection || isDirectInDirectSection);
+        };
+      }
+
+      const dataProvider = new GroupDataProvider(this._config.queryType);
+      this._listHandler = new FetchSortableDataListHandler(dataProvider, {
+        isMatchFunc: this._config.isMatchFun,
+        transformFunc: this._config.transformFun,
+        entityName: ENTITY_NAME.GROUP,
+        eventName: this._config.eventName,
+      });
+      await this.fetchGroups();
+      this.updateGlobalGroups();
     }
-
-    this._type = props.type;
-    this._config = SECTION_CONFIGS[this._type];
-
-    const dataProvider = new GroupDataProvider(this._config.queryType);
-
-    this._listHandler = new FetchSortableDataListHandler(dataProvider, {
-      isMatchFunc: this._config.isMatchFun,
-      transformFunc: this._config.transformFun,
-      entityName: ENTITY_NAME.GROUP,
-      eventName: this._config.eventName,
-    });
-    await this.fetchGroups();
   }
 
   @action
@@ -175,12 +259,13 @@ class SectionViewModel extends StoreViewModel<SectionProps>
     await this._listHandler.fetchData(FetchDataDirection.DOWN);
   }
 
+  @action
   updateGlobalGroups() {
     if (this._config && this._listHandler) {
       storeManager
         .getGlobalStore()
         .set(
-          this._config.queryType,
+          this._config.globalKey,
           this._listHandler.sortableListStore.getIds(),
         );
     }

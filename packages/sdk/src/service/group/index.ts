@@ -72,7 +72,9 @@ export default class GroupService extends BaseService<Group> {
       profile.favorite_group_ids &&
       profile.favorite_group_ids.length > 0
     ) {
-      let favorite_group_ids = profile.favorite_group_ids;
+      let favorite_group_ids = profile.favorite_group_ids.filter(
+        id => typeof id === 'number' && !isNaN(id),
+      );
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       favorite_group_ids = _.difference(favorite_group_ids, hiddenIds);
       const dao = daoManager.getDao(GroupDao);

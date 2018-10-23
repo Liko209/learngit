@@ -54,9 +54,9 @@ test(
       .getLastConversation()
       .log('3.Send a new post to move the item to top')
       .sendPostToConversation('highlight this group')
-      .log('3.Check the conversation was highlighted in list')
+      .log('4.Check the conversation was highlighted in list')
       .checkHighlighConversation()
-      .log('4.Check the conversation was opened in content')
+      .log('5.Check the conversation was opened in content')
       .checkOpenedConversation();
   },
 );

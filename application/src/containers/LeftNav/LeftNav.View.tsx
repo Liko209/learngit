@@ -41,7 +41,7 @@ class LeftNav extends Component<LeftNavProps> {
           url: '/messages',
           icon: 'message',
           title: t('Messages'),
-          umi: <Umi ids={groupIds} global={'UMI.app'} />,
+          umi: <Umi ids={groupIds} global="UMI.app" />,
         },
         {
           url: '/phone',
@@ -96,13 +96,14 @@ class LeftNav extends Component<LeftNavProps> {
   }
 
   render() {
-    const { isLeftNavOpen } = this.props;
+    const { isLeftNavOpen, history } = this.props;
 
     return (
       <JuiLeftNav
         icons={this.icons}
         expand={isLeftNavOpen}
         onRouteChange={this.onRouteChange}
+        history={history}
       />
     );
   }

@@ -6,9 +6,8 @@
 import _ from 'lodash';
 import { computed } from 'mobx';
 import { service } from 'sdk';
-import { MyState, Profile } from 'sdk/models';
+import { Profile } from 'sdk/models';
 import { getEntity, getSingleEntity } from '@/store/utils';
-import MyStateModel from '@/store/models/MyState';
 import { MenuProps, MenuViewProps } from './types';
 import { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
@@ -60,19 +59,12 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   @computed
-  get umiHint() {
-    const lastGroup = getSingleEntity<MyState, MyStateModel>(
-      ENTITY_NAME.MY_STATE,
-      'lastGroupId',
-    ) as number;
+  get showClose() {
     const groupState = getEntity(
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     ) as GroupStateModel;
-
-    const isCurrentGroup = lastGroup && lastGroup === this.groupId;
-
-    return !!(!isCurrentGroup && groupState.unreadCount);
+    return !groupState.unreadCount;
   }
 
   @computed

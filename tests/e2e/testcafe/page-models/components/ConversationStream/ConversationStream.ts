@@ -1,4 +1,3 @@
-import { ReactSelector } from 'testcafe-react-selectors';
 import { PersonAPI } from '../../../libs/sdk';
 import { BaseComponent } from '../..';
 import { ClientFunction, Selector } from 'testcafe';
@@ -7,33 +6,38 @@ class ConversationStream extends BaseComponent {
   targetPost: Selector;
 
   get teamSection() {
-    return ReactSelector('ConversationListSection').withProps('title', 'Teams');
+    return Selector('.conversation-list-section[data-name="Teams"]');
+  }
+
+  public expectExist() {
+    return this.chain(async (t: TestController) => {
+      await t
+        .expect(this.teamSection.count)
+        .eql(1, 'expect dom node exists', { timeout: 500000 });
+    });
   }
 
   get team() {
-    return this.teamSection.findReact('ConversationListItem').nth(0);
+    return this.teamSection.find('.conversation-list-item').nth(0);
   }
   get conversationCard() {
-    return ReactSelector('ConversationCard');
+    return Selector("[data-name='conversation-card']");
   }
 
   get groupId() {
-    return this.team.getReact().key;
-  }
-  get juiConversationCardHeader() {
-    return ReactSelector('JuiConversationCardHeader');
+    return this.team.getAttribute('date-group-id');
   }
   public clickFirstGroup() {
     return this.clickElement(this.team);
   }
 
-  public sendPost2Group(text: string) {
+  public sendPost2Group(groupId: number, text: string) {
     return this.chain(async (t, h) => {
       const client701 = await h.glipApiManager.getClient(
         h.users.user701,
         h.companyNumber,
       );
-      await client701.sendPost(h.teams.team1_u1_u2.glip_id, { text });
+      await client701.sendPost(groupId, { text });
     });
   }
 
@@ -54,7 +58,7 @@ class ConversationStream extends BaseComponent {
 
   public expectRightOrder(...sequence) {
     return this.chain(async (t: TestController) => {
-      const length = await this.juiConversationCardHeader.count;
+      const length = await this.conversationCard.count;
       for (const i in sequence) {
         await t
           .expect(
@@ -66,9 +70,10 @@ class ConversationStream extends BaseComponent {
   }
 
   private _getRightOrderTextContent(length, sequenceLength, i) {
-    return this.juiConversationCardHeader
+    return this.conversationCard
       .nth(length - sequenceLength + i)
-      .nextSibling('div').textContent;
+      .child('div')
+      .nth(1).textContent;
   }
 
   public expectLastConversationToBe(text: string) {

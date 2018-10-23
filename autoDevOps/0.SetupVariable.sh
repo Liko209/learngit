@@ -71,19 +71,12 @@ else
     esac
 fi
 
-demoHasUpdate="$(git diff HEAD^ HEAD  ${project}/demo)"
-# demoHasUpdate=1
-if  [ "$demoHasUpdate" ]; then
-    subDomain=demo-${subDomain}
-    addEnv projectName='Fiji Demo'
-else
-    addEnv projectName='Jupiter Application'
-fi
+addEnv projectName='Jupiter Application'
 
-export demoHasUpdate
 export subDomain
 export linkDomain
 export appUrl=https://${subDomain}.fiji.gliprc.com
+export juiUrl=https://${subDomain}.jui.gliprc.com
 addEnv appUrl=$appUrl
 
 function syncFolderToServer(){
@@ -105,6 +98,7 @@ function updateLinkDomainOnServer(){
     echo "=====Start linking domain: "
     echo "serverRootFolder: ${serverRootFolder}"
     echo "$sourceFolder ==> $linkFolder"
+    ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "cd $serverRootFolder; [ -L $linkFolder ] && unlink $linkFolder"
     ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "cd $serverRootFolder; ln -s $sourceFolder $linkFolder"
     ssh -i $sshKey -p $sshPort -o StrictHostKeyChecking=no $theServer "chown -R root:root $serverRootFolder/$linkFolder"
 }

@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { MouseEvent } from 'react';
+import { CONVERSATION_TYPES } from '@/constants';
 
 type ConversationListItemProps = {
   groupId: number;
@@ -15,7 +16,7 @@ type ConversationListItemViewProps = {
   selected: boolean;
   umiHint?: boolean;
   onClick: (event: MouseEvent<HTMLElement>) => void;
-  isTeam: boolean;
+  groupType: CONVERSATION_TYPES;
   personIdForPresence: number;
 };
 

@@ -3,35 +3,46 @@
  * @Date: 2018-09-28 17:23:20
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { action, computed } from 'mobx';
+import React from 'react';
+import { action, computed, observable } from 'mobx';
 import { AuthService } from 'sdk/service';
 
 import { AbstractViewModel } from '@/base';
 import storeManager from '@/store';
 import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 class TopBarViewModel extends AbstractViewModel {
   brandName: string = 'RingCentral';
-
+  @observable
+  isShowDialog: boolean = false;
+  @observable
+  vApp = '';
+  @observable
+  vElectron = '';
   @action
   updateLeftNavState = () => {
     const globalStore = storeManager.getGlobalStore();
-    const isLeftNavOpen = !globalStore.get('isLeftNavOpen');
-    globalStore.set('isLeftNavOpen', isLeftNavOpen);
+    const isLeftNavOpen = !globalStore.get(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
+    globalStore.set(GLOBAL_KEYS.IS_LEFT_NAV_OPEN, isLeftNavOpen);
   }
 
   @action
   updateCreateTeamDialogState = () => {
     console.log('open,-------------');
     const globalStore = storeManager.getGlobalStore();
-    const isShowCreateTeamDialog = !globalStore.get('isShowCreateTeamDialog');
-    globalStore.set('isShowCreateTeamDialog', isShowCreateTeamDialog);
+    const isShowCreateTeamDialog = !globalStore.get(
+      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
+    );
+    globalStore.set(
+      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
+      isShowCreateTeamDialog,
+    );
   }
 
   @computed
   get currentUserId() {
-    return getGlobalValue('currentUserId');
+    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 
   @action
@@ -39,6 +50,28 @@ class TopBarViewModel extends AbstractViewModel {
     const authService: AuthService = AuthService.getInstance();
     authService.logout();
     window.location.href = '/';
+  }
+  @action
+  handleAboutPage = (
+    event: React.MouseEvent<HTMLElement>,
+    appVersion?: string | undefined,
+    electronVersion?: string | undefined,
+  ) => {
+    this.vApp = appVersion || '';
+    this.vElectron = electronVersion || '';
+    this.isShowDialog = !this.isShowDialog;
+  }
+  @computed
+  get dialogStatus() {
+    return this.isShowDialog;
+  }
+  @computed
+  get electronVersion() {
+    return this.vElectron;
+  }
+  @computed
+  get appVersion() {
+    return this.vApp;
   }
 }
 

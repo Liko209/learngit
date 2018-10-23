@@ -8,49 +8,68 @@ import { AuthService } from 'sdk/service';
 import { computed, observable, action } from 'mobx';
 import * as H from 'history';
 import { parse } from 'qs';
-
+import { service } from 'sdk';
 import { getGlobalValue } from '@/store/utils';
-import { AbstractViewModel } from '@/base/';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { StoreViewModel } from '@/store/ViewModel';
+import history from '@/utils/history';
 
-class TokenRouteViewModel extends AbstractViewModel {
+const { SERVICE, ProfileService } = service;
+
+class TokenRouteViewModel extends StoreViewModel {
   private _authService: AuthService = AuthService.getInstance();
-  @observable
-  isOpen: boolean = false;
+  @observable isError: boolean = false;
+
+  constructor() {
+    super();
+    this.subscribeNotificationOnce(
+      SERVICE.FETCH_INDEX_DATA_DONE,
+      this.handleHasLoggedIn,
+    );
+  }
 
   @action
-  private _setOpen(open: boolean) {
-    this.isOpen = open;
+  private _setIsError(open: boolean) {
+    this.isError = open;
   }
 
   @computed
   get isOffline() {
-    return getGlobalValue('network') === 'offline';
+    return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
   }
 
-  unifiedLogin = async (location: H.Location, history: H.History) => {
+  @action.bound
+  async handleHasLoggedIn() {
+    const profileService: service.ProfileService = ProfileService.getInstance();
+    const { location } = history;
+    const { state = '/' } = this._getUrlParams(location);
+    await profileService.markMeConversationAsFav();
+    this._redirect(state);
+  }
+
+  unifiedLogin = async () => {
     try {
-      const { state = '/', code, id_token: token } = this._getUrlParams(
-        location,
-      );
+      const { location } = history;
+      const { code, id_token: token } = this._getUrlParams(location);
       if (code || token) {
         await this._authService.unifiedLogin({ code, token });
       }
-      this._redirect(history, state);
     } catch (e) {
-      this._setOpen(true);
+      this._setIsError(true);
     }
   }
 
-  redirectToIndex = (location: H.Location, history: H.History) => {
+  redirectToIndex = () => {
+    const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
-    this._redirect(history, state);
+    this._redirect(state);
   }
 
   private _getUrlParams(location: H.Location) {
     return parse(location.search, { ignoreQueryPrefix: true });
   }
 
-  private _redirect(history: H.History, state: string) {
+  private _redirect(state: string) {
     history.replace(state.replace('$', '&'));
   }
 }

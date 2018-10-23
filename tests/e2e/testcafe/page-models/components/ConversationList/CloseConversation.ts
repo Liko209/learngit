@@ -179,7 +179,7 @@ class CloseConversation extends BaseComponent {
   expectNoDialogTitle(title: string): this {
     return this.chain(async (t: TestController) => {
       await t
-        .expect(this.dialogTitle.withProps('children',title).exists)
+        .expect(this.dialogTitle.withProps('children', title).exists)
         .notOk("Check doesn't exist dialog", { timeout: 60000 });
     });
   }

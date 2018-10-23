@@ -24,5 +24,8 @@
   "text": "text",
   "me": "me",
   "OK": "OK",
-  "Cancel": "Cancel"
+  "Cancel": "Cancel",
+  "Back": "Back",
+  "Forward": "Forward",
+  "Done": "Done"
 }

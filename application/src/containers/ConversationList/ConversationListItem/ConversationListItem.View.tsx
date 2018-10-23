@@ -8,6 +8,7 @@ import { JuiConversationListItem } from 'jui/pattern/ConversationList';
 import { Umi } from '@/containers/Umi';
 import { Indicator } from '@/containers/ConversationList/Indicator';
 import { Presence } from '@/containers/Presence';
+import { CONVERSATION_TYPES } from '@/constants';
 import { Menu } from '../Menu';
 import { ConversationListItemViewProps } from './types';
 import { observer } from 'mobx-react';
@@ -26,6 +27,11 @@ class ConversationListItemViewComponent extends React.Component<Props, IState> {
   @observable
   menuAnchorEl: HTMLElement | null = null;
 
+  private _handleTypes = [
+    CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
+    CONVERSATION_TYPES.ME,
+  ];
+
   constructor(props: Props) {
     super(props);
     this._handleClick = this._handleClick.bind(this);
@@ -38,9 +44,10 @@ class ConversationListItemViewComponent extends React.Component<Props, IState> {
   }
 
   private get _presence() {
-    return this.props.isTeam ? null : (
+    const { groupType } = this.props;
+    return this._handleTypes.includes(groupType) ? (
       <Presence uid={this.props.personIdForPresence} />
-    );
+    ) : null;
   }
   private get _indicator() {
     if (this.props.selected) {

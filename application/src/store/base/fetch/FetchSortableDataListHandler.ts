@@ -26,10 +26,17 @@ import {
 import { SortableListStore } from './SortableListStore';
 import { IIncomingData } from '../../store';
 import _ from 'lodash';
-
 export type TReplacedData<T> = {
   id: number;
   data: T;
+};
+
+const transform2Map = (entities: any[]): Map<number, any> => {
+  const map = new Map();
+  entities.forEach((item: any) => {
+    map.set(item.id, item);
+  });
+  return map;
 };
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
@@ -44,7 +51,7 @@ export interface IFetchSortableDataProvider<T> {
     direction: FetchDataDirection,
     pageSize: number,
     anchor?: ISortableModel<T>,
-  ): Promise<T[]>;
+  ): Promise<{ data: T[]; hasMore: boolean }>;
 }
 
 export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
@@ -69,6 +76,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     this._isMatchFunc = options.isMatchFunc;
     this._transformFunc = options.transformFunc;
     this._sortableDataProvider = dataProvider;
+    this._entityName = options.entityName;
 
     if (options.eventName) {
       this.subscribeNotification(options.eventName, ({ type, entities }) => {
@@ -87,18 +95,19 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     pageSize: number,
     anchor: ISortableModel<T>,
   ) {
-    const result = await this._sortableDataProvider.fetchData(
+    const { data, hasMore } = await this._sortableDataProvider.fetchData(
       offset,
       direction,
       pageSize,
       anchor,
     );
     const sortableResult: ISortableModel<T>[] = [];
-    result.forEach((element: T) => {
+    data.forEach((element: T) => {
       sortableResult.push(this._transformFunc(element));
     });
-    this.updateEntityStore(result);
-    this.handlePageData(sortableResult, direction);
+    this.updateEntityStore(data);
+    this.handleHasMore(hasMore, direction);
+    this.handlePageData(sortableResult);
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
         direction,
@@ -179,18 +188,36 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     }
     return inRange;
   }
-  protected handlePageData(
-    result: ISortableModel[],
-    direction: FetchDataDirection,
-  ) {
+
+  protected handleHasMore(hasMore: boolean, direction: FetchDataDirection) {
     let inFront = false;
     if (direction === FetchDataDirection.UP) {
       inFront = true;
     }
-    const hasMore = result.length >= this._pageSize;
     this.sortableListStore.setHasMore(hasMore, inFront);
+  }
+
+  protected handlePageData(result: ISortableModel[]) {
     if (result.length > 0) {
       this.sortableListStore.upsert(result);
     }
+  }
+
+  removeByIds(ids: number[]) {
+    this.sortableListStore.removeByIds(ids);
+  }
+
+  upsert(models: T[]) {
+    this.onDataChanged({
+      type: EVENT_TYPES.PUT,
+      entities: transform2Map(models),
+    });
+  }
+
+  replaceAll(models: T[]) {
+    this.onDataChanged({
+      type: EVENT_TYPES.REPLACE_ALL,
+      entities: transform2Map(models),
+    });
   }
 }

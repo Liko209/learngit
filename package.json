@@ -82,6 +82,7 @@
     "@types/react-document-title": "2.0.3"
   },
   "dependencies": {
-    "downshift": "2.2.2"
+    "downshift": "2.2.2",
+    "ts-node": "7.0.1"
   }
 }

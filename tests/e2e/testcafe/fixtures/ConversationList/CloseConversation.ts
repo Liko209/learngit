@@ -52,21 +52,25 @@ const prepare_1conversationInList = async (t: TestController) => {
 };
 
 // prepare for case JPT-134: expect to show confirmation popup(skip_close_conversation_confirmation should be false or not exist) 135->true
-const presetWhetherSkipConfirmationPopup = async(t: TestController, skipCloseConfirmButton: boolean = false) => {
+const presetWhetherSkipConfirmationPopup = async (
+  t: TestController,
+  skipCloseConfirmButton: boolean = false,
+) => {
   const helper = TestHelper.from(t);
   await helper.log('2.Prepare: show confirmation popup');
   await setupSDK(t);
   const id = (await PersonAPI.requestPersonById(helper.users.user701.glip_id))
     .data.profile_id;
   let data = (await ProfileAPI.requestProfileById(id)).data;
-  if (data.skip_close_conversation_confirmation != skipCloseConfirmButton) {
+  if (data.skip_close_conversation_confirmation !== skipCloseConfirmButton) {
     data = (await (ProfileAPI as any).putDataById(id, {
       skip_close_conversation_confirmation: skipCloseConfirmButton,
     })).data;
   }
-  await helper.log(`2.1 skip_close_conversation_confirmation: ${skipCloseConfirmButton}`);
+  await helper.log(
+    `2.1 skip_close_conversation_confirmation: ${skipCloseConfirmButton}`,
+  );
 };
-
 
 const action1 = (t: TestController) =>
   directLogin(t)
@@ -124,7 +128,7 @@ test(
   ),
   async (t: TestController) => {
     await prepare_2conversationInList(t);
-    await presetWhetherSkipConfirmationPopup(t,false);
+    await presetWhetherSkipConfirmationPopup(t, false);
     await directLogin(t)
       .shouldNavigateTo(CloseConversation)
       .log('3.Prepare no UMI :Click one conversation c1')
@@ -194,7 +198,7 @@ test(
   ),
   async (t: TestController) => {
     await prepare_2conversationInList(t);
-    await presetWhetherSkipConfirmationPopup(t,false);
+    await presetWhetherSkipConfirmationPopup(t, false);
     await action1(t)
       .log(`10.Tap ${checkboxLabel} checkbox`)
       .clickDialogCheckbox()

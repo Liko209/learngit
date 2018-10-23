@@ -266,11 +266,14 @@ export default async function handleData(groups: Raw<Group>[]) {
 
 async function doFavoriteGroupsNotification(favIds: number[]) {
   mainLogger.debug('-------doFavoriteGroupsNotification--------');
-  if (favIds.length) {
+  const filteredFavIds = favIds.filter(
+    id => typeof id === 'number' && !isNaN(id),
+  );
+  if (filteredFavIds.length) {
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
     const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
-    const validFavIds = _.difference(favIds, hiddenIds);
+    const validFavIds = _.difference(filteredFavIds, hiddenIds);
     const dao = daoManager.getDao(GroupDao);
     let groups = await dao.queryGroupsByIds(validFavIds);
     groups = sortFavoriteGroups(validFavIds, groups);
@@ -384,11 +387,13 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
   const uniqMaxPosts = getUniqMostRecentPostsByGroup(posts);
   const groupDao = daoManager.getDao(GroupDao);
   let validGroups: Partial<Raw<Group>>[] = [];
+  const ids: number[] = [];
   await groupDao.doInTransaction(async () => {
     const groups: (null | Partial<Raw<Group>>)[] = await Promise.all(
       uniqMaxPosts.map(async (post: Post) => {
         const group: null | Group = await groupDao.get(post.group_id);
         if (group && isNeedToUpdateMostRecent4Group(post, group)) {
+          ids.push(post.group_id);
           const pg: Partial<Raw<Group>> = {
             _id: post.group_id,
             most_recent_post_created_at: post.created_at,
@@ -404,6 +409,8 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
     validGroups = groups.filter(item => item !== null) as Partial<Raw<Group>>[];
   });
   await handlePartialData(validGroups);
+  ids.length &&
+    notificationCenter.emit(SERVICE.POST_SERVICE.NEW_POST_TO_GROUP, ids);
 }
 
 function getGroupTime(group: Group) {

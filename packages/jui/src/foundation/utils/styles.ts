@@ -1,6 +1,7 @@
 import tinycolor from 'tinycolor2';
 import { Theme, Palette } from '../theme/theme';
 import { css } from '../styled-components';
+import { keyframes } from 'styled-components';
 
 /********************************************
  *               Dimensions                 *
@@ -139,6 +140,17 @@ function ellipsis() {
   `;
 }
 
+const rippleEnter = (theme: Theme) => keyframes`
+  from {
+    transform: scale(0);
+    opacity: 0.1;
+  }
+  to {
+    transform: scale(1);
+    opacity: ${theme.palette.action.hoverOpacity * 2};
+  }
+`;
+
 export {
   spacing,
   shape,
@@ -151,4 +163,5 @@ export {
   grey,
   typography,
   ellipsis,
+  rippleEnter,
 };

@@ -7,15 +7,12 @@ import { computed } from 'mobx';
 import { ConversationListItemViewProps } from './types';
 import { service } from 'sdk';
 const { GroupService } = service;
-import { getEntity, getSingleEntity } from '@/store/utils';
-// import { getGroupName } from '@/utils/groupName';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
-import { MyState } from 'sdk/models';
-import MyStateModel from '@/store/models/MyState';
-import GroupStateModel from '@/store/models/GroupState';
 import StoreViewModel from '@/store/ViewModel';
 import history from '@/utils/history';
 
@@ -49,8 +46,13 @@ class ConversationListItemViewModel extends StoreViewModel<
   }
 
   @computed
-  get isTeam() {
-    return this._group.isTeam;
+  get groupType() {
+    return this._group.type;
+  }
+
+  @computed
+  get currentUserId() {
+    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 
   @computed
@@ -69,7 +71,7 @@ class ConversationListItemViewModel extends StoreViewModel<
     if (
       this.personsIdsInGroup &&
       this.personsIdsInGroup.length === 1 &&
-      this.personsIdsInGroup[0] === this._group.meId
+      this.personsIdsInGroup[0] === this.currentUserId
     ) {
       return this.personsIdsInGroup[0];
     }
@@ -78,29 +80,22 @@ class ConversationListItemViewModel extends StoreViewModel<
   }
 
   onClick = () => {
-    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
+    storeManager
+      .getGlobalStore()
+      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, this.groupId);
     history.push(`/messages/${this.groupId}`);
   }
 
   @computed
   private get _currentGroupId() {
-    return storeManager.getGlobalStore().get('currentConversationId');
+    return storeManager
+      .getGlobalStore()
+      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
   }
 
   @computed
   get umiHint() {
-    const lastGroup = getSingleEntity<MyState, MyStateModel>(
-      ENTITY_NAME.MY_STATE,
-      'lastGroupId',
-    ) as number;
-    const groupState = getEntity(
-      ENTITY_NAME.GROUP_STATE,
-      this.groupId,
-    ) as GroupStateModel;
-
-    const isCurrentGroup = lastGroup && lastGroup === this.groupId;
-
-    return !!(!isCurrentGroup && groupState.unreadCount);
+    return this.selected;
   }
 }
 
