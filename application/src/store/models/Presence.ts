@@ -1,4 +1,4 @@
-import { observable } from 'mobx';
+import { observable, action } from 'mobx';
 import { Presence } from 'sdk/models';
 import Base from './Base';
 
@@ -11,6 +11,11 @@ export default class PresenceModel extends Base<Presence> {
     const { presence } = data;
 
     this.presence = presence;
+  }
+
+  @action
+  reset() {
+    this.presence = 'NotReady';
   }
 
   static fromJS(data: Presence) {

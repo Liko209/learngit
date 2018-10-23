@@ -43,7 +43,7 @@ export default class MultiEntityMapStore<
   }
 
   handleIncomingData({ type, entities }: IIncomingData<T>) {
-    if (!entities.size) {
+    if (!entities.size && type !== EVENT_TYPES.RESET) {
       return;
     }
     const existKeys: number[] = Object.keys(this._data).map(Number);
@@ -200,9 +200,9 @@ export default class MultiEntityMapStore<
 
   @action
   reset() {
-    this._data = {};
-    this._atom = {};
-    // this._usedIds = new Set();
+    this._usedIds.forEach((id: number) => {
+      this._data[id].reset();
+    });
   }
 
   @action
