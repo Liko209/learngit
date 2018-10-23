@@ -217,10 +217,9 @@ class BaseService<
       }
 
       mainLogger.info('handlePartialUpdate: trigger partial update');
-      this._doPartialNotify(partialModel, doPartialNotify);
+      await this._doPartialSaveAndNotify(partialModel, doPartialNotify);
 
       mainLogger.info('handlePartialUpdate: trigger doUpdateModel');
-
       const mergedModel = await this.getMergedModel(
         partialModel,
         originalModel,
@@ -228,7 +227,10 @@ class BaseService<
       const resp = await doUpdateModel(mergedModel);
       if (resp instanceof BaseError) {
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
-        this._doPartialNotify(rollbackPartialModel, doPartialNotify);
+        await this._doPartialSaveAndNotify(
+          rollbackPartialModel,
+          doPartialNotify,
+        );
       }
 
       result = resp;
@@ -237,14 +239,34 @@ class BaseService<
     return result;
   }
 
-  private _doPartialNotify(
+  private async _doPartialSaveAndNotify(
     model: Partial<Raw<SubModel>>,
     doPartialNotify?: (partialModels: Partial<Raw<SubModel>>[]) => void,
-  ) {
-    const partialModels: any[] = [model];
+  ): Promise<void> {
+    const partialModels: Partial<Raw<SubModel>>[] = [model];
+
+    await this._updatePartialModel2Db(partialModels);
+
     if (doPartialNotify) {
       doPartialNotify(partialModels);
     }
+  }
+
+  private async _updatePartialModel2Db(
+    partialModels: Partial<Raw<SubModel>>[],
+  ) {
+    if (!this.DaoClass) {
+      mainLogger.warn('_updatePartialModel2Db: no dao class');
+      return;
+    }
+
+    const transformedModels: SubModel[] = [];
+    partialModels.forEach((item: Partial<Raw<SubModel>>) => {
+      const transformedModel: SubModel = transform(item);
+      transformedModels.push(transformedModel);
+    });
+    const dao = daoManager.getDao(this.DaoClass);
+    await dao.bulkUpdate(transformedModels);
   }
 }
 
