@@ -122,6 +122,8 @@ class MessageInputViewModel extends AbstractViewModel
       vm.error = '';
       if (content.trim()) {
         vm._sendPost(quill);
+        const onPostHandler = (vm.props as MessageInputProps).onPost;
+        onPostHandler && onPostHandler();
       }
     };
   }

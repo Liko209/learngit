@@ -8,6 +8,9 @@ import { ConversationCard } from '@/containers/ConversationCard';
 import { StreamViewProps } from './types';
 
 class StreamView extends PureComponent<StreamViewProps> {
+  componentDidMount() {
+    this.props.setRowVisible(-1);
+  }
   render() {
     return (
       <div>

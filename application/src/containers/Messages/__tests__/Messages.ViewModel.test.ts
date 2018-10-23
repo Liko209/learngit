@@ -1,6 +1,5 @@
 import { MessagesViewModel } from '../Messages.ViewModel';
 import storeManager from '../../../store/index';
-import { match } from 'react-router';
 
 jest.mock('../../../store/index');
 

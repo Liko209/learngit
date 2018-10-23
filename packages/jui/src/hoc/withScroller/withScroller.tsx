@@ -23,20 +23,18 @@ type ScrollerProps = {
   onScrollToBottom: () => void;
   triggerScrollToOnMount: boolean;
 };
+
 type WithScrollerProps = ScrollerProps;
 type ScrollerStates = {};
-
+type ScrollerSnapShot = {
+  atBottom: boolean;
+  atTop: boolean;
+};
 const stickToBottomStyle = `
   display: flex;
-  flex-direction: column-reverse;
-  && > div:nth-child(1) {
-    order: 3;
-  }
-  && > div:nth-child(2) {
-    order: 2;
-  }
-  && > div:nth-child(3) {
-    order: 1;
+  flex-direction: column;
+  && > div {
+    margin-top:auto;
   }
 `;
 
@@ -77,7 +75,7 @@ function withScroller(Comp: ComponentType<any>) {
     render() {
       return (
         <StyledScroller ref={this._scrollElRef} stickTo={this.props.stickTo}>
-          <Comp {...this.props} />
+          <Comp {...this.props} setRowVisible={this.scrollToRow} />
         </StyledScroller>
       );
     }
@@ -90,8 +88,22 @@ function withScroller(Comp: ComponentType<any>) {
       this._atBottom = this._isAtBottom();
       this.attachScrollListener();
     }
-
-    componentDidUpdate() {
+    getSnapshotBeforeUpdate() {
+      return { atTop: this._isAtTop(0), atBottom: this._isAtBottom(0) };
+    }
+    componentDidUpdate(
+      prevProps: ScrollerProps,
+      prevState: ScrollerStates,
+      snapShot: ScrollerSnapShot,
+    ) {
+      const { atBottom, atTop } = snapShot;
+      const { stickTo } = this.props;
+      if (atBottom && stickTo === 'bottom') {
+        this.scrollToRow(-1);
+      }
+      if (atTop && stickTo === 'top') {
+        this.scrollToRow(0);
+      }
       this.attachScrollListener();
     }
 
@@ -146,6 +158,39 @@ function withScroller(Comp: ComponentType<any>) {
           scrollEl.scrollTop -
           threshold
       );
+    }
+
+    scrollToRow = (
+      n: number,
+      options: ScrollIntoViewOptions | boolean = false,
+      itemSelector: string = 'div',
+    ) => {
+      const listEl = this._scrollEl.firstElementChild;
+      if (!listEl) {
+        return;
+      }
+      if (n === -1) {
+        return window.requestAnimationFrame(() => listEl.scrollIntoView(false));
+      }
+      const rowEl = Array.from(listEl.querySelectorAll(itemSelector)).slice(
+        n,
+      )[0];
+      return window.requestAnimationFrame(() => rowEl.scrollIntoView(false));
+    }
+
+    scrollToId = (
+      id: string,
+      options: ScrollIntoViewOptions | boolean = false,
+    ) => {
+      const listEl = this._scrollEl.firstElementChild;
+      if (!listEl) {
+        return;
+      }
+      const rowEl = listEl.querySelector(id);
+      if (!rowEl) {
+        return;
+      }
+      return window.requestAnimationFrame(() => rowEl.scrollIntoView(options));
     }
   };
 }
