@@ -15,6 +15,8 @@ type ConversationListItemViewProps = {
   selected: boolean;
   umiHint?: boolean;
   onClick: (event: MouseEvent<HTMLElement>) => void;
+  isTeam: boolean;
+  personIdForPresence: number;
 };
 
 export { ConversationListItemProps, ConversationListItemViewProps };

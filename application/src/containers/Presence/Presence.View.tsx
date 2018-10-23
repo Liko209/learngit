@@ -11,9 +11,12 @@ import { PresenceViewProps } from './types';
 @observer
 class PresenceView extends React.Component<PresenceViewProps> {
   render() {
-    const { presence } = this.props;
+    const { presence, size, ...rest } = this.props;
+    console.log('size', size);
 
-    return <JuiPresence presence={presence} />;
+    return presence ? (
+      <JuiPresence presence={presence} size={size} {...rest} />
+    ) : null;
   }
 }
 

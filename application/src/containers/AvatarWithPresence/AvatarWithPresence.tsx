@@ -4,32 +4,33 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { observer } from 'mobx-react';
 import { JuiAvatarWithPresence } from 'jui/pattern/AvatarWithPresence';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { AvatarWithPresenceViewProps } from './types';
 
+@observer
 class AvatarWithPresence extends React.Component<
   AvatarWithPresenceViewProps,
   {}
 > {
   constructor(props: AvatarWithPresenceViewProps) {
     super(props);
+    this._Presence = this._Presence.bind(this);
+    this._Avatar = this._Avatar.bind(this);
   }
-  private get _presence() {
-    return <Presence id={this.props.id} />;
+  private _Presence() {
+    const { uid, ...rest } = this.props;
+    return <Presence uid={uid} size="large" {...rest} />;
   }
-  private get _avatar() {
-    return <Avatar uid={this.props.id} size="large" />;
+  private _Avatar() {
+    const { uid, ...rest } = this.props;
+    return <Avatar uid={uid} size="large" {...rest} />;
   }
   render() {
-    const { id, ...rest } = this.props;
     return (
-      <JuiAvatarWithPresence
-        presence={this._presence}
-        avatar={this._avatar}
-        {...rest}
-      />
+      <JuiAvatarWithPresence Presence={this._Presence} Avatar={this._Avatar} />
     );
   }
 }

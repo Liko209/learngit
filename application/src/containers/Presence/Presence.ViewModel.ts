@@ -14,14 +14,15 @@ import { PresenceProps, PresenceViewProps } from './types';
 class PresenceViewModel extends StoreViewModel<PresenceProps>
   implements PresenceViewProps {
   @computed
-  private get _id() {
-    return this.props.id;
+  get size() {
+    return this.props.size;
   }
-
   @computed
   get presence() {
-    return getEntity<Presence, PresenceModel>(ENTITY_NAME.PRESENCE, this._id)
-      .presence;
+    return getEntity<Presence, PresenceModel>(
+      ENTITY_NAME.PRESENCE,
+      this.props.uid,
+    ).presence;
   }
 }
 

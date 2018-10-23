@@ -21,7 +21,7 @@ import history from '@/utils/history';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
-  > {
+> {
   unreadCount: number;
   important?: boolean | undefined;
   groupService: service.GroupService = GroupService.getInstance();
@@ -47,6 +47,36 @@ class ConversationListItemViewModel extends StoreViewModel<
   get _group() {
     return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
   }
+
+  @computed
+  get isTeam() {
+    return this._group.isTeam;
+  }
+
+  @computed
+  get personsIdsInGroup() {
+    return this._group.members;
+  }
+
+  @computed
+  get personIdForPresence() {
+    const membersExcludeMe = this._group.membersExcludeMe;
+
+    if (membersExcludeMe.length > 1 || this._group.isTeam) {
+      return 0;
+    }
+
+    if (
+      this.personsIdsInGroup &&
+      this.personsIdsInGroup.length === 1 &&
+      this.personsIdsInGroup[0] === this._group.meId
+    ) {
+      return this.personsIdsInGroup[0];
+    }
+
+    return membersExcludeMe[0];
+  }
+
   onClick = () => {
     storeManager.getGlobalStore().set('currentConversationId', this.groupId);
     history.push(`/messages/${this.groupId}`);

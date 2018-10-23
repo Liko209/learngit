@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 type AvatarWithPresenceProps = {
-  id: number;
+  uid: number;
 };
 
 type AvatarWithPresenceViewProps = {
-  id: number;
+  uid: number;
 };
 
 export { AvatarWithPresenceProps, AvatarWithPresenceViewProps };

@@ -18,7 +18,7 @@ class SubscribeHandler {
   constructor(
     threshold: number,
     public subscribeSuccess: Function,
-    interval: number = 1000,
+    interval: number = 200,
   ) {
     this.queue = [];
     this.failIds = new Map();

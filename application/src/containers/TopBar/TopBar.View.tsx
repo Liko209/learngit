@@ -14,7 +14,8 @@ import {
   JuiAddMenu,
 } from 'jui/pattern/TopBar';
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
-import { Avatar } from '@/containers/Avatar';
+// import { Avatar } from '@/containers/Avatar';
+import { AvatarWithPresence } from '@/containers/AvatarWithPresence';
 
 type TopBarProps = InjectedTranslateProps & {
   signOut: Function;
@@ -37,12 +38,14 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   private _AvatarMenuTrigger(avatarMenuTriggerProps: JuiIconButtonProps) {
-    const { currentUserId } = this.props;
+    const currentUserId = this.props.currentUserId;
 
     if (!currentUserId) {
       return null;
     }
-    return <Avatar uid={currentUserId} {...avatarMenuTriggerProps} />;
+    return (
+      <AvatarWithPresence uid={currentUserId} {...avatarMenuTriggerProps} />
+    );
   }
 
   private _AvatarMenu(avatarProps: MenuListCompositionProps) {

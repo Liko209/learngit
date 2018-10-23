@@ -58,7 +58,7 @@ const StyledListItem = styled(MuiMenuItem)`
 
 type JuiConversationListItemProps = {
   title: string;
-  presence?: JSX.Element;
+  presence?: JSX.Element | null;
   umi?: JSX.Element;
   indicator: JSX.Element | null;
   fontWeight?: 'bold' | 'normal';

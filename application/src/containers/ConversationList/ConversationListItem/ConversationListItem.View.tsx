@@ -38,7 +38,9 @@ class ConversationListItemViewComponent extends React.Component<Props, IState> {
   }
 
   private get _presence() {
-    return <Presence id={this.props.groupId} />;
+    return this.props.isTeam ? null : (
+      <Presence uid={this.props.personIdForPresence} />
+    );
   }
   private get _indicator() {
     if (this.props.selected) {
