@@ -33,8 +33,10 @@ test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
   });
 
   await h(t).logAsync('And I can open add action menu', async () => {
-    await app.homePage.clickAddActionButton();
+    await app.homePage.openAddActionMenu();
+    await t.wait(1e3);
     await app.homePage.addActionMenu.createTeamEntry.enter();
+    await t.wait(1e3);
     await app.homePage.createTeamModal.clickCancelButton();
   });
 
@@ -79,16 +81,15 @@ test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
     });
   });
 
-  await h(t).logAsync('And I can enter every conversation in teams section', async () => {
-    const conversationsCount = await app.homePage.messagePanel.teamsSection.conversations.count;
-    for (let i = 0; i < conversationsCount; i++) {
-      console.log(await app.homePage.messagePanel.teamsSection.nthConversation(i).getUmi());
-      await app.homePage.messagePanel.teamsSection.nthConversation(i).enter();
-    }
-  });
-
   await h(t).logAsync('When I enter first conversation in teams section', async () => {
-    await app.homePage.messagePanel.teamsSection.nthConversation(0).enter();
+    await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).openMoreMenu();
+    await t.wait(1e3);
+    if (await app.homePage.messagePanel.moreMenu.close.exists) {
+      await app.homePage.messagePanel.moreMenu.close.enter();
+      await t.wait(1e3);
+      await app.homePage.messagePanel.closeConversationModal.confirm();
+    }
+    await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
   });
 
   await h(t).logAsync('Then I can read all posts in first teams section', async () => {
@@ -96,6 +97,14 @@ test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
     await h(t).mapSelectorsAsync(app.homePage.messagePanel.conversationSection.posts, async (post, i) => {
       console.log(await post.attributes);
     });
+  });
+
+  await h(t).logAsync('And I can enter every conversation in teams section', async () => {
+    const conversationsCount = await app.homePage.messagePanel.teamsSection.conversations.count;
+    for (let i = 0; i < conversationsCount; i++) {
+      console.log(await app.homePage.messagePanel.teamsSection.nthConversationEntry(i).getUmi());
+      await app.homePage.messagePanel.teamsSection.nthConversationEntry(i).enter();
+    }
   });
 
 });

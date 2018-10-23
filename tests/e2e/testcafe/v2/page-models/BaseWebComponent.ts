@@ -4,6 +4,7 @@ import { Selector } from 'testcafe';
 
 import { IUser } from '../models'
 import { h } from '../helpers'
+import * as assert from 'assert';
 
 export abstract class BaseWebComponent {
 
@@ -26,23 +27,19 @@ export abstract class BaseWebComponent {
             .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
     }
 
+    async exists() {
+        return await this.root.exists;
+    }
+
     // testcafe actions
     async click(cb: (c) => Selector) {
         await this.t.click(cb(this));
     }
 
-    async wait(timeout: number) {
-        await this.t.wait(timeout);
-    }
-
-    async navigateTo(url) {
-        await this.t.navigateTo(url);
-    }
-
     // jupiter
     async directLoginWithUser(url: string, user: IUser) {
         const urlWithAuthCode = await h(this.t).jupiterHelper.getUrlWithAuthCode(url, user);
-        await this.navigateTo(urlWithAuthCode);
+        await this.t.navigateTo(urlWithAuthCode);
     }
 
     getComponent<T extends BaseWebComponent>(ctor: { new(t: TestController): T }, root: Selector = null): T {
@@ -50,6 +47,7 @@ export abstract class BaseWebComponent {
         if (root) {
             component.root = root;
         }
+        assert(component.root, "component's root should not be empty");
         return component;
     }
 

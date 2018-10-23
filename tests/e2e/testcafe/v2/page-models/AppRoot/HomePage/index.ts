@@ -35,9 +35,7 @@ class LeftPanel extends BaseWebComponent {
     }
 
     private getEntry(automationId: string) {
-        const entry = this.getComponent(LeftNavigatorEntry);
-        entry.root = this.getSelectorByAutomationId(automationId);
-        return entry;
+        return this.getComponent(LeftNavigatorEntry, this.getSelectorByAutomationId(automationId));
     }
 
     get dashboardEntry() {
@@ -92,7 +90,6 @@ class LeftPanel extends BaseWebComponent {
 
     private async toggle(expand: boolean) {
         const isExpand = await this.isExpand();
-        console.log(isExpand);
         if ((!isExpand && expand) || (isExpand && !expand)) {
             await this.t.click(this.toggleButton);
         }
@@ -107,7 +104,39 @@ class LeftPanel extends BaseWebComponent {
     }
 }
 
+class MoreMenuEntry extends BaseWebComponent {
+    async enter() {
+        await this.t.click(this.root);
+    }
+}
+
+class MoreMenu extends BaseWebComponent {
+    get root() {
+        return this.getSelector('*[role="document"]');
+    }
+
+    private getEntry(name: string) {
+        this.warnFlakySelector();
+        return this.getComponent(MoreMenuEntry, this.root.find('li').withText(name));
+    }
+
+    get favorite() {
+        return this.getEntry('Favorite');
+    }
+
+    get close() {
+        return this.getEntry('Close');
+    }
+}
+
 class ConversationEntry extends BaseWebComponent {
+
+
+
+    get moreMenuEntry() {
+        this.warnFlakySelector();
+        return this.root.child().withText('more_vert');
+    }
 
     async getUmi() {
         const umi = this.root.find('.umi');
@@ -119,6 +148,12 @@ class ConversationEntry extends BaseWebComponent {
             return 100;
         }
         return Number(text);
+    }
+
+    async openMoreMenu() {
+        await this.t
+            .hover(this.moreMenuEntry)
+            .click(this.moreMenuEntry);
     }
 
     async enter() {
@@ -140,12 +175,13 @@ class ConversationListSection extends BaseWebComponent {
         return this.root.find('*[role="menuitem"]');
     }
 
-    nthConversation(n: number) {
+    nthConversationEntry(n: number) {
         return this.getComponent(ConversationEntry, this.conversations.nth(n));
     }
 
     async isExpand() {
-        return await this.root.withText('keyboard_arrow_up').exists;
+        this.warnFlakySelector();
+        return await this.root.child().withText('keyboard_arrow_up').exists;
     }
 
     private async toggle(expand: boolean) {
@@ -174,6 +210,31 @@ class ConversationSection extends BaseWebComponent {
     }
 }
 
+class CloseConversationModal extends BaseWebComponent {
+    get root() {
+        this.warnFlakySelector();
+        return this.getSelector('*[role="dialog"]');
+    }
+
+    get dontAskAgainCheckbox() {
+        this.warnFlakySelector();
+        return this.root.find('input');
+    }
+
+    get confirmButton() {
+        this.warnFlakySelector();
+        return this.root.find('button');
+    }
+
+    async toggleDontAskAgain() {
+        await this.t.click(this.dontAskAgainCheckbox);
+    }
+
+    async confirm() {
+        await this.t.click(this.confirmButton);
+    }
+}
+
 class MessagePanel extends BaseWebComponent {
     get root() {
         return this.getSelector('#root');
@@ -198,6 +259,14 @@ class MessagePanel extends BaseWebComponent {
     get conversationSection() {
         return this.getComponent(ConversationSection);
     }
+
+    get moreMenu() {
+        return this.getComponent(MoreMenu);
+    }
+
+    get closeConversationModal() {
+        return this.getComponent(CloseConversationModal);
+    }
 }
 
 class AddActionMenuEntry extends BaseWebComponent {
@@ -216,6 +285,7 @@ class AddActionMenu extends BaseWebComponent {
     }
 
     private nthEntry(nth: number) {
+        this.warnFlakySelector();
         return this.getComponent(AddActionMenuEntry, this.root.find('li').nth(nth));
     }
 
@@ -272,7 +342,7 @@ export class HomePage extends BaseWebComponent {
         return this.getComponent(CreateTeamModal);
     }
 
-    async clickAddActionButton() {
+    async openAddActionMenu() {
         await this.t.click(this.addActionButton);
         await this.t.hover('html');
     }
