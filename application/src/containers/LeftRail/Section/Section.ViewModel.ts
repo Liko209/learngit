@@ -46,7 +46,7 @@ function favGroupTransformFunc(data: Group): ISortableModel<Group> {
 const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
     title: 'favorite_plural',
-    iconName: 'start',
+    iconName: 'star_border',
     eventName: ENTITY.FAVORITE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.FAVORITE,
@@ -59,7 +59,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
     title: 'directMessage_plural',
-    iconName: 'people',
+    iconName: 'person_outline',
     eventName: ENTITY.PEOPLE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.GROUP,
@@ -71,7 +71,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   },
   [SECTION_TYPE.TEAM]: {
     title: 'team_plural',
-    iconName: 'people',
+    iconName: 'people_outline',
     eventName: ENTITY.TEAM_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.TEAM,

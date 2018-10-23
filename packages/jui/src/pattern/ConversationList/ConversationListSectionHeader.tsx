@@ -8,10 +8,13 @@ import React from 'react';
 import MuiListItem from '@material-ui/core/ListItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey } from '../../foundation/utils';
+import { spacing, grey, palette, height } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
+import tinycolor from 'tinycolor2';
+import { Theme } from '../../foundation/theme/theme';
 
+const StyledJuiIconographyLeft = styled(JuiIconography)``;
 const StyledJuiIconography = styled(JuiIconography)``;
 
 const StyledListItem = styled(MuiListItem)`
@@ -19,16 +22,26 @@ const StyledListItem = styled(MuiListItem)`
     padding: ${spacing(2, 4, 2, 3)};
     background: white;
     color: ${grey('700')};
+    height: ${height(11)};
+    line-height: ${height(11)};
+  }
+
+  && > ${StyledJuiIconographyLeft} {
+    font-size: 20px;
+    color: ${({ theme }: { theme: Theme }) =>
+      tinycolor(grey('600')({ theme }))
+        .setAlpha(0.4)
+        .toRgbString()};
   }
 
   && > ${StyledJuiIconography} {
-    color: ${grey('400')};
+    color: ${palette('grey', '400')};
   }
 `;
 
 type SectionHeaderProps = {
   title: string;
-  icon: JSX.Element;
+  icon: string;
   umi: JSX.Element;
   expanded?: boolean;
   className?: string;
@@ -51,7 +64,7 @@ const ConversationListSectionHeader = (props: SectionHeaderProps) => {
 
   return (
     <StyledListItem className={className} button={true} onClick={onClick}>
-      {icon}
+      <StyledJuiIconographyLeft>{icon}</StyledJuiIconographyLeft>
       <ItemText>{title}</ItemText>
       {!expanded ? umi : null}
       <StyledJuiIconography onClick={onArrowClick}>

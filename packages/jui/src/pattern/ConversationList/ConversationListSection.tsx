@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import Collapse from '@material-ui/core/Collapse';
 import { noop, palette, grey } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
-import { JuiDivider } from '../../components/Divider';
+// import { JuiDivider } from '../../components/Divider';
 import SectionHeader, {
   SectionHeaderProps,
 } from './ConversationListSectionHeader';
@@ -17,7 +17,7 @@ type SectionProps = {
   onExpand?: Function;
   onCollapse?: Function;
   umi?: JSX.Element;
-  icon?: JSX.Element;
+  icon?: string;
   title: string;
 } & SectionHeaderProps;
 
@@ -67,7 +67,7 @@ class JuiConversationListSection extends Component<
           onClick={this._handleClick}
         />
         <Collapse in={expanded}>
-          {this.props.children && <JuiDivider />}
+          {/* {this.props.children && <JuiDivider />} */}
           {this.props.children}
         </Collapse>
       </div>
