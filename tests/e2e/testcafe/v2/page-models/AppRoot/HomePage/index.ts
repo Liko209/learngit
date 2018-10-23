@@ -119,7 +119,7 @@ class ConversationListSection extends BaseWebComponent {
         return this.root.find('*[role="menuitem"]');
     }
 
-    nthConversation(n: number) {
+    getNthConversation(n: number) {
         return this.conversations.nth(n);
     }
 
@@ -155,7 +155,6 @@ class ConversationSection extends BaseWebComponent {
     get posts() {
         return this.root.find('*[data-name="conversation-card"]');
     }
-
 }
 
 class MessagePanel extends BaseWebComponent {
