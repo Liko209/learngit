@@ -47,6 +47,7 @@ test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
 
   await h(t).logAsync('And I can toggle every section in message panel', async () => {
     await app.homePage.leftPanel.messagesEntry.enter();
+    console.log(await app.homePage.leftPanel.messagesEntry.getUmi());
     await app.homePage.messagePanel.favoritesSection.expand();
     await app.homePage.messagePanel.favoritesSection.fold();
     await app.homePage.messagePanel.favoritesSection.expand();

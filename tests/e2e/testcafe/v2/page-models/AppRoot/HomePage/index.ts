@@ -16,6 +16,20 @@ class LeftNavigatorEntry extends BaseWebComponent {
     async enter() {
         await this.click(page => page.root);
     }
+
+    async getUmi() {
+        const umi = this.root.find('.umi');
+        const text = await umi.innerText;
+        if (_.isEmpty(text)) {
+            return 0;
+        }
+        if (text == '99+') {
+            return 100;
+        }
+        return Number(text);
+    }
+
+
 }
 
 class LeftPanel extends BaseWebComponent {
@@ -110,6 +124,9 @@ class ConversationEntry extends BaseWebComponent {
         const text = await umi.innerText;
         if (_.isEmpty(text)) {
             return 0;
+        }
+        if (text == '99+') {
+            return 100;
         }
         return Number(text);
     }
