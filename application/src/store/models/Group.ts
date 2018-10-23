@@ -11,6 +11,7 @@ import ProfileModel from '@/store/models/Profile';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 import { compareName } from '@/utils/helper';
 import { CONVERSATION_TYPES } from '@/constants';
+import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
 import { t } from 'i18next';
 
@@ -79,7 +80,7 @@ export default class GroupModel extends Base<Group> {
       return this.setAbbreviation;
     }
 
-    const currentUserId = getGlobalValue('currentUserId');
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
 
@@ -124,7 +125,7 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const currentUserId = getGlobalValue('currentUserId');
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
     const members = this.members || [];
 

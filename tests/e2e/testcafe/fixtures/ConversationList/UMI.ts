@@ -5,10 +5,15 @@ import { ConversationItemUMI } from '../../page-models/components/ConversationLi
 import {
   DirectMessageSection,
   TeamSection,
+  FavoriteSection,
 } from '../../page-models/components';
 import { setupSDK } from '../../utils/setupSDK';
 import * as _ from 'lodash';
-import { prepareConversations } from '../utils';
+import {
+  prepareConversations,
+  clearAllUMI,
+  setFavoriteConversations,
+} from '../utils';
 
 declare var test: TestFn;
 fixture('ConversationStream/ConversationStream')
@@ -186,132 +191,257 @@ test.skip(
   },
 );
 
-// test(
-//   formalName(
-//     'Should not display UMI when section is expended & Should display UMI when section is collapsed',
-//     ['JPT-98', 'JPT-99', 'P2', 'P1', 'ConversationList'],
-//   ),
-//   async (t: TestController) => {
-//     await setupSDK(t);
-//     const {
-//       favPrivateChat,
-//       favTeam,
-//       pvtChat1,
-//       pvtChat2,
-//       pvtChat3,
-//       team1,
-//       team2,
-//     } = await prepareConversations(t, [
-//       { type: 'privateChat', identifier: 'favPrivateChat' },
-//       { type: 'team', identifier: 'favTeam' },
-//       { type: 'privateChat', identifier: 'pvtChat1' },
-//       { type: 'privateChat', identifier: 'pvtChat2' },
-//       { type: 'privateChat', identifier: 'pvtChat3' },
-//       { type: 'team', identifier: 'team1' },
-//       { type: 'team', identifier: 'team2' },
-//     ]);
+test(
+  formalName(
+    'Should not display UMI when section is expended & Should display UMI when section is collapsed',
+    ['JPT-98', 'JPT-99', 'P2', 'P1', 'ConversationList'],
+  ),
+  async (t: TestController) => {
+    await setupSDK(t);
+    const {
+      favPrivateChat,
+      favTeam,
+      pvtChat1,
+      pvtChat2,
+      pvtChat3,
+      team1,
+      team2,
+    } = await prepareConversations(t, [
+      { type: 'privateChat', identifier: 'favPrivateChat', isFavorite: true },
+      { type: 'team', identifier: 'favTeam', isFavorite: true },
+      { type: 'privateChat', identifier: 'pvtChat1' },
+      { type: 'privateChat', identifier: 'pvtChat2' },
+      { type: 'privateChat', identifier: 'pvtChat3' },
+      { type: 'team', identifier: 'team1' },
+      { type: 'team', identifier: 'team2' },
+    ]);
 
-//     await directLogin(t)
-//       .log('1.Navigate to DirectMessageSection')
-//       .shouldNavigateTo(DirectMessageSection)
-//       .expectExist()
-//       .log('2.Check the section is expanded')
-//       .shouldExpand()
-//       .log('3.Click each item to reset')
-//       .clickEachItem()
-//       .log('4.Click extra item to avoid affecting target items')
-//       .clickItemById(+pvtChat3.id)
-//       .chain(t => t.wait(5000))
-//       .log('5.Navigate to ConversationItemUMI')
-//       .shouldNavigateTo(ConversationItemUMI)
-//       .log('6.Send posts to pvtChats to create UMI')
-//       .chain(t => t.wait(3000))
-//       .sendPostToGroup('TestUMI', +pvtChat1.id, '703', 2)
-//       .sendPostToGroup('TestUMI', +pvtChat2.id, '704', 3)
-//       .log('7.Check no umi in Direct Message section header')
-//       .checkNoUMIInHeader('Direct Messages')
-//       .log('8.Navigate to DirectMessageSection')
-//       .shouldNavigateTo(DirectMessageSection)
-//       .log('9.Click header to collapse')
-//       .clickHeader()
-//       .log('10.Navigate to ConversationItemUMI')
-//       .shouldNavigateTo(ConversationItemUMI)
-//       .log('11.Check UMI in header should be 5')
-//       .checkUnreadInHeader('Direct Messages', 5)
-//       .sendMentionToTeam()
-//       .log('4.Check the mention UMI of team')
-//       .checkTeamMentionUMI()
-//       .log('5.Check the section UMI of team')
-//       .checkSectionNoUMI();
-//   },
-// );
+    await clearAllUMI(t);
 
-// test(
-//   formalName('Should display UMI when section is collapsed', [
-//     'JPT-99',
-//     'P1',
-//     'ConversationList',
-//   ]),
-//   async (t: TestController) => {
-//     await directLogin(t)
-//       .log('1.Navigate to ConversationItemUMI')
-//       .shouldNavigateTo(ConversationItemUMI)
-//       .log('Check section is expanded')
-//       .shouldExpand()
-//       .log('Send post to group')
-//       .sendPostToGroup('TestUMI')
-//       .log('Calculate all UMI in group section')
-//       .calculateDMUMI()
-//       .log('Click DM section header')
-//       .clickGoupHeader()
-//       .log('Check section is collapsed')
-//       .shouldCollapsed()
-//       .log('Check UMI in DM section ')
-//       .checkSectionUMI();
-//   },
-// );
+    await directLogin(t)
+      // DM section
+      .log('1.Navigate to DirectMessageSection')
+      .shouldNavigateTo(DirectMessageSection)
+      .expectExist()
+      .log('2.Check the section is expanded')
+      .shouldExpand()
+      .log('3.Click extra item to avoid affecting target items')
+      .clickItemById(+pvtChat3.id)
+      .chain(t => t.wait(2000))
+      .log('4.Navigate to ConversationItemUMI')
+      .shouldNavigateTo(ConversationItemUMI)
+      .log('5.Send posts to pvtChats to create UMI')
+      .chain(t => t.wait(2000))
+      .sendPostToGroup('TestUMI', +pvtChat1.id, '703', 2)
+      .sendPostToGroup('TestUMI', +pvtChat2.id, '704', 3)
+      .log('6.Check no umi in Direct Message section header')
+      .chain(t => t.wait(2000))
+      .checkNoUMIInHeader('Direct Messages')
+      .log('7.Navigate to DirectMessageSection')
+      .shouldNavigateTo(DirectMessageSection)
+      .log('8.Click header to collapse')
+      .clickHeader()
+      .log('9.Navigate to ConversationItemUMI')
+      .shouldNavigateTo(ConversationItemUMI)
+      .log('10.Check UMI in header should be 5')
+      .checkUnreadInHeader('Direct Messages', 5)
+      .log('11.Send another post with mention to one pvtChat')
+      .sendMentionToGroup(+pvtChat1.id, '703')
+      .log('12.Check UMI in header should be 6 with mention color')
+      .chain(t => t.wait(2000))
+      .checkUnreadInHeader('Direct Messages', 6, true)
+      .log('13.Send another post to one pvtChat')
+      .sendPostToGroup('TestUMI', +pvtChat1.id, '703')
+      .log('14.Check UMI in header should be 7 with mention color')
+      .checkUnreadInHeader('Direct Messages', 7, true)
+      // // Team section
+      .log('15.Navigate to TeamSection')
+      .shouldNavigateTo(TeamSection)
+      .expectExist()
+      .log('16.Check the section is expanded')
+      .shouldExpand()
+      .log('17.Navigate to ConversationItemUMI')
+      .shouldNavigateTo(ConversationItemUMI)
+      .log('18.Send posts to teams to create UMI')
+      .chain(t => t.wait(2000))
+      .sendMentionToGroup(+team1.id, '702', 2)
+      .sendMentionToGroup(+team2.id, '702', 3)
+      .log('19.Check no umi in Team section header')
+      .chain(t => t.wait(2000))
+      .checkNoUMIInHeader('Teams')
+      .log('20.Navigate to TeamSection')
+      .shouldNavigateTo(TeamSection)
+      .log('21.Click header to collapse')
+      .clickHeader()
+      .log('22.Navigate to ConversationItemUMI')
+      .shouldNavigateTo(ConversationItemUMI)
+      .log('23.Check UMI in header should be 5')
+      .checkUnreadInHeader('Teams', 5, true)
+      .log('24.Send another post with mention to one team')
+      .sendMentionToGroup(+team1.id, '702')
+      .log('25.Check UMI in header should be 6 with mention color')
+      .chain(t => t.wait(2000))
+      .checkUnreadInHeader('Teams', 6, true)
+      .log('26.Send another normal post to one team')
+      .sendPostToGroup('TestUMI', +team1.id, '702')
+      .log(
+        '27. Should not increase. Check UMI in header should be 6 with mention color',
+      )
+      .checkUnreadInHeader('Teams', 6, true)
+      // Fav section
+      .log('28.Navigate to FavoriteSection')
+      .shouldNavigateTo(FavoriteSection)
+      .expectExist()
+      .log('29.Check the section is expanded')
+      .shouldExpand()
+      .log('30.Navigate to ConversationItemUMI')
+      .shouldNavigateTo(ConversationItemUMI)
+      .log('31.Send posts to teams to create UMI')
+      .chain(t => t.wait(2000))
+      .sendMentionToGroup(+favPrivateChat.id, '702', 2)
+      .sendMentionToGroup(+favTeam.id, '702', 3)
+      .log('32.Check no umi in Favorites section header')
+      .chain(t => t.wait(2000))
+      .checkNoUMIInHeader('Favorites')
+      .log('33.Navigate to FavoritesSection')
+      .shouldNavigateTo(FavoriteSection)
+      .log('34.Click header to collapse')
+      .clickHeader()
+      .log('35.Navigate to ConversationItemUMI')
+      .shouldNavigateTo(ConversationItemUMI)
+      .log('36.Check UMI in header should be 5')
+      .checkUnreadInHeader('Favorites', 5, true)
+      .log('37.Send another post with mention to one fav group')
+      .sendMentionToGroup(+favPrivateChat.id, '702')
+      .log('38.Check UMI in header should be 6 with mention color')
+      .chain(t => t.wait(2000))
+      .checkUnreadInHeader('Favorites', 6, true)
+      .log('39.Send another post with mention to one fav team')
+      .sendMentionToGroup(+favTeam.id, '702')
+      .log('40.Check UMI in header should be 7 with mention color')
+      .chain(t => t.wait(2000))
+      .checkUnreadInHeader('Favorites', 7, true)
+      .log('41.Send another normal post to one fav group')
+      .sendPostToGroup('TestUMI', +favPrivateChat.id, '702')
+      .log(
+        '42. Should increase. Check UMI in header should be 8 with mention color',
+      )
+      .checkUnreadInHeader('Favorites', 8, true)
+      .log('43.Send another normal post to one fav team')
+      .sendPostToGroup('TestUMI', +favTeam.id, '702')
+      .log(
+        '44. Should not increase. Check UMI in header should be 8 with mention color',
+      )
+      .checkUnreadInHeader('Favorites', 8, true);
+  },
+);
 
-// test(
-//   formalName('UMI should be updated when fav/unfav conversation', [
-//     'JPT-123',
-//     'P1',
-//     'ConversationList',
-//   ]),
-//   async (t: TestController) => {
-//     await directLogin(t)
-//       .log('1.Navigate to FavoriteSection')
-//       .shouldNavigateTo(FavoriteSection)
-//       .log('2.Click fav section header')
-//       .clickHeader()
-//       .log('3.Check section is collapsed')
-//       .checkCollapsed()
-//       .log('4.Check UMI in Fav section')
-//       .checkSectionUMI()
-//       .log('5.Navigate to DM section')
-//       .shouldNavigateTo(DirectMessageSection)
-//       .log('6.Send post to Group')
-//       .sendPostToGroup()
-//       .log('7.Click DM section header')
-//       .clickGoupHeader()
-//       .log('8.Check section is collapsed')
-//       .checkCollapsed()
-//       .log('9.Check the UMI in DM section')
-//       .checkSectionUMI()
-//       .log('10.Click fav section header')
-//       .clickHeader()
-//       .log('11.Check section is expanded')
-//       .shouldExpand()
-//       .log('12.Favorite the group')
-//       .FavoriteGroup()
-//       .log('13.Click fav section header')
-//       .clickHeader()
-//       .log('14.Check section is collapsed')
-// .checkCollapsed()
-//       .log('15.Check the UMI in DM section')
-//       .checkSectionNoUMI()
-//       .log('16.Navigate to Fav section')
-//       .shouldNavigateTo(FavoriteSection)
-//       .log('17.Check UMI in Fav section')
-//       .checkSectionUMI();
-//   },
-// );
+test(
+  formalName('UMI should be updated when fav/unfav conversation', [
+    'JPT-123',
+    'P1',
+    'ConversationList',
+  ]),
+  async (t: TestController) => {
+    await setFavoriteConversations(t, []);
+    const {
+      pvtChat1,
+      pvtChat2,
+      pvtChat3,
+      team1,
+      team2,
+    } = await prepareConversations(t, [
+      { type: 'privateChat', identifier: 'pvtChat1' },
+      { type: 'privateChat', identifier: 'pvtChat2' },
+      { type: 'privateChat', identifier: 'pvtChat3' },
+      { type: 'team', identifier: 'team1' },
+      { type: 'team', identifier: 'team2' },
+    ]);
+    await clearAllUMI(t);
+    await directLogin(t)
+      .log('1.Navigate to DirectMessageSection')
+      .shouldNavigateTo(DirectMessageSection)
+      .expectExist()
+      .log('2.Check the section is expanded')
+      .shouldExpand()
+      .log('3.Click extra item to avoid affecting target items')
+      .clickItemById(+pvtChat3.id)
+      .chain(t => t.wait(2000))
+      .shouldNavigateTo(ConversationItemUMI)
+      .sendPostToGroup('TestUMI', +pvtChat1.id, '702', 2)
+      .shouldNavigateTo(TeamSection)
+      .expectExist()
+      .log('4.Check the section is expanded')
+      .shouldExpand()
+      .chain(t => t.wait(2000))
+      .shouldNavigateTo(ConversationItemUMI)
+      .sendMentionToGroup(+team1.id, '702', 2)
+      .log('5.Click Favorite section header to collapse')
+      .shouldNavigateTo(FavoriteSection)
+      .clickHeader()
+      .chain(t => t.wait(1000))
+      .shouldCollapse()
+      .log('6.Preconditions done')
+      .log('7.Favorite pvtChat1 and team1, umi should move to fav section')
+      .shouldNavigateTo(ConversationItemUMI)
+      .favoriteGroup(+pvtChat1.id)
+      .favoriteGroup(+team1.id)
+      .chain(t => t.wait(2000))
+      .checkUnreadInHeader('Favorites', 4, true)
+      .checkNoUMIInHeader('Direct Messages')
+      .checkNoUMIInHeader('Teams')
+      .log('8.Favorite pvtChat2 and team3, umi no change')
+      .favoriteGroup(+pvtChat2.id)
+      .favoriteGroup(+team2.id)
+      .chain(t => t.wait(2000))
+      .checkUnreadInHeader('Favorites', 4, true)
+      .checkNoUMIInHeader('Direct Messages')
+      .checkNoUMIInHeader('Teams')
+      .log('9.Expand Favorite section')
+      .shouldNavigateTo(FavoriteSection)
+      .clickHeader()
+      .chain(t => t.wait(1000))
+      .shouldExpand()
+      .log('10.Collapse DM section')
+      .shouldNavigateTo(DirectMessageSection)
+      .clickHeader()
+      .chain(t => t.wait(1000))
+      .shouldCollapse()
+      .log('11.Collapse Team section')
+      .shouldNavigateTo(TeamSection)
+      .clickHeader()
+      .chain(t => t.wait(1000))
+      .shouldCollapse()
+      .log('12.UnFavorite pvtChat2 and team3, umi no change')
+      .shouldNavigateTo(ConversationItemUMI)
+      .unFavoriteGroup(+pvtChat2.id)
+      .unFavoriteGroup(+team2.id)
+      .log('13.Collapse Favorite section')
+      .shouldNavigateTo(FavoriteSection)
+      .clickHeader()
+      .shouldCollapse()
+      .chain(t => t.wait(2000))
+      .shouldNavigateTo(ConversationItemUMI)
+      .checkUnreadInHeader('Favorites', 4, true)
+      .checkNoUMIInHeader('Direct Messages')
+      .checkNoUMIInHeader('Teams')
+      .log('14.UnFavorite pvtChat1 and team1, umi move back')
+      .log('15.Expand Favorite section')
+      .shouldNavigateTo(FavoriteSection)
+      .clickHeader()
+      .chain(t => t.wait(1000))
+      .shouldExpand()
+      .shouldNavigateTo(ConversationItemUMI)
+      .unFavoriteGroup(+pvtChat1.id)
+      .unFavoriteGroup(+team1.id)
+      .log('16.Collapse Favorite section')
+      .shouldNavigateTo(FavoriteSection)
+      .clickHeader()
+      .shouldCollapse()
+      .chain(t => t.wait(2000))
+      .shouldNavigateTo(ConversationItemUMI)
+      .checkNoUMIInHeader('Favorites')
+      .checkUnreadInHeader('Direct Messages', 2)
+      .checkUnreadInHeader('Teams', 2, true);
+  },
+);

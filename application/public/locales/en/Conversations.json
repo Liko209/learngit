@@ -19,5 +19,6 @@
   "deletePostCancel": "Cancel",
   "sendingPost": "Sending post",
   "resendPost": "Resend post",
-  "deletePost": "Delete post"
+  "deletePost": "Delete post",
+  "show_unread": "Show unread"
 }

@@ -10,18 +10,19 @@ import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import { StateService } from 'sdk/service';
 import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 import { MessagesProps } from './types';
 
 class MessagesViewModel extends AbstractViewModel<MessagesProps> {
   @computed
   get currentConversationId() {
-    return storeManager.getGlobalStore().get('currentConversationId');
+    return getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
   }
 
-  updateCurrentConversationId = (currentConversationId?: number) => {
+  updateCurrentConversationId = (currentConversationId: number) => {
     storeManager
       .getGlobalStore()
-      .set('currentConversationId', currentConversationId);
+      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, currentConversationId);
   }
 
   getLastGroupId = async (id?: number) => {
@@ -31,7 +32,7 @@ class MessagesViewModel extends AbstractViewModel<MessagesProps> {
 
   @computed
   get isLeftNavOpen() {
-    return getGlobalValue('isLeftNavOpen');
+    return getGlobalValue(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
   }
 }
 

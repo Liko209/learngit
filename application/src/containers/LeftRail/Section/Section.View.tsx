@@ -18,6 +18,7 @@ import { SectionViewProps } from './types';
 import { Umi } from '../../Umi';
 import storeManager from '@/store';
 import history from '@/utils/history';
+import { GLOBAL_KEYS } from '@/store/constants';
 // TODO remove Stubs here
 
 const SortableList = SortableContainer(JuiConversationList);
@@ -34,7 +35,7 @@ class SectionViewComponent extends React.Component<Props> {
     const diff = [...prevGroupIds].filter(id => !new Set(groupIds).has(id));
     const currentGroupId = storeManager
       .getGlobalStore()
-      .get('currentConversationId');
+      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     if (diff.length === 1 && diff[0] === currentGroupId) {
       history.replace('/messages');
     }

@@ -1,10 +1,10 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { JuiDivider } from 'jui/components/Divider';
 import {
   JuiConversationCard,
   JuiConversationCardHeader,
-  JuiConversationCardFooter,
+  JuiConversationCardBody,
+  // JuiConversationCardFooter,
 } from 'jui/pattern/ConversationCard';
 import { Avatar } from '@/containers/Avatar';
 import { translate } from 'react-i18next';
@@ -44,7 +44,7 @@ export class ConversationCard extends React.Component<
     super(props);
   }
   render() {
-    const { id, post, creator, displayTitle, createTime, kv, currentUserId } = this.props;
+    const { id, post, creator, name, createTime, customStatus, kv, currentUserId } = this.props;
     const { text } = post;
     const str1 = Markdown(text);
     const str2 = glipdown2Html(str1);
@@ -60,21 +60,21 @@ export class ConversationCard extends React.Component<
         >
           <JuiConversationCardHeader
             data-name="conversation-card-header"
-            name={displayTitle}
+            name={name}
             time={createTime}
+            status={customStatus}
           >
             <Actions id={id} />
           </JuiConversationCardHeader>
-          {/* todo: content */}
-          <StyledPostText currentUserId={currentUserId} atMentionId={atMentionId}>
-            <div dangerouslySetInnerHTML={{ __html: html }} />
-          </StyledPostText>
-          {/* todo: content */}
-          <JuiConversationCardFooter>
-            {/* todo: footer */}
-          </JuiConversationCardFooter>
+          <JuiConversationCardBody>
+            <StyledPostText currentUserId={currentUserId} atMentionId={atMentionId}>
+              <div dangerouslySetInnerHTML={{ __html: html }} />
+            </StyledPostText>
+          </JuiConversationCardBody>
+          {/*<JuiConversationCardFooter>*/}
+            {/*/!* todo: footer *!/*/}
+          {/*</JuiConversationCardFooter>*/}
         </JuiConversationCard>
-        <JuiDivider />
       </React.Fragment>
     );
   }

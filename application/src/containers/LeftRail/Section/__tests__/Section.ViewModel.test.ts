@@ -1,6 +1,7 @@
 import storeManager from '../../../../store';
 import { SectionViewModel } from '../Section.ViewModel';
 import { SECTION_TYPE } from '../types';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 jest.mock('../../../../store/base/fetch');
 
@@ -11,7 +12,10 @@ describe('SectionViewModel', () => {
 
       const vm = new SectionViewModel();
       Object.assign(vm, {
-        _config: { queryType: SECTION_TYPE.FAVORITE },
+        _config: {
+          queryType: SECTION_TYPE.FAVORITE,
+          globalKey: GLOBAL_KEYS.GROUP_QUERY_TYPE_FAVORITE_IDS,
+        },
         _listHandler: {
           sortableListStore: {
             getIds: jest
@@ -25,7 +29,9 @@ describe('SectionViewModel', () => {
       await vm.updateGlobalGroups();
 
       const globalStore = storeManager.getGlobalStore();
-      expect(globalStore.get(SECTION_TYPE.FAVORITE)).toEqual([1, 2, 3]);
+      expect(
+        globalStore.get(GLOBAL_KEYS.GROUP_QUERY_TYPE_FAVORITE_IDS),
+      ).toEqual([1, 2, 3]);
     });
   });
 });

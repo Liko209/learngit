@@ -15,6 +15,7 @@ import { getEntity, getGlobalValue } from '@/store/utils';
 import { Post, Person } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 class ConversationCardViewModel extends AbstractViewModel implements ConversationCardViewProps {
   @observable id: number;
@@ -40,13 +41,13 @@ class ConversationCardViewModel extends AbstractViewModel implements Conversatio
   }
 
   @computed
-  get displayTitle() {
-    let str = this.creator.displayName;
-    if (this.creator.awayStatus) {
-      str += ` ${this.creator.awayStatus}`;
-    }
+  get name() {
+    return this.creator.displayName;
+  }
 
-    return str;
+  @computed
+  get customStatus() {
+    return this.creator.awayStatus;
   }
 
   @computed
@@ -68,7 +69,7 @@ class ConversationCardViewModel extends AbstractViewModel implements Conversatio
   }
   @computed
   get currentUserId() {
-    return getGlobalValue('currentUserId');
+    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 }
 
