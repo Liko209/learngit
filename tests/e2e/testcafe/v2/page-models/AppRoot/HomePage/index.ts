@@ -124,6 +124,7 @@ class ConversationListSection extends BaseWebComponent {
     }
 
     async enterNthConversation(n: number) {
+        await this.t.hover('html');  // a work around for hide behind tooktip
         await this.click(c => c.getNthConversation(n));
     }
 

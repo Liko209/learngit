@@ -9,7 +9,6 @@ import { h } from '../v2/helpers'
 import { setupCase, teardownCase } from '../init';
 import { SITE_URL } from '../config';
 import { AppRoot } from "../v2/page-models/AppRoot";
-import { timingSafeEqual } from 'crypto';
 
 fixture('Demo')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
