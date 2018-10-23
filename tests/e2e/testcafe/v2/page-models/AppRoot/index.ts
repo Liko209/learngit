@@ -6,6 +6,6 @@ export class AppRoot extends BaseWebComponent {
     async ensureLoaded() { }
 
     get homePage() {
-        return new HomePage(this.t);
+        return this.getComponent(HomePage);
     }
 }

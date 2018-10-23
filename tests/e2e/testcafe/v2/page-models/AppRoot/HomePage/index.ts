@@ -19,6 +19,14 @@ class LeftNavigatorEntry extends BaseWebComponent {
 
 class LeftPanel extends BaseWebComponent {
 
+    get root() {
+        return this.getSelectorByAutomationId('leftPanel');
+    }
+
+    get toggleButton() {
+        return this.getSelectorByAutomationId('toggleBtn');
+    }
+
     private getEntry(automationId: string) {
         const entry = this.getComponent(LeftNavigatorEntry);
         entry.automationId = automationId;
@@ -46,6 +54,27 @@ class LeftPanel extends BaseWebComponent {
     async ensureLoaded() {
         await this.messagesEntry.ensureLoaded();
     }
+
+    async isExpand() {
+        const width = await this.root.offsetWidth;
+        return width > 200 * 0.9;
+    }
+
+    private async toggle(expand: boolean) {
+        const isExpand = await this.isExpand();
+        console.log(isExpand);
+        if ((!isExpand && expand) || (isExpand && !expand)) {
+            await this.click(page => page.toggleButton);
+        }
+    }
+
+    async expand() {
+        await this.toggle(true);
+    }
+
+    async fold() {
+        await this.toggle(false);
+    }
 }
 
 class ConversationListSection extends BaseWebComponent {
@@ -67,20 +96,23 @@ class ConversationListSection extends BaseWebComponent {
         return this.root.find('*[role="menuitem"]');
     }
 
+    async isExpand() {
+        return await this.root.child().withText('keyboard_arrow_up').exists;
+    }
+
     private async toggle(expand: boolean) {
-        const isExpand = await this.root.child().withText('keyboard_arrow_up').exists;
-        console.log(isExpand);
+        const isExpand = await this.isExpand();
         if ((!isExpand && expand) || (isExpand && !expand)) {
             await this.click(page => page.toggleButton);
         }
     }
 
     async expand() {
-        return await this.toggle(true);
+        await this.toggle(true);
     }
 
     async fold() {
-        return await this.toggle(false);
+        await this.toggle(false);
     }
 
 }
