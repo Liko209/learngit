@@ -7,9 +7,8 @@ import { h } from '../helpers'
 
 export abstract class BaseWebComponent {
 
+    public root: Selector;
     constructor(public t: TestController) { }
-
-    abstract get root(): Selector;
 
     async ensureLoaded() {
         console.error('You should overwrite this method to ensure component is loaded before execute other operations');
@@ -46,8 +45,12 @@ export abstract class BaseWebComponent {
         await this.navigateTo(urlWithAuthCode);
     }
 
-    getComponent<T>(ctor: { new(t: TestController): T }): T {
-        return new ctor(this.t);
+    getComponent<T extends BaseWebComponent>(ctor: { new(t: TestController): T }, root: Selector = null): T {
+        const component = new ctor(this.t);
+        if (root) {
+            component.root = root;
+        }
+        return component;
     }
 
     getSelector(select: string, root: Selector = null) {
@@ -64,6 +67,11 @@ export abstract class BaseWebComponent {
 
     getSelectorByAnchor(anchor: string, root: Selector = null): Selector {
         return this.getSelector(`*[data-anchor="${anchor}"]`, root);
+    }
+
+    // misc
+    warnFlakySelector() {
+        console.error('a flaky selector is found!');
     }
 
 }

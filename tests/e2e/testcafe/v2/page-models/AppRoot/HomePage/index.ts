@@ -3,12 +3,6 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 
 class LeftNavigatorEntry extends BaseWebComponent {
 
-    public automationId: string;
-
-    get root() {
-        return this.getSelectorByAutomationId(this.automationId);
-    }
-
     async ensureLoaded() {
         await this.waitUntilExist(this.root, 10e3);
     }
@@ -28,8 +22,6 @@ class LeftNavigatorEntry extends BaseWebComponent {
         }
         return Number(text);
     }
-
-
 }
 
 class LeftPanel extends BaseWebComponent {
@@ -44,7 +36,7 @@ class LeftPanel extends BaseWebComponent {
 
     private getEntry(automationId: string) {
         const entry = this.getComponent(LeftNavigatorEntry);
-        entry.automationId = automationId;
+        entry.root = this.getSelectorByAutomationId(automationId);
         return entry;
     }
 
@@ -102,7 +94,7 @@ class LeftPanel extends BaseWebComponent {
         const isExpand = await this.isExpand();
         console.log(isExpand);
         if ((!isExpand && expand) || (isExpand && !expand)) {
-            await this.click(page => page.toggleButton);
+            await this.t.click(this.toggleButton);
         }
     }
 
@@ -116,8 +108,6 @@ class LeftPanel extends BaseWebComponent {
 }
 
 class ConversationEntry extends BaseWebComponent {
-
-    public root: Selector
 
     async getUmi() {
         const umi = this.root.find('.umi');
@@ -137,14 +127,9 @@ class ConversationEntry extends BaseWebComponent {
 }
 
 class ConversationListSection extends BaseWebComponent {
-    public dataName: string;
 
     ensureLoaded() {
         return this.waitUntilExist(this.root);
-    }
-
-    get root() {
-        return this.getSelector(`*[data-name="${this.dataName}"]`);
     }
 
     get toggleButton() {
@@ -156,9 +141,7 @@ class ConversationListSection extends BaseWebComponent {
     }
 
     nthConversation(n: number) {
-        const entry = this.getComponent(ConversationEntry);
-        entry.root = this.conversations.nth(n);
-        return entry;
+        return this.getComponent(ConversationEntry, this.conversations.nth(n));
     }
 
     async isExpand() {
@@ -168,7 +151,7 @@ class ConversationListSection extends BaseWebComponent {
     private async toggle(expand: boolean) {
         const isExpand = await this.isExpand();
         if ((!isExpand && expand) || (isExpand && !expand)) {
-            await this.click(page => page.toggleButton);
+            await this.t.click(this.toggleButton);
         }
     }
 
@@ -197,9 +180,7 @@ class MessagePanel extends BaseWebComponent {
     }
 
     private getSection(name: string) {
-        const section = this.getComponent(ConversationListSection);
-        section.dataName = name;
-        return section;
+        return this.getComponent(ConversationListSection, this.getSelector(`*[data-name="${name}"]`));
     }
 
     get favoritesSection() {
@@ -219,6 +200,52 @@ class MessagePanel extends BaseWebComponent {
     }
 }
 
+class AddActionMenuEntry extends BaseWebComponent {
+
+    async enter() {
+        await this.t.click(this.root);
+    }
+
+}
+
+class AddActionMenu extends BaseWebComponent {
+
+    get root() {
+        this.warnFlakySelector();
+        return this.getSelector('ul[role="menu"]');
+    }
+
+    private nthEntry(nth: number) {
+        return this.getComponent(AddActionMenuEntry, this.root.find('li').nth(nth));
+    }
+
+    get createTeamEntry() {
+        return this.nthEntry(0);
+    }
+
+}
+
+class CreateTeamModal extends BaseWebComponent {
+    get root() {
+        this.warnFlakySelector();
+        return this.getSelector('*[role="dialog"]');
+    }
+
+    get cancelButton() {
+        this.warnFlakySelector();
+        return this.root.find('button[tabindex="0"]');
+    }
+
+    get createButton() {
+        this.warnFlakySelector();
+        return this.root.find('button[tabindex="-1"]');
+    }
+
+    async clickCancelButton() {
+        await this.t.click(this.cancelButton);
+    }
+}
+
 export class HomePage extends BaseWebComponent {
     get root() {
         return this.getSelector('#root');
@@ -230,5 +257,23 @@ export class HomePage extends BaseWebComponent {
 
     get messagePanel() {
         return this.getComponent(MessagePanel);
+    }
+
+    get addActionButton() {
+        this.warnFlakySelector();
+        return this.root.find('button').child().withText('add_circle').parent().parent();
+    }
+
+    get addActionMenu() {
+        return this.getComponent(AddActionMenu);
+    }
+
+    get createTeamModal() {
+        return this.getComponent(CreateTeamModal);
+    }
+
+    async clickAddActionButton() {
+        await this.t.click(this.addActionButton);
+        await this.t.hover('html');
     }
 }

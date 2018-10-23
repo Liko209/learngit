@@ -7,8 +7,8 @@
 import { formalName } from '../libs/filter';
 import { h } from '../v2/helpers'
 import { setupCase, teardownCase } from '../init';
-import { SITE_URL } from '../config';
 import { AppRoot } from "../v2/page-models/AppRoot";
+import { SITE_URL } from '../config';
 
 fixture('Demo')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
@@ -16,7 +16,7 @@ fixture('Demo')
 
 test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
 
-  // every test case should start with following to line
+  // every test case should start with following lines
   const user = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
@@ -30,6 +30,12 @@ test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
     await app.homePage.leftPanel.expand();
     await app.homePage.leftPanel.fold();
     await app.homePage.leftPanel.expand();
+  });
+
+  await h(t).logAsync('And I can open add action menu', async () => {
+    await app.homePage.clickAddActionButton();
+    await app.homePage.addActionMenu.createTeamEntry.enter();
+    await app.homePage.createTeamModal.clickCancelButton();
   });
 
   await h(t).logAsync('And I can navigate every entry in left panel', async () => {
@@ -74,10 +80,10 @@ test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
   });
 
   await h(t).logAsync('And I can enter every conversation in teams section', async () => {
-    const conversationsCount = await app.homePage.messagePanel.directMessagesSection.conversations.count;
+    const conversationsCount = await app.homePage.messagePanel.teamsSection.conversations.count;
     for (let i = 0; i < conversationsCount; i++) {
-      console.log(await app.homePage.messagePanel.directMessagesSection.nthConversation(i).getUmi());
-      await app.homePage.messagePanel.directMessagesSection.nthConversation(i).enter();
+      console.log(await app.homePage.messagePanel.teamsSection.nthConversation(i).getUmi());
+      await app.homePage.messagePanel.teamsSection.nthConversation(i).enter();
     }
   });
 
