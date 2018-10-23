@@ -48,7 +48,30 @@ class LeftPanel extends BaseWebComponent {
     get meetingsEntry() {
         return this.getEntry('meetings');
     }
-    // TODO: other entries
+
+    get contactsEntry() {
+        return this.getEntry('contacts');
+    }
+
+    get calendarEntry() {
+        return this.getEntry('calendar');
+    }
+
+    get tasksEntry() {
+        return this.getEntry('tasks');
+    }
+
+    get notesEntry() {
+        return this.getEntry('notes');
+    }
+
+    get filesEntry() {
+        return this.getEntry('files');
+    }
+
+    get settingsEntry() {
+        return this.getEntry('settings');
+    }
 
     // actions
     async ensureLoaded() {
@@ -117,7 +140,19 @@ class ConversationListSection extends BaseWebComponent {
 
 }
 
+class ConversationPage extends BaseWebComponent {
+    get root() {
+        return this.getSelectorByAutomationId('conversation-page');
+    }
+
+
+
+}
+
 class MessagePanel extends BaseWebComponent {
+    get root() {
+        return this.getSelector('#root');
+    }
 
     private getSection(name: string) {
         const section = this.getComponent(ConversationListSection);
@@ -136,10 +171,12 @@ class MessagePanel extends BaseWebComponent {
     get teamsSection() {
         return this.getSection('Teams');
     }
-
 }
 
 export class HomePage extends BaseWebComponent {
+    get root() {
+        return this.getSelector('#root');
+    }
 
     get leftPanel() {
         return this.getComponent(LeftPanel);
@@ -148,5 +185,4 @@ export class HomePage extends BaseWebComponent {
     get messagePanel() {
         return this.getComponent(MessagePanel);
     }
-
 }
