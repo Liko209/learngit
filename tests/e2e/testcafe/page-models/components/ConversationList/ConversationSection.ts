@@ -30,7 +30,7 @@ class ConversationSection extends BaseComponent {
   }
 
   get collapse(): Selector {
-    return this.section.find('.conversation-list-section-collapse');
+    return this.section.find('.conversation-list-section-collapse').parent(2);
   }
 
   public shouldExpand() {
@@ -38,7 +38,7 @@ class ConversationSection extends BaseComponent {
       await t
         .expect(this.collapse.clientHeight)
         .gt(0, 'collapse height should be more than 0', {
-          timeout: 50000,
+          timeout: 10000,
         });
     });
   }
@@ -48,29 +48,32 @@ class ConversationSection extends BaseComponent {
       await t
         .expect(this.collapse.clientHeight)
         .eql(0, 'collapse height should be 0', {
-          timeout: 50000,
+          timeout: 10000,
         });
     });
   }
 
   public shouldShowConversation(id) {
-    return this.checkExisted(this.collapse.find(`li[data-group-id='${id}']`));
+    return this.checkExisted(
+      this.collapse.find(`.conversation-list-item[data-group-id='${id}']`),
+    );
   }
 
   public shouldNotShowConversation(id) {
     return this.chain(async (t: TestController) => {
       await t
-        .expect(this.collapse.find(`li[data-group-id='${id}']`).exists)
+        .expect(
+          this.collapse.find(`.conversation-list-item[data-group-id='${id}']`)
+            .exists,
+        )
         .notOk();
     });
   }
 
   public clickItemById(id: number) {
-    return this.chain(async (t: TestController) => {
-      await t.click(
-        this.collapse.find(`.conversation-list-item[data-group-id="${id}"]`),
-      );
-    });
+    return this.clickElement(
+      this.collapse.find(`.conversation-list-item[data-group-id="${id}"]`),
+    );
   }
 
   public clickEachItem() {
@@ -84,9 +87,7 @@ class ConversationSection extends BaseComponent {
   }
 
   public clickHeader() {
-    return this.chain(async (t: TestController) => {
-      await t.click(this.header);
-    });
+    return this.clickElement(this.header);
   }
 }
 
