@@ -67,7 +67,6 @@ class JuiConversationListSection extends Component<
           onClick={this._handleClick}
         />
         <Collapse in={expanded}>
-          {/* {this.props.children && <JuiDivider />} */}
           {this.props.children}
         </Collapse>
       </div>
