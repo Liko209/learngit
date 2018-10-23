@@ -115,8 +115,16 @@ class ConversationListSection extends BaseWebComponent {
         return this.root.find('*[role="button"]');
     }
 
-    get items() {
+    get conversations() {
         return this.root.find('*[role="menuitem"]');
+    }
+
+    nthConversation(n: number) {
+        return this.conversations.nth(n);
+    }
+
+    async enterNthConversation(n: number) {
+        return this.click(c => c.nthConversation(n));
     }
 
     async isExpand() {
@@ -137,15 +145,16 @@ class ConversationListSection extends BaseWebComponent {
     async fold() {
         await this.toggle(false);
     }
-
 }
 
-class ConversationPage extends BaseWebComponent {
+class ConversationSection extends BaseWebComponent {
     get root() {
         return this.getSelectorByAutomationId('conversation-page');
     }
 
-
+    get posts() {
+        return this.root.find('*[data-name="conversation-card"]');
+    }
 
 }
 
@@ -170,6 +179,10 @@ class MessagePanel extends BaseWebComponent {
 
     get teamsSection() {
         return this.getSection('Teams');
+    }
+
+    get conversationSection() {
+        return this.getComponent(ConversationSection);
     }
 }
 

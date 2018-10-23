@@ -55,9 +55,16 @@ test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
   await app.homePage.messagePanel.directMessagesSection.fold();
   await app.homePage.messagePanel.directMessagesSection.expand();
 
-  console.log(await app.homePage.messagePanel.favoritesSection.items());
-  await h(t).mapSelectorsAsync(app.homePage.messagePanel.directMessagesSection.items, async (item, i) => {
+  await h(t).mapSelectorsAsync(app.homePage.messagePanel.directMessagesSection.conversations, async (item, i) => {
     console.log(await item.attributes);
+  });
+
+  await app.homePage.messagePanel.directMessagesSection.enterNthConversation(0);
+  await app.homePage.messagePanel.directMessagesSection.enterNthConversation(1);
+  await app.homePage.messagePanel.directMessagesSection.enterNthConversation(2);
+
+  await h(t).mapSelectorsAsync(app.homePage.messagePanel.conversationSection.posts, async (post, i) => {
+    console.log(await post.attributes);
   });
 
 });
