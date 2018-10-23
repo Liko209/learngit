@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
 
 class LeftNavigatorEntry extends BaseWebComponent {
@@ -100,6 +101,24 @@ class LeftPanel extends BaseWebComponent {
     }
 }
 
+class ConversationEntry extends BaseWebComponent {
+
+    public root: Selector
+
+    async getUmi() {
+        const umi = this.root.find('.umi');
+        const text = await umi.innerText;
+        if (_.isEmpty(text)) {
+            return 0;
+        }
+        return Number(text);
+    }
+
+    async enter() {
+        await this.t.hover('html').click(this.root);
+    }
+}
+
 class ConversationListSection extends BaseWebComponent {
     public dataName: string;
 
@@ -119,13 +138,10 @@ class ConversationListSection extends BaseWebComponent {
         return this.root.find('*[role="menuitem"]');
     }
 
-    getNthConversation(n: number) {
-        return this.conversations.nth(n);
-    }
-
-    async enterNthConversation(n: number) {
-        await this.t.hover('html');  // a work around for hide behind tooktip
-        await this.click(c => c.getNthConversation(n));
+    nthConversation(n: number) {
+        const entry = this.getComponent(ConversationEntry);
+        entry.root = this.conversations.nth(n);
+        return entry;
     }
 
     async isExpand() {

@@ -73,14 +73,15 @@ test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
   });
 
   await h(t).logAsync('And I can enter every conversation in teams section', async () => {
-    const conversationsCount = await app.homePage.messagePanel.teamsSection.conversations.count;
+    const conversationsCount = await app.homePage.messagePanel.directMessagesSection.conversations.count;
     for (let i = 0; i < conversationsCount; i++) {
-      await app.homePage.messagePanel.teamsSection.enterNthConversation(i);
+      console.log(await app.homePage.messagePanel.directMessagesSection.nthConversation(i).getUmi());
+      await app.homePage.messagePanel.directMessagesSection.nthConversation(i).enter();
     }
   });
 
   await h(t).logAsync('When I enter first conversation in teams section', async () => {
-    await app.homePage.messagePanel.teamsSection.enterNthConversation(0);
+    await app.homePage.messagePanel.teamsSection.nthConversation(0).enter();
   });
 
   await h(t).logAsync('Then I can read all posts in first teams section', async () => {
