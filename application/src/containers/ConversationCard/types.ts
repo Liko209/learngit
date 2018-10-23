@@ -15,6 +15,10 @@ type ConversationCardViewProps = {
   creator: PersonModel;
   displayTitle: string;
   createTime: string;
+  kv: {
+    number?: string;
+  };
+  currentUserId: number;
 };
 
 export { ConversationCardProps, ConversationCardViewProps };

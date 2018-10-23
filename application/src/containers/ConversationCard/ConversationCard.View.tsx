@@ -11,13 +11,30 @@ import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
 import styled from 'jui/foundation/styled-components';
+import { Markdown } from 'glipdown';
+import { glipdown2Html } from '@/utils/glipdown2Html';
+import { html2React } from '@/utils/html2React';
+import { grey } from 'jui/foundation/utils/styles';
 
-const StyledPostText = styled.div`
-  font-size: 14px;
-  line-height: 24px;
-  color: #616161;
+type PostText = {
+  currentUserId: number;
+  atMentionId: string|number;
+};
+const StyledPostText = styled<PostText, 'div'>('div')`
+  font-size: ${({ theme }) => theme.typography.fontSize}px;
+  line-height: ${({ theme }) => theme.typography.body2.lineHeight};
+  color: ${grey('700')};
   word-wrap: break-word;
   white-space: pre-wrap;
+  a {
+    color: ${({ theme }) => theme.palette.primary.light};
+  }
+  .at_mention_compose{
+    color: ${({ theme, atMentionId, currentUserId }) => +atMentionId === currentUserId ? grey('900') : theme.palette.primary.main};
+    cursor: pointer;
+    font-weight: ${({ theme }) => theme.typography.body2.lineHeight};
+    background-color: ${({ theme, atMentionId, currentUserId }) => +atMentionId === currentUserId ? theme.palette.secondary['100'] : theme.palette.background.paper};
+  }
 `;
 @observer
 export class ConversationCard extends React.Component<
@@ -26,11 +43,13 @@ export class ConversationCard extends React.Component<
   constructor(props: ConversationCardViewProps) {
     super(props);
   }
-
   render() {
-    const { id, post, creator, displayTitle, createTime } = this.props;
+    const { id, post, creator, displayTitle, createTime, kv, currentUserId } = this.props;
     const { text } = post;
-    console.log(text);
+    const str1 = Markdown(text);
+    const str2 = glipdown2Html(str1);
+    const html = html2React(str2, kv);
+    const atMentionId = Object.keys(kv)[0] || 0;
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
       <React.Fragment>
@@ -47,8 +66,8 @@ export class ConversationCard extends React.Component<
             <Actions id={id} />
           </JuiConversationCardHeader>
           {/* todo: content */}
-          <StyledPostText>
-            {text}
+          <StyledPostText currentUserId={currentUserId} atMentionId={atMentionId}>
+            <div dangerouslySetInnerHTML={{ __html: html }} />
           </StyledPostText>
           {/* todo: content */}
           <JuiConversationCardFooter>
