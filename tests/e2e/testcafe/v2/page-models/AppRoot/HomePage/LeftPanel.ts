@@ -3,6 +3,8 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 
 class LeftNavigatorEntry extends BaseWebComponent {
 
+    public name: string;
+
     async enter() {
         await this.t.click(this.root);
     }
@@ -31,7 +33,9 @@ export class LeftPanel extends BaseWebComponent {
     }
 
     private getEntry(automationId: string) {
-        return this.getComponent(LeftNavigatorEntry, this.getSelectorByAutomationId(automationId));
+        const entry = this.getComponent(LeftNavigatorEntry, this.getSelectorByAutomationId(automationId));
+        entry.name = automationId;
+        return entry;
     }
 
     get dashboardEntry() {
