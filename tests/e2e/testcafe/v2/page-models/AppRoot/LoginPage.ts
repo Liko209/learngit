@@ -43,19 +43,19 @@ export class LoginPage extends BaseWebComponent {
     }
 
     async setCredential(credential: string) {
-        await this.typeText(this.credentialField, credential);
+        await this.t.typeText(this.credentialField, credential, { replace: true });
     }
 
     async setUsername(username: string) {
-        await this.typeText(this.usernameField, username);
+        await this.t.typeText(this.usernameField, username, { replace: true });
     }
 
     async setPassword(password: string) {
-        await this.typeText(this.passwordField, password);
+        await this.t.typeText(this.passwordField, password, { replace: true });
     }
 
     async setExtension(extension: string) {
-        await this.typeText(this.extensionField, extension);
+        await this.t.typeText(this.extensionField, extension, { replace: true });
     }
 
     async confirmSignIn() {
@@ -63,7 +63,6 @@ export class LoginPage extends BaseWebComponent {
     }
 
     async interactiveSignIn(username: string, extension: string, password: string) {
-        console.log(username, password, extension);
         await this.enterSignInMethodRedirectPage();
         await this.setCredential(username);
         await this.enterRingcentralSignInPage();

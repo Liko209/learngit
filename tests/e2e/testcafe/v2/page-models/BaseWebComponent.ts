@@ -35,11 +35,6 @@ export abstract class BaseWebComponent {
         return this.root.visible;
     }
 
-    // testcafe
-    async typeText(selector: Selector, text: string, clear: boolean = true) {
-        await this.t.typeText(selector, text, { replace: clear });
-    }
-
     // jupiter
     async directLoginWithUser(url: string, user: IUser) {
         const urlWithAuthCode = await h(this.t).jupiterHelper.getUrlWithAuthCode(url, user);
