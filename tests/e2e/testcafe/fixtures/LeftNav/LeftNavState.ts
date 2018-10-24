@@ -15,44 +15,45 @@ fixture('LeftNav')
   .afterEach(teardownCase());
 
 test(
-  formalName('reload page keep left nav state', ['P2', 'JPT-38', 'left nav state']), async (t) => {
-    const minSize = 72;
-    const maxSize = 200;
+  formalName('reload page keep left panel state', ['P2', 'JPT-38']), async (t) => {
+    const minLeftPanelWidth = 72;
+    const maxLeftPanelWidth = 200;
 
-    // every test case should start with following lines
-    const user = h(t).rcData.mainCompany.users[4];
     const app = new AppRoot(t);
+    const user = h(t).rcData.mainCompany.users[4];
 
-    // using Given-When-Then statements to write report
     await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
-      await h(t).log('success to login jupiter', true);
     }, true);
 
-    await h(t).withLog('When I collapse left panel', async () => {
-      await app.homePage.leftPanel.fold();
+    const leftPanel = app.homePage.leftPanel;
+
+    await h(t).withLog('When I fold left panel', async () => {
+      await leftPanel.fold();
     });
-    await h(t).withLog(`Then size = ${minSize}`, async () => {
-      //TODO expect size =72 
+    await h(t).withLog(`Then width of left panel should be ${minLeftPanelWidth}`, async () => {
+      await t.expect(leftPanel.root.offsetWidth).eql(minLeftPanelWidth);
     });
-    await h(t).withLog('When I refresh page', async () => {
-      //TODO refresh page
+    await h(t).withLog('When I refresh browser', async () => {
+      await h(t).refresh();
+      await leftPanel.ensureLoaded();
     });
-    await h(t).withLog(`Then size = ${minSize}`, async () => {
-      //TODO expect size =72 
+    await h(t).withLog(`Then width of left panel should be ${minLeftPanelWidth}`, async () => {
+      await t.expect(leftPanel.root.offsetWidth).eql(minLeftPanelWidth);
     });
     await h(t).withLog('When I expand left panel', async () => {
       await app.homePage.leftPanel.expand();
     });
-    await h(t).withLog(`Then size = ${maxSize}`, async () => {
-      //TODO expect size =72 
+    await h(t).withLog(`Then width of left panel should be ${maxLeftPanelWidth}`, async () => {
+      await t.expect(leftPanel.root.offsetWidth).eql(maxLeftPanelWidth);
     });
-    await h(t).withLog('When I refresh page', async () => {
-      //TODO refresh page
+    await h(t).withLog('When I refresh browser', async () => {
+      await h(t).refresh();
+      await leftPanel.ensureLoaded();
     });
-    await h(t).withLog(`Then size = ${maxSize}`, async () => {
-      //TODO expect size =200 
+    await h(t).withLog(`Then width of left panel should be ${maxLeftPanelWidth}`, async () => {
+      await t.expect(leftPanel.root.offsetWidth).eql(maxLeftPanelWidth);
     });
 
   });

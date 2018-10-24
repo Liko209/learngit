@@ -97,6 +97,11 @@ class Helper {
   get href() {
     return ClientFunction(() => document.location.href)();
   }
+
+  async refresh() {
+    await this.t.navigateTo(await this.href);
+  }
+
 }
 
 function h(t: TestController) {

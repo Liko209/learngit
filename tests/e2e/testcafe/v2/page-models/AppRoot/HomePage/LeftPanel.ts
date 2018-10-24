@@ -80,7 +80,7 @@ export class LeftPanel extends BaseWebComponent {
 
     // actions
     async ensureLoaded() {
-        await this.messagesEntry.ensureLoaded();
+        await this.waitUntilExist(this.root);
     }
 
     async isExpand() {
