@@ -3,7 +3,7 @@ import { grey } from '../../foundation/utils/styles';
 
 type PostText = {
   currentUserId: number;
-  atMentionId: string|number;
+  atMentionId: string | number;
 };
 const JuiConversationPostText = styled<PostText, 'div'>('div')`
   font-size: ${({ theme }) => theme.typography.fontSize}px;
@@ -14,11 +14,17 @@ const JuiConversationPostText = styled<PostText, 'div'>('div')`
   a {
     color: ${({ theme }) => theme.palette.primary.light};
   }
-  .at_mention_compose-${({ currentUserId }) => currentUserId}{
-    color: ${({ theme, atMentionId, currentUserId }) => +atMentionId === currentUserId ? grey('900') : theme.palette.primary.main};
+  .at_mention_compose-${({ currentUserId }) => currentUserId} {
+    color: ${({ theme, atMentionId, currentUserId }) =>
+      +atMentionId === currentUserId
+        ? grey('900')
+        : theme.palette.primary.main};
     cursor: pointer;
     font-weight: ${({ theme }) => theme.typography.body2.lineHeight};
-    background-color: ${({ theme, atMentionId, currentUserId }) => +atMentionId === currentUserId ? theme.palette.secondary['100'] : theme.palette.background.paper};
+    background-color: ${({ theme, atMentionId, currentUserId }) =>
+      +atMentionId === currentUserId
+        ? theme.palette.secondary['100']
+        : theme.palette.background.paper};
   }
 `;
 export { JuiConversationPostText };

@@ -17,7 +17,8 @@ import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { GLOBAL_KEYS } from '@/store/constants';
 
-class ConversationCardViewModel extends AbstractViewModel implements ConversationCardViewProps {
+class ConversationCardViewModel extends AbstractViewModel
+  implements ConversationCardViewProps {
   @observable id: number;
 
   @action
@@ -57,7 +58,7 @@ class ConversationCardViewModel extends AbstractViewModel implements Conversatio
   @computed
   get atMentionIdMaps() {
     const post = this.post;
-    const atMentionNonItemIds = post && post.atMentionNonItemIds || [];
+    const atMentionNonItemIds = (post && post.atMentionNonItemIds) || [];
     const kv = {};
     atMentionNonItemIds.forEach((personId: number) => {
       kv[personId] = getEntity<Person, PersonModel>(
