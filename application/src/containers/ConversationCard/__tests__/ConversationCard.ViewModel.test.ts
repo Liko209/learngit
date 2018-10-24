@@ -14,38 +14,39 @@ describe('ConversationCardViewModel', () => {
     jest.resetAllMocks();
     conversationCardVM.onReceiveProps({ id: 123 });
   });
-  it('get computed post', () => {
-    (getEntity as jest.Mock).mockReturnValue({
+  it('post()', () => {
+    const mockPostValue = {
       atMentionNonItemIds: [1234],
       text: 'abcd  efg',
+    };
+    (getEntity as jest.Mock).mockReturnValue({
+      ...mockPostValue,
     });
     expect(conversationCardVM.post).toMatchObject({
-      atMentionNonItemIds: [1234],
-      text: 'abcd  efg',
+      ...mockPostValue,
     });
   });
-  it('get kv value', () => {
+  it('kv()', () => {
     (getEntity as jest.Mock).mockReturnValue({
       atMentionNonItemIds: [1234],
-      text: 'abcd  efg',
       displayName: 'alvin huang',
     });
     expect(conversationCardVM.kv).toMatchObject({
       1234: 'alvin huang',
     });
   });
-  it('get currentUserId', () => {
+  it('currentUserId()', () => {
     (getGlobalValue as jest.Mock).mockReturnValue(123456);
     expect(conversationCardVM.currentUserId).toBe(123456);
   });
-  it('get createTime', () => {
+  it('createTime()', () => {
     (getEntity as jest.Mock).mockReturnValue({
       createdAt: 1540279718268,
       creatorId: 107913219,
     });
     expect(conversationCardVM.createTime).toBe('03:28 PM');
   });
-  it('get creator', () => {
+  it('creator()', () => {
     (getEntity as jest.Mock).mockReturnValue({
       createdAt: 1540279718268,
       creatorId: 107913219,
@@ -55,13 +56,10 @@ describe('ConversationCardViewModel', () => {
       id: 1491222532,
     });
   });
-  it('should return title if name exist', () => {
+  it('name()', () => {
     (getEntity as jest.Mock).mockReturnValue({
-      createdAt: 1540279718268,
-      creatorId: 107913219,
       displayName: 'alvin',
       id: 1491222532,
-      status: 'online',
     });
     expect(conversationCardVM.name).toBe('alvin');
   });
