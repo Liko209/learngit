@@ -181,9 +181,4 @@ export class MessagePanel extends BaseWebComponent {
   get conversationPage() {
     return this.getSelector('.conversation-page');
   }
-
-  get conversationList(){
-    return this.getComponent(ConversationListSection)
-  }
-
 }
