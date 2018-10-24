@@ -28,7 +28,7 @@ export class ConversationCard extends React.Component<
     const toMdString = Markdown(text);
     const toHtmlString = glipdown2Html(toMdString);
     const html = handleAtMentionName(toHtmlString, kv);
-    const atMentionId = Object.keys(kv)[0] || 0;
+    const atMentionId = Object.keys(kv).filter(id => +id === currentUserId)[0] || 0;
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
       <React.Fragment>

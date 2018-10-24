@@ -14,11 +14,11 @@ const JuiConversationPostText = styled<PostText, 'div'>('div')`
   a {
     color: ${({ theme }) => theme.palette.primary.light};
   }
-  .at_mention_compose-${({ atMentionId }) => +atMentionId}{
-    color: ${grey('900')};
+  .at_mention_compose-${({ currentUserId }) => currentUserId}{
+    color: ${({ theme, atMentionId, currentUserId }) => +atMentionId === currentUserId ? grey('900') : theme.palette.primary.main};
     cursor: pointer;
     font-weight: ${({ theme }) => theme.typography.body2.lineHeight};
-    background-color: ${({ theme }) => theme.palette.secondary['100']};
+    background-color: ${({ theme, atMentionId, currentUserId }) => +atMentionId === currentUserId ? theme.palette.secondary['100'] : theme.palette.background.paper};
   }
 `;
 export { JuiConversationPostText };
