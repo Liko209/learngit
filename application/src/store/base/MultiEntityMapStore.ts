@@ -61,7 +61,7 @@ export default class MultiEntityMapStore<
           matchedEntities.push(entity);
         }
       });
-      if (type === EVENT_TYPES.UPDATE) {
+      if (type === EVENT_TYPES.UPDATE || type === EVENT_TYPES.PARTIAL_UPDATE) {
         this.batchDeepSet(matchedEntities as T[]);
         return;
       }
