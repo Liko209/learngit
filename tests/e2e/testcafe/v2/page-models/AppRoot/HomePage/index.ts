@@ -8,6 +8,10 @@ import { MessagePanel } from './MessagePanel'
 
 
 export class HomePage extends BaseWebComponent {
+    async ensureLoaded() {
+        await this.leftPanel.ensureLoaded();
+    }
+
     get root() {
         return this.getSelector('#root');
     }

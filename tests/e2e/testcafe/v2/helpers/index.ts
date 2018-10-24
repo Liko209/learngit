@@ -55,8 +55,8 @@ class Helper {
     return await Promise.all(promises);
   }
 
-  async logAsync(step: IStep | string, cb: () => Promise<any>) {
-    return await this.logHelper.logAsync(step, cb);
+  async withLog(step: IStep | string, cb: () => Promise<any>, takeScreenShot: boolean = false) {
+    return await this.logHelper.withLog(step, cb, takeScreenShot);
   }
 
   async waitUntilExist(selector: Selector, timeout: number = 5e3) {
