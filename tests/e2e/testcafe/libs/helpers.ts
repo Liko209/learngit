@@ -3,7 +3,7 @@ import { RcPlatformManager } from './glip';
 import { Status, AllureStep } from '../libs/report';
 import { accountPoolClient } from '../init';
 import { setupSDK } from '../utils/setupSDK';
-import { ENV_OPTS, beatsClient, Step } from '../config';
+import { ENV_OPTS, beatsClient, Step, Test, Attachment } from '../config';
 
 export function setUp(accountType: string) {
   return async (t: TestController) => {
@@ -17,6 +17,8 @@ export function setUp(accountType: string) {
       await helper.checkInAccounts();
       throw new Error('Fail to initialize glip 1.0 sdk');
     }
+    let test = await beatsClient.createTest({"name": t['testRun'].test.name} as Test);
+    t.ctx.testId = test.id;
   };
 }
 
@@ -103,7 +105,22 @@ export class TestHelper {
       parent.children.push(step);
     }
     console.log(step.toString());
-    beatsClient.createStep({ "name": step.toString() } as Step);
+    let step_dashboard = await beatsClient.createStep({ 
+      "name": step.message, 
+      "status": Status[step.status],
+      "startTime": (new Date(step.startTime)).toISOString(),
+      "endTime": (new Date(step.endTime)).toISOString()
+    } as Step, this.t.ctx.testId);
+
+    if (takeScreen) {
+      await beatsClient.createAttachment({
+        "file": screenPath,
+        "contentType": "step",
+        "fileContentType": "multipart/form-data;",
+        "objectId": step_dashboard.id
+      } as Attachment);
+    }
+
     return step;
   }
 }

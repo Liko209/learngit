@@ -1,7 +1,8 @@
 import 'testcafe';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE } from './config';
+import { ENV_OPTS, DEBUG_MODE, beatsClient, Test } from './config';
+
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
@@ -23,6 +24,8 @@ export function setupCase(accountType: string) {
     )
     await h(t).logHelper.setup();
     await t.maximizeWindow();
+    let test = await beatsClient.createTest({"name": t['testRun'].test.name} as Test);
+    t.ctx.testId = test.id;
   }
 }
 

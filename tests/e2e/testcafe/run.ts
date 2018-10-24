@@ -19,7 +19,7 @@ async function runTests(runnerOpts) {
   const testCafe = await createTestCafe();
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
-  await beatsClient.createRun({ "name": JSON.stringify(runnerOpts, null, 2) } as Run);
+  let run = await beatsClient.createRun({ "name": JSON.stringify(runnerOpts, null, 2) } as Run);
 
   runner
     .src(runnerOpts.FIXTURES)

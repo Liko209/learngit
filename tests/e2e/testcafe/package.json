@@ -39,7 +39,7 @@
     "testcafe-reporter-allure-lazy": "https://git.ringcentral.com/TA/testcafe/testcafe-reporter-allure-lazy/uploads/2e736277938715aabc2cf91abcd2d759/testcafe-reporter-allure-lazy-1.0.4.tgz",
     "ts-node": "^7.0.1",
     "uuid": "^3.3.2",
-    "bendapi": "https://git.ringcentral.com/james.xie/bendApi/uploads/49195aecb49980f64e520f36895b00b5/bendapi-1.0.0.tgz"
+    "bendapi": "https://git.ringcentral.com/james.xie/bendApi/uploads/94bd14d20d1f97395b4d19d1822828e3/bendapi-1.0.0.tgz"
   },
   "devDependencies": {
     "nodemon": "^1.18.3"
