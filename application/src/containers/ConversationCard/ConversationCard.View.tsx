@@ -4,38 +4,17 @@ import {
   JuiConversationCard,
   JuiConversationCardHeader,
   JuiConversationCardBody,
+  JuiConversationPostText,
   // JuiConversationCardFooter,
 } from 'jui/pattern/ConversationCard';
 import { Avatar } from '@/containers/Avatar';
 import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
-import styled from 'jui/foundation/styled-components';
 import { Markdown } from 'glipdown';
 import { glipdown2Html } from '@/utils/glipdown2Html';
 import { html2React } from '@/utils/html2React';
-import { grey } from 'jui/foundation/utils/styles';
 
-type PostText = {
-  currentUserId: number;
-  atMentionId: string|number;
-};
-const StyledPostText = styled<PostText, 'div'>('div')`
-  font-size: ${({ theme }) => theme.typography.fontSize}px;
-  line-height: ${({ theme }) => theme.typography.body2.lineHeight};
-  color: ${grey('700')};
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  a {
-    color: ${({ theme }) => theme.palette.primary.light};
-  }
-  .at_mention_compose{
-    color: ${({ theme, atMentionId, currentUserId }) => +atMentionId === currentUserId ? grey('900') : theme.palette.primary.main};
-    cursor: pointer;
-    font-weight: ${({ theme }) => theme.typography.body2.lineHeight};
-    background-color: ${({ theme, atMentionId, currentUserId }) => +atMentionId === currentUserId ? theme.palette.secondary['100'] : theme.palette.background.paper};
-  }
-`;
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
@@ -67,9 +46,9 @@ export class ConversationCard extends React.Component<
             <Actions id={id} />
           </JuiConversationCardHeader>
           <JuiConversationCardBody>
-            <StyledPostText currentUserId={currentUserId} atMentionId={atMentionId}>
+            <JuiConversationPostText currentUserId={currentUserId} atMentionId={atMentionId}>
               <div dangerouslySetInnerHTML={{ __html: html }} />
-            </StyledPostText>
+            </JuiConversationPostText>
           </JuiConversationCardBody>
           {/*<JuiConversationCardFooter>*/}
             {/*/!* todo: footer *!/*/}
