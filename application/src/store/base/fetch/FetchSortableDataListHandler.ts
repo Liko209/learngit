@@ -111,7 +111,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
         direction,
-        updated: sortableResult,
+        upserted: sortableResult,
         deleted: [],
       });
   }
@@ -152,16 +152,16 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     added = _(added)
       .filter(item => this._isInRange(item.sortValue))
       .value();
-
     this.updateEntityStore(updateEntity);
-    this.sortableListStore.removeByIds(deleted);
-
-    this.sortableListStore.upsert([...updated, ...added]);
-
+    const upserted = [...updated, ...added];
+    this.sortableListStore.deleteAndUpsert({
+      deleted,
+      upserted,
+    });
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
         deleted,
-        updated: [...added, ...updated],
+        upserted,
         direction: FetchDataDirection.DOWN,
       });
   }

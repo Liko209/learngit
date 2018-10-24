@@ -27,12 +27,12 @@ abstract class TransformHandler<T, K> {
   }
 
   modificationHandler = (delta: TDelta) => {
-    const { updated, deleted, direction } = delta;
+    const { upserted, deleted, direction } = delta;
     if (deleted.length) {
       this.onDeleted(deleted);
     }
-    if (updated.length) {
-      this.onAdded(direction, updated);
+    if (upserted.length) {
+      this.onAdded(direction, upserted);
     }
   }
 

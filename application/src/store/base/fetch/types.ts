@@ -32,7 +32,7 @@ export interface ISortFunc<T> {
 }
 
 export type TDelta = {
-  updated: ISortableModel[];
+  upserted: ISortableModel[];
   deleted: number[];
   direction: FetchDataDirection;
 };
