@@ -1,8 +1,8 @@
 /*
-* @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
-* @Date: 2018-09-28 17:23:20
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-09-28 17:23:20
+ * Copyright © RingCentral. All rights reserved.
+ */
 
 import { observable, computed, action } from 'mobx';
 import { Group, Person } from 'sdk/models';
