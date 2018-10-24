@@ -3,14 +3,12 @@
  * @Date: 2018-08-22 17:13:54
  * Copyright © RingCentral. All rights reserved.
  */
-import * as assert from 'assert';
 import * as _ from 'lodash';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
-import { URL } from 'url';
 
 fixture('Left Navigator')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
@@ -45,8 +43,7 @@ test(formalName('Enter every entries in left navigator', ['P0', 'LeftNav']), asy
     });
     await h(t).log(`Then I should enter ${entry.name} panel`, true);
     await h(t).withLog(`And the url should be "/${entry.name}"`, async () => {
-      const url = new URL(await h(t).href);
-      assert.equal(_.trim(url.pathname, '/'), entry.name);
+      await t.expect(h(t).href).contains(entry.name);
     });
   }
 });
