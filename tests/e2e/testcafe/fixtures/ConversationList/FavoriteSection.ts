@@ -15,7 +15,7 @@ fixture('TeamSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(
+test.skip(
   formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);

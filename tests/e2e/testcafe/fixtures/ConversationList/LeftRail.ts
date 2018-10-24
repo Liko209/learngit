@@ -14,7 +14,7 @@ fixture('ConversationList/LeftRail')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(
+test.skip(
   formalName('Sections Order', ['P0', 'JPT-2', 'LeftRail']),
   async (t: TestController) => {
     // await directLogin(t)
@@ -32,6 +32,11 @@ test(
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
       },
+    );
+
+    await h(t).withLog(
+      'I can find the conversation sections in correct order',
+      async () => {},
     );
   },
 );
