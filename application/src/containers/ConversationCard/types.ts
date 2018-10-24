@@ -16,7 +16,7 @@ type ConversationCardViewProps = {
   name: string;
   customStatus?: string;
   createTime: string;
-  kv: {
+  atMentionIdMaps: {
     number?: string;
   };
   currentUserId: number;

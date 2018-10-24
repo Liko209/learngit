@@ -26,12 +26,12 @@ describe('ConversationCardViewModel', () => {
       ...mockPostValue,
     });
   });
-  it('kv()', () => {
+  it('atMentionIdMaps()', () => {
     (getEntity as jest.Mock).mockReturnValue({
       atMentionNonItemIds: [1234],
       displayName: 'alvin huang',
     });
-    expect(conversationCardVM.kv).toMatchObject({
+    expect(conversationCardVM.atMentionIdMaps).toMatchObject({
       1234: 'alvin huang',
     });
   });

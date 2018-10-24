@@ -55,7 +55,7 @@ class ConversationCardViewModel extends AbstractViewModel implements Conversatio
     return moment(this.post.createdAt).format('hh:mm A');
   }
   @computed
-  get kv() {
+  get atMentionIdMaps() {
     const post = this.post;
     const atMentionNonItemIds = post && post.atMentionNonItemIds || [];
     const kv = {};
