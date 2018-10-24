@@ -8,7 +8,6 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
-import { GlipSdk } from '../../v2/sdk/glip';
 import { ClientFunction } from 'testcafe';
 
 fixture('HighlightConversation')
@@ -26,7 +25,7 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
-    const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
+    const glipSDK = await h(t).sdkHelper.sdkManager.getGlip(user);
     const directMessageSection =
       app.homePage.messagePanel.directMessagesSection;
 
@@ -60,9 +59,7 @@ test(
     );
 
     await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
-      }`,
+      `When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -72,10 +69,7 @@ test(
     await h(t).withLog(
       'Then the group should be opened automatically after login',
       async () => {
-        const getLocation = ClientFunction(() => window.location.href);
-        const url = await getLocation();
-        const str = url.toString().split('messages/');
-        await t.expect(str[1]).eql(group.data.id);
+        await t.expect(h(t).href).match(new RegExp(`${group.data.id}$`));
       },
     );
 
