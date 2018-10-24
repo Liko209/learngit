@@ -8,13 +8,9 @@ import _ from 'lodash';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
-const MessageTypes = [
-  GLOBAL_KEYS.GROUP_QUERY_TYPE_FAVORITE_IDS,
-  GLOBAL_KEYS.GROUP_QUERY_TYPE_GROUP_IDS,
-  GLOBAL_KEYS.GROUP_QUERY_TYPE_TEAM_IDS,
-];
 import storeManager from '@/store';
 import { LeftNavProps } from './types';
+import SectionGroupHandler from '@/store/SectionGroupHandler';
 
 const getItem = (item: string) => {
   return localStorage.getItem(item);
@@ -32,11 +28,7 @@ class LeftNavViewModel extends AbstractViewModel {
 
   @computed
   get groupIds() {
-    let ids: number[] = [];
-    _.forEach(MessageTypes, (messageType: GLOBAL_KEYS) => {
-      ids = _.union(getGlobalValue(messageType), ids);
-    });
-    return ids;
+    return SectionGroupHandler.getInstance().getAllGroupIds();
   }
 
   @computed
