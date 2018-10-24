@@ -10,7 +10,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
 import { SITE_URL } from '../config';
 
-fixture('Demo')
+fixture('Demo').skip
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 

@@ -10,7 +10,7 @@ import { BackNForward } from '../../page-models/pages/BackNForward';
 import { ClientFunction } from 'testcafe';
 
 declare var test: TestFn;
-fixture('BackNForward/BackNForward')
+fixture('BackNForward/BackNForward').skip
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 

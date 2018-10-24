@@ -41,17 +41,17 @@ test(
     const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
     const format = 'hh:mm A';
     let groupId, postData, targetPost;
-    
+
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
       },
     );
-    
+
     await h(t).withLog(
       `select any conversation`,
       async () => {
@@ -64,18 +64,18 @@ test(
       },
     );
 
-    await h(t).withLog(`send one post to current group and check postId in conversation post id list`, async () =>{
+    await h(t).withLog(`send one post to current group and check postId in conversation post id list`, async () => {
       postData = (await glipSDK.sendPost(groupId, postContent)).data;
-      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id',postData.id)
+      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok(postData)
     })
 
-    await h(t).withLog(`check time format on post, should have right format time in card'`, async () =>{
+    await h(t).withLog(`check time format on post, should have right format time in card'`, async () => {
       const formatTime = require('moment')(postData.creationTime).format(
         format,
       );
       const timeDiv = targetPost.find('div').withText(formatTime);
-      await t.expect(timeDiv.exists).ok();    
+      await t.expect(timeDiv.exists).ok();
     })
   },
 );
@@ -92,19 +92,19 @@ test(
     const user = users[0];
     const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
     const changedName = `Random ${Date.now()}`;
-  
-    let groupId, postData,targetPost, userName;
-    
+
+    let groupId, postData, targetPost, userName;
+
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
       },
     );
-    
+
     await h(t).withLog(
       `select any conversation in team section`,
       async () => {
@@ -117,16 +117,16 @@ test(
       },
     );
 
-    await h(t).withLog(`send one post to current group and check postId in conversation post id list`, async () =>{
+    await h(t).withLog(`send one post to current group and check postId in conversation post id list`, async () => {
       postData = (await glipSDK.sendPost(groupId, postContent)).data;
-      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id',postData.id)
+      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok(postData);
       userName = await targetPost.child(1).child(0).child(0).child(0).textContent;
       console.log(userName);
     })
 
-    await h(t).withLog(`modify user name through api request and check username change to excepted`, async () =>{
-      await glipSDK.updatePerson(user.glipId, {first_name: changedName});
+    await h(t).withLog(`modify user name through api request and check username change to excepted`, async () => {
+      await glipSDK.updatePerson(user.glipId, { first_name: changedName });
       await t.expect(targetPost.textContent).contains(changedName);
       await glipSDK.updatePerson(user.glipId, { first_name: userName });
     })
@@ -145,19 +145,19 @@ test(
     const user = users[0];
     const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
     const changedName = `Random ${Date.now()}`;
-  
-    let groupId, postData,targetPost, userName;
-    
+
+    let groupId, postData, targetPost, userName;
+
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
       },
     );
-    
+
     await h(t).withLog(
       `select any conversation in team section`,
       async () => {
@@ -170,25 +170,25 @@ test(
       },
     );
 
-    await h(t).withLog(`send one post to current group and check postId in conversation post id list`, async () =>{
+    await h(t).withLog(`send one post to current group and check postId in conversation post id list`, async () => {
       postData = (await glipSDK.sendPost(groupId, postContent)).data;
-      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id',postData.id)
+      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok(postData);
       userName = await targetPost.child(1).child(0).child(0).child(0).textContent;
       console.log(userName);
     })
 
-    await h(t).withLog(`modify user status "In a meeting" through api request and check username display change to excepted`, async () =>{
-      await glipSDK.updatePerson(user.glipId, { away_status: `${userName} In a meeting`});
+    await h(t).withLog(`modify user status "In a meeting" through api request and check username display change to excepted`, async () => {
+      await glipSDK.updatePerson(user.glipId, { away_status: `${userName} In a meeting` });
       await t.expect(targetPost.textContent).contains('In a meeting');
     })
 
-    await h(t).withLog(`modify user status "content of user modify" through api request and check username display change to excepted`, async () =>{
-      await glipSDK.updatePerson(user.glipId, { away_status: `${userName} content of user modify`});
+    await h(t).withLog(`modify user status "content of user modify" through api request and check username display change to excepted`, async () => {
+      await glipSDK.updatePerson(user.glipId, { away_status: `${userName} content of user modify` });
       await t.expect(targetPost.textContent).contains('content of user modify');
     })
 
-    await h(t).withLog(`delete user status through api request and check username display change to excepted`, async () =>{
+    await h(t).withLog(`delete user status through api request and check username display change to excepted`, async () => {
       await glipSDK.updatePerson(user.glipId, { away_status: null });
       await t.expect(targetPost.textContent).notContains('content of user modify');
       await t.expect(targetPost.textContent).contains(userName);

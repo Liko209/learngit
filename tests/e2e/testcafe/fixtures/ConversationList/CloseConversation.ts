@@ -6,7 +6,7 @@ import { ProfileAPI, PersonAPI } from '../../libs/sdk';
 import { CloseConversation } from '../../page-models/components/ConversationList/CloseConversation';
 
 declare var test: TestFn;
-fixture('CloseConversation')
+fixture('CloseConversation').skip
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
