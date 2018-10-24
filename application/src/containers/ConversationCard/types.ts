@@ -16,6 +16,7 @@ type ConversationCardViewProps = {
   name: string;
   customStatus?: string;
   createTime: string;
+  itemIds: number[];
 };
 
 export { ConversationCardProps, ConversationCardViewProps };

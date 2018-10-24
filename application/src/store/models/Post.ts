@@ -10,12 +10,16 @@ export default class PostModel extends Base<Post> {
   creatorId: number;
   @observable
   status?: POST_STATUS;
+  @observable
+  itemIds: number[];
+
   constructor(data: Post) {
     super(data);
     this.createdAt = data.created_at;
     this.creatorId = data.creator_id;
     this.text = data.text;
     this.status = data.status;
+    this.itemIds = data.item_ids;
   }
 
   static fromJS(data: Post) {
