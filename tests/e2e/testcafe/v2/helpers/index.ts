@@ -1,4 +1,5 @@
 import 'testcafe';
+import { ClientFunction } from 'testcafe';
 import { getLogger } from 'log4js';
 
 import { DataHelper } from './data-helper'
@@ -92,6 +93,10 @@ class Helper {
     await this.sdkHelper.sdkManager.getGlip(user);
   }
 
+  // testcafe extend
+  get href() {
+    return ClientFunction(() => document.location.href)();
+  }
 }
 
 function h(t: TestController) {

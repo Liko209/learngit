@@ -9,7 +9,7 @@ import * as assert from 'assert';
 export abstract class BaseWebComponent {
 
     public root: Selector;
-    constructor(public t: TestController) { }
+    constructor(protected t: TestController) { }
 
     async ensureLoaded() {
         console.error('You should overwrite this method to ensure component is loaded before execute other operations');
@@ -33,6 +33,11 @@ export abstract class BaseWebComponent {
 
     get visible() {
         return this.root.visible;
+    }
+
+    // testcafe
+    async typeText(selector: Selector, text: string, clear: boolean = true) {
+        await this.t.typeText(selector, text, { replace: clear });
     }
 
     // jupiter
