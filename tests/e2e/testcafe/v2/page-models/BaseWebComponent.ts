@@ -73,6 +73,7 @@ export abstract class BaseWebComponent {
 
     // misc
     warnFlakySelector() {
+        // TODO: using stackman for better call-site info
         const stack = (new Error()).stack;
         console.error('a flaky selector is found:');
         console.error(stack);

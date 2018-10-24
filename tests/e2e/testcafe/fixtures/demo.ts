@@ -24,6 +24,7 @@ test(formalName('Sign In Success', ['P0', 'SignIn', 'demo']), async (t) => {
   await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, user);
     await app.homePage.ensureLoaded();
+    await h(t).log('success to login jupiter', true);
   }, true);
 
   await h(t).withLog('Then I can toggle left panel', async () => {

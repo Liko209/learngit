@@ -22,7 +22,7 @@ export class LogHelper {
     this.t.ctx.logs.push(step);
   }
 
-  async log(step: IStep | string, cb: () => Promise<any>, takeScreenShot: boolean = false) {
+  async log(step: IStep | string, takeScreenShot: boolean = false) {
     if (typeof step == 'string') {
       step = <IStep>{ message: step }
     }
