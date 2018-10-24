@@ -13,7 +13,7 @@ import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
 import { Markdown } from 'glipdown';
 import { glipdown2Html } from '@/utils/glipdown2Html';
-import { html2React } from '@/utils/html2React';
+import { handleAtMentionName } from '@/utils/handleAtMentionName';
 
 @observer
 export class ConversationCard extends React.Component<
@@ -25,9 +25,9 @@ export class ConversationCard extends React.Component<
   render() {
     const { id, post, creator, name, createTime, customStatus, kv, currentUserId } = this.props;
     const { text } = post;
-    const str1 = Markdown(text);
-    const str2 = glipdown2Html(str1);
-    const html = html2React(str2, kv);
+    const toMdString = Markdown(text);
+    const toHtmlString = glipdown2Html(toMdString);
+    const html = handleAtMentionName(toHtmlString, kv);
     const atMentionId = Object.keys(kv)[0] || 0;
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
