@@ -35,15 +35,6 @@ export abstract class BaseWebComponent {
         return this.root.visible;
     }
 
-    // testcafe actions
-    async click(cb: (c) => Selector) {
-        await this.t.click(cb(this));
-    }
-
-    async navigateTo(url: string) {
-        await this.t.navigateTo(url);
-    }
-
     // jupiter
     async directLoginWithUser(url: string, user: IUser) {
         const urlWithAuthCode = await h(this.t).jupiterHelper.getUrlWithAuthCode(url, user);

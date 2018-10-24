@@ -4,7 +4,7 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 class LeftNavigatorEntry extends BaseWebComponent {
 
     async enter() {
-        await this.click(page => page.root);
+        await this.t.click(this.root);
     }
 
     async getUmi() {
