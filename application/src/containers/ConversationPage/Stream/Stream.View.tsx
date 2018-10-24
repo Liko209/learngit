@@ -8,8 +8,11 @@ import { ConversationCard } from '@/containers/ConversationCard';
 import { StreamViewProps } from './types';
 
 class StreamView extends PureComponent<StreamViewProps> {
-  componentDidMount() {
-    this.props.setRowVisible(-1);
+  componentDidUpdate(prevProps: StreamViewProps) {
+    if (!prevProps.postIds.length) {
+      // initial scroll to bottom when switch to new group
+      this.props.setRowVisible(-1);
+    }
   }
   render() {
     return (

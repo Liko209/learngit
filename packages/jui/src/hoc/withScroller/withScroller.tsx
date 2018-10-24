@@ -7,6 +7,7 @@ import throttle from 'lodash/throttle';
 import React, { Component, ComponentType } from 'react';
 import styled from '../../foundation/styled-components';
 import { noop } from '../../foundation/utils';
+import _ from 'lodash';
 
 type StickType = 'top' | 'bottom';
 
@@ -169,13 +170,16 @@ function withScroller(Comp: ComponentType<any>) {
       if (!listEl) {
         return;
       }
-      if (n === -1) {
+      const global = window as any;
+      const doc = document as any;
+      const isIE11 = !!global.MSInputMethodContext && !!doc.documentMode;
+      if (n === -1 && !isIE11) {
         return window.requestAnimationFrame(() => listEl.scrollIntoView(false));
       }
-      const rowEl = Array.from(listEl.querySelectorAll(itemSelector)).slice(
-        n,
-      )[0];
-      return window.requestAnimationFrame(() => rowEl.scrollIntoView(false));
+      return window.requestAnimationFrame(() => {
+        const rowEl = _(listEl.querySelectorAll(itemSelector)).nth(n);
+        rowEl && rowEl.scrollIntoView(false);
+      });
     }
 
     scrollToId = (
