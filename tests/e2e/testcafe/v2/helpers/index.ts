@@ -81,6 +81,12 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  async resetGlipAccount(user: IUser) {
+    const adminGlip = await this.sdkHelper.sdkManager.getGlip(this.rcData.mainCompany.admin);
+    await adminGlip.deactivated(user.glipId);
+    await this.sdkHelper.sdkManager.getGlip(user);
+  }
+
 }
 
 function h(t: TestController) {
