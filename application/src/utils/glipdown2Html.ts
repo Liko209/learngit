@@ -11,17 +11,10 @@ const DECODE = {
   '&quot;': '"',
   '&copy;': '©',
   '&#x27;': "'",
-  // '\n': '<br />',
-  // '\r': '<br />',
-  // Add more
 };
 
 const glipdown2Html = (str: string) => {
-  // if (typeof str !== 'string') {
-  //   return str;
-  // }
   return str.replace(/\n|\r|&\S+?;/g, (match) => {
-    // console.log('match: ', match);
     const char = DECODE[match];
     if (char) {
       return char;
