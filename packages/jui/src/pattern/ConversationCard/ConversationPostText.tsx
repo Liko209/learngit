@@ -20,7 +20,7 @@ const JuiConversationPostText = styled<PostText, 'div'>('div')`
         ? grey('900')
         : theme.palette.primary.main};
     cursor: pointer;
-    font-weight: ${({ theme }) => theme.typography.body2.lineHeight};
+    font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
     background-color: ${({ theme, atMentionId, currentUserId }) =>
       +atMentionId === currentUserId
         ? theme.palette.secondary['100']
