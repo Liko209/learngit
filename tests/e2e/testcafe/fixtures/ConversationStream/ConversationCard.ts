@@ -27,7 +27,7 @@ const getCurrentGroupIdFromURL = ClientFunction(() => {
   return Number(/messages\/(\d+)/.exec(window.location.href)[1]);
 });
 
-test(
+test.skip(
   formalName('Check send time for each message metadata.', [
     'JPT-43',
     'P2',
@@ -133,7 +133,7 @@ test(
   },
 );
 
-test.skip(
+test(
   formalName(
     'When update custom status, can sync dynamically in message metadata.',
     ['JPT-95', 'P2', 'ConversationStream'],
