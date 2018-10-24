@@ -80,7 +80,7 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
   }
 }
 
-class StreamViewModel extends StoreViewModel {
+class StreamViewModel extends StoreViewModel<StreamProps> {
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
@@ -93,9 +93,12 @@ class StreamViewModel extends StoreViewModel {
   postIds: number[] = [];
 
   onReceiveProps(props: StreamProps) {
-    if (this.groupId === props.groupId) return;
+    if (this.groupId === props.groupId) {
+      return;
+    }
     if (this._transformHandler) {
       this._transformHandler.dispose();
+      this.dispose();
     }
     this.groupId = props.groupId;
     this.markAsRead();
