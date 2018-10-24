@@ -18,7 +18,7 @@ export class LogHelper {
   }
 
   writeStep(step: IStep) {
-    console.log(`${new Date(step.startTime).toLocaleString()} ${step.status} ${step.message} (${step.endTime - step.startTime}ms)`);
+    console.log(`${new Date(step.startTime).toLocaleString()} [${step.status}] ${step.message} (${step.endTime - step.startTime}ms)`);
     this.t.ctx.logs.push(step);
   }
 

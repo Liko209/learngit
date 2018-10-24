@@ -15,20 +15,24 @@ export abstract class BaseWebComponent {
         console.error('You should overwrite this method to ensure component is loaded before execute other operations');
     }
 
-    async waitUntilExist(selector: Selector, timeout: number = 5e3) {
+    async waitUntilExist(selector: Selector | BaseWebComponent, timeout: number = 5e3) {
         await this.t
             .expect(selector.exists)
             .ok(`fail to locate selector ${selector} within ${timeout} ms`, { timeout });
     }
 
-    async waitUntilVisible(selector: Selector, timeout: number = 5e3) {
+    async waitUntilVisible(selector: Selector | BaseWebComponent, timeout: number = 5e3) {
         await this.t
-            .expect(selector)
+            .expect(selector.visible)
             .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
     }
 
-    exists() {
+    get exists() {
         return this.root.exists;
+    }
+
+    get visible() {
+        return this.root.visible;
     }
 
     // testcafe actions
@@ -69,7 +73,9 @@ export abstract class BaseWebComponent {
 
     // misc
     warnFlakySelector() {
-        console.error('a flaky selector is found!');
+        const stack = (new Error()).stack;
+        console.error('a flaky selector is found:');
+        console.error(stack);
     }
 
 }

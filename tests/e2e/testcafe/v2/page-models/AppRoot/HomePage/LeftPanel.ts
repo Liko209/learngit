@@ -3,10 +3,6 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 
 class LeftNavigatorEntry extends BaseWebComponent {
 
-    async ensureLoaded() {
-        await this.waitUntilExist(this.root, 10e3);
-    }
-
     async enter() {
         await this.click(page => page.root);
     }
