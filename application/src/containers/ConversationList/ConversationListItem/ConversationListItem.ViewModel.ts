@@ -56,12 +56,12 @@ class ConversationListItemViewModel extends StoreViewModel<
   }
 
   @computed
-  get personsIdsInGroup() {
+  get personsIds() {
     return this._group.members;
   }
 
   @computed
-  get personIdForPresence() {
+  get personId() {
     const membersExcludeMe = this._group.membersExcludeMe;
 
     if (membersExcludeMe.length > 1 || this._group.isTeam) {
@@ -69,11 +69,11 @@ class ConversationListItemViewModel extends StoreViewModel<
     }
 
     if (
-      this.personsIdsInGroup &&
-      this.personsIdsInGroup.length === 1 &&
-      this.personsIdsInGroup[0] === this.currentUserId
+      this.personsIds &&
+      this.personsIds.length === 1 &&
+      this.personsIds[0] === this.currentUserId
     ) {
-      return this.personsIdsInGroup[0];
+      return this.personsIds[0];
     }
 
     return membersExcludeMe[0];

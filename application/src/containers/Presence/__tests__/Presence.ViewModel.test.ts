@@ -11,7 +11,7 @@ const presenceViewModel = new PresenceViewModel();
 
 describe('PresenceViewModel', () => {
   it('presence()', () => {
-    (getEntity as jest.Mock).mockReturnValue({ presence: 'online' });
-    expect(presenceViewModel.presence).toBe('online');
+    (getEntity as jest.Mock).mockReturnValue({ presence: 'Available' });
+    expect(presenceViewModel.presence).toBe('Available');
   });
 });

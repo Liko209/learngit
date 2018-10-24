@@ -46,7 +46,7 @@ class ConversationListItemViewComponent extends React.Component<Props, IState> {
   private get _presence() {
     const { groupType } = this.props;
     return this._handleTypes.includes(groupType) ? (
-      <Presence uid={this.props.personIdForPresence} />
+      <Presence uid={this.props.personId} />
     ) : null;
   }
   private get _indicator() {

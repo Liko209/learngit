@@ -17,7 +17,7 @@ type ConversationListItemViewProps = {
   umiHint?: boolean;
   onClick: (event: MouseEvent<HTMLElement>) => void;
   groupType: CONVERSATION_TYPES;
-  personIdForPresence: number;
+  personId: number;
 };
 
 export { ConversationListItemProps, ConversationListItemViewProps };
