@@ -1,19 +1,6 @@
-import { ISortableModel } from './types';
+import { ISortableModel, TReplacedData, TUpdated } from './types';
 import { SortableListStore } from './SortableListStore';
-import { TReplacedData } from './FetchSortableDataListHandler';
 import _ from 'lodash';
-
-type TChangeHandler<T> = (
-  keys: number[],
-  entities?: Map<number, T | TReplacedData<T>>,
-  transformFunc?: Function,
-  store?: SortableListStore,
-) => {
-  deleted: number[];
-  updated: ISortableModel[];
-  updateEntity: T[];
-  added: ISortableModel[];
-};
 
 function diff(keys: number[], store: SortableListStore) {
   const existKeys = store.getIds();
@@ -44,20 +31,21 @@ function handleUpsert<T>(
   store: SortableListStore,
 ) {
   const { matchedKeys, differentKeys } = diff(keys, store);
-  const updated: ISortableModel[] = [];
+  const updated: TUpdated = [];
   const updateEntity: T[] = [];
   const deleted: number[] = [];
   const added: ISortableModel[] = [];
   matchedKeys.forEach((key: number) => {
     const entity = entities.get(key) as { id: number; data: T };
     const data = (entity.data || entity) as T;
-    const idSortKey = transformFunc(data);
-    updated.push(idSortKey);
-    updateEntity.push(data);
     if (entity.data) {
-      deleted.push(key); // special for preinsert post
+      const idSortKey = transformFunc(data);
+      const index = store.getIds().indexOf(key);
+      updated.push({ value: idSortKey, index });
     }
+    updateEntity.push(data);
   });
+
   differentKeys.forEach((key: number) => {
     const model = entities.get(key) as T;
     const sortable = transformFunc(model);
@@ -93,4 +81,4 @@ function handleReplaceAll<T>(
   };
 }
 
-export { handleDelete, handleReplaceAll, TChangeHandler, handleUpsert };
+export { handleDelete, handleReplaceAll, handleUpsert };

@@ -26,7 +26,7 @@ type DebounceFunction = (
   params: { id: number; draft: string },
 ) => Promise<boolean>;
 
-class MessageInputViewModel extends AbstractViewModel
+class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
   implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
@@ -122,6 +122,8 @@ class MessageInputViewModel extends AbstractViewModel
       vm.error = '';
       if (content.trim()) {
         vm._sendPost(quill);
+        const onPostHandler = vm.props.onPost;
+        onPostHandler && onPostHandler();
       }
     };
   }

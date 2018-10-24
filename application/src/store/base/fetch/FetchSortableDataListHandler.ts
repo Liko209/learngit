@@ -7,7 +7,6 @@ import {
   handleDelete,
   handleReplaceAll,
   handleUpsert,
-  TChangeHandler,
 } from './IncomingDataHandler';
 
 import { EVENT_TYPES } from 'sdk/service';
@@ -17,6 +16,8 @@ import {
   IMatchFunc,
   ITransformFunc,
   ISortFunc,
+  TReplacedData,
+  TChangeHandler,
 } from './types';
 import {
   FetchDataListHandler,
@@ -26,10 +27,6 @@ import {
 import { SortableListStore } from './SortableListStore';
 import { IIncomingData } from '../../store';
 import _ from 'lodash';
-export type TReplacedData<T> = {
-  id: number;
-  data: T;
-};
 
 const transform2Map = (entities: any[]): Map<number, any> => {
   const map = new Map();
@@ -111,7 +108,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
         direction,
-        upserted: sortableResult,
+        added: sortableResult,
         deleted: [],
       });
   }
@@ -153,15 +150,16 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       .filter(item => this._isInRange(item.sortValue))
       .value();
     this.updateEntityStore(updateEntity);
-    const upserted = [...updated, ...added];
-    this.sortableListStore.deleteAndUpsert({
-      deleted,
-      upserted,
+    this.sortableListStore.removeByIds(deleted);
+    updated.forEach(item => {
+      this.sortableListStore.replaceAt(item.index, item.value);
     });
+    this.sortableListStore.upsert(added);
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
         deleted,
-        upserted,
+        added,
+        updated,
         direction: FetchDataDirection.DOWN,
       });
   }

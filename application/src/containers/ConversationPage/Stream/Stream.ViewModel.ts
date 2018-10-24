@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
+import {
+  ISortableModel,
+  FetchDataDirection,
+  TUpdated,
+} from '@/store/base/fetch/types';
 import _ from 'lodash';
 import { observable } from 'mobx';
 import { Post } from 'sdk/models';
@@ -78,9 +82,14 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
       deletedItems.includes(item.value as number),
     );
   }
+  onUpdated(updatedIds: TUpdated) {
+    updatedIds.forEach(item =>
+      this.listStore.replaceAt(item.index, item.value),
+    );
+  }
 }
 
-class StreamViewModel extends StoreViewModel {
+class StreamViewModel extends StoreViewModel<StreamProps> {
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
@@ -93,9 +102,12 @@ class StreamViewModel extends StoreViewModel {
   postIds: number[] = [];
 
   onReceiveProps(props: StreamProps) {
-    if (this.groupId === props.groupId) return;
+    if (this.groupId === props.groupId) {
+      return;
+    }
     if (this._transformHandler) {
       this._transformHandler.dispose();
+      this.dispose();
     }
     this.groupId = props.groupId;
     this.markAsRead();

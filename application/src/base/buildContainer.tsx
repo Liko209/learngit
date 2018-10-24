@@ -15,19 +15,22 @@ type BuildContainerOptions<T> = {
   View: ComponentType<any>;
   plugins?: IPlugin[];
 };
-
+type TPrivateProps = {
+  viewRef: (ref: any) => void;
+};
 function buildContainer<P = {}, S = {}, SS = any>({
   View,
   ViewModel,
   plugins = [],
 }: BuildContainerOptions<P>) {
+  type Props = P & Partial<TPrivateProps>;
   @observer
-  class Container extends Component<P, S, SS> {
+  class Container extends Component<Props, S, SS> {
     @observable
     vm: StoreViewModel;
     View = View;
 
-    constructor(props: P) {
+    constructor(props: Props) {
       super(props);
       this.vm = new ViewModel(props);
       plugins.forEach((plugin: IPlugin) => {
@@ -56,7 +59,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
 
     render() {
       const View = this.View;
-      return <View {...this._viewProps} />;
+      return <View {...this._viewProps} ref={this.props.viewRef} />;
     }
 
     private get _viewProps() {

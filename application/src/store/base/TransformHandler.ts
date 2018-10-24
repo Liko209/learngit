@@ -1,3 +1,4 @@
+import { TUpdated } from './../../../../.history/application/src/store/base/fetch/types_20181024203834';
 import { ListStore } from './fetch/ListStore';
 import { FetchDataDirection, ISortableModel, TDelta } from './fetch/types';
 /*
@@ -27,12 +28,15 @@ abstract class TransformHandler<T, K> {
   }
 
   modificationHandler = (delta: TDelta) => {
-    const { upserted, deleted, direction } = delta;
+    const { updated, deleted, added, direction } = delta;
     if (deleted.length) {
       this.onDeleted(deleted);
     }
-    if (upserted.length) {
-      this.onAdded(direction, upserted);
+    if (added.length) {
+      this.onAdded(direction, added);
+    }
+    if (updated) {
+      this.onUpdated(updated);
     }
   }
 
@@ -42,7 +46,7 @@ abstract class TransformHandler<T, K> {
   ): any;
 
   abstract onDeleted(deletedItems: number[]): any;
-
+  abstract onUpdated(updatedIds: TUpdated): any;
   dispose() {
     this._orderListHandler.dispose();
   }
