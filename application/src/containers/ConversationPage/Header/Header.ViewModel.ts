@@ -1,19 +1,24 @@
 /*
- * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
- * @Date: 2018-09-28 17:23:20
- * Copyright © RingCentral. All rights reserved.
- */
+* @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+* @Date: 2018-09-28 17:23:20
+* Copyright © RingCentral. All rights reserved.
+*/
 
 import { observable, computed, action } from 'mobx';
-import { Group } from 'sdk/models';
-import { getEntity } from '@/store/utils';
+import { Group, Person } from 'sdk/models';
+import { getEntity, getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
+import PersonModel from '@/store/models/Person';
 import { ENTITY_NAME } from '@/store';
 import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
-import { t } from 'i18next';
+import { t, TranslationFunction } from 'i18next';
+import _ from 'lodash';
+import { HeaderProps } from './Header.View';
 
-class HeaderViewModel extends AbstractViewModel {
+class HeaderViewModel extends AbstractViewModel implements HeaderProps {
+  t: TranslationFunction;
   @observable
   private _id: number;
 
@@ -30,6 +35,25 @@ class HeaderViewModel extends AbstractViewModel {
       title += ` (${t('text')})`;
     }
     return title;
+  }
+
+  @computed
+  get customStatus() {
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
+    if (group.members && group.members.length <= 2) {
+      let userId;
+      if (group.members.length === 1) {
+        userId = group.members[0];
+      } else {
+        userId = _.difference(
+          group.members,
+          [].concat(getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID)),
+        )[0];
+      }
+      const user = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, userId);
+      return user.awayStatus || null;
+    }
+    return null;
   }
 
   @computed
