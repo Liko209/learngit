@@ -38,10 +38,16 @@ function handleUpsert<T>(
   matchedKeys.forEach((key: number) => {
     const entity = entities.get(key) as { id: number; data: T };
     const data = (entity.data || entity) as T;
+    const idSortKey = transformFunc(data);
+    const index = store.getIds().indexOf(key);
     if (entity.data) {
-      const idSortKey = transformFunc(data);
-      const index = store.getIds().indexOf(key);
-      updated.push({ value: idSortKey, index });
+      updated.push({
+        index,
+        value: idSortKey,
+        oldValue: store.getById(entity.id),
+      });
+    } else {
+      added.push(idSortKey);
     }
     updateEntity.push(data);
   });
@@ -66,7 +72,6 @@ function handleReplaceAll<T>(
   transformFunc: Function,
   store: SortableListStore,
 ) {
-  const updated: ISortableModel[] = [];
   const updateEntity: T[] = [];
   const deleted: number[] = store.getIds();
   const added: ISortableModel[] = keys.map((key: number) => {
@@ -75,7 +80,6 @@ function handleReplaceAll<T>(
   });
   return {
     deleted,
-    updated,
     updateEntity,
     added,
   };

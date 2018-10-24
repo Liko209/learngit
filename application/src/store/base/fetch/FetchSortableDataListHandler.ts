@@ -151,9 +151,10 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       .value();
     this.updateEntityStore(updateEntity);
     this.sortableListStore.removeByIds(deleted);
-    updated.forEach(item => {
-      this.sortableListStore.replaceAt(item.index, item.value);
-    });
+    updated &&
+      updated.forEach((item: any) => {
+        this.sortableListStore.replaceAt(item.index, item.value);
+      });
     this.sortableListStore.upsert(added);
     this._dataChangeCallBack &&
       this._dataChangeCallBack({

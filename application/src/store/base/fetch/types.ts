@@ -52,7 +52,11 @@ export type TChangeHandler<T> = (
   added: ISortableModel[];
 };
 
-export type TUpdated = { value: ISortableModel; index: number }[];
+export type TUpdated = {
+  value: ISortableModel;
+  index: number;
+  oldValue?: ISortableModel;
+}[];
 
 export type TReplacedData<T> = {
   id: number;

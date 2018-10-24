@@ -61,6 +61,14 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
     super(handler);
     this.onAppended = onAppended;
   }
+  onUpdated(updatedIds: TUpdated) {
+    updatedIds.forEach(item =>
+      this.listStore.replaceAt(item.index, {
+        value: item.value.id,
+        type: TStreamType.POST,
+      }),
+    );
+  }
   onAdded(direction: FetchDataDirection, addedItems: ISortableModel[]) {
     const updated = _(addedItems)
       .map(item => ({
@@ -82,11 +90,6 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
       deletedItems.includes(item.value as number),
     );
   }
-  onUpdated(updatedIds: TUpdated) {
-    updatedIds.forEach(item =>
-      this.listStore.replaceAt(item.index, item.value),
-    );
-  }
 }
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
@@ -106,7 +109,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       return;
     }
     if (this._transformHandler) {
-      this._transformHandler.dispose();
       this.dispose();
     }
     this.groupId = props.groupId;

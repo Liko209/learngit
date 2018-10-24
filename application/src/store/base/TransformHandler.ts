@@ -1,6 +1,3 @@
-import { TUpdated } from './../../../../.history/application/src/store/base/fetch/types_20181024203834';
-import { ListStore } from './fetch/ListStore';
-import { FetchDataDirection, ISortableModel, TDelta } from './fetch/types';
 /*
  * @Author: Andy Hu
  * @Date: 2018-09-17 14:01:49
@@ -8,6 +5,13 @@ import { FetchDataDirection, ISortableModel, TDelta } from './fetch/types';
  */
 import _ from 'lodash';
 import { FetchSortableDataListHandler } from './fetch/FetchSortableDataListHandler';
+import { ListStore } from './fetch/ListStore';
+import {
+  FetchDataDirection,
+  ISortableModel,
+  TDelta,
+  TUpdated,
+} from './fetch/types';
 
 abstract class TransformHandler<T, K> {
   fetchData: (direction: FetchDataDirection) => any;

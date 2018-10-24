@@ -17,6 +17,7 @@ function handleReplace<T>(
   const added: IIDSortKey[] = [];
   const updateEntity: T[] = [];
   const deleted: number[] = [];
+  const updated: IIDSortKey[] = [];
   matchedKeys.forEach((key: number) => {
     const entity = entities.get(key) as { id: number; data: T };
     const { data } = entity;
@@ -28,6 +29,7 @@ function handleReplace<T>(
   return {
     deleted,
     added,
+    updated,
     updateEntity,
   };
 }
