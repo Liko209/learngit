@@ -25,6 +25,8 @@ export default class MultiEntityMapStore<
   private _maxCacheCount: number;
   private _service: BaseService<T>;
 
+  private _eventType = [EVENT_TYPES.RESET, EVENT_TYPES.RELOAD];
+
   constructor(
     entityName: ENTITY_NAME,
     { service, event, cacheCount }: IEntitySetting,
@@ -43,7 +45,7 @@ export default class MultiEntityMapStore<
   }
 
   handleIncomingData({ type, entities }: IIncomingData<T>) {
-    if (!entities.size && type !== EVENT_TYPES.RESET) {
+    if (!entities.size && this._eventType.includes[type]) {
       return;
     }
     const existKeys: number[] = Object.keys(this._data).map(Number);
