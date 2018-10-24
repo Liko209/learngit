@@ -65,6 +65,10 @@ class ConversationListSection extends BaseWebComponent {
     return this.root.find('*[role="button"]');
   }
 
+  get collapse() {
+    return this.root.find('.conversation-list-section-collapse');
+  }
+
   get conversations() {
     return this.root.find('*[role="menuitem"]');
   }
