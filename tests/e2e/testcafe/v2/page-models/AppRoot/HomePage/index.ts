@@ -9,7 +9,7 @@ import { MessagePanel } from './MessagePanel'
 
 export class HomePage extends BaseWebComponent {
     async ensureLoaded() {
-        await this.waitUntilExist(this.leftPanel, 30e3);
+        await this.waitUntilExist(this.leftPanel, 60e3);
     }
 
     get root() {

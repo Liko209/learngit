@@ -1,4 +1,5 @@
 import 'testcafe';
+import { getLogger } from 'log4js';
 
 import { DataHelper } from './data-helper'
 import { SdkHelper } from "./sdk-helper";
@@ -8,6 +9,9 @@ import { LogHelper } from './log-helper';
 
 import { IUser, IStep } from '../models';
 import { UICreator } from '../../page-models';
+
+const logger = getLogger(__filename);
+logger.level = 'info';
 
 class Helper {
 
@@ -82,6 +86,7 @@ class Helper {
   }
 
   async resetGlipAccount(user: IUser) {
+    logger.warn("reset a glip account will be very slow (30s+)");
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(this.rcData.mainCompany.admin);
     await adminGlip.deactivated(user.glipId);
     await this.sdkHelper.sdkManager.getGlip(user);

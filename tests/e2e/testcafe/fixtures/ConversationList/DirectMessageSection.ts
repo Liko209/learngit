@@ -20,11 +20,11 @@ test(formalName(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
+    await h(t).resetGlipAccount(user);
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
 
     let chat, group;
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat', async () => {
-      await h(t).resetGlipAccount(user);
       chat = await userPlatform.createGroup({
         type: 'PrivateChat', members: [user.rcId, users[5].rcId],
       });
