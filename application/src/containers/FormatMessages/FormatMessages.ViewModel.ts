@@ -32,7 +32,7 @@ class FormatMessagesViewModel extends StoreViewModel<{ postId: number }> {
     return kv;
   }
   @computed
-  get _currentUserId() {
+  private get _currentUserId() {
     return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
   @computed
