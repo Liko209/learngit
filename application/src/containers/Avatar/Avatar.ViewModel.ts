@@ -58,7 +58,7 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
   @computed
   get shouldShowShortName() {
     if (this._person) {
-      return !this._person.hasHeadShot && this._person.shortName;
+      return !this._person.hasHeadShot && !!this._person.shortName;
     }
     return false;
   }
