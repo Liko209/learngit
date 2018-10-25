@@ -53,6 +53,7 @@ describe('ProfileService', () => {
   describe('getProfile()', () => {
     it('should return current user profile', async () => {
       // await profileDao.bulkPut({ id: 1 }, { id: 2 });
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
       jest.spyOn(profileService, 'getById').mockImplementation(id => id);
 
@@ -217,9 +218,14 @@ describe('ProfileService', () => {
       const profile = {
         id: 2,
       };
+
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
       jest
-        .spyOn(profileService, 'getProfile')
-        .mockImplementationOnce(() => profile);
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
       const returnValue = {
         id: 2,
         hide_group_222233333: true,
@@ -246,12 +252,18 @@ describe('ProfileService', () => {
       const profile = {
         id: 2,
       };
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
+
       jest
-        .spyOn(profileService, 'getProfile')
-        .mockImplementationOnce(() => profile);
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
       ProfileAPI.putDataById.mockResolvedValueOnce({
         status: 403,
       });
+
       const result = await profileService.hideConversation(1, true, false);
       if (result instanceof BaseError) {
         expect(result.code).toBe(1403);
@@ -266,18 +278,24 @@ describe('ProfileService', () => {
         id: 2,
         hide_group_222233333: true,
       };
+
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
       jest
-        .spyOn(profileService, 'getProfile')
-        .mockImplementationOnce(() => profile);
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
       const returnValue = {
         id: 2,
         hide_group_222233333: false,
         skip_close_conversation_confirmation: true,
       };
+
       ProfileAPI.putDataById.mockResolvedValueOnce({
         data: returnValue,
       });
-      handleData.mockResolvedValueOnce(returnValue);
+
       const result = await profileService.handleGroupIncomesNewPost([
         222233333,
       ]);
@@ -288,13 +306,19 @@ describe('ProfileService', () => {
         id: 2,
         hide_group_222233333: false,
       };
+
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
       jest
-        .spyOn(profileService, 'getProfile')
-        .mockImplementationOnce(() => profile);
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
       const result = await profileService.handleGroupIncomesNewPost([
         222233333,
       ]);
-      expect(result).toBe(null);
+
+      expect(result).toEqual(profile);
     });
   });
 });

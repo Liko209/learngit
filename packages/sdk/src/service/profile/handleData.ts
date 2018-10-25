@@ -41,26 +41,19 @@ function hiddenGroupsChange(localProfile: Profile, newProfile: Profile) {
   }
 }
 
-// function doNotification(
-//   localProfile: Profile | null,
-//   transformedData: Profile[],
-// ) {
-//   if (
-//     localProfile &&
-//     transformedData.length &&
-//     transformedData[0].id === localProfile.id
-//   ) {
-//     notificationCenter.emit(
-//       SERVICE.PROFILE_FAVORITE,
-//       localProfile,
-//       transformedData[0],
-//     );
-//   }
-//   hiddenGroupsChange(localProfile, transformedData);
-// }
+function doNotification(localProfile: Profile, updatedProfile: Profile) {
+  if (localProfile && updatedProfile && updatedProfile.id === localProfile.id) {
+    notificationCenter.emit(
+      SERVICE.PROFILE_FAVORITE,
+      localProfile,
+      updatedProfile,
+    );
+  }
+  hiddenGroupsChange(localProfile, updatedProfile);
+}
 
 const profileHandleData = async (
-  profile: Raw<Profile> | Raw<Profile> | null,
+  profile: Raw<Profile> | null,
 ): Promise<Profile | null> => {
   let result: Profile | null = null;
   if (profile) {
@@ -114,4 +107,4 @@ const handlePartialProfileUpdate = async (
 };
 
 export default profileHandleData;
-export { extractHiddenGroupIds, handlePartialProfileUpdate };
+export { extractHiddenGroupIds, handlePartialProfileUpdate, doNotification };

@@ -7,13 +7,18 @@ import ProfileAPI from '../../api/glip/profile';
 
 import BaseService from '../../service/BaseService';
 import AccountService from '../account';
-import handleData, { handlePartialProfileUpdate } from './handleData';
+import handleData, {
+  handlePartialProfileUpdate,
+  doNotification,
+} from './handleData';
 import { Profile, Raw } from '../../models';
-import { SOCKET, SERVICE } from '../eventKey';
+import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import _ from 'lodash';
 import { BaseError, ErrorParser } from '../../utils';
 import PersonService from '../person';
 import { mainLogger } from 'foundation';
+import notificationCenter from '../../service/notificationCenter';
+import { transform } from '../utils';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();
@@ -31,31 +36,11 @@ export default class ProfileService extends BaseService<Profile> {
   }
 
   async getProfile(): Promise<Profile | null> {
-    const accountService: AccountService = AccountService.getInstance();
-    const profileId: number | null = accountService.getCurrentUserProfileId();
+    const profileId: number | null = this.getCurrentProfileId();
     if (!profileId) {
       return null;
     }
     return this.getById(profileId);
-  }
-
-  async handleGroupIncomesNewPost(groupIds: number[]) {
-    const profile: Profile | null = await this.getProfile();
-    if (profile && groupIds.length) {
-      let changed: boolean = false;
-      groupIds.forEach((id: number) => {
-        const key = `hide_group_${id}`;
-        if (profile[key]) {
-          profile[key] = false;
-          changed = true;
-        }
-      });
-      // open group
-      if (changed) {
-        return this._putProfile(profile);
-      }
-    }
-    return null;
   }
 
   private _reorderFavoriteGroupIds(
@@ -200,34 +185,83 @@ export default class ProfileService extends BaseService<Profile> {
     return profile;
   }
 
+  getCurrentProfileId() {
+    const accountService: AccountService = AccountService.getInstance();
+    const profileId: number | null = accountService.getCurrentUserProfileId();
+    return profileId;
+  }
+
+  async handleGroupIncomesNewPost(groupIds: number[]) {
+    if (!groupIds.length) {
+      return null;
+    }
+
+    const preHandlePartialModel = (
+      partialModel: Partial<Raw<Profile>>,
+      originalModel: Profile,
+    ): Partial<Raw<Profile>> => {
+      let partialProfile = partialModel;
+      groupIds.forEach((id: number) => {
+        const key = `hide_group_${id}`;
+        if (originalModel[key]) {
+          partialProfile = {
+            ...partialProfile,
+            [key]: false,
+          };
+        }
+      });
+      return partialProfile;
+    };
+
+    return await this._updateProfileGroupStatus(
+      groupIds,
+      false,
+      preHandlePartialModel,
+    );
+  }
+
   async hideConversation(
     groupId: number,
     hidden: boolean,
     shouldUpdateSkipConfirmation: boolean,
   ): Promise<Profile | BaseError> {
-    const profile = await this.getProfile();
-    if (profile) {
-      const key = `hide_group_${groupId}`;
-      const newProfile = _.cloneDeep(profile);
-      newProfile[key] = hidden;
-      /**tslint:disable-next-line  */
+    const preHandlePartialModel = (
+      partialModel: Partial<Raw<Profile>>,
+      originalModel: Profile,
+    ): Partial<Raw<Profile>> => {
+      let partialProfile = {
+        ...partialModel,
+        [`hide_group_${groupId}`]: hidden,
+      };
       if (
-        newProfile.skip_close_conversation_confirmation !==
+        originalModel.skip_close_conversation_confirmation !==
         shouldUpdateSkipConfirmation
       ) {
-        /**tslint:disable-next-line  */
-        newProfile.skip_close_conversation_confirmation = shouldUpdateSkipConfirmation;
-      }
-      if (hidden) {
-        let favIds = newProfile.favorite_group_ids || [];
-        favIds = favIds.filter((id: number) => id !== groupId);
-        newProfile.favorite_group_ids = favIds;
+        partialProfile = {
+          ...partialProfile,
+          skip_close_conversation_confirmation: shouldUpdateSkipConfirmation,
+        };
       }
 
-      return this._putProfile(newProfile);
-    }
-    return ErrorParser.parse('none profile error');
+      if (hidden) {
+        let favIds = _.cloneDeep(originalModel.favorite_group_ids) || [];
+        favIds = favIds.filter((id: number) => id !== groupId);
+
+        partialProfile = {
+          ...partialProfile,
+          favorite_group_ids: favIds,
+        };
+      }
+      return partialProfile;
+    };
+
+    return await this._updateProfileGroupStatus(
+      [groupId],
+      hidden,
+      preHandlePartialModel,
+    );
   }
+
   async isConversationHidden(groupId: number) {
     const profile = await this.getProfile();
     if (profile) {
@@ -236,7 +270,53 @@ export default class ProfileService extends BaseService<Profile> {
     }
     return false;
   }
-  private async _putProfile(newProfile: Profile): Promise<Profile | BaseError> {
+
+  private async _updateProfileGroupStatus(
+    groupIds: number[],
+    hidden: boolean,
+    preHandlePartialModel?: (
+      partialModel: Partial<Raw<Profile>>,
+      originalModel: Profile,
+    ) => Partial<Raw<Profile>>,
+  ) {
+    const profileId: number | null = this.getCurrentProfileId();
+    if (!profileId) {
+      return ErrorParser.parse('none profile error');
+    }
+
+    const partialProfile: any = {
+      id: profileId,
+      _id: profileId,
+    };
+
+    const doUpdateModel = async (updatedModel: Profile) => {
+      return await this._doUpdateProfile(updatedModel);
+    };
+
+    const doPartialNotify = (
+      originalModels: Profile[],
+      partialModels: Partial<Raw<Profile>>[],
+    ): void => {
+      notificationCenter.emitEntityPartialUpdate(ENTITY.PROFILE, partialModels);
+
+      doNotification(
+        originalModels[0],
+        this.getMergedModel(partialModels[0], originalModels[0]),
+      );
+    };
+
+    return await this.handlePartialUpdate(
+      partialProfile,
+      preHandlePartialModel,
+      doUpdateModel,
+      doPartialNotify,
+    );
+  }
+
+  private async _doUpdateProfile(
+    newProfile: Profile,
+    handleDataFunc?: (profile: Raw<Profile> | null) => Promise<Profile | null>,
+  ): Promise<Profile | BaseError> {
     newProfile._id = newProfile.id;
     delete newProfile.id;
     try {
@@ -244,10 +324,16 @@ export default class ProfileService extends BaseService<Profile> {
         newProfile._id,
         newProfile,
       );
+
       if (response.data) {
-        const result = await handleData(response.data);
-        if (result) {
-          return result;
+        if (handleDataFunc) {
+          const result = await handleDataFunc(response.data);
+          if (result) {
+            return result;
+          }
+        } else {
+          const latestProfileModel: Profile = transform(response.data);
+          return latestProfileModel;
         }
       }
       return ErrorParser.parse(response);
