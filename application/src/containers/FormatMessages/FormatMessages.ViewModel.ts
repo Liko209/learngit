@@ -12,7 +12,7 @@ import { Post, Person, Company } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import PersonModel from '@/store/models/Person';
-import { FormatText } from './FormatText';
+import { Transform } from './Transform';
 
 class FormatMessagesViewModel extends StoreViewModel<{ postId: number }> {
   @computed
@@ -40,22 +40,20 @@ class FormatMessagesViewModel extends StoreViewModel<{ postId: number }> {
   }
 
   @computed
-  private get _currentCompanyId() {
-    return getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
-  }
-
-  @computed
-  private get _customEmoji() {
-    const company = getEntity<Company, CompanyModel>(ENTITY_NAME.COMPANY, this._currentCompanyId) || {};
+  private get _customEmojiMap() {
+    const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
+    if (currentCompanyId <= 0) {
+      return {};
+    }
+    const company = getEntity<Company, CompanyModel>(ENTITY_NAME.COMPANY, currentCompanyId) || {};
     return company.customEmoji || {};
   }
 
   @computed
   get formatHtml() {
-    console.log(111111, this._customEmoji);
-    const formatText = new FormatText(this._post.text);
-    formatText.glipdown(this._atMentionIdMaps, this._currentUserId);
-    return formatText.text;
+    const transform = new Transform(this._post.text);
+    transform.glipdown(this._atMentionIdMaps, this._currentUserId).emoji(this._customEmojiMap);
+    return transform.text;
   }
 }
 export { FormatMessagesViewModel };

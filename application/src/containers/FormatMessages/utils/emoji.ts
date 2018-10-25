@@ -41,7 +41,7 @@ function formatAscii(text: string) {
   });
 }
 
-function formatCustom(text: string, mapCustom: Object) {
+function formatCustom(text: string, mapCustom: { [index: string]: { data: string } }) {
   const regExp = /:([^:]+?):/g;
   return text.trim().replace(regExp, (match: string, p1: string) => {
     // console.log(match, p1); // :abc: abc

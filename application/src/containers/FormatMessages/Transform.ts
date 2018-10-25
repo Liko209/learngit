@@ -3,12 +3,14 @@
  * @Date: 2018-10-25 17:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { handleAtMentionName } from './utils/handleAtMentionName';
+
 import { Markdown } from 'glipdown';
 import { glipdown2Html } from '@/utils/glipdown2Html';
+import { formatEmojiOne, formatAscii, formatCustom, handleAtMentionName } from './utils';
 
-class FormatText {
+class Transform {
   text = '';
+
   constructor(text: string) {
     this.text = text;
   }
@@ -24,9 +26,11 @@ class FormatText {
     return this;
   }
 
-  emoji() {
-
+  emoji(customEmojiMap: { [index: string]: { data: string } }) {
+    this.text = formatEmojiOne(this.text);
+    this.text = formatAscii(this.text);
+    this.text = formatCustom(this.text, customEmojiMap);
     return this;
   }
 }
-export { FormatText };
+export { Transform };

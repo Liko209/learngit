@@ -94,7 +94,7 @@ export type Company = ExtendedBaseModel & {
   name: string;
   domain: string;
   admins: number[];
-  custom_emoji: Object;
+  custom_emoji: { [index: string]: { data: string } };
 };
 
 export type Person = ExtendedBaseModel & {

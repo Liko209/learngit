@@ -6,7 +6,7 @@ export default class CompanyModel extends Base<Company> {
   @observable
   name: string;
   @observable
-  customEmoji: Object;
+  customEmoji: { [index: string]: { data: string } };
 
   constructor(data: Company) {
     super(data);
