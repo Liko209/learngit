@@ -17,10 +17,14 @@ import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { Group, Profile } from 'sdk/models';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
-import { ENTITY_NAME } from '@/store/constants';
-import { computed, IAtom, createAtom } from 'mobx';
+import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
+import { IAtom, createAtom, autorun } from 'mobx';
 import { getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
+import _ from 'lodash';
+import storeManager from '@/store';
+import history from '@/utils/history';
+
 const { GroupService } = service;
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
@@ -61,6 +65,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._initHandlerMap();
     this._idSet = new Set<number>();
     this._subscribeNotification();
+    autorun(() => this.profileUpdateGroupSections());
   }
 
   static getInstance() {
@@ -70,21 +75,46 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     return this._instance;
   }
 
-  @computed
-  get favGroupIds() {
-    return (
+  async profileUpdateGroupSections() {
+    const newFavIds =
       getSingleEntity<Profile, ProfileModel>(
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
-      ) || []
-    );
+      ) || [];
+    if (
+      this._oldFavGroupIds.sort().toString() !== newFavIds.sort().toString()
+    ) {
+      const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
+      const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
+      this._oldFavGroupIds = newFavIds;
+      // handle favorite section change
+      const groupService = GroupService.getInstance<service.GroupService>();
+      let result = await groupService.getGroupsByType(
+        GROUP_QUERY_TYPE.FAVORITE,
+      );
+      this._handlersMap[SECTION_TYPE.FAVORITE].replaceAll(result);
+
+      if (more.length) {
+        result = await groupService.getGroupsByIds(more);
+        this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
+        this._handlersMap[SECTION_TYPE.TEAM].upsert(result);
+      }
+      if (less.length) {
+        this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].removeByIds(less);
+        this._handlersMap[SECTION_TYPE.TEAM].removeByIds(less);
+        let shouldReportChanged = false;
+        less.forEach((id: number) => {
+          if (!this._idSet.has(id)) {
+            this._idSet.add(id);
+            shouldReportChanged = true;
+          }
+        });
+        shouldReportChanged && this._idSetAtom.reportChanged();
+      }
+    }
   }
 
-  async profileUpdateGroupSections() {}
-
-  private _updateIdSet(type: EVENT_TYPES, entities: Map<number, any>) {
-    const strIds = Object.keys(entities);
-    const ids = strIds.map(id => Number(id));
+  private _updateIdSet(type: EVENT_TYPES, ids: number[]) {
     if (type === EVENT_TYPES.REPLACE_ALL) {
       this._idSet = new Set(ids);
     } else if (type === EVENT_TYPES.DELETE) {
@@ -106,12 +136,27 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private _subscribeNotification() {
     this.subscribeNotification(ENTITY.GROUP, ({ type, entities }) => {
       const keys = Object.keys(this._handlersMap);
+      const strIds = Object.keys(entities);
+      const ids = strIds.map(id => Number(id));
+      // update url
+      this._updateUrl(type, ids);
       // handle id sets
-      this._updateIdSet(type, entities);
+      this._updateIdSet(type, ids);
       keys.forEach((key: string) => {
         this._handlersMap[key].onDataChanged({ type, entities });
       });
     });
+  }
+
+  private _updateUrl(type: EVENT_TYPES, ids: number[]) {
+    if (type === EVENT_TYPES.DELETE) {
+      const currentGroupId = storeManager
+        .getGlobalStore()
+        .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+      if (ids.indexOf(currentGroupId) !== -1) {
+        history.replace('/messages');
+      }
+    }
   }
 
   private _initHandlerMap() {

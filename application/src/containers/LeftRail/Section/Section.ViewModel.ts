@@ -11,7 +11,7 @@ import { ENTITY_NAME } from '@/store';
 import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
 import { ISortableModel } from '@/store/base/fetch';
-import SectionGroupHandler from '@/store/SectionGroupHandler';
+import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import {
   SectionProps,
   SectionConfig,
@@ -20,7 +20,8 @@ import {
   SECTION_TYPE,
 } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
-
+// import { getSingleEntity } from '@/store/utils';
+// import ProfileModel from '@/store/models/Profile';
 const { GroupService } = service;
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
@@ -142,18 +143,7 @@ class SectionViewModel extends StoreViewModel<SectionProps>
 
   // async profileUpdateFavSection() {
   //   const favGroupIds = this.favGroupIds;
-  //   const condition =
-  //     this._hasInitiated() &&
-  //     this._type === SECTION_TYPE.FAVORITE &&
-  //     this._oldFavGroupIds.toString() !== favGroupIds.toString();
-  //   if (condition) {
-  //     this._oldFavGroupIds = favGroupIds;
-  //     const groupService = GroupService.getInstance<service.GroupService>();
-  //     const result = await groupService.getGroupsByType(
-  //       GROUP_QUERY_TYPE.FAVORITE,
-  //     );
-  //     this._listHandler.replaceAll(result);
-  //   }
+  //   console.log('profileUpdateFavSection:', favGroupIds);
   // }
 
   // async profileUpdateGroupSections() {

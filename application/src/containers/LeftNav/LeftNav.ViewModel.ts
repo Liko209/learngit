@@ -10,7 +10,7 @@ import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import { LeftNavProps } from './types';
-import SectionGroupHandler from '@/store/SectionGroupHandler';
+import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 
 const getItem = (item: string) => {
   return localStorage.getItem(item);
