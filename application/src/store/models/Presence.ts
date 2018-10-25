@@ -1,7 +1,7 @@
 import { observable, action } from 'mobx';
 import { Presence } from 'sdk/models';
 import Base from './Base';
-import { PRESENCE } from 'sdk/src/service';
+import { PRESENCE } from 'sdk/service';
 
 export default class PresenceModel extends Base<Presence> {
   @observable
