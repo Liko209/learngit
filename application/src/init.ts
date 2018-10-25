@@ -48,6 +48,8 @@ export async function initAll() {
   notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
     const currentUserId = accountService.getCurrentUserId() as number;
     globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
+    const currentCompanyId = accountService.getCurrentCompanyId() as number;
+    globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
   });
   notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
     // 1. show loading
