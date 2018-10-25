@@ -141,7 +141,7 @@ test(
       await app.homePage.ensureLoaded();
     });
 
-    await h(t).withLog('Then I can enter the team', async () => {
+    await h(t).withLog('Then I can enter the team conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
       const teamConversation =  teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
