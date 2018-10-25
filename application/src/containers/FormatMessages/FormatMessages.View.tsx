@@ -13,10 +13,9 @@ import PostModel from '@/store/models/Post';
 
 type Props = {
   formatHtml: string;
-  currentUserId: number;
-  atMentionIdMaps: {number?: string};
+  _currentUserId: number;
+  _atMentionIdMaps: {number?: string};
   _post: PostModel;
-  atMentionId: string|number;
   postId: number;
 };
 @observer
@@ -25,13 +24,10 @@ class FormatMessagesView extends React.Component<Props> {
     super(props);
   }
   render() {
-    const { formatHtml, currentUserId, atMentionId } = this.props;
+    const { formatHtml } = this.props;
     return (
       <React.Fragment>
-        <JuiConversationPostText
-          currentUserId={currentUserId}
-          atMentionId={atMentionId}
-        >
+        <JuiConversationPostText>
           <div dangerouslySetInnerHTML={{ __html: formatHtml }} />
         </JuiConversationPostText>
       </React.Fragment>

@@ -36,14 +36,6 @@ describe('FormatMessages', () => {
   });
   it('currentUserId()', () => {
     (getGlobalValue as jest.Mock).mockReturnValue(123456);
-    expect(formatMessagesVM.currentUserId).toBe(123456);
-  });
-  it('atMentionId()', () => {
-    (getEntity as jest.Mock).mockReturnValue({
-      atMentionNonItemIds: [1234],
-      displayName: 'alvin',
-    });
-    (getGlobalValue as jest.Mock).mockReturnValue(1234);
-    expect(formatMessagesVM.atMentionId).toBe('1234');
+    expect(formatMessagesVM._currentUserId).toBe(123456);
   });
 });

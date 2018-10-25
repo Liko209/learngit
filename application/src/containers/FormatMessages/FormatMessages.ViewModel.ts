@@ -32,20 +32,14 @@ class FormatMessagesViewModel extends StoreViewModel<{postId: number}> {
     return kv;
   }
   @computed
-  get currentUserId() {
+  get _currentUserId() {
     return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
   @computed
   get formatHtml() {
-    const { text } = this._post;
-    const formatText = new FormatText(text);
-    formatText.glipdown(this._atMentionIdMaps);
+    const formatText = new FormatText(this._post.text);
+    formatText.glipdown(this._atMentionIdMaps, this._currentUserId);
     return formatText.text;
   }
-  @computed
-  get atMentionId() {
-    return Object.keys(this._atMentionIdMaps).filter(id => +id === this.currentUserId)[0] || 0;
-  }
-
 }
 export { FormatMessagesViewModel };
