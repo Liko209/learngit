@@ -22,9 +22,9 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
     const posts = _.range(3).map(i => `${i} ${uuid()}`);
-    let teamId;
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
 
+    let teamId;
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
       teamId = (await userPlatform.createGroup({
         isPublic: true,
@@ -54,19 +54,14 @@ test(
     });
 
     const postsSelector = await app.homePage.messagePanel.conversationSection.posts;
-    await h(t).withLog('Then I will receive those posts', async () => {
+    await h(t).withLog('Then I will receive those 3 posts', async () => {
       await t.expect(postsSelector.withText(new RegExp(posts.join('|'))).count).eql(3, { timeout: 5e3 });
-    });
+    }, true);
 
-    await h(t).withLog('And the conversation must display the 3 posts in order.', async () => {
-      await t.wait(3e3);
-      const posts = await app.homePage.messagePanel.conversationSection.posts;
-      const length = await posts.count
-
-      for (let i = 0; i < length; i++) {
-        await t.expect(posts.nth(i).child('div').nth(1)
-          .child('div').nth(1).textContent)
-          .eql(posts[i]);
+    await h(t).withLog('And the 3 posts must be in correct order', async () => {
+      const postsSelector = await app.homePage.messagePanel.conversationSection.posts;
+      for (let i = 0; i < posts.length; i++) {
+        await t.expect(postsSelector.nth(-posts.length + i).withText(posts[i]).exists).ok();
       }
     });
   }
@@ -104,7 +99,7 @@ test(
       await t.click(teamConversation);
     });
 
-    await h(t).withLog('And I can not find any post in the new created conversation', async () => {
+    await h(t).withLog('And I should not find any post in the new created conversation', async () => {
       await t.wait(2e3);
       const postsSelector = await app.homePage.messagePanel.conversationSection.posts;
       await t.expect(postsSelector.exists).notOk();
@@ -161,7 +156,7 @@ test(
       await userPlatform.createPost({ text: newPost }, teamId);
     });
 
-    await h(t).withLog(`Then I can check the latest post is "${newPost}"`, async () => {
+    await h(t).withLog(`Then I should find the latest post is "${newPost}"`, async () => {
       await t.wait(1e3);
       const posts = await app.homePage.messagePanel.conversationSection.posts;
       await t.expect(posts.nth(-1).textContent).contains(newPost);
