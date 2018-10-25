@@ -9,7 +9,7 @@ import { FormatMessagesViewModel } from '../FormatMessages.ViewModel';
 jest.mock('../../../store/utils');
 const formatMessagesVM = new FormatMessagesViewModel();
 
-const mockPostEntity = (text) => {
+const mockPostEntity = (text: string) => {
   (getEntity as jest.Mock).mockReturnValue({
     text,
     atMentionNonItemIds: [1234],
