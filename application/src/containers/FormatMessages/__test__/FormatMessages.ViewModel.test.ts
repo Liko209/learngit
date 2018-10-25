@@ -14,7 +14,7 @@ const mockPostEntity = (text) => {
     text,
     atMentionNonItemIds: [1234],
   });
-}
+};
 describe('FormatMessages', () => {
   beforeAll(() => {
     jest.resetAllMocks();
@@ -22,11 +22,15 @@ describe('FormatMessages', () => {
   describe('formatHtml', () => {
     it('url', () => {
       mockPostEntity('https://www.baidu.com');
-      expect(formatMessagesVM.formatHtml).toBe("<a href='https://www.baidu.com' target='_blank' rel='noreferrer'>https://www.baidu.com</a>");
+      expect(formatMessagesVM.formatHtml).toBe(
+        "<a href='https://www.baidu.com' target='_blank' rel='noreferrer'>https://www.baidu.com</a>",
+      );
     });
     it('email', () => {
       mockPostEntity('xxx@163.com');
-      expect(formatMessagesVM.formatHtml).toBe("<a href='mailto:xxx@163.com' target='_blank' rel='noreferrer'>xxx@163.com</a>");
+      expect(formatMessagesVM.formatHtml).toBe(
+        "<a href='mailto:xxx@163.com' target='_blank' rel='noreferrer'>xxx@163.com</a>",
+      );
     });
     it('bold font', () => {
       mockPostEntity('**awesome**');
