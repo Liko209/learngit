@@ -3,7 +3,7 @@
  * @Date: 2018-10-25 17:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { handleAtMentionName } from '@/utils/handleAtMentionName';
+import { handleAtMentionName } from './utils/handleAtMentionName';
 import { Markdown } from 'glipdown';
 import { glipdown2Html } from '@/utils/glipdown2Html';
 
@@ -23,10 +23,10 @@ class FormatText {
     );
     return this;
   }
-  // todo
-  // emoji() {
-  //
-  //   return this;
-  // }
+
+  emoji() {
+
+    return this;
+  }
 }
 export { FormatText };

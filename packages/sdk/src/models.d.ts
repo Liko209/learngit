@@ -94,6 +94,7 @@ export type Company = ExtendedBaseModel & {
   name: string;
   domain: string;
   admins: number[];
+  custom_emoji: Object;
 };
 
 export type Person = ExtendedBaseModel & {
@@ -197,12 +198,12 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
 export type RawPresence = {
   personId: number;
   calculatedStatus?:
-    | 'NotReady'
-    | 'Unavailable'
-    | 'Available'
-    | 'OnCall'
-    | 'DND'
-    | 'InMeeting';
+  | 'NotReady'
+  | 'Unavailable'
+  | 'Available'
+  | 'OnCall'
+  | 'DND'
+  | 'InMeeting';
 };
 
 export type Presence = BaseModel & {
