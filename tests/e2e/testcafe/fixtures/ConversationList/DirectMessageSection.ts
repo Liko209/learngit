@@ -11,7 +11,7 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
 import { GlipSdk } from '../../v2/sdk/glip';
 
-fixture('DirectMessageSection')
+fixture('ConversationList/DirectMessageSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 

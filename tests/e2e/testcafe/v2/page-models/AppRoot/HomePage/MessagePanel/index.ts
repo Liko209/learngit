@@ -66,7 +66,7 @@ class ConversationListSection extends BaseWebComponent {
   }
 
   get collapse() {
-    return this.root.find('.conversation-list-section-collapse');
+    return this.root.find('.conversation-list-section-collapse').parent(2);
   }
 
   get conversations() {
@@ -180,5 +180,9 @@ export class MessagePanel extends BaseWebComponent {
 
   get conversationPage() {
     return this.getSelector('.conversation-page');
+  }
+
+  get conversationListSections() {
+    return this.getSelector('.conversation-list-section');
   }
 }

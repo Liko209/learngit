@@ -11,11 +11,11 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
 import { GlipSdk } from '../../v2/sdk/glip';
 
-fixture('TeamSection')
+fixture('ConversationList/FavoriteSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test.skip(
+test(
   formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
@@ -73,7 +73,8 @@ test.skip(
     await h(t).withLog(
       'I can find favorite section expanded by default',
       async () => {
-        await t.expect(favoritesSection.isExpand()).ok();
+        const isExpand = await favoritesSection.isExpand();
+        await t.expect(isExpand).ok();
         await t.expect(favoritesSection.collapse.clientHeight).gt(0);
       },
     );
@@ -81,24 +82,28 @@ test.skip(
     await h(t).withLog(
       'Then I click the header of Favorite section',
       async () => {
-        await this.t.click(this.toggleButton);
+        await t.click(favoritesSection.toggleButton);
       },
     );
 
     await h(t).withLog('I can find favorite section collapsed', async () => {
-      await t.expect(favoritesSection.isExpand()).notOk();
+      await t.wait(1e3);
+      const isExpand = await favoritesSection.isExpand();
+      await t.expect(isExpand).notOk();
       await t.expect(favoritesSection.collapse.clientHeight).eql(0);
     });
 
     await h(t).withLog(
       'Then I click the header of Favorite section',
       async () => {
-        await this.t.click(this.toggleButton);
+        await t.click(favoritesSection.toggleButton);
       },
     );
 
     await h(t).withLog('I can find favorite section expanded', async () => {
-      await t.expect(favoritesSection.isExpand()).ok();
+      await t.wait(1e3);
+      const isExpand = await favoritesSection.isExpand();
+      await t.expect(isExpand).ok();
       await t.expect(favoritesSection.collapse.clientHeight).gt(0);
     });
   },
