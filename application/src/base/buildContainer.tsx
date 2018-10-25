@@ -65,11 +65,17 @@ function buildContainer<P = {}, S = {}, SS = any>({
     private get _viewProps() {
       const descriptors = Object.getOwnPropertyDescriptors(this.vm);
       const props: any = {};
+
+      Object.keys(this.props).forEach((key: string) => {
+        props[key] = this.props[key];
+      });
+
       Object.keys(descriptors)
         .filter(this._isViewProp)
         .forEach((key: string) => {
           props[key] = this.vm[key];
         });
+
       return props;
     }
 

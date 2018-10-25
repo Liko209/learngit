@@ -20,10 +20,17 @@ class PresenceViewModel extends StoreViewModel<PresenceProps>
   }
   @computed
   get presence() {
-    return (
-      getEntity<Presence, PresenceModel>(ENTITY_NAME.PRESENCE, this.props.uid)
-        .presence || PRESENCE.NOTREADY
-    );
+    if (this.props.uid !== 0) {
+      const person = getEntity(ENTITY_NAME.PERSON, this.props.uid);
+      if (person.deactivated) {
+        return PRESENCE.NOTREADY;
+      }
+      return (
+        getEntity<Presence, PresenceModel>(ENTITY_NAME.PRESENCE, this.props.uid)
+          .presence || PRESENCE.NOTREADY
+      );
+    }
+    return PRESENCE.NOTREADY;
   }
 }
 

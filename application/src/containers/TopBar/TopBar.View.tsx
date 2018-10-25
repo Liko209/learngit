@@ -54,21 +54,20 @@ class TopBar extends React.Component<TopBarProps> {
 
   private get _presence() {
     const { currentUserId } = this.props;
+
     return <Presence uid={currentUserId} size="large" />;
   }
 
   private _AvatarMenuTrigger(avatarMenuTriggerProps: JuiIconButtonProps) {
     const { currentUserId } = this.props;
 
-    if (!currentUserId) {
-      return null;
-    }
     return (
       <Avatar
         uid={currentUserId}
         presence={this._presence}
         size="large"
         {...avatarMenuTriggerProps}
+        autoMationId="topBarAvatar"
       />
     );
   }

@@ -45,14 +45,13 @@ export default class MultiEntityMapStore<
   }
 
   handleIncomingData({ type, entities }: IIncomingData<T>) {
-    if (!entities.size && this._eventType.includes[type]) {
+    if (entities && !entities.size && this._eventType.includes[type]) {
       return;
     }
     const existKeys: number[] = Object.keys(this._data).map(Number);
-    const matchedKeys: number[] = _.intersection(
-      Array.from(entities.keys()),
-      existKeys,
-    );
+    const matchedKeys: number[] = entities
+      ? _.intersection(Array.from(entities.keys()), existKeys)
+      : [];
     if (type === EVENT_TYPES.DELETE) {
       this.batchRemove(matchedKeys);
     } else {
@@ -65,8 +64,6 @@ export default class MultiEntityMapStore<
       });
       switch (type) {
         case EVENT_TYPES.UPDATE:
-          this.batchDeepSet(matchedEntities as T[]);
-          break;
         case EVENT_TYPES.PARTIAL_UPDATE:
           this.batchDeepSet(matchedEntities as T[]);
           break;
