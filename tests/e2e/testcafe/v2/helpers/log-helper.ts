@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import * as path from 'path';
 import { IStep, Status } from '../models';
 import { getLogger } from 'log4js';
+import { H } from './utils';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -16,14 +17,13 @@ export class LogHelper {
   }
 
   async takeScreenShot() {
-    try {
-      const imageFileName = `${uuid()}.png`;
-      await this.t.takeScreenshot(imageFileName);
-      return path.join(this.t['testRun'].opts.screenshotPath, imageFileName);
-    } catch (error) {
-      console.warn('fail to take screen shot', error);
+    const ua = await H.getUserAgent();
+    if (ua.includes('Electron')) {
       return null;
     }
+    const imageFileName = `${uuid()}.png`;
+    await this.t.takeScreenshot(imageFileName);
+    return path.join(this.t['testRun'].opts.screenshotPath, imageFileName);
   }
 
   writeStep(step: IStep) {
