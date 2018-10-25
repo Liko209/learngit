@@ -1,6 +1,6 @@
 enum SeparatorType {
-  'DATE',
-  'NEW_MSG',
+  DATE = 'DATE',
+  NEW_MSG = 'NEW_MSG',
 }
 
 type Separator = {
@@ -17,10 +17,10 @@ type NewSeparator = {
 } & Separator;
 
 enum StreamItemType {
-  'POST',
-  'GROUPED_POSTS',
-  'DATE_SEPARATOR',
-  'NEW_MSG_SEPARATOR',
+  POST = 'POST',
+  GROUPED_POSTS = 'GROUPED_POSTS',
+  DATE_SEPARATOR = 'DATE_SEPARATOR',
+  NEW_MSG_SEPARATOR = 'NEW_MSG_SEPARATOR',
 }
 
 type BaseElement = {
