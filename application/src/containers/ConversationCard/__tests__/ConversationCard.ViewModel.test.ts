@@ -3,7 +3,7 @@
  * @Date: 2018-10-23 15:33:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity, getGlobalValue } from '../../../store/utils';
+import { getEntity } from '../../../store/utils';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 
 jest.mock('../../../store/utils');
@@ -12,7 +12,6 @@ const conversationCardVM = new ConversationCardViewModel();
 describe('ConversationCardViewModel', () => {
   beforeAll(() => {
     jest.resetAllMocks();
-    conversationCardVM.onReceiveProps({ id: 123 });
   });
   it('post()', () => {
     const mockPostValue = {
