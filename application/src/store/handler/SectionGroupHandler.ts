@@ -115,19 +115,25 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _updateIdSet(type: EVENT_TYPES, ids: number[]) {
+    let isChanged: boolean = false;
     if (type === EVENT_TYPES.REPLACE_ALL) {
       this._idSet = new Set(ids);
+      isChanged = true;
     } else if (type === EVENT_TYPES.DELETE) {
-      ids.forEach(id => this._idSet.delete(id));
+      ids.forEach((id: number) => {
+        if (this._idSet.has(id)) {
+          isChanged = true;
+          this._idSet.delete(id);
+        }
+      });
     } else if (type === EVENT_TYPES.PUT) {
-      ids.forEach(id => this._idSet.add(id));
+      ids.forEach((id: number) => {
+        if (!this._idSet.has(id)) {
+          this._idSet.add(id);
+          isChanged = true;
+        }
+      });
     }
-
-    const isChanged =
-      type === EVENT_TYPES.REPLACE_ALL ||
-      type === EVENT_TYPES.DELETE ||
-      type === EVENT_TYPES.PUT;
-
     if (isChanged) {
       this._idSetAtom.reportChanged();
     }
@@ -136,8 +142,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private _subscribeNotification() {
     this.subscribeNotification(ENTITY.GROUP, ({ type, entities }) => {
       const keys = Object.keys(this._handlersMap);
-      const strIds = Object.keys(entities);
-      const ids = strIds.map(id => Number(id));
+      const ids: number[] = [...entities.keys()];
       // update url
       this._updateUrl(type, ids);
       // handle id sets
@@ -192,8 +197,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._addSection(SECTION_TYPE.FAVORITE, GROUP_QUERY_TYPE.FAVORITE, {
       isMatchFunc: isMatchFun,
       transformFunc: transformFun,
-      entityName: undefined, // it should not subscribe notification by itself
-      eventName: ENTITY.FAVORITE_GROUPS,
+      entityName: ENTITY_NAME.GROUP,
+      eventName: undefined, // it should not subscribe notification by itself
     });
   }
   private _addDirectMessageSection() {
@@ -205,8 +210,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._addSection(SECTION_TYPE.DIRECT_MESSAGE, GROUP_QUERY_TYPE.GROUP, {
       isMatchFunc: isMatchFun,
       transformFunc: groupTransformFunc,
-      entityName: undefined, // it should not subscribe notification by itself
-      eventName: ENTITY.PEOPLE_GROUPS,
+      entityName: ENTITY_NAME.GROUP,
+      eventName: undefined, // it should not subscribe notification by itself
     });
   }
   private _addTeamSection() {
@@ -218,8 +223,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
       isMatchFunc: isMatchFun,
       transformFunc: groupTransformFunc,
-      entityName: undefined, // it should not subscribe notification by itself
-      eventName: ENTITY.TEAM_GROUPS,
+      entityName: ENTITY_NAME.GROUP,
+      eventName: undefined, // it should not subscribe notification by itself
     });
   }
 

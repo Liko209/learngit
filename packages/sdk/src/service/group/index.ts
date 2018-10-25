@@ -27,7 +27,7 @@ import handleData, {
   handlePartialData,
   filterGroups,
   handleGroupMostRecentPostChanged,
-  handleFavoriteGroupsChanged,
+  // handleFavoriteGroupsChanged,
   handleHiddenGroupsChanged,
   sortFavoriteGroups,
 } from './handleData';
@@ -57,7 +57,7 @@ export default class GroupService extends BaseService<Group> {
       [SOCKET.GROUP]: handleData,
       [SOCKET.PARTIAL_GROUP]: handlePartialData,
       [SOCKET.POST]: handleGroupMostRecentPostChanged,
-      [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
+      // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
@@ -371,10 +371,11 @@ export default class GroupService extends BaseService<Group> {
     if (result instanceof BaseError) {
       // rollback
       const group = await this.getById(groupId);
-      notificationCenter.emitEntityPut(
-        group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS,
-        [group],
-      );
+      notificationCenter.emitEntityPut(ENTITY.GROUP, [group]);
+      // notificationCenter.emitEntityPut(
+      //   group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS,
+      //   [group],
+      // );
       if (result.code === 5000) {
         return ServiceCommonErrorType.NETWORK_NOT_AVAILABLE;
       }
@@ -399,11 +400,12 @@ export default class GroupService extends BaseService<Group> {
   // }
 
   // update partial group data
-  async updateGroupPartialData(params: object): Promise<boolean> {
+  async updateGroupPartialData(params: object, id: number): Promise<boolean> {
     try {
       const dao = daoManager.getDao(GroupDao);
       await dao.update(params);
-      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]);
+      const group = await dao.get(id); // this is wrong, waiting for Andy fix UI update notification
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [group]);
       return true;
     } catch (error) {
       throw ErrorParser.parse(error);
@@ -415,7 +417,7 @@ export default class GroupService extends BaseService<Group> {
     id: number;
     draft: string;
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData(params);
+    const result = await this.updateGroupPartialData(params, params.id);
     return result;
   }
 
@@ -424,7 +426,7 @@ export default class GroupService extends BaseService<Group> {
     id: number;
     send_failure_post_ids: number[];
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData(params);
+    const result = await this.updateGroupPartialData(params, params.id);
     return result;
   }
 
