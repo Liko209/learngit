@@ -54,13 +54,18 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
     );
   }
 
-  constructor(
-    handler: FetchSortableDataListHandler<Post>,
-    onAppended: Function,
-  ) {
+  constructor({
+    handler,
+    newMessageSeparatorHandler,
+    onAppended,
+  }: {
+    handler: FetchSortableDataListHandler<Post>;
+    newMessageSeparatorHandler: NewMessageSeparatorHandler;
+    onAppended: Function;
+  }) {
     super(handler);
     this.onAppended = onAppended;
-    this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
+    this._newMessageSeparatorHandler = newMessageSeparatorHandler;
     this._separatorHandlers.push(this._newMessageSeparatorHandler);
   }
 
@@ -68,6 +73,10 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
     this._separatorHandlers.forEach(separatorHandler =>
       separatorHandler.onAdded(direction, addedItems, this.orderListStore.items),
     );
+
+    if (direction === FetchDataDirection.DOWN) {
+      this.onAppended();
+    }
   }
 
   onDeleted(deletedItems: number[]) {

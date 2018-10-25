@@ -1,49 +1,75 @@
-import { FetchDataDirection } from '../../../../store/base';
+import { FetchDataDirection, ISortableModel } from '../../../../store/base';
 import { NewMessageSeparatorHandler } from '../NewMessageSeparatorHandler';
 import { SeparatorType } from '../types';
+
+type OnAddedCaseConfig = {
+  setup?: (handler: NewMessageSeparatorHandler) => void;
+  readThrough?: number;
+  addedItems: ISortableModel[];
+  direction?: FetchDataDirection;
+};
+
+function runOnAdded({
+  readThrough,
+  addedItems,
+  setup,
+  direction,
+}: OnAddedCaseConfig) {
+  const handler = new NewMessageSeparatorHandler();
+  setup && setup(handler);
+  readThrough && handler.setReadThrough(readThrough);
+  handler.onAdded(direction || FetchDataDirection.UP, addedItems, addedItems);
+  return handler;
+}
 
 describe('NewMessageSeparatorHandler', () => {
   describe('onAdded()', () => {
     it('should have a separator aim to the readThrough post', () => {
-      const handler = new NewMessageSeparatorHandler();
-      handler.setReadThrough(1001);
-
-      handler.onAdded(
-        FetchDataDirection.UP,
-        [{ id: 1000, sortValue: 1 }, { id: 1001, sortValue: 2 }],
-        [{ id: 1000, sortValue: 1 }, { id: 1001, sortValue: 2 }],
-      );
+      const handler = runOnAdded({
+        readThrough: 620249092,
+        addedItems: [
+          { id: 620281860, sortValue: 1540461972285 },
+          { id: 620273668, sortValue: 1540461971175 },
+          { id: 620265476, sortValue: 1540461970958 },
+          { id: 620257284, sortValue: 1540461970776 },
+          { id: 620249092, sortValue: 1540461830964 }, // readThrough is here
+          { id: 620240900, sortValue: 1540461830617 },
+          { id: 620232708, sortValue: 1540461821422 },
+        ],
+      });
 
       expect(handler.separatorMap.size).toBe(1);
-      expect(handler.separatorMap.get(1001)).toHaveProperty(
+      expect(handler.separatorMap.get(620257284)).toHaveProperty(
         'type',
         SeparatorType.NEW_MSG,
       );
     });
 
     it('should have not separator when readThrough is empty', () => {
-      const handler = new NewMessageSeparatorHandler();
-
-      handler.onAdded(
-        FetchDataDirection.UP,
-        [{ id: 1000, sortValue: 1 }, { id: 1001, sortValue: 2 }],
-        [{ id: 1000, sortValue: 1 }, { id: 1001, sortValue: 2 }],
-      );
+      const handler = runOnAdded({
+        readThrough: undefined,
+        addedItems: [
+          { id: 1002, sortValue: 3 },
+          { id: 1001, sortValue: 2 },
+          { id: 1000, sortValue: 1 },
+        ],
+      });
 
       expect(handler.separatorMap.size).toBe(0);
     });
 
     it('should not change the separator when post added', () => {
-      const handler = new NewMessageSeparatorHandler();
-      handler.setReadThrough(1001);
-      // Set a existed separator
-      handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
-
-      handler.onAdded(
-        FetchDataDirection.UP,
-        [{ id: 1000, sortValue: 1 }, { id: 1001, sortValue: 2 }],
-        [{ id: 1000, sortValue: 1 }, { id: 1001, sortValue: 2 }],
-      );
+      const handler = runOnAdded({
+        setup(handler) {
+          handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
+        },
+        readThrough: 1001,
+        addedItems: [
+          { id: 1002, sortValue: 3 },
+          { id: 1001, sortValue: 2 },
+          { id: 1000, sortValue: 1 },
+        ],
+      });
 
       // The separator should still be there
       expect(handler.separatorMap.size).toBe(1);
@@ -54,33 +80,32 @@ describe('NewMessageSeparatorHandler', () => {
     });
 
     it('should do nothing when it was disabled', () => {
-      const handler = new NewMessageSeparatorHandler();
-      handler.setReadThrough(1001);
-      handler.disable();
-
-      handler.onAdded(
-        FetchDataDirection.DOWN,
-        [{ id: 1000, sortValue: 1 }],
-        [{ id: 1000, sortValue: 1 }],
-      );
+      const handler = runOnAdded({
+        setup(handler) {
+          handler.setReadThrough(1001);
+          handler.disable();
+        },
+        readThrough: 1001,
+        direction: FetchDataDirection.DOWN,
+        addedItems: [{ id: 1000, sortValue: 1 }],
+      });
 
       expect(handler.separatorMap.size).toBe(0);
     });
 
     it('should work when it was enabled', () => {
-      const handler = new NewMessageSeparatorHandler();
-      handler.setReadThrough(1000);
-      handler.disable();
-      handler.enable();
-
-      handler.onAdded(
-        FetchDataDirection.DOWN,
-        [{ id: 1000, sortValue: 1 }],
-        [{ id: 1000, sortValue: 2 }],
-      );
+      const handler = runOnAdded({
+        setup(handler) {
+          handler.disable();
+          handler.enable();
+        },
+        readThrough: 1000,
+        direction: FetchDataDirection.DOWN,
+        addedItems: [{ id: 1000, sortValue: 1 }, { id: 1001, sortValue: 1 }],
+      });
 
       expect(handler.separatorMap.size).toBe(1);
-      expect(handler.separatorMap.get(1000)).toHaveProperty(
+      expect(handler.separatorMap.get(1001)).toHaveProperty(
         'type',
         SeparatorType.NEW_MSG,
       );
@@ -104,9 +129,9 @@ describe('NewMessageSeparatorHandler', () => {
       handler.onDeleted(
         [1000],
         [
-          { id: 999, sortValue: 1 },
-          { id: 1001, sortValue: 3 },
           { id: 1002, sortValue: 4 },
+          { id: 1001, sortValue: 3 },
+          { id: 999, sortValue: 1 },
         ],
       );
 

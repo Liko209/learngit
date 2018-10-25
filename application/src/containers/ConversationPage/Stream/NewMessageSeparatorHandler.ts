@@ -27,14 +27,19 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
 
     // If no readThrough, it means no unread posts.
     if (!this._readThrough) return;
+    const readThrough = this._readThrough;
 
     // If the `New Messages` separator already existed,
     // it will never be modified when receive new posts
     if (this.separatorMap.size > 0) return;
 
-    const target = addedItems.find(item => item.id === this._readThrough);
-    if (target) {
-      this._setSeparator(target.id);
+    const firstUnreadPost = _.findLast(
+      addedItems,
+      item => item.id > readThrough,
+    );
+
+    if (firstUnreadPost) {
+      this._setSeparator(firstUnreadPost.id);
     }
   }
 
@@ -48,7 +53,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     this.separatorMap.delete(deletedPostWithSeparator);
 
     // Find first post next to the deleted post that has separator
-    const postNext = allItems.find(({ id }: ISortableModel) => {
+    const postNext = _.findLast(allItems, ({ id }: ISortableModel) => {
       return id > deletedPostWithSeparator;
     });
 
@@ -58,7 +63,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     this._setSeparator(postNext.id);
   }
 
-  setReadThrough(readThrough: number) {
+  setReadThrough(readThrough?: number) {
     this._readThrough = readThrough;
   }
 

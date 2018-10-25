@@ -4,26 +4,28 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
 import _ from 'lodash';
 import { observable } from 'mobx';
-import { Post } from 'sdk/models';
 import { PostService, StateService, ENTITY } from 'sdk/service';
+import { Post, GroupState } from 'sdk/models';
+import { ErrorTypes } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
-import { TransformHandler } from '@/store/base/TransformHandler';
+import { FetchDataDirection } from '@/store/base/fetch/types';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
 } from '@/store/base/fetch';
-
+import StoreViewModel from '@/store/ViewModel';
 import {
   onScrollToTop,
   loading,
   loadingTop,
 } from '@/plugins/InfiniteListPlugin';
-import { StreamProps } from './types';
-import { ErrorTypes } from 'sdk/utils';
-import StoreViewModel from '@/store/ViewModel';
+import { StreamProps, StreamItem } from './types';
+import { PostTransformHandler } from './PostTransformHandler';
+import { getEntity } from '@/store/utils';
+import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
+import GroupStateModel from '@/store/models/GroupState';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -32,53 +34,6 @@ const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,
   sortValue: dataModel.created_at,
 });
-enum TStreamType {
-  'POST',
-  'GROUPED_POSTS',
-  'TAG',
-}
-type TBaseElement = {
-  type: TStreamType;
-  value: number;
-  meta?: any;
-};
-
-type TTransformedElement = {
-  type: TStreamType;
-  value: number | TBaseElement[];
-  meta?: any;
-};
-class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
-  onAppended: Function;
-  constructor(
-    handler: FetchSortableDataListHandler<Post>,
-    onAppended: Function,
-  ) {
-    super(handler);
-    this.onAppended = onAppended;
-  }
-  onAdded(direction: FetchDataDirection, addedItems: ISortableModel[]) {
-    const updated = _(addedItems)
-      .map(item => ({
-        value: item.id,
-      }))
-      .differenceBy(this.listStore.items, 'value')
-      .map(item => ({ type: TStreamType.POST, value: item.value }))
-      .reverse()
-      .value();
-    const inFront = FetchDataDirection.UP === direction;
-    if (!inFront) {
-      this.onAppended();
-    }
-    this.listStore.append(updated, inFront); // new to old
-  }
-
-  onDeleted(deletedItems: number[]) {
-    this.listStore.delete((item: TTransformedElement) =>
-      deletedItems.includes(item.value as number),
-    );
-  }
-}
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
@@ -91,6 +46,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   groupId: number;
   @observable
   postIds: number[] = [];
+  @observable
+  items: StreamItem[] = [];
 
   onReceiveProps(props: StreamProps) {
     if (this.groupId === props.groupId) {
@@ -100,7 +57,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this.dispose();
     }
     this.groupId = props.groupId;
-    this.markAsRead();
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (offset: number, direction, pageSize, anchor) => {
         try {
@@ -120,6 +76,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       },
     };
 
+    const groupState = getEntity<GroupState, GroupStateModel>(
+      ENTITY_NAME.GROUP_STATE,
+      props.groupId,
+    );
+
     const orderListHandler = new FetchSortableDataListHandler(
       postDataProvider,
       {
@@ -131,19 +92,24 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         dataChangeCallBack: () => {},
       },
     );
+    const newMessageSeparatorHandler = new NewMessageSeparatorHandler();
 
-    this._transformHandler = new PostTransformHandler(orderListHandler, () => {
-      console.log('on append');
-      this.markAsRead();
+    newMessageSeparatorHandler.setReadThrough(groupState.readThrough);
+
+    console.log('groupState.readThrough: ', groupState.readThrough);
+
+    this._transformHandler = new PostTransformHandler({
+      newMessageSeparatorHandler,
+      handler: orderListHandler,
+      onAppended: () => {
+        this.markAsRead();
+      },
     });
-    this.autorun(() => {
-      const postIds = _(this._transformHandler.listStore.items)
-        .map('value')
-        .value() as number[];
-      if (!_.isEqual([...this.postIds], postIds)) {
-        this.postIds = postIds;
-      }
-    });
+
+    this.autorun(() => (this.postIds = this._transformHandler.postIds));
+    this.autorun(() => (this.items = this._transformHandler.items));
+
+    this.markAsRead();
     this.loadInitialPosts();
   }
 
@@ -159,6 +125,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
+    console.log('markAsRead: ');
     if (this.groupId) {
       this._stateService.markAsRead(this.groupId);
     }
