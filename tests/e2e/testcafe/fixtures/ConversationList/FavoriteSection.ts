@@ -62,7 +62,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -106,24 +106,5 @@ test(
       await t.expect(isExpand).ok();
       await t.expect(favoritesSection.collapse.clientHeight).gt(0);
     });
-  },
-);
-
-test.skip(
-  formalName('Drag & Drop', ['JPT-10', 'P2', 'ConversationList']),
-  async (t: TestController) => {
-    // XIA-UP
-    // const authInfo = {
-    //   credential: 'system@tarcnonbetauser1487802163099530.com',
-    //   password: 'Test!123',
-    // };
-    // const LAST = -1;
-    // const FIRST = 0;
-    // await directLogin(t, authInfo)
-    //   .log('1. Navigate to Favorites section')
-    //   .shouldNavigateTo(FavoriteSection)
-    //   .expectExist()
-    //   .log('2. Drag & drop conversation')
-    //   .dragListItem(LAST, FIRST);
   },
 );
