@@ -402,7 +402,7 @@ describe('handleHiddenGroupsChanged', () => {
         { id: 2, is_team: false },
       ]);
     await handleHiddenGroupsChanged([], [1, 2]);
-    expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(2);
+    expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
   });
   it('handleHiddenGroupsChanged, less hidden', async () => {
     await handleHiddenGroupsChanged([1, 2], []);
