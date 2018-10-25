@@ -5,7 +5,6 @@
 */
 import { formalName } from '../../libs/filter';
 import { setupCase, teardownCase } from '../../init';
-import { GlipSdk } from '../../v2/sdk/glip';
 import { h } from '../../v2/helpers';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
@@ -37,8 +36,8 @@ test(
     const postContent = `some random text post ${Date.now()}`;
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[0];
-    const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
+    const user = users[4];
+    const glipSDK = await h(t).getGlip(user);
     const format = 'hh:mm A';
     let groupId, postData, targetPost;
 
@@ -82,8 +81,8 @@ test(
     const postContent = `some random text post ${Date.now()}`;
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[0];
-    const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
+    const user = users[4];
+    const userGlip = await h(t).getGlip(user);
     const changedName = `Random ${Date.now().toString(5)}`;
 
     let groupId, postData, targetPost, userName;
@@ -111,7 +110,7 @@ test(
     );
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
-      postData = (await glipSDK.sendPost(groupId, postContent)).data;
+      postData = (await userGlip.sendPost(groupId, postContent)).data;
       targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok(postData);
       userName = await targetPost.child(1).child(0).child(0).child(0).textContent;
@@ -119,13 +118,13 @@ test(
     })
 
     await h(t).withLog(`And I modify user name through api,`, async () => {
-      await glipSDK.updatePerson(user.glipId, { first_name: changedName });
+      await userGlip.updatePerson(user.glipId, { first_name: changedName });
     })
 
     await h(t).withLog(`Then I can find user name change to ${changedName}.`, async ()=>{
       const tempName = targetPost.child(1).child(0).child(0).child(0).textContent
       await t.expect(tempName).contains(changedName);
-      await glipSDK.updatePerson(user.glipId, { first_name: userName.split(" ")[0] })
+      await userGlip.updatePerson(user.glipId, { first_name: userName.split(" ")[0] })
     })
   },
 );
@@ -139,8 +138,8 @@ test(
     const postContent = `some random text post JPT-95 ${Date.now()}`;
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[0];
-    const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
+    const user = users[4];
+    const userGlip = await h(t).getGlip(user);
 
     let groupId, postData, targetPost, userName;
 
@@ -165,23 +164,23 @@ test(
     );
 
     await h(t).withLog(`And I send one text post to current conversation`, async () => {
-      postData = (await glipSDK.sendPost(groupId, postContent)).data;
+      postData = (await userGlip.sendPost(groupId, postContent)).data;
       targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok(postData);
       userName = await targetPost.child(1).child(0).child(0).child(0).textContent;
     });
 
     await h(t).withLog(`When I modify user status "In a meeting" through api`, async () => {
-      await glipSDK.updatePerson(user.glipId, { away_status: `${userName} In a meeting` });
+      await userGlip.updatePerson(user.glipId, { away_status: `${userName} In a meeting` });
     });
 
     await h(t).withLog(`Then I can find username display change to "${userName} In a meeting"`, async () => {
-      await glipSDK.updatePerson(user.glipId, { away_status: `${userName} In a meeting` });
+      await userGlip.updatePerson(user.glipId, { away_status: `${userName} In a meeting` });
       await t.expect(targetPost.textContent).contains('In a meeting');
     });
 
     await h(t).withLog(`When I modify user status "content of user modify" through api`, async () => {
-      await glipSDK.updatePerson(user.glipId, { away_status: `${userName} content of user modify` });
+      await userGlip.updatePerson(user.glipId, { away_status: `${userName} content of user modify` });
     });
 
     await h(t).withLog(`Then I can find username display change to "${userName} content of user modify"`, async () => {
@@ -189,7 +188,7 @@ test(
     });
 
     await h(t).withLog(`When I delete user status through api request`, async () => {
-      await glipSDK.updatePerson(user.glipId, { away_status: null });
+      await userGlip.updatePerson(user.glipId, { away_status: null });
     });
 
     await h(t).withLog(`Then I only can find username display is "${userName}" without status`, async () => {
