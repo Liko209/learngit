@@ -11,6 +11,7 @@ import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
 import { FormatMessages } from '../FormatMessages';
+// import { idToPostItemComponent } from '@/containers/PostItems';
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
@@ -26,6 +27,7 @@ export class ConversationCard extends React.Component<
       name,
       createTime,
       customStatus,
+      // itemIds,
     } = this.props;
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
@@ -45,6 +47,10 @@ export class ConversationCard extends React.Component<
           </JuiConversationCardHeader>
           <JuiConversationCardBody>
             <FormatMessages postId={post.id} />
+            {/* {itemIds.map((id: number) => {
+            const Item = idToPostItemComponent(id);
+            return <Item key={id} />;
+            })} */}
           </JuiConversationCardBody>
           {/*<JuiConversationCardFooter>*/}
           {/*/!* todo: footer *!/*/}

@@ -13,7 +13,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import PersonModel from '@/store/models/Person';
 import { FormatText } from './FormatText';
 
-class FormatMessagesViewModel extends StoreViewModel<{postId: number}> {
+class FormatMessagesViewModel extends StoreViewModel<{ postId: number }> {
   @computed
   private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.postId);

@@ -13,10 +13,14 @@ class FormatText {
     this.text = text;
   }
 
-  glipdown(atMentionIdMaps: {number?: string}, currentUserId: number) {
+  glipdown(atMentionIdMaps: { number?: string }, currentUserId: number) {
     const toMdString = Markdown(this.text);
     const toHtmlString = glipdown2Html(toMdString);
-    this.text = handleAtMentionName(toHtmlString, atMentionIdMaps, currentUserId);
+    this.text = handleAtMentionName(
+      toHtmlString,
+      atMentionIdMaps,
+      currentUserId,
+    );
     return this;
   }
   // todo

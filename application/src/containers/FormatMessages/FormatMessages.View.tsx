@@ -6,9 +6,7 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import {
-  JuiConversationPostText,
-} from 'jui/pattern/ConversationCard';
+import { JuiConversationPostText } from 'jui/pattern/ConversationCard';
 
 type Props = {
   formatHtml: string;
