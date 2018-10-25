@@ -8,7 +8,7 @@ import mapEmojiOne from './mapEmojiOne';
 import mapAscii from './mapAscii';
 
 function formatEmojiOne(text: string) {
-  const regExp = /:([^:]+?):/g;
+  const regExp = /:([^:|^\/]+?):/g; // except http://
   return text.trim().replace(regExp, (match: string) => {
     // console.log(match, p1); // :abc: abc
     const obj = mapEmojiOne[match];
@@ -30,7 +30,7 @@ function formatAscii(text: string) {
       return `\\${match}`;
     });
   });
-  // Only ascii character
+  // Only ascii character, an exact match
   const regExp = new RegExp(`^${asciiKeys.join('$|^')}$`, 'g');
   return text.trim().replace(regExp, (match: string) => {
     const unicode = mapAscii[match];
@@ -42,7 +42,7 @@ function formatAscii(text: string) {
 }
 
 function formatCustom(text: string, mapCustom: { [index: string]: { data: string } }) {
-  const regExp = /:([^:]+?):/g;
+  const regExp = /:([^:|^\/]+?):/g; // except http://
   return text.trim().replace(regExp, (match: string, p1: string) => {
     // console.log(match, p1); // :abc: abc
     const obj = mapCustom[p1];

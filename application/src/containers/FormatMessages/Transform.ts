@@ -27,8 +27,8 @@ class Transform {
   }
 
   emoji(customEmojiMap: { [index: string]: { data: string } }) {
-    this.text = formatEmojiOne(this.text);
     this.text = formatAscii(this.text);
+    this.text = formatEmojiOne(this.text);
     this.text = formatCustom(this.text, customEmojiMap);
     return this;
   }
