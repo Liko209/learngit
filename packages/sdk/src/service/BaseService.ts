@@ -195,6 +195,21 @@ class BaseService<
     return mergedModel;
   }
 
+  async updatePartialModel2Db(partialModels: Partial<Raw<SubModel>>[]) {
+    if (!this.DaoClass) {
+      mainLogger.warn('updatePartialModel2Db: no dao class');
+      return;
+    }
+
+    const transformedModels: SubModel[] = [];
+    partialModels.forEach((item: Partial<Raw<SubModel>>) => {
+      const transformedModel: SubModel = transform(item);
+      transformedModels.push(transformedModel);
+    });
+    const dao = daoManager.getDao(this.DaoClass);
+    await dao.bulkUpdate(transformedModels);
+  }
+
   private async _handlePartialUpdateWithOriginal(
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
@@ -258,28 +273,11 @@ class BaseService<
     const originalModels: SubModel[] = [originalModel];
     const partialModels: Partial<Raw<SubModel>>[] = [model];
 
-    await this._updatePartialModel2Db(partialModels);
+    await this.updatePartialModel2Db(partialModels);
 
     if (doPartialNotify) {
       doPartialNotify(originalModels, partialModels);
     }
-  }
-
-  private async _updatePartialModel2Db(
-    partialModels: Partial<Raw<SubModel>>[],
-  ) {
-    if (!this.DaoClass) {
-      mainLogger.warn('_updatePartialModel2Db: no dao class');
-      return;
-    }
-
-    const transformedModels: SubModel[] = [];
-    partialModels.forEach((item: Partial<Raw<SubModel>>) => {
-      const transformedModel: SubModel = transform(item);
-      transformedModels.push(transformedModel);
-    });
-    const dao = daoManager.getDao(this.DaoClass);
-    await dao.bulkUpdate(transformedModels);
   }
 }
 
