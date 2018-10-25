@@ -7,11 +7,11 @@
 // import { TranslationFunction, i18n } from 'i18next';
 import ItemModel from '@/store/models/Item';
 
-type FileItemsProps = {
+type FilesProps = {
   id: number;
 };
 
-type FileItemsViewProps = {
+type FilesViewProps = {
   item: ItemModel;
   needPreview: (item: ItemModel) => boolean;
   getPreviewFileInfo: (item: ItemModel) => string;
@@ -19,4 +19,4 @@ type FileItemsViewProps = {
   id: number;
 };
 
-export { FileItemsProps, FileItemsViewProps };
+export { FilesProps, FilesViewProps };

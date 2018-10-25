@@ -9,7 +9,7 @@ import { Item } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import ItemModel from '@/store/models/Item';
-import { FileItemsViewProps } from './types';
+import { FilesViewProps } from './types';
 
 const FILE_ICON_MAP = {
   pdf: ['pdf'],
@@ -18,7 +18,7 @@ const FILE_ICON_MAP = {
   ps: ['ps', 'psd'],
 };
 
-class FileItemsViewModel extends StoreViewModel<FileItemsViewProps> {
+class FilesViewModel extends StoreViewModel<FilesViewProps> {
   @computed
   get _id() {
     return this.props.id;
@@ -57,9 +57,8 @@ class FileItemsViewModel extends StoreViewModel<FileItemsViewProps> {
 
   @computed
   get item() {
-    const item = getEntity<Item, ItemModel>(ENTITY_NAME.ITEM, this._id);
-    return item;
+    return getEntity<Item, ItemModel>(ENTITY_NAME.ITEM, this._id);
   }
 }
 
-export { FileItemsViewModel };
+export { FilesViewModel };

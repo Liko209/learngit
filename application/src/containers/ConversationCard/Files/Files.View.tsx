@@ -9,17 +9,11 @@ import {
   JuiFileWithPreview,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import { getSize } from '@/utils/helper';
 
-import { FileItemsViewProps } from './types';
+import { FilesViewProps } from './types';
 
-const getSize = (bytes: number) => {
-  if (bytes / 1000 < 1000) {
-    return `${(bytes / 1000).toFixed(1)}Kb`;
-  }
-  return `${(bytes / 1000 / 1000).toFixed(1)}Mb`;
-};
-
-class FileItemsView extends React.Component<FileItemsViewProps> {
+class FilesView extends React.Component<FilesViewProps> {
   render() {
     const { item, needPreview, getPreviewFileInfo, getFileIcon } = this.props;
     const { name, size, downloadUrl } = item;
@@ -66,4 +60,4 @@ class FileItemsView extends React.Component<FileItemsViewProps> {
   }
 }
 
-export { FileItemsView };
+export { FilesView };

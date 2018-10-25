@@ -6,7 +6,7 @@
 import { GlipTypeUtil } from 'sdk/utils';
 import { POST_ITEM_TYPES } from '@/constants';
 import { Event } from './event';
-import { FileItems } from '../ConversationCard/Files';
+import { Files } from '../ConversationCard/Files';
 
 const idToPostItemType = {
   8: POST_ITEM_TYPES.PLUGIN,
@@ -20,7 +20,7 @@ const idToPostItemType = {
 
 const typeToPostItemComponent = {
   [POST_ITEM_TYPES.EVENT]: Event,
-  [POST_ITEM_TYPES.FILE]: FileItems,
+  [POST_ITEM_TYPES.FILE]: Files,
   [POST_ITEM_TYPES.PLUGIN]: () => {},
   [POST_ITEM_TYPES.TASK]: () => {},
   [POST_ITEM_TYPES.LINK]: () => {},

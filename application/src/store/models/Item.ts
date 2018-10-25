@@ -1,4 +1,4 @@
-import { Item, ItemVersions } from 'sdk/models';
+import { Item } from 'sdk/models';
 import { observable } from 'mobx';
 
 import Base from './Base';
@@ -6,23 +6,26 @@ export default class ItemModel extends Base<Item> {
   @observable
   data: any;
   @observable
-  type: Item['type'];
+  type: string;
   @observable
-  typeId: Item['type_id'];
+  typeId: number;
   @observable
-  url: ItemVersions['url'];
+  url: string;
   @observable
-  downloadUrl: ItemVersions['download_url'];
+  downloadUrl: string;
   @observable
-  size: ItemVersions['size'];
+  size: number;
   @observable
-  name: Item['name'];
+  name: string;
   @observable
-  isDocument: Item['is_document'];
+  isDocument: boolean;
   @observable
-  isNew: Item['is_new'];
+  isNew: boolean;
   @observable
-  pages: ItemVersions['pages'];
+  pages: {
+    file_id: number;
+    url: string;
+  }[];
   @observable
   thumbs: any;
   @observable
@@ -32,13 +35,18 @@ export default class ItemModel extends Base<Item> {
 
   constructor(data: Item) {
     super(data);
-    const { type, type_id, name, versions, is_document, is_new } = data;
-    this.type = type;
+    const { type_id } = data;
     this.typeId = type_id;
+    this.data = data;
+    this.setFileData();
+  }
+
+  setFileData() {
+    const { type, name, versions, is_document, is_new } = this.data;
+    this.type = type;
     this.name = name;
     this.isDocument = is_document;
     this.isNew = is_new;
-    this.data = data;
     if (versions && versions.length > 0) {
       const version = versions[0];
       const {

@@ -3,36 +3,36 @@
  * @Date: 2018-10-25 15:06:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { FileItemsViewModel } from '../FileItems.ViewModel';
+import { FilesViewModel } from '../Files.ViewModel';
 import ItemModel from '@/store/models/Item';
 
-const fileItemsViewModel = new FileItemsViewModel();
+const filesViewModel = new FilesViewModel();
 
 describe('File items tests', () => {
   it('needPreview()', () => {
-    const isNeed = fileItemsViewModel.needPreview({
+    const isNeed = filesViewModel.needPreview({
       pages: [{ file_id: 1, url: '123' }],
       thumbs: {},
     } as ItemModel);
     expect(isNeed).toBe(true);
 
-    const isNeed2 = fileItemsViewModel.needPreview({} as ItemModel);
+    const isNeed2 = filesViewModel.needPreview({} as ItemModel);
     expect(isNeed2).toBe(false);
   });
 
   it('getFileIcon()', () => {
-    const type = fileItemsViewModel.getFileIcon('xlsx');
+    const type = filesViewModel.getFileIcon('xlsx');
     expect(type).toBe('sheet');
-    const type1 = fileItemsViewModel.getFileIcon('xxx');
+    const type1 = filesViewModel.getFileIcon('xxx');
     expect(type1).toBeNull();
   });
 
   it('getPreviewFileInfo()', () => {
-    const url = fileItemsViewModel.getPreviewFileInfo({
+    const url = filesViewModel.getPreviewFileInfo({
       pages: [{ file_id: 1, url: '123' }],
     } as ItemModel);
     expect(url).toBe('123');
-    const url1 = fileItemsViewModel.getPreviewFileInfo({
+    const url1 = filesViewModel.getPreviewFileInfo({
       thumbs: {
         a: 'http://www.google.com',
       },
