@@ -3,11 +3,12 @@
  * @Date: 2018-10-23 18:21:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { ISeparatorHandler } from './ISeparatorHandler';
-import { FetchDataDirection, ISortableModel } from '@/store/base';
-import { observable } from 'mobx';
-import { NewSeparator, SeparatorType } from './types';
 import _ from 'lodash';
+import { observable } from 'mobx';
+import { Post } from 'sdk/src/models';
+import { FetchDataDirection, ISortableModel } from '@/store/base';
+import { ISeparatorHandler } from './ISeparatorHandler';
+import { NewSeparator, SeparatorType } from './types';
 
 class NewMessageSeparatorHandler implements ISeparatorHandler {
   priority = 2;
@@ -19,8 +20,8 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
 
   onAdded(
     direction: FetchDataDirection,
-    addedItems: ISortableModel[],
-    allItems: ISortableModel[],
+    addedItems: ISortableModel<Post>[],
+    allItems: ISortableModel<Post>[],
   ): void {
     if (this._disabled) return;
 

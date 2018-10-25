@@ -3,6 +3,7 @@
  * @Date: 2018-10-23 18:25:27
  * Copyright © RingCentral. All rights reserved.
  */
+import { Post } from 'sdk/src/models';
 import { FetchDataDirection, ISortableModel } from '@/store/base';
 
 interface IPostHandler {
@@ -11,8 +12,8 @@ interface IPostHandler {
    */
   onAdded(
     direction: FetchDataDirection,
-    addedItems: ISortableModel[],
-    allItems: ISortableModel[],
+    addedItems: ISortableModel<Post>[],
+    allItems: ISortableModel<Post>[],
   ): void;
   /**
    * On post deleted
