@@ -1,7 +1,6 @@
 import { formalName } from '../../libs/filter';
 import { setupCase, teardownCase } from '../../init';
 import { h } from '../../v2/helpers';
-import { GlipSdk } from '../../v2/sdk/glip';
 import { SITE_URL } from '../../config';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 
@@ -71,9 +70,9 @@ test(
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[0];
+    const user = users[4];
     let teamId;
-    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+    const userPlatform = await h(t).getPlatform(user);
     
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
       teamId = (await userPlatform.createGroup({
@@ -89,12 +88,11 @@ test(
       await app.homePage.ensureLoaded();
     });
 
-
     await h(t).withLog('Then I can enter the conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
       const teamConversation =  teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-      await t.click(teamConversation)
+      await t.click(teamConversation);
     });
 
     await h(t).withLog('And I can not find  any post in the new created conversation', async () => {
@@ -105,7 +103,6 @@ test(
   }
 );
 
-
 test(
   formalName(
     'Should be able to read the newest posts once open a conversation',
@@ -114,18 +111,18 @@ test(
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[0];
+    const user = users[4];
     let teamId;
-    const lastPost = "last post"
-    const newPost = "new post"
+    const lastPost = "last post";
+    const newPost = "new post";
 
 
-    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+    const userPlatform = await h(t).getPlatform(user);
     
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
       teamId = (await userPlatform.createGroup({
         isPublic: true,
-        name: `My Team ${Math.random().toString(10)} `,
+        name: `My Team ${Math.random().toString(10)}`,
         type: 'Team',
         members: [user.rcId, users[5].rcId, users[6].rcId],
       })).data.id;
@@ -133,7 +130,6 @@ test(
 
     await h(t).withLog(`Then I send a post "${lastPost}" to the team before login`, async () => {
         await userPlatform.createPost({ text: lastPost }, teamId);
-        await t.wait(1e3)
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
@@ -145,7 +141,7 @@ test(
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
       const teamConversation =  teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-      await t.click(teamConversation)
+      await t.click(teamConversation);
     });
 
     await h(t).withLog(`And I can find post "${lastPost}"  in the conversation posts history`, async () => {
@@ -161,7 +157,7 @@ test(
     await h(t).withLog(`Then I can check the newest post is "${newPost}"`, async () => {
       await t.wait(1e3);
       const posts = await app.homePage.messagePanel.conversationSection.posts;
-      await t.expect(posts.nth(-1).textContent).contains(newPost.trim());
+      await t.expect(posts.nth(-1).textContent).contains(newPost);
     });
   }
 );

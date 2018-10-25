@@ -19,8 +19,8 @@ test(formalName('draft', ['P0', 'JPT-139', 'Show massage draft when switching co
 async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const user = users[1];
-  const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+  const user = users[4];
+  const userPlatform = await h(t).getPlatform(user);
   const glipSDK = await h(t).sdkHelper.sdkManager.getGlip(user);
 
   let pvtChat, group, conversation1, conversation2;
