@@ -5,7 +5,7 @@
   "closeConversation": "Close Conversation",
   "closeConversationFail": "Close Conversation Failed",
   "havingTroubleCloseConversation": "We are having trouble closing the conversation. Please try again later.",
-  "unFavorite": "UnFavorite",
+  "unFavorite": "Remove From Favorite",
   "favorite": "Favorite",
   "close": "Close"
 }
