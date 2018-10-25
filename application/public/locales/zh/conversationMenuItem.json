@@ -4,5 +4,7 @@
   "havingTroubleCloseConversation": "We are having trouble closing the conversation. Please try again later.",
   "unFavorite": "Remove From Favorite",
   "favorite": "Favorite",
-  "close": "Close"
+  "close": "Close",
+  "markFavoriteServerErrorContent": "Unexpected error occurred. Try again later.",
+  "OK": "OK"
 }

@@ -73,7 +73,10 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   toggleFavorite = () => {
-    this._groupService.markGroupAsFavorite(this.groupId, !this.isFavorite);
+    return this._groupService.markGroupAsFavorite(
+      this.groupId,
+      !this.isFavorite,
+    );
   }
 
   closeConversation = (shouldSkipNextTime: boolean) => {

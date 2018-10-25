@@ -42,9 +42,26 @@ class MenuViewComponent extends Component<Props, State> {
     return null;
   }
 
-  private _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
+  private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
     this.props.onClose(event);
-    this.props.toggleFavorite();
+    const result = await this.props.toggleFavorite();
+    if (result === ServiceCommonErrorType.SERVER_ERROR) {
+      JuiModal.alert({
+        title: '',
+        content: (
+          <>
+            <JuiTypography>
+              {t('conversationMenuItem:markFavoriteServerErrorContent')}
+            </JuiTypography>
+          </>
+        ),
+        okText: t('conversationMenuItem:OK'),
+        okBtnType: 'text',
+        onOK: () => {
+          this._closeConversationWithConfirm();
+        },
+      });
+    }
   }
 
   private _checkboxChange(event: React.ChangeEvent<{}>, checked: boolean) {

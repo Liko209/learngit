@@ -331,7 +331,11 @@ export default class GroupService extends BaseService<Group> {
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
     const profileService: ProfileService = ProfileService.getInstance();
-    profileService.markGroupAsFavorite(groupId, markAsFavorite);
+    const result = profileService.markGroupAsFavorite(groupId, markAsFavorite);
+    if (result instanceof BaseError && result.code >= 5300) {
+      return ServiceCommonErrorType.SERVER_ERROR;
+    }
+    return ServiceCommonErrorType.NONE;
   }
 
   async handleResponse(resp: IResponse<Raw<Group>>) {
