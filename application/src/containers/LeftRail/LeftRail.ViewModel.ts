@@ -4,19 +4,35 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { SECTION_TYPE } from './Section/types';
-import { LeftRailViewProps, LeftRailProps } from './types';
+import { LeftRailViewProps, LeftRailProps, LeftRailFilter } from './types';
 import StoreViewModel from '@/store/ViewModel';
 
 class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   implements LeftRailViewProps {
+  @observable
+  private _unreadOnly: boolean = false;
   @computed
   get sections(): SECTION_TYPE[] {
     return [
       SECTION_TYPE.FAVORITE,
       SECTION_TYPE.DIRECT_MESSAGE,
       SECTION_TYPE.TEAM,
+    ];
+  }
+
+  @computed
+  get filters(): LeftRailFilter[] {
+    return [
+      {
+        label: 'show_unread',
+        value: this._unreadOnly,
+        onChange: (evt: any, checked: boolean) => {
+          console.log('unreadOnly changed');
+          this._unreadOnly = checked;
+        },
+      },
     ];
   }
 }

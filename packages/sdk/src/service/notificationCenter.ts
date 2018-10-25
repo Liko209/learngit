@@ -56,6 +56,13 @@ class NotificationCenter extends EventEmitter2 {
     });
   }
 
+  emitEntityPartialUpdate(key: string, entities: any[]): void {
+    this.trigger(key, {
+      type: EVENT_TYPES.PARTIAL_UPDATE,
+      entities: transform2Map(entities),
+    });
+  }
+
   emitEntityReplace(key: string, entities: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.REPLACE,

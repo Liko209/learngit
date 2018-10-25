@@ -10,17 +10,27 @@ import styled from '../../foundation/styled-components';
 const StyledLeftSection = styled('div')`
   flex-grow: 1;
   display: flex;
-  ${typography('caption')} overflow: hidden;
   min-width: 0;
+  font-size: 0;
 `;
 const StyledName = styled('div')`
   color: ${grey('900')};
-  ${ellipsis()} flex-shrink: 1;
+  ${typography('caption')} overflow: hidden;
+  flex-shrink: 1;
+  ${ellipsis()};
+`;
+const StyledStatus = styled('div')`
+  margin-left: ${spacing(1)};
+  color: ${grey('600')};
+  flex-shrink: 1;
+  white-space: nowrap;
+  ${typography('caption2')} ${ellipsis()};
 `;
 const StyledTime = styled('div')`
-  margin-left: ${spacing(1)};
-  color: ${grey('500')};
+  margin-left: ${spacing(2)};
+  color: ${grey('700')};
   white-space: nowrap;
+  ${typography('caption2')};
 `;
 const RightSection = styled('div')`
   margin-left: ${spacing(4)};
@@ -34,6 +44,7 @@ const StyledConversationCardHeader = styled('div')`
 
 type ConversationCardHeaderProps = {
   name: string;
+  status?: string;
   time: string;
   children?: React.ReactNode;
 };
@@ -42,6 +53,7 @@ const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
   <StyledConversationCardHeader>
     <StyledLeftSection>
       <StyledName>{props.name}</StyledName>
+      {props.status ? <StyledStatus>{props.status}</StyledStatus> : null}
       <StyledTime>{props.time}</StyledTime>
     </StyledLeftSection>
     <RightSection>{props.children}</RightSection>
