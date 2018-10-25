@@ -3,6 +3,7 @@
 * @Date: 2018-09-12 16:29:39
 * Copyright © RingCentral. All rights reserved.
 */
+import * as moment from 'moment';
 import { formalName } from '../../libs/filter';
 import { setupCase, teardownCase } from '../../init';
 import { h } from '../../v2/helpers';
@@ -65,7 +66,7 @@ test(
     });
 
     await h(t).withLog(`Then I can check the post's time should have right format`, async () => {
-      const formatTime = require('moment')(postData.creationTime).format(format);
+      const formatTime = moment(postData.creationTime).format(format);
       const timeDiv = targetPost.find('div').withText(formatTime);
       await t.expect(timeDiv.exists).ok();
     });
