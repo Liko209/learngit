@@ -40,6 +40,9 @@ class HeaderViewModel extends AbstractViewModel implements HeaderProps {
   @computed
   get customStatus() {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
+    if (group.isTeam) {
+      return null;
+    }
     if (group.members && group.members.length <= 2) {
       let userId;
       if (group.members.length === 1) {

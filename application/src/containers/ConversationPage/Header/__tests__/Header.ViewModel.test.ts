@@ -13,6 +13,15 @@ describe('ConversationPageHeaderViewModel', () => {
     jest.resetModules();
     vm.onReceiveProps({ id: 1 });
   });
+  it('customStatus should be null if isTeam', () => {
+    (getEntity as jest.Mock).mockImplementation((type: string) => {
+      if (type === 'group') {
+        return { isTeam: true };
+      }
+      return null;
+    });
+    expect(vm.customStatus).toBe(null);
+  });
   it('customStatus should be null if members is undefined', () => {
     (getEntity as jest.Mock).mockImplementation((type: string) => {
       if (type === 'group') {
