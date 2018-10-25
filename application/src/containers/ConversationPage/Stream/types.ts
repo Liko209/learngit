@@ -42,6 +42,7 @@ type StreamProps = {
 type StreamViewProps = {
   postIds: number[];
   items: StreamItem[];
+  setRowVisible: (n: number) => void;
 };
 
 export {

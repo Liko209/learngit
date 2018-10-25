@@ -13,8 +13,7 @@ export class JupiterHelper {
     return { state, redirectUri };
   }
 
-  constructor(private t: TestController) {
-   }
+  constructor(private t: TestController) { }
 
   get authUrl(): string {
     return this.t.ctx.__authUrl;
@@ -64,7 +63,6 @@ export class JupiterHelper {
 
   directLoginWithUser(url: string, user: IUser) {
     return new BlankPage(this.t)
-      .log(`account: ${user.company.number} extension: ${user.extension}`)
       .chain(async t => {
         const urlWithAuthCode = await this.getUrlWithAuthCode(url, user);
         await t.navigateTo(urlWithAuthCode);
