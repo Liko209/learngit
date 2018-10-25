@@ -6,13 +6,13 @@
 import React, { Fragment } from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
-import { FileWithoutPreview } from '../';
+import { JuiFileWithoutPreview } from '../';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 
 storiesOf('Pattern/ConversationCard', module)
-  .addDecorator(withInfoDecorator(FileWithoutPreview, { inline: true }))
+  .addDecorator(withInfoDecorator(JuiFileWithoutPreview, { inline: true }))
   .add('FileWithoutPreview', () => (
-    <FileWithoutPreview
+    <JuiFileWithoutPreview
       title="Conversation Card VxD.pdf"
       secondary="3.5MB"
       actions={

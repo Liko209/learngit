@@ -7,19 +7,21 @@ import React from 'react';
 
 import * as Jui from './style';
 
-type FileWithPreviewProps = {
+type JuiFileWithPreviewProps = {
   size: string;
   actions: JSX.Element;
+  fileName: string;
+  url: string;
 };
 
-class FileWithPreview extends React.Component<FileWithPreviewProps> {
+class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {
   render() {
-    const { size, actions } = this.props;
+    const { size, fileName, url, actions } = this.props;
     return (
       <Jui.FileCard>
-        <Jui.FileCardMedia image="https://material-ui.com/static/images/cards/contemplative-reptile.jpg" />
+        <Jui.FileCardMedia image={url} />
         <Jui.FileCardContent>
-          <Jui.CardFileName>sdfsdfsfsdf.png</Jui.CardFileName>
+          <Jui.CardFileName>{fileName}</Jui.CardFileName>
           <Jui.CardFileInfo>
             <Jui.CardSize>
               <Jui.FileIcon size="small" />
@@ -33,4 +35,4 @@ class FileWithPreview extends React.Component<FileWithPreviewProps> {
   }
 }
 
-export { FileWithPreview };
+export { JuiFileWithPreview, JuiFileWithPreviewProps };

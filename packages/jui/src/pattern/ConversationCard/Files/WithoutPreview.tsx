@@ -7,7 +7,7 @@ import React from 'react';
 
 import * as Jui from './style';
 
-type FileWithoutPreviewProps = {
+type JuiFileWithoutPreviewProps = {
   title: string;
   secondary: string;
   actions: JSX.Element;
@@ -22,8 +22,8 @@ const FileSecondary = (secondary: string, children: JSX.Element) => {
   );
 };
 
-const FileWithoutPreview: React.SFC<FileWithoutPreviewProps> = (
-  props: FileWithoutPreviewProps,
+const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
+  props: JuiFileWithoutPreviewProps,
 ) => {
   const { secondary, title, actions } = props;
 
@@ -42,4 +42,4 @@ const FileWithoutPreview: React.SFC<FileWithoutPreviewProps> = (
   );
 };
 
-export { FileWithoutPreview, FileWithoutPreviewProps };
+export { JuiFileWithoutPreview, JuiFileWithoutPreviewProps };

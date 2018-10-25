@@ -63,7 +63,7 @@ const FileInfo = styled(JuiListItemText)`
   }
 `;
 
-const FileActionsWrapper = styled.div`
+const FileActionsWrapper = styled.span`
   display: flex;
   & > * {
     margin: 0 ${spacing(2)} 0 0;
@@ -94,13 +94,13 @@ const CardFileName = styled(JuiTypography)`
     ${typography('subheading1')};
     width: ${width(65)};
     color: ${palette('grey', '900')};
+    margin: ${spacing(0, 0, 3, 0)};
   }
 `;
 
 const CardFileInfo = styled(JuiTypography)`
   && {
     ${typography('body1')};
-    color: ${palette('grey', '900')};
     display: flex;
     justify-content: space-between;
   }
@@ -108,6 +108,8 @@ const CardFileInfo = styled(JuiTypography)`
 
 const CardSize = styled.div`
   display: flex;
+  align-items: center;
+  color: ${palette('accent', 'ash')};
 `;
 
 const CardFileActions = styled(MuiCardActions)`

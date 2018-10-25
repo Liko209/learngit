@@ -7,13 +7,15 @@
 import React, { Fragment } from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
-import { FileWithPreview } from '../';
+import { JuiFileWithPreview } from '../';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 
 storiesOf('Pattern/ConversationCard', module)
-  .addDecorator(withInfoDecorator(FileWithPreview, { inline: true }))
+  .addDecorator(withInfoDecorator(JuiFileWithPreview, { inline: true }))
   .add('FileWithPreview', () => (
-    <FileWithPreview
+    <JuiFileWithPreview
+      url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+      fileName="fileName"
       size="2.3Mb"
       actions={
         <JuiIconButton variant="plain" tooltipTitle="download">

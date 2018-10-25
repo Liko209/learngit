@@ -10,6 +10,7 @@ import { Avatar } from '@/containers/Avatar';
 import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
+import { FileItems } from '@/containers/ConversationCard/Files';
 
 @observer
 export class ConversationCard extends React.Component<
@@ -21,8 +22,9 @@ export class ConversationCard extends React.Component<
 
   render() {
     const { id, post, creator, displayTitle, createTime } = this.props;
-    const { text } = post;
+    const { text, itemIds } = post;
     const avatar = <Avatar uid={creator.id} size="medium" />;
+
     return (
       <React.Fragment>
         <JuiConversationCard
@@ -43,6 +45,7 @@ export class ConversationCard extends React.Component<
           >
             {text}
           </div>
+          <FileItems ids={itemIds} />
           {/* todo: content */}
           <JuiConversationCardFooter>
             {/* todo: footer */}
