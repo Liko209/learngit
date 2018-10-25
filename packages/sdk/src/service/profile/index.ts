@@ -15,7 +15,7 @@ import { Profile, Raw } from '../../models';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import _ from 'lodash';
 import { BaseError, ErrorParser } from '../../utils';
-import PersonService from '../person';
+// import PersonService from '../person';
 import { mainLogger } from 'foundation';
 import notificationCenter from '../../service/notificationCenter';
 import { transform } from '../utils';
@@ -92,67 +92,131 @@ export default class ProfileService extends BaseService<Profile> {
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
-    const profile = await this.getProfile();
-    if (profile) {
-      const oldFavGroupIds = profile.favorite_group_ids || [];
-      const newFavGroupIds = this._reorderFavoriteGroupIds(
+    const profileId: number | null = this.getCurrentProfileId();
+    if (!profileId) {
+      return ErrorParser.parse('none profile error');
+    }
+
+    const partialProfile: any = {
+      id: profileId,
+      _id: profileId,
+    };
+    const preHandlePartialModel = (
+      partialModel: Partial<Raw<Profile>>,
+      originalModel: Profile,
+    ): Partial<Raw<Profile>> => {
+      const favIds = originalModel.favorite_group_ids || [];
+      const newFavIds = this._reorderFavoriteGroupIds(
         oldIndex,
         newIndex,
-        oldFavGroupIds,
+        favIds,
       );
-      profile.favorite_group_ids = newFavGroupIds;
-      return this._putProfileAndHandle(
-        profile,
-        'favorite_group_ids',
-        oldFavGroupIds,
-      );
-    }
-    return null;
+      partialModel['favorite_group_ids'] = newFavIds;
+      return partialModel;
+    };
+
+    return await this.handlePartialUpdate(
+      partialProfile,
+      preHandlePartialModel,
+      this._doUpdateModel.bind(this),
+      this._doPartialNotify.bind(this),
+    );
   }
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
-    const profile = await this.getProfile();
-    if (profile) {
-      const favIds = profile.favorite_group_ids || [];
-      let newIds: number[] = [];
+    const profileId: number | null = this.getCurrentProfileId();
+    if (!profileId) {
+      return ErrorParser.parse('none profile error');
+    }
+
+    const partialProfile: any = {
+      id: profileId,
+      _id: profileId,
+    };
+    const preHandlePartialModel = (
+      partialModel: Partial<Raw<Profile>>,
+      originalModel: Profile,
+    ): Partial<Raw<Profile>> => {
+      const favIds = originalModel.favorite_group_ids || [];
+      let newIds: number[] = favIds;
       if (markAsFavorite) {
-        if (favIds.indexOf(groupId) === -1) {
-          newIds = [groupId].concat(favIds);
-        } else {
-          return profile;
+        if (newIds.indexOf(groupId) === -1) {
+          newIds = [groupId].concat(newIds);
         }
       } else {
-        if (favIds.indexOf(groupId) !== -1) {
-          newIds = favIds.filter(id => id !== groupId);
-        } else {
-          return profile;
+        if (newIds.indexOf(groupId) !== -1) {
+          newIds = newIds.filter(id => id !== groupId);
         }
       }
-      profile.favorite_group_ids = newIds;
-      return this._putProfileAndHandle(profile, 'favorite_group_ids', favIds);
-    }
-    return profile;
+      partialModel['favorite_group_ids'] = newIds;
+      return partialModel;
+    };
+
+    return await this.handlePartialUpdate(
+      partialProfile,
+      preHandlePartialModel,
+      this._doUpdateModel.bind(this),
+      this._doPartialNotify.bind(this),
+    );
   }
-  async markMeConversationAsFav(): Promise<Profile | null> {
+
+  private async _doUpdateModel(updatedModel: Profile) {
+    return await this._requestUpdateProfile(updatedModel);
+  }
+
+  private async _doPartialNotify(
+    originalModels: Profile[],
+    partialModels: Partial<Raw<Profile>>[],
+  ) {
+    notificationCenter.emitEntityPartialUpdate(ENTITY.PROFILE, partialModels);
+
+    doNotification(
+      originalModels[0],
+      this.getMergedModel(partialModels[0], originalModels[0]),
+    );
+  }
+
+  async markMeConversationAsFav(): Promise<Profile | BaseError> {
     const { me_tab = false } = (await this.getProfile()) || {};
     if (me_tab) {
-      return null;
+      return ErrorParser.parse('does not need mark me');
     }
     const accountService = await AccountService.getInstance<AccountService>();
     const currentId = accountService.getCurrentUserId();
     if (!currentId) {
       mainLogger.warn('please make sure that currentId is available');
-      return null;
+      return ErrorParser.parse('none current user id');
     }
-    const personService = await PersonService.getInstance<PersonService>();
-    const { me_group_id } = await personService.getById(currentId);
-    const profile = await this.markGroupAsFavorite(me_group_id, true);
-    if (profile) {
-      profile.me_tab = true;
-      return this._putProfileAndHandle(profile, 'me_tab', false);
+
+    const profileId: number | null = this.getCurrentProfileId();
+    if (!profileId) {
+      return ErrorParser.parse('none profile error');
     }
-    return null;
+
+    const partialProfile: any = {
+      id: profileId,
+      _id: profileId,
+    };
+    const preHandlePartialModel = (
+      partialModel: Partial<Raw<Profile>>,
+      originalModel: Profile,
+    ): Partial<Raw<Profile>> => {
+      const favIds = originalModel.favorite_group_ids || [];
+      if (favIds.indexOf(currentId) === -1) {
+        partialModel['favorite_group_ids'] = [currentId].concat(favIds);
+      }
+      partialModel['me_tab'] = true;
+      return partialModel;
+    };
+
+    return await this.handlePartialUpdate(
+      partialProfile,
+      preHandlePartialModel,
+      this._doUpdateModel.bind(this),
+      this._doPartialNotify.bind(this),
+    );
   }
+
   async putFavoritePost(
     postId: number,
     toBook: boolean,
@@ -213,11 +277,7 @@ export default class ProfileService extends BaseService<Profile> {
       return partialProfile;
     };
 
-    return await this._updateProfileGroupStatus(
-      groupIds,
-      false,
-      preHandlePartialModel,
-    );
+    return await this._updateProfileGroupStatus(preHandlePartialModel);
   }
 
   async hideConversation(
@@ -255,11 +315,7 @@ export default class ProfileService extends BaseService<Profile> {
       return partialProfile;
     };
 
-    return await this._updateProfileGroupStatus(
-      [groupId],
-      hidden,
-      preHandlePartialModel,
-    );
+    return await this._updateProfileGroupStatus(preHandlePartialModel);
   }
 
   async isConversationHidden(groupId: number) {
@@ -272,8 +328,6 @@ export default class ProfileService extends BaseService<Profile> {
   }
 
   private async _updateProfileGroupStatus(
-    groupIds: number[],
-    hidden: boolean,
     preHandlePartialModel?: (
       partialModel: Partial<Raw<Profile>>,
       originalModel: Profile,
@@ -289,31 +343,15 @@ export default class ProfileService extends BaseService<Profile> {
       _id: profileId,
     };
 
-    const doUpdateModel = async (updatedModel: Profile) => {
-      return await this._doUpdateProfile(updatedModel);
-    };
-
-    const doPartialNotify = (
-      originalModels: Profile[],
-      partialModels: Partial<Raw<Profile>>[],
-    ): void => {
-      notificationCenter.emitEntityPartialUpdate(ENTITY.PROFILE, partialModels);
-
-      doNotification(
-        originalModels[0],
-        this.getMergedModel(partialModels[0], originalModels[0]),
-      );
-    };
-
     return await this.handlePartialUpdate(
       partialProfile,
       preHandlePartialModel,
-      doUpdateModel,
-      doPartialNotify,
+      this._doUpdateModel.bind(this),
+      this._doPartialNotify.bind(this),
     );
   }
 
-  private async _doUpdateProfile(
+  private async _requestUpdateProfile(
     newProfile: Profile,
     handleDataFunc?: (profile: Raw<Profile> | null) => Promise<Profile | null>,
   ): Promise<Profile | BaseError> {
