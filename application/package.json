@@ -11,6 +11,7 @@
     "analyze": "npm run build -- --analyze"
   },
   "dependencies": {
+    "glipdown": "^0.0.54",
     "hoist-non-react-statics": "3.0.1",
     "i18next": "11.9.1",
     "i18next-browser-languagedetector": "2.2.3",

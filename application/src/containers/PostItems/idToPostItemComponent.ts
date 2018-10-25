@@ -5,7 +5,6 @@
  */
 import { GlipTypeUtil } from 'sdk/utils';
 import { POST_ITEM_TYPES } from '@/constants';
-import { Event } from './event';
 
 const idToPostItemType = {
   8: POST_ITEM_TYPES.PLUGIN,
@@ -18,7 +17,13 @@ const idToPostItemType = {
 };
 
 const typeToPostItemComponent = {
-  [POST_ITEM_TYPES.EVENT]: Event,
+  [POST_ITEM_TYPES.PLUGIN]: () => {},
+  [POST_ITEM_TYPES.TASK]: () => {},
+  [POST_ITEM_TYPES.FILE]: () => {},
+  [POST_ITEM_TYPES.EVENT]: () => {},
+  [POST_ITEM_TYPES.LINK]: () => {},
+  [POST_ITEM_TYPES.PAGE]: () => {},
+  [POST_ITEM_TYPES.MEETING]: () => {},
 };
 
 function idToPostItemComponent(id: number) {
