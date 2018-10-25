@@ -10,7 +10,7 @@ import { Avatar } from '@/containers/Avatar';
 import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
-import { idToPostItemComponent } from '@/containers/PostItems';
+// import { idToPostItemComponent } from '@/containers/PostItems';
 
 @observer
 export class ConversationCard extends React.Component<
@@ -28,7 +28,7 @@ export class ConversationCard extends React.Component<
       name,
       customStatus,
       createTime,
-      itemIds,
+      // itemIds,
     } = this.props;
     const { text } = post;
     const avatar = <Avatar uid={creator.id} size="medium" />;
@@ -52,10 +52,10 @@ export class ConversationCard extends React.Component<
           >
             {text}
           </div>
-          {itemIds.map((id: number) => {
+          {/* {itemIds.map((id: number) => {
             const Item = idToPostItemComponent(id);
             return <Item key={id} />;
-          })}
+          })} */}
         </JuiConversationCardBody>
         {/* <JuiConversationCardFooter>
           [conversation card footer]
