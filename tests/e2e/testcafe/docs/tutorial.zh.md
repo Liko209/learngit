@@ -144,3 +144,18 @@ test(formalName('Case1 Name', ['tag1', 'tag2']), async (t) => {
 ### 其它注意事项 ###
 
 * 由于glip sdk 登录速度较慢, 在platform sdk可以满足需求的前提下, 尽可能使用该sdk, 只在必要时使用glip sdk
+
+## 断言技巧 ##
+
+### 存在性断言, 优先使用 withText, 避免使用 contains ###
+
+```typescript
+await t.expect(parentSelector.withText('john').exists).ok()
+```
+
+### 优先使用 uuid 而非 random 生成随机内容 ###
+
+```typescript
+
+```
+
