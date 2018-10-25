@@ -213,15 +213,10 @@ export default class ProfileService extends BaseService<Profile> {
       return partialProfile;
     };
 
-    const doUpdateModel = async (updatedModel: Profile) => {
-      return updatedModel;
-    };
-
     return await this._updateProfileGroupStatus(
       groupIds,
       false,
       preHandlePartialModel,
-      doUpdateModel,
     );
   }
 
@@ -260,15 +255,10 @@ export default class ProfileService extends BaseService<Profile> {
       return partialProfile;
     };
 
-    const doUpdateModel = async (updatedModel: Profile) => {
-      return await this._doUpdateProfile(updatedModel);
-    };
-
     return await this._updateProfileGroupStatus(
       [groupId],
       hidden,
       preHandlePartialModel,
-      doUpdateModel,
     );
   }
 
@@ -288,7 +278,6 @@ export default class ProfileService extends BaseService<Profile> {
       partialModel: Partial<Raw<Profile>>,
       originalModel: Profile,
     ) => Partial<Raw<Profile>>,
-    doUpdateModel?: (updatedModel: Profile) => Promise<Profile | BaseError>,
   ) {
     const profileId: number | null = this.getCurrentProfileId();
     if (!profileId) {
@@ -298,6 +287,10 @@ export default class ProfileService extends BaseService<Profile> {
     const partialProfile: any = {
       id: profileId,
       _id: profileId,
+    };
+
+    const doUpdateModel = async (updatedModel: Profile) => {
+      return await this._doUpdateProfile(updatedModel);
     };
 
     const doPartialNotify = (
