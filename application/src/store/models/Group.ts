@@ -21,7 +21,7 @@ export default class GroupModel extends Base<Group> {
   @observable
   setAbbreviation: string;
   @observable
-  members?: number[];
+  members: number[] = [];
   @observable
   description?: string;
   @observable
@@ -153,10 +153,7 @@ export default class GroupModel extends Base<Group> {
   get membersExcludeMe() {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
-    if (this.members && this.members.length) {
-      return this.members.filter(member => member !== currentUserId);
-    }
-    return [];
+    return this.members.filter(member => member !== currentUserId);
   }
 
   static fromJS(data: Group) {

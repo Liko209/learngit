@@ -15,6 +15,7 @@ import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
 import history from '@/utils/history';
+import { CONVERSATION_TYPES } from '@/constants';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
@@ -51,32 +52,18 @@ class ConversationListItemViewModel extends StoreViewModel<
   }
 
   @computed
-  get currentUserId() {
-    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-  }
-
-  @computed
-  get personsIds() {
-    return this._group.members;
-  }
-
-  @computed
   get personId() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const membersExcludeMe = this._group.membersExcludeMe;
 
-    if (membersExcludeMe.length > 1 || this._group.isTeam) {
-      return 0;
+    switch (this.groupType) {
+      case CONVERSATION_TYPES.TEAM:
+        return 0;
+      case CONVERSATION_TYPES.ME:
+        return currentUserId;
+      default:
+        return membersExcludeMe[0];
     }
-
-    if (
-      this.personsIds &&
-      this.personsIds.length === 1 &&
-      this.personsIds[0] === this.currentUserId
-    ) {
-      return this.personsIds[0];
-    }
-
-    return membersExcludeMe[0];
   }
 
   onClick = () => {

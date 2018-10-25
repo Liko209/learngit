@@ -63,23 +63,23 @@ export default class MultiEntityMapStore<
           matchedEntities.push(entity);
         }
       });
-      if (type === EVENT_TYPES.UPDATE) {
-        this.batchDeepSet(matchedEntities as T[]);
-        return;
+      switch (type) {
+        case EVENT_TYPES.UPDATE:
+          this.batchDeepSet(matchedEntities as T[]);
+          break;
+        case EVENT_TYPES.REPLACE:
+          this.batchReplace(matchedEntities as { id: number; data: T }[]);
+          break;
+        case EVENT_TYPES.RELOAD:
+          this.reload();
+          break;
+        case EVENT_TYPES.RESET:
+          this.reset();
+          break;
+        default:
+          this.batchSet(matchedEntities as T[]);
+          break;
       }
-      if (type === EVENT_TYPES.REPLACE) {
-        this.batchReplace(matchedEntities as { id: number; data: T }[]);
-        return;
-      }
-      if (type === EVENT_TYPES.RELOAD) {
-        this.reload();
-        return;
-      }
-      if (type === EVENT_TYPES.RESET) {
-        this.reset();
-        return;
-      }
-      this.batchSet(matchedEntities as T[]);
     }
   }
 

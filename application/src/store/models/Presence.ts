@@ -1,10 +1,11 @@
 import { observable, action } from 'mobx';
 import { Presence } from 'sdk/models';
 import Base from './Base';
+import { PRESENCE } from 'sdk/src/service';
 
 export default class PresenceModel extends Base<Presence> {
   @observable
-  presence?: Presence['presence'];
+  presence?: PRESENCE;
 
   constructor(data: Presence) {
     super(data);
@@ -15,7 +16,7 @@ export default class PresenceModel extends Base<Presence> {
 
   @action
   reset() {
-    this.presence = 'NotReady';
+    this.presence = PRESENCE.NOTREADY;
   }
 
   static fromJS(data: Presence) {

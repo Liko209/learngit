@@ -3,14 +3,14 @@
  * @Date: 2018-10-18 15:36:39
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ComponentType } from 'react';
+import React from 'react';
 import styled from '../../foundation/styled-components';
 // import { JuiAvatar } from 'jui/component/Avatar';
 import { height, width } from '../../foundation/utils';
 
 type Props = {
-  Avatar: ComponentType<any>;
-  Presence: ComponentType<any>;
+  avatar: JSX.Element;
+  presence: JSX.Element;
 };
 
 const StyledWrapper = styled.div`
@@ -29,13 +29,11 @@ const StyledPresenceWrapper = styled.div`
 
 class JuiAvatarWithPresence extends React.Component<Props> {
   render() {
-    const { Avatar, Presence } = this.props;
+    const { avatar, presence } = this.props;
     return (
       <StyledWrapper>
-        <Avatar />
-        <StyledPresenceWrapper>
-          <Presence />
-        </StyledPresenceWrapper>
+        {avatar}
+        <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
       </StyledWrapper>
     );
   }

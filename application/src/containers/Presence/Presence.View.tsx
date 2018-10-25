@@ -13,9 +13,7 @@ class PresenceView extends React.Component<PresenceViewProps> {
   render() {
     const { presence, size, ...rest } = this.props;
 
-    return presence ? (
-      <JuiPresence presence={presence} size={size} {...rest} />
-    ) : null;
+    return <JuiPresence presence={presence} size={size} {...rest} />;
   }
 }
 

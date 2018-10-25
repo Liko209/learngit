@@ -10,6 +10,7 @@ import { getEntity } from '@/store/utils';
 import { Presence } from 'sdk/models';
 import PresenceModel from '@/store/models/Presence';
 import { PresenceProps, PresenceViewProps } from './types';
+import { PRESENCE } from 'sdk/src/service';
 
 class PresenceViewModel extends StoreViewModel<PresenceProps>
   implements PresenceViewProps {
@@ -19,10 +20,10 @@ class PresenceViewModel extends StoreViewModel<PresenceProps>
   }
   @computed
   get presence() {
-    return getEntity<Presence, PresenceModel>(
-      ENTITY_NAME.PRESENCE,
-      this.props.uid,
-    ).presence;
+    return (
+      getEntity<Presence, PresenceModel>(ENTITY_NAME.PRESENCE, this.props.uid)
+        .presence || PRESENCE.NOTREADY
+    );
   }
 }
 

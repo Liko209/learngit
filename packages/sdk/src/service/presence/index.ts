@@ -8,13 +8,14 @@ import { presenceHandleData, handleStore } from './handleData';
 import { SOCKET, SERVICE } from '../eventKey';
 import { Presence, RawPresence } from '../../models';
 import SubscribeHandler from './subscribeHandler';
+import { PRESENCE } from '../constants';
 
 export default class PresenceService extends BaseService {
   static key = 'PresenceService';
 
   public caches: Map<number, Presence>; // <id, RawPresence['calculatedStatus']>
   public subscribeHandler: SubscribeHandler;
-  constructor(threshold: number = 25, interval: number = 200) {
+  constructor(threshold: number = 30, interval: number = 200) {
     // channel presence_unified threshold interval
     const subscriptions = {
       [SOCKET.PRESENCE]: presenceHandleData,
@@ -49,7 +50,7 @@ export default class PresenceService extends BaseService {
     this.subscribeHandler.appendId(id);
     return {
       id,
-      presence: 'NotReady',
+      presence: PRESENCE.NOTREADY,
     };
   }
 

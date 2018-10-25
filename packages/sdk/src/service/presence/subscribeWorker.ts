@@ -13,8 +13,8 @@ class SubscribeWorker {
   ) {}
 
   async execute(ids: number[]) {
-    if (!socketManager.isConnected()) return;
     if (ids.length === 0) return;
+    if (!socketManager.isConnected()) return;
 
     let requestResult;
     try {

@@ -17,20 +17,18 @@ class AvatarWithPresence extends React.Component<
 > {
   constructor(props: AvatarWithPresenceViewProps) {
     super(props);
-    this._Presence = this._Presence.bind(this);
-    this._Avatar = this._Avatar.bind(this);
   }
-  private _Presence() {
+  private get _presence() {
     const { uid, ...rest } = this.props;
     return <Presence uid={uid} size="large" {...rest} />;
   }
-  private _Avatar() {
+  private get _avatar() {
     const { uid, ...rest } = this.props;
     return <Avatar uid={uid} size="large" {...rest} />;
   }
   render() {
     return (
-      <JuiAvatarWithPresence Presence={this._Presence} Avatar={this._Avatar} />
+      <JuiAvatarWithPresence presence={this._presence} avatar={this._avatar} />
     );
   }
 }

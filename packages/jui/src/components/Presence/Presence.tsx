@@ -5,16 +5,20 @@
  */
 import React from 'react';
 import styled from '../../foundation/styled-components';
-import { height, width, palette, grey } from '../../foundation/utils';
+import { height, width, palette } from '../../foundation/utils';
+import { Palette } from '../../foundation/theme/theme';
+
+export enum PRESENCE {
+  NOTREADY = 'NotReady',
+  UNAVAILABLE = 'Unavailable',
+  AVAILABLE = 'Available',
+  ONCALL = 'OnCall',
+  DND = 'DND',
+  INMEETING = 'InMeeting',
+}
 
 export type JuiPresenceProps = {
-  presence?:
-    | 'Unavailable'
-    | 'Available'
-    | 'OnCall'
-    | 'DND'
-    | 'NotReady'
-    | 'InMeeting';
+  presence: PRESENCE;
   size?: 'small' | 'medium' | 'large' | 'profile';
 } & React.HTMLAttributes<HTMLDivElement>;
 
@@ -32,31 +36,64 @@ const borderSizes = {
   profile: 3,
 };
 
+const divSizes = {
+  small: [1, 0.5],
+  medium: [1.5, 0.5],
+  large: [1.5, 0.5],
+  profile: [2.5, 1],
+};
+
 const PRESENCE_COLOR_MAP = {
-  Available: 'positive',
-  OnCall: 'negative',
-  InMeeting: 'negative',
-  Unavailable: 'gray400',
-  DND: 'negative',
-  NotReady: 'gray400',
+  Available: 'semantic.positive',
+  OnCall: 'semantic.negative',
+  InMeeting: 'semantic.negative',
+  Unavailable: 'grey.400',
+  DND: 'semantic.negative',
+  NotReady: 'grey.400',
+};
+
+const getColor = (value: string) => {
+  let colorScope: keyof Palette = 'primary';
+  let colorName: string = 'main';
+  if (value && value.indexOf('.') >= 0) {
+    const arr = value.split('.');
+    if (arr.length > 1) {
+      colorScope = arr[0] as keyof Palette;
+      colorName = arr[1];
+    } else {
+      colorScope = arr[0] as keyof Palette;
+      colorName = 'main';
+    }
+  }
+
+  return palette(colorScope, colorName);
 };
 
 const StyledPresence = styled<JuiPresenceProps, 'div'>('div')`
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: ${props => width(sizes[props.size || 'medium'])};
   height: ${props => height(sizes[props.size || 'medium'])};
   border: ${props => borderSizes[props.size || 'medium']}px solid
     ${palette('common', 'white')};
-  /* margin: 6px 8px; */
   background: ${props =>
-    PRESENCE_COLOR_MAP[props.presence || 'NotReady'] === 'gray400'
-      ? grey('400')
-      : palette('semantic', PRESENCE_COLOR_MAP[props.presence || 'NotReady'])};
+    getColor(PRESENCE_COLOR_MAP[props.presence || PRESENCE.NOTREADY])}
   border-radius: 50%;
 `;
 
+const StyledDiv = styled<JuiPresenceProps, 'div'>('div')`
+  width: ${props => width(divSizes[props.size || 'medium'][0])};
+  height: ${props => height(divSizes[props.size || 'medium'][1])};
+  background: ${palette('common', 'white')};
+`;
+
 const JuiPresence = (props: JuiPresenceProps) => {
-  return <StyledPresence {...props} />;
+  return (
+    <StyledPresence {...props}>
+      {props.presence === PRESENCE.DND ? <StyledDiv {...props} /> : null}
+    </StyledPresence>
+  );
 };
 
 export { JuiPresence };
