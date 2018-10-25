@@ -24,7 +24,6 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    // await h(t).resetGlipAccount(user);
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
 
     let pvtChat, group;
@@ -55,7 +54,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -75,14 +74,14 @@ test(
               `[data-group-id="${pvtChat.data.id}"]`,
             ).exists,
           )
-          .ok();
+          .ok({ timeout: 10e3 });
         await t
           .expect(
             directMessagesSection.conversations.filter(
               `[data-group-id="${group.data.id}"]`,
             ).exists,
           )
-          .ok();
+          .ok({ timeout: 10e3 });
       },
       true,
     );
@@ -98,7 +97,6 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    // await h(t).resetGlipAccount(user);
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
 
     let pvtChat, group;
@@ -129,7 +127,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -149,14 +147,14 @@ test(
               `[data-group-id="${pvtChat.data.id}"]`,
             ).exists,
           )
-          .notOk();
+          .notOk({ timeout: 10e3 });
         await t
           .expect(
             directMessagesSection.conversations.filter(
               `[data-group-id="${group.data.id}"]`,
             ).exists,
           )
-          .notOk();
+          .notOk({ timeout: 10e3 });
       },
       true,
     );
@@ -191,14 +189,14 @@ test(
               `[data-group-id="${pvtChat.data.id}"]`,
             ).exists,
           )
-          .ok();
+          .ok({ timeout: 10e3 });
         await t
           .expect(
             directMessagesSection.conversations.filter(
               `[data-group-id="${group.data.id}"]`,
             ).exists,
           )
-          .ok();
+          .ok({ timeout: 10e3 });
       },
       true,
     );
