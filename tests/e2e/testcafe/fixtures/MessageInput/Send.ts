@@ -10,7 +10,7 @@ import { directLogin, createPrivateChat } from '../../utils';
 import { setupSDK } from '../../utils/setupSDK';
 import { Send } from '../../page-models/components/MessageInput';
 
-fixture('send messages')
+fixture('send messages').skip
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 

@@ -16,7 +16,7 @@ import {
 } from '../utils';
 
 declare var test: TestFn;
-fixture('ConversationStream/ConversationStream')
+fixture('ConversationStream/ConversationStream').skip
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
