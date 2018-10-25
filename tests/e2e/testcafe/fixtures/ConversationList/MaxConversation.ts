@@ -5,7 +5,7 @@ import { setUp, tearDown } from '../../libs/helpers';
 import { directLogin } from '../../utils';
 import { MaxConversation } from '../../page-models/components/ConversationList/MaxConversation';
 
-fixture('ConversationList/maxConversation')
+fixture('ConversationList/maxConversation').skip
   .beforeEach(setUp('GlipBetaUser(1210,4488)'))
   .afterEach(tearDown());
 
