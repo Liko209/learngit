@@ -5,44 +5,92 @@
  */
 
 import { formalName } from '../../libs/filter';
-import { setUp, tearDown } from '../../libs/helpers';
-import { directLogin, createPrivateChat } from '../../utils';
-import { setupSDK } from '../../utils/setupSDK';
-import { Send } from '../../page-models/components/MessageInput';
+import { AppRoot } from '../../v2/page-models/AppRoot';
+import { h } from '../../v2/helpers';
+import { SITE_URL } from '../../config';
+import { setupCase, teardownCase } from '../../init';
 
-fixture('send messages draft').skip
-  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
-  .afterEach(tearDown());
+fixture('send messages draft')
+  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .afterEach(teardownCase());
 
-test(formalName('draft', ['P0', 'JPT-139', 'Show massage draft when switching conversation']), async (t) => {
-  await setupSDK(t);
-  let groupId1: number;
-  let groupId2: number;
+
+test(formalName('draft', ['P0', 'JPT-139', 'Show massage draft when switching conversation']), 
+async (t) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const user = users[1];
+  const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+  const glipSDK = await h(t).sdkHelper.sdkManager.getGlip(user);
+
+  let pvtChat, group, conversation1, conversation2;
+  await h(t).withLog(
+    'Given I have an extension with 1 private chat and 1 group chat',
+    async () => {
+      pvtChat = await userPlatform.createGroup({
+        type: 'PrivateChat',
+        members: [user.rcId, users[5].rcId],
+      });
+      group = await userPlatform.createGroup({
+        type: 'Group',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      });
+    },
+  );
+
+  await h(t).withLog(
+    'Both conversation should not be hidden before login',
+    async () => {
+      await glipSDK.updateProfileByGlipId(user.glipId, {
+        [`hide_group_${pvtChat.data.id}`]: false,
+        [`hide_group_${group.data.id}`]: false,
+      });
+    },
+  );
+
+
   const msg = `${Date.now()}`; // Have a trap, no spaces
-  const chain = directLogin(t).chain(async (t, h) => {
-    groupId1 = await createPrivateChat(h, [h.users.user701.rc_id, h.users.user702.rc_id]);
-    h.log(`1.1 create private chat id ${groupId1} A, and show in conversation list`);
-    groupId2 = await createPrivateChat(h, [h.users.user701.rc_id, h.users.user703.rc_id]);
-    h.log(`1.2 create private chat id ${groupId2} B, and show in conversation list`);
-  });
-  await chain;
-  await chain.shouldNavigateTo(Send)
-    .log(`2.1 select A conversation id ${groupId1}`)
-    .selectConversation(groupId1)
-    .log('2.2 expect editor has existed')
-    .expectEditorHasExisted()
-    .log('2.3 typing message')
-    .inputMessage(msg)
-    .log(`3.1 select B conversation id ${groupId2}`)
-    .selectConversation(groupId2)
-    .log('3.2 expect editor has existed')
-    .expectEditorHasExisted()
-    .log(`3.3 expect conversation id ${groupId1} show draft tag in conversation list`)
-    .expectShowDraftTag(groupId1)
-    .log(`4.1 select A conversation id ${groupId1}`)
-    .selectConversation(groupId1)
-    .log('4.2 expect editor has existed')
-    .expectEditorHasExisted()
-    .log('4.3 expect show message')
-    .expectShowMessageInMessageInput(msg);
+  await h(t).withLog(
+    `When I login Jupiter with this extension: ${user.company.number}#${
+      user.extension
+    }`,
+    async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  await h(t).withLog(
+    `select A conversation, input typing message ${msg}`,
+    async () => {
+      const directMessagesSection =
+        app.homePage.messagePanel.directMessagesSection;
+      await directMessagesSection.expand();
+      conversation1 = directMessagesSection.conversations.filter(`[data-group-id="${pvtChat.data.id}"]`)
+      conversation2 = directMessagesSection.conversations.filter(`[data-group-id="${group.data.id}"]`)
+      await t.click(conversation1)
+      const inputField = app.homePage.messagePanel.conversationPage.find('.ql-editor')
+      await t.typeText(inputField, msg)
+    },
+    true,
+  );
+
+  await h(t).withLog(
+    'select B conversation, expect A conversation name has "Draft"',
+    async () => {
+      await t.click(conversation2);
+      await t.expect(conversation1.textContent).contains('Draft');
+    },
+    true,
+  );
+
+  await h(t).withLog(
+    `select A conversation, check input field has ${msg}`,
+    async () => {
+      await t.click(conversation1);
+      const inputField = app.homePage.messagePanel.conversationPage.find('.ql-editor')
+      await t.expect(inputField.textContent).contains(msg)
+    },
+    true,
+  );
 });
