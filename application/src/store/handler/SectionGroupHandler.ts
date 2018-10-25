@@ -81,9 +81,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
-    if (
-      this._oldFavGroupIds.sort().toString() !== newFavIds.sort().toString()
-    ) {
+
+    if (this._oldFavGroupIds.toString() !== newFavIds.toString()) {
       const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
       const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
       this._oldFavGroupIds = newFavIds;
