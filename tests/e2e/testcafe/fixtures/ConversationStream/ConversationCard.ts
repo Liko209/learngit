@@ -128,7 +128,7 @@ test(
     await h(t).withLog(`modify user name through api request and check username change to excepted`, async () => {
       await glipSDK.updatePerson(user.glipId, { first_name: changedName });
       await t.expect(targetPost.textContent).contains(changedName);
-      await glipSDK.updatePerson(user.glipId, { first_name: userName });
+      await glipSDK.updatePerson(user.glipId, { first_name: userName.split(" ")[0] });
     })
   },
 );
