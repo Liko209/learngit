@@ -6,8 +6,9 @@
 import { buildContainer } from '@/base';
 import { ConversationCardView } from './ConversationCard.View';
 import { ConversationCardViewModel } from './ConversationCard.ViewModel';
+import { ConversationCardProps } from './types';
 
-const ConversationCard = buildContainer<{ id: number }>({
+const ConversationCard = buildContainer<ConversationCardProps>({
   View: ConversationCardView,
   ViewModel: ConversationCardViewModel,
 });

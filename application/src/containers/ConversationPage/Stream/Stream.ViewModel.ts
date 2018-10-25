@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import { PostService, StateService, ENTITY } from 'sdk/service';
 import { Post, GroupState } from 'sdk/models';
 import { ErrorTypes } from 'sdk/utils';
@@ -18,6 +18,7 @@ import {
 import StoreViewModel from '@/store/ViewModel';
 import {
   onScrollToTop,
+  onScroll,
   loading,
   loadingTop,
 } from '@/plugins/InfiniteListPlugin';
@@ -41,6 +42,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postService: PostService = PostService.getInstance();
 
   private _transformHandler: PostTransformHandler;
+  private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
 
   @observable
   groupId: number;
@@ -48,6 +50,15 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   postIds: number[] = [];
   @observable
   items: StreamItem[] = [];
+
+  @computed
+  get _readThrough() {
+    const groupState = getEntity<GroupState, GroupStateModel>(
+      ENTITY_NAME.GROUP_STATE,
+      this.groupId,
+    );
+    return groupState.readThrough;
+  }
 
   onReceiveProps(props: StreamProps) {
     if (this.groupId === props.groupId) {
@@ -76,11 +87,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       },
     };
 
-    const groupState = getEntity<GroupState, GroupStateModel>(
-      ENTITY_NAME.GROUP_STATE,
-      props.groupId,
-    );
-
     const orderListHandler = new FetchSortableDataListHandler(
       postDataProvider,
       {
@@ -92,14 +98,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         dataChangeCallBack: () => {},
       },
     );
-    const newMessageSeparatorHandler = new NewMessageSeparatorHandler();
+    this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
 
-    newMessageSeparatorHandler.setReadThrough(groupState.readThrough);
-
-    console.log('groupState.readThrough: ', groupState.readThrough);
+    this._newMessageSeparatorHandler.setReadThrough(this._readThrough);
 
     this._transformHandler = new PostTransformHandler({
-      newMessageSeparatorHandler,
+      newMessageSeparatorHandler: this._newMessageSeparatorHandler,
       handler: orderListHandler,
       onAppended: () => {
         this.markAsRead();
@@ -122,6 +126,24 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @loadingTop
   async loadPrevPosts() {
     await this._loadPosts(FetchDataDirection.UP);
+  }
+
+  @onScroll
+  async handleNewMessageSeparatorState(event: {
+    currentTarget?: HTMLInputElement;
+  }) {
+    if (!event.currentTarget) return;
+
+    const scrollEl = event.currentTarget;
+    const atBottom =
+      scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
+
+    if (atBottom) {
+      this._newMessageSeparatorHandler.disable();
+    } else {
+      this._newMessageSeparatorHandler.setReadThrough(this._readThrough);
+      this._newMessageSeparatorHandler.enable();
+    }
   }
 
   markAsRead() {

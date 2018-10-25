@@ -12,6 +12,7 @@ import { createLoadingStateDecorator } from '../utils';
 
 const topListeners = Symbol('topListeners');
 const bottomListeners = Symbol('bottomListeners');
+const scrollListeners = Symbol('scrollListeners');
 
 interface ILoadingMoreViewModel extends IViewModel, WithScrollerProps {
   loadingTop: boolean;
@@ -36,6 +37,7 @@ class LoadingMorePlugin implements IPlugin {
     const vm = _vm.extendProps({
       loadingTop: false,
       loadingBottom: false,
+      onScroll: () => {},
       onScrollToTop: () => {},
       onScrollToBottom: () => {},
       ...this._options,
@@ -58,6 +60,13 @@ class LoadingMorePlugin implements IPlugin {
         await Promise.all(
           vm[bottomListeners].map((fn: Function) => fn.apply(vm, args)),
         );
+      });
+    }
+
+    // Call decorated function when scroll
+    if (vm[scrollListeners]) {
+      vm.onScroll = action((...args: any[]) => {
+        vm[scrollListeners].map((fn: Function) => fn.apply(vm, args));
       });
     }
   }
@@ -90,6 +99,16 @@ const onScrollToBottom = function (
   return descriptor;
 };
 
+const onScroll = function (
+  vm: IViewModel,
+  propertyKey: string,
+  descriptor: PropertyDescriptor,
+) {
+  vm[scrollListeners] = vm[scrollListeners] || [];
+  vm[scrollListeners].push(descriptor.value);
+  return descriptor;
+};
+
 const loadingTop = createLoadingStateDecorator('loadingTop');
 const loadingBottom = createLoadingStateDecorator('loadingBottom');
 
@@ -100,5 +119,6 @@ export {
   loadingTop,
   loadingBottom,
   onScrollToBottom,
+  onScroll,
   LoadingMorePluginOptions,
 };

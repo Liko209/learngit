@@ -3,7 +3,7 @@
  * @Date: 2018-09-17 14:01:06
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
 
@@ -17,7 +17,7 @@ const EmptyConversation = () => (
   </div>
 );
 
-class StreamView extends PureComponent<StreamViewProps> {
+class StreamView extends Component<StreamViewProps> {
   componentDidUpdate(prevProps: StreamViewProps) {
     if (!prevProps.postIds.length) {
       // initial scroll to bottom when switch to new group

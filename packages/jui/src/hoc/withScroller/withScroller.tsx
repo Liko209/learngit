@@ -20,6 +20,7 @@ type ScrollerProps = {
   throttle: number;
   initialScrollTop: number;
   stickTo: StickType;
+  onScroll: (event: WheelEvent) => void;
   onScrollToTop: () => void;
   onScrollToBottom: () => void;
   triggerScrollToOnMount: boolean;
@@ -52,6 +53,7 @@ function withScroller(Comp: ComponentType<any>) {
       throttle: 100,
       initialScrollTop: 0,
       stickTo: 'top',
+      onScroll: noop,
       onScrollToTop: noop,
       onScrollToBottom: noop,
       triggerScrollToOnMount: false,
@@ -128,6 +130,7 @@ function withScroller(Comp: ComponentType<any>) {
     }
 
     private _handleScroll(event: WheelEvent) {
+      this.props.onScroll(event);
       const prevAtTop = this._atTop;
       const prevAtBottom = this._atBottom;
       const atTop = this._isAtTop();
