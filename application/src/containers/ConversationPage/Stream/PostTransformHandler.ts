@@ -47,10 +47,11 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
   }
 
   @computed
-  get items() {
-    console.log('this.orderListStore.items: ', this.orderListStore.getIds());
-    console.log('this.separatorMap: ', this.separatorMap);
-    return;
+  get items(): StreamItem[] {
+    return PostTransformHandler.toStreamItems(
+      this.orderListStore.getIds(),
+      this.separatorMap,
+    );
   }
 
   constructor(
@@ -75,6 +76,11 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
     );
   }
 
+  /**
+   * Transform raw data into streamItems
+   * @param postIds
+   * @param separatorMap
+   */
   static toStreamItems(
     postIds: number[],
     separatorMap: Map<number, Separator>,
