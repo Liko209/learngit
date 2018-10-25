@@ -11,6 +11,7 @@ import { IResponseError } from 'sdk/models';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -32,19 +33,24 @@ class CreateTeamViewModel extends AbstractViewModel {
 
   @computed
   get isOpen() {
-    return getGlobalValue('isShowCreateTeamDialog') || false;
+    return getGlobalValue(GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG) || false;
   }
 
   @computed
   get isOffline() {
-    return getGlobalValue('network') === 'offline';
+    return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
   }
 
   @action
   updateCreateTeamDialogState = () => {
     const globalStore = storeManager.getGlobalStore();
-    const isShowCreateTeamDialog = !globalStore.get('isShowCreateTeamDialog');
-    globalStore.set('isShowCreateTeamDialog', isShowCreateTeamDialog);
+    const isShowCreateTeamDialog = !globalStore.get(
+      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
+    );
+    globalStore.set(
+      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
+      isShowCreateTeamDialog,
+    );
   }
 
   @action

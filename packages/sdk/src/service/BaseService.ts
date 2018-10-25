@@ -4,14 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { transform, isFunction } from '../service/utils';
+import { BaseError, ErrorParser } from '../utils';
 import { daoManager, DeactivatedDao } from '../dao';
-import { BaseModel } from '../models'; // eslint-disable-line
+import { BaseModel, Raw } from '../models'; // eslint-disable-line
 import { mainLogger } from 'foundation';
 import { AbstractService } from '../framework';
 import notificationCenter from './notificationCenter';
 import { container } from '../container';
 import dataDispatcher from '../component/DataDispatcher';
 import { SOCKET } from './eventKey';
+import _ from 'lodash';
 
 const throwError = (text: string): never => {
   throw new Error(
@@ -20,7 +22,9 @@ const throwError = (text: string): never => {
   );
 };
 
-class BaseService<SubModel extends BaseModel = BaseModel> extends AbstractService {
+class BaseService<
+  SubModel extends BaseModel = BaseModel
+> extends AbstractService {
   static serviceName = 'BaseService';
 
   constructor(
@@ -68,7 +72,9 @@ class BaseService<SubModel extends BaseModel = BaseModel> extends AbstractServic
     return result;
   }
 
-  async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<SubModel[]> {
+  async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<
+    SubModel[]
+  > {
     this._checkDaoClass();
     const dao = daoManager.getDao(this.DaoClass);
 
@@ -114,6 +120,166 @@ class BaseService<SubModel extends BaseModel = BaseModel> extends AbstractServic
       throwError('DaoClass');
     }
     return true;
+  }
+
+  async handlePartialUpdate(
+    partialModel: Partial<Raw<SubModel>>,
+    preHandlePartialModel?: (
+      partialModel: Partial<Raw<SubModel>>,
+      originalModel: SubModel,
+    ) => Partial<Raw<SubModel>>,
+    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
+    doPartialNotify?: (
+      originalModels: SubModel[],
+      partialModels: Partial<Raw<SubModel>>[],
+    ) => void,
+  ): Promise<SubModel | BaseError> {
+    const id: number = partialModel.id
+      ? partialModel.id
+      : partialModel._id
+        ? partialModel._id
+        : 0;
+    let result: SubModel | BaseError;
+
+    do {
+      if (id <= 0) {
+        mainLogger.warn('handlePartialUpdate: invalid id');
+        result = ErrorParser.parse('none model error');
+        break;
+      }
+
+      const originalModel = await this.getById(id);
+      if (!originalModel) {
+        mainLogger.warn('handlePartialUpdate: originalModel is nil');
+        result = ErrorParser.parse('none model error');
+        break;
+      }
+
+      if (!doUpdateModel) {
+        mainLogger.warn(
+          'handlePartialUpdate: doUpdateModel is nil, no updates',
+        );
+        result = originalModel;
+        break;
+      }
+
+      result = await this._handlePartialUpdateWithOriginal(
+        preHandlePartialModel
+          ? await preHandlePartialModel(partialModel, originalModel)
+          : partialModel,
+        originalModel,
+        doUpdateModel,
+        doPartialNotify,
+      );
+    } while (false);
+
+    return result;
+  }
+
+  getRollbackPartialModel(
+    partialModel: Partial<Raw<SubModel>>,
+    originalModel: SubModel,
+  ): Partial<Raw<SubModel>> {
+    const rollbackPartialModel = _.pick(
+      originalModel,
+      Object.keys(partialModel),
+    );
+    return rollbackPartialModel as Partial<Raw<SubModel>>;
+  }
+
+  getMergedModel(
+    partialModel: Partial<Raw<SubModel>>,
+    originalModel: SubModel,
+  ): SubModel {
+    const mergedModel = _.merge({}, originalModel, partialModel);
+    return mergedModel;
+  }
+
+  private async _handlePartialUpdateWithOriginal(
+    partialModel: Partial<Raw<SubModel>>,
+    originalModel: SubModel,
+    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
+    doPartialNotify?: (
+      originalModels: SubModel[],
+      partialModels: Partial<Raw<SubModel>>[],
+    ) => void,
+  ): Promise<SubModel | BaseError> {
+    let result: SubModel | BaseError;
+    do {
+      partialModel.id = originalModel.id;
+      if (partialModel._id) {
+        delete partialModel._id;
+      }
+
+      const rollbackPartialModel = this.getRollbackPartialModel(
+        partialModel,
+        originalModel,
+      );
+
+      if (_.isEqual(partialModel, rollbackPartialModel)) {
+        result = originalModel;
+        mainLogger.warn('handlePartialUpdate: no changes, no need update');
+        break;
+      }
+
+      mainLogger.info('handlePartialUpdate: trigger partial update');
+      await this._doPartialSaveAndNotify(
+        originalModel,
+        partialModel,
+        doPartialNotify,
+      );
+
+      mainLogger.info('handlePartialUpdate: trigger doUpdateModel');
+      const mergedModel = this.getMergedModel(partialModel, originalModel);
+      const resp = await doUpdateModel(mergedModel);
+      if (resp instanceof BaseError) {
+        mainLogger.error('handlePartialUpdate: doUpdateModel failed');
+        await this._doPartialSaveAndNotify(
+          mergedModel,
+          rollbackPartialModel,
+          doPartialNotify,
+        );
+      }
+
+      result = resp;
+    } while (false);
+
+    return result;
+  }
+
+  private async _doPartialSaveAndNotify(
+    originalModel: SubModel,
+    model: Partial<Raw<SubModel>>,
+    doPartialNotify?: (
+      originalModels: SubModel[],
+      partialModels: Partial<Raw<SubModel>>[],
+    ) => void,
+  ): Promise<void> {
+    const originalModels: SubModel[] = [originalModel];
+    const partialModels: Partial<Raw<SubModel>>[] = [model];
+
+    await this._updatePartialModel2Db(partialModels);
+
+    if (doPartialNotify) {
+      doPartialNotify(originalModels, partialModels);
+    }
+  }
+
+  private async _updatePartialModel2Db(
+    partialModels: Partial<Raw<SubModel>>[],
+  ) {
+    if (!this.DaoClass) {
+      mainLogger.warn('_updatePartialModel2Db: no dao class');
+      return;
+    }
+
+    const transformedModels: SubModel[] = [];
+    partialModels.forEach((item: Partial<Raw<SubModel>>) => {
+      const transformedModel: SubModel = transform(item);
+      transformedModels.push(transformedModel);
+    });
+    const dao = daoManager.getDao(this.DaoClass);
+    await dao.bulkUpdate(transformedModels);
   }
 }
 

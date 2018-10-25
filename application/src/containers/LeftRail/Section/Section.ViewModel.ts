@@ -25,6 +25,7 @@ import {
   SectionViewProps,
   SECTION_TYPE,
 } from './types';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 const { GroupService } = service;
 
@@ -49,6 +50,7 @@ const SECTION_CONFIGS: SectionConfigs = {
     eventName: ENTITY.FAVORITE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.FAVORITE,
+    globalKey: GLOBAL_KEYS.GROUP_QUERY_TYPE_FAVORITE_IDS,
     transformFun: favGroupTransformFunc,
     sortable: true,
     isMatchFun: (model: Group) => {
@@ -61,6 +63,7 @@ const SECTION_CONFIGS: SectionConfigs = {
     eventName: ENTITY.PEOPLE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.GROUP,
+    globalKey: GLOBAL_KEYS.GROUP_QUERY_TYPE_GROUP_IDS,
     transformFun: groupTransformFunc,
     isMatchFun: (model: Group) => {
       return !model.is_team;
@@ -72,6 +75,7 @@ const SECTION_CONFIGS: SectionConfigs = {
     eventName: ENTITY.TEAM_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.TEAM,
+    globalKey: GLOBAL_KEYS.GROUP_QUERY_TYPE_TEAM_IDS,
     transformFun: groupTransformFunc,
     isMatchFun: (model: Group) => {
       return model.is_team || false;
@@ -102,7 +106,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 
 class SectionViewModel extends StoreViewModel<SectionProps>
   implements SectionViewProps {
-  constructor(props: SectionProps) {
+  constructor(props?: SectionProps) {
     super(props);
     this._oldFavGroupIds =
       getSingleEntity<Profile, ProfileModel>(
@@ -261,7 +265,7 @@ class SectionViewModel extends StoreViewModel<SectionProps>
       storeManager
         .getGlobalStore()
         .set(
-          this._config.queryType,
+          this._config.globalKey,
           this._listHandler.sortableListStore.getIds(),
         );
     }

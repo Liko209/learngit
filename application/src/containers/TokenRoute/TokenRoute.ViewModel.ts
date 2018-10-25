@@ -10,6 +10,7 @@ import * as H from 'history';
 import { parse } from 'qs';
 import { service } from 'sdk';
 import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 import { StoreViewModel } from '@/store/ViewModel';
 import history from '@/utils/history';
 
@@ -34,7 +35,7 @@ class TokenRouteViewModel extends StoreViewModel {
 
   @computed
   get isOffline() {
-    return getGlobalValue('network') === 'offline';
+    return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
   }
 
   @action.bound

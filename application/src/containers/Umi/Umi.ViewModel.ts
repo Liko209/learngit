@@ -12,6 +12,7 @@ import { UmiProps, UmiViewProps } from './types';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import storeManager, { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   constructor(props: UmiProps) {
@@ -30,7 +31,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   @computed
   private get _umiObj() {
     const groupIds = this.ids;
-    const currentGroupId = getGlobalValue('currentConversationId');
+    const currentGroupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     const groupStates = _.map(groupIds, (groupId: number) => {
       return getEntity(ENTITY_NAME.GROUP_STATE, groupId) as GroupStateModel;
     });
@@ -53,7 +54,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   }
 
   updateAppUmi() {
-    storeManager.getGlobalStore().set('app.umi', this.unreadCount);
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.APP_UMI, this.unreadCount);
   }
 
   @computed

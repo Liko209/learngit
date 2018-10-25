@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component, ReactNode, MouseEvent as ReactMouseEvent } from 'react';
+import React, {
+  Component,
+  ReactNode,
+  MouseEvent as ReactMouseEvent,
+} from 'react';
 import JuiResponse from './Response';
 import JuiHorizonPanel from './HorizonPanel';
 import JuiHorizonResizer from './HorizonResizer';
@@ -119,7 +123,8 @@ class JuiTreeColumnResponse extends Component<Props, States> {
     const rightNodeOffsetWidth = rightNode.offsetWidth;
 
     const newLeftWidth = clientX - leftNodeOffsetLeft;
-    const newRightWidth = rightNodeOffsetWidth - (clientX - rightNodeOffsetLeft);
+    const newRightWidth =
+      rightNodeOffsetWidth - (clientX - rightNodeOffsetLeft);
 
     if (
       newLeftWidth >= leftMinWidth &&
@@ -279,7 +284,7 @@ class JuiTreeColumnResponse extends Component<Props, States> {
 
   onClickPreventBubble(e: ReactMouseEvent) {
     e.stopPropagation();
-    e.preventDefault();
+    // e.preventDefault();
   }
 
   onClickLayout() {
