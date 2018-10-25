@@ -21,10 +21,7 @@ interface IState {
 }
 
 @observer
-class ConversationListItemViewComponent extends React.Component<
-  Props,
-  IState
-> {
+class ConversationListItemViewComponent extends React.Component<Props, IState> {
   @observable
   menuAnchorEl: HTMLElement | null = null;
 

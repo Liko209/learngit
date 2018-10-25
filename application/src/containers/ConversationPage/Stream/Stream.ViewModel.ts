@@ -20,6 +20,7 @@ import {
   onScrollToTop,
   loading,
   loadingTop,
+  onScrollToBottom,
 } from '@/plugins/InfiniteListPlugin';
 import { StreamProps } from './types';
 import { ErrorTypes } from 'sdk/utils';
@@ -49,13 +50,8 @@ type TTransformedElement = {
   meta?: any;
 };
 class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
-  onAppended: Function;
-  constructor(
-    handler: FetchSortableDataListHandler<Post>,
-    onAppended: Function,
-  ) {
+  constructor(handler: FetchSortableDataListHandler<Post>) {
     super(handler);
-    this.onAppended = onAppended;
   }
   onAdded(direction: FetchDataDirection, addedItems: ISortableModel[]) {
     const updated = _(addedItems)
@@ -67,9 +63,6 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
       .reverse()
       .value();
     const inFront = FetchDataDirection.UP === direction;
-    if (!inFront) {
-      this.onAppended();
-    }
     this.listStore.append(updated, inFront); // new to old
   }
 
@@ -91,7 +84,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   groupId: number;
   @observable
   postIds: number[] = [];
-
+  constructor() {
+    super();
+    this.markAsRead = this.markAsRead.bind(this);
+  }
   onReceiveProps(props: StreamProps) {
     if (this.groupId === props.groupId) {
       return;
@@ -100,7 +96,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this.dispose();
     }
     this.groupId = props.groupId;
-    this.markAsRead();
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (offset: number, direction, pageSize, anchor) => {
         try {
@@ -132,10 +127,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       },
     );
 
-    this._transformHandler = new PostTransformHandler(orderListHandler, () => {
-      console.log('on append');
-      this.markAsRead();
-    });
+    this._transformHandler = new PostTransformHandler(orderListHandler);
     this.autorun(() => {
       const postIds = _(this._transformHandler.listStore.items)
         .map('value')
@@ -158,10 +150,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     await this._loadPosts(FetchDataDirection.UP);
   }
 
+  @onScrollToBottom
   markAsRead() {
-    if (this.groupId) {
-      this._stateService.markAsRead(this.groupId);
-    }
+    const isFocused = document.hasFocus();
+    isFocused && this._stateService.markAsRead(this.groupId);
   }
 
   dispose() {
