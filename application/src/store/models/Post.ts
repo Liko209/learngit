@@ -12,6 +12,9 @@ export default class PostModel extends Base<Post> {
   status?: POST_STATUS;
   @observable
   atMentionNonItemIds?: number[];
+  @observable
+  itemIds: number[];
+
   constructor(data: Post) {
     super(data);
     this.createdAt = data.created_at;
@@ -19,6 +22,7 @@ export default class PostModel extends Base<Post> {
     this.text = data.text;
     this.status = data.status;
     this.atMentionNonItemIds = data.at_mention_non_item_ids;
+    this.itemIds = data.item_ids;
   }
 
   static fromJS(data: Post) {

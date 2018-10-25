@@ -6,6 +6,7 @@
 
 type MessageInputProps = {
   id: number; // group id
+  onPost?: () => void;
 };
 
 type MessageInputViewProps = {
