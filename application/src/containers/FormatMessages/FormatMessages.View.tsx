@@ -9,14 +9,9 @@ import { observer } from 'mobx-react';
 import {
   JuiConversationPostText,
 } from 'jui/pattern/ConversationCard';
-import PostModel from '@/store/models/Post';
 
 type Props = {
   formatHtml: string;
-  _currentUserId: number;
-  _atMentionIdMaps: {number?: string};
-  _post: PostModel;
-  postId: number;
 };
 @observer
 class FormatMessagesView extends React.Component<Props> {
