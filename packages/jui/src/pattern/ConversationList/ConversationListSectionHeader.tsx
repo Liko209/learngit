@@ -36,6 +36,7 @@ const StyledListItem = styled(MuiListItem)`
 
   && > ${StyledJuiIconography} {
     color: ${grey('400')};
+    font-size: 20px;
   }
 `;
 

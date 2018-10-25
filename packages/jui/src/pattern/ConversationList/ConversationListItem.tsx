@@ -44,6 +44,7 @@ const StyledListItem = styled(MuiMenuItem)`
     color: ${palette('grey', '400')};
     opacity: 0;
     transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    font-size: 20px;
   }
 
   &&:hover ${StyledIconography} {
