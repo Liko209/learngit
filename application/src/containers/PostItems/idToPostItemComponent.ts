@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2018-10-25 10:09:11
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { GlipTypeUtil } from 'sdk/utils';
 import { POST_ITEM_TYPES } from '@/constants';
 import { Event } from './event';
