@@ -18,16 +18,18 @@ test(
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[0];
-    const msgList = ["1","2","3"]
+    const user = users[7];
+    const msgList = ['First post','Second post','Third post']
     let teamId;
+    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
 
-    const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
-    await h(t).withLog('Prepare I have one team', async () => {
-      teamId = (await glipSDK.createTeam(
-        `My Team ${Math.random().toString(10)}`, 
-        [+user.glipId, +users[1].glipId, +users[2].glipId]
-        )).data._id
+    await h(t).withLog('Given I have an extension with 1 team chat', async () => {
+      teamId = (await userPlatform.createGroup({
+        isPublic: true,
+        name: `My Team ${Math.random().toString(10)} `,
+        type: 'Team',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      })).data.id;
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
@@ -35,38 +37,32 @@ test(
       await app.homePage.ensureLoaded();
     });
 
-    await h(t).withLog('check team in Teams section', async () => {
+    await h(t).withLog('Then I enter the conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      await t.expect(teamsSection.conversations.filter(`[data-group-id="${teamId}"]`).exists).ok();
-    }, true);
-
-    await h(t).withLog('send post messages by sequense', async () => {
-      msgList.forEach(async msg=>{
-        await glipSDK.sendPost(teamId, msg);
-        await t.wait(1e3)
-      })
-    }, true);
-
-    await h(t).withLog('entry team', async () => {
-      const teamsSection = app.homePage.messagePanel.teamsSection;
       const teamConversation =  teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
       await t.click(teamConversation)
-    }, true);
+    });
 
-    await h(t).withLog('Then I can read all posts in first teams section', async () => {
-      await t.wait(2e3);
+    await h(t).withLog('When I send 3 posts in order via API', async () => {
+      await msgList.forEach(async (msg) => {
+        await userPlatform.createPost({ text: msg }, teamId);
+        await t.wait(2e3)
+      })
+    });
+
+    await h(t).withLog('Then the conversation must display the 3 posts in order.', async () => {
+      await t.wait(3e3);
       const posts = await app.homePage.messagePanel.conversationSection.posts;
-      const length = posts.length;
-      for (let i=0; i < length; i++) {
+      const length = await posts.count
+      for (let i = 0; i < length; i = i + 1) {
         await t.expect(posts.nth(i).child('div').nth(1)
         .child('div').nth(1).textContent)
-        .eql(msgList[i].trim());
+        .eql(msgList[i]);
       }
     });
   }
 );
-  
 
 test(
   formalName('No post in conversation when the conversation', 
@@ -77,13 +73,15 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
     let teamId;
-
-    const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
-    await h(t).withLog('Prepare I have one team', async () => {
-      teamId = (await glipSDK.createTeam(
-        `My Team ${Math.random().toString(10)}`, 
-        [+user.glipId, +users[1].glipId, +users[2].glipId]
-        )).data._id
+    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+    
+    await h(t).withLog('Given I have an extension with 1 team chat', async () => {
+      teamId = (await userPlatform.createGroup({
+        isPublic: true,
+        name: `My Team ${Math.random().toString(10)} `,
+        type: 'Team',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      })).data.id;
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
@@ -91,23 +89,19 @@ test(
       await app.homePage.ensureLoaded();
     });
 
-    await h(t).withLog('check team in Teams section', async () => {
+
+    await h(t).withLog('Then I can enter the conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      await t.expect(teamsSection.conversations.filter(`[data-group-id="${teamId}"]`).exists).ok();
-    }, true);
-
-    await h(t).withLog('entry team', async () => {
-      const teamsSection = app.homePage.messagePanel.teamsSection;
       const teamConversation =  teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
       await t.click(teamConversation)
-    },true);
+    });
 
-    await h(t).withLog('check no post in new created team', async () => {
+    await h(t).withLog('And I can not find  any post in the new created conversation', async () => {
       await t.wait(2e3);
       const posts = await app.homePage.messagePanel.conversationSection.posts;
       await t.expect(posts.exists).notOk("no post");
-    }, true);
+    });
   }
 );
 
@@ -122,55 +116,52 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
     let teamId;
-    const lastPost = "lastPost"
-    const newPost = "newPost"
+    const lastPost = "last post"
+    const newPost = "new post"
 
-    const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
 
-    await h(t).withLog('Prepare I have one team', async () => {
-      teamId = (await glipSDK.createTeam(
-        `My Team ${Math.random().toString(10)}`, 
-        [+user.glipId, +users[1].glipId, +users[2].glipId]
-        )).data._id
-    });
+    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+    
+    await h(t).withLog('Given I have an extension with 1 team chat', async () => {
+      teamId = (await userPlatform.createGroup({
+        isPublic: true,
+        name: `My Team ${Math.random().toString(10)} `,
+        type: 'Team',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      })).data.id;
+    }); 
 
-    await h(t).withLog('send post messages "lastPost"', async () => {
-        await glipSDK.sendPost(teamId, "lastPost");
+    await h(t).withLog(`Then I send a post "${lastPost}" to the team before login`, async () => {
+        await userPlatform.createPost({ text: lastPost }, teamId);
         await t.wait(1e3)
-    }, true);
+    });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
     });
 
-    await h(t).withLog('check team in Teams section', async () => {
+    await h(t).withLog('Then I can enter the team', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      await t.expect(teamsSection.conversations.filter(`[data-group-id="${teamId}"]`).exists).ok();
-    }, true);
-
-    await h(t).withLog('entry team', async () => {
-      const teamsSection = app.homePage.messagePanel.teamsSection;
       const teamConversation =  teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
       await t.click(teamConversation)
-    },true);
+    });
 
-    await h(t).withLog('check last post at last one of conversation posts', async () => {
+    await h(t).withLog(`And I can find post "${lastPost}"  in the conversation posts history`, async () => {
       await t.wait(2e3);
       const posts = await app.homePage.messagePanel.conversationSection.posts;
-      await t.expect(posts.nth(-1).textContent)
-        .contains(lastPost.trim());
-    }, true);
+      await t.expect(posts.nth(-1).textContent).contains(lastPost);
+    })
 
-    await h(t).withLog('send post messages "newPost"', async () => {
-      await glipSDK.sendPost(teamId, "newPost");
-    }, true);
+    await h(t).withLog(`When I receive a post: "${newPost}"`, async () => {
+      await userPlatform.createPost({ text: newPost }, teamId);
+    });
 
-    await h(t).withLog('check new post at last one of conversation posts', async () => {
-      await t.wait(2e3);
+    await h(t).withLog(`Then I can check the newest post is "${newPost}"`, async () => {
+      await t.wait(1e3);
       const posts = await app.homePage.messagePanel.conversationSection.posts;
-      await t.expect(posts.nth(-1).textContent)
-        .contains(newPost.trim());
-    }, true);
-})
+      await t.expect(posts.nth(-1).textContent).contains(newPost.trim());
+    });
+  }
+);
