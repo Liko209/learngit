@@ -13,11 +13,20 @@ import { ConversationPageViewProps } from './types';
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
+  stream: React.Component & {
+    scrollToRow: (n: number) => void;
+  };
+
+  setStreamRef = (ref: any) => {
+    this.stream = ref;
+  }
+
+  sendHandler = () => {
+    this.stream.scrollToRow(-1);
+  }
+
   render() {
     const { t, groupId, canPost } = this.props;
-    if (!groupId) {
-      return null;
-    }
     return (
       <JuiConversationPage
         className="conversation-page"
@@ -25,9 +34,9 @@ class ConversationPageViewComponent extends Component<
       >
         <Header id={groupId} />
         <JuiDivider />
-        <Stream groupId={groupId} />
+        <Stream groupId={groupId} viewRef={this.setStreamRef} />
         {canPost ? (
-          <MessageInput id={groupId} />
+          <MessageInput id={groupId} onPost={this.sendHandler} />
         ) : (
           <JuiDisabledInput text={t('disabledText')} />
         )}
