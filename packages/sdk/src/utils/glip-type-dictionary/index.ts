@@ -46,9 +46,14 @@ function parseSocketMessage(message: string | ISystemMessage) {
   } catch (e) {
     return null;
   }
-  const {
-    body: { objects, hint },
-  } = parsedMsg;
+
+  if (!parsedMsg || !parsedMsg.body || !parsedMsg.body.objects) {
+    return null;
+  }
+
+  const objects = parsedMsg.body.objects;
+  const hint = parsedMsg.body.hint;
+
   let post_creator_ids: number[] | undefined;
   if (hint && hint.post_creator_ids) {
     post_creator_ids = _.values(hint.post_creator_ids);
