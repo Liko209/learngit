@@ -126,10 +126,10 @@ test(formalName('Case1 Name', ['tag1', 'tag2']), async (t) => {
 
 目前 h(t).rcData.mainCompany 中提供了 8 个用户账号, 4个 teams 用于在测试中使用. 为了让测试可以更稳定地运行, 在测试中请遵循如下的测试使用规则
 
-* h(t).rcData.mainCompany.users[0 - 3]: 不可对此账号进行重置操作, 不要变更这些用户的权限/名称
-* h(t).rcData.mainCompany.users[4 - 7]: 可以进行重置/
-* h(t).rcData.mainCompany.teams: 不要对已存在的team进行更名, 成员变化, 权限变化等操作
-* 如果需要执行带状态的操作, 如测试更新 team 名称或成员, 请新建一个 team 进行操作
+* h(t).rcData.mainCompany.users[0 - 3]: 只读, 避免在该账号上执行会改变后端服务状态的操作, 如重置, 更名, 更改权限, 标记为收藏; 但可以执行消息发送; 如需其它操作请参考下条
+* h(t).rcData.mainCompany.users[4 - 7]: 可写, 会引起后端服务状态改变的操作请在该类账号执行
+* h(t).rcData.mainCompany.teams[0 - 3]: 只读, 避免在该账号上执行会改变后端服务状态的操作, 如更改成员, 组名等; 但可以执行消息发送, 如果其它操作请参考下条
+* 如果需要执行会引起后端服务状态改变的操作, 如测试更新 team 名称或成员, 请新建一个 team 进行操作
 
 ### 规范测试报告 ###
 
