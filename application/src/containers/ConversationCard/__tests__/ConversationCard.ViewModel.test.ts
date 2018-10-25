@@ -26,19 +26,6 @@ describe('ConversationCardViewModel', () => {
       ...mockPostValue,
     });
   });
-  it('atMentionIdMaps()', () => {
-    (getEntity as jest.Mock).mockReturnValue({
-      atMentionNonItemIds: [1234],
-      displayName: 'alvin huang',
-    });
-    expect(conversationCardVM.atMentionIdMaps).toMatchObject({
-      1234: 'alvin huang',
-    });
-  });
-  it('currentUserId()', () => {
-    (getGlobalValue as jest.Mock).mockReturnValue(123456);
-    expect(conversationCardVM.currentUserId).toBe(123456);
-  });
   it('createTime()', () => {
     (getEntity as jest.Mock).mockReturnValue({
       createdAt: 1540279718268,

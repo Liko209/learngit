@@ -16,10 +16,6 @@ type ConversationCardViewProps = {
   name: string;
   customStatus?: string;
   createTime: string;
-  atMentionIdMaps: {
-    number?: string;
-  };
-  currentUserId: number;
 };
 
 export { ConversationCardProps, ConversationCardViewProps };

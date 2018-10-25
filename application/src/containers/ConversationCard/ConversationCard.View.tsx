@@ -4,17 +4,13 @@ import {
   JuiConversationCard,
   JuiConversationCardHeader,
   JuiConversationCardBody,
-  JuiConversationPostText,
   // JuiConversationCardFooter,
 } from 'jui/pattern/ConversationCard';
 import { Avatar } from '@/containers/Avatar';
 import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
-import { Markdown } from 'glipdown';
-import { glipdown2Html } from '@/utils/glipdown2Html';
-import { handleAtMentionName } from '@/utils/handleAtMentionName';
-
+import { FormatMessages } from '../FormatMessages';
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
@@ -30,15 +26,7 @@ export class ConversationCard extends React.Component<
       name,
       createTime,
       customStatus,
-      atMentionIdMaps,
-      currentUserId,
     } = this.props;
-    const { text } = post;
-    const toMdString = Markdown(text);
-    const toHtmlString = glipdown2Html(toMdString);
-    const html = handleAtMentionName(toHtmlString, atMentionIdMaps);
-    const atMentionId =
-      Object.keys(atMentionIdMaps).filter(id => +id === currentUserId)[0] || 0;
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
       <React.Fragment>
@@ -56,12 +44,7 @@ export class ConversationCard extends React.Component<
             <Actions id={id} />
           </JuiConversationCardHeader>
           <JuiConversationCardBody>
-            <JuiConversationPostText
-              currentUserId={currentUserId}
-              atMentionId={atMentionId}
-            >
-              <div dangerouslySetInnerHTML={{ __html: html }} />
-            </JuiConversationPostText>
+            <FormatMessages postId={post.id} />
           </JuiConversationCardBody>
           {/*<JuiConversationCardFooter>*/}
           {/*/!* todo: footer *!/*/}

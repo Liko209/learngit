@@ -11,11 +11,10 @@ import {
   ConversationCardViewProps,
 } from '@/containers/ConversationCard/types';
 import { observable, action, computed } from 'mobx';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity } from '@/store/utils';
 import { Post, Person } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
-import { GLOBAL_KEYS } from '@/store/constants';
 
 class ConversationCardViewModel extends AbstractViewModel
   implements ConversationCardViewProps {
@@ -54,23 +53,6 @@ class ConversationCardViewModel extends AbstractViewModel
   @computed
   get createTime() {
     return moment(this.post.createdAt).format('hh:mm A');
-  }
-  @computed
-  get atMentionIdMaps() {
-    const post = this.post;
-    const atMentionNonItemIds = (post && post.atMentionNonItemIds) || [];
-    const kv = {};
-    atMentionNonItemIds.forEach((personId: number) => {
-      kv[personId] = getEntity<Person, PersonModel>(
-        ENTITY_NAME.PERSON,
-        personId,
-      ).displayName;
-    });
-    return kv;
-  }
-  @computed
-  get currentUserId() {
-    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 }
 
