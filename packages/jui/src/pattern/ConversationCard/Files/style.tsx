@@ -20,10 +20,21 @@ import {
   ellipsis,
   typography,
 } from '../../../foundation/utils/styles';
+import pdf from './pdf_conversation_xxh.png';
+import ppt from './ppt_conversation_xxh.png';
+import ps from './ps_conversation_xxh.png';
+import sheet from './sheet_conversation_xxh.png';
+
+const ICON_MAP = {
+  pdf,
+  ppt,
+  ps,
+  sheet,
+};
 
 type FileIconProps = {
-  icon?: string;
   size?: 'small';
+  iconType: string | null;
 };
 
 const FileItem = styled(MuiListItem)`
@@ -39,7 +50,9 @@ const FileIcon = styled<FileIconProps, 'div'>('div')`
   width: ${({ size }) => (size === 'small' ? width(6) : width(14))};
   height: ${({ size }) => (size === 'small' ? width(6) : width(14))};
   background-color: #ccc;
-  background-image: url(${(props: FileIconProps) => props.icon});
+  background-image: url(${({ iconType }) =>
+    iconType ? ICON_MAP[iconType] : ''});
+  background-size: cover;
   margin: ${({ size }) => (size === 'small' ? spacing(0, 1, 0, 0) : null)};
 `;
 
@@ -74,7 +87,9 @@ const FileActionsWrapper = styled.span`
 `;
 
 const FileCard = styled(MuiCard)`
+  display: inline-block;
   width: ${width(80)};
+  margin: ${spacing(0, 5, 2, 0)};
 `;
 
 const FileCardMedia = styled(MuiCardMedia)`

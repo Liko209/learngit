@@ -14,22 +14,54 @@ import { ENTITY_NAME } from '@/store';
 import ItemModel from '@/store/models/Item';
 import { FileItemsViewProps } from './types';
 
+const FILE_ICON_MAP = {
+  pdf: ['pdf'],
+  sheet: ['xlsx', 'xls'],
+  ppt: ['ppt', 'pptx', 'potx'],
+  ps: ['ps', 'psd'],
+};
+
 class FileItemsViewModel extends StoreViewModel<FileItemsViewProps> {
   @computed
-  get ids() {
-    return this.props.ids;
+  get _id() {
+    return this.props.id;
   }
 
-  getFileItems = () => {
-    console.log(this.ids, '----file ids');
-    this.ids.forEach((id: number) => {
-      const item = this.getItem(id);
-      console.log(item);
-    });
+  needPreview = (item: ItemModel) => {
+    return (item.pages && item.pages.length > 0) || item.thumbs ? true : false;
   }
 
-  getItem(id: number) {
-    return getEntity<Item, ItemModel>(ENTITY_NAME.ITEM, id);
+  getFileIcon = (fileType: string) => {
+    for (const key in FILE_ICON_MAP) {
+      if (FILE_ICON_MAP[key].includes(fileType)) {
+        return key;
+      }
+    }
+    return null;
+  }
+
+  getPreviewFileInfo = (item: ItemModel): string => {
+    const { pages, thumbs } = item;
+    let previewUrl = '';
+    if (pages && pages.length > 0) {
+      previewUrl = pages[0].url;
+      return previewUrl;
+    }
+    if (thumbs) {
+      for (const key in thumbs) {
+        const value = thumbs[key];
+        if (typeof value === 'string' && value.indexOf('http') > -1) {
+          previewUrl = thumbs[key];
+        }
+      }
+    }
+    return previewUrl;
+  }
+
+  @computed
+  get item() {
+    const item = getEntity<Item, ItemModel>(ENTITY_NAME.ITEM, this._id);
+    return item;
   }
 }
 

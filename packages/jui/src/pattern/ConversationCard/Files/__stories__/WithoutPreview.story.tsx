@@ -13,8 +13,9 @@ storiesOf('Pattern/ConversationCard', module)
   .addDecorator(withInfoDecorator(JuiFileWithoutPreview, { inline: true }))
   .add('FileWithoutPreview', () => (
     <JuiFileWithoutPreview
-      title="Conversation Card VxD.pdf"
-      secondary="3.5MB"
+      fileName="Conversation Card VxD.pdf"
+      size="3.5MB"
+      iconType={'pdf'}
       actions={
         <JuiIconButton variant="plain" tooltipTitle="download">
           vertical_align_bottom

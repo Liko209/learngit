@@ -8,9 +8,10 @@ import React from 'react';
 import * as Jui from './style';
 
 type JuiFileWithoutPreviewProps = {
-  title: string;
-  secondary: string;
+  fileName: string;
+  size: string;
   actions: JSX.Element;
+  iconType: string | null;
 };
 
 const FileSecondary = (secondary: string, children: JSX.Element) => {
@@ -25,18 +26,21 @@ const FileSecondary = (secondary: string, children: JSX.Element) => {
 const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
   props: JuiFileWithoutPreviewProps,
 ) => {
-  const { secondary, title, actions } = props;
+  const { size, fileName, actions, iconType } = props;
 
   return (
     <Jui.FileItem disableGutters={true}>
-      <Jui.FileIcon />
+      <Jui.FileIcon iconType={iconType} />
       <Jui.FileInfo
+        secondaryTypographyProps={{
+          component: 'div',
+        }}
         classes={{
           primary: 'file-item-primary',
           secondary: 'file-item-secondary',
         }}
-        primary={title}
-        secondary={FileSecondary(secondary, actions)}
+        primary={fileName}
+        secondary={FileSecondary(size, actions)}
       />
     </Jui.FileItem>
   );

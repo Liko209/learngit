@@ -17,6 +17,7 @@ storiesOf('Pattern/ConversationCard', module)
       url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
       fileName="fileName"
       size="2.3Mb"
+      iconType={'pdf'}
       actions={
         <JuiIconButton variant="plain" tooltipTitle="download">
           vertical_align_bottom

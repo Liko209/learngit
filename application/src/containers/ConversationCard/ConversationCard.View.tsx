@@ -55,7 +55,7 @@ export class ConversationCard extends React.Component<
           </div>
           {itemIds.map((id: number) => {
             const Item = idToPostItemComponent(id);
-            return <Item key={id} />;
+            return <Item key={id} id={id} />;
           })}
         </JuiConversationCardBody>
         {/* <JuiConversationCardFooter>

@@ -179,7 +179,10 @@ export type ItemVersions = {
   download_url: string;
   size: number;
   url: string;
+  thumbs?: any;
   length?: number; // document preview
+  orig_height?: number;
+  orig_width?: number;
   pages?: ItemVersionPage[];
 };
 
