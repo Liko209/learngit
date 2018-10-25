@@ -21,7 +21,7 @@ describe('FormatMessages', () => {
     (getEntity as jest.Mock).mockReturnValue({
       ...mockPostValue,
     });
-    expect(formatMessagesVM.post).toMatchObject({
+    expect(formatMessagesVM._post).toMatchObject({
       ...mockPostValue,
     });
   });
@@ -30,7 +30,7 @@ describe('FormatMessages', () => {
       atMentionNonItemIds: [1234],
       displayName: 'alvin huang',
     });
-    expect(formatMessagesVM.atMentionIdMaps).toMatchObject({
+    expect(formatMessagesVM._atMentionIdMaps).toMatchObject({
       1234: 'alvin huang',
     });
   });
