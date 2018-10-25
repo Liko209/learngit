@@ -5,11 +5,8 @@
  */
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-// import { ActionsProps, ActionsViewProps } from './types';
-// import { PostService } from 'sdk/service';
 import { Item } from 'sdk/models';
 import { getEntity } from '@/store/utils';
-// import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
 import ItemModel from '@/store/models/Item';
 import { FileItemsViewProps } from './types';
