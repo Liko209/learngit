@@ -17,7 +17,7 @@ fixture('Send Messages')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(formalName('send', ['P0', 'JPT-77', 'Enter text in the conversation input box']), async (t) => {
+test(formalName('Send message', ['P0', 'JPT-77']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
 
   const user = users[3];
@@ -68,7 +68,7 @@ test(formalName('Case1 Name', ['tag1', 'tag2']), async (t) => {
   // steps
 });
 
-test(formalName('Case1 Name', ['tag1', 'tag2']), async (t) => {
+test(formalName('Case2 Name', ['tag1', 'tag2']), async (t) => {
   // steps
 });
 
