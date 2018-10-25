@@ -21,7 +21,7 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    const posts = _.range(3).map(i => `${i} ${uuid()}`);
+    const msgList = _.range(3).map(i => `${i} ${uuid()}`);
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
 
     let teamId;
@@ -47,21 +47,21 @@ test(
     });
 
     await h(t).withLog('When I send 3 posts in order via API', async () => {
-      for (const post of posts) {
-        await userPlatform.createPost({ text: post }, teamId);
+      for (const msg of msgList) {
+        await userPlatform.createPost({ text: msg }, teamId);
         await t.wait(1e3)
       }
     });
 
     const postsSelector = await app.homePage.messagePanel.conversationSection.posts;
     await h(t).withLog('Then I will receive those 3 posts', async () => {
-      await t.expect(postsSelector.withText(new RegExp(posts.join('|'))).count).eql(3, { timeout: 5e3 });
+      await t.expect(postsSelector.withText(new RegExp(msgList.join('|'))).count).eql(3, { timeout: 5e3 });
     }, true);
 
     await h(t).withLog('And the 3 posts must be in correct order', async () => {
-      const postsSelector = await app.homePage.messagePanel.conversationSection.posts;
-      for (let i = 0; i < posts.length; i++) {
-        await t.expect(postsSelector.nth(-posts.length + i).withText(posts[i]).exists).ok();
+      const posts = await app.homePage.messagePanel.conversationSection.posts;
+      for (let i = 0; i < msgList.length; i++) {
+        await t.expect(posts.nth(-msgList.length + i).withText(msgList[i]).exists).ok();
       }
     });
   }
@@ -118,8 +118,8 @@ test(
     const user = users[4];
     const userPlatform = await h(t).getPlatform(user);
 
-    const lastPost = `last post ${uuid()}`;
-    const newPost = `new post ${uuid()}`;
+    const msgBeforeLogin = `send before login ${uuid()}`;
+    const msgAfterLogin = `send after login ${uuid()}`;
 
     let teamId;
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
@@ -131,8 +131,8 @@ test(
       })).data.id;
     });
 
-    await h(t).withLog(`Then I send a post "${lastPost}" to the team before login`, async () => {
-      await userPlatform.createPost({ text: lastPost }, teamId);
+    await h(t).withLog(`And a post "${msgBeforeLogin}" is sent before login`, async () => {
+      await userPlatform.createPost({ text: msgBeforeLogin }, teamId);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
@@ -140,26 +140,25 @@ test(
       await app.homePage.ensureLoaded();
     });
 
-    await h(t).withLog('Then I can enter the team conversation', async () => {
+    await h(t).withLog('And enter the team conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
       const teamConversation = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
       await t.click(teamConversation);
     });
 
-    await h(t).withLog(`And I can find post "${lastPost}"  in the conversation posts history`, async () => {
+    await h(t).withLog(`Then I should find post "${msgBeforeLogin}" in the conversation posts history`, async () => {
       const posts = await app.homePage.messagePanel.conversationSection.posts;
-      await t.expect(posts.nth(-1).textContent).contains(lastPost);
+      await t.expect(posts.nth(-1).withText(msgBeforeLogin).exists).ok();
     })
 
-    await h(t).withLog(`When I receive a post: "${newPost}"`, async () => {
-      await userPlatform.createPost({ text: newPost }, teamId);
+    await h(t).withLog(`When I send another post: "${msgAfterLogin}"`, async () => {
+      await userPlatform.createPost({ text: msgAfterLogin }, teamId);
     });
 
-    await h(t).withLog(`Then I should find the latest post is "${newPost}"`, async () => {
-      await t.wait(1e3);
+    await h(t).withLog(`Then I should find this post "${msgAfterLogin}" at the end of conversation`, async () => {
       const posts = await app.homePage.messagePanel.conversationSection.posts;
-      await t.expect(posts.nth(-1).textContent).contains(newPost);
+      await t.expect(posts.nth(-1).withText(msgAfterLogin).exists).ok();
     });
   }
 );
