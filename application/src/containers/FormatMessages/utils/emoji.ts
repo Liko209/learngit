@@ -9,13 +9,13 @@ import mapAscii from './mapAscii';
 
 function formatEmojiOne(text: string) {
   const regExp = /:([^:]+?):/g;
-  return text.trim().replace(regExp, (match: string, p1: string) => {
+  return text.trim().replace(regExp, (match: string) => {
     // console.log(match, p1); // :abc: abc
     const obj = mapEmojiOne[match];
     if (obj instanceof Object) {
       const arr = obj.unicode;
       const unicode = arr[arr.length - 1];
-      return `<img class="${getClassName(text, match)}" alt="${getAlt(unicode)}" title="${match}" src="${getSrc(unicode)}">`;
+      return getImg(text, match, unicode);
     }
     return match;
   });
@@ -35,10 +35,26 @@ function formatAscii(text: string) {
   return text.trim().replace(regExp, (match: string) => {
     const unicode = mapAscii[match];
     if (unicode) {
-      return `<img class="${getClassName(text, match)}" alt="${getAlt(unicode)}" title="${match}" src="${getSrc(unicode)}">`;
+      return getImg(text, match, unicode);
     }
     return match;
   });
+}
+
+function formatCustom(text: string, mapCustom: Object) {
+  const regExp = /:([^:]+?):/g;
+  return text.trim().replace(regExp, (match: string, p1: string) => {
+    // console.log(match, p1); // :abc: abc
+    const obj = mapCustom[p1];
+    if (obj instanceof Object) {
+      return `<img class="${getClassName(text, match)}" src="${obj.data}">`;
+    }
+    return match;
+  });
+}
+
+function getImg(text: string, match: string, unicode: string) {
+  return `<img class="${getClassName(text, match)}" alt="${getAlt(unicode)}" title="${match}" src="${getSrc(unicode)}">`;
 }
 
 function getClassName(text: string, match: string) {
@@ -87,4 +103,4 @@ function getAlt(unicode: string) {
   // return String.fromCharCode(s);
 }
 
-export { formatEmojiOne, formatAscii };
+export { formatEmojiOne, formatAscii, formatCustom };
