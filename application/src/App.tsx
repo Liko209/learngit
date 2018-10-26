@@ -21,10 +21,14 @@ import _ from 'lodash';
 import storeManager from '@/store';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import { GLOBAL_KEYS } from './store/constants';
+import { analytics } from '@/Analytics';
+
 @observer
 class App extends React.Component {
   private appName = process.env.APP_NAME || '';
-
+  componentDidMount() {
+    analytics.bootstrap();
+  }
   public render() {
     return (
       <ThemeProvider>

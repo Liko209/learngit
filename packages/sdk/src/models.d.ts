@@ -94,6 +94,7 @@ export type Company = ExtendedBaseModel & {
   name: string;
   domain: string;
   admins: number[];
+  rc_account_id?: number;
 };
 
 export type Person = ExtendedBaseModel & {
@@ -120,6 +121,7 @@ export type Person = ExtendedBaseModel & {
   glip_user_id?: number;
   away_status?: string;
   pseudo_user_phone_number?: string;
+  rc_account_id?: number;
 };
 
 export type UserInfo = {
