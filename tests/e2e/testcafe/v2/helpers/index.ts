@@ -68,6 +68,23 @@ class Helper {
     return await this.logHelper.withLog(step, cb, takeScreenShot);
   }
 
+  async getGlip(user: IUser) {
+    return await this.sdkHelper.sdkManager.getGlip(user);
+  }
+
+  async getPlatform(user: IUser) {
+    return await this.sdkHelper.sdkManager.getPlatform(user);
+  }
+
+  // testcafe extend
+  get href() {
+    return ClientFunction(() => document.location.href)();
+  }
+
+  async refresh() {
+    await this.t.navigateTo(await this.href);
+  }
+
   async waitUntilExist(selector: Selector, timeout: number = 5e3) {
     await this.t
       .expect(selector.exists)
@@ -86,22 +103,13 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  // others
   async resetGlipAccount(user: IUser) {
     logger.warn("reset a glip account will be very slow (30s+)");
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(this.rcData.mainCompany.admin);
     await adminGlip.deactivated(user.glipId);
     await this.sdkHelper.sdkManager.getGlip(user);
   }
-
-  // testcafe extend
-  get href() {
-    return ClientFunction(() => document.location.href)();
-  }
-
-  async refresh() {
-    await this.t.navigateTo(await this.href);
-  }
-
 }
 
 function h(t: TestController) {

@@ -8,19 +8,14 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
-import { GlipSdk } from '../../v2/sdk/glip';
 
 fixture('ConversationList/LeftRail')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test.skip(
+test(
   formalName('Sections Order', ['P0', 'JPT-2', 'LeftRail']),
   async (t: TestController) => {
-    // await directLogin(t)
-    //   .shouldNavigateTo(LeftRail)
-    //   .log('check leftRail section order')
-    //   .checkSectionsOrder('Favorites', 'Direct Messages', 'Teams'); // 'Unread', 'Mentions', 'Bookmarks',
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
@@ -36,7 +31,18 @@ test.skip(
 
     await h(t).withLog(
       'I can find the conversation sections in correct order',
-      async () => {},
+      async () => {
+        const order = ['Favorites', 'Direct Messages', 'Teams'];
+        for (let i = 0; i < order.length; i++) {
+          await t
+            .expect(
+              app.homePage.messagePanel.conversationListSections
+                .nth(i)
+                .getAttribute('data-name'),
+            )
+            .eql(order[i]);
+        }
+      },
     );
   },
 );
