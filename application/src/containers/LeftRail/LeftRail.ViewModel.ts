@@ -33,7 +33,7 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   get filters(): LeftRailFilter[] {
     return [
       {
-        label: 'show_unread',
+        label: 'show_unread_plural',
         value: this._unreadOnly,
         onChange: this.toggleUnread,
       },

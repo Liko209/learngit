@@ -21,10 +21,7 @@ interface IState {
 }
 
 @observer
-class ConversationListItemViewComponent extends React.Component<
-  Props,
-  IState
-> {
+class ConversationListItemViewComponent extends React.Component<Props, IState> {
   @observable
   menuAnchorEl: HTMLElement | null = null;
 
@@ -63,6 +60,7 @@ class ConversationListItemViewComponent extends React.Component<
           onClick={this._handleClick}
           title={this.props.displayName}
           selected={this.props.selected}
+          hidden={this.props.hidden}
         />
         <Menu
           groupId={this.props.groupId}

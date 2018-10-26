@@ -5,7 +5,6 @@
  */
 
 import React from 'react';
-import styled from 'jui/foundation/styled-components';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiConversationListFilter } from 'jui/pattern/ConversationList/ConversationListFilter';
 
@@ -13,33 +12,37 @@ import { Section } from './Section';
 import { LeftRailViewProps } from './types';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
-
-const Wrapper = styled.div`
-  height: 100%;
-  overflow: auto;
-  border-right: 1px solid ${({ theme }) => theme.palette.divider};
-`;
+import { toTitleCase } from '@/utils';
+import {
+  JuiLeftRail,
+  JuiLeftRailStickyTop,
+  JuiLeftRailMainSection,
+} from 'jui/pattern/LeftRail/LeftRail';
 
 const LeftRailViewComponent = (
   props: LeftRailViewProps & { t: TranslationFunction },
 ) => {
   return (
-    <Wrapper>
-      {props.filters.map((filter, index) => [
-        index ? <JuiDivider key="divider" /> : null,
-        <JuiConversationListFilter
-          checked={filter.value}
-          key={filter.label}
-          label={props.t(filter.label)}
-          onChange={filter.onChange}
-        />,
-      ])}
+    <JuiLeftRail>
+      <JuiLeftRailStickyTop>
+        {props.filters.map((filter, index) => [
+          index ? <JuiDivider key="divider" /> : null,
+          <JuiConversationListFilter
+            checked={filter.value}
+            key={filter.label}
+            label={toTitleCase(props.t(filter.label))}
+            onChange={filter.onChange}
+          />,
+        ])}
+      </JuiLeftRailStickyTop>
       <JuiDivider key="divider" />
-      {props.sections.map((type, index) => [
-        index ? <JuiDivider key="divider" /> : null,
-        <Section key={type} type={type} />,
-      ])}
-    </Wrapper>
+      <JuiLeftRailMainSection>
+        {props.sections.map((type, index) => [
+          index ? <JuiDivider key="divider" /> : null,
+          <Section key={type} type={type} />,
+        ])}
+      </JuiLeftRailMainSection>
+    </JuiLeftRail>
   );
 };
 

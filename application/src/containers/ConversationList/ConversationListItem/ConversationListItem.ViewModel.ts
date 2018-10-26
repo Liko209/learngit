@@ -62,6 +62,14 @@ class ConversationListItemViewModel extends StoreViewModel<
   get umiHint() {
     return this.selected;
   }
+
+  @computed
+  get hidden() {
+    return (
+      storeManager.getGlobalStore().get(GLOBAL_KEYS.UNREAD_TOGGLE_ON) &&
+      !(this.umiHint || this.selected)
+    );
+  }
 }
 
 export { ConversationListItemViewModel };
