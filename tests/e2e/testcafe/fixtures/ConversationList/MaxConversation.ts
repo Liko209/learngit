@@ -3,12 +3,12 @@
  * @Date: 2018-10-24 22:02:08
  * Copyright © RingCentral. All rights reserved.
  */
+import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
-import { GlipSdk } from '../../v2/sdk/glip';
 
 fixture('ConversationList/maxConversation')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
@@ -28,9 +28,7 @@ test(
       'Given I have an extension with at least on team',
       async () => {
         await userPlatform.createGroup({
-          type: 'Team',
-          name: 'My Team',
-          members: [user.rcId, users[5].rcId],
+          type: 'Team', name: uuid(), members: [user.rcId, users[5].rcId],
         });
       },
     );
@@ -59,7 +57,7 @@ test(
         for (let i = 0; i < MAX_NUMBER; i++) {
           const newTeam = await userPlatform.createGroup({
             type: 'Team',
-            name: `MAX ${Date.now()}`,
+            name: uuid(),
             members: [user.rcId, users[5].rcId],
           });
 
