@@ -5,7 +5,6 @@
  */
 import { handleAtMentionName } from '@/utils/handleAtMentionName';
 import { Markdown } from 'glipdown';
-import { glipdown2Html } from '@/utils/glipdown2Html';
 
 class FormatText {
   text = '';
@@ -15,9 +14,8 @@ class FormatText {
 
   glipdown(atMentionIdMaps: { number?: string }, currentUserId: number) {
     const toMdString = Markdown(this.text);
-    const toHtmlString = glipdown2Html(toMdString);
     this.text = handleAtMentionName(
-      toHtmlString,
+      toMdString,
       atMentionIdMaps,
       currentUserId,
     );
