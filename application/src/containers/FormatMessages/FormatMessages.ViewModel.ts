@@ -50,9 +50,14 @@ class FormatMessagesViewModel extends StoreViewModel<{ postId: number }> {
   }
 
   @computed
+  private get _staticHttpServer() {
+    return getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
+  }
+
+  @computed
   get formatHtml() {
     const transform = new Transform(this._post.text);
-    transform.glipdown(this._atMentionIdMaps, this._currentUserId).emoji(this._customEmojiMap);
+    transform.glipdown(this._atMentionIdMaps, this._currentUserId).emoji(this._staticHttpServer, this._customEmojiMap);
     return transform.text;
   }
 }

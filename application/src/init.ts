@@ -39,9 +39,10 @@ export async function initAll() {
   });
 
   // subscribe service notification to global store
-  const { notificationCenter, AccountService, SOCKET, SERVICE } = service;
+  const { notificationCenter, AccountService, ConfigService, SOCKET, SERVICE, CONFIG } = service;
   const globalStore = storeManager.getGlobalStore();
   const accountService: service.AccountService = AccountService.getInstance();
+  const configService: service.ConfigService = ConfigService.getInstance();
   notificationCenter.on(SOCKET.NETWORK_CHANGE, (data: any) => {
     globalStore.set(GLOBAL_KEYS.NETWORK, data.state);
   });
@@ -50,6 +51,10 @@ export async function initAll() {
     globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
     const currentCompanyId = accountService.getCurrentCompanyId() as number;
     globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+  });
+  notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, () => {
+    const staticHttpServer = configService.getStaticHttpServer();
+    globalStore.set(GLOBAL_KEYS.STATIC_HTTP_SERVER, staticHttpServer);
   });
   notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
     // 1. show loading

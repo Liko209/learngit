@@ -6,8 +6,9 @@
 
 import mapEmojiOne from './mapEmojiOne';
 import mapAscii from './mapAscii';
+import { CustomEmojiMap } from '../types';
 
-function formatEmojiOne(text: string) {
+function formatEmojiOne(text: string, staticHttpServer: string) {
   const regExp = /:([^:|^\/]+?):/g; // except http://
   return text.trim().replace(regExp, (match: string) => {
     // console.log(match, p1); // :abc: abc
@@ -15,13 +16,13 @@ function formatEmojiOne(text: string) {
     if (obj instanceof Object) {
       const arr = obj.unicode;
       const unicode = arr[arr.length - 1];
-      return getImg(text, match, unicode);
+      return getImg(text, match, unicode, staticHttpServer);
     }
     return match;
   });
 }
 
-function formatAscii(text: string) {
+function formatAscii(text: string, staticHttpServer: string) {
   // Regular expression special characters, Except '\', because mapAscii has used '\'
   const regExpEscape = /\$|\(|\)|\*|\+|\.|\[|\]|\?|\/|\^|\{|\}|\|/g;
   // Escape the key of mapAscii
@@ -35,13 +36,13 @@ function formatAscii(text: string) {
   return text.trim().replace(regExp, (match: string) => {
     const unicode = mapAscii[match];
     if (unicode) {
-      return getImg(text, match, unicode);
+      return getImg(text, match, unicode, staticHttpServer);
     }
     return match;
   });
 }
 
-function formatCustom(text: string, mapCustom: { [index: string]: { data: string } }) {
+function formatCustom(text: string, mapCustom: CustomEmojiMap) {
   const regExp = /:([^:|^\/]+?):/g; // except http://
   return text.trim().replace(regExp, (match: string, p1: string) => {
     // console.log(match, p1); // :abc: abc
@@ -53,8 +54,8 @@ function formatCustom(text: string, mapCustom: { [index: string]: { data: string
   });
 }
 
-function getImg(text: string, match: string, unicode: string) {
-  return `<img class="${getClassName(text, match)}" alt="${getAlt(unicode)}" title="${match}" src="${getSrc(unicode)}">`;
+function getImg(text: string, match: string, unicode: string, staticHttpServer: string) {
+  return `<img class="${getClassName(text, match)}" alt="${getAlt(unicode)}" title="${match}" src="${getSrc(unicode, staticHttpServer)}">`;
 }
 
 function getClassName(text: string, match: string) {
@@ -65,9 +66,8 @@ function getClassName(text: string, match: string) {
   return className;
 }
 
-function getSrc(unicode: string) {
-  // todo from index data static_http_server
-  const staticHttpServer = 'https://d2rbro28ib85bu.cloudfront.net';
+function getSrc(unicode: string, staticHttpServer: string) {
+  // const staticHttpServer = 'https://d2rbro28ib85bu.cloudfront.net';
   const path = '/emoji/emojione/png/';
   const param = '?v=2.2.7';
   return `${staticHttpServer}${path}${unicode}.png${param}`;

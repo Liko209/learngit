@@ -7,6 +7,7 @@
 import { Markdown } from 'glipdown';
 import { glipdown2Html } from '@/utils/glipdown2Html';
 import { formatEmojiOne, formatAscii, formatCustom, handleAtMentionName } from './utils';
+import { CustomEmojiMap } from './types';
 
 class Transform {
   text = '';
@@ -26,9 +27,9 @@ class Transform {
     return this;
   }
 
-  emoji(customEmojiMap: { [index: string]: { data: string } }) {
-    this.text = formatAscii(this.text);
-    this.text = formatEmojiOne(this.text);
+  emoji(staticHttpServer: string, customEmojiMap: CustomEmojiMap) {
+    this.text = formatAscii(this.text, staticHttpServer);
+    this.text = formatEmojiOne(this.text, staticHttpServer);
     this.text = formatCustom(this.text, customEmojiMap);
     return this;
   }
