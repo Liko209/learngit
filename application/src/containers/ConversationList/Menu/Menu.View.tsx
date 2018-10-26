@@ -48,18 +48,10 @@ class MenuViewComponent extends Component<Props, State> {
     if (result === ServiceCommonErrorType.SERVER_ERROR) {
       JuiModal.alert({
         title: '',
-        content: (
-          <>
-            <JuiTypography>
-              {t('conversationMenuItem:markFavoriteServerErrorContent')}
-            </JuiTypography>
-          </>
-        ),
+        content: t('conversationMenuItem:markFavoriteServerErrorContent'),
         okText: t('conversationMenuItem:OK'),
         okBtnType: 'text',
-        onOK: () => {
-          this._closeConversationWithConfirm();
-        },
+        onOK: () => {},
       });
     }
   }
