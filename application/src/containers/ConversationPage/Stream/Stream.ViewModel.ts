@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
+import {
+  ISortableModel,
+  FetchDataDirection,
+  TUpdated,
+} from '@/store/base/fetch/types';
 import _ from 'lodash';
 import { observable } from 'mobx';
 import { Post } from 'sdk/models';
@@ -57,6 +61,14 @@ class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
     super(handler);
     this.onAppended = onAppended;
   }
+  onUpdated(updatedIds: TUpdated) {
+    updatedIds.forEach(item =>
+      this.listStore.replaceAt(item.index, {
+        value: item.value.id,
+        type: TStreamType.POST,
+      }),
+    );
+  }
   onAdded(direction: FetchDataDirection, addedItems: ISortableModel[]) {
     const updated = _(addedItems)
       .map(item => ({
@@ -97,7 +109,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       return;
     }
     if (this._transformHandler) {
-      this._transformHandler.dispose();
       this.dispose();
     }
     this.groupId = props.groupId;

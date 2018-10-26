@@ -22,7 +22,6 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
-    const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
     const teamsSection = app.homePage.messagePanel.teamsSection;
 
     await h(t).withLog(
@@ -38,7 +37,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -86,7 +85,7 @@ test(
 
     await h(t).withLog(
       `Max conversation count should be exceeded, total number should be ${MAX_NUMBER +
-        initialCount}`,
+      initialCount}`,
       async () => {
         const count = await teamsSection.conversations.count;
         await t.expect(count).eql(MAX_NUMBER + initialCount);

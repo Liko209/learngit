@@ -49,7 +49,7 @@ test(
       },
     );
 
-    await h(t).withLog(`Then I enter a random conversation in teams section`,async () => {
+    await h(t).withLog(`Then I enter a random conversation in teams section`, async () => {
       const conversations = app.homePage.messagePanel.teamsSection.conversations;
       const count = await conversations.count;
       const n = Math.floor(Math.random() * count);
@@ -118,13 +118,13 @@ test(
     })
 
     await h(t).withLog(`And I modify user name through api,`, async () => {
-      await userGlip.updatePerson(user.glipId, { first_name: changedName });
+      await userGlip.updatePerson(null, { first_name: changedName });
     })
 
-    await h(t).withLog(`Then I can find user name change to ${changedName}.`, async ()=>{
+    await h(t).withLog(`Then I can find user name change to ${changedName}.`, async () => {
       const tempName = targetPost.child(1).child(0).child(0).child(0).textContent
       await t.expect(tempName).contains(changedName);
-      await userGlip.updatePerson(user.glipId, { first_name: userName.split(" ")[0] })
+      await userGlip.updatePerson(null, { first_name: userName.split(" ")[0] })
     })
   },
 );
@@ -171,16 +171,16 @@ test(
     });
 
     await h(t).withLog(`When I modify user status "In a meeting" through api`, async () => {
-      await userGlip.updatePerson(user.glipId, { away_status: `${userName} In a meeting` });
+      await userGlip.updatePerson(null, { away_status: `${userName} In a meeting` });
     });
 
     await h(t).withLog(`Then I can find username display change to "${userName} In a meeting"`, async () => {
-      await userGlip.updatePerson(user.glipId, { away_status: `${userName} In a meeting` });
+      await userGlip.updatePerson(null, { away_status: `${userName} In a meeting` });
       await t.expect(targetPost.textContent).contains('In a meeting');
     });
 
     await h(t).withLog(`When I modify user status "content of user modify" through api`, async () => {
-      await userGlip.updatePerson(user.glipId, { away_status: `${userName} content of user modify` });
+      await userGlip.updatePerson(null, { away_status: `${userName} content of user modify` });
     });
 
     await h(t).withLog(`Then I can find username display change to "${userName} content of user modify"`, async () => {
@@ -188,7 +188,7 @@ test(
     });
 
     await h(t).withLog(`When I delete user status through api request`, async () => {
-      await userGlip.updatePerson(user.glipId, { away_status: null });
+      await userGlip.updatePerson(null, { away_status: null });
     });
 
     await h(t).withLog(`Then I only can find username display is "${userName}" without status`, async () => {
