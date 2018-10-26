@@ -26,7 +26,7 @@ import { ENTITY, GROUP_QUERY_TYPE, notificationCenter } from 'sdk/service';
 const { EVENT_TYPES } = service;
 
 class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
-  mockData: { data: T[]; hasMore: boolean } = { data: [], hasMore: true };
+  mockData: { data: T[]; hasMore: boolean } = { data: [], hasMore: false };
 
   fetchData(
     offset: number,
@@ -139,7 +139,7 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     dataProvider = new TestFetchSortableDataHandler();
     dataProvider.mockData = {
       data: [buildSortableNumber(3), buildSortableNumber(6)],
-      hasMore: true,
+      hasMore: false,
     };
 
     fetchSortableDataHandler = new FetchSortableDataListHandler<SortableNumber>(
@@ -176,7 +176,7 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     ]);
   });
 
-  it('put with updated sort value', () => {
+  it.only('put with updated sort value', () => {
     handleChangeMap(buildSortableNumber(3, 8), EVENT_TYPES.PUT);
     checkListStore(fetchSortableDataHandler.listStore, [
       sortableTransformFunc(buildSortableNumber(6)),

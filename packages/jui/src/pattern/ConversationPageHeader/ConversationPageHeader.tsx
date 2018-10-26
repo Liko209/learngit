@@ -33,7 +33,8 @@ type JuiConversationPageHeaderProps = {
 const TitleWrapper = styled<TypographyProps>(Typography)`
   && {
     color: ${grey('900')};
-    ${typography('title2')} ${ellipsis()};
+    ${typography('title2')};
+    ${ellipsis()};
   }
 `;
 const WrappedAppBar = ({ Right, ...rest }: JuiConversationPageHeaderProps) => (
@@ -63,16 +64,16 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
     .right-wrapper {
       display: flex;
       align-items: center;
-      padding-left: ${({ theme, Right }) =>
-        Right ? spacing(3)({ theme }) : ''};
     }
 
     .subtitle {
       display: flex;
       align-items: center;
-      padding-left: ${({ theme }) => spacing(1)({ theme })};
+      overflow: hidden;
+      flex: 1;
+      padding-left: ${({ theme }) => spacing(2)({ theme })};
       padding-right: ${({ theme, Right }) =>
-        Right ? spacing(3)({ theme }) : ''};
+        Right ? spacing(12)({ theme }) : ''};
     }
   }
 `;

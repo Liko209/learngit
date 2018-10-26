@@ -10,15 +10,16 @@ import MuiTypography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import styled from '../../foundation/styled-components';
-import { isTextOverflow, spacing } from '../../foundation/utils';
+import { isTextOverflow, spacing, typography } from '../../foundation/utils';
 
 const StyledTypography = styled(MuiTypography)`
   && {
     flex: 1;
-    padding: ${spacing(0, 2)};
-    font-size: 14px;
+    padding: ${spacing(0, 3, 0, 2)};
+    ${typography('body2')};
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
     color: inherit;
   }
 `;

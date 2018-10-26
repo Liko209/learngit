@@ -6,6 +6,7 @@ import { RcPlatformSdk } from './platform';
 export class GlipSdk {
   axiosClient: AxiosInstance;
   accessToken: string;
+  initData: any;
 
   constructor(private glipServerUrl: string, private platform: RcPlatformSdk) {
     this.axiosClient = axios.create({
@@ -13,16 +14,18 @@ export class GlipSdk {
     });
   }
 
-  async authByRcToken(forMobile: boolean = true) {
+  async authByRcToken(forMobile: boolean = false) {
     const encodedToken = Buffer.from(
       JSON.stringify(this.platform.token),
     ).toString('base64');
     const url = 'api/login';
-    const data = {
-      for_mobile: forMobile,
+    const data: any = {
       remember_me: false,
       rc_access_token_data: encodedToken,
     };
+    if (forMobile) {
+      data.for_mobile = forMobile;
+    }
     return await this.axiosClient.put(url, querystring.stringify(data), {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -37,9 +40,14 @@ export class GlipSdk {
     };
   }
 
-  async auth(forMobile: boolean = false) {
+  get myId() {
+    return this.initData.user_id;
+  }
+
+  async auth(forMobile: boolean = true) {
     const res = await this.authByRcToken(forMobile);
     this.accessToken = res.headers['x-authorization'];
+    this.initData = res.data;
   }
 
   getPerson(personId: string) {
@@ -50,6 +58,8 @@ export class GlipSdk {
   }
 
   updatePerson(personId: string, personDict: object) {
+    personId = personId || this.initData.user_id;
+
     const uri = `api/person/${personId}`;
     return this.axiosClient.put(uri, personDict, {
       headers: this.headers,

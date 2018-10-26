@@ -10,7 +10,7 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
 import { ClientFunction } from 'testcafe';
 
-fixture('HighlightConversation')
+fixture('ConversationList/HighlightConversation')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 

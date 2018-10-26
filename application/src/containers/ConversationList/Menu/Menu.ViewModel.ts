@@ -47,7 +47,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
 
   @computed
   get favoriteText() {
-    return this.isFavorite ? 'unFavorite' : 'favorite';
+    return this.isFavorite ? 'remove_from_favorite' : 'favorite';
   }
 
   @computed

@@ -10,11 +10,11 @@ import { PostService, StateService, ENTITY } from 'sdk/service';
 import { Post, GroupState } from 'sdk/models';
 import { ErrorTypes } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
-import { FetchDataDirection } from '@/store/base/fetch/types';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
 } from '@/store/base/fetch';
+import { FetchDataDirection } from '@/store/base/fetch/types';
 import StoreViewModel from '@/store/ViewModel';
 import {
   onScrollToTop,
