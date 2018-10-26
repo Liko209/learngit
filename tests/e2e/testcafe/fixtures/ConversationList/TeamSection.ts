@@ -14,7 +14,7 @@ fixture('ConversationList/TeamSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test.skip(
+test(
   formalName(
     'Team section display the conversation which the login user as one of the team member',
     ['P2', 'JPT-12', 'Team section'],
@@ -49,7 +49,7 @@ test.skip(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-      user.extension
+        user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -75,7 +75,7 @@ test.skip(
   },
 );
 
-test.skip(
+test(
   formalName('Each conversation should be represented by the team name.', [
     'P0',
     'JPT-13',
@@ -113,7 +113,7 @@ test.skip(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-      user.extension
+        user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -203,7 +203,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-      user.extension
+        user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
