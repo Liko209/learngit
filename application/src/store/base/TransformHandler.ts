@@ -1,5 +1,3 @@
-import { ListStore } from './fetch/ListStore';
-import { FetchDataDirection, ISortableModel, TDelta } from './fetch/types';
 /*
  * @Author: Andy Hu
  * @Date: 2018-09-17 14:01:49
@@ -7,6 +5,13 @@ import { FetchDataDirection, ISortableModel, TDelta } from './fetch/types';
  */
 import _ from 'lodash';
 import { FetchSortableDataListHandler } from './fetch/FetchSortableDataListHandler';
+import { ListStore } from './fetch/ListStore';
+import {
+  FetchDataDirection,
+  ISortableModel,
+  TDelta,
+  TUpdated,
+} from './fetch/types';
 
 abstract class TransformHandler<T, K> {
   fetchData: (direction: FetchDataDirection) => any;
@@ -27,12 +32,15 @@ abstract class TransformHandler<T, K> {
   }
 
   modificationHandler = (delta: TDelta) => {
-    const { updated, deleted, direction } = delta;
+    const { updated, deleted, added, direction } = delta;
     if (deleted.length) {
       this.onDeleted(deleted);
     }
-    if (updated.length) {
-      this.onAdded(direction, updated);
+    if (added.length) {
+      this.onAdded(direction, added);
+    }
+    if (updated) {
+      this.onUpdated(updated);
     }
   }
 
@@ -42,7 +50,7 @@ abstract class TransformHandler<T, K> {
   ): any;
 
   abstract onDeleted(deletedItems: number[]): any;
-
+  abstract onUpdated(updatedIds: TUpdated): any;
   dispose() {
     this._orderListHandler.dispose();
   }
