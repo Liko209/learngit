@@ -10,7 +10,7 @@ import { Avatar } from '@/containers/Avatar';
 import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
-import { idToPostItemComponent } from '@/containers/PostItems';
+import { idsToConversationSheet } from '@/containers/ConversationSheet';
 
 @observer
 export class ConversationCard extends React.Component<
@@ -52,10 +52,7 @@ export class ConversationCard extends React.Component<
           >
             {text}
           </div>
-          {itemIds.map((id: number) => {
-            const Item = idToPostItemComponent(id);
-            return <Item key={id} />;
-          })}
+          {idsToConversationSheet(itemIds)}
         </JuiConversationCardBody>
         {/* <JuiConversationCardFooter>
           [conversation card footer]
