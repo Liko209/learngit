@@ -34,6 +34,7 @@ const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
 const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,
   sortValue: dataModel.created_at,
+  data: dataModel,
 });
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
@@ -43,6 +44,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _transformHandler: PostTransformHandler;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
+  private _firstTimeScrollDown: boolean = true;
 
   @observable
   groupId: number;
@@ -67,6 +69,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this._transformHandler) {
       this.dispose();
     }
+    this._firstTimeScrollDown = true;
     this.groupId = props.groupId;
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (offset: number, direction, pageSize, anchor) => {
@@ -99,7 +102,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       },
     );
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
-
     this._newMessageSeparatorHandler.setReadThrough(this._readThrough);
 
     this._transformHandler = new PostTransformHandler({
@@ -139,7 +141,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
 
     if (atBottom) {
-      this._newMessageSeparatorHandler.disable();
+      if (!this._firstTimeScrollDown) {
+        this._newMessageSeparatorHandler.disable();
+      }
+      this._firstTimeScrollDown = false;
     } else {
       this._newMessageSeparatorHandler.setReadThrough(this._readThrough);
       this._newMessageSeparatorHandler.enable();
@@ -147,7 +152,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    console.log('markAsRead: ');
     if (this.groupId) {
       this._stateService.markAsRead(this.groupId);
     }

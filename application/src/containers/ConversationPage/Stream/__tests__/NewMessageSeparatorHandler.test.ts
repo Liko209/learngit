@@ -1,6 +1,9 @@
+import { getGlobalValue } from '../../../../store/utils';
 import { FetchDataDirection, ISortableModel } from '../../../../store/base';
 import { NewMessageSeparatorHandler } from '../NewMessageSeparatorHandler';
 import { SeparatorType } from '../types';
+
+jest.mock('../../../../store/utils');
 
 type OnAddedCaseConfig = {
   setup?: (handler: NewMessageSeparatorHandler) => void;
@@ -28,15 +31,17 @@ describe('NewMessageSeparatorHandler', () => {
       const handler = runOnAdded({
         readThrough: 620249092,
         addedItems: [
-          { id: 620281860, sortValue: 1540461972285 },
-          { id: 620273668, sortValue: 1540461971175 },
-          { id: 620265476, sortValue: 1540461970958 },
-          { id: 620257284, sortValue: 1540461970776 },
-          { id: 620249092, sortValue: 1540461830964 }, // readThrough is here
-          { id: 620240900, sortValue: 1540461830617 },
-          { id: 620232708, sortValue: 1540461821422 },
+          { id: 620281860, sortValue: 1540461972285, data: { creator_id: 1 } },
+          { id: 620273668, sortValue: 1540461971175, data: { creator_id: 1 } },
+          { id: 620265476, sortValue: 1540461970958, data: { creator_id: 1 } },
+          { id: 620257284, sortValue: 1540461970776, data: { creator_id: 1 } },
+          { id: 620249092, sortValue: 1540461830964, data: { creator_id: 1 } }, // readThrough is here
+          { id: 620240900, sortValue: 1540461830617, data: { creator_id: 1 } },
+          { id: 620232708, sortValue: 1540461821422, data: { creator_id: 1 } },
         ],
       });
+
+      (getGlobalValue as jest.Mock).mockReturnValueOnce(1);
 
       expect(handler.separatorMap.size).toBe(1);
       expect(handler.separatorMap.get(620257284)).toHaveProperty(
@@ -49,9 +54,9 @@ describe('NewMessageSeparatorHandler', () => {
       const handler = runOnAdded({
         readThrough: undefined,
         addedItems: [
-          { id: 1002, sortValue: 3 },
-          { id: 1001, sortValue: 2 },
-          { id: 1000, sortValue: 1 },
+          { id: 1002, sortValue: 3, data: { creator_id: 1 } },
+          { id: 1001, sortValue: 2, data: { creator_id: 1 } },
+          { id: 1000, sortValue: 1, data: { creator_id: 1 } },
         ],
       });
 
@@ -65,9 +70,9 @@ describe('NewMessageSeparatorHandler', () => {
         },
         readThrough: 1001,
         addedItems: [
-          { id: 1002, sortValue: 3 },
-          { id: 1001, sortValue: 2 },
-          { id: 1000, sortValue: 1 },
+          { id: 1002, sortValue: 3, data: { creator_id: 1 } },
+          { id: 1001, sortValue: 2, data: { creator_id: 1 } },
+          { id: 1000, sortValue: 1, data: { creator_id: 1 } },
         ],
       });
 
@@ -101,7 +106,10 @@ describe('NewMessageSeparatorHandler', () => {
         },
         readThrough: 1000,
         direction: FetchDataDirection.DOWN,
-        addedItems: [{ id: 1000, sortValue: 1 }, { id: 1001, sortValue: 1 }],
+        addedItems: [
+          { id: 1000, sortValue: 1, data: { creator_id: 1 } },
+          { id: 1001, sortValue: 1, data: { creator_id: 1 } },
+        ],
       });
 
       expect(handler.separatorMap.size).toBe(1);

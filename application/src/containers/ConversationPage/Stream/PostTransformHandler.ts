@@ -3,7 +3,6 @@
  * @Date: 2018-10-25 11:55:22
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import { computed } from 'mobx';
 import { Post } from 'sdk/models';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';

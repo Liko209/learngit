@@ -9,14 +9,21 @@ import { Post } from 'sdk/src/models';
 import { FetchDataDirection, ISortableModel } from '@/store/base';
 import { ISeparatorHandler } from './ISeparatorHandler';
 import { NewSeparator, SeparatorType } from './types';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue } from '@/store/utils';
 
 class NewMessageSeparatorHandler implements ISeparatorHandler {
   priority = 2;
   private _readThrough?: number;
   private _disabled?: boolean;
+  private _userId?: number;
 
   @observable
   separatorMap = new Map<number, NewSeparator>();
+
+  constructor() {
+    this._userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  }
 
   onAdded(
     direction: FetchDataDirection,
@@ -34,10 +41,14 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     if (this.separatorMap.size > 0) return;
 
     const firstUnreadPost = _.findLast(
-      addedItems,
-      item => item.id > readThrough,
+      allItems,
+      (item: ISortableModel<Post>) => {
+        if (item.data) {
+          return item.id > readThrough && item.data.creator_id !== this._userId;
+        }
+        return false;
+      },
     );
-
     if (firstUnreadPost) {
       this._setSeparator(firstUnreadPost.id);
     }

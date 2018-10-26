@@ -11,11 +11,6 @@ import { StreamViewProps, StreamItem, StreamItemType } from './types';
 const NewMessageSeparator = () => (
   <div style={{ textAlign: 'center' }}>New Messages</div>
 );
-const EmptyConversation = () => (
-  <div style={{ width: '100%', height: '100%', textAlign: 'center' }}>
-    New Messages
-  </div>
-);
 
 class StreamView extends Component<StreamViewProps> {
   componentDidUpdate(prevProps: StreamViewProps) {
@@ -42,11 +37,9 @@ class StreamView extends Component<StreamViewProps> {
     const { items } = this.props;
     return (
       <div>
-        {items.length > 0 ? (
-          items.map(item => this.renderStreamItem(item))
-        ) : (
-          <EmptyConversation />
-        )}
+        {items.length > 0
+          ? items.map(item => this.renderStreamItem(item))
+          : null}
       </div>
     );
   }
