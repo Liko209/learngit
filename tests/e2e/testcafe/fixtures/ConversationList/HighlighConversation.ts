@@ -25,7 +25,7 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
-    const glipSDK = await h(t).sdkHelper.sdkManager.getGlip(user);
+    const glipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
     const directMessageSection =
       app.homePage.messagePanel.directMessagesSection;
 
@@ -43,20 +43,22 @@ test(
     await h(t).withLog(
       'And the conversation should not be hidden',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSdk.updateProfileByGlipId(user.glipId, {
           [`hide_group_${group.data.id}`]: false,
         });
       },
     );
 
     await h(t).withLog(
-      'Given the group chat is last group selected',
+      `Given the group chat ${group.data.id} is last group selected`,
       async () => {
-        await glipSDK.updateStateByGlipId(user.glipId, {
+        const stateId = await glipSdk.getStateIdByPersonId(user.glipId);
+        await glipSdk.partialUpdateState(stateId, {
           last_group_id: group.data.id,
         });
       },
     );
+
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -93,5 +95,6 @@ test(
           .ok();
       },
     );
+
   },
 );
