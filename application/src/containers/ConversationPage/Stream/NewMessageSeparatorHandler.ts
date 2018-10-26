@@ -40,15 +40,12 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     // it will never be modified when receive new posts
     if (this.separatorMap.size > 0) return;
 
-    const firstUnreadPost = _.findLast(
-      allItems,
-      (item: ISortableModel<Post>) => {
-        if (item.data) {
-          return item.id > readThrough && item.data.creator_id !== this._userId;
-        }
-        return false;
-      },
-    );
+    const firstUnreadPost = _.find(allItems, (item: ISortableModel<Post>) => {
+      if (item.data) {
+        return item.id > readThrough && item.data.creator_id !== this._userId;
+      }
+      return false;
+    });
     if (firstUnreadPost) {
       this._setSeparator(firstUnreadPost.id);
     }

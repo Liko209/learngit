@@ -2,6 +2,7 @@ import { getGlobalValue } from '../../../../store/utils';
 import { FetchDataDirection, ISortableModel } from '../../../../store/base';
 import { NewMessageSeparatorHandler } from '../NewMessageSeparatorHandler';
 import { SeparatorType } from '../types';
+import _ from 'lodash';
 
 jest.mock('../../../../store/utils');
 
@@ -21,7 +22,13 @@ function runOnAdded({
   const handler = new NewMessageSeparatorHandler();
   setup && setup(handler);
   readThrough && handler.setReadThrough(readThrough);
-  handler.onAdded(direction || FetchDataDirection.UP, addedItems, addedItems);
+  handler.onAdded(
+    direction || FetchDataDirection.UP,
+    addedItems,
+    _(addedItems)
+      .clone()
+      .reverse(),
+  );
   return handler;
 }
 
@@ -63,7 +70,7 @@ describe('NewMessageSeparatorHandler', () => {
       expect(handler.separatorMap.size).toBe(0);
     });
 
-    it('should not change the separator when post added', () => {
+    it('should not change the existed separator when post added', () => {
       const handler = runOnAdded({
         setup(handler) {
           handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });

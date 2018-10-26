@@ -6,7 +6,11 @@
 import { computed } from 'mobx';
 import { Post } from 'sdk/models';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
-import { FetchDataDirection, ISortableModel } from '@/store/base/fetch/types';
+import {
+  FetchDataDirection,
+  ISortableModel,
+  TUpdated,
+} from '@/store/base/fetch/types';
 import { TransformHandler } from '@/store/base/TransformHandler';
 
 import { ISeparatorHandler } from './ISeparatorHandler';
@@ -81,6 +85,12 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
   onDeleted(deletedItems: number[]) {
     this._separatorHandlers.forEach(separatorHandler =>
       separatorHandler.onDeleted(deletedItems, this.orderListStore.items),
+    );
+  }
+
+  onUpdated(updatedIds: TUpdated) {
+    updatedIds.forEach(item =>
+      this.orderListStore.replaceAt(item.index, item.value),
     );
   }
 
