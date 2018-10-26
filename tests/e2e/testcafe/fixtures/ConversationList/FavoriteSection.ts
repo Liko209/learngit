@@ -3,7 +3,7 @@
  * @Date: 2018-10-24 16:15:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { v4 as uuid } as 'uuid';
+import { v4 as uuid } from 'uuid';
 
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
