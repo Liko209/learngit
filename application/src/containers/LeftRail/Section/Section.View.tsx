@@ -7,7 +7,6 @@ import React from 'react';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
-import { JuiIconography } from 'jui/foundation/Iconography';
 import {
   JuiConversationList,
   JuiConversationListSection,
@@ -62,7 +61,7 @@ class SectionViewComponent extends React.Component<Props> {
       >
         <JuiConversationListSection
           title={toTitleCase(t(title))}
-          icon={<JuiIconography>{iconName}</JuiIconography>}
+          icon={iconName}
           umi={<Umi ids={groupIds} />}
           expanded={expanded}
         >

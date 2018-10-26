@@ -174,7 +174,7 @@ class ConversationItemUMI extends BaseComponent {
       await t.click(moreIcon);
       const favoriteButton = Selector('#render-props-menu')
         .find('li')
-        .withText('UnFavorite');
+        .withText('Remove from Favorite');
       await t.click(favoriteButton);
     });
   }

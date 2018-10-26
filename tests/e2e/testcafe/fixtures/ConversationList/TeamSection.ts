@@ -3,6 +3,7 @@
  * @Date: 2018-10-24 16:11:54
  * Copyright © RingCentral. All rights reserved.
  */
+import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
@@ -10,7 +11,7 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
 import { GlipSdk } from '../../v2/sdk/glip';
 
-fixture('TeamSection')
+fixture('ConversationList/TeamSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
@@ -32,7 +33,7 @@ test.skip(
       async () => {
         team = await userPlatform.createGroup({
           type: 'Team',
-          name: 'My Team',
+          name: uuid(),
           members: [user.rcId, users[5].rcId],
         });
       },
@@ -89,7 +90,7 @@ test.skip(
     const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
 
     let team;
-    const randomTeamName = `Name ${Date.now().toString()}`;
+    const randomTeamName = uuid();
     let newName;
     await h(t).withLog(
       `Given I have an extension with certain team named ${randomTeamName}`,
@@ -171,13 +172,13 @@ test(
     await h(t).withLog('Given I have an extension with two teams', async () => {
       team1 = await userPlatform.createGroup({
         type: 'Team',
-        name: 'My Team 1',
+        name: `1 ${uuid()}`,
         members: [user.rcId, users[5].rcId],
       });
 
       team2 = await userPlatform.createGroup({
         type: 'Team',
-        name: 'My Team 2',
+        name: `2 ${uuid()}`,
         members: [user.rcId, users[5].rcId],
       });
     });
