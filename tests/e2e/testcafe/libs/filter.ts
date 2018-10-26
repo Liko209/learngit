@@ -1,3 +1,5 @@
+import { AssertionError } from "assert";
+
 /*
  * @Author: Potar He(Potar.He@ringcentral.com)
  * @Date: 2018-08-15 11:15:59
@@ -11,14 +13,11 @@ export interface INameTags {
   tags: string[];
 }
 
-function isValidTag(tag: string): boolean {
-  return /^[a-zA-Z_$][a-zA-Z_\-$0-9 ]*$/.test(tag);
-}
-
-function validateTag(tag: string) {
-  if (!isValidTag(tag)) {
-    throw new Error(`Invalid tag value: ${tag}!`);
-  }
+function isValidTag(tag: string, breakOnError: boolean = false): boolean {
+  const isValid = /^[a-zA-Z_$][a-zA-Z_\-$0-9 ]*$/.test(tag);
+  if (!isValid && breakOnError)
+    throw new AssertionError({ message: `Invalid Tag: ${tag}` });
+  return isValid;
 }
 
 function isValidName(name: string): boolean {
@@ -37,7 +36,7 @@ export function formalName(name: string, tags?: string[]): string {
   if (tags) {
     formalName = tags
       .map(tag => tag.trim())
-      .map(tag => validateTag(tag) || `[${tag}]`)
+      .map(tag => isValidTag(tag, true) && `[${tag}]`)
       .join('') + ' ' + formalName;
   }
   return formalName;

@@ -237,7 +237,7 @@ test.skip(
         });
         team = await userPlatform.createGroup({
           type: 'Team',
-          name: `My Team ${Date.now()}`,
+          name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
         });
       },
@@ -363,7 +363,7 @@ test.skip(
         });
         team = await userPlatform.createGroup({
           type: 'Team',
-          name: `My Team ${Date.now()}`,
+          name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
         });
       },
@@ -485,7 +485,7 @@ test(
         });
         favTeam = await userPlatform.createGroup({
           type: 'Team',
-          name: `My Team ${Date.now()}`,
+          name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
         });
         group1 = await userPlatform.createGroup({
@@ -502,12 +502,12 @@ test(
         });
         team1 = await userPlatform.createGroup({
           type: 'Team',
-          name: `My Team ${Date.now()}`,
+          name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
         });
         team2 = await userPlatform.createGroup({
           type: 'Team',
-          name: `My Team ${Date.now()}`,
+          name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
         });
       },
@@ -816,12 +816,12 @@ test(
         });
         team1 = await userPlatform.createGroup({
           type: 'Team',
-          name: `My Team ${Date.now()}`,
+          name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
         });
         team2 = await userPlatform.createGroup({
           type: 'Team',
-          name: `My Team ${Date.now()}`,
+          name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
         });
       },

@@ -9,7 +9,6 @@ import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
 
 import { IUser, IStep } from '../models';
-import { UICreator } from '../../page-models';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -45,10 +44,6 @@ class Helper {
 
   directLoginWithUser(url: string, user: IUser) {
     return this.jupiterHelper.directLoginWithUser(url, user);
-  }
-
-  onPage<T>(uiCreator: UICreator<T>) {
-    return this.jupiterHelper.onPage(uiCreator);
   }
 
   async mapSelectorsAsync(selector: Selector, cb: (nth: Selector, i?: number) => Promise<any>) {
