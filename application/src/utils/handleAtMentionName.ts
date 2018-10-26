@@ -5,10 +5,10 @@
  */
 // dynamic change at mention name if username changed
 import { glipdown2Html } from '@/utils/glipdown2Html';
-const md_escape_at_mention_regexp = /&lt;a class=&#x27;at_mention_compose&#x27; rel=&#x27;{&quot;id&quot;:\d*?}&#x27;&gt;.*?&lt;\/a&gt;/g;
 const un_escape_html_at_mention_regexp = /<a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)[^>]+>([^<]+)<\/a>/g;
+
 const handleAtMentionName = (str: string, kv = {}, currentUserId = 0) => {
-  if (md_escape_at_mention_regexp.test(str)) {
+  if (/&lt;a class=&#x27;at_mention_compose&#x27; rel=&#x27;{&quot;id&quot;:\d*?}&#x27;&gt;.*?&lt;\/a&gt;/g.test(str)) {
     const converseHtml = glipdown2Html(str);
     return converseHtml.replace(
       un_escape_html_at_mention_regexp,
