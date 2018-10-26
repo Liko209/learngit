@@ -6,8 +6,8 @@
 
 import { Markdown } from 'glipdown';
 import { glipdown2Html } from '@/utils/glipdown2Html';
-import { formatEmojiOne, formatAscii, formatCustom, handleAtMentionName } from './utils';
 import { CustomEmojiMap } from './types';
+import { Emoji } from './Emoji';
 
 class Transform {
   text = '';
@@ -19,18 +19,18 @@ class Transform {
   glipdown(atMentionIdMaps: { number?: string }, currentUserId: number) {
     const toMdString = Markdown(this.text);
     const toHtmlString = glipdown2Html(toMdString);
-    this.text = handleAtMentionName(
-      toHtmlString,
-      atMentionIdMaps,
-      currentUserId,
-    );
+    const atMentionCompose = /<a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)[^>]+>([^<]+)<\/a>/g;
+    this.text = toHtmlString.replace(atMentionCompose, (match: string, id: string, name: string) => {
+      const text = atMentionIdMaps[id] || name;
+      return `<a class='at_mention_compose ${+id === currentUserId ? 'current' : ''}' href='javascript:void(0)' id=${id}>${text}</a>`;
+    });
     return this;
   }
 
   emoji(staticHttpServer: string, customEmojiMap: CustomEmojiMap) {
-    this.text = formatAscii(this.text, staticHttpServer);
-    this.text = formatEmojiOne(this.text, staticHttpServer);
-    this.text = formatCustom(this.text, customEmojiMap);
+    const e = new Emoji(this.text, staticHttpServer, customEmojiMap);
+    e.formatAscii().formatEmojiOne().formatCustom();
+    this.text = e.text;
     return this;
   }
 }

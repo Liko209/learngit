@@ -1,8 +1,7 @@
 /*
  * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-10-25 17:48:15
+ * @Date: 2018-10-26 10:38:14
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './emoji';
-export * from './handleAtMentionName';
+export * from './Emoji';
