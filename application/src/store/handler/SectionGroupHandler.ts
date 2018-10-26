@@ -59,6 +59,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private _idSetAtom: IAtom;
   private _oldFavGroupIds: number[] = [];
   private static _instance: SectionGroupHandler | undefined = undefined;
+  private _hiddenGroupIds: number[] = [];
   constructor() {
     super();
     this._idSetAtom = createAtom(`SectionGroupHandler: ${Math.random()}`);
@@ -66,6 +67,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._idSet = new Set<number>();
     this._subscribeNotification();
     autorun(() => this.profileUpdateGroupSections());
+    autorun(() => this._updateHiddenGroupIds());
   }
 
   static getInstance() {
@@ -73,6 +75,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       this._instance = new SectionGroupHandler();
     }
     return this._instance;
+  }
+
+  private _updateHiddenGroupIds() {
+    this._hiddenGroupIds = getSingleEntity<Profile, ProfileModel>(
+      ENTITY_NAME.PROFILE,
+      'hiddenGroupIds',
+    );
   }
 
   async profileUpdateGroupSections() {
@@ -127,7 +136,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       });
     } else if (type === EVENT_TYPES.PUT) {
       ids.forEach((id: number) => {
-        if (!this._idSet.has(id)) {
+        if (!this._idSet.has(id) && this._hiddenGroupIds.indexOf(id) === -1) {
           this._idSet.add(id);
           isChanged = true;
         }
@@ -185,7 +194,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   private _addFavoriteSection() {
     const isMatchFun = (model: Group) => {
-      return this._oldFavGroupIds.indexOf(model.id) !== -1;
+      return (
+        this._oldFavGroupIds.indexOf(model.id) !== -1 &&
+        this._hiddenGroupIds.indexOf(model.id) === -1
+      );
     };
     const transformFun = (model: Group) => {
       return {
@@ -202,7 +214,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
   private _addDirectMessageSection() {
     const isMatchFun = (model: Group) => {
-      const notInFav = this._oldFavGroupIds.indexOf(model.id) === -1;
+      const notInFav =
+        this._oldFavGroupIds.indexOf(model.id) === -1 &&
+        this._hiddenGroupIds.indexOf(model.id) === -1;
       const isDirectInDirectSection = !model.is_team;
       return notInFav && isDirectInDirectSection;
     };
@@ -215,7 +229,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
   private _addTeamSection() {
     const isMatchFun = (model: Group) => {
-      const notInFav = this._oldFavGroupIds.indexOf(model.id) === -1;
+      const notInFav =
+        this._oldFavGroupIds.indexOf(model.id) === -1 &&
+        this._hiddenGroupIds.indexOf(model.id) === -1;
       const isTeamInTeamSection = model.is_team as boolean;
       return notInFav && isTeamInTeamSection;
     };

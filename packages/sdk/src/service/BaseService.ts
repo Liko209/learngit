@@ -191,8 +191,12 @@ class BaseService<
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
   ): SubModel {
-    const mergedModel = _.merge({}, originalModel, partialModel);
-    return mergedModel;
+    const cloneO = _.cloneDeep(originalModel);
+    const keys = Object.keys(partialModel);
+    keys.forEach((key: string) => {
+      cloneO[key] = _.cloneDeep(partialModel[key]);
+    });
+    return cloneO;
   }
 
   async updatePartialModel2Db(partialModels: Partial<Raw<SubModel>>[]) {

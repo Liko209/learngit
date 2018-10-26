@@ -264,7 +264,7 @@ export default class ProfileService extends BaseService<Profile> {
       partialModel: Partial<Raw<Profile>>,
       originalModel: Profile,
     ): Partial<Raw<Profile>> => {
-      let partialProfile = partialModel;
+      let partialProfile = _.cloneDeep(partialModel);
       groupIds.forEach((id: number) => {
         const key = `hide_group_${id}`;
         if (originalModel[key]) {
