@@ -19,6 +19,7 @@ class Transform {
   glipdown(atMentionIdMaps: { number?: string }, currentUserId: number) {
     const toMdString = Markdown(this.text);
     const toHtmlString = glipdown2Html(toMdString);
+    // <a class='at_mention_compose' rel='{"id":2266292227}'>Lip Wang</a>
     const atMentionCompose = /<a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)[^>]+>([^<]+)<\/a>/g;
     this.text = toHtmlString.replace(atMentionCompose, (match: string, id: string, name: string) => {
       const text = atMentionIdMaps[id] || name;
