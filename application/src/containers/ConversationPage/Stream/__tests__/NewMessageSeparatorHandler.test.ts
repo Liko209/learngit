@@ -9,16 +9,26 @@ jest.mock('../../../../store/utils');
 type OnAddedCaseConfig = {
   setup?: (handler: NewMessageSeparatorHandler) => void;
   readThrough?: number;
+  postCreatorId?: number;
+  currentUserId?: number;
   addedItems: ISortableModel[];
   direction?: FetchDataDirection;
 };
 
 function runOnAdded({
+  postCreatorId = 1,
+  currentUserId = 2,
   readThrough,
   addedItems,
   setup,
   direction,
 }: OnAddedCaseConfig) {
+  (getGlobalValue as jest.Mock).mockReturnValueOnce(currentUserId);
+
+  addedItems.forEach(
+    item => (item.data = item.data || { creator_id: postCreatorId }),
+  );
+
   const handler = new NewMessageSeparatorHandler();
   setup && setup(handler);
   readThrough && handler.setReadThrough(readThrough);
@@ -48,13 +58,30 @@ describe('NewMessageSeparatorHandler', () => {
         ],
       });
 
-      (getGlobalValue as jest.Mock).mockReturnValueOnce(1);
-
       expect(handler.separatorMap.size).toBe(1);
       expect(handler.separatorMap.get(620257284)).toHaveProperty(
         'type',
         SeparatorType.NEW_MSG,
       );
+    });
+
+    it('should not add separator when the post is send by current user', () => {
+      const handler = runOnAdded({
+        currentUserId: 1,
+        postCreatorId: 1,
+        readThrough: 620249092,
+        addedItems: [
+          { id: 620281860, sortValue: 1540461972285, data: { creator_id: 1 } },
+          { id: 620273668, sortValue: 1540461971175, data: { creator_id: 1 } },
+          { id: 620265476, sortValue: 1540461970958, data: { creator_id: 1 } },
+          { id: 620257284, sortValue: 1540461970776, data: { creator_id: 1 } },
+          { id: 620249092, sortValue: 1540461830964, data: { creator_id: 1 } }, // readThrough is here
+          { id: 620240900, sortValue: 1540461830617, data: { creator_id: 1 } },
+          { id: 620232708, sortValue: 1540461821422, data: { creator_id: 1 } },
+        ],
+      });
+
+      expect(handler.separatorMap.size).toBe(0);
     });
 
     it('should have not separator when readThrough is empty', () => {
