@@ -82,6 +82,17 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       ENTITY_NAME.PROFILE,
       'hiddenGroupIds',
     );
+    this._removeGroupsIfExistedInHiddenGroups();
+  }
+
+  private _removeGroupsIfExistedInHiddenGroups() {
+    const inters = _.intersection(this._hiddenGroupIds, [...this._idSet]);
+    if (inters.length) {
+      inters.forEach(id => this._idSet.delete(id));
+      Object.keys(this._handlersMap).forEach((key: string) => {
+        this._handlersMap[key].removeByIds(inters);
+      });
+    }
   }
 
   async profileUpdateGroupSections() {
