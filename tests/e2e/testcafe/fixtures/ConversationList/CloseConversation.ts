@@ -317,7 +317,7 @@ test(
     });  
 
     await h(t).withLog(`When I click conversation B's close buttom`, async () => {
-      await pvtChat.openMoreMenu();
+      await team.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     }); 
 

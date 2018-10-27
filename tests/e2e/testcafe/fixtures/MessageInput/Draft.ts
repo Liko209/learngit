@@ -62,19 +62,18 @@ async (t) => {
   await h(t).withLog(
     'Then I check conversation A and B exsit',
     async () => {
-      const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
+      const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
       await directMessagesSection.expand();
-      conversation1 = directMessagesSection.conversations.filter(`[data-group-id="${pvtChat.data.id}"]`)
-      conversation2 = directMessagesSection.conversations.filter(`[data-group-id="${group.data.id}"]`)
+      conversation1 = directMessagesSection.conversationByIdEntry(pvtChat.data.id);
+      conversation2 = directMessagesSection.conversationByIdEntry(group.data.id);
     },
   );
 
   await h(t).withLog(
     `And I enter conversation A to type message "${msg}"`,
     async () => {
-      await t.click(conversation1)
-      const inputField = app.homePage.messagePanel.conversationPage.find('.ql-editor')
+      await conversation1.enter();
+      const inputField = app.homePage.messagePanel.conversationSection.messageInputArea;
       await t.typeText(inputField, msg)
     },
   );
@@ -82,7 +81,7 @@ async (t) => {
   await h(t).withLog(
     'When I enter conversation B',
     async () => {
-      await t.click(conversation2);
+      await conversation2.enter();
     },
   );
 
@@ -96,15 +95,15 @@ async (t) => {
   await h(t).withLog(
     `When I enter conversation A`,
     async () => {
-      await t.click(conversation1);
+      await conversation1.enter();
     }
   );
 
   await h(t).withLog(
     `Then I can find input field still is ${msg}`,
     async () => {
-      const inputField = app.homePage.messagePanel.conversationPage.find('.ql-editor')
-      await t.expect(inputField.textContent).eql(msg)
+      const inputField = app.homePage.messagePanel.conversationSection.messageInputArea;
+      await t.expect(inputField.textContent).eql(msg);
     }
   );
 });
