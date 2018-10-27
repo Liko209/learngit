@@ -32,7 +32,7 @@ test(
     const dmSection = app.homePage.messagePanel.directMessagesSection;
     const teamsSection = app.homePage.messagePanel.teamsSection;
 
-    let pvtChatId, groupId, teamId;
+    let pvtChatId, groupId, teamId, currentGroupId;
     await h(t).withLog(
       'Given I have an extension with 1 private chat and 1 group chat and I team chat',
       async () => {
@@ -57,6 +57,7 @@ test(
         await userGlip.updateProfileByGlipId(user.glipId, {
           [`hide_group_${pvtChatId}`]: false,
           [`hide_group_${groupId}`]: false,
+          [`hide_group_${teamId}`]: false 
         });
       },
     );
@@ -68,17 +69,16 @@ test(
       },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+    await h(t).withLog(`When I logn Jupiter with this extension: ${user.company.number}#${user.extension}`, 
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
     });
 
-    const pvtChat = dmSection.conversations.filter(`[data-group-id="${pvtChatId}"]`);
-    const group = dmSection.conversations.filter(`[data-group-id="${groupId}"]`);
-    const team = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-    const closeButton = app.getSelector('li').withText('Close');
-    const closeConversationModal = app.homePage.messagePanel.closeConversationModal;
+    //FIXME: use group id, sometimes can not find conversation.
+    const pvtChat = dmSection.conversationByIdEntry(pvtChatId); 
+    const group = dmSection.conversationByIdEntry(groupId);
+    const team = teamsSection.conversationByIdEntry(teamId);
 
 
     await h(t).withLog(`Then I can find the 3 conversations in conversation list`, async () => {
@@ -90,14 +90,14 @@ test(
     });
 
     await h(t).withLog(`When I open PrivateChat conversation and then click close conversation button`, async () => {
-      await t.click(pvtChat);
-      const moreIcon = pvtChat.find('span').withText('more_vert');
-      await t.click(moreIcon);
-      await closeConversationModal.confirm();
+      await pvtChat.enter();
+      currentGroupId = await app.homePage.messagePanel.conversationPage.getAttribute('data-group-id');
+      await pvtChat.openMoreMenu();
+      await app.homePage.messagePanel.moreMenu.close.enter();
     });
 
     await h(t).withLog(`Then PrivateChat conversation should be remove from conversation list.`, async () => {
-      await t.expect(pvtChat.exists,).notOk();
+      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
     });
     
     await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
@@ -105,18 +105,18 @@ test(
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
-      await t.expect(app.homePage.messagePanel.conversationPage.find(".ql-editor").exists).notOk()
+      await t.expect(app.homePage.messagePanel.conversationSection.messageInputArea.exists).notOk()
     })
 
     await h(t).withLog(`When I open group conversation and then click close conversation button`, async () => {
-      await t.click(group);
-      const moreIcon = group.find('span').withText('more_vert');
-      await t.click(moreIcon);
-      await t.click(closeButton);
+      await group.enter();
+      currentGroupId = await app.homePage.messagePanel.conversationPage.getAttribute('data-group-id');
+      await group.openMoreMenu();
+      await app.homePage.messagePanel.moreMenu.close.enter();
     });
 
     await h(t).withLog(`Then group conversation should be remove from conversation list.`, async () => {
-      await t.expect(group.exists,).notOk();
+      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
     });
     
     await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
@@ -124,18 +124,18 @@ test(
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
-      await t.expect(app.homePage.messagePanel.conversationPage.find(".ql-editor").exists).notOk()
+      await t.expect(app.homePage.messagePanel.conversationSection.messageInputArea.exists).notOk()
     })
 
     await h(t).withLog(`When I open team conversation and then click close conversation button`, async () => {
-      await t.click(team);
-      const moreIcon = team.find('span').withText('more_vert');
-      await t.click(moreIcon);
-      await t.click(closeButton);
+      await team.enter()
+      currentGroupId = await app.homePage.messagePanel.conversationPage.getAttribute('data-group-id');
+      await group.openMoreMenu()
+      await app.homePage.messagePanel.moreMenu.close.enter();
     });
 
     await h(t).withLog(`Then team conversation should be remove from conversation list.`, async () => {
-      await t.expect(team.exists,).notOk();
+      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
     });
     
     await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
@@ -143,7 +143,7 @@ test(
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
-      await t.expect(app.homePage.messagePanel.conversationPage.find(".ql-editor").exists).notOk()
+      await t.expect(app.homePage.messagePanel.conversationSection.messageInputArea.exists).notOk()
     })
   },
 );
@@ -199,25 +199,24 @@ test(
         await app.homePage.ensureLoaded();
     });
 
-    const pvtChat = dmSection.conversations.filter(`[data-group-id="${pvtChatId}"]`);
-    const team = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-    const closeButton = app.getSelector('li').withText('Close');
+    const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
+    const team = teamsSection.conversationByIdEntry(teamId);
 
     await h(t).withLog(`Then I clean UMI in the A and B`, async () => {
       await dmSection.expand();
       await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
-      await t.click(pvtChat);
+      await pvtChat.enter();
       await teamsSection.expand();        
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
-      await t.click(team);
+      await team.enter();
     });
 
     
     await h(t).withLog(`When I open conversation B and close conversation A`, async () => {
       urlBeforeClose = await h(t).href;
-      const moreIcon = pvtChat.find('span').withText('more_vert');
-      await t.click(moreIcon);
-      await t.click(closeButton);
+      await pvtChat.enter();
+      await pvtChat.openMoreMenu();
+      await app.homePage.messagePanel.moreMenu.close.enter();
     });
 
     await h(t).withLog(`Then  conversation A should be remove from conversation list.`, async () => {
@@ -265,9 +264,10 @@ test(
       },
     );
 
-    await h(t).withLog('All conversations should not be hidden before login',async () => {
+    await h(t).withLog('All conversations should not be hidden before login', async () => {
         await userGlip.updateProfileByGlipId(user.glipId, {
           [`hide_group_${pvtChatId}`]: false,
+          [`hide_group_${teamId}`]: false,
         });
       },
     );
@@ -285,21 +285,19 @@ test(
         await app.homePage.ensureLoaded();
     });
 
-    const pvtChat = dmSection.conversations.filter(`[data-group-id="${pvtChatId}"]`);
-    const team = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-    const closeButton = app.getSelector('li').withText('Close');
+    const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
+    const team = teamsSection.conversationByIdEntry(teamId);
     const dialog = app.homePage.messagePanel.closeConversationModal;
 
     await h(t).withLog(`Then I can open conversation A `, async () => {
       await dmSection.expand();
       await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
-      await t.click(pvtChat);
+      await pvtChat.enter();
     });
 
     await h(t).withLog(`When I click conversation A's close buttom`, async () => {
-      const moreIcon = pvtChat.find('span').withText('more_vert');
-      await t.click(moreIcon); 
-      await t.click(closeButton);
+      await pvtChat.openMoreMenu();
+      await app.homePage.messagePanel.moreMenu.close.enter();
     }); 
 
     await h(t).withLog(`Then a confirm dialog should be popup`, async () => {
@@ -319,9 +317,8 @@ test(
     });  
 
     await h(t).withLog(`When I click conversation B's close buttom`, async () => {
-      const moreIcon = team.find('span').withText('more_vert');
-      await t.click(moreIcon);
-      await t.click(closeButton);
+      await pvtChat.openMoreMenu();
+      await app.homePage.messagePanel.moreMenu.close.enter();
     }); 
 
     await h(t).withLog(`Then should be show the confirm dialog again`, async () => {
@@ -385,21 +382,19 @@ test(
         await app.homePage.ensureLoaded();
     });
 
-    const pvtChat = dmSection.conversations.filter(`[data-group-id="${pvtChatId}"]`);
-    const team = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-    const closeButton = app.getSelector('li').withText('Close');
+    const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
+    const team = teamsSection.conversationByIdEntry(teamId);
     const dialog = app.homePage.messagePanel.closeConversationModal;
 
     await h(t).withLog(`Then I can open conversation A `, async () => {
       await dmSection.expand();
       await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
-      await t.click(pvtChat);
+      await pvtChat.enter();
     });
 
     await h(t).withLog(`When I click conversation A's close buttom`, async () => {
-      const moreIcon = pvtChat.find('span').withText('more_vert');
-      await t.click(moreIcon); 
-      await t.click(closeButton);
+      await pvtChat.openMoreMenu();
+      await app.homePage.messagePanel.moreMenu.close.enter();
     }); 
 
     await h(t).withLog(`Then a confirm dialog should be popup`, async () => {
@@ -420,9 +415,8 @@ test(
     });  
 
     await h(t).withLog(`When I click conversation B's close buttom`, async () => {
-      const moreIcon = team.find('span').withText('more_vert');
-      await t.click(moreIcon);
-      await t.click(closeButton);
+      await team.openMoreMenu();
+      await app.homePage.messagePanel.moreMenu.close.enter();
     }); 
 
     await h(t).withLog(`Then should not show  the confirm dialog agin`, async () => {
@@ -450,7 +444,7 @@ test(
     const favoritesSection = app.homePage.messagePanel.favoritesSection;
     const dmSection = app.homePage.messagePanel.directMessagesSection;
     const teamsSection = app.homePage.messagePanel.teamsSection;
-    const closeButton = app.getSelector('li').withText('Close');
+    const closeButton = app.homePage.messagePanel.moreMenu.close;
 
     let favGroupId, pvtChatId, teamId1, teamId2;
     await h(t).withLog(
@@ -503,7 +497,7 @@ test(
 
     await h(t).withLog('And other user send post to each conversation',async () => {
       await teamsSection.expand();
-      await t.click(teamsSection.conversations.filter(`[data-group-id="${teamId2}"]`))
+      await teamsSection.conversationByIdEntry(teamId2).enter();
       const user5Platform = await h(t).getPlatform(users[5]);
       const umiGroupIds = [favGroupId, pvtChatId, teamId1];
       for ( let id of umiGroupIds ) {
