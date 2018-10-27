@@ -78,6 +78,8 @@ test(
     const group = dmSection.conversations.filter(`[data-group-id="${groupId}"]`);
     const team = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
     const closeButton = app.getSelector('li').withText('Close');
+    const closeConversationModal = app.homePage.messagePanel.closeConversationModal;
+
 
     await h(t).withLog(`Then I can find the 3 conversations in conversation list`, async () => {
       await dmSection.expand();
@@ -91,7 +93,7 @@ test(
       await t.click(pvtChat);
       const moreIcon = pvtChat.find('span').withText('more_vert');
       await t.click(moreIcon);
-      await t.click(closeButton);
+      await closeConversationModal.confirm();
     });
 
     await h(t).withLog(`Then PrivateChat conversation should be remove from conversation list.`, async () => {
@@ -346,8 +348,6 @@ test(
     const dmSection = app.homePage.messagePanel.directMessagesSection;
     const teamsSection = app.homePage.messagePanel.teamsSection;
 
-
-
     let pvtChatId, teamId;
     await h(t).withLog(
       'Given I have an extension with 1 private chat A and 1 team chat B',
@@ -435,14 +435,137 @@ test(
   },
 );
 
-// todo cannot check (with umi)
-test.skip(
+test(
   formalName('No close button in conversation with UMI', [
     'JPT-114',
     'P2',
     'ConversationList',
   ]),
   async (t: TestController) => {
-    
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[7];
+    const userPlatform = await h(t).getPlatform(user);
+    const userGlip = await h(t).getGlip(user);
+    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+    const dmSection = app.homePage.messagePanel.directMessagesSection;
+    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const closeButton = app.getSelector('li').withText('Close');
+
+    let favGroupId, pvtChatId, teamId1, teamId2;
+    await h(t).withLog(
+      'Given I have an extension with 2 private chat, 2 team chat, and 1 group tema',
+      async () => {
+        pvtChatId = (await userPlatform.createGroup({
+          type: 'PrivateChat',
+          members: [user.rcId, users[5].rcId],
+        })).data.id;
+        favGroupId = (await userPlatform.createGroup({
+          type: 'Group',
+          members: [user.rcId, users[5].rcId, users[6].rcId],
+        })).data.id;
+        teamId1 = (await userPlatform.createGroup({
+          isPublic: true,
+          name: `1 ${uuid()}`,
+          type: 'Team',
+          members: [user.rcId, users[5].rcId, users[6].rcId],
+        })).data.id;
+        teamId2 = (await userPlatform.createGroup({
+          isPublic: true,
+          name: `2 ${uuid()}`,
+          type: 'Team',
+          members: [user.rcId, users[5].rcId, users[6].rcId],
+        })).data.id;
+      },
+    );
+
+    await h(t).withLog('All conversations should not be hidden before login',async () => {
+        await userGlip.updateProfileByGlipId(user.glipId, {
+          [`hide_group_${pvtChatId}`]: false,
+          [`hide_group_${favGroupId}`]: false,
+          [`hide_group_${teamId1}`]: false,
+          [`hide_group_${teamId2}`]: false,
+          favorite_group_ids: [+favGroupId]
+        });
+      },
+    ); 
+
+    await h(t).withLog(
+      `When I login Jupiter with this extension: ${user.company.number}#${
+      user.extension
+      }`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+
+    await h(t).withLog('And other user send post to each conversation',async () => {
+      await teamsSection.expand();
+      await t.click(teamsSection.conversations.filter(`[data-group-id="${teamId2}"]`))
+      const user5Platform = await h(t).getPlatform(users[5]);
+      const umiGroupIds = [favGroupId, pvtChatId, teamId1];
+      for ( let id of umiGroupIds ) {
+        await user5Platform.createPost(
+          { text: `Hi, ![:Person](${user.rcId})` }, 
+          id
+        ); 
+      }
+    });
+
+    await h(t).withLog(
+      `Then I can find conversation with UMI in favorites/DM/teams section`,
+      async () => {
+        await t.wait(2e3)
+        await favoritesSection.expand();
+        const favUmiCount = (await favoritesSection.conversations.find('.umi').withText(/\d+/)).count
+        await t.expect(favUmiCount).gt(0);
+        await dmSection.expand();
+        await t.expect((await dmSection.conversations.find('.umi').withText(/\d+/)).count).gt(0);
+        await teamsSection.expand();
+        await t.expect((await teamsSection.conversations.find('.umi').withText(/\d+/)).count).gt(0);
+      },
+    );
+
+    await h(t).withLog(`When I click more Icon of a favorites conversation with UMI`, async () => {
+      const UMI = await dmSection.conversations.find('.umi').withText(/\d+/)
+      const moreIcon = UMI.nth(0).parent().find('span').withText('more_vert');
+      await t.click(moreIcon); 
+    });  
+
+    await h(t).withLog(`Then the close button should not be show`, async () => {
+      await t.expect(closeButton.exists).notOk();
+    });  
+
+    await h(t).withLog(`When I click more Icon of a DM conversation with UMI`, async () => {
+      const UMI = dmSection.conversations.find('.umi').withText(/\d+/)
+      const moreIcon = UMI.nth(0).parent().find('span').withText('more_vert');
+      await t.click(moreIcon); 
+    });  
+
+    await h(t).withLog(`Then the close button should not be show`, async () => {
+      await t.expect(closeButton.exists).notOk();
+    });  
+
+    await h(t).withLog(`When I click more Icon of a teams conversation with UMI`, async () => {
+      const UMI = teamsSection.conversations.find('.umi').withText(/\d+/)
+      const moreIcon = UMI.nth(0).parent().find('span').withText('more_vert');
+      await t.click(moreIcon); 
+    });  
+
+    await h(t).withLog(`Then the close button should not be show`, async () => {
+      await t.expect(closeButton.exists).notOk();
+    });  
+
+    await h(t).withLog(`And clean all UMI`, async ()=>{
+      await t.wait(2e3);
+      const umiConversations = app.homePage.messagePanel.conversationListSections
+        .find('.umi').withText(/\d+/).sibling('p');
+      const count = await umiConversations.count;
+      for (let i = count - 1; i >= 0; i--) {
+        await await t.click(umiConversations.nth(i));
+      }
+    });    
   },
 );
