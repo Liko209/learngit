@@ -58,18 +58,15 @@ const StyledUmi = styled<JuiUmiProps, 'span'>('span').attrs({
   display: inline-block;
   width: ${({ unreadCount }) => width(countToWidth(unreadCount))};
   height: ${height(4)};
-  border: 1px solid;
-  border-color: ${palette('common', 'white')};
   border-radius: 12px;
-  margin-right: 2px;
   transition-property: font-size, height, line-height, color;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
   background: ${({ important }) => {
-    return important ? secondary('main') : grey('200');
+    return important ? secondary('main') : grey('500');
   }};
-  color: ${({ important }) => {
-    return important ? palette('common', 'white') : grey('900');
+  color: ${() => {
+    return palette('common', 'white');
   }};
   ${({ variant = 'count' }) => styles[variant]};
 `;

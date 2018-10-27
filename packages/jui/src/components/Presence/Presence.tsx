@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import styled from '../../foundation/styled-components';
+import { width, height } from '../../foundation/utils';
 
 export type PresenceProps = {
   presence?: 'online' | 'away' | 'offline' | 'default';
@@ -19,9 +20,9 @@ const PRESENCE_COLOR_MAP = {
 
 const StyledPresence = styled<PresenceProps, 'div'>('div')`
   display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin: 6px 8px;
+  width: ${width(2)};
+  height: ${height(2)};
+  margin: 6px;
   background: ${props => PRESENCE_COLOR_MAP[props.presence || 'default']};
   border-radius: 50%;
 `;

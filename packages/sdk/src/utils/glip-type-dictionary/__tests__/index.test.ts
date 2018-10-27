@@ -42,5 +42,8 @@ describe('GlipTypeUtil', () => {
       ],
     });
   });
-
+  it('parseSocketMessage: invalid data', () => {
+    expect(parseSocketMessage('1')).toBeNull;
+    expect(parseSocketMessage('io client disconnect')).toBeNull;
+  });
 });
