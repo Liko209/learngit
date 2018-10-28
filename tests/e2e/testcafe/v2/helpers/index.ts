@@ -7,6 +7,7 @@ import { SdkHelper } from "./sdk-helper";
 import { JupiterHelper } from "./jupiter-helper";
 import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
+import { H } from './utils';
 
 import { IUser, IStep } from '../models';
 
@@ -111,4 +112,4 @@ function h(t: TestController) {
   return new Helper(t);
 }
 
-export { Helper, h };
+export { Helper, h, H };

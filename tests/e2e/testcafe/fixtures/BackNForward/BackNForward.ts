@@ -3,25 +3,30 @@
  * @Date: 2018-9-13 09:29:02
  * Copyright © RingCentral. All rights reserved.
  */
+import 'testcafe';
 import { formalName } from '../../libs/filter';
 import { ClientFunction } from 'testcafe';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
 import { setupCase, teardownCase } from '../../init';
 
-declare var test: TestFn;
 fixture('BackNForward/BackNForward')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-const getLocation = ClientFunction(() => document.location.pathname);  
+const getLocation = ClientFunction(() => document.location.pathname);
 
 test(
-  formalName('test navigation on electron backwards and forwards functions', 
+  formalName('test navigation on electron backwards and forwards functions',
     ['P2', 'JPT-44', 'JPT-49', 'BackNForward']
-  ), 
+  ),
   async (t) => {
+    if (!await H.isElectron()) {
+      await h(t).log('This case only works on Electron!');
+      return;
+    }
+
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -37,21 +42,21 @@ test(
 
     await h(t).withLog('Then the forwad button should be disabled', async () => {
       await t.expect(forwardButton.hasAttribute('disabled')).ok();
-    });  
+    });
 
     await h(t).withLog('When I enter Contacts and Calendar in order', async () => {
       await app.homePage.leftPanel.contactsEntry.enter();
       await app.homePage.leftPanel.calendarEntry.enter();
-    }); 
-    
+    });
+
     await h(t).withLog('Then the back button should be enabled', async () => {
       await t.expect(backButton.hasAttribute('disabled')).notOk();
-    }); 
-    
+    });
+
     await h(t).withLog('When I click the back button', async () => {
       await t.click(backButton);
       await t.expect(getLocation()).contains('/contacts');
-    }); 
+    });
 
     await h(t).withLog('Then the forward button should be enabled', async () => {
       await t.expect(forwardButton.hasAttribute('disabled')).notOk();
@@ -63,10 +68,15 @@ test(
 
 test(
   formalName(
-    'Check the back and forward buttons are disabled after user login', 
+    'Check the back and forward buttons are disabled after user login',
     ['P2', 'JPT-50', 'BackNForward']
-  ), 
+  ),
   async (t) => {
+    if (!await H.isElectron()) {
+      await h(t).log('This case only works on Electron!');
+      return;
+    }
+
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -83,16 +93,21 @@ test(
     await h(t).withLog('Then the forwad and back button should be disabled', async () => {
       await t.expect(forwardButton.hasAttribute('disabled')).ok();
       await t.expect(backButton.hasAttribute('disabled')).ok();
-    });  
+    });
   }
 );
 
 test(
   formalName(
-    'reLoad should disable backward and forward button', 
+    'reLoad should disable backward and forward button',
     ['P2', 'JPT-172', 'BackNForward']
-  ), 
+  ),
   async (t) => {
+    if (!await H.isElectron()) {
+      await h(t).log('This case only works on Electron!');
+      return;
+    }
+
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -122,26 +137,26 @@ test(
 
     await h(t).withLog('Then the back button should be enabled', async () => {
       await t.expect(backButton.hasAttribute('disabled')).notOk();
-    });  
+    });
 
     await h(t).withLog('When I click the back button', async () => {
       await t.click(backButton);
 
-    }); 
+    });
 
     await h(t).withLog('Then the forward and back button should be enabled', async () => {
       await t.expect(forwardButton.hasAttribute('disabled')).notOk();
-      await t.expect(backButton.hasAttribute('disabled')).notOk();    
-    }); 
-    
+      await t.expect(backButton.hasAttribute('disabled')).notOk();
+    });
+
     await h(t).withLog('When I reload App', async () => {
       const current_url = await t.eval(() => window.location.href);
-      await t.navigateTo(current_url); 
-    }); 
- 
+      await t.navigateTo(current_url);
+    });
+
     await h(t).withLog('Then the forwad and back button should be disabled', async () => {
       await t.expect(forwardButton.hasAttribute('disabled')).ok();
       await t.expect(backButton.hasAttribute('disabled')).ok();
-    }); 
+    });
   }
 );
