@@ -9,7 +9,6 @@ import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
 
 import { IUser, IStep } from '../models';
-import { UICreator } from '../../page-models';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -47,10 +46,6 @@ class Helper {
     return this.jupiterHelper.directLoginWithUser(url, user);
   }
 
-  onPage<T>(uiCreator: UICreator<T>) {
-    return this.jupiterHelper.onPage(uiCreator);
-  }
-
   async mapSelectorsAsync(selector: Selector, cb: (nth: Selector, i?: number) => Promise<any>) {
     const count = await selector.count;
     const promises = [];
@@ -66,6 +61,23 @@ class Helper {
 
   async withLog(step: IStep | string, cb: () => Promise<any>, takeScreenShot: boolean = false) {
     return await this.logHelper.withLog(step, cb, takeScreenShot);
+  }
+
+  async getGlip(user: IUser) {
+    return await this.sdkHelper.sdkManager.getGlip(user);
+  }
+
+  async getPlatform(user: IUser) {
+    return await this.sdkHelper.sdkManager.getPlatform(user);
+  }
+
+  // testcafe extend
+  get href() {
+    return ClientFunction(() => document.location.href)();
+  }
+
+  async refresh() {
+    await this.t.navigateTo(await this.href);
   }
 
   async waitUntilExist(selector: Selector, timeout: number = 5e3) {
@@ -86,22 +98,13 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  // others
   async resetGlipAccount(user: IUser) {
     logger.warn("reset a glip account will be very slow (30s+)");
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(this.rcData.mainCompany.admin);
     await adminGlip.deactivated(user.glipId);
     await this.sdkHelper.sdkManager.getGlip(user);
   }
-
-  // testcafe extend
-  get href() {
-    return ClientFunction(() => document.location.href)();
-  }
-
-  async refresh() {
-    await this.t.navigateTo(await this.href);
-  }
-
 }
 
 function h(t: TestController) {

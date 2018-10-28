@@ -76,11 +76,11 @@ function getPalette(name: keyof Palette, sub: string) {
  * @param name
  * @param sub
  */
-function palette(name: keyof Palette, sub: string, opcity?: number) {
-  if (opcity) {
+function palette(name: keyof Palette, sub: string, opacity?: number) {
+  if (opacity) {
     return ({ theme }: { theme: Theme }) =>
       tinycolor(getPalette(name, sub)({ theme }))
-        .setAlpha(theme.palette.action.hoverOpacity * opcity)
+        .setAlpha(theme.palette.action.hoverOpacity * opacity)
         .toRgbString();
   }
   return getPalette(name, sub);
