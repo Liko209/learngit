@@ -5,3 +5,4 @@
  */
 export * from './WithoutPreview';
 export * from './WithPreview';
+export * from './PreviewImage';

@@ -11,9 +11,11 @@ import MuiTypography, {
 
 type JuiTypographyProps = MuiTypographyProps;
 
-export const JuiTypography: React.SFC<JuiTypographyProps> & {
+const JuiTypography: React.SFC<JuiTypographyProps> & {
   dependencies?: any[];
 } = props => <MuiTypography {...props} />;
 
 JuiTypography.displayName = 'MuiTypography';
 JuiTypography.dependencies = [MuiTypography];
+
+export { JuiTypographyProps, JuiTypography };

@@ -20,7 +20,7 @@ storiesOf('Pattern/ConversationCard', module)
       iconType={'pdf'}
       actions={
         <JuiIconButton variant="plain" tooltipTitle="download">
-          vertical_align_bottom
+          get_app
         </JuiIconButton>
       }
     />

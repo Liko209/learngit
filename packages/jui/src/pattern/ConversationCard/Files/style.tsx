@@ -3,13 +3,16 @@
  * @Date: 2018-10-23 13:16:58
  * Copyright © RingCentral. All rights reserved.
  */
+import React from 'react';
 import MuiListItem from '@material-ui/core/ListItem';
-import MuiCardMedia from '@material-ui/core/CardMedia';
 import MuiCardContent from '@material-ui/core/CardContent';
-import MuiCard from '@material-ui/core/Card';
 import MuiCardActions from '@material-ui/core/CardActions';
-import { JuiTypography } from '../../../foundation/Typography';
+import {
+  JuiTypography,
+  JuiTypographyProps,
+} from '../../../foundation/Typography';
 import { JuiListItemText } from '../../../components/Lists';
+import { JuiCardMedia, JuiCard } from '../../../components/Cards';
 import styled from '../../../foundation/styled-components';
 import {
   spacing,
@@ -86,13 +89,13 @@ const FileActionsWrapper = styled.span`
   }
 `;
 
-const FileCard = styled(MuiCard)`
+const FileCard = styled(JuiCard)`
   display: inline-block;
   width: ${width(80)};
   margin: ${spacing(0, 5, 2, 0)};
 `;
 
-const FileCardMedia = styled(MuiCardMedia)`
+const FileCardMedia = styled(JuiCardMedia)`
   height: ${height(50)};
   background-color: ${palette('accent', 'ash')};
 `;
@@ -131,6 +134,53 @@ const CardFileActions = styled(MuiCardActions)`
   padding: 0 !important;
 `;
 
+type ImageCardProps = {
+  ratio: number;
+};
+
+const WrapperImageCard = ({ ratio, ...rest }: ImageCardProps) => (
+  <JuiCard {...rest} />
+);
+
+const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
+  && {
+    width: ${({ ratio }) => (ratio > 1 ? width(64) : width(90))};
+    height: ${({ ratio }) => (ratio > 1 ? height(64) : height(64))};
+    position: relative;
+    border-radius: 0;
+  }
+`;
+
+const ImageMedia = styled(FileCardMedia)`
+  && {
+    height: ${height(55)};
+  }
+`;
+
+type ImageFileInfoProps = {
+  ratio: number;
+} & JuiTypographyProps;
+
+const WrapperImageFileInfo = ({ ratio, ...rest }: ImageCardProps) => (
+  <CardFileInfo {...rest} />
+);
+
+const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: ${height(9)};
+  padding: ${spacing(2)};
+  box-sizing: border-box;
+  background: ${palette('semantic', 'neutral', 1)};
+  & > b {
+    font-weight: 400;
+    ${ellipsis};
+    width: ${({ ratio }) => (ratio > 1 ? width(60) : width(86))};
+  }
+`;
+
 export {
   FileItem,
   FileIcon,
@@ -143,4 +193,7 @@ export {
   CardFileActions,
   CardSize,
   CardFileInfo,
+  ImageCard,
+  ImageFileInfo,
+  ImageMedia,
 };
