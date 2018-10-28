@@ -7,16 +7,30 @@
 // import { TranslationFunction, i18n } from 'i18next';
 import ItemModel from '@/store/models/Item';
 
+enum FileType {
+  image,
+  document,
+  others,
+}
+
 type FilesProps = {
-  id: number;
+  ids: number[];
 };
 
 type FilesViewProps = {
-  item: ItemModel;
-  needPreview: (item: ItemModel) => boolean;
+  items: ItemModel[];
+  needPreview: () => boolean;
+  getFileType: (
+    item: ItemModel,
+  ) => {
+    id: number;
+    type: number;
+    url: string;
+    item: ItemModel;
+  };
   getPreviewFileInfo: (item: ItemModel) => string;
   getFileIcon: (fileType: string) => string | null;
-  id: number;
+  ids: number[];
 };
 
-export { FilesProps, FilesViewProps };
+export { FilesProps, FilesViewProps, FileType };

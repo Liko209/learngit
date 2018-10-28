@@ -144,8 +144,8 @@ const WrapperImageCard = ({ ratio, ...rest }: ImageCardProps) => (
 
 const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
   && {
-    width: ${({ ratio }) => (ratio > 1 ? width(64) : width(90))};
-    height: ${({ ratio }) => (ratio > 1 ? height(64) : height(64))};
+    width: ${({ ratio }) => (ratio >= 1 ? width(64) : width(90))};
+    height: ${({ ratio }) => (ratio >= 1 ? height(64) : height(64))};
     position: relative;
     border-radius: 0;
   }
@@ -177,7 +177,7 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   & > b {
     font-weight: 400;
     ${ellipsis};
-    width: ${({ ratio }) => (ratio > 1 ? width(60) : width(86))};
+    width: ${({ ratio }) => (ratio >= 1 ? width(60) : width(86))};
   }
 `;
 

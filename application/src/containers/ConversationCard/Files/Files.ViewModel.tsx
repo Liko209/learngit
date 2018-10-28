@@ -9,7 +9,7 @@ import { Item } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import ItemModel from '@/store/models/Item';
-import { FilesViewProps } from './types';
+import { FilesViewProps, FileType } from './types';
 
 const FILE_ICON_MAP = {
   pdf: ['pdf'],
@@ -20,12 +20,32 @@ const FILE_ICON_MAP = {
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   @computed
-  get _id() {
-    return this.props.id;
+  get _ids() {
+    return this.props.ids;
   }
 
-  needPreview = (item: ItemModel) => {
-    return (item.pages && item.pages.length > 0) || item.thumbs ? true : false;
+  getFileType = (item: ItemModel) => {
+    if (!item) return;
+
+    const fileType = {
+      item,
+      id: -1,
+      type: -1,
+      previewUrl: '',
+    };
+
+    if (this.isImage(item).isImage) {
+      fileType.type = FileType.image;
+      fileType.previewUrl = this.isImage(item).previewUrl;
+      return fileType;
+    }
+    if (this.isDocument(item).isDocument) {
+      fileType.type = FileType.document;
+      fileType.previewUrl = this.isDocument(item).previewUrl;
+      return fileType;
+    }
+    fileType.type = FileType.others;
+    return fileType;
   }
 
   getFileIcon = (fileType: string) => {
@@ -37,27 +57,44 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return null;
   }
 
-  getPreviewFileInfo = (item: ItemModel): string => {
-    const { pages, thumbs } = item;
-    let previewUrl = '';
-    if (pages && pages.length > 0) {
-      previewUrl = pages[0].url;
-      return previewUrl;
-    }
+  isImage(item: ItemModel) {
+    const { thumbs } = item;
+    const image = {
+      isImage: false,
+      previewUrl: '',
+    };
     if (thumbs) {
       for (const key in thumbs) {
         const value = thumbs[key];
         if (typeof value === 'string' && value.indexOf('http') > -1) {
-          previewUrl = thumbs[key];
+          image.isImage = true;
+          image.previewUrl = thumbs[key];
         }
       }
     }
-    return previewUrl;
+    return image;
+  }
+
+  isDocument(item: ItemModel) {
+    const { pages } = item;
+    const document = {
+      isDocument: false,
+      previewUrl: '',
+    };
+    if (pages && pages.length > 0) {
+      document.isDocument = true;
+      document.previewUrl = pages[0].url;
+    }
+    return document;
   }
 
   @computed
-  get item() {
-    return getEntity<Item, ItemModel>(ENTITY_NAME.ITEM, this._id);
+  get items() {
+    const items: any = [];
+    this._ids.forEach((id: number) => {
+      items.push(getEntity<Item, ItemModel>(ENTITY_NAME.ITEM, id));
+    });
+    return items;
   }
 }
 
