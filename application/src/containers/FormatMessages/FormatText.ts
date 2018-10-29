@@ -3,7 +3,7 @@
  * @Date: 2018-10-25 17:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { handleAtMentionName } from '@/utils/handleAtMentionName';
+import { handleAtMentionName } from './utils/handleAtMentionName';
 import { Markdown } from 'glipdown';
 
 class FormatText {
@@ -11,7 +11,9 @@ class FormatText {
   constructor(text: string) {
     this.text = text;
   }
-
+  formatHtml(atMentionIdMaps: { number?: string }, currentUserId: number) {
+    return this.glipdown(atMentionIdMaps, currentUserId);
+  }
   glipdown(atMentionIdMaps: { number?: string }, currentUserId: number) {
     const toMdString = Markdown(this.text);
     this.text = handleAtMentionName(

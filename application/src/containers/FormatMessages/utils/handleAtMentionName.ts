@@ -4,14 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 // dynamic change at mention name if username changed
-import { glipdown2Html } from '@/utils/glipdown2Html';
-const un_escape_html_at_mention_regexp = /<a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)[^>]+>([^<]+)<\/a>/g;
+import { glipdown2Html } from './glipdown2Html';
+const unEscapeHtmlAtMentionRegExp = /<a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)[^>]+>([^<]+)<\/a>/g;
 
 const handleAtMentionName = (str: string, kv = {}, currentUserId = 0) => {
   if (/&lt;a class=&#x27;at_mention_compose&#x27; rel=&#x27;{&quot;id&quot;:\d*?}&#x27;&gt;.*?&lt;\/a&gt;/g.test(str)) {
     const converseHtml = glipdown2Html(str);
     return converseHtml.replace(
-      un_escape_html_at_mention_regexp,
+      unEscapeHtmlAtMentionRegExp,
       (match, id, p2) => {
         const text = kv[id] || p2;
         return `<a class='at_mention_compose ${
