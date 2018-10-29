@@ -30,6 +30,7 @@ test(
     const userPlatform = await h(t).getPlatform(user);
     const userGlip = await h(t).getGlip(user);
     const dmSection = app.homePage.messagePanel.directMessagesSection;
+    const favSection = app.homePage.messagePanel.favoritesSection;
     const teamsSection = app.homePage.messagePanel.teamsSection;
 
     let pvtChatId, groupId, teamId, currentGroupId;
@@ -57,7 +58,8 @@ test(
         await userGlip.updateProfileByGlipId(user.glipId, {
           [`hide_group_${pvtChatId}`]: false,
           [`hide_group_${groupId}`]: false,
-          [`hide_group_${teamId}`]: false 
+          [`hide_group_${teamId}`]: false,
+          favorite_group_ids: [+groupId]
         });
       },
     );
@@ -76,27 +78,28 @@ test(
     });
 
     //FIXME: use group id, sometimes can not find conversation.
-    const pvtChat = dmSection.conversationByIdEntry(pvtChatId); 
-    const group = dmSection.conversationByIdEntry(groupId);
-    const team = teamsSection.conversationByIdEntry(teamId);
+    const pvtChat = dmSection.nthConversationEntry(0); 
+    const favChat = favSection.nthConversationEntry(0);
+    const team = teamsSection.nthConversationEntry(0);
 
 
     await h(t).withLog(`Then I can find the 3 conversations in conversation list`, async () => {
       await dmSection.expand();
-      await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
-      await t.expect(group.exists).ok(groupId, { timeout: 10e3 });
+      await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });;
+      await favSection.expand()
+      await t.expect(favChat.exists).ok(groupId, { timeout: 10e3 });
       await teamsSection.expand();        
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
     });
 
-    await h(t).withLog(`When I open PrivateChat conversation and then click close conversation button`, async () => {
+    await h(t).withLog(`When I open a DM conversation and then click close conversation button`, async () => {
       await pvtChat.enter();
       currentGroupId = await app.homePage.messagePanel.conversationPage.getAttribute('data-group-id');
       await pvtChat.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     });
 
-    await h(t).withLog(`Then PrivateChat conversation should be remove from conversation list.`, async () => {
+    await h(t).withLog(`Then the PrivateChat conversation should be remove from conversation list.`, async () => {
       await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
     });
     
@@ -108,14 +111,14 @@ test(
       await t.expect(app.homePage.messagePanel.conversationSection.messageInputArea.exists).notOk()
     })
 
-    await h(t).withLog(`When I open group conversation and then click close conversation button`, async () => {
-      await group.enter();
+    await h(t).withLog(`When I open a Fav conversation and then click close conversation button`, async () => {
+      await favChat.enter();
       currentGroupId = await app.homePage.messagePanel.conversationPage.getAttribute('data-group-id');
-      await group.openMoreMenu();
+      await favChat.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     });
 
-    await h(t).withLog(`Then group conversation should be remove from conversation list.`, async () => {
+    await h(t).withLog(`Then the Fav conversation should be remove from conversation list.`, async () => {
       await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
     });
     
@@ -127,14 +130,14 @@ test(
       await t.expect(app.homePage.messagePanel.conversationSection.messageInputArea.exists).notOk()
     })
 
-    await h(t).withLog(`When I open team conversation and then click close conversation button`, async () => {
+    await h(t).withLog(`When I open a team conversation and then click close conversation button`, async () => {
       await team.enter()
       currentGroupId = await app.homePage.messagePanel.conversationPage.getAttribute('data-group-id');
-      await group.openMoreMenu()
+      await team.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     });
 
-    await h(t).withLog(`Then team conversation should be remove from conversation list.`, async () => {
+    await h(t).withLog(`Then the team conversation should be remove from conversation list.`, async () => {
       await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
     });
     

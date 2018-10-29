@@ -37,7 +37,7 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
-    const glipSDK = await h(t).getGlip(user);
+    const userPlatform = await h(t).getPlatform(user);
     const format = 'hh:mm A';
     let groupId, postData, targetPost;
 
@@ -53,21 +53,22 @@ test(
       const conversations = app.homePage.messagePanel.teamsSection.conversations;
       const count = await conversations.count;
       const n = Math.floor(Math.random() * count);
-      await t.click(conversations.nth(n))
+      await app.homePage.messagePanel.teamsSection.nthConversationEntry(n);
       await shouldMatchUrl;
       groupId = await getCurrentGroupIdFromURL();
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
-      postData = (await glipSDK.sendPost(groupId, postContent)).data;
+      postData = (await userPlatform.createPost({text: postContent}, groupId)).data;
       targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok(postData)
     });
 
     await h(t).withLog(`Then I can check the post's time should have right format`, async () => {
       const formatTime = moment(postData.creationTime).format(format);
-      const timeDiv = targetPost.find('div').withText(formatTime);
-      await t.expect(timeDiv.exists).ok();
+      // const timeDiv = targetPost.find('div').withText(formatTime);
+      const timeDiv2 = targetPost.find('div').filter((node)=>{ moment(node.textContent, format, true).isValid()})
+      await t.expect(timeDiv2.exists).ok();
     });
   },
 );
@@ -103,7 +104,7 @@ test(
         const conversations = app.homePage.messagePanel.teamsSection.conversations;
         const count = await conversations.count;
         const n = Math.floor(Math.random() * count);
-        await t.click(conversations.nth(n))
+        await app.homePage.messagePanel.teamsSection.nthConversationEntry(n);
         await shouldMatchUrl;
         groupId = await getCurrentGroupIdFromURL();
       },
@@ -157,7 +158,7 @@ test(
         const conversations = app.homePage.messagePanel.teamsSection.conversations;
         const count = await conversations.count;
         const n = Math.floor(Math.random() * count);
-        await t.click(conversations.nth(n))
+        await app.homePage.messagePanel.teamsSection.nthConversationEntry(n).enter();
         await shouldMatchUrl;
         groupId = await getCurrentGroupIdFromURL();
       },

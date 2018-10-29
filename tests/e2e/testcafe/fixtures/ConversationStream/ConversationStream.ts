@@ -42,8 +42,7 @@ test(
     await h(t).withLog('Then I enter the conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      const teamConversation = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-      await t.click(teamConversation)
+      await teamsSection.conversationByIdEntry(teamId);
     });
 
     await h(t).withLog('When I send 3 posts in order via API', async () => {
@@ -95,8 +94,7 @@ test(
     await h(t).withLog('Then I can enter the conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      const teamConversation = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-      await t.click(teamConversation);
+      await teamsSection.conversationByIdEntry(teamId).enter();
     });
 
     await h(t).withLog('And I should not find any post in the new created conversation', async () => {
@@ -143,8 +141,7 @@ test(
     await h(t).withLog('And enter the team conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      const teamConversation = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-      await t.click(teamConversation);
+      await teamsSection.conversationByIdEntry(teamId);
     });
 
     await h(t).withLog(`Then I should find post "${msgBeforeLogin}" in the conversation posts history`, async () => {
