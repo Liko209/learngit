@@ -408,7 +408,7 @@ export default class GroupService extends BaseService<Group> {
     try {
       const dao = daoManager.getDao(GroupDao);
       await dao.update(params);
-      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]);
+      // notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]); waiting for store to support update
       return true;
     } catch (error) {
       throw ErrorParser.parse(error);

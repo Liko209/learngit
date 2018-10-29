@@ -41,17 +41,6 @@ function hiddenGroupsChange(localProfile: Profile, newProfile: Profile) {
   }
 }
 
-function doNotification(localProfile: Profile, updatedProfile: Profile) {
-  if (localProfile && updatedProfile && updatedProfile.id === localProfile.id) {
-    notificationCenter.emit(
-      SERVICE.PROFILE_FAVORITE,
-      localProfile,
-      updatedProfile,
-    );
-  }
-  hiddenGroupsChange(localProfile, updatedProfile);
-}
-
 const profileHandleData = async (
   profile: Raw<Profile> | null,
 ): Promise<Profile | null> => {
@@ -107,4 +96,4 @@ const handlePartialProfileUpdate = async (
 };
 
 export default profileHandleData;
-export { extractHiddenGroupIds, handlePartialProfileUpdate, doNotification };
+export { extractHiddenGroupIds, handlePartialProfileUpdate };

@@ -7,15 +7,11 @@ import ProfileAPI from '../../api/glip/profile';
 
 import BaseService from '../../service/BaseService';
 import AccountService from '../account';
-import handleData, {
-  handlePartialProfileUpdate,
-  doNotification,
-} from './handleData';
+import handleData, { handlePartialProfileUpdate } from './handleData';
 import { Profile, Raw } from '../../models';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import _ from 'lodash';
 import { BaseError, ErrorParser } from '../../utils';
-// import PersonService from '../person';
 import { mainLogger } from 'foundation';
 import notificationCenter from '../../service/notificationCenter';
 import { transform } from '../utils';
@@ -168,12 +164,7 @@ export default class ProfileService extends BaseService<Profile> {
     originalModels: Profile[],
     partialModels: Partial<Raw<Profile>>[],
   ) {
-    notificationCenter.emitEntityPartialUpdate(ENTITY.PROFILE, partialModels);
-
-    doNotification(
-      originalModels[0],
-      this.getMergedModel(partialModels[0], originalModels[0]),
-    );
+    notificationCenter.emitEntityUpdate(ENTITY.PROFILE, partialModels);
   }
 
   async markMeConversationAsFav(): Promise<Profile | BaseError> {

@@ -7,7 +7,6 @@
 import SectionGroupHandler from '../SectionGroupHandler';
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { notificationCenter, ENTITY } from 'sdk/service';
-import EnvSelect from '@/containers/UnifiedLogin/EnvSelect';
 
 describe('SectionGroupHandler', () => {
   describe('Basic functions/configs', () => {
