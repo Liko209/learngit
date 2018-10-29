@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import * as querystring from 'querystring';
 
 import { RcPlatformSdk } from './platform';
+import _ = require('lodash');
 
 export class GlipSdk {
   axiosClient: AxiosInstance;
@@ -144,11 +145,64 @@ export class GlipSdk {
     });
   }
 
+  getState(stateId: string) {
+    const uri = `api/state/${stateId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
   updateState(stateId: string, data: object) {
     const uri = `api/state/${stateId}`;
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
+  }
+
+  partialUpdateState(stateId: string, data: object) {
+    const uri = `api/save_state_partial/${stateId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async markAsRead(personId: string, groupIds: string[]) {
+    if (!groupIds.length) return;
+    const readThrough = {};
+    for (let i = 0; i < groupIds.length; i++) {
+      const id = groupIds[i];
+      const group = await this.getTeam(id);
+      readThrough[id] = group.data.most_recent_post_id;
+    }
+    const params = _.assign(
+      {},
+      ...groupIds.map(id => ({
+        [`unread_count:${id}`]: 0,
+        [`unread_mentions_count:${id}`]: 0,
+        [`unread_deactivated_count:${id}`]: 0,
+        [`read_through:${id}`]: readThrough[id],
+        [`marked_as_unread:${id}`]: false,
+      })),
+    );
+
+    const stateId = await this.getStateIdByPersonId(personId);
+    await this.partialUpdateState(stateId, params);
+  }
+
+  async getIdsOfGroupsWithUnreadMessages(personId: string) {
+    const stateId = await this.getStateIdByPersonId(personId);
+
+    const state = (await this.getState(stateId)).data;
+    const unreadGroups = Object.keys(state)
+      .filter((key: string) => {
+        return (
+          (/unread_count:/.test(key) || /unread_mentions_count:/.test(key)) &&
+          state[key] > 0
+        );
+      })
+      .map((key: string) => key.replace(/[^\d]+/, ''));
+
+    return unreadGroups;
   }
 
   async updateProfileByGlipId(glipId, data: object) {

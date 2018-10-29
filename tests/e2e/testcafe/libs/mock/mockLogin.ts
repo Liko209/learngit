@@ -4,8 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { requestMock } from './requestMock';
-import { AuthInfo, go2PageWithAuth } from '../../utils';
-import { SITE_URL } from '../../config';
 
 function mockLoginRequest(account: string = 'default'): RequestMock {
   const accountFolder = account;
@@ -58,8 +56,4 @@ function mockLoginRequest(account: string = 'default'): RequestMock {
   return mock;
 }
 
-function directLogin(t: TestController, authInfo?: AuthInfo) {
-  return go2PageWithAuth(t, `${SITE_URL}?state=%2F&code=authcode`);
-}
-
-export { mockLoginRequest, directLogin };
+export { mockLoginRequest };
