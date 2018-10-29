@@ -45,7 +45,7 @@ test(
       'Both conversation should not be hidden before login',
       async () => {
         const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${pvtChat.data.id}`]: false,
           [`hide_group_${group.data.id}`]: false,
         });
@@ -118,7 +118,7 @@ test(
       'Both conversation should be closed before login',
       async () => {
         const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${pvtChat.data.id}`]: true,
           [`hide_group_${group.data.id}`]: true,
         });

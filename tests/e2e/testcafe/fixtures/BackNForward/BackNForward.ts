@@ -40,7 +40,7 @@ test(
     const backButton = app.homePage.getSelectorByAutomationId("Back");
     const forwardButton = app.homePage.getSelectorByAutomationId("Forward");
 
-    await h(t).withLog('Then the forwad button should be disabled', async () => {
+    await h(t).withLog('Then the forward button should be disabled', async () => {
       await t.expect(forwardButton.hasAttribute('disabled')).ok();
     });
 
