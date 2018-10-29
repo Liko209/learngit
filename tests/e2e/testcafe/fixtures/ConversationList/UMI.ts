@@ -56,7 +56,7 @@ test.skip(
     await h(t).withLog(
       'And the conversations should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${pvtChat.data.id}`]: false,
           [`hide_group_${group.data.id}`]: false,
           [`hide_group_${team.data.id}`]: false,
@@ -66,10 +66,9 @@ test.skip(
 
     await h(t).withLog('Clear all UMIs before login', async () => {
       const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(
-        user.glipId,
+        user.rcId,
       );
-
-      await glipSDK.markAsRead(user.glipId, unreadGroupIds);
+      await glipSDK.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(
@@ -246,18 +245,15 @@ test.skip(
     await h(t).withLog(
       'And the conversations should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${pvtChat.data.id}`]: false,
         });
       },
     );
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(
-        user.glipId,
-      );
-
-      await glipSDK.markAsRead(user.glipId, unreadGroupIds);
+      const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(user.rcId);
+      await glipSDK.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(
@@ -372,7 +368,7 @@ test.skip(
     await h(t).withLog(
       'And the conversations should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${pvtChat.data.id}`]: false,
         });
       },
@@ -380,10 +376,10 @@ test.skip(
 
     await h(t).withLog('Clear all UMIs before login', async () => {
       const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(
-        user.glipId,
+        user.rcId,
       );
 
-      await glipSDK.markAsRead(user.glipId, unreadGroupIds);
+      await glipSDK.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(
@@ -516,7 +512,7 @@ test(
     await h(t).withLog(
       'And the conversations should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${favPrivateChat.data.id}`]: false,
           [`hide_group_${favTeam.data.id}`]: false,
           [`hide_group_${group1.data.id}`]: false,
@@ -531,10 +527,10 @@ test(
 
     await h(t).withLog('Clear all UMIs before login', async () => {
       const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(
-        user.glipId,
+        user.rcId,
       );
 
-      await glipSDK.markAsRead(user.glipId, unreadGroupIds);
+      await glipSDK.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(
@@ -830,7 +826,7 @@ test(
     await h(t).withLog(
       'And the conversations should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${group1.data.id}`]: false,
           [`hide_group_${group2.data.id}`]: false,
           [`hide_group_${group3.data.id}`]: false,
@@ -843,10 +839,9 @@ test(
 
     await h(t).withLog('Clear all UMIs before login', async () => {
       const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(
-        user.glipId,
+        user.rcId,
       );
-
-      await glipSDK.markAsRead(user.glipId, unreadGroupIds);
+      await glipSDK.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(
