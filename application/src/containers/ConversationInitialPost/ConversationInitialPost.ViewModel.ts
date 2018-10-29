@@ -3,16 +3,23 @@
  * @Date: 2018-10-29 10:00:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed } from 'mobx';
+import { computed, action, observable } from 'mobx';
 import { ConversationInitialPostViewProps } from './types';
+import { service } from 'sdk';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 import StoreViewModel from '@/store/ViewModel';
 
+const { GroupService } = service;
+
 class ConversationInitialPostViewModel extends StoreViewModel<
   ConversationInitialPostViewProps
 > {
+  private _groupService: service.GroupService = GroupService.getInstance();
+  @observable
+  creatorGroupId: number;
+
   @computed
   get groupId() {
     return this.props.id;
@@ -41,6 +48,12 @@ class ConversationInitialPostViewModel extends StoreViewModel<
   @computed
   get creator() {
     return this._group.creator;
+  }
+
+  @action
+  async onReceiveProps() {
+    const groups = await this._groupService.getGroupByPersonId(this.creator.id);
+    this.creatorGroupId = groups[0].id;
   }
 }
 

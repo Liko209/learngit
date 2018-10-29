@@ -24,11 +24,12 @@ class ConversationInitialPostView extends React.Component<
   }
 
   private get _name() {
-    const { creator } = this.props;
-    console.log('creator', creator);
+    const { creator, creatorGroupId } = this.props;
     return (
       <JuiLink
-        Component={props => <Link to={`/messages/${creator.id}`} {...props} />}
+        Component={props => (
+          <Link to={`/messages/${creatorGroupId}`} {...props} />
+        )}
       >
         {creator.displayName}
       </JuiLink>

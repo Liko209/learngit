@@ -16,6 +16,7 @@ type ConversationInitialPostViewProps = {
   groupType: CONVERSATION_TYPES;
   groupDescription: string;
   creator: PersonModel;
+  creatorGroupId: number;
 };
 
 export { ConversationInitialPostProps, ConversationInitialPostViewProps };
