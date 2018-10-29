@@ -88,6 +88,10 @@ let beatsClient = new BeatsClient(apiKey, baseUrl);
 const PASS = 5;
 const FAILED = 8;
 const DASHBOARD_UI = process.env.DASHBOARD_UI || true;
+export const Allure2Dashboard = {
+  'passed': PASS,
+  'failed': FAILED
+}
 
 export {
   APP_ROOT,

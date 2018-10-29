@@ -1,6 +1,8 @@
 import 'testcafe';
+import * as _ from "lodash";
 import { IAccountPoolClient } from '../../libs/accounts';
-import { ICompany, IUser, IGroup } from '../models';
+import { ICompany, IUser, IGroup, IStep, Status } from '../models';
+import { Allure2Dashboard, beatsClient, Test, Step, Attachment, DASHBOARD_UI, PASS, FAILED, } from "../../config"
 
 interface IRcData {
   mainCompany: ICompany,
@@ -69,6 +71,39 @@ class DataHelper {
     return this.t.ctx.__originData;
   }
 
+  private getKeyfromValue(value: Status) {
+    return _.findKey(Status, (v) => v === value);
+  }
+
+  private async saveAttachment(file, stepId) {
+    return await beatsClient.createAttachment({
+      "file": file,
+      "contentType": "step",
+      "fileContentType": "multipart/form-data;",
+      "objectId": stepId
+    } as Attachment);
+  }
+
+  private async saveStep2Dashboard(step: IStep, testId: number) {
+    let BStep = await beatsClient.createStep({
+      "name": step.message,
+      "status": Allure2Dashboard[step.status],
+      "startTime": (new Date(step.startTime)).toISOString(),
+      "endTime": (new Date(step.endTime)).toISOString()
+    } as Step, this.t.ctx.testId);
+
+    if (step.screenshotPath) {
+      this.saveAttachment(step.screenshotPath, BStep.id);
+    }
+  }
+
+  private async saveLogs() {
+    let status = !_.some(this.t['testRun'].errs);
+    let test = await beatsClient.createTest({ "name": this.t['testRun'].test.name, "status": status ? PASS : FAILED } as Test);
+    this.t.ctx.testId = test.id;
+    _.map(this.t.ctx.logs, (step) => this.saveStep2Dashboard(step, this.t.ctx.testId));
+  }
+
   async setup(accountPoolClient: IAccountPoolClient, accountType: string) {
     this.accountPoolClient = accountPoolClient;
     this.originData = await this.accountPoolClient.checkOutAccounts(accountType);
@@ -77,6 +112,9 @@ class DataHelper {
 
   async teardown() {
     await this.accountPoolClient.checkInAccounts(this.originData);
+    if (DASHBOARD_UI) {
+      await this.saveLogs();
+    }
   }
 }
 
