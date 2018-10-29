@@ -4,6 +4,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { h } from '../../v2/helpers';
 import { SITE_URL } from '../../config';
+import { ClientFunction } from 'testcafe';
 
 declare var test: TestFn;
 fixture('CloseConversation')
@@ -86,7 +87,7 @@ test(
     await h(t).withLog(`Then I can find the 3 conversations in conversation list`, async () => {
       await dmSection.expand();
       await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });;
-      await favSection.expand()
+      await favSection.expand();
       await t.expect(favChat.exists).ok(groupId, { timeout: 10e3 });
       await teamsSection.expand();        
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
@@ -103,8 +104,9 @@ test(
       await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
     });
     
-    await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
-      const open_url = await h(t).href;
+    await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {;
+      await t.wait(2e3)
+      const open_url = await ClientFunction(()=> window.location.href)();
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
@@ -119,11 +121,12 @@ test(
     });
 
     await h(t).withLog(`Then the Fav conversation should be remove from conversation list.`, async () => {
-      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
+      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists).notOk();
     });
     
     await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
-      const open_url = await h(t).href;
+      await t.wait(2e3);
+       const open_url = await ClientFunction(()=> window.location.href)();
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
@@ -142,7 +145,9 @@ test(
     });
     
     await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
-      const open_url = await h(t).href;
+      await t.wait(2e3);
+      const open_url = await ClientFunction(()=> window.location.href)();
+      await console.log(open_url);
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
@@ -165,7 +170,7 @@ test(
     const dmSection = app.homePage.messagePanel.directMessagesSection;
     const teamsSection = app.homePage.messagePanel.teamsSection;
 
-    let pvtChatId, teamId, urlBeforeClose, urlAfterClose;
+    let pvtChatId, teamId, urlBeforeClose, urlAfterClose, currentGroupId;
     await h(t).withLog(
       'Given I have an extension with 1 private chat A and 1 team chat B',
       async () => {
@@ -202,8 +207,9 @@ test(
         await app.homePage.ensureLoaded();
     });
 
-    const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
-    const team = teamsSection.conversationByIdEntry(teamId);
+    //FIXME: use group id, sometimes can not find conversation.
+    const pvtChat = dmSection.nthConversationEntry(0); 
+    const team = teamsSection.nthConversationEntry(0);
 
     await h(t).withLog(`Then I clean UMI in the A and B`, async () => {
       await dmSection.expand();
@@ -212,22 +218,25 @@ test(
       await teamsSection.expand();        
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
       await team.enter();
+      currentGroupId = await app.homePage.messagePanel.conversationPage.getAttribute('data-group-id');
     });
 
     
     await h(t).withLog(`When I open conversation B and close conversation A`, async () => {
-      urlBeforeClose = await h(t).href;
       await pvtChat.enter();
-      await pvtChat.openMoreMenu();
+      urlBeforeClose = await ClientFunction(()=> window.location.href)();
+      await team.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     });
 
     await h(t).withLog(`Then  conversation A should be remove from conversation list.`, async () => {
-      await t.expect(pvtChat.exists,).notOk();
+      await t.wait(2e3);
+      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists).notOk();   
     });
     
     await h(t).withLog(`And Still focus on conversation B`, async () => {
-      urlAfterClose = await h(t).href;
+      await t.wait(2e3);
+      urlAfterClose = await ClientFunction(()=> window.location.href)();
       await t.expect(urlAfterClose).eql(urlBeforeClose,"URL is changed")
     });
   },

@@ -53,7 +53,7 @@ test(
       const conversations = app.homePage.messagePanel.teamsSection.conversations;
       const count = await conversations.count;
       const n = Math.floor(Math.random() * count);
-      await app.homePage.messagePanel.teamsSection.nthConversationEntry(n);
+      await app.homePage.messagePanel.teamsSection.nthConversationEntry(n).enter();
       await shouldMatchUrl;
       groupId = await getCurrentGroupIdFromURL();
     });
@@ -64,11 +64,14 @@ test(
       await t.expect(targetPost.exists).ok(postData)
     });
 
+    //TODO: 
     await h(t).withLog(`Then I can check the post's time should have right format`, async () => {
       const formatTime = moment(postData.creationTime).format(format);
-      // const timeDiv = targetPost.find('div').withText(formatTime);
-      const timeDiv2 = targetPost.find('div').filter((node)=>{ moment(node.textContent, format, true).isValid()})
-      await t.expect(timeDiv2.exists).ok();
+      const timeDiv = targetPost.find('div').withText(formatTime);
+      // const timeDiv2 = targetPost.find('div').filter( (node)=>{ 
+      //   return moment(node.textContent, format, true).isValid()
+      // },  {moment,format})
+      await t.expect(timeDiv.exists).ok();
     });
   },
 );
@@ -104,7 +107,7 @@ test(
         const conversations = app.homePage.messagePanel.teamsSection.conversations;
         const count = await conversations.count;
         const n = Math.floor(Math.random() * count);
-        await app.homePage.messagePanel.teamsSection.nthConversationEntry(n);
+        await app.homePage.messagePanel.teamsSection.nthConversationEntry(n).enter();
         await shouldMatchUrl;
         groupId = await getCurrentGroupIdFromURL();
       },

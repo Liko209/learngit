@@ -7,6 +7,7 @@
 import { formalName } from '../../libs/filter';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { h } from '../../v2/helpers';
+import { v4 as uuid } from 'uuid';
 import { SITE_URL } from '../../config';
 import { setupCase, teardownCase } from '../../init';
 
@@ -19,31 +20,33 @@ test(formalName('draft', ['P0', 'JPT-139', 'Show massage draft when switching co
 async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const user = users[4];
+  const user = users[7];
   const userPlatform = await h(t).getPlatform(user);
-  const glipSDK = await h(t).sdkHelper.sdkManager.getGlip(user);
+  const userGlip = await h(t).getGlip(user);
 
-  let pvtChat, group, conversation1, conversation2;
+  let teamId1, teamId2, conversation1, conversation2;
   await h(t).withLog(
     'Given I have an extension with 1 private chat A and 1 group chat B',
     async () => {
-      pvtChat = await userPlatform.createGroup({
-        type: 'PrivateChat',
-        members: [user.rcId, users[5].rcId],
-      });
-      group = await userPlatform.createGroup({
-        type: 'Group',
-        members: [user.rcId, users[5].rcId, users[6].rcId],
-      });
+      teamId1 = (await userPlatform.createGroup({
+        type: 'Team',
+        name: `1 ${uuid()}`,
+        members: [user.rcId, users[5].rcId]
+      })).data.id;
+      teamId2 = (await userPlatform.createGroup({
+        type: 'Team',
+        name: `2 ${uuid()}`,
+        members: [user.rcId, users[5].rcId, users[6].rcId]
+      })).data.id;
     },
   );
 
   await h(t).withLog(
     'Both conversation should not be hidden before login',
     async () => {
-      await glipSDK.updateProfileByGlipId(user.glipId, {
-        [`hide_group_${pvtChat.data.id}`]: false,
-        [`hide_group_${group.data.id}`]: false,
+      await userGlip.updateProfileByGlipId(user.glipId, {
+        [`hide_group_${teamId1}`]: false,
+        [`hide_group_${teamId2}`]: false,
       });
     },
   );
@@ -62,10 +65,10 @@ async (t) => {
   await h(t).withLog(
     'Then I check conversation A and B exsit',
     async () => {
-      const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-      await directMessagesSection.expand();
-      conversation1 = directMessagesSection.conversationByIdEntry(pvtChat.data.id);
-      conversation2 = directMessagesSection.conversationByIdEntry(group.data.id);
+      const teamSection = app.homePage.messagePanel.teamsSection;
+      await teamSection.expand();
+      conversation1 = teamSection.conversationByIdEntry(teamId1);
+      conversation2 = teamSection.conversationByIdEntry(teamId2);
     },
   );
 
@@ -88,7 +91,12 @@ async (t) => {
   await h(t).withLog(
     'Then I can find "Draft" in Conversation A name',
     async () => {
-      await t.expect(conversation1.textContent).contains('Draft');
+      // FIXME: find a good way to get name.
+      await t.expect(app.homePage.messagePanel.teamsSection.conversations
+        .filter(`[data-group-id="${teamId1}"]`)
+        .child().withText('Draft')
+        .exists)
+        .ok();
     },
   );
 
