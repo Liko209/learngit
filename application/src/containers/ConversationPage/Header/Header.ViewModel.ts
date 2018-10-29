@@ -6,6 +6,7 @@
 
 import { observable, computed, action } from 'mobx';
 import { Group, Person } from 'sdk/models';
+import { service } from 'sdk';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -16,11 +17,13 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { t, TranslationFunction } from 'i18next';
 import _ from 'lodash';
 import { HeaderProps } from './Header.View';
-
+const { GroupService } = service;
 class HeaderViewModel extends AbstractViewModel implements HeaderProps {
   t: TranslationFunction;
   @observable
   private _id: number;
+
+  private _groupService: service.GroupService = GroupService.getInstance();
 
   @action
   onReceiveProps({ id }: { id: number }) {
@@ -105,6 +108,13 @@ class HeaderViewModel extends AbstractViewModel implements HeaderProps {
       actions.push(factory('add member', 'person_add', 'addMembers'));
     }
     return actions;
+  }
+
+  onFavoriteButtonHandler = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => {
+    return this._groupService.markGroupAsFavorite(this._id, checked);
   }
 }
 

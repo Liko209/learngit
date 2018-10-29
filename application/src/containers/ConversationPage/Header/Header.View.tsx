@@ -31,6 +31,10 @@ type HeaderProps = {
     tooltip: string;
   }[];
   customStatus: string | null;
+  onFavoriteButtonHandler: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => void;
 } & InjectedTranslateProps;
 
 @observer
@@ -81,7 +85,14 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 
   private _SubTitle() {
-    const { t, isFavorite, type, isPrivate, customStatus } = this.props;
+    const {
+      t,
+      isFavorite,
+      type,
+      isPrivate,
+      customStatus,
+      onFavoriteButtonHandler,
+    } = this.props;
     return (
       <JuiConversationPageHeaderSubtitle>
         {customStatus ? <span>{customStatus}</span> : null}
@@ -95,6 +106,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
             checkedIconName="star"
             iconName="star_border"
             checked={isFavorite}
+            onChange={onFavoriteButtonHandler}
           >
             star_border
           </JuiCheckboxButton>

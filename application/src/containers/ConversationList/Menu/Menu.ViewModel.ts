@@ -3,7 +3,7 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
+
 import { computed } from 'mobx';
 import { service } from 'sdk';
 import { Profile } from 'sdk/models';
