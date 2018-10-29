@@ -4,8 +4,6 @@ import { observable } from 'mobx';
 import Base from './Base';
 export default class ItemModel extends Base<Item> {
   @observable
-  data: any;
-  @observable
   type: string;
   @observable
   typeId: number;
@@ -37,7 +35,6 @@ export default class ItemModel extends Base<Item> {
     super(data);
     const { type_id } = data;
     this.typeId = type_id;
-    this.data = data;
     this.setFileData();
   }
 
