@@ -191,8 +191,27 @@ class BaseService<
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
   ): SubModel {
-    const mergedModel = _.merge({}, originalModel, partialModel);
-    return mergedModel;
+    const cloneO = _.cloneDeep(originalModel);
+    const keys = Object.keys(partialModel);
+    keys.forEach((key: string) => {
+      cloneO[key] = _.cloneDeep(partialModel[key]);
+    });
+    return cloneO;
+  }
+
+  async updatePartialModel2Db(partialModels: Partial<Raw<SubModel>>[]) {
+    if (!this.DaoClass) {
+      mainLogger.warn('updatePartialModel2Db: no dao class');
+      return;
+    }
+
+    const transformedModels: SubModel[] = [];
+    partialModels.forEach((item: Partial<Raw<SubModel>>) => {
+      const transformedModel: SubModel = transform(item);
+      transformedModels.push(transformedModel);
+    });
+    const dao = daoManager.getDao(this.DaoClass);
+    await dao.bulkUpdate(transformedModels);
   }
 
   private async _handlePartialUpdateWithOriginal(
@@ -258,28 +277,11 @@ class BaseService<
     const originalModels: SubModel[] = [originalModel];
     const partialModels: Partial<Raw<SubModel>>[] = [model];
 
-    await this._updatePartialModel2Db(partialModels);
+    await this.updatePartialModel2Db(partialModels);
 
     if (doPartialNotify) {
       doPartialNotify(originalModels, partialModels);
     }
-  }
-
-  private async _updatePartialModel2Db(
-    partialModels: Partial<Raw<SubModel>>[],
-  ) {
-    if (!this.DaoClass) {
-      mainLogger.warn('_updatePartialModel2Db: no dao class');
-      return;
-    }
-
-    const transformedModels: SubModel[] = [];
-    partialModels.forEach((item: Partial<Raw<SubModel>>) => {
-      const transformedModel: SubModel = transform(item);
-      transformedModels.push(transformedModel);
-    });
-    const dao = daoManager.getDao(this.DaoClass);
-    await dao.bulkUpdate(transformedModels);
   }
 }
 
