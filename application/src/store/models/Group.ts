@@ -74,7 +74,6 @@ export default class GroupModel extends Base<Group> {
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
-    console.log('---------------', [...favoriteGroupIds]);
     return favoriteGroupIds.some(groupId => groupId === this.id);
   }
 
