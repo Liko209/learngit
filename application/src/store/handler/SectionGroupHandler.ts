@@ -96,7 +96,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
   }
 
-  async _profileUpdateGroupSections() {
+  private async _profileUpdateGroupSections() {
     const newFavIds =
       getSingleEntity<Profile, ProfileModel>(
         ENTITY_NAME.PROFILE,
