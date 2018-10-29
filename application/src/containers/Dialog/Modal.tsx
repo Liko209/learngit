@@ -7,16 +7,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ThemeProvider from '@/containers/ThemeProvider';
 import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
-import { translate } from 'react-i18next';
-import { TranslationFunction } from 'i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 
 type BaseType = {
   isAlert?: boolean;
 } & JuiModalProps;
 
-type BaseModalType = {
-  t: TranslationFunction;
-} & BaseType;
+type BaseModalType = WithNamespaces & BaseType;
 
 const BaseModal = (props: BaseModalType) => {
   const { t, isAlert, ...newConfig } = props;
@@ -56,7 +53,7 @@ function modal(config: BaseType) {
     ...newConfig,
     isAlert,
     open: true,
-    async onOK () {
+    async onOK() {
       onOK && (await onOK());
       destroy();
     },

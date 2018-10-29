@@ -4,8 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { TranslationFunction } from 'i18next';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import {
   JuiConversationList,
@@ -23,9 +22,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 const SortableList = SortableContainer(JuiConversationList);
 const SortableItem = SortableElement(ConversationListItem);
 
-type Props = SectionViewProps & {
-  t: TranslationFunction;
-};
+type Props = SectionViewProps & WithNamespaces;
 
 class SectionViewComponent extends React.Component<Props> {
   componentDidUpdate(prevProps: Props) {

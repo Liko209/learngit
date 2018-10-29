@@ -1,9 +1,8 @@
-import { TranslationFunction } from 'i18next';
+import { WithNamespaces } from 'react-i18next';
 
-type ConversationPageViewProps = {
+type ConversationPageViewProps = WithNamespaces & {
   canPost: boolean;
   groupId: number;
-  t: TranslationFunction;
 };
 
 type ConversationPageProps = {

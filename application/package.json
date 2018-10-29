@@ -11,23 +11,23 @@
     "analyze": "npm run build -- --analyze"
   },
   "dependencies": {
-    "glipdown": "^0.0.54",
+    "glipdown": "0.0.54",
     "hoist-non-react-statics": "3.0.1",
-    "i18next": "11.9.1",
+    "i18next": "12.0.0",
     "i18next-browser-languagedetector": "2.2.3",
     "i18next-xhr-backend": "1.5.1",
     "jui": "0.1.0",
     "libphonenumber-js": "1.6.4",
     "lodash": "4.17.11",
-    "mobx": "4.5.0",
-    "mobx-react": "5.2.8",
+    "mobx": "4.5.2",
+    "mobx-react": "5.3.6",
     "moment": "2.22.2",
     "react": "16.5.2",
     "react-dom": "16.5.2",
-    "react-i18next": "8.0.7",
+    "react-i18next": "8.3.5",
     "react-router-dom": "4.3.1",
     "sdk": "0.1.0",
-    "styled-components": "4.0.0-beta.9"
+    "styled-components": "4.0.2"
   },
   "devDependencies": {
     "@babel/core": "7.1.2",
@@ -41,7 +41,6 @@
     "@types/i18next": "*",
     "@types/i18next-browser-languagedetector": "*",
     "@types/i18next-xhr-backend": "*",
-    "@types/react-i18next": "*",
     "@types/react-router-dom": "*",
     "add-asset-html-webpack-plugin": "3.0.1",
     "babel-loader": "8.0.4",
