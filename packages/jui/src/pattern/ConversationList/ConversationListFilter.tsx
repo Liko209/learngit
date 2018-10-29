@@ -8,54 +8,43 @@ import React from 'react';
 import MuiMenuItem from '@material-ui/core/MenuItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey, typography } from '../../foundation/utils';
+import { spacing, grey, typography, height } from '../../foundation/utils';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
-import {
-  JuiToggleButton,
-  JuiToggleButtonProps,
-} from './../../components/Buttons/ToggleButton';
+import { JuiToggleButton, JuiToggleButtonProps } from './../../components/Buttons/ToggleButton';
 
 const StyledListItem = styled(MuiMenuItem)`
-  && {
-    white-space: nowrap;
-    background: white;
-    padding: ${spacing(4, 4, 4, 8)};
-    color: ${grey('900')};
-    ${typography('body2')};
-    &:hover {
-      background: white;
-      cursor: initial;
-    }
-  }
+	&& {
+		white-space: nowrap;
+		background: white;
+		padding: ${spacing(0, 4, 0, 8)};
+		height: ${height(12)};
+		line-height: ${height(12)};
+		color: ${grey('900')};
+		${typography('body2')};
+		&:hover {
+			background: white;
+			cursor: initial;
+		}
+	}
 `;
 
 type JuiConversationListFilterProps = {
-  label: string;
+	label: string;
 } & JuiToggleButtonProps;
 
 type IConversationListItem = {
-  dependencies?: React.ComponentType[];
+	dependencies?: React.ComponentType[];
 } & React.SFC<JuiConversationListFilterProps>;
 
-const JuiConversationListFilter: IConversationListItem = (
-  props: JuiConversationListFilterProps,
-) => {
-  const { label, checked, onChange, disabled, ...rest } = props;
+const JuiConversationListFilter: IConversationListItem = (props: JuiConversationListFilterProps) => {
+	const { label, checked, onChange, disabled, ...rest } = props;
 
-  return (
-    <StyledListItem
-      classes={{ selected: 'selected' }}
-      disableRipple={true}
-      {...rest}
-    >
-      <ItemText>{label}</ItemText>
-      <JuiToggleButton
-        checked={checked}
-        onChange={onChange}
-        disabled={disabled}
-      />
-    </StyledListItem>
-  );
+	return (
+		<StyledListItem classes={{ selected: 'selected' }} disableRipple={true} {...rest}>
+			<ItemText>{label}</ItemText>
+			<JuiToggleButton checked={checked} onChange={onChange} disabled={disabled} />
+		</StyledListItem>
+	);
 };
 
 JuiConversationListFilter.dependencies = [ItemText];

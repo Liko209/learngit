@@ -10,7 +10,9 @@ import { Avatar } from '@/containers/Avatar';
 import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
-
+import { idsToConversationSheet } from '@/containers/ConversationSheet';
+import { FormatMessages } from '../FormatMessages';
+// import { idToPostItemComponent } from '@/containers/PostItems';
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
@@ -18,36 +20,41 @@ export class ConversationCard extends React.Component<
   constructor(props: ConversationCardViewProps) {
     super(props);
   }
-
   render() {
-    const { id, post, creator, name, customStatus, createTime } = this.props;
-    const { text } = post;
+    const {
+      id,
+      post,
+      creator,
+      name,
+      createTime,
+      customStatus,
+      itemIds,
+    } = this.props;
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
-      <JuiConversationCard
-        data-name="conversation-card"
-        data-id={post.id}
-        Avatar={avatar}
-      >
-        <JuiConversationCardHeader
-          data-name="conversation-card-header"
-          name={name}
-          time={createTime}
-          status={customStatus}
+      <React.Fragment>
+        <JuiConversationCard
+          data-name="conversation-card"
+          data-id={post.id}
+          Avatar={avatar}
         >
-          <Actions id={id} />
-        </JuiConversationCardHeader>
-        <JuiConversationCardBody>
-          <div
-            style={{ fontSize: '14px', lineHeight: '24px', color: '#616161' }}
+          <JuiConversationCardHeader
+            data-name="conversation-card-header"
+            name={name}
+            time={createTime}
+            status={customStatus}
           >
-            {text}
-          </div>
-        </JuiConversationCardBody>
-        {/* <JuiConversationCardFooter>
-          [conversation card footer]
-        </JuiConversationCardFooter> */}
-      </JuiConversationCard>
+            <Actions id={id} />
+          </JuiConversationCardHeader>
+          <JuiConversationCardBody>
+            <FormatMessages postId={post.id} />
+            {idsToConversationSheet(itemIds)}
+          </JuiConversationCardBody>
+          {/*<JuiConversationCardFooter>*/}
+          {/*/!* todo: footer *!/*/}
+          {/*</JuiConversationCardFooter>*/}
+        </JuiConversationCard>
+      </React.Fragment>
     );
   }
 }

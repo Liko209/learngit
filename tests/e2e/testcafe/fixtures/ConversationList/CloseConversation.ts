@@ -1,93 +1,22 @@
 import { formalName } from '../../libs/filter';
-import { setUp, tearDown, TestHelper } from '../../libs/helpers';
-import { directLogin } from '../../utils';
-import { setupSDK } from '../../utils/setupSDK';
-import { ProfileAPI, PersonAPI } from '../../libs/sdk';
-import { CloseConversation } from '../../page-models/components/ConversationList/CloseConversation';
+import { v4 as uuid } from 'uuid'
+import { setupCase, teardownCase } from '../../init';
+import { AppRoot } from '../../v2/page-models/AppRoot';
+import { h } from '../../v2/helpers';
+import { SITE_URL } from '../../config';
 
 declare var test: TestFn;
 fixture('CloseConversation')
-  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
-  .afterEach(tearDown());
+  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .afterEach(teardownCase());
 
-let con1: number;
-let con2: number;
+
 // the detail of dialog
 const title = 'Close Conversation?';
 const content =
   'Closing a conversation will remove it from the left pane, but will not delete the contents.';
 const checkboxLabel = "Don't ask me again";
 const button = 'Close Conversation';
-// prepare: must have 2 conversations at least in list
-const prepare_2conversationInList = async (t: TestController) => {
-  const helper = TestHelper.from(t);
-  await helper.log(
-    '1.Prepare: have 2 conversations at least in conversation list',
-  );
-  const client701 = await helper.glipApiManager.getClient(
-    helper.users.user701,
-    helper.companyNumber,
-  );
-  await client701.sendPost(helper.teams.team1_u1_u2.glip_id, {
-    text: `send one post to ${helper.teams.team1_u1_u2.glip_id}`,
-  });
-  await client701.sendPost(helper.teams.team3_u1_u2_u3.glip_id, {
-    text: `send one post to ${helper.teams.team3_u1_u2_u3.glip_id}`,
-  });
-};
-// prepare: must have 1 conversations at least in list
-const prepare_1conversationInList = async (t: TestController) => {
-  const helper = TestHelper.from(t);
-  await helper.log(
-    '1.Prepare: have 1 conversations at least in conversation list',
-  );
-  const client701 = await helper.glipApiManager.getClient(
-    helper.users.user701,
-    helper.companyNumber,
-  );
-  con1 = helper.teams.team1_u1_u2.glip_id;
-  await client701.sendPost(con1, {
-    text: `send one post to ${helper.teams.team1_u1_u2.name}`,
-  });
-};
-
-// prepare for case JPT-134: expect to show confirmation popup(skip_close_conversation_confirmation should be false or not exist) 135->true
-const presetWhetherSkipConfirmationPopup = async (
-  t: TestController,
-  skipCloseConfirmButton: boolean = false,
-) => {
-  const helper = TestHelper.from(t);
-  await helper.log('2.Prepare: show confirmation popup');
-  await setupSDK(t);
-  const id = (await PersonAPI.requestPersonById(helper.users.user701.glip_id))
-    .data.profile_id;
-  let data = (await ProfileAPI.requestProfileById(id)).data;
-  if (data.skip_close_conversation_confirmation !== skipCloseConfirmButton) {
-    data = (await (ProfileAPI as any).putDataById(id, {
-      skip_close_conversation_confirmation: skipCloseConfirmButton,
-    })).data;
-  }
-  await helper.log(
-    `2.1 skip_close_conversation_confirmation: ${skipCloseConfirmButton}`,
-  );
-};
-
-const action1 = (t: TestController) =>
-  directLogin(t)
-    .log('3.Should navigate to CloseConversation')
-    .shouldNavigateTo(CloseConversation)
-    .log('4.Click one conversation')
-    .clickOneConversation(0)
-    .log('5.Get conversation id')
-    .getConversationId()
-    .log('6.Click more button')
-    .clickConversationMoreButton(0)
-    .log('7.Exist close button')
-    .expectCloseButton()
-    .log('8.Click close button')
-    .clickCloseButton()
-    .log('9.Check display of the confirm dialog')
-    .expectDialog(title, content, checkboxLabel, button);
 
 test(
   formalName(
@@ -95,29 +24,125 @@ test(
     ['JPT-135', 'JPT-130', 'P1', 'ConversationList'],
   ),
   async (t: TestController) => {
-    await prepare_1conversationInList(t);
-    await presetWhetherSkipConfirmationPopup(t, true);
-    await directLogin(t)
-      .log('3.Should navigate to CloseConversation')
-      .shouldNavigateTo(CloseConversation)
-      .log('4.Click one conversation')
-      .clickOneConversation(0)
-      .log('5.Get conversation id')
-      .getConversationId()
-      .log('6.Click more button')
-      .clickConversationMoreButton(0)
-      .log('7.Exist close button')
-      .expectCloseButton()
-      .log('8.Click close button')
-      .clickCloseButton()
-      .log('9.Navigate to blank page')
-      .expect2BlankPage()
-      .log('10.The conversation has closed')
-      .expectNoClosedConversation()
-      .log('11.Refresh page')
-      .refreshPage()
-      .log('12.The conversation has closed')
-      .expectNoClosedConversation();
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[7];
+    const userPlatform = await h(t).getPlatform(user);
+    const userGlip = await h(t).getGlip(user);
+    const dmSection = app.homePage.messagePanel.directMessagesSection;
+    const teamsSection = app.homePage.messagePanel.teamsSection;
+
+    let pvtChatId, groupId, teamId;
+    await h(t).withLog(
+      'Given I have an extension with 1 private chat and 1 group chat and I team chat',
+      async () => {
+        pvtChatId = (await userPlatform.createGroup({
+          type: 'PrivateChat',
+          members: [user.rcId, users[5].rcId],
+        })).data.id;
+        groupId = (await userPlatform.createGroup({
+          type: 'Group',
+          members: [user.rcId, users[5].rcId, users[6].rcId],
+        })).data.id;;
+        teamId = (await userPlatform.createGroup({
+          isPublic: true,
+          name: uuid(),
+          type: 'Team',
+          members: [user.rcId, users[5].rcId, users[6].rcId],
+        })).data.id;
+      },
+    );
+
+    await h(t).withLog('All conversations should not be hidden before login',async () => {
+        await userGlip.updateProfileByGlipId(user.glipId, {
+          [`hide_group_${pvtChatId}`]: false,
+          [`hide_group_${groupId}`]: false,
+        });
+      },
+    );
+
+    await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
+        await userGlip.updateProfileByGlipId(user.glipId, {
+          skip_close_conversation_confirmation: true
+        });
+      },
+    );
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+    });
+
+    const pvtChat = dmSection.conversations.filter(`[data-group-id="${pvtChatId}"]`);
+    const group = dmSection.conversations.filter(`[data-group-id="${groupId}"]`);
+    const team = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
+    const closeButton = app.getSelector('li').withText('Close');
+
+    await h(t).withLog(`Then I can find the 3 conversations in conversation list`, async () => {
+      await dmSection.expand();
+      await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
+      await t.expect(group.exists).ok(groupId, { timeout: 10e3 });
+      await teamsSection.expand();        
+      await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
+    });
+
+    await h(t).withLog(`When I open PrivateChat conversation and then click close conversation button`, async () => {
+      await t.click(pvtChat);
+      const moreIcon = pvtChat.find('span').withText('more_vert');
+      await t.click(moreIcon);
+      await t.click(closeButton);
+    });
+
+    await h(t).withLog(`Then PrivateChat conversation should be remove from conversation list.`, async () => {
+      await t.expect(pvtChat.exists,).notOk();
+    });
+    
+    await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
+      const open_url = await h(t).href;
+      const str = open_url.toString().split('messages');
+      await t.expect(str.length).eql(2)
+        .expect(str[1]).eql('');
+      await t.expect(app.homePage.messagePanel.conversationPage.find(".ql-editor").exists).notOk()
+    })
+
+    await h(t).withLog(`When I open group conversation and then click close conversation button`, async () => {
+      await t.click(group);
+      const moreIcon = group.find('span').withText('more_vert');
+      await t.click(moreIcon);
+      await t.click(closeButton);
+    });
+
+    await h(t).withLog(`Then group conversation should be remove from conversation list.`, async () => {
+      await t.expect(group.exists,).notOk();
+    });
+    
+    await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
+      const open_url = await h(t).href;
+      const str = open_url.toString().split('messages');
+      await t.expect(str.length).eql(2)
+        .expect(str[1]).eql('');
+      await t.expect(app.homePage.messagePanel.conversationPage.find(".ql-editor").exists).notOk()
+    })
+
+    await h(t).withLog(`When I open team conversation and then click close conversation button`, async () => {
+      await t.click(team);
+      const moreIcon = team.find('span').withText('more_vert');
+      await t.click(moreIcon);
+      await t.click(closeButton);
+    });
+
+    await h(t).withLog(`Then team conversation should be remove from conversation list.`, async () => {
+      await t.expect(team.exists,).notOk();
+    });
+    
+    await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
+      const open_url = await h(t).href;
+      const str = open_url.toString().split('messages');
+      await t.expect(str.length).eql(2)
+        .expect(str[1]).eql('');
+      await t.expect(app.homePage.messagePanel.conversationPage.find(".ql-editor").exists).notOk()
+    })
   },
 );
 
@@ -127,37 +152,80 @@ test(
     ['JPT-137', 'JPT-130', 'P1', 'ConversationList'],
   ),
   async (t: TestController) => {
-    await prepare_2conversationInList(t);
-    await presetWhetherSkipConfirmationPopup(t, false);
-    await directLogin(t)
-      .shouldNavigateTo(CloseConversation)
-      .log('3.Prepare no UMI :Click one conversation c1')
-      .clickOneConversation(1)
-      .log('5.Get conversation id')
-      .getConversationId()
-      .log('4.Click one conversation c2')
-      .clickOneConversation(0)
-      .pushURL()
-      .log("5.Click other conversation c1's  more button")
-      .clickConversationMoreButton(1)
-      .log('6.Exist close button')
-      .expectCloseButton()
-      .log('7.Click close button')
-      .clickCloseButton()
-      .log('8.Check display of the confirm dialog')
-      .expectDialog(title, content, checkboxLabel, button)
-      .log('9.Click close button of the dialog')
-      .clickDialogCloseButton()
-      .pushURL()
-      .log('10.Current url should be same')
-      .expectSameURL()
-      .log('11.The conversation has closed')
-      .expectNoClosedConversation()
-      .log('12.Refresh page')
-      .refreshPage()
-      .log('13.The conversation has closed')
-      .expectNoClosedConversation()
-      .log('14.Click more button');
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[7];
+    const userPlatform = await h(t).getPlatform(user);
+    const userGlip = await h(t).getGlip(user);
+    const dmSection = app.homePage.messagePanel.directMessagesSection;
+    const teamsSection = app.homePage.messagePanel.teamsSection;
+
+    let pvtChatId, teamId, urlBeforeClose, urlAfterClose;
+    await h(t).withLog(
+      'Given I have an extension with 1 private chat A and 1 team chat B',
+      async () => {
+        pvtChatId = (await userPlatform.createGroup({
+          type: 'PrivateChat',
+          members: [user.rcId, users[5].rcId],
+        })).data.id;
+        teamId = (await userPlatform.createGroup({
+          isPublic: true,
+          name: uuid(),
+          type: 'Team',
+          members: [user.rcId, users[5].rcId, users[6].rcId],
+        })).data.id;
+      },
+    );
+
+    await h(t).withLog('All conversations should not be hidden before login',async () => {
+        await userGlip.updateProfileByGlipId(user.glipId, {
+          [`hide_group_${pvtChatId}`]: false,
+        });
+      },
+    );
+
+    await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
+        await userGlip.updateProfileByGlipId(user.glipId, {
+          skip_close_conversation_confirmation: true
+        });
+      },
+    );
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+    });
+
+    const pvtChat = dmSection.conversations.filter(`[data-group-id="${pvtChatId}"]`);
+    const team = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
+    const closeButton = app.getSelector('li').withText('Close');
+
+    await h(t).withLog(`Then I clean UMI in the A and B`, async () => {
+      await dmSection.expand();
+      await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
+      await t.click(pvtChat);
+      await teamsSection.expand();        
+      await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
+      await t.click(team);
+    });
+
+    
+    await h(t).withLog(`When I open conversation B and close conversation A`, async () => {
+      urlBeforeClose = await h(t).href;
+      const moreIcon = pvtChat.find('span').withText('more_vert');
+      await t.click(moreIcon);
+      await t.click(closeButton);
+    });
+
+    await h(t).withLog(`Then  conversation A should be remove from conversation list.`, async () => {
+      await t.expect(pvtChat.exists,).notOk();
+    });
+    
+    await h(t).withLog(`And Still focus on conversation B`, async () => {
+      urlAfterClose = await h(t).href;
+      await t.expect(urlAfterClose).eql(urlBeforeClose,"URL is changed")
+    });
   },
 );
 
@@ -169,26 +237,99 @@ test(
     'ConversationList',
   ]),
   async (t: TestController) => {
-    await prepare_2conversationInList(t);
-    await presetWhetherSkipConfirmationPopup(t, false);
-    await action1(t)
-      .log('10.Click close button of the dialog')
-      .clickDialogCloseButton()
-      .log('11.Navigate to blank page')
-      .expect2BlankPage()
-      .log('12.The conversation has closed')
-      .expectNoClosedConversation()
-      .log('13.Refresh page')
-      .refreshPage()
-      .log('14.The conversation has closed')
-      .expectNoClosedConversation()
-      .log('15.Click more button')
-      .clickConversationMoreButton(0)
-      .log('16.Click close button')
-      .clickCloseButton()
-      .log('17.Check display the confirm dialog')
-      .expectDialog(title, content, checkboxLabel, button);
-  },
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[7];
+    const userPlatform = await h(t).getPlatform(user);
+    const userGlip = await h(t).getGlip(user);
+    const dmSection = app.homePage.messagePanel.directMessagesSection;
+    const teamsSection = app.homePage.messagePanel.teamsSection;
+
+
+    let pvtChatId, teamId;
+    await h(t).withLog(
+      'Given I have an extension with 1 private chat A and 1 team chat B',
+      async () => {
+        pvtChatId = (await userPlatform.createGroup({
+          type: 'PrivateChat',
+          members: [user.rcId, users[5].rcId],
+        })).data.id;
+        teamId = (await userPlatform.createGroup({
+          isPublic: true,
+          name: uuid(),
+          type: 'Team',
+          members: [user.rcId, users[5].rcId, users[6].rcId],
+        })).data.id;
+      },
+    );
+
+    await h(t).withLog('All conversations should not be hidden before login',async () => {
+        await userGlip.updateProfileByGlipId(user.glipId, {
+          [`hide_group_${pvtChatId}`]: false,
+        });
+      },
+    );
+
+    await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
+        await userGlip.updateProfileByGlipId(user.glipId, {
+          skip_close_conversation_confirmation: false
+        });
+      },
+    );
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+    });
+
+    const pvtChat = dmSection.conversations.filter(`[data-group-id="${pvtChatId}"]`);
+    const team = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
+    const closeButton = app.getSelector('li').withText('Close');
+    const dialog = app.homePage.messagePanel.closeConversationModal;
+
+    await h(t).withLog(`Then I can open conversation A `, async () => {
+      await dmSection.expand();
+      await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
+      await t.click(pvtChat);
+    });
+
+    await h(t).withLog(`When I click conversation A's close buttom`, async () => {
+      const moreIcon = pvtChat.find('span').withText('more_vert');
+      await t.click(moreIcon); 
+      await t.click(closeButton);
+    }); 
+
+    await h(t).withLog(`Then a confirm dialog should be popup`, async () => {
+      await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
+      await t.expect(dialog.getSelector('p').withText(content)).ok();
+      await t.expect(dialog.dontAskAgainCheckbox.withText(checkboxLabel)).ok();
+      await t.expect(dialog.confirmButton.withText(button.toUpperCase())); //The button is uppercase,it's by design
+    });  
+
+    await h(t).withLog(`When I don't select "Don't ask me again" then click "Close Conversation" button`, async () => {
+      await dialog.confirm();
+    });   
+
+    await h(t).withLog(`The popup dialog dissmis and conversation A is unvisible`, async () => {
+      await t.expect(dialog.exists).notOk();
+      await t.expect(pvtChat.exists,).notOk();
+    });  
+
+    await h(t).withLog(`When I click conversation B's close buttom`, async () => {
+      const moreIcon = team.find('span').withText('more_vert');
+      await t.click(moreIcon);
+      await t.click(closeButton);
+    }); 
+
+    await h(t).withLog(`Then should be show the confirm dialog again`, async () => {
+      await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
+      await t.expect(dialog.getSelector('p').withText(content)).ok();
+      await t.expect(dialog.dontAskAgainCheckbox.withText(checkboxLabel)).ok();
+      await t.expect(dialog.confirmButton.withText(button.toUpperCase())); 
+    });     
+    
+  }
 );
 
 test(
@@ -197,27 +338,100 @@ test(
     ['JPT-134', 'JPT-130', 'P2', 'ConversationList'],
   ),
   async (t: TestController) => {
-    await prepare_2conversationInList(t);
-    await presetWhetherSkipConfirmationPopup(t, false);
-    await action1(t)
-      .log(`10.Tap ${checkboxLabel} checkbox`)
-      .clickDialogCheckbox()
-      .log('11.Click close button of the dialog')
-      .clickDialogCloseButton()
-      .log('12.Navigate to blank page')
-      .expect2BlankPage()
-      .log('13.The conversation has closed')
-      .expectNoClosedConversation()
-      .log('14.Refresh page')
-      .refreshPage()
-      .log('15.The conversation has closed')
-      .expectNoClosedConversation()
-      .log('16.Click more button')
-      .clickConversationMoreButton(0)
-      .log('17.Click close button')
-      .clickCloseButton()
-      .log('18.Check no confirm dialog')
-      .expectNoDialogTitle(title);
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[7];
+    const userPlatform = await h(t).getPlatform(user);
+    const userGlip = await h(t).getGlip(user);
+    const dmSection = app.homePage.messagePanel.directMessagesSection;
+    const teamsSection = app.homePage.messagePanel.teamsSection;
+
+
+
+    let pvtChatId, teamId;
+    await h(t).withLog(
+      'Given I have an extension with 1 private chat A and 1 team chat B',
+      async () => {
+        pvtChatId = (await userPlatform.createGroup({
+          type: 'PrivateChat',
+          members: [user.rcId, users[5].rcId],
+        })).data.id;
+        teamId = (await userPlatform.createGroup({
+          isPublic: true,
+          name: uuid(),
+          type: 'Team',
+          members: [user.rcId, users[5].rcId, users[6].rcId],
+        })).data.id;
+      },
+    );
+
+    await h(t).withLog('All conversations should not be hidden before login',async () => {
+        await userGlip.updateProfileByGlipId(user.glipId, {
+          [`hide_group_${pvtChatId}`]: false,
+        });
+      },
+    );
+
+    await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
+        await userGlip.updateProfileByGlipId(user.glipId, {
+          skip_close_conversation_confirmation: false
+        });
+      },
+    );
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+    });
+
+    const pvtChat = dmSection.conversations.filter(`[data-group-id="${pvtChatId}"]`);
+    const team = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
+    const closeButton = app.getSelector('li').withText('Close');
+    const dialog = app.homePage.messagePanel.closeConversationModal;
+
+    await h(t).withLog(`Then I can open conversation A `, async () => {
+      await dmSection.expand();
+      await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
+      await t.click(pvtChat);
+    });
+
+    await h(t).withLog(`When I click conversation A's close buttom`, async () => {
+      const moreIcon = pvtChat.find('span').withText('more_vert');
+      await t.click(moreIcon); 
+      await t.click(closeButton);
+    }); 
+
+    await h(t).withLog(`Then a confirm dialog should be popup`, async () => {
+      await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
+      await t.expect(dialog.getSelector('p').withText(content)).ok();
+      await t.expect(dialog.dontAskAgainCheckbox.withText(checkboxLabel)).ok();
+      await t.expect(dialog.confirmButton.withText(button.toUpperCase())); //The button is uppercase,it's by design
+    });  
+
+    await h(t).withLog(`When I select "Don't ask me again" then click "Close Conversation" button`, async () => {
+      await dialog.toggleDontAskAgain();
+      await dialog.confirm();
+    });   
+
+    await h(t).withLog(`The popup dialog dissmis and conversation A should be closed`, async () => {
+      await t.expect(dialog.exists).notOk();
+      await t.expect(pvtChat.exists).notOk();
+    });  
+
+    await h(t).withLog(`When I click conversation B's close buttom`, async () => {
+      const moreIcon = team.find('span').withText('more_vert');
+      await t.click(moreIcon);
+      await t.click(closeButton);
+    }); 
+
+    await h(t).withLog(`Then should not show  the confirm dialog agin`, async () => {
+      await t.expect(dialog.exists).notOk(); 
+    }); 
+
+    await h(t).withLog(`and conversation B should be closed`, async () => {
+      await t.expect(team.exists).notOk();
+    }); 
   },
 );
 
@@ -229,31 +443,6 @@ test.skip(
     'ConversationList',
   ]),
   async (t: TestController) => {
-    await prepare_1conversationInList(t);
-    const segment1 = directLogin(t)
-      .log('2.Should navigate to CloseConversation')
-      .shouldNavigateTo(CloseConversation)
-      .log('3.Click the conversation')
-      .clickConversationById(con1);
-    await segment1;
-    const segment2 = segment1
-      .log('4.Make one conversation c2 has unread messages')
-      .chain(async (t, h) => {
-        const client701 = await h.glipApiManager.getClient(
-          h.users.user701,
-          h.companyNumber,
-        );
-        con2 = h.teams.team3_u1_u2_u3.glip_id;
-        await client701.sendPost(con2, {
-          text: `send one post to ${h.teams.team3_u1_u2_u3.name}`,
-        });
-      });
-    await segment2;
-    const segment3 = segment2
-      .log(`5.Click more button in the conversation c2: ${con2}`)
-      .clickMoreButtonById(con2)
-      .log(`6.Expect no close button in c2: ${con2}`)
-      .expectNoCloseButton();
-    await segment3;
+    
   },
 );

@@ -42,6 +42,7 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
 
   toggleUnread = (evt: any, checked: boolean) => {
     this._globalStore.set(GLOBAL_KEYS.UNREAD_TOGGLE_ON, checked);
+    this._accountService.setUnreadToggleSetting(checked);
   }
 
   sections: SECTION_TYPE[] = [
