@@ -23,6 +23,7 @@ async (t) => {
   const user = users[7];
   const userPlatform = await h(t).getPlatform(user);
   const userGlip = await h(t).getGlip(user);
+  const teamSection = app.homePage.messagePanel.teamsSection;
 
   let teamId1, teamId2, conversation1, conversation2;
   await h(t).withLog(
@@ -44,28 +45,27 @@ async (t) => {
   await h(t).withLog(
     'Both conversation should not be hidden before login',
     async () => {
-      await userGlip.updateProfileByGlipId(user.glipId, {
+      await userGlip.updateProfile(user.rcId, {
         [`hide_group_${teamId1}`]: false,
         [`hide_group_${teamId2}`]: false,
       });
     },
   );
 
-  const msg = `${Date.now()}`; // Have a trap, no spaces
-  await h(t).withLog(
-    `When I login Jupiter with this extension: ${user.company.number}#${
+    const msg = `${Date.now()}`; // Have a trap, no spaces
+    await h(t).withLog(
+      `When I login Jupiter with this extension: ${user.company.number}#${
       user.extension
-    }`,
-    async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded();
-    },
-  );
+      }`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+      },
+    );
 
   await h(t).withLog(
     'Then I check conversation A and B exsit',
     async () => {
-      const teamSection = app.homePage.messagePanel.teamsSection;
       await teamSection.expand();
       conversation1 = teamSection.conversationByIdEntry(teamId1);
       conversation2 = teamSection.conversationByIdEntry(teamId2);
@@ -91,8 +91,8 @@ async (t) => {
   await h(t).withLog(
     'Then I can find "Draft" in Conversation A name',
     async () => {
-      // FIXME: find a good way to get name.
-      await t.expect(app.homePage.messagePanel.teamsSection.conversations
+      // refactor: find a good way to get name.
+      await t.expect(teamSection.conversations
         .filter(`[data-group-id="${teamId1}"]`)
         .child().withText('Draft')
         .exists)

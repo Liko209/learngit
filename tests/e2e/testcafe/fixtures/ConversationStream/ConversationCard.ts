@@ -64,13 +64,10 @@ test(
       await t.expect(targetPost.exists).ok(postData)
     });
 
-    //TODO: 
-    await h(t).withLog(`Then I can check the post's time should have right format`, async () => {
+    // FIXME: assert format in wrong way.
+   await h(t).withLog(`Then I can check the post's time should have right format`, async () => {
       const formatTime = moment(postData.creationTime).format(format);
       const timeDiv = targetPost.find('div').withText(formatTime);
-      // const timeDiv2 = targetPost.find('div').filter( (node)=>{ 
-      //   return moment(node.textContent, format, true).isValid()
-      // },  {moment,format})
       await t.expect(timeDiv.exists).ok();
     });
   },

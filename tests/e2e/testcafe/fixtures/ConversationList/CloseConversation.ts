@@ -56,7 +56,7 @@ test(
     );
 
     await h(t).withLog('All conversations should not be hidden before login',async () => {
-        await userGlip.updateProfileByGlipId(user.glipId, {
+        await userGlip.updateProfile(user.rcId, {
           [`hide_group_${pvtChatId}`]: false,
           [`hide_group_${groupId}`]: false,
           [`hide_group_${teamId}`]: false,
@@ -66,17 +66,17 @@ test(
     );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
-        await userGlip.updateProfileByGlipId(user.glipId, {
-          skip_close_conversation_confirmation: true
-        });
-      },
+      await userGlip.updateProfile(user.rcId, {
+        skip_close_conversation_confirmation: true
+      });
+    },
     );
 
-    await h(t).withLog(`When I logn Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
-    });
+      });
 
     //FIXME: use group id, sometimes can not find conversation.
     const pvtChat = dmSection.nthConversationEntry(0); 
@@ -106,7 +106,7 @@ test(
     
     await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {;
       await t.wait(2e3)
-      const open_url = await ClientFunction(()=> window.location.href)();
+      const open_url = await h(t).href;;
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
@@ -123,10 +123,10 @@ test(
     await h(t).withLog(`Then the Fav conversation should be remove from conversation list.`, async () => {
       await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists).notOk();
     });
-    
+
     await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
       await t.wait(2e3);
-       const open_url = await ClientFunction(()=> window.location.href)();
+       const open_url = await h(t).href;;
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
@@ -143,10 +143,10 @@ test(
     await h(t).withLog(`Then the team conversation should be remove from conversation list.`, async () => {
       await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
     });
-    
+
     await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
       await t.wait(2e3);
-      const open_url = await ClientFunction(()=> window.location.href)();
+      const open_url = await h(t).href;;
       await console.log(open_url);
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
@@ -187,25 +187,25 @@ test(
       },
     );
 
-    await h(t).withLog('All conversations should not be hidden before login',async () => {
-        await userGlip.updateProfileByGlipId(user.glipId, {
-          [`hide_group_${pvtChatId}`]: false,
-        });
-      },
+    await h(t).withLog('All conversations should not be hidden before login', async () => {
+      await userGlip.updateProfile(user.rcId, {
+        [`hide_group_${pvtChatId}`]: false,
+      });
+    },
     );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
-        await userGlip.updateProfileByGlipId(user.glipId, {
-          skip_close_conversation_confirmation: true
-        });
-      },
+      await userGlip.updateProfile(user.rcId, {
+        skip_close_conversation_confirmation: true
+      });
+    },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
-    });
+      });
 
     //FIXME: use group id, sometimes can not find conversation.
     const pvtChat = dmSection.nthConversationEntry(0); 
@@ -221,10 +221,10 @@ test(
       currentGroupId = await app.homePage.messagePanel.conversationPage.getAttribute('data-group-id');
     });
 
-    
+
     await h(t).withLog(`When I open conversation B and close conversation A`, async () => {
       await pvtChat.enter();
-      urlBeforeClose = await ClientFunction(()=> window.location.href)();
+      urlBeforeClose = await h(t).href;;
       await team.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     });
@@ -233,10 +233,10 @@ test(
       await t.wait(2e3);
       await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists).notOk();   
     });
-    
+
     await h(t).withLog(`And Still focus on conversation B`, async () => {
       await t.wait(2e3);
-      urlAfterClose = await ClientFunction(()=> window.location.href)();
+      urlAfterClose = await h(t).href;;
       await t.expect(urlAfterClose).eql(urlBeforeClose,"URL is changed")
     });
   },
@@ -277,7 +277,7 @@ test(
     );
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
-        await userGlip.updateProfileByGlipId(user.glipId, {
+        await userGlip.updateProfile(user.rcId, {
           [`hide_group_${pvtChatId}`]: false,
           [`hide_group_${teamId}`]: false,
         });
@@ -285,17 +285,17 @@ test(
     );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
-        await userGlip.updateProfileByGlipId(user.glipId, {
-          skip_close_conversation_confirmation: false
-        });
-      },
+      await userGlip.updateProfile(user.rcId, {
+        skip_close_conversation_confirmation: false
+      });
+    },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
-    });
+      });
 
     const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
     const team = teamsSection.conversationByIdEntry(teamId);
@@ -317,16 +317,16 @@ test(
       await t.expect(dialog.getSelector('p').withText(content)).ok();
       await t.expect(dialog.dontAskAgainCheckbox.withText(checkboxLabel)).ok();
       await t.expect(dialog.confirmButton.withText(button.toUpperCase())); //The button is uppercase,it's by design
-    });  
+    });
 
     await h(t).withLog(`When I don't select "Don't ask me again" then click "Close Conversation" button`, async () => {
       await dialog.confirm();
-    });   
+    });
 
     await h(t).withLog(`The popup dialog dissmis and conversation A is unvisible`, async () => {
       await t.expect(dialog.exists).notOk();
-      await t.expect(pvtChat.exists,).notOk();
-    });  
+      await t.expect(pvtChat.exists).notOk();
+    });
 
     await h(t).withLog(`When I click conversation B's close buttom`, async () => {
       await team.openMoreMenu();
@@ -337,9 +337,9 @@ test(
       await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
       await t.expect(dialog.getSelector('p').withText(content)).ok();
       await t.expect(dialog.dontAskAgainCheckbox.withText(checkboxLabel)).ok();
-      await t.expect(dialog.confirmButton.withText(button.toUpperCase())); 
-    });     
-    
+      await t.expect(dialog.confirmButton.withText(button.toUpperCase()));
+    });
+
   }
 );
 
@@ -374,25 +374,25 @@ test(
       },
     );
 
-    await h(t).withLog('All conversations should not be hidden before login',async () => {
-        await userGlip.updateProfileByGlipId(user.glipId, {
-          [`hide_group_${pvtChatId}`]: false,
-        });
-      },
+    await h(t).withLog('All conversations should not be hidden before login', async () => {
+      await userGlip.updateProfile(user.rcId, {
+        [`hide_group_${pvtChatId}`]: false,
+      });
+    },
     );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
-        await userGlip.updateProfileByGlipId(user.glipId, {
-          skip_close_conversation_confirmation: false
-        });
-      },
+      await userGlip.updateProfile(user.rcId, {
+        skip_close_conversation_confirmation: false
+      });
+    },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
-    });
+      });
 
     const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
     const team = teamsSection.conversationByIdEntry(teamId);
@@ -414,17 +414,17 @@ test(
       await t.expect(dialog.getSelector('p').withText(content)).ok();
       await t.expect(dialog.dontAskAgainCheckbox.withText(checkboxLabel)).ok();
       await t.expect(dialog.confirmButton.withText(button.toUpperCase())); //The button is uppercase,it's by design
-    });  
+    });
 
     await h(t).withLog(`When I select "Don't ask me again" then click "Close Conversation" button`, async () => {
       await dialog.toggleDontAskAgain();
       await dialog.confirm();
-    });   
+    });
 
     await h(t).withLog(`The popup dialog dissmis and conversation A should be closed`, async () => {
       await t.expect(dialog.exists).notOk();
       await t.expect(pvtChat.exists).notOk();
-    });  
+    });
 
     await h(t).withLog(`When I click conversation B's close buttom`, async () => {
       await team.openMoreMenu();
@@ -432,12 +432,12 @@ test(
     }); 
 
     await h(t).withLog(`Then should not show  the confirm dialog agin`, async () => {
-      await t.expect(dialog.exists).notOk(); 
-    }); 
+      await t.expect(dialog.exists).notOk();
+    });
 
     await h(t).withLog(`and conversation B should be closed`, async () => {
       await t.expect(team.exists).notOk();
-    }); 
+    });
   },
 );
 
@@ -486,7 +486,7 @@ test(
     );
 
     await h(t).withLog('All conversations should not be hidden before login',async () => {
-        await userGlip.updateProfileByGlipId(user.glipId, {
+        await userGlip.updateProfile(user.rcId, {
           [`hide_group_${pvtChatId}`]: false,
           [`hide_group_${favGroupId}`]: false,
           [`hide_group_${teamId1}`]: false,
