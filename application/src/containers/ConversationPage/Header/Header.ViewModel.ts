@@ -16,6 +16,7 @@ import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
 import { t, TranslationFunction } from 'i18next';
 import _ from 'lodash';
+import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { HeaderProps } from './Header.View';
 const { GroupService } = service;
 class HeaderViewModel extends AbstractViewModel implements HeaderProps {
@@ -113,7 +114,7 @@ class HeaderViewModel extends AbstractViewModel implements HeaderProps {
   onFavoriteButtonHandler = (
     event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
-  ) => {
+  ): Promise<ServiceCommonErrorType> => {
     return this._groupService.markGroupAsFavorite(this._id, checked);
   }
 }
