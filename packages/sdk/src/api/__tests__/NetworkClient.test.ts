@@ -44,6 +44,9 @@ const setup = () => {
       handlerType: HandleByRingCentral,
     },
     '/restapi',
+    NETWORK_VIA.HTTP,
+    '',
+    NetworkManager.Instance,
   );
 
   const postRequest = {
@@ -100,7 +103,6 @@ describe('apiRequest', () => {
   describe('request()', () => {
     it('networkManager addApiRequest should be called with request', () => {
       const { postRequest, rcNetworkClient } = setup();
-
       // const spy = jest.spyOn(NetworkManager.Instance, 'addApiRequest');
       rcNetworkClient.request(postRequest);
       expect(NetworkManager.Instance.addApiRequest).toBeCalled();

@@ -5,6 +5,8 @@ import { SocketRequest } from '../socket';
 import NetworkRequestBuilder from '../NetworkRequestBuilder';
 
 const builder = new NetworkRequestBuilder();
+builder.setNetworkManager(NetworkManager.Instance);
+
 describe('NetworkRequestBuilder', () => {
   it('should return SocketRequest when via socket', () => {
     const request = builder.setVia(NETWORK_VIA.SOCKET).build();

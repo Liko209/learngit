@@ -3,12 +3,12 @@ import Api from '../api';
 import { HandleByGlip } from '../handlers';
 import NetworkClient from '../NetworkClient';
 import { apiConfig } from './utils';
-
+import { NetworkManager } from 'foundation';
 jest.mock('../NetworkClient');
 
 describe('Api', () => {
   beforeEach(() => {
-    Api.init(apiConfig);
+    Api.init(apiConfig, NetworkManager.Instance);
   });
 
   describe('getNetworkClient()', () => {
