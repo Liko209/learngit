@@ -21,6 +21,15 @@ const LinkItemContents = styled.div`
   margin: 16px;
   height: 72px;
   width: 100%;
+  span{
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    color: #bfbfbf;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
 `;
 const LinkThumbnails = styled.div`
   width: 72px;
@@ -32,15 +41,6 @@ const TitleNSummaryWrapper = styled.div`
   flex: 1;
   width: 0;
   margin-left: 12px;
-  span{
-    position: absolute;
-    right: 16px;
-    top: 12px;
-    color: #bfbfbf;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-  }
 `;
 const LinkTitle = styled.p`
   margin-top: 0;
