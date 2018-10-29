@@ -50,7 +50,7 @@ test(
     await h(t).withLog(
       'And the conversations should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${group.data.id}`]: false,
           [`hide_group_${team.data.id}`]: false,
           favorite_group_ids: [],
@@ -182,7 +182,7 @@ test(
     await h(t).withLog(
       'Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${group.data.id}`]: false,
           [`hide_group_${team.data.id}`]: false,
           favorite_group_ids: [+group.data.id, +team.data.id],
@@ -298,14 +298,14 @@ test(
     await h(t).withLog(
       'Given I have an extension with a me conversation',
       async () => {
-        meChatId = (await glipSDK.getPerson(user.glipId)).data.me_group_id;
+        meChatId = (await glipSDK.getPerson(user.rcId)).data.me_group_id;
       },
     );
 
     await h(t).withLog(
       'Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${meChatId}`]: false,
           favorite_group_ids: [+meChatId],
         });
