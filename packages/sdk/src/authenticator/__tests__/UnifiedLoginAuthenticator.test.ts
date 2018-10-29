@@ -8,7 +8,11 @@ import { loginGlip } from '../../api/glip/user';
 import { Api } from '../../api';
 
 import { UnifiedLoginAuthenticator } from '..';
-import { generateCode, oauthTokenViaAuthCode } from '../../api/ringcentral/auth';
+import {
+  generateCode,
+  oauthTokenViaAuthCode,
+} from '../../api/ringcentral/auth';
+import { NetworkManager } from 'foundation';
 
 jest.mock('../../api/glip/user', () => ({
   loginGlip: jest.fn(),
@@ -37,7 +41,7 @@ describe('UnifiedLoginAuthenticator', () => {
         'x-authorization': 'glip_token',
       },
     });
-    Api.init({});
+    Api.init({}, NetworkManager.Instance);
 
     const resp = await unified.authenticate({ code: '123' });
     expect(resp.success).toBe(true);
