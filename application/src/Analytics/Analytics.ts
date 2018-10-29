@@ -6,11 +6,10 @@
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import Segment from 'load-segment';
-import PersonModel from '@/store/models/Person';
-import CompanyModel from '@/store/models/Company';
 import keys from './key.json';
 import { IReactionDisposer, reaction } from 'mobx';
-
+import PersonModel from '@/store/models/Person';
+import CompanyModel from '@/store/models/Company';
 
 type TAnalytics = {
   bootstrap: () => void;
@@ -18,9 +17,6 @@ type TAnalytics = {
 };
 
 class Analytics implements TAnalytics {
-  private _currentUserID: number;
-  private _user: PersonModel;
-  private _company: CompanyModel;
   private _segment: TSegment;
   private _disposer: IReactionDisposer;
 
@@ -29,22 +25,34 @@ class Analytics implements TAnalytics {
   }
 
   identify() {
-    this._disposer = reaction(this._extractInfo, this._identify);
+    this._disposer = reaction(this._extractInfo, this._identify, {
+      fireImmediately: false,
+    });
   }
 
   private _extractInfo = () => {
-    this._user = getEntity(ENTITY_NAME.PERSON, this._currentUserID!);
-    this._company = getEntity(ENTITY_NAME.COMPANY, this._user.companyId);
-    return { user: this._user, company: this._company };
+    const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    if (!userId) {
+      return { userId };
+    }
+    const user = getEntity(ENTITY_NAME.PERSON, userId);
+    const company = getEntity(ENTITY_NAME.COMPANY, user.companyId);
+    return {
+      userId,
+      user,
+      company,
+    };
   }
 
   private _identify = async (info: {
+    userId: number;
     user: PersonModel;
     company: CompanyModel;
   }) => {
-    const { user, company } = info;
-    this._currentUserID = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-
+    const { userId, company, user } = info;
+    if (!user.email || !company.name || !userId) {
+      return;
+    }
     const { email, companyId, inviterId } = user;
     const { name, rcAccountId } = company;
     const traits = {
@@ -52,15 +60,14 @@ class Analytics implements TAnalytics {
       companyId,
       rcAccountId,
       companyName: name,
-      id: this._currentUserID,
-      signupType: inviterId ? 'viral' : 'original',
+      id: userId,
+      signupType: inviterId ? 'viral' : 'organic',
+      accountType: rcAccountId ? 'rc' : 'non-rc',
     };
-    this._segment.identify(this._currentUserID, traits);
+    this._segment.identify(userId, traits);
     this._disposer();
   }
-  catch(e: Error) {
-    console.warn(e.message);
-  }
+  catch(e: Error) {}
 }
 
 const analytics = new Analytics();

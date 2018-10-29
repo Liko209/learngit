@@ -4,6 +4,9 @@ import * as Segment from 'load-segment';
 import { analytics } from '../Analytics';
 import * as mobx from 'mobx';
 jest.mock('@/store/utils');
+jest.mock('load-segment');
+jest.doMock('mobx');
+
 describe('Analytics', () => {
   const mockedSegment = {
     identify: jest.fn(),
@@ -11,7 +14,7 @@ describe('Analytics', () => {
   beforeEach(() => {
     const mockedReturnData = {
       [ENTITY_NAME.PERSON]: {
-        email: 0,
+        email: 99,
         companyId: 1,
         inviterId: 2,
       },
@@ -25,7 +28,7 @@ describe('Analytics', () => {
       .mockImplementation(
         (entityName: ENTITY_NAME) => mockedReturnData[entityName],
       );
-    jest.spyOn(utils, 'getGlobalValue').mockReturnValue(0);
+    jest.spyOn(utils, 'getGlobalValue').mockReturnValue(100);
 
     jest.spyOn(Segment, 'default').mockReturnValue(mockedSegment);
     jest.spyOn(mobx, 'reaction').mockImplementation((compute, reaction) => {
@@ -40,6 +43,15 @@ describe('Analytics', () => {
   it('should identify the current user', () => {
     analytics.bootstrap();
     analytics.identify();
-    expect(mockedSegment).toBeCalledTimes(1);
+    expect(Segment.default).toBeCalled();
+    expect(mockedSegment.identify).toBeCalledWith(100, {
+      accountType: 'rc',
+      companyId: 1,
+      companyName: 1,
+      email: 99,
+      id: 100,
+      rcAccountId: 2,
+      signupType: 'viral',
+    });
   });
 });
