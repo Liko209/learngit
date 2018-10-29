@@ -9,7 +9,7 @@ import { Item } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import ItemModel from '@/store/models/Item';
-import { FilesViewProps, FileType } from './types';
+import { FilesViewProps, FileType, extendFile } from './types';
 
 const FILE_ICON_MAP = {
   pdf: ['pdf'],
@@ -24,12 +24,10 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return this.props.ids;
   }
 
-  getFileType = (item: ItemModel) => {
-    if (!item) return;
-
-    const fileType = {
+  getFileType = (item: ItemModel): extendFile => {
+    const fileType: extendFile = {
       item,
-      id: -1,
+      id: item.id,
       type: -1,
       previewUrl: '',
     };
@@ -46,6 +44,21 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     }
     fileType.type = FileType.others;
     return fileType;
+  }
+
+  @computed
+  get files() {
+    const files = {
+      [FileType.image]: [],
+      [FileType.document]: [],
+      [FileType.others]: [],
+    };
+
+    this.items.forEach((item: ItemModel) => {
+      const file = this.getFileType(item);
+      files[file.type].push(file);
+    });
+    return files;
   }
 
   getFileIcon = (fileType: string) => {

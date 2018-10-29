@@ -13,24 +13,25 @@ enum FileType {
   others,
 }
 
+type extendFile = {
+  item: ItemModel;
+  id: number;
+  type: number;
+  previewUrl: string;
+};
+
 type FilesProps = {
   ids: number[];
 };
 
 type FilesViewProps = {
-  items: ItemModel[];
-  needPreview: () => boolean;
-  getFileType: (
-    item: ItemModel,
-  ) => {
-    id: number;
-    type: number;
-    url: string;
-    item: ItemModel;
+  files: {
+    [FileType.image]: extendFile[];
+    [FileType.document]: extendFile[];
+    [FileType.others]: extendFile[];
   };
-  getPreviewFileInfo: (item: ItemModel) => string;
   getFileIcon: (fileType: string) => string | null;
   ids: number[];
 };
 
-export { FilesProps, FilesViewProps, FileType };
+export { FilesProps, FilesViewProps, FileType, extendFile };
