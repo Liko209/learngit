@@ -20,5 +20,10 @@
   "sendingPost": "Sending post",
   "resendPost": "Resend post",
   "deletePost": "Delete post",
-  "show_unread": "Show unread"
+  "show_unread": "Show unread",
+  "postInitialTitle": "Get Started",
+  "postInitialContent": "Having a home based business is a wonderful asset to your life.",
+  "shareFile": "Share a file",
+  "createTask": "Create a task",
+  "integrateApps": "Integrate Apps"
 }

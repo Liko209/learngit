@@ -11,12 +11,13 @@ import {
 } from 'jui/pattern/ConversationInitialPost';
 import { JuiButton } from 'jui/components/Buttons';
 import { Link } from 'react-router-dom';
+import { translate } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
 import image from './img/illustrator.svg';
 import { CONVERSATION_TYPES } from '@/constants';
 
-class ConversationInitialPostView extends React.Component<
+class ConversationInitialPost extends React.Component<
   ConversationInitialPostViewProps
 > {
   constructor(props: ConversationInitialPostViewProps) {
@@ -47,34 +48,39 @@ class ConversationInitialPostView extends React.Component<
   }
 
   private get _handleShareFile() {
+    const { t } = this.props;
     return (
       <JuiButton variant="outlined" color="primary">
-        Share a file
+        {t('shareFile')}
       </JuiButton>
     );
   }
 
   private get _handleCreateTask() {
+    const { t } = this.props;
     return (
       <JuiButton variant="outlined" color="primary">
-        Create a task
+        {t('createTask')}
       </JuiButton>
     );
   }
 
   private get _handleIntegrateApps() {
+    const { t } = this.props;
     return (
       <JuiButton variant="outlined" color="primary">
-        Integrate apps
+        {t('integrateApps')}
       </JuiButton>
     );
   }
 
   private get _conversationInitialPostBody() {
+    const { t } = this.props;
+
     return (
       <JuiConversationInitialPostBody
-        text="Get Started"
-        content="Having a home based business is a wonderful asset to your life."
+        text={t('postInitialTitle')}
+        content={t('postInitialContent')}
         actions={[
           this._handleShareFile,
           this._handleCreateTask,
@@ -97,5 +103,9 @@ class ConversationInitialPostView extends React.Component<
     );
   }
 }
+
+const ConversationInitialPostView = translate('Conversations')(
+  ConversationInitialPost,
+);
 
 export { ConversationInitialPostView };

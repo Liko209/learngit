@@ -1,5 +1,6 @@
 import { CONVERSATION_TYPES } from '@/constants';
 import PersonModel from '@/store/models/Person';
+import { TranslationFunction } from 'i18next';
 
 /*
  * @Author: Shining Miao (shining.miao@ringcentral.com)
@@ -17,6 +18,7 @@ type ConversationInitialPostViewProps = {
   groupDescription: string;
   creator: PersonModel;
   creatorGroupId: number;
+  t: TranslationFunction;
 };
 
 export { ConversationInitialPostProps, ConversationInitialPostViewProps };

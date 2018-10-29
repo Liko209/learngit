@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, action, observable } from 'mobx';
+import { TranslationFunction } from 'i18next';
 import { ConversationInitialPostViewProps } from './types';
 import { service } from 'sdk';
 import { getEntity } from '@/store/utils';
@@ -16,6 +17,7 @@ const { GroupService } = service;
 class ConversationInitialPostViewModel extends StoreViewModel<
   ConversationInitialPostViewProps
 > {
+  t: TranslationFunction;
   private _groupService: service.GroupService = GroupService.getInstance();
   @observable
   creatorGroupId: number;
