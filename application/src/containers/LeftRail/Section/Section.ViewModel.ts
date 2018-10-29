@@ -71,7 +71,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   },
   [SECTION_TYPE.TEAM]: {
     title: 'team_plural',
-    iconName: 'group',
+    iconName: 'people_outline',
     eventName: ENTITY.TEAM_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.TEAM,
