@@ -1,9 +1,11 @@
+import * as _ from 'lodash';
+import * as functools from 'functools';
 import { v4 as uuid } from 'uuid';
 import { RcPlatformManager } from './glip';
-import { Status, AllureStep } from '../libs/report';
+import { Status, AllureStep, Allure2Dashboard } from '../libs/report';
 import { accountPoolClient } from '../init';
 import { setupSDK } from '../utils/setupSDK';
-import { ENV_OPTS, beatsClient, Step, Test, Attachment } from '../config';
+import { ENV_OPTS, beatsClient, Step, Test, Attachment, PASS, FAILED, DASHBOARD_UI } from '../config';
 
 export function setUp(accountType: string) {
   return async (t: TestController) => {
@@ -17,8 +19,6 @@ export function setUp(accountType: string) {
       await helper.checkInAccounts();
       throw new Error('Fail to initialize glip 1.0 sdk');
     }
-    let test = await beatsClient.createTest({"name": t['testRun'].test.name} as Test);
-    t.ctx.testId = test.id;
   };
 }
 
@@ -26,6 +26,9 @@ export function tearDown() {
   return async (t: TestController) => {
     const helper = TestHelper.from(t);
     await helper.checkInAccounts();
+    if (DASHBOARD_UI) {
+      await helper.saveLogs();
+    }
   };
 }
 
@@ -34,7 +37,7 @@ export class TestHelper {
     return new TestHelper(t);
   }
 
-  constructor(private t: TestController) {}
+  constructor(private t: TestController) { }
 
   async checkOutAccounts(accountType: string) {
     this.t.ctx.data = await accountPoolClient.checkOutAccounts(accountType);
@@ -46,6 +49,10 @@ export class TestHelper {
 
   get data() {
     return this.t.ctx.data;
+  }
+
+  getKeyfromValue(value: Status) {
+    return _.findKey(Status, (v) => v === value);
   }
 
   get users() {
@@ -105,22 +112,35 @@ export class TestHelper {
       parent.children.push(step);
     }
     console.log(step.toString());
-    let step_dashboard = await beatsClient.createStep({ 
-      "name": step.message, 
-      "status": Status[step.status],
-      "startTime": (new Date(step.startTime)).toISOString(),
-      "endTime": (new Date(step.endTime)).toISOString()
+    return step;
+  }
+
+  async saveAllureStep(allureStep: AllureStep, testId: number) {
+    let step = await beatsClient.createStep({
+      "name": allureStep.message,
+      "status": Allure2Dashboard[allureStep.status],
+      "startTime": (new Date(allureStep.startTime)).toISOString(),
+      "endTime": (new Date(allureStep.endTime)).toISOString()
     } as Step, this.t.ctx.testId);
 
-    if (takeScreen) {
-      await beatsClient.createAttachment({
-        "file": screenPath,
-        "contentType": "step",
-        "fileContentType": "multipart/form-data;",
-        "objectId": step_dashboard.id
-      } as Attachment);
+    if (allureStep.screenshotPath) {
+      this.saveAttachment(allureStep.screenshotPath, step.id);
     }
+  }
 
-    return step;
+  async saveAttachment(file, stepId) {
+    return await beatsClient.createAttachment({
+      "file": file,
+      "contentType": "step",
+      "fileContentType": "multipart/form-data;",
+      "objectId": stepId
+    } as Attachment);
+  }
+
+  async saveLogs() {
+    let status = !_.some(this.t['testRun'].errs);
+    let test = await beatsClient.createTest({ "name": this.t['testRun'].test.name, "status": status ? PASS : FAILED } as Test);
+    this.t.ctx.testId = test.id;
+    _.map(this.t.ctx.logs, (allureStep) => this.saveAllureStep(allureStep, this.t.ctx.testId));
   }
 }

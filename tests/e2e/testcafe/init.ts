@@ -24,8 +24,6 @@ export function setupCase(accountType: string) {
     )
     await h(t).logHelper.setup();
     await t.maximizeWindow();
-    let test = await beatsClient.createTest({"name": t['testRun'].test.name} as Test);
-    t.ctx.testId = test.id;
   }
 }
 

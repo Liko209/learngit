@@ -85,6 +85,9 @@ logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectro
 const apiKey = process.env.APIKEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
 const baseUrl = process.env.DASHBOARD_URL || "http://xia01-i01-xta05.lab.rcch.ringcentral.com:8000/api/v1";
 let beatsClient = new BeatsClient(apiKey, baseUrl);
+const PASS = 5;
+const FAILED = 8;
+const DASHBOARD_UI = process.env.DASHBOARD_UI || true;
 
 export {
   APP_ROOT,
@@ -98,5 +101,8 @@ export {
   Run,
   Test,
   Step,
-  Attachment
+  Attachment,
+  PASS,
+  FAILED,
+  DASHBOARD_UI
 };
