@@ -66,7 +66,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._initHandlerMap();
     this._idSet = new Set<number>();
     this._subscribeNotification();
-    autorun(() => this.profileUpdateGroupSections());
+    autorun(() => this._profileUpdateGroupSections());
     autorun(() => this._updateHiddenGroupIds());
   }
 
@@ -78,10 +78,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _updateHiddenGroupIds() {
-    this._hiddenGroupIds = getSingleEntity<Profile, ProfileModel>(
-      ENTITY_NAME.PROFILE,
-      'hiddenGroupIds',
-    );
+    this._hiddenGroupIds =
+      getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'hiddenGroupIds',
+      ) || [];
     this._removeGroupsIfExistedInHiddenGroups();
   }
 
@@ -95,7 +96,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
   }
 
-  async profileUpdateGroupSections() {
+  async _profileUpdateGroupSections() {
     const newFavIds =
       getSingleEntity<Profile, ProfileModel>(
         ENTITY_NAME.PROFILE,
