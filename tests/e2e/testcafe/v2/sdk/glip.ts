@@ -168,9 +168,6 @@ export class GlipSdk {
     });
   }
 
-  deactivated(rcId: string) {
-    this.updatePerson(rcId, { deactivated: true });
-  }
 
   /* team */
   getTeams() {
@@ -273,6 +270,10 @@ export class GlipSdk {
   }
 
   /* high level API */
+  deactivated(rcId: string) {
+    this.updatePerson(rcId, { deactivated: true });
+  }
+
   async markAsRead(rcId: string, groupIds: string[]) {
     if (!groupIds.length) return;
     const readThrough = {};
