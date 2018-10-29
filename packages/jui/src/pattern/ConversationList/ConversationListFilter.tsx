@@ -8,7 +8,7 @@ import React from 'react';
 import MuiMenuItem from '@material-ui/core/MenuItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey, typography } from '../../foundation/utils';
+import { spacing, grey, typography, height } from '../../foundation/utils';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import {
   JuiToggleButton,
@@ -19,7 +19,9 @@ const StyledListItem = styled(MuiMenuItem)`
   && {
     white-space: nowrap;
     background: white;
-    padding: ${spacing(4, 4, 4, 8)};
+    padding: ${spacing(0, 4, 0, 8)};
+    height: ${height(14)};
+    line-height: ${height(14)};
     color: ${grey('900')};
     ${typography('body2')};
     &:hover {

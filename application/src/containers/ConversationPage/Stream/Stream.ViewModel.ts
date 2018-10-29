@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
+import {
+  ISortableModel,
+  FetchDataDirection,
+  TUpdated,
+} from '@/store/base/fetch/types';
 import _ from 'lodash';
 import { observable } from 'mobx';
 import { Post } from 'sdk/models';
@@ -52,6 +56,14 @@ type TTransformedElement = {
 class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
   constructor(handler: FetchSortableDataListHandler<Post>) {
     super(handler);
+  }
+  onUpdated(updatedIds: TUpdated) {
+    updatedIds.forEach(item =>
+      this.listStore.replaceAt(item.index, {
+        value: item.value.id,
+        type: TStreamType.POST,
+      }),
+    );
   }
   onAdded(direction: FetchDataDirection, addedItems: ISortableModel[]) {
     const updated = _(addedItems)

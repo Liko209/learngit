@@ -11,9 +11,10 @@ import { Menu } from '../Menu';
 import { ConversationListItemViewProps } from './types';
 import { observer } from 'mobx-react';
 import { observable } from 'mobx';
+import { JuiPresence } from 'jui/src/components/Presence/Presence';
 
 // TODO remove Stubs here
-const Presence = (props: any) => <span {...props} />;
+const Presence = (props: any) => <JuiPresence {...props} />;
 
 type Props = ConversationListItemViewProps;
 interface IState {
