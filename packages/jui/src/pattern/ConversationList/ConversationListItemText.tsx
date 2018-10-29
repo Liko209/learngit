@@ -19,6 +19,7 @@ const StyledTypography = styled(MuiTypography)`
     ${typography('body2')};
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
     color: inherit;
   }
 `;
