@@ -8,7 +8,7 @@
     "dexie": "3.0.0-alpha.3",
     "eventemitter2": "5.0.1",
     "foundation": "0.1.0",
-    "glipdown": "0.0.53",
+    "glipdown": "0.0.54",
     "http-status-codes": "1.3.0",
     "lodash": "4.17.11",
     "nprogress": "0.2.0",
@@ -16,10 +16,10 @@
     "ts-javascript-state-machine": "3.1.3"
   },
   "devDependencies": {
-    "@types/faker": "*",
-    "@types/lodash": "*",
-    "@types/nprogress": "*",
-    "@types/qs": "*",
+    "@types/faker": "4.1.4",
+    "@types/lodash": "4.14.117",
+    "@types/nprogress": "0.0.29",
+    "@types/qs": "6.5.1",
     "factory.ts": "0.2.2",
     "faker": "4.1.0",
     "typescript": "3.1.3"
