@@ -10,52 +10,53 @@ import { height, grey, palette, spacing, ellipsis } from '../../foundation/utils
 
 const LinkItemsWrapper = styled.div`
   background-color: #fff;
-  //border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   width: 100%;
   box-shadow: 0 1px 1px 0;
+  height: 104px;
 `;
 const LinkItemContents = styled.div`
   display: flex;
-  padding: 16px;
+  justify-content: space-between;
+  margin: 16px;
+  height: 72px;
+  width: 100%;
 `;
 const LinkThumbnails = styled.div`
   width: 72px;
   height: 72px;
-  img {
-    width: 72px;
-    height: 72px;
-  }
+  background: url(${({ img }) => img}) 72px 72px;
+  background-size: cover;
 `;
 const TitleNSummaryWrapper = styled.div`
-  width: 100%;
-  //float: left;
+  flex: 1;
+  width: 0;
   margin-left: 12px;
-  font-size: 16px;
-`;
-const LinkTitle = styled.p`
-  position: relative;
-  margin-top: 0;
-  color: #212121;
-  ${ellipsis()}
   span{
     position: absolute;
-    right: 0;
+    right: 16px;
+    top: 12px;
     color: #bfbfbf;
     width: 20px;
     height: 20px;
     cursor: pointer;
   }
 `;
+const LinkTitle = styled.p`
+  margin-top: 0;
+  color: #212121;
+  ${ellipsis()};
+  margin-right: 20px;
+`;
 const LinkSummary = styled.p`
   font-size: 14px;
-  height: 40px;
   color: #9e9e9e;
-  ${ellipsis()};
+  word-break: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 `;
 type Props = {
   title: string;
@@ -71,18 +72,16 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
     return (
       <LinkItemsWrapper>
         <LinkItemContents>
-          <LinkThumbnails>
-            <img src={thumbnail} alt=""/>
-          </LinkThumbnails>
+          <LinkThumbnails img={thumbnail} />
           <TitleNSummaryWrapper>
             <LinkTitle>
               {title}
-              <JuiIconography>close</JuiIconography>
             </LinkTitle>
             <LinkSummary>
               {summary}
             </LinkSummary>
           </TitleNSummaryWrapper>
+          <JuiIconography>close</JuiIconography>
         </LinkItemContents>
       </LinkItemsWrapper>
     );
