@@ -65,12 +65,16 @@ class ConversationListSection extends BaseWebComponent {
     return this.root.find('[role="button"]');
   }
 
+  get header() {
+    return this.root.find('.conversation-list-section-header');
+  }
+
   get collapse() {
     return this.root.find('.conversation-list-section-collapse').parent(2);
   }
 
   get conversations() {
-    return this.root.find('[role="menuitem"]');
+    return this.root.find('.conversation-list-item');
   }
 
   nthConversationEntry(n: number) {
@@ -98,7 +102,7 @@ class ConversationListSection extends BaseWebComponent {
   }
 }
 
-class PostItem extends BaseWebComponent { }
+class PostItem extends BaseWebComponent {}
 
 class ConversationSection extends BaseWebComponent {
   get root() {

@@ -1,0 +1,74 @@
+pipeline {
+    agent {
+        label 'mac'
+    }
+    parameters {
+        string(name: 'SITE_URL', defaultValue: 'https://develop.fiji.gliprc.com/', description: '')
+        string(name: 'BROWSERS', defaultValue: 'electron:./', description: '' )
+        string(name: 'RC_PLATFORM_APP_KEY', defaultValue: 'MkCdlSVqQ06H6i7KYcv9bg', description: '' )
+        string(name: 'RC_PLATFORM_APP_SECRET', defaultValue: '5_tFBXBQTLWaVcPF61LUGgngBfc8KGQCaZ0_UTw80vsw', description: '' )
+        string(name: 'ACTION', defaultValue: 'on_merge', description: '' )
+        string(name: 'BRANCH', defaultValue: 'develop', description: '' )
+        string(name: 'DEBUG', defaultValue: 'false', description: '' )
+        string(name: 'APP_URL', defaultValue: 'https://download.fiji.gliprc.com/Jupiter.dmg', description: '')
+        string(name: 'ELECTRON_PATH', defaultValue: 'Applications/Contents/MacOS/Jupiter', description: '')
+    }
+    environment { 
+        SITE_URL = "${SITE_URL}"
+        BROWSERS = "${BROWSERS}"
+        RC_PLATFORM_APP_KEY = "${RC_PLATFORM_APP_KEY}"
+        RC_PLATFORM_APP_SECRET = "${RC_PLATFORM_APP_SECRET}"
+        ACTION = "${ACTION}"
+        BRANCH = "${BRANCH}"
+        DEBUG = "${DEBUG}"
+        APP_URL = "${APP_URL}"
+        ELECTRON_PATH = "${ELECTRON_PATH}"
+        PATH = "/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:$PATH"
+    }      
+    stages{
+        stage("run testcafe test"){
+            steps{
+                sh ("git clean -xdf")
+            }
+        }
+        stage("install dependences"){
+            parallel{
+                stage("npm install "){
+                    steps{
+                        sh '''
+                        cd tests/e2e/testcafe
+                        npm install && npm install socket.io-client && npm install localforage
+                        '''
+
+                    } 
+                }
+                stage("install electron"){
+                    steps{
+                        sh '''
+                        cd tests/e2e/testcafe
+                        tempd=$(mktemp -d)
+                        curl ${APP_URL} > $tempd/pkg.dmg
+                        listing=$(hdiutil attach $tempd/pkg.dmg | grep Volumes)
+                        echo "$listing"
+                        volume=$(echo "$listing" | cut -f 3)
+                        cp -rf "$volume"/*.app ./Applications
+                        hdiutil detach "$(echo "$listing" | cut -f 3)"
+                        rm -rf $tempd
+                        '''
+                    } 
+                }
+            }
+            
+        }
+        stage("run e2e"){
+            steps{
+                sh("npm run e2e")
+            }
+            post{
+                always{
+                    allure includeProperties: false, jdk: '', results: [[path: 'tests/e2e/testcafe/allure/allure-results']]
+                }  
+            }
+        }  
+    }  
+}

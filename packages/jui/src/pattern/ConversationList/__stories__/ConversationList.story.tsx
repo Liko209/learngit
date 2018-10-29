@@ -33,7 +33,7 @@ storiesOf('Pattern/ConversationList', module)
     withInfo({ inline: true })(() => (
       <StoryWrapper>
         <Section
-          icon={<JuiIconography>star</JuiIconography>}
+          icon="star"
           title={text('title', 'Favorite')}
           expanded={boolean('expanded', true)}
           umi={
