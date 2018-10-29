@@ -42,7 +42,7 @@ test(
     await h(t).withLog(
       'And the conversation should not be hidden',
       async () => {
-        await glipSdk.updateProfileByGlipId(user.glipId, {
+        await glipSdk.updateProfile(user.rcId, {
           [`hide_group_${group.data.id}`]: false,
         });
       },
@@ -51,8 +51,7 @@ test(
     await h(t).withLog(
       `Given the group chat ${group.data.id} is last group selected`,
       async () => {
-        const stateId = await glipSdk.getStateIdByPersonId(user.glipId);
-        await glipSdk.partialUpdateState(stateId, {
+        await glipSdk.partialUpdateState(user.rcId, {
           last_group_id: group.data.id,
         });
       },

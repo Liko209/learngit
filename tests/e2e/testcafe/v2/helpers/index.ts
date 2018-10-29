@@ -103,7 +103,7 @@ class Helper {
   async resetGlipAccount(user: IUser) {
     logger.warn("reset a glip account will be very slow (30s+)");
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(this.rcData.mainCompany.admin);
-    await adminGlip.deactivated(user.glipId);
+    await adminGlip.deactivated(user.rcId);
     await this.sdkHelper.sdkManager.getGlip(user);
   }
 }
