@@ -26,7 +26,11 @@ const JuiConversationPostText = styled('div')`
     border-left: 1px solid ${primary('700')};
     background-color: ${grey('100')};
     color: ${grey('500')};
-    padding: ${spacing(1.5)} ${spacing(1.5)} ${spacing(1.5)} ${spacing(4)}
+    padding: ${spacing(1.5)} ${spacing(1.5)} ${spacing(1.5)} ${spacing(4)};
+    margin: ${spacing(1)} 0 ${spacing(2)};
+    &::before, &::after {
+      content: '';
+    }
   }
 `;
 export { JuiConversationPostText };
