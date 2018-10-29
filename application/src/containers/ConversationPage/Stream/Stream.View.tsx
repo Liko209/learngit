@@ -5,6 +5,7 @@
  */
 import React, { PureComponent } from 'react';
 import { ConversationCard } from '@/containers/ConversationCard';
+import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { StreamViewProps } from './types';
 
 class StreamView extends PureComponent<StreamViewProps> {
@@ -17,6 +18,7 @@ class StreamView extends PureComponent<StreamViewProps> {
   render() {
     return (
       <div>
+        <ConversationInitialPost id={this.props.groupId} />
         {this.props.postIds.map((id: number) => (
           <ConversationCard id={id} key={id} />
         ))}

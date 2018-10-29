@@ -32,6 +32,8 @@ export default class GroupModel extends Base<Group> {
   draft?: string;
   @observable
   sendFailurePostIds?: number[];
+  @observable
+  creator_id: number;
 
   latestTime: number;
 
@@ -48,6 +50,7 @@ export default class GroupModel extends Base<Group> {
       send_failure_post_ids,
       most_recent_post_created_at,
       created_at,
+      creator_id,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -61,6 +64,7 @@ export default class GroupModel extends Base<Group> {
     this.latestTime = most_recent_post_created_at
       ? most_recent_post_created_at
       : created_at;
+    this.creator_id = creator_id;
   }
 
   @computed
@@ -70,7 +74,7 @@ export default class GroupModel extends Base<Group> {
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
-
+    console.log('---------------', [...favoriteGroupIds]);
     return favoriteGroupIds.some(groupId => groupId === this.id);
   }
 
@@ -147,6 +151,11 @@ export default class GroupModel extends Base<Group> {
     }
 
     return CONVERSATION_TYPES.NORMAL_GROUP;
+  }
+
+  @computed
+  get creator() {
+    return getEntity(ENTITY_NAME.PERSON, this.creator_id);
   }
 
   static fromJS(data: Group) {
