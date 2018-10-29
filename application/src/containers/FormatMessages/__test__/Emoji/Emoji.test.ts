@@ -17,7 +17,6 @@ const CLASS_NAME = 'enlarge-emoji';
 
 function format(text: string) {
   const emoji = new Emoji(text, staticHttpServer, customEmojiMap);
-  emoji.formatAscii().formatEmojiOne().formatCustom();
   return emoji.text;
 }
 

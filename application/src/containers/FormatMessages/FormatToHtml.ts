@@ -9,7 +9,7 @@ import { glipdown2Html } from '@/utils/glipdown2Html';
 import { CustomEmojiMap } from './types';
 import { Emoji } from './Emoji';
 
-class Transform {
+class FormatToHtml {
   text = '';
 
   constructor(text: string) {
@@ -28,11 +28,10 @@ class Transform {
     return this;
   }
 
-  emoji(staticHttpServer: string, customEmojiMap: CustomEmojiMap) {
+  formatToEmoji(staticHttpServer: string, customEmojiMap: CustomEmojiMap) {
     const e = new Emoji(this.text, staticHttpServer, customEmojiMap);
-    e.formatAscii().formatEmojiOne().formatCustom();
     this.text = e.text;
     return this;
   }
 }
-export { Transform };
+export { FormatToHtml };

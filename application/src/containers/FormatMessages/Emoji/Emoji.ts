@@ -17,6 +17,9 @@ class Emoji {
     this.text = text;
     this._staticHttpServer = staticHttpServer;
     this._customEmojiMap = customEmojiMap;
+    this.formatAscii();
+    this.formatEmojiOne();
+    this.formatCustom();
   }
 
   formatEmojiOne() {

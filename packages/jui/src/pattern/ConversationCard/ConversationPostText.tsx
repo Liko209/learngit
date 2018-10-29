@@ -1,5 +1,5 @@
 import styled from '../../foundation/styled-components';
-import { grey } from '../../foundation/utils/styles';
+import { grey, height, width, spacing } from '../../foundation/utils/styles';
 
 const JuiConversationPostText = styled('div')`
   font-size: ${({ theme }) => theme.typography.fontSize}px;
@@ -19,6 +19,17 @@ const JuiConversationPostText = styled('div')`
   .current {
     color: ${grey('900')};
     background-color: ${({ theme }) => theme.palette.secondary['100']}
+  }
+  .emoji {
+    width: ${height(5)};
+    height: ${width(5)};
+    padding: 0 ${spacing(0.25)};
+    vertical-align: middle;
+  }
+  .emoji.enlarge-emoji {
+    width: ${height(7.5)};
+    height: ${height(7.5)};
+    padding: 0;
   }
 `;
 export { JuiConversationPostText };

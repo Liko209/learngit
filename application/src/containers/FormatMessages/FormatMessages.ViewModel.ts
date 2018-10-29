@@ -12,7 +12,7 @@ import { Post, Person, Company } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import PersonModel from '@/store/models/Person';
-import { Transform } from './Transform';
+import { FormatToHtml } from './FormatToHtml';
 
 class FormatMessagesViewModel extends StoreViewModel<{ postId: number }> {
   @computed
@@ -56,8 +56,8 @@ class FormatMessagesViewModel extends StoreViewModel<{ postId: number }> {
 
   @computed
   get formatHtml() {
-    const transform = new Transform(this._post.text);
-    transform.glipdown(this._atMentionIdMaps, this._currentUserId).emoji(this._staticHttpServer, this._customEmojiMap);
+    const transform = new FormatToHtml(this._post.text);
+    transform.glipdown(this._atMentionIdMaps, this._currentUserId).formatToEmoji(this._staticHttpServer, this._customEmojiMap);
     return transform.text;
   }
 }
