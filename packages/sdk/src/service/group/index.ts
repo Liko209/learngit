@@ -404,12 +404,11 @@ export default class GroupService extends BaseService<Group> {
   // }
 
   // update partial group data
-  async updateGroupPartialData(params: object, id: number): Promise<boolean> {
+  async updateGroupPartialData(params: object): Promise<boolean> {
     try {
       const dao = daoManager.getDao(GroupDao);
       await dao.update(params);
-      const group = await dao.get(id); // this is wrong, waiting for Andy fix UI update notification
-      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [group]);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]);
       return true;
     } catch (error) {
       throw ErrorParser.parse(error);
@@ -421,7 +420,7 @@ export default class GroupService extends BaseService<Group> {
     id: number;
     draft: string;
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData(params, params.id);
+    const result = await this.updateGroupPartialData(params);
     return result;
   }
 
@@ -430,7 +429,7 @@ export default class GroupService extends BaseService<Group> {
     id: number;
     send_failure_post_ids: number[];
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData(params, params.id);
+    const result = await this.updateGroupPartialData(params);
     return result;
   }
 
