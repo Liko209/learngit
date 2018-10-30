@@ -27,8 +27,8 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
 
   onAdded(
     direction: FetchDataDirection,
-    addedItems: ISortableModel<Post>[],
-    allItems: ISortableModel<Post>[],
+    addedPosts: ISortableModel<Post>[],
+    allPosts: ISortableModel<Post>[],
   ): void {
     if (this._disabled) return;
 
@@ -40,19 +40,18 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     // it will never be modified when receive new posts
     if (this.separatorMap.size > 0) return;
 
-    const firstUnreadPost = _.find(allItems, (item: ISortableModel<Post>) => {
-      if (item.data) {
-        return item.id > readThrough && item.data.creator_id !== this._userId;
-      }
-      return false;
-    });
+    const firstUnreadPost = this._findNextPost(
+      this._getOtherUsersPosts(allPosts),
+      readThrough,
+    );
+
     if (firstUnreadPost) {
       this._setSeparator(firstUnreadPost.id);
     }
   }
 
-  onDeleted(deletedItemIds: number[], allItems: ISortableModel[]): void {
-    const deletedPostWithSeparator = deletedItemIds.find(postId =>
+  onDeleted(deletedPostIds: number[], allPosts: ISortableModel[]): void {
+    const deletedPostWithSeparator = deletedPostIds.find(postId =>
       this.separatorMap.has(postId),
     );
 
@@ -61,9 +60,10 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     this.separatorMap.delete(deletedPostWithSeparator);
 
     // Find first post next to the deleted post that has separator
-    const postNext = _.findLast(allItems, ({ id }: ISortableModel) => {
-      return id > deletedPostWithSeparator;
-    });
+    const postNext = _.find(
+      this._getOtherUsersPosts(allPosts),
+      ({ id }) => id > deletedPostWithSeparator,
+    );
 
     // The deleted one is the last post
     if (!postNext) return;
@@ -89,6 +89,20 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
    */
   enable() {
     this._disabled = false;
+  }
+
+  private _getOtherUsersPosts(allPosts: ISortableModel<Post>[]) {
+    return allPosts.filter(
+      item => item && item.data && item.data.creator_id !== this._userId,
+    );
+  }
+
+  private _findNextPost(allItems: ISortableModel<Post>[], postId: number) {
+    const postIndex = _.findIndex(allItems, item => item.id === postId);
+
+    if (postIndex === -1) return;
+
+    return allItems[postIndex + 1];
   }
 
   private _setSeparator(postId: number) {

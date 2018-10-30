@@ -11,21 +11,29 @@ type OnAddedCaseConfig = {
   readThrough?: number;
   postCreatorId?: number;
   currentUserId?: number;
-  addedItems: ISortableModel[];
+  allPosts: ISortableModel[];
   direction?: FetchDataDirection;
+};
+
+type OnDeletedCaseConfig = {
+  setup?: (handler: NewMessageSeparatorHandler) => void;
+  postCreatorId?: number;
+  currentUserId?: number;
+  deletedPostIds: number[];
+  allPosts: ISortableModel[];
 };
 
 function runOnAdded({
   postCreatorId = 1,
   currentUserId = 2,
   readThrough,
-  addedItems,
+  allPosts,
   setup,
   direction,
 }: OnAddedCaseConfig) {
   (getGlobalValue as jest.Mock).mockReturnValueOnce(currentUserId);
 
-  addedItems.forEach(
+  allPosts.forEach(
     item => (item.data = item.data || { creator_id: postCreatorId }),
   );
 
@@ -34,11 +42,30 @@ function runOnAdded({
   readThrough && handler.setReadThrough(readThrough);
   handler.onAdded(
     direction || FetchDataDirection.UP,
-    addedItems,
-    _(addedItems)
+    _(allPosts)
       .clone()
       .reverse(),
+    allPosts,
   );
+  return handler;
+}
+
+function runOnDeleted({
+  postCreatorId = 1,
+  currentUserId = 2,
+  deletedPostIds,
+  allPosts,
+  setup,
+}: OnDeletedCaseConfig) {
+  (getGlobalValue as jest.Mock).mockReturnValueOnce(currentUserId);
+
+  allPosts.forEach(
+    item => (item.data = item.data || { creator_id: postCreatorId }),
+  );
+
+  const handler = new NewMessageSeparatorHandler();
+  setup && setup(handler);
+  handler.onDeleted(deletedPostIds, allPosts);
   return handler;
 }
 
@@ -47,14 +74,14 @@ describe('NewMessageSeparatorHandler', () => {
     it('should have a separator aim to the readThrough post', () => {
       const handler = runOnAdded({
         readThrough: 620249092,
-        addedItems: [
-          { id: 620281860, sortValue: 1540461972285, data: { creator_id: 1 } },
-          { id: 620273668, sortValue: 1540461971175, data: { creator_id: 1 } },
-          { id: 620265476, sortValue: 1540461970958, data: { creator_id: 1 } },
-          { id: 620257284, sortValue: 1540461970776, data: { creator_id: 1 } },
-          { id: 620249092, sortValue: 1540461830964, data: { creator_id: 1 } }, // readThrough is here
-          { id: 620240900, sortValue: 1540461830617, data: { creator_id: 1 } },
-          { id: 620232708, sortValue: 1540461821422, data: { creator_id: 1 } },
+        allPosts: [
+          { id: 620232708, sortValue: 1540461821422 },
+          { id: 620240900, sortValue: 1540461830617 },
+          { id: 620249092, sortValue: 1540461830964 }, // readThrough is here
+          { id: 620257284, sortValue: 1540461970776 },
+          { id: 620265476, sortValue: 1540461970958 },
+          { id: 620273668, sortValue: 1540461971175 },
+          { id: 620281860, sortValue: 1540461972285 },
         ],
       });
 
@@ -70,14 +97,27 @@ describe('NewMessageSeparatorHandler', () => {
         currentUserId: 1,
         postCreatorId: 1,
         readThrough: 620249092,
-        addedItems: [
-          { id: 620281860, sortValue: 1540461972285, data: { creator_id: 1 } },
-          { id: 620273668, sortValue: 1540461971175, data: { creator_id: 1 } },
-          { id: 620265476, sortValue: 1540461970958, data: { creator_id: 1 } },
-          { id: 620257284, sortValue: 1540461970776, data: { creator_id: 1 } },
-          { id: 620249092, sortValue: 1540461830964, data: { creator_id: 1 } }, // readThrough is here
-          { id: 620240900, sortValue: 1540461830617, data: { creator_id: 1 } },
+        allPosts: [
           { id: 620232708, sortValue: 1540461821422, data: { creator_id: 1 } },
+          { id: 620240900, sortValue: 1540461830617, data: { creator_id: 1 } },
+          { id: 620249092, sortValue: 1540461830964, data: { creator_id: 1 } }, // readThrough is here
+          { id: 620257284, sortValue: 1540461970776, data: { creator_id: 1 } },
+          { id: 620265476, sortValue: 1540461970958, data: { creator_id: 1 } },
+          { id: 620273668, sortValue: 1540461971175, data: { creator_id: 1 } },
+          { id: 620281860, sortValue: 1540461972285, data: { creator_id: 1 } },
+        ],
+      });
+
+      expect(handler.separatorMap.size).toBe(0);
+    });
+
+    it('should have not separator when readThrough post is not existed', () => {
+      const handler = runOnAdded({
+        readThrough: 999,
+        allPosts: [
+          { id: 1000, sortValue: 1 },
+          { id: 1001, sortValue: 2 },
+          { id: 1002, sortValue: 3 },
         ],
       });
 
@@ -87,10 +127,10 @@ describe('NewMessageSeparatorHandler', () => {
     it('should have not separator when readThrough is empty', () => {
       const handler = runOnAdded({
         readThrough: undefined,
-        addedItems: [
-          { id: 1002, sortValue: 3, data: { creator_id: 1 } },
-          { id: 1001, sortValue: 2, data: { creator_id: 1 } },
-          { id: 1000, sortValue: 1, data: { creator_id: 1 } },
+        allPosts: [
+          { id: 1000, sortValue: 1 },
+          { id: 1001, sortValue: 2 },
+          { id: 1002, sortValue: 3 },
         ],
       });
 
@@ -103,10 +143,10 @@ describe('NewMessageSeparatorHandler', () => {
           handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
         },
         readThrough: 1001,
-        addedItems: [
-          { id: 1002, sortValue: 3, data: { creator_id: 1 } },
-          { id: 1001, sortValue: 2, data: { creator_id: 1 } },
-          { id: 1000, sortValue: 1, data: { creator_id: 1 } },
+        allPosts: [
+          { id: 1000, sortValue: 1 },
+          { id: 1001, sortValue: 2 },
+          { id: 1002, sortValue: 3 },
         ],
       });
 
@@ -126,7 +166,7 @@ describe('NewMessageSeparatorHandler', () => {
         },
         readThrough: 1001,
         direction: FetchDataDirection.DOWN,
-        addedItems: [{ id: 1000, sortValue: 1 }],
+        allPosts: [{ id: 1000, sortValue: 1 }],
       });
 
       expect(handler.separatorMap.size).toBe(0);
@@ -138,16 +178,21 @@ describe('NewMessageSeparatorHandler', () => {
           handler.disable();
           handler.enable();
         },
-        readThrough: 1000,
         direction: FetchDataDirection.DOWN,
-        addedItems: [
-          { id: 1000, sortValue: 1, data: { creator_id: 1 } },
-          { id: 1001, sortValue: 1, data: { creator_id: 1 } },
+        readThrough: 620249092,
+        allPosts: [
+          { id: 620232708, sortValue: 1540461821422 },
+          { id: 620240900, sortValue: 1540461830617 },
+          { id: 620249092, sortValue: 1540461830964 }, // readThrough is here
+          { id: 620257284, sortValue: 1540461970776 },
+          { id: 620265476, sortValue: 1540461970958 },
+          { id: 620273668, sortValue: 1540461971175 },
+          { id: 620281860, sortValue: 1540461972285 },
         ],
       });
 
       expect(handler.separatorMap.size).toBe(1);
-      expect(handler.separatorMap.get(1001)).toHaveProperty(
+      expect(handler.separatorMap.get(620257284)).toHaveProperty(
         'type',
         SeparatorType.NEW_MSG,
       );
@@ -163,22 +208,60 @@ describe('NewMessageSeparatorHandler', () => {
       expect(handler.separatorMap.size).toBe(0);
     });
 
-    it('should move the separator to next postId', () => {
-      const handler = new NewMessageSeparatorHandler();
-      handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
-
-      // Delete post 1000
-      handler.onDeleted(
-        [1000],
-        [
-          { id: 1002, sortValue: 4 },
-          { id: 1001, sortValue: 3 },
+    it('should move the separator to next post', () => {
+      const handler = runOnDeleted({
+        setup(handler) {
+          handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
+        },
+        deletedPostIds: [1000],
+        allPosts: [
           { id: 999, sortValue: 1 },
+          { id: 1001, sortValue: 3 },
+          { id: 1002, sortValue: 4 },
         ],
-      );
+      });
 
       expect(handler.separatorMap.size).toBe(1);
       expect(handler.separatorMap.get(1001)).toHaveProperty(
+        'type',
+        SeparatorType.NEW_MSG,
+      );
+    });
+
+    it('should move the separator to next post that not sent by current user', () => {
+      const handler = runOnDeleted({
+        setup(handler) {
+          handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
+        },
+        currentUserId: 1,
+        deletedPostIds: [1000],
+        allPosts: [
+          { id: 999, sortValue: 1, data: { creator_id: 1 } },
+          { id: 1001, sortValue: 3, data: { creator_id: 1 } },
+          { id: 1002, sortValue: 4, data: { creator_id: 2 } },
+        ],
+      });
+      expect(handler.separatorMap.size).toBe(1);
+      expect(handler.separatorMap.get(1002)).toHaveProperty(
+        'type',
+        SeparatorType.NEW_MSG,
+      );
+    });
+
+    it('should do nothing when deleted post has no separator', () => {
+      const handler = runOnDeleted({
+        setup(handler) {
+          handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
+        },
+        deletedPostIds: [1001],
+        allPosts: [
+          { id: 999, sortValue: 1 },
+          { id: 1000, sortValue: 3 },
+          { id: 1002, sortValue: 4 },
+        ],
+      });
+      expect(handler.separatorMap.size).toBe(1);
+      expect(handler.separatorMap.get(1000)).toHaveProperty(
         'type',
         SeparatorType.NEW_MSG,
       );
