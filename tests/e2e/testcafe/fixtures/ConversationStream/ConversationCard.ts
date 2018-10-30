@@ -4,9 +4,10 @@
 * Copyright © RingCentral. All rights reserved.
 */
 import * as moment from 'moment';
+import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { setupCase, teardownCase } from '../../init';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
 import { ClientFunction } from 'testcafe';
@@ -37,7 +38,7 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
-    const glipSDK = await h(t).getGlip(user);
+    const userPlatform = await h(t).getPlatform(user);
     const format = 'hh:mm A';
     let groupId, postData, targetPost;
 
@@ -53,22 +54,23 @@ test(
       const conversations = app.homePage.messagePanel.teamsSection.conversations;
       const count = await conversations.count;
       const n = Math.floor(Math.random() * count);
-      await t.click(conversations.nth(n))
+      await app.homePage.messagePanel.teamsSection.nthConversationEntry(n).enter();
       await shouldMatchUrl;
       groupId = await getCurrentGroupIdFromURL();
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
-      postData = (await glipSDK.sendPost(groupId, postContent)).data;
+      postData = (await userPlatform.createPost({ text: postContent }, groupId)).data;
       targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok(postData)
     });
 
     await h(t).withLog(`Then I can check the post's time should have right format`, async () => {
-      const formatTime = moment(postData.creationTime).format(format);
+      const utcOffset = await H.getUtcOffset();
+      const formatTime = moment(postData.creationTime).utcOffset(-utcOffset).format(format);
       const timeDiv = targetPost.find('div').withText(formatTime);
       await t.expect(timeDiv.exists).ok();
-    });
+    }, true);
   },
 );
 
@@ -83,9 +85,9 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
     const userGlip = await h(t).getGlip(user);
-    const changedName = `Random ${Date.now().toString(5)}`;
+    const changedName = `first name ${uuid()}`;
 
-    let groupId, postData, targetPost, userName;
+    let groupId, postData, targetPost;
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
@@ -98,12 +100,9 @@ test(
     );
 
     await h(t).withLog(
-      `Then I enter a random conversation in team section`,
+      `Then I enter a conversation in team section`,
       async () => {
-        const conversations = app.homePage.messagePanel.teamsSection.conversations;
-        const count = await conversations.count;
-        const n = Math.floor(Math.random() * count);
-        await t.click(conversations.nth(n))
+        await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
         await shouldMatchUrl;
         groupId = await getCurrentGroupIdFromURL();
       },
@@ -112,9 +111,7 @@ test(
     await h(t).withLog(`When I send one post to current conversation`, async () => {
       postData = (await userGlip.sendPost(groupId, postContent)).data;
       targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
-      await t.expect(targetPost.exists).ok(postData);
-      userName = await targetPost.child(1).child(0).child(0).child(0).textContent;
-      console.log(userName);
+      await t.expect(targetPost.exists).ok();
     })
 
     await h(t).withLog(`And I modify user name through api,`, async () => {
@@ -122,9 +119,7 @@ test(
     })
 
     await h(t).withLog(`Then I can find user name change to ${changedName}.`, async () => {
-      const tempName = targetPost.child(1).child(0).child(0).child(0).textContent
-      await t.expect(tempName).contains(changedName);
-      await userGlip.updatePerson(null, { first_name: userName.split(" ")[0] })
+      await t.expect(targetPost.child().withText(changedName).exists).ok();
     })
   },
 );
@@ -135,7 +130,7 @@ test(
     ['JPT-95', 'P2', 'ConversationStream'],
   ),
   async (t: TestController) => {
-    const postContent = `some random text post JPT-95 ${Date.now()}`;
+    const postContent = `JPT-95 ${uuid()}`;
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
@@ -152,12 +147,9 @@ test(
     );
 
     await h(t).withLog(
-      `Then I enter a random conversation in team section`,
+      `Then I enter a conversation in team section`,
       async () => {
-        const conversations = app.homePage.messagePanel.teamsSection.conversations;
-        const count = await conversations.count;
-        const n = Math.floor(Math.random() * count);
-        await t.click(conversations.nth(n))
+        await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
         await shouldMatchUrl;
         groupId = await getCurrentGroupIdFromURL();
       },
@@ -167,6 +159,7 @@ test(
       postData = (await userGlip.sendPost(groupId, postContent)).data;
       targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok(postData);
+      // FIXME: flaky selector
       userName = await targetPost.child(1).child(0).child(0).child(0).textContent;
     });
 
@@ -175,8 +168,7 @@ test(
     });
 
     await h(t).withLog(`Then I can find username display change to "${userName} In a meeting"`, async () => {
-      await userGlip.updatePerson(null, { away_status: `${userName} In a meeting` });
-      await t.expect(targetPost.textContent).contains('In a meeting');
+      await t.expect(targetPost.withText('In a meeting').exists).ok();
     });
 
     await h(t).withLog(`When I modify user status "content of user modify" through api`, async () => {
@@ -184,7 +176,7 @@ test(
     });
 
     await h(t).withLog(`Then I can find username display change to "${userName} content of user modify"`, async () => {
-      await t.expect(targetPost.textContent).contains('content of user modify');
+      await t.expect(targetPost.withText('content of user modify').exists).ok();
     });
 
     await h(t).withLog(`When I delete user status through api request`, async () => {
@@ -192,8 +184,8 @@ test(
     });
 
     await h(t).withLog(`Then I only can find username display is "${userName}" without status`, async () => {
-      await t.expect(targetPost.textContent).notContains('content of user modify');
-      await t.expect(targetPost.textContent).contains(userName);
+      await t.expect(targetPost.withText('content of user modify').exists).notOk();
+      await t.expect(targetPost.withText(userName).exists).ok();
     });
   },
 );
