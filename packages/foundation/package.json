@@ -7,8 +7,8 @@
     "axios": "0.18.0",
     "dexie": "3.0.0-alpha.3",
     "eventemitter2": "5.0.1",
-    "inversify": "4.13.0",
-    "localforage": "1.7.2",
+    "inversify": "5.0.1",
+    "localforage": "1.7.3",
     "lodash": "4.17.11",
     "lokijs": "1.5.5",
     "reflect-metadata": "0.1.12",
@@ -18,6 +18,6 @@
     "@types/lodash": "4.14.117",
     "@types/lokijs": "1.5.2",
     "@types/socket.io-client": "1.4.32",
-    "typescript": "3.1.3"
+    "typescript": "3.1.4"
   }
 }

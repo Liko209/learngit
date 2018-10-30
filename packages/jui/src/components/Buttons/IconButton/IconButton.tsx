@@ -8,12 +8,8 @@ import MuiIconButton, {
   IconButtonProps as MuiIconButtonProps,
 } from '@material-ui/core/IconButton';
 import MuiIcon, { IconProps as MuiIconProps } from '@material-ui/core/Icon';
-import MuiTooltip from '@material-ui/core/Tooltip';
 import tinycolor from 'tinycolor2';
-import styled, {
-  keyframes,
-  Dependencies,
-} from '../../../foundation/styled-components';
+import styled, { keyframes } from '../../../foundation/styled-components';
 import { JuiArrowTip } from '../../Tooltip/ArrowTip';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import { Theme, Palette } from '../../../foundation/theme/theme';
@@ -147,7 +143,7 @@ const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
   font-size: 0;
 `;
 
-export const JuiIconButton: React.SFC<JuiIconButtonProps> & Dependencies = (
+export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
   props: JuiIconButtonProps,
 ) => {
   const { className, children, tooltipTitle, innerRef, color, ...rest } = props;
@@ -201,7 +197,5 @@ JuiIconButton.defaultProps = {
   invisible: false,
   tooltipTitle: '',
 };
-
-JuiIconButton.dependencies = [MuiIconButton, MuiIcon, MuiTooltip];
 
 export { JuiIconButtonProps };

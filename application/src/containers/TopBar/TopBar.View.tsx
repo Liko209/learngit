@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import { translate, InjectedTranslateProps } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { JuiIconButton, JuiIconButtonProps } from 'jui/components/Buttons';
 import { JuiModal } from 'jui/components/Dialog';
 import {
@@ -24,7 +24,7 @@ import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
 import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
 import { isElectron } from '@/utils';
 
-type TopBarProps = InjectedTranslateProps & {
+type TopBarProps = WithNamespaces & {
   signOut: Function;
   updateLeftNavState: (event: React.MouseEvent<HTMLElement>) => void;
   updateCreateTeamDialogState: Function;

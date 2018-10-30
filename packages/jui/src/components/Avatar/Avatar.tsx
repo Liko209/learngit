@@ -55,5 +55,5 @@ JuiAvatar.defaultProps = {
   color: 'lake',
 };
 JuiAvatar.displayName = 'JuiAvatar';
-JuiAvatar.dependencies = [MuiAvatar];
+
 export { JuiAvatarProps, JuiAvatar };

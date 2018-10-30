@@ -17,7 +17,7 @@ import {
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { JuiModal } from '@/containers/Dialog';
 import { observer } from 'mobx-react';
-import { translate, InjectedTranslateProps } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { toTitleCase } from '@/utils/helper';
 import { CONVERSATION_TYPES } from '@/constants';
 
@@ -36,7 +36,7 @@ type HeaderProps = {
     event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
   ) => Promise<ServiceCommonErrorType>;
-} & InjectedTranslateProps;
+} & WithNamespaces;
 
 @observer
 class Header extends Component<HeaderProps, { awake: boolean }> {

@@ -14,13 +14,12 @@ import PersonModel from '@/store/models/Person';
 import { ENTITY_NAME } from '@/store';
 import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
-import { t, TranslationFunction } from 'i18next';
+import { t } from 'i18next';
 import _ from 'lodash';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { HeaderProps } from './Header.View';
 const { GroupService } = service;
-class HeaderViewModel extends AbstractViewModel implements HeaderProps {
-  t: TranslationFunction;
+
+class HeaderViewModel extends AbstractViewModel {
   @observable
   private _id: number;
 
