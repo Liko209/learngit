@@ -20,7 +20,7 @@ const LinkItemsWrapper = styled.div`
   background-color: ${({ theme }) => theme.palette.common.white};
   border: 1px solid rgba(0, 0, 0, 0.2);
   width: 100%;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.14);
+  box-shadow: ${({ theme }) => theme.boxShadow[0]};
   border-radius: ${({ theme }) => theme.shape.borderRadius}px;
   height: ${height(26)};
   :hover{
@@ -38,6 +38,7 @@ const LinkItemContents = styled.div`
     width: ${width(5)};
     height: ${height(5)};
     cursor: pointer;
+    margin-top: ${spacing(-1)};
   }
 `;
 const LinkThumbnails = styled<{img: string}, 'div'>('div')`
@@ -71,7 +72,7 @@ type Props = {
   title: string;
   summary: string;
   thumbnail: string;
-  onLinkItemClick: (e: React.MouseEvent<HTMLSpanElement>) => void;
+  onLinkItemClick?: (e: React.MouseEvent<HTMLSpanElement>) => void;
 };
 class JuiConversationCardLinkItems extends PureComponent<
   Props

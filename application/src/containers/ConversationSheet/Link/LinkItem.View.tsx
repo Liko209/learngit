@@ -20,7 +20,6 @@ class LinkItemView extends React.Component<Props> {
   }
   render() {
     const { postItems, onLinkItemClick } = this.props;
-    console.log('postItems', postItems);
     return (
       <>
         {postItems.map((item, idx) => {

@@ -16,6 +16,8 @@ storiesOf('Pattern', module)
       'Find new ideas and classic advice on strategy, innovation and leadership,Find new ideas and classic advice on strategy, innovation and leadership,' +
       'Find new ideas and classic advice on strategy, innovation and leadership,Find new ideas and classic advice on strategy, innovation and leadership';
     return (
-      <JuiConversationCardLinkItems title={title} thumbnail={thumbnail} summary={summary} />
+      <React.Fragment>
+        <JuiConversationCardLinkItems title={title} thumbnail={thumbnail} summary={summary} />
+      </React.Fragment>
     );
   });

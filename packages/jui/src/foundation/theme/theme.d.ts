@@ -142,6 +142,7 @@ type Theme = {
       lineHeight: string;
     };
   };
+  boxShadow: string[];
 } & MuiTheme;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;
