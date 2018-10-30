@@ -28,6 +28,7 @@ const LeftRailViewComponent = (
         {props.filters.map((filter, index) => [
           index ? <JuiDivider key="divider" /> : null,
           <JuiConversationListFilter
+            data-test-automation-id="unreadOnlyToggler"
             checked={filter.value}
             key={filter.label}
             label={toTitleCase(props.t(filter.label))}

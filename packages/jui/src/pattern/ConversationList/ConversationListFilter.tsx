@@ -29,22 +29,22 @@ const StyledListItem = styled(MuiMenuItem)`
 `;
 
 type JuiConversationListFilterProps = {
-	label: string;
+  label: string;
 } & JuiToggleButtonProps;
 
 type IConversationListItem = {
-	dependencies?: React.ComponentType[];
+  dependencies?: React.ComponentType[];
 } & React.SFC<JuiConversationListFilterProps>;
 
 const JuiConversationListFilter: IConversationListItem = (props: JuiConversationListFilterProps) => {
-	const { label, checked, onChange, disabled, ...rest } = props;
+  const { label, checked, onChange, disabled, ...rest } = props;
 
-	return (
-		<StyledListItem classes={{ selected: 'selected' }} disableRipple={true} {...rest}>
-			<ItemText>{label}</ItemText>
-			<JuiToggleButton checked={checked} onChange={onChange} disabled={disabled} />
-		</StyledListItem>
-	);
+  return (
+    <StyledListItem classes={{ selected: 'selected' }} disableRipple={true} {...rest}>
+      <ItemText>{label}</ItemText>
+      <JuiToggleButton className="toggle-button" checked={checked} onChange={onChange} disabled={disabled} />
+    </StyledListItem>
+  );
 };
 
 JuiConversationListFilter.dependencies = [ItemText];

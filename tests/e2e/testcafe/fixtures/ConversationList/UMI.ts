@@ -15,7 +15,7 @@ fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test.skip(
+test(
   formalName('UMI add receive message count', [
     'JPT-107',
     'P0',
@@ -113,8 +113,6 @@ test.skip(
         const text = item.find('p');
         const count = await umi.textContent;
         await t.expect(count).eql('1');
-        const umiBgColor = (await umi.style)['background-color'];
-        await t.expect(umiBgColor).eql('rgb(238, 238, 238)');
         const textFontWeight = (await text.style)['font-weight'];
         await t.expect(textFontWeight).eql('700');
       },
@@ -209,7 +207,7 @@ test.skip(
   },
 );
 
-test.skip(
+test(
   formalName('Remove UMI when open conversation', [
     'JPT-103',
     'P0',
