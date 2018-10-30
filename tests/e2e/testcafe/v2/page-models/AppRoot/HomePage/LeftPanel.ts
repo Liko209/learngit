@@ -6,11 +6,11 @@ class LeftNavigatorEntry extends BaseWebComponent {
     public name: string;
 
     async enter() {
-        await this.t.click(this.root);
+        await this.t.click(this.self);
     }
 
     async getUmi() {
-        const umi = this.root.find('.umi');
+        const umi = this.self.find('.umi');
         const text = await umi.innerText;
         if (_.isEmpty(text)) {
             return 0;
@@ -24,7 +24,7 @@ class LeftNavigatorEntry extends BaseWebComponent {
 
 export class LeftPanel extends BaseWebComponent {
 
-    get root() {
+    get self() {
         return this.getSelectorByAutomationId('leftPanel');
     }
 
@@ -80,11 +80,11 @@ export class LeftPanel extends BaseWebComponent {
 
     // actions
     async ensureLoaded() {
-        await this.waitUntilExist(this.root);
+        await this.waitUntilExist(this.self);
     }
 
     async isExpand() {
-        const width = await this.root.offsetWidth;
+        const width = await this.self.offsetWidth;
         return width > 200 * 0.9;
     }
 

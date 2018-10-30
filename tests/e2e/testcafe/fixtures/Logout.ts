@@ -21,10 +21,10 @@ test(formalName('Logout', ['JPT-', 'P0', 'Logout']), async (t) => {
         await app.homePage.ensureLoaded();
     });
     await h(t).withLog('When I Click top bar avatar', async () => {
-        await app.homePage.settingMenu.clickTopBarAvatar();
+        await app.homePage.openSettingMenu();
     })
     await h(t).withLog('Then show menu should appear', async () => {
-        await app.homePage.settingMenu.menuExists();
+        await app.homePage.settingMenu.ensureLoaded();
     })
     await h(t).withLog('When Click logout button', async () => {
         await app.homePage.settingMenu.clickLogout();
