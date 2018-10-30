@@ -81,9 +81,12 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.nth(n));
   }
 
-  conversationByIdEntry(groupId: string){
-    return this.getComponent(ConversationEntry, this.conversations.filter(`[data-group-id="${groupId}"]`)) 
-  } 
+  conversationByIdEntry(groupId: string) {
+    return this.getComponent(
+      ConversationEntry,
+      this.conversations.filter(`[data-group-id="${groupId}"]`),
+    );
+  }
 
   async isExpand() {
     this.warnFlakySelector();
@@ -106,15 +109,19 @@ class ConversationListSection extends BaseWebComponent {
   }
 }
 
-class PostItem extends BaseWebComponent {}
+class PostItem extends BaseWebComponent { }
 
-class ConversationSection extends BaseWebComponent {
+class ConversationPage extends BaseWebComponent {
   get root() {
     return this.getSelector('.conversation-page');
   }
 
   get posts() {
     return this.root.find('[data-name="conversation-card"]');
+  }
+
+  get header() {
+    return this.getSelectorByAutomationId('conversation-page-header');
   }
 
   get messageInputArea() {
@@ -186,8 +193,8 @@ export class MessagePanel extends BaseWebComponent {
     return this.getSection('Teams');
   }
 
-  get conversationSection() {
-    return this.getComponent(ConversationSection);
+  get conversationPage() {
+    return this.getComponent(ConversationPage);
   }
 
   get moreMenu() {
@@ -196,10 +203,6 @@ export class MessagePanel extends BaseWebComponent {
 
   get closeConversationModal() {
     return this.getComponent(CloseConversationModal);
-  }
-
-  get conversationPage() {
-    return this.getSelector('.conversation-page');
   }
 
   get conversationListSections() {
