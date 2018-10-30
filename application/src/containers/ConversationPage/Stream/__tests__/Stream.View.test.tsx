@@ -7,7 +7,7 @@ import { StreamItemType } from '../types';
 
 describe('StreamView', () => {
   describe('render()', () => {
-    it('should render ConversationCard', () => {
+    it('should render <ConversationCard>', () => {
       const props = {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         postIds: [1, 2],
@@ -29,7 +29,7 @@ describe('StreamView', () => {
       expect(card1.key()).toBe('2');
     });
 
-    it('should render NewMessageSeparator', () => {
+    it('should render <NewMessageSeparator>', () => {
       const props = {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         postIds: [1, 2],
@@ -64,6 +64,7 @@ describe('StreamView', () => {
       expect(wrapper).toMatchSnapshot();
     });
 
+    // TODO test empty view in the future.
     it('should render container', () => {
       const props = {
         setRowVisible: jest.fn().mockName('setRowVisible'),
