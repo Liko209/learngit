@@ -14,9 +14,10 @@ import {
   JuiCheckboxButton,
   JuiIconButton,
 } from 'jui/components/Buttons';
-
+import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
+import { JuiModal } from '@/containers/Dialog';
 import { observer } from 'mobx-react';
-import { translate, InjectedTranslateProps } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { toTitleCase } from '@/utils/helper';
 import { CONVERSATION_TYPES } from '@/constants';
 
@@ -31,7 +32,11 @@ type HeaderProps = {
     tooltip: string;
   }[];
   customStatus: string | null;
-} & InjectedTranslateProps;
+  onFavoriteButtonHandler: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => Promise<ServiceCommonErrorType>;
+} & WithNamespaces;
 
 @observer
 class Header extends Component<HeaderProps, { awake: boolean }> {
@@ -81,7 +86,30 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 
   private _SubTitle() {
-    const { t, isFavorite, type, isPrivate, customStatus } = this.props;
+    const {
+      t,
+      isFavorite,
+      type,
+      isPrivate,
+      customStatus,
+      onFavoriteButtonHandler,
+    } = this.props;
+    const onchange = async (
+      event: React.ChangeEvent<HTMLInputElement>,
+      checked: boolean,
+    ) => {
+      const result = await onFavoriteButtonHandler(event, checked);
+      if (result === ServiceCommonErrorType.SERVER_ERROR) {
+        JuiModal.alert({
+          title: '',
+          content: t('conversationMenuItem:markFavoriteServerErrorContent'),
+          okText: t('conversationMenuItem:OK'),
+          okBtnType: 'text',
+          onOK: () => {},
+        });
+      }
+    };
+
     return (
       <JuiConversationPageHeaderSubtitle>
         {customStatus ? <span>{customStatus}</span> : null}
@@ -95,6 +123,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
             checkedIconName="star"
             iconName="star_border"
             checked={isFavorite}
+            onChange={onchange}
           >
             star_border
           </JuiCheckboxButton>

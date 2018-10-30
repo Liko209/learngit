@@ -7,6 +7,7 @@ import { SdkHelper } from "./sdk-helper";
 import { JupiterHelper } from "./jupiter-helper";
 import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
+import { H } from './utils';
 
 import { IUser, IStep } from '../models';
 
@@ -71,6 +72,12 @@ class Helper {
     return await this.sdkHelper.sdkManager.getPlatform(user);
   }
 
+  async getSdk(user: IUser) {
+    const glip = await this.getGlip(user);
+    const platform = await this.getPlatform(user);
+    return { glip, platform };
+  }
+
   // testcafe extend
   get href() {
     return ClientFunction(() => document.location.href)();
@@ -102,7 +109,7 @@ class Helper {
   async resetGlipAccount(user: IUser) {
     logger.warn("reset a glip account will be very slow (30s+)");
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(this.rcData.mainCompany.admin);
-    await adminGlip.deactivated(user.glipId);
+    await adminGlip.deactivated(user.rcId);
     await this.sdkHelper.sdkManager.getGlip(user);
   }
 }
@@ -111,4 +118,4 @@ function h(t: TestController) {
   return new Helper(t);
 }
 
-export { Helper, h };
+export { Helper, h, H };

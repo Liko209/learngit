@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import MuiCircularProgress, { CircularProgressProps as MuiCircularProgressProps } from '@material-ui/core/CircularProgress';
+import MuiCircularProgress, {
+  CircularProgressProps as MuiCircularProgressProps,
+} from '@material-ui/core/CircularProgress';
 import styled from '../../foundation/styled-components';
 // import { Omit } from '../../foundation/utils/typeHelper';
 // import { grey } from '../../foundation/utils/styles';
@@ -23,13 +25,14 @@ import styled from '../../foundation/styled-components';
 
 type JuiCircularProgressProps = MuiCircularProgressProps;
 
-const JuiCircularProgress = styled<JuiCircularProgressProps>(MuiCircularProgress)``;
+const JuiCircularProgress = styled<JuiCircularProgressProps>(
+  MuiCircularProgress,
+)``;
 
 JuiCircularProgress.defaultProps = {
   size: 24,
 };
 
 JuiCircularProgress.displayName = 'JuiCircularProgress';
-JuiCircularProgress.dependencies = [MuiCircularProgress];
 
 export { JuiCircularProgress, JuiCircularProgressProps };

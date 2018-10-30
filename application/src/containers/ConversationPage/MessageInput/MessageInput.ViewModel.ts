@@ -93,10 +93,11 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
 
   forceSaveDraft = () => {
     // immediately save
-    this._groupService.updateGroupDraft({
-      draft: this.draft,
-      id: this._id,
-    });
+    this.draft &&
+      this._groupService.updateGroupDraft({
+        draft: this.draft,
+        id: this._id,
+      });
   }
 
   @computed

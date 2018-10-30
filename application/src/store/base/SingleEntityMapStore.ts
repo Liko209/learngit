@@ -66,16 +66,16 @@ export default class SingleEntityMapStore<
     if (!Object.keys(data).length) {
       return;
     }
-    let model = this.createModel(data);
-    if (matchedProperties) {
-      model = matchedProperties.reduce(
-        (matchedModel: IEntity, property: keyof IEntity) => {
-          matchedModel[property] = model[property]; // eslint-disable-line
-          return matchedModel;
-        },
-        {},
-      ) as IEntity;
-    }
+    const model = this.createModel(data);
+    // if (matchedProperties) {
+    //   model = matchedProperties.reduce(
+    //     (matchedModel: IEntity, property: keyof IEntity) => {
+    //       matchedModel[property] = model[property]; // eslint-disable-line
+    //       return matchedModel;
+    //     },
+    //     {},
+    //   ) as IEntity;
+    // }
     this.data.merge(model.toJS ? model.toJS() : model);
   }
 

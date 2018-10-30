@@ -8,8 +8,7 @@ import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import styled from '../../foundation/styled-components';
 import { observer } from 'mobx-react';
-import { TranslationFunction, i18n } from 'i18next';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { JuiDialog } from '../../components/Dialog/Dialog';
 import { JuiDialogTitle } from '../../components/Dialog/DialogTitle';
 import { JuiDialogContent } from '../../components/Dialog/DialogContent';
@@ -26,12 +25,8 @@ import {
 // import SearchContact from '../SearchContact';
 // import CreateTeamVM, { errorTips } from './createTeamVM';
 
-interface IProps extends RouteComponentProps {
-  // homePresenter: HomePresenter;
-  i18n: i18n;
-  t: TranslationFunction;
-}
-interface IState {
+type Props = RouteComponentProps & WithNamespaces;
+type State = {
   disabledOkBtn: boolean;
   nameError: boolean;
   emailError: boolean;
@@ -41,7 +36,7 @@ interface IState {
   description: string;
   items: JuiListToggleItemProps[];
   members: (number | string)[];
-}
+};
 
 const LeftJuiButton = styled(JuiButton)`
   && {
@@ -50,10 +45,10 @@ const LeftJuiButton = styled(JuiButton)`
 `;
 
 @observer
-class CreateTeam extends React.Component<IProps, IState> {
+class CreateTeam extends React.Component<Props, State> {
   // private homePresenter: HomePresenter;
   // private createTeamVM: CreateTeamVM;
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
     // this.homePresenter = props.homePresenter;
     // this.createTeamVM = new CreateTeamVM();

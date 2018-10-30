@@ -7,7 +7,6 @@ import {
   // JuiConversationCardFooter,
 } from 'jui/pattern/ConversationCard';
 import { Avatar } from '@/containers/Avatar';
-import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
 import { idsToConversationSheet } from '@/containers/ConversationSheet';
@@ -59,6 +58,6 @@ export class ConversationCard extends React.Component<
   }
 }
 
-const ConversationCardView = translate('Conversations')(ConversationCard);
+const ConversationCardView = ConversationCard;
 
 export { ConversationCardView };
