@@ -19,6 +19,7 @@ enum SECTION_TYPE {
 
 type SectionProps = {
   type: SECTION_TYPE;
+  isLast: boolean;
 };
 
 type SectionViewProps = {
@@ -28,6 +29,9 @@ type SectionViewProps = {
   iconName: string;
   title: string;
   onSortEnd: SortEndHandler;
+  isLast: boolean;
+  handleCollapse: Function;
+  handleExpand: Function;
 };
 
 type SectionConfig = {

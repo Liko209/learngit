@@ -20,6 +20,9 @@ abstract class BaseClient implements IClient {
   }
 
   isNetworkReachable(): boolean {
+    if (typeof navigator === 'undefined') {
+      return true;
+    }
     return navigator.onLine;
   }
 }
