@@ -11,6 +11,5 @@ type JuiListProps = MuiListProps;
 const JuiList = styled(MuiList)``;
 
 JuiList.displayName = 'JuiList';
-JuiList.dependencies = [MuiList];
 
 export { JuiList, JuiListProps };

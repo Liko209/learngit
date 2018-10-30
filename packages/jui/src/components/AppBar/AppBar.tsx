@@ -12,6 +12,5 @@ type JuiAppBarProps = MuiAppBarProps;
 const JuiAppBar = styled(MuiAppBar)``;
 
 JuiAppBar.displayName = 'JuiAppBar';
-JuiAppBar.dependencies = [MuiAppBar];
 
 export { JuiAppBar, JuiAppBarProps };

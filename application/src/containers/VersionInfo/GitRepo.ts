@@ -72,7 +72,10 @@ class GitRepo {
         }
         if (stdout) {
           const logMessage = stdout.split('\n');
-          const result = logMessage.map((item: string) => new GitLogMessage(item));
+          const result = logMessage.map((item: string) => {
+            const str = item.replace(/(['"])/g, '\\$1');
+            return new GitLogMessage(str);
+          });
           return callback(null, result);
         }
         return callback('No output from command');

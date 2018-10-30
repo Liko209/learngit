@@ -13,9 +13,8 @@ import { ItemService } from 'sdk/service';
 
 class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
   private _itemService: ItemService = ItemService.getInstance();
-  @observable
-  ids: number[];
-  constructor(props) {
+  @observable ids: number[];
+  constructor(props: { ids: number[] }) {
     super(props);
     this.ids = props.ids;
   }
@@ -26,10 +25,10 @@ class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
     });
   }
   @action
-  onLinkItemClick = (id) => {
+  onLinkItemClick = (id: number) => {
     this._itemService.deleteItem(id);
     const index = this.ids.indexOf(id);
-    this.ids.splice(index, 1);
+    index !== -1 ? this.ids.splice(index, 1) : null;
   }
 }
 export { LinkItemViewModel };

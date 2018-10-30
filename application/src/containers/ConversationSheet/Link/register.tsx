@@ -3,7 +3,6 @@
  * @Date: 2018-10-30 17:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
 import { TypeDictionary } from 'sdk/utils';
 import { LinkItem } from './LinkItem';
 

@@ -8,60 +8,64 @@ import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
 import {
   ellipsis,
+  width,
+  height,
+  spacing,
+  grey,
 } from '../../foundation/utils/styles';
 import defaultLinkImage  from './link_img@2x.png';
 
 const LinkItemsWrapper = styled.div`
-  margin-top: 12px;
-  background-color: #fff;
+  margin-top: ${spacing(3)};
+  background-color: ${({ theme }) => theme.palette.common.white};
   border: 1px solid rgba(0, 0, 0, 0.2);
   width: 100%;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.14);
-  border-radius: 4px;
-  height: 104px;
+  border-radius: ${({ theme }) => theme.shape.borderRadius}px;
+  height: ${height(26)};
   :hover{
-    background-color: #f5f5f5;
+    background-color: ${grey('100')};
   }
 `;
 const LinkItemContents = styled.div`
   display: flex;
-  margin: 16px;
-  height: 72px;
+  margin: ${spacing(4)};
+  height: ${height(18)};
   width: 100%;
   span {
-    margin-right: 36px;
-    color: #bfbfbf;
-    width: 20px;
-    height: 20px;
+    margin-right: ${spacing(9)};
+    color: ${({ theme }) => theme.palette.accent.ash};
+    width: ${width(5)};
+    height: ${height(5)};
     cursor: pointer;
   }
 `;
 const LinkThumbnails = styled<{img: string}, 'div'>('div')`
-  width: 72px;
-  height: 72px;
-  background: url(${({ img }) => img}) 72px 72px;
+  width: ${width(18)};
+  height: ${height(18)};
+  background: url(${({ img }) => img}) 100% 100%;
   background-size: cover;
 `;
 const TitleNSummaryWrapper = styled.div`
   flex: 1;
-  margin-left: 12px;
+  margin-left: ${spacing(3)};
 `;
 const LinkTitle = styled.p`
   margin-top: 0;
-  color: #212121;
+  color: ${grey('900')};
   ${ellipsis()};
-  margin-right: 20px;
+  margin-right: ${spacing(5)};
 `;
 const LinkSummary = styled.p`
-  font-size: 14px;
-  color: #9e9e9e;
+  font-size: ${({ theme }) => theme.typography.body2.fontSize};
+  color: ${grey('500')};
   word-break: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  margin-top: -4px;
+  margin-top: ${spacing(-1)};
 `;
 type Props = {
   title: string;

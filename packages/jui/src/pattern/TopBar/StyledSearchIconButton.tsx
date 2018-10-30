@@ -10,6 +10,5 @@ import styled from '../../foundation/styled-components';
 const StyledSearchIconButton = styled(JuiIconButton)``;
 
 StyledSearchIconButton.displayName = 'StyledSearchIconButton';
-StyledSearchIconButton.dependencies = [];
 
 export { StyledSearchIconButton };

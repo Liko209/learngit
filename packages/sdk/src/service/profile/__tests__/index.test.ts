@@ -53,6 +53,7 @@ describe('ProfileService', () => {
   describe('getProfile()', () => {
     it('should return current user profile', async () => {
       // await profileDao.bulkPut({ id: 1 }, { id: 2 });
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
       jest.spyOn(profileService, 'getById').mockImplementation(id => id);
 
@@ -141,16 +142,26 @@ describe('ProfileService', () => {
         id: 2,
         favorite_group_ids: [1, 2, 3],
       };
-      mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
-      profileService.getById = jest.fn().mockImplementation(id => profile);
+
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
+      jest
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
+      const returnValue = {
+        id: 2,
+        favorite_group_ids: [2, 1, 3],
+      };
       ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: profile,
+        data: returnValue,
       });
-      handlePartialProfileUpdate.mockResolvedValueOnce(profile);
+      handleData.mockResolvedValueOnce(returnValue);
       const result = (await profileService.reorderFavoriteGroups(1, 0)) || {
         favorite_group_ids: [],
       };
-      expect(result.favorite_group_ids).toEqual([2, 1, 3]);
+      expect(result['favorite_group_ids']).toEqual([2, 1, 3]);
     });
 
     it('reorder forward to back', async () => {
@@ -158,40 +169,54 @@ describe('ProfileService', () => {
         id: 2,
         favorite_group_ids: [1, 2, 3],
       };
-      mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
-      profileService.getById = jest.fn().mockImplementation(id => profile);
-      ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: profile,
-      });
-      handlePartialProfileUpdate.mockResolvedValueOnce({
+
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
+      jest
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
+      const returnValue = {
+        id: 2,
         favorite_group_ids: [3, 2, 1],
+      };
+      ProfileAPI.putDataById.mockResolvedValueOnce({
+        data: returnValue,
       });
+      handleData.mockResolvedValueOnce(returnValue);
       const result = (await profileService.reorderFavoriteGroups(0, 2)) || {
         favorite_group_ids: [],
       };
-      expect(result.favorite_group_ids).toEqual([3, 2, 1]);
+      expect(result['favorite_group_ids']).toEqual([3, 2, 1]);
     });
   });
   describe('markMeGroupAsFavorite', () => {
     it('markMeGroupAsFavorite if a new user logs in', async () => {
       const profile = {
         id: 2,
+        favorite_group_ids: [],
+      };
+
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
+      jest
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
+      const returnValue = {
+        id: 2,
         favorite_group_ids: [2],
       };
       ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: profile,
+        data: returnValue,
       });
-      jest
-        .spyOn(profileService, 'markGroupAsFavorite')
-        .mockImplementationOnce(() => profile);
-      jest.spyOn(profileService, 'getById').mockImplementation(() => profile);
-
-      handlePartialProfileUpdate.mockResolvedValueOnce({
-        favorite_group_ids: [2],
-      });
-      mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
-      const result = await profileService.markMeConversationAsFav();
-      expect(result.favorite_group_ids).toEqual([2]);
+      handleData.mockResolvedValueOnce(returnValue);
+      const result = (await profileService.markMeConversationAsFav()) || {
+        favorite_group_ids: [],
+      };
+      expect(result['favorite_group_ids']).toEqual([2]);
     });
     it('markMeGroupAsFavorite if an old user logs in', async () => {
       const profile = {
@@ -199,17 +224,18 @@ describe('ProfileService', () => {
         favorite_group_ids: [2],
         me_tab: true,
       };
-      ProfileAPI.putDataById.mockResolvedValue({
-        data: profile,
-      });
 
-      jest.spyOn(profileService, 'markGroupAsFavorite');
-      jest.spyOn(profileService, 'getById').mockImplementation(() => profile);
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
 
-      handlePartialProfileUpdate.mockResolvedValue({ favorite_group_ids: [2] });
-      mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
-      const result = await profileService.markMeConversationAsFav();
-      expect(result).toBeNull();
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
+      jest
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
+      const result = (await profileService.markMeConversationAsFav()) || {
+        favorite_group_ids: [],
+      };
+      expect(result instanceof BaseError).toBeTruthy();
     });
   });
   describe('hideConversation()', () => {
@@ -217,9 +243,14 @@ describe('ProfileService', () => {
       const profile = {
         id: 2,
       };
+
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
       jest
-        .spyOn(profileService, 'getProfile')
-        .mockImplementationOnce(() => profile);
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
       const returnValue = {
         id: 2,
         hide_group_222233333: true,
@@ -234,6 +265,7 @@ describe('ProfileService', () => {
         true,
         false,
       );
+      console.log('result----------------', result);
       expect(result['hide_group_222233333']).toBe(true);
       expect(result['skip_close_conversation_confirmation']).toBe(true);
     });
@@ -246,12 +278,18 @@ describe('ProfileService', () => {
       const profile = {
         id: 2,
       };
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
+
       jest
-        .spyOn(profileService, 'getProfile')
-        .mockImplementationOnce(() => profile);
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
       ProfileAPI.putDataById.mockResolvedValueOnce({
         status: 403,
       });
+
       const result = await profileService.hideConversation(1, true, false);
       if (result instanceof BaseError) {
         expect(result.code).toBe(1403);
@@ -266,18 +304,24 @@ describe('ProfileService', () => {
         id: 2,
         hide_group_222233333: true,
       };
+
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
       jest
-        .spyOn(profileService, 'getProfile')
-        .mockImplementationOnce(() => profile);
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
       const returnValue = {
         id: 2,
         hide_group_222233333: false,
         skip_close_conversation_confirmation: true,
       };
+
       ProfileAPI.putDataById.mockResolvedValueOnce({
         data: returnValue,
       });
-      handleData.mockResolvedValueOnce(returnValue);
+
       const result = await profileService.handleGroupIncomesNewPost([
         222233333,
       ]);
@@ -288,13 +332,19 @@ describe('ProfileService', () => {
         id: 2,
         hide_group_222233333: false,
       };
+
+      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+
+      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
       jest
-        .spyOn(profileService, 'getProfile')
-        .mockImplementationOnce(() => profile);
+        .spyOn(profileService, 'updatePartialModel2Db')
+        .mockImplementation(() => {});
+
       const result = await profileService.handleGroupIncomesNewPost([
         222233333,
       ]);
-      expect(result).toBe(null);
+
+      expect(result).toEqual(profile);
     });
   });
 });

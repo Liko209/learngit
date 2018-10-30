@@ -6,17 +6,18 @@
 
 import React, { Component } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { translate, InjectedTranslateProps } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import { JuiModal } from '@/containers/Dialog';
 
-type TokenRouteProps = RouteComponentProps<{}> & InjectedTranslateProps & {
-  unifiedLogin: Function;
-  redirectToIndex: Function;
-  isOffline: boolean;
-  isError: boolean;
-};
+type TokenRouteProps = RouteComponentProps<{}> &
+  WithNamespaces & {
+    unifiedLogin: Function;
+    redirectToIndex: Function;
+    isOffline: boolean;
+    isError: boolean;
+  };
 
 @observer
 class TokenRoute extends Component<TokenRouteProps> {
@@ -36,7 +37,13 @@ class TokenRoute extends Component<TokenRouteProps> {
     redirectToIndex(location, history);
   }
 
-  showAlert = ({ isOffline, isError }: { isOffline?: boolean, isError?: boolean }) => {
+  showAlert = ({
+    isOffline,
+    isError,
+  }: {
+    isOffline?: boolean;
+    isError?: boolean;
+  }) => {
     const { t } = this.props;
     let content = '';
     if (isError) {

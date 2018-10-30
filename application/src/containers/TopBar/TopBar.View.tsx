@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import { translate, InjectedTranslateProps } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { JuiIconButton, JuiIconButtonProps } from 'jui/components/Buttons';
 import { JuiModal } from 'jui/components/Dialog';
 import {
@@ -24,7 +24,7 @@ import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
 import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
 import { isElectron } from '@/utils';
 
-type TopBarProps = InjectedTranslateProps & {
+type TopBarProps = WithNamespaces & {
   signOut: Function;
   updateLeftNavState: (event: React.MouseEvent<HTMLElement>) => void;
   updateCreateTeamDialogState: Function;
@@ -71,11 +71,13 @@ class TopBar extends React.Component<TopBarProps> {
     const menusItemAboutPages = {
       label: t('About RingCentral'),
       onClick: handleAboutPage,
+      automationId: 'aboutPage',
     };
     const menuItems = [
       {
         label: t('SignOut'),
         onClick: signOut,
+        automationId: 'signOut',
       },
     ];
     !isElectron ? menuItems.unshift(menusItemAboutPages) : null;
@@ -83,6 +85,7 @@ class TopBar extends React.Component<TopBarProps> {
       <JuiAvatarMenu
         menuItems={menuItems}
         MenuExpandTrigger={this._AvatarMenuTrigger}
+        automationId="avatarMenu"
         {...avatarProps}
       />
     );

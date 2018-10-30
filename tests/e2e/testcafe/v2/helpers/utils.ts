@@ -9,4 +9,9 @@ export class H {
   static isElectron(): Promise<boolean> {
     return H.getUserAgent().then(ua => ua.includes('Electron'));
   }
+
+  static getUtcOffset(): Promise<number> {
+    return ClientFunction(() => new Date().getTimezoneOffset())();
+  }
+
 }
