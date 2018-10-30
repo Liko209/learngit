@@ -3,7 +3,7 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
+
 import { computed } from 'mobx';
 import { service } from 'sdk';
 import { Profile } from 'sdk/models';
@@ -47,7 +47,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
 
   @computed
   get favoriteText() {
-    return this.isFavorite ? 'unFavorite' : 'favorite';
+    return this.isFavorite ? 'remove_from_favorite' : 'favorite';
   }
 
   @computed
@@ -73,7 +73,10 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   toggleFavorite = () => {
-    this._groupService.markGroupAsFavorite(this.groupId, !this.isFavorite);
+    return this._groupService.markGroupAsFavorite(
+      this.groupId,
+      !this.isFavorite,
+    );
   }
 
   closeConversation = (shouldSkipNextTime: boolean) => {

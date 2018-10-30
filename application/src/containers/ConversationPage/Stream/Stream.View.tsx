@@ -9,12 +9,21 @@ import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { StreamViewProps } from './types';
 
 class StreamView extends PureComponent<StreamViewProps> {
+  componentDidMount() {
+    window.addEventListener('focus', this.focusHandler);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('focus', this.focusHandler);
+  }
+
   componentDidUpdate(prevProps: StreamViewProps) {
     if (!prevProps.postIds.length) {
       // initial scroll to bottom when switch to new group
       this.props.setRowVisible(-1);
     }
   }
+
   render() {
     return (
       <div>
@@ -24,6 +33,10 @@ class StreamView extends PureComponent<StreamViewProps> {
         ))}
       </div>
     );
+  }
+  focusHandler = () => {
+    const { atBottom, markAsRead } = this.props;
+    atBottom() && markAsRead();
   }
 }
 

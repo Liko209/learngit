@@ -17,8 +17,7 @@ export class LogHelper {
   }
 
   async takeScreenShot() {
-    const ua = await H.getUserAgent();
-    if (ua.includes('Electron')) {
+    if (await H.isElectron()) {
       return null;
     }
     const imageFileName = `${uuid()}.png`;

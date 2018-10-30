@@ -13,6 +13,5 @@ type JuiListSubheaderProps = MuiListSubheaderProps;
 const JuiListSubheader = styled(MuiListSubheader)``;
 
 JuiListSubheader.displayName = 'JuiListSubheader';
-JuiListSubheader.dependencies = [MuiListSubheader];
 
 export { JuiListSubheader, JuiListSubheaderProps };
