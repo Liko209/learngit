@@ -60,7 +60,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -82,8 +82,7 @@ test(
       favoritesSection.warnFlakySelector();
       favoriteButton1 = app.homePage
         .getSelector('#render-props-menu')
-        .find('li')
-        .withText('Favorite');
+        .find('li[data-test-automation-id="favToggler"]');
       await t.expect(favoriteButton1.exists).ok();
     });
 
@@ -121,8 +120,7 @@ test(
       favoritesSection.warnFlakySelector();
       favoriteButton2 = app.homePage
         .getSelector('#render-props-menu')
-        .find('li')
-        .withText('Favorite');
+        .find('li[data-test-automation-id="favToggler"]');
       await t.expect(favoriteButton2.exists).ok();
     });
 
@@ -192,7 +190,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -214,8 +212,7 @@ test(
       favoritesSection.warnFlakySelector();
       unfavoriteButton1 = app.homePage
         .getSelector('#render-props-menu')
-        .find('li')
-        .withText('Remove from Favorite');
+        .find('li[data-test-automation-id="favToggler"]');
       await t.expect(unfavoriteButton1.exists).ok();
     });
 
@@ -250,11 +247,9 @@ test(
 
     let unfavoriteButton2;
     await h(t).withLog('I can find the unfavorite button', async () => {
-      favoritesSection.warnFlakySelector();
       unfavoriteButton2 = app.homePage
         .getSelector('#render-props-menu')
-        .find('li')
-        .withText('Remove from Favorite');
+        .find('li[data-test-automation-id="favToggler"]');
       await t.expect(unfavoriteButton2.exists).ok();
     });
 
@@ -314,7 +309,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -336,11 +331,9 @@ test(
 
     let unfavoriteButton;
     await h(t).withLog('I can find the unfavorite button', async () => {
-      favoritesSection.warnFlakySelector();
       unfavoriteButton = app.homePage
         .getSelector('#render-props-menu')
-        .find('li')
-        .withText('Remove from Favorite');
+        .find('li[data-test-automation-id="favToggler"]');
       await t.expect(unfavoriteButton.exists).ok();
     });
 

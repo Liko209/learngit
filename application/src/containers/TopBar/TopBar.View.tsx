@@ -71,11 +71,13 @@ class TopBar extends React.Component<TopBarProps> {
     const menusItemAboutPages = {
       label: t('About RingCentral'),
       onClick: handleAboutPage,
+      automationId: 'aboutPage',
     };
     const menuItems = [
       {
         label: t('SignOut'),
         onClick: signOut,
+        automationId: 'signOut',
       },
     ];
     !isElectron ? menuItems.unshift(menusItemAboutPages) : null;
@@ -83,6 +85,7 @@ class TopBar extends React.Component<TopBarProps> {
       <JuiAvatarMenu
         menuItems={menuItems}
         MenuExpandTrigger={this._AvatarMenuTrigger}
+        automationId="avatarMenu"
         {...avatarProps}
       />
     );

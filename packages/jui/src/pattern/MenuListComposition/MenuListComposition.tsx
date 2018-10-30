@@ -28,6 +28,7 @@ type MenuListCompositionProps = {
   menuItems: MenuItems;
   MenuExpandTrigger: MenuExpandTrigger;
   className?: string;
+  automationId?: string;
 };
 
 const MenuListCompositionWrapper = styled.div`
@@ -73,7 +74,7 @@ class JuiMenuListComposition extends React.Component<
 
   render() {
     const { open, anchorEl } = this.state;
-    const { MenuExpandTrigger, menuItems } = this.props;
+    const { MenuExpandTrigger, menuItems, automationId } = this.props;
     return (
       <MenuListCompositionWrapper className={this.props.className}>
         <MenuExpandTrigger aria-haspopup="true" onClick={this.handleToggle} />
@@ -82,6 +83,7 @@ class JuiMenuListComposition extends React.Component<
           anchorEl={anchorEl}
           transition={true}
           disablePortal={true}
+          data-test-automation-id={automationId}
         >
           {({ TransitionProps, placement }) => (
             <Grow
