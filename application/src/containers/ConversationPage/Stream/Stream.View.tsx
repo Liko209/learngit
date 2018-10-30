@@ -6,11 +6,7 @@
 import React, { Component } from 'react';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
-
-// TODO replace with real component
-const NewMessageSeparator = () => (
-  <div style={{ textAlign: 'center' }}>New Messages</div>
-);
+import { NewMessageSeparator } from './NewMessageSeparator';
 
 class StreamView extends Component<StreamViewProps> {
   componentDidUpdate(prevProps: StreamViewProps) {
@@ -20,7 +16,7 @@ class StreamView extends Component<StreamViewProps> {
     }
   }
 
-  renderStreamItem(streamItem: StreamItem) {
+  private _renderStreamItem(streamItem: StreamItem) {
     switch (streamItem.type) {
       case StreamItemType.POST:
         return (
@@ -38,7 +34,7 @@ class StreamView extends Component<StreamViewProps> {
     return (
       <div>
         {items.length > 0
-          ? items.map(item => this.renderStreamItem(item))
+          ? items.map(item => this._renderStreamItem(item))
           : null}
       </div>
     );
