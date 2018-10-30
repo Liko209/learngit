@@ -13,6 +13,7 @@ import MuiAppBar, {
 } from '@material-ui/core/AppBar';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import MuiTooltip from '@material-ui/core/Tooltip';
+
 import {
   typography,
   ellipsis,
@@ -20,7 +21,7 @@ import {
   height,
   spacing,
 } from '../../foundation/utils/styles';
-import styled from '../../foundation/styled-components';
+import styled, { Dependencies } from '../../foundation/styled-components';
 import { isTextOverflow } from '../../foundation/utils';
 
 type JuiConversationPageHeaderProps = {
@@ -65,7 +66,7 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
       display: flex;
       align-items: center;
       padding-left: ${({ theme, Right }) =>
-    Right ? spacing(3)({ theme }) : ''};
+        Right ? spacing(3)({ theme }) : ''};
     }
 
     .subtitle {
@@ -82,13 +83,13 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
 
 type IJuiConversationPageHeader = React.Component<
   JuiConversationPageHeaderProps
-  > &
+> &
   Dependencies;
 
 class JuiConversationPageHeader
   extends React.Component<
-  JuiConversationPageHeaderProps,
-  { showTooltip: boolean }
+    JuiConversationPageHeaderProps,
+    { showTooltip: boolean }
   >
   implements IJuiConversationPageHeader {
   textRef: React.RefObject<any>;
@@ -145,8 +146,8 @@ class JuiConversationPageHeader
             {this.state.showTooltip ? (
               <MuiTooltip title={title}>{titleElement}</MuiTooltip>
             ) : (
-                titleElement
-              )}
+              titleElement
+            )}
             {SubTitle ? subTitleComponent : null}
           </div>
           {Right ? right : null}
