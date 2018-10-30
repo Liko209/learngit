@@ -21,22 +21,24 @@ import {
 } from './network';
 
 class NetworkManager {
-  private static _instance: NetworkManager;
+  private static _defaultInstance: NetworkManager;
 
   clientManager: ClientManager;
   handlers: Map<IHandleType, NetworkRequestHandler>;
   tokenManager?: OAuthTokenManager;
   decorator?: NetworkRequestDecorator;
 
-  constructor(oauthTokenManager = OAuthTokenManager.Instance) {
+  constructor(oauthTokenManager: OAuthTokenManager) {
     this.clientManager = new ClientManager();
     this.handlers = new Map<IHandleType, NetworkRequestHandler>();
     this.tokenManager = oauthTokenManager;
   }
 
-  public static get Instance() {
-    this._instance = this._instance || (this._instance = new this());
-    return this._instance;
+  public static get defaultInstance() {
+    this._defaultInstance =
+      this._defaultInstance ||
+      (this._defaultInstance = new this(OAuthTokenManager.defaultInstance));
+    return this._defaultInstance;
   }
 
   addApiRequest(request: IRequest, isTail = true) {

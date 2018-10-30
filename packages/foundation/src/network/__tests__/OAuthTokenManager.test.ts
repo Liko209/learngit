@@ -5,7 +5,7 @@ import {
   fakeHandleType,
 } from './utils';
 
-const manager = OAuthTokenManager.Instance;
+const manager = OAuthTokenManager.defaultInstance;
 
 describe('OAuthTokenManager', () => {
   describe('addOAuthTokenHandler', () => {

@@ -7,11 +7,12 @@ import OAuthTokenHandler from './OAuthTokenHandler';
 import Token from './Token';
 import { IHandleType } from './network';
 class OAuthTokenManager {
-  private static _instance: OAuthTokenManager;
+  private static _defaultInstance: OAuthTokenManager;
 
-  public static get Instance() {
-    this._instance = this._instance || (this._instance = new this());
-    return this._instance;
+  public static get defaultInstance() {
+    this._defaultInstance =
+      this._defaultInstance || (this._defaultInstance = new this());
+    return this._defaultInstance;
   }
 
   public tokenHandlers: Map<IHandleType, OAuthTokenHandler> = new Map();
@@ -32,7 +33,7 @@ class OAuthTokenManager {
   }
 
   clearOAuthToken() {
-    this.tokenHandlers.forEach((handler) => {
+    this.tokenHandlers.forEach((handler: OAuthTokenHandler) => {
       handler.clearOAuthToken();
     });
   }

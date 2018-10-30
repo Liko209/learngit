@@ -17,7 +17,7 @@ import { HandleByRingCentral } from '../handlers';
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
 
-NetworkManager.Instance = new NetworkManager();
+NetworkManager.defaultInstance = new NetworkManager();
 const mockRequest: any = {};
 
 const setup = () => {
@@ -46,7 +46,7 @@ const setup = () => {
     '/restapi',
     NETWORK_VIA.HTTP,
     '',
-    NetworkManager.Instance,
+    NetworkManager.defaultInstance,
   );
 
   const postRequest = {
@@ -103,9 +103,8 @@ describe('apiRequest', () => {
   describe('request()', () => {
     it('networkManager addApiRequest should be called with request', () => {
       const { postRequest, rcNetworkClient } = setup();
-      // const spy = jest.spyOn(NetworkManager.Instance, 'addApiRequest');
       rcNetworkClient.request(postRequest);
-      expect(NetworkManager.Instance.addApiRequest).toBeCalled();
+      expect(NetworkManager.defaultInstance.addApiRequest).toBeCalled();
     });
 
     it('request() should call return Promise', () => {
@@ -123,7 +122,9 @@ describe('apiRequest', () => {
 
       mockRequest.callback({ status: 200, data: { a: 1 } });
 
-      expect(NetworkManager.Instance.addApiRequest).toHaveBeenCalledTimes(1);
+      expect(
+        NetworkManager.defaultInstance.addApiRequest,
+      ).toHaveBeenCalledTimes(1);
       await expect(promise1).resolves.toEqual({ status: 200, data: { a: 1 } });
       await expect(promise2).resolves.toEqual({ status: 200, data: { a: 1 } });
     });

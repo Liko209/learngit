@@ -41,7 +41,7 @@ describe('UnifiedLoginAuthenticator', () => {
         'x-authorization': 'glip_token',
       },
     });
-    Api.init({}, NetworkManager.Instance);
+    Api.init({}, NetworkManager.defaultInstance);
 
     const resp = await unified.authenticate({ code: '123' });
     expect(resp.success).toBe(true);

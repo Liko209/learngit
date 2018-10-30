@@ -8,7 +8,7 @@ jest.mock('../NetworkClient');
 
 describe('Api', () => {
   beforeEach(() => {
-    Api.init(apiConfig, NetworkManager.Instance);
+    Api.init(apiConfig, NetworkManager.defaultInstance);
   });
 
   describe('getNetworkClient()', () => {

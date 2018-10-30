@@ -7,10 +7,10 @@ describe('NetworkSetup', () => {
   describe('setup', () => {
     it('should call OAuthTokenHandler', () => {
       const spy = jest.spyOn(
-        NetworkManager.Instance,
+        NetworkManager.defaultInstance,
         'initNetworkRequestBaseHandler',
       );
-      NetworkSetup.setup([fakeHandleType], NetworkManager.Instance);
+      NetworkSetup.setup([fakeHandleType], NetworkManager.defaultInstance);
       expect(spy).toBeCalled();
       expect(OAuthTokenHandler).toBeCalled();
     });
