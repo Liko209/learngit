@@ -20,17 +20,15 @@ test(formalName('Logout', ['JPT-70', 'P0', 'Logout']), async (t) => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
     });
-    await h(t).withLog('When I Click top bar avatar', async () => {
+    await h(t).withLog('Then I can open setting menu in home page', async () => {
         await app.homePage.openSettingMenu();
-    })
-    await h(t).withLog('Then show menu should appear', async () => {
         await app.homePage.settingMenu.ensureLoaded();
     })
-    await h(t).withLog('When Click logout button', async () => {
+    await h(t).withLog('When I click logout button in setting menu', async () => {
         await app.homePage.settingMenu.clickLogout();
 
     })
-    await h(t).withLog('Then logout successfully (url contains unified-login)', async () => {
+    await h(t).withLog('Then I should logout from Jupiter and back to login page', async () => {
         await t.expect(h(t).href).contains('unified-login');
     }, true)
 });
