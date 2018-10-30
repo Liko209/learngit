@@ -45,6 +45,7 @@ type StreamViewProps = {
   setRowVisible: (n: number) => void;
   markAsRead: () => void;
   atBottom: () => boolean;
+  enableNewMessageSeparatorHandler: () => void;
 };
 
 export {

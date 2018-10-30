@@ -14,6 +14,9 @@ describe('StreamView', () => {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         markAsRead: jest.fn().mockName('markAsRead'),
         atBottom: jest.fn().mockName('atBottom'),
+        enableNewMessageSeparatorHandler: jest
+          .fn()
+          .mockName('enableNewMessageSeparatorHandler'),
         postIds: [1, 2],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -38,6 +41,9 @@ describe('StreamView', () => {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         markAsRead: jest.fn().mockName('markAsRead'),
         atBottom: jest.fn().mockName('atBottom'),
+        enableNewMessageSeparatorHandler: jest
+          .fn()
+          .mockName('enableNewMessageSeparatorHandler'),
         postIds: [1, 2],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -57,6 +63,9 @@ describe('StreamView', () => {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         markAsRead: jest.fn().mockName('markAsRead'),
         atBottom: jest.fn().mockName('atBottom'),
+        enableNewMessageSeparatorHandler: jest
+          .fn()
+          .mockName('enableNewMessageSeparatorHandler'),
         postIds: [1, 2, 3, 4],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -77,6 +86,9 @@ describe('StreamView', () => {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         markAsRead: jest.fn().mockName('markAsRead'),
         atBottom: jest.fn().mockName('atBottom'),
+        enableNewMessageSeparatorHandler: jest
+          .fn()
+          .mockName('enableNewMessageSeparatorHandler'),
         postIds: [],
         items: [],
       };

@@ -45,7 +45,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _transformHandler: PostTransformHandler;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
-  private _firstTimeScrollDown: boolean = true;
 
   @observable
   groupId: number;
@@ -75,7 +74,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this._transformHandler) {
       this.dispose();
     }
-    this._firstTimeScrollDown = true;
+
     this.groupId = props.groupId;
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (offset: number, direction, pageSize, anchor) => {
@@ -108,7 +107,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       },
     );
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
-    this._newMessageSeparatorHandler.setReadThrough(this._readThrough);
+    this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
+      this._readThrough,
+    );
 
     this._transformHandler = new PostTransformHandler({
       newMessageSeparatorHandler: this._newMessageSeparatorHandler,
@@ -117,6 +118,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
     this.autorun(() => (this.postIds = this._transformHandler.postIds));
     this.autorun(() => (this.items = this._transformHandler.items));
+    this.autorun(() =>
+      this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
+        this._readThrough,
+      ),
+    );
 
     this.loadInitialPosts();
   }
@@ -134,30 +140,27 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @onScroll
-  async handleNewMessageSeparatorState(event: {
-    currentTarget?: HTMLInputElement;
-  }) {
-    if (!event.currentTarget) return;
-
-    const scrollEl = event.currentTarget;
-    const atBottom =
-      scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
-
-    if (atBottom) {
-      if (!this._firstTimeScrollDown) {
-        this._newMessageSeparatorHandler.disable();
-      }
-      this._firstTimeScrollDown = false;
-    } else {
-      this._newMessageSeparatorHandler.setReadThrough(this._readThrough);
-      this._newMessageSeparatorHandler.enable();
-    }
+  updateNewMessageSeparatorHandlerState() {
+    // const isFocused = document.hasFocus();
+    // if (!isFocused) {
+    // }
   }
 
   @onScrollToBottom
   markAsRead() {
     const isFocused = document.hasFocus();
-    isFocused && this._stateService.markAsRead(this.groupId);
+    if (isFocused) {
+      this.disableNewMessageSeparatorHandler();
+      this._stateService.markAsRead(this.groupId);
+    }
+  }
+
+  enableNewMessageSeparatorHandler = () => {
+    this._newMessageSeparatorHandler.enable();
+  }
+
+  disableNewMessageSeparatorHandler = () => {
+    this._newMessageSeparatorHandler.disable();
   }
 
   dispose() {

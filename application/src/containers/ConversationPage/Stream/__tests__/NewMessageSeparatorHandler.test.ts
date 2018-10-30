@@ -39,7 +39,7 @@ function runOnAdded({
 
   const handler = new NewMessageSeparatorHandler();
   setup && setup(handler);
-  readThrough && handler.setReadThrough(readThrough);
+  readThrough && handler.setReadThroughIfNoSeparator(readThrough);
   handler.onAdded(
     direction || FetchDataDirection.UP,
     _(allPosts)
@@ -161,7 +161,7 @@ describe('NewMessageSeparatorHandler', () => {
     it('should do nothing when it was disabled', () => {
       const handler = runOnAdded({
         setup(handler) {
-          handler.setReadThrough(1001);
+          handler.setReadThroughIfNoSeparator(1001);
           handler.disable();
         },
         readThrough: 1001,

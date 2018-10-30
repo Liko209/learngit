@@ -17,6 +17,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
   private _readThrough?: number;
   private _disabled?: boolean;
   private _userId?: number;
+  private _hasNewMessagesSeparator = false;
 
   @observable
   separatorMap = new Map<number, NewSeparator>();
@@ -40,13 +41,22 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     // it will never be modified when receive new posts
     if (this.separatorMap.size > 0) return;
 
+    const lastPost = _.last(allPosts);
+
+    if (lastPost) {
+      this._hasNewMessagesSeparator = lastPost.id !== this._readThrough;
+    }
+
     const firstUnreadPost = this._findNextPost(
       this._getOtherUsersPosts(allPosts),
       readThrough,
     );
 
     if (firstUnreadPost) {
+      // readThrough post in current page
       this._setSeparator(firstUnreadPost.id);
+    } else {
+      // readThrough post in the next page
     }
   }
 
@@ -71,7 +81,9 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     this._setSeparator(postNext.id);
   }
 
-  setReadThrough(readThrough?: number) {
+  setReadThroughIfNoSeparator(readThrough?: number) {
+    if (this._hasNewMessagesSeparator) return;
+
     this._readThrough = readThrough;
   }
 

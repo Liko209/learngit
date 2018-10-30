@@ -11,10 +11,12 @@ import { NewMessageSeparator } from './NewMessageSeparator';
 class StreamView extends Component<StreamViewProps> {
   componentDidMount() {
     window.addEventListener('focus', this.focusHandler);
+    window.addEventListener('blur', this.blurHandler);
   }
 
   componentWillUnmount() {
     window.removeEventListener('focus', this.focusHandler);
+    window.addEventListener('blur', this.blurHandler);
   }
 
   componentDidUpdate(prevProps: StreamViewProps) {
@@ -50,6 +52,10 @@ class StreamView extends Component<StreamViewProps> {
   focusHandler = () => {
     const { atBottom, markAsRead } = this.props;
     atBottom() && markAsRead();
+  }
+  blurHandler = () => {
+    const { enableNewMessageSeparatorHandler } = this.props;
+    enableNewMessageSeparatorHandler();
   }
 }
 
