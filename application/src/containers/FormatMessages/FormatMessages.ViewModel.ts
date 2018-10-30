@@ -38,7 +38,7 @@ class FormatMessagesViewModel extends StoreViewModel<{ postId: number }> {
   @computed
   get formatHtml() {
     const formatText = new FormatText(this._post.text);
-    formatText.glipdown(this._atMentionIdMaps, this._currentUserId);
+    formatText.formatHtml(this._atMentionIdMaps, this._currentUserId);
     return formatText.text;
   }
 }

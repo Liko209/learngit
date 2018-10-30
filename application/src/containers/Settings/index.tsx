@@ -1,12 +1,8 @@
 import React from 'react';
-import { i18n } from 'i18next';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import ThemeSwitcher from '@/containers/ThemeSwitcher';
 
-interface IProps {
-  i18n: i18n;
-}
-class Settings extends React.Component<IProps> {
+class Settings extends React.Component<WithNamespaces> {
   render() {
     const { i18n } = this.props;
     const changeLanguage = (lng: string) => {

@@ -72,6 +72,12 @@ class Helper {
     return await this.sdkHelper.sdkManager.getPlatform(user);
   }
 
+  async getSdk(user: IUser) {
+    const glip = await this.getGlip(user);
+    const platform = await this.getPlatform(user);
+    return { glip, platform };
+  }
+
   // testcafe extend
   get href() {
     return ClientFunction(() => document.location.href)();

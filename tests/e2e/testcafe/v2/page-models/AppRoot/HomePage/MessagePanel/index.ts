@@ -81,6 +81,10 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.nth(n));
   }
 
+  conversationByIdEntry(groupId: string){
+    return this.getComponent(ConversationEntry, this.conversations.filter(`[data-group-id="${groupId}"]`)) 
+  } 
+
   async isExpand() {
     this.warnFlakySelector();
     return await this.root.child().withText('keyboard_arrow_up').exists;
