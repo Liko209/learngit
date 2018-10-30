@@ -178,6 +178,7 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
     height: ${({ ratio }) => (ratio >= 1 ? height(64) : height(64))};
     position: relative;
     border-radius: 0;
+    box-shadow: none;
   }
   &:hover ${ImageFileInfo} {
     transform: translate(0, 0);

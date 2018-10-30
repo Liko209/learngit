@@ -34,6 +34,7 @@ export default class ItemModel extends Base<Item> {
   constructor(data: Item) {
     super(data);
     const { type_id } = data;
+    this.data = data;
     this.typeId = type_id;
     this.setFileData();
   }
