@@ -82,7 +82,9 @@
     "uuid": "3.3.2"
   },
   "dependencies": {
+    "babel-preset-env": "1.7.0",
     "downshift": "2.2.2",
+    "js-base64": "2.4.9",
     "ts-node": "7.0.1"
   }
 }
