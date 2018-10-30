@@ -16,7 +16,7 @@ fixture('send messages draft')
   .afterEach(teardownCase());
 
 
-test(formalName('draft', ['P0', 'JPT-139', 'Show massage draft when switching conversation']),
+test.skip(formalName('Show massage draft when switching conversation', ['P0', 'JPT-139']),
   async (t) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;

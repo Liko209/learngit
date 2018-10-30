@@ -18,7 +18,7 @@ fixture('Send Messages')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(formalName('send', ['P0', 'JPT-77', 'Enter text in the conversation input box']), async (t) => {
+test(formalName('Enter text in the conversation input box', ['P0', 'JPT-77']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
 
   const user = users[3];
