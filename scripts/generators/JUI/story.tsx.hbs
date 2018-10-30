@@ -1,0 +1,16 @@
+/*
+ * @Author: {{{userName}}} ({{{userEmail}}})
+ * @Date: {{{currentDate}}}
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import React from 'react';
+import { storiesOf } from '@storybook/react';
+import { withInfoDecorator } from '../../../foundation/utils/decorators';
+import { Jui{{properCase name}} } from '..';
+
+storiesOf('{{type}}/{{properCase name}}', module)
+  .addDecorator(withInfoDecorator(Jui{{properCase name}}, { inline: true }))
+  .add('{{properCase name}}', () => {
+    // return <Jui{{properCase name}} />;
+  });
