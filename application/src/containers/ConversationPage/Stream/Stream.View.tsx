@@ -9,6 +9,14 @@ import { StreamViewProps, StreamItem, StreamItemType } from './types';
 import { NewMessageSeparator } from './NewMessageSeparator';
 
 class StreamView extends Component<StreamViewProps> {
+  componentDidMount() {
+    window.addEventListener('focus', this.focusHandler);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('focus', this.focusHandler);
+  }
+
   componentDidUpdate(prevProps: StreamViewProps) {
     if (!prevProps.postIds.length) {
       // initial scroll to bottom when switch to new group
@@ -38,6 +46,10 @@ class StreamView extends Component<StreamViewProps> {
           : null}
       </div>
     );
+  }
+  focusHandler = () => {
+    const { atBottom, markAsRead } = this.props;
+    atBottom() && markAsRead();
   }
 }
 

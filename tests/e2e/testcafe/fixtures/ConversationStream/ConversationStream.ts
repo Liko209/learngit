@@ -42,8 +42,7 @@ test(
     await h(t).withLog('Then I enter the conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      const teamConversation = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-      await t.click(teamConversation)
+      await teamsSection.conversationByIdEntry(teamId).enter();
     });
 
     await h(t).withLog('When I send 3 posts in order via API', async () => {
@@ -53,9 +52,9 @@ test(
       }
     });
 
-    const postsSelector = await app.homePage.messagePanel.conversationSection.posts;
     await h(t).withLog('Then I will receive those 3 posts', async () => {
-      await t.expect(postsSelector.withText(new RegExp(msgList.join('|'))).count).eql(3, { timeout: 5e3 });
+      const posts = await app.homePage.messagePanel.conversationSection.posts;
+      await t.expect(posts.withText(new RegExp(msgList.join('|'))).count).eql(3, { timeout: 5e3 });
     }, true);
 
     await h(t).withLog('And the 3 posts must be in correct order', async () => {
@@ -95,8 +94,7 @@ test(
     await h(t).withLog('Then I can enter the conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      const teamConversation = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-      await t.click(teamConversation);
+      await teamsSection.conversationByIdEntry(teamId).enter();
     });
 
     await h(t).withLog('And I should not find any post in the new created conversation', async () => {
@@ -143,8 +141,7 @@ test(
     await h(t).withLog('And enter the team conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      const teamConversation = teamsSection.conversations.filter(`[data-group-id="${teamId}"]`);
-      await t.click(teamConversation);
+      await teamsSection.conversationByIdEntry(teamId).enter();
     });
 
     await h(t).withLog(`Then I should find post "${msgBeforeLogin}" in the conversation posts history`, async () => {

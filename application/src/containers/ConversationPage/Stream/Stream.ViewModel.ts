@@ -21,6 +21,7 @@ import {
   onScroll,
   loading,
   loadingTop,
+  onScrollToBottom,
 } from '@/plugins/InfiniteListPlugin';
 import { StreamProps, StreamItem } from './types';
 import { PostTransformHandler } from './PostTransformHandler';
@@ -60,6 +61,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this.groupId,
     );
     return groupState.readThrough;
+  }
+
+  constructor() {
+    super();
+    this.markAsRead = this.markAsRead.bind(this);
   }
 
   onReceiveProps(props: StreamProps) {
@@ -107,21 +113,18 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this._transformHandler = new PostTransformHandler({
       newMessageSeparatorHandler: this._newMessageSeparatorHandler,
       handler: orderListHandler,
-      onAppended: () => {
-        this.markAsRead();
-      },
     });
 
     this.autorun(() => (this.postIds = this._transformHandler.postIds));
     this.autorun(() => (this.items = this._transformHandler.items));
 
-    this.markAsRead();
     this.loadInitialPosts();
   }
 
   @loading
   async loadInitialPosts() {
     await this._loadPosts(FetchDataDirection.UP);
+    this.markAsRead();
   }
 
   @onScrollToTop
@@ -151,10 +154,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
+  @onScrollToBottom
   markAsRead() {
-    if (this.groupId) {
-      this._stateService.markAsRead(this.groupId);
-    }
+    const isFocused = document.hasFocus();
+    isFocused && this._stateService.markAsRead(this.groupId);
   }
 
   dispose() {

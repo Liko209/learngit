@@ -20,7 +20,8 @@ interface ILoadingMoreViewModel extends IViewModel, WithScrollerProps {
 }
 
 type LoadingMorePluginOptions = {
-  threshold?: number;
+  thresholdUp?: number;
+  thresholdDown?: number;
   initialScrollTop?: number;
   stickTo?: 'bottom' | 'top';
   triggerScrollToOnMount?: boolean;
