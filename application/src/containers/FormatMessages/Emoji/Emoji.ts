@@ -23,14 +23,14 @@ class Emoji {
   }
 
   formatEmojiOne() {
-    const regExp = /(?<=:)([^:]\S*?)(?=:)/g; // /(?<=:)(\S+?)(?=:)/g;
+    const regExp = /:([^:]\S*?)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
     this.text = this.text.trim().replace(regExp, (match: string) => {
-      // console.log(match); // smile
-      const obj = mapEmojiOne[`:${match}:`];
+      // console.log(match); // :smile
+      const obj = mapEmojiOne[`${match}:`];
       if (obj instanceof Object) {
         const arr = obj.unicode;
         const unicode = arr[arr.length - 1];
-        return this._getImg(`:${match}:`, unicode);
+        return this._getImg(`${match}:`, unicode);
       }
       return match;
     });
@@ -58,12 +58,12 @@ class Emoji {
   }
 
   formatCustom() {
-    const regExp = /(?<=:)([^:]\S*?)(?=:)/g; // /(?<=:)(\S+?)(?=:)/g;
+    const regExp = /:([^:]\S*?)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
     this.text = this.text.trim().replace(regExp, (match: string) => {
-      // console.log(match); // rc
+      // console.log(match); // :rc
       const obj = this._customEmojiMap[match];
       if (obj instanceof Object) {
-        return `<img class="${this._getClassName(`:${match}:`)}" src="${obj.data}">`;
+        return `<img class="${this._getClassName(`${match}:`)}" src="${obj.data}">`;
       }
       return match;
     });
