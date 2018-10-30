@@ -18,9 +18,11 @@ const HandleByRingCentral = new class extends AbstractHandleType {
   tokenRefreshable = true;
   tokenRefreshDelegate: ITokenRefreshDelegate;
   basic() {
-    return btoa(
-      `${Api.httpConfig.rc.clientId}:${Api.httpConfig.rc.clientSecret}`,
-    );
+    const str = `${Api.httpConfig.rc.clientId}:${
+      Api.httpConfig.rc.clientSecret
+    }`;
+
+    return this.btoa(str);
   }
   requestDecoration(tokenHandler: ITokenHandler) {
     const handler = tokenHandler as OAuthTokenHandler;

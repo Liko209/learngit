@@ -15,6 +15,7 @@
     "socket.io-client": "git+ssh://git@git.ringcentral.com:Fiji/FIJI-socket.io-client.git#Jupiter-2.1.101"
   },
   "devDependencies": {
+    "@types/js-base64": "^2.3.1",
     "@types/lodash": "4.14.117",
     "@types/lokijs": "1.5.2",
     "@types/socket.io-client": "1.4.32",

@@ -15,7 +15,7 @@ const HandleByGlip2 = new class extends AbstractHandleType {
   defaultVia = NETWORK_VIA.HTTP;
   tokenRefreshable = true;
   basic() {
-    return btoa(
+    return this.btoa(
       `${Api.httpConfig.glip2.clientId}:${Api.httpConfig.glip2.clientSecret}`,
     );
   }
