@@ -24,7 +24,6 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
     const conversationIdOfUrl = Number(this.props.match.params.id);
     let groupId;
     if (!conversationIdOfUrl) {
-      /* get the last group id */
       groupId = await this.props.getLastGroupId(conversationIdOfUrl);
       this.props.history.replace(`/messages/${groupId}`);
     } else {

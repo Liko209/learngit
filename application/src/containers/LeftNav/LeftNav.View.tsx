@@ -13,6 +13,8 @@ import { LeftNavViewProps } from './types';
 import { computed } from 'mobx';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue } from '@/store/utils';
 
 type LeftNavProps = {
   isLeftNavOpen: boolean;
@@ -30,6 +32,9 @@ class LeftNav extends Component<LeftNavProps> {
   @computed
   get icons(): JuiLeftNavProps['icons'] {
     const { t, groupIds } = this.props;
+    const currentConversationId = getGlobalValue(
+      GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+    );
     return [
       [
         {
@@ -38,7 +43,7 @@ class LeftNav extends Component<LeftNavProps> {
           title: t('Dashboard'),
         },
         {
-          url: '/messages',
+          url: `/messages/${currentConversationId}`,
           icon: 'message',
           title: t('Messages'),
           umi: <Umi ids={groupIds} global="UMI.app" />,
