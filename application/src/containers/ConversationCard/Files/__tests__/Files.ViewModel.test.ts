@@ -56,26 +56,21 @@ describe('File items tests', () => {
 
   it('getFileType()', () => {
     const image = {
-      id: 1,
       thumbs: {
         a: 'http://www.google.com',
       },
     } as ItemModel;
     const document = {
-      id: 2,
       pages: [
         {
           url: '213',
         },
       ],
     } as ItemModel;
-    const others = {
-      id: 3,
-    } as ItemModel;
+    const others = {} as ItemModel;
     const img = filesViewModel.getFileType(image);
     expect(img).toEqual({
       item: image,
-      id: 1,
       type: FileType.image,
       previewUrl: 'http://www.google.com',
     });
@@ -83,7 +78,6 @@ describe('File items tests', () => {
     const doc = filesViewModel.getFileType(document);
     expect(doc).toEqual({
       item: document,
-      id: 2,
       type: FileType.document,
       previewUrl: '213',
     });
@@ -91,7 +85,6 @@ describe('File items tests', () => {
     const other = filesViewModel.getFileType(others);
     expect(other).toEqual({
       item: others,
-      id: 3,
       type: FileType.others,
       previewUrl: '',
     });
