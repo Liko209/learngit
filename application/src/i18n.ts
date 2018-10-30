@@ -13,7 +13,7 @@ i18next
     fallbackLng: 'en',
 
     // have a common namespace used around the full app
-    ns: ['translations', 'conversationMenuItem'],
+    ns: ['translations'],
     defaultNS: 'translations',
 
     debug: true,

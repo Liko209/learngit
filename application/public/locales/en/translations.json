@@ -27,5 +27,7 @@
   "Cancel": "Cancel",
   "Back": "Back",
   "Forward": "Forward",
-  "Done": "Done"
+  "Done": "Done",
+  "today": "Today",
+  "yesterday": "Yesterday"
 }

@@ -9,5 +9,6 @@ export * from './ConversationCardHeader';
 export * from './ConversationCardBody';
 export * from './ConversationCardFooter';
 export * from './ConversationPostText';
+export * from './TimeNodeDivider';
 
 export { default } from './ConversationCard';
