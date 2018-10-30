@@ -26,7 +26,7 @@ type DebounceFunction = (
   params: { id: number; draft: string },
 ) => Promise<boolean>;
 
-class MessageInputViewModel extends AbstractViewModel
+class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
   implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
@@ -93,10 +93,11 @@ class MessageInputViewModel extends AbstractViewModel
 
   forceSaveDraft = () => {
     // immediately save
-    this._groupService.updateGroupDraft({
-      draft: this.draft,
-      id: this._id,
-    });
+    this.draft &&
+      this._groupService.updateGroupDraft({
+        draft: this.draft,
+        id: this._id,
+      });
   }
 
   @computed
@@ -122,6 +123,8 @@ class MessageInputViewModel extends AbstractViewModel
       vm.error = '';
       if (content.trim()) {
         vm._sendPost(quill);
+        const onPostHandler = vm.props.onPost;
+        onPostHandler && onPostHandler();
       }
     };
   }

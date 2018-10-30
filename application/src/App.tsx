@@ -20,6 +20,7 @@ import history from '@/utils/history';
 import _ from 'lodash';
 import storeManager from '@/store';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
+import { GLOBAL_KEYS } from './store/constants';
 @observer
 class App extends React.Component {
   private appName = process.env.APP_NAME || '';
@@ -53,11 +54,13 @@ class App extends React.Component {
 
   @computed
   get isLoading() {
-    return storeManager.getGlobalStore().get('app.showGlobalLoading');
+    return storeManager
+      .getGlobalStore()
+      .get(GLOBAL_KEYS.APP_SHOW_GLOBAL_LOADING);
   }
 
   updateAppUmi() {
-    const appUmi = storeManager.getGlobalStore().get('app.umi');
+    const appUmi = storeManager.getGlobalStore().get(GLOBAL_KEYS.APP_UMI);
     if (appUmi) {
       document.title = `(${appUmi}) ${this.appName}`;
     } else {

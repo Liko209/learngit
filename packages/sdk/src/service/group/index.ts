@@ -27,7 +27,7 @@ import handleData, {
   handlePartialData,
   filterGroups,
   handleGroupMostRecentPostChanged,
-  handleFavoriteGroupsChanged,
+  // handleFavoriteGroupsChanged,
   handleHiddenGroupsChanged,
   sortFavoriteGroups,
 } from './handleData';
@@ -57,7 +57,7 @@ export default class GroupService extends BaseService<Group> {
       [SOCKET.GROUP]: handleData,
       [SOCKET.PARTIAL_GROUP]: handlePartialData,
       [SOCKET.POST]: handleGroupMostRecentPostChanged,
-      [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
+      // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
@@ -331,7 +331,11 @@ export default class GroupService extends BaseService<Group> {
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
     const profileService: ProfileService = ProfileService.getInstance();
-    profileService.markGroupAsFavorite(groupId, markAsFavorite);
+    const result = profileService.markGroupAsFavorite(groupId, markAsFavorite);
+    if (result instanceof BaseError && result.code >= 5300) {
+      return ServiceCommonErrorType.SERVER_ERROR;
+    }
+    return ServiceCommonErrorType.NONE;
   }
 
   async handleResponse(resp: IResponse<Raw<Group>>) {
@@ -371,10 +375,11 @@ export default class GroupService extends BaseService<Group> {
     if (result instanceof BaseError) {
       // rollback
       const group = await this.getById(groupId);
-      notificationCenter.emitEntityPut(
-        group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS,
-        [group],
-      );
+      notificationCenter.emitEntityPut(ENTITY.GROUP, [group]);
+      // notificationCenter.emitEntityPut(
+      //   group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS,
+      //   [group],
+      // );
       if (result.code === 5000) {
         return ServiceCommonErrorType.NETWORK_NOT_AVAILABLE;
       }
@@ -403,7 +408,7 @@ export default class GroupService extends BaseService<Group> {
     try {
       const dao = daoManager.getDao(GroupDao);
       await dao.update(params);
-      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]);
+      // notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]); waiting for store to support update
       return true;
     } catch (error) {
       throw ErrorParser.parse(error);

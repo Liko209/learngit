@@ -19,9 +19,9 @@ type MenuViewProps = {
   isFavorite: boolean;
   favoriteText: string;
   shouldSkipCloseConfirmation: boolean;
-  umiHint?: boolean;
+  showClose?: boolean;
   onClose: (event: MouseEvent<HTMLElement>) => void;
-  toggleFavorite: () => void;
+  toggleFavorite: () => Promise<ServiceCommonErrorType>;
   closeConversation: (
     shouldSkipNextTime: boolean,
   ) => Promise<ServiceCommonErrorType>;

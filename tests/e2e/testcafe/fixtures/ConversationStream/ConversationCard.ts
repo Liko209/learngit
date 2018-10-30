@@ -3,35 +3,29 @@
 * @Date: 2018-09-12 16:29:39
 * Copyright © RingCentral. All rights reserved.
 */
+import * as moment from 'moment';
+import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { setUp, tearDown } from '../../libs/helpers';
-import { directLogin } from '../../utils';
-import { setupSDK } from '../../utils/setupSDK';
-import { LeftRail } from '../../page-models/components/ConversationList/LeftRail';
-import { ConversationStream } from '../../page-models/components/ConversationStream/ConversationStream';
-import { PersonAPI } from '../../libs/sdk';
-import { TestHelper } from './../../libs/helpers';
+import { setupCase, teardownCase } from '../../init';
+import { h, H } from '../../v2/helpers';
+import { AppRoot } from '../../v2/page-models/AppRoot';
+import { SITE_URL } from '../../config';
+import { ClientFunction } from 'testcafe';
 
-declare var test: TestFn;
 fixture('ConversationCard')
-  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
-  .afterEach(tearDown());
+  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .afterEach(teardownCase());
 
-const prepare = (t: TestController, postContent: string) =>
-  directLogin(t)
-    .log('1. should navigate to Left Rail')
-    .shouldNavigateTo(LeftRail)
-    .expectExist()
-    .chain(t => t.wait(10000))
-    .log('2. select any conversation')
-    .selectRandomConversation()
-    .log('3. navigate to conversation stream')
-    .shouldNavigateTo(ConversationStream)
-    .shouldMatchURL()
-    .log('4. send post to current group')
-    .sendPost2CurrentGroup(postContent, 'jpt5Post')
-    .log('5. find the post just sent')
-    .shouldFindPostById('jpt5Post');
+const shouldMatchUrl = async (t: TestController) => {
+  const getLocation = ClientFunction(() => window.location.href);
+  const reg = /messages\/(\d+)/;
+  const location = await getLocation();
+  await t.expect(location).match(reg);
+};
+
+const getCurrentGroupIdFromURL = ClientFunction(() => {
+  return Number(/messages\/(\d+)/.exec(window.location.href)[1]);
+});
 
 test(
   formalName('Check send time for each message metadata.', [
@@ -40,11 +34,43 @@ test(
     'ConversationStream',
   ]),
   async (t: TestController) => {
-    await setupSDK(t);
     const postContent = `some random text post ${Date.now()}`;
-    await prepare(t, postContent)
-      .log('6. should have right format time in card')
-      .checkTimeFormatOnPost('jpt5Post', 'hh:mm A');
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[4];
+    const userPlatform = await h(t).getPlatform(user);
+    const format = 'hh:mm A';
+    let groupId, postData, targetPost;
+
+    await h(t).withLog(
+      `When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog(`Then I enter a random conversation in teams section`, async () => {
+      const conversations = app.homePage.messagePanel.teamsSection.conversations;
+      const count = await conversations.count;
+      const n = Math.floor(Math.random() * count);
+      await app.homePage.messagePanel.teamsSection.nthConversationEntry(n).enter();
+      await shouldMatchUrl;
+      groupId = await getCurrentGroupIdFromURL();
+    });
+
+    await h(t).withLog(`When I send one post to current conversation`, async () => {
+      postData = (await userPlatform.createPost({ text: postContent }, groupId)).data;
+      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
+      await t.expect(targetPost.exists).ok(postData)
+    });
+
+    await h(t).withLog(`Then I can check the post's time should have right format`, async () => {
+      const utcOffset = await H.getUtcOffset();
+      const formatTime = moment(postData.creationTime).utcOffset(-utcOffset).format(format);
+      const timeDiv = targetPost.find('div').withText(formatTime);
+      await t.expect(timeDiv.exists).ok();
+    }, true);
   },
 );
 
@@ -54,72 +80,112 @@ test(
     ['JPT-91', 'P2', 'ConversationStream'],
   ),
   async (t: TestController) => {
-    await setupSDK(t);
-    const helper = new TestHelper(t);
-    helper.log('make sure user name is in initial state');
-    await (PersonAPI as any).putDataById(Number(helper.users.user701.glip_id), {
-      first_name: 'John',
-      last_name: 'Doe701',
-    });
     const postContent = `some random text post ${Date.now()}`;
-    const changedName = `Random ${Date.now()}`;
-    await prepare(t, postContent)
-      .log('6. check current user name')
-      .checkNameOnPost('John Doe701')
-      .log('7. modify user name through api request')
-      .chain(async (t, h) => {
-        await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
-          first_name: changedName,
-        });
-      })
-      .log('8. name should be updated')
-      .checkNameOnPost(`${changedName} Doe701`)
-      .log('9. change user name back')
-      .chain(async (t, h) => {
-        await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
-          first_name: 'John',
-          last_name: 'Doe701',
-        });
-      })
-      .log('10. name should be updated')
-      .checkNameOnPost('John Doe701');
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[4];
+    const userGlip = await h(t).getGlip(user);
+    const changedName = `first name ${uuid()}`;
+
+    let groupId, postData, targetPost;
+
+    await h(t).withLog(
+      `When I login Jupiter with this extension: ${user.company.number}#${
+      user.extension
+      }`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog(
+      `Then I enter a conversation in team section`,
+      async () => {
+        await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
+        await shouldMatchUrl;
+        groupId = await getCurrentGroupIdFromURL();
+      },
+    );
+
+    await h(t).withLog(`When I send one post to current conversation`, async () => {
+      postData = (await userGlip.sendPost(groupId, postContent)).data;
+      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
+      await t.expect(targetPost.exists).ok();
+    })
+
+    await h(t).withLog(`And I modify user name through api,`, async () => {
+      await userGlip.updatePerson(null, { first_name: changedName });
+    })
+
+    await h(t).withLog(`Then I can find user name change to ${changedName}.`, async () => {
+      await t.expect(targetPost.child().withText(changedName).exists).ok();
+    })
   },
 );
 
-test.skip(
+test(
   formalName(
     'When update custom status, can sync dynamically in message metadata.',
     ['JPT-95', 'P2', 'ConversationStream'],
   ),
   async (t: TestController) => {
-    await setupSDK(t);
-    const postContent = `some random text post ${Date.now()}`;
-    const helper = new TestHelper(t);
-    helper.log('set user away status to "in the meeting"');
-    await (PersonAPI as any).putDataById(Number(helper.users.user701.glip_id), {
-      away_status: 'In a meeting',
+    const postContent = `JPT-95 ${uuid()}`;
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[4];
+    const userGlip = await h(t).getGlip(user);
+
+    let groupId, postData, targetPost, userName;
+
+    await h(t).withLog(
+      `When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog(
+      `Then I enter a conversation in team section`,
+      async () => {
+        await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
+        await shouldMatchUrl;
+        groupId = await getCurrentGroupIdFromURL();
+      },
+    );
+
+    await h(t).withLog(`And I send one text post to current conversation`, async () => {
+      postData = (await userGlip.sendPost(groupId, postContent)).data;
+      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
+      await t.expect(targetPost.exists).ok(postData);
+      // FIXME: flaky selector
+      userName = await targetPost.child(1).child(0).child(0).child(0).textContent;
     });
-    await prepare(t, postContent)
-      .log('6. check title with away status right after user name')
-      .checkNameOnPost('John Doe701 In a meeting')
-      .log('7. set user away status to "content of user modify"')
-      .chain(async (t, h) => {
-        await (PersonAPI as any).putDataById(Number(h.users.user701.glip_id), {
-          away_status: 'content of user modify',
-        });
-      })
-      .log('8. title should be updated with away status')
-      .checkNameOnPost('John Doe701 content of user modify')
-      .log('9. delete user away status')
-      .chain(async (t, h) => {
-        const resp = await (PersonAPI as any).putDataById(
-          Number(h.users.user701.glip_id),
-          {
-            away_status: null,
-          },
-        );
-      })
-      .log('10. title should be updated to without away status')
-      .checkNameOnPost('John Doe701');
+
+    await h(t).withLog(`When I modify user status "In a meeting" through api`, async () => {
+      await userGlip.updatePerson(null, { away_status: `${userName} In a meeting` });
+    });
+
+    await h(t).withLog(`Then I can find username display change to "${userName} In a meeting"`, async () => {
+      await t.expect(targetPost.withText('In a meeting').exists).ok();
+    });
+
+    await h(t).withLog(`When I modify user status "content of user modify" through api`, async () => {
+      await userGlip.updatePerson(null, { away_status: `${userName} content of user modify` });
+    });
+
+    await h(t).withLog(`Then I can find username display change to "${userName} content of user modify"`, async () => {
+      await t.expect(targetPost.withText('content of user modify').exists).ok();
+    });
+
+    await h(t).withLog(`When I delete user status through api request`, async () => {
+      await userGlip.updatePerson(null, { away_status: null });
+    });
+
+    await h(t).withLog(`Then I only can find username display is "${userName}" without status`, async () => {
+      await t.expect(targetPost.withText('content of user modify').exists).notOk();
+      await t.expect(targetPost.withText(userName).exists).ok();
+    });
   },
 );

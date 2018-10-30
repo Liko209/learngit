@@ -5,6 +5,7 @@
  */
 import { ConversationListItemViewModel } from '../ConversationListItem.ViewModel';
 import storeManager from '@/store/base/StoreManager';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 const model = new ConversationListItemViewModel();
 describe('ConversationListItemViewModel', () => {
@@ -17,7 +18,7 @@ describe('ConversationListItemViewModel', () => {
     model.props.groupId = 1;
     storeManager.getGlobalStore = jest.fn().mockReturnValue({
       get: jest.fn((key: string) => {
-        if (key === 'currentConversationId') {
+        if (key === GLOBAL_KEYS.CURRENT_CONVERSATION_ID) {
           return 1;
         }
         return null;

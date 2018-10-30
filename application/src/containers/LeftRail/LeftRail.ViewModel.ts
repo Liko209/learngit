@@ -6,19 +6,49 @@
 
 import { computed } from 'mobx';
 import { SECTION_TYPE } from './Section/types';
-import { LeftRailViewProps, LeftRailProps } from './types';
+import { LeftRailViewProps, LeftRailProps, LeftRailFilter } from './types';
 import StoreViewModel from '@/store/ViewModel';
+import AccountService from 'sdk/service/account';
+import { GLOBAL_KEYS } from '@/store/constants';
+import storeManager from '@/store';
+import GlobalStore from '@/store/base/GlobalStore';
 
 class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   implements LeftRailViewProps {
+  private _accountService: AccountService = AccountService.getInstance();
+  private _globalStore: GlobalStore = storeManager.getGlobalStore();
+
   @computed
-  get sections(): SECTION_TYPE[] {
+  private get _unreadOnly() {
+    return this._globalStore.get(GLOBAL_KEYS.UNREAD_TOGGLE_ON);
+  }
+
+  constructor() {
+    super();
+    const isUnreadOn = this._accountService.getUnreadToggleSetting();
+    this._globalStore.set(GLOBAL_KEYS.UNREAD_TOGGLE_ON, isUnreadOn);
+  }
+
+  @computed
+  get filters(): LeftRailFilter[] {
     return [
-      SECTION_TYPE.FAVORITE,
-      SECTION_TYPE.DIRECT_MESSAGE,
-      SECTION_TYPE.TEAM,
+      {
+        label: 'show_unread',
+        value: this._unreadOnly,
+        onChange: this.toggleUnread,
+      },
     ];
   }
+
+  toggleUnread = (evt: any, checked: boolean) => {
+    this._globalStore.set(GLOBAL_KEYS.UNREAD_TOGGLE_ON, checked);
+  }
+
+  sections: SECTION_TYPE[] = [
+    SECTION_TYPE.FAVORITE,
+    SECTION_TYPE.DIRECT_MESSAGE,
+    SECTION_TYPE.TEAM,
+  ];
 }
 
 export { LeftRailViewModel };

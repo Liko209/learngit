@@ -1,5 +1,5 @@
 import { service } from 'sdk';
-import { ENTITY_NAME, HANDLER_TYPE } from './constants';
+import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 
 const {
   PersonService,
@@ -75,15 +75,25 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.POST_SENT_STATUS]: {
     event: [ENTITY.POST_SENT_STATUS],
-    service: [
-      () => PostService.getInstance(),
-      'getPostSendStatus',
-    ],
+    service: [() => PostService.getInstance(), 'getPostSendStatus'],
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
 };
 
-export {
-  ENTITY_SETTING,
+const GLOBAL_VALUES = {
+  [GLOBAL_KEYS.CURRENT_CONVERSATION_ID]: 0,
+  [GLOBAL_KEYS.CURRENT_USER_ID]: 0,
+  [GLOBAL_KEYS.IS_LEFT_NAV_OPEN]: false,
+  [GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG]: false,
+  [GLOBAL_KEYS.NETWORK]: 'online',
+  [GLOBAL_KEYS.WINDOW_FOCUS]: true,
+  [GLOBAL_KEYS.APP_SHOW_GLOBAL_LOADING]: false,
+  [GLOBAL_KEYS.APP_UMI]: 0,
+  [GLOBAL_KEYS.GROUP_QUERY_TYPE_FAVORITE_IDS]: [] as number[],
+  [GLOBAL_KEYS.GROUP_QUERY_TYPE_GROUP_IDS]: [] as number[],
+  [GLOBAL_KEYS.GROUP_QUERY_TYPE_TEAM_IDS]: [] as number[],
+  [GLOBAL_KEYS.UNREAD_TOGGLE_ON]: false,
 };
+
+export { ENTITY_SETTING, GLOBAL_VALUES };

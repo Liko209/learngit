@@ -6,5 +6,8 @@
 export * from './ConversationCard';
 export * from './ConversationCardAvatarArea';
 export * from './ConversationCardHeader';
+export * from './ConversationCardBody';
 export * from './ConversationCardFooter';
+export * from './ConversationPostText';
+
 export { default } from './ConversationCard';

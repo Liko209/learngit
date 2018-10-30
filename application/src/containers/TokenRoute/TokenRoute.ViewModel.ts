@@ -10,6 +10,7 @@ import * as H from 'history';
 import { parse } from 'qs';
 import { service } from 'sdk';
 import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 import { StoreViewModel } from '@/store/ViewModel';
 import history from '@/utils/history';
 
@@ -17,8 +18,7 @@ const { SERVICE, ProfileService } = service;
 
 class TokenRouteViewModel extends StoreViewModel {
   private _authService: AuthService = AuthService.getInstance();
-  @observable
-  isOpen: boolean = false;
+  @observable isError: boolean = false;
 
   constructor() {
     super();
@@ -29,13 +29,13 @@ class TokenRouteViewModel extends StoreViewModel {
   }
 
   @action
-  private _setOpen(open: boolean) {
-    this.isOpen = open;
+  private _setIsError(open: boolean) {
+    this.isError = open;
   }
 
   @computed
   get isOffline() {
-    return getGlobalValue('network') === 'offline';
+    return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
   }
 
   @action.bound
@@ -47,15 +47,15 @@ class TokenRouteViewModel extends StoreViewModel {
     this._redirect(state);
   }
 
-  unifiedLogin = () => {
+  unifiedLogin = async () => {
     try {
       const { location } = history;
       const { code, id_token: token } = this._getUrlParams(location);
       if (code || token) {
-        this._authService.unifiedLogin({ code, token });
+        await this._authService.unifiedLogin({ code, token });
       }
     } catch (e) {
-      this._setOpen(true);
+      this._setIsError(true);
     }
   }
 

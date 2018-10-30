@@ -7,7 +7,6 @@ import React from 'react';
 import { TranslationFunction } from 'i18next';
 import { translate } from 'react-i18next';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
-import { JuiIconography } from 'jui/foundation/Iconography';
 import {
   JuiConversationList,
   JuiConversationListSection,
@@ -16,8 +15,6 @@ import { ConversationListItem } from '@/containers/ConversationList/Conversation
 import { toTitleCase } from '@/utils';
 import { SectionViewProps } from './types';
 import { Umi } from '../../Umi';
-import storeManager from '@/store';
-import history from '@/utils/history';
 // TODO remove Stubs here
 
 const SortableList = SortableContainer(JuiConversationList);
@@ -28,17 +25,6 @@ type Props = SectionViewProps & {
 };
 
 class SectionViewComponent extends React.Component<Props> {
-  componentDidUpdate(prevProps: Props) {
-    const prevGroupIds = prevProps.groupIds;
-    const { groupIds } = this.props;
-    const diff = [...prevGroupIds].filter(id => !new Set(groupIds).has(id));
-    const currentGroupId = storeManager
-      .getGlobalStore()
-      .get('currentConversationId');
-    if (diff.length === 1 && diff[0] === currentGroupId) {
-      history.replace('/messages');
-    }
-  }
   renderList() {
     const { sortable, onSortEnd } = this.props;
 
@@ -75,7 +61,7 @@ class SectionViewComponent extends React.Component<Props> {
       >
         <JuiConversationListSection
           title={toTitleCase(t(title))}
-          icon={<JuiIconography>{iconName}</JuiIconography>}
+          icon={iconName}
           umi={<Umi ids={groupIds} />}
           expanded={expanded}
         >

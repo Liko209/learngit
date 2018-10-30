@@ -3,10 +3,11 @@
  * @Date: 2018-09-18 10:10:47
  * Copyright © RingCentral. All rights reserved.
  */
-import throttle from 'lodash/throttle';
+import debounce from 'lodash/debounce';
 import React, { Component, ComponentType } from 'react';
 import styled from '../../foundation/styled-components';
 import { noop } from '../../foundation/utils';
+import _ from 'lodash';
 
 type StickType = 'top' | 'bottom';
 
@@ -15,7 +16,8 @@ type ScrollerProps = {
    * The distance in pixels before the end of the items
    * that will trigger a scrollTop/scrollBottom event
    */
-  threshold: number;
+  thresholdUp: number;
+  thresholdDown: number;
   throttle: number;
   initialScrollTop: number;
   stickTo: StickType;
@@ -23,20 +25,18 @@ type ScrollerProps = {
   onScrollToBottom: () => void;
   triggerScrollToOnMount: boolean;
 };
+
 type WithScrollerProps = ScrollerProps;
 type ScrollerStates = {};
-
+type ScrollerSnapShot = {
+  atBottom: boolean;
+  atTop: boolean;
+};
 const stickToBottomStyle = `
   display: flex;
-  flex-direction: column-reverse;
-  && > div:nth-child(1) {
-    order: 3;
-  }
-  && > div:nth-child(2) {
-    order: 2;
-  }
-  && > div:nth-child(3) {
-    order: 1;
+  flex-direction: column;
+  && > div {
+    margin-top:auto;
   }
 `;
 
@@ -49,7 +49,8 @@ const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
 function withScroller(Comp: ComponentType<any>) {
   return class Scroller extends Component<ScrollerProps, ScrollerStates> {
     static defaultProps = {
-      threshold: 100,
+      thresholdUp: 100,
+      thresholdDown: 0,
       throttle: 100,
       initialScrollTop: 0,
       stickTo: 'top',
@@ -57,8 +58,6 @@ function withScroller(Comp: ComponentType<any>) {
       onScrollToBottom: noop,
       triggerScrollToOnMount: false,
     };
-    private _atTop = false;
-    private _atBottom = false;
     private _scrollElRef: React.RefObject<any> = React.createRef();
 
     private get _scrollEl(): HTMLElement {
@@ -68,7 +67,7 @@ function withScroller(Comp: ComponentType<any>) {
 
     constructor(props: ScrollerProps) {
       super(props);
-      this._handleScroll = throttle(
+      this._handleScroll = debounce(
         this._handleScroll.bind(this),
         props.throttle,
       );
@@ -77,7 +76,11 @@ function withScroller(Comp: ComponentType<any>) {
     render() {
       return (
         <StyledScroller ref={this._scrollElRef} stickTo={this.props.stickTo}>
-          <Comp {...this.props} />
+          <Comp
+            {...this.props}
+            setRowVisible={this.scrollToRow}
+            atBottom={this._isAtBottom}
+          />
         </StyledScroller>
       );
     }
@@ -86,12 +89,24 @@ function withScroller(Comp: ComponentType<any>) {
       this._scrollEl.scrollTop = this.props.initialScrollTop;
       this.props.triggerScrollToOnMount &&
         this._handleScroll(new WheelEvent('wheel'));
-      this._atTop = this._isAtTop();
-      this._atBottom = this._isAtBottom();
       this.attachScrollListener();
     }
-
-    componentDidUpdate() {
+    getSnapshotBeforeUpdate() {
+      return { atTop: this._isAtTop(0), atBottom: this._isAtBottom(0) };
+    }
+    componentDidUpdate(
+      prevProps: ScrollerProps,
+      prevState: ScrollerStates,
+      snapShot: ScrollerSnapShot,
+    ) {
+      const { atBottom, atTop } = snapShot;
+      const { stickTo } = this.props;
+      if (atBottom && stickTo === 'bottom') {
+        this.scrollToRow(-1);
+      }
+      if (atTop && stickTo === 'top') {
+        this.scrollToRow(0);
+      }
       this.attachScrollListener();
     }
 
@@ -101,43 +116,31 @@ function withScroller(Comp: ComponentType<any>) {
 
     attachScrollListener() {
       this._scrollEl.addEventListener('scroll', this._handleScroll, false);
-      this._scrollEl.addEventListener('mousewheel', this._handleScroll, {
-        capture: false,
-        passive: true,
-      });
     }
 
     detachScrollListener() {
       this._scrollEl.removeEventListener('scroll', this._handleScroll, false);
-      this._scrollEl.removeEventListener('mousewheel', this._handleScroll, {
-        capture: false,
-      });
     }
 
     private _handleScroll(event: WheelEvent) {
-      const prevAtTop = this._atTop;
-      const prevAtBottom = this._atBottom;
       const atTop = this._isAtTop();
       const atBottom = this._isAtBottom();
       const deltaY = event ? event.deltaY : 0;
 
-      if (atTop && (!prevAtTop || deltaY < 0)) {
+      if (atTop || deltaY < 0) {
         this.props.onScrollToTop && this.props.onScrollToTop();
       }
 
-      if (atBottom && (!prevAtBottom || deltaY > 0)) {
+      if (atBottom || deltaY > 0) {
         this.props.onScrollToBottom && this.props.onScrollToBottom();
       }
-
-      this._atTop = this._isAtTop();
-      this._atBottom = this._isAtBottom();
     }
 
-    private _isAtTop(threshold = this.props.threshold) {
+    private _isAtTop(threshold = this.props.thresholdUp) {
       return this._scrollEl.scrollTop <= threshold;
     }
 
-    private _isAtBottom(threshold = this.props.threshold) {
+    private _isAtBottom = (threshold = this.props.thresholdDown) => {
       const scrollEl = this._scrollEl;
       return (
         0 >=
@@ -146,6 +149,42 @@ function withScroller(Comp: ComponentType<any>) {
           scrollEl.scrollTop -
           threshold
       );
+    }
+
+    scrollToRow = (
+      n: number,
+      options: ScrollIntoViewOptions | boolean = false,
+      itemSelector: string = 'div',
+    ) => {
+      const listEl = this._scrollEl.firstElementChild;
+      if (!listEl) {
+        return;
+      }
+      const global = window as any;
+      const doc = document as any;
+      const isIE11 = !!global.MSInputMethodContext && !!doc.documentMode;
+      if (n === -1 && !isIE11) {
+        return window.requestAnimationFrame(() => listEl.scrollIntoView(false));
+      }
+      return window.requestAnimationFrame(() => {
+        const rowEl = _(listEl.querySelectorAll(itemSelector)).nth(n);
+        rowEl && rowEl.scrollIntoView(false);
+      });
+    }
+
+    scrollToId = (
+      id: string,
+      options: ScrollIntoViewOptions | boolean = false,
+    ) => {
+      const listEl = this._scrollEl.firstElementChild;
+      if (!listEl) {
+        return;
+      }
+      const rowEl = listEl.querySelector(id);
+      if (!rowEl) {
+        return;
+      }
+      return window.requestAnimationFrame(() => rowEl.scrollIntoView(options));
     }
   };
 }

@@ -1,15 +1,16 @@
+import * as _ from 'lodash';
+import { v4 as uuid } from 'uuid';
+
 import { formalName } from '../../libs/filter';
-import { setUp, tearDown } from '../../libs/helpers';
-import { directLogin } from '../../utils';
-import { TeamSection } from '../../page-models/components';
-import { ConversationStream } from '../../page-models/components/ConversationStream/ConversationStream';
-import { setupSDK } from '../../utils/setupSDK';
-import { prepareConversations } from '../utils';
+import { setupCase, teardownCase } from '../../init';
+import { h } from '../../v2/helpers';
+import { SITE_URL } from '../../config';
+import { AppRoot } from '../../v2/page-models/AppRoot';
 
 declare var test: TestFn;
 fixture('ConversationStream/ConversationStream')
-  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
-  .afterEach(tearDown());
+  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .afterEach(teardownCase());
 
 test(
   formalName(
@@ -17,51 +18,91 @@ test(
     ['P1', 'JPT-52', 'ConversationStream'],
   ),
   async (t: TestController) => {
-    await setupSDK(t);
-    const { team } = await prepareConversations(t, [
-      { type: 'team', identifier: 'team' },
-    ]);
-    await directLogin(t)
-      .chain(t => t.wait(10000))
-      .log('1. Navigate to ConversationStream')
-      .shouldNavigateTo(ConversationStream)
-      .expectExist()
-      .log('2. Send post 1 to first group')
-      .sendPost2Group(+team.id, '1')
-      .log('3. Send post 2 to first group')
-      .sendPost2Group(+team.id, '2')
-      .log('4. Send post 3 to first group')
-      .sendPost2Group(+team.id, '3')
-      .log('5. Click First Group')
-      .chain(t => t.wait(4000))
-      .clickFirstGroup()
-      .log('6. Expect the right order')
-      .expectRightOrder(1, 2, 3);
-  },
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[7];
+    const msgList = _.range(3).map(i => `${i} ${uuid()}`);
+    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+
+    let teamId;
+    await h(t).withLog('Given I have an extension with 1 team chat', async () => {
+      teamId = (await userPlatform.createGroup({
+        isPublic: true,
+        name: uuid(),
+        type: 'Team',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      })).data.id;
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog('Then I enter the conversation', async () => {
+      const teamsSection = app.homePage.messagePanel.teamsSection;
+      await teamsSection.expand();
+      await teamsSection.conversationByIdEntry(teamId).enter();
+    });
+
+    await h(t).withLog('When I send 3 posts in order via API', async () => {
+      for (const msg of msgList) {
+        await userPlatform.createPost({ text: msg }, teamId);
+        await t.wait(1e3)
+      }
+    });
+
+    await h(t).withLog('Then I will receive those 3 posts', async () => {
+      const posts = await app.homePage.messagePanel.conversationSection.posts;
+      await t.expect(posts.withText(new RegExp(msgList.join('|'))).count).eql(3, { timeout: 5e3 });
+    }, true);
+
+    await h(t).withLog('And the 3 posts must be in correct order', async () => {
+      const posts = await app.homePage.messagePanel.conversationSection.posts;
+      for (let i = 0; i < msgList.length; i++) {
+        await t.expect(posts.nth(-msgList.length + i).withText(msgList[i]).exists).ok();
+      }
+    });
+  }
 );
 
 test(
-  formalName('No post in conversation when the conversation', [
-    'P2',
-    'JPT-53',
-    'ConversationStream',
-  ]),
+  formalName('No post in conversation when the conversation',
+    ['P2', 'JPT-53', 'ConversationStream',]
+  ),
   async (t: TestController) => {
-    await directLogin(t)
-      .chain(t => t.wait(10000))
-      .log('1. Navigate to team section')
-      .shouldNavigateTo(TeamSection)
-      .expectExist()
-      .log('2. Create team')
-      .createTeam()
-      .log('3. Navigate to Conversation Stream')
-      .shouldNavigateTo(ConversationStream)
-      .log('4. Click first group')
-      .chain(t => t.wait(3000))
-      .clickFirstGroup()
-      .chain(t => t.wait(3000))
-      .expectNoPosts();
-  },
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[4];
+    let teamId;
+    const userPlatform = await h(t).getPlatform(user);
+
+    await h(t).withLog('Given I have an extension with 1 team chat', async () => {
+      teamId = (await userPlatform.createGroup({
+        isPublic: true,
+        name: uuid(),
+        type: 'Team',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      })).data.id;
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog('Then I can enter the conversation', async () => {
+      const teamsSection = app.homePage.messagePanel.teamsSection;
+      await teamsSection.expand();
+      await teamsSection.conversationByIdEntry(teamId).enter();
+    });
+
+    await h(t).withLog('And I should not find any post in the new created conversation', async () => {
+      await t.wait(2e3);
+      const postsSelector = await app.homePage.messagePanel.conversationSection.posts;
+      await t.expect(postsSelector.exists).notOk();
+    });
+  }
 );
 
 test(
@@ -70,29 +111,51 @@ test(
     ['P0', 'JPT-65', 'ConversationStream'],
   ),
   async (t: TestController) => {
-    await setupSDK(t);
-    const { team } = await prepareConversations(t, [
-      { type: 'team', identifier: 'team' },
-    ]);
-    await directLogin(t)
-      .shouldNavigateTo(ConversationStream)
-      .expectExist()
-      .log('1. Send post to first group lastPost')
-      .sendPost2Group(+team.id, 'lastPost')
-      .chain(t => t.wait(3000))
-      .log('2. Reload')
-      .reload()
-      .log('3. Navigate to Conversation Stream')
-      .shouldNavigateTo(ConversationStream)
-      .expectExist()
-      .log('4. Click first group')
-      .chain(t => t.wait(3000))
-      .clickFirstGroup()
-      .chain(t => t.wait(3000))
-      .expectLastConversationToBe('lastPost')
-      .log('5. Send post to first group newPost')
-      .sendPost2Group(+team.id, 'newPost')
-      .chain(t => t.wait(3000))
-      .expectLastConversationToBe('newPost');
-  },
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[4];
+    const userPlatform = await h(t).getPlatform(user);
+
+    const msgBeforeLogin = `send before login ${uuid()}`;
+    const msgAfterLogin = `send after login ${uuid()}`;
+
+    let teamId;
+    await h(t).withLog('Given I have an extension with 1 team chat', async () => {
+      teamId = (await userPlatform.createGroup({
+        isPublic: true,
+        name: uuid(),
+        type: 'Team',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      })).data.id;
+    });
+
+    await h(t).withLog(`And a post "${msgBeforeLogin}" is sent before login`, async () => {
+      await userPlatform.createPost({ text: msgBeforeLogin }, teamId);
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog('And enter the team conversation', async () => {
+      const teamsSection = app.homePage.messagePanel.teamsSection;
+      await teamsSection.expand();
+      await teamsSection.conversationByIdEntry(teamId).enter();
+    });
+
+    await h(t).withLog(`Then I should find post "${msgBeforeLogin}" in the conversation posts history`, async () => {
+      const posts = await app.homePage.messagePanel.conversationSection.posts;
+      await t.expect(posts.nth(-1).withText(msgBeforeLogin).exists).ok();
+    })
+
+    await h(t).withLog(`When I send another post: "${msgAfterLogin}"`, async () => {
+      await userPlatform.createPost({ text: msgAfterLogin }, teamId);
+    });
+
+    await h(t).withLog(`Then I should find this post "${msgAfterLogin}" at the end of conversation`, async () => {
+      const posts = await app.homePage.messagePanel.conversationSection.posts;
+      await t.expect(posts.nth(-1).withText(msgAfterLogin).exists).ok();
+    });
+  }
 );

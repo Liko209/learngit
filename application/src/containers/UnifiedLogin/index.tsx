@@ -18,6 +18,7 @@ import { AuthService } from 'sdk/service';
 import { JuiModal } from 'jui/components/Dialog';
 import { grey } from 'jui/foundation/utils/styles';
 import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
+import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
 import { isElectron } from '@/utils';
 
 const Form = styled.form`
@@ -153,10 +154,13 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
             <Param>
               Version: {appVersion} {`(E. ${electronVersion})`}
             </Param>
-            <Param>Build: {commitHash}</Param>
+            <Param>Last Commit: {commitHash}</Param>
             <Param>
-              Copyright © 1999-{new Date().getFullYear()} RingCentral, Inc. All
-              rights reserved.
+              Build Time: {formatDate(process.env.BUILD_TIME || '')}
+            </Param>
+            <Param>
+              Copyright © 1999-
+              {new Date().getFullYear()} RingCentral, Inc. All rights reserved.
             </Param>
           </JuiModal>
         ) : null}

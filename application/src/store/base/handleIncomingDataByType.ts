@@ -14,19 +14,21 @@ function handleReplace<T>(
   entities: Map<number, T & { id: number; data: T }>,
   transformFunc: Function,
 ) {
-  const updated: IIDSortKey[] = [];
+  const added: IIDSortKey[] = [];
   const updateEntity: T[] = [];
   const deleted: number[] = [];
+  const updated: IIDSortKey[] = [];
   matchedKeys.forEach((key: number) => {
     const entity = entities.get(key) as { id: number; data: T };
     const { data } = entity;
     const idSortKey = transformFunc(data);
-    updated.push(idSortKey);
+    added.push(idSortKey);
     updateEntity.push(data);
     deleted.push(key);
   });
   return {
     deleted,
+    added,
     updated,
     updateEntity,
   };

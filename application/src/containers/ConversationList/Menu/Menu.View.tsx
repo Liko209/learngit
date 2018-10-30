@@ -32,7 +32,7 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   renderCloseMenuItem() {
-    if (!this.props.umiHint) {
+    if (this.props.showClose) {
       return (
         <JuiMenuItem onClick={this._handleCloseConversation}>
           {t('conversationMenuItem:close')}
@@ -42,9 +42,18 @@ class MenuViewComponent extends Component<Props, State> {
     return null;
   }
 
-  private _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
+  private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
     this.props.onClose(event);
-    this.props.toggleFavorite();
+    const result = await this.props.toggleFavorite();
+    if (result === ServiceCommonErrorType.SERVER_ERROR) {
+      JuiModal.alert({
+        title: '',
+        content: t('conversationMenuItem:markFavoriteServerErrorContent'),
+        okText: t('conversationMenuItem:OK'),
+        okBtnType: 'text',
+        onOK: () => {},
+      });
+    }
   }
 
   private _checkboxChange(event: React.ChangeEvent<{}>, checked: boolean) {

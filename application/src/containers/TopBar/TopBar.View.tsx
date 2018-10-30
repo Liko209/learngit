@@ -21,6 +21,7 @@ import pkg from '../../../package.json';
 import { grey } from 'jui/foundation/utils/styles';
 import styled from 'jui/foundation/styled-components';
 import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
+import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
 import { isElectron } from '@/utils';
 
 type TopBarProps = InjectedTranslateProps & {
@@ -52,10 +53,6 @@ class TopBar extends React.Component<TopBarProps> {
 
   private _AvatarMenuTrigger(avatarMenuTriggerProps: JuiIconButtonProps) {
     const { currentUserId } = this.props;
-
-    if (!currentUserId) {
-      return null;
-    }
     return (
       <Avatar
         uid={currentUserId}
@@ -74,11 +71,13 @@ class TopBar extends React.Component<TopBarProps> {
     const menusItemAboutPages = {
       label: t('About RingCentral'),
       onClick: handleAboutPage,
+      automationId: 'aboutPage',
     };
     const menuItems = [
       {
         label: t('SignOut'),
         onClick: signOut,
+        automationId: 'signOut',
       },
     ];
     !isElectron ? menuItems.unshift(menusItemAboutPages) : null;
@@ -86,6 +85,7 @@ class TopBar extends React.Component<TopBarProps> {
       <JuiAvatarMenu
         menuItems={menuItems}
         MenuExpandTrigger={this._AvatarMenuTrigger}
+        automationId="avatarMenu"
         {...avatarProps}
       />
     );
@@ -170,7 +170,8 @@ class TopBar extends React.Component<TopBarProps> {
             Version: {appVersion ? appVersion : pkg.version}{' '}
             {electronVersion ? `(E. ${electronVersion})` : null}
           </Param>
-          <Param>Build: {commitHash}</Param>
+          <Param>Last Commit: {commitHash}</Param>
+          <Param>Build Time: {formatDate(process.env.BUILD_TIME || '')}</Param>
           <Param>
             Copyright © 1999-
             {new Date().getFullYear()} RingCentral, Inc. All rights reserved.
