@@ -64,8 +64,7 @@ describe('StreamView', () => {
       expect(wrapper).toMatchSnapshot();
     });
 
-    // TODO test empty view in the future.
-    it('should render container', () => {
+    it('should render empty view', () => {
       const props = {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         postIds: [],
