@@ -4,7 +4,9 @@ exports[`StreamView render() should render empty view 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StreamView
+    atBottom={[MockFunction atBottom]}
     items={Array []}
+    markAsRead={[MockFunction markAsRead]}
     postIds={Array []}
     setRowVisible={[MockFunction setRowVisible]}
   />,
@@ -66,6 +68,7 @@ exports[`StreamView render() should render posts and separators 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StreamView
+    atBottom={[MockFunction atBottom]}
     items={
       Array [
         Object {
@@ -90,6 +93,7 @@ ShallowWrapper {
         },
       ]
     }
+    markAsRead={[MockFunction markAsRead]}
     postIds={
       Array [
         1,

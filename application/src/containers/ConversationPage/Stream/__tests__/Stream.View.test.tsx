@@ -1,15 +1,19 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ConversationCard } from '@/containers/ConversationCard';
-import { StreamView } from '../Stream.View';
+import { ConversationCard } from '../../../ConversationCard';
 import { NewMessageSeparator } from '../NewMessageSeparator';
+import { StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
+
+jest.mock('../../../ConversationSheet', () => ({}));
 
 describe('StreamView', () => {
   describe('render()', () => {
     it('should render <ConversationCard>', () => {
       const props = {
         setRowVisible: jest.fn().mockName('setRowVisible'),
+        markAsRead: jest.fn().mockName('markAsRead'),
+        atBottom: jest.fn().mockName('atBottom'),
         postIds: [1, 2],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -32,6 +36,8 @@ describe('StreamView', () => {
     it('should render <NewMessageSeparator>', () => {
       const props = {
         setRowVisible: jest.fn().mockName('setRowVisible'),
+        markAsRead: jest.fn().mockName('markAsRead'),
+        atBottom: jest.fn().mockName('atBottom'),
         postIds: [1, 2],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -49,6 +55,8 @@ describe('StreamView', () => {
     it('should render posts and separators', () => {
       const props = {
         setRowVisible: jest.fn().mockName('setRowVisible'),
+        markAsRead: jest.fn().mockName('markAsRead'),
+        atBottom: jest.fn().mockName('atBottom'),
         postIds: [1, 2, 3, 4],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -67,6 +75,8 @@ describe('StreamView', () => {
     it('should render empty view', () => {
       const props = {
         setRowVisible: jest.fn().mockName('setRowVisible'),
+        markAsRead: jest.fn().mockName('markAsRead'),
+        atBottom: jest.fn().mockName('atBottom'),
         postIds: [],
         items: [],
       };
