@@ -15,6 +15,7 @@ import { ConversationListItem } from '@/containers/ConversationList/Conversation
 import { toTitleCase } from '@/utils';
 import { SectionViewProps } from './types';
 import { Umi } from '../../Umi';
+import { JuiDivider } from 'jui/components/Divider';
 // TODO remove Stubs here
 
 const SortableList = SortableContainer(JuiConversationList);
@@ -53,7 +54,16 @@ class SectionViewComponent extends React.Component<Props> {
   }
 
   render() {
-    const { t, title, groupIds, iconName, expanded } = this.props;
+    const {
+      t,
+      title,
+      groupIds,
+      iconName,
+      expanded,
+      isLast,
+      handleCollapse,
+      handleExpand,
+    } = this.props;
     return (
       <div
         className="conversation-list-section"
@@ -64,9 +74,12 @@ class SectionViewComponent extends React.Component<Props> {
           icon={iconName}
           umi={<Umi ids={groupIds} />}
           expanded={expanded}
+          onCollapse={handleCollapse}
+          onExpand={handleExpand}
         >
           {this.renderList()}
         </JuiConversationListSection>
+        {isLast && !expanded ? <JuiDivider key="divider" /> : null}
       </div>
     );
   }
