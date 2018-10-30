@@ -5,15 +5,19 @@
  */
 
 import React, { Component } from 'react';
-import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
+import {
+  JuiConversationPageHeader,
+  JuiConversationPageHeaderSubtitle,
+} from 'jui/pattern/ConversationPageHeader';
 import {
   JuiButtonBar,
   JuiCheckboxButton,
   JuiIconButton,
 } from 'jui/components/Buttons';
-
+import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
+import { JuiModal } from '@/containers/Dialog';
 import { observer } from 'mobx-react';
-import { translate, InjectedTranslateProps } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { toTitleCase } from '@/utils/helper';
 import { CONVERSATION_TYPES } from '@/constants';
 
@@ -27,7 +31,12 @@ type HeaderProps = {
     iconName: string;
     tooltip: string;
   }[];
-} & InjectedTranslateProps;
+  customStatus: string | null;
+  onFavoriteButtonHandler: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => Promise<ServiceCommonErrorType>;
+} & WithNamespaces;
 
 @observer
 class Header extends Component<HeaderProps, { awake: boolean }> {
@@ -77,34 +86,61 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 
   private _SubTitle() {
-    const { t, isFavorite, type, isPrivate } = this.props;
+    const {
+      t,
+      isFavorite,
+      type,
+      isPrivate,
+      customStatus,
+      onFavoriteButtonHandler,
+    } = this.props;
+    const onchange = async (
+      event: React.ChangeEvent<HTMLInputElement>,
+      checked: boolean,
+    ) => {
+      const result = await onFavoriteButtonHandler(event, checked);
+      if (result === ServiceCommonErrorType.SERVER_ERROR) {
+        JuiModal.alert({
+          title: '',
+          content: t('conversationMenuItem:markFavoriteServerErrorContent'),
+          okText: t('conversationMenuItem:OK'),
+          okBtnType: 'text',
+          onOK: () => {},
+        });
+      }
+    };
+
     return (
-      <JuiButtonBar size="small" overlapping={true}>
-        <JuiCheckboxButton
-          tooltipTitle={
-            isFavorite
-              ? toTitleCase(t('removeFromFavorites'))
-              : toTitleCase(t('addToFavorites'))
-          }
-          checkedIconName="star"
-          iconName="star_border"
-          checked={isFavorite}
-        >
-          star_border
-        </JuiCheckboxButton>
-        {type === CONVERSATION_TYPES.TEAM ? (
+      <JuiConversationPageHeaderSubtitle>
+        {customStatus ? <span>{customStatus}</span> : null}
+        <JuiButtonBar size="small" overlapping={true}>
           <JuiCheckboxButton
             tooltipTitle={
-              isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')
+              isFavorite
+                ? toTitleCase(t('removeFromFavorites'))
+                : toTitleCase(t('addToFavorites'))
             }
-            checkedIconName="lock"
-            iconName="lock_open"
-            checked={isPrivate}
+            checkedIconName="star"
+            iconName="star_border"
+            checked={isFavorite}
+            onChange={onchange}
           >
-            favorite_border
+            star_border
           </JuiCheckboxButton>
-        ) : null}
-      </JuiButtonBar>
+          {type === CONVERSATION_TYPES.TEAM ? (
+            <JuiCheckboxButton
+              tooltipTitle={
+                isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')
+              }
+              checkedIconName="lock"
+              iconName="lock_open"
+              checked={isPrivate}
+            >
+              favorite_border
+            </JuiCheckboxButton>
+          ) : null}
+        </JuiButtonBar>
+      </JuiConversationPageHeaderSubtitle>
     );
   }
 
@@ -137,4 +173,4 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
 const HeaderView = translate('ConversationPageHeader')(Header);
 
-export { HeaderView };
+export { HeaderView, HeaderProps };

@@ -10,7 +10,7 @@ import MuiMenuItem, {
 } from '@material-ui/core/MenuItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey, palette } from '../../foundation/utils';
+import { spacing, grey, palette, height } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
@@ -20,7 +20,9 @@ const StyledListItem = styled(MuiMenuItem)`
   && {
     white-space: nowrap;
     background: white;
-    padding: ${spacing(2, 4, 2, 3)};
+    padding: ${spacing(0, 4, 0, 3)};
+    height: ${height(8)};
+    line-height: ${height(8)};
     color: ${grey('900')};
     /**
      * Workaround to resolve transition conflicts with react-sortable-hoc
@@ -39,8 +41,10 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 
   && ${StyledIconography} {
+    color: ${palette('grey', '400')};
     opacity: 0;
     transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    font-size: 20px;
   }
 
   &&:hover ${StyledIconography} {

@@ -6,10 +6,10 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, InjectedTranslateProps } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { JuiHistoryOperation, OPERATION } from 'jui/pattern/HistoryOperation';
 
-type Props = InjectedTranslateProps & {
+type Props = WithNamespaces & {
   backRecord: { title: string; pathname: string }[];
   forwardRecord: { title: string; pathname: string }[];
   showBackPanel: boolean;

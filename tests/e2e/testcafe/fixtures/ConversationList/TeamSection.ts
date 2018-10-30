@@ -3,6 +3,7 @@
  * @Date: 2018-10-24 16:11:54
  * Copyright © RingCentral. All rights reserved.
  */
+import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
@@ -10,11 +11,11 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
 import { GlipSdk } from '../../v2/sdk/glip';
 
-fixture('TeamSection')
+fixture('ConversationList/TeamSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test.skip(
+test(
   formalName(
     'Team section display the conversation which the login user as one of the team member',
     ['P2', 'JPT-12', 'Team section'],
@@ -32,7 +33,7 @@ test.skip(
       async () => {
         team = await userPlatform.createGroup({
           type: 'Team',
-          name: 'My Team',
+          name: uuid(),
           members: [user.rcId, users[5].rcId],
         });
       },
@@ -41,7 +42,7 @@ test.skip(
     await h(t).withLog(
       'And the team should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${team.data.id}`]: false,
         });
       },
@@ -75,7 +76,7 @@ test.skip(
   },
 );
 
-test.skip(
+test(
   formalName('Each conversation should be represented by the team name.', [
     'P0',
     'JPT-13',
@@ -89,7 +90,7 @@ test.skip(
     const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
 
     let team;
-    const randomTeamName = `Name ${Date.now().toString()}`;
+    const randomTeamName = uuid();
     let newName;
     await h(t).withLog(
       `Given I have an extension with certain team named ${randomTeamName}`,
@@ -105,7 +106,7 @@ test.skip(
     await h(t).withLog(
       'And the team should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${team.data.id}`]: false,
         });
       },
@@ -171,13 +172,13 @@ test(
     await h(t).withLog('Given I have an extension with two teams', async () => {
       team1 = await userPlatform.createGroup({
         type: 'Team',
-        name: 'My Team 1',
+        name: `1 ${uuid()}`,
         members: [user.rcId, users[5].rcId],
       });
 
       team2 = await userPlatform.createGroup({
         type: 'Team',
-        name: 'My Team 2',
+        name: `2 ${uuid()}`,
         members: [user.rcId, users[5].rcId],
       });
     });
@@ -185,7 +186,7 @@ test(
     await h(t).withLog(
       'And the team should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${team1.data.id}`]: false,
           [`hide_group_${team2.data.id}`]: false,
         });

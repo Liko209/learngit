@@ -39,39 +39,6 @@ const ENV_OPTS = {
 ENV_OPTS.RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
 ENV_OPTS.RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
 
-const JUPITER_SDK_OPTS = {
-  'XMN-UP': {
-    rc: {
-      server: 'https://api-xmnup.lab.nordigy.ru',
-      apiPlatform: '/restapi',
-      clientId: 'FVKGRbLRTxGxPempqg5f9g',
-      clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
-      redirectUri: 'glip://rclogin',
-    },
-    glip2: {
-      server: 'https://api-xmnup.lab.nordigy.ru',
-      apiPlatform: '/restapi',
-      clientId: 'FVKGRbLRTxGxPempqg5f9g',
-      clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
-      redirectUri: '${deployHost}/unified-login/',
-      brandId: 1210,
-    },
-    glip: {
-      server: 'https://xmnup.asialab.glip.net',
-      apiPlatform: '/api',
-    },
-    glip_desktop: {
-      server: 'https://xmnup.asialab.glip.net',
-      apiPlatformVersion: 'v1.0',
-      apiPlatform: '/desktop',
-    },
-    upload: {
-      server: 'https://xmnup.asialab.glip.net:8443',
-      apiPlatform: '',
-    },
-  },
-}[SITE_ENV];
-
 const configLoader = new ConfigLoader(
   (process.env.BRANCH || '').toLocaleLowerCase(),
   (process.env.ACTION || '').toLocaleLowerCase(),
@@ -118,7 +85,6 @@ export {
   DEBUG_MODE,
   SITE_ENV,
   SITE_URL,
-  JUPITER_SDK_OPTS,
   ENV_OPTS,
   RUNNER_OPTS,
 };

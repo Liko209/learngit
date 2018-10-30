@@ -4,34 +4,47 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { formalName } from '../../libs/filter';
-import { setUp, tearDown } from '../../libs/helpers';
-import { directLogin, createPrivateChat } from '../../utils';
-import { setupSDK } from '../../utils/setupSDK';
-import { Send } from '../../page-models/components/MessageInput';
 
-fixture('send messages').skip
-  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
-  .afterEach(tearDown());
+import * as faker from 'faker/locale/en';
+import { v4 as uuid } from 'uuid';
+
+import { formalName } from '../../libs/filter';
+import { h } from '../../v2/helpers'
+import { setupCase, teardownCase } from '../../init';
+import { AppRoot } from "../../v2/page-models/AppRoot";
+import { SITE_URL } from '../../config';
+
+fixture('Send Messages')
+  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .afterEach(teardownCase());
 
 test(formalName('send', ['P0', 'JPT-77', 'Enter text in the conversation input box']), async (t) => {
-  await setupSDK(t);
-  let groupId: number;
-  const msg = `${Date.now()}`; // Have a trap, no spaces
-  const chain = directLogin(t).chain(async (t, h) => {
-    groupId = await createPrivateChat(h, [h.users.user701.rc_id, h.users.user702.rc_id]);
-    h.log(`1 create private chat id ${groupId}, and show in conversation list`);
+  const users = h(t).rcData.mainCompany.users;
+
+  const user = users[3];
+  const app = new AppRoot(t);
+
+  await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, user);
+    await app.homePage.ensureLoaded();
   });
-  await chain;
-  await chain.shouldNavigateTo(Send)
-    .log(`2. select this conversation id ${groupId}`)
-    .selectConversation(groupId)
-    .log('3. expect editor has existed')
-    .expectEditorHasExisted()
-    .log('4. typing message')
-    .inputMessage(msg)
-    .log('5. send message')
-    .sendMessage()
-    .log('6. expect show message')
-    .expectShowMessageInConversationCard(msg);
+
+  await h(t).withLog('When I enter a conversation', async () => {
+    // FIXME: there is a risk that no conversation in the list
+    await app.homePage.messagePanel.directMessagesSection.expand();
+    await app.homePage.messagePanel.directMessagesSection.nthConversationEntry(0).enter();
+  });
+
+  const identifier = uuid();
+  const message = `${faker.lorem.sentence()} ${identifier}`;
+
+  const conversationSection = app.homePage.messagePanel.conversationSection;
+  await h(t).withLog('Then I can send message to this conversation', async () => {
+    await conversationSection.sendMessage(message);
+  });
+
+  await h(t).withLog('And I can read this message from post list', async () => {
+    // FIXME: read text directly when reliable selector is provided
+    await t.expect(conversationSection.posts.child().withText(identifier).exists).ok();
+  }, true);
 });

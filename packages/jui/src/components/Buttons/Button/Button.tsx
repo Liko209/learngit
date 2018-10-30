@@ -8,7 +8,7 @@ import tinycolor from 'tinycolor2';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
-import styled, { Dependencies } from '../../../foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import {
   typography,
   spacing,
@@ -68,8 +68,9 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   }
 `;
 
-export const JuiButton: React.StatelessComponent<JuiButtonProps> &
-  Dependencies = (props: JuiButtonProps) => <StyledButton {...props} />;
+export const JuiButton: React.StatelessComponent<JuiButtonProps> = (
+  props: JuiButtonProps,
+) => <StyledButton {...props} />;
 
 JuiButton.defaultProps = {
   size: 'large',
@@ -77,5 +78,3 @@ JuiButton.defaultProps = {
   variant: 'contained',
   disabled: false,
 };
-
-JuiButton.dependencies = [MuiButton];

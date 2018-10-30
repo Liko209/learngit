@@ -2,12 +2,13 @@ import * as assert from 'assert';
 import Ringcentral from 'ringcentral-js-concise';
 
 import { RcPlatformSdk } from "./platform";
-import { GlipSdk } from "./glip";
+import { GlipSdk, GlipDb } from "./glip";
 import { IUser } from "../models";
 
 export class SdkManager {
   platforms: { [id: string]: RcPlatformSdk } = {};
   glips: { [id: string]: GlipSdk } = {};
+  glipDb: GlipDb;
 
   constructor(
     private platformKey: string,
@@ -15,6 +16,7 @@ export class SdkManager {
     private platformUrl: string,
     private glipUrl: string,
   ) {
+    this.glipDb = new GlipDb();
   }
 
   private createPlatform(user: IUser) {
@@ -34,7 +36,7 @@ export class SdkManager {
   }
 
   private async createGlip(user: IUser) {
-    return new GlipSdk(this.glipUrl, await this.getPlatform(user));
+    return new GlipSdk(this.glipUrl, await this.getPlatform(user), this.glipDb);
   }
 
   async getGlip(user: IUser) {

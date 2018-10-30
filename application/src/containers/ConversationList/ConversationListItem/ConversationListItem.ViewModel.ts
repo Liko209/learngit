@@ -82,7 +82,8 @@ class ConversationListItemViewModel extends StoreViewModel<
 
   @computed
   get umiHint() {
-    return this.selected;
+    const groupState = getEntity(ENTITY_NAME.GROUP_STATE, this.groupId);
+    return !!groupState.unreadCount;
   }
 }
 

@@ -62,20 +62,28 @@ class ConversationListSection extends BaseWebComponent {
   }
 
   get toggleButton() {
-    return this.root.find('*[role="button"]');
+    return this.root.find('[role="button"]');
+  }
+
+  get header() {
+    return this.root.find('.conversation-list-section-header');
   }
 
   get collapse() {
-    return this.root.find('.conversation-list-section-collapse');
+    return this.root.find('.conversation-list-section-collapse').parent(2);
   }
 
   get conversations() {
-    return this.root.find('*[role="menuitem"]');
+    return this.root.find('.conversation-list-item');
   }
 
   nthConversationEntry(n: number) {
     return this.getComponent(ConversationEntry, this.conversations.nth(n));
   }
+
+  conversationByIdEntry(groupId: string){
+    return this.getComponent(ConversationEntry, this.conversations.filter(`[data-group-id="${groupId}"]`)) 
+  } 
 
   async isExpand() {
     this.warnFlakySelector();
@@ -106,7 +114,19 @@ class ConversationSection extends BaseWebComponent {
   }
 
   get posts() {
-    return this.root.find('*[data-name="conversation-card"]');
+    return this.root.find('[data-name="conversation-card"]');
+  }
+
+  get messageInputArea() {
+    this.warnFlakySelector();
+    return this.root.child().find('.ql-editor');
+  }
+
+  async sendMessage(message: string) {
+    await this.t
+      .typeText(this.messageInputArea, message)
+      .click(this.messageInputArea)
+      .pressKey('enter');
   }
 
   nthPostItem(nth: number) {
@@ -180,5 +200,9 @@ export class MessagePanel extends BaseWebComponent {
 
   get conversationPage() {
     return this.getSelector('.conversation-page');
+  }
+
+  get conversationListSections() {
+    return this.getSelector('.conversation-list-section');
   }
 }

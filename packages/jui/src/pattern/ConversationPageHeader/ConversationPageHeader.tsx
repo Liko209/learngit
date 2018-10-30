@@ -20,7 +20,7 @@ import {
   height,
   spacing,
 } from '../../foundation/utils/styles';
-import styled, { Dependencies } from '../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { isTextOverflow } from '../../foundation/utils';
 
 type JuiConversationPageHeaderProps = {
@@ -33,7 +33,8 @@ type JuiConversationPageHeaderProps = {
 const TitleWrapper = styled<TypographyProps>(Typography)`
   && {
     color: ${grey('900')};
-    ${typography('title2')} ${ellipsis()};
+    ${typography('title2')};
+    ${ellipsis()};
   }
 `;
 const WrappedAppBar = ({ Right, ...rest }: JuiConversationPageHeaderProps) => (
@@ -41,13 +42,13 @@ const WrappedAppBar = ({ Right, ...rest }: JuiConversationPageHeaderProps) => (
 );
 const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
   && {
-    min-height: ${height(14)};
+    min-height: ${height(12)};
     padding-left: 0;
     padding-right: 0;
     background-color: white;
 
     > div {
-      min-height: ${height(14)};
+      min-height: ${height(12)};
       padding-left: ${spacing(6)};
       padding-right: ${spacing(6)};
     }
@@ -64,28 +65,30 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
       display: flex;
       align-items: center;
       padding-left: ${({ theme, Right }) =>
-        Right ? spacing(3)({ theme }) : ''};
+    Right ? spacing(3)({ theme }) : ''};
     }
 
     .subtitle {
       display: flex;
       align-items: center;
-      padding-left: ${({ theme }) => spacing(1)({ theme })};
+      overflow: hidden;
+      flex: 1;
+      padding-left: ${({ theme }) => spacing(2)({ theme })};
       padding-right: ${({ theme, Right }) =>
-        Right ? spacing(3)({ theme }) : ''};
+        Right ? spacing(12)({ theme }) : ''};
     }
   }
 `;
 
 type IJuiConversationPageHeader = React.Component<
   JuiConversationPageHeaderProps
-> &
+  > &
   Dependencies;
 
 class JuiConversationPageHeader
   extends React.Component<
-    JuiConversationPageHeaderProps,
-    { showTooltip: boolean }
+  JuiConversationPageHeaderProps,
+  { showTooltip: boolean }
   >
   implements IJuiConversationPageHeader {
   textRef: React.RefObject<any>;
@@ -142,8 +145,8 @@ class JuiConversationPageHeader
             {this.state.showTooltip ? (
               <MuiTooltip title={title}>{titleElement}</MuiTooltip>
             ) : (
-              titleElement
-            )}
+                titleElement
+              )}
             {SubTitle ? subTitleComponent : null}
           </div>
           {Right ? right : null}

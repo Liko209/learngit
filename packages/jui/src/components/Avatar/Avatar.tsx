@@ -83,6 +83,6 @@ JuiAvatar.defaultProps = {
   size: 'medium',
   color: 'lake',
 };
-StyledAvatar.displayName = 'JuiAvatar';
-StyledAvatar.dependencies = [MuiAvatar];
+JuiAvatar.displayName = 'JuiAvatar';
+JuiAvatar.dependencies = [MuiAvatar];
 export { JuiAvatarProps, JuiAvatar };
