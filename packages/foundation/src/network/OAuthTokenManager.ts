@@ -7,14 +7,6 @@ import OAuthTokenHandler from './OAuthTokenHandler';
 import Token from './Token';
 import { IHandleType } from './network';
 class OAuthTokenManager {
-  private static _defaultInstance: OAuthTokenManager;
-
-  public static get defaultInstance() {
-    this._defaultInstance =
-      this._defaultInstance || (this._defaultInstance = new this());
-    return this._defaultInstance;
-  }
-
   public tokenHandlers: Map<IHandleType, OAuthTokenHandler> = new Map();
 
   addOAuthTokenHandler(handler: OAuthTokenHandler) {

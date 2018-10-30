@@ -21,8 +21,6 @@ import {
 } from './network';
 
 class NetworkManager {
-  private static _defaultInstance: NetworkManager;
-
   clientManager: ClientManager;
   handlers: Map<IHandleType, NetworkRequestHandler>;
   tokenManager?: OAuthTokenManager;
@@ -32,13 +30,6 @@ class NetworkManager {
     this.clientManager = new ClientManager();
     this.handlers = new Map<IHandleType, NetworkRequestHandler>();
     this.tokenManager = oauthTokenManager;
-  }
-
-  public static get defaultInstance() {
-    this._defaultInstance =
-      this._defaultInstance ||
-      (this._defaultInstance = new this(OAuthTokenManager.defaultInstance));
-    return this._defaultInstance;
   }
 
   addApiRequest(request: IRequest, isTail = true) {

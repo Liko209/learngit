@@ -9,6 +9,7 @@ import {
   getFakeToken,
   getFakeHandler,
 } from './utils';
+import OAuthTokenManager from '../OAuthTokenManager';
 let networkManager: NetworkManager;
 const initManagerWithHandlerType = () => {
   networkManager.initNetworkRequestBaseHandler(
@@ -27,7 +28,7 @@ describe('NetworkManager', () => {
   });
 
   beforeAll(() => {
-    networkManager = NetworkManager.defaultInstance;
+    networkManager = new NetworkManager(new OAuthTokenManager());
   });
   describe('initNetworkRequestBaseHandler', () => {
     it('should have initiated request handler', () => {

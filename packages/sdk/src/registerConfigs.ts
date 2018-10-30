@@ -3,7 +3,7 @@
  * @Date: 2018-07-08 07:52:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { Container, NetworkManager } from 'foundation';
+import { Container, NetworkManager, OAuthTokenManager } from 'foundation';
 import { GlipAccount, RCAccount } from './account';
 import {
   AutoAuthenticator,
@@ -41,6 +41,8 @@ import socketManager from './service/SocketManager';
 import { SocketManager } from './service/SocketManager/SocketManager';
 import StateService from './service/state';
 import SyncService from './service/sync';
+
+const networkManager = new NetworkManager(new OAuthTokenManager());
 
 const registerConfigs = {
   classes: [
@@ -122,7 +124,7 @@ const registerConfigs = {
     // TODO register as class instead
     { name: DaoManager.name, value: daoManager },
     { name: SocketManager.name, value: socketManager },
-    { name: NetworkManager.name, value: NetworkManager.defaultInstance },
+    { name: NetworkManager.name, value: networkManager },
   ],
 };
 
