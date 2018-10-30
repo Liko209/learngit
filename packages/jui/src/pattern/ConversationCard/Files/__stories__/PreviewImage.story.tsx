@@ -36,6 +36,26 @@ storiesOf('Pattern/ConversationCard', module)
             </JuiIconButton>
           }
         />
+        <JuiPreviewImage
+          url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+          fileName={fileName}
+          ratio={1}
+          actions={
+            <JuiIconButton variant="plain" tooltipTitle="download">
+              get_app
+            </JuiIconButton>
+          }
+        />
+        <JuiPreviewImage
+          url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+          fileName={fileName}
+          ratio={1}
+          actions={
+            <JuiIconButton variant="plain" tooltipTitle="download">
+              get_app
+            </JuiIconButton>
+          }
+        />
       </div>
     );
   });

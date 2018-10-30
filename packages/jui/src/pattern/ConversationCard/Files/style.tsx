@@ -42,6 +42,7 @@ type FileIconProps = {
 
 const FileItem = styled(MuiListItem)`
   && {
+    margin: ${spacing(0, 0, 3, 0)};
     padding: ${spacing(2)};
     width: ${width(80)};
     border-radius: ${shape('borderRadius', 1)};
@@ -50,13 +51,13 @@ const FileItem = styled(MuiListItem)`
 `;
 
 const FileIcon = styled<FileIconProps, 'div'>('div')`
-  width: ${({ size }) => (size === 'small' ? width(6) : width(14))};
-  height: ${({ size }) => (size === 'small' ? width(6) : width(14))};
+  width: ${({ size }) => (size === 'small' ? width(5) : width(14))};
+  height: ${({ size }) => (size === 'small' ? width(5) : width(14))};
   background-color: #ccc;
   background-image: url(${({ iconType }) =>
     iconType ? ICON_MAP[iconType] : ''});
   background-size: cover;
-  margin: ${({ size }) => (size === 'small' ? spacing(0, 1, 0, 0) : null)};
+  margin: ${({ size }) => (size === 'small' ? spacing(0, 2, 0, 0) : null)};
 `;
 
 const FileInfo = styled(JuiListItemText)`
@@ -92,7 +93,7 @@ const FileActionsWrapper = styled.span`
 const FileCard = styled(JuiCard)`
   display: inline-block;
   width: ${width(80)};
-  margin: ${spacing(0, 5, 2, 0)};
+  margin: ${spacing(0, 3, 3, 0)};
 `;
 
 const FileCardMedia = styled(JuiCardMedia)`
@@ -102,7 +103,7 @@ const FileCardMedia = styled(JuiCardMedia)`
 
 const FileCardContent = styled(MuiCardContent)`
   && {
-    padding: ${spacing(2)} !important;
+    padding: ${spacing(4)} !important;
   }
 `;
 
@@ -112,7 +113,7 @@ const CardFileName = styled(JuiTypography)`
     ${typography('subheading1')};
     width: ${width(65)};
     color: ${palette('grey', '900')};
-    margin: ${spacing(0, 0, 3, 0)};
+    margin: ${spacing(0, 0, 2, 0)};
   }
 `;
 
@@ -142,21 +143,6 @@ const WrapperImageCard = ({ ratio, ...rest }: ImageCardProps) => (
   <JuiCard {...rest} />
 );
 
-const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
-  && {
-    width: ${({ ratio }) => (ratio >= 1 ? width(64) : width(90))};
-    height: ${({ ratio }) => (ratio >= 1 ? height(64) : height(64))};
-    position: relative;
-    border-radius: 0;
-  }
-`;
-
-const ImageMedia = styled(FileCardMedia)`
-  && {
-    height: ${height(55)};
-  }
-`;
-
 type ImageFileInfoProps = {
   ratio: number;
 } & JuiTypographyProps;
@@ -173,11 +159,34 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   height: ${height(9)};
   padding: ${spacing(2)};
   box-sizing: border-box;
-  background: ${palette('semantic', 'neutral', 1)};
+  background: ${palette('grey', '300')};
+  transition: all 0.35s ease;
+  transform: translate(0, ${height(9)});
   & > b {
     font-weight: 400;
     ${ellipsis};
+    color: ${palette('grey', '700')};
     width: ${({ ratio }) => (ratio >= 1 ? width(60) : width(86))};
+  }
+`;
+
+const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
+  && {
+    display: inline-block;
+    margin: ${spacing(0, 3, 3, 0)};
+    width: ${({ ratio }) => (ratio >= 1 ? width(64) : width(90))};
+    height: ${({ ratio }) => (ratio >= 1 ? height(64) : height(64))};
+    position: relative;
+    border-radius: 0;
+  }
+  &:hover ${ImageFileInfo} {
+    transform: translate(0, 0);
+  }
+`;
+
+const ImageMedia = styled(FileCardMedia)`
+  && {
+    height: ${height(64)};
   }
 `;
 

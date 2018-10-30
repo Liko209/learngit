@@ -12,14 +12,46 @@ import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconBut
 storiesOf('Pattern/ConversationCard', module)
   .addDecorator(withInfoDecorator(JuiFileWithoutPreview, { inline: true }))
   .add('FileWithoutPreview', () => (
-    <JuiFileWithoutPreview
-      fileName="Conversation Card VxD.pdf"
-      size="3.5MB"
-      iconType={'pdf'}
-      actions={
-        <JuiIconButton variant="plain" tooltipTitle="download">
-          get_app
-        </JuiIconButton>
-      }
-    />
+    <div>
+      <JuiFileWithoutPreview
+        fileName="Conversation Card VxD.pdf"
+        size="3.5MB"
+        iconType={'pdf'}
+        actions={
+          <JuiIconButton variant="plain" tooltipTitle="download">
+            get_app
+          </JuiIconButton>
+        }
+      />
+      <JuiFileWithoutPreview
+        fileName="Conversation Card VxD.pdf"
+        size="3.5MB"
+        iconType={'pdf'}
+        actions={
+          <JuiIconButton variant="plain" tooltipTitle="download">
+            get_app
+          </JuiIconButton>
+        }
+      />
+      <JuiFileWithoutPreview
+        fileName="Conversation Card VxD.pdf"
+        size="3.5MB"
+        iconType={'pdf'}
+        actions={
+          <JuiIconButton variant="plain" tooltipTitle="download">
+            get_app
+          </JuiIconButton>
+        }
+      />
+      <JuiFileWithoutPreview
+        fileName="Conversation Card VxD.pdf"
+        size="3.5MB"
+        iconType={'pdf'}
+        actions={
+          <JuiIconButton variant="plain" tooltipTitle="download">
+            get_app
+          </JuiIconButton>
+        }
+      />
+    </div>
   ));
