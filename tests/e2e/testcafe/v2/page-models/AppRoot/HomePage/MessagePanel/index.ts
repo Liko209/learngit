@@ -81,9 +81,12 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.nth(n));
   }
 
-  conversationByIdEntry(groupId: string){
-    return this.getComponent(ConversationEntry, this.conversations.filter(`[data-group-id="${groupId}"]`)) 
-  } 
+  conversationByIdEntry(groupId: string) {
+    return this.getComponent(
+      ConversationEntry,
+      this.conversations.filter(`[data-group-id="${groupId}"]`),
+    );
+  }
 
   async isExpand() {
     this.warnFlakySelector();
@@ -159,6 +162,16 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
+export class ConversationPage extends BaseWebComponent {
+  get root() {
+    return this.getSelector('.conversation-list-section');
+  }
+
+  get header() {
+    return this.getSelectorByAutomationId('conversation-page-header');
+  }
+}
+
 export class MessagePanel extends BaseWebComponent {
   get root() {
     this.warnFlakySelector();
@@ -199,7 +212,7 @@ export class MessagePanel extends BaseWebComponent {
   }
 
   get conversationPage() {
-    return this.getSelector('.conversation-page');
+    return this.getComponent(ConversationPage);
   }
 
   get conversationListSections() {

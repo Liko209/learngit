@@ -57,9 +57,10 @@ test(
       },
     );
 
-
     await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      `When I login Jupiter with this extension: ${user.company.number}#${
+        user.extension
+      }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -85,7 +86,7 @@ test(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.withAttribute(
+            app.homePage.messagePanel.conversationPage.root.withAttribute(
               'data-group-id',
               group.data.id,
             ).exists,
@@ -93,6 +94,5 @@ test(
           .ok();
       },
     );
-
   },
 );
