@@ -175,6 +175,11 @@ export type Item = ExtendedBaseModel & {
   post_ids: number[];
   company_id: number;
   type_id: number;
+  summary: string;
+  title: string;
+  url: string;
+  image: string;
+  deactivated: boolean;
 };
 
 export type FileItem = Item & {

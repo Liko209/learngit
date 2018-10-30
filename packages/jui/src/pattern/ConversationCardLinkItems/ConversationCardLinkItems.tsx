@@ -6,32 +6,37 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
-import { height, grey, palette, spacing, ellipsis } from '../../foundation/utils/styles';
+import {
+  ellipsis,
+} from '../../foundation/utils/styles';
+import defaultLinkImage  from './link_img@2x.png';
 
 const LinkItemsWrapper = styled.div`
+  margin-top: 12px;
   background-color: #fff;
   border: 1px solid rgba(0, 0, 0, 0.2);
   width: 100%;
-  box-shadow: 0 1px 1px 0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.14);
+  border-radius: 4px;
   height: 104px;
+  :hover{
+    background-color: #f5f5f5;
+  }
 `;
 const LinkItemContents = styled.div`
   display: flex;
-  justify-content: space-between;
   margin: 16px;
   height: 72px;
   width: 100%;
-  span{
-    position: absolute;
-    right: 16px;
-    top: 12px;
+  span {
+    margin-right: 36px;
     color: #bfbfbf;
     width: 20px;
     height: 20px;
     cursor: pointer;
   }
 `;
-const LinkThumbnails = styled.div`
+const LinkThumbnails = styled<{img: string}, 'div'>('div')`
   width: 72px;
   height: 72px;
   background: url(${({ img }) => img}) 72px 72px;
@@ -39,7 +44,6 @@ const LinkThumbnails = styled.div`
 `;
 const TitleNSummaryWrapper = styled.div`
   flex: 1;
-  width: 0;
   margin-left: 12px;
 `;
 const LinkTitle = styled.p`
@@ -57,31 +61,31 @@ const LinkSummary = styled.p`
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  margin-top: -4px;
 `;
 type Props = {
   title: string;
   summary: string;
   thumbnail: string;
+  onLinkItemClick: (e: React.MouseEvent<HTMLSpanElement>) => void;
 };
-class JuiConversationCardLinkItems extends PureComponent<Props> {
+class JuiConversationCardLinkItems extends PureComponent<
+  Props
+> {
   constructor(props: Props) {
     super(props);
   }
   render() {
-    const { title, summary, thumbnail } = this.props;
+    const { title, summary, thumbnail, onLinkItemClick } = this.props;
     return (
       <LinkItemsWrapper>
         <LinkItemContents>
-          <LinkThumbnails img={thumbnail} />
+          <LinkThumbnails img={thumbnail ? thumbnail : defaultLinkImage} />
           <TitleNSummaryWrapper>
-            <LinkTitle>
-              {title}
-            </LinkTitle>
-            <LinkSummary>
-              {summary}
-            </LinkSummary>
+            <LinkTitle>{title}</LinkTitle>
+            <LinkSummary>{summary}</LinkSummary>
           </TitleNSummaryWrapper>
-          <JuiIconography>close</JuiIconography>
+          <JuiIconography onClick={onLinkItemClick}>close</JuiIconography>
         </LinkItemContents>
       </LinkItemsWrapper>
     );
