@@ -89,6 +89,7 @@ describe('format multiple emoji', () => {
     expect(result).toMatch(regExp);
   });
 
+  // 'abc:smile::cry:<3:D:rc::att::xxx::yyy123:'.match()
   // it('multiple emoji', async () => {
   //   const keys = [':D', ':rc:'];
   //   const result = format(`${keys.join('')}`);

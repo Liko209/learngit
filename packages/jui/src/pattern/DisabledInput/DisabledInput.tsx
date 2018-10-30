@@ -7,9 +7,9 @@ import {
   palette,
 } from '../../foundation/utils/styles';
 
-interface IProps {
+type Props = {
   text: string;
-}
+};
 
 const StyledDisableInput = styled('div')`
   && {
@@ -24,7 +24,7 @@ const StyledDisableInput = styled('div')`
   }
 `;
 
-class JuiDisabledInput extends PureComponent<IProps> {
+class JuiDisabledInput extends PureComponent<Props> {
   render() {
     const { text } = this.props;
 

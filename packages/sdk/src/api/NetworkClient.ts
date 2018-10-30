@@ -73,7 +73,7 @@ export default class NetworkClient {
     apiPlatform: string,
     defaultVia: NETWORK_VIA,
     apiPlatformVersion: string = '',
-    networkManager: NetworkManager = NetworkManager.Instance,
+    networkManager: NetworkManager,
   ) {
     this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;

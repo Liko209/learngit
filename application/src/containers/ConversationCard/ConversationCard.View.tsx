@@ -7,9 +7,9 @@ import {
   // JuiConversationCardFooter,
 } from 'jui/pattern/ConversationCard';
 import { Avatar } from '@/containers/Avatar';
-import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
+import { idsToConversationSheet } from '@/containers/ConversationSheet';
 import { FormatMessages } from '../FormatMessages';
 // import { idToPostItemComponent } from '@/containers/PostItems';
 @observer
@@ -27,7 +27,7 @@ export class ConversationCard extends React.Component<
       name,
       createTime,
       customStatus,
-      // itemIds,
+      itemIds,
     } = this.props;
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
@@ -47,10 +47,7 @@ export class ConversationCard extends React.Component<
           </JuiConversationCardHeader>
           <JuiConversationCardBody>
             <FormatMessages postId={post.id} />
-            {/* {itemIds.map((id: number) => {
-            const Item = idToPostItemComponent(id);
-            return <Item key={id} />;
-            })} */}
+            {idsToConversationSheet(itemIds)}
           </JuiConversationCardBody>
           {/*<JuiConversationCardFooter>*/}
           {/*/!* todo: footer *!/*/}
@@ -61,6 +58,6 @@ export class ConversationCard extends React.Component<
   }
 }
 
-const ConversationCardView = translate('Conversations')(ConversationCard);
+const ConversationCardView = ConversationCard;
 
 export { ConversationCardView };

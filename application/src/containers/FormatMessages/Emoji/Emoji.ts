@@ -23,7 +23,7 @@ class Emoji {
   }
 
   formatEmojiOne() {
-    const regExp = /:([^:]\S*?)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
+    const regExp = /:([^:]\S*?)(?=:)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
     this.text = this.text.trim().replace(regExp, (match: string) => {
       // console.log(match); // :smile
       const obj = mapEmojiOne[`${match}:`];
@@ -58,10 +58,10 @@ class Emoji {
   }
 
   formatCustom() {
-    const regExp = /:([^:]\S*?)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
+    const regExp = /:([^:]\S*?)(?=:)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
     this.text = this.text.trim().replace(regExp, (match: string) => {
       // console.log(match); // :rc
-      const obj = this._customEmojiMap[match];
+      const obj = this._customEmojiMap[match.slice(1)];
       if (obj instanceof Object) {
         return `<img class="${this._getClassName(`${match}:`)}" src="${obj.data}">`;
       }
@@ -72,7 +72,7 @@ class Emoji {
   }
 
   private _replaceImg() {
-    this.text = this.text.replace(/:(<img[^>]+?>):/g, (match: string, img: string) => img);
+    this.text = this.text.replace(/(<img[^>]+?>):/g, (match: string, img: string) => img);
   }
 
   private _getImg(match: string, unicode: string) {

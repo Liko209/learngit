@@ -3,6 +3,7 @@
  * @Date: 2018-10-24 16:15:52
  * Copyright © RingCentral. All rights reserved.
  */
+import { v4 as uuid } from 'uuid';
 
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
@@ -11,11 +12,11 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
 import { GlipSdk } from '../../v2/sdk/glip';
 
-fixture('TeamSection')
+fixture('ConversationList/FavoriteSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test.skip(
+test(
   formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
@@ -35,7 +36,7 @@ test.skip(
         });
         team = await userPlatform.createGroup({
           type: 'Team',
-          name: 'My Team',
+          name: `Team ${uuid()} `,
           members: [user.rcId, users[5].rcId],
         });
       },
@@ -44,7 +45,7 @@ test.skip(
     await h(t).withLog(
       'Make sure the conversations are shown and marked as favorite',
       async () => {
-        const profile = await glipSDK.getProfileByGlipId(user.glipId);
+        const profile = await glipSDK.getProfile(user.rcId);
         const favorites = profile.data.favorite_group_ids || [];
         if (favorites.indexOf(+pvtChat.data.id) < 0) {
           favorites.push(+pvtChat.data.id);
@@ -52,7 +53,7 @@ test.skip(
         if (favorites.indexOf(+team.data.id) < 0) {
           favorites.push(+team.data.id);
         }
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${pvtChat.data.id}`]: false,
           [`hide_group_${team.data.id}`]: false,
           favorite_group_ids: favorites,
@@ -62,7 +63,7 @@ test.skip(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -73,7 +74,8 @@ test.skip(
     await h(t).withLog(
       'I can find favorite section expanded by default',
       async () => {
-        await t.expect(favoritesSection.isExpand()).ok();
+        const isExpand = await favoritesSection.isExpand();
+        await t.expect(isExpand).ok();
         await t.expect(favoritesSection.collapse.clientHeight).gt(0);
       },
     );
@@ -81,44 +83,29 @@ test.skip(
     await h(t).withLog(
       'Then I click the header of Favorite section',
       async () => {
-        await this.t.click(this.toggleButton);
+        await t.click(favoritesSection.toggleButton);
       },
     );
 
     await h(t).withLog('I can find favorite section collapsed', async () => {
-      await t.expect(favoritesSection.isExpand()).notOk();
+      await t.wait(1e3);
+      const isExpand = await favoritesSection.isExpand();
+      await t.expect(isExpand).notOk();
       await t.expect(favoritesSection.collapse.clientHeight).eql(0);
     });
 
     await h(t).withLog(
       'Then I click the header of Favorite section',
       async () => {
-        await this.t.click(this.toggleButton);
+        await t.click(favoritesSection.toggleButton);
       },
     );
 
     await h(t).withLog('I can find favorite section expanded', async () => {
-      await t.expect(favoritesSection.isExpand()).ok();
+      await t.wait(1e3);
+      const isExpand = await favoritesSection.isExpand();
+      await t.expect(isExpand).ok();
       await t.expect(favoritesSection.collapse.clientHeight).gt(0);
     });
-  },
-);
-
-test.skip(
-  formalName('Drag & Drop', ['JPT-10', 'P2', 'ConversationList']),
-  async (t: TestController) => {
-    // XIA-UP
-    // const authInfo = {
-    //   credential: 'system@tarcnonbetauser1487802163099530.com',
-    //   password: 'Test!123',
-    // };
-    // const LAST = -1;
-    // const FIRST = 0;
-    // await directLogin(t, authInfo)
-    //   .log('1. Navigate to Favorites section')
-    //   .shouldNavigateTo(FavoriteSection)
-    //   .expectExist()
-    //   .log('2. Drag & drop conversation')
-    //   .dragListItem(LAST, FIRST);
   },
 );

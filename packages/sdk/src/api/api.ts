@@ -32,15 +32,17 @@ class Api {
   static httpSet: Map<string, NetworkClient> = new Map();
   static _httpConfig: ApiConfig;
 
-  static init(config: PartialApiConfig): void {
+  static _networkManager: NetworkManager;
+
+  static init(config: PartialApiConfig, networkManager: NetworkManager): void {
     this._httpConfig = merge({}, defaultConfig, config);
-    Api.setupHandlers();
+    Api.setupHandlers(networkManager);
   }
 
-  static setupHandlers(
-    networkManager: NetworkManager = NetworkManager.Instance,
-  ) {
-    NetworkSetup.setup(types);
+  static setupHandlers(networkManager: NetworkManager) {
+    this._networkManager = networkManager;
+
+    NetworkSetup.setup(types, networkManager);
     // This explicit set rc handler accessToken as the RC token provider for glip handler
     const tokenManager = networkManager.getTokenManager();
     const rcTokenHandler =
@@ -61,10 +63,13 @@ class Api {
     return this._httpConfig;
   }
 
+  static get networkManager() {
+    return this._networkManager;
+  }
+
   static getNetworkClient(
     name: HttpConfigType,
     type: IHandleType,
-    networkManager: NetworkManager = NetworkManager.Instance,
   ): NetworkClient {
     if (!this._httpConfig) Throw(ErrorTypes.HTTP, 'Api not initialized');
 
@@ -80,7 +85,7 @@ class Api {
         currentConfig.apiPlatform,
         type.defaultVia,
         currentConfig.apiPlatformVersion,
-        networkManager,
+        this.networkManager,
       );
       this.httpSet.set(name, networkClient);
     }

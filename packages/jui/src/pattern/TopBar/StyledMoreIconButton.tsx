@@ -10,6 +10,5 @@ import styled from '../../foundation/styled-components';
 const StyledMoreIconButton = styled(JuiIconButton)``;
 
 StyledMoreIconButton.displayName = 'StyledMoreIconButton';
-StyledMoreIconButton.dependencies = [];
 
 export { StyledMoreIconButton };

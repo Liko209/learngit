@@ -7,9 +7,9 @@ import { SdkHelper } from "./sdk-helper";
 import { JupiterHelper } from "./jupiter-helper";
 import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
+import { H } from './utils';
 
 import { IUser, IStep } from '../models';
-import { UICreator } from '../../page-models';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -47,10 +47,6 @@ class Helper {
     return this.jupiterHelper.directLoginWithUser(url, user);
   }
 
-  onPage<T>(uiCreator: UICreator<T>) {
-    return this.jupiterHelper.onPage(uiCreator);
-  }
-
   async mapSelectorsAsync(selector: Selector, cb: (nth: Selector, i?: number) => Promise<any>) {
     const count = await selector.count;
     const promises = [];
@@ -66,6 +62,29 @@ class Helper {
 
   async withLog(step: IStep | string, cb: () => Promise<any>, takeScreenShot: boolean = false) {
     return await this.logHelper.withLog(step, cb, takeScreenShot);
+  }
+
+  async getGlip(user: IUser) {
+    return await this.sdkHelper.sdkManager.getGlip(user);
+  }
+
+  async getPlatform(user: IUser) {
+    return await this.sdkHelper.sdkManager.getPlatform(user);
+  }
+
+  async getSdk(user: IUser) {
+    const glip = await this.getGlip(user);
+    const platform = await this.getPlatform(user);
+    return { glip, platform };
+  }
+
+  // testcafe extend
+  get href() {
+    return ClientFunction(() => document.location.href)();
+  }
+
+  async refresh() {
+    await this.t.navigateTo(await this.href);
   }
 
   async waitUntilExist(selector: Selector, timeout: number = 5e3) {
@@ -86,26 +105,17 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  // others
   async resetGlipAccount(user: IUser) {
     logger.warn("reset a glip account will be very slow (30s+)");
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(this.rcData.mainCompany.admin);
-    await adminGlip.deactivated(user.glipId);
+    await adminGlip.deactivated(user.rcId);
     await this.sdkHelper.sdkManager.getGlip(user);
   }
-
-  // testcafe extend
-  get href() {
-    return ClientFunction(() => document.location.href)();
-  }
-
-  async refresh() {
-    await this.t.navigateTo(await this.href);
-  }
-
 }
 
 function h(t: TestController) {
   return new Helper(t);
 }
 
-export { Helper, h };
+export { Helper, h, H };

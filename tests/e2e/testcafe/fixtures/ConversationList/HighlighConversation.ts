@@ -8,9 +8,8 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
-import { ClientFunction } from 'testcafe';
 
-fixture('HighlightConversation')
+fixture('ConversationList/HighlightConversation')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
@@ -25,7 +24,7 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
-    const glipSDK = await h(t).sdkHelper.sdkManager.getGlip(user);
+    const glipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
     const directMessageSection =
       app.homePage.messagePanel.directMessagesSection;
 
@@ -41,25 +40,28 @@ test(
     );
 
     await h(t).withLog(
-      'And the conversation should not be hidden',
+      'And the conversation should not be hidden and not favorite',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSdk.updateProfile(user.rcId, {
           [`hide_group_${group.data.id}`]: false,
+          favorite_group_ids: [],
         });
       },
     );
 
     await h(t).withLog(
-      'Given the group chat is last group selected',
+      `Given the group chat ${group.data.id} is last group selected`,
       async () => {
-        await glipSDK.updateStateByGlipId(user.glipId, {
+        await glipSdk.partialUpdateState(user.rcId, {
           last_group_id: group.data.id,
         });
       },
     );
 
     await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      `When I login Jupiter with this extension: ${user.company.number}#${
+        user.extension
+      }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -85,7 +87,7 @@ test(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.withAttribute(
+            app.homePage.messagePanel.conversationPage.self.withAttribute(
               'data-group-id',
               group.data.id,
             ).exists,

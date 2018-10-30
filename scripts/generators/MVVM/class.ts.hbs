@@ -1,0 +1,17 @@
+/*
+ * @Author: {{{userName}}} ({{{userEmail}}})
+ * @Date: {{{currentDate}}}
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { buildContainer } from '@/base';
+import { {{ properCase name }}View } from './{{ properCase name }}.View';
+import { {{ properCase name }}ViewModel } from './{{ properCase name }}.ViewModel';
+import { Props } from './types';
+
+const {{ properCase name }} = buildContainer<Props>({
+  View: {{ properCase name }}View,
+  ViewModel: {{ properCase name }}ViewModel,
+});
+
+export { {{ properCase name }}, Props };

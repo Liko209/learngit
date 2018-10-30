@@ -5,7 +5,7 @@
  */
 
 import { Markdown } from 'glipdown';
-import { glipdown2Html } from '@/utils/glipdown2Html';
+import { glipdown2Html } from './utils/glipdown2Html';
 import { CustomEmojiMap } from './types';
 import { Emoji } from './Emoji';
 

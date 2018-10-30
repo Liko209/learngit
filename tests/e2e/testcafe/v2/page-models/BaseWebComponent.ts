@@ -5,14 +5,18 @@ import { Selector } from 'testcafe';
 import { IUser } from '../models'
 import { h } from '../helpers'
 import * as assert from 'assert';
+import { getLogger } from 'log4js';
+
+const logger = getLogger('BaseWebComponent');
+logger.level = 'info';
 
 export abstract class BaseWebComponent {
 
-    public root: Selector;
+    public self: Selector;
     constructor(protected t: TestController) { }
 
-    async ensureLoaded() {
-        console.error('You should overwrite this method to ensure component is loaded before execute other operations');
+    async ensureLoaded(timeout: number = 5e3) {
+        await this.t.expect(this.exists).ok({ timeout });
     }
 
     async waitUntilExist(selector: Selector | BaseWebComponent, timeout: number = 5e3) {
@@ -28,11 +32,11 @@ export abstract class BaseWebComponent {
     }
 
     get exists() {
-        return this.root.exists;
+        return this.self.exists;
     }
 
     get visible() {
-        return this.root.visible;
+        return this.self.visible;
     }
 
     // jupiter
@@ -44,9 +48,9 @@ export abstract class BaseWebComponent {
     getComponent<T extends BaseWebComponent>(ctor: { new(t: TestController): T }, root: Selector = null): T {
         const component = new ctor(this.t);
         if (root) {
-            component.root = root;
+            component.self = root;
         }
-        assert(component.root, "component's root should not be empty");
+        assert(component.self, "component's root should not be empty");
         return component;
     }
 
@@ -68,10 +72,8 @@ export abstract class BaseWebComponent {
 
     // misc
     warnFlakySelector() {
-        // TODO: using stackman for better call-site info
         const stack = (new Error()).stack;
-        console.error('a flaky selector is found:');
-        console.error(stack);
+        logger.warn(`a flaky selector is found ${stack.split('\n')[2].trim()}`);
     }
 
 }
