@@ -154,6 +154,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @loading
   async loadInitialPosts() {
     await this._loadPosts(FetchDataDirection.UP);
+    this.markAsRead();
   }
 
   @onScrollToTop
