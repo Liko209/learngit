@@ -15,9 +15,6 @@ type Props = {
 };
 @observer
 class LinkItemView extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
   render() {
     const { postItems, onLinkItemClick } = this.props;
     return (

@@ -20,7 +20,7 @@ const LinkItemsWrapper = styled.div`
   background-color: ${({ theme }) => theme.palette.common.white};
   border: 1px solid rgba(0, 0, 0, 0.2);
   width: 100%;
-  box-shadow: ${({ theme }) => theme.boxShadow[0]};
+  box-shadow: ${({ theme }) => theme.boxShadow.val1};
   border-radius: ${({ theme }) => theme.shape.borderRadius}px;
   height: ${height(26)};
   :hover{

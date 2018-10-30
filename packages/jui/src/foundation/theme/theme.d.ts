@@ -142,9 +142,10 @@ type Theme = {
       lineHeight: string;
     };
   };
-  boxShadow: string[];
+  boxShadow: {
+    val1: string;
+  };
 } & MuiTheme;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;
-
 export { Palette, Theme, ThemeProps };
