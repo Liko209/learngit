@@ -5,6 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StreamView
     atBottom={[MockFunction atBottom]}
+    enableNewMessageSeparatorHandler={[MockFunction enableNewMessageSeparatorHandler]}
     items={Array []}
     markAsRead={[MockFunction markAsRead]}
     postIds={Array []}
@@ -69,6 +70,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StreamView
     atBottom={[MockFunction atBottom]}
+    enableNewMessageSeparatorHandler={[MockFunction enableNewMessageSeparatorHandler]}
     items={
       Array [
         Object {
