@@ -2,7 +2,7 @@ import 'testcafe';
 import * as _ from "lodash";
 import { IAccountPoolClient } from '../../libs/accounts';
 import { ICompany, IUser, IGroup, IStep, Status } from '../models';
-import { Allure2Dashboard, beatsClient, Test, Step, Attachment, DASHBOARD_UI, PASS, FAILED, } from "../../config"
+import { Allure2Dashboard, beatsClient, Test, Step, Attachment, DASHBOARD_UI, PASS, FAILED } from "../../config"
 
 interface IRcData {
   mainCompany: ICompany,
@@ -71,9 +71,9 @@ class DataHelper {
     return this.t.ctx.__originData;
   }
 
-  private getKeyfromValue(value: Status) {
-    return _.findKey(Status, (v) => v === value);
-  }
+  // private getKeyfromValue(value: Status) {
+  //   return _.findKey(Status, (v) => v === value);
+  // }
 
   private async saveAttachment(file, stepId) {
     return await beatsClient.createAttachment({

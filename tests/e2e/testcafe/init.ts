@@ -1,7 +1,7 @@
 import 'testcafe';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, beatsClient, Test } from './config';
+import { ENV_OPTS, DEBUG_MODE } from './config';
 
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);

@@ -5,6 +5,7 @@ import { AssertionError } from "assert";
  * @Date: 2018-08-15 11:15:59
  * Copyright © RingCentral. All rights reserved.
  */
+
 type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string) => boolean;
 
 export interface INameTags {
