@@ -140,17 +140,24 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @onScroll
-  updateNewMessageSeparatorHandlerState() {
-    // const isFocused = document.hasFocus();
-    // if (!isFocused) {
-    // }
+  async handleNewMessageSeparatorState(event: { target?: HTMLInputElement }) {
+    if (!event.target) return;
+    const scrollEl = event.target;
+    const atBottom =
+      scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
+    const isFocused = document.hasFocus();
+    if (atBottom && isFocused) {
+      this._newMessageSeparatorHandler.disable();
+    } else {
+      this._newMessageSeparatorHandler.enable();
+    }
   }
 
   @onScrollToBottom
   markAsRead() {
     const isFocused = document.hasFocus();
     if (isFocused) {
-      this.disableNewMessageSeparatorHandler();
+      this._newMessageSeparatorHandler.disable();
       this._stateService.markAsRead(this.groupId);
     }
   }
