@@ -36,6 +36,7 @@ describe('Socket Manager', () => {
   });
 
   beforeEach(() => {
+    mockedSetReconnection.mockRestore();
     daoManager.getKVDao.mockReturnValue(configDao);
     configDao.get.mockReturnValue(test_url);
     mock.payload = test_url;
@@ -219,7 +220,7 @@ describe('Socket Manager', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
     });
 
-    it('logged-in', () => {
+    it('logged-in and online', () => {
       notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
         state: 'online',
       });
@@ -275,7 +276,14 @@ describe('Socket Manager', () => {
         1,
         true,
       );
+    });
 
+    it('logged-in and offline', () => {
+      notificationCenter.emitService(SERVICE.LOGIN);
+      expect(socketManager.hasActiveFSM()).toBeTruthy();
+      const fsmName1 = socketManager.activeFSM.name;
+      expect(!!fsmName1).toBeTruthy();
+      expect(socketManager.isConnected()).toBeFalsy();
       mockedSetReconnection.mockRestore();
 
       // Pre-condition: offline, screen is locked
@@ -285,6 +293,7 @@ describe('Socket Manager', () => {
       notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
         state: 'offline',
       });
+      expect(socketManager.isOffline()).toBeTruthy();
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
       mockedSetReconnection.mockRestore();
@@ -293,25 +302,42 @@ describe('Socket Manager', () => {
       socketManager.onPowerMonitorEvent('unlock-screen');
       expect(socketManager.isScreenLocked()).toBeFalsy();
       expect(socketManager.hasActiveFSM()).toBeFalsy();
+    });
 
-      // Pre-condition: screen is locked
-      socketManager.onPowerMonitorEvent('lock-screen');
-      expect(socketManager.isScreenLocked()).toBeTruthy();
-
-      mockedSetReconnection.mockRestore();
-
-      // In case screen is locked, online will not create new FSM
+    it('online event', () => {
       notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
         state: 'online',
       });
       expect(socketManager.isOffline()).toBeFalsy();
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-      // Pre-condition: screen in not locked
+      notificationCenter.emitService(SERVICE.LOGIN);
+      expect(socketManager.hasActiveFSM()).toBeTruthy();
+      const fsmName1 = socketManager.activeFSM.name;
+      expect(!!fsmName1).toBeTruthy();
+      expect(socketManager.isConnected()).toBeFalsy();
+      mockedSetReconnection.mockRestore();
+
+      // Pre-condition: screen is locked
+      socketManager.onPowerMonitorEvent('lock-screen');
+      expect(socketManager.isScreenLocked()).toBeTruthy();
+
       notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
         state: 'offline',
       });
-      expect(socketManager.isOffline()).toBeTruthy();
+      expect(socketManager.hasActiveFSM()).toBeFalsy();
+
+      // In case screen is locked, not create new FSM when it becomes online
+      notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+        state: 'online',
+      });
+      expect(socketManager.hasActiveFSM()).toBeFalsy();
+
+      notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+        state: 'offline',
+      });
+      expect(socketManager.hasActiveFSM()).toBeFalsy();
+
       socketManager.onPowerMonitorEvent('unlock-screen');
       expect(socketManager.isScreenLocked()).toBeFalsy();
       expect(socketManager.hasActiveFSM()).toBeFalsy();
@@ -321,9 +347,9 @@ describe('Socket Manager', () => {
         state: 'online',
       });
       expect(socketManager.isOffline()).toBeFalsy();
-      const fsmName5 = socketManager.activeFSM.name;
-      expect(!!fsmName5).toBeTruthy();
-      expect(fsmName5).not.toEqual(fsmName4);
+      const fsmName2 = socketManager.activeFSM.name;
+      expect(!!fsmName2).toBeTruthy();
+      expect(fsmName2).not.toEqual(fsmName1);
     });
   });
 });
