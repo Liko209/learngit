@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './ConversationPage';
+export * from './Stream';
 export { default } from './ConversationPage';

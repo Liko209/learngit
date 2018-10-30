@@ -15,9 +15,11 @@ import {
 } from '../../foundation/utils';
 
 type JuiConversationInitialPostHeaderProps = {
-  name: JSX.Element;
-  teamName: string;
-  description: string;
+  name?: JSX.Element;
+  teamName?: string;
+  description?: string;
+  directMessageDescription?: string;
+  isTeam: boolean;
 };
 
 const StyledConversationInitialPostHeader = styled.div`
@@ -31,7 +33,6 @@ const StyledTitle = styled.div`
   display: flex;
   align-items: center;
   height: ${height(5)};
-  margin-bottom: ${spacing(2)};
 `;
 
 const StyledSpan = styled.span`
@@ -44,6 +45,7 @@ const StyledTeamName = styled.span`
 `;
 const StyledDescription = styled.div`
   max-width: ${width(119)};
+  margin-top: ${spacing(2)};
   ${typography('body1')};
   color: ${grey('700')};
   text-align: center;
@@ -53,18 +55,31 @@ const StyledDescription = styled.div`
 
 const JuiConversationInitialPostHeader = (
   props: JuiConversationInitialPostHeaderProps,
-) => (
-  <React.Fragment>
-    <StyledConversationInitialPostHeader>
-      <StyledTitle>
-        {props.name}
-        <StyledSpan>&nbsp;created a team&nbsp;</StyledSpan>
-        <StyledTeamName>{props.teamName}</StyledTeamName>
-      </StyledTitle>
-      <StyledDescription>{props.description}</StyledDescription>
-    </StyledConversationInitialPostHeader>
-    <JuiDivider />
-  </React.Fragment>
-);
+) => {
+  const {
+    isTeam,
+    name,
+    teamName,
+    description,
+    directMessageDescription,
+  } = props;
+  return (
+    <React.Fragment>
+      <StyledConversationInitialPostHeader>
+        {isTeam ? (
+          <StyledTitle>
+            {name}
+            <StyledSpan>&nbsp;created a team&nbsp;</StyledSpan>
+            {<StyledTeamName>{teamName}</StyledTeamName>}
+          </StyledTitle>
+        ) : (
+          <StyledSpan>{directMessageDescription}</StyledSpan>
+        )}
+        {isTeam && <StyledDescription>{description}</StyledDescription>}
+      </StyledConversationInitialPostHeader>
+      <JuiDivider />
+    </React.Fragment>
+  );
+};
 
 export { JuiConversationInitialPostHeader };

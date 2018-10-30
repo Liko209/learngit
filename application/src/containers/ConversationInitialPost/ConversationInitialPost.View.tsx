@@ -15,7 +15,7 @@ import { translate } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
 import image from './img/illustrator.svg';
-import { CONVERSATION_TYPES } from '@/constants';
+// import { CONVERSATION_TYPES } from '@/constants';
 
 class ConversationInitialPost extends React.Component<
   ConversationInitialPostViewProps
@@ -38,11 +38,17 @@ class ConversationInitialPost extends React.Component<
   }
 
   private get _conversationInitialPostHeader() {
+    const { isTeam, displayName, groupDescription, t } = this.props;
+
     return (
       <JuiConversationInitialPostHeader
         name={this._name}
-        teamName={this.props.displayName}
-        description={this.props.groupDescription}
+        teamName={displayName}
+        description={groupDescription}
+        isTeam={isTeam}
+        directMessageDescription={t('directMessageDescription', {
+          displayName,
+        })}
       />
     );
   }
@@ -92,12 +98,12 @@ class ConversationInitialPost extends React.Component<
   }
 
   render() {
-    const { groupType } = this.props;
     return (
       <JuiConversationInitialPost>
-        {groupType === CONVERSATION_TYPES.TEAM
+        {/* {groupType === CONVERSATION_TYPES.TEAM
           ? this._conversationInitialPostHeader
-          : null}
+          : null} */}
+        {this._conversationInitialPostHeader}
         {this._conversationInitialPostBody}
       </JuiConversationInitialPost>
     );

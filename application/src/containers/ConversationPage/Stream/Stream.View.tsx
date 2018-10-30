@@ -6,6 +6,7 @@
 import React, { PureComponent } from 'react';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
+import { JuiStream } from 'jui/pattern/ConversationPage';
 import { StreamViewProps } from './types';
 
 class StreamView extends PureComponent<StreamViewProps> {
@@ -26,12 +27,14 @@ class StreamView extends PureComponent<StreamViewProps> {
 
   render() {
     return (
-      <div>
+      <JuiStream>
         <ConversationInitialPost id={this.props.groupId} />
-        {this.props.postIds.map((id: number) => (
-          <ConversationCard id={id} key={id} />
-        ))}
-      </div>
+        <div>
+          {this.props.postIds.map((id: number) => (
+            <ConversationCard id={id} key={id} />
+          ))}
+        </div>
+      </JuiStream>
     );
   }
   focusHandler = () => {

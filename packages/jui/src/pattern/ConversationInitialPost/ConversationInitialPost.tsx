@@ -5,17 +5,17 @@
  */
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
-import { JuiPaper } from '../../components/Paper';
+// import { JuiPaper } from '../../components/Paper';
 
 type JuiConversationInitialPostProps = {
   className?: string;
   children: (JSX.Element | null)[];
 };
 
-const StyledPaper = styled(JuiPaper)``;
+const StyledDiv = styled.div``;
 
 const JuiConversationInitialPost = (props: JuiConversationInitialPostProps) => {
-  return <StyledPaper {...props} />;
+  return <StyledDiv {...props} />;
 };
 
 export { JuiConversationInitialPost };

@@ -1,6 +1,7 @@
 import { CONVERSATION_TYPES } from '@/constants';
 import PersonModel from '@/store/models/Person';
 import { TranslationFunction } from 'i18next';
+import { WithNamespaces } from 'react-i18next';
 
 /*
  * @Author: Shining Miao (shining.miao@ringcentral.com)
@@ -11,7 +12,7 @@ type ConversationInitialPostProps = {
   id: number; // group id
 };
 
-type ConversationInitialPostViewProps = {
+type ConversationInitialPostViewProps = WithNamespaces & {
   id: number; // group id
   displayName: string;
   groupType: CONVERSATION_TYPES;
@@ -19,6 +20,7 @@ type ConversationInitialPostViewProps = {
   creator: PersonModel;
   creatorGroupId: number;
   t: TranslationFunction;
+  isTeam: boolean;
 };
 
 export { ConversationInitialPostProps, ConversationInitialPostViewProps };

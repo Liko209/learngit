@@ -52,6 +52,11 @@ class ConversationInitialPostViewModel extends StoreViewModel<
     return this._group.creator;
   }
 
+  @computed
+  get isTeam() {
+    return this._group.isTeam;
+  }
+
   @action
   async onReceiveProps() {
     const groups = await this._groupService.getGroupByPersonId(this.creator.id);
