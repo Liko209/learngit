@@ -23,7 +23,6 @@ class DataHelper {
         return <IUser>{
           company: mainCompany,
           rcId: String(u.rc_id),
-          glipId: String(u.glip_id),
           email: u.email,
           password: u.password,
           extension: u.extension,
