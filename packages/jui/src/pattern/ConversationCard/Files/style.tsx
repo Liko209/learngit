@@ -27,6 +27,7 @@ import pdf from './pdf_conversation_xxh.png';
 import ppt from './ppt_conversation_xxh.png';
 import ps from './ps_conversation_xxh.png';
 import sheet from './sheet_conversation_xxh.png';
+import defaultIcon from './default.svg';
 
 const ICON_MAP = {
   pdf,
@@ -53,9 +54,8 @@ const FileItem = styled(MuiListItem)`
 const FileIcon = styled<FileIconProps, 'div'>('div')`
   width: ${({ size }) => (size === 'small' ? width(5) : width(14))};
   height: ${({ size }) => (size === 'small' ? width(5) : width(14))};
-  background-color: #ccc;
   background-image: url(${({ iconType }) =>
-    iconType ? ICON_MAP[iconType] : ''});
+    iconType ? ICON_MAP[iconType] : defaultIcon});
   background-size: cover;
   margin: ${({ size }) => (size === 'small' ? spacing(0, 2, 0, 0) : null)};
 `;

@@ -22,7 +22,7 @@ const downloadBtn = (downloadUrl: string) => (
     variant="plain"
     tooltipTitle="download"
   >
-    vertical_align_bottom
+    get_app
   </JuiIconButton>
 );
 
