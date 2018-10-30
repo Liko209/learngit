@@ -87,7 +87,7 @@ test(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.root.withAttribute(
+            app.homePage.messagePanel.conversationPage.self.withAttribute(
               'data-group-id',
               group.data.id,
             ).exists,

@@ -95,7 +95,7 @@ test(
 
     await h(t).withLog(`When I open a DM conversation and then click close conversation button`, async () => {
       await pvtChat.enter();
-      currentGroupId = await app.homePage.messagePanel.conversationPage.root.getAttribute('data-group-id');
+      currentGroupId = await app.homePage.messagePanel.conversationPage.self.getAttribute('data-group-id');
       await pvtChat.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     });
@@ -116,7 +116,7 @@ test(
 
     await h(t).withLog(`When I open a Fav conversation and then click close conversation button`, async () => {
       await favChat.enter();
-      currentGroupId = await app.homePage.messagePanel.conversationPage.root.getAttribute('data-group-id');
+      currentGroupId = await app.homePage.messagePanel.conversationPage.self.getAttribute('data-group-id');
       await favChat.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     });
@@ -136,7 +136,7 @@ test(
 
     await h(t).withLog(`When I open a team conversation and then click close conversation button`, async () => {
       await team.enter()
-      currentGroupId = await app.homePage.messagePanel.conversationPage.root.getAttribute('data-group-id');
+      currentGroupId = await app.homePage.messagePanel.conversationPage.self.getAttribute('data-group-id');
       await team.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     });
@@ -219,7 +219,7 @@ test(
       await teamsSection.expand();
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
       await team.enter();
-      currentGroupId = await app.homePage.messagePanel.conversationPage.root.getAttribute('data-group-id');
+      currentGroupId = await app.homePage.messagePanel.conversationPage.self.getAttribute('data-group-id');
     });
 
 
