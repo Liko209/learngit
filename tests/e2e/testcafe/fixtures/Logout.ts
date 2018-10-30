@@ -12,7 +12,7 @@ fixture('Logout')
     .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
     .afterEach(teardownCase());
 
-test(formalName('Logout', ['JPT-', 'P0', 'Logout']), async (t) => {
+test(formalName('Logout', ['JPT-70', 'P0', 'Logout']), async (t) => {
     const user = h(t).rcData.mainCompany.users[4];
     const app = new AppRoot(t);
 
