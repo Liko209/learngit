@@ -50,6 +50,7 @@ const LinkThumbnails = styled<{img: string}, 'div'>('div')`
 const TitleNSummaryWrapper = styled.div`
   flex: 1;
   margin-left: ${spacing(3)};
+  width: 0;
 `;
 const LinkTitle = styled.p`
   margin-top: 0;

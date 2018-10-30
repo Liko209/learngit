@@ -6,7 +6,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiConversationCardLinkItems } from '../ConversationCardLinkItems';
-import thumbnail from './summary.png';
+import thumbnail from '../link_img@2x.png';
 
 storiesOf('Pattern', module)
   .add('ConversationCardLinkItems', () => {
