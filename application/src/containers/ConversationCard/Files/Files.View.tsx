@@ -10,11 +10,11 @@ import {
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { getSize } from '@/utils/helper';
+import { getFileSize } from '@/utils/helper';
 
-import { FilesViewProps, FileType, extendFile } from './types';
+import { FilesViewProps, FileType, ExtendFile } from './types';
 
-const downLoadBtn = (downloadUrl: string) => (
+const downloadBtn = (downloadUrl: string) => (
   <JuiIconButton
     component="a"
     download={true}
@@ -32,45 +32,45 @@ class FilesView extends React.Component<FilesViewProps> {
 
     return (
       <>
-        {files[FileType.image].map((file: extendFile) => {
-          const { item, id, previewUrl } = file;
-          const { origHeight, origWidth, name, downloadUrl } = item;
+        {files[FileType.image].map((file: ExtendFile) => {
+          const { item, previewUrl } = file;
+          const { origHeight, id, origWidth, name, downloadUrl } = item;
           return (
             <JuiPreviewImage
               key={id}
               ratio={origHeight / origWidth}
               fileName={name}
               url={previewUrl}
-              actions={downLoadBtn(downloadUrl)}
+              actions={downloadBtn(downloadUrl)}
             />
           );
         })}
-        {files[FileType.document].map((file: extendFile) => {
-          const { item, id, previewUrl } = file;
-          const { size, type, name, downloadUrl } = item;
+        {files[FileType.document].map((file: ExtendFile) => {
+          const { item, previewUrl } = file;
+          const { size, type, id, name, downloadUrl } = item;
           const iconType = getFileIcon(type);
           return (
             <JuiFileWithPreview
               key={id}
               fileName={name}
-              size={`${getSize(size)}`}
+              size={`${getFileSize(size)}`}
               url={previewUrl}
               iconType={iconType}
-              actions={downLoadBtn(downloadUrl)}
+              actions={downloadBtn(downloadUrl)}
             />
           );
         })}
-        {files[FileType.others].map((file: extendFile) => {
-          const { item, id } = file;
-          const { size, type, name, downloadUrl } = item;
+        {files[FileType.others].map((file: ExtendFile) => {
+          const { item } = file;
+          const { size, type, name, downloadUrl, id } = item;
           const iconType = getFileIcon(type);
           return (
             <JuiFileWithoutPreview
               key={id}
               fileName={name}
-              size={`${getSize(size)}`}
+              size={`${getFileSize(size)}`}
               iconType={iconType}
-              actions={downLoadBtn(downloadUrl)}
+              actions={downloadBtn(downloadUrl)}
             />
           );
         })}

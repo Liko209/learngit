@@ -13,9 +13,8 @@ enum FileType {
   others,
 }
 
-type extendFile = {
+type ExtendFile = {
   item: ItemModel;
-  id: number;
   type: number;
   previewUrl: string;
 };
@@ -26,12 +25,12 @@ type FilesProps = {
 
 type FilesViewProps = {
   files: {
-    [FileType.image]: extendFile[];
-    [FileType.document]: extendFile[];
-    [FileType.others]: extendFile[];
+    [FileType.image]: ExtendFile[];
+    [FileType.document]: ExtendFile[];
+    [FileType.others]: ExtendFile[];
   };
   getFileIcon: (fileType: string) => string | null;
   ids: number[];
 };
 
-export { FilesProps, FilesViewProps, FileType, extendFile };
+export { FilesProps, FilesViewProps, FileType, ExtendFile };

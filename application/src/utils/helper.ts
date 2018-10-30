@@ -64,7 +64,7 @@ function handleOneOfName(firstName: string, lastName: string) {
   return `${firstLetter}${lastLetter}`;
 }
 
-function getSize(bytes: number) {
+function getFileSize(bytes: number) {
   if (bytes / 1024 < 1000) {
     return `${(bytes / 1024).toFixed(1)}Kb`;
   }
@@ -80,5 +80,5 @@ export {
   isOnlyLetterOrNumbers,
   handleOnlyLetterOrNumbers,
   handleOneOfName,
-  getSize,
+  getFileSize,
 };
