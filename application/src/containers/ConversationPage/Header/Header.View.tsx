@@ -161,6 +161,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
     return (
       <JuiConversationPageHeader
+        data-test-automation-id="conversation-page-header"
         title={title}
         SubTitle={this._SubTitle()}
         Right={this._ActionButtons()}

@@ -32,9 +32,9 @@ const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
         />,
       ])}
       <JuiDivider key="divider" />
-      {props.sections.map((type, index) => [
+      {props.sections.map((type, index, array) => [
         index ? <JuiDivider key="divider" /> : null,
-        <Section key={type} type={type} />,
+        <Section key={type} type={type} isLast={index === array.length - 1} />,
       ])}
     </Wrapper>
   );
