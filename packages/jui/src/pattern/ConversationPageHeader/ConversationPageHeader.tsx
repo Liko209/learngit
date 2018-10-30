@@ -20,7 +20,7 @@ import {
   height,
   spacing,
 } from '../../foundation/utils/styles';
-import styled, { Dependencies } from '../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { isTextOverflow } from '../../foundation/utils';
 
 type JuiConversationPageHeaderProps = {
@@ -80,8 +80,7 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
 
 type IJuiConversationPageHeader = React.Component<
   JuiConversationPageHeaderProps
-> &
-  Dependencies;
+>;
 
 class JuiConversationPageHeader
   extends React.Component<

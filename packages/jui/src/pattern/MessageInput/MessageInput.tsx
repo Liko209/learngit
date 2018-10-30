@@ -16,7 +16,7 @@ import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
 
 import 'react-quill/dist/quill.snow.css';
 
-const GlobalStyle = createGlobalStyle`
+const GlobalStyle = createGlobalStyle<{}>`
   .quill {
     width: 100%;
     align-self: flex-end;

@@ -5,7 +5,7 @@
  */
 import React, { SFC } from 'react';
 import MuiBadge, { BadgeProps as MuiBadgeProps } from '@material-ui/core/Badge';
-import styled, { css, Dependencies } from '../../foundation/styled-components';
+import styled, { css } from '../../foundation/styled-components';
 import { Omit } from '../../foundation/utils/typeHelper';
 import { width, height } from '../../foundation/utils/styles';
 
@@ -55,7 +55,7 @@ export type JuiBadgeProps = Omit<MuiBadgeProps, 'innerRef'> & {
   placement?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 };
 
-const JuiBadge: SFC<JuiBadgeProps> & Dependencies = (props: JuiBadgeProps) => (
+const JuiBadge: SFC<JuiBadgeProps> = (props: JuiBadgeProps) => (
   <StyledBadge
     {...props}
     classes={{
@@ -70,6 +70,5 @@ JuiBadge.defaultProps = {
   placement: 'top-right',
 };
 JuiBadge.displayName = 'JuiBadge';
-JuiBadge.dependencies = [MuiBadge];
 
 export { JuiBadge, MuiBadgeProps };

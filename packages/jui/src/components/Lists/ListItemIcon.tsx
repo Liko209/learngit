@@ -17,6 +17,5 @@ const JuiListItemIcon = styled(MuiListItemIcon)`
 `;
 
 JuiListItemIcon.displayName = 'JuiListItemIcon';
-JuiListItemIcon.dependencies = [MuiListItemIcon];
 
 export { JuiListItemIcon, JuiListItemIconProps };

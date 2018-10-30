@@ -10,7 +10,6 @@ export interface ICompany {
 
 export interface IUser {
   rcId?: string;
-  glipId?: string;
   company: ICompany;
   extension?: string;
   email?: string;

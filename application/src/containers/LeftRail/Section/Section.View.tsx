@@ -14,9 +14,6 @@ import { ConversationListItem } from '@/containers/ConversationList/Conversation
 import { toTitleCase } from '@/utils';
 import { SectionViewProps } from './types';
 import { Umi } from '../../Umi';
-import storeManager from '@/store';
-import history from '@/utils/history';
-import { GLOBAL_KEYS } from '@/store/constants';
 // TODO remove Stubs here
 
 const SortableList = SortableContainer(JuiConversationList);
@@ -25,17 +22,6 @@ const SortableItem = SortableElement(ConversationListItem);
 type Props = SectionViewProps & WithNamespaces;
 
 class SectionViewComponent extends React.Component<Props> {
-  componentDidUpdate(prevProps: Props) {
-    const prevGroupIds = prevProps.groupIds;
-    const { groupIds } = this.props;
-    const diff = [...prevGroupIds].filter(id => !new Set(groupIds).has(id));
-    const currentGroupId = storeManager
-      .getGlobalStore()
-      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    if (diff.length === 1 && diff[0] === currentGroupId) {
-      history.replace('/messages');
-    }
-  }
   renderList() {
     const { sortable, onSortEnd } = this.props;
 

@@ -5,6 +5,10 @@ import { Selector } from 'testcafe';
 import { IUser } from '../models'
 import { h } from '../helpers'
 import * as assert from 'assert';
+import { getLogger } from 'log4js';
+
+const logger = getLogger('BaseWebComponent');
+logger.level = 'info';
 
 export abstract class BaseWebComponent {
 
@@ -68,10 +72,8 @@ export abstract class BaseWebComponent {
 
     // misc
     warnFlakySelector() {
-        // TODO: using stackman for better call-site info
         const stack = (new Error()).stack;
-        console.error('a flaky selector is found:');
-        console.error(stack);
+        logger.warn(`a flaky selector is found ${stack.split('\n')[2].trim()}`);
     }
 
 }

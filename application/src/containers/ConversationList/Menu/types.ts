@@ -21,7 +21,7 @@ type MenuViewProps = {
   shouldSkipCloseConfirmation: boolean;
   showClose?: boolean;
   onClose: (event: MouseEvent<HTMLElement>) => void;
-  toggleFavorite: () => void;
+  toggleFavorite: () => Promise<ServiceCommonErrorType>;
   closeConversation: (
     shouldSkipNextTime: boolean,
   ) => Promise<ServiceCommonErrorType>;

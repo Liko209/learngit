@@ -5,10 +5,7 @@
  */
 
 import * as React from 'react';
-import styled, {
-  Dependencies,
-  css,
-} from '../../../foundation/styled-components';
+import styled, { css } from '../../../foundation/styled-components';
 import { Theme } from '../../../foundation/theme/theme';
 import { JuiIconButton, JuiIconButtonProps } from '../IconButton/IconButton';
 import {
@@ -40,11 +37,12 @@ const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
 
 type StyledIconButtonChild = JuiIconButtonProps &
   JuiButtonBarProps & { index?: number; componentName: string };
-type StyledCheckboxButtonChild = JuiCheckboxButtonProps & JuiButtonBarProps & {
-  index?: number;
-  componentName: string;
-  variant?: string;
-};
+type StyledCheckboxButtonChild = JuiCheckboxButtonProps &
+  JuiButtonBarProps & {
+    index?: number;
+    componentName: string;
+    variant?: string;
+  };
 type StyledChild = StyledIconButtonChild | StyledCheckboxButtonChild;
 
 const overlappingSize = {
@@ -102,7 +100,7 @@ const StyledChild = styledComponentWrapper<StyledChild>(
   `,
 );
 
-type IButtonBar = React.SFC<JuiButtonBarProps> & Dependencies;
+type IButtonBar = React.SFC<JuiButtonBarProps>;
 const JuiButtonBar: IButtonBar = ({ children, ...rest }) => {
   return (
     <StyledButtonBar {...rest}>

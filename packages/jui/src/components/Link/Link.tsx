@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import tinycolor from 'tinycolor2';
-import styled, { Dependencies } from '../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { typography, palette, grey } from '../../foundation/utils/styles';
 
 type JuiLinkProps = {
@@ -32,7 +32,7 @@ const StyledComponent = styled<JuiLinkProps, 'span'>('span')`
   }
 `;
 
-type ILink = React.ComponentType<JuiLinkProps> & Dependencies;
+type ILink = React.ComponentType<JuiLinkProps>;
 const JuiLink: ILink = ({ Component, ...rest }: JuiLinkProps) => {
   return Component ? (
     <Component {...rest}>

@@ -6,6 +6,7 @@
 
 import { observable, computed, action } from 'mobx';
 import { Group, Person } from 'sdk/models';
+import { service } from 'sdk';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -15,10 +16,14 @@ import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
 import { t } from 'i18next';
 import _ from 'lodash';
+import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
+const { GroupService } = service;
 
 class HeaderViewModel extends AbstractViewModel {
   @observable
   private _id: number;
+
+  private _groupService: service.GroupService = GroupService.getInstance();
 
   @action
   onReceiveProps({ id }: { id: number }) {
@@ -103,6 +108,13 @@ class HeaderViewModel extends AbstractViewModel {
       actions.push(factory('add member', 'person_add', 'addMembers'));
     }
     return actions;
+  }
+
+  onFavoriteButtonHandler = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ): Promise<ServiceCommonErrorType> => {
+    return this._groupService.markGroupAsFavorite(this._id, checked);
   }
 }
 
