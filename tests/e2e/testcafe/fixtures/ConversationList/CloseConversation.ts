@@ -55,14 +55,14 @@ test(
       },
     );
 
-    await h(t).withLog('All conversations should not be hidden before login',async () => {
-        await userGlip.updateProfile(user.rcId, {
-          [`hide_group_${pvtChatId}`]: false,
-          [`hide_group_${groupId}`]: false,
-          [`hide_group_${teamId}`]: false,
-          favorite_group_ids: [+groupId]
-        });
-      },
+    await h(t).withLog('All conversations should not be hidden before login', async () => {
+      await userGlip.updateProfile(user.rcId, {
+        [`hide_group_${pvtChatId}`]: false,
+        [`hide_group_${groupId}`]: false,
+        [`hide_group_${teamId}`]: false,
+        favorite_group_ids: [+groupId]
+      });
+    },
     );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
@@ -79,7 +79,7 @@ test(
       });
 
     //FIXME: use group id, sometimes can not find conversation.
-    const pvtChat = dmSection.nthConversationEntry(0); 
+    const pvtChat = dmSection.nthConversationEntry(0);
     const favChat = favSection.nthConversationEntry(0);
     const team = teamsSection.nthConversationEntry(0);
 
@@ -89,7 +89,7 @@ test(
       await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });;
       await favSection.expand();
       await t.expect(favChat.exists).ok(groupId, { timeout: 10e3 });
-      await teamsSection.expand();        
+      await teamsSection.expand();
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
     });
 
@@ -101,16 +101,17 @@ test(
     });
 
     await h(t).withLog(`Then the PrivateChat conversation should be remove from conversation list.`, async () => {
-      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
+      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists).notOk();
     });
-    
-    await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {;
+
+    await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
+      ;
       await t.wait(2e3)
       const open_url = await h(t).href;;
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
-      await t.expect(app.homePage.messagePanel.conversationSection.messageInputArea.exists).notOk()
+      await t.expect(app.homePage.messagePanel.conversationPage.messageInputArea.exists).notOk()
     })
 
     await h(t).withLog(`When I open a Fav conversation and then click close conversation button`, async () => {
@@ -126,11 +127,11 @@ test(
 
     await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
       await t.wait(2e3);
-       const open_url = await h(t).href;;
+      const open_url = await h(t).href;;
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
-      await t.expect(app.homePage.messagePanel.conversationSection.messageInputArea.exists).notOk()
+      await t.expect(app.homePage.messagePanel.conversationPage.messageInputArea.exists).notOk()
     })
 
     await h(t).withLog(`When I open a team conversation and then click close conversation button`, async () => {
@@ -141,7 +142,7 @@ test(
     });
 
     await h(t).withLog(`Then the team conversation should be remove from conversation list.`, async () => {
-      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists,).notOk();
+      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists).notOk();
     });
 
     await h(t).withLog(`And Content panel should navigate to Blank page`, async () => {
@@ -151,7 +152,7 @@ test(
       const str = open_url.toString().split('messages');
       await t.expect(str.length).eql(2)
         .expect(str[1]).eql('');
-      await t.expect(app.homePage.messagePanel.conversationSection.messageInputArea.exists).notOk()
+      await t.expect(app.homePage.messagePanel.conversationPage.messageInputArea.exists).notOk()
     })
   },
 );
@@ -208,14 +209,14 @@ test(
       });
 
     //FIXME: use group id, sometimes can not find conversation.
-    const pvtChat = dmSection.nthConversationEntry(0); 
+    const pvtChat = dmSection.nthConversationEntry(0);
     const team = teamsSection.nthConversationEntry(0);
 
     await h(t).withLog(`Then I clean UMI in the A and B`, async () => {
       await dmSection.expand();
       await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
       await pvtChat.enter();
-      await teamsSection.expand();        
+      await teamsSection.expand();
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
       await team.enter();
       currentGroupId = await app.homePage.messagePanel.conversationPage.root.getAttribute('data-group-id');
@@ -231,13 +232,13 @@ test(
 
     await h(t).withLog(`Then  conversation A should be remove from conversation list.`, async () => {
       await t.wait(2e3);
-      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists).notOk();   
+      await t.expect(dmSection.conversationByIdEntry(currentGroupId).exists).notOk();
     });
 
     await h(t).withLog(`And Still focus on conversation B`, async () => {
       await t.wait(2e3);
       urlAfterClose = await h(t).href;;
-      await t.expect(urlAfterClose).eql(urlBeforeClose,"URL is changed")
+      await t.expect(urlAfterClose).eql(urlBeforeClose, "URL is changed")
     });
   },
 );
@@ -277,11 +278,11 @@ test(
     );
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
-        await userGlip.updateProfile(user.rcId, {
-          [`hide_group_${pvtChatId}`]: false,
-          [`hide_group_${teamId}`]: false,
-        });
-      },
+      await userGlip.updateProfile(user.rcId, {
+        [`hide_group_${pvtChatId}`]: false,
+        [`hide_group_${teamId}`]: false,
+      });
+    },
     );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
@@ -310,7 +311,7 @@ test(
     await h(t).withLog(`When I click conversation A's close buttom`, async () => {
       await pvtChat.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
-    }); 
+    });
 
     await h(t).withLog(`Then a confirm dialog should be popup`, async () => {
       await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
@@ -331,7 +332,7 @@ test(
     await h(t).withLog(`When I click conversation B's close buttom`, async () => {
       await team.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
-    }); 
+    });
 
     await h(t).withLog(`Then should be show the confirm dialog again`, async () => {
       await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
@@ -407,7 +408,7 @@ test(
     await h(t).withLog(`When I click conversation A's close buttom`, async () => {
       await pvtChat.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
-    }); 
+    });
 
     await h(t).withLog(`Then a confirm dialog should be popup`, async () => {
       await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
@@ -429,7 +430,7 @@ test(
     await h(t).withLog(`When I click conversation B's close buttom`, async () => {
       await team.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
-    }); 
+    });
 
     await h(t).withLog(`Then should not show  the confirm dialog agin`, async () => {
       await t.expect(dialog.exists).notOk();
@@ -485,16 +486,16 @@ test(
       },
     );
 
-    await h(t).withLog('All conversations should not be hidden before login',async () => {
-        await userGlip.updateProfile(user.rcId, {
-          [`hide_group_${pvtChatId}`]: false,
-          [`hide_group_${favGroupId}`]: false,
-          [`hide_group_${teamId1}`]: false,
-          [`hide_group_${teamId2}`]: false,
-          favorite_group_ids: [+favGroupId]
-        });
-      },
-    ); 
+    await h(t).withLog('All conversations should not be hidden before login', async () => {
+      await userGlip.updateProfile(user.rcId, {
+        [`hide_group_${pvtChatId}`]: false,
+        [`hide_group_${favGroupId}`]: false,
+        [`hide_group_${teamId1}`]: false,
+        [`hide_group_${teamId2}`]: false,
+        favorite_group_ids: [+favGroupId]
+      });
+    },
+    );
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
@@ -507,16 +508,16 @@ test(
     );
 
 
-    await h(t).withLog('And other user send post to each conversation',async () => {
+    await h(t).withLog('And other user send post to each conversation', async () => {
       await teamsSection.expand();
       await teamsSection.conversationByIdEntry(teamId2).enter();
       const user5Platform = await h(t).getPlatform(users[5]);
       const umiGroupIds = [favGroupId, pvtChatId, teamId1];
-      for ( let id of umiGroupIds ) {
+      for (let id of umiGroupIds) {
         await user5Platform.createPost(
-          { text: `Hi, ![:Person](${user.rcId})` }, 
+          { text: `Hi, ![:Person](${user.rcId})` },
           id
-        ); 
+        );
       }
     });
 
@@ -537,34 +538,34 @@ test(
     await h(t).withLog(`When I click more Icon of a favorites conversation with UMI`, async () => {
       const UMI = await dmSection.conversations.find('.umi').withText(/\d+/)
       const moreIcon = UMI.nth(0).parent().find('span').withText('more_vert');
-      await t.click(moreIcon); 
-    });  
+      await t.click(moreIcon);
+    });
 
     await h(t).withLog(`Then the close button should not be show`, async () => {
       await t.expect(closeButton.exists).notOk();
-    });  
+    });
 
     await h(t).withLog(`When I click more Icon of a DM conversation with UMI`, async () => {
       const UMI = dmSection.conversations.find('.umi').withText(/\d+/)
       const moreIcon = UMI.nth(0).parent().find('span').withText('more_vert');
-      await t.click(moreIcon); 
-    });  
+      await t.click(moreIcon);
+    });
 
     await h(t).withLog(`Then the close button should not be show`, async () => {
       await t.expect(closeButton.exists).notOk();
-    });  
+    });
 
     await h(t).withLog(`When I click more Icon of a teams conversation with UMI`, async () => {
       const UMI = teamsSection.conversations.find('.umi').withText(/\d+/)
       const moreIcon = UMI.nth(0).parent().find('span').withText('more_vert');
-      await t.click(moreIcon); 
-    });  
+      await t.click(moreIcon);
+    });
 
     await h(t).withLog(`Then the close button should not be show`, async () => {
       await t.expect(closeButton.exists).notOk();
-    });  
+    });
 
-    await h(t).withLog(`And clean all UMI`, async ()=>{
+    await h(t).withLog(`And clean all UMI`, async () => {
       await t.wait(2e3);
       const umiConversations = app.homePage.messagePanel.conversationListSections
         .find('.umi').withText(/\d+/).sibling('p');
@@ -572,6 +573,6 @@ test(
       for (let i = count - 1; i >= 0; i--) {
         await await t.click(umiConversations.nth(i));
       }
-    });    
+    });
   },
 );

@@ -38,7 +38,7 @@ test(formalName('send', ['P0', 'JPT-77', 'Enter text in the conversation input b
   const identifier = uuid();
   const message = `${faker.lorem.sentence()} ${identifier}`;
 
-  const conversationSection = app.homePage.messagePanel.conversationSection;
+  const conversationSection = app.homePage.messagePanel.conversationPage;
   await h(t).withLog('Then I can send message to this conversation', async () => {
     await conversationSection.sendMessage(message);
   });

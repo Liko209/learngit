@@ -61,7 +61,7 @@ test(
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
       postData = (await userPlatform.createPost({ text: postContent }, groupId)).data;
-      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
+      targetPost = app.homePage.messagePanel.conversationPage.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok(postData)
     });
 
@@ -110,7 +110,7 @@ test(
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
       postData = (await userGlip.sendPost(groupId, postContent)).data;
-      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
+      targetPost = app.homePage.messagePanel.conversationPage.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok();
     })
 
@@ -157,7 +157,7 @@ test(
 
     await h(t).withLog(`And I send one text post to current conversation`, async () => {
       postData = (await userGlip.sendPost(groupId, postContent)).data;
-      targetPost = app.homePage.messagePanel.conversationSection.posts.withAttribute('data-id', postData.id)
+      targetPost = app.homePage.messagePanel.conversationPage.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok(postData);
       // FIXME: flaky selector
       userName = await targetPost.child(1).child(0).child(0).child(0).textContent;
