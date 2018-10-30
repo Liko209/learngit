@@ -51,7 +51,7 @@ class MenuViewComponent extends Component<Props, State> {
         content: t('conversationMenuItem:markFavoriteServerErrorContent'),
         okText: t('conversationMenuItem:OK'),
         okBtnType: 'text',
-        onOK: () => {},
+        onOK: () => { },
       });
     }
   }
@@ -126,7 +126,7 @@ class MenuViewComponent extends Component<Props, State> {
         open={!!anchorEl}
         onClose={onClose}
       >
-        <JuiMenuItem onClick={this._handleToggleFavorite}>
+        <JuiMenuItem data-test-automation-id="favToggler" onClick={this._handleToggleFavorite}>
           {t(`conversationMenuItem:${favoriteText}`)}
         </JuiMenuItem>
         {this.renderCloseMenuItem()}

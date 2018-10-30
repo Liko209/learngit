@@ -896,8 +896,7 @@ test(
       favoritesSection.warnFlakySelector();
       const favoriteButton = app.homePage
         .getSelector('#render-props-menu')
-        .find('li')
-        .withText('Favorite');
+        .find('li[data-test-automation-id="favToggler"]')
       await t.click(favoriteButton);
 
       const item2 = teamsSection.conversations.filter(
@@ -908,8 +907,7 @@ test(
       favoritesSection.warnFlakySelector();
       const favoriteButton2 = app.homePage
         .getSelector('#render-props-menu')
-        .find('li')
-        .withText('Favorite');
+        .find('li[data-test-automation-id="favToggler"]')
       await t.click(favoriteButton2);
     });
 
@@ -971,8 +969,7 @@ test(
         favoritesSection.warnFlakySelector();
         const favoriteButton = app.homePage
           .getSelector('#render-props-menu')
-          .find('li')
-          .withText('UnFavorite');
+          .find('li[data-test-automation-id="favToggler"]')
         await t.click(favoriteButton);
 
         const item2 = favoritesSection.conversations.filter(
@@ -982,8 +979,7 @@ test(
         await t.click(moreIcon2);
         const favoriteButton2 = app.homePage
           .getSelector('#render-props-menu')
-          .find('li')
-          .withText('UnFavorite');
+          .find('li[data-test-automation-id="favToggler"]')
         await t.click(favoriteButton2);
       },
     );
