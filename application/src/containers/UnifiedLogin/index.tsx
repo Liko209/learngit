@@ -115,6 +115,7 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
   render() {
     const { t } = this.props;
     window.jupiterElectron = {
+      ...window.jupiterElectron,
       handleAboutPage: this._handleAboutPage,
     };
     const { isShowDialog, appVersion, electronVersion } = this.state;
