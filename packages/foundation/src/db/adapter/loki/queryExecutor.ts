@@ -7,7 +7,7 @@ import Loki from 'lokijs';
 import CriteriaParser from '../CriteriaParser';
 // import LokiCollection from './LokiCollection';
 // import { array } from 'prop-types';
-import { IQuery, ICriteria, IRange, IEqual, IContain } from '../../db';
+import { IQuery, ICriteria, IRange, IEqual, IContain, IFilter } from '../../db';
 
 function isLokiCollection(collection: any): collection is Loki.Collection {
   return collection.chain !== undefined;
@@ -80,12 +80,12 @@ export const execQuery = <T extends {}>(
   });
 
   startsWiths.forEach(({ key, value, ignoreCase }) => {
-    const $regex = new RegExp('^' + value, ignoreCase ? 'i' : undefined);
+    const $regex = new RegExp(`^${value}`, ignoreCase ? 'i' : undefined);
     const condition = { [key]: { $regex } };
     resultSet = resultSet.find(condition);
   });
 
-  filters.forEach(fn => {
+  filters.forEach((fn: IFilter<T>) => {
     resultSet = resultSet.where(fn);
   });
 
