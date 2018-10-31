@@ -41,6 +41,5 @@ const StyledRight = styled('div')`
 `;
 
 StyledRight.displayName = 'StyledRight';
-StyledRight.dependencies = [];
 
 export { StyledRight };

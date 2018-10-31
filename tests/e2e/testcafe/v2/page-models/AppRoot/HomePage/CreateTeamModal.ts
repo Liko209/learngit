@@ -2,19 +2,19 @@
 import { BaseWebComponent } from '../../BaseWebComponent';
 
 export class CreateTeamModal extends BaseWebComponent {
-    get root() {
+    get self() {
         this.warnFlakySelector();
         return this.getSelector('*[role="dialog"]');
     }
 
     get cancelButton() {
         this.warnFlakySelector();
-        return this.root.find('button[tabindex="0"]');
+        return this.self.find('button[tabindex="0"]');
     }
 
     get createButton() {
         this.warnFlakySelector();
-        return this.root.find('button[tabindex="-1"]');
+        return this.self.find('button[tabindex="-1"]');
     }
 
     async clickCancelButton() {

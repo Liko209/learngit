@@ -93,6 +93,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       Object.keys(this._handlersMap).forEach((key: string) => {
         this._handlersMap[key].removeByIds(inters);
       });
+      this._updateUrl(EVENT_TYPES.DELETE, inters);
     }
   }
 

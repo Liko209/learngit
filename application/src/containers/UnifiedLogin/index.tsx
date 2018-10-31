@@ -6,8 +6,7 @@
 
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { TranslationFunction } from 'i18next';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import styled from 'styled-components';
 import getUrl from './getUrl';
 
@@ -61,9 +60,8 @@ const Param = styled.p`
   color: ${grey('700')};
   font-size: ${({ theme }) => theme.typography.body2.fontSize};
 `;
-interface IProps extends RouteComponentProps<{}> {
-  t: TranslationFunction;
-}
+
+type Props = RouteComponentProps<{}> & WithNamespaces;
 
 interface IStates {
   isShowDialog: boolean;
@@ -71,8 +69,8 @@ interface IStates {
   electronVersion: string;
 }
 
-class UnifiedLogin extends React.Component<IProps, IStates> {
-  constructor(props: IProps) {
+class UnifiedLogin extends React.Component<Props, IStates> {
+  constructor(props: Props) {
     super(props);
     this._checkIfLogin();
   }
@@ -115,6 +113,7 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
   render() {
     const { t } = this.props;
     window.jupiterElectron = {
+      ...window.jupiterElectron,
       handleAboutPage: this._handleAboutPage,
     };
     const { isShowDialog, appVersion, electronVersion } = this.state;
