@@ -281,6 +281,14 @@ class BaseService<
 
     if (doPartialNotify) {
       doPartialNotify(originalModels, partialModels);
+    } else {
+      if (this.DaoClass) {
+        const dao = daoManager.getDao(this.DaoClass);
+        const modelName = dao.modelName.toUpperCase();
+        const eventKey: string = `ENTITY.${modelName}`;
+        mainLogger.info(`_doPartialSaveAndNotify: eventKey= ${eventKey}`);
+        notificationCenter.emitEntityUpdate(eventKey, partialModels);
+      }
     }
   }
 }
