@@ -1,5 +1,4 @@
 import 'testcafe';
-import * as _ from "lodash";
 import { IAccountPoolClient } from '../../libs/accounts';
 import { ICompany, IUser, IGroup } from '../models';
 
