@@ -71,13 +71,38 @@ function runOnDeleted({
 
 describe('NewMessageSeparatorHandler', () => {
   describe('onAdded()', () => {
-    it('should have a separator aim to the readThrough post', () => {
+    it('should have a separator next to the readThrough post', () => {
       const handler = runOnAdded({
         readThrough: 620249092,
         allPosts: [
           { id: 620232708, sortValue: 1540461821422 },
           { id: 620240900, sortValue: 1540461830617 },
           { id: 620249092, sortValue: 1540461830964 }, // readThrough is here
+          // separator should be here
+          { id: 620257284, sortValue: 1540461970776 },
+          { id: 620265476, sortValue: 1540461970958 },
+          { id: 620273668, sortValue: 1540461971175 },
+          { id: 620281860, sortValue: 1540461972285 },
+        ],
+      });
+
+      expect(handler.separatorMap.size).toBe(1);
+      expect(handler.separatorMap.get(620257284)).toHaveProperty(
+        'type',
+        SeparatorType.NEW_MSG,
+      );
+    });
+
+    it('should have a separator when the post next to the readThrough is sent by current user', () => {
+      const handler = runOnAdded({
+        currentUserId: 1,
+        postCreatorId: 2,
+        readThrough: 620249092,
+        allPosts: [
+          { id: 620232708, sortValue: 1540461821422 },
+          { id: 620240900, sortValue: 1540461830617 },
+          { id: 620249092, sortValue: 1540461830964, data: { creator_id: 1 } }, // readThrough is here
+          // separator should be here
           { id: 620257284, sortValue: 1540461970776 },
           { id: 620265476, sortValue: 1540461970958 },
           { id: 620273668, sortValue: 1540461971175 },

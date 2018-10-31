@@ -47,10 +47,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
       this._hasNewMessagesSeparator = lastPost.id !== this._readThrough;
     }
 
-    const firstUnreadPost = this._findNextPost(
-      this._getOtherUsersPosts(allPosts),
-      readThrough,
-    );
+    const firstUnreadPost = this._findNextOthersPost(allPosts, readThrough);
 
     if (firstUnreadPost) {
       // readThrough post in current page
@@ -109,12 +106,25 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     );
   }
 
-  private _findNextPost(allItems: ISortableModel<Post>[], postId: number) {
-    const postIndex = _.findIndex(allItems, item => item.id === postId);
+  private _findNextOthersPost(
+    allPosts: ISortableModel<Post>[],
+    postId: number,
+  ) {
+    const targetPost = allPosts.find(post => post.id === postId);
+    if (!targetPost) return;
 
-    if (postIndex === -1) return;
+    const nextPost = allPosts.find(
+      post =>
+        !!(
+          post.id > targetPost.id &&
+          post.data &&
+          post.data.creator_id !== this._userId
+        ),
+    );
 
-    return allItems[postIndex + 1];
+    if (!nextPost) return;
+
+    return nextPost;
   }
 
   private _setSeparator(postId: number) {
