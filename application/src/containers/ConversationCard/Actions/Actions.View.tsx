@@ -6,8 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate } from 'react-i18next';
-import { TranslationFunction } from 'i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { ActionsViewProps } from './types';
 import { JuiActions } from 'jui/pattern/ConversationCard/Actions';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
@@ -16,9 +15,7 @@ import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
 import { POST_STATUS } from 'sdk/service';
 import { JuiModal } from '@/containers/Dialog';
 
-type Props = ActionsViewProps & {
-  t: TranslationFunction;
-};
+type Props = ActionsViewProps & WithNamespaces;
 
 @observer
 class ActionsViewComponent extends Component<Props> {

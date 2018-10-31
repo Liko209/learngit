@@ -5,9 +5,8 @@
  */
 import * as React from 'react';
 import MuiChip, { ChipProps as MuiChipProps } from '@material-ui/core/Chip';
-import { JuiAvatar } from '../Avatar';
 import { JuiIconButton } from '../Buttons/IconButton';
-import styled, { Dependencies } from '../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { width, spacing, height } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 
@@ -45,9 +44,7 @@ const StyledChip = styled(MuiChip)`
   }
 `;
 
-export const JuiChip: React.SFC<TJuiChipProps> & Dependencies = (
-  props: TJuiChipProps,
-) => {
+export const JuiChip: React.SFC<TJuiChipProps> = (props: TJuiChipProps) => {
   const { onDelete, ChipAvatar, ...rest } = props;
   const avatar: any = ChipAvatar ? (
     <ChipAvatar size="small" uid={rest.uid} />
@@ -67,5 +64,3 @@ export const JuiChip: React.SFC<TJuiChipProps> & Dependencies = (
     />
   );
 };
-
-JuiChip.dependencies = [JuiAvatar];

@@ -11,8 +11,7 @@ import { JuiConversationListFilter } from 'jui/pattern/ConversationList/Conversa
 
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
-import { TranslationFunction } from 'i18next';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -20,9 +19,7 @@ const Wrapper = styled.div`
   border-right: 1px solid ${({ theme }) => theme.palette.divider};
 `;
 
-const LeftRailViewComponent = (
-  props: LeftRailViewProps & { t: TranslationFunction },
-) => {
+const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
   return (
     <Wrapper>
       {props.filters.map((filter, index) => [
@@ -35,9 +32,9 @@ const LeftRailViewComponent = (
         />,
       ])}
       <JuiDivider key="divider" />
-      {props.sections.map((type, index) => [
+      {props.sections.map((type, index, array) => [
         index ? <JuiDivider key="divider" /> : null,
-        <Section key={type} type={type} />,
+        <Section key={type} type={type} isLast={index === array.length - 1} />,
       ])}
     </Wrapper>
   );

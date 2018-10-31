@@ -40,10 +40,11 @@ test(
     );
 
     await h(t).withLog(
-      'And the conversation should not be hidden',
+      'And the conversation should not be hidden and not favorite',
       async () => {
-        await glipSdk.updateProfileByGlipId(user.glipId, {
+        await glipSdk.updateProfile(user.rcId, {
           [`hide_group_${group.data.id}`]: false,
+          favorite_group_ids: [],
         });
       },
     );
@@ -51,16 +52,16 @@ test(
     await h(t).withLog(
       `Given the group chat ${group.data.id} is last group selected`,
       async () => {
-        const stateId = await glipSdk.getStateIdByPersonId(user.glipId);
-        await glipSdk.partialUpdateState(stateId, {
+        await glipSdk.partialUpdateState(user.rcId, {
           last_group_id: group.data.id,
         });
       },
     );
 
-
     await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      `When I login Jupiter with this extension: ${user.company.number}#${
+        user.extension
+      }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -86,7 +87,7 @@ test(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.withAttribute(
+            app.homePage.messagePanel.conversationPage.self.withAttribute(
               'data-group-id',
               group.data.id,
             ).exists,
@@ -94,6 +95,5 @@ test(
           .ok();
       },
     );
-
   },
 );

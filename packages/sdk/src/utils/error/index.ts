@@ -10,9 +10,11 @@ import BaseError from './base';
 import ErrorTypes, { HttpError } from './types';
 import ErrorParser from './parser';
 
-window.addEventListener('error', (err: any) => {
-  notificationCenter.emit('Error', { error: ErrorParser.parse(err) });
-});
+if (typeof window !== 'undefined') {
+  window.addEventListener('error', (err: any) => {
+    notificationCenter.emit('Error', { error: ErrorParser.parse(err) });
+  });
+}
 
 const Throw = (code: number, message: string) => {
   throw new BaseError(code, message);

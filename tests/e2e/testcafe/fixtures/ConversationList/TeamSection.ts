@@ -42,7 +42,7 @@ test(
     await h(t).withLog(
       'And the team should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${team.data.id}`]: false,
         });
       },
@@ -50,7 +50,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -106,7 +106,7 @@ test(
     await h(t).withLog(
       'And the team should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${team.data.id}`]: false,
         });
       },
@@ -114,7 +114,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -186,7 +186,7 @@ test(
     await h(t).withLog(
       'And the team should not be hidden before login',
       async () => {
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${team1.data.id}`]: false,
           [`hide_group_${team2.data.id}`]: false,
         });
@@ -204,7 +204,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);

@@ -5,8 +5,7 @@
  */
 import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { TranslationFunction } from 'i18next';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { JuiLeftNav, JuiLeftNavProps } from 'jui/pattern/LeftNav';
 import { Umi } from '../Umi';
 import { LeftNavViewProps } from './types';
@@ -16,9 +15,9 @@ import { observer } from 'mobx-react';
 
 type LeftNavProps = {
   isLeftNavOpen: boolean;
-  t: TranslationFunction;
 } & LeftNavViewProps &
-  RouteComponentProps;
+  RouteComponentProps &
+  WithNamespaces;
 
 @observer
 class LeftNav extends Component<LeftNavProps> {

@@ -4,8 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { TranslationFunction } from 'i18next';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import {
   JuiConversationList,
@@ -15,30 +14,15 @@ import { ConversationListItem } from '@/containers/ConversationList/Conversation
 import { toTitleCase } from '@/utils';
 import { SectionViewProps } from './types';
 import { Umi } from '../../Umi';
-import storeManager from '@/store';
-import history from '@/utils/history';
-import { GLOBAL_KEYS } from '@/store/constants';
+import { JuiDivider } from 'jui/components/Divider';
 // TODO remove Stubs here
 
 const SortableList = SortableContainer(JuiConversationList);
 const SortableItem = SortableElement(ConversationListItem);
 
-type Props = SectionViewProps & {
-  t: TranslationFunction;
-};
+type Props = SectionViewProps & WithNamespaces;
 
 class SectionViewComponent extends React.Component<Props> {
-  componentDidUpdate(prevProps: Props) {
-    const prevGroupIds = prevProps.groupIds;
-    const { groupIds } = this.props;
-    const diff = [...prevGroupIds].filter(id => !new Set(groupIds).has(id));
-    const currentGroupId = storeManager
-      .getGlobalStore()
-      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    if (diff.length === 1 && diff[0] === currentGroupId) {
-      history.replace('/messages');
-    }
-  }
   renderList() {
     const { sortable, onSortEnd } = this.props;
 
@@ -67,7 +51,16 @@ class SectionViewComponent extends React.Component<Props> {
   }
 
   render() {
-    const { t, title, groupIds, iconName, expanded } = this.props;
+    const {
+      t,
+      title,
+      groupIds,
+      iconName,
+      expanded,
+      isLast,
+      handleCollapse,
+      handleExpand,
+    } = this.props;
     return (
       <div
         className="conversation-list-section"
@@ -78,9 +71,12 @@ class SectionViewComponent extends React.Component<Props> {
           icon={iconName}
           umi={<Umi ids={groupIds} />}
           expanded={expanded}
+          onCollapse={handleCollapse}
+          onExpand={handleExpand}
         >
           {this.renderList()}
         </JuiConversationListSection>
+        {isLast && !expanded ? <JuiDivider key="divider" /> : null}
       </div>
     );
   }

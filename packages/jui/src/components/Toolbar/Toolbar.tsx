@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import MuiToolbar, { ToolbarProps as MuiToolbarProps } from '@material-ui/core/Toolbar';
+import MuiToolbar, {
+  ToolbarProps as MuiToolbarProps,
+} from '@material-ui/core/Toolbar';
 import styled from '../../foundation/styled-components';
 
 type JuiToolbarProps = MuiToolbarProps;
@@ -12,6 +14,5 @@ type JuiToolbarProps = MuiToolbarProps;
 const JuiToolbar = styled(MuiToolbar)``;
 
 JuiToolbar.displayName = 'JuiToolbar';
-JuiToolbar.dependencies = [MuiToolbar];
 
 export { JuiToolbar, JuiToolbarProps };
