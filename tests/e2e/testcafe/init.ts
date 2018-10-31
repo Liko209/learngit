@@ -33,7 +33,7 @@ export function teardownCase() {
   return async (t: TestController) => {
     await h(t).dataHelper.teardown();
     if (DASHBOARD_UI) {
-      await h(t).BendAPIHelper.teardown(beatsClient);
+      await h(t).bendAPIHelper.teardown(beatsClient);
     }
   }
 }

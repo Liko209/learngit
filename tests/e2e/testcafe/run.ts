@@ -22,7 +22,7 @@ async function runTests(runnerOpts) {
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
 
   if (DASHBOARD_UI) {
-    let run = await beatsClient.createRun({ "name": JSON.stringify(runnerOpts, null, 2) } as Run);
+    const run = await beatsClient.createRun({ "name": JSON.stringify(runnerOpts, null, 2) } as Run);
   }
 
   runner

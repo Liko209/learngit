@@ -18,8 +18,8 @@ export {
 const PASS = 5;
 const FAILED = 8;
 const AllureStatusToDashboardStatusMap = {
-  'passed': PASS,
-  'failed': FAILED
+  passed: PASS,
+  failed: FAILED
 }
 
 export class BendAPIHelper {
@@ -27,19 +27,19 @@ export class BendAPIHelper {
 
   private async saveAttachment(file: string, stepId: number, beatsClient: BeatsClient) {
     return await beatsClient.createAttachment({
-      "file": file,
-      "contentType": "step",
-      "fileContentType": "multipart/form-data;",
-      "objectId": stepId
+      file: file,
+      contentType: "step",
+      fileContentType: "multipart/form-data;",
+      objectId: stepId
     } as Attachment);
   }
 
   private async saveStep(step: IStep, testId: number, beatsClient: BeatsClient) {
     let bStep = await beatsClient.createStep({
-      "name": step.message,
-      "status": AllureStatusToDashboardStatusMap[step.status],
-      "startTime": (new Date(step.startTime)).toISOString(),
-      "endTime": (new Date(step.endTime)).toISOString()
+      name: step.message,
+      status: AllureStatusToDashboardStatusMap[step.status],
+      startTime: (new Date(step.startTime)).toISOString(),
+      endTime: (new Date(step.endTime)).toISOString()
     } as Step, this.t.ctx.testId);
 
     if (step.screenshotPath) {
@@ -48,7 +48,7 @@ export class BendAPIHelper {
   }
 
   private async saveLogs(beatsClient: BeatsClient) {
-    let status = !_.some(this.t['testRun'].errs);
+    let status = !this.t['testRun'].errs.length;
     let test = await beatsClient.createTest({ "name": this.t['testRun'].test.name, "status": status ? PASS : FAILED } as Test);
     this.t.ctx.testId = test.id;
     for (const step of this.t.ctx.logs) {

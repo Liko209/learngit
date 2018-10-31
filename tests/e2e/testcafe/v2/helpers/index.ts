@@ -39,7 +39,7 @@ class Helper {
     return new LogHelper(this.t);
   }
 
-  get BendAPIHelper() {
+  get bendAPIHelper() {
     return new BendAPIHelper(this.t);
   }
 
