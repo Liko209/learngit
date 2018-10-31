@@ -21,4 +21,3 @@ export const JuiDivider = styled<JuiDividerProps>(MuiDivider)`
 `;
 
 JuiDivider.displayName = 'JuiDivider';
-JuiDivider.dependencies = [MuiDivider];

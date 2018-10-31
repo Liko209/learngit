@@ -1,0 +1,19 @@
+/*
+ * @Author: {{{userName}}} ({{{userEmail}}})
+ * @Date: {{{currentDate}}}
+ * Copyright © RingCentral. All rights reserved.
+ */
+import { {{ properCase name }}ViewModel } from '../{{ properCase name }}.ViewModel';
+
+let ViewModel: FormViewModel;
+
+describe('{{ properCase name }}VM', () => {
+  beforeAll(() => {
+    jest.resetAllMocks();
+    ViewModel = new {{ properCase name }}ViewModel();
+  });
+
+  it('Expect to have unit tests specified', () => {
+    expect(true).toEqual(false);
+  });
+});

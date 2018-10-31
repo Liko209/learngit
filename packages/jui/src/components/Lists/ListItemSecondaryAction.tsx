@@ -13,6 +13,5 @@ type JuiListItemSecondaryActionProps = MuiListItemSecondaryActionProps;
 const JuiListItemSecondaryAction = styled(MuiListItemSecondaryAction)``;
 
 JuiListItemSecondaryAction.displayName = 'JuiListItemSecondaryAction';
-JuiListItemSecondaryAction.dependencies = [MuiListItemSecondaryAction];
 
 export { JuiListItemSecondaryAction, JuiListItemSecondaryActionProps };

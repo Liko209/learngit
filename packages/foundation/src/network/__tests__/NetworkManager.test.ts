@@ -7,8 +7,9 @@ import {
   fakeHandleType,
   getFakeRequest,
   getFakeToken,
-  getFakeHandler
+  getFakeHandler,
 } from './utils';
+import OAuthTokenManager from '../OAuthTokenManager';
 let networkManager: NetworkManager;
 const initManagerWithHandlerType = () => {
   networkManager.initNetworkRequestBaseHandler(
@@ -18,7 +19,7 @@ const initManagerWithHandlerType = () => {
       decorate(request: IRequest) {
         jest.fn();
       }
-    }()
+    }(),
   );
 };
 describe('NetworkManager', () => {
@@ -27,14 +28,14 @@ describe('NetworkManager', () => {
   });
 
   beforeAll(() => {
-    networkManager = NetworkManager.Instance;
+    networkManager = new NetworkManager(new OAuthTokenManager());
   });
   describe('initNetworkRequestBaseHandler', () => {
     it('should have initiated request handler', () => {
       const spy = jest.spyOn(networkManager, 'addRequestConsumer');
       initManagerWithHandlerType();
       expect(
-        networkManager.networkRequestHandler(fakeHandleType)
+        networkManager.networkRequestHandler(fakeHandleType),
       ).not.toBeNull();
       expect(spy).toHaveBeenCalledTimes(2);
       expect(NetworkRequestSurvivalMode).toHaveBeenCalledTimes(1);
@@ -46,7 +47,7 @@ describe('NetworkManager', () => {
       const request = getFakeRequest();
       const spy = jest.spyOn(
         networkManager.networkRequestHandler(fakeHandleType),
-        'addApiRequest'
+        'addApiRequest',
       );
       networkManager.addApiRequest(request);
       expect(spy).toHaveBeenCalled();
@@ -100,7 +101,7 @@ describe('NetworkManager', () => {
       const request = getFakeRequest();
       const spy = jest.spyOn(
         networkManager.networkRequestHandler(fakeHandleType),
-        'cancelRequest'
+        'cancelRequest',
       );
       networkManager.cancelRequest(request);
       expect(spy).toHaveBeenCalled();
@@ -111,7 +112,7 @@ describe('NetworkManager', () => {
     it('should return tokenManager', () => {
       expect(networkManager.getTokenManager()).not.toBeNull();
       expect(
-        networkManager.getTokenManager() === networkManager.tokenManager
+        networkManager.getTokenManager() === networkManager.tokenManager,
       ).toBeTruthy();
     });
   });
@@ -144,7 +145,7 @@ describe('NetworkManager', () => {
     it('should get particular type handler', () => {
       expect(
         networkManager.networkRequestHandler(fakeHandleType) ===
-          networkManager.handlers.get(fakeHandleType)
+          networkManager.handlers.get(fakeHandleType),
       ).toBeTruthy();
     });
   });

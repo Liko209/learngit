@@ -36,6 +36,5 @@ const JuiMenuItem = styled(MuiMenuItem)`
 `;
 
 JuiMenuItem.displayName = 'JuiMenuItem';
-JuiMenuItem.dependencies = [MuiMenuItem];
 
 export { JuiMenuItem, JuiMenuItemProps };

@@ -4,8 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { translate } from 'react-i18next';
-import { TranslationFunction, i18n } from 'i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { JuiContactSearch } from 'jui/pattern/ContactSearch';
 
 import { Chip } from '@/containers/Chip';
@@ -13,10 +12,7 @@ import { ContactSearchItem } from './ContactSearchItem';
 
 import { ViewProps } from './types';
 
-type Props = {
-  i18n: i18n;
-  t: TranslationFunction;
-} & ViewProps;
+type Props = WithNamespaces & ViewProps;
 
 class ContactSearch extends React.Component<Props> {
   constructor(props: Props) {

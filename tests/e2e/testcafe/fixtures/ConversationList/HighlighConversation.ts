@@ -40,10 +40,11 @@ test(
     );
 
     await h(t).withLog(
-      'And the conversation should not be hidden',
+      'And the conversation should not be hidden and not favorite',
       async () => {
         await glipSdk.updateProfile(user.rcId, {
           [`hide_group_${group.data.id}`]: false,
+          favorite_group_ids: [],
         });
       },
     );
@@ -57,9 +58,10 @@ test(
       },
     );
 
-
     await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      `When I login Jupiter with this extension: ${user.company.number}#${
+        user.extension
+      }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -85,7 +87,7 @@ test(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.withAttribute(
+            app.homePage.messagePanel.conversationPage.self.withAttribute(
               'data-group-id',
               group.data.id,
             ).exists,
@@ -93,6 +95,5 @@ test(
           .ok();
       },
     );
-
   },
 );

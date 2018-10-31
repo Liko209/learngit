@@ -13,4 +13,3 @@ export const JuiPaper: React.SFC<JuiPaperProps> & {
 } = props => <MuiPaper {...props} />;
 
 JuiPaper.displayName = 'JuiPaper';
-JuiPaper.dependencies = [MuiPaper];

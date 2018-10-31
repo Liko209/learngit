@@ -21,7 +21,7 @@ class OAuthTokenHandler implements ITokenHandler {
 
   constructor(
     type: IHandleType,
-    cumstumizedHandler: ITokenHandler,
+    cumstomizedHandler: ITokenHandler,
     token?: Token,
     basic?: string,
     listener?: ITokenRefreshListener,
@@ -130,7 +130,7 @@ class OAuthTokenHandler implements ITokenHandler {
         }
         if (this.token) {
           this.doRefreshToken(this.token)
-            .then((token) => {
+            .then((token: Token) => {
               if (token) {
                 this.token = token;
                 this._notifyRefreshTokenSuccess(token);
