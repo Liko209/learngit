@@ -38,8 +38,22 @@ export async function initAll() {
     db,
   });
 
+  const {
+    notificationCenter,
+    AccountService,
+    socketManager,
+    SOCKET,
+    SERVICE,
+  } = service;
+
+  window.jupiterElectron = {
+    ...window.jupiterElectron,
+    onPowerMonitorEvent: (actionName: string) => {
+      socketManager.onPowerMonitorEvent(actionName);
+    },
+  };
+
   // subscribe service notification to global store
-  const { notificationCenter, AccountService, SOCKET, SERVICE } = service;
   const globalStore = storeManager.getGlobalStore();
   const accountService: service.AccountService = AccountService.getInstance();
   notificationCenter.on(SOCKET.NETWORK_CHANGE, (data: any) => {
