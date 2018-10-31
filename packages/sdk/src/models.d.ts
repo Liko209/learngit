@@ -96,6 +96,7 @@ export type Company = ExtendedBaseModel & {
   admins: number[];
   custom_emoji: { [index: string]: { data: string } };
   _delta?: { add_keys?: object; remove_keys: object; };
+  rc_account_id?: number;
 };
 
 export type Person = ExtendedBaseModel & {
@@ -122,6 +123,7 @@ export type Person = ExtendedBaseModel & {
   glip_user_id?: number;
   away_status?: string;
   pseudo_user_phone_number?: string;
+  rc_account_id?: number;
 };
 
 export type UserInfo = {
