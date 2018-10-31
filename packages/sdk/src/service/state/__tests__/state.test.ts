@@ -49,7 +49,10 @@ describe('StateService', () => {
   const groupStateDao = new GroupStateDao(null);
   const stateDao = new StateDao(null);
   const accountDao = new AccountDao(null);
-  PostService.getInstance = jest.fn().mockReturnValue(postService);
+
+  beforeEach(() => {
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -80,8 +83,7 @@ describe('StateService', () => {
     });
 
     it('should call dependencies', async () => {
-      await stateService.updateState(12, () => ({}));
-      expect(postService.getLastPostOfGroup).toHaveBeenCalledTimes(1);
+      await stateService.updateState(12, 3, () => ({}));
       expect(stateDao.getFirst).toHaveBeenCalledTimes(1);
       expect(groupStateDao.get).toHaveBeenCalledTimes(1);
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
@@ -91,7 +93,7 @@ describe('StateService', () => {
       postService.getLastPostOfGroup.mockResolvedValueOnce({});
       stateDao.getFirst.mockResolvedValueOnce({});
       groupStateDao.get.mockReturnValue(null);
-      await stateService.updateState(12, () => ({}));
+      await stateService.updateState(12, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
     });
 
@@ -99,11 +101,11 @@ describe('StateService', () => {
       postService.getLastPostOfGroup.mockResolvedValueOnce({});
       stateDao.getFirst.mockResolvedValueOnce({});
       groupStateDao.get.mockReturnValue({});
-      await stateService.updateState(12, () => ({}));
+      await stateService.updateState(12, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
 
       groupStateDao.get.mockReturnValue({ unread_count: 0 });
-      await stateService.updateState(12, () => ({}));
+      await stateService.updateState(12, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
     });
 
@@ -111,7 +113,7 @@ describe('StateService', () => {
       postService.getLastPostOfGroup.mockResolvedValueOnce({});
       stateDao.getFirst.mockResolvedValueOnce({});
       groupStateDao.get.mockReturnValue({ unread_count: 1 });
-      await stateService.updateState(12, () => ({}));
+      await stateService.updateState(12, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(1);
     });
   });
@@ -119,6 +121,7 @@ describe('StateService', () => {
   describe('markAsRead()', () => {
     beforeAll(() => {
       jest.spyOn(stateService, 'getMyState');
+      jest.spyOn(stateService, 'getLastPostOfGroup');
     });
 
     beforeEach(() => {
@@ -130,7 +133,7 @@ describe('StateService', () => {
     });
 
     it('should call StateAPI.saveStatePartial()', async () => {
-      postService.getLastPostOfGroup.mockResolvedValueOnce({ id: 1 });
+      stateService.getLastPostOfGroup.mockResolvedValue({ id: 1 });
       stateService.getMyState.mockResolvedValueOnce({ id: 1 });
 
       await stateService.markAsRead(1);
