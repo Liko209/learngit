@@ -7,6 +7,7 @@ import { SdkHelper } from "./sdk-helper";
 import { JupiterHelper } from "./jupiter-helper";
 import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
+import { BendAPIHelper } from './bendapi-helper';
 import { H } from './utils';
 
 import { IUser, IStep } from '../models';
@@ -36,6 +37,10 @@ class Helper {
 
   get logHelper() {
     return new LogHelper(this.t);
+  }
+
+  get BendAPIHelper() {
+    return new BendAPIHelper(this.t);
   }
 
   /* delegate following method */

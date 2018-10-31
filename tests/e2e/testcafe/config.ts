@@ -10,7 +10,6 @@ import { writeFileSync } from 'fs';
 import { getLogger } from 'log4js';
 
 import { flattenGlobs, parseArgs, ConfigLoader } from './libs/utils';
-import { BeatsClient, Run, Test, Step, Attachment } from 'bendapi';
 
 
 const logger = getLogger(__filename);
@@ -81,10 +80,8 @@ writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
 logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
 
 //FILL apiKey or YOUR ACCOUNT INFO
-
-const apiKey = process.env.APIKEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
-const baseUrl = process.env.DASHBOARD_URL || "http://xia01-i01-xta05.lab.rcch.ringcentral.com:8000/api/v1";
-let beatsClient = new BeatsClient(apiKey, baseUrl);
+const APIKEY = process.env.APIKEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
+const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-xta05.lab.rcch.ringcentral.com:8000/api/v1";
 const PASS = 5;
 const FAILED = 8;
 const DASHBOARD_UI = process.env.DASHBOARD_UI || true;
@@ -101,12 +98,9 @@ export {
   SITE_URL,
   ENV_OPTS,
   RUNNER_OPTS,
-  beatsClient,
-  Run,
-  Test,
-  Step,
-  Attachment,
   PASS,
   FAILED,
-  DASHBOARD_UI
+  DASHBOARD_UI,
+  APIKEY,
+  DASHBOARD_URL
 };

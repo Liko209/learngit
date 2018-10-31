@@ -1,10 +1,12 @@
 import 'testcafe';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE } from './config';
-
+import { ENV_OPTS, DEBUG_MODE, APIKEY, DASHBOARD_URL, DASHBOARD_UI } from './config';
+import { BeatsClient } from 'bendapi';
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
+export const beatsClient = DASHBOARD_UI ? new BeatsClient(APIKEY, DASHBOARD_URL) : undefined;
+
 
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
@@ -30,5 +32,8 @@ export function setupCase(accountType: string) {
 export function teardownCase() {
   return async (t: TestController) => {
     await h(t).dataHelper.teardown();
+    if (DASHBOARD_UI) {
+      await h(t).BendAPIHelper.teardown(beatsClient);
+    }
   }
 }

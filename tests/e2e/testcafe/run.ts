@@ -6,8 +6,9 @@
 import { getLogger } from 'log4js';
 
 import { filterByTags } from './libs/filter';
-import { RUNNER_OPTS, beatsClient, Run } from './config';
-import { accountPoolClient } from './init';
+import { RUNNER_OPTS, DASHBOARD_UI } from './config';
+import { accountPoolClient, beatsClient } from './init';
+import { Run } from 'bendapi';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -19,7 +20,10 @@ async function runTests(runnerOpts) {
   const testCafe = await createTestCafe();
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
-  let run = await beatsClient.createRun({ "name": JSON.stringify(runnerOpts, null, 2) } as Run);
+
+  if (DASHBOARD_UI) {
+    let run = await beatsClient.createRun({ "name": JSON.stringify(runnerOpts, null, 2) } as Run);
+  }
 
   runner
     .src(runnerOpts.FIXTURES)
