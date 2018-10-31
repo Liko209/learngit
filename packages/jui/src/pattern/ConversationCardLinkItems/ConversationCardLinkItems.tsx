@@ -44,7 +44,7 @@ const LinkItemContents = styled.div`
 const LinkThumbnails = styled<{img: string}, 'div'>('div')`
   width: ${width(18)};
   height: ${height(18)};
-  background: url(${({ img }) => img}) 100% 100%;
+  background: no-repeat center url(${({ img }) => img});
   background-size: cover;
 `;
 const TitleNSummaryWrapper = styled.div`
