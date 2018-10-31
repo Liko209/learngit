@@ -11,7 +11,7 @@ import ItemModel from '@/store/models/Item';
 
 type Props = {
   postItems: ItemModel[];
-  onLinkItemClose: (e: React.MouseEvent<HTMLSpanElement>) => void;
+  onLinkItemClick: (e: React.MouseEvent<HTMLSpanElement>) => void;
 };
 @observer
 class LinkItemView extends React.Component<Props> {
