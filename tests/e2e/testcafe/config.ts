@@ -82,13 +82,7 @@ logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectro
 //FILL apiKey or YOUR ACCOUNT INFO
 const APIKEY = process.env.APIKEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
 const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-xta05.lab.rcch.ringcentral.com:8000/api/v1";
-const PASS = 5;
-const FAILED = 8;
 const DASHBOARD_UI = process.env.DASHBOARD_UI || true;
-export const Allure2Dashboard = {
-  'passed': PASS,
-  'failed': FAILED
-}
 
 export {
   APP_ROOT,
@@ -98,9 +92,7 @@ export {
   SITE_URL,
   ENV_OPTS,
   RUNNER_OPTS,
-  PASS,
-  FAILED,
-  DASHBOARD_UI,
   APIKEY,
+  DASHBOARD_UI,
   DASHBOARD_URL
 };

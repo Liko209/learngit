@@ -1,12 +1,26 @@
 import 'testcafe';
 import { getLogger } from 'log4js';
 import * as _ from "lodash";
-import { Allure2Dashboard, PASS, FAILED } from "../../config"
 import { IStep } from "../models";
-import { BeatsClient, Test, Step, Attachment } from 'bendapi';
+import { BeatsClient, Run, Test, Step, Attachment } from 'bendapi';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
+
+export {
+  BeatsClient,
+  Run,
+  Test,
+  Step,
+  Attachment
+}
+
+const PASS = 5;
+const FAILED = 8;
+const AllureStatusToDashboardStatusMap = {
+  'passed': PASS,
+  'failed': FAILED
+}
 
 export class BendAPIHelper {
   constructor(private t: TestController) { }
@@ -20,10 +34,10 @@ export class BendAPIHelper {
     } as Attachment);
   }
 
-  private async saveStep2Dashboard(step: IStep, testId: number, beatsClient: BeatsClient) {
+  private async saveStep(step: IStep, testId: number, beatsClient: BeatsClient) {
     let bStep = await beatsClient.createStep({
       "name": step.message,
-      "status": Allure2Dashboard[step.status],
+      "status": AllureStatusToDashboardStatusMap[step.status],
       "startTime": (new Date(step.startTime)).toISOString(),
       "endTime": (new Date(step.endTime)).toISOString()
     } as Step, this.t.ctx.testId);
@@ -38,7 +52,7 @@ export class BendAPIHelper {
     let test = await beatsClient.createTest({ "name": this.t['testRun'].test.name, "status": status ? PASS : FAILED } as Test);
     this.t.ctx.testId = test.id;
     for (const step of this.t.ctx.logs) {
-      await this.saveStep2Dashboard(step, this.t.ctx.testId, beatsClient);
+      await this.saveStep(step, this.t.ctx.testId, beatsClient);
 
     }
   }

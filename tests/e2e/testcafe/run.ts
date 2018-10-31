@@ -8,7 +8,7 @@ import { getLogger } from 'log4js';
 import { filterByTags } from './libs/filter';
 import { RUNNER_OPTS, DASHBOARD_UI } from './config';
 import { accountPoolClient, beatsClient } from './init';
-import { Run } from 'bendapi';
+import { Run } from './v2/helpers/bendapi-helper';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
