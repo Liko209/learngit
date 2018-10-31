@@ -164,7 +164,7 @@ const teamName = `Team ${uuid()}`;
 const message = faker.lorem.sentence();
 ```
 
-####  当元素可能被tooltip阻挡而影响点击时, 可以通过在执行点击前hover('html')规避 ####
+####  当元素可能被tooltip阻挡而影响点击时, 可以通过在执行点击前执行 hover('html') 规避 ####
 
 ```typescript
 await t.hover('html').click(button);
@@ -197,11 +197,7 @@ await t.hover('html').click(button);
 
 #### 测试文件结构应当与QA在Einstein中对应用例的目录结构一致 ####
 
-例如用例 JPT-5 位于 Einstein 中的 Left Rail Panel -> Conversation List -> Direct Messages 下, 相应的自动化测试用例将被置于 ./fixtures/LeftRailPanel/ConversationList/DirectMessages/JPT-5/ 目录下. 目录名采用驼峰式规则.
-
-#### 每个自动化测试文件只包含一个Case, 如果针对某个用例有多个脚本, 则以数字进行编号
-
-例如我们需要为 JPT-5 编写 2 个自动化测试文件, 则它们都将位于 JPT-5 目录下, 分别名为 1.ts, 2.ts. 如果二者需要共享代码片段, 则置于同目录下的 common.ts 文件中
+例如, 用例 JPT-5 位于 Einstein 中的 Left Rail Panel -> Conversation List -> Direct Messages 下, 相应的自动化测试用例将被置于 ./fixtures/LeftRailPanel/ConversationList/DirectMessages/ 目录下的 JPT-5.ts 文件. 目录名采用驼峰式规则.
 
 #### Case 名称规范 ####
 
@@ -209,7 +205,7 @@ Case 名称应当与 Einstein 中的名称保持一致
 
 #### Tag 使用规范 ####
 
-每个 Case 都应当按顺序提供以下 Tag: Einstein ID, Priority, Owner, Compoent其中
+每个 Case 都应当按顺序提供以下 Tag: Einstein ID, Priority, Owner, Compoent 其中
 
 Einstein ID: 用于与用例进行关联, 如 JPT-5
 
