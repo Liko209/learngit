@@ -20,6 +20,7 @@ import {
   SECTION_TYPE,
 } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue } from '@/store/utils';
 const { GroupService } = service;
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
@@ -93,7 +94,8 @@ class SectionViewModel extends StoreViewModel<SectionProps>
 
   @computed
   get sortable() {
-    return this._config.sortable || false;
+    const unreadToggleOn = getGlobalValue(GLOBAL_KEYS.UNREAD_TOGGLE_ON);
+    return !unreadToggleOn && !!this._config.sortable;
   }
 
   @computed
