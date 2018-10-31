@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as appRoot from 'app-root-path';
 import * as Runtime from 'allure-js-commons/runtime';
 import * as Allure from 'allure-js-commons';
 import { identity } from 'lodash';
@@ -35,7 +34,7 @@ export class AllureHelper {
   configure() {
     this.allureReporter = new Allure();
     this.allure = new Runtime(this.allureReporter);
-    const targetDir = process.env.ALLURE_DIR ? `${process.env.ALLURE_DIR}/allure/allure-results` : `${appRoot}/allure/allure-results`;
+    const targetDir = process.env.ALLURE_DIR ? `${process.env.ALLURE_DIR}/allure/allure-results` : `./allure/allure-results`;
     this.allureReporter.setOptions({ targetDir });
     this[errorDecorator] = this.createErrorDecorator();
   }
