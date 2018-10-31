@@ -6,7 +6,18 @@
 
 import mapEmojiOne from './mapEmojiOne';
 import mapAscii from './mapAscii';
+import mapUnicode from './mapUnicode';
 import { CustomEmojiMap } from '../types';
+import getEscapeKeys from './getEscapeKeys';
+
+// Regular expression for colon (EmojiOne, Custom)
+const regExpColon = /:([^:]\S*?)(?=:)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
+
+// Ascii keys regular expression, only ascii character, an exact match
+const regExpAscii = new RegExp(`^${getEscapeKeys(Object.keys(mapAscii)).join('$|^')}$`, 'g');
+
+// Unicode keys regular expression
+const regExpUnicode = new RegExp(`${getEscapeKeys(Object.keys(mapUnicode)).join('|')}`, 'g');
 
 class Emoji {
   text: string;
@@ -17,16 +28,16 @@ class Emoji {
     this.text = text;
     this._staticHttpServer = staticHttpServer;
     this._customEmojiMap = customEmojiMap;
+    this.formatUnicode();
     this.formatAscii();
     this.formatEmojiOne();
     this.formatCustom();
   }
 
   formatEmojiOne() {
-    const regExp = /:([^:]\S*?)(?=:)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
-    this.text = this.text.trim().replace(regExp, (match: string) => {
+    this.text = this.text.trim().replace(regExpColon, (match: string) => {
       // console.log(match); // :smile
-      const obj = mapEmojiOne[`${match}:`];
+      const obj = mapEmojiOne[`${match}:`]; // :smile:
       if (obj instanceof Object) {
         const arr = obj.unicode;
         const unicode = arr[arr.length - 1];
@@ -38,36 +49,33 @@ class Emoji {
     return this;
   }
 
-  formatAscii() {
-    // Regular expression special characters, Except '\', because mapAscii has used '\'
-    const regExpEscape = /\$|\(|\)|\*|\+|\.|\[|\]|\?|\/|\^|\{|\}|\|/g;
-    // Escape the key of mapAscii
-    const asciiKeys = Object.keys(mapAscii).map((key: string) => {
-      return key.replace(regExpEscape, (match: string) => {
-        return `\\${match}`;
-      });
-    });
-    // Only ascii character, an exact match
-    const regExp = new RegExp(`^${asciiKeys.join('$|^')}$`, 'g');
-    this.text = this.text.trim().replace(regExp, (match: string) => {
-      // console.log(match); // <3
-      const unicode = mapAscii[match];
-      return this._getImg(match, unicode);
-    });
-    return this;
-  }
-
   formatCustom() {
-    const regExp = /:([^:]\S*?)(?=:)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
-    this.text = this.text.trim().replace(regExp, (match: string) => {
+    this.text = this.text.trim().replace(regExpColon, (match: string) => {
       // console.log(match); // :rc
-      const obj = this._customEmojiMap[match.slice(1)];
+      const obj = this._customEmojiMap[match.slice(1)]; // rc
       if (obj instanceof Object) {
         return `<img class="${this._getClassName(`${match}:`)}" src="${obj.data}">`;
       }
       return match;
     });
     this._replaceImg();
+    return this;
+  }
+
+  formatAscii() {
+    return this.formatExactMatch(regExpAscii, mapAscii);
+  }
+
+  formatUnicode() {
+    return this.formatExactMatch(regExpUnicode, mapUnicode);
+  }
+
+  formatExactMatch(regExp: RegExp, mapData: Object) {
+    this.text = this.text.trim().replace(regExp, (match: string) => {
+      // console.log(match); // <3  🇭🇰
+      const unicode = mapData[match];
+      return this._getImg(match, unicode);
+    });
     return this;
   }
 

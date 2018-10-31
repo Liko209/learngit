@@ -7,6 +7,7 @@
 import { Emoji } from '../../Emoji';
 import mapEmojiOne from '../../Emoji/mapEmojiOne';
 import mapAscii from '../../Emoji/mapAscii';
+import mapUnicode from '../../Emoji/mapUnicode';
 
 const staticHttpServer = 'https://www.abc.com/a/b';
 const customEmojiMap = {
@@ -22,7 +23,7 @@ function format(text: string) {
 
 describe('format one kind emoji', () => {
   it('only one kind emoji, has specific class name', async () => {
-    const keys = [':smile:', '<3', ':rc:', ':xyz:'];
+    const keys = [':smile:', '<3', ':rc:', ':xyz:', '🇭🇰'];
     // EmojiOne
     const result1 = format(keys[0]);
     const unicode1 = mapEmojiOne[keys[0]];
@@ -42,10 +43,15 @@ describe('format one kind emoji', () => {
     const result4 = format(keys[3]);
     const regExp4 = new RegExp(`^${keys[3]}$`);
     expect(result4).toMatch(regExp4);
+    // Unicode
+    const result5 = format(keys[4]);
+    const unicode5 = mapUnicode[keys[4]];
+    const regExp5 = new RegExp(`^<img[^>]+?${CLASS_NAME}[^>]+?${unicode5}\.png[^>]+?>$`);
+    expect(result5).toMatch(regExp5);
   });
 
   it('only one kind emoji, some text on emoji left and right', async () => {
-    const keys = [':smile:', '<3', ':rc:', ':xyz:'];
+    const keys = [':smile:', '<3', ':rc:', ':xyz:', '🇭🇰'];
     const left = 'abc';
     const right = '123';
     // EmojiOne
@@ -66,26 +72,36 @@ describe('format one kind emoji', () => {
     const result4 = format(`${left}${keys[3]}${right}`);
     const regExp4 = new RegExp(`^${left}${keys[3]}${right}$`);
     expect(result4).toMatch(regExp4);
+    // Unicode
+    const result5 = format(`${left}${keys[4]}${right}`);
+    const unicode5 = mapUnicode[keys[4]];
+    const regExp5 = new RegExp(`^${left}<img[^>]+?${unicode5}[^>]+?>${right}$`);
+    expect(result5).toMatch(regExp5);
   });
 
 });
 
 describe('format multiple emoji', () => {
   it('multiple emoji', async () => {
-    const keys = [':smile:', ':cry:', '<3', ':D', ':rc:', ':att:', ':xxx:', ':yyy:'];
+    // EmojiOne, Ascii, Custom, Not match, Unicode
+    const keys = [':smile:', ':cry:', '<3', ':D', ':rc:', ':att:', ':xxx:', ':yyy:', '🇭🇰', '🌶'];
     const left = 'abc';
     const right = '123';
 
     const result = format(`${left}${keys.join('')}${right}`);
-    const unicode1 = mapEmojiOne[keys[0]].fname;
-    const unicode2 = mapEmojiOne[keys[1]].fname;
-    const src1 = customEmojiMap.rc.data;
-    const src2 = customEmojiMap.att.data;
+    const unicode0 = mapEmojiOne[keys[0]].fname;
+    const unicode1 = mapEmojiOne[keys[1]].fname;
+    const unicode8 = mapUnicode[keys[8]];
+    const unicode9 = mapUnicode[keys[9]];
+    const src4 = customEmojiMap.rc.data;
+    const src5 = customEmojiMap.att.data;
+    const regExpEmojiOne0 = `<img[^>]+?${unicode0}\.png[^>]+?>`;
     const regExpEmojiOne1 = `<img[^>]+?${unicode1}\.png[^>]+?>`;
-    const regExpEmojiOne2 = `<img[^>]+?${unicode2}\.png[^>]+?>`;
-    const regExpCustom1 = `<img[^>]+?${src1}[^>]+?>`;
-    const regExpCustom2 = `<img[^>]+?${src2}[^>]+?>`;
-    const regExp = new RegExp(`^${left}${regExpEmojiOne1}${regExpEmojiOne2}${keys[2]}${keys[3]}${regExpCustom1}${regExpCustom2}${keys[6]}${keys[7]}${right}$`);
+    const regExpCustom4 = `<img[^>]+?${src4}[^>]+?>`;
+    const regExpCustom5 = `<img[^>]+?${src5}[^>]+?>`;
+    const regExpUnicode8 = `<img[^>]+?${unicode8}\.png[^>]+?>`;
+    const regExpUnicode9 = `<img[^>]+?${unicode9}\.png[^>]+?>`;
+    const regExp = new RegExp(`^${left}${regExpEmojiOne0}${regExpEmojiOne1}${keys[2]}${keys[3]}${regExpCustom4}${regExpCustom5}${keys[6]}${keys[7]}${regExpUnicode8}${regExpUnicode9}${right}$`);
     expect(result).toMatch(regExp);
   });
 
