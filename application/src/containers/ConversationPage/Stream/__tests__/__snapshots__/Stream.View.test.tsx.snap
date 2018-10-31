@@ -3,13 +3,14 @@
 exports[`StreamView render() should render empty view 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <StreamView
+  Symbol(enzyme.__unrendered__): <StreamViewComponent
     atBottom={[MockFunction atBottom]}
     enableNewMessageSeparatorHandler={[MockFunction enableNewMessageSeparatorHandler]}
     items={Array []}
     markAsRead={[MockFunction markAsRead]}
     postIds={Array []}
     setRowVisible={[MockFunction setRowVisible]}
+    t={[Function]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -66,7 +67,7 @@ ShallowWrapper {
 exports[`StreamView render() should render posts and separators 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <StreamView
+  Symbol(enzyme.__unrendered__): <StreamViewComponent
     atBottom={[MockFunction atBottom]}
     enableNewMessageSeparatorHandler={[MockFunction enableNewMessageSeparatorHandler]}
     items={
@@ -103,6 +104,7 @@ ShallowWrapper {
       ]
     }
     setRowVisible={[MockFunction setRowVisible]}
+    t={[Function]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -122,7 +124,7 @@ ShallowWrapper {
           id={1}
         />,
         <Container
-          value="New messages"
+          value=""
         />,
         <Container
           id={2}
@@ -153,7 +155,7 @@ ShallowWrapper {
         "key": "null",
         "nodeType": "class",
         "props": Object {
-          "value": "New messages",
+          "value": "",
         },
         "ref": null,
         "rendered": null,
@@ -206,7 +208,7 @@ ShallowWrapper {
             id={1}
           />,
           <Container
-            value="New messages"
+            value=""
           />,
           <Container
             id={2}
@@ -237,7 +239,7 @@ ShallowWrapper {
           "key": "null",
           "nodeType": "class",
           "props": Object {
-            "value": "New messages",
+            "value": "",
           },
           "ref": null,
           "rendered": null,
