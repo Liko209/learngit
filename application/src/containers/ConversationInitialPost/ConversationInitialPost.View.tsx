@@ -8,6 +8,10 @@ import {
   JuiConversationInitialPost,
   JuiConversationInitialPostHeader,
   JuiConversationInitialPostBody,
+  StyledTitle,
+  StyledSpan,
+  StyledTeamName,
+  StyledDescription,
 } from 'jui/pattern/ConversationInitialPost';
 import { JuiButton } from 'jui/components/Buttons';
 import { Link } from 'react-router-dom';
@@ -15,7 +19,6 @@ import { translate } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
 import image from './img/illustrator.svg';
-// import { CONVERSATION_TYPES } from '@/constants';
 
 class ConversationInitialPost extends React.Component<
   ConversationInitialPostViewProps
@@ -41,15 +44,22 @@ class ConversationInitialPost extends React.Component<
     const { isTeam, displayName, groupDescription, t } = this.props;
 
     return (
-      <JuiConversationInitialPostHeader
-        name={this._name}
-        teamName={displayName}
-        description={groupDescription}
-        isTeam={isTeam}
-        directMessageDescription={t('directMessageDescription', {
-          displayName,
-        })}
-      />
+      <JuiConversationInitialPostHeader>
+        {isTeam ? (
+          <StyledTitle>
+            {this._name}
+            <StyledSpan>&nbsp;created a team&nbsp;</StyledSpan>
+            {<StyledTeamName>{displayName}</StyledTeamName>}
+          </StyledTitle>
+        ) : (
+          <StyledSpan>
+            {t('directMessageDescription', { displayName })}
+          </StyledSpan>
+        )}
+        {isTeam ? (
+          <StyledDescription>{groupDescription}</StyledDescription>
+        ) : null}
+      </JuiConversationInitialPostHeader>
     );
   }
 
@@ -100,9 +110,6 @@ class ConversationInitialPost extends React.Component<
   render() {
     return (
       <JuiConversationInitialPost>
-        {/* {groupType === CONVERSATION_TYPES.TEAM
-          ? this._conversationInitialPostHeader
-          : null} */}
         {this._conversationInitialPostHeader}
         {this._conversationInitialPostBody}
       </JuiConversationInitialPost>
