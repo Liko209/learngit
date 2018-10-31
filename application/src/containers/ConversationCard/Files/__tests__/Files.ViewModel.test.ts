@@ -53,6 +53,16 @@ describe('File items tests', () => {
       previewUrl: '',
     });
   });
+  it('file is gif', () => {
+    const image = filesViewModel.isImage({
+      type: 'gif',
+      url: '123',
+    } as ItemModel);
+    expect(image).toEqual({
+      isImage: true,
+      previewUrl: '123',
+    });
+  });
 
   it('getFileType()', () => {
     const image = {

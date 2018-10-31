@@ -70,11 +70,18 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   isImage(item: ItemModel) {
-    const { thumbs } = item;
+    const { thumbs, type, url } = item;
     const image = {
       isImage: false,
       previewUrl: '',
     };
+
+    if (type === 'gif') {
+      image.isImage = true;
+      image.previewUrl = url;
+      return image;
+    }
+
     if (thumbs) {
       for (const key in thumbs) {
         const value = thumbs[key];
