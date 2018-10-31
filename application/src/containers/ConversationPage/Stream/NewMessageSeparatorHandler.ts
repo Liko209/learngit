@@ -41,19 +41,22 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     // it will never be modified when receive new posts
     if (this.separatorMap.size > 0) return;
 
+    // Check if there is a new messages separator
     const lastPost = _.last(allPosts);
+    const firstPost = _.first(allPosts);
+    if (lastPost && lastPost.id > this._readThrough) {
+      this._hasNewMessagesSeparator = true;
 
-    if (lastPost) {
-      this._hasNewMessagesSeparator = lastPost.id !== this._readThrough;
+      if (firstPost && firstPost.id > this._readThrough) {
+        // Separator in other page, we'll handle it later
+        return;
+      }
     }
 
     const firstUnreadPost = this._findNextOthersPost(allPosts, readThrough);
 
     if (firstUnreadPost) {
-      // readThrough post in current page
       this._setSeparator(firstUnreadPost.id);
-    } else {
-      // readThrough post in the next page
     }
   }
 
@@ -110,21 +113,16 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     allPosts: ISortableModel<Post>[],
     postId: number,
   ) {
-    const targetPost = allPosts.find(post => post.id === postId);
-    if (!targetPost) return;
-
-    const nextPost = allPosts.find(
-      post =>
+    const targetPost = allPosts.find(
+      (post, i) =>
         !!(
-          post.id > targetPost.id &&
+          post.id > postId &&
           post.data &&
           post.data.creator_id !== this._userId
         ),
     );
-
-    if (!nextPost) return;
-
-    return nextPost;
+    if (!targetPost) return;
+    return targetPost;
   }
 
   private _setSeparator(postId: number) {

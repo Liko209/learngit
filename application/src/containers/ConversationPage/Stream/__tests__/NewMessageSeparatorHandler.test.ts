@@ -1,8 +1,9 @@
+import _ from 'lodash';
+import { Post } from 'sdk/src/models';
 import { getGlobalValue } from '../../../../store/utils';
 import { FetchDataDirection, ISortableModel } from '../../../../store/base';
 import { NewMessageSeparatorHandler } from '../NewMessageSeparatorHandler';
 import { SeparatorType } from '../types';
-import _ from 'lodash';
 
 jest.mock('../../../../store/utils');
 
@@ -136,17 +137,47 @@ describe('NewMessageSeparatorHandler', () => {
       expect(handler.separatorMap.size).toBe(0);
     });
 
-    it('should have not separator when readThrough post is not existed', () => {
+    it('should have separator when readThrough post is in prev page', () => {
       const handler = runOnAdded({
         readThrough: 999,
         allPosts: [
-          { id: 1000, sortValue: 1 },
+          { id: 1000, sortValue: 3 },
+          { id: 1001, sortValue: 4 },
+          { id: 1002, sortValue: 5 },
+        ],
+      });
+
+      expect(handler.separatorMap.size).toBe(0);
+
+      // load prev page
+      handler.onAdded(FetchDataDirection.UP, [], [
+        { id: 998, sortValue: 1, data: { creator_id: 1 } },
+        { id: 999, sortValue: 2, data: { creator_id: 1 } },
+        { id: 1000, sortValue: 3, data: { creator_id: 1 } },
+        { id: 1001, sortValue: 4, data: { creator_id: 1 } },
+        { id: 1002, sortValue: 5, data: { creator_id: 1 } },
+      ] as ISortableModel[]);
+
+      expect(handler.separatorMap.get(1000)).toHaveProperty(
+        'type',
+        SeparatorType.NEW_MSG,
+      );
+    });
+
+    it('should have separator at next post when readThrough post is not existed', () => {
+      const handler = runOnAdded({
+        readThrough: 1000,
+        allPosts: [
+          { id: 999, sortValue: 1 },
           { id: 1001, sortValue: 2 },
           { id: 1002, sortValue: 3 },
         ],
       });
 
-      expect(handler.separatorMap.size).toBe(0);
+      expect(handler.separatorMap.get(1001)).toHaveProperty(
+        'type',
+        SeparatorType.NEW_MSG,
+      );
     });
 
     it('should have not separator when readThrough is empty', () => {
