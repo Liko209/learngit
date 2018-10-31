@@ -29,15 +29,18 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
 
   @computed
   get creator() {
-    return getEntity<Person, PersonModel>(
-      ENTITY_NAME.PERSON,
-      this.post.creatorId,
-    );
+    if (this.post.creatorId) {
+      return getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        this.post.creatorId,
+      );
+    }
+    return {} as PersonModel;
   }
 
   @computed
   get itemIds() {
-    return this.post.itemIds;
+    return this.post.itemIds || [];
   }
 
   @computed

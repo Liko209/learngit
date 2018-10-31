@@ -47,6 +47,6 @@ describe('ConversationCardViewModel', () => {
       displayName: 'alvin',
       id: 1491222532,
     });
-    expect(conversationCardVM.name).toBe('alvin');
+    expect(conversationCardVM.name).toBe(undefined);
   });
 });
