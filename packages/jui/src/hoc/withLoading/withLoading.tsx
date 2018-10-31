@@ -3,7 +3,7 @@
  * @Date: 2018-09-18 10:11:03
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ComponentType } from 'react';
+import React, { ComponentType, Fragment } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiCircularProgress } from '../../components/Progress';
 import { JuiFade } from '../../components/Fade';
@@ -15,19 +15,24 @@ type WithLoadingProps = {
 };
 
 const StyledLoading = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
+  z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
 `;
 
-const DefaultLoading = () => (
-  <StyledLoading>
-    <JuiFade in={true} style={{ transitionDelay: '500ms' }}>
-      <JuiCircularProgress />
-    </JuiFade>
-  </StyledLoading>
+const DefaultLoading = (props: any) => (
+  <Fragment>
+    <StyledLoading>
+      <JuiFade in={props.isVisible}>
+        <JuiCircularProgress />
+      </JuiFade>
+    </StyledLoading>
+    {props.children}
+  </Fragment>
 );
 
 const MAP = {
@@ -44,11 +49,12 @@ const withLoading = <P extends object>(
     transitionDelay = 0,
     ...props
   }: WithLoadingProps) => {
-    if (!loading) return <Component {...props} />;
-
     const Loading = CustomizedLoading || MAP[variant || 'circular'];
-
-    return <Loading transitionDelay={transitionDelay} />;
+    return (
+      <Loading transitionDelay={transitionDelay} isVisible={loading}>
+        <Component {...props} />
+      </Loading>
+    );
   };
 };
 

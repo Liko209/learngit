@@ -4,6 +4,7 @@ import { ConversationCard } from '../../../ConversationCard';
 import { NewMessageSeparator } from '../NewMessageSeparator';
 import { StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
+import { LoadingMorePlugin } from '@/plugins';
 
 jest.mock('../../../ConversationSheet', () => ({}));
 
@@ -22,6 +23,9 @@ describe('StreamView', () => {
           { type: StreamItemType.POST, value: 1 },
           { type: StreamItemType.POST, value: 2 },
         ],
+        plugins: {
+          loadingMorePlugin: new LoadingMorePlugin(),
+        },
       };
 
       const wrapper = shallow(<StreamView {...props} />);
@@ -50,6 +54,9 @@ describe('StreamView', () => {
           { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
           { type: StreamItemType.POST, value: 2 },
         ],
+        plugins: {
+          loadingMorePlugin: new LoadingMorePlugin(),
+        },
       };
 
       const wrapper = shallow(<StreamView {...props} />);
@@ -74,6 +81,9 @@ describe('StreamView', () => {
           { type: StreamItemType.POST, value: 3 },
           { type: StreamItemType.POST, value: 4 },
         ],
+        plugins: {
+          loadingMorePlugin: new LoadingMorePlugin(),
+        },
       };
 
       const wrapper = shallow(<StreamView {...props} />);
@@ -91,6 +101,9 @@ describe('StreamView', () => {
           .mockName('enableNewMessageSeparatorHandler'),
         postIds: [],
         items: [],
+        plugins: {
+          loadingMorePlugin: new LoadingMorePlugin(),
+        },
       };
 
       const wrapper = shallow(<StreamView {...props} />);

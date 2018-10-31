@@ -8,6 +8,7 @@ import { mount } from 'enzyme';
 import { JuiCircularProgress } from 'jui/components';
 import { ThemeProvider } from 'jui/foundation/theme';
 import { AbstractViewModel } from '@/base/AbstractViewModel';
+
 import {
   LoadingMorePlugin,
   onScrollToTop,
@@ -81,7 +82,6 @@ describe('LoadingMorePlugin', () => {
       const View = plugin.wrapView(() => <div>Hello World</div>);
       plugin.install(vm);
       const wrapper = mount(<View {...vm} />);
-
       const promise = wrapper.prop('onScrollToTop')();
       expect(fetchPrevSpy).toHaveBeenCalled();
       expect(vm).toHaveProperty('loadingTop', true);
