@@ -214,6 +214,18 @@ class BaseService<
     await dao.bulkUpdate(transformedModels);
   }
 
+  doDefaultPartialNotify(partialModels: Partial<Raw<SubModel>>[]) {
+    if (this.DaoClass) {
+      const dao = daoManager.getDao(this.DaoClass);
+      const modelName = dao.modelName.toUpperCase();
+      const eventKey: string = `ENTITY.${modelName}`;
+      mainLogger.info(`doDefaultPartialNotify: eventKey= ${eventKey}`);
+      notificationCenter.emitEntityUpdate(eventKey, partialModels);
+    } else {
+      mainLogger.warn('doDefaultPartialNotify: no dao class');
+    }
+  }
+
   private async _handlePartialUpdateWithOriginal(
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
@@ -282,13 +294,7 @@ class BaseService<
     if (doPartialNotify) {
       doPartialNotify(originalModels, partialModels);
     } else {
-      if (this.DaoClass) {
-        const dao = daoManager.getDao(this.DaoClass);
-        const modelName = dao.modelName.toUpperCase();
-        const eventKey: string = `ENTITY.${modelName}`;
-        mainLogger.info(`_doPartialSaveAndNotify: eventKey= ${eventKey}`);
-        notificationCenter.emitEntityUpdate(eventKey, partialModels);
-      }
+      this.doDefaultPartialNotify(partialModels);
     }
   }
 }
