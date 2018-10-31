@@ -20,5 +20,6 @@
   "sendingPost": "Sending post",
   "resendPost": "Resend post",
   "deletePost": "Delete post",
-  "show_unread": "Show unread"
+  "show_unread": "show unread",
+  "show_unread_plural": "show unreads"
 }

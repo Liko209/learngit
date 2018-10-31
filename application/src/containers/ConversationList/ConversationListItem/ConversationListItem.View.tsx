@@ -61,6 +61,7 @@ class ConversationListItemViewComponent extends React.Component<Props, IState> {
           onClick={this._handleClick}
           title={this.props.displayName}
           selected={this.props.selected}
+          hidden={this.props.hidden}
         />
         <Menu
           groupId={this.props.groupId}
