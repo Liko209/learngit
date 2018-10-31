@@ -54,9 +54,11 @@ const TitleNSummaryWrapper = styled.div`
 `;
 const LinkTitle = styled.p`
   margin-top: 0;
-  color: ${grey('900')};
   ${ellipsis()};
   margin-right: ${spacing(5)};
+  a {
+    color: ${grey('900')};
+  }
 `;
 const LinkSummary = styled.p`
   font-size: ${({ theme }) => theme.typography.body2.fontSize};
@@ -73,7 +75,8 @@ type Props = {
   title: string;
   summary: string;
   thumbnail: string;
-  onLinkItemClick?: (e: React.MouseEvent<HTMLSpanElement>) => void;
+  onLinkItemClose?: (e: React.MouseEvent<HTMLSpanElement>) => void;
+  url: string;
 };
 class JuiConversationCardLinkItems extends PureComponent<
   Props
@@ -82,16 +85,18 @@ class JuiConversationCardLinkItems extends PureComponent<
     super(props);
   }
   render() {
-    const { title, summary, thumbnail, onLinkItemClick } = this.props;
+    const { title, summary, thumbnail, onLinkItemClose, url } = this.props;
     return (
       <LinkItemsWrapper>
         <LinkItemContents>
           <LinkThumbnails img={thumbnail ? thumbnail : defaultLinkImage} />
           <TitleNSummaryWrapper>
-            <LinkTitle>{title}</LinkTitle>
+            <LinkTitle>
+              <a href={url} target="_blank">{title}</a>
+            </LinkTitle>
             <LinkSummary>{summary}</LinkSummary>
           </TitleNSummaryWrapper>
-          <JuiIconography onClick={onLinkItemClick}>close</JuiIconography>
+          <JuiIconography onClick={onLinkItemClose}>close</JuiIconography>
         </LinkItemContents>
       </LinkItemsWrapper>
     );

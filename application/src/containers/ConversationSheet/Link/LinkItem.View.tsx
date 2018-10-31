@@ -11,7 +11,7 @@ import ItemModel from '@/store/models/Item';
 
 type Props = {
   postItems: ItemModel[];
-  onLinkItemClick: (e: React.MouseEvent<HTMLSpanElement>) => void;
+  onLinkItemClose: (e: React.MouseEvent<HTMLSpanElement>) => void;
 };
 @observer
 class LinkItemView extends React.Component<Props> {
@@ -30,7 +30,8 @@ class LinkItemView extends React.Component<Props> {
               title={item.title}
               summary={item.summary}
               thumbnail={image}
-              onLinkItemClick={onLinkItemClick.bind(this, item.id)}
+              url={item.url}
+              onLinkItemClose={onLinkItemClick.bind(this, item.id)}
             />
           ) : null;
         })}
