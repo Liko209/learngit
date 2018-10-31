@@ -13,15 +13,16 @@ import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import PersonModel from '@/store/models/Person';
 import { FormatToHtml } from './FormatToHtml';
+import { TextMessageProps } from './types';
 
-class FormatMessagesViewModel extends StoreViewModel<{ postId: number }> {
+class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   @computed
   private get _post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.postId);
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.id);
   }
 
   @computed
-  private get _atMentionIdMaps() {
+  private get _atMentions() {
     const post = this._post;
     const atMentionNonItemIds = (post && post.atMentionNonItemIds) || [];
     const kv = {};
@@ -55,10 +56,15 @@ class FormatMessagesViewModel extends StoreViewModel<{ postId: number }> {
   }
 
   @computed
-  get formatHtml() {
-    const transform = new FormatToHtml(this._post.text);
-    transform.glipdown(this._atMentionIdMaps, this._currentUserId).formatToEmoji(this._staticHttpServer, this._customEmojiMap);
-    return transform.text;
+  get html() {
+    const formatToHtml = new FormatToHtml({
+      text: this._post.text,
+      atMentions: this._atMentions,
+      currentUserId: this._currentUserId,
+      staticHttpServer: this._staticHttpServer,
+      customEmojiMap: this._customEmojiMap,
+    });
+    return formatToHtml.text;
   }
 }
-export { FormatMessagesViewModel };
+export { TextMessageViewModel };
