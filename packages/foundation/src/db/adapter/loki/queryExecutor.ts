@@ -24,11 +24,25 @@ export const execQuery = <T extends {}>(
   if (query.criteria.length === 0) return [resultSet.find()];
 
   const {
-    ranges,
+    offsets,
+    limits,
     orderBys,
+    ranges,
     equals,
+    notEquals,
+    anyOfs,
     contains,
+    filters,
+    startsWiths,
+    desc,
   }: ICriteria<T> = new CriteriaParser<T>().parse(query.criteria);
+
+  anyOfs.forEach(({ key, array, ignoreCase }) => {
+    const condition = ignoreCase
+      ? { [key]: { $regex: new RegExp(array.join('|'), 'i') } }
+      : { [key]: { $in: array } };
+    resultSet = resultSet.find(condition);
+  });
 
   ranges.forEach(
     ({ key, lower, upper, includeLower, includeUpper }: IRange) => {
@@ -54,7 +68,25 @@ export const execQuery = <T extends {}>(
   );
 
   equals.forEach(({ key, value, ignoreCase }: IEqual) => {
-    resultSet = resultSet.find({ [key]: value });
+    const condition = ignoreCase
+      ? { [key]: { $regex: new RegExp(value, 'i') } }
+      : { [key]: value };
+    resultSet = resultSet.find(condition);
+  });
+
+  notEquals.forEach(({ key, value }) => {
+    const condition = { [key]: { $ne: value } };
+    resultSet = resultSet.find(condition);
+  });
+
+  startsWiths.forEach(({ key, value, ignoreCase }) => {
+    const $regex = new RegExp('^' + value, ignoreCase ? 'i' : undefined);
+    const condition = { [key]: { $regex } };
+    resultSet = resultSet.find(condition);
+  });
+
+  filters.forEach(fn => {
+    resultSet = resultSet.where(fn);
   });
 
   contains.forEach(({ key, value }: IContain) => {
@@ -64,13 +96,28 @@ export const execQuery = <T extends {}>(
   // TODO multi orderBy
   const orderBy = orderBys[0];
   if (orderBy) {
-    resultSet = resultSet.simplesort(orderBy.key);
+    const { key, desc } = orderBy;
+    resultSet = resultSet.simplesort(key, { desc });
+  }
+
+  if (desc) {
+    resultSet = resultSet.simplesort('id', { desc });
+  }
+
+  if (offsets) {
+    resultSet = resultSet.offset(offsets);
+  }
+
+  if (limits) {
+    resultSet = resultSet.limit(limits);
   }
 
   const resultSets: Resultset<T>[] = [];
   resultSets.push(resultSet);
 
-  // parallel
+  //
+  // Parallel
+  //
   const parallel: IQuery<T>[] = query.parallel || [];
   if (parallel.length > 0) {
     const additions = parallel.map(query => execQuery(collection, query)[0]);
