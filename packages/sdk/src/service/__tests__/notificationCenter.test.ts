@@ -17,11 +17,6 @@ it('emitEntityUpdate()', () => {
   expect(result).toBeUndefined();
 });
 
-it('emitEntityPartialUpdate', () => {
-  const result = notificationCenter.emitEntityPartialUpdate('KEY', []);
-  expect(result).toBeUndefined();
-});
-
 it('emitEntityDelete()', () => {
   const result = notificationCenter.emitEntityDelete('KEY', []);
   expect(result).toBeUndefined();
