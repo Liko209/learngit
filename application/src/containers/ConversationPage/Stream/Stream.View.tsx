@@ -6,7 +6,7 @@
 import React, { Component } from 'react';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
-import { NewMessageSeparator } from './NewMessageSeparator';
+import { TimeNodeDivider } from '../TimeNodeDivider';
 
 class StreamView extends Component<StreamViewProps> {
   componentDidMount() {
@@ -33,7 +33,9 @@ class StreamView extends Component<StreamViewProps> {
           <ConversationCard id={streamItem.value} key={streamItem.value} />
         );
       case StreamItemType.NEW_MSG_SEPARATOR:
-        return <NewMessageSeparator key="newMessages" />;
+        return <TimeNodeDivider key={streamItem.value} value="New messages" />;
+      case StreamItemType.POST:
+        return <TimeNodeDivider key={streamItem.value} value={streamItem.value} />;
       default:
         return null;
     }
