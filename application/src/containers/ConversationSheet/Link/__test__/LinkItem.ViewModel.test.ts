@@ -5,6 +5,13 @@
  */
 import { getEntity } from '../../../../store/utils';
 import { LinkItemViewModel } from '../LinkItem.ViewModel';
+import { service } from 'sdk';
+const { ItemService } = service;
+
+const itemService = {
+  deleteItem: jest.fn(),
+};
+ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
 jest.mock('../../../../store/utils');
 
@@ -38,8 +45,9 @@ describe('LinkItemViewModel', () => {
     expect(linkItemVM.postItems).toHaveLength(3);
   });
 
-  it('while delete item and item id exist should update item', () => {
-    linkItemVM.onLinkItemClick(123);
+  it('while delete item and item id exist should update item', async() => {
+    await linkItemVM.onLinkItemClick(123);
+    expect(itemService.deleteItem).toBeCalled();
     expect(linkItemVM.postItems).toHaveLength(2);
   });
 });
