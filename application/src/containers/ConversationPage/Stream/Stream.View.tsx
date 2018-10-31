@@ -34,8 +34,10 @@ class StreamView extends Component<StreamViewProps> {
         );
       case StreamItemType.NEW_MSG_SEPARATOR:
         return <TimeNodeDivider key={streamItem.value} value="New messages" />;
-      case StreamItemType.POST:
-        return <TimeNodeDivider key={streamItem.value} value={streamItem.value} />;
+      case StreamItemType.DATE_SEPARATOR:
+        return (
+          <TimeNodeDivider key={streamItem.value} value={streamItem.value} />
+        );
       default:
         return null;
     }

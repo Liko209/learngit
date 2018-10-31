@@ -28,6 +28,7 @@ import { PostTransformHandler } from './PostTransformHandler';
 import { getEntity } from '@/store/utils';
 import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
 import GroupStateModel from '@/store/models/GroupState';
+import { DateSeparatorHandler } from './DateSeparatorHandler';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -112,7 +113,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     );
 
     this._transformHandler = new PostTransformHandler({
-      newMessageSeparatorHandler: this._newMessageSeparatorHandler,
+      separatorHandlers: [
+        this._newMessageSeparatorHandler,
+        new DateSeparatorHandler(),
+      ],
       handler: orderListHandler,
     });
 
