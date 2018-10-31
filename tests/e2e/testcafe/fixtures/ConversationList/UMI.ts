@@ -333,7 +333,7 @@ test.skip(
   },
 );
 
-test(
+test.skip(
   formalName('Current opened conversation should not display UMI', [
     'JPT-105',
     'P1',
