@@ -6,7 +6,7 @@ import { LoginPage } from './LoginPage';
 export class AppRoot extends BaseWebComponent {
     async ensureLoaded() { }
 
-    get root() {
+    get self() {
         return null;
     }
 

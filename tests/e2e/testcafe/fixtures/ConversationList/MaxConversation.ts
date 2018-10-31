@@ -14,7 +14,7 @@ fixture('ConversationList/maxConversation')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(
+test.skip(
   formalName('maxConversation', ['JPT-57', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const MAX_NUMBER = 20;

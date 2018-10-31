@@ -18,7 +18,7 @@ fixture('Send Messages')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(formalName('send', ['P0', 'JPT-77', 'Enter text in the conversation input box']), async (t) => {
+test(formalName('Enter text in the conversation input box', ['P0', 'JPT-77']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
 
   const user = users[3];
@@ -38,7 +38,7 @@ test(formalName('send', ['P0', 'JPT-77', 'Enter text in the conversation input b
   const identifier = uuid();
   const message = `${faker.lorem.sentence()} ${identifier}`;
 
-  const conversationSection = app.homePage.messagePanel.conversationSection;
+  const conversationSection = app.homePage.messagePanel.conversationPage;
   await h(t).withLog('Then I can send message to this conversation', async () => {
     await conversationSection.sendMessage(message);
   });

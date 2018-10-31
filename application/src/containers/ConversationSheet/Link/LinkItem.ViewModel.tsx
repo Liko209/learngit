@@ -13,23 +13,23 @@ import { ItemService } from 'sdk/service';
 
 class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
   private _itemService: ItemService = ItemService.getInstance();
-  @observable ids: number[] = [];
+  @observable private _ids: number[] = [];
   constructor(props: { ids: number[] }) {
     super(props);
-    this.ids = props.ids;
+    this._ids = props.ids;
   }
   @computed
   get postItems() {
-    return this.ids.map((item) => {
+    return this._ids.map((item) => {
       return getEntity<Item, ItemModel>(ENTITY_NAME.ITEM, item);
     });
   }
   @action
-  onLinkItemClick = (id: number) => {
-    this._itemService.deleteItem(id);
-    const idIndex = this.ids.indexOf(id);
+  onLinkItemClick = async (itemId: number) => {
+    await this._itemService.deleteItem(itemId);
+    const idIndex = this._ids.indexOf(itemId);
     if (idIndex > -1) {
-      this.ids.splice(idIndex, 1);
+      this._ids.splice(idIndex, 1);
     }
   }
 }

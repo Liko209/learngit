@@ -14,15 +14,10 @@ import {
 import _ from 'lodash';
 import OAuthTokenHandler from './OAuthTokenHandler';
 import NetworkManager from './NetworkManager';
-import OAuthTokenManager from './OAuthTokenManager';
 import NetworkRequestHandler from './NetworkRequestHandler';
 
 class NetworkSetup {
-  static setup(
-    types: IHandleType[],
-    networkManager: NetworkManager = NetworkManager.Instance,
-    oAuthTokenManager: OAuthTokenManager = OAuthTokenManager.Instance,
-  ) {
+  static setup(types: IHandleType[], networkManager: NetworkManager) {
     types.forEach((type: IHandleType) => {
       const tokenHandler = new OAuthTokenHandler(
         type,
@@ -50,7 +45,11 @@ class NetworkSetup {
       );
       tokenHandler.listener = new TokenRefreshListener(tokenHandler, handler);
       tokenHandler.basic = type.basic();
-      oAuthTokenManager.addOAuthTokenHandler(tokenHandler);
+
+      const tokenManager = networkManager.getTokenManager();
+      if (tokenManager) {
+        tokenManager.addOAuthTokenHandler(tokenHandler);
+      }
     });
   }
 }

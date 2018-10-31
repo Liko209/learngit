@@ -34,7 +34,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
   priority: REQUEST_PRIORITY = REQUEST_PRIORITY.NORMAL;
   via: NETWORK_VIA = NETWORK_VIA.HTTP;
   method: NETWORK_METHOD = NETWORK_METHOD.GET;
-  networkManager: NetworkManager = NetworkManager.Instance;
+  networkManager: NetworkManager;
 
   options(options: IRequestBuilderOption) {
     const {

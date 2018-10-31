@@ -125,14 +125,24 @@ export default class StateService extends BaseService<GroupState> {
     return groupId;
   }
   async markAsRead(groupId: number): Promise<void> {
+    const lastPost = await this.getLastPostOfGroup(groupId);
+    const lastPostId = lastPost ? lastPost.id : undefined;
+
     notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [
       {
         id: groupId,
+        read_through: lastPostId,
+        last_read_through: lastPostId,
         unread_count: 0,
         unread_mentions_count: 0,
       },
     ]);
-    return this.updateState(groupId, StateService.buildMarkAsReadParam);
+
+    return this.updateState(
+      groupId,
+      lastPostId,
+      StateService.buildMarkAsReadParam,
+    );
   }
 
   async updateLastGroup(groupId: number): Promise<void> {
@@ -150,22 +160,25 @@ export default class StateService extends BaseService<GroupState> {
     return groupStateDao.getByIds(ids);
   }
 
-  async updateState(groupId: number, paramBuilder: Function): Promise<void> {
-    const lastPost = await this.getLastPostOfGroup(groupId);
+  async updateState(
+    groupId: number,
+    lastPostId: number | undefined,
+    paramBuilder: Function,
+  ): Promise<void> {
     const currentState = await this.getMyState();
     const groupStateDao = daoManager.getDao(GroupStateDao);
     const state = await groupStateDao.get(groupId);
 
     if (
+      lastPostId &&
       currentState &&
-      lastPost &&
-      !!state &&
+      state &&
       state.unread_count &&
       state.unread_count > 0
     ) {
       await StateAPI.saveStatePartial(
         currentState.id,
-        paramBuilder(groupId, lastPost.id),
+        paramBuilder(groupId, lastPostId),
       );
     }
   }
