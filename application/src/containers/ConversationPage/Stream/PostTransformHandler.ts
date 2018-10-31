@@ -3,7 +3,7 @@
  * @Date: 2018-10-25 11:55:22
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed } from 'mobx';
+import { computed, transaction } from 'mobx';
 import { Post } from 'sdk/models';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import {
@@ -58,21 +58,31 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
   }
 
   onAdded(direction: FetchDataDirection, addedItems: ISortableModel<Post>[]) {
-    this._separatorHandlers.forEach(separatorHandler =>
-      separatorHandler.onAdded(direction, addedItems, this.orderListStore.items),
-    );
+    transaction(() => {
+      this._separatorHandlers.forEach(separatorHandler =>
+        separatorHandler.onAdded(
+          direction,
+          addedItems,
+          this.orderListStore.items,
+        ),
+      );
+    });
   }
 
   onDeleted(deletedItems: number[]) {
-    this._separatorHandlers.forEach(separatorHandler =>
-      separatorHandler.onDeleted(deletedItems, this.orderListStore.items),
-    );
+    transaction(() => {
+      this._separatorHandlers.forEach(separatorHandler =>
+        separatorHandler.onDeleted(deletedItems, this.orderListStore.items),
+      );
+    });
   }
 
   onUpdated(updatedIds: TUpdated) {
-    updatedIds.forEach(item =>
-      this.orderListStore.replaceAt(item.index, item.value),
-    );
+    transaction(() => {
+      updatedIds.forEach(item =>
+        this.orderListStore.replaceAt(item.index, item.value),
+      );
+    });
   }
 
   static combineSeparatorHandlersMaps(handlers: ISeparatorHandler[]) {
