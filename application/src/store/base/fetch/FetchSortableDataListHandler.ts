@@ -140,7 +140,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
 
     const handler = this._handleIncomingDataByType[type] as TChangeHandler<T>;
     // tslint:disable-next-line
-    let { deleted, updated, updateEntity, added } = handler(
+    let { deleted, updated, added } = handler(
       keys,
       entities,
       this._transformFunc,
@@ -149,7 +149,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     added = _(added)
       .filter(item => this._isInRange(item.sortValue))
       .value();
-    this.updateEntityStore(updateEntity);
+    // this.updateEntityStore(updateEntity);
     this.sortableListStore.removeByIds(deleted);
     updated &&
       updated.forEach((item: any) => {

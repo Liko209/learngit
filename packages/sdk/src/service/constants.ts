@@ -16,7 +16,6 @@ enum EVENT_TYPES {
   'UPDATE' = 'update',
   'DELETE' = 'delete',
   'REPLACE_ALL' = 'replaceAll',
-  'PARTIAL_UPDATE' = 'partialUpdate',
   'RELOAD' = 'reload',
   'RESET' = 'reset',
   // LOGIN: 'login',
