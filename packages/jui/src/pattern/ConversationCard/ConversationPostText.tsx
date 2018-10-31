@@ -31,6 +31,7 @@ const JuiConversationPostText = styled('div')`
     width: ${height(7.5)};
     height: ${height(7.5)};
     padding: 0;
+  }
   q {
     display: block;
     border-left: 1px solid ${primary('700')};
