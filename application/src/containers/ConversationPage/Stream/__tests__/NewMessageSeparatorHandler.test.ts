@@ -313,36 +313,17 @@ describe('NewMessageSeparatorHandler', () => {
         setup(handler) {
           handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
         },
+        currentUserId: 2,
         deletedPostIds: [1000],
         allPosts: [
-          { id: 999, sortValue: 1 },
-          { id: 1001, sortValue: 3 },
-          { id: 1002, sortValue: 4 },
+          { id: 999, sortValue: 1, data: { creator_id: 1 } },
+          { id: 1001, sortValue: 3, data: { creator_id: 2 } },
+          { id: 1002, sortValue: 4, data: { creator_id: 1 } },
         ],
       });
 
       expect(handler.separatorMap.size).toBe(1);
       expect(handler.separatorMap.get(1001)).toHaveProperty(
-        'type',
-        SeparatorType.NEW_MSG,
-      );
-    });
-
-    it('should move the separator to next post that not sent by current user', () => {
-      const handler = runOnDeleted({
-        setup(handler) {
-          handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
-        },
-        currentUserId: 1,
-        deletedPostIds: [1000],
-        allPosts: [
-          { id: 999, sortValue: 1, data: { creator_id: 1 } },
-          { id: 1001, sortValue: 3, data: { creator_id: 1 } },
-          { id: 1002, sortValue: 4, data: { creator_id: 2 } },
-        ],
-      });
-      expect(handler.separatorMap.size).toBe(1);
-      expect(handler.separatorMap.get(1002)).toHaveProperty(
         'type',
         SeparatorType.NEW_MSG,
       );

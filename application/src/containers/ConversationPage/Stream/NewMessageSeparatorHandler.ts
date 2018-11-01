@@ -71,7 +71,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
 
     // Find first post next to the deleted post that has separator
     const postNext = _.find(
-      this._getOtherUsersPosts(allPosts),
+      allPosts,
       ({ id }) => id > deletedPostWithSeparator,
     );
 
@@ -101,12 +101,6 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
    */
   enable() {
     this._disabled = false;
-  }
-
-  private _getOtherUsersPosts(allPosts: ISortableModel<Post>[]) {
-    return allPosts.filter(
-      item => item && item.data && item.data.creator_id !== this._userId,
-    );
   }
 
   private _findNextOthersPost(
