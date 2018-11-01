@@ -7,6 +7,7 @@ import { SdkHelper } from "./sdk-helper";
 import { JupiterHelper } from "./jupiter-helper";
 import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
+import { DashboardHelper } from './dashboard-helper';
 import { H } from './utils';
 
 import { IUser, IStep } from '../models';
@@ -36,6 +37,10 @@ class Helper {
 
   get logHelper() {
     return new LogHelper(this.t);
+  }
+
+  get dashboardHelper() {
+    return new DashboardHelper(this.t);
   }
 
   /* delegate following method */
@@ -105,9 +110,8 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
-  // others
+  // misc
   async resetGlipAccount(user: IUser) {
-    logger.warn("reset a glip account will be very slow (30s+)");
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(this.rcData.mainCompany.admin);
     await adminGlip.deactivated(user.rcId);
     await this.sdkHelper.sdkManager.getGlip(user);

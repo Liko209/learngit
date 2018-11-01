@@ -6,7 +6,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { JuiCircularProgress } from 'jui/components';
-import { ThemeProvider } from 'jui/foundation/theme';
 import { AbstractViewModel } from '@/base/AbstractViewModel';
 import {
   LoadingMorePlugin,
@@ -63,13 +62,7 @@ describe('LoadingMorePlugin', () => {
     it.skip('should wrap View with loadingTop & loadingBottom', () => {
       const plugin = new LoadingMorePlugin();
       const View = plugin.wrapView(() => <div>Hello World</div>);
-
-      const wrapper = mount(
-        <ThemeProvider themeName="dark">
-          <View loadingTop={true} />
-        </ThemeProvider>,
-      );
-
+      const wrapper = mount(<View />);
       expect(wrapper.find(JuiCircularProgress).exists()).toBeTruthy();
     });
   });
@@ -81,7 +74,6 @@ describe('LoadingMorePlugin', () => {
       const View = plugin.wrapView(() => <div>Hello World</div>);
       plugin.install(vm);
       const wrapper = mount(<View {...vm} />);
-
       const promise = wrapper.prop('onScrollToTop')();
       expect(fetchPrevSpy).toHaveBeenCalled();
       expect(vm).toHaveProperty('loadingTop', true);
