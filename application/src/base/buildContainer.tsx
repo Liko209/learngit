@@ -38,13 +38,6 @@ function buildContainer<P = {}, S = {}, SS = any>({
         this.View = plugin.wrapView(this.View);
       });
       this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
-      if (this.vm.onReceiveProps) {
-        console.warn(
-          `[${
-            ViewModel.name
-          }] You probably no longer need onReceiveProps(), use this.props to get props, it is observable`,
-        );
-      }
       this.vm.onReceiveProps && this.vm.onReceiveProps(props);
     }
 
