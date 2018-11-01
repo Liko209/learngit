@@ -42,9 +42,9 @@ export class DashboardHelper {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
-
+    // FIXME: remove user-agent from case name when dashboard is ready
     const beatTest = await this.beatsClient.createTest({
-      name: testRun.test.name,
+      name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})`,
       status: StatusMap[status],
       metadata: {
         user_agent: testRun.browserConnection.browserInfo.userAgent,
