@@ -22,6 +22,7 @@ const StyledLoading = styled.div<TStyledLoading>`
   height: 100%;
   display: flex;
   align-items: center;
+  pointer-events: none;
   justify-content: center;
   background: ${({ isVisible, theme }) =>
     isVisible ? theme.palette && theme.palette.common.white : 'transparent'};
