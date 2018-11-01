@@ -1,11 +1,11 @@
 import 'testcafe';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, APIKEY, DASHBOARD_URL, DASHBOARD_UI } from './config';
+import { ENV_OPTS, DEBUG_MODE, APIKEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD } from './config';
 import { BeatsClient } from './v2/helpers/bendapi-helper';
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
-export const beatsClient = DASHBOARD_UI ? new BeatsClient(APIKEY, DASHBOARD_URL) : undefined;
+export const beatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(APIKEY, DASHBOARD_URL) : undefined;
 
 
 export function setupCase(accountType: string) {
@@ -32,7 +32,7 @@ export function setupCase(accountType: string) {
 export function teardownCase() {
   return async (t: TestController) => {
     await h(t).dataHelper.teardown();
-    if (DASHBOARD_UI) {
+    if (ENABLE_REMOTE_DASHBOARD) {
       await h(t).bendAPIHelper.teardown(beatsClient);
     }
   }

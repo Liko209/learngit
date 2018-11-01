@@ -49,7 +49,14 @@ export class BendAPIHelper {
 
   private async saveLogs(beatsClient: BeatsClient) {
     let status = !this.t['testRun'].errs.length;
-    let test = await beatsClient.createTest({ "name": this.t['testRun'].test.name, "status": status ? PASS : FAILED } as Test);
+    console.log(this.t['testRun'].browserConnection.browserInfo.userAgent);
+    let test = await beatsClient.createTest({
+      name: this.t['testRun'].test.name,
+      status: status ? PASS : FAILED,
+      metadata: {
+        user_agent: this.t['testRun'].browserConnection.browserInfo.userAgent
+      }
+    } as any);
     this.t.ctx.testId = test.id;
     for (const step of this.t.ctx.logs) {
       await this.saveStep(step, this.t.ctx.testId, beatsClient);
