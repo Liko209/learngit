@@ -29,6 +29,10 @@ ConversationCardViewProps
       customStatus,
       itemIds,
     } = this.props;
+    if (!creator.id) {
+      return null;
+    }
+
     const avatar = <Avatar uid={creator.id} size="medium" />;
     return (
       <React.Fragment>

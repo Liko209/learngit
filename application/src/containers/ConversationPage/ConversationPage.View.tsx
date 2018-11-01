@@ -27,7 +27,8 @@ class ConversationPageViewComponent extends Component<
 
   render() {
     const { t, groupId, canPost } = this.props;
-    return (
+
+    return groupId ? (
       <JuiConversationPage
         className="conversation-page"
         data-group-id={groupId}
@@ -41,7 +42,7 @@ class ConversationPageViewComponent extends Component<
           <JuiDisabledInput text={t('disabledText')} />
         )}
       </JuiConversationPage>
-    );
+    ) : null;
   }
 }
 

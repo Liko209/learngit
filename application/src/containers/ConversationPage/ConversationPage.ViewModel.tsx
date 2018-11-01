@@ -45,10 +45,10 @@ class ConversationPageViewModel extends AbstractViewModel {
   @action
   async onReceiveProps({ groupId }: ConversationPageProps) {
     if (!_.isEqual(groupId, this.groupId) && groupId) {
-      this.groupId = groupId;
       const group = (await this._groupService.getById(groupId)) as Group;
+      this.groupId = group.id;
       this._permissions = this._groupService.getPermissions(group);
-      this._readGroup(groupId);
+      this.groupId && this._readGroup(groupId);
     }
   }
 

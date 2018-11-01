@@ -13,9 +13,15 @@ class BaseDao<T extends {}> {
   static COLLECTION_NAME: string = '';
   private collection: IDatabaseCollection<T>;
   private db: IDatabase;
-  constructor(collectionName: string, db: IDatabase) {
+  private _modelName: string;
+  constructor(modelName: string, db: IDatabase) {
     this.db = db;
-    this.collection = db.getCollection<T>(collectionName);
+    this.collection = db.getCollection<T>(modelName);
+    this._modelName = modelName;
+  }
+
+  get modelName(): string {
+    return this._modelName;
   }
 
   async put(item: T | T[]): Promise<void> {
@@ -154,22 +160,33 @@ class BaseDao<T extends {}> {
   }
   private _validateItem(item: Partial<T>, withPrimaryKey: boolean): void {
     if (!_.isObjectLike(item)) {
-      Throw(ErrorTypes.DB_INVALID_USAGE_ERROR, `Item should be an object. Received ${item}`);
+      Throw(
+        ErrorTypes.DB_INVALID_USAGE_ERROR,
+        `Item should be an object. Received ${item}`,
+      );
     }
     if (_.isEmpty(item)) {
-      Throw(ErrorTypes.DB_INVALID_USAGE_ERROR, 'Item should not be an empty object.');
+      Throw(
+        ErrorTypes.DB_INVALID_USAGE_ERROR,
+        'Item should not be an empty object.',
+      );
     }
     if (withPrimaryKey && !item[this.collection.primaryKeyName()]) {
       Throw(
         ErrorTypes.DB_INVALID_USAGE_ERROR,
-        `Lack of primary key ${this.collection.primaryKeyName()} in object ${JSON.stringify(item)}`,
+        `Lack of primary key ${this.collection.primaryKeyName()} in object ${JSON.stringify(
+          item,
+        )}`,
       );
     }
   }
 
   private _validateKey(key: number) {
     if (!_.isInteger(key)) {
-      Throw(ErrorTypes.DB_INVALID_USAGE_ERROR, 'Key for db get method should be an integer.');
+      Throw(
+        ErrorTypes.DB_INVALID_USAGE_ERROR,
+        'Key for db get method should be an integer.',
+      );
     }
   }
 }
