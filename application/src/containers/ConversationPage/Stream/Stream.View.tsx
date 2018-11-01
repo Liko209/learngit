@@ -5,16 +5,23 @@
  */
 import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
+import VisibilitySensor from 'react-visibility-sensor';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { toTitleCase } from '@/utils';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { JumpToFirstUnreadButton } from './JumpToUnreadButton';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
+import { observable } from 'mobx';
+import { observer } from 'mobx-react';
 
 type Props = WithNamespaces & StreamViewProps;
 
+@observer
 class StreamViewComponent extends Component<Props> {
+  @observable
+  private _newMessageSeparatorVisible = false;
+
   componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
@@ -42,10 +49,16 @@ class StreamViewComponent extends Component<Props> {
         );
       case StreamItemType.NEW_MSG_SEPARATOR:
         return (
-          <TimeNodeDivider
-            key={streamItem.value}
-            value={toTitleCase(t('newMessage_plural'))}
-          />
+          <VisibilitySensor
+            onChange={this._newMessagesSeparatorVisibilityChange}
+          >
+            {() => (
+              <TimeNodeDivider
+                key={streamItem.value}
+                value={toTitleCase(t('newMessage_plural'))}
+              />
+            )}
+          </VisibilitySensor>
         );
       case StreamItemType.DATE_SEPARATOR:
         return (
@@ -63,18 +76,30 @@ class StreamViewComponent extends Component<Props> {
         {items.length > 0
           ? items.map(item => this._renderStreamItem(item))
           : null}
-        <JumpToFirstUnreadButtonWrapper>
-          <JumpToFirstUnreadButton
-            onClick={this._jumpToFirstUnread}
-            count={9}
-          />
-        </JumpToFirstUnreadButtonWrapper>
+        {!this._newMessageSeparatorVisible ? (
+          <JumpToFirstUnreadButtonWrapper>
+            <JumpToFirstUnreadButton
+              onClick={this._jumpToFirstUnread}
+              count={9}
+            />
+          </JumpToFirstUnreadButtonWrapper>
+        ) : null}
       </div>
     );
   }
 
+  private _newMessagesSeparatorVisibilityChange = (isVisible: boolean) => {
+    this._newMessageSeparatorVisible = isVisible;
+    if (isVisible) this._readFirstUnread();
+  }
+
+  private _readFirstUnread = () => {
+    console.log('_readFirstUnread');
+  }
+
   private _jumpToFirstUnread = () => {
     console.log('_jumpToFirstUnread');
+    this._readFirstUnread();
   }
 
   private _focusHandler = () => {
