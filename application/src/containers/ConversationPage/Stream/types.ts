@@ -47,6 +47,8 @@ type StreamViewProps = {
   atBottom: () => boolean;
   enableNewMessageSeparatorHandler: () => void;
   loadPostUntilFirstUnread: () => Promise<boolean>;
+  hasUnread: boolean;
+  setHasUnread: (arg: boolean) => void;
   firstUnreadCount: number;
 };
 

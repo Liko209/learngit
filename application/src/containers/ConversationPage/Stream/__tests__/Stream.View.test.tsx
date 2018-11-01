@@ -20,6 +20,9 @@ describe('StreamView', () => {
         enableNewMessageSeparatorHandler: jest
           .fn()
           .mockName('enableNewMessageSeparatorHandler'),
+        firstUnreadCount: 0,
+        hasUnread: false,
+        setHasUnread: jest.fn().mockName('setHasUnread'),
         postIds: [1, 2],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -50,6 +53,9 @@ describe('StreamView', () => {
         enableNewMessageSeparatorHandler: jest
           .fn()
           .mockName('enableTimeNodeDividerHandler'),
+        firstUnreadCount: 0,
+        hasUnread: false,
+        setHasUnread: jest.fn().mockName('setHasUnread'),
         postIds: [1, 2],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -75,6 +81,9 @@ describe('StreamView', () => {
         enableNewMessageSeparatorHandler: jest
           .fn()
           .mockName('enableNewMessageSeparatorHandler'),
+        firstUnreadCount: 0,
+        hasUnread: false,
+        setHasUnread: jest.fn().mockName('setHasUnread'),
         postIds: [1, 2, 3, 4],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -101,6 +110,9 @@ describe('StreamView', () => {
         enableNewMessageSeparatorHandler: jest
           .fn()
           .mockName('enableNewMessageSeparatorHandler'),
+        firstUnreadCount: 0,
+        hasUnread: false,
+        setHasUnread: jest.fn().mockName('setHasUnread'),
         postIds: [],
         items: [],
       };

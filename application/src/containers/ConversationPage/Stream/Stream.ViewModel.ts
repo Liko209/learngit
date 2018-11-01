@@ -49,7 +49,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _initialized = false;
 
   @observable
-  hasShownFirstUnreadIndicator: boolean = false;
+  hasUnread: boolean = false;
 
   @observable
   firstGroupState: GroupStateModel;
@@ -61,33 +61,24 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @observable
   items: StreamItem[] = [];
 
-  @computed
-  get _readThrough() {
-    const groupState = getEntity<GroupState, GroupStateModel>(
+  get _groupState() {
+    return getEntity<GroupState, GroupStateModel>(
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     );
-    return groupState.readThrough;
   }
 
-  // @computed
-  // get _unreadCount() {
-  //   if (!this.props.groupId) {
-  //     return 0;
-  //   }
-  //   const groupState = getEntity<GroupState, GroupStateModel>(
-  //     ENTITY_NAME.GROUP_STATE,
-  //     this.groupId,
-  //   );
-  //   return groupState.unreadCount;
-  // }
+  @computed
+  get _readThrough() {
+    return this._groupState.readThrough;
+  }
 
   getFirstUnreadIndicatorState() {
     return this.firstGroupState;
   }
 
-  setHasShownFirstUnreadIndicator(hasShown: boolean) {
-    this.hasShownFirstUnreadIndicator = hasShown;
+  setHasUnread = (hasUnread: boolean) => {
+    this.hasUnread = hasUnread;
   }
 
   constructor() {
@@ -159,13 +150,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.loadInitialPosts();
   }
 
-  initFirstUnreadIndicator() {
-    const result = getEntity<GroupState, GroupStateModel>(
-      ENTITY_NAME.GROUP_STATE,
-      this.groupId,
-    );
-    this.firstGroupState = _.cloneDeep(result);
-    this.setHasShownFirstUnreadIndicator(false);
+  saveGroupState() {
+    this.firstGroupState = _.cloneDeep(this._groupState);
+
+    if (!this.firstGroupState.unreadCount) return;
+
+    this.setHasUnread(this.firstGroupState.unreadCount > 0);
   }
 
   @computed
@@ -179,7 +169,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @loading
   async loadInitialPosts() {
     await this._loadPosts(FetchDataDirection.UP);
-    this.initFirstUnreadIndicator();
+    this.saveGroupState();
     this._initialized = true;
     this.markAsRead();
   }
@@ -231,7 +221,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   loadPostUntilFirstUnread = async () => {
-    this.setHasShownFirstUnreadIndicator(true);
+    this.setHasUnread(true);
     if (this.firstGroupState.readThrough && this.firstGroupState.unreadCount) {
       if (this.postIds.indexOf(this.firstGroupState.readThrough) !== -1) {
         return true;

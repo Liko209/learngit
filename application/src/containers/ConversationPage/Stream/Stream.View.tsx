@@ -69,21 +69,28 @@ class StreamViewComponent extends Component<Props> {
     }
   }
 
+  private get jumpToFirstUnreadButton() {
+    const { hasUnread, firstUnreadCount } = this.props;
+    const shouldHaveJumpButton = !this._newMessageSeparatorVisible && hasUnread;
+
+    return shouldHaveJumpButton ? (
+      <JumpToFirstUnreadButtonWrapper>
+        <JumpToFirstUnreadButton
+          onClick={this._jumpToFirstUnread}
+          count={firstUnreadCount}
+        />
+      </JumpToFirstUnreadButtonWrapper>
+    ) : null;
+  }
+
   render() {
-    const { items, firstUnreadCount } = this.props;
+    const { items } = this.props;
     return (
       <div>
         {items.length > 0
           ? items.map(item => this._renderStreamItem(item))
           : null}
-        {!this._newMessageSeparatorVisible ? (
-          <JumpToFirstUnreadButtonWrapper>
-            <JumpToFirstUnreadButton
-              onClick={this._jumpToFirstUnread}
-              count={firstUnreadCount}
-            />
-          </JumpToFirstUnreadButtonWrapper>
-        ) : null}
+        {this.jumpToFirstUnreadButton}
       </div>
     );
   }
@@ -94,13 +101,12 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _readFirstUnread = () => {
-    console.log('_readFirstUnread');
+    this.props.setHasUnread(false);
   }
 
   private _jumpToFirstUnread = async () => {
-    // console.log('_jumpToFirstUnread');
     await this.props.loadPostUntilFirstUnread();
-    this._readFirstUnread();
+    this.props.setRowVisible(0);
   }
 
   private _focusHandler = () => {
