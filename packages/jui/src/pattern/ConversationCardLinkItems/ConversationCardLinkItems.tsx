@@ -60,6 +60,9 @@ const LinkTitle = styled.p`
   margin-right: ${spacing(5)};
   a {
     color: ${grey('900')};
+    &:hover{
+      text-decoration: underline;
+    }
   }
 `;
 const LinkSummary = styled.p`
