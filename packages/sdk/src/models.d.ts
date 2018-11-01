@@ -94,6 +94,8 @@ export type Company = ExtendedBaseModel & {
   name: string;
   domain: string;
   admins: number[];
+  custom_emoji: { [index: string]: { data: string } };
+  _delta?: { add_keys?: object; remove_keys: object; };
   rc_account_id?: number;
 };
 
@@ -220,12 +222,12 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
 export type RawPresence = {
   personId: number;
   calculatedStatus?:
-    | 'NotReady'
-    | 'Unavailable'
-    | 'Available'
-    | 'OnCall'
-    | 'DND'
-    | 'InMeeting';
+  | 'NotReady'
+  | 'Unavailable'
+  | 'Available'
+  | 'OnCall'
+  | 'DND'
+  | 'InMeeting';
 };
 
 export type Presence = BaseModel & {

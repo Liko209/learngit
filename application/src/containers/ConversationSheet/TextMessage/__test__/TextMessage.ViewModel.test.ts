@@ -3,11 +3,11 @@
  * @Date: 2018-10-25 10:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../store/utils';
-import { FormatMessagesViewModel } from '../FormatMessages.ViewModel';
+import { getEntity } from '../../../../store/utils';
+import { TextMessageViewModel } from '../TextMessage.ViewModel';
 
-jest.mock('../../../store/utils');
-const formatMessagesVM = new FormatMessagesViewModel();
+jest.mock('../../../../store/utils');
+const TextMessageVM = new TextMessageViewModel();
 
 const mockPostEntity = (text: string) => {
   (getEntity as jest.Mock).mockReturnValue({
@@ -15,26 +15,26 @@ const mockPostEntity = (text: string) => {
     atMentionNonItemIds: [1234],
   });
 };
-describe('FormatMessages', () => {
+describe('TextMessage', () => {
   beforeAll(() => {
     jest.resetAllMocks();
   });
   describe('formatHtml', () => {
     it('url', () => {
       mockPostEntity('https://www.baidu.com');
-      expect(formatMessagesVM.formatHtml).toBe(
+      expect(TextMessageVM.html).toBe(
         "<a href='https://www.baidu.com' target='_blank' rel='noreferrer'>https://www.baidu.com</a>",
       );
     });
     it('email', () => {
       mockPostEntity('xxx@163.com');
-      expect(formatMessagesVM.formatHtml).toBe(
+      expect(TextMessageVM.html).toBe(
         "<a href='mailto:xxx@163.com' target='_blank' rel='noreferrer'>xxx@163.com</a>",
       );
     });
     it('bold font', () => {
       mockPostEntity('**awesome**');
-      expect(formatMessagesVM.formatHtml).toBe('<b>awesome</b>');
+      expect(TextMessageVM.html).toBe('<b>awesome</b>');
     });
   });
 });
