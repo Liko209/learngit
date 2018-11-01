@@ -5,7 +5,7 @@
  */
 
 import { Markdown } from 'glipdown';
-import { glipdown2Html } from './utils/glipdown2Html';
+import { handleAtMentionName } from './utils/handleAtMentionName';
 import { CustomEmojiMap, AtMentions, FormatToHtmlParams } from './types';
 import { Emoji } from './Emoji';
 
@@ -29,13 +29,9 @@ class FormatToHtml {
 
   formatToGlipdown() {
     const toMdString = Markdown(this.text);
-    const toHtmlString = glipdown2Html(toMdString);
-    // <a class='at_mention_compose' rel='{"id":2266292227}'>Lip Wang</a>
-    const atMentionCompose = /<a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)[^>]+>([^<]+)<\/a>/g;
-    this.text = toHtmlString.replace(atMentionCompose, (match: string, id: string, name: string) => {
-      const text = this._atMentions[id] || name;
-      return `<a class='at_mention_compose ${+id === this._currentUserId ? 'current' : ''}' href='javascript:void(0)' id=${id}>${text}</a>`;
-    });
+    const atMentionId = this._atMentions;
+    const currentUserId = this._currentUserId;
+    this.text = handleAtMentionName(toMdString, atMentionId, currentUserId);
     return this;
   }
 
