@@ -11,7 +11,6 @@ import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
 import { idsToConversationSheet } from '@/containers/ConversationSheet';
 import { FormatMessages } from '../FormatMessages';
-// import { idToPostItemComponent } from '@/containers/PostItems';
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
@@ -34,6 +33,7 @@ export class ConversationCard extends React.Component<
     }
 
     const avatar = <Avatar uid={creator.id} size="medium" />;
+
     return (
       <React.Fragment>
         <JuiConversationCard
