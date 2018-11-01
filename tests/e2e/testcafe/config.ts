@@ -83,7 +83,6 @@ const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501
 const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-xta05.lab.rcch.ringcentral.com:8000/api/v1";
 const ENABLE_REMOTE_DASHBOARD = (process.env.ENABLE_REMOTE_DASHBOARD === 'true');
 const RUN_NAME = process.env.RUN_NAME || uuid();
-const RUN_ID = Number(process.env.RUN_ID);
 
 export {
   APP_ROOT,
@@ -97,5 +96,4 @@ export {
   ENABLE_REMOTE_DASHBOARD,
   DASHBOARD_URL,
   RUN_NAME,
-  RUN_ID,
 };

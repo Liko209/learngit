@@ -2,19 +2,21 @@ import 'testcafe';
 import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUN_ID, RUNNER_OPTS } from './config';
+import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
 import { BeatsClient, Run } from 'bendapi';
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
 let beatsClient: BeatsClient;
-let runId = RUN_ID;
+let runId;
 
 if (ENABLE_REMOTE_DASHBOARD) {
   beatsClient = new BeatsClient(DASHBOARD_API_KEY, DASHBOARD_URL);
 }
 
-export async function getRunId(beatsClient: BeatsClient) {
+export async function getOrCreateRunId() {
+  if (!beatsClient)
+    return null;
   if (!runId) {
     const runName = RUN_NAME || uuid();
     const metadata = {};
@@ -58,7 +60,7 @@ export function teardownCase() {
   return async (t: TestController) => {
     await h(t).dataHelper.teardown();
     if (beatsClient) {
-      await h(t).dashboardHelper.teardown(beatsClient, await getRunId(beatsClient));
+      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId());
     }
   }
 }
