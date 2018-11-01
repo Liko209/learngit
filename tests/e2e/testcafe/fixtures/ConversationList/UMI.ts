@@ -10,12 +10,13 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
 import { GlipSdk } from '../../v2/sdk/glip';
+import { ClientFunction, Selector } from 'testcafe';
 
 fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test.skip(
+test(
   formalName('UMI add receive message count', [
     'JPT-107',
     'P0',
@@ -113,8 +114,6 @@ test.skip(
         const text = item.find('p');
         const count = await umi.textContent;
         await t.expect(count).eql('1');
-        const umiBgColor = (await umi.style)['background-color'];
-        await t.expect(umiBgColor).eql('rgb(238, 238, 238)');
         const textFontWeight = (await text.style)['font-weight'];
         await t.expect(textFontWeight).eql('700');
       },
@@ -209,7 +208,7 @@ test.skip(
   },
 );
 
-test.skip(
+test(
   formalName('Remove UMI when open conversation', [
     'JPT-103',
     'P0',
@@ -345,42 +344,35 @@ test.skip(
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
     const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
 
-    const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
+    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
     const teamsSection = app.homePage.messagePanel.teamsSection;
     const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
-    let pvtChat, team;
+    
+    let pvtChatId, teamId, pvtchat, team;
     await h(t).withLog(
       'Given I have an extension with a team and a private chat',
       async () => {
-        pvtChat = await userPlatform.createGroup({
+        pvtChatId = (await userPlatform.createGroup({
           type: 'PrivateChat',
           members: [user.rcId, users[5].rcId],
-        });
-        team = await userPlatform.createGroup({
+        })).data.id;
+        teamId = (await userPlatform.createGroup({
           type: 'Team',
           name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
-        });
+        })).data.id;
       },
     );
 
     await h(t).withLog(
-      'And the conversations should not be hidden before login',
+      'And the conversations should not be hidden and not favorite before login',
       async () => {
         await glipSDK.updateProfile(user.rcId, {
-          [`hide_group_${pvtChat.data.id}`]: false,
+          [`hide_group_${pvtChatId}`]: false,
+          favorite_group_ids: [],
         });
       },
     );
-
-    await h(t).withLog('Clear all UMIs before login', async () => {
-      const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(
-        user.rcId,
-      );
-
-      await glipSDK.markAsRead(user.rcId, unreadGroupIds);
-    });
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
@@ -392,63 +384,42 @@ test.skip(
       },
     );
 
-    await h(t).withLog('Then I click private chat to open it', async () => {
-      await t.click(
-        directMessagesSection.conversations.filter(
-          `[data-group-id="${pvtChat.data.id}"]`,
-        ),
-      );
+    await h(t).withLog('Then I can open the private chat', async () => {
+      pvtchat =  directMessagesSection.conversationByIdEntry(pvtChatId);
+      await pvtchat.enter();
     });
 
     await h(t).withLog(
-      'Then other user send a post to the private chat',
+      'When I receive a new message from other user in the private chat ',
       async () => {
         await user5Platform.createPost(
           {
             text: 'TestGroupUMI',
           },
-          pvtChat.data.id,
-        );
-        await t.wait(3e3);
+          pvtChatId,
+        )
       },
     );
 
-    await h(t).withLog('The private chat should not have umi', async () => {
-      const item = directMessagesSection.conversations.filter(
-        `[data-group-id="${pvtChat.data.id}"]`,
-      );
-      const umi = item.find('.umi');
-      directMessagesSection.warnFlakySelector();
-      const text = item.find('p');
-      const count = await umi.textContent;
-      await t.expect(count).eql('');
-      const textFontWeight = (await text.style)['font-weight'];
-      await t.expect(textFontWeight).eql('400');
+    // FIXME: When run cases concurrently, current browser will be lost focus, and fail.
+    await h(t).withLog('Then I should not have UMI in the private chat', async () => {
+      const umi = await pvtchat.getUmi();
+      await t.expect(umi).eql(0);
     });
 
-    await h(t).withLog('Open other conversation and reload', async () => {
-      await t.click(
-        teamsSection.conversations.filter(`[data-group-id="${team.data.id}"]`),
-      );
-      await t.wait(1e3);
+    await h(t).withLog('When I open other conversation and reload web page', async () => {
+      team = teamsSection.conversationByIdEntry(teamId);
+      await team.enter();
+      await t.wait(3e3);
       await t.eval(() => location.reload(true));
       await t.wait(1e3);
     });
 
     await h(t).withLog(
-      'The private chat should still not have umi',
+      'Then I should not have UMI in the private chat too',
       async () => {
-        const item = directMessagesSection.conversations.filter(
-          `[data-group-id="${pvtChat.data.id}"]`,
-        );
-        const umi = item.find('.umi');
-        directMessagesSection.warnFlakySelector();
-        const text = item.find('p');
-        const count = await umi.textContent;
-        await t.wait(1e10);
-        await t.expect(count).eql('');
-        const textFontWeight = (await text.style)['font-weight'];
-        await t.expect(textFontWeight).eql('400');
+        const umi = await  pvtchat.getUmi();
+        await t.expect(umi).eql(0);
       },
     );
   },

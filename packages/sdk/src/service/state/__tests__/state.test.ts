@@ -49,7 +49,10 @@ describe('StateService', () => {
   const groupStateDao = new GroupStateDao(null);
   const stateDao = new StateDao(null);
   const accountDao = new AccountDao(null);
-  PostService.getInstance = jest.fn().mockReturnValue(postService);
+
+  beforeEach(() => {
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -80,8 +83,7 @@ describe('StateService', () => {
     });
 
     it('should call dependencies', async () => {
-      await stateService.updateState(12, () => ({}));
-      expect(postService.getLastPostOfGroup).toHaveBeenCalledTimes(1);
+      await stateService.updateState(12, 3, () => ({}));
       expect(stateDao.getFirst).toHaveBeenCalledTimes(1);
       expect(groupStateDao.get).toHaveBeenCalledTimes(1);
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
@@ -91,7 +93,7 @@ describe('StateService', () => {
       postService.getLastPostOfGroup.mockResolvedValueOnce({});
       stateDao.getFirst.mockResolvedValueOnce({});
       groupStateDao.get.mockReturnValue(null);
-      await stateService.updateState(12, () => ({}));
+      await stateService.updateState(12, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
     });
 
@@ -99,11 +101,11 @@ describe('StateService', () => {
       postService.getLastPostOfGroup.mockResolvedValueOnce({});
       stateDao.getFirst.mockResolvedValueOnce({});
       groupStateDao.get.mockReturnValue({});
-      await stateService.updateState(12, () => ({}));
+      await stateService.updateState(12, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
 
       groupStateDao.get.mockReturnValue({ unread_count: 0 });
-      await stateService.updateState(12, () => ({}));
+      await stateService.updateState(12, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
     });
 
@@ -111,7 +113,7 @@ describe('StateService', () => {
       postService.getLastPostOfGroup.mockResolvedValueOnce({});
       stateDao.getFirst.mockResolvedValueOnce({});
       groupStateDao.get.mockReturnValue({ unread_count: 1 });
-      await stateService.updateState(12, () => ({}));
+      await stateService.updateState(12, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(1);
     });
   });
@@ -119,6 +121,7 @@ describe('StateService', () => {
   describe('markAsRead()', () => {
     beforeAll(() => {
       jest.spyOn(stateService, 'getMyState');
+      jest.spyOn(stateService, 'getLastPostOfGroup');
     });
 
     beforeEach(() => {
@@ -130,7 +133,7 @@ describe('StateService', () => {
     });
 
     it('should call StateAPI.saveStatePartial()', async () => {
-      postService.getLastPostOfGroup.mockResolvedValueOnce({ id: 1 });
+      stateService.getLastPostOfGroup.mockResolvedValue({ id: 1 });
       stateService.getMyState.mockResolvedValueOnce({ id: 1 });
 
       await stateService.markAsRead(1);
@@ -271,86 +274,6 @@ describe('StateService', () => {
         .mockReturnValue(originState());
       const resp = await stateService.calculateUMI([groupState9]);
       expect(resp).toEqual([]);
-    });
-  });
-  describe('Validate conversation id', async () => {
-    let data;
-    let last_group_id;
-    let is_hidden;
-    let me_group_id;
-    let user_id;
-    beforeEach(() => {
-      data = {
-        is_archived: false,
-      };
-      last_group_id = 120;
-      is_hidden = false;
-      GroupAPI.getDataById = jest.fn().mockResolvedValue({ data });
-      stateService.getMyState = jest.fn().mockResolvedValue({ last_group_id });
-      jest.spyOn(ProfileService, 'getInstance').mockImplementation(() => ({
-        isConversationHidden: jest.fn().mockResolvedValue(is_hidden),
-      }));
-      jest.spyOn(PersonService, 'getInstance').mockImplementation(() => ({
-        getById: () => ({
-          me_group_id,
-        }),
-      }));
-      jest.spyOn(AccountService, 'getInstance').mockImplementation(() => ({
-        getCurrentUserId: () => user_id,
-      }));
-    });
-    describe('When url contains a conversation id', () => {
-      it('should return group id if the conversation is not hidden or unavailable', async () => {
-        const id = await stateService.getLastValidGroupId(110);
-        expect(id).toEqual(110);
-      });
-      it('should return undefined if the conversation is archived', async () => {
-        data.is_archived = true;
-        const id = await stateService.getLastValidGroupId(110);
-        expect(id).toBeUndefined();
-      });
-      it('should return undefined if the conversation is closed', async () => {
-        is_hidden = true;
-        const id = await stateService.getLastValidGroupId(110);
-        expect(id).toBeUndefined();
-      });
-      it('should return undefined if the conversation info is unavailable to user', async () => {
-        GroupAPI.getDataById = jest.fn().mockRejectedValue({ data });
-        const id = await stateService.getLastValidGroupId(110);
-        expect(id).toBeUndefined();
-      });
-    });
-    describe('When url does not contain a conversation id', () => {
-      it('should return group id if the conversation is not hidden or unavailable', async () => {
-        const id = await stateService.getLastValidGroupId();
-        expect(id).toEqual(last_group_id);
-      });
-      it('should return undefined if the conversation is archived', async () => {
-        data.is_archived = true;
-        const id = await stateService.getLastValidGroupId(110);
-        expect(id).toBeUndefined();
-      });
-      it('should return undefined if the conversation is closed', async () => {
-        is_hidden = true;
-        const id = await stateService.getLastValidGroupId(110);
-        expect(id).toBeUndefined();
-      });
-      it('should return undefined if the conversation info is unavailable to user', async () => {
-        GroupAPI.getDataById = jest.fn().mockRejectedValue({ data });
-        const id = await stateService.getLastValidGroupId(110);
-        expect(id).toBeUndefined();
-      });
-      // it('should return me conversation id for new user', async () => {
-      //   user_id = 40;
-      //   me_group_id = 50;
-      //   last_group_id = 0;
-      //   data = {};
-      //   stateService.getMyState = jest
-      //     .fn()
-      //     .mockResolvedValue({ last_group_id });
-      //   const id = await stateService.getLastValidGroupId();
-      //   expect(id).toBe(me_group_id);
-      // });
     });
   });
 });

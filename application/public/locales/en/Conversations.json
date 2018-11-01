@@ -26,5 +26,6 @@
   "shareFile": "Share a file",
   "createTask": "Create a task",
   "integrateApps": "Integrate apps",
-  "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}"
+  "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
+  "show_unread_plural": "show unreads"
 }

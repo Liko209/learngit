@@ -3,6 +3,7 @@
     "language": "en",
     "words": [
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "apos",
         "Appender",
         "appenders",
         "apppender",
@@ -61,6 +62,7 @@
         "minification",
         "mobx",
         "msvisibilitychange",
+        "mvvm",
         "nametag",
         "nello",
         "Newable",

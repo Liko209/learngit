@@ -64,6 +64,14 @@ class ConversationListItemViewModel extends StoreViewModel<
     const groupState = getEntity(ENTITY_NAME.GROUP_STATE, this.groupId);
     return !!groupState.unreadCount;
   }
+
+  @computed
+  get hidden() {
+    return (
+      storeManager.getGlobalStore().get(GLOBAL_KEYS.UNREAD_TOGGLE_ON) &&
+      !(this.umiHint || this.selected)
+    );
+  }
 }
 
 export { ConversationListItemViewModel };

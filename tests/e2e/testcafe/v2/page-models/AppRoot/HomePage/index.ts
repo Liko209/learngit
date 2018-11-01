@@ -5,6 +5,7 @@ import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessagePanel } from './MessagePanel'
+import { Header } from './header';
 
 
 export class HomePage extends BaseWebComponent {
@@ -12,7 +13,7 @@ export class HomePage extends BaseWebComponent {
         await this.waitUntilExist(this.leftPanel, 60e3);
     }
 
-    get root() {
+    get self() {
         return this.getSelector('#root');
     }
 
@@ -24,9 +25,13 @@ export class HomePage extends BaseWebComponent {
         return this.getComponent(MessagePanel);
     }
 
+    get header(){
+        return this.getComponent(Header);
+    }
+
     get addActionButton() {
         this.warnFlakySelector();
-        return this.root.find('button').child().withText('add_circle').parent().parent();
+        return this.self.find('button').child().withText('add_circle').parent().parent();
     }
 
     get addActionMenu() {
@@ -37,11 +42,20 @@ export class HomePage extends BaseWebComponent {
         return this.getComponent(CreateTeamModal);
     }
 
+    get topBarAvatar() {
+        return this.getSelectorByAutomationId('topBarAvatar');
+    }
+
     get settingMenu() {
         return this.getComponent(SettingMenu);
     }
 
     async openAddActionMenu() {
-        await this.t.click(this.addActionButton).hover('html');
+        await this.t.hover('html').click(this.addActionButton);
     }
+
+    async openSettingMenu() {
+        await this.t.click(this.topBarAvatar);
+    }
+
 }

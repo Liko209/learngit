@@ -53,7 +53,7 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
 
   async bulkPut(array: T[]): Promise<void> {
     await Promise.all(
-      array.map(async (item) => {
+      array.map(async (item: T) => {
         return this.put(item);
       }),
     );

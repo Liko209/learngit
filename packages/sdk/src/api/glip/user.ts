@@ -37,6 +37,7 @@ export type IndexDataModel = {
   timestamp?: number;
   scoreboard?: string;
   client_config: IFlag;
+  static_http_server: string;
 };
 
 type IndexResponse = IResponse<IndexDataModel & IResponseError>;
