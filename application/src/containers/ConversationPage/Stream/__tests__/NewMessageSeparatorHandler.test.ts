@@ -1,8 +1,9 @@
+import _ from 'lodash';
+import { Post } from 'sdk/src/models';
 import { getGlobalValue } from '../../../../store/utils';
 import { FetchDataDirection, ISortableModel } from '../../../../store/base';
 import { NewMessageSeparatorHandler } from '../NewMessageSeparatorHandler';
 import { SeparatorType } from '../types';
-import _ from 'lodash';
 
 jest.mock('../../../../store/utils');
 
@@ -71,13 +72,55 @@ function runOnDeleted({
 
 describe('NewMessageSeparatorHandler', () => {
   describe('onAdded()', () => {
-    it('should have a separator aim to the readThrough post', () => {
+    it('should have a separator next to the readThrough post', () => {
       const handler = runOnAdded({
         readThrough: 620249092,
         allPosts: [
           { id: 620232708, sortValue: 1540461821422 },
           { id: 620240900, sortValue: 1540461830617 },
           { id: 620249092, sortValue: 1540461830964 }, // readThrough is here
+          // separator should be here
+          { id: 620257284, sortValue: 1540461970776 },
+          { id: 620265476, sortValue: 1540461970958 },
+          { id: 620273668, sortValue: 1540461971175 },
+          { id: 620281860, sortValue: 1540461972285 },
+        ],
+      });
+
+      expect(handler.separatorMap.size).toBe(1);
+      expect(handler.separatorMap.get(620257284)).toHaveProperty(
+        'type',
+        SeparatorType.NEW_MSG,
+      );
+    });
+
+    it('should not have a separator when no post', () => {
+      const handler = runOnAdded({
+        readThrough: undefined,
+        allPosts: [],
+      });
+
+      expect(handler.separatorMap.size).toBe(0);
+
+      // If the conversation used to have posts but had been deleted.
+      const handler2 = runOnAdded({
+        readThrough: 1000,
+        allPosts: [],
+      });
+
+      expect(handler2.separatorMap.size).toBe(0);
+    });
+
+    it('should have a separator when the post next to the readThrough is sent by current user', () => {
+      const handler = runOnAdded({
+        currentUserId: 1,
+        postCreatorId: 2,
+        readThrough: 620249092,
+        allPosts: [
+          { id: 620232708, sortValue: 1540461821422 },
+          { id: 620240900, sortValue: 1540461830617 },
+          { id: 620249092, sortValue: 1540461830964, data: { creator_id: 1 } }, // readThrough is here
+          // separator should be here
           { id: 620257284, sortValue: 1540461970776 },
           { id: 620265476, sortValue: 1540461970958 },
           { id: 620273668, sortValue: 1540461971175 },
@@ -111,9 +154,53 @@ describe('NewMessageSeparatorHandler', () => {
       expect(handler.separatorMap.size).toBe(0);
     });
 
-    it('should have not separator when readThrough post is not existed', () => {
+    it('should have separator when readThrough post is in prev page', () => {
       const handler = runOnAdded({
         readThrough: 999,
+        allPosts: [
+          { id: 1000, sortValue: 3 },
+          { id: 1001, sortValue: 4 },
+          { id: 1002, sortValue: 5 },
+        ],
+      });
+
+      expect(handler.separatorMap.size).toBe(0);
+
+      // load prev page
+      handler.onAdded(FetchDataDirection.UP, [], [
+        { id: 998, sortValue: 1, data: { creator_id: 1 } },
+        { id: 999, sortValue: 2, data: { creator_id: 1 } },
+        // separator should be here
+        { id: 1000, sortValue: 3, data: { creator_id: 1 } },
+        { id: 1001, sortValue: 4, data: { creator_id: 1 } },
+        { id: 1002, sortValue: 5, data: { creator_id: 1 } },
+      ] as ISortableModel[]);
+
+      expect(handler.separatorMap.get(1000)).toHaveProperty(
+        'type',
+        SeparatorType.NEW_MSG,
+      );
+    });
+
+    it('should have separator at next post when readThrough post is not existed', () => {
+      const handler = runOnAdded({
+        readThrough: 1000,
+        allPosts: [
+          { id: 999, sortValue: 1 },
+          { id: 1001, sortValue: 2 },
+          { id: 1002, sortValue: 3 },
+        ],
+      });
+
+      expect(handler.separatorMap.get(1001)).toHaveProperty(
+        'type',
+        SeparatorType.NEW_MSG,
+      );
+    });
+
+    it('should have not separator when readThrough is empty', () => {
+      const handler = runOnAdded({
+        readThrough: undefined,
         allPosts: [
           { id: 1000, sortValue: 1 },
           { id: 1001, sortValue: 2 },
@@ -124,9 +211,22 @@ describe('NewMessageSeparatorHandler', () => {
       expect(handler.separatorMap.size).toBe(0);
     });
 
-    it('should have not separator when readThrough is empty', () => {
+    it('should have not separator when readThrough === last post', () => {
       const handler = runOnAdded({
-        readThrough: undefined,
+        readThrough: 1002,
+        allPosts: [
+          { id: 1000, sortValue: 1 },
+          { id: 1001, sortValue: 2 },
+          { id: 1002, sortValue: 3 },
+        ],
+      });
+
+      expect(handler.separatorMap.size).toBe(0);
+    });
+
+    it('should have not separator when readThrough > last post', () => {
+      const handler = runOnAdded({
+        readThrough: 1003,
         allPosts: [
           { id: 1000, sortValue: 1 },
           { id: 1001, sortValue: 2 },
@@ -213,36 +313,17 @@ describe('NewMessageSeparatorHandler', () => {
         setup(handler) {
           handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
         },
+        currentUserId: 2,
         deletedPostIds: [1000],
         allPosts: [
-          { id: 999, sortValue: 1 },
-          { id: 1001, sortValue: 3 },
-          { id: 1002, sortValue: 4 },
+          { id: 999, sortValue: 1, data: { creator_id: 1 } },
+          { id: 1001, sortValue: 3, data: { creator_id: 2 } },
+          { id: 1002, sortValue: 4, data: { creator_id: 1 } },
         ],
       });
 
       expect(handler.separatorMap.size).toBe(1);
       expect(handler.separatorMap.get(1001)).toHaveProperty(
-        'type',
-        SeparatorType.NEW_MSG,
-      );
-    });
-
-    it('should move the separator to next post that not sent by current user', () => {
-      const handler = runOnDeleted({
-        setup(handler) {
-          handler.separatorMap.set(1000, { type: SeparatorType.NEW_MSG });
-        },
-        currentUserId: 1,
-        deletedPostIds: [1000],
-        allPosts: [
-          { id: 999, sortValue: 1, data: { creator_id: 1 } },
-          { id: 1001, sortValue: 3, data: { creator_id: 1 } },
-          { id: 1002, sortValue: 4, data: { creator_id: 2 } },
-        ],
-      });
-      expect(handler.separatorMap.size).toBe(1);
-      expect(handler.separatorMap.get(1002)).toHaveProperty(
         'type',
         SeparatorType.NEW_MSG,
       );
