@@ -21,7 +21,7 @@ const StyledLeft = styled<Props, 'div'>('div')`
     flex: 1;
   }
   @media (min-width: 1100px) and (max-width: 1280px) {
-    width: ${width(246)};
+    width: ${width(234)};
   }
   @media (max-width: 1100px) {
     flex: 1;

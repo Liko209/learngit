@@ -31,14 +31,15 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded();
-    });
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded(); 
+      }
+    );
 
-    //TODO: should has "header" web component trunk
-    const backButton = app.homePage.getSelectorByAutomationId("Back");
-    const forwardButton = app.homePage.getSelectorByAutomationId("Forward");
+    const backButton = app.homePage.header.backButton;
+    const forwardButton = app.homePage.header.forwardButton;
 
     await h(t).withLog('Then the forward button should be disabled', async () => {
       await t.expect(forwardButton.hasAttribute('disabled')).ok();
@@ -54,13 +55,14 @@ test(
     });
 
     await h(t).withLog('When I click the back button', async () => {
-      await t.click(backButton);
+      await app.homePage.header.clickBack();
       await t.expect(getLocation()).contains('/contacts');
+
     });
 
     await h(t).withLog('Then the forward button should be enabled', async () => {
       await t.expect(forwardButton.hasAttribute('disabled')).notOk();
-      await t.click(forwardButton);
+      await app.homePage.header.clickForward();
       await t.expect(getLocation()).contains('/calendar');
     });
   }
@@ -81,14 +83,15 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded();
-    });
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+      }
+    );
 
-    //TODO: should has "header" web component trunk
-    const backButton = app.homePage.getSelectorByAutomationId("Back");
-    const forwardButton = app.homePage.getSelectorByAutomationId("Forward");
+    const backButton = app.homePage.header.backButton
+    const forwardButton = app.homePage.header.forwardButton
 
     await h(t).withLog('Then the forwad and back button should be disabled', async () => {
       await t.expect(forwardButton.hasAttribute('disabled')).ok();
@@ -112,14 +115,16 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded();
-    });
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded(); 
+      }
+    );
 
-    //TODO: should has "header" web component trunk
-    const backButton = app.homePage.getSelectorByAutomationId("Back");
-    const forwardButton = app.homePage.getSelectorByAutomationId("Forward");
+    const backButton = app.homePage.header.backButton
+    const forwardButton = app.homePage.header.forwardButton
+
 
     await h(t).withLog('And I navigate every entry in left panel', async () => {
       await app.homePage.leftPanel.dashboardEntry.enter();
@@ -140,8 +145,7 @@ test(
     });
 
     await h(t).withLog('When I click the back button', async () => {
-      await t.click(backButton);
-
+      await app.homePage.header.clickBack();
     });
 
     await h(t).withLog('Then the forward and back button should be enabled', async () => {
@@ -150,8 +154,7 @@ test(
     });
 
     await h(t).withLog('When I reload App', async () => {
-      const current_url = await t.eval(() => window.location.href);
-      await t.navigateTo(current_url);
+      await t.eval(() => location.reload(true));
     });
 
     await h(t).withLog('Then the forwad and back button should be disabled', async () => {

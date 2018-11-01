@@ -11,13 +11,13 @@ import { ISchema } from '../../../db';
 
 const schema: ISchema = {
   name: 'Glip',
-  version: 1,
   schema: {
     1: {
       person: { unique: '++id', indices: ['firstName', 'lastName'] },
       group: { unique: '++id' },
     },
   },
+  version: 1.0,
 };
 
 async function createOpenedDb() {

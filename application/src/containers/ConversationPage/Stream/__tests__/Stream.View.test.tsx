@@ -65,7 +65,7 @@ describe('StreamView', () => {
       expect(wrapper.find(NewMessageSeparator)).toHaveLength(1);
     });
 
-    it('should render posts and separators', () => {
+    it.skip('should render posts and separators', () => {
       const props = {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         markAsRead: jest.fn().mockName('markAsRead'),
@@ -91,7 +91,7 @@ describe('StreamView', () => {
       expect(wrapper).toMatchSnapshot();
     });
 
-    it('should render empty view', () => {
+    it.skip('should render empty view', () => {
       const props = {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         markAsRead: jest.fn().mockName('markAsRead'),

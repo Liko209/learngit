@@ -13,7 +13,6 @@ import { isElectron } from '@/utils';
 class HomeViewModel extends StoreViewModel {
   @observable
   openCreateTeam: boolean = false;
-
   constructor() {
     super();
     this._initHistoryListen();

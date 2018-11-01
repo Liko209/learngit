@@ -94,6 +94,9 @@ export type Company = ExtendedBaseModel & {
   name: string;
   domain: string;
   admins: number[];
+  custom_emoji: { [index: string]: { data: string } };
+  _delta?: { add_keys?: object; remove_keys: object; };
+  rc_account_id?: number;
 };
 
 export type Person = ExtendedBaseModel & {
@@ -120,6 +123,7 @@ export type Person = ExtendedBaseModel & {
   glip_user_id?: number;
   away_status?: string;
   pseudo_user_phone_number?: string;
+  rc_account_id?: number;
 };
 
 export type UserInfo = {
@@ -170,11 +174,32 @@ export type Post = ExtendedBaseModel & {
   status?: POST_STATUS;
 };
 
+export type ItemVersionPage = {
+  file_id: number;
+  url: string;
+};
+
+export type ItemVersions = {
+  download_url: string;
+  size: number;
+  url: string;
+  thumbs?: any;
+  length?: number; // document preview
+  orig_height?: number;
+  orig_width?: number;
+  pages?: ItemVersionPage[];
+};
+
 export type Item = ExtendedBaseModel & {
   group_ids: number[];
   post_ids: number[];
   company_id: number;
-  type_id: number;
+  is_new: boolean;
+  is_document?: boolean;
+  name: string; // file name
+  type_id: number; // file type
+  type: string; // file type .jpg .exe
+  versions: ItemVersions[];
 };
 
 export type FileItem = Item & {
@@ -197,12 +222,12 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
 export type RawPresence = {
   personId: number;
   calculatedStatus?:
-    | 'NotReady'
-    | 'Unavailable'
-    | 'Available'
-    | 'OnCall'
-    | 'DND'
-    | 'InMeeting';
+  | 'NotReady'
+  | 'Unavailable'
+  | 'Available'
+  | 'OnCall'
+  | 'DND'
+  | 'InMeeting';
 };
 
 export type Presence = BaseModel & {

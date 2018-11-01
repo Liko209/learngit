@@ -252,11 +252,11 @@ export default class PostService extends BaseService<Post> {
 
   async handlePreInsertProcess(buildPost: Post): Promise<void> {
     this._postStatusHandler.setPreInsertId(buildPost.id);
+    const dao = daoManager.getDao(PostDao);
+    await dao.put(buildPost);
     try {
       notificationCenter.emitEntityPut(ENTITY.POST, [buildPost]);
     } catch (err) {}
-    const dao = daoManager.getDao(PostDao);
-    await dao.put(buildPost);
   }
 
   async handleSendPostSuccess(
