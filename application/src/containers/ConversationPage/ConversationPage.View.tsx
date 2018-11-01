@@ -9,7 +9,6 @@ import { MessageInput } from './MessageInput';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 import { ConversationPageViewProps } from './types';
 import { StreamWrapper } from './StreamWrapper';
-import { JumpToFirstUnreadButtonRoot } from './JumpToFirstUnreadButtonRoot';
 
 @observer
 class ConversationPageViewComponent extends Component<
@@ -38,7 +37,6 @@ class ConversationPageViewComponent extends Component<
         <Header id={groupId} />
         <JuiDivider />
         <StreamWrapper>
-          <JumpToFirstUnreadButtonRoot />
           <Stream groupId={groupId} viewRef={this.setStreamRef} />
         </StreamWrapper>
         {canPost ? (

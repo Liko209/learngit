@@ -8,8 +8,9 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { toTitleCase } from '@/utils';
 import { TimeNodeDivider } from '../TimeNodeDivider';
-import { StreamViewProps, StreamItem, StreamItemType } from './types';
+import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { JumpToFirstUnreadButton } from './JumpToUnreadButton';
+import { StreamViewProps, StreamItem, StreamItemType } from './types';
 
 type Props = WithNamespaces & StreamViewProps;
 
@@ -62,7 +63,12 @@ class StreamViewComponent extends Component<Props> {
         {items.length > 0
           ? items.map(item => this._renderStreamItem(item))
           : null}
-        <JumpToFirstUnreadButton onClick={this._jumpToFirstUnread} count={9} />
+        <JumpToFirstUnreadButtonWrapper>
+          <JumpToFirstUnreadButton
+            onClick={this._jumpToFirstUnread}
+            count={9}
+          />
+        </JumpToFirstUnreadButtonWrapper>
       </div>
     );
   }
