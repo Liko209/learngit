@@ -70,7 +70,7 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    const { items } = this.props;
+    const { items, firstUnreadCount } = this.props;
     return (
       <div>
         {items.length > 0
@@ -80,7 +80,7 @@ class StreamViewComponent extends Component<Props> {
           <JumpToFirstUnreadButtonWrapper>
             <JumpToFirstUnreadButton
               onClick={this._jumpToFirstUnread}
-              count={9}
+              count={firstUnreadCount}
             />
           </JumpToFirstUnreadButtonWrapper>
         ) : null}
@@ -97,8 +97,9 @@ class StreamViewComponent extends Component<Props> {
     console.log('_readFirstUnread');
   }
 
-  private _jumpToFirstUnread = () => {
-    console.log('_jumpToFirstUnread');
+  private _jumpToFirstUnread = async () => {
+    // console.log('_jumpToFirstUnread');
+    await this.props.loadPostUntilFirstUnread();
     this._readFirstUnread();
   }
 
