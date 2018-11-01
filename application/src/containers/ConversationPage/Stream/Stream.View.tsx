@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { toTitleCase } from '@/utils';
@@ -12,15 +13,28 @@ import { StreamViewProps, StreamItem, StreamItemType } from './types';
 
 type Props = WithNamespaces & StreamViewProps;
 
+const JumpToFirstUnreadButton = (props: any) => {
+  const jumpToFirstUnreadButtonRoot = document.getElementById(
+    'jumpToFirstUnreadButtonRoot',
+  );
+
+  if (!jumpToFirstUnreadButtonRoot) return null;
+
+  return ReactDOM.createPortal(
+    <button>{props.count} Unread ⬆</button>,
+    jumpToFirstUnreadButtonRoot,
+  );
+};
+
 class StreamViewComponent extends Component<Props> {
   componentDidMount() {
-    window.addEventListener('focus', this.focusHandler);
-    window.addEventListener('blur', this.blurHandler);
+    window.addEventListener('focus', this._focusHandler);
+    window.addEventListener('blur', this._blurHandler);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('focus', this.focusHandler);
-    window.addEventListener('blur', this.blurHandler);
+    window.removeEventListener('focus', this._focusHandler);
+    window.addEventListener('blur', this._blurHandler);
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -61,14 +75,21 @@ class StreamViewComponent extends Component<Props> {
         {items.length > 0
           ? items.map(item => this._renderStreamItem(item))
           : null}
+        <JumpToFirstUnreadButton onClick={this._jumpToFirstUnread} count={9} />
       </div>
     );
   }
-  focusHandler = () => {
+
+  private _jumpToFirstUnread = () => {
+    console.log('_jumpToFirstUnread');
+  }
+
+  private _focusHandler = () => {
     const { atBottom, markAsRead } = this.props;
     atBottom() && markAsRead();
   }
-  blurHandler = () => {
+
+  private _blurHandler = () => {
     const { enableNewMessageSeparatorHandler } = this.props;
     enableNewMessageSeparatorHandler();
   }
