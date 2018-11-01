@@ -34,6 +34,7 @@ ConversationCardViewProps
     }
 
     const avatar = <Avatar uid={creator.id} size="medium" />;
+
     return (
       <React.Fragment>
         <JuiConversationCard

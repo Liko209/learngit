@@ -174,11 +174,32 @@ export type Post = ExtendedBaseModel & {
   status?: POST_STATUS;
 };
 
+export type ItemVersionPage = {
+  file_id: number;
+  url: string;
+};
+
+export type ItemVersions = {
+  download_url: string;
+  size: number;
+  url: string;
+  thumbs?: any;
+  length?: number; // document preview
+  orig_height?: number;
+  orig_width?: number;
+  pages?: ItemVersionPage[];
+};
+
 export type Item = ExtendedBaseModel & {
   group_ids: number[];
   post_ids: number[];
   company_id: number;
-  type_id: number;
+  is_new: boolean;
+  is_document?: boolean;
+  name: string; // file name
+  type_id: number; // file type
+  type: string; // file type .jpg .exe
+  versions: ItemVersions[];
 };
 
 export type FileItem = Item & {
