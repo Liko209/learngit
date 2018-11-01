@@ -2,15 +2,15 @@ import {
   NetworkManager,
   OAuthTokenManager,
   Token,
-} from '../../../../../packages/foundation';
+} from '../../../../packages/foundation/src';
 
-import PostAPI from '../../../../../packages/sdk/src/api/glip/post';
+import PostAPI from '../../../../packages/sdk/src/api/glip/post';
 import {
   HandleByGlip2,
   Api,
   HandleByRingCentral,
   HandleByUpload,
-} from '../../../../../packages/sdk/src/api';
+} from '../../../../packages/sdk/src/api';
 
 const chrisSandboxConfig = {
   rc: {
