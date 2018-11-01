@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import ReactQuill, { Quill } from 'react-quill';
+import React from 'react';
+import ReactQuill from 'react-quill';
 import { Delta, Sources } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
 import {
@@ -11,24 +11,26 @@ import {
   primary,
   ellipsis,
 } from '../../foundation/utils/styles';
-import MarkdownShortcuts from './MarkdownShortcuts';
 import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
 
 import 'react-quill/dist/quill.snow.css';
+
+const Wrapper = styled.div`
+  box-shadow: ${props => props.theme.shadows[2]};
+  padding: ${spacing(4)};
+  z-index: ${({ theme }) => `${theme.zIndex.mobileStepper}`};
+`;
 
 const GlobalStyle = createGlobalStyle<{}>`
   .quill {
     width: 100%;
     align-self: flex-end;
-    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.14);
-    z-index: ${({ theme }) => `${theme.zIndex.mobileStepper}`};
   }
   .ql-snow {
     &&& {
       box-sizing: border-box;
       border: 1px solid transparent;
       border-radius: ${spacing(1)};
-      margin: ${spacing(4)};
       .ql-editor {
         ${typography('body1')};
         padding: ${spacing(2)};
@@ -57,40 +59,39 @@ const GlobalStyle = createGlobalStyle<{}>`
   }
 `;
 
-Quill.register({
-  'modules/markdownShortcuts': MarkdownShortcuts,
-  // 'modules/toolbarEmoji': toolbarEmoji,
-});
-
-const StyledError = styled('div')`
+const StyledError = styled.div`
   && {
     ${typography('caption')};
     color: ${palette('semantic', 'negative')};
-    margin: ${spacing(-2)} ${spacing(4)} ${spacing(2)};
+    margin-top: ${spacing(2)};
   }
 `;
 
-interface IProps {
+type Props = {
   value: string | Delta;
   onChange: Function;
   keyboardEventHandler: {};
   error: string;
-}
-interface IState {
+};
+type State = {
   modules: {};
-}
+};
 
-class JuiMessageInput extends React.Component<IProps, IState> {
+// Quill.register({
+//   'modules/markdownShortcuts': MarkdownShortcuts,
+//   'modules/toolbarEmoji': toolbarEmoji,
+// });
+
+class JuiMessageInput extends React.Component<Props, State> {
   private _changeSource: Sources = 'api';
   private _modules: {};
   private _inputRef: React.RefObject<ReactQuill> = React.createRef();
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
     this.onChange = this.onChange.bind(this);
 
     const { keyboardEventHandler } = this.props;
     this._modules = {
-      markdownShortcuts: {},
       toolbar: false,
       keyboard: {
         bindings: { ...keyboardEventHandler, ...keyboardEventDefaultHandler },
@@ -134,7 +135,7 @@ class JuiMessageInput extends React.Component<IProps, IState> {
   render() {
     const { value, error } = this.props;
     return (
-      <Fragment>
+      <Wrapper>
         <ReactQuill
           value={value}
           onChange={this.onChange}
@@ -142,11 +143,11 @@ class JuiMessageInput extends React.Component<IProps, IState> {
           modules={this._modules}
           ref={this._inputRef}
         />
-        <StyledError>{error}</StyledError>
+        {error ? <StyledError>{error}</StyledError> : null}
         <GlobalStyle />
-      </Fragment>
+      </Wrapper>
     );
   }
 }
 
-export { JuiMessageInput, IProps };
+export { JuiMessageInput, Props };

@@ -7,7 +7,6 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { JuiIconButton, JuiIconButtonProps } from 'jui/components/Buttons';
-import { JuiModal } from 'jui/components/Dialog';
 import {
   JuiLogo,
   JuiTopBar,
@@ -17,11 +16,6 @@ import {
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
 import { BackNForward } from '@/containers/BackNForward';
-import pkg from '../../../package.json';
-import { grey } from 'jui/foundation/utils/styles';
-import styled from 'jui/foundation/styled-components';
-import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
-import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
 import { isElectron } from '@/utils';
 
 type TopBarProps = WithNamespaces & {
@@ -31,14 +25,8 @@ type TopBarProps = WithNamespaces & {
   brandName: string;
   currentUserId: number;
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
-  dialogStatus: boolean;
-  electronVersion: number;
-  appVersion: number;
 };
-const Param = styled.p`
-  color: ${grey('700')};
-  font-size: ${({ theme }) => theme.typography.body2.fontSize};
-`;
+
 @observer
 class TopBar extends React.Component<TopBarProps> {
   constructor(props: TopBarProps) {
@@ -49,6 +37,11 @@ class TopBar extends React.Component<TopBarProps> {
     this._AvatarMenu = this._AvatarMenu.bind(this);
     this._AddMenuTrigger = this._AddMenuTrigger.bind(this);
     this._AvatarMenuTrigger = this._AvatarMenuTrigger.bind(this);
+    const handleAboutPage = props.handleAboutPage;
+    window.jupiterElectron = {
+      ...window.jupiterElectron,
+      handleAboutPage,
+    };
   }
 
   private _AvatarMenuTrigger(avatarMenuTriggerProps: JuiIconButtonProps) {
@@ -65,10 +58,6 @@ class TopBar extends React.Component<TopBarProps> {
 
   private _AvatarMenu(avatarProps: MenuListCompositionProps) {
     const { signOut, t, handleAboutPage } = this.props;
-    window.jupiterElectron = {
-      ...window.jupiterElectron,
-      handleAboutPage,
-    };
     const menusItemAboutPages = {
       label: t('About RingCentral'),
       onClick: handleAboutPage,
@@ -144,14 +133,6 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
-    const {
-      dialogStatus,
-      t,
-      handleAboutPage,
-      electronVersion,
-      appVersion,
-    } = this.props;
-    const commitHash = gitCommitInfo.commitInfo[0].commitHash;
     return (
       <React.Fragment>
         <JuiTopBar
@@ -161,23 +142,6 @@ class TopBar extends React.Component<TopBarProps> {
           Logo={this._Logo}
           BackNForward={isElectron ? BackNForward : undefined}
         />
-        <JuiModal
-          open={dialogStatus}
-          title={t('About RingCentral')}
-          okText={t('Done')}
-          onOK={handleAboutPage}
-        >
-          <Param>
-            Version: {appVersion ? appVersion : pkg.version}{' '}
-            {electronVersion ? `(E. ${electronVersion})` : null}
-          </Param>
-          <Param>Last Commit: {commitHash}</Param>
-          <Param>Build Time: {formatDate(process.env.BUILD_TIME || '')}</Param>
-          <Param>
-            Copyright © 1999-
-            {new Date().getFullYear()} RingCentral, Inc. All rights reserved.
-          </Param>
-        </JuiModal>
       </React.Fragment>
     );
   }
