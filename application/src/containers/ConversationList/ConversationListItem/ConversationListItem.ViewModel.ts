@@ -12,18 +12,18 @@ import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
-import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
 import history from '@/utils/history';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
 > {
-  unreadCount: number;
+  firstUnreadCount: number;
   important?: boolean | undefined;
   groupService: service.GroupService = GroupService.getInstance();
   draft?: string | undefined;
   sendFailurePostIds: number[];
+  hasShowedUmi: boolean = false;
 
   @computed
   get groupId() {

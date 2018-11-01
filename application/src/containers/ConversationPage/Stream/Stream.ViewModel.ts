@@ -46,6 +46,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _transformHandler: PostTransformHandler;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
 
+  private _hasShownFirstUnreadIndicator: boolean = false;
+  private _firstGroupState: GroupState;
+
   @observable
   groupId: number;
   @observable
@@ -60,6 +63,22 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this.groupId,
     );
     return groupState.readThrough;
+  }
+
+  @computed
+  get _unreadCount() {
+    if (!this.props.groupId) {
+      return 0;
+    }
+    const groupState = getEntity<GroupState, GroupStateModel>(
+      ENTITY_NAME.GROUP_STATE,
+      this.groupId,
+    );
+    return groupState.unreadCount;
+  }
+
+  setHasShownFirstUnreadIndicator(hasShown: boolean) {
+    this._hasShownFirstUnreadIndicator = hasShown;
   }
 
   constructor() {
@@ -127,9 +146,18 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.loadInitialPosts();
   }
 
+  initFirstUnreadIndicator() {
+    this._firstGroupState = getEntity<GroupState, GroupStateModel>(
+      ENTITY_NAME.GROUP_STATE,
+      this.groupId,
+    );
+    this.setHasShownFirstUnreadIndicator(false);
+  }
+
   @loading
   async loadInitialPosts() {
     await this._loadPosts(FetchDataDirection.UP);
+    this.initFirstUnreadIndicator();
     this.markAsRead();
   }
 
@@ -178,6 +206,13 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private async _loadPosts(direction: FetchDataDirection) {
     if (!this._transformHandler.hasMore(direction)) return;
     await this._transformHandler.fetchData(direction);
+  }
+
+  jumpToFirstUnread(count: number) {
+    this.setHasShownFirstUnreadIndicator(true);
+    console.log(this._hasShownFirstUnreadIndicator, this._firstGroupState);
+    // 1. calculate unread count
+    // 2. load data
   }
 }
 
