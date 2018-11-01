@@ -54,8 +54,8 @@ class TopBarViewModel extends AbstractViewModel {
   @action
   handleAboutPage = (
     event: React.MouseEvent<HTMLElement>,
-    appVersion?: string | undefined,
-    electronVersion?: string | undefined,
+    appVersion?: string,
+    electronVersion?: string,
   ) => {
     this._appVersion = appVersion || '';
     this._electronVersion = electronVersion || '';

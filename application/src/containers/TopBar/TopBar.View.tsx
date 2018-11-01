@@ -27,8 +27,8 @@ type TopBarProps = WithNamespaces & {
   currentUserId: number;
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
   isShowDialog: boolean;
-  electronVersion: string | undefined;
-  appVersion: string | undefined;
+  electronVersion: string;
+  appVersion: string;
 };
 
 @observer

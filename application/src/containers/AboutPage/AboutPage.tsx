@@ -13,8 +13,8 @@ import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
 import pkg from '../../../package.json';
 
 type Props = WithNamespaces & {
-  appVersion: string | undefined;
-  electronVersion: string | undefined;
+  appVersion: string;
+  electronVersion: string;
   isShowDialog: boolean;
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
 };
