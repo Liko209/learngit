@@ -200,6 +200,11 @@ export type Item = ExtendedBaseModel & {
   type_id: number; // file type
   type: string; // file type .jpg .exe
   versions: ItemVersions[];
+  summary: string;
+  title: string;
+  url: string;
+  image: string;
+  deactivated: boolean;
 };
 
 export type FileItem = Item & {

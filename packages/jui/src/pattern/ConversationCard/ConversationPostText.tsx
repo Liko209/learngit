@@ -10,6 +10,9 @@ const JuiConversationPostText = styled('div')`
   text-align: justify;
   a {
     color: ${({ theme }) => theme.palette.primary.light};
+    &:hover {
+      text-decoration: underline;
+    }
   }
   .at_mention_compose {
     color: ${({ theme }) => theme.palette.primary.main};

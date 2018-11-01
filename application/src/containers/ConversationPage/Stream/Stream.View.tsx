@@ -7,6 +7,8 @@ import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import VisibilitySensor from 'react-visibility-sensor';
 import { ConversationCard } from '@/containers/ConversationCard';
+import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
+import { JuiStream } from 'jui/pattern/ConversationPage';
 import { toTitleCase } from '@/utils';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
@@ -84,14 +86,16 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    const { items } = this.props;
+    const { items, groupId, hasMore } = this.props;
     return (
-      <div>
+      <JuiStream>
+        {hasMore ? null : <ConversationInitialPost id={groupId} />}
+        <div>
         {items.length > 0
           ? items.map(item => this._renderStreamItem(item))
           : null}
         {this.jumpToFirstUnreadButton}
-      </div>
+      </div></JuiStream>
     );
   }
 

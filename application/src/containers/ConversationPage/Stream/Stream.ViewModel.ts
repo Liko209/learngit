@@ -81,6 +81,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.hasUnread = hasUnread;
   }
 
+  @computed
+  get hasMore() {
+    return this._transformHandler.hasMore(FetchDataDirection.UP);
+  }
+
   constructor() {
     super();
     this.markAsRead = this.markAsRead.bind(this);
