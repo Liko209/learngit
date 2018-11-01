@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
+import { Selector } from 'testcafe';
 
 class LeftNavigatorEntry extends BaseWebComponent {
 
@@ -43,8 +44,18 @@ export class LeftPanel extends BaseWebComponent {
     }
 
     get messagesEntry() {
-        return this.getEntry('messages');
-    }
+        const sel = Selector('*').filter( node => {
+          const attrName = 'data-test-automation-id'
+          if (!node.hasAttribute(attrName)){ 
+              return false
+            };
+          const attr = node.getAttribute(attrName);
+          return !!attr.match('messages');
+        })
+        const entry = this.getComponent(LeftNavigatorEntry,sel)
+        entry.name = 'messages';
+        return entry;
+      }
 
     get phoneEntry() {
         return this.getEntry('phone');

@@ -281,6 +281,7 @@ test(
       await userGlip.updateProfile(user.rcId, {
         [`hide_group_${pvtChatId}`]: false,
         [`hide_group_${teamId}`]: false,
+        favorite_group_ids: [],
       });
     },
     );
@@ -378,6 +379,7 @@ test(
     await h(t).withLog('All conversations should not be hidden before login', async () => {
       await userGlip.updateProfile(user.rcId, {
         [`hide_group_${pvtChatId}`]: false,
+        favorite_group_ids: [],
       });
     },
     );
