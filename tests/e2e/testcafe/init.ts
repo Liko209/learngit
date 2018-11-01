@@ -7,7 +7,6 @@ import { BeatsClient } from './v2/helpers/bendapi-helper';
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 export const beatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(APIKEY, DASHBOARD_URL) : undefined;
 
-
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
     await h(t).dataHelper.setup(
