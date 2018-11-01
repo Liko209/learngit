@@ -7,8 +7,6 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { JuiCircularProgress } from 'jui/components';
 import { AbstractViewModel } from '@/base/AbstractViewModel';
-import { ThemeProvider as StyledThemeProvider } from 'styled-components';
-import { theme } from './theme.json';
 import {
   LoadingMorePlugin,
   onScrollToTop,
