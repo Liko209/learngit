@@ -61,6 +61,7 @@ test(
           [`hide_group_${pvtChat.data.id}`]: false,
           [`hide_group_${group.data.id}`]: false,
           [`hide_group_${team.data.id}`]: false,
+          favorite_group_ids: [],
         });
       },
     );
@@ -208,7 +209,7 @@ test(
   },
 );
 
-test(
+test.skip(
   formalName('Remove UMI when open conversation', [
     'JPT-103',
     'P0',
@@ -246,6 +247,7 @@ test(
       async () => {
         await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${pvtChat.data.id}`]: false,
+          favorite_group_ids: [],
         });
       },
     );
