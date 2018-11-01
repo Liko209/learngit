@@ -3,6 +3,8 @@
 echo '====Start Run'
 . ./_Init.sh
 
+. $autoDevOps/1.InstallDeps.sh
+
 n_procs=(
     ". $autoDevOps/2.SA.sh"
     ". $autoDevOps/3.UT.sh"
