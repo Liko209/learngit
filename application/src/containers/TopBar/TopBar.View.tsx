@@ -41,6 +41,11 @@ class TopBar extends React.Component<TopBarProps> {
     this._AvatarMenu = this._AvatarMenu.bind(this);
     this._AddMenuTrigger = this._AddMenuTrigger.bind(this);
     this._AvatarMenuTrigger = this._AvatarMenuTrigger.bind(this);
+    const handleAboutPage = props.handleAboutPage;
+    window.jupiterElectron = {
+      ...window.jupiterElectron,
+      handleAboutPage,
+    };
   }
 
   private _AvatarMenuTrigger(avatarMenuTriggerProps: JuiIconButtonProps) {
@@ -57,10 +62,6 @@ class TopBar extends React.Component<TopBarProps> {
 
   private _AvatarMenu(avatarProps: MenuListCompositionProps) {
     const { signOut, t, handleAboutPage } = this.props;
-    window.jupiterElectron = {
-      ...window.jupiterElectron,
-      handleAboutPage,
-    };
     const menusItemAboutPages = {
       label: t('About RingCentral'),
       onClick: handleAboutPage,
