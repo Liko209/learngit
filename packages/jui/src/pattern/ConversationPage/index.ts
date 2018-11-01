@@ -5,4 +5,5 @@
  */
 export * from './ConversationPage';
 export * from './Stream';
+export * from './TimeNodeDivider';
 export { default } from './ConversationPage';

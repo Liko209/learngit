@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { ConversationCard } from '../../../ConversationCard';
-import { NewMessageSeparator } from '../NewMessageSeparator';
 import { StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
+import { TimeNodeDivider } from '../../TimeNodeDivider';
 
 jest.mock('../../../ConversationSheet', () => ({}));
 
@@ -42,7 +42,7 @@ describe('StreamView', () => {
       expect(card1.key()).toBe('2');
     });
 
-    it('should render <NewMessageSeparator>', () => {
+    it('should render <TimeNodeDivider>', () => {
       const props = {
         ...baseProps,
         postIds: [1, 2],
@@ -56,7 +56,7 @@ describe('StreamView', () => {
       const wrapper = shallow(<StreamView {...props} />);
 
       expect(wrapper.find(ConversationCard)).toHaveLength(2);
-      expect(wrapper.find(NewMessageSeparator)).toHaveLength(1);
+      expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
     });
 
     it.skip('should render posts and separators', () => {

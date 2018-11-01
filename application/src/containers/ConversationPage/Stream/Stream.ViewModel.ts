@@ -28,6 +28,7 @@ import { PostTransformHandler } from './PostTransformHandler';
 import { getEntity } from '@/store/utils';
 import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
 import GroupStateModel from '@/store/models/GroupState';
+import { DateSeparatorHandler } from './DateSeparatorHandler';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -45,6 +46,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _transformHandler: PostTransformHandler;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
+  private _initialized = false;
 
   @observable
   groupId: number;
@@ -117,7 +119,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     );
 
     this._transformHandler = new PostTransformHandler({
-      newMessageSeparatorHandler: this._newMessageSeparatorHandler,
+      separatorHandlers: [
+        this._newMessageSeparatorHandler,
+        new DateSeparatorHandler(),
+      ],
       handler: orderListHandler,
     });
 
@@ -129,12 +134,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       ),
     );
 
+    this._initialized = false;
     this.loadInitialPosts();
   }
 
   @loading
   async loadInitialPosts() {
     await this._loadPosts(FetchDataDirection.UP);
+    this._initialized = true;
     this.markAsRead();
   }
 
@@ -151,7 +158,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     const atBottom =
       scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
     const isFocused = document.hasFocus();
-    if (atBottom && isFocused) {
+    if (atBottom && isFocused && this._initialized) {
       this._newMessageSeparatorHandler.disable();
     } else {
       this._newMessageSeparatorHandler.enable();
@@ -162,7 +169,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   markAsRead() {
     const isFocused = document.hasFocus();
     if (isFocused) {
-      this._newMessageSeparatorHandler.disable();
       this._stateService.markAsRead(this.groupId);
     }
   }
