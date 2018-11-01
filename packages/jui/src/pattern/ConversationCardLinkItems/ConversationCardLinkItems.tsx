@@ -23,6 +23,7 @@ const LinkItemsWrapper = styled.div`
   box-shadow: ${({ theme }) => theme.boxShadow.val1};
   border-radius: ${({ theme }) => theme.shape.borderRadius}px;
   height: ${height(26)};
+  overflow: hidden;
   :hover{
     background-color: ${grey('100')};
   }
@@ -51,6 +52,7 @@ const TitleNSummaryWrapper = styled.div`
   flex: 1;
   margin-left: ${spacing(3)};
   width: 0;
+  max-width: 100%;
 `;
 const LinkTitle = styled.p`
   margin-top: 0;
