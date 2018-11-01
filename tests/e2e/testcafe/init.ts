@@ -1,11 +1,23 @@
 import 'testcafe';
+import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, APIKEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD } from './config';
-import { BeatsClient } from './v2/helpers/bendapi-helper';
+import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
+import { BeatsClient, Run } from 'bendapi';
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
-export const beatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(APIKEY, DASHBOARD_URL) : undefined;
+
+let beatsClient: BeatsClient;
+let run: Promise<Run>;
+
+if (ENABLE_REMOTE_DASHBOARD) {
+  beatsClient = new BeatsClient(DASHBOARD_API_KEY, DASHBOARD_URL);
+  const runName = RUN_NAME || uuid();
+  run = beatsClient.createRun({
+    name: runName,
+    metadata: RUNNER_OPTS as any,
+  } as Run);
+}
 
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
@@ -31,8 +43,8 @@ export function setupCase(accountType: string) {
 export function teardownCase() {
   return async (t: TestController) => {
     await h(t).dataHelper.teardown();
-    if (ENABLE_REMOTE_DASHBOARD) {
-      await h(t).bendAPIHelper.teardown(beatsClient);
+    if (beatsClient) {
+      await h(t).dashboardHelper.teardown(beatsClient, run);
     }
   }
 }

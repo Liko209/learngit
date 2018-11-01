@@ -4,12 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { getLogger } from 'log4js';
-import { v4 as uuid } from 'uuid';
 
 import { filterByTags } from './libs/filter';
-import { RUNNER_OPTS, ENABLE_REMOTE_DASHBOARD, RUN } from './config';
-import { accountPoolClient, beatsClient } from './init';
-import { Run } from './v2/helpers/bendapi-helper';
+import { RUNNER_OPTS } from './config';
+import { accountPoolClient } from './init';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -21,15 +19,6 @@ async function runTests(runnerOpts) {
   const testCafe = await createTestCafe();
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
-
-  if (ENABLE_REMOTE_DASHBOARD) {
-    // const run = await beatsClient.createRun({ "name": JSON.stringify(runnerOpts, null, 2) } as Run);
-    const runName = RUN || uuid();
-    const run = await beatsClient.createRun({
-      name: runName,
-      metadata: Object.keys(runnerOpts).filter((key) => (["FIXTURES", "REPORTER"]).indexOf(key) === -1).reduce((prev, cur) => Object.assign(prev, { [cur]: JSON.stringify(runnerOpts[cur]) }), {})
-    } as Run)
-  }
 
   runner
     .src(runnerOpts.FIXTURES)

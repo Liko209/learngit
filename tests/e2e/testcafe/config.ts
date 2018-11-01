@@ -6,11 +6,10 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { writeFileSync } from 'fs';
-
+import { v4 as uuid } from 'uuid';
 import { getLogger } from 'log4js';
 
 import { flattenGlobs, parseArgs, ConfigLoader } from './libs/utils';
-
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -79,11 +78,11 @@ const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
 writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
 logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
 
-//FILL apiKey or YOUR ACCOUNT INFO
-const APIKEY = process.env.APIKEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
+// beat dashboard configuration
+const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
 const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-xta05.lab.rcch.ringcentral.com:8000/api/v1";
 const ENABLE_REMOTE_DASHBOARD = (process.env.ENABLE_REMOTE_DASHBOARD === 'true');
-const RUN = process.env.RUN;
+const RUN_NAME = process.env.RUN_NAME || uuid();
 
 export {
   APP_ROOT,
@@ -93,8 +92,8 @@ export {
   SITE_URL,
   ENV_OPTS,
   RUNNER_OPTS,
-  APIKEY,
+  DASHBOARD_API_KEY,
   ENABLE_REMOTE_DASHBOARD,
   DASHBOARD_URL,
-  RUN
+  RUN_NAME
 };
