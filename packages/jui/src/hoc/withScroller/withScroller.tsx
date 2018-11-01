@@ -21,6 +21,7 @@ type ScrollerProps = {
   throttle: number;
   initialScrollTop: number;
   stickTo: StickType;
+  onScroll: (event: WheelEvent) => void;
   onScrollToTop: () => void;
   onScrollToBottom: () => void;
   triggerScrollToOnMount: boolean;
@@ -33,11 +34,11 @@ type ScrollerSnapShot = {
   atTop: boolean;
 };
 const stickToBottomStyle = `
-  display: flex;
-  flex-direction: column;
-  && > div {
-    margin-top:auto;
-  }
+  // display: flex;
+  // flex-direction: column;
+  // && > div {
+  //   margin-top:auto;
+  // }
 `;
 
 const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
@@ -54,6 +55,7 @@ function withScroller(Comp: ComponentType<any>) {
       throttle: 100,
       initialScrollTop: 0,
       stickTo: 'top',
+      onScroll: noop,
       onScrollToTop: noop,
       onScrollToBottom: noop,
       triggerScrollToOnMount: false,
@@ -123,6 +125,7 @@ function withScroller(Comp: ComponentType<any>) {
     }
 
     private _handleScroll(event: WheelEvent) {
+      this.props.onScroll(event);
       const atTop = this._isAtTop();
       const atBottom = this._isAtBottom();
       const deltaY = event ? event.deltaY : 0;

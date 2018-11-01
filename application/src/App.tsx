@@ -21,25 +21,53 @@ import _ from 'lodash';
 import storeManager from '@/store';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import { GLOBAL_KEYS } from './store/constants';
+import { analytics } from '@/Analytics';
+import { AboutView } from './containers/About';
+
 @observer
 class App extends React.Component {
   private appName = process.env.APP_NAME || '';
-
+  componentDidMount() {
+    analytics.bootstrap();
+  }
+  get dialogInfo() {
+    const globalStore = storeManager.getGlobalStore();
+    const isShowDialog = globalStore.get(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG);
+    const appVersion = globalStore.get(GLOBAL_KEYS.APP_VERSION);
+    const electronVersion = globalStore.get(GLOBAL_KEYS.ELECTRON_VERSION);
+    return {
+      isShowDialog,
+      appVersion,
+      electronVersion,
+    };
+  }
   public render() {
+    const {
+      isShowDialog,
+      appVersion,
+      electronVersion,
+    } = this.dialogInfo;
     return (
       <ThemeProvider>
         {this.isLoading ? (
           <JuiContentLoader />
         ) : (
-          <Router history={history}>
-            <Switch>
-              <Route path="/commit-info" component={VersionInfo} />
-              <Route path="/version" component={VersionInfo} />
-              <Route path="/login" component={Login} />
-              <Route path="/unified-login" component={UnifiedLogin} />
-              <AuthRoute path="/" component={Home} />
-            </Switch>
-          </Router>
+          <>
+            <Router history={history}>
+              <Switch>
+                <Route path="/commit-info" component={VersionInfo} />
+                <Route path="/version" component={VersionInfo} />
+                <Route path="/login" component={Login} />
+                <Route path="/unified-login" component={UnifiedLogin} />
+                <AuthRoute path="/" component={Home} />
+              </Switch>
+            </Router>
+            <AboutView
+              isShowDialog={isShowDialog}
+              appVersion={appVersion}
+              electronVersion={electronVersion}
+            />
+          </>
         )}
       </ThemeProvider>
     );

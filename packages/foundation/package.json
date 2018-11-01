@@ -8,6 +8,7 @@
     "dexie": "3.0.0-alpha.3",
     "eventemitter2": "5.0.1",
     "inversify": "5.0.1",
+    "js-base64": "2.4.9",
     "localforage": "1.7.3",
     "lodash": "4.17.11",
     "lokijs": "1.5.5",
@@ -15,6 +16,7 @@
     "socket.io-client": "git+ssh://git@git.ringcentral.com:Fiji/FIJI-socket.io-client.git#Jupiter-2.1.101"
   },
   "devDependencies": {
+    "@types/js-base64": "2.3.1",
     "@types/lodash": "4.14.117",
     "@types/lokijs": "1.5.2",
     "@types/socket.io-client": "1.4.32",

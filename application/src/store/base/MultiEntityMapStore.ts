@@ -64,7 +64,6 @@ export default class MultiEntityMapStore<
       });
       switch (type) {
         case EVENT_TYPES.UPDATE:
-        case EVENT_TYPES.PARTIAL_UPDATE:
           this.batchDeepSet(matchedEntities as T[]);
           break;
         case EVENT_TYPES.REPLACE:

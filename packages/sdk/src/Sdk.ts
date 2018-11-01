@@ -66,7 +66,7 @@ class Sdk {
       dbAdapter: dbConfig.adapter,
     });
 
-    Api.init(apiConfig);
+    Api.init(apiConfig, this.networkManager);
     await this.daoManager.initDatabase();
 
     // Sync service should always start before login

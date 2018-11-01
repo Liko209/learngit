@@ -253,4 +253,18 @@ describe('Socket FSM', async () => {
       );
     });
   });
+
+  describe('reconnection', () => {
+    it('reconnection', () => {
+      const fsm = fsmCreate();
+      fsm.start();
+      fsm.setReconnection(false);
+      expect(fsm.socketClient.socket.io._reconnection).toBeFalsy();
+      fsm.setReconnection(true);
+      expect(fsm.socketClient.socket.io._reconnection).toBeTruthy();
+
+      fsm.socketClient.socket = null;
+      fsm.setReconnection(false);
+    });
+  });
 });

@@ -10,11 +10,11 @@ import { Avatar } from '@/containers/Avatar';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
 import { Actions } from '@/containers/ConversationCard/Actions';
 import { idsToConversationSheet } from '@/containers/ConversationSheet';
-import { FormatMessages } from '../FormatMessages';
+import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 // import { idToPostItemComponent } from '@/containers/PostItems';
 @observer
 export class ConversationCard extends React.Component<
-  ConversationCardViewProps
+ConversationCardViewProps
 > {
   constructor(props: ConversationCardViewProps) {
     super(props);
@@ -29,7 +29,12 @@ export class ConversationCard extends React.Component<
       customStatus,
       itemIds,
     } = this.props;
+    if (!creator.id) {
+      return null;
+    }
+
     const avatar = <Avatar uid={creator.id} size="medium" />;
+
     return (
       <React.Fragment>
         <JuiConversationCard
@@ -46,7 +51,7 @@ export class ConversationCard extends React.Component<
             <Actions id={id} />
           </JuiConversationCardHeader>
           <JuiConversationCardBody>
-            <FormatMessages postId={post.id} />
+            <TextMessage id={post.id} />
             {idsToConversationSheet(itemIds)}
           </JuiConversationCardBody>
           {/*<JuiConversationCardFooter>*/}

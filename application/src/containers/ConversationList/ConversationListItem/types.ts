@@ -15,6 +15,7 @@ type ConversationListItemViewProps = {
   displayName: string;
   selected: boolean;
   umiHint?: boolean;
+  hidden?: boolean;
   onClick: (event: MouseEvent<HTMLElement>) => void;
   groupType: CONVERSATION_TYPES;
   personId: number;

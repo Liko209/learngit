@@ -5,6 +5,7 @@
   "bookmark_plural": "bookmarks",
   "favorite": "favorite",
   "favorite_plural": "favorites",
+  "newMessage_plural": "new messages",
   "team": "team",
   "team_plural": "teams",
   "mention": "mention",
@@ -20,5 +21,12 @@
   "sendingPost": "Sending post",
   "resendPost": "Resend post",
   "deletePost": "Delete post",
-  "show_unread": "Show unread"
+  "show_unread": "Show unread",
+  "postInitialTitle": "Get Started",
+  "postInitialContent": "Having a home based business is a wonderful asset to your life.",
+  "shareFile": "Share a file",
+  "createTask": "Create a task",
+  "integrateApps": "Integrate apps",
+  "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
+  "show_unread_plural": "show unreads"
 }

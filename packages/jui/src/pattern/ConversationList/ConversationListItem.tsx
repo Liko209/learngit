@@ -18,6 +18,7 @@ const StyledIconography = styled(JuiIconography)``;
 
 const StyledListItem = styled(MuiMenuItem)`
   && {
+    display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
     white-space: nowrap;
     background: white;
     padding: ${spacing(0, 4, 0, 3)};
@@ -73,6 +74,7 @@ type JuiConversationListItemProps = {
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
   umiHint?: boolean;
+  hidden?: boolean;
 } & MuiMenuItemProps;
 
 type IConversationListItem = {

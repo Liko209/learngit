@@ -20,6 +20,7 @@ import {
   SECTION_TYPE,
 } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue } from '@/store/utils';
 const { GroupService } = service;
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
@@ -83,6 +84,9 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   }
 
   @observable
+  isLast: boolean;
+
+  @observable
   private _type: SECTION_TYPE;
 
   @observable
@@ -93,7 +97,8 @@ class SectionViewModel extends StoreViewModel<SectionProps>
 
   @computed
   get sortable() {
-    return this._config.sortable || false;
+    const unreadToggleOn = getGlobalValue(GLOBAL_KEYS.UNREAD_TOGGLE_ON);
+    return !unreadToggleOn && !!this._config.sortable;
   }
 
   @computed
@@ -126,6 +131,10 @@ class SectionViewModel extends StoreViewModel<SectionProps>
       this._type = props.type;
       this._config = SECTION_CONFIGS[this._type];
     }
+
+    if (this.isLast !== props.isLast) {
+      this.isLast = props.isLast;
+    }
   }
 
   @action
@@ -139,6 +148,16 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   handleSortEnd(oldIndex: number, newIndex: number) {
     const groupService = GroupService.getInstance<service.GroupService>();
     groupService.reorderFavoriteGroups(oldIndex, newIndex);
+  }
+
+  @action
+  handleCollapse = () => {
+    this.expanded = false;
+  }
+
+  @action
+  handleExpand = () => {
+    this.expanded = true;
   }
 }
 

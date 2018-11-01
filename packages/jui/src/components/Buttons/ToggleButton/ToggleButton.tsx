@@ -20,7 +20,7 @@ type JuiToggleButtonProps = {
 const JuiToggleButton: React.SFC<SwitchProps> = (
   props: JuiToggleButtonProps,
 ) => {
-  const { disabled, onChange, checked } = props;
+  const { disabled, onChange, checked, ...rest } = props;
 
   return (
     // <MuiTooltip title={tooltipTitle}>
@@ -38,6 +38,7 @@ const JuiToggleButton: React.SFC<SwitchProps> = (
       color="primary"
       disabled={disabled}
       disableRipple={true}
+      {...rest}
     />
     // </MuiTooltip>
   );
