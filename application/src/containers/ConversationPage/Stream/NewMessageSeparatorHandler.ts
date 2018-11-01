@@ -41,22 +41,22 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     // it will never be modified when receive new posts
     if (this.separatorMap.size > 0) return;
 
+    // Check if there is a new messages separator
     const lastPost = _.last(allPosts);
+    const firstPost = _.first(allPosts);
+    if (lastPost && lastPost.id > this._readThrough) {
+      this._hasNewMessagesSeparator = true;
 
-    if (lastPost) {
-      this._hasNewMessagesSeparator = lastPost.id !== this._readThrough;
+      if (firstPost && firstPost.id > this._readThrough) {
+        // Separator in other page, we'll handle it later
+        return;
+      }
     }
 
-    const firstUnreadPost = this._findNextPost(
-      this._getOtherUsersPosts(allPosts),
-      readThrough,
-    );
+    const firstUnreadPost = this._findNextOthersPost(allPosts, readThrough);
 
     if (firstUnreadPost) {
-      // readThrough post in current page
       this._setSeparator(firstUnreadPost.id);
-    } else {
-      // readThrough post in the next page
     }
   }
 
@@ -71,7 +71,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
 
     // Find first post next to the deleted post that has separator
     const postNext = _.find(
-      this._getOtherUsersPosts(allPosts),
+      allPosts,
       ({ id }) => id > deletedPostWithSeparator,
     );
 
@@ -103,18 +103,20 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     this._disabled = false;
   }
 
-  private _getOtherUsersPosts(allPosts: ISortableModel<Post>[]) {
-    return allPosts.filter(
-      item => item && item.data && item.data.creator_id !== this._userId,
+  private _findNextOthersPost(
+    allPosts: ISortableModel<Post>[],
+    postId: number,
+  ) {
+    const targetPost = allPosts.find(
+      (post, i) =>
+        !!(
+          post.id > postId &&
+          post.data &&
+          post.data.creator_id !== this._userId
+        ),
     );
-  }
-
-  private _findNextPost(allItems: ISortableModel<Post>[], postId: number) {
-    const postIndex = _.findIndex(allItems, item => item.id === postId);
-
-    if (postIndex === -1) return;
-
-    return allItems[postIndex + 1];
+    if (!targetPost) return;
+    return targetPost;
   }
 
   private _setSeparator(postId: number) {
