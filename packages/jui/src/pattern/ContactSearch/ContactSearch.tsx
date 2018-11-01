@@ -6,7 +6,7 @@
 import React from 'react';
 import keycode from 'keycode';
 import Downshift from 'downshift';
-import differenceBy from 'lodash/differenceBy';
+import { differenceBy } from 'lodash';
 import styled from '../../foundation/styled-components';
 import { JuiPaper } from '../../components/Paper';
 import { JuiTextField } from '../../components/Forms/TextField';
@@ -107,6 +107,10 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
     selectedItem: [],
   };
 
+  constructor(props: Props) {
+    super(props);
+  }
+
   handleKeyDown = (event: Event) => {
     const { inputValue, selectedItem } = this.state;
     if (
@@ -133,8 +137,8 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
         {...itemProps}
         isHighlighted={isHighlighted}
         suggestion={suggestion}
-        key={index}
         uid={suggestion.id}
+        key={suggestion.id}
       />
     ) : null;
   }
