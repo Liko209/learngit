@@ -1,4 +1,5 @@
 import 'testcafe';
+import * as fs from 'fs';
 import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
@@ -8,14 +9,24 @@ import { BeatsClient, Run } from 'bendapi';
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
 let beatsClient: BeatsClient;
-let runId;
+let runId = getRunIdFromFile();
 
 if (ENABLE_REMOTE_DASHBOARD) {
   beatsClient = new BeatsClient(DASHBOARD_API_KEY, DASHBOARD_URL);
 }
 
+function getRunIdFromFile(runIdFile: string = './runId') {
+  if (!ENABLE_REMOTE_DASHBOARD)
+    return null;
+  if (fs.existsSync(runIdFile)) {
+    const content = fs.readFileSync(runIdFile, 'utf8');
+    return Number(content);
+  }
+  return null;
+}
+
 export async function getOrCreateRunId() {
-  if (!beatsClient)
+  if (!ENABLE_REMOTE_DASHBOARD)
     return null;
   if (!runId) {
     const runName = RUN_NAME || uuid();
@@ -59,7 +70,7 @@ export function setupCase(accountType: string) {
 export function teardownCase() {
   return async (t: TestController) => {
     await h(t).dataHelper.teardown();
-    if (beatsClient) {
+    if (ENABLE_REMOTE_DASHBOARD) {
       await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId());
     }
   }
