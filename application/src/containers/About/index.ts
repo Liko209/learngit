@@ -3,4 +3,4 @@
  * @Date: 2018-10-31 14:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-export * from './AboutPage';
+export * from './About';

@@ -9,12 +9,14 @@ import { RouteComponentProps } from 'react-router-dom';
 import { translate, WithNamespaces } from 'react-i18next';
 import styled from 'styled-components';
 import getUrl from './getUrl';
-
+import { observer } from 'mobx-react';
 import EnvSelect from './EnvSelect';
 import Download from './Download';
 import LoginVersionStatus from '../VersionInfo/LoginVersionStatus';
 import { AuthService } from 'sdk/service';
-import { AboutPageView } from '../AboutPage';
+import { GLOBAL_KEYS } from '@/store/constants';
+import storeManager from '@/store';
+import { AboutView } from '../About';
 
 const Form = styled.form`
   width: 300px;
@@ -57,10 +59,10 @@ type Props = RouteComponentProps<{}> & WithNamespaces;
 
 interface IStates {
   isShowDialog: boolean;
-  appVersion: string;
-  electronVersion: string;
 }
+const globalStore = storeManager.getGlobalStore();
 
+@observer
 class UnifiedLogin extends React.Component<Props, IStates> {
   constructor(props: Props) {
     super(props);
@@ -72,8 +74,6 @@ class UnifiedLogin extends React.Component<Props, IStates> {
   }
   state = {
     isShowDialog: false,
-    appVersion: '',
-    electronVersion: '',
   };
 
   private _checkIfLogin() {
@@ -85,15 +85,13 @@ class UnifiedLogin extends React.Component<Props, IStates> {
   }
   private _handleAboutPage = (
     event?: React.MouseEvent<HTMLElement>,
-    vApp?: string,
-    vElectron?: string,
+    appVersion?: string,
+    electronVersion?: string,
   ) => {
     const { isShowDialog } = this.state;
-    this.setState({
-      isShowDialog: !isShowDialog,
-      appVersion: vApp || '',
-      electronVersion: vElectron || '',
-    });
+    globalStore.set(GLOBAL_KEYS.APP_VERSION, appVersion || '');
+    globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion || '');
+    globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !isShowDialog);
   }
 
   // onChange = (event: React.FormEvent<HTMLSelectElement>) => {
@@ -108,7 +106,9 @@ class UnifiedLogin extends React.Component<Props, IStates> {
 
   render() {
     const { t } = this.props;
-    const { isShowDialog, appVersion, electronVersion } = this.state;
+    const isShowDialog = globalStore.get(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG);
+    const appVersion = globalStore.get(GLOBAL_KEYS.APP_VERSION);
+    const electronVersion = globalStore.get(GLOBAL_KEYS.ELECTRON_VERSION);
     return (
       <div>
         <Form onSubmit={this.onSubmit}>
@@ -134,11 +134,10 @@ class UnifiedLogin extends React.Component<Props, IStates> {
         </Form>
         <LoginVersionStatus />
         <Download />
-        <AboutPageView
+        <AboutView
           isShowDialog={isShowDialog}
           appVersion={appVersion}
           electronVersion={electronVersion}
-          handleAboutPage={this._handleAboutPage}
         />
       </div>
     );

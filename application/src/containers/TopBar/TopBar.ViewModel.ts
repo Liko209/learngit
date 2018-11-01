@@ -11,18 +11,14 @@ import { AbstractViewModel } from '@/base';
 import storeManager from '@/store';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
+const globalStore = storeManager.getGlobalStore();
 
 class TopBarViewModel extends AbstractViewModel {
   brandName: string = 'RingCentral';
   @observable
   private  _isShowDialog: boolean = false;
-  @observable
-  private _appVersion = '';
-  @observable
-  private _electronVersion = '';
   @action
   updateLeftNavState = () => {
-    const globalStore = storeManager.getGlobalStore();
     const isLeftNavOpen = !globalStore.get(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
     globalStore.set(GLOBAL_KEYS.IS_LEFT_NAV_OPEN, isLeftNavOpen);
   }
@@ -30,7 +26,6 @@ class TopBarViewModel extends AbstractViewModel {
   @action
   updateCreateTeamDialogState = () => {
     console.log('open,-------------');
-    const globalStore = storeManager.getGlobalStore();
     const isShowCreateTeamDialog = !globalStore.get(
       GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
     );
@@ -57,21 +52,9 @@ class TopBarViewModel extends AbstractViewModel {
     appVersion?: string,
     electronVersion?: string,
   ) => {
-    this._appVersion = appVersion || '';
-    this._electronVersion = electronVersion || '';
-    this._isShowDialog = !this._isShowDialog;
-  }
-  @computed
-  get isShowDialog() {
-    return this._isShowDialog;
-  }
-  @computed
-  get electronVersion() {
-    return this._electronVersion;
-  }
-  @computed
-  get appVersion() {
-    return this._appVersion;
+    globalStore.set(GLOBAL_KEYS.APP_VERSION, appVersion || '');
+    globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion || '');
+    globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !this._isShowDialog);
   }
 }
 

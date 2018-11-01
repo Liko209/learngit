@@ -16,12 +16,32 @@ import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 import { HomeViewProps } from './types';
 import { analytics } from '@/Analytics';
+import { AboutView } from '../About';
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+
 @observer
 class Home extends Component<HomeViewProps> {
   componentDidMount() {
     analytics.identify();
   }
+  get dialogInfo() {
+    const globalStore = storeManager.getGlobalStore();
+    const isShowDialog = globalStore.get(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG);
+    const appVersion = globalStore.get(GLOBAL_KEYS.APP_VERSION);
+    const electronVersion = globalStore.get(GLOBAL_KEYS.ELECTRON_VERSION);
+    return {
+      isShowDialog,
+      appVersion,
+      electronVersion,
+    };
+  }
   render() {
+    const {
+      isShowDialog,
+      appVersion,
+      electronVersion,
+    } = this.dialogInfo;
     return (
       <Wrapper>
         <TopBar />
@@ -34,6 +54,11 @@ class Home extends Component<HomeViewProps> {
           </Switch>
         </Bottom>
         <CreateTeam />
+        <AboutView
+          isShowDialog={isShowDialog}
+          electronVersion={electronVersion}
+          appVersion={appVersion}
+        />
       </Wrapper>
     );
   }

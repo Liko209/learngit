@@ -17,7 +17,6 @@ import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
 import { BackNForward } from '@/containers/BackNForward';
 import { isElectron } from '@/utils';
-import { AboutPageView } from '../AboutPage';
 
 type TopBarProps = WithNamespaces & {
   signOut: Function;
@@ -26,9 +25,6 @@ type TopBarProps = WithNamespaces & {
   brandName: string;
   currentUserId: number;
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
-  isShowDialog: boolean;
-  electronVersion: string;
-  appVersion: string;
 };
 
 @observer
@@ -137,12 +133,6 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
-    const {
-      isShowDialog,
-      handleAboutPage,
-      electronVersion,
-      appVersion,
-    } = this.props;
     return (
       <React.Fragment>
         <JuiTopBar
@@ -151,12 +141,6 @@ class TopBar extends React.Component<TopBarProps> {
           AddMenu={this._AddMenu}
           Logo={this._Logo}
           BackNForward={isElectron ? BackNForward : undefined}
-        />
-        <AboutPageView
-          isShowDialog={isShowDialog}
-          electronVersion={electronVersion}
-          appVersion={appVersion}
-          handleAboutPage={handleAboutPage}
         />
       </React.Fragment>
     );

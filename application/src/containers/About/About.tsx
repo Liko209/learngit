@@ -10,28 +10,31 @@ import { grey } from 'jui/foundation/utils/styles';
 import styled from 'jui/foundation/styled-components';
 import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
 import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 import pkg from '../../../package.json';
+import { getGlobalValue } from '@/store/utils';
 
 type Props = WithNamespaces & {
   appVersion: string;
   electronVersion: string;
   isShowDialog: boolean;
-  handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
 };
 const Param = styled.p`
   color: ${grey('700')};
   font-size: ${({ theme }) => theme.typography.body2.fontSize};
 `;
-class AboutPage extends Component<Props> {
-  constructor(props: Props) {
-    super(props);
+class About extends Component<Props> {
+  private _handleAboutPage = () => {
+    const globalStore = storeManager.getGlobalStore();
+    const isSHowDialog = getGlobalValue(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG);
+    globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !isSHowDialog);
   }
   render() {
     const {
       isShowDialog,
       electronVersion,
       appVersion,
-      handleAboutPage,
       t,
     } = this.props;
     const commitHash = gitCommitInfo.commitInfo[0].commitHash;
@@ -40,7 +43,7 @@ class AboutPage extends Component<Props> {
         open={isShowDialog}
         title={t('About RingCentral')}
         okText={t('Done')}
-        onOK={handleAboutPage}
+        onOK={this._handleAboutPage}
       >
         <Param>
           Version: {appVersion ? appVersion : pkg.version}{' '}
@@ -57,5 +60,5 @@ class AboutPage extends Component<Props> {
   }
 }
 
-const AboutPageView = translate('translations')(AboutPage);
-export { AboutPageView };
+const AboutView = translate('translations')(About);
+export { AboutView };
