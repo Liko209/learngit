@@ -181,6 +181,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           onChange={handleDescChange}
         />
         <JuiListToggleButton
+          data-test-automation-id="CreateTeamToggleList"
           items={items}
           toggleChange={this.handleSwitchChange}
         />
