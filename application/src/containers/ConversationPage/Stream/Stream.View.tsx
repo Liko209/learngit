@@ -4,27 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { toTitleCase } from '@/utils';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
+import { JumpToFirstUnreadButton } from './JumpToUnreadButton';
 
 type Props = WithNamespaces & StreamViewProps;
-
-const JumpToFirstUnreadButton = (props: any) => {
-  const jumpToFirstUnreadButtonRoot = document.getElementById(
-    'jumpToFirstUnreadButtonRoot',
-  );
-
-  if (!jumpToFirstUnreadButtonRoot) return null;
-
-  return ReactDOM.createPortal(
-    <button>{props.count} Unread ⬆</button>,
-    jumpToFirstUnreadButtonRoot,
-  );
-};
 
 class StreamViewComponent extends Component<Props> {
   componentDidMount() {
