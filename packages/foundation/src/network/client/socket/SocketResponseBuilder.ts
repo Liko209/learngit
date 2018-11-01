@@ -16,7 +16,7 @@ class SocketResponseBuilder extends NetworkResponseBuilder {
         'X-Frame-Options',
         'X-Request-Id',
       ]);
-      this.status = 200;
+      this.status = options.request.status_code;
       if (options.request) {
         this.request = {
           ...options.request,
