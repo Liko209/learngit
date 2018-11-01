@@ -43,7 +43,7 @@ export class DashboardHelper {
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
     // FIXME: remove user-agent from case name when dashboard is ready
-    const beatTest = await this.beatsClient.createTest({
+    const beatsTest = await this.beatsClient.createTest({
       name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})`,
       status: StatusMap[status],
       metadata: {
@@ -51,7 +51,19 @@ export class DashboardHelper {
       }
     } as any, runId);
     for (const step of this.t.ctx.logs) {
-      await this.createStepInDashboard(step, beatTest.id);
+      await this.createStepInDashboard(step, beatsTest.id);
+    }
+    // TODO: dump error message to attachment
+    if (status === Status.FAILED) {
+      logger.info(`add error message as an extra step to case ${beatsTest.id}`);
+      const now = Date.now();
+      await this.createStepInDashboard(
+        {
+          message: 'Error',
+          status: Status.FAILED,
+          startTime: now,
+          endTime: now,
+        }, beatsTest.id);
     }
   }
 
@@ -63,7 +75,6 @@ export class DashboardHelper {
     } catch (error) {
       logger.error('fail to create test in dashboard', error);
     }
-    logger.info(`it takes ${Date.now() - ts}ms to upload result to dashboard`);
+    logger.info(`it takes ${Date.now() - ts} ms to upload result to dashboard`);
   }
-
 }
