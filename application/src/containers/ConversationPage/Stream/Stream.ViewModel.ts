@@ -48,7 +48,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
   private _initialized = false;
 
-  private _hasShownFirstUnreadIndicator: boolean = false;
+  @observable
+  hasShownFirstUnreadIndicator: boolean = false;
+
   private _firstGroupState: GroupState;
 
   @observable
@@ -79,8 +81,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return groupState.unreadCount;
   }
 
+  getFirstUnreadIndicatorState() {
+    return this._firstGroupState;
+  }
+
   setHasShownFirstUnreadIndicator(hasShown: boolean) {
-    this._hasShownFirstUnreadIndicator = hasShown;
+    this.hasShownFirstUnreadIndicator = hasShown;
   }
 
   constructor() {
@@ -214,11 +220,21 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     await this._transformHandler.fetchData(direction);
   }
 
-  jumpToFirstUnread(count: number) {
+  async jumpToFirstUnread(count: number, readThrough: number) {
     this.setHasShownFirstUnreadIndicator(true);
-    console.log(this._hasShownFirstUnreadIndicator, this._firstGroupState);
-    // 1. calculate unread count
-    // 2. load data
+    if (this.postIds.indexOf(readThrough) !== -1) {
+      return true;
+    }
+
+    await this._transformHandler.fetchData(
+      FetchDataDirection.UP,
+      count - this.postIds.length + 1,
+    );
+    return true;
+    // // await this._transformHandler.fetchData();
+    // console.log(this.hasShownFirstUnreadIndicator, this._firstGroupState);
+    // // 1. calculate unread count
+    // // 2. load data
   }
 }
 
