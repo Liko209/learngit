@@ -94,6 +94,23 @@ describe('NewMessageSeparatorHandler', () => {
       );
     });
 
+    it('should not have a separator when no post', () => {
+      const handler = runOnAdded({
+        readThrough: undefined,
+        allPosts: [],
+      });
+
+      expect(handler.separatorMap.size).toBe(0);
+
+      // If the conversation used to have posts but had been deleted.
+      const handler2 = runOnAdded({
+        readThrough: 1000,
+        allPosts: [],
+      });
+
+      expect(handler2.separatorMap.size).toBe(0);
+    });
+
     it('should have a separator when the post next to the readThrough is sent by current user', () => {
       const handler = runOnAdded({
         currentUserId: 1,
@@ -153,6 +170,7 @@ describe('NewMessageSeparatorHandler', () => {
       handler.onAdded(FetchDataDirection.UP, [], [
         { id: 998, sortValue: 1, data: { creator_id: 1 } },
         { id: 999, sortValue: 2, data: { creator_id: 1 } },
+        // separator should be here
         { id: 1000, sortValue: 3, data: { creator_id: 1 } },
         { id: 1001, sortValue: 4, data: { creator_id: 1 } },
         { id: 1002, sortValue: 5, data: { creator_id: 1 } },
@@ -183,6 +201,32 @@ describe('NewMessageSeparatorHandler', () => {
     it('should have not separator when readThrough is empty', () => {
       const handler = runOnAdded({
         readThrough: undefined,
+        allPosts: [
+          { id: 1000, sortValue: 1 },
+          { id: 1001, sortValue: 2 },
+          { id: 1002, sortValue: 3 },
+        ],
+      });
+
+      expect(handler.separatorMap.size).toBe(0);
+    });
+
+    it('should have not separator when readThrough === last post', () => {
+      const handler = runOnAdded({
+        readThrough: 1002,
+        allPosts: [
+          { id: 1000, sortValue: 1 },
+          { id: 1001, sortValue: 2 },
+          { id: 1002, sortValue: 3 },
+        ],
+      });
+
+      expect(handler.separatorMap.size).toBe(0);
+    });
+
+    it('should have not separator when readThrough > last post', () => {
+      const handler = runOnAdded({
+        readThrough: 1003,
         allPosts: [
           { id: 1000, sortValue: 1 },
           { id: 1001, sortValue: 2 },

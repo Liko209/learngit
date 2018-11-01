@@ -90,6 +90,7 @@ describe('DateSeparatorHandler', () => {
         ],
       });
 
+      expect(handler.separatorMap.size).toBe(1);
       expect(handler.separatorMap.get(1000)).toEqual({
         timestamp: START_OF_2018_10_31,
         type: SeparatorType.DATE,
