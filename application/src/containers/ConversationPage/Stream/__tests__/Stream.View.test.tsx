@@ -16,6 +16,10 @@ const baseProps = {
     .fn()
     .mockName('enableNewMessageSeparatorHandler'),
   hasMore: true,
+  firstUnreadCount: 0,
+  hasUnread: false,
+  setHasUnread: jest.fn().mockName('setHasUnread'),
+  loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
 };
 
 describe('StreamView', () => {
