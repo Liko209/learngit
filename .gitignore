@@ -32,7 +32,7 @@ yarn-error.log*
 .idea/
 # cache
 .rpt2_cache
-
+packages/jui/.cache
 # lint report folder
 /lint
 # UT error
