@@ -25,7 +25,7 @@ class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
     });
   }
   @action
-  onLinkItemClick = async (itemId: number) => {
+  onLinkItemClick = async (itemId: number = 0) => {
     await this._itemService.deleteItem(itemId);
     const idIndex = this._ids.indexOf(itemId);
     if (idIndex > -1) {
