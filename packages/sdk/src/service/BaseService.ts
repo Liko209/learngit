@@ -131,7 +131,7 @@ class BaseService<
     doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
     doPartialNotify?: (
       originalModels: SubModel[],
-      updatedModels: SubModel[],
+      partialModels: Partial<Raw<SubModel>>[],
     ) => void,
   ): Promise<SubModel | BaseError> {
     const id: number = partialModel.id
@@ -214,7 +214,7 @@ class BaseService<
     await dao.bulkUpdate(transformedModels);
   }
 
-  doDefaultPartialNotify(partialModels: SubModel[]) {
+  doDefaultPartialNotify(partialModels: Partial<Raw<SubModel>>[]) {
     if (this.DaoClass) {
       const dao = daoManager.getDao(this.DaoClass);
       const modelName = dao.modelName.toUpperCase();
@@ -232,7 +232,7 @@ class BaseService<
     doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
     doPartialNotify?: (
       originalModels: SubModel[],
-      updatedModels: SubModel[],
+      partialModels: Partial<Raw<SubModel>>[],
     ) => void,
   ): Promise<SubModel | BaseError> {
     let result: SubModel | BaseError;
@@ -253,28 +253,20 @@ class BaseService<
         break;
       }
 
-      const mergedModel = this.getMergedModel(partialModel, originalModel);
-
       mainLogger.info('handlePartialUpdate: trigger partial update');
       await this._doPartialSaveAndNotify(
         originalModel,
-        mergedModel,
         partialModel,
         doPartialNotify,
       );
 
       mainLogger.info('handlePartialUpdate: trigger doUpdateModel');
-
+      const mergedModel = this.getMergedModel(partialModel, originalModel);
       const resp = await doUpdateModel(mergedModel);
       if (resp instanceof BaseError) {
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
-        const fullRollbackModel = this.getMergedModel(
-          rollbackPartialModel,
-          mergedModel,
-        );
         await this._doPartialSaveAndNotify(
           mergedModel,
-          fullRollbackModel,
           rollbackPartialModel,
           doPartialNotify,
         );
@@ -288,23 +280,21 @@ class BaseService<
 
   private async _doPartialSaveAndNotify(
     originalModel: SubModel,
-    fullUpdateModel: SubModel,
-    partialModel: Partial<Raw<SubModel>>,
+    model: Partial<Raw<SubModel>>,
     doPartialNotify?: (
       originalModels: SubModel[],
-      updatedModels: SubModel[],
+      partialModels: Partial<Raw<SubModel>>[],
     ) => void,
   ): Promise<void> {
     const originalModels: SubModel[] = [originalModel];
-    const fullUpdatedModels: SubModel[] = [fullUpdateModel];
-    const partialModels: Partial<Raw<SubModel>>[] = [partialModel];
+    const partialModels: Partial<Raw<SubModel>>[] = [model];
 
     await this.updatePartialModel2Db(partialModels);
 
     if (doPartialNotify) {
-      doPartialNotify(originalModels, fullUpdatedModels);
+      doPartialNotify(originalModels, partialModels);
     } else {
-      this.doDefaultPartialNotify(fullUpdatedModels);
+      this.doDefaultPartialNotify(partialModels);
     }
   }
 }
