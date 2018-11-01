@@ -8,7 +8,7 @@ import React from 'react';
 import styled from '../../foundation/styled-components';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
+import { JuiPaper } from '../../components/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
@@ -93,7 +93,7 @@ class JuiMenuListComposition extends React.Component<
                   placement === 'bottom' ? 'center top' : 'center bottom',
               }}
             >
-              <Paper>
+              <JuiPaper>
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList>
                     {menuItems.map((item, index) => {
@@ -112,7 +112,7 @@ class JuiMenuListComposition extends React.Component<
                     })}
                   </MenuList>
                 </ClickAwayListener>
-              </Paper>
+              </JuiPaper>
             </Grow>
           )}
         </MenuWrapper>
