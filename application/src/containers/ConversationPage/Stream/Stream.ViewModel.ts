@@ -51,7 +51,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @observable
   hasShownFirstUnreadIndicator: boolean = false;
 
-  private _firstGroupState: GroupState;
+  @observable
+  firstGroupState: GroupStateModel;
 
   @observable
   groupId: number;
@@ -69,20 +70,20 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return groupState.readThrough;
   }
 
-  @computed
-  get _unreadCount() {
-    if (!this.props.groupId) {
-      return 0;
-    }
-    const groupState = getEntity<GroupState, GroupStateModel>(
-      ENTITY_NAME.GROUP_STATE,
-      this.groupId,
-    );
-    return groupState.unreadCount;
-  }
+  // @computed
+  // get _unreadCount() {
+  //   if (!this.props.groupId) {
+  //     return 0;
+  //   }
+  //   const groupState = getEntity<GroupState, GroupStateModel>(
+  //     ENTITY_NAME.GROUP_STATE,
+  //     this.groupId,
+  //   );
+  //   return groupState.unreadCount;
+  // }
 
   getFirstUnreadIndicatorState() {
-    return this._firstGroupState;
+    return this.firstGroupState;
   }
 
   setHasShownFirstUnreadIndicator(hasShown: boolean) {
@@ -159,11 +160,20 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   initFirstUnreadIndicator() {
-    this._firstGroupState = getEntity<GroupState, GroupStateModel>(
+    const result = getEntity<GroupState, GroupStateModel>(
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     );
+    this.firstGroupState = _.cloneDeep(result);
     this.setHasShownFirstUnreadIndicator(false);
+  }
+
+  @computed
+  get firstUnreadCount() {
+    const unreadCount = this.firstGroupState
+      ? this.firstGroupState.unreadCount || 0
+      : 0;
+    return unreadCount;
   }
 
   @loading
@@ -220,21 +230,19 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     await this._transformHandler.fetchData(direction);
   }
 
-  async jumpToFirstUnread(count: number, readThrough: number) {
+  loadPostUntilFirstUnread = async () => {
     this.setHasShownFirstUnreadIndicator(true);
-    if (this.postIds.indexOf(readThrough) !== -1) {
-      return true;
-    }
+    if (this.firstGroupState.readThrough && this.firstGroupState.unreadCount) {
+      if (this.postIds.indexOf(this.firstGroupState.readThrough) !== -1) {
+        return true;
+      }
 
-    await this._transformHandler.fetchData(
-      FetchDataDirection.UP,
-      count - this.postIds.length + 1,
-    );
+      await this._transformHandler.fetchData(
+        FetchDataDirection.UP,
+        this.firstGroupState.unreadCount - this.postIds.length + 1,
+      );
+    }
     return true;
-    // // await this._transformHandler.fetchData();
-    // console.log(this.hasShownFirstUnreadIndicator, this._firstGroupState);
-    // // 1. calculate unread count
-    // // 2. load data
   }
 }
 

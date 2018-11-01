@@ -14,6 +14,9 @@ describe('StreamView', () => {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         markAsRead: jest.fn().mockName('markAsRead'),
         atBottom: jest.fn().mockName('atBottom'),
+        loadPostUntilFirstUnread: jest
+          .fn()
+          .mockName('loadPostUntilFirstUnread'),
         enableNewMessageSeparatorHandler: jest
           .fn()
           .mockName('enableNewMessageSeparatorHandler'),
@@ -41,6 +44,9 @@ describe('StreamView', () => {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         markAsRead: jest.fn().mockName('markAsRead'),
         atBottom: jest.fn().mockName('atBottom'),
+        loadPostUntilFirstUnread: jest
+          .fn()
+          .mockName('loadPostUntilFirstUnread'),
         enableNewMessageSeparatorHandler: jest
           .fn()
           .mockName('enableTimeNodeDividerHandler'),
@@ -63,6 +69,9 @@ describe('StreamView', () => {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         markAsRead: jest.fn().mockName('markAsRead'),
         atBottom: jest.fn().mockName('atBottom'),
+        loadPostUntilFirstUnread: jest
+          .fn()
+          .mockName('loadPostUntilFirstUnread'),
         enableNewMessageSeparatorHandler: jest
           .fn()
           .mockName('enableNewMessageSeparatorHandler'),
@@ -86,6 +95,9 @@ describe('StreamView', () => {
         setRowVisible: jest.fn().mockName('setRowVisible'),
         markAsRead: jest.fn().mockName('markAsRead'),
         atBottom: jest.fn().mockName('atBottom'),
+        loadPostUntilFirstUnread: jest
+          .fn()
+          .mockName('loadPostUntilFirstUnread'),
         enableNewMessageSeparatorHandler: jest
           .fn()
           .mockName('enableNewMessageSeparatorHandler'),
