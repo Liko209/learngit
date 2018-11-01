@@ -5,5 +5,5 @@ npm i
 
 exitCode=$?
 if [ $exitCode -ne 0 ]; then
-    exit 1
+    addEnv BUILD_ERROR=1
 fi
