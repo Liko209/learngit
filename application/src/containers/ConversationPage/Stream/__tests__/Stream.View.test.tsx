@@ -7,16 +7,22 @@ import { TimeNodeDivider } from '../../TimeNodeDivider';
 
 jest.mock('../../../ConversationSheet', () => ({}));
 
+const baseProps = {
+  groupId: 1,
+  setRowVisible: jest.fn().mockName('setRowVisible'),
+  markAsRead: jest.fn().mockName('markAsRead'),
+  atBottom: jest.fn().mockName('atBottom'),
+  enableNewMessageSeparatorHandler: jest
+    .fn()
+    .mockName('enableNewMessageSeparatorHandler'),
+  hasMore: true,
+};
+
 describe('StreamView', () => {
   describe('render()', () => {
     it('should render <ConversationCard>', () => {
       const props = {
-        setRowVisible: jest.fn().mockName('setRowVisible'),
-        markAsRead: jest.fn().mockName('markAsRead'),
-        atBottom: jest.fn().mockName('atBottom'),
-        enableNewMessageSeparatorHandler: jest
-          .fn()
-          .mockName('enableNewMessageSeparatorHandler'),
+        ...baseProps,
         postIds: [1, 2],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -38,12 +44,7 @@ describe('StreamView', () => {
 
     it('should render <TimeNodeDivider>', () => {
       const props = {
-        setRowVisible: jest.fn().mockName('setRowVisible'),
-        markAsRead: jest.fn().mockName('markAsRead'),
-        atBottom: jest.fn().mockName('atBottom'),
-        enableNewMessageSeparatorHandler: jest
-          .fn()
-          .mockName('enableTimeNodeDividerHandler'),
+        ...baseProps,
         postIds: [1, 2],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -60,12 +61,7 @@ describe('StreamView', () => {
 
     it.skip('should render posts and separators', () => {
       const props = {
-        setRowVisible: jest.fn().mockName('setRowVisible'),
-        markAsRead: jest.fn().mockName('markAsRead'),
-        atBottom: jest.fn().mockName('atBottom'),
-        enableNewMessageSeparatorHandler: jest
-          .fn()
-          .mockName('enableNewMessageSeparatorHandler'),
+        ...baseProps,
         postIds: [1, 2, 3, 4],
         items: [
           { type: StreamItemType.POST, value: 1 },
@@ -83,12 +79,7 @@ describe('StreamView', () => {
 
     it.skip('should render empty view', () => {
       const props = {
-        setRowVisible: jest.fn().mockName('setRowVisible'),
-        markAsRead: jest.fn().mockName('markAsRead'),
-        atBottom: jest.fn().mockName('atBottom'),
-        enableNewMessageSeparatorHandler: jest
-          .fn()
-          .mockName('enableNewMessageSeparatorHandler'),
+        ...baseProps,
         postIds: [],
         items: [],
       };
