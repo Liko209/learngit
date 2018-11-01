@@ -43,11 +43,11 @@ type TScroller = {
   ) => void;
 };
 const stickToBottomStyle = `
-  display: flex;
-  flex-direction: column;
-  && > div {
-    margin-top:auto;
-  }
+  // display: flex;
+  // flex-direction: column;
+  // && > div {
+  //   margin-top:auto;
+  // }
 `;
 
 const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`

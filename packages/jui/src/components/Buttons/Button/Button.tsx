@@ -20,7 +20,7 @@ import { Omit } from '../../../foundation/utils/typeHelper';
 
 export type JuiButtonProps = Omit<MuiButtonProps, 'innerRef'> & {
   size?: 'small' | 'large';
-  variant?: 'text' | 'contained';
+  variant?: 'text' | 'contained' | 'outlined';
   disabled?: boolean;
   color?: 'primary' | 'secondary';
 };
@@ -40,6 +40,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     min-width: ${({ theme }) => width(26)({ theme })};
     padding-left: ${spacing(4)};
     padding-right: ${spacing(4)};
+    text-transform: none;
     ${typography('button')} &.containedButtonStyle {
       box-shadow: unset;
       color: white;
