@@ -6,7 +6,7 @@
 import React, { Component } from 'react';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
-// import { JuiStream } from 'jui/pattern/ConversationPage';
+import { JuiStream } from 'jui/pattern/ConversationPage';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
 import { NewMessageSeparator } from './NewMessageSeparator';
 
@@ -42,14 +42,16 @@ class StreamView extends Component<StreamViewProps> {
   }
 
   render() {
-    const { items, groupId } = this.props;
+    const { items, groupId, hasMore } = this.props;
     return (
-      <div>
-        <ConversationInitialPost id={groupId} />
-        {items.length > 0
-          ? items.map(item => this._renderStreamItem(item))
-          : null}
-      </div>
+      <JuiStream>
+        {hasMore ? null : <ConversationInitialPost id={groupId} />}
+        <div>
+          {items.length > 0
+            ? items.map(item => this._renderStreamItem(item))
+            : null}
+        </div>
+      </JuiStream>
     );
   }
   focusHandler = () => {

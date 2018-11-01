@@ -62,6 +62,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return groupState.readThrough;
   }
 
+  @computed
+  get hasMore() {
+    return this._transformHandler.hasMore(FetchDataDirection.UP);
+  }
+
   constructor() {
     super();
     this.markAsRead = this.markAsRead.bind(this);

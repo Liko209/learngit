@@ -43,6 +43,7 @@ type StreamViewProps = {
   postIds: number[];
   groupId: number;
   items: StreamItem[];
+  hasMore: boolean;
   setRowVisible: (n: number) => void;
   markAsRead: () => void;
   atBottom: () => boolean;

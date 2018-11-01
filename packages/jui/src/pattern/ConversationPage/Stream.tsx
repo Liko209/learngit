@@ -8,7 +8,7 @@ import styled from '../../foundation/styled-components';
 
 type JuiStreamProps = {
   className?: string;
-  children: JSX.Element | JSX.Element[];
+  children: (JSX.Element | (JSX.Element | null)[] | null)[];
 };
 
 const StyledDiv = styled<JuiStreamProps, 'div'>('div')`
