@@ -8,7 +8,9 @@ import ItemAPI from '../../api/glip/item';
 import handleData, { sendFileItem, uploadStorageFile } from './handleData';
 import { transform } from '../utils';
 import { StoredFile, Item, FileItem, NoteItem } from '../../models';
-import { SOCKET } from '../eventKey';
+import { ENTITY, SOCKET } from '../eventKey';
+import notificationCenter from '../notificationCenter';
+import { ErrorParser } from '../../utils/error';
 
 export interface ISendFile {
   file: FormData;
@@ -46,7 +48,10 @@ export default class ItemService extends BaseService<Item> {
         handleData(data.items);
       }
     });
-    return (daoManager.getDao(this.DaoClass) as ItemDao).getItemsByGroupId(groupId, limit);
+    return (daoManager.getDao(this.DaoClass) as ItemDao).getItemsByGroupId(
+      groupId,
+      limit,
+    );
   }
 
   async getNoteById(id: number): Promise<NoteItem | null> {
@@ -64,5 +69,28 @@ export default class ItemService extends BaseService<Item> {
 
     // should handle errors when error handling ready
     return null;
+  }
+  async deleteItem(id: number): Promise<boolean> {
+    const itemDao = daoManager.getDao(ItemDao);
+    const item = (await itemDao.get(id)) as Item;
+    notificationCenter.emitEntityDelete(ENTITY.ITEM, [item]);
+    await itemDao.delete(id);
+    if (item) {
+      item.deactivated = true;
+      item._id = item.id;
+      delete item.id;
+      try {
+        const resp = await ItemAPI.deleteItem<Item>(id, 'link', {
+          deactivated: true,
+        });
+        if (resp && !resp.data.error) {
+          return true;
+        }
+        throw resp;
+      } catch (e) {
+        throw ErrorParser.parse(e);
+      }
+    }
+    return false;
   }
 }
