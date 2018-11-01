@@ -16,7 +16,6 @@ import LoginVersionStatus from '../VersionInfo/LoginVersionStatus';
 import { AuthService } from 'sdk/service';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
-import { AboutView } from '../About';
 
 const Form = styled.form`
   width: 300px;
@@ -106,9 +105,6 @@ class UnifiedLogin extends React.Component<Props, IStates> {
 
   render() {
     const { t } = this.props;
-    const isShowDialog = globalStore.get(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG);
-    const appVersion = globalStore.get(GLOBAL_KEYS.APP_VERSION);
-    const electronVersion = globalStore.get(GLOBAL_KEYS.ELECTRON_VERSION);
     return (
       <div>
         <Form onSubmit={this.onSubmit}>
@@ -134,11 +130,6 @@ class UnifiedLogin extends React.Component<Props, IStates> {
         </Form>
         <LoginVersionStatus />
         <Download />
-        <AboutView
-          isShowDialog={isShowDialog}
-          appVersion={appVersion}
-          electronVersion={electronVersion}
-        />
       </div>
     );
   }
