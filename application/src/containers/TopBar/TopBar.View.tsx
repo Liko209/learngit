@@ -17,9 +17,8 @@ import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
 import { BackNForward } from '@/containers/BackNForward';
 import { isElectron } from '@/utils';
-import { AboutPageView } from '../AboutPage/AboutPage';
+import { AboutPageView } from '../AboutPage';
 
-const aboutPageView = new AboutPageView();
 type TopBarProps = WithNamespaces & {
   signOut: Function;
   updateLeftNavState: (event: React.MouseEvent<HTMLElement>) => void;
@@ -27,6 +26,9 @@ type TopBarProps = WithNamespaces & {
   brandName: string;
   currentUserId: number;
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
+  isShowDialog: boolean;
+  electronVersion: string | undefined;
+  appVersion: string | undefined;
 };
 
 @observer
@@ -54,10 +56,14 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   private _AvatarMenu(avatarProps: MenuListCompositionProps) {
-    const { signOut, t } = this.props;
+    const { signOut, t, handleAboutPage } = this.props;
+    window.jupiterElectron = {
+      ...window.jupiterElectron,
+      handleAboutPage,
+    };
     const menusItemAboutPages = {
       label: t('About RingCentral'),
-      onClick: aboutPageView.handleAboutPage,
+      onClick: handleAboutPage,
       automationId: 'aboutPage',
     };
     const menuItems = [
@@ -130,6 +136,12 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
+    const {
+      isShowDialog,
+      handleAboutPage,
+      electronVersion,
+      appVersion,
+    } = this.props;
     return (
       <React.Fragment>
         <JuiTopBar
@@ -138,6 +150,12 @@ class TopBar extends React.Component<TopBarProps> {
           AddMenu={this._AddMenu}
           Logo={this._Logo}
           BackNForward={isElectron ? BackNForward : undefined}
+        />
+        <AboutPageView
+          isShowDialog={isShowDialog}
+          electronVersion={electronVersion}
+          appVersion={appVersion}
+          handleAboutPage={handleAboutPage}
         />
       </React.Fragment>
     );

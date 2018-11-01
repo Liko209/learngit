@@ -14,11 +14,7 @@ import EnvSelect from './EnvSelect';
 import Download from './Download';
 import LoginVersionStatus from '../VersionInfo/LoginVersionStatus';
 import { AuthService } from 'sdk/service';
-import { JuiModal } from 'jui/components/Dialog';
-import { grey } from 'jui/foundation/utils/styles';
-import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
-import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
-import { isElectron } from '@/utils';
+import { AboutPageView } from '../AboutPage';
 
 const Form = styled.form`
   width: 300px;
@@ -55,10 +51,6 @@ const Button = styled.button`
     border-color: #007bff;
     opacity: 0.65;
   }
-`;
-const Param = styled.p`
-  color: ${grey('700')};
-  font-size: ${({ theme }) => theme.typography.body2.fontSize};
 `;
 
 type Props = RouteComponentProps<{}> & WithNamespaces;
@@ -117,7 +109,6 @@ class UnifiedLogin extends React.Component<Props, IStates> {
       handleAboutPage: this._handleAboutPage,
     };
     const { isShowDialog, appVersion, electronVersion } = this.state;
-    const commitHash = gitCommitInfo.commitInfo[0].commitHash;
     return (
       <div>
         <Form onSubmit={this.onSubmit}>
@@ -143,26 +134,12 @@ class UnifiedLogin extends React.Component<Props, IStates> {
         </Form>
         <LoginVersionStatus />
         <Download />
-        {isElectron ? (
-          <JuiModal
-            open={isShowDialog}
-            title={t('About RingCentral')}
-            okText={t('Done')}
-            onOK={this._handleAboutPage}
-          >
-            <Param>
-              Version: {appVersion} {`(E. ${electronVersion})`}
-            </Param>
-            <Param>Last Commit: {commitHash}</Param>
-            <Param>
-              Build Time: {formatDate(process.env.BUILD_TIME || '')}
-            </Param>
-            <Param>
-              Copyright © 1999-
-              {new Date().getFullYear()} RingCentral, Inc. All rights reserved.
-            </Param>
-          </JuiModal>
-        ) : null}
+        <AboutPageView
+          isShowDialog={isShowDialog}
+          appVersion={appVersion}
+          electronVersion={electronVersion}
+          handleAboutPage={this._handleAboutPage}
+        />
       </div>
     );
   }

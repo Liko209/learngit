@@ -4,60 +4,43 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-// import { translate, WithNamespaces } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
-import pkg from '../../../package.json';
 import { grey } from 'jui/foundation/utils/styles';
 import styled from 'jui/foundation/styled-components';
 import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
 import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
-// import { TranslationFunction } from 'i18next';
+import pkg from '../../../package.json';
 
-// type Props = WithNamespaces;
-type State = {
-  appVersion: string | undefined,
-  electronVersion: string | undefined,
-  isShowDialog: boolean,
+type Props = WithNamespaces & {
+  appVersion: string | undefined;
+  electronVersion: string | undefined;
+  isShowDialog: boolean;
+  handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
 };
 const Param = styled.p`
   color: ${grey('700')};
   font-size: ${({ theme }) => theme.typography.body2.fontSize};
 `;
-class AboutPageView extends Component<{}, State> {
-  constructor(props: {}) {
+class AboutPage extends Component<Props> {
+  constructor(props: Props) {
     super(props);
-  }
-  state = {
-    appVersion: '',
-    electronVersion: '',
-    isShowDialog: false,
-  };
-  handleAboutPage = (
-    event: React.MouseEvent<HTMLElement>,
-    appVersion?: string | undefined,
-    electronVersion?: string | undefined,
-  ) => {
-    console.log('handleAboutPage');
-    this.setState({
-      appVersion,
-      electronVersion,
-      isShowDialog: !this.state.isShowDialog,
-    });
-    console.log('isShowDialog', this.state.isShowDialog);
   }
   render() {
     const {
       isShowDialog,
       electronVersion,
       appVersion,
-    } = this.state;
+      handleAboutPage,
+      t,
+    } = this.props;
     const commitHash = gitCommitInfo.commitInfo[0].commitHash;
     return (
       <JuiModal
         open={isShowDialog}
-        title={('About RingCentral')}
-        okText={('Done')}
-        onOK={this.handleAboutPage}
+        title={t('About RingCentral')}
+        okText={t('Done')}
+        onOK={handleAboutPage}
       >
         <Param>
           Version: {appVersion ? appVersion : pkg.version}{' '}
@@ -74,5 +57,5 @@ class AboutPageView extends Component<{}, State> {
   }
 }
 
-// const AboutPageView = translate('translations')(AboutPage);
+const AboutPageView = translate('translations')(AboutPage);
 export { AboutPageView };
