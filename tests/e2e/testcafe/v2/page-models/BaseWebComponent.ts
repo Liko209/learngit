@@ -31,12 +31,18 @@ export abstract class BaseWebComponent {
             .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
     }
 
+
+    // delegate testcafe method
     get exists() {
         return this.self.exists;
     }
 
     get visible() {
         return this.self.visible;
+    }
+
+    getAttribute(attributeName: string) {
+        return this.self.getAttribute(attributeName);
     }
 
     // jupiter
