@@ -24,11 +24,13 @@ function buildContainer<P = {}, S = {}, SS = any>({
   plugins = [],
 }: BuildContainerOptions<P>) {
   type Props = P & Partial<TPrivateProps>;
+  const ObserverView = observer(View);
+
   @observer
   class Container extends Component<Props, S, SS> {
     @observable
     vm: StoreViewModel;
-    View = View;
+    View = ObserverView;
 
     constructor(props: Props) {
       super(props);
