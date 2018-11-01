@@ -30,14 +30,6 @@ export async function initAll() {
     }
   }
 
-  const api = config.get('api');
-  const db = config.get('db');
-
-  await Sdk.init({
-    api,
-    db,
-  });
-
   const {
     notificationCenter,
     AccountService,
@@ -57,30 +49,51 @@ export async function initAll() {
 
   // subscribe service notification to global store
   const globalStore = storeManager.getGlobalStore();
-  const accountService: service.AccountService = AccountService.getInstance();
-  const configService: service.ConfigService = ConfigService.getInstance();
-  notificationCenter.on(SOCKET.NETWORK_CHANGE, (data: any) => {
-    globalStore.set(GLOBAL_KEYS.NETWORK, data.state);
-  });
-  notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+
+  const updateAccountInfoForGlobalStore = () => {
+    const accountService: service.AccountService = AccountService.getInstance();
     const currentUserId = accountService.getCurrentUserId() as number;
     globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
     const currentCompanyId = accountService.getCurrentCompanyId() as number;
     globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+  };
+
+  notificationCenter.on(SERVICE.LOGIN, () => {
+    updateAccountInfoForGlobalStore();
   });
+
+  notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+    updateAccountInfoForGlobalStore();
+  });
+
   notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, () => {
+    const configService: service.ConfigService = ConfigService.getInstance();
     const staticHttpServer = configService.getStaticHttpServer();
     globalStore.set(GLOBAL_KEYS.STATIC_HTTP_SERVER, staticHttpServer);
   });
+
+  notificationCenter.on(SOCKET.NETWORK_CHANGE, (data: any) => {
+    globalStore.set(GLOBAL_KEYS.NETWORK, data.state);
+  });
+
   notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
     // 1. show loading
     globalStore.set(GLOBAL_KEYS.APP_SHOW_GLOBAL_LOADING, true);
     // 2. clear store data
     storeManager.resetStores();
   });
+
   notificationCenter.on(SERVICE.SYNC_SERVICE.END_CLEAR_DATA, () => {
     // stop loading
     globalStore.set(GLOBAL_KEYS.APP_SHOW_GLOBAL_LOADING, false);
     history.replace('/messages');
+  });
+
+  const api = config.get('api');
+  const db = config.get('db');
+
+  await Sdk.init({
+    api,
+    db,
   });
 }
