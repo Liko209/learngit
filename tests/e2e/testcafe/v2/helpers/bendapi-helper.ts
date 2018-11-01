@@ -60,7 +60,6 @@ export class BendAPIHelper {
     this.t.ctx.testId = test.id;
     for (const step of this.t.ctx.logs) {
       await this.saveStep(step, this.t.ctx.testId, beatsClient);
-
     }
   }
 

@@ -27,7 +27,7 @@ async function runTests(runnerOpts) {
     const runName = RUN || uuid();
     const run = await beatsClient.createRun({
       name: runName,
-      metadata: Object.keys(runnerOpts).reduce((prev, cur) => Object.assign(prev, { [cur]: JSON.stringify(runnerOpts[cur]) }), {})
+      metadata: Object.keys(runnerOpts).filter((key) => (["FIXTURES", "REPORTER"]).indexOf(key) === -1).reduce((prev, cur) => Object.assign(prev, { [cur]: JSON.stringify(runnerOpts[cur]) }), {})
     } as Run)
   }
 
