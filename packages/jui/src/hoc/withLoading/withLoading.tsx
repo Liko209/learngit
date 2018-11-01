@@ -13,21 +13,28 @@ type WithLoadingProps = {
   transitionDelay?: number;
   variant?: 'circular';
 };
-
-const StyledLoading = styled.div`
+type TStyledLoading = {
+  isVisible: Boolean;
+};
+const StyledLoading = styled.div<TStyledLoading>`
   position: absolute;
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: ${({ isVisible, theme }) =>
+    isVisible ? theme.palette && theme.palette.common.white : 'transparent'};
+  z-index: ${({ theme }) => theme.zIndex && theme.zIndex.drawer};
 `;
 
 const DefaultLoading = (props: any) => (
   <Fragment>
-    <StyledLoading>
+    <StyledLoading isVisible={props.isVisible}>
       <JuiFade in={props.isVisible}>
-        <JuiCircularProgress />
+        <div>
+          <JuiCircularProgress />
+        </div>
       </JuiFade>
     </StyledLoading>
     {props.children}
