@@ -80,7 +80,7 @@ export default class GroupModel extends Base<Group> {
   @computed
   get displayName(): string {
     if (this.type === CONVERSATION_TYPES.TEAM) {
-      return this.setAbbreviation;
+      return this.setAbbreviation || '';
     }
 
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
@@ -100,7 +100,7 @@ export default class GroupModel extends Base<Group> {
       this.type === CONVERSATION_TYPES.SMS
     ) {
       const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
-      return person.displayName;
+      return person.displayName || '';
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
