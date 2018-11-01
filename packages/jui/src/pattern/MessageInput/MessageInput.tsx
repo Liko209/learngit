@@ -16,8 +16,7 @@ import keyboardEventDefaultHandler from './keyboardEventDefaultHandler';
 import 'react-quill/dist/quill.snow.css';
 
 const Wrapper = styled.div`
-  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 3px 1px -2px rgba(0, 0, 0, 0.12),
-    0 2px 2px 0 rgba(0, 0, 0, 0.14);
+  box-shadow: ${props => props.theme.shadows[2]};
   padding: ${spacing(4)};
   z-index: ${({ theme }) => `${theme.zIndex.mobileStepper}`};
 `;
@@ -64,7 +63,7 @@ const StyledError = styled.div`
   && {
     ${typography('caption')};
     color: ${palette('semantic', 'negative')};
-    margin-top: 8px;
+    margin-top: ${spacing(2)};
   }
 `;
 
