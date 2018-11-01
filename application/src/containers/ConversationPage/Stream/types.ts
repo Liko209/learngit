@@ -1,3 +1,4 @@
+import { LoadingMorePlugin } from '@/plugins';
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -48,6 +49,11 @@ type StreamViewProps = {
   markAsRead: () => void;
   atBottom: () => boolean;
   enableNewMessageSeparatorHandler: () => void;
+  plugins: TPluginsProps;
+};
+
+type TPluginsProps = {
+  loadingMorePlugin: LoadingMorePlugin;
 };
 
 export {
