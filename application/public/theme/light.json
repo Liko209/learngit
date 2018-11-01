@@ -132,6 +132,10 @@
       "fontWeight": 500,
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
       "lineHeight": "16px"
+    },
+    "heading1": {
+      "lineHeight": "1.5em",
+      "maxHeight": "3em"
     }
   },
   "boxShadow": {

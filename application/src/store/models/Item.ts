@@ -8,8 +8,6 @@ export default class ItemModel extends Base<Item> {
   @observable
   typeId: number;
   @observable
-  url: string;
-  @observable
   downloadUrl: string;
   @observable
   size: number;

@@ -141,6 +141,10 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
+    heading1: {
+      lineHeight: string;
+      maxHeight: string;
+    }
   };
   boxShadow: {
     val1: string;

@@ -70,6 +70,8 @@ const LinkSummary = styled.p`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   margin-top: ${spacing(-1)};
+  line-height: ${({ theme }) => theme.typography.heading1.lineHeight};/* firefox */
+  max-height: ${({ theme }) => theme.typography.heading1.maxHeight};       /* firefox */
 `;
 type Props = {
   title: string;
