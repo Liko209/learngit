@@ -8,6 +8,7 @@ import ConfigDao from '../../dao/config';
 import {
   LAST_INDEX_TIMESTAMP,
   SOCKET_SERVER_HOST,
+  STATIC_HTTP_SERVER,
 } from '../../dao/config/constants';
 import { ErrorParser } from '../../utils/error';
 import accountHandleData from '../account/handleData';
@@ -77,13 +78,19 @@ const handleData = async (
   shouldSaveScoreboard: boolean = true,
 ) => {
   try {
-    const { timestamp = null, scoreboard = null } = result;
+    const { timestamp = null, scoreboard = null, static_http_server: staticHttpServer = '' } = result;
     const configDao = daoManager.getKVDao(ConfigDao);
 
     if (scoreboard && shouldSaveScoreboard) {
       configDao.put(SOCKET_SERVER_HOST, scoreboard);
       notificationCenter.emitConfigPut(CONFIG.SOCKET_SERVER_HOST, scoreboard);
     }
+
+    if (staticHttpServer) {
+      configDao.put(STATIC_HTTP_SERVER, staticHttpServer);
+      notificationCenter.emitConfigPut(CONFIG.STATIC_HTTP_SERVER, staticHttpServer);
+    }
+
     // logger.time('handle index data');
     await dispatchIncomingData(result);
     // logger.timeEnd('handle index data');

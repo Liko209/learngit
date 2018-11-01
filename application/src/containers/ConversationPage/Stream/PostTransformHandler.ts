@@ -3,7 +3,7 @@
  * @Date: 2018-10-25 11:55:22
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed } from 'mobx';
+import { computed, transaction } from 'mobx';
 import { Post } from 'sdk/models';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import {
@@ -12,9 +12,7 @@ import {
   TUpdated,
 } from '@/store/base/fetch/types';
 import { TransformHandler } from '@/store/base/TransformHandler';
-
 import { ISeparatorHandler } from './ISeparatorHandler';
-import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
 import {
   Separator,
   StreamItem,
@@ -25,23 +23,14 @@ import {
 
 class PostTransformHandler extends TransformHandler<StreamItem, Post> {
   private _separatorHandlers: ISeparatorHandler[] = [];
-  private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
 
   onAppended: Function;
 
   @computed
   get separatorMap() {
-    // key => postId
-    const map = new Map<number, Separator>();
-
-    // Merge separatorMaps of separatorHandlers
-    this._separatorHandlers.forEach((handler: ISeparatorHandler) => {
-      handler.separatorMap.forEach((separator: Separator, postId: number) => {
-        map.set(postId, separator);
-      });
-    });
-
-    return map;
+    return PostTransformHandler.combineSeparatorHandlersMaps(
+      this._separatorHandlers,
+    );
   }
 
   @computed
@@ -59,32 +48,57 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
 
   constructor({
     handler,
-    newMessageSeparatorHandler,
+    separatorHandlers,
   }: {
     handler: FetchSortableDataListHandler<Post>;
-    newMessageSeparatorHandler: NewMessageSeparatorHandler;
+    separatorHandlers: ISeparatorHandler[];
   }) {
     super(handler);
-    this._newMessageSeparatorHandler = newMessageSeparatorHandler;
-    this._separatorHandlers.push(this._newMessageSeparatorHandler);
+    this._separatorHandlers.push(...separatorHandlers);
   }
 
   onAdded(direction: FetchDataDirection, addedItems: ISortableModel<Post>[]) {
-    this._separatorHandlers.forEach(separatorHandler =>
-      separatorHandler.onAdded(direction, addedItems, this.orderListStore.items),
-    );
+    transaction(() => {
+      this._separatorHandlers.forEach(separatorHandler =>
+        separatorHandler.onAdded(
+          direction,
+          addedItems,
+          this.orderListStore.items,
+        ),
+      );
+    });
   }
 
   onDeleted(deletedItems: number[]) {
-    this._separatorHandlers.forEach(separatorHandler =>
-      separatorHandler.onDeleted(deletedItems, this.orderListStore.items),
-    );
+    transaction(() => {
+      this._separatorHandlers.forEach(separatorHandler =>
+        separatorHandler.onDeleted(deletedItems, this.orderListStore.items),
+      );
+    });
   }
 
   onUpdated(updatedIds: TUpdated) {
-    updatedIds.forEach(item =>
-      this.orderListStore.replaceAt(item.index, item.value),
-    );
+    transaction(() => {
+      updatedIds.forEach(item =>
+        this.orderListStore.replaceAt(item.index, item.value),
+      );
+    });
+  }
+
+  static combineSeparatorHandlersMaps(handlers: ISeparatorHandler[]) {
+    // key => postId
+    const map = new Map<number, Separator>();
+
+    // Merge separatorMaps of separatorHandlers
+    handlers
+      .sort((a, b) => a.priority - b.priority)
+      .forEach((handler: ISeparatorHandler) => {
+        handler.separatorMap.forEach((separator: Separator, postId: number) => {
+          map.set(postId, separator);
+        });
+      });
+
+    return map;
   }
 
   /**
@@ -109,6 +123,17 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
         value: postId,
       });
     });
+
+    // First item can not be separator
+    const firstStreamItem = streamItems[0];
+    if (
+      firstStreamItem &&
+      (firstStreamItem.type === StreamItemType.DATE_SEPARATOR ||
+        firstStreamItem.type === StreamItemType.NEW_MSG_SEPARATOR)
+    ) {
+      streamItems.shift();
+    }
+
     return streamItems;
   }
 
