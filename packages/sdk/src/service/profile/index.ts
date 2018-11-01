@@ -9,11 +9,10 @@ import BaseService from '../../service/BaseService';
 import AccountService from '../account';
 import handleData, { handlePartialProfileUpdate } from './handleData';
 import { Profile, Raw } from '../../models';
-import { SOCKET, SERVICE, ENTITY } from '../eventKey';
+import { SOCKET, SERVICE } from '../eventKey';
 import _ from 'lodash';
 import { BaseError, ErrorParser } from '../../utils';
 import { mainLogger } from 'foundation';
-import notificationCenter from '../../service/notificationCenter';
 import { transform } from '../utils';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
@@ -115,7 +114,6 @@ export default class ProfileService extends BaseService<Profile> {
       partialProfile,
       preHandlePartialModel,
       this._doUpdateModel.bind(this),
-      this._doPartialNotify.bind(this),
     );
   }
 
@@ -152,19 +150,11 @@ export default class ProfileService extends BaseService<Profile> {
       partialProfile,
       preHandlePartialModel,
       this._doUpdateModel.bind(this),
-      this._doPartialNotify.bind(this),
     );
   }
 
   private async _doUpdateModel(updatedModel: Profile) {
     return await this._requestUpdateProfile(updatedModel);
-  }
-
-  private async _doPartialNotify(
-    originalModels: Profile[],
-    partialModels: Partial<Raw<Profile>>[],
-  ) {
-    notificationCenter.emitEntityUpdate(ENTITY.PROFILE, partialModels);
   }
 
   async markMeConversationAsFav(): Promise<Profile | BaseError> {
@@ -204,7 +194,6 @@ export default class ProfileService extends BaseService<Profile> {
       partialProfile,
       preHandlePartialModel,
       this._doUpdateModel.bind(this),
-      this._doPartialNotify.bind(this),
     );
   }
 
@@ -338,7 +327,6 @@ export default class ProfileService extends BaseService<Profile> {
       partialProfile,
       preHandlePartialModel,
       this._doUpdateModel.bind(this),
-      this._doPartialNotify.bind(this),
     );
   }
 

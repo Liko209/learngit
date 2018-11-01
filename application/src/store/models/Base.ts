@@ -15,11 +15,12 @@ export default class Base<T extends BaseModel> implements IEntity {
   }
 
   toJS() {
-    try {
-      return JSON.parse(JSON.stringify(this));
-    } catch (err) {
-      return this;
-    }
+    const descriptors = Object.getOwnPropertyDescriptors(this);
+    const props: any = {};
+    Object.keys(descriptors).forEach((key: string) => {
+      props[key] = this[key];
+    });
+    return props;
   }
 }
 
