@@ -7,24 +7,22 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationPostText } from 'jui/pattern/ConversationCard';
+import { TextMessageViewProps } from './types';
 
-type Props = {
-  formatHtml: string;
-};
 @observer
-class FormatMessagesView extends React.Component<Props> {
-  constructor(props: Props) {
+class TextMessageView extends React.Component<TextMessageViewProps> {
+  constructor(props: TextMessageViewProps) {
     super(props);
   }
   render() {
-    const { formatHtml } = this.props;
+    const { html } = this.props;
     return (
       <React.Fragment>
         <JuiConversationPostText>
-          <div dangerouslySetInnerHTML={{ __html: formatHtml }} />
+          <div dangerouslySetInnerHTML={{ __html: html }} />
         </JuiConversationPostText>
       </React.Fragment>
     );
   }
 }
-export { FormatMessagesView };
+export { TextMessageView };
