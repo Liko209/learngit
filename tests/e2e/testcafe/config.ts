@@ -47,7 +47,7 @@ const configLoader = new ConfigLoader(
 
 configLoader.load();
 
-const REPORTER = process.env.REPORTER || 'allure-lazy';
+const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');

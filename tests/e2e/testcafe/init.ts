@@ -48,6 +48,7 @@ export async function getOrCreateRunId() {
 
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
+    h(t).allureHelper.initReporter();
     await h(t).dataHelper.setup(
       accountPoolClient,
       accountType
@@ -69,6 +70,7 @@ export function setupCase(accountType: string) {
 
 export function teardownCase() {
   return async (t: TestController) => {
+    h(t).allureHelper.writeReport();
     await h(t).dataHelper.teardown();
     if (ENABLE_REMOTE_DASHBOARD) {
       await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId());

@@ -8,6 +8,7 @@ import { JupiterHelper } from "./jupiter-helper";
 import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
 import { DashboardHelper } from './dashboard-helper';
+import { AllureHelper } from './allure-helper';
 import { H } from './utils';
 
 import { IUser, IStep } from '../models';
@@ -41,6 +42,10 @@ class Helper {
 
   get dashboardHelper() {
     return new DashboardHelper(this.t);
+  }
+
+  get allureHelper() {
+    return new AllureHelper(this.t);
   }
 
   /* delegate following method */

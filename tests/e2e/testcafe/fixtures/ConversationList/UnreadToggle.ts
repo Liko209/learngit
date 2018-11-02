@@ -171,7 +171,7 @@ test(
 
       // currently opened group3 should remain visible on the list and the conversation remained opened
       await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group3.data.id}"]`).visible).ok();
-      await t.expect(app.homePage.messagePanel.conversationPage.getAttribute('data-group-id')).eql(group3.data.id);
+      await t.expect(app.homePage.messagePanel.conversationPage.self.getAttribute('data-group-id')).eql(group3.data.id);
     }, true);
 
     await h(t).withLog('Then I click the unread toggle', async () => {
