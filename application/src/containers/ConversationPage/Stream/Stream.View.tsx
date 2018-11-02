@@ -52,14 +52,13 @@ class StreamViewComponent extends Component<Props> {
       case StreamItemType.NEW_MSG_SEPARATOR:
         return (
           <VisibilitySensor
+            key={streamItem.value}
             onChange={this._newMessagesSeparatorVisibilityChange}
           >
-            {() => (
-              <TimeNodeDivider
-                key={streamItem.value}
-                value={toTitleCase(t('newMessage_plural'))}
-              />
-            )}
+            <TimeNodeDivider
+              key={streamItem.value}
+              value={toTitleCase(t('newMessage_plural'))}
+            />
           </VisibilitySensor>
         );
       case StreamItemType.DATE_SEPARATOR:
@@ -91,11 +90,12 @@ class StreamViewComponent extends Component<Props> {
       <JuiStream>
         {hasMore ? null : <ConversationInitialPost id={groupId} />}
         <div>
-        {items.length > 0
-          ? items.map(item => this._renderStreamItem(item))
-          : null}
-        {this.jumpToFirstUnreadButton}
-      </div></JuiStream>
+          {items.length > 0
+            ? items.map(item => this._renderStreamItem(item))
+            : null}
+          {this.jumpToFirstUnreadButton}
+        </div>
+      </JuiStream>
     );
   }
 

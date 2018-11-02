@@ -60,7 +60,7 @@ describe('StreamView', () => {
       const wrapper = shallow(<StreamView {...props} />);
 
       expect(wrapper.find(ConversationCard)).toHaveLength(2);
-      expect(wrapper.find(TimeNodeDivider).length).toBe(1);
+      expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
     });
   });
 });
