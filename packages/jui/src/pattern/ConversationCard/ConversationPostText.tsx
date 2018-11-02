@@ -7,10 +7,10 @@ const JuiConversationPostText = styled('div')`
   color: ${grey('700')};
   word-wrap: break-word;
   white-space: pre-wrap;
-  word-break: break-all;
   text-align: justify;
   a {
     color: ${({ theme }) => theme.palette.primary.light};
+    word-break: break-all;
     &:hover {
       text-decoration: underline;
     }
