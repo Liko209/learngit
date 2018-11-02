@@ -60,37 +60,7 @@ describe('StreamView', () => {
       const wrapper = shallow(<StreamView {...props} />);
 
       expect(wrapper.find(ConversationCard)).toHaveLength(2);
-      expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
-    });
-
-    it.skip('should render posts and separators', () => {
-      const props = {
-        ...baseProps,
-        postIds: [1, 2, 3, 4],
-        items: [
-          { type: StreamItemType.POST, value: 1 },
-          { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
-          { type: StreamItemType.POST, value: 2 },
-          { type: StreamItemType.POST, value: 3 },
-          { type: StreamItemType.POST, value: 4 },
-        ],
-      };
-
-      const wrapper = shallow(<StreamView {...props} />);
-
-      expect(wrapper).toMatchSnapshot();
-    });
-
-    it.skip('should render empty view', () => {
-      const props = {
-        ...baseProps,
-        postIds: [],
-        items: [],
-      };
-
-      const wrapper = shallow(<StreamView {...props} />);
-
-      expect(wrapper).toMatchSnapshot();
+      expect(wrapper.find(TimeNodeDivider).length).toBe(1);
     });
   });
 });
