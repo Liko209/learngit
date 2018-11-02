@@ -18,14 +18,11 @@ const Wrapper = styled.div`
   display: flex;
   position: relative;
   overflow: hidden;
+  height: 100%; // safari compatibility
 `;
 
 const JuiResponse = ({ onClick, children }: ExternalProps) => {
-  return (
-    <Wrapper onClick={onClick}>
-      {children}
-    </Wrapper>
-  );
+  return <Wrapper onClick={onClick}>{children}</Wrapper>;
 };
 
 export default JuiResponse;

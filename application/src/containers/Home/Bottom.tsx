@@ -11,6 +11,7 @@ const Bottom: any = styled.div`
   display: flex;
   flex-direction: row;
   overflow: hidden;
+  height: calc(100% - 65px); // safari compatibility
 `;
 
 export default Bottom;
