@@ -5,6 +5,7 @@
  */
 import React from 'react';
 
+import { getFileName } from '../../../foundation/utils/getFileName';
 import * as Jui from './style';
 
 type JuiFileWithoutPreviewProps = {
@@ -27,6 +28,7 @@ const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
   props: JuiFileWithoutPreviewProps,
 ) => {
   const { size, fileName, actions, iconType } = props;
+  const [left, right] = getFileName(fileName);
 
   return (
     <Jui.FileItem disableGutters={true}>
@@ -39,7 +41,12 @@ const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
           primary: 'file-item-primary',
           secondary: 'file-item-secondary',
         }}
-        primary={fileName}
+        primary={
+          <>
+            <span className="left-name">{left}</span>
+            <span className="right-name">{right}</span>
+          </>
+        }
         secondary={FileSecondary(size, actions)}
       />
     </Jui.FileItem>
