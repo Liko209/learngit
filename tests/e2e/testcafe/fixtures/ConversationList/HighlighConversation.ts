@@ -53,7 +53,7 @@ test(
       `Given the group chat ${group.data.id} is last group selected`,
       async () => {
         await glipSdk.partialUpdateState(user.rcId, {
-          last_group_id: group.data.id,
+          last_group_id: +group.data.id,
         });
       },
     );
