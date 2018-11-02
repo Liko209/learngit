@@ -56,7 +56,7 @@ export class LogHelper {
       return ret;
     } catch (error) {
       step.status = Status.FAILED;
-      takeScreenShot = true;
+      takeScreenShot = false;
       throw error;
     } finally {
       step.endTime = Date.now();
