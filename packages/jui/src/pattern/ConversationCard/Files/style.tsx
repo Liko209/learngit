@@ -20,7 +20,6 @@ import {
   height,
   shape,
   palette,
-  ellipsis,
   typography,
 } from '../../../foundation/utils/styles';
 import pdf from './pdf_conversation_xxh.png';
@@ -68,15 +67,8 @@ const FileInfo = styled(JuiListItemText)`
     justify-content: space-between;
     padding: ${spacing(0, 0, 0, 3)};
     .file-item-primary {
-      ${ellipsis};
       width: ${width(57)};
       color: ${palette('grey', '900')};
-      .left-name {
-        ${ellipsis};
-        max-width: ${spacing(38)};
-        display: inline-block;
-        vertical-align: top;
-      }
     }
     .file-item-secondary {
       display: flex;
@@ -118,14 +110,6 @@ const CardFileName = styled(JuiTypography)`
     ${typography('subheading1')};
     color: ${palette('grey', '900')};
     margin: ${spacing(0, 0, 2, 0)};
-    .left-name {
-      ${ellipsis};
-      max-width: ${spacing(50)};
-      display: inline-block;
-      vertical-align: top;
-    }
-    .right-name {
-    }
   }
 `;
 
@@ -178,12 +162,6 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
     font-weight: 400;
     color: ${palette('grey', '700')};
     width: ${({ ratio }) => (ratio >= 1 ? width(60) : width(86))};
-    .left-name {
-      ${ellipsis};
-      max-width: ${({ ratio }) => (ratio >= 1 ? width(40) : width(63))};
-      display: inline-block;
-      vertical-align: top;
-    }
   }
 `;
 

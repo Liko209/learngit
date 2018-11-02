@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { getFileName } from '../../../foundation/utils/getFileName';
 import * as Jui from './style';
+import { FileName } from './FileName';
 
 type JuiFileWithPreviewProps = {
   size: string;
@@ -18,15 +18,13 @@ type JuiFileWithPreviewProps = {
 class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {
   render() {
     const { size, fileName, url, actions, iconType } = this.props;
-    const [left, right] = getFileName(fileName);
 
     return (
       <Jui.FileCard>
         <Jui.FileCardMedia image={url} />
         <Jui.FileCardContent>
           <Jui.CardFileName>
-            <span className="left-name">{left}</span>
-            <span className="right-name">{right}</span>
+            <FileName widthSpacing={50} filename={fileName} />
           </Jui.CardFileName>
           <Jui.CardFileInfo component="div">
             <Jui.CardSize>
