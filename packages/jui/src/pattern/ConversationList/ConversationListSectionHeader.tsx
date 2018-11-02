@@ -8,7 +8,7 @@ import React from 'react';
 import MuiListItem from '@material-ui/core/ListItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey, height } from '../../foundation/utils';
+import { spacing, grey, height, typography } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import tinycolor from 'tinycolor2';
@@ -21,9 +21,10 @@ const StyledListItem = styled(MuiListItem)`
   && {
     padding: ${spacing(2, 4, 2, 3)};
     background: white;
-    color: ${grey('700')};
+    color: ${grey('900')};
     height: ${height(11)};
     line-height: ${height(11)};
+    ${typography('body2')};
   }
 
   && > ${StyledJuiIconographyLeft} {
@@ -37,6 +38,7 @@ const StyledListItem = styled(MuiListItem)`
   && > ${StyledJuiIconography} {
     color: ${grey('400')};
     font-size: 20px;
+    margin-bottom: -1px;
   }
 `;
 
