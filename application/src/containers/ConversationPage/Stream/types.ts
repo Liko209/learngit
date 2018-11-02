@@ -1,3 +1,4 @@
+import { LoadingMorePlugin } from '@/plugins';
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -41,11 +42,18 @@ type StreamProps = {
 
 type StreamViewProps = {
   postIds: number[];
+  groupId: number;
   items: StreamItem[];
+  hasMore: boolean;
   setRowVisible: (n: number) => void;
   markAsRead: () => void;
   atBottom: () => boolean;
   enableNewMessageSeparatorHandler: () => void;
+  plugins: TPluginsProps;
+};
+
+type TPluginsProps = {
+  loadingMorePlugin: LoadingMorePlugin;
 };
 
 export {

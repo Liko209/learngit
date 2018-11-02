@@ -3,28 +3,78 @@
  * @Date: 2018-10-23 18:25:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable } from 'mobx';
+import _ from 'lodash';
+import moment from 'moment';
+import { observable, computed, transaction } from 'mobx';
 import { Post } from 'sdk/src/models';
 import { FetchDataDirection, ISortableModel } from '@/store/base';
-import { DateSeparator } from './types';
+import { DateSeparator, SeparatorType } from './types';
 import { ISeparatorHandler } from './ISeparatorHandler';
 
 // TODO
 class DateSeparatorHandler implements ISeparatorHandler {
-  priority: number;
+  priority: number = 1;
+
   @observable
-  separatorMap: Map<number, DateSeparator>;
+  postsByDateMap: Map<number, ISortableModel<Post>[]> = new Map();
+
+  // _separatorMap: Map<number, DateSeparator> = new Map();
+
+  @computed
+  get separatorMap() {
+    const resultMap = new Map<number, DateSeparator>();
+    this.postsByDateMap.forEach(
+      (posts: ISortableModel<Post>[], timestamp: number) => {
+        const firstPost = _.first(posts);
+        if (!firstPost) return;
+
+        resultMap.set(firstPost.id, {
+          timestamp,
+          type: SeparatorType.DATE,
+        });
+      },
+    );
+    return resultMap;
+  }
 
   onAdded(
     direction: FetchDataDirection,
-    addedItems: ISortableModel<Post>[],
-    allItems: ISortableModel<Post>[],
+    addedPosts: ISortableModel<Post>[],
+    allPosts: ISortableModel<Post>[],
   ): void {
-    throw new Error('Method not implemented.');
+    transaction(() => {
+      _(addedPosts)
+        .reverse()
+        .forEach((post: ISortableModel<Post>) => {
+          if (post.data) {
+            const timestamp = moment(post.data.created_at)
+              .startOf('day')
+              .valueOf();
+            const posts = this.postsByDateMap.get(timestamp) || [];
+            if (posts) {
+              posts.push(post);
+            }
+            this.postsByDateMap.set(timestamp, _.sortBy(posts, 'id'));
+          }
+        });
+    });
   }
 
-  onDeleted(deletedItems: number[], allItems: ISortableModel<any>[]): void {
-    throw new Error('Method not implemented.');
+  onDeleted(deletedPostIds: number[], allPosts: ISortableModel<any>[]): void {
+    transaction(() => {
+      deletedPostIds.forEach((deletedPostId: number) => {
+        this.postsByDateMap.forEach(
+          (posts: ISortableModel[], timestamp: number) => {
+            const newPosts = _.filter(posts, post => post.id !== deletedPostId);
+            if (newPosts.length > 0) {
+              this.postsByDateMap.set(timestamp, newPosts);
+            } else {
+              this.postsByDateMap.delete(timestamp);
+            }
+          },
+        );
+      });
+    });
   }
 }
 

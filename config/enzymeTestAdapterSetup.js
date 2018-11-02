@@ -3,7 +3,20 @@
  * @Date: 2018-08-30 08:42:25
  * Copyright © RingCentral. All rights reserved.
  */
-import { configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { configure } from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
+
+const withNamespaces = () => Component => {
+  Component.defaultProps = { ...Component.defaultProps, t: () => "" };
+  return Component;
+};
+
+const mockReactI18nNext = {
+  // this mock makes sure any components using the translate HoC receive the t function as a prop
+  translate: withNamespaces,
+  withNamespaces: withNamespaces
+};
+
+jest.mock("react-i18next", () => mockReactI18nNext);
 
 configure({ adapter: new Adapter() });

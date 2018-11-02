@@ -78,11 +78,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _updateHiddenGroupIds() {
-    this._hiddenGroupIds =
-      getSingleEntity<Profile, ProfileModel>(
-        ENTITY_NAME.PROFILE,
-        'hiddenGroupIds',
-      ) || [];
+    const hiddenGroupIds = getSingleEntity<Profile, ProfileModel>(
+      ENTITY_NAME.PROFILE,
+      'hiddenGroupIds',
+    );
+    this._hiddenGroupIds = (hiddenGroupIds && hiddenGroupIds.get()) || [];
     this._removeGroupsIfExistedInHiddenGroups();
   }
 

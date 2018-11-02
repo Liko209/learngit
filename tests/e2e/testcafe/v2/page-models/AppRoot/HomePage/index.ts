@@ -5,6 +5,7 @@ import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessagePanel } from './MessagePanel'
+import { Header } from './header';
 
 
 export class HomePage extends BaseWebComponent {
@@ -22,6 +23,10 @@ export class HomePage extends BaseWebComponent {
 
     get messagePanel() {
         return this.getComponent(MessagePanel);
+    }
+
+    get header(){
+        return this.getComponent(Header);
     }
 
     get addActionButton() {

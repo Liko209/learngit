@@ -32,23 +32,34 @@ type ScrollerStates = {};
 type ScrollerSnapShot = {
   atBottom: boolean;
   atTop: boolean;
+  height: number;
+};
+
+type TScroller = {
+  scrollToRow: (
+    n: number,
+    options?: ScrollIntoViewOptions | boolean,
+    itemSelector?: string,
+  ) => void;
 };
 const stickToBottomStyle = `
-  display: flex;
-  flex-direction: column;
-  && > div {
-    margin-top:auto;
-  }
+  // display: flex;
+  // flex-direction: column;
+  // && > div {
+  //   margin-top:auto;
+  // }
 `;
 
 const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
   overflow: auto;
   height: 100%;
+  position: relative;
   ${({ stickTo }) => (stickTo === 'bottom' ? stickToBottomStyle : null)};
 `;
 
 function withScroller(Comp: ComponentType<any>) {
-  return class Scroller extends Component<ScrollerProps, ScrollerStates> {
+  return class Scroller extends Component<ScrollerProps, ScrollerStates>
+    implements TScroller {
     static defaultProps = {
       thresholdUp: 100,
       thresholdDown: 0,
@@ -89,25 +100,45 @@ function withScroller(Comp: ComponentType<any>) {
 
     componentDidMount() {
       this._scrollEl.scrollTop = this.props.initialScrollTop;
-      this.props.triggerScrollToOnMount &&
-        this._handleScroll(new WheelEvent('wheel'));
       this.attachScrollListener();
     }
+
     getSnapshotBeforeUpdate() {
-      return { atTop: this._isAtTop(0), atBottom: this._isAtBottom(0) };
+      const wrapper = this._scrollEl.lastElementChild;
+      if (!wrapper) {
+        return;
+      }
+      return {
+        atTop: this._isAtTop(0),
+        atBottom: this._isAtBottom(0),
+        height: wrapper.getBoundingClientRect().height,
+      };
     }
+
     componentDidUpdate(
       prevProps: ScrollerProps,
       prevState: ScrollerStates,
       snapShot: ScrollerSnapShot,
     ) {
-      const { atBottom, atTop } = snapShot;
+      const { atBottom, atTop, height } = snapShot;
       const { stickTo } = this.props;
-      if (atBottom && stickTo === 'bottom') {
-        this.scrollToRow(-1);
+      const wrapper = this._scrollEl.lastElementChild;
+      if (!wrapper) {
+        return;
       }
-      if (atTop && stickTo === 'top') {
-        this.scrollToRow(0);
+      if (stickTo === 'bottom') {
+        if (atBottom) {
+          this.scrollToRow(-1);
+        }
+        if (atTop) {
+          const addedHeight = wrapper.getBoundingClientRect().height - height;
+          this._scrollEl.scrollTop += addedHeight;
+        }
+      }
+      if (stickTo === 'top') {
+        if (atTop) {
+          this.scrollToRow(0);
+        }
       }
       this.attachScrollListener();
     }
@@ -159,7 +190,7 @@ function withScroller(Comp: ComponentType<any>) {
       options: ScrollIntoViewOptions | boolean = false,
       itemSelector: string = 'div',
     ) => {
-      const listEl = this._scrollEl.firstElementChild;
+      const listEl = this._scrollEl.lastElementChild;
       if (!listEl) {
         return;
       }
@@ -192,4 +223,4 @@ function withScroller(Comp: ComponentType<any>) {
   };
 }
 
-export { withScroller, ScrollerProps, WithScrollerProps };
+export { withScroller, ScrollerProps, WithScrollerProps, TScroller };

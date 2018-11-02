@@ -27,6 +27,9 @@ const CustomLeftNav: React.SFC<LeftNavProps> = ({ expand, ...props }) => {
   return <MuiDrawer {...props} />;
 };
 const Left = styled<LeftNavProps>(CustomLeftNav)`
+  && {
+    height: 100%; // safari compatibility
+  }
   .left-paper {
     position: relative;
     height: 100%;
@@ -187,7 +190,7 @@ class JuiLeftNav extends PureComponent<
             const navUrl = item.url;
             let selected;
             if (selectedPath) {
-              selected = selectedPath === navUrl.substr(1);
+              selected = selectedPath === navUrl.split('/')[1];
             } else {
               const pathname = window.location.pathname;
               const actIndex = pathname.lastIndexOf('/');

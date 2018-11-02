@@ -36,6 +36,9 @@ class Analytics implements TAnalytics {
       return { userId };
     }
     const user = getEntity(ENTITY_NAME.PERSON, userId);
+    if (!user.companyId) {
+      return { userId, user };
+    }
     const company = getEntity(ENTITY_NAME.COMPANY, user.companyId);
     return {
       userId,
