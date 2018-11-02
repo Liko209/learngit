@@ -11,19 +11,16 @@ import { JuiConversationListFilter } from 'jui/pattern/ConversationList/Conversa
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
 import { toTitleCase } from '@/utils';
-import { JuiLeftRailStickyTop } from 'jui/pattern/LeftRail/LeftRail';
+import {
+  JuiLeftRail,
+  JuiLeftRailStickyTop,
+  JuiLeftRailMainSection,
+} from 'jui/pattern/LeftRail/LeftRail';
 import { translate, WithNamespaces } from 'react-i18next';
-import styled from 'jui/src/foundation/styled-components';
-
-const Wrapper = styled.div`
-  height: 100%;
-  overflow: auto;
-  border-right: 1px solid ${({ theme }) => theme.palette.divider};
-`;
 
 const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
   return (
-    <Wrapper>
+    <JuiLeftRail>
       <JuiLeftRailStickyTop>
         {props.filters.map((filter, index) => [
           index ? <JuiDivider key="divider" /> : null,
@@ -37,11 +34,13 @@ const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
         ])}
       </JuiLeftRailStickyTop>
       <JuiDivider key="divider" />
-      {props.sections.map((type, index, array) => [
-        index ? <JuiDivider key="divider" /> : null,
-        <Section key={type} type={type} isLast={index === array.length - 1} />,
-      ])}
-    </Wrapper>
+      <JuiLeftRailMainSection>
+        {props.sections.map((type, index, array) => [
+          index ? <JuiDivider key="divider" /> : null,
+          <Section key={type} type={type} isLast={index === array.length - 1} />,
+        ])}
+      </JuiLeftRailMainSection>
+    </JuiLeftRail>
   );
 };
 

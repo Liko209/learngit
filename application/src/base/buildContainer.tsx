@@ -13,17 +13,17 @@ import StoreViewModel from '@/store/ViewModel';
 type BuildContainerOptions<T> = {
   ViewModel: new (...args: any[]) => StoreViewModel;
   View: ComponentType<any>;
-  plugins?: IPlugin[];
+  plugins?: { [key: string]: IPlugin };
 };
-type TPrivateProps = {
-  viewRef: (ref: any) => void;
+type TIntrinsticProps = {
+  viewRefs?: any;
 };
 function buildContainer<P = {}, S = {}, SS = any>({
   View,
   ViewModel,
-  plugins = [],
+  plugins = {},
 }: BuildContainerOptions<P>) {
-  type Props = P & Partial<TPrivateProps>;
+  type Props = P & TIntrinsticProps;
   const ObserverView = observer(View);
 
   @observer
@@ -35,7 +35,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
     constructor(props: Props) {
       super(props);
       this.vm = new ViewModel(props);
-      plugins.forEach((plugin: IPlugin) => {
+      _(plugins).forEach((plugin: IPlugin) => {
         plugin.install(this.vm);
         this.View = plugin.wrapView(this.View);
       });
@@ -54,7 +54,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
 
     render() {
       const View = this.View;
-      return <View {...this._viewProps} ref={this.props.viewRef} />;
+      return <View {...this._viewProps} />;
     }
 
     private get _viewProps() {
@@ -65,6 +65,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
         .forEach((key: string) => {
           props[key] = this.vm[key];
         });
+      props.plugins = plugins;
       return props;
     }
 

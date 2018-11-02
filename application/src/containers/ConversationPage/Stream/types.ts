@@ -1,3 +1,4 @@
+import { LoadingMorePlugin } from '@/plugins';
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -52,6 +53,11 @@ type StreamViewProps = {
   hasUnread: boolean;
   setHasUnread: (arg: boolean) => void;
   firstUnreadCount: number;
+  plugins: TPluginsProps;
+};
+
+type TPluginsProps = {
+  loadingMorePlugin: LoadingMorePlugin;
 };
 
 export {
