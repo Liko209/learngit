@@ -30,6 +30,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   description: string = '';
   @observable
   serverError: boolean = false;
+  @observable
+  members: (number | string)[];
 
   @computed
   get isOpen() {
@@ -71,6 +73,18 @@ class CreateTeamViewModel extends AbstractViewModel {
 
   handleDescChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.description = e.target.value;
+  }
+
+  handleSearchContactChange = (items: any) => {
+    const members = items.map((item: any) => {
+      if (item.id) {
+        return item.id;
+      }
+      return item.email;
+    });
+    this.errorMsg = '';
+    this.emailError = false;
+    this.members = members;
   }
 
   @action
