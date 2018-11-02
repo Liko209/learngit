@@ -1,3 +1,4 @@
+import 'testcafe';
 import * as fs from 'fs';
 import * as Runtime from 'allure-js-commons/runtime';
 import * as Allure from 'allure-js-commons';
@@ -25,23 +26,20 @@ export class AllureHelper {
 
   private allureReporter;
   private allure;
-  private testController;
 
-  constructor(testController) {
-    this.testController = testController;
-  }
+  constructor(private t: TestController) { }
 
   configure() {
     this.allureReporter = new Allure();
     this.allure = new Runtime(this.allureReporter);
-    const targetDir = process.env.ALLURE_DIR ? `${process.env.ALLURE_DIR}/allure/allure-results` : `./allure/allure-results`;
+    const targetDir = process.env.ALLURE_DIR || `./allure/allure-results`;
     this.allureReporter.setOptions({ targetDir });
     this[errorDecorator] = this.createErrorDecorator();
   }
 
   initReporter() {
-    this.testController.fixtureCtx.startTime = this.testController.fixtureCtx.startTime || Date.now();
-    this.testController.ctx.startTime = Date.now();
+    this.t.fixtureCtx.startTime = this.t.fixtureCtx.startTime || Date.now();
+    this.t.ctx.startTime = Date.now();
   }
 
   startSuite(fixtureName, startTime) {
@@ -75,6 +73,7 @@ export class AllureHelper {
 
   writeReport() {
     this.configure();
+    const testRun = this.t['testRun'];
     const {
       test: {
         name: testCaseName,
@@ -92,14 +91,14 @@ export class AllureHelper {
       fixtureCtx: {
         startTime: fixtureStartTime,
       },
-    } = this.testController.testRun;
+    } = testRun;
 
-    const { testStatus, testInfo } = this.buildErrorTestInfo(this.testController.testRun.errs[0]);
-    const failScreenShotPath = this.testController.testRun.errs.length > 0 ? this.testController.testRun.errs[0].screenshotPath : null;
+    const { testStatus, testInfo } = this.buildErrorTestInfo(testRun.errs[0]);
+    const failScreenShotPath = testRun.errs.length > 0 ? testRun.errs[0].screenshotPath : null;
     this.startSuite(fixtureName, fixtureStartTime);
     this.startCase(testCaseName, testCaseStartTime, userAgent);
     this.writeSteps(steps);
-    if (failScreenShotPath) this.addScreenshot(failScreenShotPath, 'ScreenShot On Fail');
+    if (failScreenShotPath) this.addScreenshot(failScreenShotPath, 'Screenshot On Fail');
     this.endCase(testStatus, testInfo, Date.now());
     this.endSuite(Date.now());
   }
@@ -192,5 +191,4 @@ export class AllureHelper {
       a: str => `"${str}"`,
     };
   }
-
 }
