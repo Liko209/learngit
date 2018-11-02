@@ -59,7 +59,7 @@ test.skip(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-      user.extension
+        user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -82,8 +82,9 @@ test.skip(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.header.find('.subtitle')
-              .textContent,
+            app.homePage.messagePanel.conversationPage.header.find(
+              '[data-test-automation-id="conversation-page-header-status"]',
+            ).textContent,
           )
           .contains('In a meeting');
       },
@@ -103,35 +104,33 @@ test.skip(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.header.find('.subtitle')
-              .textContent,
+            app.homePage.messagePanel.conversationPage.header.find(
+              '[data-test-automation-id="conversation-page-header-status"]',
+            ).textContent,
           )
           .contains('content of user modify');
       },
       true,
     );
 
-    await h(t).withLog(
-      'Then I delete user5\'s custom status',
-      async () => {
-        await user5Glip.updatePerson(null, {
-          away_status: null,
-        });
-      },
-    );
+    await h(t).withLog("Then I delete user5's custom status", async () => {
+      await user5Glip.updatePerson(null, {
+        away_status: null,
+      });
+    });
 
     await h(t).withLog(
       'Then I should not find the custom status on the page header',
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.header.find('.subtitle')
-              .textContent,
+            app.homePage.messagePanel.conversationPage.header.find(
+              '[data-test-automation-id="conversation-page-header-status"]',
+            ).textContent,
           )
           .notContains('content of user modify');
       },
       true,
     );
-
   },
 );
