@@ -37,7 +37,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
 
   constructor(props: ContactSearchProps) {
     super(props);
-    this.searchMembers = debounce(this.searchMembers.bind(this), 400);
+    this.searchMembers = debounce(this.searchMembers.bind(this), 300);
   }
 
   @action

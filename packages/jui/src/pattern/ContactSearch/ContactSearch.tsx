@@ -216,7 +216,11 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
     } = this.props;
     const { inputValue, selectedItem, shrink, showPlaceholder } = this.state;
 
-    const filterSuggestions = differenceBy(suggestions, selectedItem, 'id');
+    let filterSuggestions = suggestions;
+
+    if (selectedItem && selectedItem.length) {
+      filterSuggestions = differenceBy(suggestions, selectedItem, 'id');
+    }
 
     return (
       <Downshift
