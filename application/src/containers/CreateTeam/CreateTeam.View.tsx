@@ -25,7 +25,6 @@ import { ViewProps } from './types';
 
 interface IState {
   items: JuiListToggleItemProps[];
-  members: (number | string)[];
 }
 
 const StyledSnackbarsContent = styled(JuiSnackbarContent)`
@@ -39,7 +38,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
   constructor(props: ViewProps) {
     super(props);
     this.state = {
-      members: [],
       items: [],
     };
   }
@@ -88,19 +86,9 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     });
   }
 
-  handleSearchContactChange = (items: any) => {
-    const members = items.map((item: any) => {
-      if (item.id) {
-        return item.id;
-      }
-      return item.email;
-    });
-    this.setState({ members });
-  }
-
   createTeam = async () => {
-    const { items, members } = this.state;
-    const { teamName, description } = this.props;
+    const { items } = this.state;
+    const { teamName, description, members } = this.props;
     const { history, create } = this.props;
     const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
     const canPost = items.filter(item => item.type === 'canPost')[0].checked;
@@ -135,6 +123,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       errorMsg,
       handleNameChange,
       handleDescChange,
+      handleSearchContactChange,
       isOffline,
       serverError,
     } = this.props;
@@ -169,7 +158,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           onChange={handleNameChange}
         />
         <ContactSearch
-          onChange={this.handleSearchContactChange}
+          onChange={handleSearchContactChange}
           label={t('Members')}
           placeholder={t('Search Contact Placeholder')}
           error={emailError}

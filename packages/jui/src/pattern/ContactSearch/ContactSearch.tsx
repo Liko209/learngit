@@ -107,10 +107,6 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
     selectedItem: [],
   };
 
-  constructor(props: Props) {
-    super(props);
-  }
-
   handleKeyDown = (event: Event) => {
     const { inputValue, selectedItem } = this.state;
     if (
