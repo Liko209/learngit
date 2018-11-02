@@ -9,7 +9,6 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
-import { GlipSdk } from '../../v2/sdk/glip';
 
 fixture('ConversationList/MarkFavoriteOrUnfavorite')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
@@ -24,96 +23,77 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    const userPlatform = await h(t).getPlatform(user);
-    const userGlip = await h(t).getGlip(user);
-    const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    user.sdk = await h(t).getSdk(user);
+
     const favoritesSection = app.homePage.messagePanel.favoritesSection;
     const favoriteToggler = app.homePage.messagePanel.moreMenu.favoriteToggler;
 
-    let groupId, teamId, groupItem, teamItem; 
-    await h(t).withLog(
-      'Given I have an extension with a group and a team conversation',
-      async () => {
-        groupId = (await userPlatform.createGroup({
-          type: 'Group',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
-        teamId = (await userPlatform.createGroup({
-          type: 'Team',
-          name: uuid(),
-          members: [user.rcId, users[5].rcId],
-        })).data.id;
-      },
-    );
+    let groupId, teamId;
+    await h(t).withLog('Given I have an extension with a group and a team conversation', async () => {
+      groupId = (await user.sdk.platform.createGroup({
+        type: 'Group',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      })).data.id;
+      teamId = (await user.sdk.platform.createGroup({
+        type: 'Team',
+        name: uuid(),
+        members: [user.rcId, users[5].rcId],
+      })).data.id;
+    });
 
-    await h(t).withLog(
-      'And the conversations should not be hidden before login',
-      async () => {
-        await userGlip.updateProfile(user.rcId, {
-          [`hide_group_${groupId}`]: false,
-          [`hide_group_${teamId}`]: false,
-          favorite_group_ids: [],
-        });
-      },
-    );
+    await h(t).withLog('And the conversations should not be hidden and unfavorited before login', async () => {
+      await user.sdk.glip.updateProfile(user.rcId, {
+        [`hide_group_${groupId}`]: false,
+        [`hide_group_${teamId}`]: false,
+        favorite_group_ids: [],
+      });
+    });
 
-    await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${
-      user.extension
-      }`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded();
-      },
-    );
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
 
-    await h(t).withLog('Then I click more button of group', async () => {
-      groupItem = directMessagesSection.conversationByIdEntry(groupId);
+    let groupItem, teamItem; 
+    await h(t).withLog('and I click more button of group', async () => {
+      groupItem = app.homePage.messagePanel.directMessagesSection.conversationByIdEntry(groupId);
       await groupItem.openMoreMenu(); 
     });
 
-    await h(t).withLog('I can find the favorite button', async () => {
+    await h(t).withLog('Then I can find the favorite button', async () => {
       await t.expect(favoriteToggler.self.textContent).eql('Favorite');
     });
 
-    await h(t).withLog('Then I click the favorite button', async () => {
+    await h(t).withLog('When I click the favorite button', async () => {
       await favoriteToggler.enter();
       await t.wait(1e3);
     });
 
-    await h(t).withLog(
-      'Then I can find the item in favorite section but not in direct messages section',
-      async () => {
-        await t.expect(groupItem.exists).notOk();
-        groupItem = favoritesSection.conversationByIdEntry(groupId);
-        await t.expect(groupItem.exists).ok();
-      },
-    );
+    await h(t).withLog('Then the group should be in favorite section but not in direct messages section', async () => {
+      await t.expect(groupItem.exists).notOk();
+      groupItem = favoritesSection.conversationByIdEntry(groupId);
+      await t.expect(groupItem.exists).ok();
+    });
 
-    await h(t).withLog('Then I click more button of team', async () => {
-      teamItem = teamsSection.conversationByIdEntry(teamId);
+    await h(t).withLog('When I click more button of team', async () => {
+      teamItem = app.homePage.messagePanel.teamsSection.conversationByIdEntry(teamId);
       await teamItem.openMoreMenu();
     });
 
-    await h(t).withLog('I can find the favorite button', async () => {
+    await h(t).withLog('Then I can find the favorite button', async () => {
       await t.expect(favoriteToggler.self.textContent).eql('Favorite');
     });
 
-    await h(t).withLog('Then I click the favorite button', async () => {
+    await h(t).withLog('When I click the favorite button', async () => {
       await favoriteToggler.enter();
       await t.wait(1e3);
     });
 
-    await h(t).withLog(
-      'Then I can find the item in favorite section but not in team section',
-      async () => {
-        await t.expect(teamItem.exists).notOk();
-        teamItem = favoritesSection.conversationByIdEntry(teamId);
-        await t.expect(teamItem.exists).ok();
-      },
-    );
+    await h(t).withLog('Then the team should be in favorite section but not in team section', async () => {
+      await t.expect(teamItem.exists).notOk();
+      teamItem = favoritesSection.conversationByIdEntry(teamId);
+      await t.expect(teamItem.exists).ok();
+    });
   },
 );
 
@@ -126,23 +106,20 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    const userPlatform = await h(t).getPlatform(user);
-    const glipSDK: GlipSdk = await h(t).getGlip(user);
-    const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    user.sdk = await h(t).getSdk(user);
+   
     const favoritesSection = app.homePage.messagePanel.favoritesSection;
     const favoriteToggler = app.homePage.messagePanel.moreMenu.favoriteToggler;
 
-    let groupId, teamId, groupItem, teamItem;
+    let groupId, teamId;
     await h(t).withLog(
       'Given I have an extension with a group and a team conversation',
       async () => {
-        groupId = (await userPlatform.createGroup({
+        groupId = (await user.sdk.platform.createGroup({
           type: 'Group',
           members: [user.rcId, users[5].rcId, users[6].rcId],
         })).data.id;
-        teamId = (await userPlatform.createGroup({
+        teamId = (await user.sdk.platform.createGroup({
           type: 'Team',
           name: uuid(),
           members: [user.rcId, users[5].rcId],
@@ -153,7 +130,7 @@ test(
     await h(t).withLog(
       'Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await glipSDK.updateProfile(user.rcId, {
+        await user.sdk.glip.updateProfile(user.rcId, {
           [`hide_group_${groupId}`]: false,
           [`hide_group_${teamId}`]: false,
           favorite_group_ids: [+groupId, +teamId],
@@ -161,16 +138,14 @@ test(
       },
     );
 
-    await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${
-      user.extension
-      }`,
+    await h(t).withLog( `When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
       },
     );
 
+    let groupItem, teamItem;
     await h(t).withLog('Then I click more button of group', async () => {
       groupItem = favoritesSection.conversationByIdEntry(groupId);
       await groupItem.openMoreMenu(); 
@@ -185,14 +160,11 @@ test(
       await t.wait(1e3);
     });
 
-    await h(t).withLog(
-      'Then I can find the item in direct messages section but not in favorite section',
-      async () => {
-        await t.expect(groupItem.exists).notOk();
-        groupItem = directMessagesSection.conversationByIdEntry(groupId); 
-        await t.expect(groupItem.exists).ok();
-      },
-    );
+    await h(t).withLog('Then I can find the item in direct messages section but not in favorite section', async () => {
+      await t.expect(groupItem.exists).notOk();
+      groupItem = app.homePage.messagePanel.directMessagesSection.conversationByIdEntry(groupId);
+      await t.expect(groupItem.exists).ok();
+    });
 
     await h(t).withLog('Then I click more button of team', async () => {
       teamItem = favoritesSection.conversationByIdEntry(teamId);
@@ -208,14 +180,11 @@ test(
       await t.wait(1e3);
     });
 
-    await h(t).withLog(
-      'Then I can find the item in team section but not in favorite section',
-      async () => {
-        await t.expect(teamItem.exists).notOk();
-        teamItem = teamsSection.conversationByIdEntry(teamId);
-        await t.expect(teamItem.exists).ok();
-      },
-    );
+    await h(t).withLog('Then I can find the item in team section but not in favorite section', async () => {
+      await t.expect(teamItem.exists).notOk();
+      teamItem = app.homePage.messagePanel.teamsSection.conversationByIdEntry(teamId);
+      await t.expect(teamItem.exists).ok();
+    });
   },
 );
 
@@ -228,42 +197,33 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
-    const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+    user.sdk = await h(t).getSdk(user);
 
-    let meChat, meChatId;
-    await h(t).withLog(
-      'Given I have an extension with a me conversation',
-      async () => {
-        meChatId = (await glipSDK.getPerson(user.rcId)).data.me_group_id;
-      },
-    );
+    let meChatId;
+    await h(t).withLog('Given I have an extension with a me conversation', async () => {
+      meChatId = (await user.sdk.glip.getPerson(user.rcId)).data.me_group_id;
+    });
 
     await h(t).withLog(
       'Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await glipSDK.updateProfile(user.rcId, {
+        await user.sdk.glip.updateProfile(user.rcId, {
           [`hide_group_${meChatId}`]: false,
           favorite_group_ids: [+meChatId],
         });
       },
     );
 
-    await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${
-      user.extension
-      }`,
+    await h(t).withLog( `When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
       },
     );
 
-    await h(t).withLog(`Then I should find Me Conversation in Favorite Section`, async () => {
-      meChat = favoritesSection.conversationByIdEntry(meChatId);
+    let meChat;
+    await h(t).withLog(`Then I can find Me Conversation in Favorite Section`, async () => {
+      meChat = app.homePage.messagePanel.favoritesSection.conversationByIdEntry(meChatId);
       await t.expect(meChat.exists).ok();
     });
 
@@ -271,16 +231,16 @@ test(
       await meChat.openMoreMenu();
     });
 
-    await h(t).withLog('And I click the unfavorite button', async () => {
+    await h(t).withLog('and I click the unfavorite button', async () => {
       await app.homePage.messagePanel.moreMenu.favoriteToggler.enter();
     });
 
     await h(t).withLog(
-      'Then I can find the item in direct messages section but not in favorite section nor in team section',
+      'Then the Me Conversation should be in direct messages section but not in favorite section nor in team section',
       async () => {
-        await t.expect(directMessagesSection.conversationByIdEntry(meChatId).exists).ok();
-        await t.expect(favoritesSection.conversationByIdEntry(meChatId).exists).notOk();
-        await t.expect(teamsSection.conversationByIdEntry(meChatId).exists).notOk();
+        await t.expect(app.homePage.messagePanel.directMessagesSection.conversationByIdEntry(meChatId).exists).ok();
+        await t.expect(app.homePage.messagePanel.favoritesSection.conversationByIdEntry(meChatId).exists).notOk();
+        await t.expect(app.homePage.messagePanel.teamsSection.conversationByIdEntry(meChatId).exists).notOk();
       },
     );
   },

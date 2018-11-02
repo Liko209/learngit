@@ -117,7 +117,7 @@ class Helper {
 
   // misc
   async resetGlipAccount(user: IUser) {
-    const adminGlip = await this.sdkHelper.sdkManager.getGlip(this.rcData.mainCompany.admin);
+    const adminGlip = await this.sdkHelper.sdkManager.getGlip(user.company.admin);
     await adminGlip.deactivated(user.rcId);
     await this.sdkHelper.sdkManager.getGlip(user);
   }
