@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationPage } from 'jui/pattern/ConversationPage';
-import { JuiDivider } from 'jui/components/Divider';
 import { translate } from 'react-i18next';
 import { Header } from './Header';
 import { Stream } from './Stream';
@@ -36,7 +35,6 @@ class ConversationPageViewComponent extends Component<
         data-group-id={groupId}
       >
         <Header id={groupId} />
-        <JuiDivider />
         <Stream groupId={groupId} viewRefs={this._viewRefs} />
         {canPost ? (
           <MessageInput id={groupId} onPost={this.sendHandler} />
