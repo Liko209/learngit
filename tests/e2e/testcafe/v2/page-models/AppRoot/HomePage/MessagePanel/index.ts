@@ -20,8 +20,15 @@ class MoreMenu extends BaseWebComponent {
     );
   }
 
-  get favorite() {
-    return this.getEntry('Favorite');
+  private getToggler(id: string){
+    return this.getComponent(
+      MoreMenuEntry,
+      this.getSelectorByAutomationId(id),
+    ); 
+  }
+  
+  get favoriteToggler() {
+    return this.getToggler('favToggler');
   }
 
   get close() {
