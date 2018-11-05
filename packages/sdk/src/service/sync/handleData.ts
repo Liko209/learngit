@@ -78,7 +78,11 @@ const handleData = async (
   shouldSaveScoreboard: boolean = true,
 ) => {
   try {
-    const { timestamp = null, scoreboard = null, static_http_server: staticHttpServer = '' } = result;
+    const {
+      timestamp = null,
+      scoreboard = null,
+      static_http_server: staticHttpServer = '',
+    } = result;
     const configDao = daoManager.getKVDao(ConfigDao);
 
     if (scoreboard && shouldSaveScoreboard) {
@@ -88,7 +92,10 @@ const handleData = async (
 
     if (staticHttpServer) {
       configDao.put(STATIC_HTTP_SERVER, staticHttpServer);
-      notificationCenter.emitConfigPut(CONFIG.STATIC_HTTP_SERVER, staticHttpServer);
+      notificationCenter.emitConfigPut(
+        CONFIG.STATIC_HTTP_SERVER,
+        staticHttpServer,
+      );
     }
 
     // logger.time('handle index data');
@@ -99,10 +106,10 @@ const handleData = async (
       notificationCenter.emitConfigPut(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
     }
 
-    notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_DONE);
+    notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);
   } catch (error) {
     mainLogger.error(error);
-    notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, {
+    notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
       error: ErrorParser.parse(error),
     });
   }

@@ -40,7 +40,6 @@ jest.mock('../../post');
 jest.mock('../../../api/glip/state');
 jest.mock('../../../service/notificationCenter', () => ({
   emitEntityUpdate: jest.fn(),
-  emitEntityPut: jest.fn(),
 }));
 describe('StateService', () => {
   const stateService: StateService = new StateService();

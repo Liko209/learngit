@@ -84,7 +84,7 @@ const handlePartialProfileUpdate = async (
           localProfile && hiddenGroupsChange(localProfile, transformedData);
         }
         await profileDao.put(transformedData);
-        notificationCenter.emitEntityPut(ENTITY.PROFILE, [transformedData]);
+        notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [transformedData]);
         return transformedData;
       }
     }

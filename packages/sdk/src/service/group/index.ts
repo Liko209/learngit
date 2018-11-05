@@ -375,8 +375,8 @@ export default class GroupService extends BaseService<Group> {
     if (result instanceof BaseError) {
       // rollback
       const group = await this.getById(groupId);
-      notificationCenter.emitEntityPut(ENTITY.GROUP, [group]);
-      // notificationCenter.emitEntityPut(
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [group]);
+      // notificationCenter.emitEntityUpdate(
       //   group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS,
       //   [group],
       // );

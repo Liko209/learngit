@@ -40,7 +40,6 @@ jest.mock('..', () => ({
 }));
 jest.mock('../../../service/notificationCenter', () => ({
   emitEntityUpdate: jest.fn(),
-  emitEntityPut: jest.fn(),
 }));
 
 describe('transform()', () => {
@@ -78,13 +77,13 @@ describe('getStates()', () => {
 describe('stateHandleData()', () => {
   it('should return void if pass empty array', async () => {
     await expect(handleData([])).resolves.toBeUndefined();
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(0);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(0);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(0);
     expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(0);
   });
   it('should save to db', async () => {
     await handleData([sample]);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(2);
   });
@@ -97,14 +96,14 @@ describe('handlePartialData', () => {
   it('should save to db if umi related metrics change', async () => {
     jest.clearAllMocks();
     await handlePartialData([partialSample]);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(2);
   });
   it('should not save to db and update if empty state', async () => {
     jest.clearAllMocks();
     await handlePartialData([]);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(0);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(0);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(0);
     expect(daoManager.getDao(StateDao).bulkUpdate).toHaveBeenCalledTimes(0);
   });

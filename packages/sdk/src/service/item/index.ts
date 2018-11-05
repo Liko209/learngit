@@ -73,7 +73,7 @@ export default class ItemService extends BaseService<Item> {
   async deleteItem(id: number): Promise<boolean> {
     const itemDao = daoManager.getDao(ItemDao);
     const item = (await itemDao.get(id)) as Item;
-    notificationCenter.emitEntityDelete(ENTITY.ITEM, [item]);
+    notificationCenter.emitEntityDelete(ENTITY.ITEM, [item.id]);
     await itemDao.delete(id);
     if (item) {
       item.deactivated = true;

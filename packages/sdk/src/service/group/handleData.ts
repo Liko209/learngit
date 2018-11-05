@@ -156,8 +156,11 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
 
   const archivedGroups = normalData.filter((item: Group) => item.is_archived);
   const deactivatedGroups = deactivatedData.concat(archivedGroups);
-  deactivatedGroups.length &&
-    notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroups);
+  const deactivatedGroupIds = _.map(deactivatedGroups, (group: Group) => {
+    return group.id;
+  });
+  deactivatedGroupIds.length &&
+    notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
 
   // let deactivatedTeams = deactivatedData.filter(
   //   (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
@@ -211,11 +214,11 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
     (item: Group) => favIds.indexOf(item.id) !== -1,
   );
   const result = addedTeams.concat(addedGroups).concat(addFavorites);
-  result.length && notificationCenter.emitEntityPut(ENTITY.GROUP, result);
+  result.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, result);
   // addedTeams.length > 0 &&
-  //   notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, addedTeams);
+  //   notificationCenter.emitEntityUpdate(ENTITY.TEAM_GROUPS, addedTeams);
   // addedGroups.length > 0 &&
-  //   notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, addedGroups);
+  //   notificationCenter.emitEntityUpdate(ENTITY.PEOPLE_GROUPS, addedGroups);
   // addFavorites.length > 0 && (await doFavoriteGroupsNotification(favIds));
 }
 
@@ -283,9 +286,13 @@ async function doFavoriteGroupsNotification(favIds: number[]) {
     let groups = await dao.queryGroupsByIds(validFavIds);
     groups = sortFavoriteGroups(validFavIds, groups);
 
-    notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, groups);
+    const replaceGroups = _.map(groups, (group: Group) => {
+      return { id: group.id, entity: group };
+    });
+
+    notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, replaceGroups);
   } else {
-    notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, []);
+    notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, []);
   }
 }
 
@@ -353,16 +360,24 @@ async function handleHiddenGroupsChanged(
 function doNonFavoriteGroupsNotification(groups: Group[], isPut: boolean) {
   if (isPut) {
     const teams = groups.filter((item: Group) => item.is_team);
-    teams.length && notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, teams);
+    teams.length &&
+      notificationCenter.emitEntityUpdate(ENTITY.TEAM_GROUPS, teams);
     const peopleGroups = groups.filter((item: Group) => !item.is_team);
     peopleGroups &&
-      notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, peopleGroups);
+      notificationCenter.emitEntityUpdate(ENTITY.PEOPLE_GROUPS, peopleGroups);
   } else {
     const teams = groups.filter((item: Group) => item.is_team);
-    teams && notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, teams);
+    const teamIds = _.map(teams, (team: Group) => {
+      return team.id;
+    });
+    teamIds && notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, teamIds);
+
     const peopleGroups = groups.filter((item: Group) => !item.is_team);
-    peopleGroups &&
-      notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, peopleGroups);
+    const peopleGroupIds = _.map(peopleGroups, (group: Group) => {
+      return group.id;
+    });
+    peopleGroupIds &&
+      notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, peopleGroupIds);
   }
 }
 

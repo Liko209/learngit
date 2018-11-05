@@ -12,17 +12,10 @@ enum GROUP_QUERY_TYPE {
 
 enum EVENT_TYPES {
   'REPLACE' = 'replace',
-  'PUT' = 'put',
   'UPDATE' = 'update',
   'DELETE' = 'delete',
-  'REPLACE_ALL' = 'replaceAll',
   'RELOAD' = 'reload',
   'RESET' = 'reset',
-  // LOGIN: 'login',
-  // LOGOUT: 'logout',
-  // INDEX_EXIST: 'fetchIndexDataExist',
-  // INDEX_DONE: 'fetchIndexDataDone',
-  // INDEX_ERROR: 'fetchIndexDataError',
 }
 
 enum PERMISSION_ENUM {

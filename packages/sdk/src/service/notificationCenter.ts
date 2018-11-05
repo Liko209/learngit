@@ -5,6 +5,7 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { EVENT_TYPES } from './constants';
+import _ from 'lodash';
 
 // interface Item {
 //   id: number;
@@ -33,47 +34,33 @@ class NotificationCenter extends EventEmitter2 {
   }
 
   /**
-   * emit event for ui layer of store entity insert or update
-   * @param {string} key
-   * @param {array} entities
-   */
-  emitEntityPut(key: string, entities: any[]): void {
-    this.trigger(key, {
-      type: EVENT_TYPES.PUT,
-      entities: transform2Map(entities),
-    });
-  }
-
-  /**
    * emit event for ui layer of store entity update partial data
    * @param {string} key
    * @param {array} entities
    */
-  emitEntityUpdate(key: string, entities: any[]): void {
+  emitEntityUpdate(key: string, entities: any[], partials?: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.UPDATE,
-      entities: transform2Map(entities),
+      body: {
+        entities: transform2Map(entities),
+        partials: partials ? transform2Map(partials) : null,
+      },
     });
   }
 
-  emitEntityReplace(key: string, entities: any[]): void {
+  emitEntityReplace(key: string, entities: { id: any; entity: any }[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.REPLACE,
-      entities: transform2Map(entities),
+      body: _.map(entities, ({ id, entity }) => {
+        return { id, entities: transform2Map(entity) };
+      }),
     });
   }
 
-  emitEntityReplaceAll(key: string, entities: any[]): void {
-    this.trigger(key, {
-      type: EVENT_TYPES.REPLACE_ALL,
-      entities: transform2Map(entities),
-    });
-  }
-
-  emitEntityDelete(key: string, entities: any[]): void {
+  emitEntityDelete(key: string, ids: any[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.DELETE,
-      entities: transform2Map(entities),
+      body: ids,
     });
   }
 
@@ -89,21 +76,12 @@ class NotificationCenter extends EventEmitter2 {
     });
   }
 
-  emitConfigPut(key: string, payload: any): void {
-    this.trigger(key, {
-      payload,
-      type: EVENT_TYPES.PUT,
-    });
-  }
-
-  emitConfigDelete(key: string): void {
-    this.trigger(key, {
-      type: EVENT_TYPES.DELETE,
-    });
-  }
-
-  emitService(key: string, payload?: any): void {
-    this.trigger(key, payload);
+  emitKVChange(key: string, value?: any): void {
+    if (value) {
+      this.trigger(key, { value });
+    } else {
+      this.trigger(key);
+    }
   }
 }
 

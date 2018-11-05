@@ -255,7 +255,7 @@ export default class PostService extends BaseService<Post> {
     const dao = daoManager.getDao(PostDao);
     await dao.put(buildPost);
     try {
-      notificationCenter.emitEntityPut(ENTITY.POST, [buildPost]);
+      notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
     } catch (err) {}
   }
 
@@ -270,7 +270,10 @@ export default class PostService extends BaseService<Post> {
       data: post,
     };
     const result = [obj];
-    notificationCenter.emitEntityReplace(ENTITY.POST, result);
+
+    const replacePosts = [{ id: preInsertId, entity: post }];
+
+    notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
     const dao = daoManager.getDao(PostDao);
 
     const groupService: GroupService = GroupService.getInstance();
@@ -365,7 +368,7 @@ export default class PostService extends BaseService<Post> {
 
     if (this.isInPreInsert(id)) {
       this._postStatusHandler.removePreInsertId(id);
-      notificationCenter.emitEntityDelete(ENTITY.POST, [post]);
+      notificationCenter.emitEntityDelete(ENTITY.POST, [post.id]);
       postDao.delete(id);
 
       const groupService: GroupService = GroupService.getInstance();
