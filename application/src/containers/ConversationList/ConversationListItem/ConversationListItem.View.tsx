@@ -7,24 +7,27 @@ import React, { MouseEvent, Fragment } from 'react';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
 import { Umi } from '@/containers/Umi';
 import { Indicator } from '@/containers/ConversationList/Indicator';
+import { Presence } from '@/containers/Presence';
+import { CONVERSATION_TYPES } from '@/constants';
 import { Menu } from '../Menu';
 import { ConversationListItemViewProps } from './types';
 import { observer } from 'mobx-react';
 import { observable } from 'mobx';
-import { JuiPresence } from 'jui/src/components/Presence/Presence';
-
-// TODO remove Stubs here
-const Presence = (props: any) => <JuiPresence {...props} />;
 
 type Props = ConversationListItemViewProps;
-interface IState {
+type State = {
   currentGroupId: number;
-}
+};
 
 @observer
-class ConversationListItemViewComponent extends React.Component<Props, IState> {
+class ConversationListItemViewComponent extends React.Component<Props, State> {
   @observable
   menuAnchorEl: HTMLElement | null = null;
+
+  private _requiredShownPresenceConversationTypes = [
+    CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
+    CONVERSATION_TYPES.ME,
+  ];
 
   constructor(props: Props) {
     super(props);
@@ -38,7 +41,10 @@ class ConversationListItemViewComponent extends React.Component<Props, IState> {
   }
 
   private get _presence() {
-    return <Presence id={this.props.groupId} />;
+    const { groupType } = this.props;
+    return this._requiredShownPresenceConversationTypes.includes(groupType) ? (
+      <Presence uid={this.props.personId} />
+    ) : null;
   }
   private get _indicator() {
     if (this.props.selected) {

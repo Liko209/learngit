@@ -15,7 +15,7 @@ import {
 
 abstract class TransformHandler<T, K> {
   fetchData: (direction: FetchDataDirection) => any;
-  hasMore: (direction: FetchDataDirection) => boolean;
+
   constructor(
     protected _orderListHandler: FetchSortableDataListHandler<K>,
     public listStore = new ListStore<T>(),
@@ -24,7 +24,10 @@ abstract class TransformHandler<T, K> {
     this.fetchData = async (...args) => {
       await this._orderListHandler.fetchData(...args);
     };
-    this.hasMore = this._orderListHandler.hasMore.bind(_orderListHandler);
+  }
+
+  hasMore(direction: FetchDataDirection) {
+    return this._orderListHandler.hasMore(direction);
   }
 
   get orderListStore() {
