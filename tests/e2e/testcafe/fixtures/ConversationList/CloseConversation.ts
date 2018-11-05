@@ -339,9 +339,8 @@ test(
       await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
       await t.expect(dialog.getSelector('p').withText(content)).ok();
       await t.expect(dialog.dontAskAgainCheckbox.withText(checkboxLabel)).ok();
-      await t.expect(dialog.confirmButton.withText(button.toUpperCase()));
+      await t.expect(dialog.confirmButton.withText(button.toUpperCase())).ok();
     });
-
   }
 );
 
@@ -416,7 +415,7 @@ test(
       await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
       await t.expect(dialog.getSelector('p').withText(content)).ok();
       await t.expect(dialog.dontAskAgainCheckbox.withText(checkboxLabel)).ok();
-      await t.expect(dialog.confirmButton.withText(button.toUpperCase())); //The button is uppercase,it's by design
+      await t.expect(dialog.confirmButton.withText(button.toUpperCase())).ok();
     });
 
     await h(t).withLog(`When I select "Don't ask me again" then click "Close Conversation" button`, async () => {
@@ -424,7 +423,7 @@ test(
       await dialog.confirm();
     });
 
-    await h(t).withLog(`The popup dialog dissmis and conversation A should be closed`, async () => {
+    await h(t).withLog(`The popup dialog disappear and conversation A should be closed`, async () => {
       await t.expect(dialog.exists).notOk();
       await t.expect(pvtChat.exists).notOk();
     });
@@ -444,16 +443,12 @@ test(
   },
 );
 
-test(
-  formalName('No close button in conversation with UMI', [
-    'JPT-114',
-    'P2',
-    'ConversationList',
-  ]),
-  async (t: TestController) => {
+test(formalName(
+  'No close button in conversation with UMI',
+  ['JPT-114', 'P2', 'ConversationList',]), async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     await h(t).resetGlipAccount(user)
     user.sdk = await h(t).getSdk(user);
 
@@ -462,53 +457,39 @@ test(
     const teamsSection = app.homePage.messagePanel.teamsSection;
 
     let favGroupId, pvtChatId, teamId1, teamId2;
-    await h(t).withLog(
-      'Given I have an extension with 2 private chat, 2 team chat, and 1 group tema',
-      async () => {
-        pvtChatId = (await user.sdk.platform.createGroup({
-          type: 'PrivateChat',
-          members: [user.rcId, users[5].rcId],
-        })).data.id;
-        favGroupId = (await user.sdk.platform.createGroup({
-          type: 'Group',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
-        teamId1 = (await user.sdk.platform.createGroup({
-          isPublic: true,
-          name: `Team ${uuid()}`,
-          type: 'Team',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
-        teamId2 = (await user.sdk.platform.createGroup({
-          isPublic: true,
-          name: `Team ${uuid()}`,
-          type: 'Team',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
-      },
-    );
+    await h(t).withLog('Given I have an extension with 2 private chat, 2 team chat, and 1 group team', async () => {
+      pvtChatId = (await user.sdk.platform.createGroup({
+        type: 'PrivateChat',
+        members: [user.rcId, users[5].rcId],
+      })).data.id;
+      favGroupId = (await user.sdk.platform.createGroup({
+        type: 'Group',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      })).data.id;
+      teamId1 = (await user.sdk.platform.createGroup({
+        isPublic: true,
+        name: `Team ${uuid()}`,
+        type: 'Team',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      })).data.id;
+      teamId2 = (await user.sdk.platform.createGroup({
+        isPublic: true,
+        name: `Team ${uuid()}`,
+        type: 'Team',
+        members: [user.rcId, users[5].rcId, users[6].rcId],
+      })).data.id;
+    });
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
       await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${pvtChatId}`]: false,
-        [`hide_group_${favGroupId}`]: false,
-        [`hide_group_${teamId1}`]: false,
-        [`hide_group_${teamId2}`]: false,
         favorite_group_ids: [+favGroupId]
       });
-    },
-    );
+    });
 
-    await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${
-      user.extension
-      }`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded();
-      },
-    );
-
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
 
     await h(t).withLog('And other user send post to each conversation', async () => {
       await teamsSection.expand();
@@ -524,21 +505,18 @@ test(
     });
 
     let favoriteItem, directMessageItem, teamItem;
-    await h(t).withLog(
-      `Then I can find conversation with UMI in favorites/DM/teams section`,
-      async () => {
-        await t.wait(3e3)
-        await favoritesSection.expand();
-        favoriteItem = favoritesSection.conversationByIdEntry(favGroupId); 
-        await t.expect(await favoriteItem.getUmi()).eql(1);
-        await directMessagesSection.expand();
-        directMessageItem = directMessagesSection.conversationByIdEntry(pvtChatId)
-        await t.expect(await directMessageItem.getUmi()).eql(1);
-        await teamsSection.expand();
-        teamItem = teamsSection.conversationByIdEntry(teamId1);
-        await t.expect(await teamItem.getUmi()).eql(1);
-      },
-    );
+    await h(t).withLog(`Then I can find conversation with UMI in favorites/DM/teams section`, async () => {
+      await t.wait(3e3);
+      await favoritesSection.expand();
+      favoriteItem = favoritesSection.conversationByIdEntry(favGroupId);
+      await t.expect(await favoriteItem.getUmi()).eql(1);
+      await directMessagesSection.expand();
+      directMessageItem = directMessagesSection.conversationByIdEntry(pvtChatId)
+      await t.expect(await directMessageItem.getUmi()).eql(1);
+      await teamsSection.expand();
+      teamItem = teamsSection.conversationByIdEntry(teamId1);
+      await t.expect(await teamItem.getUmi()).eql(1);
+    });
 
     const groupList = {
       favorite: favoriteItem,
@@ -546,7 +524,7 @@ test(
       team: teamItem,
     }
     const closeButton = app.homePage.messagePanel.moreMenu.close;
-    for (let key in groupList){
+    for (let key in groupList) {
       const item = groupList[key];
       await h(t).withLog(`When I click more Icon of a ${key} conversation with UMI`, async () => {
         await item.openMoreMenu();
