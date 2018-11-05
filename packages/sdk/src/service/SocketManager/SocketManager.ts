@@ -263,7 +263,7 @@ export class SocketManager {
       const body = JSON.parse(data.body);
       const configDao = daoManager.getKVDao(ConfigDao);
       configDao.put(SOCKET_SERVER_HOST, body.server);
-      notificationCenter.emitConfigPut(CONFIG.SOCKET_SERVER_HOST, body.server);
+      notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, body.server);
     } catch (error) {
       this.warn(`fail on socket reconnect: ${error}`);
     }

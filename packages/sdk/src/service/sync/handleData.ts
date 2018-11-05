@@ -87,12 +87,12 @@ const handleData = async (
 
     if (scoreboard && shouldSaveScoreboard) {
       configDao.put(SOCKET_SERVER_HOST, scoreboard);
-      notificationCenter.emitConfigPut(CONFIG.SOCKET_SERVER_HOST, scoreboard);
+      notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
     }
 
     if (staticHttpServer) {
       configDao.put(STATIC_HTTP_SERVER, staticHttpServer);
-      notificationCenter.emitConfigPut(
+      notificationCenter.emitKVChange(
         CONFIG.STATIC_HTTP_SERVER,
         staticHttpServer,
       );
@@ -103,7 +103,7 @@ const handleData = async (
     // logger.timeEnd('handle index data');
     if (timestamp) {
       configDao.put(LAST_INDEX_TIMESTAMP, timestamp);
-      notificationCenter.emitConfigPut(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
+      notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
     }
 
     notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);
