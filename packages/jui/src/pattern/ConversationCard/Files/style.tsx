@@ -20,7 +20,6 @@ import {
   height,
   shape,
   palette,
-  ellipsis,
   typography,
 } from '../../../foundation/utils/styles';
 import pdf from './pdf_conversation_xxh.png';
@@ -68,7 +67,6 @@ const FileInfo = styled(JuiListItemText)`
     justify-content: space-between;
     padding: ${spacing(0, 0, 0, 3)};
     .file-item-primary {
-      ${ellipsis};
       width: ${width(57)};
       color: ${palette('grey', '900')};
     }
@@ -109,9 +107,7 @@ const FileCardContent = styled(MuiCardContent)`
 
 const CardFileName = styled(JuiTypography)`
   && {
-    ${ellipsis};
     ${typography('subheading1')};
-    width: ${width(65)};
     color: ${palette('grey', '900')};
     margin: ${spacing(0, 0, 2, 0)};
   }
@@ -164,7 +160,6 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   transform: translate(0, ${height(9)});
   & > b {
     font-weight: 400;
-    ${ellipsis};
     color: ${palette('grey', '700')};
     width: ${({ ratio }) => (ratio >= 1 ? width(60) : width(86))};
   }
