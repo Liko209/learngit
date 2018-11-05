@@ -5,6 +5,8 @@
  */
 
 const getFileName = (filename: string) => {
+  if (!filename) return '';
+
   const name = filename;
   const right = name.substr(-7);
   const left = name.replace(right, '');
