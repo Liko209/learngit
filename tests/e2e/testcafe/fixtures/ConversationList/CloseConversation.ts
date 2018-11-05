@@ -51,6 +51,14 @@ test(formalName('Close current conversation directly, and navigate to blank page
         [`hide_group_${teamId}`]: false,
         favorite_group_ids: [+favChatId]
       });
+      const user5Platform = await h(t).getPlatform(users[5]);
+      const umiGroupIds = [favChatId, pvtChatId, teamId];
+      for (let id of umiGroupIds) {
+        await user5Platform.createPost(
+          { text: `Hi, ![:Person](${user.rcId})` },
+          id
+        );
+      }
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
@@ -261,11 +269,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
       await pvtChat.waitUntilUmiNotExist();
     });
 
-    await h(t).withLog(`Then conversation A should not have UMI`, async () => {
-      await pvtChat.waitUntilUmiNotExist();
-    });
-
-    await h(t).withLog(`When I click conversation A's close buttom`, async () => {
+    await h(t).withLog(`When I click conversation A's close button`, async () => {
       await pvtChat.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     });
@@ -359,10 +363,6 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
       await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
       await pvtChat.enter();
     }, true);
-
-    await h(t).withLog(`Then conversation A should not have UMI`, async () => {
-      await pvtChat.waitUntilUmiNotExist();
-    });
 
     await h(t).withLog(`Then conversation A should not have UMI`, async () => {
       await pvtChat.waitUntilUmiNotExist();
