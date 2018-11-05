@@ -60,6 +60,10 @@ const StyledListItem = styled(MuiMenuItem)`
     color: ${palette('primary', 'main')};
   }
 
+  &&:last-child {
+    margin-bottom: ${spacing(2)};
+  }
+
   .child {
     background: ${palette('primary', '50')};
   }
