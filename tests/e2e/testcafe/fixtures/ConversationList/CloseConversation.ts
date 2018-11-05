@@ -251,12 +251,15 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
 
     const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
     const team = teamsSection.conversationByIdEntry(teamId);
-
     await h(t).withLog(`And I open conversation A `, async () => {
       await dmSection.expand();
       await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
       await pvtChat.enter();
     }, true);
+
+    await h(t).withLog(`Then conversation A should not have UMI`, async () => {
+      await pvtChat.waitUntilUmiNotExist();
+    });
 
     await h(t).withLog(`Then conversation A should not have UMI`, async () => {
       await pvtChat.waitUntilUmiNotExist();
@@ -356,6 +359,10 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
       await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
       await pvtChat.enter();
     }, true);
+
+    await h(t).withLog(`Then conversation A should not have UMI`, async () => {
+      await pvtChat.waitUntilUmiNotExist();
+    });
 
     await h(t).withLog(`Then conversation A should not have UMI`, async () => {
       await pvtChat.waitUntilUmiNotExist();
