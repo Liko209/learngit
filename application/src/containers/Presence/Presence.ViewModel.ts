@@ -19,6 +19,10 @@ class PresenceViewModel extends StoreViewModel<PresenceProps>
     return this.props.size;
   }
   @computed
+  get borderSize() {
+    return this.props.borderSize;
+  }
+  @computed
   get presence() {
     if (this.props.uid !== 0) {
       const person = getEntity(ENTITY_NAME.PERSON, this.props.uid);

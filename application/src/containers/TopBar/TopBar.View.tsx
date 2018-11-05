@@ -48,7 +48,7 @@ class TopBar extends React.Component<TopBarProps> {
   private get _presence() {
     const { currentUserId } = this.props;
 
-    return <Presence uid={currentUserId} size="large" />;
+    return <Presence uid={currentUserId} size="large" borderSize="large" />;
   }
 
   private _AvatarMenuTrigger(avatarMenuTriggerProps: JuiIconButtonProps) {

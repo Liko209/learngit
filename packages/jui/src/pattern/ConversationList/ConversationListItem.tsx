@@ -10,7 +10,7 @@ import MuiMenuItem, {
 } from '@material-ui/core/MenuItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey, palette, height } from '../../foundation/utils';
+import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
@@ -65,6 +65,12 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 `;
 
+const StyledPresenceWrapper = styled.div`
+  width: ${width(2)};
+  height: ${height(2)};
+  margin: ${spacing(1.5)};
+`;
+
 type JuiConversationListItemProps = {
   title: string;
   presence?: JSX.Element | null;
@@ -112,7 +118,7 @@ const JuiConversationListItem: IConversationListItem = (
       TouchRippleProps={{ classes: touchRippleClasses }}
       {...rest}
     >
-      {presence}
+      <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
       <ItemText style={{ fontWeight }}>
         {indicator} {title}
       </ItemText>
