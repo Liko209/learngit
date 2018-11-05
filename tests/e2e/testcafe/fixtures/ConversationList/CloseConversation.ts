@@ -51,14 +51,6 @@ test(formalName('Close current conversation directly, and navigate to blank page
         [`hide_group_${teamId}`]: false,
         favorite_group_ids: [+favChatId]
       });
-      const user5Platform = await h(t).getPlatform(users[5]);
-      const umiGroupIds = [favChatId, pvtChatId, teamId];
-      for (let id of umiGroupIds) {
-        await user5Platform.createPost(
-          { text: `Hi, ![:Person](${user.rcId})` },
-          id
-        );
-      }
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
