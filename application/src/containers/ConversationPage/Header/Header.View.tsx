@@ -91,7 +91,6 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
       isFavorite,
       type,
       isPrivate,
-      customStatus,
       onFavoriteButtonHandler,
     } = this.props;
     const onchange = async (
@@ -112,7 +111,6 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
     return (
       <JuiConversationPageHeaderSubtitle>
-        {customStatus ? <span>{customStatus}</span> : null}
         <JuiButtonBar size="small" overlapping={true}>
           <JuiCheckboxButton
             tooltipTitle={
@@ -157,12 +155,13 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 
   render() {
-    const { title } = this.props;
+    const { title, customStatus } = this.props;
 
     return (
       <JuiConversationPageHeader
         data-test-automation-id="conversation-page-header"
         title={title}
+        status={customStatus}
         SubTitle={this._SubTitle()}
         Right={this._ActionButtons()}
         onMouseEnter={this._onHover}
