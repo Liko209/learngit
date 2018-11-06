@@ -46,12 +46,12 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     return [
       {
         type: 'isPublic',
-        text: t('Public Team'),
+        text: t('PublicTeam'),
         checked: false,
       },
       {
         type: 'canPost',
-        text: t('Members may post messages'),
+        text: t('MembersMayPostMessages'),
         checked: true,
       },
     ];
@@ -59,6 +59,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
 
   static getDerivedStateFromProps(props: any, state: any) {
     let items = [];
+    console.log(CreateTeam.initItems);
     if (props.isOpen) {
       items = CreateTeam.initItems;
     }
