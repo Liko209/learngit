@@ -161,6 +161,7 @@ describe('ItemService', () => {
     };
     const itemDao = {
       get: jest.fn(),
+      update: jest.fn(),
     };
     beforeAll(() => {
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
@@ -179,11 +180,19 @@ describe('ItemService', () => {
     it('should return true if doNotRenderLink called success', async() => {
       itemDao.get.mockResolvedValue(itemObj);
       const ret = await itemService.doNotRenderLink(1, 'link');
+      itemDao.update = jest.fn().mockReturnValue({
+        do_not_render: true,
+        deactivated: false,
+      });
       expect(ret).toBe(true);
     });
     it('should update do_not_render if doNotRenderLink called success', async() => {
       itemDao.get.mockResolvedValue(itemObj);
       await itemService.doNotRenderLink(1, 'link');
+      itemDao.update = jest.fn().mockReturnValue({
+        do_not_render: true,
+        deactivated: false,
+      });
       expect(await itemDao.get(1)).toMatchObject({
         do_not_render: true,
         deactivated: false,
