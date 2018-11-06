@@ -73,7 +73,6 @@ export default class ItemService extends BaseService<Item> {
   async doNotRenderLink(id: number, type: string): Promise<boolean> {
     const itemDao = daoManager.getDao(ItemDao);
     const item = (await itemDao.get(id)) as Item;
-    console.log('item', item);
     if (item) {
       item.do_not_render = true;
       notificationCenter.emitEntityUpdate(ENTITY.ITEM, [item]);
