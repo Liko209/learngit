@@ -3,11 +3,8 @@
  * @Date: 2018-10-07 00:50:11
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  handleDelete,
-  handleReplaceAll,
-  handleUpsert,
-} from './IncomingDataHandler';
+import { BaseModel } from 'sdk/models';
+import { handleDelete, handleUpsert } from './IncomingDataHandler';
 
 import { EVENT_TYPES } from 'sdk/service';
 import {
@@ -25,7 +22,7 @@ import {
 } from './FetchDataListHandler';
 
 import { SortableListStore } from './SortableListStore';
-import { IIncomingData } from '../../store';
+import { IncomingData } from '../../store';
 import _ from 'lodash';
 
 const transform2Map = (entities: any[]): Map<number, any> => {
@@ -51,17 +48,15 @@ export interface IFetchSortableDataProvider<T> {
   ): Promise<{ data: T[]; hasMore: boolean }>;
 }
 
-export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
-  ISortableModel<T>
-> {
+export class FetchSortableDataListHandler<
+  T extends BaseModel
+> extends FetchDataListHandler<ISortableModel<T>> {
   private _isMatchFunc: IMatchFunc<T | TReplacedData<T>>;
   private _transformFunc: ITransformFunc<T>;
   private _sortableDataProvider: IFetchSortableDataProvider<T>;
   protected _handleIncomingDataByType = {
     [EVENT_TYPES.DELETE]: handleDelete,
     [EVENT_TYPES.REPLACE]: handleUpsert,
-    [EVENT_TYPES.REPLACE_ALL]: handleReplaceAll,
-    [EVENT_TYPES.PUT]: handleUpsert,
     [EVENT_TYPES.UPDATE]: handleUpsert,
   };
 
@@ -76,8 +71,8 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     this._entityName = options.entityName;
 
     if (options.eventName) {
-      this.subscribeNotification(options.eventName, ({ type, entities }) => {
-        this.onDataChanged({ type, entities });
+      this.subscribeNotification(options.eventName, ({ type, body }) => {
+        this.onDataChanged({ type, body });
       });
     }
   }
@@ -113,30 +108,39 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       });
   }
 
-  extractModel(
-    entities: Map<number, T | TReplacedData<T>>,
-    key: number,
-    type: EVENT_TYPES,
-  ) {
-    let model: T;
-    if (type === EVENT_TYPES.REPLACE) {
-      model = (entities.get(key) as TReplacedData<T>).data as T;
-    } else {
-      model = entities.get(key) as T;
+  onDataChanged({ type, body }: IncomingData<T>) {
+    let keys: number[] = [];
+    let entities: Map<number, T | TReplacedData<T>> = new Map();
+    switch (type) {
+      case EVENT_TYPES.DELETE: {
+        keys = body as number[];
+        break;
+      }
+      case EVENT_TYPES.UPDATE: {
+        entities = (body as {
+          entities: Map<number, T>;
+          partials: Map<number, T> | null;
+        }).entities;
+        keys = _([...entities.values()])
+          .filter(entity => this._isMatchFunc(entity))
+          .map('id')
+          .value();
+        break;
+      }
+      case EVENT_TYPES.REPLACE: {
+        (body as {
+          id: number;
+          entity: T;
+        }[]).forEach(({ id, entity: data }) => {
+          entities.set(data.id, { id, data });
+        });
+        keys = _([...(entities as Map<number, TReplacedData<T>>).values()])
+          .filter(entity => this._isMatchFunc(entity.data))
+          .map('id')
+          .value();
+        break;
+      }
     }
-    return model;
-  }
-
-  onDataChanged({ type, entities }: IIncomingData<T | TReplacedData<T>>) {
-    const extractModel = (type: EVENT_TYPES, entity: T | TReplacedData<T>): T =>
-      type === EVENT_TYPES.REPLACE
-        ? (entity as TReplacedData<T>).data
-        : (entity as T);
-
-    const keys = _([...entities.values()])
-      .filter(entity => this._isMatchFunc(extractModel(type, entity)))
-      .map('id')
-      .value();
 
     const handler = this._handleIncomingDataByType[type] as TChangeHandler<T>;
     // tslint:disable-next-line
@@ -149,7 +153,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     added = _(added)
       .filter(item => this._isInRange(item.sortValue))
       .value();
-    if (EVENT_TYPES.PUT === type) {
+    if (EVENT_TYPES.UPDATE === type) {
       this.updateEntityStore(updateEntity);
     }
     this.sortableListStore.removeByIds(deleted);
@@ -210,15 +214,11 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
 
   upsert(models: T[]) {
     this.onDataChanged({
-      type: EVENT_TYPES.PUT,
-      entities: transform2Map(models),
-    });
-  }
-
-  replaceAll(models: T[]) {
-    this.onDataChanged({
-      type: EVENT_TYPES.REPLACE_ALL,
-      entities: transform2Map(models),
+      type: EVENT_TYPES.UPDATE,
+      body: {
+        entities: transform2Map(models),
+        partials: null,
+      },
     });
   }
 }

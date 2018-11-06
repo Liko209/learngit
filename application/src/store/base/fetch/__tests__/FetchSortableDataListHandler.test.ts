@@ -16,14 +16,12 @@ import {
 } from '../types';
 import checkListStore from './checkListStore';
 
-import { service } from 'sdk';
-import { Group } from 'sdk/models';
+import { BaseModel, Group } from 'sdk/models';
 import storeManager from '../../../index';
 import { ENTITY_NAME } from '@/store';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import GroupModel from '@/store/models/Group';
-import { ENTITY, notificationCenter } from 'sdk/service';
-const { EVENT_TYPES } = service;
+import { ENTITY, notificationCenter, EVENT_TYPES } from 'sdk/service';
 
 class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
   mockData: { data: T[]; hasMore: boolean } = { data: [], hasMore: false };
@@ -32,7 +30,7 @@ class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
     offset: number,
     direction: FetchDataDirection,
     pageSize: number,
-    anchor: ISortableModel<T>,
+    anchor?: ISortableModel<T>,
   ): Promise<{ data: T[]; hasMore: boolean }> {
     return Promise.resolve(this.mockData);
   }
@@ -50,25 +48,25 @@ function matchFunc<T>(arg: T): boolean {
   return true;
 }
 
-function numberTransformFunc(data: number): ISortableModel<number> {
-  return { data, id: data, sortValue: data as number };
+function numberTransformFunc(data: BaseModel): ISortableModel<BaseModel> {
+  return { data, id: data.id, sortValue: data.id };
 }
 
 describe('FetchSortableDataListHandler - fetchData', () => {
-  let fetchSortableDataHandler: FetchSortableDataListHandler<number>;
-  let dataProvider: TestFetchSortableDataHandler<number>;
-  const transformFunc: ITransformFunc<number> = numberTransformFunc;
+  let fetchSortableDataHandler: FetchSortableDataListHandler<BaseModel>;
+  let dataProvider: TestFetchSortableDataHandler<BaseModel>;
+  const transformFunc: ITransformFunc<BaseModel> = numberTransformFunc;
   const sortFunc: ISortFunc<any> = (
     first: ISortableModel,
     second: ISortableModel,
   ) => first.sortValue - second.sortValue;
 
-  const isMatchFunc: IMatchFunc<number> = notMatchFunc;
+  const isMatchFunc: IMatchFunc<BaseModel> = notMatchFunc;
 
   beforeEach(() => {
     dataProvider = new TestFetchSortableDataHandler();
-    dataProvider.mockData = { data: [1, 2], hasMore: true };
-    fetchSortableDataHandler = new FetchSortableDataListHandler<number>(
+    dataProvider.mockData = { data: [{ id: 1 }, { id: 2 }], hasMore: true };
+    fetchSortableDataHandler = new FetchSortableDataListHandler<BaseModel>(
       dataProvider,
       { isMatchFunc, transformFunc, sortFunc, pageSize: 2 },
     );
@@ -80,13 +78,13 @@ describe('FetchSortableDataListHandler - fetchData', () => {
     expect(
       fetchSortableDataHandler.hasMore(FetchDataDirection.DOWN),
     ).toBeTruthy();
-    checkListStore(fetchSortableDataHandler.listStore, [
+    checkListStore<ISortableModel>(fetchSortableDataHandler.listStore, [
       buildNumberSortableModel(1),
       buildNumberSortableModel(2),
     ]);
-    dataProvider.mockData = { data: [3], hasMore: false };
+    dataProvider.mockData = { data: [{ id: 3 }], hasMore: false };
     await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
-    checkListStore(fetchSortableDataHandler.listStore, [
+    checkListStore<ISortableModel>(fetchSortableDataHandler.listStore, [
       buildNumberSortableModel(1),
       buildNumberSortableModel(2),
       buildNumberSortableModel(3),
@@ -126,12 +124,15 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
 
   let isMatchFunc: IMatchFunc<SortableNumber> = matchFunc;
 
-  function handleChangeMap(data: SortableNumber, type: string) {
-    const changeMap = new Map<number, SortableNumber>();
-    changeMap.set(data.id, data);
+  function handleChangeMap(data: SortableNumber, type: EVENT_TYPES) {
+    const changeMap = {
+      entities: new Map([[data.id, data]]),
+      partials: null,
+    };
+
     fetchSortableDataHandler.onDataChanged({
       type,
-      entities: changeMap,
+      body: changeMap,
     });
   }
 
@@ -149,8 +150,8 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
   });
 
-  it('put in front', () => {
-    handleChangeMap(buildSortableNumber(1), EVENT_TYPES.PUT);
+  it('update in front', () => {
+    handleChangeMap(buildSortableNumber(1), EVENT_TYPES.UPDATE);
 
     checkListStore(fetchSortableDataHandler.listStore, [
       sortableTransformFunc(buildSortableNumber(1)),
@@ -159,8 +160,8 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     ]);
   });
 
-  it('put in middle', () => {
-    handleChangeMap(buildSortableNumber(4), EVENT_TYPES.PUT);
+  it('update in middle', () => {
+    handleChangeMap(buildSortableNumber(4), EVENT_TYPES.UPDATE);
     checkListStore(fetchSortableDataHandler.listStore, [
       sortableTransformFunc(buildSortableNumber(3)),
       sortableTransformFunc(buildSortableNumber(4)),
@@ -168,30 +169,30 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     ]);
   });
 
-  it('put in tail', () => {
-    handleChangeMap(buildSortableNumber(9), EVENT_TYPES.PUT);
+  it('update in tail', () => {
+    handleChangeMap(buildSortableNumber(9), EVENT_TYPES.UPDATE);
     checkListStore(fetchSortableDataHandler.listStore, [
       sortableTransformFunc(buildSortableNumber(3)),
       sortableTransformFunc(buildSortableNumber(6)),
     ]);
   });
 
-  it.only('put with updated sort value', () => {
-    handleChangeMap(buildSortableNumber(3, 8), EVENT_TYPES.PUT);
+  it.only('update with updated sort value', () => {
+    handleChangeMap(buildSortableNumber(3, 8), EVENT_TYPES.UPDATE);
     checkListStore(fetchSortableDataHandler.listStore, [
       sortableTransformFunc(buildSortableNumber(6)),
       sortableTransformFunc(buildSortableNumber(3, 8)),
     ]);
   });
 
-  it('put an value from matched to unmatched', async () => {
+  it('update an value from matched to unmatched', async () => {
     isMatchFunc = matchInRange;
     fetchSortableDataHandler = new FetchSortableDataListHandler<SortableNumber>(
       dataProvider,
       { isMatchFunc, transformFunc, sortFunc, pageSize: 2 },
     );
     await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
-    handleChangeMap(buildSortableNumber(3, 9), EVENT_TYPES.PUT);
+    handleChangeMap(buildSortableNumber(3, 9), EVENT_TYPES.UPDATE);
     checkListStore(fetchSortableDataHandler.listStore, [
       sortableTransformFunc(buildSortableNumber(3)),
       sortableTransformFunc(buildSortableNumber(6)),
@@ -216,12 +217,23 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
 
 describe('FetchSortableDataListHandler - updateEntityStore', () => {
   function groupTransformFunc(model: Group): ISortableModel {
-    return { id: model.id, sortValue: model.most_recent_post_created_at };
+    return { id: model.id, sortValue: model.most_recent_post_created_at || 0 };
   }
 
   const group: Group = {
     id: 123,
     most_recent_post_created_at: 1000,
+    created_at: 1000,
+    modified_at: 1000,
+    creator_id: 1000,
+    is_new: false,
+    deactivated: false,
+    version: 1000,
+    members: [],
+    company_id: 888,
+    set_abbreviation: '',
+    email_friendly_abbreviation: '',
+    most_recent_content_modified_at: 2000,
   };
 
   let fetchSortableDataHandler: FetchSortableDataListHandler<Group>;
@@ -268,7 +280,11 @@ describe('FetchSortableDataListHandler - updateEntityStore', () => {
     console.log(JSON.stringify(groupStore.get(group.id)));
     expect(groupStore.get(group.id)).toEqual(GroupModel.fromJS(group));
 
-    let newGroup: Group = { id: 456, most_recent_post_created_at: 99 };
+    let newGroup: Group = {
+      ...group,
+      id: 456,
+      most_recent_post_created_at: 99,
+    };
     notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
 
     expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
@@ -276,7 +292,7 @@ describe('FetchSortableDataListHandler - updateEntityStore', () => {
       123,
     ]);
 
-    newGroup = { id: 789, most_recent_post_created_at: 1002 };
+    newGroup = { ...group, id: 789, most_recent_post_created_at: 1002 };
     notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
     expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
       456,

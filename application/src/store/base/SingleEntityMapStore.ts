@@ -32,7 +32,7 @@ export default class SingleEntityMapStore<
   }
 
   handleIncomingData({ type, body }: IncomingData<T>) {
-    if (!body) {
+    if (type !== EVENT_TYPES.UPDATE) {
       return;
     }
     const { entities } = body as {

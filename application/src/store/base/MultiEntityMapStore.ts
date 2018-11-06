@@ -45,12 +45,18 @@ export default class MultiEntityMapStore<
   }
 
   handleIncomingData({ type, body }: IncomingData<T>) {
-    if (body) {
+    if (!body && !this._eventType.includes(type)) {
       return;
     }
     const existKeys: number[] = Object.keys(this._data).map(Number);
     let matchedKeys: number[];
     switch (type) {
+      case EVENT_TYPES.RESET:
+        this.reset();
+        break;
+      case EVENT_TYPES.RELOAD:
+        this.reload();
+        break;
       case EVENT_TYPES.DELETE:
         matchedKeys = _.intersection(body as number[], existKeys);
         this.batchRemove(matchedKeys);
