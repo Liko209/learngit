@@ -10,7 +10,6 @@ import { transform } from '../utils';
 import { StoredFile, Item, FileItem, NoteItem } from '../../models';
 import { ENTITY, SOCKET } from '../eventKey';
 import notificationCenter from '../notificationCenter';
-import { ErrorParser } from '../../utils/error';
 
 export interface ISendFile {
   file: FormData;
@@ -77,18 +76,12 @@ export default class ItemService extends BaseService<Item> {
       item.do_not_render = true;
       item._id = item.id;
       delete item.id;
-      try {
-        const resp = await ItemAPI.putItem<Item>(id, type, item);
-        if (resp && resp.data) {
-          notificationCenter.emitEntityUpdate(ENTITY.ITEM, [item]);
-          return true;
-        }
-      } catch (e) {
-        item._id = item.id;
-        delete item.id;
-        item.do_not_render = false;
+      const resp = await ItemAPI.putItem<Item>(id, type, item);
+      if (resp && resp.data) {
+        item.id = resp.data._id;
+        itemDao.update(item);
         notificationCenter.emitEntityUpdate(ENTITY.ITEM, [item]);
-        throw ErrorParser.parse(e);
+        return true;
       }
     }
     return false;
