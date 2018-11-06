@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { observer } from 'mobx-react';
 import { observable, computed } from 'mobx';
 import { translate, WithNamespaces } from 'react-i18next';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -20,7 +19,6 @@ import { StreamViewProps, StreamItem, StreamItemType } from './types';
 
 type Props = WithNamespaces & StreamViewProps;
 
-@observer
 class StreamViewComponent extends Component<Props> {
   private _firstUnreadCardRef: React.ReactInstance | null = null;
 
@@ -29,30 +27,8 @@ class StreamViewComponent extends Component<Props> {
 
   @computed
   private get _firstHistoryUnreadInPage() {
-    console.log(
-      '[_firstHistoryUnreadInPage] this.props.firstHistoryUnreadPostId: ',
-      this.props.firstHistoryUnreadPostId,
-    );
     if (!this.props.firstHistoryUnreadPostId) return false;
     return this.props.postIds.includes(this.props.firstHistoryUnreadPostId);
-  }
-
-  @computed
-  private get _shouldHaveJumpButton() {
-    console.group('_shouldHaveJumpButton: ');
-    console.log(
-      'this._firstHistoryUnreadInPage: ',
-      this._firstHistoryUnreadInPage,
-    );
-    console.log(
-      'this._firstUnreadPostVisible: ',
-      this._firstHistoryUnreadPostVisible,
-    );
-    console.groupEnd();
-    return (
-      this.props.hasHistoryUnread &&
-      (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostVisible)
-    );
   }
 
   @computed
@@ -145,7 +121,11 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private get _jumpToFirstUnreadButton() {
-    return this._shouldHaveJumpButton ? (
+    const shouldHaveJumpButton =
+      this.props.hasHistoryUnread &&
+      (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostVisible);
+
+    return shouldHaveJumpButton ? (
       <JumpToFirstUnreadButtonWrapper>
         <JumpToFirstUnreadButton
           onClick={this._jumpToFirstUnread}

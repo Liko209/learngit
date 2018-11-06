@@ -17,6 +17,8 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
   private _readThrough?: number;
   private _disabled?: boolean;
   private _userId?: number;
+
+  @observable
   private _hasNewMessagesSeparator = false;
 
   @observable
@@ -32,6 +34,9 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
 
   constructor() {
     this._userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    Object.assign(window, {
+      newMessageSeparatorHandler: this,
+    });
   }
 
   onAdded(

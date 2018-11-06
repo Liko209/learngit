@@ -9,7 +9,7 @@ import { observable, computed } from 'mobx';
 import { PostService, StateService, ENTITY } from 'sdk/service';
 import { Post, GroupState } from 'sdk/models';
 import { ErrorTypes } from 'sdk/utils';
-import storeManager, { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '@/store';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
@@ -40,24 +40,20 @@ const transformFunc = (dataModel: Post) => ({
 });
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
-  groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
-
-  @observable
   private _transformHandler: PostTransformHandler;
-
-  private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
   private _initialized = false;
 
   @observable
   _historyGroupState?: GroupStateModel;
 
+  @observable
+  private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
+
   @computed
   get hasHistoryUnread() {
-    if (!this._historyGroupState) return false;
-    const { unreadCount } = this._historyGroupState;
-    return unreadCount && unreadCount > 0;
+    return this._newMessageSeparatorHandler.hasUnread;
   }
 
   @computed
@@ -104,6 +100,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   onReceiveProps(props: StreamProps) {
+    Object.assign(window, {
+      vm: this,
+    });
     if (this.groupId === props.groupId) {
       return;
     }
