@@ -32,6 +32,7 @@ describe('StreamView', () => {
         plugins: {
           loadingMorePlugin: new LoadingMorePlugin(),
         },
+        loadInitialPosts: async () => {},
       };
 
       const wrapper = shallow(<StreamView {...props} />);
@@ -58,6 +59,7 @@ describe('StreamView', () => {
         plugins: {
           loadingMorePlugin: new LoadingMorePlugin(),
         },
+        loadInitialPosts: async () => {},
       };
 
       const wrapper = shallow(<StreamView {...props} />);
@@ -80,6 +82,7 @@ describe('StreamView', () => {
         plugins: {
           loadingMorePlugin: new LoadingMorePlugin(),
         },
+        loadInitialPosts: async () => {},
       };
 
       const wrapper = shallow(<StreamView {...props} />);
@@ -95,6 +98,7 @@ describe('StreamView', () => {
         plugins: {
           loadingMorePlugin: new LoadingMorePlugin(),
         },
+        loadInitialPosts: async () => {},
       };
 
       const wrapper = shallow(<StreamView {...props} />);

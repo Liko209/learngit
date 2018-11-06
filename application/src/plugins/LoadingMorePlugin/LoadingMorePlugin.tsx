@@ -90,6 +90,10 @@ class LoadingMorePlugin implements IPlugin {
     this.scroller.scrollToRow(n);
   }
 
+  onListMounted = (list: React.RefObject<HTMLElement>) => {
+    this.scroller.onListMounted(list);
+  }
+
   wrapView(View: ComponentType<any>): React.SFC<any> {
     let WrappedView = View;
     WrappedView = withLoadingMore(WrappedView);

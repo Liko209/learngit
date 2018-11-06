@@ -14,7 +14,7 @@ import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 // import { idToPostItemComponent } from '@/containers/PostItems';
 @observer
 export class ConversationCard extends React.Component<
-ConversationCardViewProps
+  ConversationCardViewProps
 > {
   constructor(props: ConversationCardViewProps) {
     super(props);

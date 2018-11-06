@@ -29,18 +29,20 @@ const StyledLoading = styled.div<TStyledLoading>`
   z-index: ${({ theme }) => theme.zIndex && theme.zIndex.drawer};
 `;
 
-const DefaultLoading = (props: any) => (
-  <Fragment>
-    <StyledLoading isVisible={props.isVisible}>
-      <JuiFade in={props.isVisible}>
-        <div>
-          <JuiCircularProgress />
-        </div>
-      </JuiFade>
-    </StyledLoading>
-    {props.children}
-  </Fragment>
-);
+const DefaultLoading = (props: any) => {
+  return (
+    <Fragment>
+      <StyledLoading isVisible={props.isVisible}>
+        <JuiFade in={props.isVisible}>
+          <div>
+            <JuiCircularProgress />
+          </div>
+        </JuiFade>
+      </StyledLoading>
+      {props.children}
+    </Fragment>
+  );
+};
 
 const MAP = {
   circular: DefaultLoading,

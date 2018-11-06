@@ -98,6 +98,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       pageSize,
       anchor,
     );
+
     const sortableResult: ISortableModel<T>[] = [];
     data.forEach((element: T) => {
       sortableResult.push(this._transformFunc(element));
@@ -111,6 +112,7 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
         added: sortableResult,
         deleted: [],
       });
+    return data;
   }
 
   extractModel(

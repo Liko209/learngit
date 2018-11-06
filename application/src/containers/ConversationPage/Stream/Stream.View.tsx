@@ -15,21 +15,27 @@ import { StreamViewProps, StreamItem, StreamItemType } from './types';
 type Props = WithNamespaces & StreamViewProps;
 
 class StreamViewComponent extends Component<Props> {
-  componentDidMount() {
+  private _listRef: React.RefObject<HTMLElement> = React.createRef();
+
+  async componentDidMount() {
     window.addEventListener('focus', this.focusHandler);
     window.addEventListener('blur', this.blurHandler);
+    // Scroller's on componentDidMount was called earlier than stream itself
+    this.props.plugins.loadingMorePlugin.onListMounted(this._listRef);
+    await this.props.loadInitialPosts();
+    this.props.plugins.loadingMorePlugin.scrollToRow(-1);
+  }
+
+  async componentDidUpdate(prevProps: Props) {
+    if (prevProps.groupId !== this.props.groupId) {
+      await this.props.loadInitialPosts();
+      this.props.plugins.loadingMorePlugin.scrollToRow(-1);
+    }
   }
 
   componentWillUnmount() {
     window.removeEventListener('focus', this.focusHandler);
     window.addEventListener('blur', this.blurHandler);
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    if (!prevProps.postIds.length) {
-      // initial scroll to bottom when switch to new group
-      this.props.plugins.loadingMorePlugin.scrollToRow(-1);
-    }
   }
 
   private _renderStreamItem(streamItem: StreamItem) {
@@ -61,18 +67,20 @@ class StreamViewComponent extends Component<Props> {
     return (
       <JuiStream>
         {hasMore ? null : <ConversationInitialPost id={groupId} />}
-        <div>
+        <section ref={this._listRef}>
           {items.length > 0
             ? items.map(item => this._renderStreamItem(item))
             : null}
-        </div>
+        </section>
       </JuiStream>
     );
   }
+
   focusHandler = () => {
     const { atBottom, markAsRead } = this.props;
     atBottom() && markAsRead();
   }
+
   blurHandler = () => {
     const { enableNewMessageSeparatorHandler } = this.props;
     enableNewMessageSeparatorHandler();
