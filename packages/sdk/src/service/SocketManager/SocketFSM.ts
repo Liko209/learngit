@@ -216,7 +216,7 @@ export class SocketFSM extends StateMachine {
 
     this.socketClient.socket.on('presence_unified', (data: any) => {
       this.info(`socket-> presence_unified. ${data || ''}`);
-      dataDispatcher.onDataArrived(data);
+      dataDispatcher.onPresenceArrived(data);
     });
 
     this.socketClient.socket.on('message', (data: any) => {

@@ -32,6 +32,15 @@ enum POST_STATUS {
   INPROGRESS,
 }
 
+enum PRESENCE {
+  NOTREADY = 'NotReady',
+  UNAVAILABLE = 'Unavailable',
+  AVAILABLE = 'Available',
+  ONCALL = 'OnCall',
+  DND = 'DND',
+  INMEETING = 'InMeeting',
+}
+
 const SHOULD_UPDATE_NETWORK_TOKEN = 'should_update_network_token';
 const UMI_METRICS = [
   'group_post_drp_cursor',
@@ -47,4 +56,5 @@ export {
   SHOULD_UPDATE_NETWORK_TOKEN,
   POST_STATUS,
   UMI_METRICS,
+  PRESENCE,
 };

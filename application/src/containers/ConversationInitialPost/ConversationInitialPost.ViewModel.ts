@@ -34,9 +34,14 @@ class ConversationInitialPostViewModel extends StoreViewModel<
 
   @computed
   get displayName() {
-    const arr = this._group.displayName.split(',');
+    const arr = String(this._group.displayName).split(',');
     if (arr.length > 1) {
-      return `${arr[arr.length - 1]} and ${arr[arr.length - 2]}`;
+      arr.splice(
+        arr.length - 2,
+        2,
+        `${arr[arr.length - 2]} and ${arr[arr.length - 1]}`,
+      );
+      return arr.join(',');
     }
     return this._group.displayName;
   }
