@@ -59,7 +59,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
 
   static getDerivedStateFromProps(props: any, state: any) {
     let items = [];
-    console.log(CreateTeam.initItems);
+
     if (props.isOpen) {
       items = CreateTeam.initItems;
     }
