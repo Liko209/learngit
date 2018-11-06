@@ -63,6 +63,7 @@ export default class MultiEntityMapStore<
         break;
       case EVENT_TYPES.REPLACE:
         this.batchReplace(body as { id: number; entity: T }[]);
+        break;
       case EVENT_TYPES.UPDATE:
         const { entities } = body as {
           entities: Map<number, T>;
