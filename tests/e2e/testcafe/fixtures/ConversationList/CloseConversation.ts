@@ -91,7 +91,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
       await h(t).withLog(`When I open a ${key} conversation and then click close conversation button`, async () => {
         await item.enter();
         currentGroupId = await app.homePage.messagePanel.conversationPage.self.getAttribute('data-group-id');
-        await item.waitUntilUmiNotExist();
+        await item.waitUntilUmiExist(false);
         await item.openMoreMenu();
         await app.homePage.messagePanel.moreMenu.close.enter();
       });
@@ -258,7 +258,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
     }, true);
 
     await h(t).withLog(`Then conversation A should not have UMI`, async () => {
-      await pvtChat.waitUntilUmiNotExist();
+      await pvtChat.waitUntilUmiExist(false);
     });
 
     await h(t).withLog(`When I click conversation A's close button`, async () => {
@@ -357,7 +357,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     }, true);
 
     await h(t).withLog(`Then conversation A should not have UMI`, async () => {
-      await pvtChat.waitUntilUmiNotExist();
+      await pvtChat.waitUntilUmiExist(false);
     });
 
     await h(t).withLog(`When I click conversation A's close buttom`, async () => {
