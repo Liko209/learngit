@@ -51,9 +51,7 @@ class NotificationCenter extends EventEmitter2 {
   emitEntityReplace(key: string, entities: { id: any; entity: any }[]): void {
     this.trigger(key, {
       type: EVENT_TYPES.REPLACE,
-      body: _.map(entities, ({ id, entity }) => {
-        return { id, entities: transform2Map(entity) };
-      }),
+      body: entities,
     });
   }
 
