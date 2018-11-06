@@ -33,7 +33,7 @@ export default class ItemModel extends Base<Item> {
   @observable url: string;
   @observable image: string;
   @observable deactivated: boolean;
-  @observable do_not_render: boolean;
+  @observable doNotRender: boolean;
 
   constructor(data: Item) {
     super(data);
@@ -45,7 +45,7 @@ export default class ItemModel extends Base<Item> {
     this.image = data.image || '';
     this.deactivated = data.deactivated;
     this.typeId = type_id;
-    this.do_not_render = data.do_not_render || false;
+    this.doNotRender = data.do_not_render || false;
     this.setFileData();
   }
 

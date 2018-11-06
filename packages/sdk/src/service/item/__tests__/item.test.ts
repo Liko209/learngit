@@ -155,4 +155,39 @@ describe('ItemService', () => {
       expect(ret).toBeNull();
     });
   });
+  describe('doNotRenderLink', () => {
+    const rawData = {
+      do_not_render: true,
+    };
+    const itemDao = {
+      get: jest.fn(),
+    };
+    beforeAll(() => {
+      daoManager.getDao = jest.fn().mockReturnValue(itemDao);
+      ItemAPI.putItem = jest.fn().mockResolvedValue({
+        data: rawData,
+      });
+    });
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+    const itemObj = {
+      id: 1,
+      do_not_render: false,
+      deactivated: false,
+    };
+    it('should return true if doNotRenderLink called success', async() => {
+      itemDao.get.mockResolvedValue(itemObj);
+      const ret = await itemService.doNotRenderLink(1, 'link');
+      expect(ret).toBe(true);
+    });
+    it('should update do_not_render if doNotRenderLink called success', async() => {
+      itemDao.get.mockResolvedValue(itemObj);
+      await itemService.doNotRenderLink(1, 'link');
+      expect(await itemDao.get(1)).toMatchObject({
+        do_not_render: true,
+        deactivated: false,
+      });
+    });
+  });
 });

@@ -88,7 +88,8 @@ class ItemAPI extends Api {
   static getNote(id: number): Promise<NoteResponse> {
     return this.glipNetworkClient.get(`/pages_body/${id}`);
   }
-  static deleteItem<T>(
+
+  static putItem<T>(
     id: number,
     type: string,
     data: Partial<T>,
