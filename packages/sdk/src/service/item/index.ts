@@ -75,12 +75,12 @@ export default class ItemService extends BaseService<Item> {
     const item = (await itemDao.get(id)) as Item;
     if (item) {
       item.do_not_render = true;
-      notificationCenter.emitEntityUpdate(ENTITY.ITEM, [item]);
       item._id = item.id;
       delete item.id;
       try {
         const resp = await ItemAPI.putItem<Item>(id, type, item);
         if (resp && resp.data) {
+          notificationCenter.emitEntityUpdate(ENTITY.ITEM, [item]);
           return true;
         }
       } catch (e) {
