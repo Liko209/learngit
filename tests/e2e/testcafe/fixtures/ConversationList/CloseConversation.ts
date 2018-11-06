@@ -411,7 +411,7 @@ test(formalName(
     const teamsSection = app.homePage.messagePanel.teamsSection;
 
     let favGroupId, pvtChatId, teamId1, teamId2;
-    await h(t).withLog('Given I have an extension with 2 private chat, 2 team chat, and 1 group team', async () => {
+    await h(t).withLog('Given I have an extension with 1 private chat, 2 team chat, and 1 group chat', async () => {
       pvtChatId = (await user.sdk.platform.createGroup({
         type: 'PrivateChat',
         members: [user.rcId, users[5].rcId],
