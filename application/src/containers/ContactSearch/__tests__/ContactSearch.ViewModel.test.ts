@@ -23,4 +23,10 @@ describe('ContactSearchVM', () => {
       { id: 2 },
     ]);
   });
+  it('searchMembers with empty string', async () => {
+    const contactSearchViewModel = new ContactSearchViewModel();
+    const value = '';
+    contactSearchViewModel.searchMembers(value);
+    expect(contactSearchViewModel.suggestions).toEqual([]);
+  });
 });

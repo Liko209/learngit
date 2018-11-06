@@ -18,10 +18,12 @@ type ViewProps = WithNamespaces & {
   teamName: string;
   description: string;
   serverError: boolean;
+  members: (number | string)[];
   updateCreateTeamDialogState: () => void;
   inputReset: () => void;
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSearchContactChange: (items: any) => void;
 } & RouteComponentProps;
 
 export { ViewProps };

@@ -95,7 +95,7 @@ class LoadingMorePlugin implements IPlugin {
     WrappedView = withLoadingMore(WrappedView);
     WrappedView = withScroller(WrappedView);
     return (props: any) => (
-      <WrappedView {...props} ref={this._forwardRefs(props.viewRef)} />
+      <WrappedView {...props} ref={this._forwardRefs(props.viewRefs)} />
     );
   }
 }

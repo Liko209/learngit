@@ -27,50 +27,50 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
-    const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
+    const userPlatform = await h(t).getPlatform(user);
+    const glipSDK: GlipSdk = await h(t).getGlip(user);
 
-    const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
+    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
     const teamsSection = app.homePage.messagePanel.teamsSection;
     const favoritesSection = app.homePage.messagePanel.favoritesSection;
     const unreadToggler = app.homePage.messagePanel.getSelectorByAutomationId('unreadOnlyToggler');
-    const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
-    let favPrivateChat, favTeam, group1, group2, group3, team1, team2;
+    const user5Platform = await h(t).getPlatform(users[5]);
+    
+    let favPrivateChatId, favTeamId, groupId1, groupId2, groupId3, teamId1, teamId2;
     await h(t).withLog(
       'Given I have an extension with some conversations',
       async () => {
-        favPrivateChat = await userPlatform.createGroup({
+        favPrivateChatId = (await userPlatform.createGroup({
           type: 'PrivateChat',
           members: [user.rcId, users[5].rcId],
-        });
-        favTeam = await userPlatform.createGroup({
+        })).data.id;
+        favTeamId = (await userPlatform.createGroup({
           type: 'Team',
           name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
-        });
-        group1 = await userPlatform.createGroup({
+        })).data.id;
+        groupId1 = (await userPlatform.createGroup({
           type: 'Group',
           members: [user.rcId, users[5].rcId, users[6].rcId],
-        });
-        group2 = await userPlatform.createGroup({
+        })).data.id;
+        groupId2 = (await userPlatform.createGroup({
           type: 'Group',
           members: [user.rcId, users[5].rcId, users[1].rcId],
-        });
-        group3 = await userPlatform.createGroup({
+        })).data.id;
+        groupId3 = (await userPlatform.createGroup({
           type: 'Group',
           members: [user.rcId, users[5].rcId, users[2].rcId],
-        });
-        team1 = await userPlatform.createGroup({
+        })).data.id;
+        teamId1 = (await userPlatform.createGroup({
           type: 'Team',
           name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
-        });
-        team2 = await userPlatform.createGroup({
+        })).data.id;
+        teamId2 = (await userPlatform.createGroup({
           type: 'Team',
           name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
-        });
+        })).data.id;
       },
     );
 
@@ -78,23 +78,22 @@ test(
       'And the conversations should not be hidden before login',
       async () => {
         await glipSDK.updateProfile(user.rcId, {
-          [`hide_group_${favPrivateChat.data.id}`]: false,
-          [`hide_group_${favTeam.data.id}`]: false,
-          [`hide_group_${group1.data.id}`]: false,
-          [`hide_group_${group2.data.id}`]: false,
-          [`hide_group_${group3.data.id}`]: false,
-          [`hide_group_${team1.data.id}`]: false,
-          [`hide_group_${team2.data.id}`]: false,
-          favorite_group_ids: [+favPrivateChat.data.id, +favTeam.data.id],
+          [`hide_group_${favPrivateChatId}`]: false,
+          [`hide_group_${favTeamId}`]: false,
+          [`hide_group_${groupId1}`]: false,
+          [`hide_group_${groupId2}`]: false,
+          [`hide_group_${groupId3}`]: false,
+          [`hide_group_${teamId1}`]: false,
+          [`hide_group_${teamId2}`]: false,
+          favorite_group_ids: [+favPrivateChatId, +favTeamId],
         });
       },
     );
 
-    await h(t).withLog('Clear all UMIs before login', async () => {
+    await h(t).withLog('And clear all UMIs before login', async () => {
       const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(
         user.rcId,
       );
-
       await glipSDK.markAsRead(user.rcId, unreadGroupIds);
     });
 
@@ -109,106 +108,97 @@ test(
     );
 
     await h(t).withLog(
-      'Then I click group3 to make sure other conversations are not selected',
+      'And click group3 to make sure other conversations are not selected',
       async () => {
-        await t.click(
-          directMessagesSection.conversations.filter(
-            `[data-group-id="${group3.data.id}"]`,
-          ),
-        );
+        await directMessagesSection.conversationByIdEntry(groupId3).enter();
       },
     );
 
-    await h(t).withLog('Send posts to conversations', async () => {
-      await user5Platform.createPost(
-        {
-          text: 'TestGroupUMI',
-        },
-        favPrivateChat.data.id,
-      );
-      await user5Platform.createPost(
-        {
-          text: 'TestGroupUMI',
-        },
-        group1.data.id,
-      );
-
-      await user5Platform.createPost(
-        {
-          text: 'TestGroupUMI',
-        },
-        team1.data.id,
-      );
-      await t.wait(2e3);
-    });
-
-    await h(t).withLog('Should find unread toggle and the default state is off', async () => {
+    // JPT-194 
+    await h(t).withLog('Then I Should find unread toggle and the default state is off', async () => {
       await t.expect(unreadToggler.exists).ok();
       await t.expect(unreadToggler.find('input[type="checkbox"]').checked).notOk();
     }, true);
 
-    await h(t).withLog('All prepared conversation should be visible', async () => {
-      await t.expect(favoritesSection.conversations.filter(`[data-group-id="${favPrivateChat.data.id}"]`).visible).ok();
-      await t.expect(favoritesSection.conversations.filter(`[data-group-id="${favTeam.data.id}"]`).visible).ok();
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group1.data.id}"]`).visible).ok();
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group2.data.id}"]`).visible).ok();
-      await t.expect(teamsSection.conversations.filter(`[data-group-id="${team1.data.id}"]`).visible).ok();
-      await t.expect(teamsSection.conversations.filter(`[data-group-id="${team2.data.id}"]`).visible).ok();
+    await h(t).withLog('And All prepared conversation should be visible', async () => {
+      await t.expect(favoritesSection.conversationByIdEntry(favPrivateChatId).self.visible).ok();
+      await t.expect(favoritesSection.conversationByIdEntry(favTeamId).self.visible).ok();
+      await t.expect(directMessagesSection.conversationByIdEntry(groupId1).self.visible).ok();
+      await t.expect(directMessagesSection.conversationByIdEntry(groupId2).self.visible).ok();
+      await t.expect(teamsSection.conversationByIdEntry(teamId1).self.visible).ok();
+      await t.expect(teamsSection.conversationByIdEntry(teamId2).self.visible).ok();
     }, true);
 
-    await h(t).withLog('Then I click the unread toggle', async () => {
-      await t.click(unreadToggler.find('.toggle-button'));
-    });
-
-    await h(t).withLog('The state of the toggle should be on and conversations without unread messages should be hidden, except the currently opened one', async () => {
-      await t.expect(unreadToggler.find('input[type="checkbox"]').checked).ok();
-      await t.expect(favoritesSection.conversations.filter(`[data-group-id="${favPrivateChat.data.id}"]`).visible).ok();
-      await t.expect(favoritesSection.conversations.filter(`[data-group-id="${favTeam.data.id}"]`).visible).notOk();
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group1.data.id}"]`).visible).ok();
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group2.data.id}"]`).visible).notOk();
-      await t.expect(teamsSection.conversations.filter(`[data-group-id="${team1.data.id}"]`).visible).ok();
-      await t.expect(teamsSection.conversations.filter(`[data-group-id="${team2.data.id}"]`).visible).notOk();
-
-      // currently opened group3 should remain visible on the list and the conversation remained opened
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group3.data.id}"]`).visible).ok();
-      await t.expect(app.homePage.messagePanel.conversationPage.getAttribute('data-group-id')).eql(group3.data.id);
-    }, true);
-
-    await h(t).withLog('Then I click the unread toggle', async () => {
-      await t.click(unreadToggler.find('.toggle-button'));
-    });
-
-    await h(t).withLog('The state of the toggle should be off and all prepared conversations should be visible', async () => {
-      await t.expect(unreadToggler.find('input[type="checkbox"]').checked).notOk();
-      await t.expect(favoritesSection.conversations.filter(`[data-group-id="${favPrivateChat.data.id}"]`).visible).ok();
-      await t.expect(favoritesSection.conversations.filter(`[data-group-id="${favTeam.data.id}"]`).visible).ok();
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group1.data.id}"]`).visible).ok();
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group2.data.id}"]`).visible).ok();
-      await t.expect(teamsSection.conversations.filter(`[data-group-id="${team1.data.id}"]`).visible).ok();
-      await t.expect(teamsSection.conversations.filter(`[data-group-id="${team2.data.id}"]`).visible).ok();
-    }, true);
-
-    await h(t).withLog('Then I click the unread toggle to turn it on again and open another conversation', async () => {
-      await t.click(unreadToggler.find('.toggle-button'));
-      await t.expect(unreadToggler.find('input[type="checkbox"]').checked).ok();
-      await t.click(directMessagesSection.conversations.filter(`[data-group-id="${group1.data.id}"]`));
-    });
-
-    await h(t).withLog('Group3 should be hidden', async () => {
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group3.data.id}"]`).visible).notOk();
-    }, true);
-
-    await h(t).withLog('Then group3 received a new message', async () => {
+    await h(t).withLog('When other user send posts to some specific conversations', async () => {
       await user5Platform.createPost(
-        {
-          text: 'TestGroupUMI',
-        },
-        group3.data.id,
+        { text: 'TestGroupUMI' },
+        favPrivateChatId,
+      );
+      await user5Platform.createPost(
+        { text: 'TestGroupUMI' },
+        groupId1,
+      );
+
+      await user5Platform.createPost(
+        { text: 'TestGroupUMI' },
+        teamId1,
+      );
+      await t.wait(2e3);
+    });
+
+    await h(t).withLog('And I click the unread  to turn it on', async () => {
+      await t.click(unreadToggler.find('.toggle-button'));
+    });
+
+    // JPT-198,JPT-202
+    await h(t).withLog('Then the state of the toggle should be on and conversations without unread messages should be hidden, except  conversations with UMI and the currently opened one', async () => {
+      await t.expect(unreadToggler.find('input[type="checkbox"]').checked).ok();
+      await t.expect(favoritesSection.conversationByIdEntry(favPrivateChatId).self.visible).ok();
+      await t.expect(favoritesSection.conversationByIdEntry(favTeamId).self.visible).notOk();
+      await t.expect(directMessagesSection.conversationByIdEntry(groupId1).self.visible).ok();
+      await t.expect(directMessagesSection.conversationByIdEntry(groupId2).self.visible).notOk();
+      await t.expect(teamsSection.conversationByIdEntry(teamId1).self.visible).ok();
+      await t.expect(teamsSection.conversationByIdEntry(teamId2).self.visible).notOk();
+
+      // currently opened groupId3 should remain visible on the list and the conversation remained opened
+      await t.expect(directMessagesSection.conversationByIdEntry(groupId3).self.visible).ok();
+      await t.expect(app.homePage.messagePanel.conversationPage.self.getAttribute('data-group-id')).eql(groupId3);
+    }, true);
+
+    await h(t).withLog('When I click the unread toggle to turn it off', async () => {
+      await t.click(unreadToggler.find('.toggle-button'));
+    });
+
+    await h(t).withLog('Then the state of the toggle should be off and all prepared conversations should be visible', async () => {
+      await t.expect(unreadToggler.find('input[type="checkbox"]').checked).notOk();
+      await t.expect(favoritesSection.conversationByIdEntry(favPrivateChatId).self.visible).ok();
+      await t.expect(favoritesSection.conversationByIdEntry(favTeamId).self.visible).ok();
+      await t.expect(directMessagesSection.conversationByIdEntry(groupId1).self.visible).ok();
+      await t.expect(directMessagesSection.conversationByIdEntry(groupId2).self.visible).ok();
+      await t.expect(teamsSection.conversationByIdEntry(teamId1).self.visible).ok();
+      await t.expect(teamsSection.conversationByIdEntry(teamId2).self.visible).ok();
+    }, true);
+
+    // JPT-201
+    await h(t).withLog('When I click the unread toggle to turn it on again and open another conversation', async () => {
+      await t.click(unreadToggler.find('.toggle-button'));
+      await t.expect(unreadToggler.find('input[type="checkbox"]').checked).ok();
+      await directMessagesSection.conversationByIdEntry(groupId1).enter();
+    });
+
+    await h(t).withLog('GroupId3 should be hidden', async () => {
+      await t.expect(directMessagesSection.conversationByIdEntry(groupId3).self.visible).notOk();
+    }, true);
+
+    await h(t).withLog('Then groupId3 received a new message', async () => {
+      await user5Platform.createPost(
+        { text: 'TestGroupUMI' },
+        groupId3,
       );
     });
 
-    await h(t).withLog('Group3 should be visible again', async () => {
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group3.data.id}"]`).visible).ok();
+    await h(t).withLog('GroupId3 should be visible again', async () => {
+      await t.expect(directMessagesSection.conversationByIdEntry(groupId3).self.visible).ok();
     }, true);
   },
 );

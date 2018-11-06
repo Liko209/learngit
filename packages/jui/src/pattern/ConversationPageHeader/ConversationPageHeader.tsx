@@ -27,6 +27,7 @@ import { JuiDivider } from 'jui/src/components/Divider/Divider';
 
 type JuiConversationPageHeaderProps = {
   title?: string;
+  status?: string | null;
   SubTitle?: React.ReactNode;
   Right?: React.ReactNode;
 } & MuiToolbarProps &
@@ -37,7 +38,17 @@ const TitleWrapper = styled<TypographyProps>(Typography)`
     color: ${grey('900')};
     ${typography('title2')};
     ${ellipsis()};
+    padding-right: ${spacing(2)};
   }
+`;
+
+const StatusWrapper = styled.div`
+  ${typography('subheading1')};
+  color: ${grey('600')};
+  white-space: nowrap;
+  ${ellipsis()};
+  padding-right: ${spacing(4)};
+  flex-shrink: 1;
 `;
 const WrappedAppBar = ({ Right, ...rest }: JuiConversationPageHeaderProps) => (
   <MuiAppBar {...rest} />
@@ -61,23 +72,12 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
       flex-grow: 1;
       flex-shrink: 1;
       overflow: hidden;
+      padding-right: ${spacing(12)};
     }
 
     .right-wrapper {
       display: flex;
       align-items: center;
-      padding-left: ${({ theme, Right }) =>
-        Right ? spacing(3)({ theme }) : ''};
-    }
-
-    .subtitle {
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      flex: 1;
-      padding-left: ${({ theme }) => spacing(2)({ theme })};
-      padding-right: ${({ theme, Right }) =>
-        Right ? spacing(12)({ theme }) : ''};
     }
   }
 `;
@@ -124,17 +124,30 @@ class JuiConversationPageHeader
   }
 
   render() {
-    const { children, title, SubTitle, Right, innerRef, ...rest } = this.props;
-    const subTitleComponent = <div className="subtitle">{SubTitle}</div>;
+    const {
+      children,
+      title,
+      status,
+      SubTitle,
+      Right,
+      innerRef,
+      ...rest
+    } = this.props;
 
     const right = <div className="right-wrapper">{Right}</div>;
     const titleElement = (
-      <TitleWrapper ref={this.textRef} variant="title" component="h6">
+      <TitleWrapper
+        ref={this.textRef}
+        variant="title"
+        component="h6"
+        data-test-automation-id="conversation-page-header-title"
+      >
         {title}
       </TitleWrapper>
     );
     return (
       <StyledPageHeader
+        data-test-automation-id="conversation-page-header"
         position="static"
         elevation={0}
         square={true}
@@ -149,7 +162,12 @@ class JuiConversationPageHeader
             ) : (
               titleElement
             )}
-            {SubTitle ? subTitleComponent : null}
+            {status ? (
+              <StatusWrapper data-test-automation-id="conversation-page-header-status">
+                {status}
+              </StatusWrapper>
+            ) : null}
+            {SubTitle ? SubTitle : null}
           </div>
           {Right ? right : null}
         </MuiToolbar>

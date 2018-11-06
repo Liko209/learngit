@@ -8,6 +8,7 @@ import { JupiterHelper } from "./jupiter-helper";
 import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
 import { DashboardHelper } from './dashboard-helper';
+import { AllureHelper } from './allure-helper';
 import { H } from './utils';
 
 import { IUser, IStep } from '../models';
@@ -41,6 +42,10 @@ class Helper {
 
   get dashboardHelper() {
     return new DashboardHelper(this.t);
+  }
+
+  get allureHelper() {
+    return new AllureHelper(this.t);
   }
 
   /* delegate following method */
@@ -112,7 +117,7 @@ class Helper {
 
   // misc
   async resetGlipAccount(user: IUser) {
-    const adminGlip = await this.sdkHelper.sdkManager.getGlip(this.rcData.mainCompany.admin);
+    const adminGlip = await this.sdkHelper.sdkManager.getGlip(user.company.admin);
     await adminGlip.deactivated(user.rcId);
     await this.sdkHelper.sdkManager.getGlip(user);
   }

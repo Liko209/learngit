@@ -5,6 +5,11 @@ CI=true node $project/scripts/test.js --env=jsdom 2>&1 | awk '/Summary of all fa
 
 yarn run test:cover
 
+exitCode=$?
+if [ $exitCode -ne 0 ]; then
+    addEnv BUILD_ERROR=1
+fi
+
 coverageFolder=coverage/$subDomain/$BUILD_NUMBER
 syncFolderToServer $project/coverage/ $coverageFolder
 

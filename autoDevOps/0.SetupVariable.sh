@@ -39,7 +39,7 @@ echo "gitlabTargetBranch: ${gitlabTargetBranch}"
 echo "Following environment variables are used by e2e tests to define test scope:"
 addEnv "ACTION=ON_${gitlabActionType}"
 addEnv "BRANCH=${gitlabBranch}"
-
+addEnv "BUILD_ERROR=0"
 # Generate the subDomain
 subDomain=${gitlabSourceBranch//[\/\.]/$'-'} # "/."" => "-""
 subDomain=${subDomain,,} # Uppercase becomes Lowercase
