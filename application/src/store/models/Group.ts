@@ -21,7 +21,7 @@ export default class GroupModel extends Base<Group> {
   @observable
   setAbbreviation: string;
   @observable
-  members: number[];
+  members: number[] = [];
   @observable
   description?: string;
   @observable
@@ -150,6 +150,13 @@ export default class GroupModel extends Base<Group> {
     }
 
     return CONVERSATION_TYPES.NORMAL_GROUP;
+  }
+
+  @computed
+  get membersExcludeMe() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+
+    return this.members.filter(member => member !== currentUserId);
   }
 
   @computed

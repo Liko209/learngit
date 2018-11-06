@@ -14,7 +14,7 @@ type AvatarViewProps = JuiAvatarProps & {
   shortName?: string;
   headShotUrl?: string;
   bgColor?: string;
-  shouldShowShortName?: string|boolean;
+  shouldShowShortName?: boolean;
   autoMationId?: string;
 };
 export { AvatarProps, AvatarViewProps };

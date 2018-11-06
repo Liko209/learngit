@@ -15,6 +15,7 @@ import {
 } from 'jui/pattern/TopBar';
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
+import { Presence } from '@/containers/Presence';
 import { BackNForward } from '@/containers/BackNForward';
 import { isElectron } from '@/utils';
 
@@ -44,11 +45,19 @@ class TopBar extends React.Component<TopBarProps> {
     };
   }
 
+  private get _presence() {
+    const { currentUserId } = this.props;
+
+    return <Presence uid={currentUserId} size="large" borderSize="large" />;
+  }
+
   private _AvatarMenuTrigger(avatarMenuTriggerProps: JuiIconButtonProps) {
     const { currentUserId } = this.props;
+
     return (
       <Avatar
         uid={currentUserId}
+        presence={this._presence}
         size="large"
         {...avatarMenuTriggerProps}
         autoMationId="topBarAvatar"
