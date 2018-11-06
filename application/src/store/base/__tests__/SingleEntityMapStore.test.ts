@@ -9,7 +9,7 @@ import BaseStore from '../BaseStore';
 import { ENTITY_SETTING } from '../../config';
 import ModelProvider from '../ModelProvider';
 import SingleEntityMapStore from '../SingleEntityMapStore';
-import { IEntity, IIncomingData } from '../../store';
+import { Entity, IncomingData } from '../../store';
 import { ENTITY_NAME } from '../../constants';
 
 jest.mock('../ModelProvider');
@@ -18,11 +18,11 @@ jest.mock('../BaseStore');
 
 let instance: SingleEntityMapStore<any, any>;
 const getService = () => {};
-const getEntity: (i?: number) => IEntity = (i?: number) => ({
+const getEntity: (i?: number) => Entity = (i?: number) => ({
   id: i || faker.random.number(10),
 });
-const getEntityMap: (n?: number) => Map<number, IEntity> = (n?: number) => {
-  const map: Map<number, IEntity> = new Map<number, IEntity>();
+const getEntityMap: (n?: number) => Map<number, Entity> = (n?: number) => {
+  const map: Map<number, Entity> = new Map<number, Entity>();
   for (let i = 0; i < (n || faker.random.number(10)); i += 1) {
     map.set(i, getEntity(i));
   }
@@ -55,13 +55,11 @@ describe('SingleEntityMapStore constructor', () => {
 describe('handleIncomingData()', () => {
   beforeEach(() => {
     jest.spyOn(instance, 'batchSet');
-    jest.spyOn(instance, 'batchRemove');
     jest.spyOn(instance.data, 'keys').mockImplementation(() => ['existing']);
   });
 
   afterEach(() => {
     (instance.batchSet as jest.Mock).mockReset();
-    (instance.batchRemove as jest.Mock).mockReset();
   });
 
   afterAll(() => {
@@ -69,61 +67,46 @@ describe('handleIncomingData()', () => {
   });
 
   it('should return if entities is empty', () => {
-    const data: IIncomingData<any> = {
-      type: EVENT_TYPES.REPLACE_ALL,
-      entities: new Map(),
+    const data: IncomingData<any> = {
+      type: EVENT_TYPES.DELETE,
+      body: [],
     };
     instance.handleIncomingData(data);
 
     expect(instance.batchSet).not.toHaveBeenCalled();
-    expect(instance.batchRemove).not.toHaveBeenCalled();
   });
 
   it('should return if no matched properties', () => {
-    const entities: Map<number, IEntity> = getEntityMap(3);
-    const data: IIncomingData<any> = {
-      entities,
+    const body = {
+      entities: getEntityMap(3),
+      partials: null,
+    };
+    const data: IncomingData<any> = {
+      body,
       type: EVENT_TYPES.DELETE,
     };
     instance.handleIncomingData(data);
     expect(instance.batchSet).not.toHaveBeenCalled();
-    expect(instance.batchRemove).toHaveBeenCalled();
-  });
-
-  it('should remove if type is delete', () => {
-    const entities: Map<number, IEntity> = new Map<number, IEntity>();
-    for (let i = 0; i < 4; i += 1) {
-      entities.set(i, {
-        id: i,
-        existing: 'attr',
-        some: 'thing',
-      });
-    }
-    const data: IIncomingData<any> = {
-      entities,
-      type: EVENT_TYPES.DELETE,
-    };
-    instance.handleIncomingData(data);
-    expect(instance.batchSet).not.toHaveBeenCalled();
-    expect(instance.batchRemove).toHaveBeenCalled();
   });
 
   it('should set if type is not delete', () => {
-    const entities: Map<number, IEntity> = new Map<number, IEntity>();
+    const body = {
+      entities: getEntityMap(3),
+      partials: null,
+    };
     for (let i = 0; i < 4; i += 1) {
-      entities.set(i, {
+      body.entities.set(i, {
         id: i,
         existing: 'attr',
         some: 'thing',
       });
     }
-    const data: IIncomingData<any> = {
-      entities,
-      type: EVENT_TYPES.PUT,
+    const data: IncomingData<any> = {
+      body,
+      type: EVENT_TYPES.UPDATE,
     };
     instance.handleIncomingData(data);
     expect(instance.batchSet).toHaveBeenCalled();
-    expect(instance.batchRemove).not.toHaveBeenCalled();
   });
 });
 
@@ -175,7 +158,7 @@ describe('batchSet()', () => {
     };
     jest
       .spyOn(instance, 'createModel')
-      .mockImplementation((entity: IEntity) => entity);
+      .mockImplementation((entity: Entity) => entity);
 
     instance.batchSet(data);
 
@@ -186,43 +169,6 @@ describe('batchSet()', () => {
       other: 'other',
     });
     // expect(instance.data.merge).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('remove()', () => {
-  beforeAll(() => {
-    jest.spyOn(instance.data, 'delete');
-  });
-
-  afterEach(() => {
-    if (jest.isMockFunction(instance.data.delete)) {
-      (instance.data.delete as jest.Mock).mockClear();
-    }
-  });
-
-  it('should call delete on data if model exists', () => {
-    jest.spyOn(instance, 'get').mockImplementation(() => ({ id: 1 }));
-    instance.remove('id');
-    expect(instance.data.delete).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('batchRemove()', () => {
-  beforeEach(() => {
-    jest.spyOn(instance, 'remove');
-  });
-
-  beforeEach(() => {
-    (instance.remove as jest.Mock).mockClear();
-  });
-
-  afterAll(() => {
-    jest.restoreAllMocks();
-  });
-
-  it('should call instance.remove 4 times', () => {
-    instance.batchRemove(['id', 'other']);
-    expect(instance.remove).toHaveBeenCalledTimes(2);
   });
 });
 

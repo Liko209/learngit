@@ -7,7 +7,7 @@ import { BaseModel } from 'sdk/models';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import visibilityChangeEvent from './visibilityChangeEvent';
-import { IIncomingData, IEntity, IEntitySetting } from '../store';
+import { IncomingData, Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 
 const modelProvider = new ModelProvider();
@@ -15,7 +15,7 @@ const { EVENT_TYPES } = service;
 
 export default class MultiEntityMapStore<
   T extends BaseModel,
-  K extends IEntity
+  K extends Entity
 > extends BaseStore {
   private _data: { [id: number]: K } = {};
   private _atom: { [id: number]: IAtom } = {};
@@ -29,14 +29,14 @@ export default class MultiEntityMapStore<
 
   constructor(
     entityName: ENTITY_NAME,
-    { service, event, cacheCount }: IEntitySetting,
+    { service, event, cacheCount }: EntitySetting,
   ) {
     super(entityName);
 
     this._getService = service;
     this._maxCacheCount = cacheCount;
-    const callback = ({ type, entities }: IIncomingData<T>) => {
-      this.handleIncomingData({ type, entities });
+    const callback = ({ type, body }: IncomingData<T>) => {
+      this.handleIncomingData({ type, body });
     };
     event.forEach((eventName: string) => {
       this.subscribeNotification(eventName, callback);
@@ -44,41 +44,34 @@ export default class MultiEntityMapStore<
     visibilityChangeEvent(this._refreshCache.bind(this));
   }
 
-  handleIncomingData({ type, entities }: IIncomingData<T>) {
-    if (entities && !entities.size && this._eventType.includes[type]) {
+  handleIncomingData({ type, body }: IncomingData<T>) {
+    if (body) {
       return;
     }
     const existKeys: number[] = Object.keys(this._data).map(Number);
-    const matchedKeys: number[] = entities
-      ? _.intersection(Array.from(entities.keys()), existKeys)
-      : [];
-    if (type === EVENT_TYPES.DELETE) {
-      this.batchRemove(matchedKeys);
-    } else {
-      const matchedEntities: (T | { id: number; data: T })[] = [];
-      matchedKeys.forEach((key: number) => {
-        const entity = entities.get(key);
-        if (entity) {
-          matchedEntities.push(entity);
-        }
-      });
-      switch (type) {
-        case EVENT_TYPES.UPDATE:
-          this.batchDeepSet(matchedEntities as T[]);
-          break;
-        case EVENT_TYPES.REPLACE:
-          this.batchReplace(matchedEntities as { id: number; data: T }[]);
-          break;
-        case EVENT_TYPES.RELOAD:
-          this.reload();
-          break;
-        case EVENT_TYPES.RESET:
-          this.reset();
-          break;
-        default:
-          this.batchSet(matchedEntities as T[]);
-          break;
-      }
+    let matchedKeys: number[];
+    switch (type) {
+      case EVENT_TYPES.DELETE:
+        matchedKeys = _.intersection(body as number[], existKeys);
+        this.batchRemove(matchedKeys);
+        break;
+      case EVENT_TYPES.REPLACE:
+        this.batchReplace(body as { id: number; entity: T }[]);
+      case EVENT_TYPES.UPDATE:
+        const { entities } = body as {
+          entities: Map<number, T>;
+          partials: Map<number, T> | null;
+        };
+        const matchedEntities: T[] = [];
+        matchedKeys = _.intersection(Array.from(entities.keys()), existKeys);
+        matchedKeys.forEach((key: number) => {
+          const entity = entities.get(key);
+          if (entity) {
+            matchedEntities.push(entity);
+          }
+        });
+        this.batchSet(matchedEntities as T[]);
+        break;
     }
   }
 
@@ -100,26 +93,16 @@ export default class MultiEntityMapStore<
     });
   }
 
-  batchDeepSet(entities: T[]) {
+  batchReplace(entities: { id: number; entity: T }[]) {
     if (!entities.length) {
       return;
     }
-    entities.forEach((entity: T) => {
-      const { id } = entity;
-      const obs = this.get(id);
-      _.merge(obs, this.createModel(entity));
-      this._atom[id].reportChanged();
-    });
-  }
-
-  batchReplace(entities: { id: number; data: T }[]) {
-    if (!entities.length) {
-      return;
-    }
-    entities.forEach((entity: { id: number; data: T }) => {
-      const { id, data } = entity;
-      this.remove(id);
-      this.set(data);
+    entities.forEach((data: { id: number; entity: T }) => {
+      const { id, entity } = data;
+      if (this._data[id]) {
+        this.remove(id);
+        this.set(entity);
+      }
     });
   }
 

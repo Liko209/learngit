@@ -22,7 +22,7 @@ import storeManager from '../../../index';
 import { ENTITY_NAME } from '@/store';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import GroupModel from '@/store/models/Group';
-import { ENTITY, GROUP_QUERY_TYPE, notificationCenter } from 'sdk/service';
+import { ENTITY, notificationCenter } from 'sdk/service';
 const { EVENT_TYPES } = service;
 
 class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {

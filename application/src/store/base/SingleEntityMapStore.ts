@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { observable, action, ObservableMap } from 'mobx';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
-import { IIncomingData, IEntity, IEntitySetting } from '../store';
+import { IncomingData, Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { BaseService, EVENT_TYPES } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
@@ -11,45 +11,46 @@ const modelProvider = new ModelProvider();
 
 export default class SingleEntityMapStore<
   T extends BaseModel,
-  K extends IEntity
+  K extends Entity
 > extends BaseStore {
   @observable
-  data: ObservableMap = new ObservableMap<keyof IEntity, any>();
+  data: ObservableMap = new ObservableMap<keyof Entity, any>();
   init: boolean;
   getService: Function;
   service: BaseService<T>;
-  constructor(entityName: ENTITY_NAME, { service, event }: IEntitySetting) {
+  constructor(entityName: ENTITY_NAME, { service, event }: EntitySetting) {
     super(entityName);
     this.init = false;
     this.getService = service as Function;
 
-    const callback = ({ type, entities }: IIncomingData<T>) => {
-      this.handleIncomingData({ type, entities });
+    const callback = ({ type, body }: IncomingData<T>) => {
+      this.handleIncomingData({ type, body });
     };
     event.forEach((eventName: string) => {
       this.subscribeNotification(eventName, callback);
     });
   }
 
-  handleIncomingData({ type, entities }: IIncomingData<T>) {
-    if (!entities.size) {
+  handleIncomingData({ type, body }: IncomingData<T>) {
+    if (!body) {
       return;
     }
+    const { entities } = body as {
+      entities: Map<number, T>;
+      partials: Map<number, T> | null;
+    };
     const entity = {};
     Array.from(entities.values()).forEach((value: T) => {
       _.merge(entity, value);
     });
 
-    if (type === EVENT_TYPES.DELETE) {
-      this.batchRemove(entity as T);
-    }
-    if (type === EVENT_TYPES.UPDATE || type === EVENT_TYPES.PUT) {
+    if (type === EVENT_TYPES.UPDATE) {
       this.batchSet(entity as T);
     }
   }
 
   @action
-  set(property: keyof IEntity, value: any) {
+  set(property: keyof Entity, value: any) {
     this.data.set(property, value);
   }
 
@@ -60,18 +61,6 @@ export default class SingleEntityMapStore<
     }
     const model = this.createModel(data);
     this.data.merge(model.toJS ? model.toJS() : model);
-  }
-
-  @action
-  remove(property: keyof IEntity) {
-    this.data.delete(property);
-  }
-
-  @action
-  batchRemove(data: T) {
-    Object.keys(data).forEach((property: string) => {
-      this.remove(_.camelCase(property));
-    });
   }
 
   get(property: keyof K) {
@@ -86,7 +75,7 @@ export default class SingleEntityMapStore<
     return this.data.get(property);
   }
 
-  has(property: keyof IEntity) {
+  has(property: keyof Entity) {
     return this.data.has(property);
   }
 
@@ -102,7 +91,7 @@ export default class SingleEntityMapStore<
     return this.service[serviceFunctionName]();
   }
 
-  createModel(data: T): IEntity {
+  createModel(data: T): Entity {
     const Model = modelProvider.getModelCreator(this.name);
     return Model.fromJS(data);
   }
