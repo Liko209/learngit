@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import { Post } from 'sdk/src/models';
 import { FetchDataDirection, ISortableModel } from '@/store/base';
 import { ISeparatorHandler } from './ISeparatorHandler';
@@ -21,6 +21,14 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
 
   @observable
   separatorMap = new Map<number, NewSeparator>();
+
+  @observable
+  firstUnreadPostId?: number;
+
+  @computed
+  get hasUnread() {
+    return this._hasNewMessagesSeparator;
+  }
 
   constructor() {
     this._userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
@@ -123,6 +131,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     const separator: NewSeparator = {
       type: SeparatorType.NEW_MSG,
     };
+    this.firstUnreadPostId = postId;
     this.separatorMap.set(postId, separator);
   }
 }

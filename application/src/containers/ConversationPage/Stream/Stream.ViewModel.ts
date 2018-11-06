@@ -49,10 +49,27 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _initialized = false;
 
   @observable
-  hasUnread: boolean = false;
+  _historyGroupState?: GroupStateModel;
 
-  @observable
-  firstGroupState: GroupStateModel;
+  @computed
+  get hasHistoryUnread() {
+    if (!this._historyGroupState) return false;
+    const { unreadCount } = this._historyGroupState;
+    return unreadCount && unreadCount > 0;
+  }
+
+  @computed
+  get firstHistoryUnreadPostId() {
+    console.log(
+      'this._newMessageSeparatorHandler.firstUnreadPostId: ',
+      this._newMessageSeparatorHandler.firstUnreadPostId,
+    );
+    return this._newMessageSeparatorHandler.firstUnreadPostId;
+  }
+
+  clearHistoryUnread = () => {
+    this._historyGroupState = undefined;
+  }
 
   @observable
   groupId: number;
@@ -61,6 +78,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @observable
   items: StreamItem[] = [];
 
+  @computed
   get _groupState() {
     return getEntity<GroupState, GroupStateModel>(
       ENTITY_NAME.GROUP_STATE,
@@ -71,14 +89,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @computed
   get _readThrough() {
     return this._groupState.readThrough;
-  }
-
-  getFirstUnreadIndicatorState() {
-    return this.firstGroupState;
-  }
-
-  setHasUnread = (hasUnread: boolean) => {
-    this.hasUnread = hasUnread;
   }
 
   @computed
@@ -124,6 +134,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       {
         transformFunc,
         hasMoreUp: true,
+        pageSize: 3,
         isMatchFunc: isMatchedFunc(props.groupId),
         entityName: ENTITY_NAME.POST,
         eventName: ENTITY.POST,
@@ -155,18 +166,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.loadInitialPosts();
   }
 
-  saveGroupState() {
-    this.firstGroupState = _.cloneDeep(this._groupState);
-
-    if (!this.firstGroupState.unreadCount) return;
-
-    this.setHasUnread(this.firstGroupState.unreadCount > 0);
+  updateHistoryGroupState() {
+    this._historyGroupState = _.cloneDeep(this._groupState);
   }
 
   @computed
-  get firstUnreadCount() {
-    const unreadCount = this.firstGroupState
-      ? this.firstGroupState.unreadCount || 0
+  get historyUnreadCount() {
+    const unreadCount = this._historyGroupState
+      ? this._historyGroupState.unreadCount || 0
       : 0;
     return unreadCount;
   }
@@ -174,7 +181,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @loading
   async loadInitialPosts() {
     await this._loadPosts(FetchDataDirection.UP);
-    this.saveGroupState();
+    this.updateHistoryGroupState();
     this._initialized = true;
     this.markAsRead();
   }
@@ -220,24 +227,32 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this._transformHandler.dispose();
   }
 
-  private async _loadPosts(direction: FetchDataDirection) {
+  private async _loadPosts(direction: FetchDataDirection, limit?: number) {
     if (!this._transformHandler.hasMore(direction)) return;
-    await this._transformHandler.fetchData(direction);
+    await this._transformHandler.fetchData(direction, limit);
   }
 
   loadPostUntilFirstUnread = async () => {
-    this.setHasUnread(true);
-    if (this.firstGroupState.readThrough && this.firstGroupState.unreadCount) {
-      if (this.postIds.indexOf(this.firstGroupState.readThrough) !== -1) {
-        return true;
-      }
+    if (!this._historyGroupState) return;
 
-      await this._transformHandler.fetchData(
+    const unreadCount = this._historyGroupState.unreadCount || 0;
+    const readThrough = this._historyGroupState.readThrough;
+
+    if (!readThrough) return;
+
+    // Find first unread post id
+    if (unreadCount > this.postIds.length) {
+      await this._loadPosts(
         FetchDataDirection.UP,
-        this.firstGroupState.unreadCount - this.postIds.length + 1,
+        unreadCount - this.postIds.length + 1,
       );
     }
-    return true;
+
+    console.log(
+      'this.firstHistoryUnreadPostId: ',
+      this.firstHistoryUnreadPostId,
+    );
+    return this.firstHistoryUnreadPostId;
   }
 }
 

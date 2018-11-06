@@ -4,25 +4,62 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import { observable, computed } from 'mobx';
 import { translate, WithNamespaces } from 'react-i18next';
 import VisibilitySensor from 'react-visibility-sensor';
+import { JuiStream } from 'jui/pattern/ConversationPage';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
-import { JuiStream } from 'jui/pattern/ConversationPage';
 import { toTitleCase } from '@/utils';
+import { scrollToComponent } from '@/utils/reactDom';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { JumpToFirstUnreadButton } from './JumpToUnreadButton';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
-import { observable } from 'mobx';
-import { observer } from 'mobx-react';
 
 type Props = WithNamespaces & StreamViewProps;
 
 @observer
 class StreamViewComponent extends Component<Props> {
+  private _firstUnreadCardRef: React.ReactInstance | null = null;
+
   @observable
-  private _newMessageSeparatorVisible = false;
+  private _firstHistoryUnreadPostVisible = false;
+
+  @computed
+  private get _firstHistoryUnreadInPage() {
+    console.log(
+      '[_firstHistoryUnreadInPage] this.props.firstHistoryUnreadPostId: ',
+      this.props.firstHistoryUnreadPostId,
+    );
+    if (!this.props.firstHistoryUnreadPostId) return false;
+    return this.props.postIds.includes(this.props.firstHistoryUnreadPostId);
+  }
+
+  @computed
+  private get _shouldHaveJumpButton() {
+    console.group('_shouldHaveJumpButton: ');
+    console.log(
+      'this._firstHistoryUnreadInPage: ',
+      this._firstHistoryUnreadInPage,
+    );
+    console.log(
+      'this._firstUnreadPostVisible: ',
+      this._firstHistoryUnreadPostVisible,
+    );
+    console.groupEnd();
+    return (
+      this.props.hasHistoryUnread &&
+      (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostVisible)
+    );
+  }
+
+  @computed
+  private get _firstHistoryUnreadPostId() {
+    const { firstHistoryUnreadPostId } = this.props;
+    return firstHistoryUnreadPostId;
+  }
 
   componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
@@ -39,78 +76,107 @@ class StreamViewComponent extends Component<Props> {
       // initial scroll to bottom when switch to new group
       this.props.plugins.loadingMorePlugin.scrollToRow(-1);
     }
-  }
-
-  private _renderStreamItem(streamItem: StreamItem) {
-    const { t } = this.props;
-
-    switch (streamItem.type) {
-      case StreamItemType.POST:
-        return (
-          <ConversationCard id={streamItem.value} key={streamItem.value} />
-        );
-      case StreamItemType.NEW_MSG_SEPARATOR:
-        return (
-          <VisibilitySensor
-            key={streamItem.value}
-            onChange={this._newMessagesSeparatorVisibilityChange}
-          >
-            <TimeNodeDivider
-              key={streamItem.value}
-              value={toTitleCase(t('newMessage_plural'))}
-            />
-          </VisibilitySensor>
-        );
-      case StreamItemType.DATE_SEPARATOR:
-        return (
-          <TimeNodeDivider key={streamItem.value} value={streamItem.value} />
-        );
-      default:
-        return null;
+    if (prevProps.groupId !== this.props.groupId) {
+      this._firstHistoryUnreadPostVisible = false;
+      this._firstUnreadCardRef = null;
     }
   }
 
-  private get jumpToFirstUnreadButton() {
-    const { hasUnread, firstUnreadCount } = this.props;
-    const shouldHaveJumpButton = !this._newMessageSeparatorVisible && hasUnread;
+  private _renderConversationCard(streamItem: StreamItem) {
+    console.log(
+      'this._firstHistoryUnreadPostId: ',
+      this._firstHistoryUnreadPostId,
+    );
+    if (streamItem.value === this.props.firstHistoryUnreadPostId) {
+      // Observe first unread post visibility
+      return (
+        <VisibilitySensor
+          key={`VisibilitySensor${streamItem.value}`}
+          onChange={this._handleFirstUnreadCardVisibilityChange}
+        >
+          <ConversationCard
+            ref={this._setFirstUnreadCardRef}
+            id={streamItem.value}
+            key={`VisibilitySensor${streamItem.value}`}
+          />
+        </VisibilitySensor>
+      );
+    }
 
-    return shouldHaveJumpButton ? (
+    return <ConversationCard id={streamItem.value} key={streamItem.value} />;
+  }
+
+  private _renderNewMessagesDivider(streamItem: StreamItem) {
+    const { t } = this.props;
+    return (
+      <TimeNodeDivider
+        key="TimeNodeDividerNewMessagesDivider"
+        value={toTitleCase(t('newMessage_plural'))}
+      />
+    );
+  }
+
+  private _renderDateDivider(streamItem: StreamItem) {
+    return (
+      <TimeNodeDivider
+        key={`TimeNodeDividerDateDivider${streamItem.value}`}
+        value={streamItem.value}
+      />
+    );
+  }
+
+  private _renderStreamItem(streamItem: StreamItem) {
+    const RENDERER_MAP = {
+      [StreamItemType.POST]: this._renderConversationCard,
+      [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
+      [StreamItemType.DATE_SEPARATOR]: this._renderDateDivider,
+    };
+    const streamItemRenderer = RENDERER_MAP[streamItem.type];
+    return streamItemRenderer.call(this, streamItem);
+  }
+
+  private get _initialPost() {
+    const { groupId, hasMore } = this.props;
+    return hasMore ? null : <ConversationInitialPost id={groupId} />;
+  }
+
+  private get _streamItems() {
+    return this.props.items.map(item => this._renderStreamItem(item));
+  }
+
+  private get _jumpToFirstUnreadButton() {
+    return this._shouldHaveJumpButton ? (
       <JumpToFirstUnreadButtonWrapper>
         <JumpToFirstUnreadButton
           onClick={this._jumpToFirstUnread}
-          count={firstUnreadCount}
+          count={this.props.historyUnreadCount}
         />
       </JumpToFirstUnreadButtonWrapper>
     ) : null;
   }
 
   render() {
-    const { items, groupId, hasMore } = this.props;
     return (
       <JuiStream>
-        {hasMore ? null : <ConversationInitialPost id={groupId} />}
-        <div>
-          {items.length > 0
-            ? items.map(item => this._renderStreamItem(item))
-            : null}
-          {this.jumpToFirstUnreadButton}
-        </div>
+        {this._jumpToFirstUnreadButton}
+        {this._initialPost}
+        <div>{this._streamItems}</div>
       </JuiStream>
     );
   }
 
-  private _newMessagesSeparatorVisibilityChange = (isVisible: boolean) => {
-    this._newMessageSeparatorVisible = isVisible;
-    if (isVisible) this._readFirstUnread();
-  }
-
-  private _readFirstUnread = () => {
-    this.props.setHasUnread(false);
+  private _handleFirstUnreadCardVisibilityChange = (isVisible: boolean) => {
+    this._firstHistoryUnreadPostVisible = isVisible;
+    if (isVisible) this.props.clearHistoryUnread();
   }
 
   private _jumpToFirstUnread = async () => {
-    await this.props.loadPostUntilFirstUnread();
-    this.props.setRowVisible(0);
+    const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
+    if (!firstUnreadPostId) return;
+
+    requestAnimationFrame(() => {
+      scrollToComponent(this._firstUnreadCardRef);
+    });
   }
 
   private _focusHandler = () => {
@@ -121,6 +187,11 @@ class StreamViewComponent extends Component<Props> {
   private _blurHandler = () => {
     const { enableNewMessageSeparatorHandler } = this.props;
     enableNewMessageSeparatorHandler();
+  }
+
+  private _setFirstUnreadCardRef = (card: any) => {
+    if (!card) return;
+    this._firstUnreadCardRef = card;
   }
 }
 

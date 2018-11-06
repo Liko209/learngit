@@ -40,7 +40,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
         this.View = plugin.wrapView(this.View);
       });
       this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
-      this.vm.onReceiveProps && this.vm.onReceiveProps(props);
+      this.vm.onReceiveProps && this.vm.onReceiveProps(this.props);
     }
 
     componentWillUnmount() {

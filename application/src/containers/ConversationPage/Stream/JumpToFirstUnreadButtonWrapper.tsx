@@ -1,10 +1,14 @@
 import React, { HTMLAttributes } from 'react';
+import ReactDOM from 'react-dom';
 
 type JumpToFirstUnreadButtonWrapperProps = HTMLAttributes<any>;
 const JumpToFirstUnreadButtonWrapper = (
   props: JumpToFirstUnreadButtonWrapperProps,
 ) => {
-  return (
+  const root = document.getElementById('jumpToFirstUnreadButtonRoot');
+  if (!root) return null;
+
+  return ReactDOM.createPortal(
     <div
       style={{
         position: 'absolute',
@@ -15,7 +19,8 @@ const JumpToFirstUnreadButtonWrapper = (
       }}
     >
       {props.children}
-    </div>
+    </div>,
+    root,
   );
 };
 

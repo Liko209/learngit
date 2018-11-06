@@ -49,10 +49,11 @@ type StreamViewProps = {
   markAsRead: () => void;
   atBottom: () => boolean;
   enableNewMessageSeparatorHandler: () => void;
-  loadPostUntilFirstUnread: () => Promise<boolean>;
-  hasUnread: boolean;
-  setHasUnread: (arg: boolean) => void;
-  firstUnreadCount: number;
+  loadPostUntilFirstUnread: () => Promise<number | undefined>;
+  hasHistoryUnread: boolean;
+  clearHistoryUnread: () => void;
+  historyUnreadCount: number;
+  firstHistoryUnreadPostId?: number;
   plugins: TPluginsProps;
 };
 

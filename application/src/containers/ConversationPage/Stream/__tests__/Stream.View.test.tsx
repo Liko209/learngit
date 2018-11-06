@@ -17,9 +17,9 @@ const baseProps = {
     .fn()
     .mockName('enableNewMessageSeparatorHandler'),
   hasMore: true,
-  firstUnreadCount: 0,
-  hasUnread: false,
-  setHasUnread: jest.fn().mockName('setHasUnread'),
+  historyUnreadCount: 0,
+  hasHistoryUnread: false,
+  clearHistoryUnread: jest.fn().mockName('setHasUnread'),
   loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
 };
 

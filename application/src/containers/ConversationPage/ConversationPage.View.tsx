@@ -40,6 +40,7 @@ class ConversationPageViewComponent extends Component<
         <JuiDivider />
         <StreamWrapper>
           <Stream groupId={groupId} viewRefs={this._viewRefs} />
+          <div id="jumpToFirstUnreadButtonRoot" />
         </StreamWrapper>
         {canPost ? (
           <MessageInput id={groupId} onPost={this.sendHandler} />
