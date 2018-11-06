@@ -70,19 +70,16 @@ export default class ItemService extends BaseService<Item> {
     // should handle errors when error handling ready
     return null;
   }
-  async deleteItem(id: number): Promise<boolean> {
+  async deleteItem(id: number, type: string): Promise<boolean> {
     const itemDao = daoManager.getDao(ItemDao);
     const item = (await itemDao.get(id)) as Item;
-    notificationCenter.emitEntityDelete(ENTITY.ITEM, [item]);
-    await itemDao.delete(id);
+    notificationCenter.emitEntityUpdate(ENTITY.ITEM, [item]);
     if (item) {
-      item.deactivated = true;
+      item['do_not_render'] = true;
       item._id = item.id;
       delete item.id;
       try {
-        const resp = await ItemAPI.deleteItem<Item>(id, 'link', {
-          deactivated: true,
-        });
+        const resp = await ItemAPI.deleteItem<Item>(id, type, item);
         if (resp && !resp.data.error) {
           return true;
         }
