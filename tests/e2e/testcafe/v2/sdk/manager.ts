@@ -47,6 +47,6 @@ export class SdkManager {
       await glip.auth();
       this.glips[user.rcId] = glip;
     }
-    return glip
+    return glip;
   }
 }

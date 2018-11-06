@@ -13,7 +13,9 @@ class SubscribeWorker {
   ) {}
 
   async execute(ids: number[]) {
+    if (ids.length === 0) return;
     if (!socketManager.isConnected()) return;
+
     let requestResult;
     try {
       requestResult = await PresenceAPI.requestPresenceByIds(ids);
@@ -22,6 +24,7 @@ class SubscribeWorker {
       return;
     }
     const { data } = requestResult;
+
     this.successCallback(data);
   }
 }

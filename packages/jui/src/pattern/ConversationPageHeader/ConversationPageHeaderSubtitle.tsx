@@ -4,22 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
-import { typography, grey, ellipsis, spacing } from '../../foundation/utils';
 
 const JuiConversationPageHeaderSubtitle = styled.div`
-  ${typography('subheading1')};
-  color: ${grey('600')};
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-  flex-shrink: 1;
-  overflow: hidden;
-  > span {
-    flex-shrink: 1;
-    white-space: nowrap;
-    ${ellipsis()};
-    padding-right: ${spacing(4)};
-  }
+  flex-shrink: 0;
 `;
 
 export { JuiConversationPageHeaderSubtitle };

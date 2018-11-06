@@ -44,7 +44,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
 
+  @observable
   private _transformHandler: PostTransformHandler;
+
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
   private _initialized = false;
 
@@ -141,6 +143,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         dataChangeCallBack: () => {},
       },
     );
+
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
       this._readThrough,

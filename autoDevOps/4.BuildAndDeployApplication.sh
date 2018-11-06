@@ -17,5 +17,5 @@ if [ $? -eq 0 ]; then
         echo "Not need to update linked Domain"
     fi
 else
-    echo "Not need to update linked Domain"
+    addEnv BUILD_ERROR=1
 fi

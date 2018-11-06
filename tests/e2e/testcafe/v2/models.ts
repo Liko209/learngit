@@ -1,3 +1,11 @@
+import { GlipSdk } from './sdk/glip';
+import { RcPlatformSdk } from './sdk/platform';
+
+export interface Sdk {
+  glip: GlipSdk;
+  platform: RcPlatformSdk;
+}
+
 export interface ICompany {
   type: string;
   number: string;
@@ -14,6 +22,7 @@ export interface IUser {
   extension?: string;
   email?: string;
   password: string;
+  sdk: Sdk;
 }
 
 export interface IGroup {

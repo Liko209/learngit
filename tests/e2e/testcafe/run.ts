@@ -24,8 +24,7 @@ async function runTests(runnerOpts) {
     .src(runnerOpts.FIXTURES)
     .filter(filterByTags(runnerOpts.INCLUDE_TAGS, runnerOpts.EXCLUDE_TAGS))
     .browsers(runnerOpts.BROWSERS)
-    .reporter(runnerOpts.REPORTER, process.stderr)
-    .reporter('spec', process.stdout)
+    .reporter(runnerOpts.REPORTER, process.stdout)
     .screenshots(runnerOpts.SCREENSHOTS_PATH, runnerOpts.SCREENSHOT_ON_FAIL)
     .concurrency(runnerOpts.CONCURRENCY);
 

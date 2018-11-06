@@ -20,8 +20,15 @@ class MoreMenu extends BaseWebComponent {
     );
   }
 
-  get favorite() {
-    return this.getEntry('Favorite');
+  private getToggler(id: string){
+    return this.getComponent(
+      MoreMenuEntry,
+      this.getSelectorByAutomationId(id),
+    ); 
+  }
+  
+  get favoriteToggler() {
+    return this.getToggler('favToggler');
   }
 
   get close() {
@@ -49,6 +56,30 @@ class ConversationEntry extends BaseWebComponent {
 
   async openMoreMenu() {
     await this.t.hover(this.moreMenuEntry).click(this.moreMenuEntry);
+  }
+
+  async waitUntilUmiExist(timeout=20) {
+    const umiCount = this.getUmi(); 
+    let tryTime = 0
+    while (!await umiCount) {
+      if (tryTime >= timeout){
+        throw(`Wait until conversation with UMI: timeout: ${timeout}s`)
+      }
+      tryTime = tryTime + 1;
+      await this.t.wait(1e3);
+    } 
+  }
+
+  async waitUntilUmiNotExist(timeout=20){
+    const umiCount = this.getUmi(); 
+    let tryTime = 0
+    while (await umiCount) {
+      if (tryTime >= timeout){
+        throw(`Wait until conversation without UMI: timeout: ${timeout}s`)
+      }
+      tryTime = tryTime + 1;
+      await this.t.wait(1e3);
+    } 
   }
 
   async enter() {

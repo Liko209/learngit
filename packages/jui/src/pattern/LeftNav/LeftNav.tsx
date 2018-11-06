@@ -27,6 +27,9 @@ const CustomLeftNav: React.SFC<LeftNavProps> = ({ expand, ...props }) => {
   return <MuiDrawer {...props} />;
 };
 const Left = styled<LeftNavProps>(CustomLeftNav)`
+  && {
+    height: 100%; // safari compatibility
+  }
   .left-paper {
     position: relative;
     height: 100%;

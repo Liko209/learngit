@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { observable, action } from 'mobx';
+import { debounce } from 'lodash';
 
 import SearchService from 'sdk/service/search';
 import { Person } from 'sdk/src/models';
@@ -34,6 +35,11 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
   @observable
   helperText: string;
 
+  constructor(props: ContactSearchProps) {
+    super(props);
+    this.searchMembers = debounce(this.searchMembers.bind(this), 300);
+  }
+
   @action
   onReceiveProps({
     label,
@@ -61,6 +67,10 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
 
   @action
   searchMembers = (value: string) => {
+    if (!value) {
+      this.suggestions = [];
+      return;
+    }
     let members: SelectedMember[] = [];
     this.fetchSearch(value).then((data: Person[]) => {
       console.log('------data----', data);

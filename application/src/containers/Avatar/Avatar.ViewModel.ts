@@ -26,23 +26,10 @@ const AVATAR_COLORS = [
 class AvatarViewModel extends StoreViewModel<AvatarProps>
   implements AvatarViewProps {
   @computed
-  private get _uid() {
-    return this.props.uid;
-  }
-  @computed
-  get size() {
-    return this.props.size;
-  }
-  @computed
-  get onClick() {
-    return this.props.onClick;
-  }
-
-  @computed
   private get _hash() {
     let hash = 0;
-    if (this._uid) {
-      for (const i of `${this._uid}`) {
+    if (this.props.uid) {
+      for (const i of `${this.props.uid}`) {
         hash = hash + String(i).charCodeAt(0);
       }
     }
@@ -54,8 +41,8 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
 
   @computed
   private get _person() {
-    if (!this._uid) return null;
-    return getEntity(ENTITY_NAME.PERSON, this._uid);
+    if (!this.props.uid) return null;
+    return getEntity(ENTITY_NAME.PERSON, this.props.uid);
   }
   @computed
   get bgColor() {
@@ -71,7 +58,7 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
   @computed
   get shouldShowShortName() {
     if (this._person) {
-      return !this._person.hasHeadShot && this._person.shortName;
+      return !this._person.hasHeadShot && !!this._person.shortName;
     }
     return false;
   }
@@ -85,7 +72,7 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     const { headShotVersion, headshot } = this._person;
     if (headShotVersion) {
       const personService = PersonService.getInstance<PersonService>();
-      url = personService.getHeadShot(this._uid, headShotVersion, 150);
+      url = personService.getHeadShot(this.props.uid, headShotVersion, 150);
     } else if (headshot) {
       if (typeof headshot === 'string') {
         url = headshot;

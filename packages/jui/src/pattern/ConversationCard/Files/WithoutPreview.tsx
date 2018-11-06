@@ -6,6 +6,7 @@
 import React from 'react';
 
 import * as Jui from './style';
+import { FileName } from './FileName';
 
 type JuiFileWithoutPreviewProps = {
   fileName: string;
@@ -39,7 +40,7 @@ const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
           primary: 'file-item-primary',
           secondary: 'file-item-secondary',
         }}
-        primary={fileName}
+        primary={<FileName widthSpacing={38} filename={fileName} />}
         secondary={FileSecondary(size, actions)}
       />
     </Jui.FileItem>
