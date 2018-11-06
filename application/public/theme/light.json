@@ -108,7 +108,6 @@
   "zIndex": {
     "reponsePanel": 1,
     "reponseResizer": 2,
-    "dark": 1000
   },
   "size": {
     "width": 4,

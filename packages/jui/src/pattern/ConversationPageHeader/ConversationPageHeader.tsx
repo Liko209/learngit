@@ -23,7 +23,7 @@ import {
 } from '../../foundation/utils/styles';
 import styled, { Dependencies } from '../../foundation/styled-components';
 import { isTextOverflow } from '../../foundation/utils';
-import { JuiDivider } from 'jui/src/components/Divider/Divider';
+import { JuiDivider } from '../../components/Divider/Divider';
 
 type JuiConversationPageHeaderProps = {
   title?: string;
