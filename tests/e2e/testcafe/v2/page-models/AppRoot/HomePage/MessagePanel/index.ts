@@ -58,18 +58,22 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.hover(this.moreMenuEntry).click(this.moreMenuEntry);
   }
 
-  async waitUntilUmiExist(exist:boolean, timeout=20) {
+  async waitUntilUmiExist(exist: boolean, timeout=20) {
     let tryTime = 0;
-    if (exist == !!(await this.getUmi())){
+    let count = await this.getUmi();
+    if (exist == !!count) {
       return
     }
-    while (!exist) {
+    while (true) {
       if (tryTime >= timeout){
         throw(`Wait until conversation without UMI: timeout: ${timeout}s`)
       }
       tryTime = tryTime + 1;
       await this.t.wait(1e3);
-      exist = !!(await this.getUmi());
+      count = await this.getUmi();
+      if (exist == !!(count)) {
+        break
+      }
     } 
   }
 
