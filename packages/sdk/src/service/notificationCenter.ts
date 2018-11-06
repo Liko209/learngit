@@ -76,7 +76,7 @@ class NotificationCenter extends EventEmitter2 {
 
   emitKVChange(key: string, value?: any): void {
     if (value) {
-      this.trigger(key, { value });
+      this.trigger(key, value);
     } else {
       this.trigger(key);
     }
