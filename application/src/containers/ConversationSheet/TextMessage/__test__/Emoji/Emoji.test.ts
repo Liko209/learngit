@@ -89,37 +89,3 @@ describe('format multiple kind emoji', () => {
   });
   // 'abc:smile::cry:<3:D:rc::att::xxx::yyy123:'.match()
 });
-
-  // const keysEmojiOne = Object.keys(mapEmojiOne);
-  // const keysAscii = ['<3', '</3', ':\')', '*)']; // Object.keys(mapAscii); // Cannot all merge parsing, :b d: *-) *)
-  // const keysUnicode = Object.keys(mapUnicode);
-  // const keysCustom = Object.keys(customEmojiMap).map((key: string) => `:${key}:`);
-  // const keysNotMatch = arrNotMatch;
-
-  // const keys = [...keysEmojiOne, ...keysAscii, ...keysUnicode, ...keysCustom, ...keysNotMatch];
-
-  // const result = format(keys.join(''));
-
-  // const emojiOneImg = keysEmojiOne.map((key: string) => {
-  //   const obj = mapEmojiOne[key];
-  //   if (obj instanceof Object) {
-  //     const arr = obj.unicode;
-  //     const unicode = arr[arr.length - 1];
-  //     return `<img.+?${unicode}\.png[^>]+?>`;
-  //   }
-  //   return key;
-  // }).join('');
-  // const asciiText = keysAscii.join('').replace(regExpEscape, (match: string) => mapEscape[match]).replace(regExpSpecial, (match: string) => mapSpecial[match]);
-
-  // const unicodeImg = keysEmojiOne.map((key: string) => {
-  //   const unicode = mapUnicode[key];
-  //   return `<img.+?${unicode}\.png[^>]+?>`;
-  // }).join('');
-  // const customImg = Object.keys(customEmojiMap).map((key: string) => {
-  //   const src = customEmojiMap[key].data;
-  //   return `<img.+?${src}[^>]+?>`;
-  // }).join('');
-  // const notMatchText = keysNotMatch.join('');
-
-  // const regExp = new RegExp(`${unicodeImg}`);
-  // expect(result).toMatch(regExp);
