@@ -13,7 +13,6 @@ import {
   width,
 } from '../../../foundation/utils';
 import { JuiCircularProgress } from '../../Progress/CircularProgress';
-import { JuiFade } from '../../Fade';
 
 type Direction = 'up' | 'down';
 type JuiLozengeButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -83,9 +82,7 @@ const JuiLozengeButton: React.StatelessComponent<JuiLozengeButtonProps> = ({
     <StyledLozengeButton {...rest} className={className}>
       <span>{children}</span>
       {loading ? (
-        <JuiFade in={true} style={{ transitionDelay: '500ms' }}>
-          <JuiCircularProgress color="inherit" size={16} />
-        </JuiFade>
+        <JuiCircularProgress color="inherit" size={16} />
       ) : (
         arrowComponent
       )}

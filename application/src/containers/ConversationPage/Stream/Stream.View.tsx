@@ -5,6 +5,7 @@
  */
 import React, { Component } from 'react';
 import { observable, computed, action } from 'mobx';
+import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import VisibilitySensor from 'react-visibility-sensor';
 import { JuiStream } from 'jui/pattern/ConversationPage';
@@ -16,7 +17,6 @@ import { scrollToComponent } from '@/utils/reactDom';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
-import { observer } from 'mobx-react';
 
 type Props = WithNamespaces & StreamViewProps;
 
@@ -164,8 +164,12 @@ class StreamViewComponent extends Component<Props> {
   @action.bound
   private _jumpToFirstUnread = async () => {
     if (this._jumpToFirstUnreadLoading) return;
-    this._jumpToFirstUnreadLoading = true;
+    const timeout = setTimeout(() => {
+      // Delay 500ms then show loading
+      this._jumpToFirstUnreadLoading = true;
+    },                         500);
     const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
+    clearTimeout(timeout);
     this._jumpToFirstUnreadLoading = false;
     if (!firstUnreadPostId) return;
 
