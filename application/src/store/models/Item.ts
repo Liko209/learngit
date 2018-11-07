@@ -24,17 +24,20 @@ export default class ItemModel extends Base<Item> {
   image: string;
   @observable
   deactivated: boolean;
+  @observable
+  doNotRender: boolean;
 
   constructor(data: Item) {
     super(data);
     const { type_id } = data;
     this.data = data;
-    this.summary = data.summary;
-    this.title = data.title;
+    this.summary = data.summary || '';
+    this.title = data.title || '';
     this.url = data.url;
-    this.image = data.image;
+    this.image = data.image || '';
     this.deactivated = data.deactivated;
     this.typeId = type_id;
+    this.doNotRender = data.do_not_render || false;
 
     ITEM_DATA_HANDLE_MAP[type_id] && ITEM_DATA_HANDLE_MAP[type_id].call(this);
   }
