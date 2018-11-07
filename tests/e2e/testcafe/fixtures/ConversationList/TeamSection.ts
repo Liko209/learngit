@@ -9,14 +9,14 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
-import { GlipSdk } from '../../v2/sdk/glip';
 
 fixture('ConversationList/TeamSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(formalName('Team section display the conversation which the login user as one of the team member',
-['P2', 'JPT-12', 'Team section']),
+test(formalName(
+  'Team section display the conversation which the login user as one of the team member',
+  ['P2', 'JPT-12', 'Team section']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -27,7 +27,7 @@ test(formalName('Team section display the conversation which the login user as o
     await h(t).withLog('Given I have an extension with certain team', async () => {
       team = await user.sdk.platform.createGroup({
         type: 'Team',
-        name: uuid(),
+        name: `Team ${uuid()}`,
         members: [user.rcId, users[5].rcId],
       });
     });
@@ -36,9 +36,9 @@ test(formalName('Team section display the conversation which the login user as o
       await user.sdk.glip.updateProfile(user.rcId, {
         [`hide_group_${team.data.id}`]: false,
       });
-    }); 
-    
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -64,13 +64,13 @@ test(formalName('Each conversation should be represented by the team name.',
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
     user.sdk = await h(t).getSdk(user);
-    const randomTeamName = uuid();
-    
+    const teamName = `Team ${uuid()}`;
+
     let team, newName;
-    await h(t).withLog(`Given I have an extension with certain team named ${randomTeamName}`, async () => {
+    await h(t).withLog(`Given I have an extension with certain team named ${teamName}`, async () => {
       team = await user.sdk.platform.createGroup({
         type: 'Team',
-        name: randomTeamName,
+        name: teamName,
         members: [user.rcId, users[5].rcId],
       });
     });
@@ -81,7 +81,7 @@ test(formalName('Each conversation should be represented by the team name.',
       });
     });
 
-    await h(t).withLog( `When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -92,8 +92,8 @@ test(formalName('Each conversation should be represented by the team name.',
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
       await t
-        .expect(teamsSection.conversationByNameEntry(randomTeamName).self.exists)
-        .ok(randomTeamName,{ timeout: 5e3 });
+        .expect(teamsSection.conversationByNameEntry(teamName).self.exists)
+        .ok(teamName, { timeout: 5e3 });
     }, true);
 
     await h(t).withLog('hen I modify the team name', async () => {
@@ -107,13 +107,13 @@ test(formalName('Each conversation should be represented by the team name.',
       await t
         .expect(teamsSection.conversationByNameEntry(newName).self.exists)
         .ok(newName, { timeout: 5e3 });
-    }, true,);
+    }, true);
   },
 );
 
 test(
   formalName('Conversation that received post should be moved to top',
-  ['JPT-47', 'P2', 'ConversationList']),
+    ['JPT-47', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -124,13 +124,13 @@ test(
     await h(t).withLog('Given I have an extension with two teams', async () => {
       team1 = await user.sdk.platform.createGroup({
         type: 'Team',
-        name: `1 ${uuid()}`,
+        name: `Team 1 ${uuid()}`,
         members: [user.rcId, users[5].rcId],
       });
 
       team2 = await user.sdk.platform.createGroup({
         type: 'Team',
-        name: `2 ${uuid()}`,
+        name: `Team 2 ${uuid()}`,
         members: [user.rcId, users[5].rcId],
       });
     });
@@ -149,7 +149,7 @@ test(
       );
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();

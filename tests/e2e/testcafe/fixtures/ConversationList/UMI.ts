@@ -21,10 +21,7 @@ test(formalName('UMI should be added received messages count in conversations', 
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    user.sdk = await h(t).getSdk(user)  
-    const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    user.sdk = await h(t).getSdk(user)
     const user5Platform = await h(t).getPlatform(users[5]);
 
     let pvtChat, group, team, groupConversation, teamConversation;
@@ -60,7 +57,7 @@ test(formalName('UMI should be added received messages count in conversations', 
       await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -72,6 +69,8 @@ test(formalName('UMI should be added received messages count in conversations', 
 
     });
 
+    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
+    const teamsSection = app.homePage.messagePanel.teamsSection;
     await h(t).withLog(`And make preconditions: group ${group.data.id} and team ${team.data.id} both with UMI=1`, async () => {
       await user5Platform.createPost(
         { text: `![:Person](${user.rcId}), ${uuid()}` },
@@ -80,7 +79,7 @@ test(formalName('UMI should be added received messages count in conversations', 
       await user5Platform.createPost(
         { text: `![:Person](${user.rcId}), ${uuid()}` },
         team.data.id,
-      ); 
+      );
       await t.wait(3e3);
       await directMessagesSection.expand();
       groupConversation = app.homePage.messagePanel.directMessagesSection.conversationByIdEntry(group.data.id);
@@ -98,7 +97,7 @@ test(formalName('UMI should be added received messages count in conversations', 
       await t.wait(3e3);
     });
 
-    await h(t).withLog(`The group should have 2 umi`, async ()=>{
+    await h(t).withLog(`The group should have 2 umi`, async () => {
       await t.expect(await groupConversation.getUmi()).eql(2);
     });
 
@@ -110,7 +109,7 @@ test(formalName('UMI should be added received messages count in conversations', 
       await t.wait(3e3);
     });
 
-    await h(t).withLog(`Then the team should have 2 umi`, async ()=>{
+    await h(t).withLog(`Then the team should have 2 umi`, async () => {
       await t.expect(await teamConversation.getUmi()).eql(2);
     });
 
@@ -122,7 +121,7 @@ test(formalName('UMI should be added received messages count in conversations', 
       await t.wait(3e3);
     });
 
-    await h(t).withLog(`Then the group should have 3 umi`, async ()=>{
+    await h(t).withLog(`Then the group should have 3 umi`, async () => {
       await t.expect(await groupConversation.getUmi()).eql(3);
     });
 
@@ -135,7 +134,7 @@ test(formalName('UMI should be added received messages count in conversations', 
       await t.wait(3e3);
     });
 
-    await h(t).withLog(`Then the team should have 2 umi, no change`, async ()=>{
+    await h(t).withLog(`Then the team should have 2 umi, no change`, async () => {
       await t.expect(await teamConversation.getUmi()).eql(2);
     });
   },
@@ -281,7 +280,7 @@ test.skip(
     const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
     const teamsSection = app.homePage.messagePanel.teamsSection;
     const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
-    
+
     let pvtChatId, teamId, pvtchat, team;
     await h(t).withLog(
       'Given I have an extension with a team and a private chat',
@@ -319,7 +318,7 @@ test.skip(
     );
 
     await h(t).withLog('Then I can open the private chat', async () => {
-      pvtchat =  directMessagesSection.conversationByIdEntry(pvtChatId);
+      pvtchat = directMessagesSection.conversationByIdEntry(pvtChatId);
       await pvtchat.enter();
     });
 
@@ -352,7 +351,7 @@ test.skip(
     await h(t).withLog(
       'Then I should not have UMI in the private chat too',
       async () => {
-        const umi = await  pvtchat.getUmi();
+        const umi = await pvtchat.getUmi();
         await t.expect(umi).eql(0);
       },
     );
