@@ -111,9 +111,14 @@ test(formalName('Each conversation should be represented by the team name.',
   },
 );
 
+<<<<<<< HEAD
 test(
   formalName('Conversation that received post should be moved to top',
     ['JPT-47', 'P2', 'ConversationList']),
+=======
+test(formalName('Conversation that received post should be moved to top',
+  ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']),
+>>>>>>> refactor(e2e): jpt-47
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -149,7 +154,11 @@ test(
       );
     });
 
+<<<<<<< HEAD
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+=======
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
+>>>>>>> refactor(e2e): jpt-47
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
