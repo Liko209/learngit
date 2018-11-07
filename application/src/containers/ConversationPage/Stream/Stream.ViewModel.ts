@@ -133,7 +133,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       {
         transformFunc,
         hasMoreUp: true,
-        pageSize: 3,
         isMatchFunc: isMatchedFunc(props.groupId),
         entityName: ENTITY_NAME.POST,
         eventName: ENTITY.POST,
