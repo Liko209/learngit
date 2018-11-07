@@ -66,10 +66,7 @@ test(
   }
 );
 
-test(
-  formalName('No post in conversation when the conversation',
-    ['P2', 'JPT-53', 'ConversationStream',]
-  ),
+test(formalName('No post in conversation when the conversation', ['P2', 'JPT-53', 'ConversationStream']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -80,7 +77,7 @@ test(
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
       teamId = (await userPlatform.createGroup({
         isPublic: true,
-        name: uuid(),
+        name: `Team ${uuid()}`,
         type: 'Team',
         members: [user.rcId, users[5].rcId, users[6].rcId],
       })).data.id;
@@ -123,7 +120,7 @@ test(
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
       teamId = (await userPlatform.createGroup({
         isPublic: true,
-        name: uuid(),
+        name: `Team ${uuid()}`,
         type: 'Team',
         members: [user.rcId, users[5].rcId, users[6].rcId],
       })).data.id;
