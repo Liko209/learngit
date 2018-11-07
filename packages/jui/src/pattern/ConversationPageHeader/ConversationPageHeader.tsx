@@ -23,6 +23,7 @@ import {
 } from '../../foundation/utils/styles';
 import styled, { Dependencies } from '../../foundation/styled-components';
 import { isTextOverflow } from '../../foundation/utils';
+import { JuiDivider } from '../../components/Divider/Divider';
 
 type JuiConversationPageHeaderProps = {
   title?: string;
@@ -58,7 +59,7 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
     padding-left: 0;
     padding-right: 0;
     background-color: white;
-
+    z-index: ${({ theme }) => `${theme.zIndex.drawer + 10}`};
     > div {
       min-height: ${height(12)};
       padding-left: ${spacing(6)};
@@ -170,6 +171,7 @@ class JuiConversationPageHeader
           </div>
           {Right ? right : null}
         </MuiToolbar>
+        <JuiDivider />
       </StyledPageHeader>
     );
   }

@@ -91,7 +91,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
       await h(t).withLog(`When I open a ${key} conversation and then click close conversation button`, async () => {
         await item.enter();
         currentGroupId = await app.homePage.messagePanel.conversationPage.self.getAttribute('data-group-id');
-        await item.waitUntilUmiNotExist();
+        await item.waitUntilUmiExist(false);
         await item.openMoreMenu();
         await app.homePage.messagePanel.moreMenu.close.enter();
       });
@@ -251,7 +251,6 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
 
     const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
     const team = teamsSection.conversationByIdEntry(teamId);
-
     await h(t).withLog(`And I open conversation A `, async () => {
       await dmSection.expand();
       await t.expect(pvtChat.exists).ok(pvtChatId, { timeout: 10e3 });
@@ -259,10 +258,10 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
     }, true);
 
     await h(t).withLog(`Then conversation A should not have UMI`, async () => {
-      await pvtChat.waitUntilUmiNotExist();
+      await pvtChat.waitUntilUmiExist(false);
     });
 
-    await h(t).withLog(`When I click conversation A's close buttom`, async () => {
+    await h(t).withLog(`When I click conversation A's close button`, async () => {
       await pvtChat.openMoreMenu();
       await app.homePage.messagePanel.moreMenu.close.enter();
     });
@@ -358,7 +357,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     }, true);
 
     await h(t).withLog(`Then conversation A should not have UMI`, async () => {
-      await pvtChat.waitUntilUmiNotExist();
+      await pvtChat.waitUntilUmiExist(false);
     });
 
     await h(t).withLog(`When I click conversation A's close buttom`, async () => {
@@ -412,7 +411,7 @@ test(formalName(
     const teamsSection = app.homePage.messagePanel.teamsSection;
 
     let favGroupId, pvtChatId, teamId1, teamId2;
-    await h(t).withLog('Given I have an extension with 2 private chat, 2 team chat, and 1 group team', async () => {
+    await h(t).withLog('Given I have an extension with 1 private chat, 2 team chat, and 1 group chat', async () => {
       pvtChatId = (await user.sdk.platform.createGroup({
         type: 'PrivateChat',
         members: [user.rcId, users[5].rcId],
