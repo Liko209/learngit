@@ -5,7 +5,7 @@
  */
 import ItemModel from '../Item';
 
-type FileItemType = {
+type FileItem = {
   type: string;
   typeId: number;
   downloadUrl: string;
@@ -23,4 +23,4 @@ type FileItemType = {
   origWidth: number;
 } & ItemModel;
 
-export { FileItemType };
+export { FileItem };

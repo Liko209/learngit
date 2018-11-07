@@ -8,7 +8,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { FileItemType } from '@/store/models/Items';
+import { FileItem } from '@/store/models/Items';
 import { FilesViewProps, FileType, ExtendFile } from './types';
 
 const FILE_ICON_MAP = {
@@ -24,7 +24,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return this.props.ids;
   }
 
-  getFileType = (item: FileItemType): ExtendFile => {
+  getFileType = (item: FileItem): ExtendFile => {
     const fileType: ExtendFile = {
       item,
       type: -1,
@@ -53,7 +53,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       [FileType.others]: [],
     };
 
-    this.items.forEach((item: FileItemType) => {
+    this.items.forEach((item: FileItem) => {
       const file = this.getFileType(item);
       files[file.type].push(file);
     });
@@ -69,7 +69,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return null;
   }
 
-  isImage(item: FileItemType) {
+  isImage(item: FileItem) {
     const { thumbs, type, url } = item;
     const image = {
       isImage: false,
@@ -94,7 +94,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return image;
   }
 
-  isDocument(item: FileItemType) {
+  isDocument(item: FileItem) {
     const { pages } = item;
     const document = {
       isDocument: false,
@@ -110,7 +110,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   @computed
   get items() {
     return this._ids.map((id: number) => {
-      return getEntity<Item, FileItemType>(ENTITY_NAME.ITEM, id);
+      return getEntity<Item, FileItem>(ENTITY_NAME.ITEM, id);
     });
   }
 }

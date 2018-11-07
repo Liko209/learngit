@@ -3,9 +3,9 @@
  * @Date: 2018-11-07 16:17:22
  * Copyright © RingCentral. All rights reserved.
  */
-import { FileItemType } from './Files.type';
+import { FileItem } from './Files.type';
 
-function setFileData(this: FileItemType) {
+function setFileData(this: FileItem) {
   const { type, name, versions, is_document, is_new } = this.data;
   this.type = type;
   this.name = name;
