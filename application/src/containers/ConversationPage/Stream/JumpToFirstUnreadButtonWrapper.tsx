@@ -1,7 +1,12 @@
-import React, { HTMLAttributes } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import {
+  JuiJumpToFirstUnreadButtonWrapper,
+  JuiJumpToFirstUnreadButtonWrapperProps,
+} from 'jui/pattern/ConversationPage/JumpToFirstUnreadButtonWrapper';
 
-type JumpToFirstUnreadButtonWrapperProps = HTMLAttributes<any>;
+type JumpToFirstUnreadButtonWrapperProps = JuiJumpToFirstUnreadButtonWrapperProps;
+
 const JumpToFirstUnreadButtonWrapper = (
   props: JumpToFirstUnreadButtonWrapperProps,
 ) => {
@@ -9,17 +14,9 @@ const JumpToFirstUnreadButtonWrapper = (
   if (!root) return null;
 
   return ReactDOM.createPortal(
-    <div
-      style={{
-        position: 'absolute',
-        top: 12,
-        left: 0,
-        right: 0,
-        textAlign: 'center',
-      }}
-    >
+    <JuiJumpToFirstUnreadButtonWrapper>
       {props.children}
-    </div>,
+    </JuiJumpToFirstUnreadButtonWrapper>,
     root,
   );
 };

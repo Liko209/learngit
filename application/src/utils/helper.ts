@@ -74,6 +74,14 @@ function getFileSize(bytes: number) {
   return `${(bytes / 1024 / 1024 / 1024).toFixed(1)}Gb`;
 }
 
+function sleep(timeout: number) {
+  return new Promise((resolve: Function) => {
+    setTimeout(() => {
+      resolve();
+    },         timeout);
+  });
+}
+
 export {
   compareName,
   toTitleCase,
@@ -81,4 +89,5 @@ export {
   handleOnlyLetterOrNumbers,
   handleOneOfName,
   getFileSize,
+  sleep,
 };

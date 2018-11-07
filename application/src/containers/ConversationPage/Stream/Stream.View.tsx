@@ -4,23 +4,28 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { translate, WithNamespaces } from 'react-i18next';
 import VisibilitySensor from 'react-visibility-sensor';
 import { JuiStream } from 'jui/pattern/ConversationPage';
+import { JuiLozengeButton } from 'jui/src/components/Buttons';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { toTitleCase } from '@/utils';
 import { scrollToComponent } from '@/utils/reactDom';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
-import { JumpToFirstUnreadButton } from './JumpToUnreadButton';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
+import { observer } from 'mobx-react';
 
 type Props = WithNamespaces & StreamViewProps;
 
+@observer
 class StreamViewComponent extends Component<Props> {
   private _firstUnreadCardRef: React.ReactInstance | null = null;
+
+  @observable
+  private _jumpToFirstUnreadLoading = false;
 
   @observable
   private _firstHistoryUnreadPostVisible = false;
@@ -47,6 +52,7 @@ class StreamViewComponent extends Component<Props> {
       this.props.plugins.loadingMorePlugin.scrollToRow(-1);
     }
     if (prevProps.groupId !== this.props.groupId) {
+      this._jumpToFirstUnreadLoading = false;
       this._firstHistoryUnreadPostVisible = false;
       this._firstUnreadCardRef = null;
     }
@@ -111,17 +117,27 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private get _jumpToFirstUnreadButton() {
+    const {
+      t,
+      hasHistoryUnread,
+      historyUnreadCount,
+      historyGroupState,
+    } = this.props;
+
     const shouldHaveJumpButton =
-      this.props.hasHistoryUnread &&
-      this.props.historyGroupState &&
+      hasHistoryUnread &&
+      historyGroupState &&
       (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostVisible);
 
     return shouldHaveJumpButton ? (
       <JumpToFirstUnreadButtonWrapper>
-        <JumpToFirstUnreadButton
+        <JuiLozengeButton
+          arrowDirection="up"
+          loading={this._jumpToFirstUnreadLoading}
           onClick={this._jumpToFirstUnread}
-          count={this.props.historyUnreadCount}
-        />
+        >
+          {historyUnreadCount} {toTitleCase(t('newMessage_plural'))}
+        </JuiLozengeButton>
       </JumpToFirstUnreadButtonWrapper>
     ) : null;
   }
@@ -131,21 +147,29 @@ class StreamViewComponent extends Component<Props> {
       <JuiStream>
         {this._jumpToFirstUnreadButton}
         {this._initialPost}
-        <div>{this._streamItems}</div>
+        <div>
+          {this._streamItems}
+          {this._jumpToFirstUnreadLoading}
+        </div>
       </JuiStream>
     );
   }
 
+  @action
   private _handleFirstUnreadCardVisibilityChange = (isVisible: boolean) => {
     this._firstHistoryUnreadPostVisible = isVisible;
     if (isVisible) this.props.clearHistoryUnread();
   }
 
+  @action.bound
   private _jumpToFirstUnread = async () => {
+    if (this._jumpToFirstUnreadLoading) return;
+    this._jumpToFirstUnreadLoading = true;
     const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
+    this._jumpToFirstUnreadLoading = false;
     if (!firstUnreadPostId) return;
 
-    requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
       scrollToComponent(this._firstUnreadCardRef, {
         behavior: 'smooth',
         block: 'center',
@@ -159,8 +183,7 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _blurHandler = () => {
-    const { enableNewMessageSeparatorHandler } = this.props;
-    enableNewMessageSeparatorHandler();
+    this.props.enableNewMessageSeparatorHandler();
   }
 
   private _setFirstUnreadCardRef = (card: any) => {

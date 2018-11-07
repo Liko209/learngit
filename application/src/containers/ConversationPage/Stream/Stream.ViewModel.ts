@@ -133,6 +133,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       {
         transformFunc,
         hasMoreUp: true,
+        pageSize: 3,
         isMatchFunc: isMatchedFunc(props.groupId),
         entityName: ENTITY_NAME.POST,
         eventName: ENTITY.POST,
@@ -208,7 +209,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @onScrollToBottom
   markAsRead() {
     const isFocused = document.hasFocus();
-    if (isFocused && this._initialized) {
+    if (isFocused && this._initialized && false) {
       this._stateService.markAsRead(this.groupId);
     }
   }

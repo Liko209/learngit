@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { translate } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { JuiConversationPage } from 'jui/pattern/ConversationPage';
+import {
+  JuiStreamWrapper,
+  JuiConversationPage,
+} from 'jui/pattern/ConversationPage';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 import { TScroller } from 'jui/hoc/withScroller';
@@ -9,7 +12,6 @@ import { Header } from './Header';
 import { Stream } from './Stream';
 import { MessageInput } from './MessageInput';
 import { ConversationPageViewProps } from './types';
-import { StreamWrapper } from './StreamWrapper';
 
 @observer
 class ConversationPageViewComponent extends Component<
@@ -38,10 +40,10 @@ class ConversationPageViewComponent extends Component<
       >
         <Header id={groupId} />
         <JuiDivider />
-        <StreamWrapper>
+        <JuiStreamWrapper>
           <Stream groupId={groupId} viewRefs={this._viewRefs} />
           <div id="jumpToFirstUnreadButtonRoot" />
-        </StreamWrapper>
+        </JuiStreamWrapper>
         {canPost ? (
           <MessageInput id={groupId} onPost={this.sendHandler} />
         ) : (
