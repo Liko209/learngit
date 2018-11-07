@@ -189,3 +189,38 @@ test(formalName('Conversation that received post should be moved to top',
     }, true);
   },
 );
+
+test(formalName('Can expand and collapse the team section by clicking the section name.',
+  ['JPT-11', 'P2', 'ConversationList']),
+  async (t: TestController) => {
+    const app = new AppRoot(t);
+    const user = h(t).rcData.mainCompany.users[0];
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
+    async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    })
+    
+    let teamSection = app.homePage.messagePanel.teamsSection;
+    await h(t).withLog('Then Team section should be expanded by default', async () => {
+      await t.expect(await teamSection.isExpand()).ok();
+    }); 
+
+    const teamSectionName = teamSection.toggleButton.child().withExactText('Teams');
+    await h(t).withLog('When I click the team section name', async () => {
+      await t.click(teamSectionName);
+    }); 
+    await h(t).withLog('Then the team section should be collapsed.', async () => {
+      await t.expect(await teamSection.isExpand()).notOk();
+    }); 
+
+    await h(t).withLog('When I click the team section name again', async () => {
+      await t.click(teamSectionName);
+    }); 
+
+    await h(t).withLog('Then the team section should be expanded.', async () => {
+      await t.expect(await teamSection.isExpand()).ok();
+    }); 
+  }
+);
