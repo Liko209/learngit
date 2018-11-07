@@ -22,13 +22,13 @@ test(
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
     const msgList = _.range(3).map(i => `${i} ${uuid()}`);
-    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+    const userPlatform = await h(t).getPlatform(user);
 
     let teamId;
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
       teamId = (await userPlatform.createGroup({
         isPublic: true,
-        name: uuid(),
+        name: `Team ${uuid()}`,
         type: 'Team',
         members: [user.rcId, users[5].rcId, users[6].rcId],
       })).data.id;
