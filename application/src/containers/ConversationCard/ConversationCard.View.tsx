@@ -14,7 +14,7 @@ import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 // import { idToPostItemComponent } from '@/containers/PostItems';
 @observer
 export class ConversationCard extends React.Component<
-ConversationCardViewProps
+  ConversationCardViewProps
 > {
   constructor(props: ConversationCardViewProps) {
     super(props);
@@ -33,7 +33,7 @@ ConversationCardViewProps
       return null;
     }
 
-    const avatar = <Avatar uid={creator.id} size="medium" />;
+    const avatar = <Avatar uid={creator.id} size="medium" data-name="avatar" />;
 
     return (
       <React.Fragment>
@@ -43,14 +43,14 @@ ConversationCardViewProps
           Avatar={avatar}
         >
           <JuiConversationCardHeader
-            data-name="conversation-card-header"
+            data-name="header"
             name={name}
             time={createTime}
             status={customStatus}
           >
             <Actions id={id} />
           </JuiConversationCardHeader>
-          <JuiConversationCardBody>
+          <JuiConversationCardBody data-name="body">
             <TextMessage id={post.id} />
             {idsToConversationSheet(itemIds)}
           </JuiConversationCardBody>

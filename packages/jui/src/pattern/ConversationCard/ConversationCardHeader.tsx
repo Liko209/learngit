@@ -52,9 +52,9 @@ type ConversationCardHeaderProps = {
 const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
   <StyledConversationCardHeader>
     <StyledLeftSection>
-      <StyledName>{props.name}</StyledName>
+      <StyledName data-name="name">{props.name}</StyledName>
       {props.status ? <StyledStatus>{props.status}</StyledStatus> : null}
-      <StyledTime>{props.time}</StyledTime>
+      <StyledTime data-name="time">{props.time}</StyledTime>
     </StyledLeftSection>
     <RightSection>{props.children}</RightSection>
   </StyledConversationCardHeader>
