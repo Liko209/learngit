@@ -29,5 +29,7 @@
   "Forward": "Forward",
   "Done": "Done",
   "today": "Today",
-  "yesterday": "Yesterday"
+  "yesterday": "Yesterday",
+  "PublicTeam": "Public Team (visible to any co-worker)",
+  "MembersMayPostMessages": "Allow members to post messages"
 }

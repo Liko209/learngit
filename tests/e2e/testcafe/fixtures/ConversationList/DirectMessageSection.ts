@@ -14,7 +14,8 @@ fixture('DirectMessageSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(formalName(
+// this case is skipped because latest update on platform API doesn't handle account resolve properly
+test.skip(formalName(
   'Show the 1:1 conversation and group conversation in the Direct Message section',
   ['JPT-5', 'P2', 'ConversationList']), async (t: TestController) => {
     const app = new AppRoot(t);
