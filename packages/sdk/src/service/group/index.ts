@@ -34,12 +34,11 @@ import handleData, {
 import Permission from './permission';
 import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
-import { SOCKET, SERVICE, ENTITY } from '../eventKey';
+import { SOCKET, SERVICE } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
-import notificationCenter from '../notificationCenter';
 
 export type CreateTeamOptions = {
   isPublic?: boolean;
@@ -373,13 +372,6 @@ export default class GroupService extends BaseService<Group> {
     );
 
     if (result instanceof BaseError) {
-      // rollback
-      const group = await this.getById(groupId);
-      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [group]);
-      // notificationCenter.emitEntityUpdate(
-      //   group.is_team ? ENTITY.TEAM_GROUPS : ENTITY.PEOPLE_GROUPS,
-      //   [group],
-      // );
       if (result.code === 5000) {
         return ServiceCommonErrorType.NETWORK_NOT_AVAILABLE;
       }
@@ -406,9 +398,13 @@ export default class GroupService extends BaseService<Group> {
   // update partial group data
   async updateGroupPartialData(params: object): Promise<boolean> {
     try {
-      const dao = daoManager.getDao(GroupDao);
-      await dao.update(params);
-      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [params]);
+      await this.handlePartialUpdate(
+        params,
+        undefined,
+        async (updatedModel: Group) => {
+          return updatedModel;
+        },
+      );
       return true;
     } catch (error) {
       throw ErrorParser.parse(error);

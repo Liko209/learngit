@@ -32,6 +32,14 @@ jest.mock('../../../api/glip/group');
 
 describe('GroupService', () => {
   const groupService: GroupService = new GroupService();
+
+  jest
+    .spyOn(groupService, 'updatePartialModel2Db')
+    .mockImplementation(() => {});
+  jest
+    .spyOn(groupService, 'doDefaultPartialNotify')
+    .mockImplementation(() => {});
+
   const accountDao = new AccountDao(null);
   const groupDao = new GroupDao(null);
   const configDao = new ConfigDao(null);
@@ -198,26 +206,14 @@ describe('GroupService', () => {
   });
 
   it('updateGroupPartialData(object) is update success', async () => {
-    daoManager.getDao.mockReturnValueOnce(groupDao);
     const result = await groupService.updateGroupPartialData({
       id: 1,
       abc: '123',
     });
     expect(result).toEqual(true);
-    expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
-    // expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
-  });
-
-  it('updateGroupPartialData(object) is update error', async () => {
-    daoManager.getDao.mockReturnValueOnce(groupDao);
-    groupDao.update.mockRejectedValueOnce(new Error());
-    await expect(
-      groupService.updateGroupPartialData({ id: 1, abc: '123' }),
-    ).rejects.toThrow();
   });
 
   it('updateGroupDraf({id, draft}) is update success', async () => {
-    daoManager.getDao.mockReturnValueOnce(groupDao);
     const result = await groupService.updateGroupDraft({
       id: 1,
       draft: 'draft',
@@ -225,32 +221,14 @@ describe('GroupService', () => {
     expect(result).toEqual(true);
   });
 
-  it('updateGroupDraf({id, draft}) is update error', async () => {
-    daoManager.getDao.mockReturnValueOnce(groupDao);
-    groupDao.update.mockRejectedValueOnce(new Error());
-    await expect(
-      groupService.updateGroupDraft({ id: NaN, draft: 'draft' }),
-    ).rejects.toThrow();
-  });
-
   it('updateGroupSendFailurePostIds({id, send_failure_post_ids}) is update success', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
+
     const result = await groupService.updateGroupSendFailurePostIds({
       id: 123,
       send_failure_post_ids: [12, 13],
     });
     expect(result).toEqual(true);
-  });
-
-  it('updateGroupSendFailurePostIds({id, send_failure_post_ids}) is update error', async () => {
-    daoManager.getDao.mockReturnValueOnce(groupDao);
-    groupDao.update.mockRejectedValueOnce(new Error());
-    await expect(
-      groupService.updateGroupSendFailurePostIds({
-        id: NaN,
-        send_failure_post_ids: [12, 13],
-      }),
-    ).rejects.toThrow();
   });
 
   it('getGroupSendFailurePostIds(id) will be return number array', async () => {

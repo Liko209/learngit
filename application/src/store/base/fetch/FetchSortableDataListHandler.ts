@@ -132,7 +132,7 @@ export class FetchSortableDataListHandler<
           id: number;
           entity: T;
         }[]).forEach(({ id, entity: data }) => {
-          entities.set(data.id, { id, data });
+          entities.set(id, { id, data });
         });
         keys = _([...(entities as Map<number, TReplacedData<T>>).values()])
           .filter(entity => this._isMatchFunc(entity.data))
