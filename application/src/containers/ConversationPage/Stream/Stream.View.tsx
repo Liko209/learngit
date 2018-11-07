@@ -24,6 +24,8 @@ type Props = WithNamespaces & StreamViewProps;
 class StreamViewComponent extends Component<Props> {
   private _firstUnreadCardRef: React.ReactInstance | null = null;
 
+  private _timeout: NodeJS.Timeout | null;
+
   @observable
   private _jumpToFirstUnreadLoading = false;
 
@@ -163,13 +165,18 @@ class StreamViewComponent extends Component<Props> {
 
   @action.bound
   private _jumpToFirstUnread = async () => {
-    if (this._jumpToFirstUnreadLoading) return;
-    const timeout = setTimeout(() => {
-      // Delay 500ms then show loading
+    if (this._jumpToFirstUnreadLoading || this._timeout) return;
+
+    // Delay 500ms then show loading
+    this._timeout = setTimeout(() => {
       this._jumpToFirstUnreadLoading = true;
     },                         500);
+
     const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
-    clearTimeout(timeout);
+
+    clearTimeout(this._timeout);
+    this._timeout = null;
+
     this._jumpToFirstUnreadLoading = false;
     if (!firstUnreadPostId) return;
 
