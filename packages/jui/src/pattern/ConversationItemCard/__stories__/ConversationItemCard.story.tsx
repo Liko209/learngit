@@ -37,7 +37,6 @@ storiesOf('Pattern/ConversationItemCard', module)
 
       onClick = () => {
         const { checked } = this.state;
-        console.log(checked, ' -----');
         this.setState({
           checked: !checked,
         });
@@ -48,11 +47,7 @@ storiesOf('Pattern/ConversationItemCard', module)
 
         return (
           <Wrapper className={checked ? 'checked' : ''}>
-            <JuiConversationItemCard
-              title={'Event Name'}
-              icon={<EventIcon />}
-              footer={<div>footer</div>}
-            >
+            <JuiConversationItemCard title={'Event Name'} icon={<EventIcon />}>
               content
             </JuiConversationItemCard>
             <JuiConversationItemCard
