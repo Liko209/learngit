@@ -70,7 +70,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -110,7 +110,7 @@ test(
           currentGroupId = await app.homePage.messagePanel.conversationPage.self.getAttribute(
             'data-group-id',
           );
-          await item.waitUntilUmiNotExist();
+          await item.waitUntilUmiExist(false);
           await item.openMoreMenu();
           await app.homePage.messagePanel.moreMenu.close.enter();
         },
@@ -221,7 +221,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -334,7 +334,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -356,7 +356,7 @@ test(
     );
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
-      await pvtChat.waitUntilUmiNotExist();
+      await pvtChat.waitUntilUmiExist(false);
     });
 
     await h(t).withLog(
@@ -481,7 +481,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -504,7 +504,7 @@ test(
     );
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
-      await pvtChat.waitUntilUmiNotExist();
+      await pvtChat.waitUntilUmiExist(false);
     });
 
     await h(t).withLog(
@@ -624,7 +624,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
