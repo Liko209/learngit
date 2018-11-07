@@ -10,7 +10,5 @@
   "Members": "组员",
   "already taken": "该名字已经被使用, 请换一个。",
   "Invalid Email": "邮箱不合法",
-  "Search Contact Placeholder": "组员 (请输入名字或者邮箱)",
-  "Public Team": "公开的群组 (任何同事都可见)",
-  "Members may post messages": "允许成员发消息"
+  "Search Contact Placeholder": "组员 (请输入名字或者邮箱)"
 }

@@ -69,10 +69,10 @@ class JuiListToggleButton extends Component<Props, {}> {
   }
 
   render() {
-    const { items } = this.props;
+    const { items, ...rest } = this.props;
 
     return (
-      <List dense={true}>
+      <List dense={true} {...rest}>
         {items.map(toggleItem => (
           <ListItem key={toggleItem.text} dense={true}>
             <ListItemText>{toggleItem.text}</ListItemText>

@@ -16,6 +16,7 @@ const StyledDiv = styled<JuiConversationPageProps, 'div'>('div')`
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 `;
 
 const JuiConversationPage = (props: JuiConversationPageProps) => (

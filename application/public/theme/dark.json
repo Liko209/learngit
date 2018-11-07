@@ -57,10 +57,7 @@
   "spacing": {
     "unit": 4
   },
-  "zIndex": {
-    "reponsePanel": 1,
-    "reponseResizer": 2
-  },
+  "zIndex": { "reponsePanel": 1, "reponseResizer": 2, "loading": 1000 },
   "size": {
     "width": 4,
     "height": 4
