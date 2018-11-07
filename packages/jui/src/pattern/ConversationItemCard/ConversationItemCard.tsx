@@ -45,7 +45,7 @@ type JuiConversationItemCardProps = {
   titleColor?: string;
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
   children: React.ReactNode;
-  footer: JSX.Element | null;
+  footer?: JSX.Element | null;
   footerPadding?: boolean;
   classes?: {
     itemTitle: string;
