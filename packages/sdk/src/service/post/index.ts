@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { daoManager, ItemDao, PostDao } from '../../dao';
+import { daoManager, ItemDao, PostDao, GroupConfigDao } from '../../dao';
 // import GroupDao from 'dao/group';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
@@ -163,31 +163,38 @@ export default class PostService extends BaseService<Post> {
         offset,
         limit,
       });
+      if (result.posts.length < limit) {
+        const groupConfigDao = daoManager.getDao(GroupConfigDao);
+        const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(groupId);
+        if (hasMoreRemote) {
+          // should try to get more posts from server
+          mainLogger.debug(
+            `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`,
+          );
 
-      if (
-        result.posts.length === 0 ||
-        (result.hasMore && result.posts.length < limit)
-      ) {
-        // should try to get more posts from server
-        mainLogger.debug(
-          `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`,
-        );
+          const lastPost = _.last(result.posts);
 
-        const lastPost = _.last(result.posts);
+          const remoteResult = await this.getPostsFromRemote({
+            groupId,
+            direction,
+            postId: lastPost ? lastPost.id : postId,
+            limit: limit - result.posts.length,
+          });
 
-        const remoteResult = await this.getPostsFromRemote({
-          groupId,
-          direction,
-          postId: lastPost ? lastPost.id : postId,
-          limit: limit - result.posts.length,
-        });
+          const posts: Post[] =
+            (await baseHandleData(remoteResult.posts)) || [];
+          const items = (await itemHandleData(remoteResult.items)) || [];
 
-        const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
-        const items = (await itemHandleData(remoteResult.items)) || [];
-
-        result.posts.push(...posts);
-        result.items.push(...items);
-        result.hasMore = remoteResult.hasMore;
+          result.posts.push(...posts);
+          result.items.push(...items);
+          result.hasMore = remoteResult.hasMore;
+          await groupConfigDao.update({
+            id: groupId,
+            has_more: remoteResult.hasMore,
+          });
+        } else {
+          result.hasMore = false;
+        }
       }
 
       result.limit = limit;
