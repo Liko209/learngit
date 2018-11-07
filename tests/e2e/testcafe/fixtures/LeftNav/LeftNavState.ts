@@ -4,27 +4,56 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { directLogin } from '../../utils';
 import { formalName } from '../../libs/filter';
-import { LeftNavState } from '../../page-models/pages/LeftNavState';
-import { setUp, tearDown } from '../../libs/helpers';
+import { h } from '../../v2/helpers'
+import { setupCase, teardownCase } from '../../init';
+import { AppRoot } from "../../v2/page-models/AppRoot";
+import { SITE_URL } from '../../config';
 
-fixture('LeftNavState')
-  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
-  .afterEach(tearDown());
+fixture('LeftNav')
+  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .afterEach(teardownCase());
 
 test(
-  formalName('reload page keep left nav state', ['P2', 'JPT-38', 'left nav state']), async (t) => {
-    const page = directLogin(t);
-    await page.chain(t => t.wait(10000))
-      .log('1. Navigate to LeftNavigationPage')
-      .shouldNavigateTo(LeftNavState)
-      .toggle()
-      .size(72)
-      .reload()
-      .size(72)
-      .toggle()
-      .size(200)
-      .reload()
-      .size(200);
+  formalName('reload page keep left panel state', ['P2', 'JPT-38']), async (t) => {
+    const minLeftPanelWidth = 72;
+    const maxLeftPanelWidth = 200;
+
+    const app = new AppRoot(t);
+    const user = h(t).rcData.mainCompany.users[4];
+
+    await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    }, true);
+
+    const leftPanel = app.homePage.leftPanel;
+
+    await h(t).withLog('When I fold left panel', async () => {
+      await leftPanel.fold();
+    });
+    await h(t).withLog(`Then width of left panel should be ${minLeftPanelWidth}`, async () => {
+      await t.expect(leftPanel.self.offsetWidth).eql(minLeftPanelWidth);
+    });
+    await h(t).withLog('When I refresh browser', async () => {
+      await h(t).refresh();
+      await leftPanel.ensureLoaded();
+    });
+    await h(t).withLog(`Then width of left panel should be ${minLeftPanelWidth}`, async () => {
+      await t.expect(leftPanel.self.offsetWidth).eql(minLeftPanelWidth);
+    });
+    await h(t).withLog('When I expand left panel', async () => {
+      await app.homePage.leftPanel.expand();
+    });
+    await h(t).withLog(`Then width of left panel should be ${maxLeftPanelWidth}`, async () => {
+      await t.expect(leftPanel.self.offsetWidth).eql(maxLeftPanelWidth);
+    });
+    await h(t).withLog('When I refresh browser', async () => {
+      await h(t).refresh();
+      await leftPanel.ensureLoaded();
+    });
+    await h(t).withLog(`Then width of left panel should be ${maxLeftPanelWidth}`, async () => {
+      await t.expect(leftPanel.self.offsetWidth).eql(maxLeftPanelWidth);
+    });
+
   });

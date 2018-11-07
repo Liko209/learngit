@@ -7,21 +7,19 @@ import { computed } from 'mobx';
 import { ConversationListItemViewProps } from './types';
 import { service } from 'sdk';
 const { GroupService } = service;
-import { getEntity, getSingleEntity } from '@/store/utils';
-// import { getGroupName } from '@/utils/groupName';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
-import { MyState } from 'sdk/models';
-import MyStateModel from '@/store/models/MyState';
-import GroupStateModel from '@/store/models/GroupState';
 import StoreViewModel from '@/store/ViewModel';
 import history from '@/utils/history';
+import { CONVERSATION_TYPES } from '@/constants';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
-  > {
+> {
   unreadCount: number;
   important?: boolean | undefined;
   groupService: service.GroupService = GroupService.getInstance();
@@ -47,30 +45,53 @@ class ConversationListItemViewModel extends StoreViewModel<
   get _group() {
     return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
   }
+
+  @computed
+  get groupType() {
+    return this._group.type;
+  }
+
+  @computed
+  get personId() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const membersExcludeMe = this._group.membersExcludeMe;
+
+    switch (this.groupType) {
+      case CONVERSATION_TYPES.TEAM:
+        return 0;
+      case CONVERSATION_TYPES.ME:
+        return currentUserId;
+      default:
+        return membersExcludeMe[0];
+    }
+  }
+
   onClick = () => {
-    storeManager.getGlobalStore().set('currentConversationId', this.groupId);
+    storeManager
+      .getGlobalStore()
+      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, this.groupId);
     history.push(`/messages/${this.groupId}`);
   }
 
   @computed
   private get _currentGroupId() {
-    return storeManager.getGlobalStore().get('currentConversationId');
+    return storeManager
+      .getGlobalStore()
+      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
   }
 
   @computed
   get umiHint() {
-    const lastGroup = getSingleEntity<MyState, MyStateModel>(
-      ENTITY_NAME.MY_STATE,
-      'lastGroupId',
-    ) as number;
-    const groupState = getEntity(
-      ENTITY_NAME.GROUP_STATE,
-      this.groupId,
-    ) as GroupStateModel;
+    const groupState = getEntity(ENTITY_NAME.GROUP_STATE, this.groupId);
+    return !!groupState.unreadCount;
+  }
 
-    const isCurrentGroup = lastGroup && lastGroup === this.groupId;
-
-    return !!(!isCurrentGroup && groupState.unreadCount);
+  @computed
+  get hidden() {
+    return (
+      storeManager.getGlobalStore().get(GLOBAL_KEYS.UNREAD_TOGGLE_ON) &&
+      !(this.umiHint || this.selected)
+    );
   }
 }
 

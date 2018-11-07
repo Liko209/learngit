@@ -11,6 +11,7 @@ import ProfileModel from '@/store/models/Profile';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 import { compareName } from '@/utils/helper';
 import { CONVERSATION_TYPES } from '@/constants';
+import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
 import { t } from 'i18next';
 
@@ -20,7 +21,7 @@ export default class GroupModel extends Base<Group> {
   @observable
   setAbbreviation: string;
   @observable
-  members: number[];
+  members: number[] = [];
   @observable
   description?: string;
   @observable
@@ -31,6 +32,8 @@ export default class GroupModel extends Base<Group> {
   draft?: string;
   @observable
   sendFailurePostIds?: number[];
+  @observable
+  creatorId: number;
 
   latestTime: number;
 
@@ -47,6 +50,7 @@ export default class GroupModel extends Base<Group> {
       send_failure_post_ids,
       most_recent_post_created_at,
       created_at,
+      creator_id,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -60,6 +64,7 @@ export default class GroupModel extends Base<Group> {
     this.latestTime = most_recent_post_created_at
       ? most_recent_post_created_at
       : created_at;
+    this.creatorId = creator_id;
   }
 
   @computed
@@ -69,17 +74,16 @@ export default class GroupModel extends Base<Group> {
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
-
     return favoriteGroupIds.some(groupId => groupId === this.id);
   }
 
   @computed
   get displayName(): string {
     if (this.type === CONVERSATION_TYPES.TEAM) {
-      return this.setAbbreviation;
+      return this.setAbbreviation || '';
     }
 
-    const currentUserId = getGlobalValue('currentUserId');
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
 
@@ -96,7 +100,7 @@ export default class GroupModel extends Base<Group> {
       this.type === CONVERSATION_TYPES.SMS
     ) {
       const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
-      return person.displayName;
+      return person.displayName || '';
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
@@ -124,7 +128,7 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const currentUserId = getGlobalValue('currentUserId');
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
     const members = this.members || [];
 
@@ -146,6 +150,18 @@ export default class GroupModel extends Base<Group> {
     }
 
     return CONVERSATION_TYPES.NORMAL_GROUP;
+  }
+
+  @computed
+  get membersExcludeMe() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+
+    return this.members.filter(member => member !== currentUserId);
+  }
+
+  @computed
+  get creator() {
+    return getEntity(ENTITY_NAME.PERSON, this.creatorId);
   }
 
   static fromJS(data: Group) {

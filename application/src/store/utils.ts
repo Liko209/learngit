@@ -4,6 +4,7 @@ import SingleEntityMapStore from './base/SingleEntityMapStore';
 import { BaseModel } from 'sdk/models';
 import { IEntity, IIDSortKey } from './store';
 import { ENTITY_NAME } from './constants';
+import { GLOBAL_VALUES } from './config';
 
 function getEntity<T extends BaseModel, K extends IEntity>(
   entityName: ENTITY_NAME,
@@ -25,7 +26,7 @@ function getSingleEntity<T extends BaseModel, K extends IEntity>(
   return store.get(id);
 }
 
-function getGlobalValue(key: any) {
+function getGlobalValue(key: keyof typeof GLOBAL_VALUES) {
   const store = storeManager.getGlobalStore();
   return store.get(key);
 }

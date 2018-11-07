@@ -12,6 +12,10 @@ class DataDispatcher extends EventEmitter2 {
     this.off(key, dataHandler);
   }
 
+  onPresenceArrived(data: any) {
+    this.emitAsync(this._getEmitEvent('SOCKET', 'presence', false), data);
+  }
+
   async onDataArrived(data: string, partial?: boolean) {
     const entries = parseSocketMessage(data);
     if (!entries) {
@@ -25,7 +29,9 @@ class DataDispatcher extends EventEmitter2 {
   }
 
   private _getEmitEvent(channel: string, eventKey: string, partial?: boolean) {
-    const event = `${channel.toUpperCase()}${partial ? '.PARTIAL' : ''}.${eventKey.toUpperCase()}`;
+    const event = `${channel.toUpperCase()}${
+      partial ? '.PARTIAL' : ''
+    }.${eventKey.toUpperCase()}`;
     mainLogger.info(`Data dispatched for event:${event}`);
     return event;
   }

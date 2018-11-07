@@ -3,5 +3,7 @@
   "prettier.tslintIntegration": true,
   "editor.formatOnSave": true,
   "typescript.surveys.enabled": false,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "tslint.exclude": "**/testcafe/**/*.ts",
+  "[handlebars]": { "editor.formatOnSave": false }
 }

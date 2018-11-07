@@ -8,31 +8,43 @@ import { Stream } from './Stream';
 import { MessageInput } from './MessageInput';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 import { ConversationPageViewProps } from './types';
+import { TScroller } from 'jui/hoc/withScroller';
 
 @observer
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
+  private _viewRefs: {
+    scroller?: TScroller;
+  } = {};
+
+  scroller: React.Component & {
+    scrollToRow: (n: number) => void;
+  };
+
+  sendHandler = () => {
+    const scroller = this._viewRefs.scroller;
+    scroller && scroller.scrollToRow(-1);
+  }
+
   render() {
     const { t, groupId, canPost } = this.props;
-    if (!groupId) {
-      return null;
-    }
-    return (
+
+    return groupId ? (
       <JuiConversationPage
         className="conversation-page"
         data-group-id={groupId}
       >
         <Header id={groupId} />
         <JuiDivider />
-        <Stream groupId={groupId} />
+        <Stream groupId={groupId} viewRefs={this._viewRefs} />
         {canPost ? (
-          <MessageInput id={groupId} />
+          <MessageInput id={groupId} onPost={this.sendHandler} />
         ) : (
           <JuiDisabledInput text={t('disabledText')} />
         )}
       </JuiConversationPage>
-    );
+    ) : null;
   }
 }
 

@@ -3,72 +3,163 @@
  * @Date: 2018-9-13 09:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { directLogin } from '../../utils';
-import { setUp, tearDown } from '../../libs/helpers';
+import 'testcafe';
 import { formalName } from '../../libs/filter';
-import { BackNForward } from '../../page-models/pages/BackNForward';
 import { ClientFunction } from 'testcafe';
+import { h, H } from '../../v2/helpers';
+import { AppRoot } from '../../v2/page-models/AppRoot';
+import { SITE_URL } from '../../config';
+import { setupCase, teardownCase } from '../../init';
 
-declare var test: TestFn;
 fixture('BackNForward/BackNForward')
-  .beforeEach(setUp('GlipBetaUser(1210,4488)'))
-  .afterEach(tearDown());
+  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .afterEach(teardownCase());
+
+const getLocation = ClientFunction(() => document.location.pathname);
 
 test(
-  formalName('test navigation on electron backwards and forwards functions', ['P2', 'JPT-44', 'JPT-49', 'BackNForward']), async (t) => {
-    const page = directLogin(t);
-    await page.chain(t => t.wait(10000))
-      .log('1. Navigate to BackNForward')
-      .shouldNavigateTo(BackNForward)
-      .log('2. click Phone Nav')
-      .clickLeftNavBtn('phone')
-      .log('3. click Meetings Nav')
-      .clickLeftNavBtn('meetings')
-      .log('4. click Contacts Nav')
-      .clickLeftNavBtn('contacts')
-      .log('5. Click Calendar Nav')
-      .clickLeftNavBtn('calendar')
-      .log('6. Click backward btn')
-      .clickBackwardBtn();
-    const getLocation = ClientFunction(() => document.location.pathname);
-    await t.expect(getLocation()).contains('/contacts');
-    await page.log('7. click forward btn')
-      .shouldNavigateTo(BackNForward)
-      .clickForwardBtn();
-    await t.expect(getLocation()).contains('/calendar');
-    await page.shouldNavigateTo(BackNForward)
-      .log('8. click avatar to sign out')
-      .clickAvatar()
-      .clickSignOut();
-  });
+  formalName('test navigation on electron backwards and forwards functions',
+    ['P2', 'JPT-44', 'JPT-49', 'BackNForward']
+  ),
+  async (t) => {
+    if (!await H.isElectron()) {
+      await h(t).log('This case only works on Electron!');
+      return;
+    }
+
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[0];
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded(); 
+      }
+    );
+
+    const backButton = app.homePage.header.backButton;
+    const forwardButton = app.homePage.header.forwardButton;
+
+    await h(t).withLog('Then the forward button should be disabled', async () => {
+      await t.expect(forwardButton.hasAttribute('disabled')).ok();
+    });
+
+    await h(t).withLog('When I enter Contacts and Calendar in order', async () => {
+      await app.homePage.leftPanel.contactsEntry.enter();
+      await app.homePage.leftPanel.calendarEntry.enter();
+    });
+
+    await h(t).withLog('Then the back button should be enabled', async () => {
+      await t.expect(backButton.hasAttribute('disabled')).notOk();
+    });
+
+    await h(t).withLog('When I click the back button', async () => {
+      await app.homePage.header.clickBack();
+      await t.expect(getLocation()).contains('/contacts');
+
+    });
+
+    await h(t).withLog('Then the forward button should be enabled', async () => {
+      await t.expect(forwardButton.hasAttribute('disabled')).notOk();
+      await app.homePage.header.clickForward();
+      await t.expect(getLocation()).contains('/calendar');
+    });
+  }
+);
 
 test(
-  formalName('reLogin should disable backward and forward button', ['P2', 'JPT-50', 'BackNForward']), async (t) => {
-    const page = directLogin(t);
-    await page.chain(t => t.wait(10000))
-      .log('1. Navigate to BackNForward')
-      .shouldNavigateTo(BackNForward)
-      .log('2. expect re-login backward btn disabled')
-      .backwardNForwardBtnShouldBeDisabled();
-  });
+  formalName(
+    'Check the back and forward buttons are disabled after user login',
+    ['P2', 'JPT-50', 'BackNForward']
+  ),
+  async (t) => {
+    if (!await H.isElectron()) {
+      await h(t).log('This case only works on Electron!');
+      return;
+    }
+
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[0];
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+      }
+    );
+
+    const backButton = app.homePage.header.backButton
+    const forwardButton = app.homePage.header.forwardButton
+
+    await h(t).withLog('Then the forwad and back button should be disabled', async () => {
+      await t.expect(forwardButton.hasAttribute('disabled')).ok();
+      await t.expect(backButton.hasAttribute('disabled')).ok();
+    });
+  }
+);
 
 test(
-  formalName('reLoad should disable backward and forward button', ['P2', 'JPT-172', 'BackNForward']), async (t) => {
-    const page = directLogin(t);
-    await page.chain(t => t.wait(10000))
-      .log('1. Navigate to BackNForward')
-      .shouldNavigateTo(BackNForward)
-      .log('2. click Phone Nav')
-      .clickLeftNavBtn('phone')
-      .log('3. click Meetings Nav')
-      .clickLeftNavBtn('meetings')
-      .log('4. click Contacts Nav')
-      .clickLeftNavBtn('contacts')
-      .log('5. Click backward btn')
-      .clickBackwardBtn()
-      .log('6. Reload app');
-    const current_url = await t.eval(() => window.location.href);
-    await t.navigateTo(current_url);
-    page.log('7. expect re-login backward btn disabled').shouldNavigateTo(BackNForward)
-      .backwardNForwardBtnShouldBeDisabled();
-  });
+  formalName(
+    'reLoad should disable backward and forward button',
+    ['P2', 'JPT-172', 'BackNForward']
+  ),
+  async (t) => {
+    if (!await H.isElectron()) {
+      await h(t).log('This case only works on Electron!');
+      return;
+    }
+
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[0];
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded(); 
+      }
+    );
+
+    const backButton = app.homePage.header.backButton
+    const forwardButton = app.homePage.header.forwardButton
+
+
+    await h(t).withLog('And I navigate every entry in left panel', async () => {
+      await app.homePage.leftPanel.dashboardEntry.enter();
+      await app.homePage.leftPanel.messagesEntry.enter();
+      await app.homePage.leftPanel.phoneEntry.enter();
+      await app.homePage.leftPanel.meetingsEntry.enter();
+      await app.homePage.leftPanel.contactsEntry.enter();
+      await app.homePage.leftPanel.calendarEntry.enter();
+      await app.homePage.leftPanel.tasksEntry.enter();
+      await app.homePage.leftPanel.notesEntry.enter();
+      await app.homePage.leftPanel.filesEntry.enter();
+      await app.homePage.leftPanel.settingsEntry.enter();
+    });
+
+
+    await h(t).withLog('Then the back button should be enabled', async () => {
+      await t.expect(backButton.hasAttribute('disabled')).notOk();
+    });
+
+    await h(t).withLog('When I click the back button', async () => {
+      await app.homePage.header.clickBack();
+    });
+
+    await h(t).withLog('Then the forward and back button should be enabled', async () => {
+      await t.expect(forwardButton.hasAttribute('disabled')).notOk();
+      await t.expect(backButton.hasAttribute('disabled')).notOk();
+    });
+
+    await h(t).withLog('When I reload App', async () => {
+      await t.eval(() => location.reload(true));
+    });
+
+    await h(t).withLog('Then the forwad and back button should be disabled', async () => {
+      await t.expect(forwardButton.hasAttribute('disabled')).ok();
+      await t.expect(backButton.hasAttribute('disabled')).ok();
+    });
+  }
+);

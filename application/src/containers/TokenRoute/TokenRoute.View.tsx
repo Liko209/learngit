@@ -6,45 +6,30 @@
 
 import React, { Component } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { translate, InjectedTranslateProps } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { reaction, IReactionDisposer } from 'mobx';
-
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import { JuiModal } from '@/containers/Dialog';
 
 type TokenRouteProps = RouteComponentProps<{}> &
-  InjectedTranslateProps & {
+  WithNamespaces & {
     unifiedLogin: Function;
     redirectToIndex: Function;
     isOffline: boolean;
-    isOpen: boolean;
+    isError: boolean;
   };
 
 @observer
 class TokenRoute extends Component<TokenRouteProps> {
-  private _observer: IReactionDisposer;
+  private _alert: { destroy: () => void };
 
   constructor(props: TokenRouteProps) {
     super(props);
-    this._observer = reaction(
-      () => {
-        const { isOffline, isOpen } = this.props;
-        return { isOffline, isOpen };
-      },
-      ({ isOffline, isOpen }) => {
-        this.showAlert(isOffline, isOpen);
-      },
-    );
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { location, history, unifiedLogin } = this.props;
-    unifiedLogin(location, history);
-  }
-
-  componentWillUnmount() {
-    this._observer();
+    await unifiedLogin(location, history);
   }
 
   onClose = () => {
@@ -52,26 +37,41 @@ class TokenRoute extends Component<TokenRouteProps> {
     redirectToIndex(location, history);
   }
 
-  showAlert(offline: any, open: any) {
+  showAlert = ({
+    isOffline,
+    isError,
+  }: {
+    isOffline?: boolean;
+    isError?: boolean;
+  }) => {
     const { t } = this.props;
-    if (open) {
-      JuiModal.alert({
+    let content = '';
+    if (isError) {
+      content = t('signInFailedContent');
+    }
+    if (isOffline) {
+      content = t('signInFailedContentNetwork');
+    }
+    if (content) {
+      if (this._alert) {
+        this._alert.destroy();
+      }
+      this._alert = JuiModal.alert({
+        content,
         title: t('signInFailedTitle'),
         onOK: () => {
           this.onClose();
         },
-        content: t(
-          offline ? 'signInFailedContentNetwork' : 'signInFailedContent',
-        ),
-        okText: 'OK',
       });
     }
   }
 
   render() {
+    const { isOffline, isError } = this.props;
     return (
       <React.Fragment>
         <JuiContentLoader />
+        {this.showAlert({ isOffline, isError })}
       </React.Fragment>
     );
   }

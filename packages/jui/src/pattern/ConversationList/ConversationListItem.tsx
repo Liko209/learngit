@@ -10,7 +10,7 @@ import MuiMenuItem, {
 } from '@material-ui/core/MenuItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey, palette } from '../../foundation/utils';
+import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 
@@ -18,9 +18,12 @@ const StyledIconography = styled(JuiIconography)``;
 
 const StyledListItem = styled(MuiMenuItem)`
   && {
+    display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
     white-space: nowrap;
     background: white;
-    padding: ${spacing(2, 4, 2, 3)};
+    padding: ${spacing(0, 4, 0, 3)};
+    height: ${height(8)};
+    line-height: ${height(8)};
     color: ${grey('900')};
     /**
      * Workaround to resolve transition conflicts with react-sortable-hoc
@@ -39,8 +42,10 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 
   && ${StyledIconography} {
+    color: ${palette('grey', '400')};
     opacity: 0;
     transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    font-size: 20px;
   }
 
   &&:hover ${StyledIconography} {
@@ -60,15 +65,22 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 `;
 
+const StyledPresenceWrapper = styled.div`
+  width: ${width(2)};
+  height: ${height(2)};
+  margin: ${spacing(1.5)};
+`;
+
 type JuiConversationListItemProps = {
   title: string;
-  presence?: JSX.Element;
+  presence?: JSX.Element | null;
   umi?: JSX.Element;
   indicator: JSX.Element | null;
   fontWeight?: 'bold' | 'normal';
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
   umiHint?: boolean;
+  hidden?: boolean;
 } & MuiMenuItemProps;
 
 type IConversationListItem = {
@@ -106,7 +118,7 @@ const JuiConversationListItem: IConversationListItem = (
       TouchRippleProps={{ classes: touchRippleClasses }}
       {...rest}
     >
-      {presence}
+      <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
       <ItemText style={{ fontWeight }}>
         {indicator} {title}
       </ItemText>

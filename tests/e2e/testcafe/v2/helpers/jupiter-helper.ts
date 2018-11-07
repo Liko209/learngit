@@ -2,8 +2,6 @@ import 'testcafe';
 import axios from 'axios';
 import { URL } from 'url';
 import { IUser } from '../models';
-import { UICreator } from '../../page-models'
-import { BlankPage } from '../../page-models/pages/BlankPage';
 
 export class JupiterHelper {
 
@@ -13,8 +11,7 @@ export class JupiterHelper {
     return { state, redirectUri };
   }
 
-  constructor(private t: TestController) {
-   }
+  constructor(private t: TestController) { }
 
   get authUrl(): string {
     return this.t.ctx.__authUrl;
@@ -62,16 +59,8 @@ export class JupiterHelper {
     return response.data.redirectUri;
   }
 
-  directLoginWithUser(url: string, user: IUser) {
-    return new BlankPage(this.t)
-      .log(`account: ${user.company.number} extension: ${user.extension}`)
-      .chain(async t => {
-        const urlWithAuthCode = await this.getUrlWithAuthCode(url, user);
-        await t.navigateTo(urlWithAuthCode);
-      });
-  }
-
-  onPage<T>(uiCreator: UICreator<T>) {
-    return new uiCreator(this.t);
+  async directLoginWithUser(url: string, user: IUser) {
+    const urlWithAuthCode = await this.getUrlWithAuthCode(url, user);
+    await this.t.navigateTo(urlWithAuthCode);
   }
 }

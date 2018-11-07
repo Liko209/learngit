@@ -1,18 +1,13 @@
 import * as React from 'react';
-import { translate } from 'react-i18next';
-import { i18n } from 'i18next';
-
-interface IProps {
-  i18n: i18n;
-}
+import { translate, WithNamespaces } from 'react-i18next';
 
 interface ILanguage {
   code: string;
   label: string;
 }
 
-class LanguageSwitcher extends React.PureComponent<IProps> {
-  constructor(props: IProps) {
+class LanguageSwitcher extends React.PureComponent<WithNamespaces> {
+  constructor(props: WithNamespaces) {
     super(props);
     const { i18n } = this.props;
     this.state = { language: i18n.language };
@@ -20,7 +15,7 @@ class LanguageSwitcher extends React.PureComponent<IProps> {
     this.handleChangeLanguage = this.handleChangeLanguage.bind(this);
   }
 
-  static getDerivedStateFromProps(props: IProps) {
+  static getDerivedStateFromProps(props: WithNamespaces) {
     return { language: props.i18n.language };
   }
 

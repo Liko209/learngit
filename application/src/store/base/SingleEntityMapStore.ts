@@ -4,7 +4,7 @@ import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import { IIncomingData, IEntity, IEntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
-import BaseService from 'sdk/service/BaseService';
+import { BaseService, EVENT_TYPES } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
 
 const modelProvider = new ModelProvider();
@@ -35,24 +35,16 @@ export default class SingleEntityMapStore<
     if (!entities.size) {
       return;
     }
-    const existProperties = Array.from(this.data.keys());
     const entity = {};
     Array.from(entities.values()).forEach((value: T) => {
       _.merge(entity, value);
     });
 
-    const matchedProperties: (keyof IEntity)[] = _.intersection(
-      Object.keys(entity).map(property => _.camelCase(property)),
-      existProperties,
-    );
-
-    if (!matchedProperties.length) {
-      return;
+    if (type === EVENT_TYPES.DELETE) {
+      this.batchRemove(entity as T);
     }
-    if (type === 'delete') {
-      this.batchRemove(matchedProperties);
-    } else {
-      this.batchSet(entity as T, matchedProperties);
+    if (type === EVENT_TYPES.UPDATE || type === EVENT_TYPES.PUT) {
+      this.batchSet(entity as T);
     }
   }
 
@@ -62,20 +54,11 @@ export default class SingleEntityMapStore<
   }
 
   @action
-  batchSet(data: T, matchedProperties?: (keyof IEntity)[]) {
+  batchSet(data: T) {
     if (!Object.keys(data).length) {
       return;
     }
-    let model = this.createModel(data);
-    if (matchedProperties) {
-      model = matchedProperties.reduce(
-        (matchedModel: IEntity, property: keyof IEntity) => {
-          matchedModel[property] = model[property]; // eslint-disable-line
-          return matchedModel;
-        },
-        {},
-      ) as IEntity;
-    }
+    const model = this.createModel(data);
     this.data.merge(model.toJS ? model.toJS() : model);
   }
 
@@ -85,9 +68,9 @@ export default class SingleEntityMapStore<
   }
 
   @action
-  batchRemove(properties: (keyof IEntity)[]) {
-    properties.forEach((property: any) => {
-      this.remove(property);
+  batchRemove(data: T) {
+    Object.keys(data).forEach((property: string) => {
+      this.remove(_.camelCase(property));
     });
   }
 

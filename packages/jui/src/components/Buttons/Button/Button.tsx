@@ -8,7 +8,7 @@ import tinycolor from 'tinycolor2';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
-import styled, { Dependencies } from '../../../foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import {
   typography,
   spacing,
@@ -20,7 +20,7 @@ import { Omit } from '../../../foundation/utils/typeHelper';
 
 export type JuiButtonProps = Omit<MuiButtonProps, 'innerRef'> & {
   size?: 'small' | 'large';
-  variant?: 'text' | 'contained';
+  variant?: 'text' | 'contained' | 'outlined';
   disabled?: boolean;
   color?: 'primary' | 'secondary';
 };
@@ -40,6 +40,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     min-width: ${({ theme }) => width(26)({ theme })};
     padding-left: ${spacing(4)};
     padding-right: ${spacing(4)};
+    text-transform: none;
     ${typography('button')} &.containedButtonStyle {
       box-shadow: unset;
       color: white;
@@ -68,8 +69,9 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   }
 `;
 
-export const JuiButton: React.StatelessComponent<JuiButtonProps> &
-  Dependencies = (props: JuiButtonProps) => <StyledButton {...props} />;
+export const JuiButton: React.StatelessComponent<JuiButtonProps> = (
+  props: JuiButtonProps,
+) => <StyledButton {...props} />;
 
 JuiButton.defaultProps = {
   size: 'large',
@@ -77,5 +79,3 @@ JuiButton.defaultProps = {
   variant: 'contained',
   disabled: false,
 };
-
-JuiButton.dependencies = [MuiButton];

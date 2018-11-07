@@ -15,9 +15,13 @@ import NotFound from '@/containers/NotFound';
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 import { HomeViewProps } from './types';
+import { analytics } from '@/Analytics';
 
 @observer
 class Home extends Component<HomeViewProps> {
+  componentDidMount() {
+    analytics.identify();
+  }
   render() {
     return (
       <Wrapper>

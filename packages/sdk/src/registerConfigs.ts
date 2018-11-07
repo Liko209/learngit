@@ -3,7 +3,7 @@
  * @Date: 2018-07-08 07:52:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { Container, NetworkManager } from 'foundation';
+import { Container, NetworkManager, OAuthTokenManager } from 'foundation';
 import { GlipAccount, RCAccount } from './account';
 import {
   AutoAuthenticator,
@@ -42,6 +42,8 @@ import { SocketManager } from './service/SocketManager/SocketManager';
 import StateService from './service/state';
 import SyncService from './service/sync';
 
+const networkManager = new NetworkManager(new OAuthTokenManager());
+
 const registerConfigs = {
   classes: [
     // DAOs
@@ -58,7 +60,11 @@ const registerConfigs = {
 
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
-    { name: AutoAuthenticator.name, value: AutoAuthenticator, injects: [DaoManager.name] },
+    {
+      name: AutoAuthenticator.name,
+      value: AutoAuthenticator,
+      injects: [DaoManager.name],
+    },
     { name: UnifiedLoginAuthenticator.name, value: UnifiedLoginAuthenticator },
 
     // Account
@@ -75,8 +81,16 @@ const registerConfigs = {
     { name: ProfileService.name, value: ProfileService },
     { name: SearchService.name, value: SearchService },
     { name: StateService.name, value: StateService },
-    { name: ConfigService.name, value: ConfigService, injects: [AuthService.name] },
-    { name: AuthService.name, value: AuthService, injects: [AccountManager.name] },
+    {
+      name: ConfigService.name,
+      value: ConfigService,
+      injects: [AuthService.name],
+    },
+    {
+      name: AuthService.name,
+      value: AuthService,
+      injects: [AccountManager.name],
+    },
     { name: AccountService.name, value: AccountService },
     { name: SyncService.name, value: SyncService },
 
@@ -110,7 +124,7 @@ const registerConfigs = {
     // TODO register as class instead
     { name: DaoManager.name, value: daoManager },
     { name: SocketManager.name, value: socketManager },
-    { name: NetworkManager.name, value: NetworkManager.Instance },
+    { name: NetworkManager.name, value: networkManager },
   ],
 };
 

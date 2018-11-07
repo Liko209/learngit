@@ -13,7 +13,9 @@ class LogManager {
   public constructor(public appenders: LOG_APPENDER = LOG_APPENDER.CONSOLE) {
     this._loggers = new Map();
     this.initMainLogger();
-
+    if (typeof window === 'undefined') {
+      return;
+    }
     window.onerror = this.windowError.bind(this);
     window.addEventListener('beforeunload', (event: any) => {
       this.doAppend();

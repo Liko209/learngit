@@ -8,17 +8,19 @@ import { SwitchProps } from '@material-ui/core/Switch';
 // import MuiTooltip from '@material-ui/core/Tooltip';
 import { ToggleButton } from './styled';
 
-type IProps = {
-  checked: boolean;
-  onChange: (
+type JuiToggleButtonProps = {
+  checked?: boolean;
+  onChange?: (
     event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
   ) => void;
   disabled?: boolean;
 };
 
-export const JuiToggleButton: React.SFC<SwitchProps> = (props: IProps) => {
-  const { disabled, onChange, checked } = props;
+const JuiToggleButton: React.SFC<SwitchProps> = (
+  props: JuiToggleButtonProps,
+) => {
+  const { disabled, onChange, checked, ...rest } = props;
 
   return (
     // <MuiTooltip title={tooltipTitle}>
@@ -36,7 +38,10 @@ export const JuiToggleButton: React.SFC<SwitchProps> = (props: IProps) => {
       color="primary"
       disabled={disabled}
       disableRipple={true}
+      {...rest}
     />
     // </MuiTooltip>
   );
 };
+
+export { JuiToggleButton, JuiToggleButtonProps };

@@ -187,7 +187,7 @@ class JuiLeftNav extends PureComponent<
             const navUrl = item.url;
             let selected;
             if (selectedPath) {
-              selected = selectedPath === navUrl.substr(1);
+              selected = selectedPath === navUrl.split('/')[1];
             } else {
               const pathname = window.location.pathname;
               const actIndex = pathname.lastIndexOf('/');

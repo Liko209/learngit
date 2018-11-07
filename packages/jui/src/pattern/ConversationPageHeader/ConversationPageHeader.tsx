@@ -13,6 +13,7 @@ import MuiAppBar, {
 } from '@material-ui/core/AppBar';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import MuiTooltip from '@material-ui/core/Tooltip';
+
 import {
   typography,
   ellipsis,
@@ -33,7 +34,8 @@ type JuiConversationPageHeaderProps = {
 const TitleWrapper = styled<TypographyProps>(Typography)`
   && {
     color: ${grey('900')};
-    ${typography('title2')} ${ellipsis()};
+    ${typography('title2')};
+    ${ellipsis()};
   }
 `;
 const WrappedAppBar = ({ Right, ...rest }: JuiConversationPageHeaderProps) => (
@@ -41,13 +43,13 @@ const WrappedAppBar = ({ Right, ...rest }: JuiConversationPageHeaderProps) => (
 );
 const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
   && {
-    min-height: ${height(14)};
+    min-height: ${height(12)};
     padding-left: 0;
     padding-right: 0;
     background-color: white;
 
     > div {
-      min-height: ${height(14)};
+      min-height: ${height(12)};
       padding-left: ${spacing(6)};
       padding-right: ${spacing(6)};
     }
@@ -70,9 +72,11 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
     .subtitle {
       display: flex;
       align-items: center;
-      padding-left: ${({ theme }) => spacing(1)({ theme })};
+      overflow: hidden;
+      flex: 1;
+      padding-left: ${({ theme }) => spacing(2)({ theme })};
       padding-right: ${({ theme, Right }) =>
-        Right ? spacing(3)({ theme }) : ''};
+        Right ? spacing(12)({ theme }) : ''};
     }
   }
 `;

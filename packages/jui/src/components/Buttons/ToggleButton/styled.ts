@@ -15,10 +15,10 @@ import {
 
 const ToggleButton = styled(MuiSwitch)`
   && {
-    width: ${({ theme }) => spacing(12)};
+    width: ${({ theme }) => spacing(9)};
   }
   .custom-switchBase {
-    width: ${({ theme }) => spacing(12)};
+    width: ${({ theme }) => spacing(9)};
     height: ${({ theme }) => spacing(5)};
     transform: translateX(${({ theme }) => spacing(-2)});
   }

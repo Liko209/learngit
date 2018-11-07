@@ -10,7 +10,6 @@ import { debounce, Cancelable } from 'lodash';
 import { AbstractViewModel } from '@/base';
 import { MessageInputProps, MessageInputViewProps } from './types';
 import { GroupService, PostService } from 'sdk/service';
-import { markdownFromDelta } from 'jui/pattern/MessageInput';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -26,7 +25,7 @@ type DebounceFunction = (
   params: { id: number; draft: string },
 ) => Promise<boolean>;
 
-class MessageInputViewModel extends AbstractViewModel
+class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
   implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
@@ -93,10 +92,11 @@ class MessageInputViewModel extends AbstractViewModel
 
   forceSaveDraft = () => {
     // immediately save
-    this._groupService.updateGroupDraft({
-      draft: this.draft,
-      id: this._id,
-    });
+    this.draft &&
+      this._groupService.updateGroupDraft({
+        draft: this.draft,
+        id: this._id,
+      });
   }
 
   @computed
@@ -122,12 +122,14 @@ class MessageInputViewModel extends AbstractViewModel
       vm.error = '';
       if (content.trim()) {
         vm._sendPost(quill);
+        const onPostHandler = vm.props.onPost;
+        onPostHandler && onPostHandler();
       }
     };
   }
 
   private async _sendPost(quill: Quill) {
-    const text = markdownFromDelta(quill.getContents());
+    const text = quill.getText();
     this.changeDraft('');
     try {
       await this._postService.sendPost({

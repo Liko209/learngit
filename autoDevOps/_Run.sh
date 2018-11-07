@@ -25,6 +25,9 @@ done
 for pid in ${pids[*]}; do
     echo "waiting for sub process $pid"
     wait $pid
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
 done
 
 addEnv hasLintError=$hasLintError

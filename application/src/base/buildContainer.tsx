@@ -13,24 +13,27 @@ import StoreViewModel from '@/store/ViewModel';
 type BuildContainerOptions<T> = {
   ViewModel: new (...args: any[]) => StoreViewModel;
   View: ComponentType<any>;
-  plugins?: IPlugin[];
+  plugins?: { [key: string]: IPlugin };
 };
-
+type TIntrinsticProps = {
+  viewRefs?: any;
+};
 function buildContainer<P = {}, S = {}, SS = any>({
   View,
   ViewModel,
-  plugins = [],
+  plugins = {},
 }: BuildContainerOptions<P>) {
+  type Props = P & TIntrinsticProps;
   @observer
-  class Container extends Component<P, S, SS> {
+  class Container extends Component<Props, S, SS> {
     @observable
     vm: StoreViewModel;
     View = View;
 
-    constructor(props: P) {
+    constructor(props: Props) {
       super(props);
       this.vm = new ViewModel(props);
-      plugins.forEach((plugin: IPlugin) => {
+      _(plugins).forEach((plugin: IPlugin) => {
         plugin.install(this.vm);
         this.View = plugin.wrapView(this.View);
       });
@@ -62,11 +65,17 @@ function buildContainer<P = {}, S = {}, SS = any>({
     private get _viewProps() {
       const descriptors = Object.getOwnPropertyDescriptors(this.vm);
       const props: any = {};
+
+      Object.keys(this.props).forEach((key: string) => {
+        props[key] = this.props[key];
+      });
+
       Object.keys(descriptors)
         .filter(this._isViewProp)
         .forEach((key: string) => {
           props[key] = this.vm[key];
         });
+      props.plugins = plugins;
       return props;
     }
 

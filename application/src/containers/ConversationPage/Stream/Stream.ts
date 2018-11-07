@@ -6,19 +6,20 @@
 import { buildContainer } from '@/base';
 import { StreamView } from './Stream.View';
 import { StreamViewModel } from './Stream.ViewModel';
-import { InfiniteListPlugin } from '@/plugins';
+import { LoadingMorePlugin, LoadingPlugin } from '@/plugins';
 import { StreamProps } from './types';
 
 const Stream = buildContainer<StreamProps>({
   View: StreamView,
   ViewModel: StreamViewModel,
-  plugins: [
-    new InfiniteListPlugin({
-      threshold: 600,
+  plugins: {
+    loadingPlugin: new LoadingPlugin(),
+    loadingMorePlugin: new LoadingMorePlugin({
+      thresholdUp: 600,
       initialScrollTop: 99999,
       stickTo: 'bottom',
     }),
-  ],
+  },
 });
 
 export { Stream };

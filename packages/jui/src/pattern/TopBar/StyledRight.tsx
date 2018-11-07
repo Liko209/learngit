@@ -24,7 +24,7 @@ const StyledRight = styled('div')`
   }
 
   @media (max-width: 1100px) {
-    width: ${width(21)};
+    width: ${width(33)};
   }
 
   @media (max-width: 600px) {
@@ -41,6 +41,5 @@ const StyledRight = styled('div')`
 `;
 
 StyledRight.displayName = 'StyledRight';
-StyledRight.dependencies = [];
 
 export { StyledRight };

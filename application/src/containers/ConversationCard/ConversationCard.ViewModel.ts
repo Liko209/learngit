@@ -5,24 +5,21 @@
 */
 import moment from 'moment';
 import PostModel from '@/store/models/Post';
-import { AbstractViewModel } from '@/base';
 import {
   ConversationCardProps,
   ConversationCardViewProps,
 } from '@/containers/ConversationCard/types';
-import { observable, action, computed } from 'mobx';
+import { computed } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { Post, Person } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
-class ConversationCardViewModel extends AbstractViewModel implements ConversationCardViewProps {
-  @observable id: number;
-
-  @action
-  onReceiveProps(props: ConversationCardProps) {
-    if (this.id !== props.id) {
-      this.id = props.id;
-    }
+import { StoreViewModel } from '@/store/ViewModel';
+class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
+  implements ConversationCardViewProps {
+  @computed
+  get id() {
+    return this.props.id;
   }
 
   @computed
@@ -32,20 +29,28 @@ class ConversationCardViewModel extends AbstractViewModel implements Conversatio
 
   @computed
   get creator() {
-    return getEntity<Person, PersonModel>(
-      ENTITY_NAME.PERSON,
-      this.post.creatorId,
-    );
+    if (this.post.creatorId) {
+      return getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        this.post.creatorId,
+      );
+    }
+    return {} as PersonModel;
   }
 
   @computed
-  get displayTitle() {
-    let str = this.creator.displayName;
-    if (this.creator.awayStatus) {
-      str += ` ${this.creator.awayStatus}`;
-    }
+  get itemIds() {
+    return this.post.itemIds || [];
+  }
 
-    return str;
+  @computed
+  get name() {
+    return this.creator.displayName;
+  }
+
+  @computed
+  get customStatus() {
+    return this.creator.awayStatus;
   }
 
   @computed

@@ -5,16 +5,12 @@
  */
 import { computed } from 'mobx';
 import _ from 'lodash';
-import { service } from 'sdk';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
-const MessageTypes = [
-  service.GROUP_QUERY_TYPE.FAVORITE,
-  service.GROUP_QUERY_TYPE.GROUP,
-  service.GROUP_QUERY_TYPE.TEAM,
-];
+import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import { LeftNavProps } from './types';
+import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 
 const getItem = (item: string) => {
   return localStorage.getItem(item);
@@ -27,21 +23,17 @@ class LeftNavViewModel extends AbstractViewModel {
         ? true
         : JSON.parse(String(getItem('expanded')));
     const globalStore = storeManager.getGlobalStore();
-    globalStore.set('isLeftNavOpen', isLocalExpand);
+    globalStore.set(GLOBAL_KEYS.IS_LEFT_NAV_OPEN, isLocalExpand);
   }
 
   @computed
   get groupIds() {
-    let ids: number[] = [];
-    _.forEach(MessageTypes, (messageType: string) => {
-      ids = _.union(getGlobalValue(messageType), ids);
-    });
-    return ids;
+    return SectionGroupHandler.getInstance().getAllGroupIds();
   }
 
   @computed
   get isLeftNavOpen() {
-    const isExpand = getGlobalValue('isLeftNavOpen');
+    const isExpand = getGlobalValue(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
     localStorage.setItem('expanded', JSON.stringify(isExpand));
     return JSON.parse(getItem('expanded') || 'true');
   }

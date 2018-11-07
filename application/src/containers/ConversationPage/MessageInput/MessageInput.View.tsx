@@ -5,16 +5,13 @@
  */
 
 import React, { Component } from 'react';
-import { translate } from 'react-i18next';
-import { TranslationFunction } from 'i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { MessageInputViewProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
 
-type Props = {
-  t: TranslationFunction,
-};
-
-class MessageInputViewComponent extends Component<MessageInputViewProps & Props> {
+class MessageInputViewComponent extends Component<
+  MessageInputViewProps & WithNamespaces
+> {
   componentWillUnmount() {
     this.props.forceSaveDraft();
   }

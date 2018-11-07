@@ -13,6 +13,5 @@ type JuiListItemAvatarProps = MuiListItemAvatarProps;
 const JuiListItemAvatar = styled(MuiListItemAvatar)``;
 
 JuiListItemAvatar.displayName = 'JuiListItemAvatar';
-JuiListItemAvatar.dependencies = [MuiListItemAvatar];
 
 export { JuiListItemAvatar, JuiListItemAvatarProps };

@@ -14,7 +14,7 @@ type ConversationCardProps = {
 
 const StyledRightSection = styled('div')`
   flex-grow: 1;
-  overflow: hidden;
+  /* overflow: hidden; */
   min-width: 0;
 `;
 const StyledConversationCard = styled('div')`

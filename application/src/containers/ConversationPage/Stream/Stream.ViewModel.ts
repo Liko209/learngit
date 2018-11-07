@@ -4,26 +4,31 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISortableModel, FetchDataDirection } from '@/store/base/fetch/types';
 import _ from 'lodash';
-import { observable } from 'mobx';
-import { Post } from 'sdk/models';
+import { observable, computed } from 'mobx';
 import { PostService, StateService, ENTITY } from 'sdk/service';
+import { Post, GroupState } from 'sdk/models';
+import { ErrorTypes } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
-import { TransformHandler } from '@/store/base/TransformHandler';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
 } from '@/store/base/fetch';
-
+import { FetchDataDirection } from '@/store/base/fetch/types';
+import StoreViewModel from '@/store/ViewModel';
 import {
   onScrollToTop,
+  onScroll,
   loading,
   loadingTop,
+  onScrollToBottom,
 } from '@/plugins/InfiniteListPlugin';
-import { StreamProps } from './types';
-import { ErrorTypes } from 'sdk/utils';
-import StoreViewModel from '@/store/ViewModel';
+import { StreamProps, StreamItem } from './types';
+import { PostTransformHandler } from './PostTransformHandler';
+import { getEntity } from '@/store/utils';
+import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
+import GroupStateModel from '@/store/models/GroupState';
+import { DateSeparatorHandler } from './DateSeparatorHandler';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -31,74 +36,55 @@ const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
 const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,
   sortValue: dataModel.created_at,
+  data: dataModel,
 });
-enum TStreamType {
-  'POST',
-  'GROUPED_POSTS',
-  'TAG',
-}
-type TBaseElement = {
-  type: TStreamType;
-  value: number;
-  meta?: any;
-};
 
-type TTransformedElement = {
-  type: TStreamType;
-  value: number | TBaseElement[];
-  meta?: any;
-};
-class PostTransformHandler extends TransformHandler<TTransformedElement, Post> {
-  onAppended: Function;
-  constructor(
-    handler: FetchSortableDataListHandler<Post>,
-    onAppended: Function,
-  ) {
-    super(handler);
-    this.onAppended = onAppended;
-  }
-  onAdded(direction: FetchDataDirection, addedItems: ISortableModel[]) {
-    const updated = _(addedItems)
-      .map(item => ({
-        value: item.id,
-      }))
-      .differenceBy(this.listStore.items, 'value')
-      .map(item => ({ type: TStreamType.POST, value: item.value }))
-      .reverse()
-      .value();
-    const inFront = FetchDataDirection.UP === direction;
-    if (!inFront) {
-      this.onAppended();
-    }
-    this.listStore.append(updated, inFront); // new to old
-  }
-
-  onDeleted(deletedItems: number[]) {
-    this.listStore.delete((item: TTransformedElement) =>
-      deletedItems.includes(item.value as number),
-    );
-  }
-}
-
-class StreamViewModel extends StoreViewModel {
+class StreamViewModel extends StoreViewModel<StreamProps> {
   groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
 
+  @observable
   private _transformHandler: PostTransformHandler;
+
+  private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
+  private _initialized = false;
 
   @observable
   groupId: number;
   @observable
   postIds: number[] = [];
+  @observable
+  items: StreamItem[] = [];
+
+  @computed
+  get _readThrough() {
+    const groupState = getEntity<GroupState, GroupStateModel>(
+      ENTITY_NAME.GROUP_STATE,
+      this.groupId,
+    );
+    return groupState.readThrough;
+  }
+
+  @computed
+  get hasMore() {
+    return this._transformHandler.hasMore(FetchDataDirection.UP);
+  }
+
+  constructor() {
+    super();
+    this.markAsRead = this.markAsRead.bind(this);
+  }
 
   onReceiveProps(props: StreamProps) {
-    if (this.groupId === props.groupId) return;
-    if (this._transformHandler) {
-      this._transformHandler.dispose();
+    if (this.groupId === props.groupId) {
+      return;
     }
+    if (this._transformHandler) {
+      this.dispose();
+    }
+
     this.groupId = props.groupId;
-    this.markAsRead();
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (offset: number, direction, pageSize, anchor) => {
         try {
@@ -130,24 +116,36 @@ class StreamViewModel extends StoreViewModel {
       },
     );
 
-    this._transformHandler = new PostTransformHandler(orderListHandler, () => {
-      console.log('on append');
-      this.markAsRead();
+    this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
+    this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
+      this._readThrough,
+    );
+
+    this._transformHandler = new PostTransformHandler({
+      separatorHandlers: [
+        this._newMessageSeparatorHandler,
+        new DateSeparatorHandler(),
+      ],
+      handler: orderListHandler,
     });
-    this.autorun(() => {
-      const postIds = _(this._transformHandler.listStore.items)
-        .map('value')
-        .value() as number[];
-      if (!_.isEqual([...this.postIds], postIds)) {
-        this.postIds = postIds;
-      }
-    });
+
+    this.autorun(() => (this.postIds = this._transformHandler.postIds));
+    this.autorun(() => (this.items = this._transformHandler.items));
+    this.autorun(() =>
+      this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
+        this._readThrough,
+      ),
+    );
+
+    this._initialized = false;
     this.loadInitialPosts();
   }
 
   @loading
   async loadInitialPosts() {
     await this._loadPosts(FetchDataDirection.UP);
+    this._initialized = true;
+    this.markAsRead();
   }
 
   @onScrollToTop
@@ -156,10 +154,34 @@ class StreamViewModel extends StoreViewModel {
     await this._loadPosts(FetchDataDirection.UP);
   }
 
+  @onScroll
+  async handleNewMessageSeparatorState(event: { target?: HTMLInputElement }) {
+    if (!event.target) return;
+    const scrollEl = event.target;
+    const atBottom =
+      scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
+    const isFocused = document.hasFocus();
+    if (atBottom && isFocused && this._initialized) {
+      this._newMessageSeparatorHandler.disable();
+    } else {
+      this._newMessageSeparatorHandler.enable();
+    }
+  }
+
+  @onScrollToBottom
   markAsRead() {
-    if (this.groupId) {
+    const isFocused = document.hasFocus();
+    if (isFocused) {
       this._stateService.markAsRead(this.groupId);
     }
+  }
+
+  enableNewMessageSeparatorHandler = () => {
+    this._newMessageSeparatorHandler.enable();
+  }
+
+  disableNewMessageSeparatorHandler = () => {
+    this._newMessageSeparatorHandler.disable();
   }
 
   dispose() {

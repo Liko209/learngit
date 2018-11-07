@@ -3,10 +3,17 @@
  * @Date: 2018-03-14 20:26:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { IResponse } from '../NetworkClient';
+import { IResponse, IResponseError } from '../NetworkClient';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
-import { FileItem, Item, BaseModel, StoredFile, Raw, NoteItem } from '../../models';
+import {
+  FileItem,
+  Item,
+  BaseModel,
+  StoredFile,
+  Raw,
+  NoteItem,
+} from '../../models';
 import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
 
 interface IRightRailItemModel extends BaseModel {
@@ -49,7 +56,10 @@ class ItemAPI extends Api {
     return this.glipNetworkClient.post('/file', data);
   }
 
-  static uploadFileItem(files: FormData, callback?: ProgressCallback): Promise<UploadFileResponse> {
+  static uploadFileItem(
+    files: FormData,
+    callback?: ProgressCallback,
+  ): Promise<UploadFileResponse> {
     return this.uploadNetworkClient.http({
       path: '/upload',
       method: NETWORK_METHOD.POST,
@@ -77,6 +87,13 @@ class ItemAPI extends Api {
 
   static getNote(id: number): Promise<NoteResponse> {
     return this.glipNetworkClient.get(`/pages_body/${id}`);
+  }
+  static deleteItem<T>(
+    id: number,
+    type: string,
+    data: Partial<T>,
+  ): Promise<IResponse<Raw<T> & IResponseError>> {
+    return this.glipNetworkClient.put(`/${type}/${id}`, data);
   }
 }
 

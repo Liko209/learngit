@@ -7,11 +7,12 @@ import { computed } from 'mobx';
 import _ from 'lodash';
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity } from '@/store/utils';
 import { UmiProps, UmiViewProps } from './types';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import storeManager, { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   constructor(props: UmiProps) {
@@ -30,22 +31,19 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   @computed
   private get _umiObj() {
     const groupIds = this.ids;
-    const currentGroupId = getGlobalValue('currentConversationId');
     const groupStates = _.map(groupIds, (groupId: number) => {
       return getEntity(ENTITY_NAME.GROUP_STATE, groupId) as GroupStateModel;
     });
-    let important = false;
-    const unreadCount = _.sumBy(groupStates, (groupState: GroupStateModel) => {
-      const isCurrentGroup = currentGroupId === groupState.id;
-      const group = getEntity(ENTITY_NAME.GROUP, groupState.id) as GroupModel;
-      const unreadCount = isCurrentGroup
-        ? 0
-        : (!group.isTeam && (groupState.unreadCount || 0)) ||
-          (groupState.unreadMentionsCount || 0);
-      important = important || !!groupState.unreadMentionsCount;
-      return unreadCount;
+    const important = _(groupStates).some((groupState: GroupStateModel) => {
+      return !!groupState.unreadMentionsCount;
     });
-
+    const unreadCount = _(groupStates).sumBy((groupState: GroupStateModel) => {
+      const group: GroupModel = getEntity(ENTITY_NAME.GROUP, groupState.id);
+      const umiCount = group.isTeam
+        ? groupState.unreadMentionsCount
+        : groupState.unreadCount;
+      return umiCount || 0;
+    });
     return {
       unreadCount,
       important,
@@ -53,7 +51,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   }
 
   updateAppUmi() {
-    storeManager.getGlobalStore().set('app.umi', this.unreadCount);
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.APP_UMI, this.unreadCount);
   }
 
   @computed

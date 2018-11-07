@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { createAtom, IAtom } from 'mobx';
+import { createAtom, IAtom, action } from 'mobx';
 import { service } from 'sdk';
 import { BaseService } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
@@ -25,6 +25,8 @@ export default class MultiEntityMapStore<
   private _maxCacheCount: number;
   private _service: BaseService<T>;
 
+  private _eventType = [EVENT_TYPES.RESET, EVENT_TYPES.RELOAD];
+
   constructor(
     entityName: ENTITY_NAME,
     { service, event, cacheCount }: IEntitySetting,
@@ -43,14 +45,13 @@ export default class MultiEntityMapStore<
   }
 
   handleIncomingData({ type, entities }: IIncomingData<T>) {
-    if (!entities.size) {
+    if (entities && !entities.size && this._eventType.includes[type]) {
       return;
     }
     const existKeys: number[] = Object.keys(this._data).map(Number);
-    const matchedKeys: number[] = _.intersection(
-      Array.from(entities.keys()),
-      existKeys,
-    );
+    const matchedKeys: number[] = entities
+      ? _.intersection(Array.from(entities.keys()), existKeys)
+      : [];
     if (type === EVENT_TYPES.DELETE) {
       this.batchRemove(matchedKeys);
     } else {
@@ -61,15 +62,23 @@ export default class MultiEntityMapStore<
           matchedEntities.push(entity);
         }
       });
-      if (type === EVENT_TYPES.UPDATE) {
-        this.batchDeepSet(matchedEntities as T[]);
-        return;
+      switch (type) {
+        case EVENT_TYPES.UPDATE:
+          this.batchDeepSet(matchedEntities as T[]);
+          break;
+        case EVENT_TYPES.REPLACE:
+          this.batchReplace(matchedEntities as { id: number; data: T }[]);
+          break;
+        case EVENT_TYPES.RELOAD:
+          this.reload();
+          break;
+        case EVENT_TYPES.RESET:
+          this.reset();
+          break;
+        default:
+          this.batchSet(matchedEntities as T[]);
+          break;
       }
-      if (type === EVENT_TYPES.REPLACE) {
-        this.batchReplace(matchedEntities as { id: number; data: T }[]);
-        return;
-      }
-      this.batchSet(matchedEntities as T[]);
     }
   }
 
@@ -188,6 +197,29 @@ export default class MultiEntityMapStore<
 
   getUsedIds() {
     return this._usedIds;
+  }
+
+  @action
+  reset() {
+    this._usedIds.forEach((id: number) => {
+      this._data[id].reset();
+    });
+  }
+
+  @action
+  reload() {
+    this._usedIds.forEach((id: number) => {
+      const res = this.getByService(id);
+      if (res instanceof Promise) {
+        res.then((res: T & { error?: {} }) => {
+          if (res && !res.error) {
+            this.set(res);
+          }
+        });
+      } else {
+        this.set(res as T);
+      }
+    });
   }
 
   private _createAtom(id: number) {

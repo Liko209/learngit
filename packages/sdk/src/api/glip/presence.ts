@@ -18,7 +18,7 @@ class PresenceAPI extends Api {
     idArr: number[],
   ): Promise<IResponse<RawPresence[]>> {
     const ids = idArr.join(',');
-    return this.glipNetworkClient.get(
+    return this.uploadNetworkClient.get(
       `/glip-presence/v1/person/${ids}/presence`,
       {},
       NETWORK_VIA.SOCKET,
