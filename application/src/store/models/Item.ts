@@ -1,38 +1,29 @@
 import { Item } from 'sdk/models';
 import { observable } from 'mobx';
-
+import { TypeDictionary } from 'sdk/utils';
+import { setFileData } from './Items';
 import Base from './Base';
+
+const ITEM_DATA_HANDLE_MAP = {
+  [TypeDictionary.TYPE_ID_TASK]: () => {},
+  [TypeDictionary.TYPE_ID_FILE]: setFileData,
+  [TypeDictionary.TYPE_ID_EVENT]: () => {},
+  [TypeDictionary.TYPE_ID_LINK]: () => {},
+};
+
 export default class ItemModel extends Base<Item> {
-  @observable
-  type: string;
   @observable
   typeId: number;
   @observable
-  downloadUrl: string;
+  summary: string;
   @observable
-  size: number;
+  title: string;
   @observable
-  name: string;
+  url: string;
   @observable
-  isDocument: boolean;
+  image: string;
   @observable
-  isNew: boolean;
-  @observable
-  pages: {
-    file_id: number;
-    url: string;
-  }[];
-  @observable
-  thumbs: any;
-  @observable
-  origHeight: number;
-  @observable
-  origWidth: number;
-  @observable summary: string;
-  @observable title: string;
-  @observable url: string;
-  @observable image: string;
-  @observable deactivated: boolean;
+  deactivated: boolean;
 
   constructor(data: Item) {
     super(data);
@@ -44,42 +35,8 @@ export default class ItemModel extends Base<Item> {
     this.image = data.image;
     this.deactivated = data.deactivated;
     this.typeId = type_id;
-    this.setFileData();
-  }
 
-  setFileData() {
-    const { type, name, versions, is_document, is_new } = this.data;
-    this.type = type;
-    this.name = name;
-    this.isDocument = is_document;
-    this.isNew = is_new;
-    if (versions && versions.length > 0) {
-      const version = versions[0];
-      const {
-        url,
-        download_url,
-        size,
-        pages,
-        thumbs,
-        orig_height,
-        orig_width,
-      } = version;
-      this.url = url;
-      this.size = size;
-      this.downloadUrl = download_url;
-      if (pages && pages.length > 0) {
-        this.pages = pages;
-      }
-      if (thumbs) {
-        this.thumbs = thumbs;
-      }
-      if (orig_height) {
-        this.origHeight = orig_height;
-      }
-      if (orig_width) {
-        this.origWidth = orig_width;
-      }
-    }
+    ITEM_DATA_HANDLE_MAP[type_id] && ITEM_DATA_HANDLE_MAP[type_id].call(this);
   }
 
   static fromJS(data: Item) {
