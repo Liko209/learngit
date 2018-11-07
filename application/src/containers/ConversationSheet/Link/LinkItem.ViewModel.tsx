@@ -26,7 +26,7 @@ class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
   }
   @action
   onLinkItemClick = async (itemId: number = 0) => {
-    await this._itemService.doNotRenderLink(itemId, 'link');
+    await this._itemService.doNotRenderItem(itemId, 'link');
   }
 }
 export { LinkItemViewModel };

@@ -8,8 +8,11 @@ import ItemAPI from '../../api/glip/item';
 import handleData, { sendFileItem, uploadStorageFile } from './handleData';
 import { transform } from '../utils';
 import { StoredFile, Item, FileItem, NoteItem } from '../../models';
-import { ENTITY, SOCKET } from '../eventKey';
-import notificationCenter from '../notificationCenter';
+import { BaseError } from '../../utils';
+import { SOCKET } from '../eventKey';
+import ErrorParser from '../../utils/error/parser';
+// import notificationCenter from '../notificationCenter';
+// import { IResponse } from '../../api/NetworkClient';
 
 export interface ISendFile {
   file: FormData;
@@ -69,21 +72,32 @@ export default class ItemService extends BaseService<Item> {
     // should handle errors when error handling ready
     return null;
   }
-  async doNotRenderLink(id: number, type: string): Promise<boolean> {
+  async doNotRenderItem(id: number, type: string) {
     const itemDao = daoManager.getDao(ItemDao);
     const item = (await itemDao.get(id)) as Item;
     if (item) {
-      item.do_not_render = true;
-      item._id = item.id;
-      delete item.id;
-      const resp = await ItemAPI.putItem<Item>(id, type, item);
-      if (resp && resp.data) {
-        item.id = resp.data._id;
-        itemDao.update(item);
-        notificationCenter.emitEntityUpdate(ENTITY.ITEM, [item]);
-        return true;
-      }
+      return await this.handlePartialUpdate(
+        {
+          id: item.id,
+          _id: item.id,
+          do_not_render: true,
+        },
+        undefined, this._doUpdateItemModel.bind(this, item, type),
+      );
     }
     return false;
+  }
+  private async _doUpdateItemModel(updatedItemModel: Item, type: string): Promise<Item | BaseError> {
+    updatedItemModel.do_not_render = true;
+    updatedItemModel._id = updatedItemModel.id;
+    delete updatedItemModel.id;
+    let itemData: Item;
+    const resp = ItemAPI.putItem<Item>(updatedItemModel._id, type, updatedItemModel).then((resolve) => {
+      itemData = resolve.data;
+      return itemData;
+    }).catch((e) => {
+      return ErrorParser.parse(e);
+    });
+    return resp;
   }
 }

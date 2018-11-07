@@ -10,6 +10,7 @@ import ItemService from '../../../service/item';
 import handleData, { uploadStorageFile, sendFileItem } from '../../../service/item/handleData';
 import { daoManager } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
+// import BaseDao from '../../../dao/base/BaseDao';
 
 const itemService = new ItemService();
 
@@ -161,12 +162,16 @@ describe('ItemService', () => {
     };
     const itemDao = {
       get: jest.fn(),
-      update: jest.fn(),
     };
     beforeAll(() => {
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
       ItemAPI.putItem = jest.fn().mockResolvedValue({
         data: rawData,
+      });
+      itemService.handlePartialUpdate = jest.fn().mockResolvedValue({
+        id: 1,
+        do_not_render: true,
+        deactivated: false,
       });
     });
     afterAll(() => {
@@ -177,23 +182,11 @@ describe('ItemService', () => {
       do_not_render: false,
       deactivated: false,
     };
-    it('should return true if doNotRenderLink called success', async() => {
-      itemDao.get.mockResolvedValue(itemObj);
-      const ret = await itemService.doNotRenderLink(1, 'link');
-      itemDao.update = jest.fn().mockReturnValue({
-        do_not_render: true,
-        deactivated: false,
-      });
-      expect(ret).toBe(true);
-    });
     it('should update do_not_render if doNotRenderLink called success', async() => {
-      itemDao.get.mockResolvedValue(itemObj);
-      await itemService.doNotRenderLink(1, 'link');
-      itemDao.update = jest.fn().mockReturnValue({
-        do_not_render: true,
-        deactivated: false,
-      });
-      expect(await itemDao.get(1)).toMatchObject({
+      itemDao.get.mockReturnValue(itemObj);
+      const ret = await itemService.doNotRenderItem(1, 'link');
+      expect(await itemService.handlePartialUpdate).toHaveBeenCalled();
+      expect(ret).toMatchObject({
         do_not_render: true,
         deactivated: false,
       });
