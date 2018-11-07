@@ -9,7 +9,7 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import VisibilitySensor from 'react-visibility-sensor';
 import { JuiStream } from 'jui/pattern/ConversationPage';
-import { JuiLozengeButton } from 'jui/src/components/Buttons';
+import { JuiLozengeButton } from 'jui/components/Buttons';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { toTitleCase } from '@/utils';
