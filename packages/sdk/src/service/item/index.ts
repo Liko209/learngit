@@ -11,8 +11,6 @@ import { StoredFile, Item, FileItem, NoteItem } from '../../models';
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
 import ErrorParser from '../../utils/error/parser';
-// import notificationCenter from '../notificationCenter';
-// import { IResponse } from '../../api/NetworkClient';
 
 export interface ISendFile {
   file: FormData;
