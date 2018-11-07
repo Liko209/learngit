@@ -31,12 +31,6 @@ class StreamViewComponent extends Component<Props> {
     return this.props.postIds.includes(this.props.firstHistoryUnreadPostId);
   }
 
-  @computed
-  private get _firstHistoryUnreadPostId() {
-    const { firstHistoryUnreadPostId } = this.props;
-    return firstHistoryUnreadPostId;
-  }
-
   componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
@@ -59,10 +53,6 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _renderConversationCard(streamItem: StreamItem) {
-    console.log(
-      'this._firstHistoryUnreadPostId: ',
-      this._firstHistoryUnreadPostId,
-    );
     if (streamItem.value === this.props.firstHistoryUnreadPostId) {
       // Observe first unread post visibility
       return (
@@ -123,6 +113,7 @@ class StreamViewComponent extends Component<Props> {
   private get _jumpToFirstUnreadButton() {
     const shouldHaveJumpButton =
       this.props.hasHistoryUnread &&
+      this.props.historyGroupState &&
       (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostVisible);
 
     return shouldHaveJumpButton ? (
@@ -155,7 +146,10 @@ class StreamViewComponent extends Component<Props> {
     if (!firstUnreadPostId) return;
 
     requestAnimationFrame(() => {
-      scrollToComponent(this._firstUnreadCardRef);
+      scrollToComponent(this._firstUnreadCardRef, {
+        behavior: 'smooth',
+        block: 'center',
+      });
     });
   }
 

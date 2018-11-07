@@ -5,11 +5,14 @@
  */
 import ReactDOM from 'react-dom';
 
-function scrollToComponent(component?: React.ReactInstance | null) {
+function scrollToComponent(
+  component?: React.ReactInstance | null,
+  options?: boolean | ScrollIntoViewOptions,
+) {
   if (!component) return;
   const el = ReactDOM.findDOMNode(component);
   if (el && el instanceof HTMLElement) {
-    el.scrollIntoView();
+    el.scrollIntoView(options);
   }
 }
 
