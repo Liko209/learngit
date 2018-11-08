@@ -12,7 +12,7 @@ type JuiFileWithoutPreviewProps = {
   fileName: string;
   size: string;
   actions: JSX.Element;
-  iconType?: string;
+  iconType?: string | null;
 };
 
 const FileSecondary = (secondary: string, children: JSX.Element) => {
