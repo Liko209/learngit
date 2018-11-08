@@ -24,7 +24,7 @@ const JuiPreviewImage: React.SFC<JuiPreviewImageProps> = (
       <Jui.ImageMedia image={url} />
       <Jui.ImageFileInfo ratio={ratio} component="div">
         <b>
-          <FileName widthSpacing={ratio >= 1 ? 40 : 63} filename={fileName} />
+          <FileName filename={fileName} />
         </b>
         <Jui.FileActionsWrapper>{actions}</Jui.FileActionsWrapper>
       </Jui.ImageFileInfo>
