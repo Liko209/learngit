@@ -18,6 +18,14 @@ echo $ACTION
 echo $BRANCH
 echo $SCREENSHOTS_PATH
 
+echo "gitlabActionType: ${gitlabActionType}"
+echo "gitlabMergeRequestId: ${gitlabMergeRequestId}"
+echo "gitlabMergeRequestState: ${gitlabMergeRequestState}"
+echo "gitlabBranch: ${gitlabBranch}"
+echo "gitlabSourceName: ${gitlabSourceName}"
+echo "gitlabSourceBranch: ${gitlabSourceBranch}"
+echo "gitlabTargetBranch: ${gitlabTargetBranch}"
+
 export SELENIUM_SERVER=$SELENIUM_SERVER
 export BROWSERS=$BROWSERS
 export RC_PLATFORM_APP_KEY=$RC_PLATFORM_APP_KEY
