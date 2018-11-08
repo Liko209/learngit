@@ -188,9 +188,7 @@ const ImageMedia = styled(FileCardMedia)`
   }
 `;
 
-const FileExpandItemWrapper = styled.div`
-  
-`;
+const FileExpandItemWrapper = styled.div``;
 
 const FileExpandItem = styled(MuiListItem)`
   && {
