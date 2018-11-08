@@ -5,8 +5,8 @@
  */
 import { FileItem } from './Files.type';
 
-function setFileData(this: FileItem) {
-  const { type, name, versions, is_document, is_new } = this.data;
+function setFileData(this: FileItem, data: any) {
+  const { type, name, versions, is_document, is_new } = data;
   this.type = type;
   this.name = name;
   this.isDocument = is_document;

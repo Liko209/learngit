@@ -24,7 +24,7 @@ class LinkItemView extends React.Component<Props> {
             ? `${item.image}&key=4527f263d6e64d7a8251b007b1ba9972`
             : '';
           return (item.title || item.image || item.summary) &&
-            !item.data.do_not_render &&
+            !item.doNotRender &&
             !item.deactivated ? (
               <JuiConversationCardLinkItems
                 key={idx}

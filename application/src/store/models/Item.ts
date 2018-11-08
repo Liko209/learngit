@@ -18,10 +18,9 @@ export default class ItemModel extends Base<Item> {
   constructor(data: Item) {
     super(data);
     const { type_id } = data;
-    this.data = data;
     this.typeId = type_id;
 
-    ITEM_DATA_HANDLE_MAP[type_id] && ITEM_DATA_HANDLE_MAP[type_id].call(this);
+    ITEM_DATA_HANDLE_MAP[type_id] && ITEM_DATA_HANDLE_MAP[type_id].call(this, data);
   }
 
   static fromJS(data: Item) {

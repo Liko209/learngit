@@ -5,8 +5,8 @@
  */
 import { LinkItem } from './Link.type';
 
-function setLinkData(this: LinkItem) {
-  const { summary, title, url, image, deactivated, do_not_render } = this.data;
+function setLinkData(this: LinkItem, data: any) {
+  const { summary, title, url, image, deactivated, do_not_render } = data;
   this.summary = summary || '';
   this.title = title || '';
   this.url = url;
