@@ -3,6 +3,11 @@ import { createAtom, IAtom, action } from 'mobx';
 import { service } from 'sdk';
 import { BaseService } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
+import {
+  NotificationUpdateBody,
+  NotificationReplaceBody,
+  NotificationDeleteBody,
+} from 'sdk/service/notificationCenter';
 
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
@@ -25,8 +30,6 @@ export default class MultiEntityMapStore<
   private _maxCacheCount: number;
   private _service: BaseService<T>;
 
-  private _eventType = [EVENT_TYPES.RESET, EVENT_TYPES.RELOAD];
-
   constructor(
     entityName: ENTITY_NAME,
     { service, event, cacheCount }: EntitySetting,
@@ -45,9 +48,6 @@ export default class MultiEntityMapStore<
   }
 
   handleIncomingData({ type, body }: IncomingData<T>) {
-    if (!body && !this._eventType.includes(type)) {
-      return;
-    }
     const existKeys: number[] = Object.keys(this._data).map(Number);
     let matchedKeys: number[];
     switch (type) {
@@ -58,17 +58,14 @@ export default class MultiEntityMapStore<
         this.reload();
         break;
       case EVENT_TYPES.DELETE:
-        matchedKeys = _.intersection(body as number[], existKeys);
+        matchedKeys = _.intersection(body as NotificationDeleteBody, existKeys);
         this.batchRemove(matchedKeys);
         break;
       case EVENT_TYPES.REPLACE:
-        this.batchReplace(body as { id: number; entity: T }[]);
+        this.batchReplace(body as NotificationReplaceBody<T>);
         break;
       case EVENT_TYPES.UPDATE:
-        const { entities } = body as {
-          entities: Map<number, T>;
-          partials: Map<number, T> | null;
-        };
+        const { entities } = body as NotificationUpdateBody<T>;
         const matchedEntities: T[] = [];
         matchedKeys = _.intersection(Array.from(entities.keys()), existKeys);
         matchedKeys.forEach((key: number) => {

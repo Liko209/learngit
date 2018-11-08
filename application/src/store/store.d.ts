@@ -1,6 +1,11 @@
 import { ENTITY_NAME, HANDLER_TYPE } from './constants';
 import { BaseService, EVENT_TYPES } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
+import {
+  NotificationUpdateBody,
+  NotificationReplaceBody,
+  NotificationDeleteBody,
+} from 'sdk/service/notificationCenter';
 
 export type Entity = {
   id: number;
@@ -11,12 +16,9 @@ export type Entity = {
 export type IncomingData<T> = {
   type: EVENT_TYPES;
   body:
-    | number[]
-    | {
-      entities: Map<number, T>;
-      partials: Map<number, T> | null;
-    }
-    | { id: number; entity: T }[];
+    | NotificationUpdateBody<T>
+    | NotificationReplaceBody<T>
+    | NotificationDeleteBody;
 };
 
 export type EntitySetting = {

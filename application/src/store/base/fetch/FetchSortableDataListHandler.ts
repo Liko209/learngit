@@ -4,6 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { BaseModel } from 'sdk/models';
+import {
+  NotificationUpdateBody,
+  NotificationReplaceBody,
+  NotificationDeleteBody,
+} from 'sdk/service/notificationCenter';
 import { handleDelete, handleUpsert } from './IncomingDataHandler';
 
 import { EVENT_TYPES } from 'sdk/service';
@@ -113,14 +118,11 @@ export class FetchSortableDataListHandler<
     let entities: Map<number, T | TReplacedData<T>> = new Map();
     switch (type) {
       case EVENT_TYPES.DELETE: {
-        keys = body as number[];
+        keys = body as NotificationDeleteBody;
         break;
       }
       case EVENT_TYPES.UPDATE: {
-        entities = (body as {
-          entities: Map<number, T>;
-          partials: Map<number, T> | null;
-        }).entities;
+        entities = (body as NotificationUpdateBody<T>).entities;
         keys = _([...entities.values()])
           .filter(entity => this._isMatchFunc(entity))
           .map('id')
@@ -128,10 +130,7 @@ export class FetchSortableDataListHandler<
         break;
       }
       case EVENT_TYPES.REPLACE: {
-        (body as {
-          id: number;
-          entity: T;
-        }[]).forEach(({ id, entity: data }) => {
+        (body as NotificationReplaceBody<T>).forEach(({ id, entity: data }) => {
           entities.set(id, { id, data });
         });
         keys = _([...(entities as Map<number, TReplacedData<T>>).values()])

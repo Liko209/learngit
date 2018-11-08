@@ -6,6 +6,7 @@ import { IncomingData, Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { BaseService, EVENT_TYPES } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
+import { NotificationUpdateBody } from 'sdk/service/notificationCenter';
 
 const modelProvider = new ModelProvider();
 
@@ -35,18 +36,13 @@ export default class SingleEntityMapStore<
     if (type !== EVENT_TYPES.UPDATE) {
       return;
     }
-    const { entities } = body as {
-      entities: Map<number, T>;
-      partials: Map<number, T> | null;
-    };
+    const { entities } = body as NotificationUpdateBody<T>;
     const entity = {};
     Array.from(entities.values()).forEach((value: T) => {
       _.merge(entity, value);
     });
 
-    if (type === EVENT_TYPES.UPDATE) {
-      this.batchSet(entity as T);
-    }
+    this.batchSet(entity as T);
   }
 
   @action

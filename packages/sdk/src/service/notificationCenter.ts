@@ -7,9 +7,30 @@ import { EventEmitter2 } from 'eventemitter2';
 import { EVENT_TYPES } from './constants';
 import _ from 'lodash';
 
-// interface Item {
-//   id: number;
-// }
+export type NotificationType = {
+  type: EVENT_TYPES;
+};
+
+export type NotificationUpdateBody<T> = {
+  entities: Map<number, T>;
+  partials: Map<number, T> | null;
+};
+
+export type NotificationUpdatePayload<T> = NotificationType & {
+  body: NotificationUpdateBody<T>;
+};
+
+export type NotificationReplaceBody<T> = { id: number; entity: T }[];
+
+export type NotificationReplacePayload<T> = NotificationType & {
+  body: NotificationReplaceBody<T>;
+};
+
+export type NotificationDeleteBody = number[];
+
+export type NotificationDeletePayload = NotificationType & {
+  body: NotificationDeleteBody;
+};
 
 /**
  * transform array to map structure
@@ -21,25 +42,6 @@ const transform2Map = (entities: any[]): Map<number, any> => {
     map.set(item.id, item);
   });
   return map;
-};
-
-export type NotificationType = {
-  type: EVENT_TYPES;
-};
-
-export type NotificationUpdatePayload<T> = NotificationType & {
-  body: {
-    entities: Map<number, T>;
-    partials: Map<number, T> | null;
-  };
-};
-
-export type NotificationReplacePayload<T> = NotificationType & {
-  body: { id: number; entity: T }[];
-};
-
-export type NotificationDeletePayload<T> = NotificationType & {
-  body: T[];
 };
 
 class NotificationCenter extends EventEmitter2 {
@@ -71,7 +73,7 @@ class NotificationCenter extends EventEmitter2 {
   }
 
   emitEntityDelete(key: string, ids: any[]): void {
-    const notification: NotificationDeletePayload<any> = {
+    const notification: NotificationDeletePayload = {
       type: EVENT_TYPES.DELETE,
       body: ids,
     };
