@@ -2,7 +2,7 @@
 
 if [ "MERGE" != "${gitlabActionType}" ]
 then
-  echo "skip e2e for action : ${gitlabActionType}"
+  echo "Skip e2e for action : ${gitlabActionType}"
   exit 0
 fi
 
