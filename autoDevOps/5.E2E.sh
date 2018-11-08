@@ -1,14 +1,27 @@
 #!/usr/local/bin/bash
-echo '====Start E2E===='
 
+if [ "MERGE" != "${gitlabActionType}" ]
+then
+  echo "skip e2e for action : ${gitlabActionType}"
+  exit 0
+fi
+
+echo '====Start E2E===='
 cd $project/tests/e2e/testcafe
 git clean -xdf
 npm i
 
 export SITE_URL=$appUrl
 export SCREENSHOTS_PATH=./screenshots
+export SELENIUM_SERVER=$SELENIUM_SERVER
+export BROWSERS=$BROWSERS
+export RC_PLATFORM_APP_KEY=$RC_PLATFORM_APP_KEY
+export RC_PLATFORM_APP_SECRET=$RC_PLATFORM_APP_SECRET
+export ACTION="ON_${gitlabActionType}"
+export BRANCH="${gitlabBranch}"
+export ENABLE_REMOTE_DASHBOARD=true
 
-echo "Following options are used by E2E framework"
+echo "Following environment variables are used by e2e tests to define test scope:"
 echo $SELENIUM_SERVER
 echo $BROWSERS
 echo $RC_PLATFORM_APP_KEY
@@ -17,22 +30,6 @@ echo $SITE_URL
 echo $ACTION
 echo $BRANCH
 echo $SCREENSHOTS_PATH
-
-echo "gitlabActionType: ${gitlabActionType}"
-echo "gitlabMergeRequestId: ${gitlabMergeRequestId}"
-echo "gitlabMergeRequestState: ${gitlabMergeRequestState}"
-echo "gitlabBranch: ${gitlabBranch}"
-echo "gitlabSourceName: ${gitlabSourceName}"
-echo "gitlabSourceBranch: ${gitlabSourceBranch}"
-echo "gitlabTargetBranch: ${gitlabTargetBranch}"
-
-export SELENIUM_SERVER=$SELENIUM_SERVER
-export BROWSERS=$BROWSERS
-export RC_PLATFORM_APP_KEY=$RC_PLATFORM_APP_KEY
-export RC_PLATFORM_APP_SECRET=$RC_PLATFORM_APP_SECRET
-export ACTION=$ACTION
-export BRANCH=$BRANCH
-export ENABLE_REMOTE_DASHBOARD=true
 
 mkdir -p $SCREENSHOTS_PATH
 npx ts-node create-run-id.ts
