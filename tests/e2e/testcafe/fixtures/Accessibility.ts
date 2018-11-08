@@ -8,7 +8,7 @@ fixture('Accessibility')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(formalName('Accessibility', ['FIJI-1531']), async (t) => {
+test(formalName('Accessibility', ['FIJI-1323']), async (t) => {
   const user = h(t).rcData.mainCompany.users[4];
   const app = new AppRoot(t);
 
