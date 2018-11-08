@@ -21,7 +21,6 @@ type DataMap = {
   };
 };
 class PostListPageViewModel extends AbstractViewModel {
-  @observable
   private _dataMap: DataMap = {
     [POST_LIST_TYPE.mentions]: {
       caption: `@${toTitleCase(t('mentions'))}`,
