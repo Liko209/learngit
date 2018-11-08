@@ -7,8 +7,9 @@ import { EventEmitter2 } from 'eventemitter2';
 import { EVENT_TYPES } from './constants';
 import _ from 'lodash';
 
-export type NotificationType = {
+export type NotificationPayload<T> = {
   type: EVENT_TYPES;
+  body?: T;
 };
 
 export type NotificationUpdateBody<T> = {
@@ -16,21 +17,9 @@ export type NotificationUpdateBody<T> = {
   partials: Map<number, T> | null;
 };
 
-export type NotificationUpdatePayload<T> = NotificationType & {
-  body: NotificationUpdateBody<T>;
-};
-
 export type NotificationReplaceBody<T> = { id: number; entity: T }[];
 
-export type NotificationReplacePayload<T> = NotificationType & {
-  body: NotificationReplaceBody<T>;
-};
-
 export type NotificationDeleteBody = number[];
-
-export type NotificationDeletePayload = NotificationType & {
-  body: NotificationDeleteBody;
-};
 
 /**
  * transform array to map structure
@@ -49,12 +38,12 @@ class NotificationCenter extends EventEmitter2 {
     super({ wildcard: true });
   }
 
-  trigger(key: string, ...args: any[]): void {
-    super.emit(key, ...args);
+  trigger<T>(key: string, notification?: NotificationPayload<T>): void {
+    super.emit(key, notification);
   }
 
   emitEntityUpdate(key: string, entities: any[], partials?: any[]): void {
-    const notification: NotificationUpdatePayload<any> = {
+    const notification = {
       type: EVENT_TYPES.UPDATE,
       body: {
         entities: transform2Map(entities),
@@ -65,7 +54,7 @@ class NotificationCenter extends EventEmitter2 {
   }
 
   emitEntityReplace(key: string, entities: { id: any; entity: any }[]): void {
-    const notification: NotificationReplacePayload<any> = {
+    const notification = {
       type: EVENT_TYPES.REPLACE,
       body: entities,
     };
@@ -73,7 +62,7 @@ class NotificationCenter extends EventEmitter2 {
   }
 
   emitEntityDelete(key: string, ids: any[]): void {
-    const notification: NotificationDeletePayload = {
+    const notification = {
       type: EVENT_TYPES.DELETE,
       body: ids,
     };
@@ -81,14 +70,14 @@ class NotificationCenter extends EventEmitter2 {
   }
 
   emitEntityReset(key: string): void {
-    const notification: NotificationType = {
+    const notification = {
       type: EVENT_TYPES.RESET,
     };
     this.trigger(key, notification);
   }
 
   emitEntityReload(key: string): void {
-    const notification: NotificationType = {
+    const notification = {
       type: EVENT_TYPES.RELOAD,
     };
     this.trigger(key, notification);
