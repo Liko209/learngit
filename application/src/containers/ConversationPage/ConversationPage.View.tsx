@@ -1,18 +1,21 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-11-08 09:21:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { Component } from 'react';
-import { translate } from 'react-i18next';
 import { observer } from 'mobx-react';
-import {
-  JuiStreamWrapper,
-  JuiConversationPage,
-} from 'jui/pattern/ConversationPage';
-import { JuiDivider } from 'jui/components/Divider';
-import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
-import { TScroller } from 'jui/hoc/withScroller';
-import { JuiConversationPage } from 'jui/pattern/ConversationPage';
 import { translate } from 'react-i18next';
+import { TScroller } from 'jui/hoc/withScroller';
+import {
+  JuiConversationPage,
+  JuiStreamWrapper,
+} from 'jui/pattern/ConversationPage';
+import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
+
 import { Header } from './Header';
-import { Stream } from './Stream';
 import { MessageInput } from './MessageInput';
+import { Stream } from './Stream';
 import { ConversationPageViewProps } from './types';
 
 @observer
