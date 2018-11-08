@@ -54,7 +54,7 @@ type JuiConversationItemCardProps = {
 
 class JuiConversationItemCard extends React.Component<
   JuiConversationItemCardProps
-> {
+  > {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
     const { titleClick } = this.props;
     titleClick && titleClick(e);
@@ -85,7 +85,7 @@ class JuiConversationItemCard extends React.Component<
           </ItemCardHeader>
           {children}
         </ItemCardContent>
-        <ItemCardFooter footerPadding={footerPadding}>{footer}</ItemCardFooter>
+        {footer && <ItemCardFooter footerPadding={footerPadding}>{footer}</ItemCardFooter>}
       </ItemCardWrapper>
     );
   }
