@@ -36,8 +36,8 @@ const convertMapUnicode = convertKeys(mapUnicode);
 // Regular expression for colon (EmojiOne, Custom)
 const regExpColon = /:([^:]\S*?)(?=:)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
 
-// Ascii keys regular expression, an exact match
-const regExpAscii = new RegExp(`^${Object.keys(convertMapAscii).join('$|^')}$`, 'g');
+// Ascii keys regular expression
+const regExpAscii = new RegExp(`(^|\\s)${Object.keys(convertMapAscii).join('(?!\\S)|(^|\\s)')}(?!\\S)`, 'g');
 
 // Unicode keys regular expression
 const regExpUnicode = new RegExp(`${Object.keys(convertMapUnicode).join('|')}`, 'g');
