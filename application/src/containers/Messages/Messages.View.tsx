@@ -13,6 +13,7 @@ import { RightRail } from '@/containers/RightRail';
 
 import { MessagesViewProps } from './types';
 import { observer } from 'mobx-react';
+import { PostListPage } from '../PostListPage';
 
 @observer
 class MessagesViewComponent extends Component<MessagesViewProps> {
@@ -21,20 +22,29 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
   }
 
   async componentDidMount() {
-    const conversationIdOfUrl = Number(this.props.match.params.id);
-    let groupId;
-    if (!conversationIdOfUrl) {
-      groupId = await this.props.getLastGroupId(conversationIdOfUrl);
-      this.props.history.replace(`/messages/${groupId}`);
-    } else {
-      groupId = conversationIdOfUrl;
-    }
-    this.props.updateCurrentConversationId(groupId);
+    this.checkUrl(this.props, true);
   }
 
   componentWillReceiveProps(props: MessagesViewProps) {
-    const id = Number(props.match.params.id);
-    this.props.updateCurrentConversationId(id);
+    if (props.match.params.id !== this.props.match.params.id) {
+      this.checkUrl(props);
+    }
+  }
+
+  async checkUrl(props: MessagesViewProps, afterMount: boolean = false) {
+    const paramId = props.match.params.id;
+    if (!paramId && afterMount) {
+      const groupId = await this.props.getLastGroupId();
+      this.props.history.replace(`/messages/${groupId}`);
+      this.props.updateCurrentConversationId(groupId);
+      return;
+    }
+    if (/\d+/.test(paramId)) {
+      const id = Number(props.match.params.id);
+      this.props.updateCurrentConversationId(id);
+      return;
+    }
+    this.props.updateCurrentConversationId(0);
   }
 
   render() {
@@ -49,7 +59,9 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
         <LeftRail />
         {currentConversationId ? (
           <ConversationPage groupId={currentConversationId} />
-        ) : null}
+        ) : (
+          <PostListPage type={this.props.match.params.id} />
+        )}
         <RightRail />
       </JuiTreeColumnResponse>
     );

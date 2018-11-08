@@ -42,23 +42,25 @@ const StyledListItem = styled(MuiListItem)`
   }
 `;
 
-type SectionHeaderProps = {
+type JuiSectionHeaderProps = {
   title: string;
   icon: string;
-  umi: JSX.Element;
+  umi?: JSX.Element;
   expanded?: boolean;
   className?: string;
+  hideArrow?: boolean;
   onClick?: (e: React.MouseEvent) => any;
   onArrowClick?: (e: React.MouseEvent) => any;
 };
 
-const ConversationListSectionHeader = (props: SectionHeaderProps) => {
+const JuiConversationListSectionHeader = (props: JuiSectionHeaderProps) => {
   const {
     icon,
     title,
     umi,
     expanded,
     className,
+    hideArrow,
     onClick,
     onArrowClick,
   } = props;
@@ -66,16 +68,23 @@ const ConversationListSectionHeader = (props: SectionHeaderProps) => {
   const arrow = expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
 
   return (
-    <StyledListItem className={className} button={true} onClick={onClick}>
+    <StyledListItem
+      className={className}
+      data-test-automation-id="conversation-list-section-header"
+      button={true}
+      onClick={onClick}
+    >
       <StyledJuiIconographyLeft>{icon}</StyledJuiIconographyLeft>
       <ItemText>{title}</ItemText>
       {!expanded ? umi : null}
-      <StyledJuiIconography onClick={onArrowClick}>
-        {arrow}
-      </StyledJuiIconography>
+      {!hideArrow ? (
+        <StyledJuiIconography onClick={onArrowClick}>
+          {arrow}
+        </StyledJuiIconography>
+      ) : null}
     </StyledListItem>
   );
 };
 
-export default ConversationListSectionHeader;
-export { ConversationListSectionHeader, SectionHeaderProps };
+export default JuiConversationListSectionHeader;
+export { JuiConversationListSectionHeader, JuiSectionHeaderProps };

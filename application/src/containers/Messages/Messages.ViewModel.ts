@@ -26,7 +26,7 @@ class MessagesViewModel extends AbstractViewModel<MessagesProps> {
       .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, currentConversationId);
   }
 
-  getLastGroupId = async (id: number) => {
+  getLastGroupId = async () => {
     let groupId;
     const stateService: service.StateService = StateService.getInstance();
     const myState = await stateService.getMyState();
