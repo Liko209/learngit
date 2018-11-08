@@ -6,12 +6,16 @@
 
 import React, { Component } from 'react';
 import { NoteViewProps } from './types';
+import { JuiConversationItemCard, JuiNoteContent } from 'jui/pattern/ConversationItemCard';
+import NoteIcon from '@material-ui/icons/EventNote';
 
 class NoteView extends Component<NoteViewProps> {
   render() {
     const { title, summary } = this.props;
     return (
-      <div>Note: {title}{summary}</div>
+      <JuiConversationItemCard title={title} icon={<NoteIcon />}>
+        <JuiNoteContent>{summary}</JuiNoteContent>
+      </JuiConversationItemCard>
     );
   }
 }

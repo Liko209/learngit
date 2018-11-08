@@ -5,7 +5,7 @@
  */
 
 type NoteProps = {
-  id: number; // post id
+  ids: number[]; // item ids
 };
 
 type NoteViewProps = {
