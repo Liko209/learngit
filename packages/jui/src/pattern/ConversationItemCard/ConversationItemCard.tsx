@@ -23,7 +23,7 @@ const ItemTitle = styled.span`
 
 const ItemCardHeader = styled.div`
   padding: 0;
-  margin: ${spacing(0, 0, 0, -7)};
+  margin: ${spacing(0, 0, 2, -6)};
   display: flex;
   align-items: center;
   ${typography('subheading3')};
@@ -58,7 +58,7 @@ type JuiConversationItemCardProps = {
 
 class JuiConversationItemCard extends React.Component<
   JuiConversationItemCardProps
-  > {
+> {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
     const { titleClick } = this.props;
     titleClick && titleClick(e);
@@ -89,7 +89,11 @@ class JuiConversationItemCard extends React.Component<
           </ItemCardHeader>
           {children}
         </ItemCardContent>
-        {footer && <ItemCardFooter footerPadding={footerPadding}>{footer}</ItemCardFooter>}
+        {footer && (
+          <ItemCardFooter footerPadding={footerPadding}>
+            {footer}
+          </ItemCardFooter>
+        )}
       </ItemCardWrapper>
     );
   }
