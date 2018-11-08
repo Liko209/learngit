@@ -12,7 +12,7 @@ type JuiFileWithPreviewProps = {
   actions: JSX.Element;
   fileName: string;
   url: string;
-  iconType?: string;
+  iconType?: string | null;
 };
 
 class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {

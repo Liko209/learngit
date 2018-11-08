@@ -39,7 +39,7 @@ const ITEM_WIDTH = 84;
 
 type FileIconProps = {
   size?: 'small';
-  iconType?: string;
+  iconType?: string | null;
 };
 
 const FileItem = styled(MuiListItem)`
