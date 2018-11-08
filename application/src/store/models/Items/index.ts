@@ -6,3 +6,5 @@
 
 export * from './Files';
 export * from './Files.type';
+export * from './Link';
+export * from './Link.type';

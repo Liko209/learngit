@@ -7,7 +7,6 @@ import ItemModel from '../Item';
 
 type FileItem = {
   type: string;
-  typeId: number;
   downloadUrl: string;
   size: number;
   name: string;
