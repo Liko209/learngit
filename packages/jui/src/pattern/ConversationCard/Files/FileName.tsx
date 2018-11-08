@@ -5,28 +5,27 @@
  */
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import { spacing, ellipsis } from '../../../foundation/utils/styles';
+import { ellipsis } from '../../../foundation/utils/styles';
 import { getFileName } from '../../../foundation/utils/getFileName';
 
 type FileNameProps = {
-  widthSpacing: number;
   filename: string;
 };
 
-const LeftName = styled<{ widthSpacing: number }, 'span'>('span')`
+const LeftName = styled.span`
   ${ellipsis};
-  max-width: ${({ widthSpacing }) => spacing(widthSpacing)};
+  max-width: 70%;
   display: inline-block;
   vertical-align: top;
 `;
 
 const FileName = (Props: FileNameProps) => {
-  const { widthSpacing, filename } = Props;
+  const { filename } = Props;
   const [left, right] = getFileName(filename);
 
   return (
     <>
-      <LeftName widthSpacing={widthSpacing}>{left}</LeftName>
+      <LeftName>{left}</LeftName>
       <span>{right}</span>
     </>
   );
