@@ -5,10 +5,11 @@
  */
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-// import { Item } from 'sdk/models';
+import { Item } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { EventViewProps } from './types';
+import { EventItem } from '@/store/models/Items';
 
 class EventViewModel extends StoreViewModel<EventViewProps> {
   @computed
@@ -18,7 +19,7 @@ class EventViewModel extends StoreViewModel<EventViewProps> {
 
   @computed
   get event() {
-    return getEntity(ENTITY_NAME.ITEM, this._id);
+    return getEntity<Item, EventItem>(ENTITY_NAME.ITEM, this._id);
   }
 }
 

@@ -3,6 +3,7 @@
  * @Date: 2018-11-07 15:47:16
  * Copyright © RingCentral. All rights reserved.
  */
+import { EventItem } from '@/store/models/Items';
 
 type EventProps = {
   ids: number[];
@@ -10,7 +11,7 @@ type EventProps = {
 
 type EventViewProps = {
   ids: number[];
-  event: any;
+  event: EventItem;
 };
 
 export { EventProps, EventViewProps };
