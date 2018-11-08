@@ -44,4 +44,20 @@ type EventItem = {
   text: string;
 } & ItemModel;
 
-export { FileItem, LinkItem, EventItem };
+type TaskItem = {
+  color: string;
+  complete: boolean;
+  notes: string;
+  start: number | null;
+  section: string;
+  repeat: string;
+  repeat_ending: string;
+  repeat_ending_after: string;
+  text: string;
+  due: number;
+  complete_type: string;
+  assigned_to_ids: number[];
+  attachment_ids: number[];
+} & ItemModel;
+
+export { FileItem, LinkItem, EventItem, TaskItem };

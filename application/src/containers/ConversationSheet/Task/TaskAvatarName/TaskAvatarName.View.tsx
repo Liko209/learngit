@@ -14,7 +14,13 @@ class TaskAvatarNameView extends React.Component<ViewProps> {
   render() {
     const { name, id } = this.props;
 
-    return <JuiAvatarName key={id} avatar={<Avatar uid={id} />} name={name} />;
+    return (
+      <JuiAvatarName
+        key={id}
+        avatar={<Avatar uid={id} size="small" />}
+        name={name}
+      />
+    );
   }
 }
 

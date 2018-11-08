@@ -6,19 +6,21 @@
 
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import { typography, grey } from '../../../foundation/utils/styles';
+import { typography, grey, spacing } from '../../../foundation/utils/styles';
 
 // type person = {
 //   url: string;
 //   name: string;
 // }
 type Props = {
-  avatarNames: JSX.Element[] | null[];
+  avatarNames: JSX.Element[] | null[] | JSX.Element;
   count: number;
 };
 
 const StyledTaskAvatarName = styled.div`
+  margin: ${spacing(2)} 0;
   display: flex;
+  flex-wrap: wrap;
   ${typography('body1')};
   color: ${grey('900')};
 `;
