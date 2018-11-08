@@ -6,17 +6,16 @@
 
 import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { ActionsProps, ActionsViewProps, ERROR_TYPE } from './types';
+import { FooterProps, FooterViewProps, ERROR_TYPE } from './types';
 import { PostService } from 'sdk/service';
-import { Post, Profile } from 'sdk/models';
-import { getGlobalValue, getSingleEntity, getEntity } from '@/store/utils';
+import { Post } from 'sdk/models';
+import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
-import ProfileModel from '@/store/models/Profile';
 
-class ActionsViewModel extends StoreViewModel<ActionsProps>
-  implements ActionsViewProps {
+class FooterViewModel extends StoreViewModel<FooterProps>
+  implements FooterViewProps {
   currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
   @computed
@@ -30,39 +29,32 @@ class ActionsViewModel extends StoreViewModel<ActionsProps>
   @observable
   hasError: boolean = false;
 
-  @observable
-  tKey: string;
-
   @computed
   get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._id);
   }
 
   @computed
-  get _favoritePostIds() {
-    return getSingleEntity<Profile, ProfileModel>(
-      ENTITY_NAME.PROFILE,
-      'favoritePostIds',
-    );
+  get _likes() {
+    return this._post.likes;
   }
 
   @computed
-  get _isOffline() {
-    return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
+  get likeCount() {
+    return this._likes ? this._likes.length : 0;
   }
 
   @computed
   get isLike() {
-    const likes = this._post.likes;
-    if (likes && likes.includes(this.currentUserId)) {
+    if (this._likes && this._likes.includes(this.currentUserId)) {
       return true;
     }
     return false;
   }
 
   @computed
-  get isBookmark() {
-    return this._favoritePostIds.includes(this._id);
+  get _isOffline() {
+    return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
   }
 
   @action
@@ -86,30 +78,6 @@ class ActionsViewModel extends StoreViewModel<ActionsProps>
       this.hasError = true;
     }
   }
-
-  @action
-  bookmark = () => {
-    const postService = PostService.getInstance<PostService>();
-    try {
-      postService.bookmarkPost(this._id, true);
-    } catch {
-      this.errType = this._isOffline ? ERROR_TYPE.NETWORK : ERROR_TYPE.BOOKMARK;
-      this.hasError = true;
-    }
-  }
-
-  @action
-  removeBookmark = () => {
-    const postService = PostService.getInstance<PostService>();
-    try {
-      postService.bookmarkPost(this._id, false);
-    } catch {
-      this.errType = this._isOffline
-        ? ERROR_TYPE.NETWORK
-        : ERROR_TYPE.REMOVE_BOOKMARK;
-      this.hasError = true;
-    }
-  }
 }
 
-export { ActionsViewModel };
+export { FooterViewModel };

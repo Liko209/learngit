@@ -7,21 +7,19 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { ActionsViewProps, ERROR_TYPE } from './types';
-import { JuiConversationActionBar } from 'jui/pattern/ConversationActionBar';
+import { FooterViewProps, ERROR_TYPE } from './types';
+import { JuiConversationCardFooter } from 'jui/pattern/ConversationCard';
 
-type Props = ActionsViewProps & WithNamespaces;
+type Props = FooterViewProps & WithNamespaces;
 
 @observer
-class ActionsViewComponent extends Component<Props> {
+class FooterViewComponent extends Component<Props> {
   render() {
     const {
       isLike,
-      isBookmark,
+      likeCount,
       like,
       unlike,
-      bookmark,
-      removeBookmark,
       errType,
       hasError,
       t,
@@ -30,27 +28,20 @@ class ActionsViewComponent extends Component<Props> {
       [ERROR_TYPE.NETWORK]: t('Network Error'),
       [ERROR_TYPE.LIKE]: t('Like Error'),
       [ERROR_TYPE.UNLIKE]: t('Unlike Error'),
-      [ERROR_TYPE.BOOKMARK]: t('Bookmark Error'),
-      [ERROR_TYPE.REMOVE_BOOKMARK]: t('Removing Bookmark Error'),
     };
     const props = {
       isLike,
-      isBookmark,
+      likeCount,
       handleLike: like,
       handleUnlike: unlike,
-      handleBookmark: bookmark,
-      handleRemoveBookmark: removeBookmark,
       likeTooltipTitle: t('Like'),
       unlikeTooltipTitle: t('Unlike'),
-      bookmarkTooltipTitle: t('Bookmark'),
-      removeBookmarkTooltipTitle: t('Remove bookmark'),
-      moreTooltipTitle: t('More'),
       errMsg: hasError ? errMsgs[errType] : '',
     };
-    return <JuiConversationActionBar {...props} />;
+    return <JuiConversationCardFooter {...props} />;
   }
 }
 
-const ActionsView = translate('Conversations')(ActionsViewComponent);
+const FooterView = translate('Conversations')(FooterViewComponent);
 
-export { ActionsView };
+export { FooterView };

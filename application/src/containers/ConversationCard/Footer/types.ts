@@ -3,27 +3,24 @@
  * @Date: 2018-11-07 17:56:52
  * Copyright © RingCentral. All rights reserved.
  */
+
 enum ERROR_TYPE {
   NETWORK,
   LIKE,
   UNLIKE,
-  BOOKMARK,
-  REMOVE_BOOKMARK,
 }
 
-type ActionsProps = {
+type FooterProps = {
   id: number; // post id
 };
 
-type ActionsViewProps = {
+type FooterViewProps = {
   isLike: boolean;
-  isBookmark: boolean;
+  likeCount: number;
   like: (event: React.MouseEvent<HTMLElement>) => void;
   unlike: (event: React.MouseEvent<HTMLElement>) => void;
-  bookmark: (event: React.MouseEvent<HTMLElement>) => void;
-  removeBookmark: (event: React.MouseEvent<HTMLElement>) => void;
   hasError: boolean;
   errType: ERROR_TYPE;
 };
 
-export { ActionsProps, ActionsViewProps, ERROR_TYPE };
+export { FooterProps, FooterViewProps, ERROR_TYPE };

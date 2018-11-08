@@ -5,7 +5,7 @@
  */
 
 import { service } from 'sdk';
-import { ActionsViewModel } from '../Actions.ViewModel';
+import { ProgressActionsViewModel } from '../ProgressActions.ViewModel';
 
 const { PostService } = service;
 const postService = {
@@ -18,7 +18,7 @@ const mockPostEntityData = {};
 // @ts-ignore
 const getEntity = jest.fn().mockReturnValue(mockPostEntityData);
 
-const actionsViewModel = new ActionsViewModel();
+const actionsViewModel = new ProgressActionsViewModel();
 
 beforeEach(() => {
   jest.clearAllMocks();
