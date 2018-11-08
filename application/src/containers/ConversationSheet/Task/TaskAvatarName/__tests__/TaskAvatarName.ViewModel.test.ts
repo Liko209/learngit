@@ -3,17 +3,19 @@
  * @Date: 2018-11-08 17:27:47
  * Copyright © RingCentral. All rights reserved.
  */
+import { getEntity } from '../../../../../store/utils';
 import { TaskAvatarNameViewModel } from '../TaskAvatarName.ViewModel';
+jest.mock('../../../../../store/utils');
 
-let ViewModel: FormViewModel;
+const ViewModel = new TaskAvatarNameViewModel();
 
 describe('TaskAvatarNameVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
-    ViewModel = new TaskAvatarNameViewModel();
   });
 
-  it('Expect to have unit tests specified', () => {
-    expect(true).toEqual(false);
+  it('name()', () => {
+    (getEntity as jest.Mock).mockReturnValue({ displayName: 'Alan' });
+    expect(ViewModel.name).toEqual('Alan');
   });
 });
