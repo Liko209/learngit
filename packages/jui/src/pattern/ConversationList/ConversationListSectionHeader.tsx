@@ -8,7 +8,13 @@ import React from 'react';
 import MuiListItem from '@material-ui/core/ListItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey, height, typography } from '../../foundation/utils';
+import {
+  spacing,
+  grey,
+  height,
+  typography,
+  palette,
+} from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import tinycolor from 'tinycolor2';
@@ -25,6 +31,27 @@ const StyledListItem = styled(MuiListItem)`
     height: ${height(11)};
     line-height: ${height(11)};
     ${typography('body2')};
+  }
+
+  &&:active {
+    color: ${palette('primary', 'main')};
+    background: ${palette('primary', '50')};
+  }
+
+  &&:hover {
+    background-color: ${grey('50')};
+  }
+
+  &&.selected {
+    background: white;
+
+    p {
+      color: ${palette('primary', 'main')};
+    }
+
+    > ${StyledJuiIconographyLeft} {
+      color: ${palette('primary', 'main')};
+    }
   }
 
   && > ${StyledJuiIconographyLeft} {
@@ -49,6 +76,7 @@ type JuiSectionHeaderProps = {
   expanded?: boolean;
   className?: string;
   hideArrow?: boolean;
+  selected?: boolean;
   onClick?: (e: React.MouseEvent) => any;
   onArrowClick?: (e: React.MouseEvent) => any;
 };
@@ -63,6 +91,7 @@ const JuiConversationListSectionHeader = (props: JuiSectionHeaderProps) => {
     hideArrow,
     onClick,
     onArrowClick,
+    selected,
   } = props;
 
   const arrow = expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
@@ -72,6 +101,8 @@ const JuiConversationListSectionHeader = (props: JuiSectionHeaderProps) => {
       className={className}
       data-test-automation-id="conversation-list-section-header"
       button={true}
+      selected={selected}
+      classes={{ selected: 'selected' }}
       onClick={onClick}
     >
       <StyledJuiIconographyLeft>{icon}</StyledJuiIconographyLeft>

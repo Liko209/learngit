@@ -41,6 +41,7 @@ const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
           title={toTitleCase(props.t(entry.title))}
           icon={entry.icon}
           hideArrow={true}
+          selected={entry.selected}
           onClick={entry.onClick}
         />
       ))}

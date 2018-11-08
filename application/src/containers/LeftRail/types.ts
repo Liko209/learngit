@@ -9,6 +9,7 @@ type LeftRailProps = {};
 type LeftRailEntry = {
   title: string;
   icon: string;
+  selected: boolean;
   onClick: (evt: any) => void;
 };
 

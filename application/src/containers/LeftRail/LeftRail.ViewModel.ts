@@ -18,6 +18,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import GlobalStore from '@/store/base/GlobalStore';
 import history from '@/utils/history';
+import { POST_LIST_TYPE } from '../PostListPage/types';
 
 class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   implements LeftRailViewProps {
@@ -42,7 +43,12 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
         title: 'mention_plural',
         icon: 'alternate_email',
         onClick: (evt: any) => {
-          history.push('/messages/mentions');
+          history.push(`/messages/${POST_LIST_TYPE.mentions}`);
+        },
+        get selected() {
+          return new RegExp('^/messages/mentions$').test(
+            history.location.pathname,
+          );
         },
       },
     ];
