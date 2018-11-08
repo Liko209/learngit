@@ -1,6 +1,6 @@
 /*
  * @Author: Nello Huang (nello.huang@ringcentral.com)
- * @Date: 2018-11-07 16:37:30
+ * @Date: 2018-11-08 10:09:31
  * Copyright © RingCentral. All rights reserved.
  */
 import ItemModel from '../Item';
@@ -22,4 +22,13 @@ type FileItem = {
   origWidth: number;
 } & ItemModel;
 
-export { FileItem };
+type LinkItem = {
+  summary: string;
+  title: string;
+  url: string;
+  image: string;
+  deactivated: boolean;
+  doNotRender: boolean;
+} & ItemModel;
+
+export { FileItem, LinkItem };
