@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import moment from 'moment';
+import { t } from 'i18next';
 import getDateMessage from './getDateMessage';
 
 function compareCharacters(a: string, b: string) {
@@ -85,7 +86,19 @@ function getFileSize(bytes: number) {
 function getDateAndTime(timestamp: number) {
   const getAMOrPM = moment(timestamp).format('h:mm A');
   const date = getDateMessage(timestamp);
-  return `${date} at ${getAMOrPM}`;
+
+  return `${date} ${t('at')} ${getAMOrPM}`;
+}
+
+function getDurtionTime(startTimestamp: number, endTimestamp: number) {
+  const startTime = getDateAndTime(startTimestamp);
+  let endTime = getDateAndTime(endTimestamp);
+  const isToday = startTime.split(' ')[0] === endTime.split(' ')[0];
+
+  if (isToday) {
+    endTime = endTime.replace(endTime.split(' ')[0], '');
+  }
+  return `${startTime} - ${endTime}`;
 }
 
 export {
@@ -96,4 +109,5 @@ export {
   handleOneOfName,
   getFileSize,
   getDateAndTime,
+  getDurtionTime,
 };

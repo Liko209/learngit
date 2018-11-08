@@ -31,5 +31,7 @@
   "today": "Today",
   "yesterday": "Yesterday",
   "PublicTeam": "Public Team (visible to any co-worker)",
-  "MembersMayPostMessages": "Allow members to post messages"
+  "MembersMayPostMessages": "Allow members to post messages",
+  "at": "at",
+  "tomorrow": "tomorrow"
 }

@@ -6,7 +6,7 @@
 
 import moment from 'moment';
 import i18next, { t } from 'i18next';
-(window as any).moment = moment;
+
 function getDateMessage(timestamp: any): string {
   moment.locale(i18next.language);
   const m = moment(timestamp)
@@ -25,6 +25,9 @@ function getDateMessage(timestamp: any): string {
   }
   if (diff === 1) {
     return t('yesterday');
+  }
+  if (diff === -1) {
+    return t('tomorrow');
   }
   if (diff <= 7) {
     return m.format('ddd, MMM Do'); // Tue, Oct 30th  周二, 10月30日
