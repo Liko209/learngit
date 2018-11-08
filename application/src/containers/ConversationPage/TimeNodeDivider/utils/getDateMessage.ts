@@ -6,7 +6,7 @@
 
 import moment from 'moment';
 import i18next, { t } from 'i18next';
-
+(window as any).moment = moment;
 function getDateMessage(timestamp: any): string {
   moment.locale(i18next.language);
   const m = moment(timestamp).hour(0).minute(0).second(0).millisecond(0);

@@ -7,7 +7,7 @@ import { EventItem } from './items.d';
 
 function setEventData(this: EventItem, data: any) {
   const { color, description, start, end, location, repeat, repeat_ending, repeat_ending_after, repeat_ending_on, text } = data;
-
+  console.log(data, '-------event data');
   this.color = color;
   this.description = description;
   this.start = start;

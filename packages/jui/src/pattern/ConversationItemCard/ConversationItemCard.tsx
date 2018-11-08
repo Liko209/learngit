@@ -44,7 +44,7 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
 `;
 
 type JuiConversationItemCardProps = {
-  title: string;
+  title: string | JSX.Element;
   icon: JSX.Element | string;
   titleColor?: string;
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
