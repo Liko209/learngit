@@ -9,8 +9,16 @@ import i18next, { t } from 'i18next';
 
 function getDateMessage(timestamp: any): string {
   moment.locale(i18next.language);
-  const m = moment(timestamp).hour(0).minute(0).second(0).millisecond(0);
-  const now = moment().hour(0).minute(0).second(0).millisecond(0);
+  const m = moment(timestamp)
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
+  const now = moment()
+    .hour(0)
+    .minute(0)
+    .second(0)
+    .millisecond(0);
   const diff = now.diff(m, 'days', true);
   if (diff === 0) {
     return t('today');
@@ -24,4 +32,4 @@ function getDateMessage(timestamp: any): string {
   return m.format('l'); // 30/10/2018  2018/10/30
 }
 
-export { getDateMessage };
+export default getDateMessage;
