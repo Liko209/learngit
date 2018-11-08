@@ -1,3 +1,11 @@
+/*
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2018-11-08 17:20:01
+ * Copyright © RingCentral. All rights reserved.
+ */
+import moment from 'moment';
+import getDateMessage from './getDateMessage';
+
 function compareCharacters(a: string, b: string) {
   if (a === b) {
     return 0;
@@ -74,6 +82,12 @@ function getFileSize(bytes: number) {
   return `${(bytes / 1024 / 1024 / 1024).toFixed(1)}Gb`;
 }
 
+function getDateAndTime(timestamp: number) {
+  const getAMOrPM = moment(timestamp).format('h:mm A');
+  const date = getDateMessage(timestamp);
+  return `${date} at ${getAMOrPM}`;
+}
+
 export {
   compareName,
   toTitleCase,
@@ -81,4 +95,5 @@ export {
   handleOnlyLetterOrNumbers,
   handleOneOfName,
   getFileSize,
+  getDateAndTime,
 };
