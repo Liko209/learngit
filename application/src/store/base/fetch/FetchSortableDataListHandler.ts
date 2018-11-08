@@ -5,9 +5,8 @@
  */
 import { BaseModel } from 'sdk/models';
 import {
-  NotificationUpdateBody,
-  NotificationReplaceBody,
-  NotificationDeleteBody,
+  NotificationEntityPayload,
+  NotificationEntityBody,
 } from 'sdk/service/notificationCenter';
 import { handleDelete, handleUpsert } from './IncomingDataHandler';
 
@@ -19,7 +18,6 @@ import {
   ITransformFunc,
   ISortFunc,
   TReplacedData,
-  TChangeHandler,
 } from './types';
 import {
   FetchDataListHandler,
@@ -27,7 +25,6 @@ import {
 } from './FetchDataListHandler';
 
 import { SortableListStore } from './SortableListStore';
-import { IncomingData } from '../../store';
 import _ from 'lodash';
 
 const transform2Map = (entities: any[]): Map<number, any> => {
@@ -113,62 +110,59 @@ export class FetchSortableDataListHandler<
       });
   }
 
-  onDataChanged({ type, body }: IncomingData<T>) {
-    let keys: number[] = [];
-    let entities: Map<number, T | TReplacedData<T>> = new Map();
-    switch (type) {
-      case EVENT_TYPES.DELETE: {
-        keys = body as NotificationDeleteBody;
-        break;
-      }
-      case EVENT_TYPES.UPDATE: {
-        entities = (body as NotificationUpdateBody<T>).entities;
-        keys = _([...entities.values()])
-          .filter(entity => this._isMatchFunc(entity))
-          .map('id')
-          .value();
-        break;
-      }
-      case EVENT_TYPES.REPLACE: {
-        (body as NotificationReplaceBody<T>).forEach(({ id, entity: data }) => {
-          entities.set(id, { id, data });
-        });
-        keys = _([...(entities as Map<number, TReplacedData<T>>).values()])
-          .filter(entity => this._isMatchFunc(entity.data))
-          .map('id')
-          .value();
-        break;
-      }
-    }
+  onDataChanged(payload: NotificationEntityPayload<T>) {
+    const body: NotificationEntityBody<T> = payload.body!;
 
-    const handler = this._handleIncomingDataByType[type] as TChangeHandler<T>;
-    // tslint:disable-next-line
-    let { deleted, updated, added, updateEntity } = handler(
-      keys,
-      entities,
-      this._transformFunc,
-      this.sortableListStore,
-    );
-    added = _(added)
-      .filter(item => this._isInRange(item.sortValue))
-      .value();
-    if (EVENT_TYPES.UPDATE === type) {
-      this.updateEntityStore(updateEntity);
+    const keys = Array.from(body.ids!);
+    if (payload.type === EVENT_TYPES.DELETE) {
+      this.sortableListStore.removeByIds(keys);
+    } else {
+      const existKeys = this.sortableListStore.getIds();
+      const entities = body.entities!;
+
+      const matchedKeys: number[] = _.intersection(keys, existKeys);
+      const differentKeys: number[] = _.difference(keys, existKeys);
+
+      const matchedSortableModels: ISortableModel<T>[] = [];
+      const matchedEntities: T[] = [];
+      const notMatchedKeys: number[] = [];
+
+      matchedKeys.forEach((key: number) => {
+        const model = entities.get(key) as T;
+        if (this._isMatchFunc(model)) {
+          const sortableModel = this._transformFunc(model);
+          matchedSortableModels.push(sortableModel);
+          matchedEntities.push(model);
+        } else {
+          notMatchedKeys.push(key);
+        }
+      });
+
+      differentKeys.forEach((key: number) => {
+        const model = entities.get(key) as T;
+        if (this._isMatchFunc(model)) {
+          const idSortKey = this._transformFunc(model);
+          if (this._isInRange(idSortKey.sortValue)) {
+            matchedSortableModels.push(idSortKey);
+            matchedEntities.push(model);
+          }
+        }
+      });
+
+      this.updateEntityStore(matchedEntities);
+      this.sortableListStore.upsert(matchedSortableModels);
+      this.sortableListStore.removeByIds(notMatchedKeys);
+
+      this._dataChangeCallBack &&
+        this._dataChangeCallBack({
+          deleted: notMatchedKeys,
+          added: [],
+          updated: [],
+          direction: FetchDataDirection.DOWN,
+        });
     }
-    this.sortableListStore.removeByIds(deleted);
-    updated &&
-      updated.forEach((item: any) => {
-        this.sortableListStore.replaceAt(item.index, item.value);
-      });
-    this.sortableListStore.upsert(added);
-    this._dataChangeCallBack &&
-      this._dataChangeCallBack({
-        deleted,
-        added,
-        updated,
-        direction: FetchDataDirection.DOWN,
-      });
   }
+
   private _isInRange(sortValue: number) {
     let inRange = false;
     const idArray = this.sortableListStore.items;
@@ -212,12 +206,15 @@ export class FetchSortableDataListHandler<
   }
 
   upsert(models: T[]) {
+    const entityMap = transform2Map(models);
+    const notificationBody: NotificationEntityBody<T> = {
+      ids: Array.from(entityMap.keys()),
+      entities: entityMap,
+    };
+
     this.onDataChanged({
       type: EVENT_TYPES.UPDATE,
-      body: {
-        entities: transform2Map(models),
-        partials: null,
-      },
+      body: notificationBody,
     });
   }
 }

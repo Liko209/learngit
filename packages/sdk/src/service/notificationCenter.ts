@@ -6,28 +6,26 @@
 import { EventEmitter2 } from 'eventemitter2';
 import { EVENT_TYPES } from './constants';
 import _ from 'lodash';
+import { BaseModel } from 'sdk/models';
 
-export type NotificationPayload<T> = {
+export type NotificationEntityBody<T> = {
+  ids?: number[];
+  entities?: Map<number, T>;
+  partials?: Map<number, T>;
+};
+
+export type NotificationEntityPayload<T> = {
   type: EVENT_TYPES;
-  body?: T;
+  body?: NotificationEntityBody<T>;
 };
-
-export type NotificationUpdateBody<T> = {
-  entities: Map<number, T>;
-  partials: Map<number, T> | null;
-};
-
-export type NotificationReplaceBody<T> = { id: number; entity: T }[];
-
-export type NotificationDeleteBody = number[];
 
 /**
  * transform array to map structure
  * @param {array} entities
  */
-const transform2Map = (entities: any[]): Map<number, any> => {
-  const map = new Map();
-  entities.forEach((item: any) => {
+const transform2Map = <T extends BaseModel>(entities: T[]): Map<number, T> => {
+  const map = new Map<number, T>();
+  entities.forEach((item: T) => {
     map.set(item.id, item);
   });
   return map;
@@ -38,57 +36,75 @@ class NotificationCenter extends EventEmitter2 {
     super({ wildcard: true });
   }
 
-  trigger<T>(key: string, notification?: NotificationPayload<T>): void {
-    super.emit(key, notification);
-  }
+  emitEntityUpdate<T extends BaseModel>(
+    key: string,
+    entities: T[],
+    partials?: T[],
+  ): void {
+    const entityMap = transform2Map(entities);
+    const partialMap = partials ? transform2Map(partials) : undefined;
+    const ids = Array.from(entityMap.keys());
 
-  emitEntityUpdate(key: string, entities: any[], partials?: any[]): void {
     const notification = {
       type: EVENT_TYPES.UPDATE,
       body: {
-        entities: transform2Map(entities),
-        partials: partials ? transform2Map(partials) : null,
+        ids,
+        entities: entityMap,
+        partials: partialMap,
       },
     };
-    this.trigger(key, notification);
+    this._notifyEntityChange(key, notification);
   }
 
-  emitEntityReplace(key: string, entities: { id: any; entity: any }[]): void {
+  emitEntityReplace<T>(key: string, payload: Map<number, T>): void {
+    const ids = Array.from(payload.keys());
     const notification = {
       type: EVENT_TYPES.REPLACE,
-      body: entities,
+      body: { ids, entities: payload },
     };
-    this.trigger(key, notification);
+
+    this._notifyEntityChange(key, notification);
   }
 
-  emitEntityDelete(key: string, ids: any[]): void {
+  emitEntityDelete(key: string, ids: number[]): void {
     const notification = {
       type: EVENT_TYPES.DELETE,
-      body: ids,
+      body: { ids },
     };
-    this.trigger(key, notification);
+    this._notifyEntityChange(key, notification);
   }
 
   emitEntityReset(key: string): void {
     const notification = {
       type: EVENT_TYPES.RESET,
     };
-    this.trigger(key, notification);
+    this._notifyEntityChange(key, notification);
   }
 
   emitEntityReload(key: string): void {
     const notification = {
       type: EVENT_TYPES.RELOAD,
     };
-    this.trigger(key, notification);
+    this._notifyEntityChange(key, notification);
   }
 
   emitKVChange(key: string, value?: any): void {
     if (value) {
-      this.trigger(key, value);
+      this._trigger(key, value);
     } else {
-      this.trigger(key);
+      this._trigger(key);
     }
+  }
+
+  private _notifyEntityChange<T>(
+    key: string,
+    notification?: NotificationEntityPayload<T>,
+  ): void {
+    this._trigger(key, notification);
+  }
+
+  private _trigger(key: string, ...args: any[]): void {
+    super.emit(key, ...args);
   }
 }
 

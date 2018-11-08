@@ -3,17 +3,14 @@ import { createAtom, IAtom, action } from 'mobx';
 import { service } from 'sdk';
 import { BaseService } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
-import {
-  NotificationUpdateBody,
-  NotificationReplaceBody,
-  NotificationDeleteBody,
-} from 'sdk/service/notificationCenter';
-
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import visibilityChangeEvent from './visibilityChangeEvent';
-import { IncomingData, Entity, EntitySetting } from '../store';
+import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
+import {
+  NotificationEntityPayload,
+} from 'sdk/src/service/notificationCenter';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
@@ -38,8 +35,8 @@ export default class MultiEntityMapStore<
 
     this._getService = service;
     this._maxCacheCount = cacheCount;
-    const callback = ({ type, body }: IncomingData<T>) => {
-      this.handleIncomingData({ type, body });
+    const callback = (payload: NotificationEntityPayload<T>) => {
+      this.handleIncomingData(payload);
     };
     event.forEach((eventName: string) => {
       this.subscribeNotification(eventName, callback);
@@ -47,10 +44,10 @@ export default class MultiEntityMapStore<
     visibilityChangeEvent(this._refreshCache.bind(this));
   }
 
-  handleIncomingData({ type, body }: IncomingData<T>) {
+  handleIncomingData(payload: NotificationEntityPayload<T>) {
     const existKeys: number[] = Object.keys(this._data).map(Number);
     let matchedKeys: number[];
-    switch (type) {
+    switch (payload.type) {
       case EVENT_TYPES.RESET:
         this.reset();
         break;
@@ -58,23 +55,25 @@ export default class MultiEntityMapStore<
         this.reload();
         break;
       case EVENT_TYPES.DELETE:
-        matchedKeys = _.intersection(body as NotificationDeleteBody, existKeys);
+        matchedKeys = _.intersection(payload.body!.ids!, existKeys);
         this.batchRemove(matchedKeys);
         break;
       case EVENT_TYPES.REPLACE:
-        this.batchReplace(body as NotificationReplaceBody<T>);
+        // this.batchReplace(body as NotificationReplaceBody<T>);
         break;
       case EVENT_TYPES.UPDATE:
-        const { entities } = body as NotificationUpdateBody<T>;
+        const entities = payload.body!.entities!;
+        const keys = Array.from(payload.body!.ids!);
+
         const matchedEntities: T[] = [];
-        matchedKeys = _.intersection(Array.from(entities.keys()), existKeys);
+        matchedKeys = _.intersection(Array.from(keys), existKeys);
         matchedKeys.forEach((key: number) => {
           const entity = entities.get(key);
           if (entity) {
             matchedEntities.push(entity);
           }
         });
-        this.batchSet(matchedEntities as T[]);
+        this.batchSet(matchedEntities);
         break;
     }
   }

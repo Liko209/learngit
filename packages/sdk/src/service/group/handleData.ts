@@ -21,7 +21,7 @@ import {
   Profile,
   PartialWithKey,
   GroupState,
-} from '../../models';
+} from 'sdk/models';
 import StateService from '../state';
 import { mainLogger } from 'foundation';
 import AccountService from '../account';
@@ -277,6 +277,8 @@ async function doFavoriteGroupsNotification(favIds: number[]) {
   const filteredFavIds = favIds.filter(
     id => typeof id === 'number' && !isNaN(id),
   );
+
+  const replaceGroups = new Map<number, Group>();
   if (filteredFavIds.length) {
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
@@ -286,14 +288,11 @@ async function doFavoriteGroupsNotification(favIds: number[]) {
     let groups = await dao.queryGroupsByIds(validFavIds);
     groups = sortFavoriteGroups(validFavIds, groups);
 
-    const replaceGroups = _.map(groups, (group: Group) => {
-      return { id: group.id, entity: group };
+    _.forEach(groups, (group: Group) => {
+      replaceGroups[group.id] = group;
     });
-
-    notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, replaceGroups);
-  } else {
-    notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, []);
   }
+  notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, replaceGroups);
 }
 
 function sortFavoriteGroups(ids: number[], groups: Group[]): Group[] {

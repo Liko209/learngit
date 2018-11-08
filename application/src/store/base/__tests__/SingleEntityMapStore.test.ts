@@ -9,7 +9,7 @@ import BaseStore from '../BaseStore';
 import { ENTITY_SETTING } from '../../config';
 import ModelProvider from '../ModelProvider';
 import SingleEntityMapStore from '../SingleEntityMapStore';
-import { Entity, IncomingData } from '../../store';
+import { Entity } from '../../store';
 import { ENTITY_NAME } from '../../constants';
 
 jest.mock('../ModelProvider');

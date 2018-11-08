@@ -8,8 +8,9 @@ import { service } from 'sdk';
 import MultiEntityMapStore from '../MultiEntityMapStore';
 import { ENTITY_SETTING } from '../../config';
 import { ENTITY_NAME } from '../../constants';
-import { Entity, IncomingData } from '../../store';
+import { Entity } from '@/store';
 import { BaseModel } from 'sdk/models';
+import { NotificationEntityPayload } from '../../../../../packages/sdk/src/service/notificationCenter';
 const { EVENT_TYPES } = service;
 
 // jest.mock('../ModelProvider');
@@ -36,9 +37,10 @@ const getEntityMap: (n?: number) => Map<number, Entity> = (n?: number) => {
 };
 
 describe('handleIncomingData()', () => {
+  const entityMap = getEntityMap(10);
   const body = {
-    entities: getEntityMap(10),
-    partials: null,
+    ids: Array.from(entityMap.keys()),
+    entities: entityMap,
   };
   const entitiesArray = getEntityArray(5);
   beforeEach(() => {
@@ -50,7 +52,7 @@ describe('handleIncomingData()', () => {
   });
 
   it('for put type', () => {
-    const data: IncomingData<BaseModel> = {
+    const data: NotificationEntityPayload<BaseModel> = {
       body,
       type: EVENT_TYPES.UPDATE,
     };
@@ -62,7 +64,7 @@ describe('handleIncomingData()', () => {
   });
 
   it('for update type', () => {
-    const data: IncomingData<BaseModel> = {
+    const data: NotificationEntityPayload<BaseModel> = {
       body,
       type: EVENT_TYPES.UPDATE,
     };
@@ -74,14 +76,12 @@ describe('handleIncomingData()', () => {
   });
 
   it('for delete type', () => {
-    const data: IncomingData<BaseModel> = {
-      body: [1, 2, 3, 4, 5, 6],
+    const data: NotificationEntityPayload<BaseModel> = {
+      body: { ids: [1, 2, 3, 4, 5, 6] },
       type: EVENT_TYPES.DELETE,
     };
     instance.handleIncomingData(data);
-
     const models = instance.getData();
-
     expect(Object.keys(models)).toHaveLength(0);
   });
 });

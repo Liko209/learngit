@@ -270,8 +270,8 @@ export default class PostService extends BaseService<Post> {
       data: post,
     };
     const result = [obj];
-
-    const replacePosts = [{ id: preInsertId, entity: post }];
+    const replacePosts = new Map<number, Post>();
+    replacePosts[preInsertId] = post;
 
     notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
     const dao = daoManager.getDao(PostDao);

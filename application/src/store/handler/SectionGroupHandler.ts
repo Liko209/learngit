@@ -24,6 +24,7 @@ import ProfileModel from '@/store/models/Profile';
 import _ from 'lodash';
 import storeManager from '@/store';
 import history from '@/utils/history';
+import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
 
 const { GroupService } = service;
 
@@ -158,23 +159,26 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _subscribeNotification() {
-    this.subscribeNotification(ENTITY.GROUP, ({ type, body }) => {
-      const keys = Object.keys(this._handlersMap);
-      let ids: number[] = [];
-      if (type === EVENT_TYPES.DELETE) {
-        ids = body;
-      }
-      if (type === EVENT_TYPES.UPDATE) {
-        ids = [...body.entities.keys()];
-      }
-      // update url
-      this._updateUrl(type, ids);
-      // handle id sets
-      this._updateIdSet(type, ids);
-      keys.forEach((key: string) => {
-        this._handlersMap[key].onDataChanged({ type, body });
-      });
-    });
+    this.subscribeNotification(
+      ENTITY.GROUP,
+      (payload: NotificationEntityPayload<Group>) => {
+        const keys = Object.keys(this._handlersMap);
+        let ids: number[] = [];
+        if (
+          payload.type === EVENT_TYPES.DELETE ||
+          payload.type === EVENT_TYPES.UPDATE
+        ) {
+          ids = payload.body!.ids!;
+        }
+        // update url
+        this._updateUrl(payload.type, ids);
+        // handle id sets
+        this._updateIdSet(payload.type, ids);
+        keys.forEach((key: string) => {
+          this._handlersMap[key].onDataChanged(payload);
+        });
+      },
+    );
   }
 
   private _updateUrl(type: EVENT_TYPES, ids: number[]) {
@@ -182,7 +186,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const currentGroupId = storeManager
         .getGlobalStore()
         .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-      if (ids.indexOf(currentGroupId) !== -1) {
+      if (_.findIndex(ids, currentGroupId) !== -1) {
         history.replace('/messages');
       }
     }

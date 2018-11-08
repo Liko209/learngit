@@ -2,11 +2,11 @@ import _ from 'lodash';
 import { observable, action, ObservableMap } from 'mobx';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
-import { IncomingData, Entity, EntitySetting } from '../store';
+import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { BaseService, EVENT_TYPES } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
-import { NotificationUpdateBody } from 'sdk/service/notificationCenter';
+import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
 
 const modelProvider = new ModelProvider();
 
@@ -24,19 +24,19 @@ export default class SingleEntityMapStore<
     this.init = false;
     this.getService = service as Function;
 
-    const callback = ({ type, body }: IncomingData<T>) => {
-      this.handleIncomingData({ type, body });
+    const callback = (payload: NotificationEntityPayload<T>) => {
+      this.handleIncomingData(payload);
     };
     event.forEach((eventName: string) => {
       this.subscribeNotification(eventName, callback);
     });
   }
 
-  handleIncomingData({ type, body }: IncomingData<T>) {
-    if (type !== EVENT_TYPES.UPDATE) {
+  handleIncomingData(payload: NotificationEntityPayload<T>) {
+    if (payload.type !== EVENT_TYPES.UPDATE) {
       return;
     }
-    const { entities } = body as NotificationUpdateBody<T>;
+    const entities = payload.body!.entities!;
     const entity = {};
     Array.from(entities.values()).forEach((value: T) => {
       _.merge(entity, value);

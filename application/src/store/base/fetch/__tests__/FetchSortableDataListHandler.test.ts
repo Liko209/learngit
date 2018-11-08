@@ -37,7 +37,7 @@ class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
 }
 
 function buildNumberSortableModel(data: number) {
-  return { data, id: data, sortValue: data };
+  return { data: { id: data }, id: data, sortValue: data };
 }
 
 function notMatchFunc<T>(arg: T): boolean {
@@ -125,14 +125,18 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
   let isMatchFunc: IMatchFunc<SortableNumber> = matchFunc;
 
   function handleChangeMap(data: SortableNumber, type: EVENT_TYPES) {
-    const changeMap = {
-      entities: new Map([[data.id, data]]),
-      partials: null,
+    const changeMap = new Map<number, SortableNumber>();
+    changeMap.set(data.id, data);
+    const ids = [data.id];
+
+    const notificationBody = {
+      ids,
+      entities: changeMap,
     };
 
     fetchSortableDataHandler.onDataChanged({
       type,
-      body: changeMap,
+      body: notificationBody,
     });
   }
 
@@ -140,7 +144,7 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     dataProvider = new TestFetchSortableDataHandler();
     dataProvider.mockData = {
       data: [buildSortableNumber(3), buildSortableNumber(6)],
-      hasMore: false,
+      hasMore: true,
     };
 
     fetchSortableDataHandler = new FetchSortableDataListHandler<SortableNumber>(
@@ -177,7 +181,7 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     ]);
   });
 
-  it.only('update with updated sort value', () => {
+  it('update with updated sort value', () => {
     handleChangeMap(buildSortableNumber(3, 8), EVENT_TYPES.UPDATE);
     checkListStore(fetchSortableDataHandler.listStore, [
       sortableTransformFunc(buildSortableNumber(6)),
@@ -194,7 +198,6 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
     handleChangeMap(buildSortableNumber(3, 9), EVENT_TYPES.UPDATE);
     checkListStore(fetchSortableDataHandler.listStore, [
-      sortableTransformFunc(buildSortableNumber(3)),
       sortableTransformFunc(buildSortableNumber(6)),
     ]);
   });
