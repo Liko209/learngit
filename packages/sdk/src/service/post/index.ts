@@ -400,54 +400,57 @@ export default class PostService extends BaseService<Post> {
     return false;
   }
 
-  async likePost(postId: number, personId: number, toLike: boolean) {
-    try {
-      const postDao = daoManager.getDao(PostDao);
-      const post = await postDao.get(postId);
+  async likePost(
+    postId: number,
+    personId: number,
+    toLike: boolean,
+  ): Promise<Post | null> {
+    if (postId < 0) {
+      return null;
+    }
+    const postDao = daoManager.getDao(PostDao);
+    const post = await postDao.get(postId);
 
-      if (post) {
-        post.likes = post.likes || [];
-        if (toLike) {
-          if (post.likes.indexOf(personId) === -1) {
-            post.likes.push(personId);
-          } else {
-            return post;
-          }
+    if (post) {
+      post.likes = post.likes || [];
+      if (toLike) {
+        if (post.likes.indexOf(personId) === -1) {
+          post.likes.push(personId);
         } else {
-          if (post.likes.indexOf(personId) !== -1) {
-            post.likes = post.likes.filter((id: number) => id !== personId);
-          } else {
-            return post;
-          }
+          return post;
         }
-        post._id = post.id;
-        delete post.id;
-        const response = await PostAPI.putDataById<Post>(postId, post);
-        if (response.data) {
-          const result = await baseHandleData(response.data);
-          if (result && result.length) {
-            return result[0];
-          }
+      } else {
+        if (post.likes.indexOf(personId) !== -1) {
+          post.likes = post.likes.filter((id: number) => id !== personId);
+        } else {
+          return post;
         }
       }
-      throw new Error();
-    } catch {
-      throw new Error();
+      post._id = post.id;
+      delete post.id;
+      const response = await PostAPI.putDataById<Post>(postId, post);
+      if (response.data) {
+        const result = await baseHandleData(response.data);
+        if (result && result.length) {
+          return result[0];
+        }
+      }
+      // error
+      return null;
     }
+
+    // error
+    return null;
   }
 
-  async bookmarkPost(postId: number, toBook: boolean) {
+  async bookmarkPost(postId: number, toBook: boolean): Promise<Profile | null> {
     // favorite_post_ids in profile
-    try {
-      const profileService: ProfileService = ProfileService.getInstance();
-      const profile: Profile | null = await profileService.putFavoritePost(
-        postId,
-        toBook,
-      );
-      return profile;
-    } catch {
-      throw new Error();
-    }
+    const profileService: ProfileService = ProfileService.getInstance();
+    const profile: Profile | null = await profileService.putFavoritePost(
+      postId,
+      toBook,
+    );
+    return profile;
   }
 
   getLastPostOfGroup(groupId: number): Promise<Post | null> {
