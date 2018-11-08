@@ -12,7 +12,7 @@ import {
   JuiTaskNotes,
   JuiTaskAvatarName,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
-import { TaskAvatarName } from './TaskAvatarName';
+import { AvatarName } from './AvatarName';
 
 import { ViewProps } from './types';
 
@@ -24,17 +24,16 @@ class TaskView extends React.Component<ViewProps> {
 
     if (assigned_to_ids && assigned_to_ids.length >= 2) {
       return [
-        <TaskAvatarName key={assigned_to_ids[0]} id={assigned_to_ids[0]} />,
-        <TaskAvatarName key={assigned_to_ids[1]} id={assigned_to_ids[1]} />,
+        <AvatarName key={assigned_to_ids[0]} id={assigned_to_ids[0]} />,
+        <AvatarName key={assigned_to_ids[1]} id={assigned_to_ids[1]} />,
       ];
     }
 
-    return assigned_to_ids && <TaskAvatarName id={assigned_to_ids[0]} />;
+    return assigned_to_ids && <AvatarName id={assigned_to_ids[0]} />;
   }
   render() {
     const { task } = this.props;
     const { section, color, text, notes, complete, assigned_to_ids } = task;
-    console.log('task---------', task);
     return (
       <JuiConversationItemCard
         complete={complete}

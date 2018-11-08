@@ -10,7 +10,7 @@ import { JuiAvatarName } from 'jui/pattern/ConversationItemCard/ConversationItem
 import { ViewProps } from './types';
 
 @observer
-class TaskAvatarNameView extends React.Component<ViewProps> {
+class AvatarNameView extends React.Component<ViewProps> {
   render() {
     const { name, id } = this.props;
 
@@ -24,4 +24,4 @@ class TaskAvatarNameView extends React.Component<ViewProps> {
   }
 }
 
-export { TaskAvatarNameView };
+export { AvatarNameView };
