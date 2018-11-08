@@ -23,55 +23,73 @@ const transform2Map = (entities: any[]): Map<number, any> => {
   return map;
 };
 
+export type NotificationType = {
+  type: EVENT_TYPES;
+};
+
+export type NotificationUpdatePayload<T> = NotificationType & {
+  body: {
+    entities: Map<number, T>;
+    partials: Map<number, T> | null;
+  };
+};
+
+export type NotificationReplacePayload<T> = NotificationType & {
+  body: { id: number; entity: T }[];
+};
+
+export type NotificationDeletePayload<T> = NotificationType & {
+  body: T[];
+};
+
 class NotificationCenter extends EventEmitter2 {
   constructor() {
     super({ wildcard: true });
   }
 
   trigger(key: string, ...args: any[]): void {
-    // mainLogger.debug(...args);
     super.emit(key, ...args);
   }
 
-  /**
-   * emit event for ui layer of store entity update partial data
-   * @param {string} key
-   * @param {array} entities
-   */
   emitEntityUpdate(key: string, entities: any[], partials?: any[]): void {
-    this.trigger(key, {
+    const notification: NotificationUpdatePayload<any> = {
       type: EVENT_TYPES.UPDATE,
       body: {
         entities: transform2Map(entities),
         partials: partials ? transform2Map(partials) : null,
       },
-    });
+    };
+    this.trigger(key, notification);
   }
 
   emitEntityReplace(key: string, entities: { id: any; entity: any }[]): void {
-    this.trigger(key, {
+    const notification: NotificationReplacePayload<any> = {
       type: EVENT_TYPES.REPLACE,
       body: entities,
-    });
+    };
+    this.trigger(key, notification);
   }
 
   emitEntityDelete(key: string, ids: any[]): void {
-    this.trigger(key, {
+    const notification: NotificationDeletePayload<any> = {
       type: EVENT_TYPES.DELETE,
       body: ids,
-    });
+    };
+    this.trigger(key, notification);
   }
 
   emitEntityReset(key: string): void {
-    this.trigger(key, {
+    const notification: NotificationType = {
       type: EVENT_TYPES.RESET,
-    });
+    };
+    this.trigger(key, notification);
   }
 
   emitEntityReload(key: string): void {
-    this.trigger(key, {
+    const notification: NotificationType = {
       type: EVENT_TYPES.RELOAD,
-    });
+    };
+    this.trigger(key, notification);
   }
 
   emitKVChange(key: string, value?: any): void {

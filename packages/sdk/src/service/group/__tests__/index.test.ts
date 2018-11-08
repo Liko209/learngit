@@ -37,7 +37,7 @@ describe('GroupService', () => {
     .spyOn(groupService, 'updatePartialModel2Db')
     .mockImplementation(() => {});
   jest
-    .spyOn(groupService, 'doDefaultPartialNotify')
+    .spyOn(groupService, '_doDefaultPartialNotify')
     .mockImplementation(() => {});
 
   const accountDao = new AccountDao(null);
