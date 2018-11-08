@@ -118,8 +118,11 @@ function withScroller(Comp: ComponentType<any>) {
     componentDidUpdate(
       prevProps: ScrollerProps,
       prevState: ScrollerStates,
-      snapShot: ScrollerSnapShot,
+      snapShot?: ScrollerSnapShot,
     ) {
+      if (!snapShot) {
+        return;
+      }
       const { atBottom, atTop, height } = snapShot;
       const { stickTo } = this.props;
       const wrapper = this._scrollEl.lastElementChild;
