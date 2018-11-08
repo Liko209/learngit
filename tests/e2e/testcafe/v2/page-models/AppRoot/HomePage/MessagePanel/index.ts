@@ -58,32 +58,27 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.hover(this.moreMenuEntry).click(this.moreMenuEntry);
   }
 
-  async waitUntilUmiExist(timeout=20) {
-    const umiCount = this.getUmi(); 
-    let tryTime = 0
-    while (!await umiCount) {
-      if (tryTime >= timeout){
-        throw(`Wait until conversation with UMI: timeout: ${timeout}s`)
-      }
-      tryTime = tryTime + 1;
-      await this.t.wait(1e3);
-    } 
-  }
-
-  async waitUntilUmiNotExist(timeout=20){
-    const umiCount = this.getUmi(); 
-    let tryTime = 0
-    while (await umiCount) {
+  async waitUntilUmiExist(exist: boolean, timeout=20) {
+    let tryTime = 0;
+    let count = await this.getUmi();
+    if (exist == !!count) {
+      return
+    }
+    while (true) {
       if (tryTime >= timeout){
         throw(`Wait until conversation without UMI: timeout: ${timeout}s`)
       }
       tryTime = tryTime + 1;
       await this.t.wait(1e3);
+      count = await this.getUmi();
+      if (exist == !!(count)) {
+        break
+      }
     } 
   }
 
   async enter() {
-    await this.t.hover('html').click(this.self);
+    await this.t.hover(this.self).click(this.self);
   }
 }
 
@@ -113,7 +108,11 @@ class ConversationListSection extends BaseWebComponent {
   }
 
   conversationByIdEntry(groupId: string) {
-    return this.getComponent(ConversationEntry, this.conversations.filter(`[data-group-id="${groupId}"]`))
+    return this.getComponent(ConversationEntry, this.conversations.filter(`[data-group-id="${groupId}"]`));
+  }
+
+  conversationByNameEntry(name: string) {
+    return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name));
   }
 
   async isExpand() {

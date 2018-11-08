@@ -13,12 +13,12 @@ const Stream = buildContainer<StreamProps>({
   View: StreamView,
   ViewModel: StreamViewModel,
   plugins: {
-    loadingPlugin: new LoadingPlugin(),
     loadingMorePlugin: new LoadingMorePlugin({
       thresholdUp: 0,
       initialScrollTop: 99999,
       stickTo: 'bottom',
     }),
+    loadingPlugin: new LoadingPlugin(),
   },
 });
 

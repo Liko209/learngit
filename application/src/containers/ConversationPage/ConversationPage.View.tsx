@@ -8,6 +8,8 @@ import {
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 import { TScroller } from 'jui/hoc/withScroller';
+import { JuiConversationPage } from 'jui/pattern/ConversationPage';
+import { translate } from 'react-i18next';
 import { Header } from './Header';
 import { Stream } from './Stream';
 import { MessageInput } from './MessageInput';
@@ -39,7 +41,6 @@ class ConversationPageViewComponent extends Component<
         data-group-id={groupId}
       >
         <Header id={groupId} />
-        <JuiDivider />
         <JuiStreamWrapper>
           <Stream groupId={groupId} viewRefs={this._viewRefs} />
           <div id="jumpToFirstUnreadButtonRoot" />

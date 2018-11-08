@@ -49,7 +49,7 @@ class StreamViewComponent extends Component<Props> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (!prevProps.postIds.length) {
+    if (prevProps.groupId !== this.props.groupId) {
       // initial scroll to bottom when switch to new group
       this.props.plugins.loadingMorePlugin.scrollToRow(-1);
     }
