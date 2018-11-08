@@ -12,11 +12,8 @@ fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(
-  formalName(
-    'The posts in the conversation should be displayed in the order of recency (date/time)',
-    ['P1', 'JPT-52', 'ConversationStream'],
-  ),
+test(formalName('The posts in the conversation should be displayed in the order of recency (date/time)',
+    ['P1', 'JPT-52', 'ConversationStream']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -34,8 +31,9 @@ test(
       })).data.id;
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
     });
 
@@ -83,9 +81,10 @@ test(formalName('No post in conversation when the conversation', ['P2', 'JPT-53'
       })).data.id;
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded();
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
     });
 
     await h(t).withLog('Then I can enter the conversation', async () => {
@@ -102,11 +101,8 @@ test(formalName('No post in conversation when the conversation', ['P2', 'JPT-53'
   }
 );
 
-test(
-  formalName(
-    'Should be able to read the newest posts once open a conversation',
-    ['P0', 'JPT-65', 'ConversationStream'],
-  ),
+test(formalName('Should be able to read the newest posts once open a conversation',
+    ['P0', 'JPT-65', 'ConversationStream']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -130,9 +126,10 @@ test(
       await userPlatform.createPost({ text: msgBeforeLogin }, teamId);
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded();
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
     });
 
     await h(t).withLog('And enter the team conversation', async () => {

@@ -14,9 +14,8 @@ fixture('ConversationList/TeamSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(formalName(
-  'Team section display the conversation which the login user as one of the team member',
-  ['P2', 'JPT-12', 'Team section']),
+test(formalName('Team section display the conversation which the login user as one of the team member',
+    ['P2', 'JPT-12', 'Team section']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -58,7 +57,7 @@ test(formalName(
 );
 
 test(formalName('Each conversation should be represented by the team name.',
-  ['P0', 'JPT-13', 'Team section',]),
+    ['P0', 'JPT-13', 'Team section',]),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -111,14 +110,8 @@ test(formalName('Each conversation should be represented by the team name.',
   },
 );
 
-<<<<<<< HEAD
-test(
-  formalName('Conversation that received post should be moved to top',
-    ['JPT-47', 'P2', 'ConversationList']),
-=======
 test(formalName('Conversation that received post should be moved to top',
-  ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']),
->>>>>>> refactor(e2e): jpt-47
+    ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -154,11 +147,7 @@ test(formalName('Conversation that received post should be moved to top',
       );
     });
 
-<<<<<<< HEAD
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
-=======
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
->>>>>>> refactor(e2e): jpt-47
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -191,12 +180,12 @@ test(formalName('Conversation that received post should be moved to top',
 );
 
 test(formalName('Can expand and collapse the team section by clicking the section name.',
-  ['JPT-11', 'P2', 'ConversationList']),
+    ['JPT-11', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const user = h(t).rcData.mainCompany.users[0];
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
     async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
