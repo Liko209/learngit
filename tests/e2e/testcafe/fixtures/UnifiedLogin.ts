@@ -15,7 +15,7 @@ fixture('Unified Login')
   .afterEach(teardownCase());
 
 test(formalName('Unified Login', ['JPT-67', 'P0', 'Login']), async (t) => {
-  const user = h(t).rcData.mainCompany.users[4];
+  const user = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
   await h(t).withLog('Given I login Jupiter interactively', async () => {
