@@ -61,12 +61,18 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _renderConversationCard(streamItem: StreamItem) {
-    if (streamItem.value === this.props.firstHistoryUnreadPostId) {
-      // Observe first unread post visibility
+    const { firstHistoryUnreadPostId, hasHistoryUnread } = this.props;
+    if (
+      hasHistoryUnread &&
+      firstHistoryUnreadPostId &&
+      streamItem.value <= firstHistoryUnreadPostId
+    ) {
+      // Observe all visibility of posts which are older
+      // than the first unread post
       return (
         <VisibilitySensor
           key={`VisibilitySensor${streamItem.value}`}
-          onChange={this._handleFirstUnreadCardVisibilityChange}
+          onChange={this._handleFirstUnreadPostVisibilityChange}
         >
           <ConversationCard
             ref={this._setFirstUnreadCardRef}
@@ -162,7 +168,7 @@ class StreamViewComponent extends Component<Props> {
   }
 
   @action
-  private _handleFirstUnreadCardVisibilityChange = (isVisible: boolean) => {
+  private _handleFirstUnreadPostVisibilityChange = (isVisible: boolean) => {
     if (isVisible) {
       this._firstHistoryUnreadPostViewed = true;
       this.props.clearHistoryUnread();
