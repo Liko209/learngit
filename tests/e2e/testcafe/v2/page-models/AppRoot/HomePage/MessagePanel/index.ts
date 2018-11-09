@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
+import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
+import { h } from '../../../../helpers';
 
 class MoreMenuEntry extends BaseWebComponent {
   async enter() {
@@ -263,5 +265,15 @@ export class MessagePanel extends BaseWebComponent {
 
   get conversationListSections() {
     return this.getSelector('.conversation-list-section');
+  }
+
+  async getCurrentGroupIdFromURL(): Promise<number> {
+    return Number(/messages\/(\d+)/.exec(await h(this.t).href)[1]);
+  } 
+
+  async isValidUrl() {
+    const url = await h(this.t).href;
+    const result = /messages\/(\d+)/.test(url);
+    assert(result, `current URL is valid: ${url}`);
   }
 }

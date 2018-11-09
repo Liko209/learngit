@@ -16,12 +16,6 @@ fixture('ConversationCard')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-const shouldMatchUrl = async (t: TestController) => {
-  const getLocation = ClientFunction(() => window.location.href);
-  const reg = /messages\/(\d+)/;
-  const location = await getLocation();
-  await t.expect(location).match(reg);
-};
 
 test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', 'ConversationStream']),
   async (t: TestController) => {
@@ -54,9 +48,8 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
       const count = await conversations.count;
       const n = Math.floor(Math.random() * count);
       await app.homePage.messagePanel.teamsSection.nthConversationEntry(n).enter();
-      await shouldMatchUrl;
-      groupId = await app.getCurrentGroupIdFromURL();
-      console.log("====>",groupId)
+      await app.homePage.messagePanel.isValidUrl();
+      groupId = await app.homePage.messagePanel.getCurrentGroupIdFromURL();
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
@@ -94,8 +87,8 @@ test(formalName('When update user name, can sync dynamically in message metadata
 
     await h(t).withLog(`Then I enter a conversation in team section`, async () => {
       await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
-      await shouldMatchUrl;
-      groupId = await app.getCurrentGroupIdFromURL();
+      await app.homePage.messagePanel.isValidUrl();
+      groupId = await app.homePage.messagePanel.getCurrentGroupIdFromURL();
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
@@ -135,8 +128,8 @@ test(formalName('When update custom status, can sync dynamically in message meta
 
     await h(t).withLog(`Then I enter a conversation in team section`, async () => {
       await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
-      await shouldMatchUrl;
-      groupId = await app.getCurrentGroupIdFromURL();
+      await app.homePage.messagePanel.isValidUrl();
+      groupId = await app.homePage.messagePanel.getCurrentGroupIdFromURL();
     });
 
     await h(t).withLog(`And I send one text post to current conversation`, async () => {
