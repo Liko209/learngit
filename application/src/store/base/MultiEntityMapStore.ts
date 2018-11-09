@@ -9,6 +9,7 @@ import visibilityChangeEvent from './visibilityChangeEvent';
 import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
+import { Raw } from 'sdk/src/models';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
@@ -64,18 +65,17 @@ export default class MultiEntityMapStore<
         break;
       case EVENT_TYPES.UPDATE:
         {
+          const partials = payload.body!.partials!;
           const entities = payload.body!.entities!;
-          const keys = Array.from(payload.body!.ids!);
-          matchedKeys = _.intersection(Array.from(keys), existKeys);
-          const matchedEntities: T[] = [];
-          matchedKeys = _.intersection(Array.from(keys), existKeys);
-          matchedKeys.forEach((key: number) => {
-            const entity = entities.get(key);
-            if (entity) {
-              matchedEntities.push(entity);
-            }
-          });
-          this.batchSet(matchedEntities);
+          if (partials) {
+            this.batchUpdate(partials);
+          } else {
+            entities.forEach((entity: T) => {
+              if (this._data[entity.id]) {
+                this.set(entity);
+              }
+            });
+          }
         }
         break;
     }
@@ -90,10 +90,19 @@ export default class MultiEntityMapStore<
     this._atom[id].reportChanged();
   }
 
+  @action
+  batchUpdate(partials: Map<number, Partial<Raw<T>>>) {
+    partials.forEach((partialEntity, id) => {
+      const model = this._data[id];
+      if (model) {
+        Object.keys(partialEntity).forEach((key: string) => {
+          model[key] = partialEntity[key];
+        });
+      }
+    });
+  }
+
   batchSet(entities: T[]) {
-    if (!entities.length) {
-      return;
-    }
     entities.forEach((entity: T) => {
       this.set(entity);
     });
@@ -109,7 +118,7 @@ export default class MultiEntityMapStore<
   }
 
   remove(id: number) {
-    const model = this.get(id);
+    const model = this._data[id];
     if (model) {
       delete this._data[id];
       delete this._atom[id];
