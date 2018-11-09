@@ -56,7 +56,11 @@ storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
   .addDecorator(withInfoDecorator(JuiTaskAvatarName, { inline: true }))
   .add('TaskAvatarName', () => {
     return (
-      <JuiTaskAvatarName avatarNames={[AvatarName1, AvatarName2]} count={13} />
+      <JuiTaskAvatarName
+        avatarNames={[AvatarName1, AvatarName2]}
+        count={13}
+        tOther="and other 11 people"
+      />
     );
   });
 
