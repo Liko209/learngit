@@ -18,6 +18,8 @@ type historyItem = {
 
 type Props = {
   history: historyItem[];
+  tHide: string;
+  tShow: string;
 };
 
 type States = {
@@ -50,13 +52,13 @@ class JuiEventCollapse extends React.Component<Props, States> {
   }
 
   render() {
-    const { history } = this.props;
+    const { history, tHide, tShow } = this.props;
     const { isShow } = this.state;
     return (
       <Fragment>
         {isShow && <StyledContent>{history[0].text}</StyledContent>}
         <StyledToggle onClick={this.handleToggle}>
-          {isShow ? 'Hide' : 'Show old'}
+          {isShow ? tHide : tShow}
         </StyledToggle>
       </Fragment>
     );
