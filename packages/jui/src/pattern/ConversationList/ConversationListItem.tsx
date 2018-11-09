@@ -21,7 +21,7 @@ const StyledListItem = styled(MuiMenuItem)`
   && {
     display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
     white-space: nowrap;
-    background: white;
+    background: ${palette('common', 'white')};
     padding: ${spacing(0, 4, 0, 3)};
     height: ${height(8)};
     line-height: ${height(8)};
@@ -38,34 +38,28 @@ const StyledListItem = styled(MuiMenuItem)`
     color: ${palette('primary', 'main')};
   }
 
-  &&&:hover {
-    background-color: ${grey('50')};
-  }
-
   && ${StyledIconographyMore} {
     color: ${palette('grey', '400')};
     display: none;
     font-size: ${spacing(5)};
   }
 
-  &&:hover ${StyledIconographyMore} {
-    display: inline-block;
-  }
-
-  &&:hover ${StyledIconographyDraft} {
-    display: none;
-  }
-
-  &&:hover ${StyledIconographyFailure} {
-    display: none;
+  &&&:hover {
+    background-color: ${grey('50')};
+    ${StyledIconographyMore} {
+      display: inline-block;
+    }
+    ${StyledIconographyDraft},
+    ${StyledIconographyFailure} {
+      display: none;
+    }
   }
 
   &&.selected {
-    background: white;
-  }
-
-  &&.selected p {
-    color: ${palette('primary', 'main')};
+    background: ${palette('common', 'white')};
+    p {
+      color: ${palette('primary', 'main')};
+    }
   }
 
   &&:last-child {
