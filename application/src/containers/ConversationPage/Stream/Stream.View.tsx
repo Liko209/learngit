@@ -132,6 +132,9 @@ class StreamViewComponent extends Component<Props> {
       historyUnreadCount > 0 &&
       (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostVisible);
 
+    const countText =
+      historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
+
     return shouldHaveJumpButton ? (
       <JumpToFirstUnreadButtonWrapper>
         <JuiLozengeButton
@@ -139,7 +142,7 @@ class StreamViewComponent extends Component<Props> {
           loading={this._jumpToFirstUnreadLoading}
           onClick={this._jumpToFirstUnread}
         >
-          {historyUnreadCount} {toTitleCase(t('newMessage_plural'))}
+          {countText} {toTitleCase(t('newMessage_plural'))}
         </JuiLozengeButton>
       </JumpToFirstUnreadButtonWrapper>
     ) : null;
