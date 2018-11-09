@@ -44,10 +44,4 @@ describe('LinkItemViewModel', () => {
     linkItemVM.onLinkItemClick(1);
     expect(linkItemVM.postItems).toHaveLength(3);
   });
-
-  it('while delete item and item id exist should update item', async() => {
-    await linkItemVM.onLinkItemClick(123);
-    expect(itemService.deleteItem).toBeCalled();
-    expect(linkItemVM.postItems).toHaveLength(2);
-  });
 });

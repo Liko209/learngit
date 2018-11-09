@@ -5,11 +5,11 @@
  */
 import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import ItemModel from '@/store/models/Item';
 import { getEntity } from '@/store/utils';
 import { Item } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import { ItemService } from 'sdk/service';
+import { LinkItem } from '@/store/models/Items';
 
 class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
   private _itemService: ItemService = ItemService.getInstance();
@@ -21,16 +21,12 @@ class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
   @computed
   get postItems() {
     return this._ids.map((item) => {
-      return getEntity<Item, ItemModel>(ENTITY_NAME.ITEM, item);
+      return getEntity<Item, LinkItem>(ENTITY_NAME.ITEM, item);
     });
   }
   @action
   onLinkItemClick = async (itemId: number = 0) => {
-    await this._itemService.deleteItem(itemId);
-    const idIndex = this._ids.indexOf(itemId);
-    if (idIndex > -1) {
-      this._ids.splice(idIndex, 1);
-    }
+    await this._itemService.doNotRenderItem(itemId, 'link');
   }
 }
 export { LinkItemViewModel };

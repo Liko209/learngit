@@ -5,7 +5,7 @@
  */
 // import { RouteComponentProps } from 'react-router-dom';
 // import { TranslationFunction, i18n } from 'i18next';
-import ItemModel from '@/store/models/Item';
+import { FileItem } from '@/store/models/Items';
 
 enum FileType {
   image,
@@ -14,7 +14,7 @@ enum FileType {
 }
 
 type ExtendFile = {
-  item: ItemModel;
+  item: FileItem;
   type: number;
   previewUrl: string;
 };

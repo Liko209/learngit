@@ -12,7 +12,7 @@ type JuiFileWithoutPreviewProps = {
   fileName: string;
   size: string;
   actions: JSX.Element;
-  iconType: string | null;
+  iconType?: string | null;
 };
 
 const FileSecondary = (secondary: string, children: JSX.Element) => {
@@ -40,7 +40,7 @@ const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
           primary: 'file-item-primary',
           secondary: 'file-item-secondary',
         }}
-        primary={<FileName widthSpacing={38} filename={fileName} />}
+        primary={<FileName filename={fileName} />}
         secondary={FileSecondary(size, actions)}
       />
     </Jui.FileItem>
