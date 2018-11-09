@@ -22,8 +22,7 @@ type ActionsViewProps = {
   unlike: (event: React.MouseEvent<HTMLElement>) => void;
   bookmark: (event: React.MouseEvent<HTMLElement>) => void;
   removeBookmark: (event: React.MouseEvent<HTMLElement>) => void;
-  hasError: boolean;
-  errType: ERROR_TYPE;
+  isOffline: boolean;
 };
 
 export { ActionsProps, ActionsViewProps, ERROR_TYPE };

@@ -11,9 +11,25 @@ import { ActionsViewProps, ERROR_TYPE } from './types';
 import { JuiConversationActionBar } from 'jui/pattern/ConversationActionBar';
 
 type Props = ActionsViewProps & WithNamespaces;
+type State = {
+  hasError: boolean;
+  errType: ERROR_TYPE;
+};
 
 @observer
-class ActionsViewComponent extends Component<Props> {
+class ActionsViewComponent extends Component<Props, State> {
+  state = {
+    hasError: false,
+    errType: ERROR_TYPE.NETWORK,
+  };
+
+  componentDidCatch(error: any, info: any) {
+    const { isOffline } = this.props;
+    const errType = isOffline ? ERROR_TYPE.NETWORK : ERROR_TYPE.LIKE;
+
+    this.setState({ errType, hasError: true });
+  }
+
   render() {
     const {
       isLike,
@@ -22,10 +38,9 @@ class ActionsViewComponent extends Component<Props> {
       unlike,
       bookmark,
       removeBookmark,
-      errType,
-      hasError,
       t,
     } = this.props;
+    const { hasError, errType } = this.state;
     const errMsgs = {
       [ERROR_TYPE.NETWORK]: t('Network Error'),
       [ERROR_TYPE.LIKE]: t('Like Error'),

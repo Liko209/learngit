@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable, action } from 'mobx';
+import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { ActionsProps, ActionsViewProps, ERROR_TYPE } from './types';
+import { ActionsProps, ActionsViewProps } from './types';
 import { PostService } from 'sdk/service';
 import { Post, Profile } from 'sdk/models';
 import { getGlobalValue, getSingleEntity, getEntity } from '@/store/utils';
@@ -24,15 +24,6 @@ class ActionsViewModel extends StoreViewModel<ActionsProps>
     return this.props.id;
   }
 
-  @observable
-  errType: ERROR_TYPE;
-
-  @observable
-  hasError: boolean = false;
-
-  @observable
-  tKey: string;
-
   @computed
   get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._id);
@@ -47,7 +38,7 @@ class ActionsViewModel extends StoreViewModel<ActionsProps>
   }
 
   @computed
-  get _isOffline() {
+  get isOffline() {
     return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
   }
 
@@ -68,47 +59,25 @@ class ActionsViewModel extends StoreViewModel<ActionsProps>
   @action
   like = () => {
     const postService = PostService.getInstance<PostService>();
-    try {
-      postService.likePost(this._id, this.currentUserId, true);
-    } catch {
-      this.errType = this._isOffline ? ERROR_TYPE.NETWORK : ERROR_TYPE.LIKE;
-      this.hasError = true;
-    }
+    postService.likePost(this._id, this.currentUserId, true);
   }
 
   @action
   unlike = () => {
     const postService = PostService.getInstance<PostService>();
-    try {
-      postService.likePost(this._id, this.currentUserId, false);
-    } catch {
-      this.errType = this._isOffline ? ERROR_TYPE.NETWORK : ERROR_TYPE.UNLIKE;
-      this.hasError = true;
-    }
+    postService.likePost(this._id, this.currentUserId, false);
   }
 
   @action
   bookmark = () => {
     const postService = PostService.getInstance<PostService>();
-    try {
-      postService.bookmarkPost(this._id, true);
-    } catch {
-      this.errType = this._isOffline ? ERROR_TYPE.NETWORK : ERROR_TYPE.BOOKMARK;
-      this.hasError = true;
-    }
+    postService.bookmarkPost(this._id, true);
   }
 
   @action
   removeBookmark = () => {
     const postService = PostService.getInstance<PostService>();
-    try {
-      postService.bookmarkPost(this._id, false);
-    } catch {
-      this.errType = this._isOffline
-        ? ERROR_TYPE.NETWORK
-        : ERROR_TYPE.REMOVE_BOOKMARK;
-      this.hasError = true;
-    }
+    postService.bookmarkPost(this._id, false);
   }
 }
 
