@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable, action } from 'mobx';
+import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { FooterProps, FooterViewProps, ERROR_TYPE } from './types';
+import { FooterProps, FooterViewProps } from './types';
 import { PostService } from 'sdk/service';
 import { Post } from 'sdk/models';
 import { getGlobalValue, getEntity } from '@/store/utils';
@@ -22,12 +22,6 @@ class FooterViewModel extends StoreViewModel<FooterProps>
   get _id() {
     return this.props.id;
   }
-
-  @observable
-  errType: ERROR_TYPE;
-
-  @observable
-  hasError: boolean = false;
 
   @computed
   get _post() {
@@ -53,30 +47,20 @@ class FooterViewModel extends StoreViewModel<FooterProps>
   }
 
   @computed
-  get _isOffline() {
+  get isOffline() {
     return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
   }
 
   @action
-  like = () => {
+  like = async () => {
     const postService = PostService.getInstance<PostService>();
-    try {
-      postService.likePost(this._id, this.currentUserId, true);
-    } catch {
-      this.errType = this._isOffline ? ERROR_TYPE.NETWORK : ERROR_TYPE.LIKE;
-      this.hasError = true;
-    }
+    await postService.likePost(this._id, this.currentUserId, true);
   }
 
   @action
-  unlike = () => {
+  unlike = async () => {
     const postService = PostService.getInstance<PostService>();
-    try {
-      postService.likePost(this._id, this.currentUserId, false);
-    } catch {
-      this.errType = this._isOffline ? ERROR_TYPE.NETWORK : ERROR_TYPE.UNLIKE;
-      this.hasError = true;
-    }
+    await postService.likePost(this._id, this.currentUserId, false);
   }
 }
 

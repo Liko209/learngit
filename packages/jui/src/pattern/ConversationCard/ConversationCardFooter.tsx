@@ -7,7 +7,7 @@ import * as React from 'react';
 import { spacing, shape, grey, palette } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
 import { JuiIconButton } from '../../components/Buttons';
-import { JuiSnackbarContent } from '../../components/Snackbars';
+import Collapse from '@material-ui/core/Collapse';
 
 type Props = {
   likeTooltipTitle: string;
@@ -16,7 +16,6 @@ type Props = {
   likeCount: number;
   handleLike: (event: React.MouseEvent<HTMLElement>) => void;
   handleUnlike: (event: React.MouseEvent<HTMLElement>) => void;
-  errMsg: string;
 };
 
 const StyledConversationCardFooter = styled('div')`
@@ -54,26 +53,24 @@ class JuiConversationCardFooter extends React.PureComponent<Props> {
       handleLike,
       handleUnlike,
       likeCount,
-      errMsg,
     } = this.props;
     return (
-      <StyledConversationCardFooter>
-        <StyledIconWrapper>
-          <JuiIconButton
-            size="small"
-            tooltipTitle={isLike ? unlikeTooltipTitle : likeTooltipTitle}
-            color={isLike ? 'primary' : undefined}
-            onClick={isLike ? handleUnlike : handleLike}
-            variant="plain"
-          >
-            thumb_up
-          </JuiIconButton>
-          <span>{likeCount}</span>
-        </StyledIconWrapper>
-        {errMsg && (
-          <JuiSnackbarContent type="error">{errMsg}</JuiSnackbarContent>
-        )}
-      </StyledConversationCardFooter>
+      <Collapse in={!!likeCount}>
+        <StyledConversationCardFooter>
+          <StyledIconWrapper>
+            <JuiIconButton
+              size="small"
+              tooltipTitle={isLike ? unlikeTooltipTitle : likeTooltipTitle}
+              color={isLike ? 'primary' : undefined}
+              onClick={isLike ? handleUnlike : handleLike}
+              variant="plain"
+            >
+              thumb_up
+            </JuiIconButton>
+            <span>{likeCount}</span>
+          </StyledIconWrapper>
+        </StyledConversationCardFooter>
+      </Collapse>
     );
   }
 }

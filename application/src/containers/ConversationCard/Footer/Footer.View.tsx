@@ -7,36 +7,49 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { FooterViewProps, ERROR_TYPE } from './types';
+import { FooterViewProps } from './types';
 import { JuiConversationCardFooter } from 'jui/pattern/ConversationCard';
+import { JuiModal } from '@/containers/Dialog';
 
 type Props = FooterViewProps & WithNamespaces;
-
 @observer
 class FooterViewComponent extends Component<Props> {
+  private _handleError(content: string) {
+    const { t, isOffline } = this.props;
+    JuiModal.alert({
+      title: '',
+      content: isOffline ? t('Network Error') : content,
+    });
+  }
+
+  private _handleLike = async () => {
+    const { like, t } = this.props;
+    try {
+      await like();
+    } catch {
+      this._handleError(t('Like Error'));
+    }
+  }
+
+  private _handleUnlike = async () => {
+    const { unlike, t } = this.props;
+    try {
+      await unlike();
+    } catch {
+      this._handleError(t('Unlike Error'));
+    }
+  }
+
   render() {
-    const {
-      isLike,
-      likeCount,
-      like,
-      unlike,
-      errType,
-      hasError,
-      t,
-    } = this.props;
-    const errMsgs = {
-      [ERROR_TYPE.NETWORK]: t('Network Error'),
-      [ERROR_TYPE.LIKE]: t('Like Error'),
-      [ERROR_TYPE.UNLIKE]: t('Unlike Error'),
-    };
+    const { isLike, likeCount, t } = this.props;
+
     const props = {
       isLike,
       likeCount,
-      handleLike: like,
-      handleUnlike: unlike,
+      handleLike: this._handleLike,
+      handleUnlike: this._handleUnlike,
       likeTooltipTitle: t('Like'),
       unlikeTooltipTitle: t('Unlike'),
-      errMsg: hasError ? errMsgs[errType] : '',
     };
     return <JuiConversationCardFooter {...props} />;
   }

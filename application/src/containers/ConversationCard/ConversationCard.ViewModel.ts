@@ -29,11 +29,6 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   }
 
   @computed
-  get likes() {
-    return this.post.likes;
-  }
-
-  @computed
   get creator() {
     if (this.post.creatorId) {
       return getEntity<Person, PersonModel>(

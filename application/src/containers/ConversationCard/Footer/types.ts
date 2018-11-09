@@ -4,12 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-enum ERROR_TYPE {
-  NETWORK,
-  LIKE,
-  UNLIKE,
-}
-
 type FooterProps = {
   id: number; // post id
 };
@@ -17,10 +11,9 @@ type FooterProps = {
 type FooterViewProps = {
   isLike: boolean;
   likeCount: number;
-  like: (event: React.MouseEvent<HTMLElement>) => void;
-  unlike: (event: React.MouseEvent<HTMLElement>) => void;
-  hasError: boolean;
-  errType: ERROR_TYPE;
+  like: (event?: React.MouseEvent<HTMLElement>) => void;
+  unlike: (event?: React.MouseEvent<HTMLElement>) => void;
+  isOffline: boolean;
 };
 
-export { FooterProps, FooterViewProps, ERROR_TYPE };
+export { FooterProps, FooterViewProps };

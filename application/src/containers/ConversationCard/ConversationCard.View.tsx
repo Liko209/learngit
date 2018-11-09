@@ -41,7 +41,6 @@ export class ConversationCard extends React.Component<
       customStatus,
       showProgressActions,
       itemIds,
-      likes,
     } = this.props;
     const { isHover } = this.state;
     if (!creator.id) {
@@ -72,7 +71,7 @@ export class ConversationCard extends React.Component<
             <TextMessage id={id} />
             {idsToConversationSheet(itemIds)}
           </JuiConversationCardBody>
-          {likes && likes.length ? <Footer id={id} /> : null}
+          <Footer id={id} />
         </JuiConversationCard>
       </React.Fragment>
     );
