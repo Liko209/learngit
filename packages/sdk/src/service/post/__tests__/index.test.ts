@@ -458,47 +458,52 @@ describe('PostService', () => {
   describe('like post', () => {
     it('should return null when post id is negative', async () => {
       const result = await postService.likePost(-1, 101, true);
-      expect(result).toBe(null);
+      expect(result).toBe(undefined);
     });
     it('should return null when post is not eixt in local', async () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       postDao.get.mockResolvedValueOnce(null);
       const result = await postService.likePost(100, 101, true);
-      expect(result).toBe(null);
+      expect(result).toBe(undefined);
     });
     it('should return post with likes', async () => {
+      const post = { id: 100, likes: [] };
       daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce({ id: 100, likes: [] });
+      postDao.get.mockResolvedValueOnce(post);
       PostAPI.putDataById.mockResolvedValueOnce({
         data: { _id: 100, likes: [101] },
       });
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
-      expect(result.likes).toEqual([101]);
+      expect(post.likes).toEqual([101]);
     });
     it('should return old post if person id is not in post likes when to unlike', async () => {
+      const post = { id: 100, likes: [] };
       daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce({ id: 100, likes: [101] });
-      const result = await postService.likePost(100, 102, false);
-      expect(result.likes).toEqual([101]);
+      postDao.get.mockResolvedValueOnce(post);
+      await postService.likePost(100, 102, false);
+      expect(post.likes).toEqual([]);
     });
     it('should return old post if person id is in post likes when to like', async () => {
+      const post = { id: 100, likes: [] };
       daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce({ id: 100, likes: [101] });
+      postDao.get.mockResolvedValueOnce(post);
       const result = await postService.likePost(100, 101, true);
-      expect(result.likes).toEqual([101]);
+      expect(post.likes).toEqual([101]);
     });
 
     it('should return new post if person id is in post likes when to unlike', async () => {
+      const postInDao = { id: 100, likes: [101, 102] };
+      const postInApi = { _id: 100, likes: [102] };
       daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce({ id: 100, likes: [101, 102] });
+      postDao.get.mockResolvedValueOnce(postInDao);
       PostAPI.putDataById.mockResolvedValueOnce({
-        data: { _id: 100, likes: [102] },
+        data: postInApi,
       });
 
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [102] }]);
       const result = await postService.likePost(100, 101, false);
-      expect(result.likes).toEqual([102]);
+      expect(postInDao.likes).toEqual([102]);
     });
 
     it('should return new post if person id is in post likes when to unlike', async () => {
@@ -508,7 +513,7 @@ describe('PostService', () => {
         error: { _id: 100, likes: [102] },
       });
       const result = await postService.likePost(100, 101, false);
-      expect(result).toBeNull();
+      expect(result).toBeUndefined();
     });
   });
 
@@ -554,7 +559,7 @@ describe('PostService', () => {
     it('book post should return null', async () => {
       profileService.putFavoritePost.mockResolvedValueOnce(null);
       const result = await postService.bookmarkPost(1, true);
-      expect(result).toBeNull();
+      expect(result).toBeUndefined();
     });
   });
 
