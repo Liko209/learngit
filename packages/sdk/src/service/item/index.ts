@@ -73,10 +73,6 @@ export default class ItemService extends BaseService<Item> {
   async doNotRenderItem(id: number, type: string) {
     const itemDao = daoManager.getDao(ItemDao);
     const item = (await itemDao.get(id)) as Item;
-
-    notificationCenter.emitEntityDelete(ENTITY.ITEM, [item.id]);
-    await itemDao.delete(id);
-
     if (item) {
       return await this.handlePartialUpdate(
         {
