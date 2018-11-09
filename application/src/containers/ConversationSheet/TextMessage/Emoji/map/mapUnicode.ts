@@ -2100,4 +2100,4 @@ const mapUnicode = {
   "➿": "27bf"
 };
 
-export default mapUnicode;
+export { mapUnicode };
