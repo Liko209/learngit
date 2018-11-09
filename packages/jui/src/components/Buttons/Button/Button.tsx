@@ -85,9 +85,9 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
 
     &.roundButtonStyle {
       height: ${({ theme }) => height(7)({ theme })};
-      border-radius: ${({ theme }) => height(7)({ theme })};
+      border-radius: ${({ theme }) => spacing(7)({ theme })};
       padding: ${({ theme }) => spacing(0, 4)({ theme })};
-      background-color: #fff;
+      background-color: ${palette('common', 'white')};
       color:${primary('700')};
       width:inherit;
       &:hover {
