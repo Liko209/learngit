@@ -30,7 +30,7 @@ class StreamViewComponent extends Component<Props> {
   private _jumpToFirstUnreadLoading = false;
 
   @observable
-  private _firstHistoryUnreadPostVisible = false;
+  private _firstHistoryUnreadPostViewed = false;
 
   @computed
   private get _firstHistoryUnreadInPage() {
@@ -55,18 +55,24 @@ class StreamViewComponent extends Component<Props> {
     }
     if (prevProps.groupId !== this.props.groupId) {
       this._jumpToFirstUnreadLoading = false;
-      this._firstHistoryUnreadPostVisible = false;
+      this._firstHistoryUnreadPostViewed = false;
       this._firstUnreadCardRef = null;
     }
   }
 
   private _renderConversationCard(streamItem: StreamItem) {
-    if (streamItem.value === this.props.firstHistoryUnreadPostId) {
-      // Observe first unread post visibility
+    const { firstHistoryUnreadPostId, hasHistoryUnread } = this.props;
+    if (
+      hasHistoryUnread &&
+      firstHistoryUnreadPostId &&
+      streamItem.value <= firstHistoryUnreadPostId
+    ) {
+      // Observe all visibility of posts which are older
+      // than the first unread post
       return (
         <VisibilitySensor
           key={`VisibilitySensor${streamItem.value}`}
-          onChange={this._handleFirstUnreadCardVisibilityChange}
+          onChange={this._handleFirstUnreadPostVisibilityChange}
         >
           <ConversationCard
             ref={this._setFirstUnreadCardRef}
@@ -129,7 +135,11 @@ class StreamViewComponent extends Component<Props> {
     const shouldHaveJumpButton =
       hasHistoryUnread &&
       historyGroupState &&
-      (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostVisible);
+      historyUnreadCount > 0 &&
+      (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostViewed);
+
+    const countText =
+      historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
 
     return shouldHaveJumpButton ? (
       <JumpToFirstUnreadButtonWrapper>
@@ -138,7 +148,7 @@ class StreamViewComponent extends Component<Props> {
           loading={this._jumpToFirstUnreadLoading}
           onClick={this._jumpToFirstUnread}
         >
-          {historyUnreadCount} {toTitleCase(t('newMessage_plural'))}
+          {countText} {toTitleCase(t('newMessage_plural'))}
         </JuiLozengeButton>
       </JumpToFirstUnreadButtonWrapper>
     ) : null;
@@ -158,9 +168,11 @@ class StreamViewComponent extends Component<Props> {
   }
 
   @action
-  private _handleFirstUnreadCardVisibilityChange = (isVisible: boolean) => {
-    this._firstHistoryUnreadPostVisible = isVisible;
-    if (isVisible) this.props.clearHistoryUnread();
+  private _handleFirstUnreadPostVisibilityChange = (isVisible: boolean) => {
+    if (isVisible) {
+      this._firstHistoryUnreadPostViewed = true;
+      this.props.clearHistoryUnread();
+    }
   }
 
   @action.bound
