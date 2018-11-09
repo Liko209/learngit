@@ -64,7 +64,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     ) as GroupStateModel;
-    return !groupState.unreadCount;
+    return !groupState.unreadCount && !this.isFavorite;
   }
 
   @computed
