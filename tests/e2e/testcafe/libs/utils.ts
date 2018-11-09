@@ -23,11 +23,11 @@ export class ConfigLoader {
 
   load() {
     const defaultConfigFile = path.join(this.configsDir, `${this.defaultBranch}.json`);
-    const configFile  = path.join(this.configsDir, `${this.branch}.json`);
+    const configFile = path.join(this.configsDir, `${this.branch}.json`);
     this.config = require(defaultConfigFile);
     if (fs.existsSync(configFile)) {
       logger.info(`load custom configuration from ${configFile}`);
-      _.merge(this.config, require(configFile));
+      _.assign(this.config, require(configFile));
     }
   }
 
