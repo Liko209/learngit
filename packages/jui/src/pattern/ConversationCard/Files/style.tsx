@@ -35,16 +35,18 @@ const ICON_MAP = {
   sheet,
 };
 
+const ITEM_WIDTH = 84;
+
 type FileIconProps = {
   size?: 'small';
-  iconType: string | null;
+  iconType?: string | null;
 };
 
 const FileItem = styled(MuiListItem)`
   && {
     margin: ${spacing(0, 0, 3, 0)};
     padding: ${spacing(2)};
-    width: ${width(80)};
+    width: ${width(ITEM_WIDTH)};
     border-radius: ${shape('borderRadius', 1)};
     box-shadow: ${props => props.theme.shadows[1]};
   }
@@ -90,7 +92,7 @@ const FileActionsWrapper = styled.span`
 
 const FileCard = styled(JuiCard)`
   display: inline-block;
-  width: ${width(80)};
+  width: ${width(ITEM_WIDTH)};
   margin: ${spacing(0, 3, 3, 0)};
 `;
 
@@ -161,7 +163,7 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   & > b {
     font-weight: 400;
     color: ${palette('grey', '700')};
-    width: ${({ ratio }) => (ratio >= 1 ? width(60) : width(86))};
+    width: ${({ ratio }) => (ratio >= 1 ? width(56) : width(82))};
   }
 `;
 
@@ -186,6 +188,18 @@ const ImageMedia = styled(FileCardMedia)`
   }
 `;
 
+const FileExpandItemWrapper = styled.div``;
+
+const FileExpandItem = styled(MuiListItem)`
+  && {
+    margin: ${spacing(0, 0, 3, 0)};
+    padding: ${spacing(4)};
+    width: ${width(ITEM_WIDTH)};
+    border-radius: ${shape('borderRadius', 1)};
+    box-shadow: ${props => props.theme.shadows[1]};
+  }
+`;
+
 export {
   FileItem,
   FileIcon,
@@ -201,4 +215,6 @@ export {
   ImageCard,
   ImageFileInfo,
   ImageMedia,
+  FileExpandItem,
+  FileExpandItemWrapper,
 };

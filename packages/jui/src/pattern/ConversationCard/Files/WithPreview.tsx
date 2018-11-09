@@ -12,7 +12,7 @@ type JuiFileWithPreviewProps = {
   actions: JSX.Element;
   fileName: string;
   url: string;
-  iconType: string | null;
+  iconType?: string | null;
 };
 
 class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {
@@ -24,7 +24,7 @@ class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {
         <Jui.FileCardMedia image={url} />
         <Jui.FileCardContent>
           <Jui.CardFileName>
-            <FileName widthSpacing={50} filename={fileName} />
+            <FileName filename={fileName} />
           </Jui.CardFileName>
           <Jui.CardFileInfo component="div">
             <Jui.CardSize>
