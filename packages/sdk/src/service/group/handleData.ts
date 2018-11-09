@@ -289,7 +289,7 @@ async function doFavoriteGroupsNotification(favIds: number[]) {
     groups = sortFavoriteGroups(validFavIds, groups);
 
     _.forEach(groups, (group: Group) => {
-      replaceGroups[group.id] = group;
+      replaceGroups.set(group.id, group);
     });
   }
   notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, replaceGroups);

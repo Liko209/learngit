@@ -6,12 +6,12 @@
 import { EventEmitter2 } from 'eventemitter2';
 import { EVENT_TYPES } from './constants';
 import _ from 'lodash';
-import { BaseModel } from 'sdk/models';
+import { BaseModel, Raw } from '../models';
 
 export type NotificationEntityBody<T> = {
   ids?: number[];
   entities?: Map<number, T>;
-  partials?: Map<number, T>;
+  partials?: Map<number, Partial<Raw<T>>>;
 };
 
 export type NotificationEntityPayload<T> = {
@@ -31,6 +31,16 @@ const transform2Map = <T extends BaseModel>(entities: T[]): Map<number, T> => {
   return map;
 };
 
+const transformPartial2Map = <T extends BaseModel>(
+  entities: Partial<Raw<T>>[],
+): Map<number, Partial<Raw<T>>> => {
+  const map = new Map<number, Partial<Raw<T>>>();
+  entities.forEach((item: Partial<Raw<T>>) => {
+    map.set(item.id ? item.id : item._id ? item._id : 0, item);
+  });
+  return map;
+};
+
 class NotificationCenter extends EventEmitter2 {
   constructor() {
     super({ wildcard: true });
@@ -39,10 +49,10 @@ class NotificationCenter extends EventEmitter2 {
   emitEntityUpdate<T extends BaseModel>(
     key: string,
     entities: T[],
-    partials?: T[],
+    partials?: Partial<Raw<T>>[],
   ): void {
     const entityMap = transform2Map(entities);
-    const partialMap = partials ? transform2Map(partials) : undefined;
+    const partialMap = partials ? transformPartial2Map(partials) : undefined;
     const ids = Array.from(entityMap.keys());
 
     const notification = {
@@ -57,10 +67,10 @@ class NotificationCenter extends EventEmitter2 {
   }
 
   emitEntityReplace<T>(key: string, payload: Map<number, T>): void {
-    const ids = Array.from(payload.keys());
+    const idsArr = Array.from(payload.keys());
     const notification = {
       type: EVENT_TYPES.REPLACE,
-      body: { ids, entities: payload },
+      body: { ids: idsArr, entities: payload },
     };
 
     this._notifyEntityChange(key, notification);

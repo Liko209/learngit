@@ -8,9 +8,7 @@ import ModelProvider from './ModelProvider';
 import visibilityChangeEvent from './visibilityChangeEvent';
 import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
-import {
-  NotificationEntityPayload,
-} from 'sdk/src/service/notificationCenter';
+import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
@@ -59,21 +57,26 @@ export default class MultiEntityMapStore<
         this.batchRemove(matchedKeys);
         break;
       case EVENT_TYPES.REPLACE:
-        // this.batchReplace(body as NotificationReplaceBody<T>);
+        {
+          const entities = payload.body!.entities!;
+          this.batchReplace(entities);
+        }
         break;
       case EVENT_TYPES.UPDATE:
-        const entities = payload.body!.entities!;
-        const keys = Array.from(payload.body!.ids!);
-
-        const matchedEntities: T[] = [];
-        matchedKeys = _.intersection(Array.from(keys), existKeys);
-        matchedKeys.forEach((key: number) => {
-          const entity = entities.get(key);
-          if (entity) {
-            matchedEntities.push(entity);
-          }
-        });
-        this.batchSet(matchedEntities);
+        {
+          const entities = payload.body!.entities!;
+          const keys = Array.from(payload.body!.ids!);
+          matchedKeys = _.intersection(Array.from(keys), existKeys);
+          const matchedEntities: T[] = [];
+          matchedKeys = _.intersection(Array.from(keys), existKeys);
+          matchedKeys.forEach((key: number) => {
+            const entity = entities.get(key);
+            if (entity) {
+              matchedEntities.push(entity);
+            }
+          });
+          this.batchSet(matchedEntities);
+        }
         break;
     }
   }
@@ -96,12 +99,8 @@ export default class MultiEntityMapStore<
     });
   }
 
-  batchReplace(entities: { id: number; entity: T }[]) {
-    if (!entities.length) {
-      return;
-    }
-    entities.forEach((data: { id: number; entity: T }) => {
-      const { id, entity } = data;
+  batchReplace(entities: Map<number, T>) {
+    entities.forEach((entity, id) => {
       if (this._data[id]) {
         this.remove(id);
         this.set(entity);

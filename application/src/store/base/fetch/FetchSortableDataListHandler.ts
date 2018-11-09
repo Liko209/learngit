@@ -119,13 +119,10 @@ export class FetchSortableDataListHandler<
     } else {
       const existKeys = this.sortableListStore.getIds();
       const entities = body.entities!;
-
+      let notMatchedKeys: number[] = [];
       const matchedKeys: number[] = _.intersection(keys, existKeys);
-      const differentKeys: number[] = _.difference(keys, existKeys);
-
       const matchedSortableModels: ISortableModel<T>[] = [];
       const matchedEntities: T[] = [];
-      const notMatchedKeys: number[] = [];
 
       matchedKeys.forEach((key: number) => {
         const model = entities.get(key) as T;
@@ -138,16 +135,21 @@ export class FetchSortableDataListHandler<
         }
       });
 
-      differentKeys.forEach((key: number) => {
-        const model = entities.get(key) as T;
-        if (this._isMatchFunc(model)) {
-          const idSortKey = this._transformFunc(model);
-          if (this._isInRange(idSortKey.sortValue)) {
-            matchedSortableModels.push(idSortKey);
-            matchedEntities.push(model);
+      if (payload.type === EVENT_TYPES.REPLACE) {
+        notMatchedKeys = matchedKeys;
+      } else {
+        const differentKeys: number[] = _.difference(keys, existKeys);
+        differentKeys.forEach((key: number) => {
+          const model = entities.get(key) as T;
+          if (this._isMatchFunc(model)) {
+            const idSortKey = this._transformFunc(model);
+            if (this._isInRange(idSortKey.sortValue)) {
+              matchedSortableModels.push(idSortKey);
+              matchedEntities.push(model);
+            }
           }
-        }
-      });
+        });
+      }
 
       this.updateEntityStore(matchedEntities);
       this.sortableListStore.upsert(matchedSortableModels);
