@@ -8,7 +8,3 @@
 // import { FileType } from '../types';
 
 // const filesViewModel = new FilesViewModel();
-
-describe('File items tests', () => {
-
-});
