@@ -165,8 +165,8 @@ class StreamViewComponent extends Component<Props> {
   private _handleFirstUnreadCardVisibilityChange = (isVisible: boolean) => {
     if (isVisible) {
       this._firstHistoryUnreadPostViewed = true;
+      this.props.clearHistoryUnread();
     }
-    if (isVisible) this.props.clearHistoryUnread();
   }
 
   @action.bound
