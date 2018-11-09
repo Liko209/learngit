@@ -13,8 +13,9 @@ import styled from '../../foundation/styled-components';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
+import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 
-const StyledIconography = styled(JuiIconography)``;
+const StyledIconographyMore = styled(JuiIconography)``;
 
 const StyledListItem = styled(MuiMenuItem)`
   && {
@@ -41,15 +42,22 @@ const StyledListItem = styled(MuiMenuItem)`
     background-color: ${grey('50')};
   }
 
-  && ${StyledIconography} {
+  && ${StyledIconographyMore} {
     color: ${palette('grey', '400')};
-    opacity: 0;
-    transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    font-size: 20px;
+    display: none;
+    font-size: ${spacing(5)};
   }
 
-  &&:hover ${StyledIconography} {
-    opacity: 1;
+  &&:hover ${StyledIconographyMore} {
+    display: inline-block;
+  }
+
+  &&:hover ${StyledIconographyDraft} {
+    display: none;
+  }
+
+  &&:hover ${StyledIconographyFailure} {
+    display: none;
   }
 
   &&.selected {
@@ -124,10 +132,11 @@ const JuiConversationListItem: IConversationListItem = (
     >
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
       <ItemText style={{ fontWeight }}>
-        {indicator} {title}
+        {title}
       </ItemText>
       {umi}
-      <StyledIconography onClick={onMoreClick}>more_vert</StyledIconography>
+      {indicator}
+      <StyledIconographyMore onClick={onMoreClick}>more_vert</StyledIconographyMore>
     </StyledListItem>
   );
 };
