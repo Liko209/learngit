@@ -1,0 +1,8 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/**/*.ts"],
+    "include_tags": [],
+    "exclude_tags": [],
+    "browsers": ["selenium:chrome"]
+  }
+}
