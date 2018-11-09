@@ -99,11 +99,11 @@ export default class ItemService extends BaseService<Item> {
       type,
       updatedItemModel,
     )
-      .then(resolve => {
+      .then((resolve: any) => {
         itemData = resolve.data;
         return itemData;
       })
-      .catch(e => {
+      .catch((e: any) => {
         return ErrorParser.parse(e);
       });
     return resp;
