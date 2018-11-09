@@ -12,7 +12,7 @@ import {
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { getFileSize } from '@/utils/helper';
 
-import { FilesViewProps, FileType, ExtendFile } from './types';
+import { FilesViewProps, FileType, ExtendFileItem } from './types';
 
 const downloadBtn = (downloadUrl: string) => (
   <JuiIconButton
@@ -28,11 +28,12 @@ const downloadBtn = (downloadUrl: string) => (
 
 class FilesView extends React.Component<FilesViewProps> {
   render() {
-    const { getFileIcon, files } = this.props;
+    const { files } = this.props;
+    console.log(files, '---file file item');
 
     return (
       <>
-        {files[FileType.image].map((file: ExtendFile) => {
+        {files[FileType.image].map((file: ExtendFileItem) => {
           const { item, previewUrl } = file;
           const { origHeight, id, origWidth, name, downloadUrl } = item;
           return (
@@ -45,10 +46,10 @@ class FilesView extends React.Component<FilesViewProps> {
             />
           );
         })}
-        {files[FileType.document].map((file: ExtendFile) => {
+        {files[FileType.document].map((file: ExtendFileItem) => {
           const { item, previewUrl } = file;
           const { size, type, id, name, downloadUrl } = item;
-          const iconType = getFileIcon(type);
+          const iconType = item.getFileIcon(type);
           return (
             <JuiFileWithPreview
               key={id}
@@ -60,10 +61,10 @@ class FilesView extends React.Component<FilesViewProps> {
             />
           );
         })}
-        {files[FileType.others].map((file: ExtendFile) => {
+        {files[FileType.others].map((file: ExtendFileItem) => {
           const { item } = file;
           const { size, type, name, downloadUrl, id } = item;
-          const iconType = getFileIcon(type);
+          const iconType = item.getFileIcon(type);
           return (
             <JuiFileWithoutPreview
               key={id}

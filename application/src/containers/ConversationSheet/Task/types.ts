@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { TaskItem } from '@/store/models/Items';
+import { TaskItem, FileType, ExtendFileItem } from '@/store/models/Items';
 
 type Props = {
   ids: number[];
@@ -13,6 +13,7 @@ type Props = {
 type ViewProps = {
   ids: number[];
   task: TaskItem;
+  files: ExtendFileItem[];
 };
 
-export { Props, ViewProps };
+export { Props, ViewProps, FileType, ExtendFileItem };

@@ -5,6 +5,12 @@
  */
 import ItemModel from '../Item';
 
+enum FileType {
+  image = 0,
+  document = 1,
+  others = 2,
+}
+
 type FileItem = {
   type: string;
   downloadUrl: string;
@@ -21,6 +27,12 @@ type FileItem = {
   origHeight: number;
   origWidth: number;
 } & ItemModel;
+
+type ExtendFileItem = {
+  item: FileItem;
+  type: number;
+  previewUrl: string;
+};
 
 type LinkItem = {
   summary: string;
@@ -60,4 +72,4 @@ type TaskItem = {
   attachment_ids: number[];
 } & ItemModel;
 
-export { FileItem, LinkItem, EventItem, TaskItem };
+export { FileItem, ExtendFileItem, FileType, LinkItem, EventItem, TaskItem };

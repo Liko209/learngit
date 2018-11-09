@@ -12,12 +12,90 @@ import {
   JuiTaskNotes,
   JuiTaskAvatarName,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
-import { AvatarName } from './AvatarName';
+import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import {
+  JuiFileWithPreview,
+  JuiFileWithExpand,
+  JuiPreviewImage,
+} from 'jui/pattern/ConversationCard/Files';
+import { getFileSize } from '@/utils/helper';
 
-import { ViewProps } from './types';
+import { AvatarName } from './AvatarName';
+import { ViewProps, FileType, ExtendFileItem } from './types';
+
+const downloadBtn = (downloadUrl: string) => (
+  <JuiIconButton
+    component="a"
+    download={true}
+    href={downloadUrl}
+    variant="plain"
+    tooltipTitle="download"
+  >
+    get_app
+  </JuiIconButton>
+);
+
+const File_COMPS = {
+  [FileType.image]: (file: ExtendFileItem) => {
+    const { item, previewUrl } = file;
+    const { id, name, downloadUrl } = item;
+
+    return (
+      <JuiFileWithExpand
+        key={id}
+        fileName={name}
+        actions={
+          <>
+            {downloadBtn(downloadUrl)}
+            <JuiIconButton
+              variant="plain"
+              tooltipTitle="expand"
+            >
+              event
+            </JuiIconButton>
+          </>
+        }
+      >
+        <JuiPreviewImage
+          ratio={1}
+          fileName={name}
+          url={previewUrl}
+          actions={downloadBtn(downloadUrl)}
+        />
+      </JuiFileWithExpand>
+    );
+  },
+  [FileType.document]: (file: ExtendFileItem, props: ViewProps) => {
+    const { item, previewUrl } = file;
+    const { size, type, id, name, downloadUrl } = item;
+    const iconType = item.getFileIcon(type);
+    return (
+      <JuiFileWithPreview
+        key={id}
+        fileName={name}
+        size={`${getFileSize(size)}`}
+        url={previewUrl}
+        iconType={iconType}
+        actions={downloadBtn(downloadUrl)}
+      />
+    );
+  },
+  [FileType.others]: (file: ExtendFileItem) => {
+    const { item } = file;
+    const { name, downloadUrl, id } = item;
+    return (
+      <JuiFileWithExpand
+        key={id}
+        fileName={name}
+        actions={downloadBtn(downloadUrl)}
+      />
+    );
+  },
+};
 
 @observer
 class TaskView extends React.Component<ViewProps> {
+
   private get _taskAvatarNames() {
     const { task } = this.props;
     const { assigned_to_ids } = task;
@@ -31,9 +109,11 @@ class TaskView extends React.Component<ViewProps> {
 
     return assigned_to_ids && <AvatarName id={assigned_to_ids[0]} />;
   }
+
   render() {
-    const { task } = this.props;
+    const { task, files } = this.props;
     const { section, color, text, notes, complete, assigned_to_ids } = task;
+    console.log(files, '-----files');
     return (
       <JuiConversationItemCard
         complete={complete}
@@ -47,6 +127,10 @@ class TaskView extends React.Component<ViewProps> {
         />
         <JuiTaskSection section={section} />
         <JuiTaskNotes notes={notes} />
+        <JuiTaskSection section={'Attachments'} />
+        {files.map((file: ExtendFileItem) => {
+          return File_COMPS[file.type](file, this.props);
+        })}
       </JuiConversationItemCard>
     );
   }

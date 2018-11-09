@@ -8,4 +8,4 @@ export * from './Files';
 export * from './Link';
 export * from './Event';
 export * from './Task';
-export * from './items.d';
+export * from './types';

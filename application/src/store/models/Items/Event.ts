@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 11:28:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { EventItem } from './items.d';
+import { EventItem } from './';
 
 function setEventData(this: EventItem, data: any) {
   const { color, description, start, end, location, repeat, repeat_ending, repeat_ending_after, repeat_ending_on, text } = data;

@@ -9,6 +9,8 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props } from './types';
+import { FileItem, TaskItem } from '@/store/models/Items';
+import { Item } from 'sdk/models';
 
 class TaskViewModel extends StoreViewModel<Props> {
   @computed
@@ -18,8 +20,28 @@ class TaskViewModel extends StoreViewModel<Props> {
 
   @computed
   get task() {
-    return getEntity(ENTITY_NAME.ITEM, this._id);
+    return getEntity<Item, TaskItem>(ENTITY_NAME.ITEM, this._id);
   }
+
+  @computed
+  get attachmentIds() {
+    return this.task.attachment_ids || [];
+  }
+
+  @computed
+  get files() {
+    return this.attachments.map((file: FileItem) => {
+      return file.getFileType();
+    });
+  }
+
+  @computed
+  get attachments() {
+    return this.attachmentIds.map((attachment: number) => {
+      return getEntity<Item, FileItem>(ENTITY_NAME.ITEM, attachment);
+    });
+  }
+
 }
 
 export { TaskViewModel };
