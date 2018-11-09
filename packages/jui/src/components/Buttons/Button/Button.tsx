@@ -39,6 +39,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
   if (_variant === 'round') {
     _variant = 'fab';
     restProps.disableRipple = true;
+    restProps.size = 'small';
   }
   return (
     <MuiButton
@@ -54,10 +55,10 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
   );
 };
 
-const shadow = () => {
+const shadow = (n: number) => {
   return css<JuiButtonProps>`
     box-shadow: ${({ theme, variant }) =>
-      variant === 'round' ? theme.boxShadow.val1 : 'unset'};
+      variant === 'round' ? theme.shadows[n] : 'unset'};
   `;
 };
 
@@ -70,7 +71,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     ${typography('button')};
     &.containedButtonStyle {
       color: white;
-      ${shadow()}
+      ${shadow(3)}
       &:hover {
         background-color: ${({ theme, color = 'primary' }) =>
           tinycolor(palette(color, 'main')({ theme }))
@@ -78,7 +79,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
             .toRgbString()};
       }
       &:active {
-        ${shadow()}
+        ${shadow(1)}
       }
     }
 
@@ -93,6 +94,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
         background-color: ${grey('50')}
       &:active {
         background-color: ${grey('100')};
+
       }
     }
 
