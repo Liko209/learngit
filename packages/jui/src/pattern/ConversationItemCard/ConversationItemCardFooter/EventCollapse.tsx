@@ -24,12 +24,6 @@ type States = {
   isShow: boolean;
 };
 
-// const StyledEventCollapse = styled.div`
-//   width: 100%;
-//   background: ${grey('100')};
-//   padding: ${spacing(4)} 0 ${spacing(4)} ${spacing(10)};
-// `;
-
 const StyledContent = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
