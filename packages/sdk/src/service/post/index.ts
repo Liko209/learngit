@@ -408,49 +408,59 @@ export default class PostService extends BaseService<Post> {
     if (postId < 0) {
       return null;
     }
-    const postDao = daoManager.getDao(PostDao);
-    const post = await postDao.get(postId);
+    try {
+      const postDao = daoManager.getDao(PostDao);
+      const post = await postDao.get(postId);
 
-    if (post) {
-      post.likes = post.likes || [];
-      if (toLike) {
-        if (post.likes.indexOf(personId) === -1) {
-          post.likes.push(personId);
+      if (post) {
+        post.likes = post.likes || [];
+        if (toLike) {
+          if (post.likes.indexOf(personId) === -1) {
+            post.likes.push(personId);
+          } else {
+            return post;
+          }
         } else {
-          return post;
+          if (post.likes.indexOf(personId) !== -1) {
+            post.likes = post.likes.filter((id: number) => id !== personId);
+          } else {
+            return post;
+          }
         }
-      } else {
-        if (post.likes.indexOf(personId) !== -1) {
-          post.likes = post.likes.filter((id: number) => id !== personId);
-        } else {
-          return post;
+        post._id = post.id;
+        delete post.id;
+        const response = await PostAPI.putDataById<Post>(postId, post);
+        if (response.data) {
+          const result = await baseHandleData(response.data);
+          if (result && result.length) {
+            return result[0];
+          }
         }
+        // error
+        return null;
       }
-      post._id = post.id;
-      delete post.id;
-      const response = await PostAPI.putDataById<Post>(postId, post);
-      if (response.data) {
-        const result = await baseHandleData(response.data);
-        if (result && result.length) {
-          return result[0];
-        }
-      }
+
       // error
       return null;
+    } catch (e) {
+      mainLogger.warn(`modify post error ${JSON.stringify(e)}`);
+      throw ErrorParser.parse(e);
     }
-
-    // error
-    return null;
   }
 
   async bookmarkPost(postId: number, toBook: boolean): Promise<Profile | null> {
-    // favorite_post_ids in profile
-    const profileService: ProfileService = ProfileService.getInstance();
-    const profile: Profile | null = await profileService.putFavoritePost(
-      postId,
-      toBook,
-    );
-    return profile;
+    try {
+      // favorite_post_ids in profile
+      const profileService: ProfileService = ProfileService.getInstance();
+      const profile: Profile | null = await profileService.putFavoritePost(
+        postId,
+        toBook,
+      );
+      return profile;
+    } catch (e) {
+      mainLogger.warn(`modify post error ${JSON.stringify(e)}`);
+      throw ErrorParser.parse(e);
+    }
   }
 
   getLastPostOfGroup(groupId: number): Promise<Post | null> {

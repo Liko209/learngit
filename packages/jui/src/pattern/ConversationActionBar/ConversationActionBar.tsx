@@ -35,9 +35,9 @@ const StyledWrapper = styled('div')`
     border-radius: ${spacing(4)};
     background-color: ${palette('common', 'white')};
     transition: box-shadow 0.3s ease-in;
-    box-shadow: ${props => props.theme.shadows[2]};
+    box-shadow: ${props => props.theme.shadows[1]};
     &:hover {
-      box-shadow: ${props => props.theme.shadows[1]};
+      box-shadow: ${props => props.theme.shadows[5]};
     }
     & > div {
       width: ${height(7)};
