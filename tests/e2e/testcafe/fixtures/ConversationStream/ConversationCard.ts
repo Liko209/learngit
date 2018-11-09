@@ -10,7 +10,6 @@ import { setupCase, teardownCase } from '../../init';
 import { h, H } from '../../v2/helpers';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
-import { ClientFunction } from 'testcafe';
 
 fixture('ConversationCard')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
@@ -48,7 +47,6 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
       const count = await conversations.count;
       const n = Math.floor(Math.random() * count);
       await app.homePage.messagePanel.teamsSection.nthConversationEntry(n).enter();
-      await app.homePage.messagePanel.isValidUrl();
       groupId = await app.homePage.messagePanel.getCurrentGroupIdFromURL();
     });
 
@@ -67,7 +65,7 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
 );
 
 test(formalName('When update user name, can sync dynamically in message metadata.',
-    ['JPT-91', 'P2', 'ConversationStream']),
+  ['JPT-91', 'P2', 'ConversationStream']),
   async (t: TestController) => {
     const postContent = `some random text post ${Date.now()}`;
     const app = new AppRoot(t);
@@ -78,16 +76,13 @@ test(formalName('When update user name, can sync dynamically in message metadata
 
     let groupId, postData, targetPost;
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded();
-      },
-    );
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
 
     await h(t).withLog(`Then I enter a conversation in team section`, async () => {
       await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
-      await app.homePage.messagePanel.isValidUrl();
       groupId = await app.homePage.messagePanel.getCurrentGroupIdFromURL();
     });
 
@@ -95,21 +90,21 @@ test(formalName('When update user name, can sync dynamically in message metadata
       postData = (await userGlip.sendPost(groupId, postContent)).data;
       targetPost = app.homePage.messagePanel.conversationPage.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok();
-    })
+    });
 
     await h(t).withLog(`And I modify user name through api,`, async () => {
       await userGlip.updatePerson(null, { first_name: changedName });
-    })
+    });
 
     await h(t).withLog(`Then I can find user name change to ${changedName}.`, async () => {
       await t.expect(targetPost.child().withText(changedName).exists).ok();
       await userGlip.updatePerson(null, { first_name: 'John' }); // reset first_name
-    }, true)
+    }, true);
   },
 );
 
 test(formalName('When update custom status, can sync dynamically in message metadata.',
-    ['JPT-95', 'P2', 'ConversationStream']),
+  ['JPT-95', 'P2', 'ConversationStream']),
   async (t: TestController) => {
     const postContent = `JPT-95 ${uuid()}`;
     const app = new AppRoot(t);
@@ -119,16 +114,13 @@ test(formalName('When update custom status, can sync dynamically in message meta
 
     let groupId, postData, targetPost;
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded();
-      },
-    );
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
 
     await h(t).withLog(`Then I enter a conversation in team section`, async () => {
       await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
-      await app.homePage.messagePanel.isValidUrl();
       groupId = await app.homePage.messagePanel.getCurrentGroupIdFromURL();
     });
 
@@ -138,8 +130,8 @@ test(formalName('When update custom status, can sync dynamically in message meta
       await t.expect(targetPost.exists).ok(postData);
     });
 
-    let userStatusList = ['In a meeting', 'content of user modify']
-    for (let userStatus of userStatusList){
+    const userStatusList = ['In a meeting', 'content of user modify']
+    for (const userStatus of userStatusList) {
       await h(t).withLog(`When I modify user status "${userStatus}" through api`, async () => {
         await userGlip.updatePerson(null, { away_status: userStatus });
       });
@@ -154,8 +146,8 @@ test(formalName('When update custom status, can sync dynamically in message meta
     });
 
     await h(t).withLog(`Then I only can find username display without status`, async () => {
-      // FIXME: waiting for FIJI-1433 add status data-name 
-      await t.expect(targetPost.userStatus.withAttribute('data-name','time').exists).ok();
+      // FIXME: waiting for FIJI-1433 add status data-name
+      await t.expect(targetPost.userStatus.withAttribute('data-name', 'time').exists).ok();
     });
   },
 );

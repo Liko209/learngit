@@ -22,13 +22,13 @@ class MoreMenu extends BaseWebComponent {
     );
   }
 
-  private getToggler(id: string){
+  private getToggler(id: string) {
     return this.getComponent(
       MoreMenuEntry,
       this.getSelectorByAutomationId(id),
-    ); 
+    );
   }
-  
+
   get favoriteToggler() {
     return this.getToggler('favToggler');
   }
@@ -60,15 +60,15 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.hover(this.moreMenuEntry).click(this.moreMenuEntry);
   }
 
-  async waitUntilUmiExist(exist: boolean, timeout=20) {
+  async waitUntilUmiExist(exist: boolean, timeout = 20) {
     let tryTime = 0;
     let count = await this.getUmi();
     if (exist == !!count) {
       return
     }
     while (true) {
-      if (tryTime >= timeout){
-        throw(`Wait until conversation without UMI: timeout: ${timeout}s`)
+      if (tryTime >= timeout) {
+        throw (`Wait until conversation without UMI: timeout: ${timeout}s`)
       }
       tryTime = tryTime + 1;
       await this.t.wait(1e3);
@@ -76,7 +76,7 @@ class ConversationEntry extends BaseWebComponent {
       if (exist == !!(count)) {
         break
       }
-    } 
+    }
   }
 
   async enter() {
@@ -148,7 +148,7 @@ class PostItem extends BaseWebComponent {
   }
 
   get userStatus() {
-    this. warnFlakySelector();
+    this.warnFlakySelector();
     return this.name.nextSibling('div')
   }
 
@@ -159,11 +159,11 @@ class PostItem extends BaseWebComponent {
   get body() {
     return this.self.find(`[data-name="body"]`);
   }
-  
-  get text(){
+
+  get text() {
     return this.self.find(`[data-name="text"]`);
   }
- }
+}
 
 class ConversationPage extends BaseWebComponent {
   get self() {
@@ -194,7 +194,7 @@ class ConversationPage extends BaseWebComponent {
     return this.getComponent(PostItem, this.posts.nth(nth));
   }
 
-  postItemById(postId: string){
+  postItemById(postId: string) {
     return this.getComponent(PostItem, this.posts.filter(`[data-id="${postId}"]`));
   }
 }
@@ -268,12 +268,13 @@ export class MessagePanel extends BaseWebComponent {
   }
 
   async getCurrentGroupIdFromURL(): Promise<number> {
+    await this.isValidUrl();
     return Number(/messages\/(\d+)/.exec(await h(this.t).href)[1]);
-  } 
+  }
 
   async isValidUrl() {
     const url = await h(this.t).href;
     const result = /messages\/(\d+)/.test(url);
-    assert(result, `current URL is valid: ${url}`);
+    assert(result, `invalid url: ${url}`);
   }
 }
