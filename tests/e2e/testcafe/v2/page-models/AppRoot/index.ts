@@ -20,6 +20,6 @@ export class AppRoot extends BaseWebComponent {
     }
 
     async getCurrentGroupIdFromURL(): Promise<number> {
-        return Number(/messages\/(\d+)/.exec(await h(this.t).href)[1])
+        return Number(/messages\/(\d+)/.exec(await h(this.t).href)[1]);
     } 
 }
