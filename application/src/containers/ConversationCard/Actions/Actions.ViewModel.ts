@@ -57,27 +57,27 @@ class ActionsViewModel extends StoreViewModel<ActionsProps>
   }
 
   @action
-  like = () => {
+  like = async () => {
     const postService = PostService.getInstance<PostService>();
-    postService.likePost(this._id, this.currentUserId, true);
+    await postService.likePost(this._id, this.currentUserId, true);
   }
 
   @action
-  unlike = () => {
+  unlike = async () => {
     const postService = PostService.getInstance<PostService>();
-    postService.likePost(this._id, this.currentUserId, false);
+    await postService.likePost(this._id, this.currentUserId, false);
   }
 
   @action
-  bookmark = () => {
+  bookmark = async () => {
     const postService = PostService.getInstance<PostService>();
-    postService.bookmarkPost(this._id, true);
+    await postService.bookmarkPost(this._id, true);
   }
 
   @action
-  removeBookmark = () => {
+  removeBookmark = async () => {
     const postService = PostService.getInstance<PostService>();
-    postService.bookmarkPost(this._id, false);
+    await postService.bookmarkPost(this._id, false);
   }
 }
 

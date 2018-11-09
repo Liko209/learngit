@@ -6,7 +6,6 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiIconButton } from '../../components/Buttons';
-import { JuiSnackbarContent } from '../../components/Snackbars';
 
 import { spacing, palette, height } from '../../foundation/utils/styles';
 
@@ -18,7 +17,6 @@ type Props = {
   moreTooltipTitle: string;
   isLike: boolean;
   isBookmark: boolean;
-  errMsg: string;
   handleLike: (event: React.MouseEvent<HTMLElement>) => void;
   handleUnlike: (event: React.MouseEvent<HTMLElement>) => void;
   handleBookmark: (event: React.MouseEvent<HTMLElement>) => void;
@@ -60,7 +58,6 @@ class JuiConversationActionBar extends PureComponent<Props> {
       handleUnlike,
       handleBookmark,
       handleRemoveBookmark,
-      errMsg,
     } = this.props;
     return (
       <StyledWrapper>
@@ -91,9 +88,6 @@ class JuiConversationActionBar extends PureComponent<Props> {
         >
           more_horiz
         </JuiIconButton>
-        {errMsg && (
-          <JuiSnackbarContent type="error">{errMsg}</JuiSnackbarContent>
-        )}
       </StyledWrapper>
     );
   }

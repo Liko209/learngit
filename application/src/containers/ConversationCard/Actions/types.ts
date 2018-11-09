@@ -3,13 +3,6 @@
  * @Date: 2018-11-07 17:56:52
  * Copyright © RingCentral. All rights reserved.
  */
-enum ERROR_TYPE {
-  NETWORK,
-  LIKE,
-  UNLIKE,
-  BOOKMARK,
-  REMOVE_BOOKMARK,
-}
 
 type ActionsProps = {
   id: number; // post id
@@ -18,11 +11,11 @@ type ActionsProps = {
 type ActionsViewProps = {
   isLike: boolean;
   isBookmark: boolean;
-  like: (event: React.MouseEvent<HTMLElement>) => void;
-  unlike: (event: React.MouseEvent<HTMLElement>) => void;
-  bookmark: (event: React.MouseEvent<HTMLElement>) => void;
-  removeBookmark: (event: React.MouseEvent<HTMLElement>) => void;
+  like: (event?: React.MouseEvent<HTMLElement>) => void;
+  unlike: (event?: React.MouseEvent<HTMLElement>) => void;
+  bookmark: (event?: React.MouseEvent<HTMLElement>) => void;
+  removeBookmark: (event?: React.MouseEvent<HTMLElement>) => void;
   isOffline: boolean;
 };
 
-export { ActionsProps, ActionsViewProps, ERROR_TYPE };
+export { ActionsProps, ActionsViewProps };

@@ -15,7 +15,7 @@ import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
-import { Post, Profile, Item, Raw } from '../../models';
+import { Post, Item, Raw } from '../../models';
 import { PostStatusHandler } from './postStatusHandler';
 import { POST_STATUS } from '../constants';
 import { ENTITY, SOCKET } from '../eventKey';
@@ -400,14 +400,7 @@ export default class PostService extends BaseService<Post> {
     return false;
   }
 
-  async likePost(
-    postId: number,
-    personId: number,
-    toLike: boolean,
-  ): Promise<Post | null> {
-    if (postId < 0) {
-      return null;
-    }
+  async likePost(postId: number, personId: number, toLike: boolean) {
     try {
       const postDao = daoManager.getDao(PostDao);
       const post = await postDao.get(postId);
@@ -417,48 +410,27 @@ export default class PostService extends BaseService<Post> {
         if (toLike) {
           if (post.likes.indexOf(personId) === -1) {
             post.likes.push(personId);
-          } else {
-            return post;
           }
         } else {
           if (post.likes.indexOf(personId) !== -1) {
             post.likes = post.likes.filter((id: number) => id !== personId);
-          } else {
-            return post;
           }
         }
         post._id = post.id;
         delete post.id;
-        const response = await PostAPI.putDataById<Post>(postId, post);
-        if (response.data) {
-          const result = await baseHandleData(response.data);
-          if (result && result.length) {
-            return result[0];
-          }
-        }
-        // error
-        return null;
+        await PostAPI.putDataById<Post>(postId, post);
       }
-
-      // error
-      return null;
     } catch (e) {
-      mainLogger.warn(`modify post error ${JSON.stringify(e)}`);
       throw ErrorParser.parse(e);
     }
   }
 
-  async bookmarkPost(postId: number, toBook: boolean): Promise<Profile | null> {
+  async bookmarkPost(postId: number, toBook: boolean) {
     try {
       // favorite_post_ids in profile
       const profileService: ProfileService = ProfileService.getInstance();
-      const profile: Profile | null = await profileService.putFavoritePost(
-        postId,
-        toBook,
-      );
-      return profile;
+      await profileService.putFavoritePost(postId, toBook);
     } catch (e) {
-      mainLogger.warn(`modify post error ${JSON.stringify(e)}`);
       throw ErrorParser.parse(e);
     }
   }
