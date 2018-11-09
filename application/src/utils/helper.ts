@@ -101,6 +101,32 @@ function getDurtionTime(startTimestamp: number, endTimestamp: number) {
   return `${startTime} - ${endTime}`;
 }
 
+const REPEAT_TEXT = {
+  daily: ', repeating every day',
+  weekdaily: ', repeating every weekday',
+  weekly: ', repeating every week',
+  monthly: ', repeating every month',
+  yearly: ', repeating ervery year',
+};
+
+const TIMES_TEXT = {
+  daily: 'day',
+  weekdaily: 'weekday',
+  weekly: 'week',
+  monthly: 'month',
+  yearly: 'year',
+};
+
+function getDurtionTimeText(repeat: string, repeatEndingAfter: string, repeatEndingOn: string, repeatEnding: string) {
+  const after = repeatEndingAfter === '1' ? 'one' : repeatEndingAfter;
+  const times = `${TIMES_TEXT[repeat]}${Number(repeatEndingAfter) > 1 ? 's' : ''}`;
+  const ENDING = {
+    after: `for ${after} ${times}`,
+    on: `until ${moment(repeatEndingOn).format('ddd, MMM D')}`,
+  };
+  return `${REPEAT_TEXT[repeat] || ''} ${ENDING[repeatEnding] || ''}`;
+}
+
 export {
   compareName,
   toTitleCase,
@@ -110,4 +136,5 @@ export {
   getFileSize,
   getDateAndTime,
   getDurtionTime,
+  getDurtionTimeText,
 };
