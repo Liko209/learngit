@@ -42,7 +42,6 @@ const transformFunc = (dataModel: Post) => ({
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
-  private _transformHandler: PostTransformHandler;
   private _initialized = false;
 
   @observable
@@ -50,6 +49,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @observable
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
+
+  @observable
+  private _transformHandler: PostTransformHandler;
 
   @computed
   get hasHistoryUnread() {
