@@ -147,53 +147,10 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
 
   const favIds = (profile && profile.favorite_group_ids) || [];
-
-  /**
-   * favorite groups/teams: put/delete
-   * normal groups: put/delete
-   * normal teams: put/delete
-   */
-
   const archivedGroups = normalData.filter((item: Group) => item.is_archived);
   const deactivatedGroups = deactivatedData.concat(archivedGroups);
   deactivatedGroups.length &&
     notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroups);
-
-  // let deactivatedTeams = deactivatedData.filter(
-  //   (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
-  // );
-  // deactivatedTeams = deactivatedTeams.concat(
-  //   archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1),
-  // );
-
-  // let deactivatedFavGroups = deactivatedData.filter(
-  //   (item: Group) => favIds.indexOf(item.id) !== -1,
-  // );
-  // deactivatedFavGroups = deactivatedFavGroups.concat(
-  //   archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1),
-  // );
-
-  // const deactivatedGroups = deactivatedData.filter(
-  //   (item: Group) => !item.is_team && favIds.indexOf(item.id) === -1,
-  // );
-
-  // if (deactivatedFavGroups.length > 0) {
-  //   notificationCenter.emitEntityDelete(
-  //     ENTITY.FAVORITE_GROUPS,
-  //     deactivatedFavGroups,
-  //   );
-  // }
-
-  // if (deactivatedTeams.length > 0) {
-  //   notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, deactivatedTeams);
-  // }
-
-  // if (deactivatedGroups.length > 0) {
-  //   notificationCenter.emitEntityDelete(
-  //     ENTITY.PEOPLE_GROUPS,
-  //     deactivatedGroups,
-  //   );
-  // }
 
   const limits = accountService.getConversationListLimits();
 
@@ -212,11 +169,6 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   );
   const result = addedTeams.concat(addedGroups).concat(addFavorites);
   result.length && notificationCenter.emitEntityPut(ENTITY.GROUP, result);
-  // addedTeams.length > 0 &&
-  //   notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, addedTeams);
-  // addedGroups.length > 0 &&
-  //   notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, addedGroups);
-  // addFavorites.length > 0 && (await doFavoriteGroupsNotification(favIds));
 }
 
 async function operateGroupDao(deactivatedData: Group[], normalData: Group[]) {
@@ -457,7 +409,16 @@ async function filterGroups(groups: Group[], limit: number) {
       (group: Group, i) => getGroupTime(group) >= oldestUnreadGroupTime,
     );
     if (filteredGroups.length > limit) {
-      return filteredGroups;
+      const result = [];
+      for (let i = 0; i < limit; i++) {
+        result.push(filteredGroups[i]);
+      }
+      for (let i = limit; i < filteredGroups.length; i++) {
+        if (unreadGroupIds.indexOf(filteredGroups[i].id) !== -1) {
+          result.push(filteredGroups[i]);
+        }
+      }
+      return result;
     }
   }
 

@@ -285,17 +285,18 @@ describe('filterGroups()', () => {
     expect(filteredGroups.length).toBe(TOTAL_GROUPS);
   });
 
-  it("should return groups until unread group when unread group's position > limit", async () => {
+  it("should return groups with unread group which unread group's position > limit", async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
+
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_count: 1 },
     ]);
 
     const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(4);
+    expect(filteredGroups.length).toBe(3);
   });
 
   it("should return all groups when unread group's position = limit", async () => {
@@ -324,13 +325,14 @@ describe('filterGroups()', () => {
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
-  it('should return groups until unread @mention', async () => {
+  it('should return groups with unread @mention', async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_mentions_count: 1 },
+      { id: 3, unread_mentions_count: 1 },
     ]);
 
     const filteredGroups = await filterGroups(teams, LIMIT);
