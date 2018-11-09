@@ -30,7 +30,7 @@ class StreamViewComponent extends Component<Props> {
   private _jumpToFirstUnreadLoading = false;
 
   @observable
-  private _firstHistoryUnreadPostVisible = false;
+  private _firstHistoryUnreadPostViewed = false;
 
   @computed
   private get _firstHistoryUnreadInPage() {
@@ -55,7 +55,7 @@ class StreamViewComponent extends Component<Props> {
     }
     if (prevProps.groupId !== this.props.groupId) {
       this._jumpToFirstUnreadLoading = false;
-      this._firstHistoryUnreadPostVisible = false;
+      this._firstHistoryUnreadPostViewed = false;
       this._firstUnreadCardRef = null;
     }
   }
@@ -130,7 +130,7 @@ class StreamViewComponent extends Component<Props> {
       hasHistoryUnread &&
       historyGroupState &&
       historyUnreadCount > 0 &&
-      (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostVisible);
+      (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostViewed);
 
     const countText =
       historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
@@ -163,7 +163,9 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _handleFirstUnreadCardVisibilityChange = (isVisible: boolean) => {
-    this._firstHistoryUnreadPostVisible = isVisible;
+    if (isVisible) {
+      this._firstHistoryUnreadPostViewed = true;
+    }
     if (isVisible) this.props.clearHistoryUnread();
   }
 
