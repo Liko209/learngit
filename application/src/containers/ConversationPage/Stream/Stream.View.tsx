@@ -129,6 +129,7 @@ class StreamViewComponent extends Component<Props> {
     const shouldHaveJumpButton =
       hasHistoryUnread &&
       historyGroupState &&
+      historyUnreadCount > 0 &&
       (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostVisible);
 
     return shouldHaveJumpButton ? (
