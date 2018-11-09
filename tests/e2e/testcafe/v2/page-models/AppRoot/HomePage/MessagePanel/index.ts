@@ -136,7 +136,32 @@ class ConversationListSection extends BaseWebComponent {
   }
 }
 
-class PostItem extends BaseWebComponent { }
+class PostItem extends BaseWebComponent {
+  get avatar() {
+    return this.self.find(`[data-name="avatar"]`);
+  }
+
+  get name() {
+    return this.self.find(`[data-name="name"]`);
+  }
+
+  get userStatus() {
+    this. warnFlakySelector();
+    return this.name.nextSibling('div')
+  }
+
+  get time() {
+    return this.self.find(`[data-name="time"]`);
+  }
+
+  get body() {
+    return this.self.find(`[data-name="body"]`);
+  }
+  
+  get text(){
+    return this.self.find(`[data-name="text"]`);
+  }
+ }
 
 class ConversationPage extends BaseWebComponent {
   get self() {
@@ -165,6 +190,10 @@ class ConversationPage extends BaseWebComponent {
 
   nthPostItem(nth: number) {
     return this.getComponent(PostItem, this.posts.nth(nth));
+  }
+
+  postItemById(postId: string){
+    return this.getComponent(PostItem, this.posts.filter(`[data-id="${postId}"]`));
   }
 }
 
