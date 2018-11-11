@@ -404,7 +404,7 @@ export default class PostService extends BaseService<Post> {
     try {
       const postDao = daoManager.getDao(PostDao);
       const post = await postDao.get(postId);
-
+      console.log(post);
       if (post) {
         const likes = post.likes || [];
         const index = likes.indexOf(personId);
@@ -417,7 +417,14 @@ export default class PostService extends BaseService<Post> {
             likes.splice(index, 1);
           }
         }
-        await PostAPI.putDataById<Post>(postId, { likes, _id: postId });
+        await PostAPI.putDataById<Post>(postId, {
+          likes,
+          _id: postId,
+          text: post.text,
+          item_ids: post.item_ids,
+          activity: post.activity,
+          at_mention_non_item_ids: post.at_mention_non_item_ids,
+        });
       }
     } catch (e) {
       throw ErrorParser.parse(e);
