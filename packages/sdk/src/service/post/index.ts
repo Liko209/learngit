@@ -406,19 +406,18 @@ export default class PostService extends BaseService<Post> {
       const post = await postDao.get(postId);
 
       if (post) {
-        post.likes = post.likes || [];
+        const likes = post.likes || [];
+        const index = likes.indexOf(personId);
         if (toLike) {
-          if (post.likes.indexOf(personId) === -1) {
-            post.likes.push(personId);
+          if (index === -1) {
+            likes.push(personId);
           }
         } else {
-          if (post.likes.indexOf(personId) !== -1) {
-            post.likes = post.likes.filter((id: number) => id !== personId);
+          if (index > -1) {
+            likes.splice(index, 1);
           }
         }
-        post._id = post.id;
-        delete post.id;
-        await PostAPI.putDataById<Post>(postId, post);
+        await PostAPI.putDataById<Post>(postId, { likes, _id: postId });
       }
     } catch (e) {
       throw ErrorParser.parse(e);
