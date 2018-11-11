@@ -50,9 +50,9 @@ type EventItem = {
   end: number;
   location: string;
   repeat: string;
-  repeat_ending: string;
-  repeat_ending_after: string;
-  repeat_ending_on: string;
+  repeatEnding: string;
+  repeatEndingAfter: string;
+  repeatEndingOn: string;
   text: string;
 } & ItemModel;
 

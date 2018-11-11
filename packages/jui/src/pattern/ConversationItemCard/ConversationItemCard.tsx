@@ -24,7 +24,7 @@ const ItemTitle = styled<{ complete?: boolean }, 'span'>('span')`
 
 const ItemCardHeader = styled.div`
   padding: 0;
-  margin: ${spacing(0, 0, 0, -7)};
+  margin: ${spacing(0, 0, 2, -6)};
   display: flex;
   align-items: center;
   ${typography('subheading3')};
@@ -45,7 +45,7 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
 `;
 
 type JuiConversationItemCardProps = {
-  title: string;
+  title: string | JSX.Element;
   icon: JSX.Element | string;
   titleColor?: string;
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;

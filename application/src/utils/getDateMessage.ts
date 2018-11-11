@@ -26,6 +26,9 @@ function getDateMessage(timestamp: any): string {
   if (diff === 1) {
     return t('yesterday');
   }
+  if (diff === -1) {
+    return t('tomorrow');
+  }
   if (diff <= 7) {
     return m.format('ddd, MMM Do'); // Tue, Oct 30th  周二, 10月30日
   }

@@ -13,4 +13,4 @@ const Event = buildContainer<EventProps>({
   View: EventView,
 });
 
-export { Event };
+export { Event, EventProps };

@@ -1,3 +1,12 @@
+/*
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2018-11-08 17:20:01
+ * Copyright © RingCentral. All rights reserved.
+ */
+import moment from 'moment';
+import { t } from 'i18next';
+import getDateMessage from './getDateMessage';
+
 function compareCharacters(a: string, b: string) {
   if (a === b) {
     return 0;
@@ -74,6 +83,50 @@ function getFileSize(bytes: number) {
   return `${(bytes / 1024 / 1024 / 1024).toFixed(1)}Gb`;
 }
 
+function getDateAndTime(timestamp: number) {
+  const getAMOrPM = moment(timestamp).format('h:mm A');
+  const date = getDateMessage(timestamp);
+
+  return `${date} ${t('at')} ${getAMOrPM}`;
+}
+
+function getDurtionTime(startTimestamp: number, endTimestamp: number) {
+  const startTime = getDateAndTime(startTimestamp);
+  let endTime = getDateAndTime(endTimestamp);
+  const isToday = startTime.split(' ')[0] === endTime.split(' ')[0];
+
+  if (isToday) {
+    endTime = endTime.replace(endTime.split(' ')[0], '');
+  }
+  return `${startTime} - ${endTime}`;
+}
+
+const REPEAT_TEXT = {
+  daily: ', repeating every day',
+  weekdaily: ', repeating every weekday',
+  weekly: ', repeating every week',
+  monthly: ', repeating every month',
+  yearly: ', repeating ervery year',
+};
+
+const TIMES_TEXT = {
+  daily: 'day',
+  weekdaily: 'weekday',
+  weekly: 'week',
+  monthly: 'month',
+  yearly: 'year',
+};
+
+function getDurtionTimeText(repeat: string, repeatEndingAfter: string, repeatEndingOn: string, repeatEnding: string) {
+  const after = repeatEndingAfter === '1' ? 'one' : repeatEndingAfter;
+  const times = `${TIMES_TEXT[repeat]}${Number(repeatEndingAfter) > 1 ? 's' : ''}`;
+  const ENDING = {
+    after: `for ${after} ${times}`,
+    on: `until ${moment(repeatEndingOn).format('ddd, MMM D')}`,
+  };
+  return `${REPEAT_TEXT[repeat] || ''} ${ENDING[repeatEnding] || ''}`;
+}
+
 export {
   compareName,
   toTitleCase,
@@ -81,4 +134,7 @@ export {
   handleOnlyLetterOrNumbers,
   handleOneOfName,
   getFileSize,
+  getDateAndTime,
+  getDurtionTime,
+  getDurtionTimeText,
 };
