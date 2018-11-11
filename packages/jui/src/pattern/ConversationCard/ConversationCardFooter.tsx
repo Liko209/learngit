@@ -14,8 +14,7 @@ type Props = {
   unlikeTooltipTitle: string;
   isLike: boolean;
   likeCount: number;
-  handleLike: (event: React.MouseEvent<HTMLElement>) => void;
-  handleUnlike: (event: React.MouseEvent<HTMLElement>) => void;
+  handleLikeButton: (toLike: boolean) => Promise<void>;
 };
 
 const StyledConversationCardFooter = styled('div')`
@@ -45,13 +44,16 @@ const StyledIconWrapper = styled('div')`
 `;
 
 class JuiConversationCardFooter extends React.PureComponent<Props> {
+  private _handleLikeButton = () => {
+    const { isLike, handleLikeButton } = this.props;
+    handleLikeButton(!isLike);
+  }
+
   render() {
     const {
       likeTooltipTitle,
       unlikeTooltipTitle,
       isLike,
-      handleLike,
-      handleUnlike,
       likeCount,
     } = this.props;
     return (
@@ -62,7 +64,7 @@ class JuiConversationCardFooter extends React.PureComponent<Props> {
               size="small"
               tooltipTitle={isLike ? unlikeTooltipTitle : likeTooltipTitle}
               color={isLike ? 'primary' : undefined}
-              onClick={isLike ? handleUnlike : handleLike}
+              onClick={this._handleLikeButton}
               variant="plain"
             >
               thumb_up

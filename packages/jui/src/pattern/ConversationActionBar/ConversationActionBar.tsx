@@ -17,10 +17,8 @@ type Props = {
   moreTooltipTitle: string;
   isLike: boolean;
   isBookmark: boolean;
-  handleLike: (event: React.MouseEvent<HTMLElement>) => void;
-  handleUnlike: (event: React.MouseEvent<HTMLElement>) => void;
-  handleBookmark: (event: React.MouseEvent<HTMLElement>) => void;
-  handleRemoveBookmark: (event: React.MouseEvent<HTMLElement>) => void;
+  handleLikeButton: (toLike: boolean) => Promise<void>;
+  handleBookmarkButton: (toBookmark: boolean) => Promise<void>;
 };
 
 const StyledWrapper = styled('div')`
@@ -45,6 +43,16 @@ const StyledWrapper = styled('div')`
 `;
 
 class JuiConversationActionBar extends PureComponent<Props> {
+  private _handleLikeButton = () => {
+    const { isLike, handleLikeButton } = this.props;
+    handleLikeButton(!isLike);
+  }
+
+  private _handleBookmarkButton = () => {
+    const { isBookmark, handleBookmarkButton } = this.props;
+    handleBookmarkButton(!isBookmark);
+  }
+
   render() {
     const {
       likeTooltipTitle,
@@ -54,10 +62,6 @@ class JuiConversationActionBar extends PureComponent<Props> {
       moreTooltipTitle,
       isLike,
       isBookmark,
-      handleLike,
-      handleUnlike,
-      handleBookmark,
-      handleRemoveBookmark,
     } = this.props;
     return (
       <StyledWrapper>
@@ -65,7 +69,7 @@ class JuiConversationActionBar extends PureComponent<Props> {
           size="small"
           tooltipTitle={isLike ? unlikeTooltipTitle : likeTooltipTitle}
           color={isLike ? 'primary' : undefined}
-          onClick={isLike ? handleUnlike : handleLike}
+          onClick={this._handleLikeButton}
           variant="plain"
         >
           thumb_up
@@ -76,7 +80,7 @@ class JuiConversationActionBar extends PureComponent<Props> {
             isBookmark ? removeBookmarkTooltipTitle : bookmarkTooltipTitle
           }
           color={isBookmark ? 'primary' : undefined}
-          onClick={isBookmark ? handleRemoveBookmark : handleBookmark}
+          onClick={this._handleBookmarkButton}
           variant="plain"
         >
           {isBookmark ? 'bookmark' : 'bookmark_border'}

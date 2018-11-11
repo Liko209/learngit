@@ -20,45 +20,26 @@ class ActionsViewComponent extends Component<Props> {
     JuiModal.alert({
       title: '',
       content: isOffline ? t('Network Error') : content,
-      okText: t('conversationMenuItem:OK'),
-      okBtnType: 'text',
-      onOK: () => {},
     });
   }
 
-  private _handleLike = async () => {
+  private _handleLikeButton = async (toLike: boolean) => {
     const { like, t } = this.props;
     try {
-      await like();
+      await like(toLike);
     } catch {
-      this._handleError(t('Like Error'));
+      this._handleError(toLike ? t('Like Error') : t('Unlike Error'));
     }
   }
 
-  private _handleUnlike = async () => {
-    const { unlike, t } = this.props;
-    try {
-      await unlike();
-    } catch {
-      this._handleError(t('Unlike Error'));
-    }
-  }
-
-  private _handleBookMark = async () => {
+  private _handleBookmarkButton = async (toBookmark: boolean) => {
     const { bookmark, t } = this.props;
     try {
-      await bookmark();
+      await bookmark(toBookmark);
     } catch {
-      this._handleError(t('Bookmark Error'));
-    }
-  }
-
-  private _handleRemoveBookmark = async () => {
-    const { removeBookmark, t } = this.props;
-    try {
-      await removeBookmark();
-    } catch {
-      this._handleError(t('Removing Bookmark Error'));
+      this._handleError(
+        toBookmark ? t('Bookmark Error') : t('Removing Bookmark Error'),
+      );
     }
   }
 
@@ -67,10 +48,8 @@ class ActionsViewComponent extends Component<Props> {
     const props = {
       isLike,
       isBookmark,
-      handleLike: this._handleLike,
-      handleUnlike: this._handleUnlike,
-      handleBookmark: this._handleBookMark,
-      handleRemoveBookmark: this._handleRemoveBookmark,
+      handleLikeButton: this._handleLikeButton,
+      handleBookmarkButton: this._handleBookmarkButton,
       likeTooltipTitle: t('Like'),
       unlikeTooltipTitle: t('Unlike'),
       bookmarkTooltipTitle: t('Bookmark'),

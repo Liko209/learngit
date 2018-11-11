@@ -22,21 +22,12 @@ class FooterViewComponent extends Component<Props> {
     });
   }
 
-  private _handleLike = async () => {
+  private _handleLikeButton = async (toLike: boolean) => {
     const { like, t } = this.props;
     try {
-      await like();
+      await like(toLike);
     } catch {
-      this._handleError(t('Like Error'));
-    }
-  }
-
-  private _handleUnlike = async () => {
-    const { unlike, t } = this.props;
-    try {
-      await unlike();
-    } catch {
-      this._handleError(t('Unlike Error'));
+      this._handleError(toLike ? t('Like Error') : t('Unlike Error'));
     }
   }
 
@@ -46,8 +37,7 @@ class FooterViewComponent extends Component<Props> {
     const props = {
       isLike,
       likeCount,
-      handleLike: this._handleLike,
-      handleUnlike: this._handleUnlike,
+      handleLikeButton: this._handleLikeButton,
       likeTooltipTitle: t('Like'),
       unlikeTooltipTitle: t('Unlike'),
     };

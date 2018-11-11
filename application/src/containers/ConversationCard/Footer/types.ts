@@ -11,8 +11,7 @@ type FooterProps = {
 type FooterViewProps = {
   isLike: boolean;
   likeCount: number;
-  like: (event?: React.MouseEvent<HTMLElement>) => void;
-  unlike: (event?: React.MouseEvent<HTMLElement>) => void;
+  like: (like: boolean) => void;
   isOffline: boolean;
 };
 

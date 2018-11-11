@@ -11,10 +11,8 @@ type ActionsProps = {
 type ActionsViewProps = {
   isLike: boolean;
   isBookmark: boolean;
-  like: (event?: React.MouseEvent<HTMLElement>) => void;
-  unlike: (event?: React.MouseEvent<HTMLElement>) => void;
-  bookmark: (event?: React.MouseEvent<HTMLElement>) => void;
-  removeBookmark: (event?: React.MouseEvent<HTMLElement>) => void;
+  like: (like: boolean) => void;
+  bookmark: (bookmark: boolean) => void;
   isOffline: boolean;
 };
 

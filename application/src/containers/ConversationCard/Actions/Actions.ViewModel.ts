@@ -17,7 +17,7 @@ import ProfileModel from '@/store/models/Profile';
 
 class ActionsViewModel extends StoreViewModel<ActionsProps>
   implements ActionsViewProps {
-  currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
   @computed
   get _id() {
@@ -25,12 +25,12 @@ class ActionsViewModel extends StoreViewModel<ActionsProps>
   }
 
   @computed
-  get _post() {
+  private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._id);
   }
 
   @computed
-  get _favoritePostIds() {
+  private get _favoritePostIds() {
     return getSingleEntity<Profile, ProfileModel>(
       ENTITY_NAME.PROFILE,
       'favoritePostIds',
@@ -45,7 +45,7 @@ class ActionsViewModel extends StoreViewModel<ActionsProps>
   @computed
   get isLike() {
     const likes = this._post.likes;
-    if (likes && likes.includes(this.currentUserId)) {
+    if (likes && likes.includes(this._currentUserId)) {
       return true;
     }
     return false;
@@ -57,27 +57,15 @@ class ActionsViewModel extends StoreViewModel<ActionsProps>
   }
 
   @action
-  like = async () => {
+  like = async (toLike: boolean) => {
     const postService = PostService.getInstance<PostService>();
-    await postService.likePost(this._id, this.currentUserId, true);
+    await postService.likePost(this._id, this._currentUserId, toLike);
   }
 
   @action
-  unlike = async () => {
+  bookmark = async (toBookmark: boolean) => {
     const postService = PostService.getInstance<PostService>();
-    await postService.likePost(this._id, this.currentUserId, false);
-  }
-
-  @action
-  bookmark = async () => {
-    const postService = PostService.getInstance<PostService>();
-    await postService.bookmarkPost(this._id, true);
-  }
-
-  @action
-  removeBookmark = async () => {
-    const postService = PostService.getInstance<PostService>();
-    await postService.bookmarkPost(this._id, false);
+    await postService.bookmarkPost(this._id, toBookmark);
   }
 }
 

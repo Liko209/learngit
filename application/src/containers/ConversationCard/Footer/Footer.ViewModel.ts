@@ -16,20 +16,20 @@ import PostModel from '@/store/models/Post';
 
 class FooterViewModel extends StoreViewModel<FooterProps>
   implements FooterViewProps {
-  currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
   @computed
-  get _id() {
+  private get _id() {
     return this.props.id;
   }
 
   @computed
-  get _post() {
+  private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._id);
   }
 
   @computed
-  get _likes() {
+  private get _likes() {
     return this._post.likes;
   }
 
@@ -40,7 +40,7 @@ class FooterViewModel extends StoreViewModel<FooterProps>
 
   @computed
   get isLike() {
-    if (this._likes && this._likes.includes(this.currentUserId)) {
+    if (this._likes && this._likes.includes(this._currentUserId)) {
       return true;
     }
     return false;
@@ -52,15 +52,9 @@ class FooterViewModel extends StoreViewModel<FooterProps>
   }
 
   @action
-  like = async () => {
+  like = async (toLike: boolean) => {
     const postService = PostService.getInstance<PostService>();
-    await postService.likePost(this._id, this.currentUserId, true);
-  }
-
-  @action
-  unlike = async () => {
-    const postService = PostService.getInstance<PostService>();
-    await postService.likePost(this._id, this.currentUserId, false);
+    await postService.likePost(this._id, this._currentUserId, toLike);
   }
 }
 
