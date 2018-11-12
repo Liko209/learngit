@@ -41,7 +41,6 @@ class TaskViewModel extends StoreViewModel<Props> {
       return getEntity<Item, FileItem>(ENTITY_NAME.ITEM, attachment);
     });
   }
-
 }
 
 export { TaskViewModel };

@@ -32,6 +32,7 @@ type ExtendFileItem = {
   item: FileItem;
   type: number;
   previewUrl: string;
+  expand?: boolean;
 };
 
 type LinkItem = {

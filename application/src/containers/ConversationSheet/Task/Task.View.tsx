@@ -16,11 +16,9 @@ import {
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import {
-  JuiFileWithPreview,
   JuiFileWithExpand,
-  JuiPreviewImage,
+  JuiExpandImage,
 } from 'jui/pattern/ConversationCard/Files';
-import { getFileSize } from '@/utils/helper';
 
 import { AvatarName } from './AvatarName';
 import { ViewProps, FileType, ExtendFileItem } from './types';
@@ -37,45 +35,16 @@ const downloadBtn = (downloadUrl: string) => (
   </JuiIconButton>
 );
 
-const File_COMPS = {
-  [FileType.image]: (file: ExtendFileItem) => {
+const FILE_COMPS = {
+  [FileType.image]: (file: ExtendFileItem, props: ViewProps) => {
     const { item, previewUrl } = file;
     const { id, name, downloadUrl } = item;
-
     return (
-      <JuiFileWithExpand
+      <JuiExpandImage
         key={id}
+        previewUrl={previewUrl}
         fileName={name}
-        actions={
-          <>
-            {downloadBtn(downloadUrl)}
-            <JuiIconButton variant="plain" tooltipTitle="expand">
-              event
-            </JuiIconButton>
-          </>
-        }
-      >
-        <JuiPreviewImage
-          ratio={1}
-          fileName={name}
-          url={previewUrl}
-          actions={downloadBtn(downloadUrl)}
-        />
-      </JuiFileWithExpand>
-    );
-  },
-  [FileType.document]: (file: ExtendFileItem, props: ViewProps) => {
-    const { item, previewUrl } = file;
-    const { size, type, id, name, downloadUrl } = item;
-    const iconType = item.getFileIcon(type);
-    return (
-      <JuiFileWithPreview
-        key={id}
-        fileName={name}
-        size={`${getFileSize(size)}`}
-        url={previewUrl}
-        iconType={iconType}
-        actions={downloadBtn(downloadUrl)}
+        actions={<>{downloadBtn(downloadUrl)}</>}
       />
     );
   },
@@ -137,7 +106,7 @@ class Task extends React.Component<ViewProps> {
         {files && files.length > 0 && (
           <JuiTaskContent title={t('Attachments')}>
             {files.map((file: ExtendFileItem) => {
-              return File_COMPS[file.type](file, this.props);
+              return FILE_COMPS[file.type](file, this.props);
             })}
           </JuiTaskContent>
         )}
