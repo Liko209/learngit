@@ -5,12 +5,14 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
+import { translate } from 'react-i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
   JuiTaskSection,
   JuiTaskNotes,
   JuiTaskAvatarName,
+  JuiTaskContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import {
@@ -47,10 +49,7 @@ const File_COMPS = {
         actions={
           <>
             {downloadBtn(downloadUrl)}
-            <JuiIconButton
-              variant="plain"
-              tooltipTitle="expand"
-            >
+            <JuiIconButton variant="plain" tooltipTitle="expand">
               event
             </JuiIconButton>
           </>
@@ -94,8 +93,7 @@ const File_COMPS = {
 };
 
 @observer
-class TaskView extends React.Component<ViewProps> {
-
+class Task extends React.Component<ViewProps> {
   private get _taskAvatarNames() {
     const { task } = this.props;
     const { assigned_to_ids } = task;
@@ -111,7 +109,7 @@ class TaskView extends React.Component<ViewProps> {
   }
 
   render() {
-    const { task, files } = this.props;
+    const { task, files, t } = this.props;
     const { section, color, text, notes, complete, assigned_to_ids } = task;
     console.log(files, '-----files');
     return (
@@ -124,16 +122,30 @@ class TaskView extends React.Component<ViewProps> {
         <JuiTaskAvatarName
           avatarNames={this._taskAvatarNames}
           count={assigned_to_ids && assigned_to_ids.length}
+          tOther={
+            assigned_to_ids && assigned_to_ids.length
+              ? t('avatarnamesWithOthers', {
+                count: assigned_to_ids.length - 2,
+              })
+              : ''
+          }
         />
-        <JuiTaskSection section={section} />
-        <JuiTaskNotes notes={notes} />
-        <JuiTaskSection section={'Attachments'} />
-        {files.map((file: ExtendFileItem) => {
-          return File_COMPS[file.type](file, this.props);
-        })}
+        <JuiTaskContent>
+          <JuiTaskSection section={section} />
+          <JuiTaskNotes notes={notes} />
+        </JuiTaskContent>
+        {files && files.length > 0 && (
+          <JuiTaskContent title={t('Attachments')}>
+            {files.map((file: ExtendFileItem) => {
+              return File_COMPS[file.type](file, this.props);
+            })}
+          </JuiTaskContent>
+        )}
       </JuiConversationItemCard>
     );
   }
 }
+
+const TaskView = translate('translations')(Task);
 
 export { TaskView };

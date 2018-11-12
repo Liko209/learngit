@@ -33,5 +33,7 @@
   "PublicTeam": "Public Team (visible to any co-worker)",
   "MembersMayPostMessages": "Allow members to post messages",
   "at": "at",
-  "tomorrow": "tomorrow"
+  "tomorrow": "tomorrow",
+  "avatarnamesWithOthers": " and other {{count}} people",
+  "Attachments": "Attachments"
 }

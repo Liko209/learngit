@@ -5,12 +5,13 @@
  */
 
 import { TaskItem, FileType, ExtendFileItem } from '@/store/models/Items';
+import { WithNamespaces } from 'react-i18next';
 
 type Props = {
   ids: number[];
 };
 
-type ViewProps = {
+type ViewProps = WithNamespaces & {
   ids: number[];
   task: TaskItem;
   files: ExtendFileItem[];

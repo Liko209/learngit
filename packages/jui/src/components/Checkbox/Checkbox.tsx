@@ -5,11 +5,13 @@
  */
 import React from 'react';
 import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
-import styled from '../../foundation/styled-components';
+// import styled from '../../foundation/styled-components';
 
-const StyledCheckbox = styled(Checkbox)``;
+// const StyledCheckbox = styled(Checkbox)``;
 
-const JuiCheckbox = (props: CheckboxProps) => <StyledCheckbox {...props} />;
+const JuiCheckbox = (props: CheckboxProps) => {
+  return <Checkbox {...props} />;
+};
 
 JuiCheckbox.displayName = 'JuiCheckbox';
 

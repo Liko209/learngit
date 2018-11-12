@@ -17,9 +17,15 @@ const StyledTaskCheckbox = styled(JuiCheckbox)`
   }
 `;
 
-const JuiTaskCheckbox = (props: Props) => (
-  <StyledTaskCheckbox checked={props.checked} disableRipple={true} />
-);
+const JuiTaskCheckbox = (props: Props) => {
+  return (
+    <StyledTaskCheckbox
+      checked={props.checked}
+      disableRipple={true}
+      {...props}
+    />
+  );
+};
 
 JuiTaskCheckbox.displayName = 'JuiTaskCheckbox';
 
