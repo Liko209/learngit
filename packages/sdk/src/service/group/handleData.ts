@@ -409,7 +409,7 @@ async function handleGroupMostRecentPostChanged({
   type: EVENT_TYPES;
   entities: any;
 }) {
-  if (type !== EVENT_TYPES.UPDATE) {
+  if (type !== EVENT_TYPES.UPDATE || !entities) {
     return;
   }
   const posts: Post[] = [];
