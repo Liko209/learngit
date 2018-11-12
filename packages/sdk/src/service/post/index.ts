@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { daoManager, ItemDao, PostDao } from '../../dao';
+import { daoManager, PostDao } from '../../dao';
 // import GroupDao from 'dao/group';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
@@ -15,7 +15,7 @@ import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
-import { Post, Profile, Item, Raw } from '../../models';
+import { Post, Item, Raw } from '../../models';
 import { PostStatusHandler } from './postStatusHandler';
 import { POST_STATUS } from '../constants';
 import { ENTITY, SOCKET } from '../eventKey';
@@ -88,19 +88,8 @@ export default class PostService extends BaseService<Post> {
     };
     if (posts.length !== 0) {
       result.posts = posts;
-      let itemIds: number[] = [];
-      posts.forEach((post: Post) => {
-        if (post.item_ids && post.item_ids[0]) {
-          itemIds = itemIds.concat(post.item_ids);
-        }
-        if (post.at_mention_item_ids && post.at_mention_item_ids[0]) {
-          itemIds = itemIds.concat(post.at_mention_item_ids);
-        }
-      });
-      const itemDao = daoManager.getDao(ItemDao);
-      result.items = await itemDao.getItemsByIds([
-        ...Array.from(new Set(itemIds)),
-      ]);
+      const itemService: ItemService = ItemService.getInstance();
+      result.items = await itemService.getByPosts(posts);
     }
     return result;
   }
@@ -182,7 +171,8 @@ export default class PostService extends BaseService<Post> {
           limit: limit - result.posts.length,
         });
 
-        const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
+        const posts: Post[] =
+          (await baseHandleData(remoteResult.posts, true, true)) || [];
         const items = (await itemHandleData(remoteResult.items)) || [];
 
         result.posts.push(...posts);
@@ -204,6 +194,28 @@ export default class PostService extends BaseService<Post> {
         hasMore: true,
       };
     }
+  }
+
+  async getPostsByIds(
+    ids: number[],
+  ): Promise<{ posts: Post[]; items: Item[] }> {
+    const itemService: ItemService = ItemService.getInstance();
+    const dao = daoManager.getDao(PostDao);
+    const localPosts = await dao.queryManyPostsByIds(ids);
+    const result = {
+      posts: localPosts,
+      items: await itemService.getByPosts(localPosts),
+    };
+    const restIds = _.difference(ids, localPosts.map(({ id }) => id));
+    if (restIds.length) {
+      const remoteResult = (await PostAPI.requestByIds(restIds)).data;
+      const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
+      const items = (await itemHandleData(remoteResult.items)) || [];
+
+      result.posts.push(...posts);
+      result.items.push(...items);
+    }
+    return result;
   }
 
   isInPreInsert(id: number) {
@@ -400,57 +412,45 @@ export default class PostService extends BaseService<Post> {
     return false;
   }
 
-  async likePost(
-    postId: number,
-    personId: number,
-    toLike: boolean,
-  ): Promise<Post | null> {
-    if (postId < 0) {
-      return null;
-    }
-    const postDao = daoManager.getDao(PostDao);
-    const post = await postDao.get(postId);
-
-    if (post) {
-      post.likes = post.likes || [];
-      if (toLike) {
-        if (post.likes.indexOf(personId) === -1) {
-          post.likes.push(personId);
+  async likePost(postId: number, personId: number, toLike: boolean) {
+    try {
+      const postDao = daoManager.getDao(PostDao);
+      const post = await postDao.get(postId);
+      console.log(post);
+      if (post) {
+        const likes = post.likes || [];
+        const index = likes.indexOf(personId);
+        if (toLike) {
+          if (index === -1) {
+            likes.push(personId);
+          }
         } else {
-          return post;
+          if (index > -1) {
+            likes.splice(index, 1);
+          }
         }
-      } else {
-        if (post.likes.indexOf(personId) !== -1) {
-          post.likes = post.likes.filter((id: number) => id !== personId);
-        } else {
-          return post;
-        }
+        await PostAPI.putDataById<Post>(postId, {
+          likes,
+          _id: postId,
+          text: post.text,
+          item_ids: post.item_ids,
+          activity: post.activity,
+          at_mention_non_item_ids: post.at_mention_non_item_ids,
+        });
       }
-      post._id = post.id;
-      delete post.id;
-      const response = await PostAPI.putDataById<Post>(postId, post);
-      if (response.data) {
-        const result = await baseHandleData(response.data);
-        if (result && result.length) {
-          return result[0];
-        }
-      }
-      // error
-      return null;
+    } catch (e) {
+      throw ErrorParser.parse(e);
     }
-
-    // error
-    return null;
   }
 
-  async bookmarkPost(postId: number, toBook: boolean): Promise<Profile | null> {
-    // favorite_post_ids in profile
-    const profileService: ProfileService = ProfileService.getInstance();
-    const profile: Profile | null = await profileService.putFavoritePost(
-      postId,
-      toBook,
-    );
-    return profile;
+  async bookmarkPost(postId: number, toBook: boolean) {
+    try {
+      // favorite_post_ids in profile
+      const profileService: ProfileService = ProfileService.getInstance();
+      await profileService.putFavoritePost(postId, toBook);
+    } catch (e) {
+      throw ErrorParser.parse(e);
+    }
   }
 
   getLastPostOfGroup(groupId: number): Promise<Post | null> {

@@ -28,5 +28,15 @@
   "createTask": "Create a task",
   "integrateApps": "Integrate apps",
   "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
-  "show_unread_plural": "show unreads"
+  "show_unread_plural": "show unreads",
+  "Like": "Like",
+  "Unlike": "Unlike",
+  "Bookmark": "Bookmark",
+  "Remove bookmark": "Remove bookmark",
+  "More": "More",
+  "Network Error": "Network disconnected. Please try again when the network is resumed.",
+  "Like Error": "Failed to like the message due to unexpected error. Try again later.",
+  "Unlike Error": "Failed to unlike the message due to unexpected error. Try again later.",
+  "Removing Bookmark Error": "Removing bookmark failed due to unexpected error. Try again later.",
+  "Bookmark Error": "Bookmark failed due to unexpected error. Try again later."
 }
