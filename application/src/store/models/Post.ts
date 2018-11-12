@@ -23,8 +23,17 @@ export default class PostModel extends Base<Post> {
 
   constructor(data: Post) {
     super(data);
-    console.log(data, '----event post -data');
-    const { created_at, creator_id, text, status, at_mention_non_item_ids, item_ids, likes, activity_data, item_id } = data;
+    const {
+      created_at,
+      creator_id,
+      text,
+      status,
+      at_mention_non_item_ids,
+      item_ids,
+      likes,
+      activity_data,
+      item_id,
+    } = data;
     this.createdAt = created_at;
     this.creatorId = creator_id;
     this.activityData = activity_data;

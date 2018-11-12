@@ -19,7 +19,6 @@ export default {
     const { ids, postId } = props;
     const post = getEntity<Post, PostModel>(ENTITY_NAME.POST, postId);
     const { activityData } = post;
-    console.log(post, postId, '-----event update');
     if (activityData && activityData.object_id) {
       return <EventUpdate ids={ids} postId={postId} />;
     }

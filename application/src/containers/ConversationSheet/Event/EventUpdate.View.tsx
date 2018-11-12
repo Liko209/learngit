@@ -47,7 +47,6 @@ class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
       repeatEndingOn,
       repeatEnding,
     );
-    console.log(post, '-----event update post');
     return (
       <EventUpdateViewCard
         title={text}
