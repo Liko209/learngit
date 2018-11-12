@@ -17,13 +17,16 @@ class ConversationPageViewComponent extends Component<
     scroller?: TScroller;
   } = {};
 
-  scroller: React.Component & {
-    scrollToRow: (n: number) => void;
-  };
-
   sendHandler = () => {
     const scroller = this._viewRefs.scroller;
     scroller && scroller.scrollToRow(-1);
+  }
+
+  componentDidUpdate(prevProps: ConversationPageViewProps) {
+    if (this.props.groupId !== prevProps.groupId) {
+      const scroller = this._viewRefs.scroller;
+      scroller && scroller.scrollToRow(-1);
+    }
   }
 
   render() {

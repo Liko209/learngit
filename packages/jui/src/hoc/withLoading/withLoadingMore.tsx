@@ -31,7 +31,7 @@ const DefaultLoadingMore = () => (
 const withDelay = (Component: ComponentType<any>) => {
   class ComponentWithDelay extends React.Component<{ delay: number }> {
     static defaultProps = {
-      delay: 500,
+      delay: 0,
     };
 
     state = {
@@ -77,11 +77,10 @@ const withLoadingMore = (
       const { loadingTop, loadingBottom, ...rest } = this.props;
       const LoadingMoreWithDelay =
         CustomizedLoadingWithDelay || DefaultLoadingMoreWithDelay;
-
       return (
         <Fragment>
           {loadingTop ? <LoadingMoreWithDelay /> : null}
-          <Component {...rest}>{rest.children}</Component>
+          <Component {...rest} />
           {loadingBottom ? <LoadingMoreWithDelay /> : null}
         </Fragment>
       );

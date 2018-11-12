@@ -22,7 +22,7 @@ abstract class TransformHandler<T, K> {
   ) {
     this._orderListHandler.setUpDataChangeCallback(this.modificationHandler);
     this.fetchData = async (...args) => {
-      await this._orderListHandler.fetchData(...args);
+      return this._orderListHandler.fetchData(...args);
     };
   }
 

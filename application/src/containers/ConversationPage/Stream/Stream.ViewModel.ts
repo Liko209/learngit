@@ -6,10 +6,10 @@
 
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
-import { PostService, StateService, ENTITY } from 'sdk/service';
+import { PostService, StateService, ENTITY, ItemService } from 'sdk/service';
 import { Post, GroupState } from 'sdk/models';
 import { ErrorTypes } from 'sdk/utils';
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager from '@/store';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
@@ -29,6 +29,7 @@ import { getEntity } from '@/store/utils';
 import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
 import GroupStateModel from '@/store/models/GroupState';
 import { DateSeparatorHandler } from './DateSeparatorHandler';
+import { ENTITY_NAME } from '@/store/constants';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -54,6 +55,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   groupId: number;
   @observable
   postIds: number[] = [];
+
   @observable
   items: StreamItem[] = [];
 
@@ -74,6 +76,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   constructor() {
     super();
     this.markAsRead = this.markAsRead.bind(this);
+    this.loadInitialPosts = this.loadInitialPosts.bind(this);
   }
 
   onReceiveProps(props: StreamProps) {
@@ -138,12 +141,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     );
 
     this._initialized = false;
-    this.loadInitialPosts();
   }
 
   @loading
   async loadInitialPosts() {
-    await this._loadPosts(FetchDataDirection.UP);
+    const posts = await this._loadPosts(FetchDataDirection.UP);
+    if (posts && posts.length) {
+      await this._prepareAllData(posts);
+    }
     this._initialized = true;
     this.markAsRead();
   }
@@ -189,9 +194,21 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this._transformHandler.dispose();
   }
 
+  private async _prepareAllData(posts: Post[]) {
+    const itemService = ItemService.getInstance();
+    const itemIds = _(posts)
+      .map('item_ids')
+      .flatMap((i: number[]) => i.slice())
+      .value();
+    const items = await Promise.all(
+      itemIds.map(itemService.getById.bind(itemService)),
+    );
+    storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
+  }
+
   private async _loadPosts(direction: FetchDataDirection) {
-    if (!this._transformHandler.hasMore(direction)) return;
-    await this._transformHandler.fetchData(direction);
+    if (!this._transformHandler.hasMore(direction)) return {};
+    return this._transformHandler.fetchData(direction);
   }
 }
 

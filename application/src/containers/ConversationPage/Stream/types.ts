@@ -47,6 +47,7 @@ type StreamViewProps = {
   hasMore: boolean;
   setRowVisible: (n: number) => void;
   markAsRead: () => void;
+  loadInitialPosts: () => Promise<void>;
   atBottom: () => boolean;
   enableNewMessageSeparatorHandler: () => void;
   plugins: TPluginsProps;
