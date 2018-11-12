@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { observable, computed, action } from 'mobx';
+import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -33,12 +33,6 @@ class StreamViewComponent extends Component<Props> {
 
   @observable
   private _firstHistoryUnreadPostViewed = false;
-
-  @computed
-  private get _firstHistoryUnreadInPage() {
-    if (!this.props.firstHistoryUnreadPostId) return false;
-    return this.props.postIds.includes(this.props.firstHistoryUnreadPostId);
-  }
 
   componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
@@ -133,13 +127,14 @@ class StreamViewComponent extends Component<Props> {
       hasHistoryUnread,
       historyUnreadCount,
       historyGroupState,
+      firstHistoryUnreadInPage,
     } = this.props;
 
     const shouldHaveJumpButton =
       hasHistoryUnread &&
       historyGroupState &&
       historyUnreadCount > 0 &&
-      (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostViewed);
+      (!firstHistoryUnreadInPage || !this._firstHistoryUnreadPostViewed);
 
     const countText =
       historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
@@ -162,10 +157,7 @@ class StreamViewComponent extends Component<Props> {
       <JuiStream>
         {this._jumpToFirstUnreadButton}
         {this._initialPost}
-        <div>
-          {this._streamItems}
-          {this._jumpToFirstUnreadLoading}
-        </div>
+        <div>{this._streamItems}</div>
       </JuiStream>
     );
   }
