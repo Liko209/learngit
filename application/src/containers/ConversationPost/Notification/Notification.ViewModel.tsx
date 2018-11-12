@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { NotificationProps, NotificationViewProps } from './types';
 import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 import { Post } from 'sdk/models';
-import { ENTITY_NAME } from '@/store';
 
 class NotificationViewModel extends AbstractViewModel<NotificationProps>
   implements NotificationViewProps {
@@ -25,15 +25,8 @@ class NotificationViewModel extends AbstractViewModel<NotificationProps>
   }
 
   @computed
-  get content() {
-    // todo
-    return 'John Smith changed the thread subject from ”Test” to ”Global UXD”';
-  }
-
-  @computed
-  get date() {
-    // todo
-    return 'Sep 4th 2018 3:15 PM';
+  get activityData() {
+    return this._post.activityData || {};
   }
 }
 

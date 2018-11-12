@@ -4,13 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+type ActivityData = {
+  [index: string]: any;
+};
+
 type NotificationProps = {
   id: number;
 };
 
 type NotificationViewProps = {
-  content: string;
-  date: string;
+  id: number;
+  activityData: ActivityData;
 };
 
-export { NotificationProps, NotificationViewProps };
+export { NotificationProps, NotificationViewProps, ActivityData };
