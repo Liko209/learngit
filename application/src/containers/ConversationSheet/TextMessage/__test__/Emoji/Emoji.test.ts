@@ -4,86 +4,66 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { Markdown } from 'glipdown';
 import { Emoji } from '../../Emoji';
-import mapEmojiOne from '../../Emoji/mapEmojiOne';
-import mapAscii from '../../Emoji/mapAscii';
-import mapUnicode from '../../Emoji/mapUnicode';
+import { mapEmojiOne, mapAscii, mapUnicode } from '../../Emoji/map';
 
 const staticHttpServer = 'https://www.abc.com/a/b';
 const customEmojiMap = {
   rc: { data: 'https://www.123.com/a/rc.png' },
   att: { data: 'https://www.123.com/a/att.png' },
 };
-const CLASS_NAME = 'enlarge-emoji';
+const arrNotMatch = [':xyz:', ':zyx:'];
 
 function format(text: string) {
-  const emoji = new Emoji(text, staticHttpServer, customEmojiMap);
+  const markdown = Markdown(text);
+  const emoji = new Emoji(markdown, staticHttpServer, customEmojiMap);
+  // console.log(`markdown: ${markdown}, result: ${emoji.text}`);
   return emoji.text;
 }
 
-describe('format one kind emoji', () => {
-  it('only one kind emoji, has specific class name', async () => {
-    const keys = [':smile:', '<3', ':rc:', ':xyz:', '🇭🇰'];
-    // EmojiOne
-    const result1 = format(keys[0]);
-    const unicode1 = mapEmojiOne[keys[0]];
-    const regExp1 = new RegExp(`^<img[^>]+?${CLASS_NAME}[^>]+?${unicode1}\.png[^>]+?>$`);
-    expect(result1).toMatch(regExp1);
-    // Ascii
-    const result2 = format(keys[1]);
-    const unicode2 = mapAscii[keys[1]];
-    const regExp2 = new RegExp(`^<img[^>]+?${CLASS_NAME}[^>]+?${unicode2}\.png[^>]+?>$`);
-    expect(result2).toMatch(regExp2);
-    // Custom
-    const result3 = format(keys[2]);
-    const src = customEmojiMap.rc.data;
-    const regExp3 = new RegExp(`^<img[^>]+?${CLASS_NAME}[^>]+?${src}[^>]+?>$`);
-    expect(result3).toMatch(regExp3);
-    // No match
-    const result4 = format(keys[3]);
-    const regExp4 = new RegExp(`^${keys[3]}$`);
-    expect(result4).toMatch(regExp4);
-    // Unicode
-    const result5 = format(keys[4]);
-    const unicode5 = mapUnicode[keys[4]];
-    const regExp5 = new RegExp(`^<img[^>]+?${CLASS_NAME}[^>]+?${unicode5}\.png[^>]+?>$`);
-    expect(result5).toMatch(regExp5);
+describe('Format one kind emoji, only one kind emoji, has specific class name', () => {
+  const CLASS_NAME = 'enlarge-emoji';
+  const getRegExp = (unicode: string) => new RegExp(`^<img.+?${CLASS_NAME}.+?${unicode}\.png[^>]+?>$`);
+  const _runAll = (mapOriginalData: object) => {
+    Object.keys(mapOriginalData).forEach((originKey: string) => {
+      const result = format(originKey);
+      const unicode = mapOriginalData[originKey];
+      expect(result).toMatch(getRegExp(unicode));
+    });
+  };
+
+  it('All EmojiOne', async () => {
+    _runAll(mapEmojiOne);
   });
 
-  it('only one kind emoji, some text on emoji left and right', async () => {
-    const keys = [':smile:', '<3', ':rc:', ':xyz:', '🇭🇰'];
-    const left = 'abc';
-    const right = '123';
-    // EmojiOne
-    const result1 = format(`${left}${keys[0]}${right}`);
-    const unicode1 = mapEmojiOne[keys[0]];
-    const regExp1 = new RegExp(`^${left}<img[^>]+?${unicode1}\.png[^>]+?>${right}$`);
-    expect(result1).toMatch(regExp1);
-    // Ascii
-    const result2 = format(`${left}${keys[1]}${right}`);
-    const regExp2 = new RegExp(`^${left}${keys[1]}${right}$`);
-    expect(result2).toMatch(regExp2);
-    // Custom
-    const result3 = format(`${left}${keys[2]}${right}`);
-    const src = customEmojiMap.rc.data;
-    const regExp3 = new RegExp(`^${left}<img[^>]+?${src}[^>]+?>${right}$`);
-    expect(result3).toMatch(regExp3);
-    // No match
-    const result4 = format(`${left}${keys[3]}${right}`);
-    const regExp4 = new RegExp(`^${left}${keys[3]}${right}$`);
-    expect(result4).toMatch(regExp4);
-    // Unicode
-    const result5 = format(`${left}${keys[4]}${right}`);
-    const unicode5 = mapUnicode[keys[4]];
-    const regExp5 = new RegExp(`^${left}<img[^>]+?${unicode5}[^>]+?>${right}$`);
-    expect(result5).toMatch(regExp5);
+  it('All Ascii', async () => {
+    _runAll(mapAscii);
   });
 
+  it('All Unicode', async () => {
+    _runAll(mapUnicode);
+  });
+
+  it('All Custom', async () => {
+    const map = {};
+    for (const key in customEmojiMap) {
+      map[`:${key}:`] = customEmojiMap[key];
+    }
+    _runAll(map);
+  });
+
+  it('All Not match', async () => {
+    arrNotMatch.forEach((originKey: string) => {
+      const result = format(originKey);
+      const regExp = new RegExp(`^${originKey}$`);
+      expect(result).toMatch(regExp);
+    });
+  });
 });
 
-describe('format multiple emoji', () => {
-  it('multiple emoji', async () => {
-    // EmojiOne, Ascii, Custom, Not match, Unicode
+describe('format multiple kind emoji', () => {
+  it('EmojiOne + Ascii + Unicode + Custom + Not match ', async () => {
     const keys = [':smile:', ':cry:', '<3', ':D', ':rc:', ':att:', ':xxx:', ':yyy:', '🇭🇰', '🌶'];
     const left = 'abc';
     const right = '123';
@@ -101,16 +81,11 @@ describe('format multiple emoji', () => {
     const regExpCustom5 = `<img[^>]+?${src5}[^>]+?>`;
     const regExpUnicode8 = `<img[^>]+?${unicode8}\.png[^>]+?>`;
     const regExpUnicode9 = `<img[^>]+?${unicode9}\.png[^>]+?>`;
-    const regExp = new RegExp(`^${left}${regExpEmojiOne0}${regExpEmojiOne1}${keys[2]}${keys[3]}${regExpCustom4}${regExpCustom5}${keys[6]}${keys[7]}${regExpUnicode8}${regExpUnicode9}${right}$`);
+    const key2 = Markdown(keys[2]);
+    const key3 = Markdown(keys[3]);
+
+    const regExp = new RegExp(`^${left}${regExpEmojiOne0}${regExpEmojiOne1}${key2}${key3}${regExpCustom4}${regExpCustom5}${keys[6]}${keys[7]}${regExpUnicode8}${regExpUnicode9}${right}$`);
     expect(result).toMatch(regExp);
   });
-
   // 'abc:smile::cry:<3:D:rc::att::xxx::yyy123:'.match()
-  // it('multiple emoji', async () => {
-  //   const keys = [':D', ':rc:'];
-  //   const result = format(`${keys.join('')}`);
-  //   const src = customEmojiMap.rc.data;
-  //   const regExp = new RegExp(`^${keys[0]}<img[^>]+?${src}[^>]+?>$`);
-  //   expect(result).toMatch(regExp);
-  // });
 });
