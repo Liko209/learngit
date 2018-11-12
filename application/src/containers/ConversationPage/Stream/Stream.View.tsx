@@ -18,6 +18,8 @@ import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
 
+const VISIBILITY_SENSOR_OFFSET = { top: 100 };
+
 type Props = WithNamespaces & StreamViewProps;
 
 @observer
@@ -72,6 +74,7 @@ class StreamViewComponent extends Component<Props> {
       return (
         <VisibilitySensor
           key={`VisibilitySensor${streamItem.value}`}
+          offset={VISIBILITY_SENSOR_OFFSET}
           onChange={this._handleFirstUnreadPostVisibilityChange}
         >
           <ConversationCard
