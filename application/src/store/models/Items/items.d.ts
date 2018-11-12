@@ -44,4 +44,9 @@ type EventItem = {
   text: string;
 } & ItemModel;
 
-export { FileItem, LinkItem, EventItem };
+type NoteItem = {
+  title: string;
+  summary: string;
+} & ItemModel
+
+export { FileItem, LinkItem, NoteItem, EventItem };

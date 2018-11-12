@@ -58,7 +58,7 @@ type JuiConversationItemCardProps = {
 
 class JuiConversationItemCard extends React.Component<
   JuiConversationItemCardProps
-> {
+  > {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
     const { titleClick } = this.props;
     titleClick && titleClick(e);
