@@ -4,12 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type ActionsProps = {
+type FooterProps = {
   id: number; // post id
 };
 
-type ActionsViewProps = {
+type FooterViewProps = {
   id: number;
+  likeCount: number;
 };
 
-export { ActionsProps, ActionsViewProps };
+export { FooterProps, FooterViewProps };
