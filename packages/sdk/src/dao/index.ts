@@ -23,6 +23,7 @@ export { default as PostDao } from './post';
 export { default as ProfileDao } from './profile';
 export { default as StateDao } from './state';
 export { default as DeactivatedDao } from './deactivated';
+export { default as GroupConfigDao } from './groupConfig';
 
 import DaoManager from './DaoManager';
 const daoManager = new DaoManager();
