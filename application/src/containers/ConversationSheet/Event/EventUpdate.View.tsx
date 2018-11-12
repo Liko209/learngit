@@ -8,48 +8,67 @@ import { t } from 'i18next';
 import { JuiConversationItemCard as EventUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import {
   JuiEventLocation,
-  JuiEventDescription,
   JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import {
   JuiEventCollapse,
   JuiEventCollapseContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
-// import { JuiEventCollapse } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
 import { getDurationTime, getDurationTimeText } from '../../../utils/helper';
 import { EventUpdateViewProps } from './types';
 
 class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
+  private _getDurationTime = (value: any) => {
+    const { event } = this.props;
+    const { start, end } = event;
+    return getDurationTime(
+      !value.start ? start : value.start,
+      !value.end ? end : value.end,
+    );
+  }
+
+  private _getTimeText = (value: any) => {
+    const { event } = this.props;
+    const { repeat, repeatEndingAfter, repeatEnding, repeatEndingOn } = event;
+    return (
+      repeatEndingAfter &&
+      getDurationTimeText(
+        value.repeat || repeat,
+        value.repeat_ending_after || repeatEndingAfter,
+        value.repeat_ending_on || repeatEndingOn,
+        value.repeat_ending || repeatEnding,
+      )
+    );
+  }
+
+  private _isShowTime = (value: any) => {
+    return (
+      value.start ||
+      value.end ||
+      value.repeat ||
+      value.repeat_ending_after ||
+      value.repeat_ending_on ||
+      value.repeat_ending
+    );
+  }
+
+  private _getLocation = (value: any) => value.location;
+
   render() {
     const { event, post } = this.props;
-    const {
-      location,
-      color,
-      text,
-      description,
-      start,
-      end,
-      repeat,
-      repeatEndingAfter,
-      repeatEnding,
-      repeatEndingOn,
-    } = event;
-    const { old_values } = post.activityData;
-    const time = getDurationTime(start, end);
-    const oldTime =
-      old_values.start || old_values.end
-        ? getDurationTime(
-            !old_values.start ? start : old_values.start,
-            !old_values.end ? end : old_values.end,
-          )
-        : null;
-    const oldLocation = old_values.location;
-    const timeText = getDurationTimeText(
-      repeat,
-      repeatEndingAfter,
-      repeatEndingOn,
-      repeatEnding,
-    );
+    const { color, text } = event;
+    const { old_values, new_values } = post.activityData;
+
+    const oldTime = this._getDurationTime(old_values);
+    const oldTimeText = this._getTimeText(old_values);
+    const oldLocation = this._getLocation(old_values);
+    const hasOldTime = this._isShowTime(old_values);
+
+    const newTime = this._getDurationTime(new_values);
+    const newTimeText = this._getTimeText(new_values);
+    const newLocation = this._getLocation(new_values);
+    const hasNewTime = this._isShowTime(new_values);
+
     return (
       <EventUpdateViewCard
         title={text}
@@ -60,18 +79,17 @@ class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
             showText={t('showEventHistory')}
             hideText={t('hideEventHistory')}
           >
+            {hasOldTime && (
+              <JuiEventCollapseContent>{`${oldTime} ${oldTimeText}`}</JuiEventCollapseContent>
+            )}
             {oldLocation && (
               <JuiEventCollapseContent>{oldLocation}</JuiEventCollapseContent>
-            )}
-            {oldTime && (
-              <JuiEventCollapseContent>{oldTime}</JuiEventCollapseContent>
             )}
           </JuiEventCollapse>
         }
       >
-        <JuiTimeMessage time={`${time} ${timeText}`} />
-        {location && <JuiEventLocation location={location} />}
-        {description && <JuiEventDescription description={description} />}
+        {hasNewTime && <JuiTimeMessage time={`${newTime} ${newTimeText}`} />}
+        {newLocation && <JuiEventLocation location={newLocation} />}
       </EventUpdateViewCard>
     );
   }
