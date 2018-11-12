@@ -1,8 +1,8 @@
 /*
-* @Author: Steve Chen (steve.chen@ringcentral.com)
-* @Date: 2018-10-02 15:46:35
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Steve Chen (steve.chen@ringcentral.com)
+ * @Date: 2018-10-02 15:46:35
+ * Copyright © RingCentral. All rights reserved.
+ */
 
 import { computed } from 'mobx';
 import { SECTION_TYPE } from './Section/types';
@@ -46,7 +46,7 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
           history.push(`/messages/${POST_LIST_TYPE.mentions}`);
         },
         get selected() {
-          return new RegExp('^/messages/mentions$').test(
+          return new RegExp(`^/messages/${POST_LIST_TYPE.mentions}$`).test(
             history.location.pathname,
           );
         },
