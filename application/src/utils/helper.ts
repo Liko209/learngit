@@ -118,10 +118,14 @@ const TIMES_TEXT = {
 };
 
 function getDurtionTimeText(repeat: string, repeatEndingAfter: string, repeatEndingOn: string, repeatEnding: string) {
-  const times = TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter));
+  const times = TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter)) || '';
   const date = repeatEndingOn ? getDateMessage(repeatEndingOn, 'ddd, MMM D') : '';
-  const repeatText = `${times || ''} ${t('until')} ${date}`;
-  return `${t(REPEAT_TEXT[repeat]) || ''} ${repeat !== 'none' ? repeatText : ''}`;
+  const hideUntil = (repeat: string, repeatEnding: string) => repeat === 'none' || repeatEnding === 'none' || repeatEnding === 'after';
+  // if has repeat and is forever need hide times
+  const hideTimes = (repeatEndingAfter: string, repeatEnding: string) => repeatEndingAfter === '1' && repeatEnding === 'none';
+  const repeatText = ` ${t('until')} ${date}`;
+
+  return `${t(REPEAT_TEXT[repeat]) || ''} ${hideTimes(repeatEndingAfter, repeatEnding) ? '' : times} ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }
 
 export {
