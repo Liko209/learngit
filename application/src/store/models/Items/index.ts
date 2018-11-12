@@ -6,4 +6,5 @@
 
 export * from './Files';
 export * from './Link';
+export * from './Note';
 export * from './items.d';
