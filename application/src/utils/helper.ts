@@ -102,11 +102,11 @@ function getDurtionTime(startTimestamp: number, endTimestamp: number) {
 }
 
 const REPEAT_TEXT = {
-  daily: t('repeatingEveryDay'), // ', repeating every day',
-  weekdaily: t('repeatingEveryWeekday'),
-  weekly: t('repeatingEveryWeek'),
-  monthly: t('repeatingEveryMonth'),
-  yearly: t('repeatingEveryYear'),
+  daily: 'repeatingEveryDay', // ', repeating every day',
+  weekdaily: 'repeatingEveryWeek',
+  weekly: 'repeatingEveryWeek',
+  monthly: 'repeatingEveryMonth',
+  yearly: 'repeatingEveryYear',
 };
 
 const TIMES_TEXT = {
@@ -119,11 +119,9 @@ const TIMES_TEXT = {
 
 function getDurtionTimeText(repeat: string, repeatEndingAfter: string, repeatEndingOn: string, repeatEnding: string) {
   const times = TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter));
-  const ENDING = {
-    after: times || '',
-    on: `${t('until')} ${getDateMessage(repeatEndingOn, 'ddd, MMM D')}`,
-  };
-  return `${REPEAT_TEXT[repeat] || ''} ${repeat !== 'none' ? ENDING[repeatEnding] : ''}`;
+  const date = repeatEndingOn ? getDateMessage(repeatEndingOn, 'ddd, MMM D') : '';
+  const repeatText = `${times || ''} ${t('until')} ${date}`;
+  return `${t(REPEAT_TEXT[repeat]) || ''} ${repeat !== 'none' ? repeatText : ''}`;
 }
 
 export {
