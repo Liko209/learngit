@@ -5,7 +5,7 @@
  */
 import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { ConversationCard } from '@/containers/ConversationCard';
+import { ConversationPost } from '@/containers/ConversationPost';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { toTitleCase } from '@/utils';
@@ -38,7 +38,7 @@ class StreamViewComponent extends Component<Props> {
     switch (streamItem.type) {
       case StreamItemType.POST:
         return (
-          <ConversationCard id={streamItem.value} key={streamItem.value} />
+          <ConversationPost id={streamItem.value} key={streamItem.value} />
         );
       case StreamItemType.NEW_MSG_SEPARATOR:
         return (

@@ -17,7 +17,9 @@ import { POST_STATUS } from '../constants';
 export type LinksArray = { url: string }[];
 class PostServiceHandler {
   // <a class='at_mention_compose' rel='{"id":21952077827}'>@Jeffrey Huang</a>
-  static buildAtMentionsPeopleInfo(params: RawPostInfo): {
+  static buildAtMentionsPeopleInfo(
+    params: RawPostInfo,
+  ): {
     text: string;
     at_mention_non_item_ids: number[];
   } {
@@ -37,7 +39,7 @@ class PostServiceHandler {
         // tslint:disable-next-line:max-line-length
         const replacedText = `<a class='at_mention_compose' rel='{"id":${
           users[i].id
-          }}'>@${users[i].display}</a>`;
+        }}'>@${users[i].display}</a>`;
         renderedText = renderedText.replace(key, replacedText);
         ids.push(users[i].id);
       }
@@ -100,6 +102,7 @@ class PostServiceHandler {
       company_id: companyId,
       deactivated: false,
       status: POST_STATUS.INPROGRESS,
+      activity_data: {},
     };
   }
 
