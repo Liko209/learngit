@@ -19,6 +19,7 @@ import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
 import { DEFAULT_CONVERSATION_LIST_LIMITS } from '../../account/constants';
 import { transform } from '../../utils';
+import { EVENT_TYPES } from '../..';
 
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
@@ -244,13 +245,70 @@ describe('handleGroupMostRecentPostChanged()', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  it('should update group recent modified time', async () => {
-    daoManager.getDao(GroupDao).get.mockReturnValue([{ is_team: true }]);
-    const posts: Post[] = toArrayOf<Post>([
-      { id: 1, modified_at: 1, created_at: 1 },
-    ]);
-    await handleGroupMostRecentPostChanged(posts);
-    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(0);
+
+  const post = {
+    id: 1,
+    modified_at: 100,
+    created_at: 100,
+    is_team: true,
+    group_id: 2,
+  };
+  const map = new Map();
+  map.set(1, post);
+  it('EVENT_TYPES is not PUT, do not update', async () => {
+    await handleGroupMostRecentPostChanged({
+      type: EVENT_TYPES.UPDATE,
+      entities: map,
+    });
+    expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
+  });
+  it('EVENT_TYPES is PUT, do update', async () => {
+    daoManager
+      .getDao(GroupDao)
+      .doInTransaction.mockImplementation(async (fn: Function) => {
+        await fn();
+      });
+    daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
+      id: 2,
+      most_recent_post_created_at: 99,
+    });
+    await handleGroupMostRecentPostChanged({
+      type: EVENT_TYPES.UPDATE,
+      entities: map,
+    });
+    expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+  });
+  it('group has not most_recent_post_created_at should update group recent modified time', async () => {
+    daoManager
+      .getDao(GroupDao)
+      .doInTransaction.mockImplementation(async (fn: Function) => {
+        await fn();
+      });
+    daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
+      id: 2,
+    });
+    await handleGroupMostRecentPostChanged({
+      type: EVENT_TYPES.UPDATE,
+      entities: map,
+    });
+    expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+  });
+
+  it('group has most_recent_post_created_at and greater then post created_at should not update group recent modified time', async () => {
+    daoManager
+      .getDao(GroupDao)
+      .doInTransaction.mockImplementation(async (fn: Function) => {
+        await fn();
+      });
+    daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
+      id: 2,
+      most_recent_post_created_at: 101,
+    });
+    await handleGroupMostRecentPostChanged({
+      type: EVENT_TYPES.UPDATE,
+      entities: map,
+    });
+    expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
   });
 });
 

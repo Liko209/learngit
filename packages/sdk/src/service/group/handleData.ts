@@ -25,7 +25,7 @@ import {
 import StateService from '../state';
 import { mainLogger } from 'foundation';
 import AccountService from '../account';
-import { GROUP_QUERY_TYPE } from '../constants';
+import { GROUP_QUERY_TYPE, EVENT_TYPES } from '../constants';
 
 async function getExistedAndTransformDataFromPartial(
   groups: Partial<Raw<Group>>[],
@@ -402,7 +402,18 @@ function getUniqMostRecentPostsByGroup(posts: Post[]): Post[] {
   return uniqMaxPosts;
 }
 
-async function handleGroupMostRecentPostChanged(posts: Post[]) {
+async function handleGroupMostRecentPostChanged({
+  type,
+  entities,
+}: {
+  type: EVENT_TYPES;
+  entities: any;
+}) {
+  if (type !== EVENT_TYPES.UPDATE) {
+    return;
+  }
+  const posts: Post[] = [];
+  entities.forEach((item: Post) => posts.push(item));
   const uniqMaxPosts = getUniqMostRecentPostsByGroup(posts);
   const groupDao = daoManager.getDao(GroupDao);
   let validGroups: Partial<Raw<Group>>[] = [];
@@ -424,7 +435,6 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
         return null;
       }),
     );
-
     validGroups = groups.filter(item => item !== null) as Partial<Raw<Group>>[];
   });
   await handlePartialData(validGroups);

@@ -31,4 +31,9 @@ type LinkItem = {
   doNotRender: boolean;
 } & ItemModel;
 
-export { FileItem, LinkItem };
+type NoteItem = {
+  title: string;
+  summary: string;
+} & ItemModel
+
+export { FileItem, LinkItem, NoteItem };

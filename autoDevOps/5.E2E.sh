@@ -8,7 +8,7 @@ fi
 
 echo '====Start E2E===='
 cd $project/tests/e2e/testcafe
-git clean -xdf
+git clean -xdf -e node_modules
 npm i
 
 export SITE_URL=$appUrl

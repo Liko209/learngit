@@ -34,7 +34,7 @@ import handleData, {
 import Permission from './permission';
 import { IResponse } from '../../api/NetworkClient';
 import { mainLogger } from 'foundation';
-import { SOCKET, SERVICE } from '../eventKey';
+import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
@@ -55,7 +55,7 @@ export default class GroupService extends BaseService<Group> {
     const subscriptions = {
       [SOCKET.GROUP]: handleData,
       [SOCKET.PARTIAL_GROUP]: handlePartialData,
-      [SOCKET.POST]: handleGroupMostRecentPostChanged,
+      [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
