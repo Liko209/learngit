@@ -1,8 +1,8 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2018-09-19 14:19:09
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-09-19 14:19:09
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { computed } from 'mobx';
 import { ConversationListItemViewProps } from './types';
 import { service } from 'sdk';
@@ -14,7 +14,7 @@ import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
 import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
-import history from '@/utils/history';
+import history from '@/history';
 import { CONVERSATION_TYPES } from '@/constants';
 
 class ConversationListItemViewModel extends StoreViewModel<

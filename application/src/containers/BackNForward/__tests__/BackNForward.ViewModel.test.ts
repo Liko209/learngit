@@ -3,13 +3,13 @@
  * @Date: 2018-10-17 14:17:32
  * Copyright © RingCentral. All rights reserved.
  */
-import historyStack from '@/utils/HistoryStack';
+import historyStack from '@/common/HistoryStack';
 import { OPERATION } from 'jui/pattern/HistoryOperation';
 import { BackNForwardViewModel } from '../BackNForward.ViewModel';
 
 const backNForwardViewModel = new BackNForwardViewModel();
 
-jest.mock('@/utils/getDocTitle', () => (pathname: string) => pathname);
+jest.mock('@/common/getDocTitle', () => (pathname: string) => pathname);
 
 describe('backNForward ViewModel', () => {
   beforeEach(() => {

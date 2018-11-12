@@ -3,7 +3,7 @@
  * @Date: 2018-08-28 17:52:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { toTitleCase } from '../toTitleCase';
+import { toTitleCase } from '../index';
 
 describe('toTitleCase()', () => {
   it('should transform "unicorns and rainbows" to "Unicorns And Rainbows"', () => {
@@ -23,6 +23,8 @@ describe('toTitleCase()', () => {
   });
 
   it('should transform "unicorns   and rainbows" to "Unicorns   And Rainbows"', () => {
-    expect(toTitleCase('unicorns   and rainbows')).toBe('Unicorns   and Rainbows');
+    expect(toTitleCase('unicorns   and rainbows')).toBe(
+      'Unicorns   and Rainbows',
+    );
   });
 });

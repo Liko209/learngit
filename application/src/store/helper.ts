@@ -1,3 +1,5 @@
+import { parsePhoneNumber } from 'libphonenumber-js';
+
 function compareCharacters(a: string, b: string) {
   if (a === b) {
     return 0;
@@ -18,23 +20,6 @@ function compareName(nameOne: string, nameTwo: string) {
     }
   }
   return 0;
-}
-
-function toTitleCase(input: string) {
-  const allTitleCase = input
-    .toLowerCase()
-    .replace(/(?:^|\s|-)\S/g, x => x.toUpperCase());
-  const smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|nor|of|on|or|per|the|to|v.?|vs.?|via)$/i;
-  const wordSeparators = /([ :–—-])/;
-  return allTitleCase
-    .split(wordSeparators)
-    .map((current: string) => {
-      if (current.search(smallWords) > -1) {
-        return current.toLowerCase();
-      }
-      return current;
-    })
-    .join('');
 }
 
 function isOnlyLetterOrNumbers(value: string) {
@@ -64,21 +49,20 @@ function handleOneOfName(firstName: string, lastName: string) {
   return `${firstLetter}${lastLetter}`;
 }
 
-function getFileSize(bytes: number) {
-  if (bytes / 1024 < 1000) {
-    return `${(bytes / 1024).toFixed(1)}Kb`;
+function phoneNumberDefaultFormat(num: string) {
+  try {
+    const phoneNumber = parsePhoneNumber(num);
+    // currently use US phone number format, for other regions, use phoneNumber.formatInternational()
+    return phoneNumber.formatNational();
+  } catch (error) {
+    return num;
   }
-  if (bytes / 1024 / 1024 < 1000) {
-    return `${(bytes / 1024 / 1024).toFixed(1)}Mb`;
-  }
-  return `${(bytes / 1024 / 1024 / 1024).toFixed(1)}Gb`;
 }
 
 export {
   compareName,
-  toTitleCase,
   isOnlyLetterOrNumbers,
   handleOnlyLetterOrNumbers,
   handleOneOfName,
-  getFileSize,
+  phoneNumberDefaultFormat,
 };
