@@ -32,15 +32,6 @@ const StyledBox = styled('div')`
   }
 `;
 
-// const StyledContent = styled('div')`
-//   ${typography('body2')};
-// `;
-
-// const StyledDate = styled('div')`
-//   ${typography('body1')};
-//   color: ${grey('500')};
-// `;
-
 type Props = {
   children: JSX.Element | null;
 };
