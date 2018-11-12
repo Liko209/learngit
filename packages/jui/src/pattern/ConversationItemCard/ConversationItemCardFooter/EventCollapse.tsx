@@ -3,7 +3,7 @@
  * @Date: 2018-11-07 14:51:04
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { Fragment } from 'react';
 import styled from '../../../foundation/styled-components';
 import {
   typography,
@@ -22,10 +22,6 @@ type States = {
   isShow: boolean;
 };
 
-const StyledWrapper = styled.div`
-  background: ${grey('100')};
-`;
-
 const StyledContent = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
@@ -33,6 +29,7 @@ const StyledContent = styled.div`
 `;
 
 const StyledToggle = styled.div`
+  display: inline-block;
   ${typography('body1')};
   color: ${primary('main')};
   text-decoration: underline;
@@ -55,12 +52,12 @@ class JuiEventCollapse extends React.Component<Props, States> {
     const { children, hideText, showText } = this.props;
     const { isShow } = this.state;
     return (
-      <StyledWrapper>
+      <Fragment>
         {isShow && children}
         <StyledToggle onClick={this.handleToggle}>
           {isShow ? hideText : showText}
         </StyledToggle>
-      </StyledWrapper>
+      </Fragment>
     );
   }
 }

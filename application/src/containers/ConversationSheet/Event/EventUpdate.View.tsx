@@ -36,10 +36,13 @@ class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
     } = event;
     const { old_values } = post.activityData;
     const time = getDurationTime(start, end);
-    const oldTime = getDurationTime(
-      !old_values.start ? start : old_values.start,
-      !old_values.end ? end : old_values.end,
-    );
+    const oldTime =
+      old_values.start || old_values.end
+        ? getDurationTime(
+            !old_values.start ? start : old_values.start,
+            !old_values.end ? end : old_values.end,
+          )
+        : null;
     const oldLocation = old_values.location;
     const timeText = getDurationTimeText(
       repeat,
