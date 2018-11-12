@@ -5,7 +5,7 @@
  */
 
 import moment from 'moment';
-import { getDateMessage } from '../../utils/getDateMessage';
+import getDateMessage from '../getDateMessage';
 
 jest.mock('i18next', () => ({
   t: (text: string) => text,
