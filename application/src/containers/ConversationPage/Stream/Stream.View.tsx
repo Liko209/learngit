@@ -68,9 +68,7 @@ class StreamViewComponent extends Component<Props> {
       <JuiStream>
         {hasMore ? null : <ConversationInitialPost id={groupId} />}
         <section ref={this._listRef}>
-          {items.length > 0
-            ? items.map(item => this._renderStreamItem(item))
-            : null}
+          {items.map(item => this._renderStreamItem(item))}
         </section>
       </JuiStream>
     );

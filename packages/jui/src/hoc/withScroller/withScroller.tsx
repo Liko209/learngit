@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import debounce from 'lodash/debounce';
-import React, { Component, ComponentType, RefObject } from 'react';
+import React, { ComponentType, RefObject, PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { noop } from '../../foundation/utils';
 import _ from 'lodash';
@@ -51,7 +51,7 @@ const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
 `;
 
 function withScroller(Comp: ComponentType<any>) {
-  return class Scroller extends Component<ScrollerProps, ScrollerStates>
+  return class Scroller extends PureComponent<ScrollerProps, ScrollerStates>
     implements TScroller {
     static defaultProps = {
       thresholdUp: 100,
@@ -65,7 +65,6 @@ function withScroller(Comp: ComponentType<any>) {
       triggerScrollToOnMount: false,
     };
     private _scrollElRef: React.RefObject<any> = React.createRef();
-    private _observer: MutationObserver;
     private _list: RefObject<HTMLElement>;
 
     private _previousPosition: ScrollerSnapShot;
@@ -109,7 +108,7 @@ function withScroller(Comp: ComponentType<any>) {
     }
 
     getSnapshotBeforeUpdate() {
-      if (!this._list.current) {
+      if (!this._list || !this._list.current) {
         return;
       }
       this._previousPosition = {

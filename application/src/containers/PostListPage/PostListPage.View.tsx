@@ -15,7 +15,6 @@ import { translate } from 'react-i18next';
 class PostListPageViewComponent extends Component<PostListPageViewProps> {
   render() {
     const { type, caption, ids, t } = this.props;
-
     return (
       <JuiConversationPage
         data-test-automation-id="post-list-page"
@@ -25,7 +24,7 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
           data-test-automation-id="post-list-page-header"
           title={t(caption)}
         />
-        <Stream postIds={ids} />
+        {ids ? <Stream postIds={ids} type={type} /> : null}
       </JuiConversationPage>
     );
   }

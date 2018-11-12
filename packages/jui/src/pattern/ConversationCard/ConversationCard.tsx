@@ -15,7 +15,7 @@ import {
 
 type ConversationCardProps = {
   Avatar: React.ReactNode;
-  children: (React.ReactChild | null)[];;
+  children: (React.ReactChild | null)[];
   mode?: string;
   onClick?: (e: React.MouseEvent) => any;
 } & React.DOMAttributes<{}>;
@@ -27,7 +27,8 @@ const StyledNavigationButton = styled<JuiButtonProps>(JuiButton)`
     left: 50%;
     transform: translate(-50%, 0);
     position: absolute;
-    transition: all, 0.3s;
+    transition: all, 0.2s;
+    z-index: ${({ theme }) => theme.zIndex.snackbar};
   }
 `;
 

@@ -27,14 +27,8 @@ import {
 import { SortableListStore } from './SortableListStore';
 import { IIncomingData } from '../../store';
 import _ from 'lodash';
+import { transform2Map } from '@/store/utils';
 
-const transform2Map = (entities: any[]): Map<number, any> => {
-  const map = new Map();
-  entities.forEach((item: any) => {
-    map.set(item.id, item);
-  });
-  return map;
-};
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
   isMatchFunc: IMatchFunc<T>;
@@ -154,12 +148,17 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     if (EVENT_TYPES.PUT === type) {
       this.updateEntityStore(updateEntity);
     }
-    this.sortableListStore.removeByIds(deleted);
-    updated &&
+    if (deleted.length) {
+      this.sortableListStore.removeByIds(deleted);
+    }
+    if (updated && updated.length) {
       updated.forEach((item: any) => {
         this.sortableListStore.replaceAt(item.index, item.value);
       });
-    this.sortableListStore.upsert(added);
+    }
+    if (added.length) {
+      this.sortableListStore.upsert(added);
+    }
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
         deleted,

@@ -3,7 +3,7 @@
  * @Date: 2018-08-17 10:35:07
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import Collapse from '@material-ui/core/Collapse';
 import { noop } from '../../foundation/utils';
 import JuiSectionHeader, {
@@ -23,7 +23,7 @@ type SectionStates = {
   expanded: boolean;
 };
 
-class JuiConversationListSection extends Component<
+class JuiConversationListSection extends PureComponent<
   SectionProps,
   SectionStates
 > {

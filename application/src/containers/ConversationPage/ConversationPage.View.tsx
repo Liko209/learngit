@@ -22,13 +22,6 @@ class ConversationPageViewComponent extends Component<
     scroller && scroller.scrollToRow(-1);
   }
 
-  componentDidUpdate(prevProps: ConversationPageViewProps) {
-    if (this.props.groupId !== prevProps.groupId) {
-      const scroller = this._viewRefs.scroller;
-      scroller && scroller.scrollToRow(-1);
-    }
-  }
-
   render() {
     const { t, groupId, canPost } = this.props;
 

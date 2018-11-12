@@ -91,7 +91,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       color:${primary('700')};
       width:inherit;
       &:hover {
-        background-color: ${grey('50')}
+        background-color: ${grey('50')};
       &:active {
         background-color: ${grey('100')};
 

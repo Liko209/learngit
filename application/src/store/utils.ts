@@ -35,4 +35,18 @@ function defaultSortFunc(IdSortKeyPrev: IIDSortKey, IdSortKeyNext: IIDSortKey) {
   return IdSortKeyPrev.sortKey - IdSortKeyNext.sortKey;
 }
 
-export { getEntity, getSingleEntity, getGlobalValue, defaultSortFunc };
+const transform2Map = (entities: any[]): Map<number, any> => {
+  const map = new Map();
+  entities.forEach((item: any) => {
+    map.set(item.id, item);
+  });
+  return map;
+};
+
+export {
+  getEntity,
+  getSingleEntity,
+  getGlobalValue,
+  defaultSortFunc,
+  transform2Map,
+};

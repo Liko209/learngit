@@ -1,8 +1,8 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2018-10-08 16:29:08
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-10-08 16:29:08
+ * Copyright © RingCentral. All rights reserved.
+ */
 import moment from 'moment';
 import PostModel from '@/store/models/Post';
 import {

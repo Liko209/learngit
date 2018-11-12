@@ -18,16 +18,15 @@ type DataMap = {
     idListProvider: () => number[];
   };
 };
+
 class PostListPageViewModel extends AbstractViewModel {
   private _dataMap: DataMap = {
     [POST_LIST_TYPE.mentions]: {
       caption: '@mentions',
       idListProvider: () => {
-        return (
-          getSingleEntity<MyState, MyStateModel>(
-            ENTITY_NAME.MY_STATE,
-            'atMentionPostIds',
-          ) || []
+        return getSingleEntity<MyState, MyStateModel>(
+          ENTITY_NAME.MY_STATE,
+          'atMentionPostIds',
         );
       },
     },
