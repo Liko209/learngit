@@ -11,12 +11,12 @@ import { translate, WithNamespaces } from 'react-i18next';
 class JoinViewComponent extends Component<JoinViewProps & WithNamespaces> {
   render() {
     const { newUserId, newUserName, createdAt, t } = this.props;
-    const newUser = `<a href="/users/${newUserId}">${newUserName}</a>`;
+    const newUser = `<a class="user" href="/users/${newUserId}">${newUserName}</a>`;
     const html = t('joinTheTeam', { newUser });
     return (
       <React.Fragment>
         <div dangerouslySetInnerHTML={{ __html: html }} />
-        <div>{createdAt}</div>
+        <div className="datetime">{createdAt}</div>
       </React.Fragment>
     );
   }
