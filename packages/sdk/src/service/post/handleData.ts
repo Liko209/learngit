@@ -67,23 +67,18 @@ export async function handleDeactivedAndNormalPosts(
   const normalPosts = _.flatten(
     await Promise.all(
       Object.values(groups).map(async (posts: Post[]) => {
-        console.log('isContinuous', isContinuous);
         const _isContinuous =
           isContinuous || (await isContinuousWithLocalData(posts));
-        console.log('_isContinuous', _isContinuous);
         const normalPosts = await utilsBaseHandleData({
           data: posts,
           dao: postDao,
           eventKey: ENTITY.POST,
           noSavingToDB: !_isContinuous,
         });
-        console.log('normalPosts', normalPosts);
         return normalPosts;
       }),
     ),
   );
-
-  console.log('normalPosts', normalPosts);
 
   // check if post's owner group exist in local or not
   // seems we only need check normal posts, don't need to check deactivated data
