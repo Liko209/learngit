@@ -244,7 +244,6 @@ export default class PostService extends BaseService<Post> {
       // error, notifiy, should add error handle after IResponse give back error info
       throw resp;
     } catch (e) {
-      mainLogger.warn('crash of innerSendPost()');
       this.handleSendPostFail(preInsertId);
       throw ErrorParser.parse(e);
     }
