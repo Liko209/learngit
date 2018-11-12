@@ -117,10 +117,11 @@ export default async function stateHandleData(state: Raw<State>[]) {
     return;
   }
 
-  console.time('stateHandleData');
+  const logLabel = `[Performance]stateHandleData ${Date.now()}`;
+  console.time(logLabel);
   const { myState, groupStates } = getStates(state);
   await operateDaoAndDoNotification(myState, groupStates);
-  console.timeEnd('stateHandleData');
+  console.timeEnd(logLabel);
 }
 
 async function operateDaoAndDoNotification(
@@ -135,14 +136,18 @@ async function operateDaoAndDoNotification(
   }
   if (groupStates) {
     const stateService: StateService = StateService.getInstance();
-    console.time('calculateUMI');
+    const calculateLabel = `[Performance]calculateUMI ${Date.now()}`;
+    console.time(calculateLabel);
     const result = await stateService.calculateUMI(groupStates);
-    console.timeEnd('calculateUMI');
+    console.timeEnd(calculateLabel);
 
     if (result.length) {
-      console.time(`result.length ${result.length}`);
+      const updateLabel = `[Performance]groupState bulkUpdate(${
+        result.length
+      }) ${Date.now()}`;
+      console.time(updateLabel);
       await groupStateDao.bulkUpdate(result);
-      console.timeEnd(`result.length ${result.length}`);
+      console.timeEnd(updateLabel);
 
       notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, result);
     }
