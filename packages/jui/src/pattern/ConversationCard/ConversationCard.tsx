@@ -6,7 +6,7 @@
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiConversationCardAvatarArea } from './ConversationCardAvatarArea';
-import { grey } from '../../foundation/utils/styles';
+import { palette, grey } from '../../foundation/utils/styles';
 
 type ConversationCardProps = {
   Avatar: React.ReactNode;
@@ -19,7 +19,7 @@ const StyledRightSection = styled('div')`
   min-width: 0;
 `;
 const StyledConversationCard = styled('div')`
-  background-color: white;
+  background-color: ${palette('common', 'white')};
   display: flex;
   transition: background-color 0.2s ease-in;
   &:hover {
