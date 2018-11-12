@@ -436,7 +436,7 @@ export default class GroupService extends BaseService<Group> {
   // get group data, for send failure post ids
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
-      const group = (await this.getById(id)) as Group;
+      const group = (await this.getGroupById(id)) as Group;
       return group.send_failure_post_ids || [];
     } catch (error) {
       throw ErrorParser.parse(error);

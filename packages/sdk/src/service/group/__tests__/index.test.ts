@@ -95,12 +95,12 @@ describe('GroupService', () => {
     expect(result2).toEqual([mock]);
   });
 
-  it('getById()', async () => {
+  it('getGroupById()', async () => {
     const mock = { id: 1 };
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.get.mockResolvedValue(mock);
 
-    const result = await groupService.getById(1);
+    const result = await groupService.getGroupById(1);
     expect(result).toEqual(mock);
   });
 
