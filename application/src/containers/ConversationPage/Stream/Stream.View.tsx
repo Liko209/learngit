@@ -18,7 +18,7 @@ import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
 
-const VISIBILITY_SENSOR_OFFSET = { top: 100 };
+const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 
 type Props = WithNamespaces & StreamViewProps;
 
