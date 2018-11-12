@@ -37,7 +37,7 @@ type NotificationEntityUpdatePayload<T> = {
 };
 
 type NotificationEntityResetPayload = {
-  type: EVENT_TYPES.RESET | EVENT_TYPES.RELOAD;
+  type: EVENT_TYPES.RESET;
 };
 
 type NotificationEntityReloadPayload = {
