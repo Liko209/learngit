@@ -32,6 +32,7 @@ class SectionViewComponent extends React.Component<Props> {
           className="conversation-list-section-collapse"
           distance={5}
           lockAxis="y"
+          helperClass="sortable-list-helper"
           onSortEnd={onSortEnd}
         >
           {this.props.groupIds.map((id: number, index: number) => (

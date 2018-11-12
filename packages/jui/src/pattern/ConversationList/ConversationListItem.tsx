@@ -34,6 +34,10 @@ const StyledListItem = styled(MuiMenuItem)`
       background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   }
 
+  &&.sortable-list-helper {
+    z-index: ${({ theme }) => theme.zIndex.dragging};
+  }
+
   &&:active p {
     color: ${palette('primary', 'main')};
   }
@@ -49,8 +53,7 @@ const StyledListItem = styled(MuiMenuItem)`
     ${StyledIconographyMore} {
       display: inline-block;
     }
-    ${StyledIconographyDraft},
-    ${StyledIconographyFailure} {
+    ${StyledIconographyDraft}, ${StyledIconographyFailure} {
       display: none;
     }
   }
@@ -125,12 +128,12 @@ const JuiConversationListItem: IConversationListItem = (
       {...rest}
     >
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-      <ItemText style={{ fontWeight }}>
-        {title}
-      </ItemText>
+      <ItemText style={{ fontWeight }}>{title}</ItemText>
       {umi}
       {indicator}
-      <StyledIconographyMore onClick={onMoreClick}>more_vert</StyledIconographyMore>
+      <StyledIconographyMore onClick={onMoreClick}>
+        more_vert
+      </StyledIconographyMore>
     </StyledListItem>
   );
 };
