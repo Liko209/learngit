@@ -3,7 +3,7 @@
  * @Date: 2018-11-07 14:51:04
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Fragment } from 'react';
+import React from 'react';
 import styled from '../../../foundation/styled-components';
 import {
   typography,
@@ -12,19 +12,19 @@ import {
   spacing,
 } from '../../../foundation/utils/styles';
 
-type historyItem = {
-  text: string;
-};
-
 type Props = {
-  history: historyItem[];
-  tHide: string;
-  tShow: string;
+  children?: React.ReactNode;
+  hideText: string;
+  showText: string;
 };
 
 type States = {
   isShow: boolean;
 };
+
+const StyledWrapper = styled.div`
+  background: ${grey('100')};
+`;
 
 const StyledContent = styled.div`
   ${typography('body1')};
@@ -52,17 +52,19 @@ class JuiEventCollapse extends React.Component<Props, States> {
   }
 
   render() {
-    const { history, tHide, tShow } = this.props;
+    const { children, hideText, showText } = this.props;
     const { isShow } = this.state;
     return (
-      <Fragment>
-        {isShow && <StyledContent>{history[0].text}</StyledContent>}
+      <StyledWrapper>
+        {isShow && children}
         <StyledToggle onClick={this.handleToggle}>
-          {isShow ? tHide : tShow}
+          {isShow ? hideText : showText}
         </StyledToggle>
-      </Fragment>
+      </StyledWrapper>
     );
   }
 }
 
-export { JuiEventCollapse };
+const JuiEventCollapseContent = StyledContent;
+
+export { JuiEventCollapse, JuiEventCollapseContent };

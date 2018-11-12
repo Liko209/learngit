@@ -54,5 +54,7 @@
   "forWeekdailyTimes": "for $t(weekdaily, { 'count': {{count}} })",
   "forMonthlyTimes": "for $t(monthly, { 'count': {{count}} })",
   "forYearlyTimes": "for $t(yearly, { 'count': {{count}} })",
-  "until": "until"
+  "until": "until",
+  "hideEventHistory": "hide",
+  "showEventHistory": "showOld"
 }
