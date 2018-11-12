@@ -97,7 +97,7 @@ export default class MultiEntityMapStore<
       const model = this._data[id];
       if (model) {
         Object.keys(partialEntity).forEach((key: string) => {
-          model[key] = partialEntity[key];
+          model[_.camelCase(key)] = partialEntity[key];
         });
       }
     });

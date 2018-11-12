@@ -131,7 +131,7 @@ async function operateDaoAndDoNotification(
   const groupStateDao = daoManager.getDao(GroupStateDao);
   if (myState) {
     await stateDao.bulkUpdate(myState);
-    notificationCenter.emitEntityUpdate(ENTITY.MY_STATE, myState);
+    notificationCenter.emitEntityUpdate(ENTITY.MY_STATE, myState, myState);
   }
   if (groupStates) {
     const stateService: StateService = StateService.getInstance();
@@ -144,7 +144,7 @@ async function operateDaoAndDoNotification(
       await groupStateDao.bulkUpdate(result);
       console.timeEnd(`result.length ${result.length}`);
 
-      notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, result);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, result, result);
     }
   }
 }
