@@ -7,10 +7,10 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationCardLinkItems } from 'jui/pattern/ConversationCardLinkItems';
-import ItemModel from '@/store/models/Item';
+import { LinkItem } from '@/store/models/Items';
 
 type Props = {
-  postItems: ItemModel[];
+  postItems: LinkItem[];
   onLinkItemClick: (e: React.MouseEvent<HTMLSpanElement>) => void;
 };
 @observer
@@ -24,17 +24,17 @@ class LinkItemView extends React.Component<Props> {
             ? `${item.image}&key=4527f263d6e64d7a8251b007b1ba9972`
             : '';
           return (item.title || item.image || item.summary) &&
-            !item.data.do_not_render &&
+            !item.doNotRender &&
             !item.deactivated ? (
-            <JuiConversationCardLinkItems
-              key={idx}
-              title={item.title}
-              summary={item.summary}
-              thumbnail={image}
-              url={item.url}
-              onLinkItemClose={onLinkItemClick.bind(this, item.id)}
-            />
-          ) : null;
+              <JuiConversationCardLinkItems
+                key={idx}
+                title={item.title}
+                summary={item.summary}
+                thumbnail={image}
+                url={item.url}
+                onLinkItemClose={onLinkItemClick.bind(this, item.id)}
+              />
+            ) : null;
         })}
       </>
     );

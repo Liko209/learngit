@@ -1,4 +1,5 @@
 import 'testcafe';
+import * as fs from 'fs';
 import { ClientFunction } from 'testcafe';
 
 export class H {
@@ -14,4 +15,8 @@ export class H {
     return ClientFunction(() => new Date().getTimezoneOffset())();
   }
 
+  static jsonDump(path: string, object: any) {
+    const content = JSON.stringify(object, null, 2);
+    fs.writeFileSync(path, content);
+  }
 }
