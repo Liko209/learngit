@@ -121,7 +121,7 @@ function getDurtionTimeText(repeat: string, repeatEndingAfter: string, repeatEnd
   const times = TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter));
   const ENDING = {
     after: times || '',
-    on: `t('until') ${moment(repeatEndingOn).format('ddd, MMM D')}`,
+    on: `${t('until')} ${getDateMessage(repeatEndingOn, 'ddd, MMM D')}`,
   };
   return `${REPEAT_TEXT[repeat] || ''} ${repeat !== 'none' ? ENDING[repeatEnding] : ''}`;
 }

@@ -7,7 +7,7 @@
 import moment from 'moment';
 import i18next, { t } from 'i18next';
 
-function getDateMessage(timestamp: any): string {
+function getDateMessage(timestamp: any, format: string = 'ddd, MMM Do'): string {
   moment.locale(i18next.language);
   const m = moment(timestamp)
     .hour(0)
@@ -30,7 +30,7 @@ function getDateMessage(timestamp: any): string {
     return t('tomorrow');
   }
   if (diff <= 7) {
-    return m.format('ddd, MMM Do'); // Tue, Oct 30th  周二, 10月30日
+    return m.format(format); // Tue, Oct 30th  周二, 10月30日
   }
   return m.format('l'); // 30/10/2018  2018/10/30
 }
