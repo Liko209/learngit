@@ -16,7 +16,7 @@ import {
   JuiEventCollapseContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
 // import { JuiEventCollapse } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
-import { getDurtionTime, getDurtionTimeText } from '../../../utils/helper';
+import { getDurationTime, getDurationTimeText } from '../../../utils/helper';
 import { EventUpdateViewProps } from './types';
 
 class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
@@ -35,13 +35,13 @@ class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
       repeatEndingOn,
     } = event;
     const { old_values } = post.activityData;
-    const time = getDurtionTime(start, end);
-    const oldTime = getDurtionTime(
+    const time = getDurationTime(start, end);
+    const oldTime = getDurationTime(
       !old_values.start ? start : old_values.start,
       !old_values.end ? end : old_values.end,
     );
     const oldLocation = old_values.location;
-    const timeText = getDurtionTimeText(
+    const timeText = getDurationTimeText(
       repeat,
       repeatEndingAfter,
       repeatEndingOn,
@@ -57,14 +57,18 @@ class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
             showText={t('showEventHistory')}
             hideText={t('hideEventHistory')}
           >
-            <JuiEventCollapseContent>{oldLocation}</JuiEventCollapseContent>
-            <JuiEventCollapseContent>{oldTime}</JuiEventCollapseContent>
+            {oldLocation && (
+              <JuiEventCollapseContent>{oldLocation}</JuiEventCollapseContent>
+            )}
+            {oldTime && (
+              <JuiEventCollapseContent>{oldTime}</JuiEventCollapseContent>
+            )}
           </JuiEventCollapse>
         }
       >
         <JuiTimeMessage time={`${time} ${timeText}`} />
-        <JuiEventLocation location={location} />
-        <JuiEventDescription description={description} />
+        {location && <JuiEventLocation location={location} />}
+        {description && <JuiEventDescription description={description} />}
       </EventUpdateViewCard>
     );
   }

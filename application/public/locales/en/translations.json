@@ -55,6 +55,6 @@
   "forMonthlyTimes": "for $t(monthly, { 'count': {{count}} })",
   "forYearlyTimes": "for $t(yearly, { 'count': {{count}} })",
   "until": "until",
-  "hideEventHistory": "hide",
-  "showEventHistory": "showOld"
+  "hideEventHistory": "Hide",
+  "showEventHistory": "Show old"
 }
