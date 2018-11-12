@@ -195,7 +195,7 @@ export default class PostService extends BaseService<Post> {
 
       return result;
     } catch (e) {
-      mainLogger.error(e);
+      mainLogger.error(`getPostsByGroupId: ${JSON.stringify(e)}`);
       return {
         offset,
         limit,

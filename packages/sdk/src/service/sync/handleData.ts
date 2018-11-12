@@ -101,7 +101,7 @@ const handleData = async (
 
     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_DONE);
   } catch (error) {
-    mainLogger.error(error);
+    mainLogger.error(`sync/handleData: ${JSON.stringify(error)}`);
     notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_ERROR, {
       error: ErrorParser.parse(error),
     });

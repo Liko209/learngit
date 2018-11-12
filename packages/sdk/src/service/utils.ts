@@ -55,7 +55,7 @@ const baseHandleData = async ({ data, dao, eventKey }: any) => {
     }
     return normalData;
   } catch (e) {
-    mainLogger.error(e);
+    mainLogger.error(`baseHandleData: ${JSON.stringify(e)}`);
     return [];
   }
 };
