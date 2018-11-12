@@ -6,20 +6,25 @@
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiConversationCardAvatarArea } from './ConversationCardAvatarArea';
+import { palette, grey } from '../../foundation/utils/styles';
 
 type ConversationCardProps = {
   Avatar: React.ReactNode;
-  children: React.ReactChild[];
-};
+  children: (React.ReactChild | null)[];
+} & React.DOMAttributes<{}>;
 
 const StyledRightSection = styled('div')`
+  position: relative;
   flex-grow: 1;
-  /* overflow: hidden; */
   min-width: 0;
 `;
 const StyledConversationCard = styled('div')`
-  background-color: white;
+  background-color: ${palette('common', 'white')};
   display: flex;
+  transition: background-color 0.2s ease-in;
+  &:hover {
+    background-color: ${grey('100')};
+  }
 `;
 
 const JuiConversationCard = ({

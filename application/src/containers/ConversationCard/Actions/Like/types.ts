@@ -4,12 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type ActionsProps = {
+type LikeProps = {
   id: number; // post id
 };
 
-type ActionsViewProps = {
-  id: number;
+type LikeViewProps = {
+  isLike: boolean;
+  like: (like: boolean) => void;
 };
 
-export { ActionsProps, ActionsViewProps };
+export { LikeProps, LikeViewProps };

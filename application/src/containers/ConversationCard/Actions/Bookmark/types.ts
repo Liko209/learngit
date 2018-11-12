@@ -4,12 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type ActionsProps = {
+type BookmarkProps = {
   id: number; // post id
 };
 
-type ActionsViewProps = {
-  id: number;
+type BookmarkViewProps = {
+  isBookmark: boolean;
+  bookmark: (bookmark: boolean) => void;
 };
 
-export { ActionsProps, ActionsViewProps };
+export { BookmarkProps, BookmarkViewProps };
