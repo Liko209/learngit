@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { daoManager, ItemDao, PostDao } from '../../dao';
+import { daoManager, PostDao } from '../../dao';
 // import GroupDao from 'dao/group';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
@@ -88,19 +88,8 @@ export default class PostService extends BaseService<Post> {
     };
     if (posts.length !== 0) {
       result.posts = posts;
-      let itemIds: number[] = [];
-      posts.forEach((post: Post) => {
-        if (post.item_ids && post.item_ids[0]) {
-          itemIds = itemIds.concat(post.item_ids);
-        }
-        if (post.at_mention_item_ids && post.at_mention_item_ids[0]) {
-          itemIds = itemIds.concat(post.at_mention_item_ids);
-        }
-      });
-      const itemDao = daoManager.getDao(ItemDao);
-      result.items = await itemDao.getItemsByIds([
-        ...Array.from(new Set(itemIds)),
-      ]);
+      const itemService: ItemService = ItemService.getInstance();
+      result.items = await itemService.getByPosts(posts);
     }
     return result;
   }
@@ -182,7 +171,8 @@ export default class PostService extends BaseService<Post> {
           limit: limit - result.posts.length,
         });
 
-        const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
+        const posts: Post[] =
+          (await baseHandleData(remoteResult.posts, true, true)) || [];
         const items = (await itemHandleData(remoteResult.items)) || [];
 
         result.posts.push(...posts);
@@ -204,6 +194,28 @@ export default class PostService extends BaseService<Post> {
         hasMore: true,
       };
     }
+  }
+
+  async getPostsByIds(
+    ids: number[],
+  ): Promise<{ posts: Post[]; items: Item[] }> {
+    const itemService: ItemService = ItemService.getInstance();
+    const dao = daoManager.getDao(PostDao);
+    const localPosts = await dao.queryManyPostsByIds(ids);
+    const result = {
+      posts: localPosts,
+      items: await itemService.getByPosts(localPosts),
+    };
+    const restIds = _.difference(ids, localPosts.map(({ id }) => id));
+    if (restIds.length) {
+      const remoteResult = (await PostAPI.requestByIds(restIds)).data;
+      const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
+      const items = (await itemHandleData(remoteResult.items)) || [];
+
+      result.posts.push(...posts);
+      result.items.push(...items);
+    }
+    return result;
   }
 
   isInPreInsert(id: number) {
