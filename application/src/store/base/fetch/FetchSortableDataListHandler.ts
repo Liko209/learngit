@@ -4,10 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { BaseModel } from 'sdk/models';
-import {
-  NotificationEntityPayload,
-  NotificationEntityBody,
-} from 'sdk/service/notificationCenter';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { handleDelete, handleUpsert } from './IncomingDataHandler';
 
 import { EVENT_TYPES } from 'sdk/service';
@@ -111,14 +108,22 @@ export class FetchSortableDataListHandler<
   }
 
   onDataChanged(payload: NotificationEntityPayload<T>) {
-    const body: NotificationEntityBody<T> = payload.body!;
-
-    const keys = Array.from(body.ids!);
-    if (payload.type === EVENT_TYPES.DELETE) {
+    if (EVENT_TYPES.DELETE === payload.type) {
+      const keys = Array.from(payload.body.ids);
       this.sortableListStore.removeByIds(keys);
     } else {
+      let entities: Map<number, T>;
+      let keys: number[] = [];
+
+      if (
+        EVENT_TYPES.UPDATE === payload.type ||
+        EVENT_TYPES.REPLACE === payload.type
+      ) {
+        entities = payload.body.entities;
+        keys = Array.from(payload.body.ids);
+      }
+
       const existKeys = this.sortableListStore.getIds();
-      const entities = body.entities!;
       let notMatchedKeys: number[] = [];
       const matchedKeys: number[] = _.intersection(keys, existKeys);
       const matchedSortableModels: ISortableModel<T>[] = [];
@@ -209,7 +214,7 @@ export class FetchSortableDataListHandler<
 
   upsert(models: T[]) {
     const entityMap = transform2Map(models);
-    const notificationBody: NotificationEntityBody<T> = {
+    const notificationBody = {
       ids: Array.from(entityMap.keys()),
       entities: entityMap,
     };

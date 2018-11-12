@@ -8,16 +8,49 @@ import { EVENT_TYPES } from './constants';
 import _ from 'lodash';
 import { BaseModel, Raw } from '../models';
 
-export type NotificationEntityBody<T> = {
-  ids?: number[];
-  entities?: Map<number, T>;
+type NotificationEntityIds = {
+  ids: number[];
+};
+
+type NotificationEntityBody<T> = NotificationEntityIds & {
+  entities: Map<number, T>;
+};
+
+type NotificationEntityUpdateBody<T> = NotificationEntityBody<T> & {
   partials?: Map<number, Partial<Raw<T>>>;
 };
 
-export type NotificationEntityPayload<T> = {
-  type: EVENT_TYPES;
-  body?: NotificationEntityBody<T>;
+// fixed type and body for type binding
+type NotificationEntityReplacePayload<T> = {
+  type: EVENT_TYPES.REPLACE;
+  body: NotificationEntityBody<T>;
 };
+
+type NotificationEntityDeletePayload = {
+  type: EVENT_TYPES.DELETE;
+  body: NotificationEntityIds;
+};
+
+type NotificationEntityUpdatePayload<T> = {
+  type: EVENT_TYPES.UPDATE;
+  body: NotificationEntityUpdateBody<T>;
+};
+
+type NotificationEntityResetPayload = {
+  type: EVENT_TYPES.RESET | EVENT_TYPES.RELOAD;
+};
+
+type NotificationEntityReloadPayload = {
+  type: EVENT_TYPES.RELOAD;
+};
+
+// unify notification payload
+export type NotificationEntityPayload<T> =
+  | NotificationEntityReplacePayload<T>
+  | NotificationEntityDeletePayload
+  | NotificationEntityUpdatePayload<T>
+  | NotificationEntityResetPayload
+  | NotificationEntityReloadPayload;
 
 /**
  * transform array to map structure
@@ -55,44 +88,56 @@ class NotificationCenter extends EventEmitter2 {
     const partialMap = partials ? transformPartial2Map(partials) : undefined;
     const ids = Array.from(entityMap.keys());
 
-    const notification = {
+    const notificationBody: NotificationEntityUpdateBody<T> = {
+      ids,
+      entities: entityMap,
+      partials: partialMap,
+    };
+
+    const notification: NotificationEntityUpdatePayload<T> = {
       type: EVENT_TYPES.UPDATE,
-      body: {
-        ids,
-        entities: entityMap,
-        partials: partialMap,
-      },
+      body: notificationBody,
     };
     this._notifyEntityChange(key, notification);
   }
 
   emitEntityReplace<T>(key: string, payload: Map<number, T>): void {
     const idsArr = Array.from(payload.keys());
-    const notification = {
+
+    const notificationBody: NotificationEntityBody<T> = {
+      ids: idsArr,
+      entities: payload,
+    };
+
+    const notification: NotificationEntityReplacePayload<T> = {
       type: EVENT_TYPES.REPLACE,
-      body: { ids: idsArr, entities: payload },
+      body: notificationBody,
     };
 
     this._notifyEntityChange(key, notification);
   }
 
   emitEntityDelete(key: string, ids: number[]): void {
-    const notification = {
+    const notificationBody: NotificationEntityIds = {
+      ids,
+    };
+
+    const notification: NotificationEntityDeletePayload = {
       type: EVENT_TYPES.DELETE,
-      body: { ids },
+      body: notificationBody,
     };
     this._notifyEntityChange(key, notification);
   }
 
   emitEntityReset(key: string): void {
-    const notification = {
+    const notification: NotificationEntityResetPayload = {
       type: EVENT_TYPES.RESET,
     };
     this._notifyEntityChange(key, notification);
   }
 
   emitEntityReload(key: string): void {
-    const notification = {
+    const notification: NotificationEntityReloadPayload = {
       type: EVENT_TYPES.RELOAD,
     };
     this._notifyEntityChange(key, notification);
@@ -108,7 +153,7 @@ class NotificationCenter extends EventEmitter2 {
 
   private _notifyEntityChange<T>(
     key: string,
-    notification?: NotificationEntityPayload<T>,
+    notification: NotificationEntityPayload<T>,
   ): void {
     this._trigger(key, notification);
   }

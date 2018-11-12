@@ -45,7 +45,6 @@ export default class MultiEntityMapStore<
 
   handleIncomingData(payload: NotificationEntityPayload<T>) {
     const existKeys: number[] = Object.keys(this._data).map(Number);
-    let matchedKeys: number[];
     switch (payload.type) {
       case EVENT_TYPES.RESET:
         this.reset();
@@ -54,19 +53,21 @@ export default class MultiEntityMapStore<
         this.reload();
         break;
       case EVENT_TYPES.DELETE:
-        matchedKeys = _.intersection(payload.body!.ids!, existKeys);
-        this.batchRemove(matchedKeys);
+        {
+          const matchedKeys = _.intersection(payload.body.ids, existKeys);
+          this.batchRemove(matchedKeys);
+        }
         break;
       case EVENT_TYPES.REPLACE:
         {
-          const entities = payload.body!.entities!;
+          const entities = payload.body.entities;
           this.batchReplace(entities);
         }
         break;
       case EVENT_TYPES.UPDATE:
         {
-          const partials = payload.body!.partials!;
-          const entities = payload.body!.entities!;
+          const partials = payload.body.partials;
+          const entities = payload.body.entities;
           if (partials) {
             this.batchUpdate(partials);
           } else {
