@@ -56,7 +56,7 @@ export default class GroupService extends BaseService<Group> {
     const subscriptions = {
       [SOCKET.GROUP]: handleData,
       [SOCKET.PARTIAL_GROUP]: handlePartialData,
-      [SOCKET.POST]: handleGroupMostRecentPostChanged,
+      [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };

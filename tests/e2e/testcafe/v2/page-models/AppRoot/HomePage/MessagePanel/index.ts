@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
+import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
+import { h } from '../../../../helpers';
 
 class MoreMenuEntry extends BaseWebComponent {
   async enter() {
@@ -20,13 +22,13 @@ class MoreMenu extends BaseWebComponent {
     );
   }
 
-  private getToggler(id: string){
+  private getToggler(id: string) {
     return this.getComponent(
       MoreMenuEntry,
       this.getSelectorByAutomationId(id),
-    ); 
+    );
   }
-  
+
   get favoriteToggler() {
     return this.getToggler('favToggler');
   }
@@ -58,15 +60,15 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.hover(this.moreMenuEntry).click(this.moreMenuEntry);
   }
 
-  async waitUntilUmiExist(exist: boolean, timeout=20) {
+  async waitUntilUmiExist(exist: boolean, timeout = 20) {
     let tryTime = 0;
     let count = await this.getUmi();
     if (exist == !!count) {
       return
     }
     while (true) {
-      if (tryTime >= timeout){
-        throw(`Wait until conversation without UMI: timeout: ${timeout}s`)
+      if (tryTime >= timeout) {
+        throw (`Wait until conversation without UMI: timeout: ${timeout}s`)
       }
       tryTime = tryTime + 1;
       await this.t.wait(1e3);
@@ -74,7 +76,7 @@ class ConversationEntry extends BaseWebComponent {
       if (exist == !!(count)) {
         break
       }
-    } 
+    }
   }
 
   async enter() {
@@ -136,7 +138,32 @@ class ConversationListSection extends BaseWebComponent {
   }
 }
 
-class PostItem extends BaseWebComponent { }
+class PostItem extends BaseWebComponent {
+  get avatar() {
+    return this.self.find(`[data-name="avatar"]`);
+  }
+
+  get name() {
+    return this.self.find(`[data-name="name"]`);
+  }
+
+  get userStatus() {
+    this.warnFlakySelector();
+    return this.name.nextSibling('div')
+  }
+
+  get time() {
+    return this.self.find(`[data-name="time"]`);
+  }
+
+  get body() {
+    return this.self.find(`[data-name="body"]`);
+  }
+
+  get text() {
+    return this.self.find(`[data-name="text"]`);
+  }
+}
 
 class ConversationPage extends BaseWebComponent {
   get self() {
@@ -165,6 +192,10 @@ class ConversationPage extends BaseWebComponent {
 
   nthPostItem(nth: number) {
     return this.getComponent(PostItem, this.posts.nth(nth));
+  }
+
+  postItemById(postId: string) {
+    return this.getComponent(PostItem, this.posts.filter(`[data-id="${postId}"]`));
   }
 }
 
@@ -234,5 +265,16 @@ export class MessagePanel extends BaseWebComponent {
 
   get conversationListSections() {
     return this.getSelector('.conversation-list-section');
+  }
+
+  async getCurrentGroupIdFromURL(): Promise<number> {
+    await this.isValidUrl();
+    return Number(/messages\/(\d+)/.exec(await h(this.t).href)[1]);
+  }
+
+  async isValidUrl() {
+    const url = await h(this.t).href;
+    const result = /messages\/(\d+)/.test(url);
+    assert(result, `invalid url: ${url}`);
   }
 }
