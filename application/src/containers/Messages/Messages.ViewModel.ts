@@ -20,10 +20,16 @@ class MessagesViewModel extends AbstractViewModel<MessagesProps> {
     return getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
   }
 
-  updateCurrentConversationId = (currentConversationId: number) => {
+  updateCurrentConversationId = (currentConversationId: number | string) => {
+    if (
+      typeof currentConversationId === 'string' &&
+      !/\d+/.test(currentConversationId)
+    ) {
+      return;
+    }
     storeManager
       .getGlobalStore()
-      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, currentConversationId);
+      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, Number(currentConversationId));
   }
 
   getLastGroupId = async () => {

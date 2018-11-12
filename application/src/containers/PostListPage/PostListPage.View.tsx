@@ -9,11 +9,12 @@ import { JuiConversationPage } from 'jui/pattern/ConversationPage';
 import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
 import { PostListPageViewProps } from './types';
 import { Stream } from './Stream';
+import { translate } from 'react-i18next';
 
 @observer
-class PostListPageView extends Component<PostListPageViewProps> {
+class PostListPageViewComponent extends Component<PostListPageViewProps> {
   render() {
-    const { type, caption, ids } = this.props;
+    const { type, caption, ids, t } = this.props;
 
     return (
       <JuiConversationPage
@@ -22,12 +23,14 @@ class PostListPageView extends Component<PostListPageViewProps> {
       >
         <JuiConversationPageHeader
           data-test-automation-id="post-list-page-header"
-          title={caption}
+          title={t(caption)}
         />
         <Stream postIds={ids} />
       </JuiConversationPage>
     );
   }
 }
+
+const PostListPageView = translate()(PostListPageViewComponent);
 
 export { PostListPageView };

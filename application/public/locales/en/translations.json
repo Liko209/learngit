@@ -33,5 +33,6 @@
   "PublicTeam": "Public Team (visible to any co-worker)",
   "MembersMayPostMessages": "Allow members to post messages",
   "mentions": "mentions",
-  "bookmarks": "bookmarks"
+  "bookmarks": "bookmarks",
+  "@mentions": "@Mentions"
 }

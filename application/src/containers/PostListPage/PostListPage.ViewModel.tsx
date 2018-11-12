@@ -7,8 +7,6 @@
 import { AbstractViewModel } from '@/base';
 import { POST_LIST_TYPE, PostListPageProps } from './types';
 import { computed, observable } from 'mobx';
-import { t } from 'i18next';
-import { toTitleCase } from '@/utils';
 import { getSingleEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import { MyState } from 'sdk/src/models';
@@ -23,7 +21,7 @@ type DataMap = {
 class PostListPageViewModel extends AbstractViewModel {
   private _dataMap: DataMap = {
     [POST_LIST_TYPE.mentions]: {
-      caption: `@${toTitleCase(t('mentions'))}`,
+      caption: '@mentions',
       idListProvider: () => {
         return (
           getSingleEntity<MyState, MyStateModel>(

@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import { JuiTreeColumnResponse } from 'jui/foundation/Layout/Response/ThreeColumnResponse';
 import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
@@ -14,6 +14,7 @@ import { RightRail } from '@/containers/RightRail';
 import { MessagesViewProps } from './types';
 import { observer } from 'mobx-react';
 import { PostListPage } from '../PostListPage';
+import { POST_LIST_TYPE } from '../PostListPage/types';
 
 @observer
 class MessagesViewComponent extends Component<MessagesViewProps> {
@@ -22,29 +23,19 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
   }
 
   async componentDidMount() {
-    this.checkUrl(this.props, true);
+    const conversationIdOfUrl = this.props.match.params.id;
+    let groupId;
+    if (!conversationIdOfUrl) {
+      groupId = await this.props.getLastGroupId();
+      this.props.history.replace(`/messages/${groupId}`);
+    } else {
+      groupId = conversationIdOfUrl;
+    }
+    this.props.updateCurrentConversationId(groupId);
   }
 
   componentWillReceiveProps(props: MessagesViewProps) {
-    if (props.match.params.id !== this.props.match.params.id) {
-      this.checkUrl(props);
-    }
-  }
-
-  async checkUrl(props: MessagesViewProps, afterMount: boolean = false) {
-    const paramId = props.match.params.id;
-    if (!paramId && afterMount) {
-      const groupId = await this.props.getLastGroupId();
-      this.props.history.replace(`/messages/${groupId}`);
-      this.props.updateCurrentConversationId(groupId);
-      return;
-    }
-    if (/\d+/.test(paramId)) {
-      const id = Number(props.match.params.id);
-      this.props.updateCurrentConversationId(id);
-      return;
-    }
-    this.props.updateCurrentConversationId(0);
+    this.props.updateCurrentConversationId(props.match.params.id);
   }
 
   render() {
@@ -57,12 +48,21 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
     return (
       <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
         <LeftRail />
-        {currentConversationId ? (
-          <ConversationPage groupId={currentConversationId} />
-        ) : (
-          <PostListPage type={this.props.match.params.id} />
-        )}
-        <RightRail />
+        <Switch>
+          <Route
+            path={`/messages/${POST_LIST_TYPE.mentions}`}
+            render={props => (
+              <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
+            )}
+          />
+          <Route
+            path="/messages/:id?"
+            render={props => (
+              <ConversationPage {...props} groupId={currentConversationId} />
+            )}
+          />
+        </Switch>
+        {currentConversationId ? <RightRail /> : null}
       </JuiTreeColumnResponse>
     );
   }
