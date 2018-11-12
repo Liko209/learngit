@@ -10,15 +10,9 @@ import { JuiIconButton } from '../../components/Buttons';
 import { spacing, palette, height } from '../../foundation/utils/styles';
 
 type Props = {
-  likeTooltipTitle: string;
-  unlikeTooltipTitle: string;
-  bookmarkTooltipTitle: string;
-  removeBookmarkTooltipTitle: string;
   moreTooltipTitle: string;
-  isLike: boolean;
-  isBookmark: boolean;
-  handleLikeButton: (toLike: boolean) => Promise<void>;
-  handleBookmarkButton: (toBookmark: boolean) => Promise<void>;
+  Like: React.ReactNode;
+  Bookmark: React.ReactNode;
 };
 
 const StyledWrapper = styled('div')`
@@ -43,48 +37,12 @@ const StyledWrapper = styled('div')`
 `;
 
 class JuiConversationActionBar extends PureComponent<Props> {
-  private _handleLikeButton = () => {
-    const { isLike, handleLikeButton } = this.props;
-    handleLikeButton(!isLike);
-  }
-
-  private _handleBookmarkButton = () => {
-    const { isBookmark, handleBookmarkButton } = this.props;
-    handleBookmarkButton(!isBookmark);
-  }
-
   render() {
-    const {
-      likeTooltipTitle,
-      unlikeTooltipTitle,
-      bookmarkTooltipTitle,
-      removeBookmarkTooltipTitle,
-      moreTooltipTitle,
-      isLike,
-      isBookmark,
-    } = this.props;
+    const { moreTooltipTitle, Like, Bookmark } = this.props;
     return (
       <StyledWrapper>
-        <JuiIconButton
-          size="small"
-          tooltipTitle={isLike ? unlikeTooltipTitle : likeTooltipTitle}
-          color={isLike ? 'primary' : undefined}
-          onClick={this._handleLikeButton}
-          variant="plain"
-        >
-          thumb_up
-        </JuiIconButton>
-        <JuiIconButton
-          size="small"
-          tooltipTitle={
-            isBookmark ? removeBookmarkTooltipTitle : bookmarkTooltipTitle
-          }
-          color={isBookmark ? 'primary' : undefined}
-          onClick={this._handleBookmarkButton}
-          variant="plain"
-        >
-          {isBookmark ? 'bookmark' : 'bookmark_border'}
-        </JuiIconButton>
+        {Like}
+        {Bookmark}
         <JuiIconButton
           size="small"
           tooltipTitle={moreTooltipTitle}

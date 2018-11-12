@@ -9,11 +9,7 @@ type ActionsProps = {
 };
 
 type ActionsViewProps = {
-  isLike: boolean;
-  isBookmark: boolean;
-  like: (like: boolean) => void;
-  bookmark: (bookmark: boolean) => void;
-  isOffline: boolean;
+  id: number;
 };
 
 export { ActionsProps, ActionsViewProps };

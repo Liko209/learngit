@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type FooterProps = {
+type LikeProps = {
   id: number; // post id
 };
 
-type FooterViewProps = {
-  id: number;
-  likeCount: number;
+type LikeViewProps = {
+  isLike: boolean;
+  like: (like: boolean) => void;
 };
 
-export { FooterProps, FooterViewProps };
+export { LikeProps, LikeViewProps };

@@ -6,15 +6,11 @@
 import * as React from 'react';
 import { spacing, shape, grey, palette } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
-import { JuiIconButton } from '../../components/Buttons';
 import Collapse from '@material-ui/core/Collapse';
 
 type Props = {
-  likeTooltipTitle: string;
-  unlikeTooltipTitle: string;
-  isLike: boolean;
+  Like: React.ReactNode;
   likeCount: number;
-  handleLikeButton: (toLike: boolean) => Promise<void>;
 };
 
 const StyledConversationCardFooter = styled('div')`
@@ -44,31 +40,13 @@ const StyledIconWrapper = styled('div')`
 `;
 
 class JuiConversationCardFooter extends React.PureComponent<Props> {
-  private _handleLikeButton = () => {
-    const { isLike, handleLikeButton } = this.props;
-    handleLikeButton(!isLike);
-  }
-
   render() {
-    const {
-      likeTooltipTitle,
-      unlikeTooltipTitle,
-      isLike,
-      likeCount,
-    } = this.props;
+    const { Like, likeCount } = this.props;
     return (
       <Collapse in={!!likeCount}>
         <StyledConversationCardFooter>
           <StyledIconWrapper>
-            <JuiIconButton
-              size="small"
-              tooltipTitle={isLike ? unlikeTooltipTitle : likeTooltipTitle}
-              color={isLike ? 'primary' : undefined}
-              onClick={this._handleLikeButton}
-              variant="plain"
-            >
-              thumb_up
-            </JuiIconButton>
+            {Like}
             <span>{likeCount}</span>
           </StyledIconWrapper>
         </StyledConversationCardFooter>

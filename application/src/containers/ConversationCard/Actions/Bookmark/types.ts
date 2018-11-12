@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type FooterProps = {
+type BookmarkProps = {
   id: number; // post id
 };
 
-type FooterViewProps = {
-  id: number;
-  likeCount: number;
+type BookmarkViewProps = {
+  isBookmark: boolean;
+  bookmark: (bookmark: boolean) => void;
 };
 
-export { FooterProps, FooterViewProps };
+export { BookmarkProps, BookmarkViewProps };
