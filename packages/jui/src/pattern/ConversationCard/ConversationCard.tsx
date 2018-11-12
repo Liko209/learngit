@@ -15,10 +15,10 @@ import {
 
 type ConversationCardProps = {
   Avatar: React.ReactNode;
-  children: React.ReactChild[];
+  children: (React.ReactChild | null)[];
   mode?: string;
   onClick?: (e: React.MouseEvent) => any;
-};
+} & React.DOMAttributes<{}>;
 
 const StyledNavigationButton = styled<JuiButtonProps>(JuiButton)`
   && {
@@ -32,6 +32,7 @@ const StyledNavigationButton = styled<JuiButtonProps>(JuiButton)`
 `;
 
 const StyledRightSection = styled('div')`
+  position: relative;
   flex-grow: 1;
   min-width: 0;
 `;
@@ -57,7 +58,7 @@ const navigationStyles = ({ mode }: { mode?: string }) =>
 const StyledConversationCard = styled<{ mode?: string }, 'div'>('div')`
   background-color: white;
   display: flex;
-  transition: all 0.3s;
+  transition: background-color 0.2s ease-in;
   &:hover,
   &:focus {
     background: ${grey('50')};

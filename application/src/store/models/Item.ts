@@ -1,7 +1,7 @@
 import { Item } from 'sdk/models';
 import { observable } from 'mobx';
 import { TypeDictionary } from 'sdk/utils';
-import { setFileData, setLinkData } from './Items';
+import { setFileData, setLinkData, setNoteData } from './Items';
 import Base from './Base';
 
 const ITEM_DATA_HANDLE_MAP = {
@@ -9,6 +9,7 @@ const ITEM_DATA_HANDLE_MAP = {
   [TypeDictionary.TYPE_ID_FILE]: setFileData,
   [TypeDictionary.TYPE_ID_EVENT]: () => { },
   [TypeDictionary.TYPE_ID_LINK]: setLinkData,
+  [TypeDictionary.TYPE_ID_PAGE]: setNoteData,
 };
 
 export default class ItemModel extends Base<Item> {
