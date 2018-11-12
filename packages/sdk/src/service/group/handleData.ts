@@ -245,11 +245,11 @@ async function saveDataAndDoNotification(groups: Group[]) {
 }
 
 export default async function handleData(groups: Raw<Group>[]) {
-  console.time('grouphandleData');
-
   if (groups.length === 0) {
     return;
   }
+
+  console.time('grouphandleData');
   // const dao = daoManager.getDao(GroupDao);
   const accountDao = daoManager.getKVDao(AccountDao);
   const userId = Number(accountDao.get(ACCOUNT_USER_ID));

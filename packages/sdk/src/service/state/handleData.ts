@@ -113,11 +113,11 @@ export function getStates(state: Raw<State>[]) {
 }
 
 export default async function stateHandleData(state: Raw<State>[]) {
-  console.time('stateHandleData');
-
   if (state.length === 0) {
     return;
   }
+
+  console.time('stateHandleData');
   const { myState, groupStates } = getStates(state);
   await operateDaoAndDoNotification(myState, groupStates);
   console.timeEnd('stateHandleData');
