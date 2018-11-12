@@ -102,29 +102,28 @@ function getDurtionTime(startTimestamp: number, endTimestamp: number) {
 }
 
 const REPEAT_TEXT = {
-  daily: ', repeating every day',
-  weekdaily: ', repeating every weekday',
-  weekly: ', repeating every week',
-  monthly: ', repeating every month',
-  yearly: ', repeating ervery year',
+  daily: t('repeatingEveryDay'), // ', repeating every day',
+  weekdaily: t('repeatingEveryWeekday'),
+  weekly: t('repeatingEveryWeek'),
+  monthly: t('repeatingEveryMonth'),
+  yearly: t('repeatingEveryYear'),
 };
 
 const TIMES_TEXT = {
-  daily: 'day',
-  weekdaily: 'weekday',
-  weekly: 'week',
-  monthly: 'month',
-  yearly: 'year',
+  daily: (count: number) => t('forDayTimes', { count }),
+  weekly: (count: number) => t('forWeekTimes', { count }),
+  weekdaily: (count: number) => t('forWeekTimes', { count }),
+  monthly: (count: number) => t('forMonthlyTimes', { count }),
+  yearly: (count: number) => t('forYearlyTimes', { count }),
 };
 
 function getDurtionTimeText(repeat: string, repeatEndingAfter: string, repeatEndingOn: string, repeatEnding: string) {
-  const after = repeatEndingAfter === '1' ? 'one' : repeatEndingAfter;
-  const times = `${TIMES_TEXT[repeat]}${Number(repeatEndingAfter) > 1 ? 's' : ''}`;
+  const times = TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter));
   const ENDING = {
-    after: `for ${after} ${times}`,
-    on: `until ${moment(repeatEndingOn).format('ddd, MMM D')}`,
+    after: times || '',
+    on: `t('until') ${moment(repeatEndingOn).format('ddd, MMM D')}`,
   };
-  return `${REPEAT_TEXT[repeat] || ''} ${ENDING[repeatEnding] || ''}`;
+  return `${REPEAT_TEXT[repeat] || ''} ${repeat !== 'none' ? ENDING[repeatEnding] : ''}`;
 }
 
 export {
