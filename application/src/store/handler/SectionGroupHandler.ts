@@ -23,7 +23,7 @@ import { getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import _ from 'lodash';
 import storeManager from '@/store';
-import history from '@/utils/history';
+import history from '@/history';
 
 const { GroupService } = service;
 

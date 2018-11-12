@@ -8,7 +8,7 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { ConversationCard } from '@/containers/ConversationCard';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { JuiStream } from 'jui/pattern/ConversationPage';
-import { toTitleCase } from '@/utils';
+import { toTitleCase } from '@/utils/string';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
 

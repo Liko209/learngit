@@ -1,13 +1,10 @@
-/*
- * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-10-30 09:48:58
- * Copyright © RingCentral. All rights reserved.
- */
-
 import moment from 'moment';
 import i18next, { t } from 'i18next';
 
-function getDateMessage(timestamp: any, format: string = 'ddd, MMM Do'): string {
+function getDateMessage(
+  timestamp: any,
+  format: string = 'ddd, MMM Do',
+): string {
   moment.locale(i18next.language);
   const m = moment(timestamp)
     .hour(0)
@@ -35,4 +32,4 @@ function getDateMessage(timestamp: any, format: string = 'ddd, MMM Do'): string 
   return m.format('l'); // 30/10/2018  2018/10/30
 }
 
-export default getDateMessage;
+export { getDateMessage };
