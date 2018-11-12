@@ -5,6 +5,7 @@
  */
 
 import { computed } from 'mobx';
+import moment from 'moment';
 import { AbstractViewModel } from '@/base';
 import { JoinProps, JoinViewProps } from './types';
 
@@ -33,8 +34,7 @@ class JoinViewModel extends AbstractViewModel<JoinProps>
 
   @computed
   get createdAt() {
-    // todo format
-    return this._post.createdAt.toString();
+    return moment(this._post.createdAt).format('lll');
   }
 
   private _getPerson(id: number) {

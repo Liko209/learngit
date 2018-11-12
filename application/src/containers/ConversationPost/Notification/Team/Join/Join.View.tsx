@@ -12,9 +12,10 @@ class JoinViewComponent extends Component<JoinViewProps & WithNamespaces> {
   render() {
     const { newUserId, newUserName, createdAt, t } = this.props;
     const newUser = `<a href="/users/${newUserId}">${newUserName}</a>`;
+    const html = t('joinTheTeam', { newUser });
     return (
       <React.Fragment>
-        {t('joinTheTeam', { newUser })}
+        <div dangerouslySetInnerHTML={{ __html: html }} />
         <div>{createdAt}</div>
       </React.Fragment>
     );

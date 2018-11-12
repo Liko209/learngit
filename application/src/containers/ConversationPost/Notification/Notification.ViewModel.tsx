@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable } from 'mobx';
+import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { NotificationProps, NotificationViewProps } from './types';
 import { getEntity } from '@/store/utils';

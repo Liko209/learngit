@@ -5,6 +5,7 @@
  */
 
 import { computed } from 'mobx';
+import moment from 'moment';
 import { AbstractViewModel } from '@/base';
 import { ChangeProps, ChangeViewProps } from './types';
 import { Markdown } from 'glipdown';
@@ -34,8 +35,7 @@ class ChangeViewModel extends AbstractViewModel<ChangeProps>
 
   @computed
   get createdAt() {
-    // todo format
-    return this._post.createdAt.toString();
+    return moment(this._post.createdAt).format('lll');
   }
 
   private _getPerson(id: number) {

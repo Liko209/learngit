@@ -19,9 +19,10 @@ class ChangeViewComponent extends Component<ChangeViewProps & WithNamespaces> {
       t,
     } = this.props;
     const changer = `<a href="/users/${changerId}">${changerName}</a>`;
+    const html = t('changeTeamName', { changer, value, oldValue });
     return (
       <React.Fragment>
-        {t('changeTeamName', { changer, value, oldValue })}
+        <div dangerouslySetInnerHTML={{ __html: html }} />
         <div>{createdAt}</div>
       </React.Fragment>
     );

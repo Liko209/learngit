@@ -20,13 +20,10 @@ class AddedViewComponent extends Component<AddedViewProps & WithNamespaces> {
     } = this.props;
     const inviter = `<a href="/users/${inviterId}">${inviterName}</a>`;
     const newUser = `<a href="/users/${newUserId}">${newUserName}</a>`;
+    const html = t('addedToTeam', { inviter, newUser });
     return (
       <React.Fragment>
-        {t('addedToTeam', {
-          inviter,
-          newUser,
-          interpolation: { escapeValue: false },
-        })}
+        <div dangerouslySetInnerHTML={{ __html: html }} />
         <div>{createdAt}</div>
       </React.Fragment>
     );

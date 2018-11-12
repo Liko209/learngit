@@ -5,6 +5,7 @@
  */
 
 import { computed } from 'mobx';
+import moment from 'moment';
 import { AbstractViewModel } from '@/base';
 import { AddedProps, AddedViewProps } from './types';
 
@@ -33,8 +34,7 @@ class AddedViewModel extends AbstractViewModel<AddedProps>
 
   @computed
   get createdAt() {
-    // todo format
-    return this._post.createdAt.toString();
+    return moment(this._post.createdAt).format('lll');
   }
 
   private _getPerson(id: number) {
