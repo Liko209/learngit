@@ -295,7 +295,7 @@ test.skip(formalName('Current opened conversation should not display UMI', ['JPT
 );
 
 test(formalName('Should not display UMI when section is expended & Should display UMI when section is collapsed',
-    ['JPT-98', 'JPT-99', 'P2', 'P1', 'ConversationList']),
+  ['JPT-98', 'JPT-99', 'P2', 'P1', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -306,7 +306,6 @@ test(formalName('Should not display UMI when section is expended & Should displa
       app.homePage.messagePanel.directMessagesSection;
     const teamsSection = app.homePage.messagePanel.teamsSection;
     const favoritesSection = app.homePage.messagePanel.favoritesSection;
-    const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
 
     let favPrivateChat, favTeam, group1, group2, group3, team1, team2;
     await h(t).withLog('Given I have an extension with a team and a private chat',
@@ -355,8 +354,8 @@ test(formalName('Should not display UMI when section is expended & Should displa
         [`hide_group_${team1.data.id}`]: false,
         [`hide_group_${team2.data.id}`]: false,
         favorite_group_ids: [+favPrivateChat.data.id, +favTeam.data.id],
-        });
-      },
+      });
+    },
     );
 
     await h(t).withLog('Clear all UMIs before login', async () => {
@@ -376,11 +375,12 @@ test(formalName('Should not display UMI when section is expended & Should displa
 
     await h(t).withLog('Then I click group3 to make sure other conversations are not selected',
       async () => {
-        await t.click(directMessagesSection.conversations.filter(`[data-group-id="${group3.data.id}"]`));
+        await directMessagesSection.conversationByIdEntry(group3.data.id).enter;
       },
     );
 
-    await h(t).withLog('Send posts to conversations', async () => {
+    const user5Platform = await h(t).getPlatform(users[5]);
+    await h(t).withLog('When other user send normal posts to all other conversations', async () => {
       await user5Platform.createPost(
         { text: 'TestGroupUMI' },
         favPrivateChat.data.id,
@@ -397,7 +397,6 @@ test(formalName('Should not display UMI when section is expended & Should displa
         { text: 'TestGroupUMI' },
         group2.data.id,
       );
-
       await user5Platform.createPost(
         { text: 'TestGroupUMI' },
         team1.data.id,
@@ -406,74 +405,47 @@ test(formalName('Should not display UMI when section is expended & Should displa
         { text: 'TestGroupUMI' },
         team2.data.id,
       );
-      await t.wait(2e3);
+      await t.wait(3e3);
     });
 
-    await h(t).withLog('Should not have umi in header of favorite sections', async () => {
-      const header = favoritesSection.header;
-      const umi = header.child('.umi');
-      const count = await umi.count;
-      if (count === 1) {
-        await t.expect(umi.textContent).eql('');
-      } else {
-        await t.expect(umi.count).eql(0);
-      }
+    await h(t).withLog('Then there should not be any umi in header of favorite sections', async () => {
+      const count = await favoritesSection.getHeaderUmi();
+      await t.expect(count).eql(0);
     });
 
-    await h(t).withLog('Should not have umi in header of direct message sections', async () => {
-      const header = directMessagesSection.header;
-      const umi = header.child('.umi');
-      const count = await umi.count;
-      if (count === 1) {
-        await t.expect(umi.textContent).eql('');
-      } else {
-        await t.expect(umi.count).eql(0);
-      }
+    await h(t).withLog('and there should not be any umi in header of direct message sections', async () => {
+      const count = await directMessagesSection.getHeaderUmi();
+      await t.expect(count).eql(0);
     });
 
-    await h(t).withLog('Should not have umi in header of team sections', async () => {
-      const header = teamsSection.header;
-      const umi = header.child('.umi');
-      const count = await umi.count;
-      if (count === 1) {
-        await t.expect(umi.textContent).eql('');
-      } else {
-        await t.expect(umi.count).eql(0);
-        }
-      },
-    );
+    await h(t).withLog('and there should not be any umi in header of team sections', async () => {
+      const count = await teamsSection.getHeaderUmi();
+      await t.expect(count).eql(0);
+    });
 
-    await h(t).withLog('Fold the sections', async () => {
+    await h(t).withLog('When I fold the sections', async () => {
       await favoritesSection.fold();
       await directMessagesSection.fold();
       await teamsSection.fold();
       await t.wait(1e3);
+    })
+
+    await h(t).withLog('Then there should be 1 umi in header of favorite sections', async () => {
+      const count = await favoritesSection.getHeaderUmi();
+      await t.expect(count).eql(1);
     });
 
-    await h(t).withLog('Should have 1 umi in header of favorite sections', async () => {
-      const header = favoritesSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('1');
-    });
-  
-    await h(t).withLog('Should have 2 umi in header of direct messages sections', async () => {
-      const header = favoritesSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('1');
-    });
-    
-    await h(t).withLog('Should not have umi in header of team sections', async () => {
-      const header = teamsSection.header;
-      const umi = header.child('.umi');
-      const count = await umi.count;
-      if (count === 1) {
-        await t.expect(umi.textContent).eql('');
-      } else {
-        await t.expect(umi.count).eql(0);
-      }
+    await h(t).withLog('and there should be 2 umi in header of direct messages sections', async () => {
+      const count = await directMessagesSection.getHeaderUmi();
+      await t.expect(count).eql(2);
     });
 
-    await h(t).withLog('Send posts with mention to conversations', async () => {
+    await h(t).withLog('and there should not be any umi in header of team sections', async () => {
+      const count = await teamsSection.getHeaderUmi();
+      await t.expect(count).eql(0);
+    });
+
+    await h(t).withLog('When other user send posts with mention to specified conversations', async () => {
       await user5Platform.createPost(
         { text: `Hi, ![:Person](${user.rcId})` },
         favPrivateChat.data.id,
@@ -486,28 +458,25 @@ test(formalName('Should not display UMI when section is expended & Should displa
         { text: `Hi, ![:Person](${user.rcId})` },
         team1.data.id,
       );
-      await t.wait(1e3);
+      await t.wait(3e3);
     });
 
-    await h(t).withLog('Should have 2 umi in header of favorite sections', async () => {
-      const header = favoritesSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('2');
-    });
-    
-    await h(t).withLog('Should have 3 umi in header of direct messages sections', async () => {
-      const header = directMessagesSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('3');
+    await h(t).withLog('Then there should be 2 umi in header of favorite sections', async () => {
+      const count = await favoritesSection.getHeaderUmi();
+      await t.expect(count).eql(2);
     });
 
-    await h(t).withLog('Should have 1 umi in header of team sections', async () => {
-      const header = teamsSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('1');
+    await h(t).withLog('and there should be 3 umi in header of direct messages sections', async () => {
+      const count = await directMessagesSection.getHeaderUmi();
+      await t.expect(count).eql(3);
     });
 
-    await h(t).withLog('Send normal posts to conversations', async () => {
+    await h(t).withLog('and there should be 1 umi in header of team sections', async () => {
+      const count = await teamsSection.getHeaderUmi();
+      await t.expect(count).eql(1);
+    });
+
+    await h(t).withLog('When other user send normal posts to specified conversations', async () => {
       await user5Platform.createPost(
         { text: 'test' },
         favPrivateChat.data.id,
@@ -524,25 +493,22 @@ test(formalName('Should not display UMI when section is expended & Should displa
         { text: 'test' },
         team1.data.id,
       );
-      await t.wait(1e3);
+      await t.wait(3e3);
     });
 
-    await h(t).withLog('Should have 3 umi in header of favorite sections', async () => {
-      const header = favoritesSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('3');
+    await h(t).withLog('Then there should be 3 umi in header of favorite sections', async () => {
+      const count = await favoritesSection.getHeaderUmi();
+      await t.expect(count).eql(3);
     });
 
-    await h(t).withLog('Should have 4 umi in header of direct messages sections', async () => {
-      const header = directMessagesSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('4');
+    await h(t).withLog('and there should be 4 umi in header of direct messages sections', async () => {
+      const count = await directMessagesSection.getHeaderUmi();
+      await t.expect(count).eql(4);
     });
 
-    await h(t).withLog('Should have 1 umi in header of team sections', async () => {
-      const header = teamsSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('1');
+    await h(t).withLog('and there should be 1 umi in header of team sections', async () => {
+      const count = await teamsSection.getHeaderUmi();
+      await t.expect(count).eql(1);
     });
   },
 );
