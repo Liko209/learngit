@@ -1,4 +1,5 @@
 import { LoadingMorePlugin } from '@/plugins';
+import GroupStateModel from '@/store/models/GroupState';
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -49,6 +50,12 @@ type StreamViewProps = {
   markAsRead: () => void;
   atBottom: () => boolean;
   enableNewMessageSeparatorHandler: () => void;
+  loadPostUntilFirstUnread: () => Promise<number | undefined>;
+  hasHistoryUnread: boolean;
+  clearHistoryUnread: () => void;
+  historyUnreadCount: number;
+  historyGroupState?: GroupStateModel;
+  firstHistoryUnreadPostId?: number;
   plugins: TPluginsProps;
 };
 

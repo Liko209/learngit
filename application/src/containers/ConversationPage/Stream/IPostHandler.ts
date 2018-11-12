@@ -14,6 +14,7 @@ interface IPostHandler {
     direction: FetchDataDirection,
     addedItems: ISortableModel<Post>[],
     allItems: ISortableModel<Post>[],
+    hasMore: boolean,
   ): void;
   /**
    * On post deleted

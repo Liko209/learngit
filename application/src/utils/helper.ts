@@ -83,6 +83,14 @@ function getFileSize(bytes: number) {
   return `${(bytes / 1024 / 1024 / 1024).toFixed(1)}Gb`;
 }
 
+function sleep(timeout: number) {
+  return new Promise((resolve: Function) => {
+    setTimeout(() => {
+      resolve();
+    },         timeout);
+  });
+}
+
 function getDateAndTime(timestamp: number) {
   const getAMOrPM = moment(timestamp).format('h:mm A');
   const date = getDateMessage(timestamp);
@@ -117,15 +125,27 @@ const TIMES_TEXT = {
   yearly: (count: number) => t('forYearlyTimes', { count }),
 };
 
-function getDurtionTimeText(repeat: string, repeatEndingAfter: string, repeatEndingOn: string, repeatEnding: string) {
-  const times = TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter)) || '';
-  const date = repeatEndingOn ? getDateMessage(repeatEndingOn, 'ddd, MMM D') : '';
-  const hideUntil = (repeat: string, repeatEnding: string) => repeat === 'none' || repeatEnding === 'none' || repeatEnding === 'after';
+function getDurtionTimeText(
+  repeat: string,
+  repeatEndingAfter: string,
+  repeatEndingOn: string,
+  repeatEnding: string,
+) {
+  const times =
+    (TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter))) || '';
+  const date = repeatEndingOn
+    ? getDateMessage(repeatEndingOn, 'ddd, MMM D')
+    : '';
+  const hideUntil = (repeat: string, repeatEnding: string) =>
+    repeat === 'none' || repeatEnding === 'none' || repeatEnding === 'after';
   // if has repeat and is forever need hide times
-  const hideTimes = (repeatEndingAfter: string, repeatEnding: string) => repeatEndingAfter === '1' && repeatEnding === 'none';
+  const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
+    repeatEndingAfter === '1' && repeatEnding === 'none';
   const repeatText = ` ${t('until')} ${date}`;
 
-  return `${t(REPEAT_TEXT[repeat]) || ''} ${hideTimes(repeatEndingAfter, repeatEnding) ? '' : times} ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
+  return `${t(REPEAT_TEXT[repeat]) || ''} ${
+    hideTimes(repeatEndingAfter, repeatEnding) ? '' : times
+  } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }
 
 export {
@@ -135,6 +155,7 @@ export {
   handleOnlyLetterOrNumbers,
   handleOneOfName,
   getFileSize,
+  sleep,
   getDateAndTime,
   getDurtionTime,
   getDurtionTimeText,
