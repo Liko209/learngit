@@ -7,6 +7,7 @@
 import React from 'react';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiConversationListFilter } from 'jui/pattern/ConversationList/ConversationListFilter';
+import { JuiConversationListSectionHeader } from 'jui/pattern/ConversationList/ConversationListSectionHeader';
 
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
@@ -23,7 +24,7 @@ const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
     <JuiLeftRail>
       <JuiLeftRailStickyTop>
         {props.filters.map((filter, index) => [
-          index ? <JuiDivider key="divider" /> : null,
+          index ? <JuiDivider key={`divider${index}`} /> : null,
           <JuiConversationListFilter
             data-test-automation-id="unreadOnlyToggler"
             checked={filter.value}
@@ -33,10 +34,21 @@ const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
           />,
         ])}
       </JuiLeftRailStickyTop>
-      <JuiDivider key="divider" />
+      <JuiDivider key="divider-filters" />
+      {props.entries.map((entry, index) => (
+        <JuiConversationListSectionHeader
+          key={entry.title}
+          title={toTitleCase(props.t(entry.title))}
+          icon={entry.icon}
+          hideArrow={true}
+          selected={entry.selected}
+          onClick={entry.onClick}
+        />
+      ))}
+      <JuiDivider key="divider-entries" />
       <JuiLeftRailMainSection>
         {props.sections.map((type, index, array) => [
-          index ? <JuiDivider key="divider" /> : null,
+          index ? <JuiDivider key={`divider${index}`} /> : null,
           <Section key={type} type={type} isLast={index === array.length - 1} />,
         ])}
       </JuiLeftRailMainSection>

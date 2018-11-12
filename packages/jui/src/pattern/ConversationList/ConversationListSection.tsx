@@ -5,10 +5,9 @@
  */
 import React, { Component } from 'react';
 import Collapse from '@material-ui/core/Collapse';
-import { noop, palette, grey } from '../../foundation/utils';
-import styled from '../../foundation/styled-components';
-import SectionHeader, {
-  SectionHeaderProps,
+import { noop } from '../../foundation/utils';
+import JuiSectionHeader, {
+  JuiSectionHeaderProps,
 } from './ConversationListSectionHeader';
 
 type SectionProps = {
@@ -18,22 +17,12 @@ type SectionProps = {
   umi?: JSX.Element;
   icon?: string;
   title: string;
-} & SectionHeaderProps;
+} & JuiSectionHeaderProps;
 
 type SectionStates = {
   expanded: boolean;
 };
 
-const StyledSectionHeader = styled(SectionHeader)`
-  &&:active {
-    color: ${palette('primary', 'main')};
-    background: ${palette('primary', '50')};
-  }
-
-  &&:hover {
-    background-color: ${grey('50')};
-  }
-`;
 class JuiConversationListSection extends Component<
   SectionProps,
   SectionStates
@@ -58,16 +47,14 @@ class JuiConversationListSection extends Component<
 
     return (
       <div>
-        <StyledSectionHeader
+        <JuiSectionHeader
           className="conversation-list-section-header"
           {...this.props}
           expanded={expanded}
           umi={umi}
           onClick={this._handleClick}
         />
-        <Collapse in={expanded}>
-          {this.props.children}
-        </Collapse>
+        <Collapse in={expanded}>{this.props.children}</Collapse>
       </div>
     );
   }
