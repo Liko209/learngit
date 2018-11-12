@@ -39,7 +39,7 @@ class MessagesViewModel extends AbstractViewModel<MessagesProps> {
     }
     try {
       const groupService: service.GroupService = GroupService.getInstance();
-      const lastGroup = await groupService.getGroupById(groupId);
+      const lastGroup = await groupService.getById(groupId);
       if (lastGroup && lastGroup.is_archived) {
         return;
       }
