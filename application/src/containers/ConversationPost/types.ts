@@ -4,11 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+enum PostType {
+  notification = 'notification',
+  post = 'post',
+}
+
 type ConversationPostProps = {
   id: number;
 };
-
-type PostType = 'post' | 'notification';
 
 type ConversationPostViewProps = {
   id: number;

@@ -7,7 +7,6 @@
 import { getEntity } from '../../../../../../store/utils';
 import { JoinViewModel } from '../Join.ViewModel';
 import { ENTITY_NAME } from '@/store';
-import moment from 'moment';
 
 jest.mock('../../../../../../store/utils');
 
@@ -44,10 +43,6 @@ describe('Team join', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('computed createdAt', () => {
-    expect(joinViewModel.createdAt).toEqual(moment(now).format('lll'));
   });
 
   it('computed newUserId', () => {

@@ -7,7 +7,6 @@
 import { getEntity } from '../../../../../../store/utils';
 import { ChangeViewModel } from '../Change.ViewModel';
 import { ENTITY_NAME } from '@/store';
-import moment from 'moment';
 
 jest.mock('../../../../../../store/utils');
 
@@ -46,10 +45,6 @@ describe('Team change', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('computed createdAt', () => {
-    expect(changeViewModel.createdAt).toEqual(moment(now).format('lll'));
   });
 
   it('computed changerId', () => {

@@ -4,12 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../store/utils';
-import { AddedViewModel } from '../Added.ViewModel';
+import { getEntity } from '../../../../../store/utils';
+import { TeamViewModel } from '../Team.ViewModel';
 import { ENTITY_NAME } from '@/store';
+import moment from 'moment';
 import { isPlainObject, isFunction } from 'lodash';
 
-jest.mock('../../../../../../store/utils');
+jest.mock('../../../../../store/utils');
 
 const now = Date.now();
 
@@ -48,9 +49,9 @@ const mockMapData = {
 const props = {
   id: 123,
 };
-const addedViewModel = new AddedViewModel(props);
+const teamViewModel = new TeamViewModel(props);
 
-describe('Team added', () => {
+describe('Team VM', () => {
   beforeAll(() => {
     (getEntity as jest.Mock).mockImplementation((name, id) => {
       const data = mockMapData[name];
@@ -68,25 +69,16 @@ describe('Team added', () => {
     jest.clearAllMocks();
   });
 
-  it('computed inviterId', () => {
-    expect(addedViewModel.inviterId).toBe(mockPostData.activityData.inviter_id);
+  it('computed activityData', () => {
+    expect(teamViewModel.activityData).toEqual(mockPostData.activityData);
   });
 
-  it('computed inviterName', () => {
-    expect(addedViewModel.inviterName).toBe(mockPersonData1.displayName);
-    mockPersonData1.displayName = 'Name3';
-    expect(addedViewModel.inviterName).toBe(mockPersonData1.displayName);
+  it('computed createdAt', () => {
+    expect(teamViewModel.createdAt).toEqual(moment(now).format('lll'));
   });
 
-  it('computed newUserId', () => {
-    expect(addedViewModel.newUserId).toBe(
-      mockPostData.activityData.new_user_id,
-    );
-  });
-
-  it('computed newUserName', () => {
-    expect(addedViewModel.newUserName).toBe(mockPersonData2.displayName);
-    mockPersonData2.displayName = 'Name4';
-    expect(addedViewModel.newUserName).toBe(mockPersonData2.displayName);
+  it('getPerson method', () => {
+    expect(teamViewModel.getPerson(1)).toEqual(mockPersonData1);
+    expect(teamViewModel.getPerson(2)).toEqual(mockPersonData2);
   });
 });

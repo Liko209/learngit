@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { AddedViewProps } from './types';
 import { translate, WithNamespaces } from 'react-i18next';
-import { renderPerson } from '../utils';
+import { renderPerson } from '@/common/renderPerson';
 
 class AddedViewComponent extends Component<AddedViewProps & WithNamespaces> {
   render() {

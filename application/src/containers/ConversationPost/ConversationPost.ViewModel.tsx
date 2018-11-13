@@ -17,8 +17,8 @@ import { Post } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 
 const ActivityDataKeyMappingPostType = {
-  set_abbreviation: 'notification',
-  members: 'notification',
+  set_abbreviation: PostType.notification,
+  members: PostType.notification,
 };
 
 class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
@@ -41,7 +41,7 @@ class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
   @computed
   get type(): PostType {
     const { key } = this._activityData;
-    return ActivityDataKeyMappingPostType[key] || 'post';
+    return ActivityDataKeyMappingPostType[key] || PostType.post;
   }
 }
 

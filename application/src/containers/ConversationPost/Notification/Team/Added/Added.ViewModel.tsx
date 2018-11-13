@@ -5,62 +5,30 @@
  */
 
 import { computed } from 'mobx';
-import moment from 'moment';
-import { AbstractViewModel } from '@/base';
-import { AddedProps, AddedViewProps } from './types';
+import { AddedViewProps } from './types';
+import { TeamViewModel } from '../Team.ViewModel';
 
-import { getEntity } from '@/store/utils';
-import { ENTITY_NAME } from '@/store';
-import PersonModel from '@/store/models/Person';
-import PostModel from '@/store/models/Post';
-import { Person, Post } from 'sdk/models';
-
-class AddedViewModel extends AbstractViewModel<AddedProps>
-  implements AddedViewProps {
-  @computed
-  private get _id() {
-    return this.props.id;
-  }
-
-  @computed
-  private get _post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._id);
-  }
-
-  @computed
-  private get _activityData() {
-    return this._post.activityData;
-  }
-
-  @computed
-  get createdAt() {
-    return moment(this._post.createdAt).format('lll');
-  }
-
-  private _getPerson(id: number) {
-    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
-  }
-
+class AddedViewModel extends TeamViewModel implements AddedViewProps {
   @computed
   get inviterId() {
-    const { inviter_id: inviterId } = this._activityData;
+    const { inviter_id: inviterId } = this.activityData;
     return inviterId;
   }
 
   @computed
   get inviterName() {
-    return this._getPerson(this.inviterId).displayName;
+    return super.getPerson(this.inviterId).displayName;
   }
 
   @computed
   get newUserId() {
-    const { new_user_id: newUserId } = this._activityData;
+    const { new_user_id: newUserId } = this.activityData;
     return newUserId;
   }
 
   @computed
   get newUserName() {
-    return this._getPerson(this.newUserId).displayName;
+    return this.getPerson(this.newUserId).displayName;
   }
 }
 

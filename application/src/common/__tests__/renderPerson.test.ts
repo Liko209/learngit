@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { renderPerson } from '../../utils';
+import { renderPerson } from '../renderPerson';
 
 describe('render person utils', () => {
   it('renderPerson method', () => {
