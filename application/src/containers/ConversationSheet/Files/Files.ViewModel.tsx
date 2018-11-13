@@ -10,6 +10,7 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { FileItem } from '@/store/models/Items';
 import { FilesViewProps, FileType } from './types';
+import { getFileType } from '../helper';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   @computed
@@ -26,7 +27,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     };
 
     this.items.forEach((item: FileItem) => {
-      const file = item.getFileType();
+      const file = getFileType(item);
       files[file.type].push(file);
     });
     return files;

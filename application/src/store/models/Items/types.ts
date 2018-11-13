@@ -28,6 +28,12 @@ type FileItem = {
   origWidth: number;
 } & ItemModel;
 
+type ExtendFileItem = {
+  item: FileItem;
+  type: number;
+  previewUrl: string;
+};
+
 type LinkItem = {
   summary: string;
   title: string;
@@ -73,4 +79,12 @@ type NoteItem = {
   summary: string;
 } & ItemModel;
 
-export { FileItem, FileType, LinkItem, EventItem, TaskItem, NoteItem };
+export {
+  FileItem,
+  FileType,
+  LinkItem,
+  EventItem,
+  TaskItem,
+  NoteItem,
+  ExtendFileItem,
+};

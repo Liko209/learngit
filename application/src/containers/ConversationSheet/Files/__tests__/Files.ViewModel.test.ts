@@ -12,25 +12,20 @@ jest.mock('../../../../store/utils');
 import { FileType } from '../types';
 
 const { ItemService } = service;
-ItemService.getInstance = jest.fn().mockReturnValue({
-
-});
+ItemService.getInstance = jest.fn().mockReturnValue({});
 
 const filesItemVM = new FilesViewModel();
 filesItemVM.props.ids = [1, 2, 3];
 
 const mockItemValue = {
   name: 'filename',
-  type: 1,
   id: 1,
-  pages: {
-    file_id: 11,
-    url: 'http://www.xxx.com',
-  },
-  isNew: false,
-  isDocument: true,
-  url: 'https://material-ui.com/',
-  getFileType: () => mockItemValue,
+  pages: [
+    {
+      file_id: 11,
+      url: 'http://www.xxx.com',
+    },
+  ],
 };
 
 describe('filesItemVM', () => {
@@ -47,19 +42,24 @@ describe('filesItemVM', () => {
   });
 
   it('get files', () => {
-
     expect(filesItemVM.files).toEqual({
       [FileType.image]: [],
-      [FileType.document]: [{
-        ...mockItemValue,
-      }, { ...mockItemValue }, { ...mockItemValue }],
+      [FileType.document]: [
+        { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
+        { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
+        { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
+      ],
       [FileType.others]: [],
     });
   });
 
   it('get items', () => {
-    expect(filesItemVM.items).toMatchObject([{
-      ...mockItemValue,
-    }, { ...mockItemValue }, { ...mockItemValue }]);
+    expect(filesItemVM.items).toMatchObject([
+      {
+        ...mockItemValue,
+      },
+      { ...mockItemValue },
+      { ...mockItemValue },
+    ]);
   });
 });

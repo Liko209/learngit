@@ -11,7 +11,7 @@ import {
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { getFileSize } from './helper';
-
+import { getFileIcon } from '../helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 
 const downloadBtn = (downloadUrl: string) => (
@@ -48,7 +48,7 @@ class FilesView extends React.Component<FilesViewProps> {
         {files[FileType.document].map((file: ExtendFileItem) => {
           const { item, previewUrl } = file;
           const { size, type, id, name, downloadUrl } = item;
-          const iconType = item.getFileIcon(type);
+          const iconType = getFileIcon(type);
           return (
             <JuiFileWithPreview
               key={id}
@@ -63,7 +63,7 @@ class FilesView extends React.Component<FilesViewProps> {
         {files[FileType.others].map((file: ExtendFileItem) => {
           const { item } = file;
           const { size, type, name, downloadUrl, id } = item;
-          const iconType = item.getFileIcon(type);
+          const iconType = getFileIcon(type);
           return (
             <JuiFileWithoutPreview
               key={id}
