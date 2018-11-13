@@ -19,7 +19,7 @@ import { Group, Profile, GroupState } from 'sdk/models';
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { IAtom, createAtom, autorun, observable } from 'mobx';
-import { getSingleEntity } from '@/store/utils';
+import { getSingleEntity, getGlobalValue } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import _ from 'lodash';
 import storeManager from '@/store';
@@ -337,11 +337,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   async removeOverLimitGroupByChangingCurrentGroupId() {
+    const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     const profileService = ProfileService.getInstance<service.ProfileService>();
     const limit = await profileService.getMaxLeftRailGroup();
-    const currentId = storeManager
-      .getGlobalStore()
-      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     if (currentId !== this._lastGroupId) {
       await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.DIRECT_MESSAGE,
@@ -357,16 +355,15 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   private async _removeOverLimitGroupByChangingIds(
     type: SECTION_TYPE,
+    originalIds: number[],
     limit: number,
   ) {
-    const directGroupIds = this.getGroupIds(type);
     const stateService = StateService.getInstance<service.StateService>();
     const states =
-      (await stateService.getGroupStatesFromLocalWithUnread(directGroupIds)) ||
-      [];
+      (await stateService.getGroupStatesFromLocalWithUnread(originalIds)) || [];
     const ids = this.getRemovedIds(
       states,
-      directGroupIds,
+      originalIds,
       limit,
       this._lastGroupId,
     );
@@ -384,12 +381,19 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       return;
     }
     const profileService = ProfileService.getInstance<service.ProfileService>();
+    const directIds = this.getGroupIds(SECTION_TYPE.DIRECT_MESSAGE);
+    const teamIds = this.getGroupIds(SECTION_TYPE.TEAM);
     const limit = await profileService.getMaxLeftRailGroup();
     await this._removeOverLimitGroupByChangingIds(
       SECTION_TYPE.DIRECT_MESSAGE,
+      directIds,
       limit,
     );
-    await this._removeOverLimitGroupByChangingIds(SECTION_TYPE.TEAM, limit);
+    await this._removeOverLimitGroupByChangingIds(
+      SECTION_TYPE.TEAM,
+      teamIds,
+      limit,
+    );
   }
 
   getAllGroupIds() {
