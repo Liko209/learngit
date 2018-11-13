@@ -214,7 +214,8 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
     (item: Group) => favIds.indexOf(item.id) !== -1,
   );
   const result = addedTeams.concat(addedGroups).concat(addFavorites);
-  result.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, result);
+  result.length &&
+    notificationCenter.emitEntityUpdate(ENTITY.GROUP, result, result);
   // addedTeams.length > 0 &&
   //   notificationCenter.emitEntityUpdate(ENTITY.TEAM_GROUPS, addedTeams);
   // addedGroups.length > 0 &&

@@ -135,9 +135,7 @@ export class FetchSortableDataListHandler<
       });
 
       if (payload.type === EVENT_TYPES.REPLACE) {
-        if (!payload.body.isReplaceAll) {
-          notMatchedKeys = matchedKeys;
-        }
+        notMatchedKeys = matchedKeys;
       } else {
         const differentKeys: number[] = _.difference(keys, existKeys);
         differentKeys.forEach((key: number) => {
@@ -217,20 +215,6 @@ export class FetchSortableDataListHandler<
 
     this.onDataChanged({
       type: EVENT_TYPES.UPDATE,
-      body: notificationBody,
-    });
-  }
-
-  replaceAll(models: T[]) {
-    const entityMap = transform2Map(models);
-    const notificationBody = {
-      ids: Array.from(entityMap.keys()),
-      entities: entityMap,
-      isReplaceAll: true,
-    };
-
-    this.onDataChanged({
-      type: EVENT_TYPES.REPLACE,
       body: notificationBody,
     });
   }

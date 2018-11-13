@@ -108,26 +108,25 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (this._oldFavGroupIds.toString() !== newFavIds.toString()) {
       const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
       const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
-      this._oldFavGroupIds = newFavIds;
-      // handle favorite section change
-      const groupService = GroupService.getInstance<service.GroupService>();
-      const groups = await groupService.getGroupsByType(
-        GROUP_QUERY_TYPE.FAVORITE,
+
+      this._handlersMap[SECTION_TYPE.FAVORITE].removeByIds(
+        this._oldFavGroupIds,
       );
-      this._handlersMap[SECTION_TYPE.FAVORITE].replaceAll(groups);
+
+      this._oldFavGroupIds = newFavIds;
+      const groupService = GroupService.getInstance<service.GroupService>();
+      this.fetchGroups(SECTION_TYPE.FAVORITE, FetchDataDirection.DOWN);
 
       let result: Group[];
       if (more.length) {
         result = await groupService.getGroupsByIds(more);
         this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
         this._handlersMap[SECTION_TYPE.TEAM].upsert(result);
-        this._handlersMap[SECTION_TYPE.FAVORITE].removeByIds(more);
       }
       if (less.length) {
         result = await groupService.getGroupsByIds(less);
         this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].removeByIds(less);
         this._handlersMap[SECTION_TYPE.TEAM].removeByIds(less);
-        this._handlersMap[SECTION_TYPE.FAVORITE].upsert(result);
         let shouldReportChanged = false;
         less.forEach((id: number) => {
           if (!this._idSet.has(id)) {
