@@ -33,6 +33,6 @@
   "PublicTeam": "Public Team (visible to any co-worker)",
   "MembersMayPostMessages": "Allow members to post messages",
   "addedToTeam": "{{inviter}} added {{newUser}} to the team",
-  "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
+  "changeTeamName": "{{changer}} changed the team name from \"{{oldValue}}\" to \"{{value}}\"",
   "joinTheTeam": "{{newUser}} joined the team"
 }
