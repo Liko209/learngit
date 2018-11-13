@@ -21,6 +21,10 @@ function getDurationTime(startTimestamp: number, endTimestamp: number) {
   return `${startTime} - ${endTime}`;
 }
 
+function getI18Text(type: string, count: number) {
+  return t(type, { count, postProcess: 'interval' });
+}
+
 const REPEAT_TEXT = {
   daily: 'repeatingEveryDay', // ', repeating every day',
   weekdaily: 'repeatingEveryWeekday',
@@ -30,16 +34,11 @@ const REPEAT_TEXT = {
 };
 
 const TIMES_TEXT = {
-  daily: (count: number) =>
-    t('forDayTimes_interval', { count, postProcess: 'interval' }),
-  weekly: (count: number) =>
-    t('forWeekTimes_interval', { count, postProcess: 'interval' }),
-  weekdaily: (count: number) =>
-    t('forWeekdailyTimes_interval', { count, postProcess: 'interval' }),
-  monthly: (count: number) =>
-    t('forMonthlyTimes_interval', { count, postProcess: 'interval' }),
-  yearly: (count: number) =>
-    t('forYearlyTimes_interval', { count, postProcess: 'interval' }),
+  daily: (count: number) => getI18Text('forDayTimes_interval', count),
+  weekly: (count: number) => getI18Text('forWeekTimes_interval', count),
+  weekdaily: (count: number) => getI18Text('forWeekdailyTimes_interval', count),
+  monthly: (count: number) => getI18Text('forMonthlyTimes_interval', count),
+  yearly: (count: number) => getI18Text('forYearlyTimes_interval', count),
 };
 
 function getDurationTimeText(
