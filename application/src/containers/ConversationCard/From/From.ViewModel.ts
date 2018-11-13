@@ -3,11 +3,6 @@
  * @Date: 2018-11-12 10:45:42
  * Copyright © RingCentral. All rights reserved.
  */
-/*
- * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-09-28 16:29:03
- * Copyright © RingCentral. All rights reserved.
- */
 
 import { observable, computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
