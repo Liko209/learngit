@@ -200,7 +200,6 @@ function withScroller(Comp: ComponentType<any>) {
       options: ScrollIntoViewOptions | boolean = false,
       itemSelector: string = 'div',
     ) => {
-      console.log('scroll called');
       const listEl = this._list.current;
       if (!listEl) {
         return;

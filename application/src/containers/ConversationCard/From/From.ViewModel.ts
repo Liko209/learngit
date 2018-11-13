@@ -14,21 +14,20 @@ import { Group } from 'sdk/models';
 
 class FromViewModel extends AbstractViewModel implements FromViewProps {
   @observable
-  _id: number;
+  id: number;
 
   @computed
   get displayName(): string {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id)
-      .displayName;
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id).displayName;
   }
   @computed
   get isTeam(): boolean {
-    return !!getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id).isTeam;
+    return !!getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id).isTeam;
   }
 
   onReceiveProps({ id }: FromProps) {
-    if (id !== this._id) {
-      this._id = id;
+    if (id !== this.id) {
+      this.id = id;
     }
   }
 }
