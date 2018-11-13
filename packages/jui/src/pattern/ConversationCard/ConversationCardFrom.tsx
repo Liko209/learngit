@@ -18,6 +18,7 @@ import styled from '../../foundation/styled-components';
 type ConversationCardFromProps = {
   name: string;
   isTeam?: boolean;
+  onClick: (e: React.MouseEvent) => any;
 };
 const StyledName = styled('div')`
   color: ${primary('700')};
@@ -39,7 +40,7 @@ const StyledName = styled('div')`
 `;
 
 const JuiConversationCardFrom = (props: ConversationCardFromProps) => (
-  <StyledName>
+  <StyledName onClick={props.onClick}>
     <span className="preposition">in</span>
     {props.isTeam ? <MuiIcon fontSize="small">people_outline</MuiIcon> : null}
     <span className="conversation-name">{props.name}</span>

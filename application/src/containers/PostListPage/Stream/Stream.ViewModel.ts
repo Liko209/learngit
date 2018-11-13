@@ -49,40 +49,40 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _sortableListHandler: FetchSortableDataListHandler<Post>;
 
   get _postProvider() {
-    /* tslint:disable-next-line */
-    const self = this;
     return {
-      fetchData: async (
-        offset: number,
-        direction: FetchDataDirection,
-        pageSize: number,
-        anchor?: ISortableModel<Post>,
-      ) => {
-        const postService = PostService.getInstance<IPostService>();
-        let ids;
-        let hasMore;
-        if (anchor) {
-          const index = _(self._postIds).indexOf(anchor.id);
-          const start = index + 1;
-          const end = index + pageSize + 1;
-          ids = _(self._postIds)
-            .slice(start, end)
-            .value();
-          hasMore = end < self._postIds.length - 1;
-        } else {
-          ids = _(self._postIds)
-            .slice(undefined, pageSize + 1)
-            .value();
-          hasMore = self._postIds.length > pageSize;
-        }
-        const results = await postService.getPostsByIds(ids);
-        const posts = results.posts.filter((post: Post) => !post.deactivated);
-        if (posts.length) {
-          return { hasMore, data: posts };
-        }
-        return { hasMore: true, data: [] };
-      },
+      fetchData: this.fetchData,
     };
+  }
+
+  fetchData = async (
+    offset: number,
+    direction: FetchDataDirection,
+    pageSize: number,
+    anchor?: ISortableModel<Post>,
+  ) => {
+    const postService = PostService.getInstance<IPostService>();
+    let ids;
+    let hasMore;
+    if (anchor) {
+      const index = _(this._postIds).indexOf(anchor.id);
+      const start = index + 1;
+      const end = index + pageSize + 1;
+      ids = _(this._postIds)
+        .slice(start, end)
+        .value();
+      hasMore = end < this._postIds.length - 1;
+    } else {
+      ids = _(this._postIds)
+        .slice(undefined, pageSize + 1)
+        .value();
+      hasMore = this._postIds.length > pageSize;
+    }
+    const results = await postService.getPostsByIds(ids);
+    const posts = results.posts.filter((post: Post) => !post.deactivated);
+    if (posts.length) {
+      return { hasMore, data: posts };
+    }
+    return { hasMore: true, data: [] };
   }
 
   constructor() {

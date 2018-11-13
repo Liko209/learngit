@@ -109,7 +109,7 @@ function withScroller(Comp: ComponentType<any>) {
 
     getSnapshotBeforeUpdate() {
       if (!this._list || !this._list.current) {
-        return;
+        return {};
       }
       this._previousPosition = {
         atTop: this._isAtTop(0),
@@ -200,7 +200,6 @@ function withScroller(Comp: ComponentType<any>) {
       options: ScrollIntoViewOptions | boolean = false,
       itemSelector: string = 'div',
     ) => {
-      console.log('scroll called');
       const listEl = this._list.current;
       if (!listEl) {
         return;

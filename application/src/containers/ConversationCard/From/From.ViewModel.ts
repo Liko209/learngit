@@ -3,11 +3,6 @@
  * @Date: 2018-11-12 10:45:42
  * Copyright © RingCentral. All rights reserved.
  */
-/*
- * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-09-28 16:29:03
- * Copyright © RingCentral. All rights reserved.
- */
 
 import { observable, computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
@@ -19,21 +14,20 @@ import { Group } from 'sdk/models';
 
 class FromViewModel extends AbstractViewModel implements FromViewProps {
   @observable
-  _id: number;
+  id: number;
 
   @computed
   get displayName(): string {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id)
-      .displayName;
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id).displayName;
   }
   @computed
   get isTeam(): boolean {
-    return !!getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id).isTeam;
+    return !!getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id).isTeam;
   }
 
   onReceiveProps({ id }: FromProps) {
-    if (id !== this._id) {
-      this._id = id;
+    if (id !== this.id) {
+      this.id = id;
     }
   }
 }
