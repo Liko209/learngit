@@ -10,7 +10,7 @@ import {
   JuiEventDescription,
   JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
-import { getDurtionTime, getDurtionTimeText } from './helper';
+import { getDurationTime, getDurationTimeText } from './helper';
 import { EventViewProps } from './types';
 
 class EventView extends React.Component<EventViewProps, {}> {
@@ -28,8 +28,8 @@ class EventView extends React.Component<EventViewProps, {}> {
       repeatEnding,
       repeatEndingOn,
     } = event;
-    const time = getDurtionTime(start, end);
-    const timeText = getDurtionTimeText(
+    const time = getDurationTime(start, end);
+    const timeText = getDurationTimeText(
       repeat,
       repeatEndingAfter,
       repeatEndingOn,
@@ -38,8 +38,8 @@ class EventView extends React.Component<EventViewProps, {}> {
     return (
       <JuiConversationItemCard title={text} titleColor={color} icon="event">
         <JuiTimeMessage time={`${time} ${timeText}`} />
-        <JuiEventLocation location={location} />
-        <JuiEventDescription description={description} />
+        {location && <JuiEventLocation location={location} />}
+        {description && <JuiEventDescription description={description} />}
       </JuiConversationItemCard>
     );
   }

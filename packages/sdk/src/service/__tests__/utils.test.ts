@@ -61,6 +61,20 @@ describe('utils', () => {
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
     });
 
+    it('should not put data but should notify', async () => {
+      const obj = {
+        data: [{ id: 1 }, { id: 2 }, { id: 3 }],
+        dao: fakeDao,
+        eventKey: ENTITY.POST,
+        noSavingToDB: true,
+      };
+
+      await baseHandleData(obj);
+
+      expect(fakeDao.bulkPut).not.toHaveBeenCalled();
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
+    });
+
     it('should delete deactivated data', async () => {
       const obj = {
         data: [

@@ -48,5 +48,7 @@
   "forMonthlyTimes_interval": "(1){for one month};",
   "forYearlyTimes": "for {{count}} years",
   "forYearlyTimes_interval": "(1){for one year};",
-  "until": "until"
+  "until": "until",
+  "hideEventHistory": "Hide",
+  "showEventHistory": "Show old"
 }
