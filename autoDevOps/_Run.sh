@@ -29,5 +29,8 @@ for pid in ${pids[*]}; do
     fi
 done
 . $autoDevOps/5.E2E.sh
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 
 addEnv hasLintError=$hasLintError

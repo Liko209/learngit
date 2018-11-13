@@ -40,7 +40,7 @@ describe('Socket Manager', () => {
     daoManager.getKVDao.mockReturnValue(configDao);
     configDao.get.mockReturnValue(test_url);
     mock.payload = test_url;
-    notificationCenter.emitService(SERVICE.LOGOUT);
+    notificationCenter.emitKVChange(SERVICE.LOGOUT);
   });
 
   describe('logger: function is normal operation', () => {
@@ -60,21 +60,21 @@ describe('Socket Manager', () => {
 
     it('login', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
-      notificationCenter.emitService(SERVICE.LOGIN);
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       expect(socketManager.ongoingFSMCount()).toEqual(1);
     });
 
     it('logout', () => {
-      notificationCenter.emitService(SERVICE.LOGOUT);
+      notificationCenter.emitKVChange(SERVICE.LOGOUT);
       expect(socketManager.hasActiveFSM()).toBeFalsy();
     });
 
     describe('network_change', () => {
       it('online before logged in', () => {
-        notificationCenter.emitService(SERVICE.LOGOUT);
+        notificationCenter.emitKVChange(SERVICE.LOGOUT);
         expect(socketManager.hasActiveFSM()).toBeFalsy();
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+        notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'online',
         });
         expect(socketManager.hasActiveFSM()).toBeFalsy();
@@ -82,13 +82,13 @@ describe('Socket Manager', () => {
       });
 
       it('online after logged in', () => {
-        notificationCenter.emitService(SERVICE.LOGIN);
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmNameBeforeOnline = socketManager.activeFSM.name;
         expect(!!fsmNameBeforeOnline).toBeTruthy();
         socketManager.activeFSM.finishConnect();
         expect(socketManager.isConnected()).toBeTruthy();
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+        notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'online',
         });
         const fsmNameAfterOnline = socketManager.activeFSM.name;
@@ -97,33 +97,33 @@ describe('Socket Manager', () => {
       });
 
       it('offline', () => {
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+        notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'offline',
         });
         expect(socketManager.hasActiveFSM()).toBeFalsy();
       });
 
       it('focus', () => {
-        notificationCenter.emitService(SERVICE.LOGOUT);
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+        notificationCenter.emitKVChange(SERVICE.LOGOUT);
+        notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'focus',
         });
         expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-        notificationCenter.emitService(SERVICE.LOGIN);
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
 
         socketManager.activeFSM.finishConnect();
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+        notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'focus',
         });
 
         socketManager.activeFSM.fireDisconnect();
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+        notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'focus',
         });
 
-        notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+        notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'refresh',
         });
       });
@@ -131,45 +131,45 @@ describe('Socket Manager', () => {
 
     describe('server_host_updated', () => {
       it('not login', () => {
-        notificationCenter.emitService(CONFIG.SOCKET_SERVER_HOST);
+        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         expect(socketManager.hasActiveFSM()).toBeFalsy();
 
         configDao.get.mockReturnValue('new_url_server_host_updated');
-        notificationCenter.emitService(CONFIG.SOCKET_SERVER_HOST);
+        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         expect(socketManager.hasActiveFSM()).toBeFalsy();
       });
 
       it('invalid new url', () => {
-        notificationCenter.emitService(SERVICE.LOGIN);
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
         const fsmName1 = socketManager.activeFSM.name;
 
         configDao.get.mockReturnValue('');
-        notificationCenter.emitService(CONFIG.SOCKET_SERVER_HOST);
+        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         const fsmName2 = socketManager.activeFSM.name;
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         expect(fsmName1).toEqual(fsmName2);
       });
 
       it('url no changed', () => {
-        notificationCenter.emitService(SERVICE.LOGIN);
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmName1 = socketManager.activeFSM.name;
 
-        notificationCenter.emitService(CONFIG.SOCKET_SERVER_HOST);
+        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         const fsmName2 = socketManager.activeFSM.name;
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         expect(fsmName1).toEqual(fsmName2);
       });
 
       it('url changed', () => {
-        notificationCenter.emitService(SERVICE.LOGIN);
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmName1 = socketManager.activeFSM.name;
 
         socketManager.activeFSM.finishConnect();
 
         configDao.get.mockReturnValue('new_url_changed');
-        notificationCenter.emitService(CONFIG.SOCKET_SERVER_HOST);
+        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmName2 = socketManager.activeFSM.name;
         expect(fsmName1).not.toEqual(fsmName2);
@@ -177,7 +177,7 @@ describe('Socket Manager', () => {
         socketManager.activeFSM.finishConnect();
 
         configDao.get.mockReturnValue(test_url);
-        notificationCenter.emitService(CONFIG.SOCKET_SERVER_HOST);
+        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmName3 = socketManager.activeFSM.name;
         expect(fsmName3).toEqual(fsmName2);
@@ -186,19 +186,19 @@ describe('Socket Manager', () => {
 
     describe('reconnect', () => {
       it('reconnect event by attempt reconnection', () => {
-        notificationCenter.emitService(SERVICE.LOGIN);
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         // const fsmName1 = socketManager.activeFSM.name;
 
-        notificationCenter.emitService(SOCKET.RECONNECT, 123);
+        notificationCenter.emitKVChange(SOCKET.RECONNECT, 123);
       });
 
       it('socket reconnect new url', () => {
-        notificationCenter.emitService(SERVICE.LOGIN);
+        notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         // const fsmName1 = socketManager.activeFSM.name;
 
-        notificationCenter.emitService(SOCKET.RECONNECT, {
+        notificationCenter.emitKVChange(SOCKET.RECONNECT, {
           body: { server: 'reconnect_url_a' },
         });
       });
@@ -207,7 +207,7 @@ describe('Socket Manager', () => {
 
   describe('PowerMonitor', () => {
     it('not login', () => {
-      notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+      notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'online',
       });
 
@@ -221,7 +221,7 @@ describe('Socket Manager', () => {
     });
 
     it('logged-in and online', () => {
-      notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+      notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'online',
       });
 
@@ -233,7 +233,7 @@ describe('Socket Manager', () => {
       expect(socketManager.isScreenLocked()).toBeTruthy();
 
       // Login will create FSM even if screen is locked.
-      notificationCenter.emitService(SERVICE.LOGIN);
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       const fsmName1 = socketManager.activeFSM.name;
       expect(!!fsmName1).toBeTruthy();
@@ -279,7 +279,7 @@ describe('Socket Manager', () => {
     });
 
     it('logged-in and offline', () => {
-      notificationCenter.emitService(SERVICE.LOGIN);
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       const fsmName1 = socketManager.activeFSM.name;
       expect(!!fsmName1).toBeTruthy();
@@ -290,7 +290,7 @@ describe('Socket Manager', () => {
       socketManager.onPowerMonitorEvent('lock-screen');
       expect(socketManager.isScreenLocked()).toBeTruthy();
 
-      notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+      notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'offline',
       });
       expect(socketManager.isOffline()).toBeTruthy();
@@ -305,13 +305,13 @@ describe('Socket Manager', () => {
     });
 
     it('online event', () => {
-      notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+      notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'online',
       });
       expect(socketManager.isOffline()).toBeFalsy();
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-      notificationCenter.emitService(SERVICE.LOGIN);
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       const fsmName1 = socketManager.activeFSM.name;
       expect(!!fsmName1).toBeTruthy();
@@ -322,18 +322,18 @@ describe('Socket Manager', () => {
       socketManager.onPowerMonitorEvent('lock-screen');
       expect(socketManager.isScreenLocked()).toBeTruthy();
 
-      notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+      notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'offline',
       });
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
       // In case screen is locked, not create new FSM when it becomes online
-      notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+      notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'online',
       });
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-      notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+      notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'offline',
       });
       expect(socketManager.hasActiveFSM()).toBeFalsy();
@@ -343,7 +343,7 @@ describe('Socket Manager', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
       // online will create new FSM
-      notificationCenter.emitService(SOCKET.NETWORK_CHANGE, {
+      notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'online',
       });
       expect(socketManager.isOffline()).toBeFalsy();

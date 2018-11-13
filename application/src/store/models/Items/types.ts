@@ -73,4 +73,17 @@ type TaskItem = {
   attachment_ids: number[];
 } & ItemModel;
 
-export { FileItem, ExtendFileItem, FileType, LinkItem, EventItem, TaskItem };
+type NoteItem = {
+  title: string;
+  summary: string;
+} & ItemModel;
+
+export {
+  FileItem,
+  ExtendFileItem,
+  FileType,
+  LinkItem,
+  EventItem,
+  TaskItem,
+  NoteItem,
+};

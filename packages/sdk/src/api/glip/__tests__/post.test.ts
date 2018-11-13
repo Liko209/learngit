@@ -12,7 +12,9 @@ describe('PostAPI', () => {
   describe('requestPosts()', () => {
     it('glipNetworkClient get() should be called with params', () => {
       PostAPI.requestPosts({ id: 111 });
-      expect(PostAPI.glipNetworkClient.get).toHaveBeenCalledWith('/posts', { id: 111 });
+      expect(PostAPI.glipNetworkClient.get).toHaveBeenCalledWith('/posts', {
+        id: 111,
+      });
     });
   });
   describe('sendPost()', () => {
@@ -31,6 +33,15 @@ describe('PostAPI', () => {
     it('glipNetworkClient putDataById() should be called with params', () => {
       PostAPI.editPost(6, { text: 'ccc' });
       expect(Api.putDataById).toHaveBeenCalledWith(6, { text: 'ccc' });
+    });
+  });
+  describe('requestByIds()', () => {
+    it('glipNetworkClient get() should be called with params', () => {
+      PostAPI.requestByIds([11, 22, 33, 44]);
+      expect(PostAPI.glipNetworkClient.get).toHaveBeenCalledWith(
+        '/posts_items_by_ids',
+        { post_ids: '11,22,33,44' },
+      );
     });
   });
 });

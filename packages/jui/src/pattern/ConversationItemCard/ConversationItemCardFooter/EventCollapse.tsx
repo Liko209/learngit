@@ -12,14 +12,10 @@ import {
   spacing,
 } from '../../../foundation/utils/styles';
 
-type historyItem = {
-  text: string;
-};
-
 type Props = {
-  history: historyItem[];
-  tHide: string;
-  tShow: string;
+  children?: React.ReactNode;
+  hideText: string;
+  showText: string;
 };
 
 type States = {
@@ -33,6 +29,7 @@ const StyledContent = styled.div`
 `;
 
 const StyledToggle = styled.div`
+  display: inline-block;
   ${typography('body1')};
   color: ${primary('main')};
   text-decoration: underline;
@@ -52,17 +49,19 @@ class JuiEventCollapse extends React.Component<Props, States> {
   }
 
   render() {
-    const { history, tHide, tShow } = this.props;
+    const { children, hideText, showText } = this.props;
     const { isShow } = this.state;
     return (
       <Fragment>
-        {isShow && <StyledContent>{history[0].text}</StyledContent>}
+        {isShow && children}
         <StyledToggle onClick={this.handleToggle}>
-          {isShow ? tHide : tShow}
+          {isShow ? hideText : showText}
         </StyledToggle>
       </Fragment>
     );
   }
 }
 
-export { JuiEventCollapse };
+const JuiEventCollapseContent = StyledContent;
+
+export { JuiEventCollapse, JuiEventCollapseContent };

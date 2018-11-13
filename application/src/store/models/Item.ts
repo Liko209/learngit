@@ -10,6 +10,7 @@ const ITEM_DATA_HANDLE_MAP = {
   [TypeDictionary.TYPE_ID_FILE]: setFileData,
   [TypeDictionary.TYPE_ID_EVENT]: setEventData,
   [TypeDictionary.TYPE_ID_LINK]: setLinkData,
+  [TypeDictionary.TYPE_ID_PAGE]: setNoteData,
 };
 
 const FILE_ICON_MAP = {

@@ -11,6 +11,7 @@ export type RawPostInfo = {
   groupId?: number;
   itemIds?: number[];
   postId?: number;
+  itemId?: number;
 };
 
 export type RawPostInfoWithFile = RawPostInfo & {

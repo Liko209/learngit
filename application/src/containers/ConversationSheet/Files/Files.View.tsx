@@ -10,7 +10,7 @@ import {
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { getFileSize } from '@/utils/helper';
+import { getFileSize } from './helper';
 
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 
