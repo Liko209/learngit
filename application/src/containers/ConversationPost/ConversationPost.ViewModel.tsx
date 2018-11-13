@@ -29,13 +29,13 @@ class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
   }
 
   @computed
-  get _post() {
+  private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
   }
 
   @computed
-  get _activityData() {
-    return this._post.activityData || {};
+  private get _activityData() {
+    return this._post.activityData;
   }
 
   @computed
@@ -45,4 +45,4 @@ class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
   }
 }
 
-export { ConversationPostViewModel };
+export { ConversationPostViewModel, ActivityDataKeyMappingPostType };

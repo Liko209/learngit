@@ -19,18 +19,18 @@ import { Person, Post } from 'sdk/models';
 class ChangeViewModel extends AbstractViewModel<ChangeProps>
   implements ChangeViewProps {
   @computed
-  get _id() {
+  private get _id() {
     return this.props.id;
   }
 
   @computed
-  get _post() {
+  private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._id);
   }
 
   @computed
-  get _activityData() {
-    return this._post.activityData || {};
+  private get _activityData() {
+    return this._post.activityData;
   }
 
   @computed

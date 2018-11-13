@@ -29,7 +29,7 @@ class JoinViewModel extends AbstractViewModel<JoinProps>
 
   @computed
   get _activityData() {
-    return this._post.activityData || {};
+    return this._post.activityData;
   }
 
   @computed

@@ -20,13 +20,13 @@ class NotificationViewModel extends AbstractViewModel<NotificationProps>
   }
 
   @computed
-  get _post() {
+  private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
   }
 
   @computed
   get activityData() {
-    return this._post.activityData || {};
+    return this._post.activityData;
   }
 }
 
