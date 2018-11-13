@@ -12,9 +12,10 @@ import {
   TDelta,
   TUpdated,
 } from './fetch/types';
+import { BaseModel } from 'sdk/src/models';
 
-abstract class TransformHandler<T, K> {
-  fetchData: (direction: FetchDataDirection) => any;
+abstract class TransformHandler<T, K extends BaseModel> {
+  fetchData: (direction: FetchDataDirection, pageSize?: number) => any;
 
   constructor(
     protected _orderListHandler: FetchSortableDataListHandler<K>,

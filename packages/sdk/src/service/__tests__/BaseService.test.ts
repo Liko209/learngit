@@ -40,9 +40,10 @@ class AService extends BaseService<BaseServiceTestModel> {
 
   async doPartialNotify(
     originalModels: BaseServiceTestModel[],
+    updatedModels: BaseServiceTestModel[],
     partialModels: Partial<Raw<BaseServiceTestModel>>[],
   ) {
-    notificationCenter.emitEntityPartialUpdate(EVENT, partialModels);
+    notificationCenter.emitEntityUpdate(EVENT, updatedModels, partialModels);
   }
 
   async doUpdateModel(

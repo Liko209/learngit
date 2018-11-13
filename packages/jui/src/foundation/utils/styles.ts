@@ -67,7 +67,7 @@ function cssValue(...values: number[]): string {
  *                 Colors                   *
  ********************************************/
 
-function getPalette(name: keyof Palette, sub: string) {
+function getPalette(name: keyof Palette, sub: string = 'main') {
   return ({ theme }: { theme: Theme }) => theme.palette[name][sub];
 }
 
@@ -90,7 +90,7 @@ function palette(name: keyof Palette, sub: string, opacity?: number) {
  * primary color
  * @param sub
  */
-function primary(sub: string) {
+function primary(sub: string = 'main') {
   return palette('primary', sub);
 }
 
@@ -98,7 +98,7 @@ function primary(sub: string) {
  * secondary color
  * @param sub
  */
-function secondary(sub: string) {
+function secondary(sub: string = 'main') {
   return palette('secondary', sub);
 }
 
@@ -110,23 +110,32 @@ function grey(sub: string) {
   return palette('grey', sub);
 }
 
+/********************************************
+ *              Typography                  *
+ ********************************************/
+
 /**
  * typography
  * @param name
  */
-function typography(name: string) {
+function typography(name: keyof Theme['typography']) {
   return css`
-    font-size: ${({ theme }: { theme: Theme }) =>
-      theme.typography[name].fontSize};
-    font-weight: ${({ theme }: { theme: Theme }) =>
-      theme.typography[name].fontWeight};
-    font-family: ${({ theme }: { theme: Theme }) =>
-      theme.typography[name].fontFamily};
-    line-height: ${({ theme }: { theme: Theme }) =>
-      theme.typography[name].lineHeight || ''};
-    letter-spacing: ${({ theme }: { theme: Theme }) =>
-      theme.typography[name].letterSpacing || ''};
+    font-size: ${typographyProp(name, 'fontSize')};
+    font-weight: ${typographyProp(name, 'fontWeight')};
+    font-family: ${typographyProp(name, 'fontFamily')};
+    line-height: ${typographyProp(name, 'lineHeight')};
+    letter-spacing: ${typographyProp(name, 'letterSpacing')};
   `;
+}
+
+function typographyProp(name: keyof Theme['typography'], key: string) {
+  return ({ theme }: { theme: Theme }) => {
+    const typography = theme.typography[name];
+    if (typeof typography !== 'object') {
+      throw new Error(`Unexpected typography name: ${name}`);
+    }
+    return typography[key];
+  };
 }
 
 /**

@@ -15,6 +15,14 @@ import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 
+const StyledRightWrapper = styled.div`
+  width: ${width(5)};
+  height: ${height(5)};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const StyledIconographyMore = styled(JuiIconography)``;
 
 const StyledListItem = styled(MuiMenuItem)`
@@ -130,10 +138,12 @@ const JuiConversationListItem: IConversationListItem = (
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
       <ItemText style={{ fontWeight }}>{title}</ItemText>
       {umi}
-      {indicator}
-      <StyledIconographyMore onClick={onMoreClick}>
-        more_vert
-      </StyledIconographyMore>
+      <StyledRightWrapper>
+        {indicator}
+        <StyledIconographyMore onClick={onMoreClick}>
+          more_vert
+        </StyledIconographyMore>
+      </StyledRightWrapper>
     </StyledListItem>
   );
 };

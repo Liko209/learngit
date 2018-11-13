@@ -5,7 +5,7 @@ import handleData from '../handleData';
 import { rawPersonFactory } from '../../../__tests__/factories';
 
 jest.mock('../../../service/notificationCenter', () => ({
-  emitEntityPut: jest.fn(),
+  emitEntityUpdate: jest.fn(),
 }));
 
 jest.mock('../../../dao', () => ({

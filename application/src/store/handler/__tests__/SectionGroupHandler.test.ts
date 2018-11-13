@@ -46,7 +46,7 @@ describe('SectionGroupHandler', () => {
           created_at: 0,
         },
       ];
-      notificationCenter.emitEntityPut(ENTITY.GROUP, fakeData);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
       expect(
         SectionGroupHandler.getInstance()
           .getAllGroupIds()
@@ -61,7 +61,7 @@ describe('SectionGroupHandler', () => {
       expect(
         SectionGroupHandler.getInstance().groupIds(SECTION_TYPE.FAVORITE),
       ).toEqual([]);
-      notificationCenter.emitEntityDelete(ENTITY.GROUP, fakeData);
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, [1, 2]);
     });
 
     it('entity delete id not in id sets', () => {
@@ -73,24 +73,17 @@ describe('SectionGroupHandler', () => {
           created_at: 0,
         },
       ];
-      const deleteData = [
-        {
-          id: 3,
-          is_team: true,
-          created_at: 0,
-        },
-      ];
       expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([]);
-      notificationCenter.emitEntityPut(ENTITY.GROUP, putData);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, putData);
       expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([2]);
-      notificationCenter.emitEntityDelete(ENTITY.GROUP, deleteData);
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, [3]);
       expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([2]);
       expect(
         SectionGroupHandler.getInstance()
           .groupIds(SECTION_TYPE.TEAM)
           .sort(),
       ).toEqual([2]);
-      notificationCenter.emitEntityDelete(ENTITY.GROUP, putData);
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, [2]);
     });
 
     it('entity delete id in id sets', () => {
@@ -102,12 +95,12 @@ describe('SectionGroupHandler', () => {
           created_at: 0,
         },
       ];
-      notificationCenter.emitEntityPut(ENTITY.GROUP, putData);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, putData);
       expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([2]);
       expect(
         SectionGroupHandler.getInstance().groupIds(SECTION_TYPE.TEAM),
       ).toEqual([2]);
-      notificationCenter.emitEntityDelete(ENTITY.GROUP, putData);
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, [2]);
       expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([]);
       expect(
         SectionGroupHandler.getInstance().groupIds(SECTION_TYPE.DIRECT_MESSAGE),

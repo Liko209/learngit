@@ -11,7 +11,7 @@ import {
   JuiConversationListSection,
 } from 'jui/pattern/ConversationList';
 import { ConversationListItem } from '@/containers/ConversationList/ConversationListItem';
-import { toTitleCase } from '@/utils';
+import { toTitleCase } from '@/utils/string';
 import { SectionViewProps } from './types';
 import { Umi } from '../../Umi';
 import { JuiDivider } from 'jui/components/Divider';

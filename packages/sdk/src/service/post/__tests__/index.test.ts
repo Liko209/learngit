@@ -1,5 +1,5 @@
 /// <reference path="../../../__tests__/types.d.ts" />
-import { daoManager, PostDao, ItemDao } from '../../../dao';
+import { daoManager, PostDao, ItemDao, GroupConfigDao } from '../../../dao';
 import PostAPI from '../../../api/glip/post';
 import itemHandleData from '../../item/handleData';
 import { baseHandleData } from '../handleData';
@@ -23,6 +23,7 @@ jest.mock('../../profile');
 jest.mock('../../group');
 // PostAPI.getDataById = jest.fn();
 PostAPI.putDataById = jest.fn();
+PostAPI.requestByIds = jest.fn();
 
 describe('PostService', () => {
   const postService = new PostService();
@@ -31,6 +32,7 @@ describe('PostService', () => {
   const profileService = new ProfileService();
   const postDao = new PostDao(null);
   const itemDao = new ItemDao(null);
+  const groupConfigDao = new GroupConfigDao(null);
   const postMockInfo = postFactory.build({
     id: -1,
     created_at: 11111,
@@ -53,6 +55,7 @@ describe('PostService', () => {
     GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     daoManager.getDao.mockReturnValueOnce(postDao);
     daoManager.getDao.mockReturnValueOnce(itemDao);
+    daoManager.getDao.mockReturnValueOnce(groupConfigDao);
   });
 
   describe('getPostsFromLocal()', () => {
@@ -60,7 +63,7 @@ describe('PostService', () => {
       const mockPosts = postFactory.buildList(2);
       const mockItems = itemFactory.buildList(3);
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
-      itemDao.getItemsByIds.mockResolvedValue(mockItems);
+      itemService.getByPosts.mockResolvedValue(mockItems);
 
       const result = await postService.getPostsFromLocal({
         groupId: 1,
@@ -81,7 +84,7 @@ describe('PostService', () => {
       const mockPosts = [];
       const mockItems = [];
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
-      itemDao.getItemsByIds.mockResolvedValue(mockItems);
+      itemService.getByPosts.mockResolvedValue(mockItems);
 
       const result = await postService.getPostsFromLocal({
         groupId: 1,
@@ -205,14 +208,25 @@ describe('PostService', () => {
     });
 
     it('should return local data', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * We have 2 posts total at local, 0 at remote.
        */
       postService.getPostsFromLocal.mockResolvedValueOnce({
         posts: [{ id: 1 }, { id: 2 }],
         items: [],
+        hasMore: true,
+      });
+
+      postService.getPostsFromRemote.mockResolvedValueOnce({
+        posts: [],
+        items: [],
         hasMore: false,
       });
+
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
       const resultEmpty = await postService.getPostsByGroupId({
         groupId: 1,
         offset: 0,
@@ -233,6 +247,8 @@ describe('PostService', () => {
     });
 
     it('should return remote data', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * 2 posts total, 2 at remote, 0 at local.
        */
@@ -246,6 +262,8 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
 
       baseHandleData.mockResolvedValue([{ id: 1 }, { id: 2 }]);
       itemHandleData.mockResolvedValue([]);
@@ -265,6 +283,8 @@ describe('PostService', () => {
     });
 
     it('should return local+remote data when localData + remoteData < pageSize', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * 4 posts total, 2 at local, 2 at remote.
        * When pageSize is 20, it should return all 4 posts.
@@ -279,9 +299,11 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
-
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
       baseHandleData.mockResolvedValue([{ id: 3 }, { id: 4 }]);
       itemHandleData.mockResolvedValue([]);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
 
       const result = await postService.getPostsByGroupId({
         groupId: 1,
@@ -298,6 +320,8 @@ describe('PostService', () => {
     });
 
     it('should return local+remote data when localData + remoteData > pageSize', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * 4 posts total, 2 of them at local, 2 at remote.
        * When pageSize is 3, it should return 3 posts (2 local + 1 remote).
@@ -312,7 +336,8 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
-
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
       baseHandleData.mockResolvedValue([{ id: 3 }]);
       itemHandleData.mockResolvedValue([]);
 
@@ -344,6 +369,97 @@ describe('PostService', () => {
         offset: 0,
         limit: 20,
       });
+    });
+  });
+
+  describe('getPostsByIds', () => {
+    beforeAll(() => {
+      jest.spyOn(itemService, 'getByPosts');
+      jest.spyOn(postDao, 'queryManyPostsByIds');
+      jest.spyOn(PostAPI, 'requestByIds');
+    });
+
+    afterAll(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should return local posts if exists', async () => {
+      const localPosts = [{ id: 3 }, { id: 4 }, { id: 5 }];
+      postDao.queryManyPostsByIds.mockReturnValue(localPosts);
+      const result = await postService.getPostsByIds([3, 4, 5]);
+      expect(result.posts).toEqual(localPosts);
+    });
+
+    it('should return local posts + remote posts if partly exists', async () => {
+      const localPosts = [{ id: 3 }, { id: 4 }, { id: 5 }];
+      const remotePosts = [{ id: 1 }, { id: 2 }];
+      postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
+      PostAPI.requestByIds.mockResolvedValue({
+        data: { posts: [...remotePosts], items: [] },
+      });
+      baseHandleData.mockImplementationOnce((data: any) => data);
+      itemService.getByPosts.mockResolvedValue([]);
+      const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
+      expect(result.posts.map(({ id }) => id).sort()).toEqual(
+        [...remotePosts, ...localPosts].map(({ id }) => id).sort(),
+      );
+    });
+
+    it('should return remote posts if none in local', async () => {
+      const localPosts = [];
+      const remotePosts = [
+        { id: 1 },
+        { id: 2 },
+        { id: 3 },
+        { id: 4 },
+        { id: 5 },
+      ];
+      postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
+      PostAPI.requestByIds.mockResolvedValue({
+        data: { posts: [...remotePosts], items: [] },
+      });
+      baseHandleData.mockImplementationOnce((data: any) => data);
+      itemService.getByPosts.mockResolvedValue([]);
+      const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
+      expect(result.posts.map(({ id }) => id).sort()).toEqual(
+        [...remotePosts].map(({ id }) => id).sort(),
+      );
+    });
+
+    it('should return items get with itemService for local posts', async () => {
+      const localPosts = [{ id: 3 }, { id: 4 }, { id: 5 }];
+      itemService.getByPosts.mockResolvedValue([
+        { id: 100 },
+        { id: 101 },
+        { id: 102 },
+      ]);
+      postDao.queryManyPostsByIds.mockReturnValue(localPosts);
+      const result = await postService.getPostsByIds([3, 4, 5]);
+      expect(result.items).toEqual([{ id: 100 }, { id: 101 }, { id: 102 }]);
+    });
+
+    it('should push remote items to existing items', async () => {
+      const localPosts = [{ id: 3 }, { id: 4 }, { id: 5 }];
+      const remotePosts = [{ id: 1 }, { id: 2 }];
+      itemService.getByPosts.mockResolvedValue([
+        { id: 100 },
+        { id: 101 },
+        { id: 102 },
+      ]);
+      postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
+      PostAPI.requestByIds.mockResolvedValue({
+        data: { posts: [...remotePosts], items: [{ id: 103 }, { id: 104 }] },
+      });
+      baseHandleData.mockImplementationOnce((data: any) => data);
+      itemHandleData.mockImplementationOnce((data: any) => data);
+      const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
+      expect(result.items).toEqual([
+        { id: 100 },
+        { id: 101 },
+        { id: 102 },
+        { id: 103 },
+        { id: 104 },
+      ]);
     });
   });
 

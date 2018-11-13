@@ -42,7 +42,7 @@ export type TDelta = {
 
 export type TChangeHandler<T> = (
   keys: number[],
-  entities?: Map<number, T | TReplacedData<T>>,
+  entities?: Map<number, T>,
   transformFunc?: Function,
   store?: SortableListStore,
 ) => {

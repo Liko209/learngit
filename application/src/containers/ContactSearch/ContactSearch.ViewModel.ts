@@ -10,7 +10,7 @@ import SearchService from 'sdk/service/search';
 import { Person } from 'sdk/src/models';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactSearchProps, ViewProps, SelectedMember } from './types';
-import { getName } from '../../utils/getName';
+import { getName } from './helper/getName';
 
 class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
   implements ViewProps {
