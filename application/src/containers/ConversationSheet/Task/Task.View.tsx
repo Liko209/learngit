@@ -86,7 +86,7 @@ class Task extends React.Component<ViewProps> {
         complete={complete}
         title={text}
         titleColor={color}
-        icon={<JuiTaskCheckbox checked={complete} />}
+        icon={<JuiTaskCheckbox checked={complete || false} />}
       >
         <JuiTaskAvatarName
           avatarNames={this._taskAvatarNames}
