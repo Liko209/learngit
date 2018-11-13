@@ -10,7 +10,6 @@ const JuiConversationPostText = styled('div')`
   text-align: justify;
   a {
     color: ${({ theme }) => theme.palette.primary.light};
-    word-break: break-all;
     &:hover {
       text-decoration: underline;
     }
