@@ -38,7 +38,7 @@ const transformAll = <T extends { id: number }>(target: any): T[] => {
   return arr.map(obj => transform(obj));
 };
 
-const baseHandleData = async ({ data, dao, eventKey }: any) => {
+const baseHandleData = async ({ data, dao, eventKey, noSavingToDB }: any) => {
   // ** NOTICE **
   // this function only fliter normal data and deactivated data and emit event for them
   // if you have more complex logic, should not use it
@@ -60,7 +60,9 @@ const baseHandleData = async ({ data, dao, eventKey }: any) => {
     // put normalData
     const normalData = data.filter((item: any) => item.deactivated !== true);
     if (normalData.length > 0) {
-      await dao.bulkPut(normalData);
+      if (!noSavingToDB) {
+        await dao.bulkPut(normalData);
+      }
       notificationCenter.emitEntityUpdate(eventKey, normalData);
     }
     return normalData;

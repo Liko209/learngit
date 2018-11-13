@@ -95,6 +95,7 @@ class PostServiceHandler {
       text: atMentionsPeopleInfo.text,
       group_id: Number(params.groupId),
       from_group_id: Number(params.groupId),
+      item_id: params.itemId,
       item_ids: params.itemIds || [],
       post_ids: [],
       at_mention_item_ids: [],
