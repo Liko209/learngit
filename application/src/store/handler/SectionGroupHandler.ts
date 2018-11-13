@@ -37,6 +37,7 @@ function groupTransformFunc(data: Group): ISortableModel<Group> {
 
 class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   private _queryType: GROUP_QUERY_TYPE;
+
   constructor(queryType: GROUP_QUERY_TYPE) {
     this._queryType = queryType;
   }
@@ -54,8 +55,9 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 }
 
 class SectionGroupHandler extends BaseNotificationSubscribable {
-  private _handlersMap: {} = {};
+  private _stateService: service.StateService = StateService.getInstance();
 
+  private _handlersMap: {} = {};
   private _idSet: Set<number>;
   private _idSetAtom: IAtom;
   private _oldFavGroupIds: number[] = [];
@@ -75,8 +77,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._subscribeNotification();
     autorun(() => this._profileUpdateGroupSections());
     autorun(() => this._updateHiddenGroupIds());
-    autorun(() => this.removeOverflewGroupByChangingIds());
-    autorun(() => this.removeOverflewGroupByChangingCurrentGroupId());
+    autorun(() => this.removeOverLimitGroupByChangingIds());
+    autorun(() => this.removeOverLimitGroupByChangingCurrentGroupId());
   }
 
   static getInstance() {
@@ -212,7 +214,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     config: IFetchSortableDataListHandlerOptions<Group>,
   ) {
     const dataProvider = new GroupDataProvider(queryType);
-    new FetchSortableDataListHandler(dataProvider, config);
     this._handlersMap[sectionType] = new FetchSortableDataListHandler(
       dataProvider,
       config,
@@ -304,39 +305,43 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     return removedIds;
   }
 
-  private async _removeOverflewGroupByChangingCurrentGroupId(
+  private async _removeOverLimitGroupByChangingCurrentGroupId(
     type: SECTION_TYPE,
     limit: number,
   ) {
-    const handler = this._handlersMap[type];
-    const directGroupIds = handler.sortableListStore
-      ? handler.sortableListStore.getIds()
-      : [];
-    const index = directGroupIds.indexOf(this._lastGroupId);
-    if (index >= limit) {
-      const stateService = StateService.getInstance<service.StateService>();
-      const states =
-        (await stateService.getGroupStatesFromLocalWithUnread(
-          directGroupIds,
-        )) || [];
-      if (states.length === 0) {
+    const groupIds = this.getGroupIds(type);
+    const lastGroupIndex = groupIds.indexOf(this._lastGroupId);
+    if (lastGroupIndex >= limit) {
+      if (!this._hasUnreadInGroups(groupIds)) {
+        const handler = this._handlersMap[type];
         handler.removeByIds([this._lastGroupId]);
       }
     }
   }
 
-  async removeOverflewGroupByChangingCurrentGroupId() {
+  private async _getStates(groupIds: number[]): Promise<GroupState[]> {
+    const states = await this._stateService.getGroupStatesFromLocalWithUnread(
+      groupIds,
+    );
+    return states || [];
+  }
+
+  private async _hasUnreadInGroups(groupIds: number[]) {
+    return (await this._getStates(groupIds)).length === 0;
+  }
+
+  async removeOverLimitGroupByChangingCurrentGroupId() {
     const profileService = ProfileService.getInstance<service.ProfileService>();
     const limit = await profileService.getMaxLeftRailGroup();
     const currentId = storeManager
       .getGlobalStore()
       .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     if (currentId !== this._lastGroupId) {
-      await this._removeOverflewGroupByChangingCurrentGroupId(
+      await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.DIRECT_MESSAGE,
         limit,
       );
-      await this._removeOverflewGroupByChangingCurrentGroupId(
+      await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.TEAM,
         limit,
       );
@@ -344,14 +349,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
   }
 
-  private async _removeOverflewGroupByChangingIds(
+  private async _removeOverLimitGroupByChangingIds(
     type: SECTION_TYPE,
     limit: number,
   ) {
     const handler = this._handlersMap[type];
-    const directGroupIds = handler.sortableListStore
-      ? handler.sortableListStore.getIds()
-      : [];
+    const directGroupIds = this.getGroupIds(type);
     const stateService = StateService.getInstance<service.StateService>();
     const states =
       (await stateService.getGroupStatesFromLocalWithUnread(directGroupIds)) ||
@@ -367,7 +370,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   /*
   FIJI-1269
   */
-  async removeOverflewGroupByChangingIds() {
+  async removeOverLimitGroupByChangingIds() {
     // 1. observe current group change
     // 2. check overflew groups
     // 3. remove from list
@@ -377,11 +380,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
     const profileService = ProfileService.getInstance<service.ProfileService>();
     const limit = await profileService.getMaxLeftRailGroup();
-    await this._removeOverflewGroupByChangingIds(
+    await this._removeOverLimitGroupByChangingIds(
       SECTION_TYPE.DIRECT_MESSAGE,
       limit,
     );
-    await this._removeOverflewGroupByChangingIds(SECTION_TYPE.TEAM, limit);
+    await this._removeOverLimitGroupByChangingIds(SECTION_TYPE.TEAM, limit);
   }
 
   getAllGroupIds() {
@@ -389,7 +392,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     return Array.from(this._idSet) || [];
   }
 
-  groupIds(type: SECTION_TYPE) {
+  getGroupIds(type: SECTION_TYPE) {
     const ids = this._handlersMap[type]
       ? this._handlersMap[type].sortableListStore.getIds()
       : [];

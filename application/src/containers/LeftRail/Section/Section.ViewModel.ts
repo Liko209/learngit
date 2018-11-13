@@ -113,7 +113,7 @@ class SectionViewModel extends StoreViewModel<SectionProps>
 
   @computed
   get groupIds() {
-    return SectionGroupHandler.getInstance().groupIds(this._type);
+    return SectionGroupHandler.getInstance().getGroupIds(this._type);
   }
 
   onSortEnd = ({
