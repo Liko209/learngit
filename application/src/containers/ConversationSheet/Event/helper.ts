@@ -48,19 +48,9 @@ function getDurtionTimeText(
   repeatEndingOn: string,
   repeatEnding: string,
 ) {
-  console.log(
-    repeat, // weekly
-    repeatEndingAfter, // 1
-    repeatEndingOn, // null
-    repeatEnding, // none
-    '-----event',
-  );
   const times =
     (TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter))) || '';
-  console.log(
-    t('key2_interval', { postProcess: 'interval', count: 4 }),
-    '---event -ttt',
-  );
+
   const date = repeatEndingOn
     ? getDateMessage(repeatEndingOn, 'ddd, MMM D')
     : '';
@@ -68,7 +58,7 @@ function getDurtionTimeText(
     repeat === 'none' || repeatEnding === 'none' || repeatEnding === 'after';
   // if has repeat and is forever need hide times
   const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
-    repeatEndingAfter === '1' && repeatEnding === 'none';
+    repeatEnding === 'none' || repeatEnding === 'on';
   const repeatText = ` ${t('until')} ${date}`;
 
   return `${t(REPEAT_TEXT[repeat]) || ''} ${
