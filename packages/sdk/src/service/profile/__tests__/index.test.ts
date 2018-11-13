@@ -150,7 +150,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const returnValue = {
@@ -180,7 +180,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const returnValue = {
@@ -211,7 +211,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const returnValue = {
@@ -241,7 +241,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const result = (await profileService.markMeConversationAsFav()) || {
@@ -263,7 +263,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const returnValue = {
@@ -300,7 +300,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       ProfileAPI.putDataById.mockResolvedValueOnce({
@@ -329,7 +329,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const returnValue = {
@@ -360,7 +360,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const result = await profileService.handleGroupIncomesNewPost([

@@ -4,7 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import { spacing, typography, grey, ellipsis } from '../../foundation/utils';
+import {
+  spacing,
+  typography,
+  grey,
+  ellipsis,
+  primary,
+} from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
 
 const StyledLeftSection = styled('div')`
@@ -12,6 +18,7 @@ const StyledLeftSection = styled('div')`
   display: flex;
   min-width: 0;
   font-size: 0;
+  align-items: center;
 `;
 const StyledName = styled('div')`
   color: ${grey('900')};
@@ -32,12 +39,17 @@ const StyledTime = styled('div')`
   white-space: nowrap;
   ${typography('caption2')};
 `;
+const StyledFrom = styled('div')`
+  margin-left: ${spacing(1)};
+  color: ${primary('700')};
+  font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
+`;
 const RightSection = styled('div')`
   margin-left: ${spacing(4)};
   display: inline-flex;
 `;
 const StyledConversationCardHeader = styled('div')`
-  padding: ${spacing(4, 4, 2, 0)};
+  padding: ${spacing(3, 4, 2, 0)};
   display: flex;
   align-items: center;
 `;
@@ -47,6 +59,7 @@ type ConversationCardHeaderProps = {
   status?: string;
   time: string;
   children?: React.ReactNode;
+  from?: JSX.Element;
 };
 
 const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
@@ -54,6 +67,7 @@ const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
     <StyledLeftSection>
       <StyledName data-name="name">{props.name}</StyledName>
       {props.status ? <StyledStatus>{props.status}</StyledStatus> : null}
+      {props.from ? <StyledFrom>{props.from}</StyledFrom> : null}
       <StyledTime data-name="time">{props.time}</StyledTime>
     </StyledLeftSection>
     <RightSection>{props.children}</RightSection>

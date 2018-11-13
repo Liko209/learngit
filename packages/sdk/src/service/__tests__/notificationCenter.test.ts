@@ -7,11 +7,6 @@ import notificationCenter from '../notificationCenter';
 
 // const emitter = new EventEmitter2();
 
-it('emitEntityPut()', () => {
-  const result = notificationCenter.emitEntityPut('KEY', [{ id: 1 }]);
-  expect(result).toBeUndefined();
-});
-
 it('emitEntityUpdate()', () => {
   const result = notificationCenter.emitEntityUpdate('KEY', []);
   expect(result).toBeUndefined();
@@ -22,17 +17,7 @@ it('emitEntityDelete()', () => {
   expect(result).toBeUndefined();
 });
 
-it('emitConfigPut()', () => {
-  const result = notificationCenter.emitConfigPut('KEY', []);
-  expect(result).toBeUndefined();
-});
-
-it('emitConfigDelete()', () => {
-  const result = notificationCenter.emitConfigDelete('KEY');
-  expect(result).toBeUndefined();
-});
-
-it('emitService()', () => {
-  const result = notificationCenter.emitService('KEY', []);
+it('emitKVChange()', () => {
+  const result = notificationCenter.emitKVChange('KEY', []);
   expect(result).toBeUndefined();
 });

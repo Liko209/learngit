@@ -31,4 +31,22 @@ type LinkItem = {
   doNotRender: boolean;
 } & ItemModel;
 
-export { FileItem, LinkItem };
+type EventItem = {
+  color: string;
+  description: string;
+  start: number;
+  end: number;
+  location: string;
+  repeat: string;
+  repeatEnding: string;
+  repeatEndingAfter: string;
+  repeatEndingOn: string;
+  text: string;
+} & ItemModel;
+
+type NoteItem = {
+  title: string;
+  summary: string;
+} & ItemModel
+
+export { FileItem, LinkItem, NoteItem, EventItem };

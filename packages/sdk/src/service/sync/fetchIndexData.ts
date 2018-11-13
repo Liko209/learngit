@@ -43,7 +43,7 @@ const fetchIndexData = async (
   progressBar.start();
   const params: IParams = { newer_than: timeStamp };
 
-  notificationCenter.emitService(SERVICE.FETCH_INDEX_DATA_EXIST);
+  notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_EXIST);
 
   const requestConfig = {
     onDownloadProgress(e: any) {

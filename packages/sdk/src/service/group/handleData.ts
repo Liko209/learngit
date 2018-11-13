@@ -21,9 +21,11 @@ import {
   Profile,
   PartialWithKey,
   GroupState,
-} from '../../models';
+} from 'sdk/models';
 import StateService from '../state';
 import { mainLogger } from 'foundation';
+import AccountService from '../account';
+import { GROUP_QUERY_TYPE, EVENT_TYPES } from '../constants';
 
 async function getExistedAndTransformDataFromPartial(
   groups: Partial<Raw<Group>>[],
@@ -146,8 +148,11 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   const favIds = (profile && profile.favorite_group_ids) || [];
   const archivedGroups = normalData.filter((item: Group) => item.is_archived);
   const deactivatedGroups = deactivatedData.concat(archivedGroups);
-  deactivatedGroups.length &&
-    notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroups);
+  const deactivatedGroupIds = _.map(deactivatedGroups, (group: Group) => {
+    return group.id;
+  });
+  deactivatedGroupIds.length &&
+    notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
 
   const limit = await profileService.getMaxLeftRailGroup();
 
@@ -165,7 +170,12 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
     (item: Group) => favIds.indexOf(item.id) !== -1,
   );
   const result = addedTeams.concat(addedGroups).concat(addFavorites);
-  result.length && notificationCenter.emitEntityPut(ENTITY.GROUP, result);
+  result.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, result);
+  // addedTeams.length > 0 &&
+  //   notificationCenter.emitEntityUpdate(ENTITY.TEAM_GROUPS, addedTeams);
+  // addedGroups.length > 0 &&
+  //   notificationCenter.emitEntityUpdate(ENTITY.PEOPLE_GROUPS, addedGroups);
+  // addFavorites.length > 0 && (await doFavoriteGroupsNotification(favIds));
 }
 
 async function operateGroupDao(deactivatedData: Group[], normalData: Group[]) {
@@ -223,6 +233,8 @@ async function doFavoriteGroupsNotification(favIds: number[]) {
   const filteredFavIds = favIds.filter(
     id => typeof id === 'number' && !isNaN(id),
   );
+
+  const replaceGroups = new Map<number, Group>();
   if (filteredFavIds.length) {
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
@@ -232,10 +244,11 @@ async function doFavoriteGroupsNotification(favIds: number[]) {
     let groups = await dao.queryGroupsByIds(validFavIds);
     groups = sortFavoriteGroups(validFavIds, groups);
 
-    notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, groups);
-  } else {
-    notificationCenter.emitEntityReplaceAll(ENTITY.FAVORITE_GROUPS, []);
+    _.forEach(groups, (group: Group) => {
+      replaceGroups.set(group.id, group);
+    });
   }
+  notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, replaceGroups);
 }
 
 function sortFavoriteGroups(ids: number[], groups: Group[]): Group[] {
@@ -302,16 +315,24 @@ async function handleHiddenGroupsChanged(
 function doNonFavoriteGroupsNotification(groups: Group[], isPut: boolean) {
   if (isPut) {
     const teams = groups.filter((item: Group) => item.is_team);
-    teams.length && notificationCenter.emitEntityPut(ENTITY.TEAM_GROUPS, teams);
+    teams.length &&
+      notificationCenter.emitEntityUpdate(ENTITY.TEAM_GROUPS, teams);
     const peopleGroups = groups.filter((item: Group) => !item.is_team);
     peopleGroups &&
-      notificationCenter.emitEntityPut(ENTITY.PEOPLE_GROUPS, peopleGroups);
+      notificationCenter.emitEntityUpdate(ENTITY.PEOPLE_GROUPS, peopleGroups);
   } else {
     const teams = groups.filter((item: Group) => item.is_team);
-    teams && notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, teams);
+    const teamIds = _.map(teams, (team: Group) => {
+      return team.id;
+    });
+    teamIds && notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, teamIds);
+
     const peopleGroups = groups.filter((item: Group) => !item.is_team);
-    peopleGroups &&
-      notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, peopleGroups);
+    const peopleGroupIds = _.map(peopleGroups, (group: Group) => {
+      return group.id;
+    });
+    peopleGroupIds &&
+      notificationCenter.emitEntityDelete(ENTITY.PEOPLE_GROUPS, peopleGroupIds);
   }
 }
 
@@ -337,7 +358,18 @@ function getUniqMostRecentPostsByGroup(posts: Post[]): Post[] {
   return uniqMaxPosts;
 }
 
-async function handleGroupMostRecentPostChanged(posts: Post[]) {
+async function handleGroupMostRecentPostChanged({
+  type,
+  entities,
+}: {
+  type: EVENT_TYPES;
+  entities: any;
+}) {
+  if (type !== EVENT_TYPES.UPDATE || !entities) {
+    return;
+  }
+  const posts: Post[] = [];
+  entities.forEach((item: Post) => posts.push(item));
   const uniqMaxPosts = getUniqMostRecentPostsByGroup(posts);
   const groupDao = daoManager.getDao(GroupDao);
   let validGroups: Partial<Raw<Group>>[] = [];
@@ -359,7 +391,6 @@ async function handleGroupMostRecentPostChanged(posts: Post[]) {
         return null;
       }),
     );
-
     validGroups = groups.filter(item => item !== null) as Partial<Raw<Group>>[];
   });
   await handlePartialData(validGroups);

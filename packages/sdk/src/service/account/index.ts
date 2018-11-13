@@ -107,7 +107,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
         endpoint_id,
       });
       authDao.put(AUTH_RC_TOKEN, refreshedRCAuthData.data);
-      notificationCenter.emitConfigPut(AUTH_RC_TOKEN, refreshedRCAuthData.data);
+      notificationCenter.emitKVChange(AUTH_RC_TOKEN, refreshedRCAuthData.data);
       return refreshedRCAuthData.data;
     } catch (err) {
       Aware(ErrorTypes.OAUTH, err.message);

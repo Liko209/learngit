@@ -61,4 +61,14 @@ storiesOf('Components/Buttons', module)
         </JuiButton>
       </div>
     );
+  })
+  .add('Round Button', () => {
+    const { content, ...rest } = getKnobs();
+    return (
+      <div>
+        <JuiButton variant="round" {...rest}>
+          {content}
+        </JuiButton>
+      </div>
+    );
   });

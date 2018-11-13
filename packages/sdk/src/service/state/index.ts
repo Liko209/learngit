@@ -69,18 +69,16 @@ export default class StateService extends BaseService<GroupState> {
     const lastPost = await this.getLastPostOfGroup(groupId);
     const lastPostId = lastPost ? lastPost.id : undefined;
 
-    notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [
-      {
-        id: groupId,
-        read_through: lastPostId,
-        last_read_through: lastPostId,
-        unread_count: 0,
-        unread_mentions_count: 0,
-      },
-    ]);
+    const partialState = {
+      id: groupId,
+      read_through: lastPostId,
+      last_read_through: lastPostId,
+      unread_count: 0,
+      unread_mentions_count: 0,
+    };
 
-    return this.updateState(
-      groupId,
+    await this.updateState(
+      partialState,
       lastPostId,
       StateService.buildMarkAsReadParam,
     );
@@ -112,25 +110,33 @@ export default class StateService extends BaseService<GroupState> {
   }
 
   async updateState(
-    groupId: number,
+    partialState: Partial<GroupState>,
     lastPostId: number | undefined,
     paramBuilder: Function,
   ): Promise<void> {
     const currentState = await this.getMyState();
     const groupStateDao = daoManager.getDao(GroupStateDao);
+    const groupId = partialState.id ? partialState.id : 0;
     const state = await groupStateDao.get(groupId);
-
-    if (
-      lastPostId &&
-      currentState &&
-      state &&
-      state.unread_count &&
-      state.unread_count > 0
-    ) {
-      await StateAPI.saveStatePartial(
-        currentState.id,
-        paramBuilder(groupId, lastPostId),
+    if (state) {
+      const updatedState = this.getMergedModel(partialState, state);
+      notificationCenter.emitEntityUpdate(
+        ENTITY.GROUP_STATE,
+        [updatedState],
+        [partialState],
       );
+
+      if (
+        lastPostId &&
+        currentState &&
+        state.unread_count &&
+        state.unread_count > 0
+      ) {
+        await StateAPI.saveStatePartial(
+          currentState.id,
+          paramBuilder(state.id, lastPostId),
+        );
+      }
     }
   }
 

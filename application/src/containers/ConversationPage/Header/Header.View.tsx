@@ -18,7 +18,7 @@ import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { JuiModal } from '@/containers/Dialog';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { toTitleCase } from '@/utils/helper';
+import { toTitleCase } from '@/utils/string';
 import { CONVERSATION_TYPES } from '@/constants';
 
 type HeaderProps = {
