@@ -24,8 +24,7 @@ import {
 } from 'sdk/models';
 import StateService from '../state';
 import { mainLogger } from 'foundation';
-import AccountService from '../account';
-import { GROUP_QUERY_TYPE, EVENT_TYPES } from '../constants';
+import { EVENT_TYPES } from '../constants';
 
 async function getExistedAndTransformDataFromPartial(
   groups: Partial<Raw<Group>>[],
