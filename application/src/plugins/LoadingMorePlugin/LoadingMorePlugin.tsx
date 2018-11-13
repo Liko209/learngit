@@ -71,11 +71,13 @@ class LoadingMorePlugin implements IPlugin {
     }
   }
 
-  wrapView(View: ComponentType<any>): React.SFC<any> {
+  wrapView(View: ComponentType<any>): ComponentType<any> {
     let WrappedView = View;
     WrappedView = withLoadingMore(WrappedView);
     WrappedView = withScroller(WrappedView);
-    return (props: any) => <WrappedView {...props} />;
+    return ({ scrollerRef, ...props }) => {
+      return <WrappedView ref={scrollerRef} {...props} />;
+    };
   }
 }
 

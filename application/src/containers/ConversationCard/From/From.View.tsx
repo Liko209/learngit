@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { FromViewProps } from './types';
-import JuiConversationCardFrom from 'jui/src/pattern/ConversationCard/ConversationCardFrom';
+import { JuiConversationCardFrom } from 'jui/pattern/ConversationCard/ConversationCardFrom';
 import history from '@/history';
 
 type Props = FromViewProps & WithNamespaces;

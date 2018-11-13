@@ -69,7 +69,6 @@ function withScroller(Comp: ComponentType<any>) {
     private _previousPosition: ScrollerSnapShot;
 
     private get _scrollEl(): HTMLElement {
-      if (!this._scrollElRef.current) throw new Error();
       return this._scrollElRef.current;
     }
 
@@ -106,10 +105,6 @@ function withScroller(Comp: ComponentType<any>) {
       }
       this._scrollEl.scrollTop = this.props.initialScrollTop;
       this.attachScrollListener();
-    }
-
-    get wrapper() {
-      return this._scrollEl.querySelector('.list-container');
     }
 
     getSnapshotBeforeUpdate() {

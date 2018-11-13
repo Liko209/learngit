@@ -16,7 +16,7 @@ type BuildContainerOptions<T> = {
   plugins?: { [key: string]: IPlugin };
 };
 type TIntrinsticProps = {
-  viewRefs?: any;
+  scrollerRef?: any;
 };
 function buildContainer<P = {}, S = {}, SS = any>({
   View,

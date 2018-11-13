@@ -92,6 +92,7 @@ const JuiConversationListSectionHeader = (props: JuiSectionHeaderProps) => {
     onClick,
     onArrowClick,
     selected,
+    ...rest
   } = props;
 
   const arrow = expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
@@ -104,6 +105,7 @@ const JuiConversationListSectionHeader = (props: JuiSectionHeaderProps) => {
       selected={selected}
       classes={{ selected: 'selected' }}
       onClick={onClick}
+      {...rest}
     >
       <StyledJuiIconographyLeft>{icon}</StyledJuiIconographyLeft>
       <ItemText>{title}</ItemText>
