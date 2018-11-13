@@ -13,10 +13,12 @@ import { ENTITY_NAME } from '@/store/constants';
 import { FetchDataDirection, ISortableModel } from '@/store/base/fetch/types';
 import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
 import { Post } from 'sdk/src/models';
-import { PostService } from 'sdk/src/service';
+import { service } from 'sdk';
 import { EVENT_TYPES, ENTITY } from 'sdk/service';
 import { transform2Map } from '@/store/utils';
+import { PostService as IPostService } from 'sdk/src/service';
 
+const { PostService } = service;
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
   private _isMatchFunc(post: Post) {
@@ -53,7 +55,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         pageSize: number,
         anchor?: ISortableModel<Post>,
       ) => {
-        const postService = PostService.getInstance<PostService>();
+        const postService = PostService.getInstance<IPostService>();
         let ids;
         let hasMore;
         if (anchor) {
@@ -101,7 +103,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         .difference(this._postIds)
         .value();
       if (added.length) {
-        const postService = PostService.getInstance<PostService>();
+        const postService = PostService.getInstance() as IPostService;
         const { posts } = await postService.getPostsByIds(added);
         this._sortableListHandler.onDataChanged({
           type: EVENT_TYPES.PUT,
@@ -141,6 +143,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       const misMatchedKeys = keys
         .filter(key => !this._isMatchFunc(entities.get(key)))
         .value();
+
       this._sortableListHandler.sortableListStore.removeByIds(misMatchedKeys);
     });
   }
