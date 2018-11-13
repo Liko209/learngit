@@ -5,7 +5,7 @@
  */
 
 enum POST_TYPE {
-  NOTIFICATION,
+  NOTIFICATION = 1,
   POST,
 }
 

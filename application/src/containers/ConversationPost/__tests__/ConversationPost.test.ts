@@ -5,11 +5,9 @@
  */
 
 import { getEntity } from '../../../store/utils';
-import {
-  ConversationPostViewModel,
-  ActivityDataKeyMappingPostType,
-} from '../ConversationPost.ViewModel';
+import { ConversationPostViewModel } from '../ConversationPost.ViewModel';
 import { ENTITY_NAME } from '@/store';
+import { POST_TYPE } from '../types';
 
 jest.mock('../../../store/utils');
 
@@ -43,10 +41,8 @@ describe('Conversation post notification', () => {
   });
 
   it('computed type', () => {
-    expect(conversationPostViewModel.type).toBe(
-      ActivityDataKeyMappingPostType.members,
-    );
+    expect(conversationPostViewModel.type).toBe(POST_TYPE.NOTIFICATION);
     mockPostData.activityData.key = '';
-    expect(conversationPostViewModel.type).toBe('post');
+    expect(conversationPostViewModel.type).toBe(POST_TYPE.POST);
   });
 });

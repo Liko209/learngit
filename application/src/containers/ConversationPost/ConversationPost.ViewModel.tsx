@@ -45,4 +45,4 @@ class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
   }
 }
 
-export { ConversationPostViewModel, ActivityDataKeyMappingPostType };
+export { ConversationPostViewModel };
