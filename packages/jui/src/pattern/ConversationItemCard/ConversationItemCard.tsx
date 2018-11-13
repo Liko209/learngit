@@ -25,7 +25,6 @@ const ItemCardHeader = styled.div`
   padding: 0;
   margin: ${spacing(0, 0, 2, -6)};
   display: flex;
-  align-items: center;
   ${typography('subheading3')};
   color: ${({ color }) => color || palette('primary', 'main')};
 `;
@@ -58,7 +57,7 @@ type JuiConversationItemCardProps = {
 
 class JuiConversationItemCard extends React.Component<
   JuiConversationItemCardProps
-  > {
+> {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
     const { titleClick } = this.props;
     titleClick && titleClick(e);

@@ -15,6 +15,7 @@ import { JuiConversationItemCard } from '../';
 const CheckboxTest = styled(Checkbox)`
   && {
     padding: 0;
+    font-size: 20px;
   }
 `;
 

@@ -35,6 +35,7 @@ const StyledRightSection = styled('div')`
   position: relative;
   flex-grow: 1;
   min-width: 0;
+  width: 100%;
 `;
 
 const navigationStyles = ({ mode }: { mode?: string }) =>

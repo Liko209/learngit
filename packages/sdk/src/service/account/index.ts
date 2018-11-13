@@ -38,7 +38,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   getCurrentUserId(): number | null {
     const userId: string = this.accountDao.get(ACCOUNT_USER_ID);
     if (!userId) {
-      mainLogger.warn('there is not UserId Id');
+      mainLogger.info('there is not UserId');
       return null;
     }
     return Number(userId);
@@ -56,7 +56,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   getCurrentCompanyId(): number | null {
     const companyId = this.accountDao.get(ACCOUNT_COMPANY_ID);
     if (!companyId) {
-      mainLogger.warn('there is not companyId Id');
+      mainLogger.info('there is not companyId');
       return null;
     }
     return Number(companyId);
