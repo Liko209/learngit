@@ -1,5 +1,11 @@
+/*
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2018-11-13 14:25:07
+ * Copyright © RingCentral. All rights reserved.
+ */
 import moment from 'moment';
 import { t } from 'i18next';
+import { FileItem, ExtendFileItem, FileType } from '@/store/models/Items';
 
 import { getDateMessage } from '@/utils/date';
 
@@ -60,4 +66,87 @@ function getDurationTimeText(
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }
 
-export { getDateAndTime, getDurationTime, getDurationTimeText };
+const FILE_ICON_MAP = {
+  pdf: ['pdf'],
+  sheet: ['xlsx', 'xls'],
+  ppt: ['ppt', 'pptx', 'potx'],
+  ps: ['ps', 'psd'],
+};
+
+function getFileIcon(fileType: string) {
+  for (const key in FILE_ICON_MAP) {
+    if (FILE_ICON_MAP[key].includes(fileType)) {
+      return key;
+    }
+  }
+  return null;
+}
+
+function getFileType(item: FileItem): ExtendFileItem {
+  const fileType: ExtendFileItem = {
+    item,
+    type: -1,
+    previewUrl: '',
+  };
+
+  if (image(item).isImage) {
+    fileType.type = FileType.image;
+    fileType.previewUrl = image(item).previewUrl;
+    return fileType;
+  }
+
+  if (document(item).isDocument) {
+    fileType.type = FileType.document;
+    fileType.previewUrl = document(item).previewUrl;
+    return fileType;
+  }
+
+  fileType.type = FileType.others;
+  return fileType;
+}
+
+function image(item: FileItem) {
+  const { thumbs, type, url } = item;
+  const image = {
+    isImage: false,
+    previewUrl: '',
+  };
+
+  if (type === 'gif') {
+    image.isImage = true;
+    image.previewUrl = url;
+    return image;
+  }
+
+  if (thumbs) {
+    for (const key in thumbs) {
+      const value = thumbs[key];
+      if (typeof value === 'string' && value.indexOf('http') > -1) {
+        image.isImage = true;
+        image.previewUrl = thumbs[key];
+      }
+    }
+  }
+  return image;
+}
+
+function document(item: FileItem) {
+  const pages = item.pages;
+  const doc = {
+    isDocument: false,
+    previewUrl: '',
+  };
+  if (pages && pages.length > 0) {
+    doc.isDocument = true;
+    doc.previewUrl = pages[0].url;
+  }
+  return doc;
+}
+
+export {
+  getDateAndTime,
+  getDurationTime,
+  getDurationTimeText,
+  getFileIcon,
+  getFileType,
+};

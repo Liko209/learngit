@@ -11,6 +11,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Props } from './types';
 import { FileItem, TaskItem } from '@/store/models/Items';
 import { Item } from 'sdk/models';
+import { getFileType } from '../helper';
 
 class TaskViewModel extends StoreViewModel<Props> {
   @computed
@@ -31,7 +32,7 @@ class TaskViewModel extends StoreViewModel<Props> {
   @computed
   get files() {
     return this.attachments.map((file: FileItem) => {
-      return file.getFileType();
+      return getFileType(file);
     });
   }
 
