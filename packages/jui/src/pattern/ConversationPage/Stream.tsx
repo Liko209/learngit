@@ -18,7 +18,9 @@ const StyledDiv = styled<JuiStreamProps, 'div'>('div')`
   min-height: 100%;
 `;
 
-const JuiStream = (props: JuiStreamProps) => <StyledDiv {...props} />;
+const JuiStream = (props: JuiStreamProps) => (
+  <StyledDiv {...props} data-test-automation-id="jui-stream" />
+);
 
 export { JuiStream, JuiStreamProps };
 export default JuiStream;
