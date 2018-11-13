@@ -9,6 +9,7 @@ import { service } from 'sdk';
 jest.mock('../../../../store/utils');
 // import ItemModel from '@/store/models/Item';
 // import { FileType } from '../types';
+import { FileType } from '../types';
 
 const { ItemService } = service;
 ItemService.getInstance = jest.fn().mockReturnValue({});
@@ -18,15 +19,13 @@ filesItemVM.props.ids = [1, 2, 3];
 
 const mockItemValue = {
   name: 'filename',
-  type: 2,
   id: 1,
-  pages: {
-    file_id: 11,
-    url: 'http://www.xxx.com',
-  },
-  isNew: false,
-  isDocument: true,
-  url: 'https://material-ui.com/',
+  pages: [
+    {
+      file_id: 11,
+      url: 'http://www.xxx.com',
+    },
+  ],
 };
 
 describe('filesItemVM', () => {
@@ -40,6 +39,18 @@ describe('filesItemVM', () => {
   });
   it('get _ids', () => {
     expect(filesItemVM._ids).toEqual([1, 2, 3]);
+  });
+
+  it('get files', () => {
+    expect(filesItemVM.files).toEqual({
+      [FileType.image]: [],
+      [FileType.document]: [
+        { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
+        { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
+        { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
+      ],
+      [FileType.others]: [],
+    });
   });
 
   it('get items', () => {
