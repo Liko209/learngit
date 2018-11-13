@@ -41,7 +41,7 @@ type TScroller = {
     options?: ScrollIntoViewOptions | boolean,
     itemSelector?: string,
   ) => void;
-  onListMounted: (el: React.RefObject<HTMLElement>) => void;
+  onListAsyncMounted: (el: React.RefObject<HTMLElement>) => void;
 };
 
 const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
@@ -66,7 +66,6 @@ function withScroller(Comp: ComponentType<any>) {
     };
     private _scrollElRef: React.RefObject<any> = React.createRef();
     private _list: HTMLElement | null;
-
     private _previousPosition: ScrollerSnapShot;
 
     private get _scrollEl(): HTMLElement {
@@ -89,12 +88,15 @@ function withScroller(Comp: ComponentType<any>) {
             {...this.props}
             setRowVisible={this.scrollToRow}
             atBottom={this._isAtBottom}
+            scrollToRow={this.scrollToRow}
+            onListAsyncMounted={this.onListAsyncMounted}
           />
         </StyledScroller>
       );
     }
 
-    onListMounted(list: React.RefObject<HTMLElement>) {
+    onListAsyncMounted = (list: React.RefObject<HTMLElement>) => {
+      /* This function is called especially when the list is mounted after withScroller mounted*/
       this._list = list.current;
     }
 
@@ -158,6 +160,7 @@ function withScroller(Comp: ComponentType<any>) {
 
     componentWillUnmount() {
       this.detachScrollListener();
+      this._list = null;
     }
 
     attachScrollListener() {

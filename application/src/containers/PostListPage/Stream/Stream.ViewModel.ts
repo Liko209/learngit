@@ -22,10 +22,6 @@ const { PostService } = service;
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
   private _isMatchFunc(post: Post) {
-    // const mentionPersonIds = post.at_mention_non_item_ids;
-    // if (!mentionPersonIds) {
-    //   return false;
-    // }
     return this._postIds.includes(post.id) && !post.deactivated;
   }
 

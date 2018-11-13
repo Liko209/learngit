@@ -70,7 +70,6 @@ function buildContainer<P = {}, S = {}, SS = any>({
         .forEach((key: string) => {
           props[key] = this.vm[key];
         });
-      props.plugins = plugins;
       return props;
     }
 
