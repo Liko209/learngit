@@ -111,8 +111,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       this._oldFavGroupIds = newFavIds;
       // handle favorite section change
       const groupService = GroupService.getInstance<service.GroupService>();
-      let result: Group[];
+      const groups = await groupService.getGroupsByType(
+        GROUP_QUERY_TYPE.FAVORITE,
+      );
+      this._handlersMap[SECTION_TYPE.FAVORITE].replaceAll(groups);
 
+      let result: Group[];
       if (more.length) {
         result = await groupService.getGroupsByIds(more);
         this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
