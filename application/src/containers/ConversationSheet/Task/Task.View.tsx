@@ -13,6 +13,7 @@ import {
   JuiTaskNotes,
   JuiTaskAvatarName,
   JuiTaskContent,
+  JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import {
@@ -21,6 +22,7 @@ import {
 } from 'jui/pattern/ConversationCard/Files';
 
 import { AvatarName } from './AvatarName';
+import { getDurationTime, getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 
 const downloadBtn = (downloadUrl: string) => (
@@ -79,8 +81,28 @@ class Task extends React.Component<ViewProps> {
 
   render() {
     const { task, files, t } = this.props;
-    const { section, color, text, notes, complete, assigned_to_ids } = task;
+    const {
+      section,
+      color,
+      text,
+      notes,
+      complete,
+      assigned_to_ids,
+      start,
+      end,
+      repeat,
+      repeatEndingAfter,
+      repeatEnding,
+      repeatEndingOn,
+    } = task;
     console.log(files, '-----files');
+    const time = getDurationTime(start, end);
+    const timeText = getDurationTimeText(
+      repeat,
+      repeatEndingAfter,
+      repeatEndingOn,
+      repeatEnding,
+    );
     return (
       <JuiConversationItemCard
         complete={complete}
@@ -88,6 +110,7 @@ class Task extends React.Component<ViewProps> {
         titleColor={color}
         icon={<JuiTaskCheckbox checked={complete || false} />}
       >
+        <JuiTimeMessage time={`${time} ${timeText}`} />
         <JuiTaskAvatarName
           avatarNames={this._taskAvatarNames}
           count={assigned_to_ids && assigned_to_ids.length}

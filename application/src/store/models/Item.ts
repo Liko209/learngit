@@ -2,7 +2,13 @@ import { Item } from 'sdk/models';
 import { observable } from 'mobx';
 import { TypeDictionary } from 'sdk/utils';
 import { FileItem, ExtendFileItem, FileType } from '@/store/models/Items';
-import { setFileData, setLinkData, setEventData, setTaskData } from './Items';
+import {
+  setFileData,
+  setLinkData,
+  setEventData,
+  setTaskData,
+  setNoteData,
+} from './Items';
 import Base from './Base';
 
 const ITEM_DATA_HANDLE_MAP = {

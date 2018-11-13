@@ -61,11 +61,13 @@ type TaskItem = {
   color: string;
   complete: boolean;
   notes: string;
-  start: number | null;
+  start: number;
+  end: number;
   section: string;
   repeat: string;
-  repeat_ending: string;
-  repeat_ending_after: string;
+  repeatEnding: string;
+  repeatEndingAfter: string;
+  repeatEndingOn: string;
   text: string;
   due: number;
   complete_type: string;
