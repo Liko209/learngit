@@ -110,12 +110,13 @@ class CreateTeamViewModel extends AbstractViewModel {
           canPost,
         },
       );
-      console.log(result);
+      console.log(result, '------creatssse team');
     } catch (err) {
+      console.log(err, '------creatssse err team');
       this.serverError = true;
       return;
     }
-
+    console.log(result, '------create team');
     if (result && (result as IResponseError).error) {
       throw this.createErrorHandler(result as IResponseError);
     }
