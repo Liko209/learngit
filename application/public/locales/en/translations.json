@@ -34,6 +34,8 @@
   "MembersMayPostMessages": "Allow members to post messages",
   "at": "at",
   "tomorrow": "tomorrow",
+  "avatarnamesWithOthers": " and other {{count}} people",
+  "Attachments": "Attachments",
   "repeatingEveryDay": "repeating every day",
   "repeatingEveryWeekday": "repeating every weekday",
   "repeatingEveryWeek": "repeating every week",
@@ -56,5 +58,6 @@
   "forYearlyTimes": "for $t(yearly, { 'count': {{count}} })",
   "until": "until",
   "hideEventHistory": "Hide",
-  "showEventHistory": "Show old"
+  "showEventHistory": "Show old",
+  "download": "download"
 }

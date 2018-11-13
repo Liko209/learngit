@@ -16,7 +16,7 @@ const globalStore = storeManager.getGlobalStore();
 class TopBarViewModel extends AbstractViewModel {
   brandName: string = 'RingCentral';
   @observable
-  private  _isShowDialog: boolean = false;
+  private _isShowDialog: boolean = false;
   @action
   updateLeftNavState = () => {
     const isLeftNavOpen = !globalStore.get(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
@@ -25,7 +25,6 @@ class TopBarViewModel extends AbstractViewModel {
 
   @action
   updateCreateTeamDialogState = () => {
-    console.log('open,-------------');
     const isShowCreateTeamDialog = !globalStore.get(
       GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
     );

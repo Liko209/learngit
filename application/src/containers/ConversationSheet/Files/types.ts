@@ -5,19 +5,7 @@
  */
 // import { RouteComponentProps } from 'react-router-dom';
 // import { TranslationFunction, i18n } from 'i18next';
-import { FileItem } from '@/store/models/Items';
-
-enum FileType {
-  image,
-  document,
-  others,
-}
-
-type ExtendFile = {
-  item: FileItem;
-  type: number;
-  previewUrl: string;
-};
+import { FileType, ExtendFileItem } from '@/store/models/Items';
 
 type FilesProps = {
   ids: number[];
@@ -25,12 +13,11 @@ type FilesProps = {
 
 type FilesViewProps = {
   files: {
-    [FileType.image]: ExtendFile[];
-    [FileType.document]: ExtendFile[];
-    [FileType.others]: ExtendFile[];
+    [FileType.image]: ExtendFileItem[];
+    [FileType.document]: ExtendFileItem[];
+    [FileType.others]: ExtendFileItem[];
   };
-  getFileIcon: (fileType: string) => string | null;
   ids: number[];
 };
 
-export { FilesProps, FilesViewProps, FileType, ExtendFile };
+export { FilesProps, FilesViewProps, FileType, ExtendFileItem };
