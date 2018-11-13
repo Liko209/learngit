@@ -75,17 +75,19 @@ class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
         titleColor={color}
         icon="event"
         footer={
-          <JuiEventCollapse
-            showText={t('showEventHistory')}
-            hideText={t('hideEventHistory')}
-          >
-            {hasOldTime && (
-              <JuiEventCollapseContent>{`${oldTime} ${oldTimeText}`}</JuiEventCollapseContent>
-            )}
-            {oldLocation && (
-              <JuiEventCollapseContent>{oldLocation}</JuiEventCollapseContent>
-            )}
-          </JuiEventCollapse>
+          (hasOldTime || oldLocation) && (
+            <JuiEventCollapse
+              showText={t('showEventHistory')}
+              hideText={t('hideEventHistory')}
+            >
+              {hasOldTime && (
+                <JuiEventCollapseContent>{`${oldTime} ${oldTimeText}`}</JuiEventCollapseContent>
+              )}
+              {oldLocation && (
+                <JuiEventCollapseContent>{oldLocation}</JuiEventCollapseContent>
+              )}
+            </JuiEventCollapse>
+          )
         }
       >
         {hasNewTime && <JuiTimeMessage time={`${newTime} ${newTimeText}`} />}
