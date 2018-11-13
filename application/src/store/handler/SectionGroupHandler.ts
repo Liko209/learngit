@@ -23,12 +23,8 @@ import { getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import _ from 'lodash';
 import storeManager from '@/store';
-<<<<<<< HEAD
-import history from '@/utils/history';
-import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
-=======
 import history from '@/history';
->>>>>>> develop
+import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
 
 const { GroupService } = service;
 

@@ -14,13 +14,8 @@ import {
 } from './fetch/types';
 import { BaseModel } from 'sdk/src/models';
 
-<<<<<<< HEAD
 abstract class TransformHandler<T, K extends BaseModel> {
-  fetchData: (direction: FetchDataDirection) => any;
-=======
-abstract class TransformHandler<T, K> {
   fetchData: (direction: FetchDataDirection, pageSize?: number) => any;
->>>>>>> develop
 
   constructor(
     protected _orderListHandler: FetchSortableDataListHandler<K>,
