@@ -7,7 +7,6 @@
 import { StreamViewModel } from '../Stream.ViewModel';
 import { POST_LIST_TYPE } from '../../types';
 import { service } from 'sdk';
-import { transform2Map } from '@/store/utils';
 import { notificationCenter } from 'sdk/service';
 const { ENTITY, EVENT_TYPES, PostService } = service;
 function setup(obj: any) {
@@ -67,21 +66,11 @@ describe('StreamViewModel', () => {
     const returnedEntity = new Map();
     returnedEntity.set(1, { id: 1 });
     expect(mockedSortableListHandler.onDataChanged).toBeCalledWith({
-      entities: returnedEntity,
-      type: 'put',
+      body: {
+        entities: returnedEntity,
+        ids: [1, 2],
+      },
+      type: 'update',
     });
-  });
-
-  it('should delete old post if user removed one of the post in the postIds list', () => {
-    const newPostEntities = new Map();
-    newPostEntities.set(1, { id: 1, deactivated: true });
-    newPostEntities.set(19, { id: 19, deactivated: true });
-    notificationCenter.emit(ENTITY.POST, {
-      type: EVENT_TYPES.DELETE,
-      entities: newPostEntities,
-    });
-    expect(
-      mockedSortableListHandler.sortableListStore.removeByIds,
-    ).toBeCalledWith([1]);
   });
 });
