@@ -255,6 +255,10 @@ export class MessagePanel extends BaseWebComponent {
     return this.getComponent(ConversationPage);
   }
 
+  get postListPage() {
+    return this.getSelectorByAutomationId('post-list-page');
+  }
+
   get moreMenu() {
     return this.getComponent(MoreMenu);
   }

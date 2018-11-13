@@ -37,6 +37,7 @@ const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
       <JuiDivider key="divider-filters" />
       {props.entries.map((entry, index) => (
         <JuiConversationListSectionHeader
+          data-test-automation-id="entry-mentions"
           key={entry.title}
           title={toTitleCase(props.t(entry.title))}
           icon={entry.icon}
