@@ -26,7 +26,7 @@ class TaskViewModel extends StoreViewModel<Props> {
 
   @computed
   get attachmentIds() {
-    return this.task.attachment_ids || [];
+    return this.task.attachmentIds || [];
   }
 
   @computed

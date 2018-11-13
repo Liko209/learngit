@@ -70,9 +70,9 @@ class Task extends React.Component<ViewProps> {
     const { task } = this.props;
     const { assignedToIds } = task;
 
-    const assignedIds = assignedToIds.splice(0, 2);
+    const assignedIds = assignedToIds ? assignedToIds.slice(0, 2) : [];
 
-    return assignedIds.map(assignedId => (
+    return assignedIds.map((assignedId: number) => (
       <AvatarName key={assignedId} id={assignedId} />
     ));
   }
