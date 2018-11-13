@@ -419,7 +419,23 @@ module.exports = {
         new RegExp("/[^/]+\\.[^/]+$")
       ],
       globDirectory: paths.appPublic,
-      globPatterns: ["theme/**/*.json", "locales/**/*.json"]
+      globPatterns: ["theme/**/*.json", "locales/**/*.json"],
+      runtimeCaching: [
+        {
+          urlPattern: new RegExp("https://glipdevasia-dev.s3.amazonaws.com"),
+          handler: "staleWhileRevalidate"
+        },
+        {
+          urlPattern: new RegExp(
+            "https://glipasialabnet-xmnup.s3.amazonaws.com"
+          ),
+          handler: "staleWhileRevalidate"
+        },
+        {
+          urlPattern: new RegExp("https://d2rbro28ib85bu.cloudfront.net"),
+          handler: "staleWhileRevalidate"
+        }
+      ]
     }),
     ...[
       argv.indexOf("--analyze") !== -1 ? new BundleAnalyzerPlugin() : () => {}
