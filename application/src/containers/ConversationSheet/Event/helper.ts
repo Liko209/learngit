@@ -34,11 +34,11 @@ const REPEAT_TEXT = {
 };
 
 const TIMES_TEXT = {
-  daily: (count: number) => getI18Text('forDayTimes_interval', count),
-  weekly: (count: number) => getI18Text('forWeekTimes_interval', count),
-  weekdaily: (count: number) => getI18Text('forWeekdailyTimes_interval', count),
-  monthly: (count: number) => getI18Text('forMonthlyTimes_interval', count),
-  yearly: (count: number) => getI18Text('forYearlyTimes_interval', count),
+  daily: 'forDayTimes_interval',
+  weekly: 'forWeekTimes_interval',
+  weekdaily: 'forWeekdailyTimes_interval',
+  monthly: 'forMonthlyTimes_interval',
+  yearly: 'forYearlyTimes_interval',
 };
 
 function getDurationTimeText(
@@ -48,7 +48,9 @@ function getDurationTimeText(
   repeatEnding: string,
 ) {
   const times =
-    (TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter))) || '';
+    (TIMES_TEXT[repeat] &&
+      getI18Text(TIMES_TEXT[repeat], Number(repeatEndingAfter))) ||
+    '';
 
   const date = repeatEndingOn
     ? getDateMessage(repeatEndingOn, 'ddd, MMM D')
