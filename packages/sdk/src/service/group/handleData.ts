@@ -404,16 +404,16 @@ function getUniqMostRecentPostsByGroup(posts: Post[]): Post[] {
 
 async function handleGroupMostRecentPostChanged({
   type,
-  entities,
+  body,
 }: {
   type: EVENT_TYPES;
-  entities: any;
+  body: any;
 }) {
-  if (type !== EVENT_TYPES.UPDATE || !entities) {
+  if (type !== EVENT_TYPES.UPDATE || !body.entities) {
     return;
   }
   const posts: Post[] = [];
-  entities.forEach((item: Post) => posts.push(item));
+  body.entities.forEach((item: Post) => posts.push(item));
   const uniqMaxPosts = getUniqMostRecentPostsByGroup(posts);
   const groupDao = daoManager.getDao(GroupDao);
   let validGroups: Partial<Raw<Group>>[] = [];
