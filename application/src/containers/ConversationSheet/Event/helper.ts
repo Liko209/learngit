@@ -10,7 +10,7 @@ function getDateAndTime(timestamp: number) {
   return `${date} ${t('at')} ${getAMOrPM}`;
 }
 
-function getDurtionTime(startTimestamp: number, endTimestamp: number) {
+function getDurationTime(startTimestamp: number, endTimestamp: number) {
   const startTime = getDateAndTime(startTimestamp);
   let endTime = getDateAndTime(endTimestamp);
   const isToday = startTime.split(' ')[0] === endTime.split(' ')[0];
@@ -37,7 +37,7 @@ const TIMES_TEXT = {
   yearly: (count: number) => t('forYearlyTimes', { count }),
 };
 
-function getDurtionTimeText(
+function getDurationTimeText(
   repeat: string,
   repeatEndingAfter: string,
   repeatEndingOn: string,
@@ -60,4 +60,4 @@ function getDurtionTimeText(
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }
 
-export { getDateAndTime, getDurtionTime, getDurtionTimeText };
+export { getDateAndTime, getDurationTime, getDurationTimeText };
