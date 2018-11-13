@@ -178,7 +178,6 @@ export type Post = ExtendedBaseModel & {
   links?: object[];
   items?: object[];
   status?: POST_STATUS;
-  activity_data: object;
 };
 
 export type ItemVersionPage = {

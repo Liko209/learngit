@@ -1,11 +1,10 @@
 import moment from 'moment';
-import i18next, { t } from 'i18next';
+import { t } from 'i18next';
 
 function getDateMessage(
   timestamp: any,
   format: string = 'ddd, MMM Do',
 ): string {
-  moment.locale(i18next.language);
   const m = moment(timestamp)
     .hour(0)
     .minute(0)
