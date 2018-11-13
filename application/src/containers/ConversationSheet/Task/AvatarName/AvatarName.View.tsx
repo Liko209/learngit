@@ -17,7 +17,7 @@ class AvatarNameView extends React.Component<ViewProps> {
     return (
       <JuiAvatarName
         key={id}
-        avatar={<Avatar uid={id} size="small" />}
+        Avatar={<Avatar uid={id} size="small" />}
         name={name}
       />
     );

@@ -63,9 +63,9 @@ type TaskItem = {
   repeatEndingOn: string;
   text: string;
   due: number;
-  complete_type: string;
-  assigned_to_ids: number[];
-  attachment_ids: number[];
+  completeType: string;
+  assignedToIds: number[];
+  attachmentIds: number[];
 } & ItemModel;
 
 type NoteItem = {
