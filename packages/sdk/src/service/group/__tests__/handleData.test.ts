@@ -107,9 +107,6 @@ beforeEach(() => {
   AccountService.getInstance = jest.fn().mockReturnValue(accountService);
   PersonService.getInstance = jest.fn().mockReturnValue(personService);
   ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-  accountService.getConversationListLimits.mockReturnValue(
-    DEFAULT_CONVERSATION_LIST_LIMITS,
-  );
 });
 
 describe('handleData()', () => {

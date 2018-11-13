@@ -24,8 +24,6 @@ import {
 } from '../../models';
 import StateService from '../state';
 import { mainLogger } from 'foundation';
-import AccountService from '../account';
-import { GROUP_QUERY_TYPE } from '../constants';
 
 async function getExistedAndTransformDataFromPartial(
   groups: Partial<Raw<Group>>[],
@@ -136,7 +134,6 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
 }
 
 async function doNotification(deactivatedData: Group[], groups: Group[]) {
-  const accountService: AccountService = AccountService.getInstance();
   const profileService: ProfileService = ProfileService.getInstance();
   const profile = await profileService.getProfile();
   const hiddenGroupIds = profile ? extractHiddenGroupIds(profile) : [];
@@ -152,17 +149,17 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   deactivatedGroups.length &&
     notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroups);
 
-  const limits = accountService.getConversationListLimits();
+  const limit = await profileService.getMaxLeftRailGroup();
 
   let addedTeams = normalData.filter(
     (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
   );
-  addedTeams = await filterGroups(addedTeams, limits[GROUP_QUERY_TYPE.TEAM]);
+  addedTeams = await filterGroups(addedTeams, limit);
 
   let addedGroups = normalData.filter(
     (item: Group) => !item.is_team && favIds.indexOf(item.id) === -1,
   );
-  addedGroups = await filterGroups(addedGroups, limits[GROUP_QUERY_TYPE.GROUP]);
+  addedGroups = await filterGroups(addedGroups, limit);
 
   const addFavorites = normalData.filter(
     (item: Group) => favIds.indexOf(item.id) !== -1,

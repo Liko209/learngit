@@ -20,6 +20,8 @@ const handleGroupIncomesNewPost = (groupIds: number[]) => {
   profileService.handleGroupIncomesNewPost(groupIds);
 };
 
+const DEFAULT_LEFTRAIL_GROUP: number = 20;
+
 export default class ProfileService extends BaseService<Profile> {
   static serviceName = 'ProfileService';
   constructor() {
@@ -357,5 +359,13 @@ export default class ProfileService extends BaseService<Profile> {
     } catch (e) {
       return ErrorParser.parse(e);
     }
+  }
+
+  async getMaxLeftRailGroup(): Promise<number> {
+    const profile = await this.getProfile();
+    if (profile && profile.max_leftrail_group_tabs2) {
+      return profile.max_leftrail_group_tabs2;
+    }
+    return DEFAULT_LEFTRAIL_GROUP;
   }
 }
