@@ -23,18 +23,23 @@ function getDurtionTime(startTimestamp: number, endTimestamp: number) {
 
 const REPEAT_TEXT = {
   daily: 'repeatingEveryDay', // ', repeating every day',
-  weekdaily: 'repeatingEveryWeek',
+  weekdaily: 'repeatingEveryWeekday',
   weekly: 'repeatingEveryWeek',
   monthly: 'repeatingEveryMonth',
   yearly: 'repeatingEveryYear',
 };
 
 const TIMES_TEXT = {
-  daily: (count: number) => t('forDayTimes', { count }),
-  weekly: (count: number) => t('forWeekTimes', { count }),
-  weekdaily: (count: number) => t('forWeekTimes', { count }),
-  monthly: (count: number) => t('forMonthlyTimes', { count }),
-  yearly: (count: number) => t('forYearlyTimes', { count }),
+  daily: (count: number) =>
+    t('forDayTimes_interval', { count, postProcess: 'interval' }),
+  weekly: (count: number) =>
+    t('forWeekTimes_interval', { count, postProcess: 'interval' }),
+  weekdaily: (count: number) =>
+    t('forWeekdailyTimes_interval', { count, postProcess: 'interval' }),
+  monthly: (count: number) =>
+    t('forMonthlyTimes_interval', { count, postProcess: 'interval' }),
+  yearly: (count: number) =>
+    t('forYearlyTimes_interval', { count, postProcess: 'interval' }),
 };
 
 function getDurtionTimeText(
@@ -43,8 +48,19 @@ function getDurtionTimeText(
   repeatEndingOn: string,
   repeatEnding: string,
 ) {
+  console.log(
+    repeat, // weekly
+    repeatEndingAfter, // 1
+    repeatEndingOn, // null
+    repeatEnding, // none
+    '-----event',
+  );
   const times =
     (TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter))) || '';
+  console.log(
+    t('key2_interval', { postProcess: 'interval', count: 4 }),
+    '---event -ttt',
+  );
   const date = repeatEndingOn
     ? getDateMessage(repeatEndingOn, 'ddd, MMM D')
     : '';

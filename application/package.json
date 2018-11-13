@@ -15,6 +15,7 @@
     "hoist-non-react-statics": "3.1.0",
     "i18next": "12.0.0",
     "i18next-browser-languagedetector": "2.2.3",
+    "i18next-intervalplural-postprocessor": "^1.0.2",
     "i18next-xhr-backend": "1.5.1",
     "jui": "0.1.0",
     "libphonenumber-js": "1.6.4",
