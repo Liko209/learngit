@@ -434,6 +434,20 @@ module.exports = {
         {
           urlPattern: new RegExp("https://d2rbro28ib85bu.cloudfront.net"),
           handler: "staleWhileRevalidate"
+        },
+        {
+          urlPattern: new RegExp(
+            "https://aws13-g04-uds02.asialab.glip.net:11907"
+          ),
+          handler: "staleWhileRevalidate"
+        },
+        {
+          urlPattern: new RegExp("https://cache.glip.com"),
+          handler: "staleWhileRevalidate"
+        },
+        {
+          urlPattern: new RegExp("https://xmnup.asialab.glip.net:31337"),
+          handler: "staleWhileRevalidate"
         }
       ]
     }),
