@@ -1,0 +1,6 @@
+{
+  "on_push": {
+    "fixtures": ["./fixtures/LeftNav/LeftNavigator.ts"],
+    "browsers": ["selenium:chrome"]
+ }
+}
