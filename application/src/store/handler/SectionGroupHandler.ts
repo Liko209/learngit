@@ -101,8 +101,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const inters = _.intersection(this._hiddenGroupIds, [...this._idSet]);
     if (inters.length) {
       inters.forEach(id => this._idSet.delete(id));
-      Object.keys(this._handlersMap).forEach((key: string) => {
-        this._handlersMap[key].removeByIds(inters);
+      Object.keys(this._handlersMap).forEach((key: SECTION_TYPE) => {
+        this._removeByIds(key, inters);
       });
       this._updateUrl(EVENT_TYPES.DELETE, inters);
     }
@@ -127,12 +127,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         result = await groupService.getGroupsByIds(more);
         this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
         this._handlersMap[SECTION_TYPE.TEAM].upsert(result);
-        this._handlersMap[SECTION_TYPE.FAVORITE].removeByIds(more);
+        this._removeByIds(SECTION_TYPE.FAVORITE, more);
       }
       if (less.length) {
         result = await groupService.getGroupsByIds(less);
-        this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].removeByIds(less);
-        this._handlersMap[SECTION_TYPE.TEAM].removeByIds(less);
+        this._removeByIds(SECTION_TYPE.DIRECT_MESSAGE, less);
+        this._removeByIds(SECTION_TYPE.TEAM, less);
         this._handlersMap[SECTION_TYPE.FAVORITE].upsert(result);
         let shouldReportChanged = false;
         less.forEach((id: number) => {
@@ -309,14 +309,20 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     type: SECTION_TYPE,
     limit: number,
   ) {
-    const groupIds = this.getGroupIds(type);
-    const lastGroupIndex = groupIds.indexOf(this._lastGroupId);
+    const lastGroupIndex = this.getGroupIds(type).indexOf(this._lastGroupId);
     if (lastGroupIndex >= limit) {
-      if (!this._hasUnreadInGroups(groupIds)) {
-        const handler = this._handlersMap[type];
-        handler.removeByIds([this._lastGroupId]);
+      if (!this._hasUnreadInGroups([this._lastGroupId])) {
+        this._removeByIds(type, [this._lastGroupId]);
       }
     }
+  }
+
+  private _removeByIds(type: SECTION_TYPE, ids: number[]) {
+    if (ids.length === 0) return;
+
+    const handler = this._handlersMap[type];
+    handler.removeByIds(ids);
+    ids.forEach(id => this._idSet.delete(id));
   }
 
   private async _getStates(groupIds: number[]): Promise<GroupState[]> {
@@ -353,7 +359,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     type: SECTION_TYPE,
     limit: number,
   ) {
-    const handler = this._handlersMap[type];
     const directGroupIds = this.getGroupIds(type);
     const stateService = StateService.getInstance<service.StateService>();
     const states =
@@ -365,7 +370,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       limit,
       this._lastGroupId,
     );
-    ids.length && handler.removeByIds(ids);
+    this._removeByIds(type, ids);
   }
   /*
   FIJI-1269
