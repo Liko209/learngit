@@ -25,6 +25,7 @@
     "./typings/images.d.ts",
     "./typings/chat-view.d.ts",
     "./typings/string-natural-compare.d.ts",
+    "./typings/react-visibility-sensor.d.ts",
     "./typings/glipdown.d.ts"
   ]
 }

@@ -17,7 +17,7 @@ import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { BackNForward } from '@/containers/BackNForward';
-import { isElectron } from '@/utils';
+import isElectron from '@/common/isElectron';
 
 type TopBarProps = WithNamespaces & {
   signOut: Function;

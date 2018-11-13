@@ -17,6 +17,8 @@ type ConversationCardViewProps = {
   customStatus?: string;
   createTime: string;
   itemIds: number[];
+  showProgressActions: boolean;
+  likes?: number[];
 };
 
 export { ConversationCardProps, ConversationCardViewProps };

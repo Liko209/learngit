@@ -70,7 +70,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     text-transform: none;
     ${typography('button')};
     &.containedButtonStyle {
-      color: white;
+      color: ${palette('common', 'white')};
       ${shadow(3)}
       &:hover {
         background-color: ${({ theme, color = 'primary' }) =>

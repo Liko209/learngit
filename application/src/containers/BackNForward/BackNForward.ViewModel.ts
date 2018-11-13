@@ -6,9 +6,9 @@
 
 import { action, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import history from '@/utils/history';
-import historyStack from '@/utils/HistoryStack';
-import getDocTitle from '@/utils/getDocTitle';
+import history from '@/history';
+import historyStack from '@/common/HistoryStack';
+import getDocTitle from '@/common/getDocTitle';
 import { OPERATION } from 'jui/pattern/HistoryOperation';
 
 class BackNForwardViewModel extends StoreViewModel {

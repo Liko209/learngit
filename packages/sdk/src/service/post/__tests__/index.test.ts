@@ -1,5 +1,5 @@
 /// <reference path="../../../__tests__/types.d.ts" />
-import { daoManager, PostDao, ItemDao } from '../../../dao';
+import { daoManager, PostDao, ItemDao, GroupConfigDao } from '../../../dao';
 import PostAPI from '../../../api/glip/post';
 import itemHandleData from '../../item/handleData';
 import { baseHandleData } from '../handleData';
@@ -31,6 +31,7 @@ describe('PostService', () => {
   const profileService = new ProfileService();
   const postDao = new PostDao(null);
   const itemDao = new ItemDao(null);
+  const groupConfigDao = new GroupConfigDao(null);
   const postMockInfo = postFactory.build({
     id: -1,
     created_at: 11111,
@@ -53,6 +54,7 @@ describe('PostService', () => {
     GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     daoManager.getDao.mockReturnValueOnce(postDao);
     daoManager.getDao.mockReturnValueOnce(itemDao);
+    daoManager.getDao.mockReturnValueOnce(groupConfigDao);
   });
 
   describe('getPostsFromLocal()', () => {
@@ -205,14 +207,25 @@ describe('PostService', () => {
     });
 
     it('should return local data', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * We have 2 posts total at local, 0 at remote.
        */
       postService.getPostsFromLocal.mockResolvedValueOnce({
         posts: [{ id: 1 }, { id: 2 }],
         items: [],
+        hasMore: true,
+      });
+
+      postService.getPostsFromRemote.mockResolvedValueOnce({
+        posts: [],
+        items: [],
         hasMore: false,
       });
+
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
       const resultEmpty = await postService.getPostsByGroupId({
         groupId: 1,
         offset: 0,
@@ -233,6 +246,8 @@ describe('PostService', () => {
     });
 
     it('should return remote data', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * 2 posts total, 2 at remote, 0 at local.
        */
@@ -246,6 +261,8 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
 
       baseHandleData.mockResolvedValue([{ id: 1 }, { id: 2 }]);
       itemHandleData.mockResolvedValue([]);
@@ -265,6 +282,8 @@ describe('PostService', () => {
     });
 
     it('should return local+remote data when localData + remoteData < pageSize', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * 4 posts total, 2 at local, 2 at remote.
        * When pageSize is 20, it should return all 4 posts.
@@ -279,9 +298,11 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
-
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
       baseHandleData.mockResolvedValue([{ id: 3 }, { id: 4 }]);
       itemHandleData.mockResolvedValue([]);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
 
       const result = await postService.getPostsByGroupId({
         groupId: 1,
@@ -298,6 +319,8 @@ describe('PostService', () => {
     });
 
     it('should return local+remote data when localData + remoteData > pageSize', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * 4 posts total, 2 of them at local, 2 at remote.
        * When pageSize is 3, it should return 3 posts (2 local + 1 remote).
@@ -312,7 +335,8 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
-
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
       baseHandleData.mockResolvedValue([{ id: 3 }]);
       itemHandleData.mockResolvedValue([]);
 
@@ -458,47 +482,52 @@ describe('PostService', () => {
   describe('like post', () => {
     it('should return null when post id is negative', async () => {
       const result = await postService.likePost(-1, 101, true);
-      expect(result).toBe(null);
+      expect(result).toBe(undefined);
     });
     it('should return null when post is not eixt in local', async () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       postDao.get.mockResolvedValueOnce(null);
       const result = await postService.likePost(100, 101, true);
-      expect(result).toBe(null);
+      expect(result).toBe(undefined);
     });
     it('should return post with likes', async () => {
+      const post = { id: 100, likes: [] };
       daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce({ id: 100, likes: [] });
+      postDao.get.mockResolvedValueOnce(post);
       PostAPI.putDataById.mockResolvedValueOnce({
         data: { _id: 100, likes: [101] },
       });
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
-      expect(result.likes).toEqual([101]);
+      expect(post.likes).toEqual([101]);
     });
     it('should return old post if person id is not in post likes when to unlike', async () => {
+      const post = { id: 100, likes: [] };
       daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce({ id: 100, likes: [101] });
-      const result = await postService.likePost(100, 102, false);
-      expect(result.likes).toEqual([101]);
+      postDao.get.mockResolvedValueOnce(post);
+      await postService.likePost(100, 102, false);
+      expect(post.likes).toEqual([]);
     });
     it('should return old post if person id is in post likes when to like', async () => {
+      const post = { id: 100, likes: [] };
       daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce({ id: 100, likes: [101] });
+      postDao.get.mockResolvedValueOnce(post);
       const result = await postService.likePost(100, 101, true);
-      expect(result.likes).toEqual([101]);
+      expect(post.likes).toEqual([101]);
     });
 
     it('should return new post if person id is in post likes when to unlike', async () => {
+      const postInDao = { id: 100, likes: [101, 102] };
+      const postInApi = { _id: 100, likes: [102] };
       daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce({ id: 100, likes: [101, 102] });
+      postDao.get.mockResolvedValueOnce(postInDao);
       PostAPI.putDataById.mockResolvedValueOnce({
-        data: { _id: 100, likes: [102] },
+        data: postInApi,
       });
 
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [102] }]);
       const result = await postService.likePost(100, 101, false);
-      expect(result.likes).toEqual([102]);
+      expect(postInDao.likes).toEqual([102]);
     });
 
     it('should return new post if person id is in post likes when to unlike', async () => {
@@ -508,7 +537,7 @@ describe('PostService', () => {
         error: { _id: 100, likes: [102] },
       });
       const result = await postService.likePost(100, 101, false);
-      expect(result).toBeNull();
+      expect(result).toBeUndefined();
     });
   });
 
@@ -554,7 +583,7 @@ describe('PostService', () => {
     it('book post should return null', async () => {
       profileService.putFavoritePost.mockResolvedValueOnce(null);
       const result = await postService.bookmarkPost(1, true);
-      expect(result).toBeNull();
+      expect(result).toBeUndefined();
     });
   });
 

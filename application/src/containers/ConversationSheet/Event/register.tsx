@@ -1,8 +1,8 @@
-import React from 'react';
 import { TypeDictionary } from 'sdk/utils';
+import { Event } from './';
 
 export default {
   priority: 0,
-  component: () => <span>Event</span>,
+  component: Event,
   type: TypeDictionary.TYPE_ID_EVENT,
 };
