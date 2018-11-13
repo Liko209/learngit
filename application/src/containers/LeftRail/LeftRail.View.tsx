@@ -10,7 +10,7 @@ import { JuiConversationListFilter } from 'jui/pattern/ConversationList/Conversa
 
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
-import { toTitleCase } from '@/utils';
+import { toTitleCase } from '@/utils/string';
 import {
   JuiLeftRail,
   JuiLeftRailStickyTop,

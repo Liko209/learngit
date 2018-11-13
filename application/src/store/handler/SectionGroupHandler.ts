@@ -23,7 +23,8 @@ import { getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import _ from 'lodash';
 import storeManager from '@/store';
-import history from '@/utils/history';
+import history from '@/history';
+import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
 
 const { GroupService } = service;
 
@@ -110,19 +111,19 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       this._oldFavGroupIds = newFavIds;
       // handle favorite section change
       const groupService = GroupService.getInstance<service.GroupService>();
-      let result = await groupService.getGroupsByType(
-        GROUP_QUERY_TYPE.FAVORITE,
-      );
-      this._handlersMap[SECTION_TYPE.FAVORITE].replaceAll(result);
+      let result: Group[];
 
       if (more.length) {
         result = await groupService.getGroupsByIds(more);
         this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
         this._handlersMap[SECTION_TYPE.TEAM].upsert(result);
+        this._handlersMap[SECTION_TYPE.FAVORITE].removeByIds(more);
       }
       if (less.length) {
+        result = await groupService.getGroupsByIds(less);
         this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].removeByIds(less);
         this._handlersMap[SECTION_TYPE.TEAM].removeByIds(less);
+        this._handlersMap[SECTION_TYPE.FAVORITE].upsert(result);
         let shouldReportChanged = false;
         less.forEach((id: number) => {
           if (!this._idSet.has(id)) {
@@ -137,17 +138,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   private _updateIdSet(type: EVENT_TYPES, ids: number[]) {
     let isChanged: boolean = false;
-    if (type === EVENT_TYPES.REPLACE_ALL) {
-      this._idSet = new Set(ids);
-      isChanged = true;
-    } else if (type === EVENT_TYPES.DELETE) {
+    if (type === EVENT_TYPES.DELETE) {
       ids.forEach((id: number) => {
         if (this._idSet.has(id)) {
           isChanged = true;
           this._idSet.delete(id);
         }
       });
-    } else if (type === EVENT_TYPES.PUT) {
+    } else if (type === EVENT_TYPES.UPDATE) {
       ids.forEach((id: number) => {
         if (!this._idSet.has(id) && this._hiddenGroupIds.indexOf(id) === -1) {
           this._idSet.add(id);
@@ -161,17 +159,26 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _subscribeNotification() {
-    this.subscribeNotification(ENTITY.GROUP, ({ type, entities }) => {
-      const keys = Object.keys(this._handlersMap);
-      const ids: number[] = [...entities.keys()];
-      // update url
-      this._updateUrl(type, ids);
-      // handle id sets
-      this._updateIdSet(type, ids);
-      keys.forEach((key: string) => {
-        this._handlersMap[key].onDataChanged({ type, entities });
-      });
-    });
+    this.subscribeNotification(
+      ENTITY.GROUP,
+      (payload: NotificationEntityPayload<Group>) => {
+        const keys = Object.keys(this._handlersMap);
+        let ids: number[] = [];
+        if (
+          payload.type === EVENT_TYPES.DELETE ||
+          payload.type === EVENT_TYPES.UPDATE
+        ) {
+          ids = payload.body!.ids!;
+        }
+        // update url
+        this._updateUrl(payload.type, ids);
+        // handle id sets
+        this._updateIdSet(payload.type, ids);
+        keys.forEach((key: string) => {
+          this._handlersMap[key].onDataChanged(payload);
+        });
+      },
+    );
   }
 
   private _updateUrl(type: EVENT_TYPES, ids: number[]) {
@@ -179,7 +186,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const currentGroupId = storeManager
         .getGlobalStore()
         .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-      if (ids.indexOf(currentGroupId) !== -1) {
+      if (_.findIndex(ids, currentGroupId) !== -1) {
         history.replace('/messages');
       }
     }

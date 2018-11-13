@@ -6,7 +6,7 @@
 import config from './config';
 import { Sdk, LogControlManager, service } from 'sdk';
 import storeManager from '@/store';
-import history from '@/utils/history';
+import history from '@/history';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { parse } from 'qs';
 

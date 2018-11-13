@@ -13,14 +13,23 @@ import styled from '../../foundation/styled-components';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
+import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 
-const StyledIconography = styled(JuiIconography)``;
+const StyledRightWrapper = styled.div`
+  width: ${width(5)};
+  height: ${height(5)};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const StyledIconographyMore = styled(JuiIconography)``;
 
 const StyledListItem = styled(MuiMenuItem)`
   && {
     display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
     white-space: nowrap;
-    background: white;
+    background: ${palette('common', 'white')};
     padding: ${spacing(0, 4, 0, 3)};
     height: ${height(8)};
     line-height: ${height(8)};
@@ -37,27 +46,28 @@ const StyledListItem = styled(MuiMenuItem)`
     color: ${palette('primary', 'main')};
   }
 
+  && ${StyledIconographyMore} {
+    color: ${palette('grey', '400')};
+    display: none;
+    font-size: ${spacing(5)};
+  }
+
   &&&:hover {
     background-color: ${grey('50')};
-  }
-
-  && ${StyledIconography} {
-    color: ${palette('grey', '400')};
-    opacity: 0;
-    transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    font-size: 20px;
-  }
-
-  &&:hover ${StyledIconography} {
-    opacity: 1;
+    ${StyledIconographyMore} {
+      display: inline-block;
+    }
+    ${StyledIconographyDraft},
+    ${StyledIconographyFailure} {
+      display: none;
+    }
   }
 
   &&.selected {
-    background: white;
-  }
-
-  &&.selected p {
-    color: ${palette('primary', 'main')};
+    background: ${palette('common', 'white')};
+    p {
+      color: ${palette('primary', 'main')};
+    }
   }
 
   &&:last-child {
@@ -123,11 +133,14 @@ const JuiConversationListItem: IConversationListItem = (
       {...rest}
     >
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-      <ItemText style={{ fontWeight }}>
-        {indicator} {title}
-      </ItemText>
+      <ItemText style={{ fontWeight }}>{title}</ItemText>
       {umi}
-      <StyledIconography onClick={onMoreClick}>more_vert</StyledIconography>
+      <StyledRightWrapper>
+        {indicator}
+        <StyledIconographyMore onClick={onMoreClick}>
+          more_vert
+        </StyledIconographyMore>
+      </StyledRightWrapper>
     </StyledListItem>
   );
 };

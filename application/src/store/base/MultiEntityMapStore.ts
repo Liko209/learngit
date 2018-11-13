@@ -3,19 +3,20 @@ import { createAtom, IAtom, action } from 'mobx';
 import { service } from 'sdk';
 import { BaseService } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
-
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import visibilityChangeEvent from './visibilityChangeEvent';
-import { IIncomingData, IEntity, IEntitySetting } from '../store';
+import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
+import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
+import { Raw } from 'sdk/src/models';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
 
 export default class MultiEntityMapStore<
   T extends BaseModel,
-  K extends IEntity
+  K extends Entity
 > extends BaseStore {
   private _data: { [id: number]: K } = {};
   private _atom: { [id: number]: IAtom } = {};
@@ -25,18 +26,16 @@ export default class MultiEntityMapStore<
   private _maxCacheCount: number;
   private _service: BaseService<T>;
 
-  private _eventType = [EVENT_TYPES.RESET, EVENT_TYPES.RELOAD];
-
   constructor(
     entityName: ENTITY_NAME,
-    { service, event, cacheCount }: IEntitySetting,
+    { service, event, cacheCount }: EntitySetting,
   ) {
     super(entityName);
 
     this._getService = service;
     this._maxCacheCount = cacheCount;
-    const callback = ({ type, entities }: IIncomingData<T>) => {
-      this.handleIncomingData({ type, entities });
+    const callback = (payload: NotificationEntityPayload<T>) => {
+      this.handleIncomingData(payload);
     };
     event.forEach((eventName: string) => {
       this.subscribeNotification(eventName, callback);
@@ -44,41 +43,42 @@ export default class MultiEntityMapStore<
     visibilityChangeEvent(this._refreshCache.bind(this));
   }
 
-  handleIncomingData({ type, entities }: IIncomingData<T>) {
-    if (entities && !entities.size && this._eventType.includes[type]) {
-      return;
-    }
+  handleIncomingData(payload: NotificationEntityPayload<T>) {
     const existKeys: number[] = Object.keys(this._data).map(Number);
-    const matchedKeys: number[] = entities
-      ? _.intersection(Array.from(entities.keys()), existKeys)
-      : [];
-    if (type === EVENT_TYPES.DELETE) {
-      this.batchRemove(matchedKeys);
-    } else {
-      const matchedEntities: (T | { id: number; data: T })[] = [];
-      matchedKeys.forEach((key: number) => {
-        const entity = entities.get(key);
-        if (entity) {
-          matchedEntities.push(entity);
+    switch (payload.type) {
+      case EVENT_TYPES.RESET:
+        this.reset();
+        break;
+      case EVENT_TYPES.RELOAD:
+        this.reload();
+        break;
+      case EVENT_TYPES.DELETE:
+        {
+          const matchedKeys = _.intersection(payload.body.ids, existKeys);
+          this.batchRemove(matchedKeys);
         }
-      });
-      switch (type) {
-        case EVENT_TYPES.UPDATE:
-          this.batchDeepSet(matchedEntities as T[]);
-          break;
-        case EVENT_TYPES.REPLACE:
-          this.batchReplace(matchedEntities as { id: number; data: T }[]);
-          break;
-        case EVENT_TYPES.RELOAD:
-          this.reload();
-          break;
-        case EVENT_TYPES.RESET:
-          this.reset();
-          break;
-        default:
-          this.batchSet(matchedEntities as T[]);
-          break;
-      }
+        break;
+      case EVENT_TYPES.REPLACE:
+        {
+          const entities = payload.body.entities;
+          this.batchReplace(entities);
+        }
+        break;
+      case EVENT_TYPES.UPDATE:
+        {
+          const partials = payload.body.partials;
+          const entities = payload.body.entities;
+          if (partials) {
+            this.batchUpdate(partials);
+          } else {
+            entities.forEach((entity: T) => {
+              if (this._data[entity.id]) {
+                this.set(entity);
+              }
+            });
+          }
+        }
+        break;
     }
   }
 
@@ -91,40 +91,35 @@ export default class MultiEntityMapStore<
     this._atom[id].reportChanged();
   }
 
+  @action
+  batchUpdate(partials: Map<number, Partial<Raw<T>>>) {
+    partials.forEach((partialEntity, id) => {
+      const model = this._data[id];
+      if (model) {
+        Object.keys(partialEntity).forEach((key: string) => {
+          model[_.camelCase(key)] = partialEntity[key];
+        });
+      }
+    });
+  }
+
   batchSet(entities: T[]) {
-    if (!entities.length) {
-      return;
-    }
     entities.forEach((entity: T) => {
       this.set(entity);
     });
   }
 
-  batchDeepSet(entities: T[]) {
-    if (!entities.length) {
-      return;
-    }
-    entities.forEach((entity: T) => {
-      const { id } = entity;
-      const obs = this.get(id);
-      _.merge(obs, this.createModel(entity));
-      this._atom[id].reportChanged();
-    });
-  }
-
-  batchReplace(entities: { id: number; data: T }[]) {
-    if (!entities.length) {
-      return;
-    }
-    entities.forEach((entity: { id: number; data: T }) => {
-      const { id, data } = entity;
-      this.remove(id);
-      this.set(data);
+  batchReplace(entities: Map<number, T>) {
+    entities.forEach((entity, id) => {
+      if (this._data[id]) {
+        this.remove(id);
+        this.set(entity);
+      }
     });
   }
 
   remove(id: number) {
-    const model = this.get(id);
+    const model = this._data[id];
     if (model) {
       delete this._data[id];
       delete this._atom[id];
