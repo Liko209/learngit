@@ -248,11 +248,12 @@ async function saveDataAndDoNotification(groups: Group[]) {
 }
 
 export default async function handleData(groups: Raw<Group>[]) {
-  console.time('grouphandleData');
-
   if (groups.length === 0) {
     return;
   }
+
+  const logLabel = `[Performance]grouphandleData ${Date.now()}`;
+  console.time(logLabel);
   // const dao = daoManager.getDao(GroupDao);
   const accountDao = daoManager.getKVDao(AccountDao);
   const userId = Number(accountDao.get(ACCOUNT_USER_ID));
@@ -269,7 +270,7 @@ export default async function handleData(groups: Raw<Group>[]) {
   // if (shouldCheckIncompleteMembers) {
   //   await checkIncompleteGroupsMembers(normalGroups);
   // }
-  console.timeEnd('grouphandleData');
+  console.timeEnd(logLabel);
 }
 
 async function doFavoriteGroupsNotification(favIds: number[]) {
