@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-enum PostType {
-  notification = 'notification',
-  post = 'post',
+enum POST_TYPE {
+  NOTIFICATION,
+  POST,
 }
 
 type ConversationPostProps = {
@@ -15,7 +15,7 @@ type ConversationPostProps = {
 
 type ConversationPostViewProps = {
   id: number;
-  type: PostType;
+  type: POST_TYPE;
 };
 
-export { ConversationPostProps, ConversationPostViewProps, PostType };
+export { ConversationPostProps, ConversationPostViewProps, POST_TYPE };

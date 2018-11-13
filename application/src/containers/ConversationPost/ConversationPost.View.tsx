@@ -5,16 +5,16 @@
  */
 
 import React, { Component } from 'react';
-import { ConversationPostViewProps, PostType } from './types';
+import { ConversationPostViewProps, POST_TYPE } from './types';
 import { ConversationCard } from '../ConversationCard';
 import { Notification } from './Notification';
 
 const PostTypeMappingComponent = {
-  post: ConversationCard,
-  notification: Notification,
+  [POST_TYPE.POST]: ConversationCard,
+  [POST_TYPE.NOTIFICATION]: Notification,
 };
 
-const factory = (type: PostType, postId: number) => {
+const factory = (type: POST_TYPE, postId: number) => {
   const Component = PostTypeMappingComponent[type];
   return <Component id={postId} />;
 };

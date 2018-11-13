@@ -9,7 +9,7 @@ import { AbstractViewModel } from '@/base';
 import {
   ConversationPostProps,
   ConversationPostViewProps,
-  PostType,
+  POST_TYPE,
 } from './types';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
@@ -17,8 +17,8 @@ import { Post } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 
 const ActivityDataKeyMappingPostType = {
-  set_abbreviation: PostType.notification,
-  members: PostType.notification,
+  set_abbreviation: POST_TYPE.NOTIFICATION,
+  members: POST_TYPE.NOTIFICATION,
 };
 
 class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
@@ -39,9 +39,9 @@ class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
   }
 
   @computed
-  get type(): PostType {
+  get type(): POST_TYPE {
     const { key } = this._activityData;
-    return ActivityDataKeyMappingPostType[key] || PostType.post;
+    return ActivityDataKeyMappingPostType[key] || POST_TYPE.POST;
   }
 }
 
