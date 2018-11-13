@@ -110,4 +110,45 @@ describe('SectionGroupHandler', () => {
       ).toEqual([]);
     });
   });
+  describe('getRemovedIds', async () => {
+    it('should return [] because its length less or equal than limit', () => {
+      const result = SectionGroupHandler.getInstance().getRemovedIds(
+        [],
+        [1, 2],
+        2,
+        1,
+      );
+      expect(result.length).toBe(0);
+    });
+    it('should return [] because over group limit has unread', () => {
+      const result = SectionGroupHandler.getInstance().getRemovedIds(
+        [{ id: 3 }],
+        [1, 2, 3],
+        2,
+        0,
+      );
+      expect(result.length).toBe(0);
+    });
+    it('should return [] because over group is current group', () => {
+      const result = SectionGroupHandler.getInstance().getRemovedIds(
+        [],
+        [1, 2, 3],
+        2,
+        3,
+      );
+      expect(result.length).toBe(0);
+    });
+    it('should return [3,4] because over group has not unread and is not current group', () => {
+      const result = SectionGroupHandler.getInstance().getRemovedIds(
+        [],
+        [1, 2, 3, 4, 5],
+        2,
+        5,
+      );
+      expect(result.length).toBe(2);
+    });
+  });
+
+  describe('removeOverflewGroupByChangingIds', () => {});
+  describe('removeOverflewGroupByChangingCurrentGroupId', () => {});
 });
