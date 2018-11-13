@@ -7,7 +7,7 @@
 import { History } from 'history';
 import { parse, stringify } from 'qs';
 import config from '@/config';
-import getLanguage from '@/utils/getLanguage';
+import { getLanguage } from './helper';
 
 const defaultOptions = {
   response_type: 'code',

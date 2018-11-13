@@ -58,7 +58,7 @@ describe('utils', () => {
         { id: 2 },
         { id: 3 },
       ]);
-      expect(notificationCenter.emitEntityPut).toHaveBeenCalled();
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
     });
 
     it('should not put data but should notify', async () => {
@@ -72,7 +72,7 @@ describe('utils', () => {
       await baseHandleData(obj);
 
       expect(fakeDao.bulkPut).not.toHaveBeenCalled();
-      expect(notificationCenter.emitEntityPut).toHaveBeenCalled();
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
     });
 
     it('should delete deactivated data', async () => {

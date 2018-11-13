@@ -23,19 +23,19 @@ export interface IHandleData {
 const accountHandleData = ({ userId, companyId, profileId, clientConfig }: IHandleData): void => {
   const dao = daoManager.getKVDao(AccountDao);
   if (userId) {
-    notificationCenter.emitConfigPut(ACCOUNT_USER_ID, userId);
+    notificationCenter.emitKVChange(ACCOUNT_USER_ID, userId);
     dao.put(ACCOUNT_USER_ID, userId);
   }
   if (companyId) {
-    notificationCenter.emitConfigPut(ACCOUNT_COMPANY_ID, companyId);
+    notificationCenter.emitKVChange(ACCOUNT_COMPANY_ID, companyId);
     dao.put(ACCOUNT_COMPANY_ID, companyId);
   }
   if (profileId) {
-    notificationCenter.emitConfigPut(ACCOUNT_PROFILE_ID, profileId);
+    notificationCenter.emitKVChange(ACCOUNT_PROFILE_ID, profileId);
     dao.put(ACCOUNT_PROFILE_ID, profileId);
   }
   if (clientConfig) {
-    notificationCenter.emitConfigPut(ACCOUNT_CLIENT_CONFIG, clientConfig);
+    notificationCenter.emitKVChange(ACCOUNT_CLIENT_CONFIG, clientConfig);
     dao.put(ACCOUNT_CLIENT_CONFIG, clientConfig);
   }
 };

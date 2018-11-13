@@ -14,6 +14,7 @@ import _ from 'lodash';
 import { BaseError, ErrorParser } from '../../utils';
 import { mainLogger } from 'foundation';
 import { transform } from '../utils';
+import PersonService from '../person';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();
@@ -173,6 +174,8 @@ export default class ProfileService extends BaseService<Profile> {
     if (!profileId) {
       return ErrorParser.parse('none profile error');
     }
+    const personService = await PersonService.getInstance<PersonService>();
+    const { me_group_id } = await personService.getById(currentId);
 
     const partialProfile: any = {
       id: profileId,
@@ -184,7 +187,7 @@ export default class ProfileService extends BaseService<Profile> {
     ): Partial<Raw<Profile>> => {
       const favIds = originalModel.favorite_group_ids || [];
       if (favIds.indexOf(currentId) === -1) {
-        partialModel['favorite_group_ids'] = [currentId].concat(favIds);
+        partialModel['favorite_group_ids'] = [me_group_id].concat(favIds);
       }
       partialModel['me_tab'] = true;
       return partialModel;

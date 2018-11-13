@@ -16,7 +16,7 @@ import UnifiedLogin from '@/containers/UnifiedLogin';
 import VersionInfo from '@/containers/VersionInfo';
 import { autorun, computed } from 'mobx';
 import { observer } from 'mobx-react';
-import history from '@/utils/history';
+import history from '@/history';
 import _ from 'lodash';
 import storeManager from '@/store';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
@@ -42,11 +42,7 @@ class App extends React.Component {
     };
   }
   public render() {
-    const {
-      isShowDialog,
-      appVersion,
-      electronVersion,
-    } = this.dialogInfo;
+    const { isShowDialog, appVersion, electronVersion } = this.dialogInfo;
     return (
       <ThemeProvider>
         {this.isLoading ? (

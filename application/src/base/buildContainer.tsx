@@ -24,11 +24,13 @@ function buildContainer<P = {}, S = {}, SS = any>({
   plugins = {},
 }: BuildContainerOptions<P>) {
   type Props = P & TIntrinsticProps;
+  const ObserverView = observer(View);
+
   @observer
   class Container extends Component<Props, S, SS> {
     @observable
     vm: StoreViewModel;
-    View = View;
+    View = ObserverView;
 
     constructor(props: Props) {
       super(props);
@@ -38,14 +40,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
         this.View = plugin.wrapView(this.View);
       });
       this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
-      if (this.vm.onReceiveProps) {
-        console.warn(
-          `[${
-            ViewModel.name
-          }] You probably no longer need onReceiveProps(), use this.props to get props, it is observable`,
-        );
-      }
-      this.vm.onReceiveProps && this.vm.onReceiveProps(props);
+      this.vm.onReceiveProps && this.vm.onReceiveProps(this.props);
     }
 
     componentWillUnmount() {

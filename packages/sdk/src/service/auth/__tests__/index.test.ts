@@ -5,8 +5,16 @@
  */
 /// <reference path="../../../__tests__/types.d.ts" />
 
-import { loginGlip, loginGlip2ByPassword, loginRCByPassword, Api } from '../../../api';
-import { generateCode, oauthTokenViaAuthCode } from '../../../api/ringcentral/auth';
+import {
+  loginGlip,
+  loginGlip2ByPassword,
+  loginRCByPassword,
+  Api,
+} from '../../../api';
+import {
+  generateCode,
+  oauthTokenViaAuthCode,
+} from '../../../api/ringcentral/auth';
 import { AuthDao, daoManager } from '../../../dao';
 import { SERVICE } from '../../eventKey';
 import notificationCenter from '../../notificationCenter';
@@ -64,7 +72,11 @@ describe('AuthService', () => {
   describe('login()', () => {
     describe('when everything is fine', () => {
       beforeEach(async () => {
-        await authService.login({ username: '123', extension: '123', password: 'abc' });
+        await authService.login({
+          username: '123',
+          extension: '123',
+          password: 'abc',
+        });
       });
 
       it('should call accountManager.login', () => {
@@ -79,14 +91,17 @@ describe('AuthService', () => {
         loginGlip2ByPassword.mockImplementation(() => {
           throw new Error('test error');
         });
-        await authService.login({ username: '123', extension: '123', password: 'abc' });
+        await authService.login({
+          username: '123',
+          extension: '123',
+          password: 'abc',
+        });
 
-        expect(loginGlip2ByPassword)
-          .toHaveBeenCalledWith({
-            password: 'abc',
-            extension: '123',
-            username: '123',
-          });
+        expect(loginGlip2ByPassword).toHaveBeenCalledWith({
+          password: 'abc',
+          extension: '123',
+          username: '123',
+        });
       });
     });
   });
@@ -102,7 +117,9 @@ describe('AuthService', () => {
     });
 
     it('should emit event', () => {
-      expect(notificationCenter.emitService).toHaveBeenCalledWith(SERVICE.LOGOUT);
+      expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
+        SERVICE.LOGOUT,
+      );
     });
   });
 

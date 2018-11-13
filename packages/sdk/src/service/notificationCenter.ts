@@ -5,19 +5,71 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { EVENT_TYPES } from './constants';
+import _ from 'lodash';
+import { BaseModel, Raw } from '../models';
 
-// interface Item {
-//   id: number;
-// }
+type NotificationEntityIds = {
+  ids: number[];
+};
+
+type NotificationEntityBody<T> = NotificationEntityIds & {
+  entities: Map<number, T>;
+};
+
+type NotificationEntityUpdateBody<T> = NotificationEntityBody<T> & {
+  partials?: Map<number, Partial<Raw<T>>>;
+};
+
+// fixed type and body for type binding
+type NotificationEntityReplacePayload<T> = {
+  type: EVENT_TYPES.REPLACE;
+  body: NotificationEntityBody<T>;
+};
+
+type NotificationEntityDeletePayload = {
+  type: EVENT_TYPES.DELETE;
+  body: NotificationEntityIds;
+};
+
+type NotificationEntityUpdatePayload<T> = {
+  type: EVENT_TYPES.UPDATE;
+  body: NotificationEntityUpdateBody<T>;
+};
+
+type NotificationEntityResetPayload = {
+  type: EVENT_TYPES.RESET;
+};
+
+type NotificationEntityReloadPayload = {
+  type: EVENT_TYPES.RELOAD;
+};
+
+// unify notification payload
+export type NotificationEntityPayload<T> =
+  | NotificationEntityReplacePayload<T>
+  | NotificationEntityDeletePayload
+  | NotificationEntityUpdatePayload<T>
+  | NotificationEntityResetPayload
+  | NotificationEntityReloadPayload;
 
 /**
  * transform array to map structure
  * @param {array} entities
  */
-const transform2Map = (entities: any[]): Map<number, any> => {
-  const map = new Map();
-  entities.forEach((item: any) => {
+const transform2Map = <T extends BaseModel>(entities: T[]): Map<number, T> => {
+  const map = new Map<number, T>();
+  entities.forEach((item: T) => {
     map.set(item.id, item);
+  });
+  return map;
+};
+
+const transformPartial2Map = <T extends BaseModel>(
+  entities: Partial<Raw<T>>[],
+): Map<number, Partial<Raw<T>>> => {
+  const map = new Map<number, Partial<Raw<T>>>();
+  entities.forEach((item: Partial<Raw<T>>) => {
+    map.set(item.id ? item.id : item._id ? item._id : 0, item);
   });
   return map;
 };
@@ -27,83 +79,87 @@ class NotificationCenter extends EventEmitter2 {
     super({ wildcard: true });
   }
 
-  trigger(key: string, ...args: any[]): void {
-    // mainLogger.debug(...args);
-    super.emit(key, ...args);
-  }
+  emitEntityUpdate<T extends BaseModel>(
+    key: string,
+    entities: T[],
+    partials?: Partial<Raw<T>>[],
+  ): void {
+    const entityMap = transform2Map(entities);
+    const partialMap = partials ? transformPartial2Map(partials) : undefined;
+    const ids = Array.from(entityMap.keys());
 
-  /**
-   * emit event for ui layer of store entity insert or update
-   * @param {string} key
-   * @param {array} entities
-   */
-  emitEntityPut(key: string, entities: any[]): void {
-    this.trigger(key, {
-      type: EVENT_TYPES.PUT,
-      entities: transform2Map(entities),
-    });
-  }
+    const notificationBody: NotificationEntityUpdateBody<T> = {
+      ids,
+      entities: entityMap,
+      partials: partialMap,
+    };
 
-  /**
-   * emit event for ui layer of store entity update partial data
-   * @param {string} key
-   * @param {array} entities
-   */
-  emitEntityUpdate(key: string, entities: any[]): void {
-    this.trigger(key, {
+    const notification: NotificationEntityUpdatePayload<T> = {
       type: EVENT_TYPES.UPDATE,
-      entities: transform2Map(entities),
-    });
+      body: notificationBody,
+    };
+    this._notifyEntityChange(key, notification);
   }
 
-  emitEntityReplace(key: string, entities: any[]): void {
-    this.trigger(key, {
+  emitEntityReplace<T>(key: string, payload: Map<number, T>): void {
+    const idsArr = Array.from(payload.keys());
+
+    const notificationBody: NotificationEntityBody<T> = {
+      ids: idsArr,
+      entities: payload,
+    };
+
+    const notification: NotificationEntityReplacePayload<T> = {
       type: EVENT_TYPES.REPLACE,
-      entities: transform2Map(entities),
-    });
+      body: notificationBody,
+    };
+
+    this._notifyEntityChange(key, notification);
   }
 
-  emitEntityReplaceAll(key: string, entities: any[]): void {
-    this.trigger(key, {
-      type: EVENT_TYPES.REPLACE_ALL,
-      entities: transform2Map(entities),
-    });
-  }
+  emitEntityDelete(key: string, ids: number[]): void {
+    const notificationBody: NotificationEntityIds = {
+      ids,
+    };
 
-  emitEntityDelete(key: string, entities: any[]): void {
-    this.trigger(key, {
+    const notification: NotificationEntityDeletePayload = {
       type: EVENT_TYPES.DELETE,
-      entities: transform2Map(entities),
-    });
+      body: notificationBody,
+    };
+    this._notifyEntityChange(key, notification);
   }
 
   emitEntityReset(key: string): void {
-    this.trigger(key, {
+    const notification: NotificationEntityResetPayload = {
       type: EVENT_TYPES.RESET,
-    });
+    };
+    this._notifyEntityChange(key, notification);
   }
 
   emitEntityReload(key: string): void {
-    this.trigger(key, {
+    const notification: NotificationEntityReloadPayload = {
       type: EVENT_TYPES.RELOAD,
-    });
+    };
+    this._notifyEntityChange(key, notification);
   }
 
-  emitConfigPut(key: string, payload: any): void {
-    this.trigger(key, {
-      payload,
-      type: EVENT_TYPES.PUT,
-    });
+  emitKVChange(key: string, value?: any): void {
+    if (value) {
+      this._trigger(key, value);
+    } else {
+      this._trigger(key);
+    }
   }
 
-  emitConfigDelete(key: string): void {
-    this.trigger(key, {
-      type: EVENT_TYPES.DELETE,
-    });
+  private _notifyEntityChange<T>(
+    key: string,
+    notification: NotificationEntityPayload<T>,
+  ): void {
+    this._trigger(key, notification);
   }
 
-  emitService(key: string, payload?: any): void {
-    this.trigger(key, payload);
+  private _trigger(key: string, ...args: any[]): void {
+    super.emit(key, ...args);
   }
 }
 

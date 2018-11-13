@@ -11,7 +11,7 @@ import handleData from '../handleData';
 import { rawCompanyFactory } from '../../../__tests__/factories';
 
 jest.mock('../../../service/notificationCenter', () => ({
-  emitEntityPut: jest.fn(),
+  emitEntityUpdate: jest.fn(),
 }));
 
 // jest.mock('../../../dao', () => ({
@@ -37,14 +37,14 @@ describe('Company Service handleData', () => {
   it('handleData for an empty array', async () => {
     await handleData([]);
     expect(transform).toHaveBeenCalledTimes(0);
-    expect(notificationCenter.emitEntityPut).not.toHaveBeenCalled();
+    expect(notificationCenter.emitEntityUpdate).not.toHaveBeenCalled();
     expect(daoManager.getDao(CompanyDao).bulkPut).not.toHaveBeenCalled();
   });
 
   it('handleData for an normal array', async () => {
     await handleData([rawCompanyFactory.build({ _id: 1 }), rawCompanyFactory.build({ _id: 2 })]);
     expect(transform).toHaveBeenCalledTimes(2);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalled();
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
     expect(daoManager.getDao(CompanyDao).bulkPut).toHaveBeenCalled();
   });
 });

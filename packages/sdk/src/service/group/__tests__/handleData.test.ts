@@ -149,7 +149,7 @@ describe('handleData()', () => {
     // expect doNotification function
     expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     // expect checkIncompleteGroupsMembers function
     // const personService: PersonService = PersonService.getInstance();
     // expect(personService.getPersonsByIds).toHaveBeenCalled();
@@ -175,7 +175,7 @@ describe('handlePartialData', () => {
     expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
 
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     expect(GroupAPI.requestGroupById).not.toHaveBeenCalled();
   });
 
@@ -216,9 +216,9 @@ describe('handleFavoriteGroupsChanged()', () => {
       oldProfile as Profile,
       newProfile as Profile,
     );
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(2);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(2);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(2);
-    expect(notificationCenter.emitEntityReplaceAll).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityReplace).toHaveBeenCalledTimes(1);
     jest.clearAllMocks();
   });
   it('params are arry empty', async () => {
@@ -236,7 +236,7 @@ describe('handleFavoriteGroupsChanged()', () => {
       favorite_post_ids: 0,
     };
     await handleFavoriteGroupsChanged(oldProfile, newProfile);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(0);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(0);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(0);
   });
 });
@@ -245,6 +245,7 @@ describe('handleGroupMostRecentPostChanged()', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
   const post = {
     id: 1,
     modified_at: 100,
@@ -272,7 +273,7 @@ describe('handleGroupMostRecentPostChanged()', () => {
       most_recent_post_created_at: 99,
     });
     await handleGroupMostRecentPostChanged({
-      type: EVENT_TYPES.PUT,
+      type: EVENT_TYPES.UPDATE,
       entities: map,
     });
     expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
@@ -287,7 +288,7 @@ describe('handleGroupMostRecentPostChanged()', () => {
       id: 2,
     });
     await handleGroupMostRecentPostChanged({
-      type: EVENT_TYPES.PUT,
+      type: EVENT_TYPES.UPDATE,
       entities: map,
     });
     expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
@@ -304,7 +305,7 @@ describe('handleGroupMostRecentPostChanged()', () => {
       most_recent_post_created_at: 101,
     });
     await handleGroupMostRecentPostChanged({
-      type: EVENT_TYPES.PUT,
+      type: EVENT_TYPES.UPDATE,
       entities: map,
     });
     expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
