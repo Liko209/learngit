@@ -4,11 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { TaskItem, FileType, ExtendFileItem } from '@/store/models/Items';
+import Post from '@/store/models/Post';
 import { WithNamespaces } from 'react-i18next';
 
 type Props = {
   ids: number[];
 };
+
+type TaskUpdateProps = {
+  postId: number;
+} & Props;
 
 type ViewProps = WithNamespaces & {
   ids: number[];
@@ -17,4 +22,16 @@ type ViewProps = WithNamespaces & {
   expandImage: any;
 };
 
-export { Props, ViewProps, FileType, ExtendFileItem };
+type TaskUpdateViewProps = {
+  post: Post;
+  postId: number;
+} & ViewProps;
+
+export {
+  Props,
+  TaskUpdateProps,
+  ViewProps,
+  TaskUpdateViewProps,
+  FileType,
+  ExtendFileItem,
+};

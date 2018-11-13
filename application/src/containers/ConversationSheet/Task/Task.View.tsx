@@ -109,17 +109,19 @@ class Task extends React.Component<ViewProps> {
         icon={<JuiTaskCheckbox checked={complete || false} />}
       >
         <JuiTimeMessage time={`${time} ${timeText}`} />
-        <JuiTaskAvatarName
-          avatarNames={this._taskAvatarNames}
-          count={assignedToIds && assignedToIds.length}
-          otherText={
-            assignedToIds && assignedToIds.length
-              ? t('avatarnamesWithOthers', {
-                count: assignedToIds.length - 2,
-              })
-              : ''
-          }
-        />
+        {assignedToIds && assignedToIds.length > 0 && (
+          <JuiTaskAvatarName
+            avatarNames={this._taskAvatarNames}
+            count={assignedToIds && assignedToIds.length}
+            otherText={
+              assignedToIds.length
+                ? t('avatarnamesWithOthers', {
+                  count: assignedToIds.length - 2,
+                })
+                : ''
+            }
+          />
+        )}
         <JuiTaskContent>
           <JuiTaskSection section={section} />
           <JuiTaskNotes notes={notes} />

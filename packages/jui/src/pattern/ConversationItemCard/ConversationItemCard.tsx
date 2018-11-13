@@ -24,7 +24,7 @@ const ItemTitle = styled<{ complete?: boolean }, 'span'>('span')`
 
 const ItemCardHeader = styled.div`
   padding: 0;
-  margin: ${spacing(0, 0, 2, -6)};
+  margin: ${spacing(0, 0, 0, -6)};
   display: flex;
   align-items: center;
   ${typography('subheading3')};
@@ -45,11 +45,11 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
 `;
 
 type JuiConversationItemCardProps = {
-  title: string | JSX.Element;
+  title?: string | JSX.Element;
   icon: JSX.Element | string;
   titleColor?: string;
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   footer?: JSX.Element | null;
   footerPadding?: boolean;
   complete?: boolean;
@@ -57,7 +57,7 @@ type JuiConversationItemCardProps = {
 
 class JuiConversationItemCard extends React.Component<
   JuiConversationItemCardProps
-  > {
+> {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
     const { titleClick } = this.props;
     titleClick && titleClick(e);
@@ -79,7 +79,7 @@ class JuiConversationItemCard extends React.Component<
         <ItemCardContent>
           <ItemCardHeader onClick={this.titleHandle} color={titleColor}>
             {typeof Icon === 'string' ? <ItemIcon>{Icon}</ItemIcon> : Icon}
-            <ItemTitle complete={complete}>{title}</ItemTitle>
+            {title && <ItemTitle complete={complete}>{title}</ItemTitle>}
           </ItemCardHeader>
           {children}
         </ItemCardContent>
