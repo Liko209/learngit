@@ -58,5 +58,6 @@
   "forYearlyTimes": "for $t(yearly, { 'count': {{count}} })",
   "until": "until",
   "hideEventHistory": "Hide",
-  "showEventHistory": "Show old"
+  "showEventHistory": "Show old",
+  "download": "download"
 }

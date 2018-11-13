@@ -6,6 +6,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
+import { t } from 'i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
@@ -31,7 +32,7 @@ const downloadBtn = (downloadUrl: string) => (
     download={true}
     href={downloadUrl}
     variant="plain"
-    tooltipTitle="download"
+    tooltipTitle={t('download')}
   >
     get_app
   </JuiIconButton>
@@ -67,16 +68,13 @@ const FILE_COMPS = {
 class Task extends React.Component<ViewProps> {
   private get _taskAvatarNames() {
     const { task } = this.props;
-    const { assigned_to_ids } = task;
+    const { assignedToIds } = task;
 
-    if (assigned_to_ids && assigned_to_ids.length >= 2) {
-      return [
-        <AvatarName key={assigned_to_ids[0]} id={assigned_to_ids[0]} />,
-        <AvatarName key={assigned_to_ids[1]} id={assigned_to_ids[1]} />,
-      ];
-    }
+    const assignedIds = assignedToIds ? assignedToIds.slice(0, 2) : [];
 
-    return assigned_to_ids && <AvatarName id={assigned_to_ids[0]} />;
+    return assignedIds.map((assignedId: number) => (
+      <AvatarName key={assignedId} id={assignedId} />
+    ));
   }
 
   render() {
@@ -87,7 +85,7 @@ class Task extends React.Component<ViewProps> {
       text,
       notes,
       complete,
-      assigned_to_ids,
+      assignedToIds,
       start,
       end,
       repeat,
@@ -113,11 +111,11 @@ class Task extends React.Component<ViewProps> {
         <JuiTimeMessage time={`${time} ${timeText}`} />
         <JuiTaskAvatarName
           avatarNames={this._taskAvatarNames}
-          count={assigned_to_ids && assigned_to_ids.length}
-          tOther={
-            assigned_to_ids && assigned_to_ids.length
+          count={assignedToIds && assignedToIds.length}
+          otherText={
+            assignedToIds && assignedToIds.length
               ? t('avatarnamesWithOthers', {
-                count: assigned_to_ids.length - 2,
+                count: assignedToIds.length - 2,
               })
               : ''
           }

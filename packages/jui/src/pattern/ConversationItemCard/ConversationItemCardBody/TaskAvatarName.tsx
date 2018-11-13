@@ -11,7 +11,7 @@ import { typography, grey, spacing } from '../../../foundation/utils/styles';
 type Props = {
   avatarNames: JSX.Element[] | null[] | JSX.Element;
   count: number;
-  tOther: string;
+  otherText: string;
 };
 
 const StyledTaskAvatarName = styled.div`
@@ -30,7 +30,7 @@ const StyledTaskOther = styled.div`
 const JuiTaskAvatarName = (props: Props) => (
   <StyledTaskAvatarName>
     {props.avatarNames}
-    <StyledTaskOther>{props.count > 2 ? props.tOther : ''}</StyledTaskOther>
+    <StyledTaskOther>{props.count > 2 ? props.otherText : ''}</StyledTaskOther>
   </StyledTaskAvatarName>
 );
 

@@ -36,9 +36,9 @@ function setTaskData(this: TaskItem, data: any) {
   this.repeatEndingOn = repeat_ending_on;
   this.text = text;
   this.due = due;
-  this.complete_type = complete_type;
-  this.assigned_to_ids = assigned_to_ids;
-  this.attachment_ids = attachment_ids;
+  this.completeType = complete_type;
+  this.assignedToIds = assigned_to_ids;
+  this.attachmentIds = attachment_ids;
 }
 
 export { setTaskData };
