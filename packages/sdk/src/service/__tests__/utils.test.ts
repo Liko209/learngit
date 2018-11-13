@@ -53,8 +53,12 @@ describe('utils', () => {
 
       await baseHandleData(obj);
 
-      expect(fakeDao.bulkPut).toHaveBeenCalledWith([{ id: 1 }, { id: 2 }, { id: 3 }]);
-      expect(notificationCenter.emitEntityPut).toHaveBeenCalled();
+      expect(fakeDao.bulkPut).toHaveBeenCalledWith([
+        { id: 1 },
+        { id: 2 },
+        { id: 3 },
+      ]);
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
     });
 
     it('should delete deactivated data', async () => {

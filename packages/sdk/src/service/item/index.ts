@@ -80,22 +80,32 @@ export default class ItemService extends BaseService<Item> {
           _id: item.id,
           do_not_render: true,
         },
-        undefined, this._doUpdateItemModel.bind(this, item, type),
+        undefined,
+        this._doUpdateItemModel.bind(this, item, type),
       );
     }
     return false;
   }
-  private async _doUpdateItemModel(updatedItemModel: Item, type: string): Promise<Item | BaseError> {
+  private async _doUpdateItemModel(
+    updatedItemModel: Item,
+    type: string,
+  ): Promise<Item | BaseError> {
     updatedItemModel.do_not_render = true;
     updatedItemModel._id = updatedItemModel.id;
     delete updatedItemModel.id;
     let itemData: Item;
-    const resp = ItemAPI.putItem<Item>(updatedItemModel._id, type, updatedItemModel).then((resolve) => {
-      itemData = resolve.data;
-      return itemData;
-    }).catch((e) => {
-      return ErrorParser.parse(e);
-    });
+    const resp = ItemAPI.putItem<Item>(
+      updatedItemModel._id,
+      type,
+      updatedItemModel,
+    )
+      .then((resolve: any) => {
+        itemData = resolve.data;
+        return itemData;
+      })
+      .catch((e: any) => {
+        return ErrorParser.parse(e);
+      });
     return resp;
   }
 }

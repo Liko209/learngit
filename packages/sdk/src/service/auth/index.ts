@@ -5,7 +5,10 @@
 import { mainLogger } from 'foundation';
 
 import { loginGlip2ByPassword } from '../../api';
-import { RCPasswordAuthenticator, UnifiedLoginAuthenticator } from '../../authenticator';
+import {
+  RCPasswordAuthenticator,
+  UnifiedLoginAuthenticator,
+} from '../../authenticator';
 import { AuthDao, daoManager } from '../../dao';
 import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
 import { AccountManager } from '../../framework';
@@ -36,7 +39,10 @@ export default class AuthService extends BaseService {
 
   async unifiedLogin({ code, token }: IUnifiedLogin) {
     try {
-      const resp = await this._accountManager.login(UnifiedLoginAuthenticator.name, { code, token });
+      const resp = await this._accountManager.login(
+        UnifiedLoginAuthenticator.name,
+        { code, token },
+      );
       mainLogger.info(`unifiedLogin finished ${JSON.stringify(resp)}`);
       this.onLogin();
     } catch (err) {
@@ -53,7 +59,7 @@ export default class AuthService extends BaseService {
   onLogin() {
     // TODO replace all LOGIN listen on notificationCenter
     // with accountManager.on(EVENT_LOGIN)
-    notificationCenter.emitService(SERVICE.LOGIN);
+    notificationCenter.emitKVChange(SERVICE.LOGIN);
   }
 
   async loginGlip(params: ILogin) {
@@ -70,7 +76,7 @@ export default class AuthService extends BaseService {
     try {
       const glip2AuthData = await loginGlip2ByPassword(params);
       authDao.put(AUTH_GLIP2_TOKEN, glip2AuthData.data);
-      notificationCenter.emitConfigPut(AUTH_GLIP2_TOKEN, glip2AuthData.data);
+      notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, glip2AuthData.data);
     } catch (err) {
       // Since glip2 api is no in use now, we can ignore all it's errors
       Aware(ErrorTypes.OAUTH, err.message);
@@ -82,7 +88,7 @@ export default class AuthService extends BaseService {
 
     // TODO replace all LOGOUT listen on notificationCenter
     // with accountManager.on(EVENT_LOGOUT)
-    notificationCenter.emitService(SERVICE.LOGOUT);
+    notificationCenter.emitKVChange(SERVICE.LOGOUT);
   }
 
   isLoggedIn(): boolean {

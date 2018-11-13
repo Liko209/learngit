@@ -76,10 +76,10 @@ export default class SyncService extends BaseService {
         }
       }
       mainLogger.error('fetch initial data or remaining data error');
-      notificationCenter.emitService(SERVICE.DO_SIGN_OUT);
+      notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     } catch (e) {
       mainLogger.error('fetch initial data or remaining data error');
-      notificationCenter.emitService(SERVICE.DO_SIGN_OUT);
+      notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
   }
 
@@ -97,9 +97,9 @@ export default class SyncService extends BaseService {
   private async _handleSyncIndexError(result: any) {
     const error = ErrorParser.parse(result);
     if (error.code === HttpError.GATE_WAY_504) {
-      notificationCenter.emitService(SERVICE.SYNC_SERVICE.START_CLEAR_DATA);
+      notificationCenter.emitKVChange(SERVICE.SYNC_SERVICE.START_CLEAR_DATA);
       await this.handle504GateWayError();
-      notificationCenter.emitService(SERVICE.SYNC_SERVICE.END_CLEAR_DATA);
+      notificationCenter.emitKVChange(SERVICE.SYNC_SERVICE.END_CLEAR_DATA);
     }
   }
 

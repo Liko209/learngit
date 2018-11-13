@@ -37,7 +37,7 @@ const companyHandleData = async (companies: Raw<Company>[]) => {
   // const transformedData: Company[] = companies.map(item => transform<Company>(item));
   const transformedData: Company[] = await _getTransformData(companies);
   const companyDao = daoManager.getDao(CompanyDao);
-  notificationCenter.emitEntityPut(ENTITY.COMPANY, transformedData);
+  notificationCenter.emitEntityUpdate(ENTITY.COMPANY, transformedData);
   await companyDao.bulkPut(transformedData);
 };
 

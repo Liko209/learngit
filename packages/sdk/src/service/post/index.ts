@@ -262,7 +262,7 @@ export default class PostService extends BaseService<Post> {
     const dao = daoManager.getDao(PostDao);
     await dao.put(buildPost);
     try {
-      notificationCenter.emitEntityPut(ENTITY.POST, [buildPost]);
+      notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
     } catch (err) {}
   }
 
@@ -277,7 +277,10 @@ export default class PostService extends BaseService<Post> {
       data: post,
     };
     const result = [obj];
-    notificationCenter.emitEntityReplace(ENTITY.POST, result);
+    const replacePosts = new Map<number, Post>();
+    replacePosts.set(preInsertId, post);
+
+    notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
     const dao = daoManager.getDao(PostDao);
 
     const groupService: GroupService = GroupService.getInstance();
@@ -299,21 +302,26 @@ export default class PostService extends BaseService<Post> {
 
   async handleSendPostFail(preInsertId: number) {
     this._postStatusHandler.setPreInsertId(preInsertId, POST_STATUS.FAIL);
-    const postDao = daoManager.getDao(PostDao);
-    const post = (await postDao.get(preInsertId)) as Post;
     const updateData = {
       id: preInsertId,
+      _id: preInsertId,
       status: POST_STATUS.FAIL,
     };
-    postDao.update(updateData);
-    notificationCenter.emitEntityUpdate(ENTITY.POST, [updateData]);
+    let groupId: number = 0;
+
+    await this.handlePartialUpdate(
+      updateData,
+      undefined,
+      async (updatedPost: Post) => {
+        groupId = updatedPost.group_id;
+        return updatedPost;
+      },
+    );
 
     const groupService: GroupService = GroupService.getInstance();
-    const failIds = await groupService.getGroupSendFailurePostIds(
-      post.group_id,
-    );
+    const failIds = await groupService.getGroupSendFailurePostIds(groupId);
     groupService.updateGroupSendFailurePostIds({
-      id: post.group_id,
+      id: groupId,
       send_failure_post_ids: [...new Set([...failIds, preInsertId])],
     });
     return [];
@@ -372,7 +380,7 @@ export default class PostService extends BaseService<Post> {
 
     if (this.isInPreInsert(id)) {
       this._postStatusHandler.removePreInsertId(id);
-      notificationCenter.emitEntityDelete(ENTITY.POST, [post]);
+      notificationCenter.emitEntityDelete(ENTITY.POST, [post.id]);
       postDao.delete(id);
 
       const groupService: GroupService = GroupService.getInstance();

@@ -12,8 +12,9 @@ import {
   TDelta,
   TUpdated,
 } from './fetch/types';
+import { BaseModel } from 'sdk/src/models';
 
-abstract class TransformHandler<T, K> {
+abstract class TransformHandler<T, K extends BaseModel> {
   fetchData: (direction: FetchDataDirection, pageSize?: number) => any;
 
   constructor(

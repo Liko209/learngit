@@ -94,7 +94,7 @@ class Sdk {
       // TODO replace all LOGIN listen on notificationCenter
       // with accountManager.on(EVENT_LOGIN)
       this.accountManager.updateSupportedServices();
-      notificationCenter.emitService(SERVICE.LOGIN);
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
     }
   }
 
