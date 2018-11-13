@@ -7,7 +7,7 @@ import PostModel from '@/store/models/Post';
 import PersonModel from '@/store/models/Person';
 type ConversationCardProps = {
   id: number; // post id
-  mode?: string;
+  mode?: 'navigation';
 };
 
 type ConversationCardViewProps = {
