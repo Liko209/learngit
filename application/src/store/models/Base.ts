@@ -3,10 +3,10 @@
  * @Date: 2018-09-04 12:00:41
  * Copyright © RingCentral. All rights reserved.
  */
-import { IEntity } from '../store';
+import { Entity } from '../store';
 import { BaseModel } from 'sdk/models';
 
-export default class Base<T extends BaseModel> implements IEntity {
+export default class Base<T extends BaseModel> implements Entity {
   id: number;
   data?: any;
   constructor(data: T) {
@@ -15,11 +15,12 @@ export default class Base<T extends BaseModel> implements IEntity {
   }
 
   toJS() {
-    try {
-      return JSON.parse(JSON.stringify(this));
-    } catch (err) {
-      return this;
-    }
+    const descriptors = Object.getOwnPropertyDescriptors(this);
+    const props: any = {};
+    Object.keys(descriptors).forEach((key: string) => {
+      props[key] = this[key];
+    });
+    return props;
   }
 }
 

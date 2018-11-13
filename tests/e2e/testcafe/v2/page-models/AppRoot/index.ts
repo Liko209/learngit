@@ -2,11 +2,12 @@ import 'testcafe';
 import { BaseWebComponent } from '../BaseWebComponent';
 import { HomePage } from './HomePage';
 import { LoginPage } from './LoginPage';
+import { h } from '../../helpers';
 
 export class AppRoot extends BaseWebComponent {
     async ensureLoaded() { }
 
-    get root() {
+    get self() {
         return null;
     }
 

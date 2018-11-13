@@ -2,93 +2,61 @@ import _ from 'lodash';
 import { observable, action, ObservableMap } from 'mobx';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
-import { IIncomingData, IEntity, IEntitySetting } from '../store';
+import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
-import BaseService from 'sdk/service/BaseService';
+import { BaseService, EVENT_TYPES } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
+import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
 
 const modelProvider = new ModelProvider();
 
 export default class SingleEntityMapStore<
   T extends BaseModel,
-  K extends IEntity
+  K extends Entity
 > extends BaseStore {
   @observable
-  data: ObservableMap = new ObservableMap<keyof IEntity, any>();
+  data: ObservableMap = new ObservableMap<keyof Entity, any>();
   init: boolean;
   getService: Function;
   service: BaseService<T>;
-  constructor(entityName: ENTITY_NAME, { service, event }: IEntitySetting) {
+  constructor(entityName: ENTITY_NAME, { service, event }: EntitySetting) {
     super(entityName);
     this.init = false;
     this.getService = service as Function;
 
-    const callback = ({ type, entities }: IIncomingData<T>) => {
-      this.handleIncomingData({ type, entities });
+    const callback = (payload: NotificationEntityPayload<T>) => {
+      this.handleIncomingData(payload);
     };
     event.forEach((eventName: string) => {
       this.subscribeNotification(eventName, callback);
     });
   }
 
-  handleIncomingData({ type, entities }: IIncomingData<T>) {
-    if (!entities.size) {
+  handleIncomingData(payload: NotificationEntityPayload<T>) {
+    if (payload.type !== EVENT_TYPES.UPDATE) {
       return;
     }
-    const existProperties = Array.from(this.data.keys());
+    const entities = payload.body!.entities!;
     const entity = {};
     Array.from(entities.values()).forEach((value: T) => {
       _.merge(entity, value);
     });
 
-    const matchedProperties: (keyof IEntity)[] = _.intersection(
-      Object.keys(entity).map(property => _.camelCase(property)),
-      existProperties,
-    );
-
-    if (!matchedProperties.length) {
-      return;
-    }
-    if (type === 'delete') {
-      this.batchRemove(matchedProperties);
-    } else {
-      this.batchSet(entity as T, matchedProperties);
-    }
+    this.batchSet(entity as T);
   }
 
   @action
-  set(property: keyof IEntity, value: any) {
+  set(property: keyof Entity, value: any) {
     this.data.set(property, value);
   }
 
   @action
-  batchSet(data: T, matchedProperties?: (keyof IEntity)[]) {
+  batchSet(data: T) {
     if (!Object.keys(data).length) {
       return;
     }
-    let model = this.createModel(data);
-    if (matchedProperties) {
-      model = matchedProperties.reduce(
-        (matchedModel: IEntity, property: keyof IEntity) => {
-          matchedModel[property] = model[property]; // eslint-disable-line
-          return matchedModel;
-        },
-        {},
-      ) as IEntity;
-    }
+    const model = this.createModel(data);
     this.data.merge(model.toJS ? model.toJS() : model);
-  }
-
-  @action
-  remove(property: keyof IEntity) {
-    this.data.delete(property);
-  }
-
-  @action
-  batchRemove(properties: (keyof IEntity)[]) {
-    properties.forEach((property: any) => {
-      this.remove(property);
-    });
   }
 
   get(property: keyof K) {
@@ -103,7 +71,7 @@ export default class SingleEntityMapStore<
     return this.data.get(property);
   }
 
-  has(property: keyof IEntity) {
+  has(property: keyof Entity) {
     return this.data.has(property);
   }
 
@@ -119,7 +87,7 @@ export default class SingleEntityMapStore<
     return this.service[serviceFunctionName]();
   }
 
-  createModel(data: T): IEntity {
+  createModel(data: T): Entity {
     const Model = modelProvider.getModelCreator(this.name);
     return Model.fromJS(data);
   }

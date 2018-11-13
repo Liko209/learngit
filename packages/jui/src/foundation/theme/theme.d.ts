@@ -65,16 +65,16 @@ type Palette = {
     dark: string;
   };
   avatar: {
-    'tomato': string,
-    'blueberry': string,
-    'oasis': string,
-    'gold': string,
-    'sage': string,
-    'ash': string,
-    'persimmon': string,
-    'pear': string,
-    'brass': string,
-    'lake': string,
+    tomato: string;
+    blueberry: string;
+    oasis: string;
+    gold: string;
+    sage: string;
+    ash: string;
+    persimmon: string;
+    pear: string;
+    brass: string;
+    lake: string;
   };
 } & MuiPalette;
 
@@ -93,6 +93,7 @@ type Theme = {
   zIndex: {
     reponsePanel: number;
     reponseResizer: number;
+    loading: number;
   };
   size: {
     width: number;
@@ -141,9 +142,15 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
+    heading1: {
+      lineHeight: string;
+      maxHeight: string;
+    };
+  };
+  boxShadow: {
+    val1: string;
   };
 } & MuiTheme;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;
-
 export { Palette, Theme, ThemeProps };

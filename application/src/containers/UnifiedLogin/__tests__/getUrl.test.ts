@@ -21,10 +21,12 @@ jest.mock('../../../config', () => ({
   }),
 }));
 
-jest.mock('../../../utils/getLanguage', () => {
-  return jest.fn().mockImplementation(() => {
-    return 'en-US';
-  });
+jest.mock('../helper', () => {
+  return {
+    getLanguage: jest.fn().mockImplementation(() => {
+      return 'en-US';
+    }),
+  };
 });
 
 describe('getUrl method', () => {

@@ -17,7 +17,7 @@ import Token from '../Token';
 import OAuthTokenManager from '../OAuthTokenManager';
 import NetworkRequestHandler from '../NetworkRequestHandler';
 import OAuthTokenHandler from '../OAuthTokenHandler';
-const fakeHandleType = new class extends AbstractHandleType { }();
+const fakeHandleType = new class extends AbstractHandleType {}();
 
 const getFakeRequest = () => {
   const request = new NetworkRequestBuilder()
@@ -44,7 +44,7 @@ const getFakeHandler = () => {
 };
 
 const getFakeClient = () => {
-  return new class extends BaseClient { }();
+  return new class extends BaseClient {}();
 };
 
 const getFakeExecutor = () => {

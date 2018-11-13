@@ -10,6 +10,8 @@ import {
   IHandleType,
   NETWORK_VIA,
 } from './network';
+import { Base64 } from 'js-base64';
+
 abstract class AbstractHandleType implements IHandleType {
   defaultVia: NETWORK_VIA = NETWORK_VIA.HTTP;
   survivalModeSupportable: boolean = false;
@@ -20,6 +22,12 @@ abstract class AbstractHandleType implements IHandleType {
   }
   basic() {
     return '';
+  }
+  btoa(str: string) {
+    if (typeof window !== 'undefined' && window.btoa) {
+      return window.btoa(str);
+    }
+    return Base64.btoa(str);
   }
   requestDecoration(tokenHandler: ITokenHandler) {
     return (request: IRequest) => {

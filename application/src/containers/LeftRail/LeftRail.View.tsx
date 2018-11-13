@@ -5,41 +5,42 @@
  */
 
 import React from 'react';
-import styled from 'jui/foundation/styled-components';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiConversationListFilter } from 'jui/pattern/ConversationList/ConversationListFilter';
 
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
-import { TranslationFunction } from 'i18next';
-import { translate } from 'react-i18next';
+import { toTitleCase } from '@/utils/string';
+import {
+  JuiLeftRail,
+  JuiLeftRailStickyTop,
+  JuiLeftRailMainSection,
+} from 'jui/pattern/LeftRail/LeftRail';
+import { translate, WithNamespaces } from 'react-i18next';
 
-const Wrapper = styled.div`
-  height: 100%;
-  overflow: auto;
-  border-right: 1px solid ${({ theme }) => theme.palette.divider};
-`;
-
-const LeftRailViewComponent = (
-  props: LeftRailViewProps & { t: TranslationFunction },
-) => {
+const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
   return (
-    <Wrapper>
-      {props.filters.map((filter, index) => [
-        index ? <JuiDivider key="divider" /> : null,
-        <JuiConversationListFilter
-          checked={filter.value}
-          key={filter.label}
-          label={props.t(filter.label)}
-          onChange={filter.onChange}
-        />,
-      ])}
+    <JuiLeftRail>
+      <JuiLeftRailStickyTop>
+        {props.filters.map((filter, index) => [
+          index ? <JuiDivider key="divider" /> : null,
+          <JuiConversationListFilter
+            data-test-automation-id="unreadOnlyToggler"
+            checked={filter.value}
+            key={filter.label}
+            label={toTitleCase(props.t(filter.label))}
+            onChange={filter.onChange}
+          />,
+        ])}
+      </JuiLeftRailStickyTop>
       <JuiDivider key="divider" />
-      {props.sections.map((type, index) => [
-        index ? <JuiDivider key="divider" /> : null,
-        <Section key={type} type={type} />,
-      ])}
-    </Wrapper>
+      <JuiLeftRailMainSection>
+        {props.sections.map((type, index, array) => [
+          index ? <JuiDivider key="divider" /> : null,
+          <Section key={type} type={type} isLast={index === array.length - 1} />,
+        ])}
+      </JuiLeftRailMainSection>
+    </JuiLeftRail>
   );
 };
 

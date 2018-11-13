@@ -5,20 +5,21 @@
  */
 import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { TranslationFunction } from 'i18next';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { JuiLeftNav, JuiLeftNavProps } from 'jui/pattern/LeftNav';
 import { Umi } from '../Umi';
 import { LeftNavViewProps } from './types';
 import { computed } from 'mobx';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue } from '@/store/utils';
 
 type LeftNavProps = {
   isLeftNavOpen: boolean;
-  t: TranslationFunction;
 } & LeftNavViewProps &
-  RouteComponentProps;
+  RouteComponentProps &
+  WithNamespaces;
 
 @observer
 class LeftNav extends Component<LeftNavProps> {
@@ -30,6 +31,9 @@ class LeftNav extends Component<LeftNavProps> {
   @computed
   get icons(): JuiLeftNavProps['icons'] {
     const { t, groupIds } = this.props;
+    const currentConversationId = getGlobalValue(
+      GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+    );
     return [
       [
         {
@@ -38,7 +42,7 @@ class LeftNav extends Component<LeftNavProps> {
           title: t('Dashboard'),
         },
         {
-          url: '/messages',
+          url: `/messages/${currentConversationId}`,
           icon: 'message',
           title: t('Messages'),
           umi: <Umi ids={groupIds} global="UMI.app" />,

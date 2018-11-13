@@ -126,6 +126,23 @@ export class SocketFSM extends StateMachine {
     return this.state === 'connected';
   }
 
+  public setReconnection(bOn: boolean) {
+    if (
+      this.socketClient &&
+      this.socketClient.socket &&
+      this.socketClient.socket.io
+    ) {
+      this.info(
+        `setReconnection: ${
+          this.socketClient.socket.io._reconnection
+        } ==> ${bOn}`,
+      );
+      this.socketClient.socket.io.reconnection(bOn);
+    } else {
+      this.warn(`setReconnection: ==> ${bOn}. Error: no socket`);
+    }
+  }
+
   cleanup() {
     if (this.socketClient) {
       if (this.socketClient.socket) {
@@ -199,7 +216,7 @@ export class SocketFSM extends StateMachine {
 
     this.socketClient.socket.on('presence_unified', (data: any) => {
       this.info(`socket-> presence_unified. ${data || ''}`);
-      dataDispatcher.onDataArrived(data);
+      dataDispatcher.onPresenceArrived(data);
     });
 
     this.socketClient.socket.on('message', (data: any) => {

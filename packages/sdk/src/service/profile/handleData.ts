@@ -41,26 +41,8 @@ function hiddenGroupsChange(localProfile: Profile, newProfile: Profile) {
   }
 }
 
-// function doNotification(
-//   localProfile: Profile | null,
-//   transformedData: Profile[],
-// ) {
-//   if (
-//     localProfile &&
-//     transformedData.length &&
-//     transformedData[0].id === localProfile.id
-//   ) {
-//     notificationCenter.emit(
-//       SERVICE.PROFILE_FAVORITE,
-//       localProfile,
-//       transformedData[0],
-//     );
-//   }
-//   hiddenGroupsChange(localProfile, transformedData);
-// }
-
 const profileHandleData = async (
-  profile: Raw<Profile> | Raw<Profile> | null,
+  profile: Raw<Profile> | null,
 ): Promise<Profile | null> => {
   let result: Profile | null = null;
   if (profile) {
@@ -95,14 +77,18 @@ const handlePartialProfileUpdate = async (
             };
             obj[key] = transformedData[key];
             await profileDao.update(obj);
-            notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [obj]);
+            notificationCenter.emitEntityUpdate(
+              ENTITY.PROFILE,
+              [transformedData],
+              [obj],
+            );
             hiddenGroupsChange(localProfile, transformedData);
             return transformedData;
           }
           localProfile && hiddenGroupsChange(localProfile, transformedData);
         }
         await profileDao.put(transformedData);
-        notificationCenter.emitEntityPut(ENTITY.PROFILE, [transformedData]);
+        notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [transformedData]);
         return transformedData;
       }
     }

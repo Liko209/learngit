@@ -7,8 +7,8 @@ import {
   isOnlyLetterOrNumbers,
   handleOnlyLetterOrNumbers,
   handleOneOfName,
-} from '@/utils/helper';
-import phoneNumberHelper from '@/utils/phoneNumber';
+  phoneNumberDefaultFormat,
+} from '../helper';
 
 export default class PersonModel extends Base<Person> {
   @observable
@@ -35,7 +35,8 @@ export default class PersonModel extends Base<Person> {
   awayStatus?: string;
   @observable
   pseudoUserPhoneNumber?: string;
-
+  rcAccountId?: number;
+  inviterId?: number;
   constructor(data: Person) {
     super(data);
     const {
@@ -50,6 +51,8 @@ export default class PersonModel extends Base<Person> {
       away_status,
       headshot_version,
       pseudo_user_phone_number,
+      rc_account_id,
+      inviter_id,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -62,6 +65,8 @@ export default class PersonModel extends Base<Person> {
     this.glipUserId = glip_user_id;
     this.awayStatus = away_status;
     this.pseudoUserPhoneNumber = pseudo_user_phone_number;
+    this.rcAccountId = rc_account_id;
+    this.inviterId = inviter_id;
   }
 
   static fromJS(data: Person) {
@@ -80,7 +85,7 @@ export default class PersonModel extends Base<Person> {
       }
       if (!pseudoUserDisplayName) {
         pseudoUserDisplayName = this.pseudoUserPhoneNumber
-          ? phoneNumberHelper.defaultFormat(this.pseudoUserPhoneNumber)
+          ? phoneNumberDefaultFormat(this.pseudoUserPhoneNumber)
           : this.firstName;
       }
       return pseudoUserDisplayName;

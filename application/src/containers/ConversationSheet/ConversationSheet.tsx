@@ -16,6 +16,7 @@ type RegisterOptions = {
 type PayLoad = {
   type: any;
   props: {
+    postId: number;
     ids: number[];
   };
 };
@@ -39,18 +40,19 @@ class ConversationSheet {
 
     const chain = this._compose(this._middleware)(this._defaultHandler);
 
-    this.dispatch = (sheets: { [type: string]: number[] }) => {
+    this.dispatch = (sheets: { [type: string]: number[] }, postId: number) => {
       if (!Object.keys(sheets).length) {
         return null;
       }
       return modules.map((module: RegisterOptions) => {
         const { type } = module;
         if (!sheets[type]) {
-          return () => null;
+          return null;
         }
         return chain({
           type,
           props: {
+            postId,
             ids: sheets[type],
           },
         });

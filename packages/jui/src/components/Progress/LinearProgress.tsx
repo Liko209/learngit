@@ -5,7 +5,9 @@
  */
 
 import React from 'react';
-import MuiLinearProgress, { LinearProgressProps as MuiLinearProgressProps } from '@material-ui/core/LinearProgress';
+import MuiLinearProgress, {
+  LinearProgressProps as MuiLinearProgressProps,
+} from '@material-ui/core/LinearProgress';
 import styled from '../../foundation/styled-components';
 import { Omit } from '../../foundation/utils/typeHelper';
 
@@ -15,6 +17,5 @@ type JuiLinearProgressProps = Omit<MuiLinearProgressProps, 'innerRef'> &
 const JuiLinearProgress = styled(MuiLinearProgress)``;
 
 JuiLinearProgress.displayName = 'JuiLinearProgress';
-JuiLinearProgress.dependencies = [MuiLinearProgress];
 
 export { JuiLinearProgress, JuiLinearProgressProps };

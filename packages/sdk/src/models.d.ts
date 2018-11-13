@@ -3,7 +3,7 @@
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { POST_STATUS } from './service';
+import { POST_STATUS, PRESENCE } from './service';
 
 export type BaseModel = {
   id: number;
@@ -94,6 +94,9 @@ export type Company = ExtendedBaseModel & {
   name: string;
   domain: string;
   admins: number[];
+  custom_emoji: { [index: string]: { data: string } };
+  _delta?: { add_keys?: object; remove_keys: object };
+  rc_account_id?: number;
 };
 
 export type Person = ExtendedBaseModel & {
@@ -120,6 +123,7 @@ export type Person = ExtendedBaseModel & {
   glip_user_id?: number;
   away_status?: string;
   pseudo_user_phone_number?: string;
+  rc_account_id?: number;
 };
 
 export type UserInfo = {
@@ -144,7 +148,7 @@ export type GroupState = {
   unread_count?: number;
   unread_mentions_count?: number;
   read_through?: number;
-  last_read_through?: number;
+  last_read_through?: number; // last post of the group
   marked_as_unread?: boolean;
   post_cursor?: number;
   unread_deactivated_count?: number;
@@ -153,14 +157,21 @@ export type GroupState = {
   trigger_ids?: number[];
 };
 
+export type GroupConfig = {
+  id: number; // group id
+  has_more?: boolean;
+};
+
 export type Post = ExtendedBaseModel & {
   group_id: number;
   company_id: number;
   text: string;
+  item_id?: number;
   item_ids: number[];
   post_ids: number[]; // quoted posts
   likes?: number[];
   activity?: string;
+  activity_data?: object;
   at_mention_item_ids?: number[];
   at_mention_non_item_ids?: number[];
   new_version?: number;
@@ -170,11 +181,38 @@ export type Post = ExtendedBaseModel & {
   status?: POST_STATUS;
 };
 
+export type ItemVersionPage = {
+  file_id: number;
+  url: string;
+};
+
+export type ItemVersions = {
+  download_url: string;
+  size: number;
+  url: string;
+  thumbs?: any;
+  length?: number; // document preview
+  orig_height?: number;
+  orig_width?: number;
+  pages?: ItemVersionPage[];
+};
+
 export type Item = ExtendedBaseModel & {
   group_ids: number[];
   post_ids: number[];
   company_id: number;
-  type_id: number;
+  is_new: boolean;
+  is_document?: boolean;
+  name: string; // file name
+  type_id: number; // file type
+  type: string; // file type .jpg .exe
+  versions: ItemVersions[];
+  summary?: string;
+  title?: string;
+  url: string;
+  image?: string;
+  deactivated: boolean;
+  do_not_render?: boolean;
 };
 
 export type FileItem = Item & {
@@ -196,13 +234,7 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
 
 export type RawPresence = {
   personId: number;
-  calculatedStatus?:
-    | 'NotReady'
-    | 'Unavailable'
-    | 'Available'
-    | 'OnCall'
-    | 'DND'
-    | 'InMeeting';
+  calculatedStatus?: PRESENCE;
 };
 
 export type Presence = BaseModel & {

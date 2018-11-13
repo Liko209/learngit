@@ -12,11 +12,14 @@ type ConversationCardProps = {
 type ConversationCardViewProps = {
   id: number;
   post: PostModel;
+  hideText: boolean;
   creator: PersonModel;
   name: string;
   customStatus?: string;
   createTime: string;
   itemIds: number[];
+  showProgressActions: boolean;
+  likes?: number[];
 };
 
 export { ConversationCardProps, ConversationCardViewProps };

@@ -13,21 +13,35 @@ type WithLoadingProps = {
   transitionDelay?: number;
   variant?: 'circular';
 };
-
-const StyledLoading = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+type TStyledLoading = {
+  isVisible: Boolean;
+};
+const StyledLoading = styled.div<TStyledLoading>`
+  position: absolute;
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  justify-content: center;
+  top: 0px;
+  left: 0px;
+  visibility: ${({ isVisible }) => (isVisible ? 'visible' : 'hidden')};
+  background: #fff;
+  z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
 
-const DefaultLoading = () => (
-  <StyledLoading>
-    <JuiFade in={true} style={{ transitionDelay: '500ms' }}>
-      <JuiCircularProgress />
+const DefaultLoading = (props: any) => (
+  <>
+    {props.children}
+    <JuiFade in={props.isVisible} style={{ transitionDelay: '400ms' }}>
+      <StyledLoading isVisible={props.isVisible}>
+        <div>
+          <JuiCircularProgress />
+        </div>
+      </StyledLoading>
     </JuiFade>
-  </StyledLoading>
+  </>
 );
 
 const MAP = {
@@ -44,11 +58,12 @@ const withLoading = <P extends object>(
     transitionDelay = 0,
     ...props
   }: WithLoadingProps) => {
-    if (!loading) return <Component {...props} />;
-
     const Loading = CustomizedLoading || MAP[variant || 'circular'];
-
-    return <Loading transitionDelay={transitionDelay} />;
+    return (
+      <Loading transitionDelay={transitionDelay} isVisible={loading}>
+        <Component {...props} />
+      </Loading>
+    );
   };
 };
 

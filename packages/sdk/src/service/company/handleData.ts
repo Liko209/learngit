@@ -9,14 +9,35 @@ import notificationCenter from '../../service/notificationCenter';
 import { ENTITY } from '../../service/eventKey';
 import { transform } from '../utils';
 import { Company, Raw } from '../../models';
+import CompanyAPI from '../../api/glip/company';
+
+const _getTransformData = async (companies: Raw<Company>[]): Promise<Company[]> => {
+  const transformedData: (Company | null)[] = await Promise.all(
+    companies.map(async (item: Raw<Company>) => {
+      const { _delta: delta, _id: id } = item;
+      let finalItem = item;
+      if (delta && id) {
+        const resp = await CompanyAPI.requestCompanyById(id);
+        if (resp && resp.data) {
+          finalItem = resp.data;
+        } else {
+          return null;
+        }
+      }
+      return transform<Company>(finalItem);
+    }),
+  );
+  return transformedData.filter((item: Company | null) => item !== null) as Company[];
+};
 
 const companyHandleData = async (companies: Raw<Company>[]) => {
   if (companies.length === 0) {
     return;
   }
-  const transformedData: Company[] = companies.map(item => transform<Company>(item));
+  // const transformedData: Company[] = companies.map(item => transform<Company>(item));
+  const transformedData: Company[] = await _getTransformData(companies);
   const companyDao = daoManager.getDao(CompanyDao);
-  notificationCenter.emitEntityPut(ENTITY.COMPANY, transformedData);
+  notificationCenter.emitEntityUpdate(ENTITY.COMPANY, transformedData);
   await companyDao.bulkPut(transformedData);
 };
 

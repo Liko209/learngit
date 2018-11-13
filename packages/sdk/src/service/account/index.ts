@@ -10,6 +10,7 @@ import {
   ACCOUNT_PROFILE_ID,
   ACCOUNT_COMPANY_ID,
   ACCOUNT_CONVERSATION_LIST_LIMITS,
+  UNREAD_TOGGLE_ON,
 } from '../../dao/account/constants';
 import { daoManager, AuthDao } from '../../dao';
 import AccountDao from '../../dao/account';
@@ -32,6 +33,7 @@ const DEFAULT_CONVERSATION_LIST_LIMITS = {
   [GROUP_QUERY_TYPE.GROUP]: 20,
   [GROUP_QUERY_TYPE.FAVORITE]: Infinity,
 };
+const DEFAULT_UNREAD_TOGGLE_SETTING = false;
 
 type ConversationListLimits = typeof DEFAULT_CONVERSATION_LIST_LIMITS;
 
@@ -116,7 +118,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
         endpoint_id,
       });
       authDao.put(AUTH_RC_TOKEN, refreshedRCAuthData.data);
-      notificationCenter.emitConfigPut(AUTH_RC_TOKEN, refreshedRCAuthData.data);
+      notificationCenter.emitKVChange(AUTH_RC_TOKEN, refreshedRCAuthData.data);
       return refreshedRCAuthData.data;
     } catch (err) {
       Aware(ErrorTypes.OAUTH, err.message);
@@ -148,6 +150,16 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   async onBoardingPreparation() {
     const profileService: ProfileService = ProfileService.getInstance();
     await profileService.markMeConversationAsFav();
+  }
+
+  getUnreadToggleSetting() {
+    return (
+      this.accountDao.get(UNREAD_TOGGLE_ON) || DEFAULT_UNREAD_TOGGLE_SETTING
+    );
+  }
+
+  setUnreadToggleSetting(value: boolean) {
+    this.accountDao.put(UNREAD_TOGGLE_ON, value);
   }
 }
 

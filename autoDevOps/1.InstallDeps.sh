@@ -1,10 +1,9 @@
 #!/usr/local/bin/bash
 echo '====Start Install Deps'
 
-npm i --ci
-npm run bt --hoist --no-ci
+npm i
 
 exitCode=$?
 if [ $exitCode -ne 0 ]; then
-    exit 1
+    addEnv BUILD_ERROR=1
 fi

@@ -5,11 +5,14 @@
  */
 import * as React from 'react';
 import tinycolor from 'tinycolor2';
-import styled, { Dependencies } from '../../foundation/styled-components';
+import styled from '../../foundation/styled-components';
 import { typography, palette, grey } from '../../foundation/utils/styles';
+import { Theme } from '../../foundation/theme/theme';
+
+type Size = 'small' | 'medium' | 'large';
 
 type JuiLinkProps = {
-  size?: 'small' | 'medium' | 'large';
+  size?: Size;
   disabled?: boolean;
   color?: 'primary' | 'secondary';
   Component?: React.ComponentType | keyof JSX.IntrinsicElements;
@@ -32,7 +35,7 @@ const StyledComponent = styled<JuiLinkProps, 'span'>('span')`
   }
 `;
 
-type ILink = React.ComponentType<JuiLinkProps> & Dependencies;
+type ILink = React.ComponentType<JuiLinkProps>;
 const JuiLink: ILink = ({ Component, ...rest }: JuiLinkProps) => {
   return Component ? (
     <Component {...rest}>
@@ -41,7 +44,7 @@ const JuiLink: ILink = ({ Component, ...rest }: JuiLinkProps) => {
   ) : null;
 };
 
-const typographySizeMap = {
+const typographySizeMap: { [key in Size]: keyof Theme['typography'] } = {
   small: 'caption',
   medium: 'body2',
   large: 'headline',

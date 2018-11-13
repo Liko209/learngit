@@ -2,7 +2,7 @@ import { BaseWebComponent } from "../BaseWebComponent";
 
 export class LoginPage extends BaseWebComponent {
 
-    get root() {
+    get self() {
         return this.getSelector('html');
     }
 

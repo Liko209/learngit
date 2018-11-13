@@ -5,15 +5,14 @@
  */
 import { Location, Action } from 'history';
 import { action, observable } from 'mobx';
-import history from '@/utils/history';
-import historyStack from '@/utils/HistoryStack';
+import history from '@/history';
+import historyStack from '@/common/HistoryStack';
 import { StoreViewModel } from '@/store/ViewModel';
-import { isElectron } from '@/utils';
+import isElectron from '@/common/isElectron';
 
 class HomeViewModel extends StoreViewModel {
   @observable
   openCreateTeam: boolean = false;
-
   constructor() {
     super();
     this._initHistoryListen();

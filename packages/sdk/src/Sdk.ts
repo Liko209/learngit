@@ -66,7 +66,7 @@ class Sdk {
       dbAdapter: dbConfig.adapter,
     });
 
-    Api.init(apiConfig);
+    Api.init(apiConfig, this.networkManager);
     await this.daoManager.initDatabase();
 
     // Sync service should always start before login
@@ -94,7 +94,7 @@ class Sdk {
       // TODO replace all LOGIN listen on notificationCenter
       // with accountManager.on(EVENT_LOGIN)
       this.accountManager.updateSupportedServices();
-      notificationCenter.emitService(SERVICE.LOGIN);
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
     }
   }
 

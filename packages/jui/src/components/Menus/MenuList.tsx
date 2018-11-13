@@ -13,6 +13,5 @@ type JuiMenuListProps = MuiMenuListProps;
 const JuiMenuList = styled(MuiMenuList)``;
 
 JuiMenuList.displayName = 'JuiMenuList';
-JuiMenuList.dependencies = [MuiMenuList];
 
 export { JuiMenuList, JuiMenuListProps };

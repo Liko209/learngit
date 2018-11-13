@@ -4,13 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+class SocketIO {
+  _reconnection: boolean = true;
+  reconnection(v: boolean) {
+    this._reconnection = v;
+  }
+}
+
 export default class Socket {
+  io: SocketIO;
   _subs: object = {};
   connect = jest.fn();
   disconnect = jest.fn();
   close = jest.fn();
   open = jest.fn();
   removeAllListeners = jest.fn();
+
+  constructor() {
+    this.io = new SocketIO();
+  }
   emit(event: string, props: object) {
     for (const e in this._subs) {
       if (e === event) {

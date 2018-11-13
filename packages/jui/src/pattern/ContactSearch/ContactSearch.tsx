@@ -6,7 +6,7 @@
 import React from 'react';
 import keycode from 'keycode';
 import Downshift from 'downshift';
-import differenceBy from 'lodash/differenceBy';
+import { differenceBy } from 'lodash';
 import styled from '../../foundation/styled-components';
 import { JuiPaper } from '../../components/Paper';
 import { JuiTextField } from '../../components/Forms/TextField';
@@ -133,8 +133,8 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
         {...itemProps}
         isHighlighted={isHighlighted}
         suggestion={suggestion}
-        key={index}
         uid={suggestion.id}
+        key={suggestion.id}
       />
     ) : null;
   }
@@ -212,7 +212,11 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
     } = this.props;
     const { inputValue, selectedItem, shrink, showPlaceholder } = this.state;
 
-    const filterSuggestions = differenceBy(suggestions, selectedItem, 'id');
+    let filterSuggestions = suggestions;
+
+    if (selectedItem && selectedItem.length) {
+      filterSuggestions = differenceBy(suggestions, selectedItem, 'id');
+    }
 
     return (
       <Downshift

@@ -4,61 +4,81 @@ import {
   JuiConversationCard,
   JuiConversationCardHeader,
   JuiConversationCardBody,
-  // JuiConversationCardFooter,
 } from 'jui/pattern/ConversationCard';
 import { Avatar } from '@/containers/Avatar';
-import { translate } from 'react-i18next';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
+import { ProgressActions } from '@/containers/ConversationCard/ProgressActions';
 import { Actions } from '@/containers/ConversationCard/Actions';
+import { Footer } from '@/containers/ConversationCard/Footer';
 import { idsToConversationSheet } from '@/containers/ConversationSheet';
-import { FormatMessages } from '../FormatMessages';
+import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 // import { idToPostItemComponent } from '@/containers/PostItems';
 @observer
 export class ConversationCard extends React.Component<
-  ConversationCardViewProps
+ConversationCardViewProps
 > {
-  constructor(props: ConversationCardViewProps) {
-    super(props);
+  state = {
+    isHover: false,
+  };
+  handleMouseEnter = () => {
+    this.setState({
+      isHover: true,
+    });
   }
+
+  handleMouseLeave = () => {
+    this.setState({
+      isHover: false,
+    });
+  }
+
   render() {
     const {
       id,
-      post,
       creator,
       name,
       createTime,
       customStatus,
+      showProgressActions,
       itemIds,
+      hideText,
     } = this.props;
-    const avatar = <Avatar uid={creator.id} size="medium" />;
+    const { isHover } = this.state;
+    if (!creator.id) {
+      return null;
+    }
+
+    const avatar = <Avatar uid={creator.id} size="medium" data-name="avatar" />;
+
     return (
       <React.Fragment>
         <JuiConversationCard
           data-name="conversation-card"
-          data-id={post.id}
+          data-id={id}
           Avatar={avatar}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
         >
           <JuiConversationCardHeader
-            data-name="conversation-card-header"
+            data-name="header"
             name={name}
             time={createTime}
             status={customStatus}
           >
-            <Actions id={id} />
+            {showProgressActions ? <ProgressActions id={id} /> : null}
+            {!showProgressActions && isHover ? <Actions id={id} /> : null}
           </JuiConversationCardHeader>
-          <JuiConversationCardBody>
-            <FormatMessages postId={post.id} />
-            {idsToConversationSheet(itemIds)}
+          <JuiConversationCardBody data-name="body">
+            {hideText ? null : <TextMessage id={id} />}
+            {idsToConversationSheet(itemIds, id)}
           </JuiConversationCardBody>
-          {/*<JuiConversationCardFooter>*/}
-          {/*/!* todo: footer *!/*/}
-          {/*</JuiConversationCardFooter>*/}
+          <Footer id={id} />
         </JuiConversationCard>
       </React.Fragment>
     );
   }
 }
 
-const ConversationCardView = translate('Conversations')(ConversationCard);
+const ConversationCardView = ConversationCard;
 
 export { ConversationCardView };

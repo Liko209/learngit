@@ -3,7 +3,7 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
+
 import { computed } from 'mobx';
 import { service } from 'sdk';
 import { Profile } from 'sdk/models';
@@ -64,7 +64,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     ) as GroupStateModel;
-    return !groupState.unreadCount;
+    return !groupState.unreadCount && !this.isFavorite;
   }
 
   @computed
@@ -73,7 +73,10 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   toggleFavorite = () => {
-    this._groupService.markGroupAsFavorite(this.groupId, !this.isFavorite);
+    return this._groupService.markGroupAsFavorite(
+      this.groupId,
+      !this.isFavorite,
+    );
   }
 
   closeConversation = (shouldSkipNextTime: boolean) => {

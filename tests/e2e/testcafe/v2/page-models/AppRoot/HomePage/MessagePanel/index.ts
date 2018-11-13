@@ -1,14 +1,16 @@
 import * as _ from 'lodash';
+import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
+import { h } from '../../../../helpers';
 
 class MoreMenuEntry extends BaseWebComponent {
   async enter() {
-    await this.t.click(this.root);
+    await this.t.click(this.self);
   }
 }
 
 class MoreMenu extends BaseWebComponent {
-  get root() {
+  get self() {
     return this.getSelector('*[role="document"]');
   }
 
@@ -16,12 +18,19 @@ class MoreMenu extends BaseWebComponent {
     this.warnFlakySelector();
     return this.getComponent(
       MoreMenuEntry,
-      this.root.find('li').withText(name),
+      this.self.find('li').withText(name),
     );
   }
 
-  get favorite() {
-    return this.getEntry('Favorite');
+  private getToggler(id: string) {
+    return this.getComponent(
+      MoreMenuEntry,
+      this.getSelectorByAutomationId(id),
+    );
+  }
+
+  get favoriteToggler() {
+    return this.getToggler('favToggler');
   }
 
   get close() {
@@ -32,11 +41,11 @@ class MoreMenu extends BaseWebComponent {
 class ConversationEntry extends BaseWebComponent {
   get moreMenuEntry() {
     this.warnFlakySelector();
-    return this.root.child().withText('more_vert');
+    return this.self.child().withText('more_vert');
   }
 
   async getUmi() {
-    const umi = this.root.find('.umi');
+    const umi = this.self.find('.umi');
     const text = await umi.innerText;
     if (_.isEmpty(text)) {
       return 0;
@@ -51,39 +60,66 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.hover(this.moreMenuEntry).click(this.moreMenuEntry);
   }
 
+  async waitUntilUmiExist(exist: boolean, timeout = 20) {
+    let tryTime = 0;
+    let count = await this.getUmi();
+    if (exist == !!count) {
+      return
+    }
+    while (true) {
+      if (tryTime >= timeout) {
+        throw (`Wait until conversation without UMI: timeout: ${timeout}s`)
+      }
+      tryTime = tryTime + 1;
+      await this.t.wait(1e3);
+      count = await this.getUmi();
+      if (exist == !!(count)) {
+        break
+      }
+    }
+  }
+
   async enter() {
-    await this.t.hover('html').click(this.root);
+    await this.t.hover(this.self).click(this.self);
   }
 }
 
 class ConversationListSection extends BaseWebComponent {
   ensureLoaded() {
-    return this.waitUntilExist(this.root);
+    return this.waitUntilExist(this.self);
   }
 
   get toggleButton() {
-    return this.root.find('[role="button"]');
+    return this.self.find('[role="button"]');
   }
 
   get header() {
-    return this.root.find('.conversation-list-section-header');
+    return this.self.find('.conversation-list-section-header');
   }
 
   get collapse() {
-    return this.root.find('.conversation-list-section-collapse').parent(2);
+    return this.self.find('.conversation-list-section-collapse').parent(2);
   }
 
   get conversations() {
-    return this.root.find('.conversation-list-item');
+    return this.self.find('.conversation-list-item');
   }
 
   nthConversationEntry(n: number) {
     return this.getComponent(ConversationEntry, this.conversations.nth(n));
   }
 
+  conversationByIdEntry(groupId: string) {
+    return this.getComponent(ConversationEntry, this.conversations.filter(`[data-group-id="${groupId}"]`));
+  }
+
+  conversationByNameEntry(name: string) {
+    return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name));
+  }
+
   async isExpand() {
     this.warnFlakySelector();
-    return await this.root.child().withText('keyboard_arrow_up').exists;
+    return await this.self.child().withText('keyboard_arrow_up').exists;
   }
 
   private async toggle(expand: boolean) {
@@ -102,20 +138,49 @@ class ConversationListSection extends BaseWebComponent {
   }
 }
 
-class PostItem extends BaseWebComponent {}
+class PostItem extends BaseWebComponent {
+  get avatar() {
+    return this.self.find(`[data-name="avatar"]`);
+  }
 
-class ConversationSection extends BaseWebComponent {
-  get root() {
+  get name() {
+    return this.self.find(`[data-name="name"]`);
+  }
+
+  get userStatus() {
+    this.warnFlakySelector();
+    return this.name.nextSibling('div')
+  }
+
+  get time() {
+    return this.self.find(`[data-name="time"]`);
+  }
+
+  get body() {
+    return this.self.find(`[data-name="body"]`);
+  }
+
+  get text() {
+    return this.self.find(`[data-name="text"]`);
+  }
+}
+
+class ConversationPage extends BaseWebComponent {
+  get self() {
     return this.getSelector('.conversation-page');
   }
 
   get posts() {
-    return this.root.find('[data-name="conversation-card"]');
+    return this.self.find('[data-name="conversation-card"]');
+  }
+
+  get header() {
+    return this.getSelectorByAutomationId('conversation-page-header');
   }
 
   get messageInputArea() {
     this.warnFlakySelector();
-    return this.root.child().find('.ql-editor');
+    return this.self.child().find('.ql-editor');
   }
 
   async sendMessage(message: string) {
@@ -128,22 +193,26 @@ class ConversationSection extends BaseWebComponent {
   nthPostItem(nth: number) {
     return this.getComponent(PostItem, this.posts.nth(nth));
   }
+
+  postItemById(postId: string) {
+    return this.getComponent(PostItem, this.posts.filter(`[data-id="${postId}"]`));
+  }
 }
 
 class CloseConversationModal extends BaseWebComponent {
-  get root() {
+  get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
   }
 
   get dontAskAgainCheckbox() {
     this.warnFlakySelector();
-    return this.root.find('input');
+    return this.self.find('input');
   }
 
   get confirmButton() {
     this.warnFlakySelector();
-    return this.root.find('button');
+    return this.self.find('button');
   }
 
   async toggleDontAskAgain() {
@@ -156,7 +225,7 @@ class CloseConversationModal extends BaseWebComponent {
 }
 
 export class MessagePanel extends BaseWebComponent {
-  get root() {
+  get self() {
     this.warnFlakySelector();
     return this.getSelector(
       '[data-test-automation-id="leftPanel"]',
@@ -182,8 +251,8 @@ export class MessagePanel extends BaseWebComponent {
     return this.getSection('Teams');
   }
 
-  get conversationSection() {
-    return this.getComponent(ConversationSection);
+  get conversationPage() {
+    return this.getComponent(ConversationPage);
   }
 
   get moreMenu() {
@@ -194,11 +263,18 @@ export class MessagePanel extends BaseWebComponent {
     return this.getComponent(CloseConversationModal);
   }
 
-  get conversationPage() {
-    return this.getSelector('.conversation-page');
-  }
-
   get conversationListSections() {
     return this.getSelector('.conversation-list-section');
+  }
+
+  async getCurrentGroupIdFromURL(): Promise<number> {
+    await this.isValidUrl();
+    return Number(/messages\/(\d+)/.exec(await h(this.t).href)[1]);
+  }
+
+  async isValidUrl() {
+    const url = await h(this.t).href;
+    const result = /messages\/(\d+)/.test(url);
+    assert(result, `invalid url: ${url}`);
   }
 }

@@ -16,15 +16,17 @@ import { mainLogger } from 'foundation';
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
   private static instance: SocketManager;
-  activeFSM: any = null;
+  public activeFSM: any = null;
 
-  private logPrefix: string;
-  private closingFSMs: { [key: string]: SocketFSM } = {};
-  private successConnectedUrls: string[] = [];
-  private hasLoggedIn: boolean = false;
+  private _logPrefix: string;
+  private _closingFSMs: { [key: string]: SocketFSM } = {};
+  private _successConnectedUrls: string[] = [];
+  private _hasLoggedIn: boolean = false;
+  private _isScreenLocked: boolean = false;
+  private _isOffline: boolean = false;
 
   private constructor() {
-    this.logPrefix = `[${SOCKET_LOGGER} manager]`;
+    this._logPrefix = `[${SOCKET_LOGGER} manager]`;
 
     this._subscribeExternalEvent();
   }
@@ -39,19 +41,41 @@ export class SocketManager {
   }
 
   public info(message: string) {
-    mainLogger.info(`${this.logPrefix} ${message}`);
+    mainLogger.info(`${this._logPrefix} ${message}`);
   }
 
   public warn(message: string) {
-    mainLogger.warn(`${this.logPrefix} ${message}`);
+    mainLogger.warn(`${this._logPrefix} ${message}`);
   }
 
   public error(message: string) {
-    mainLogger.error(`${this.logPrefix} ${message}`);
+    mainLogger.error(`${this._logPrefix} ${message}`);
+  }
+
+  public onPowerMonitorEvent(actionName: string) {
+    this.info(
+      `[PowerMonitor] Locked[${this._isScreenLocked}] ==> ${actionName}`,
+    );
+
+    if (!this._isScreenLocked && actionName === 'lock-screen') {
+      this._isScreenLocked = true;
+      this._onLockScreen();
+    } else if (this._isScreenLocked && actionName === 'unlock-screen') {
+      this._isScreenLocked = false;
+      this._onUnlockScreen();
+    }
   }
 
   public hasActiveFSM() {
     return this.activeFSM !== null;
+  }
+
+  public isScreenLocked() {
+    return this._isScreenLocked;
+  }
+
+  public isOffline() {
+    return this._isOffline;
   }
 
   public ongoingFSMCount() {
@@ -61,8 +85,8 @@ export class SocketManager {
       count += 1;
     }
 
-    if (this.closingFSMs) {
-      count += Object.keys(this.closingFSMs).length;
+    if (this._closingFSMs) {
+      count += Object.keys(this._closingFSMs).length;
     }
 
     return count;
@@ -113,15 +137,15 @@ export class SocketManager {
 
   private _onLogin() {
     this.info('onLogin');
-    this.hasLoggedIn = true;
-    this.successConnectedUrls = [];
+    this._hasLoggedIn = true;
+    this._successConnectedUrls = [];
     this._stopActiveFSM();
     this._startFSM();
   }
 
   private _onLogout() {
     this.info('onLogout');
-    this.hasLoggedIn = false;
+    this._hasLoggedIn = false;
     this._stopActiveFSM();
   }
 
@@ -131,11 +155,11 @@ export class SocketManager {
     const serverUrl = configDao.get(SOCKET_SERVER_HOST);
     // tslint:disable-next-line:max-line-length
     this.info(
-      `onServerHostUpdated: ${serverUrl}, hasLoggedIn: ${
-        this.hasLoggedIn
+      `onServerHostUpdated: ${serverUrl}, _hasLoggedIn: ${
+        this._hasLoggedIn
       }, hasActiveFSM: ${hasActive}`,
     );
-    if (!this.hasLoggedIn) {
+    if (!this._hasLoggedIn) {
       this.info('Ignore server updated event due to not logged-in');
       return;
     }
@@ -154,7 +178,7 @@ export class SocketManager {
           Solution:
           Save the URL which is connected success, ignore reseting to these tried URLs
       */
-      const isNewUrl = this.successConnectedUrls.indexOf(serverUrl) === -1;
+      const isNewUrl = this._successConnectedUrls.indexOf(serverUrl) === -1;
       if (!hasActive || isNewUrl) {
         // tslint:disable-next-line:max-line-length
         this.info(
@@ -170,13 +194,20 @@ export class SocketManager {
 
   private _onOffline() {
     this.info('onOffline');
+    this._isOffline = true;
     this._stopActiveFSM();
   }
 
   private _onOnline() {
     this.info('onOnline');
-    if (!this.hasLoggedIn) {
-      this.info('Ignore online event due to not logged-in');
+    this._isOffline = false;
+    if (!this._hasLoggedIn) {
+      this.info('Not start socket when online due to not logged-in');
+      return;
+    }
+
+    if (this._isScreenLocked) {
+      this.info('Not start socket when online due to locked screen');
       return;
     }
 
@@ -195,6 +226,35 @@ export class SocketManager {
     }
   }
 
+  private _onLockScreen() {
+    if (!this.activeFSM) {
+      this.info('No activeFSM when lock screen.');
+      return;
+    }
+
+    this.activeFSM.setReconnection(false);
+  }
+
+  private _onUnlockScreen() {
+    if (this.isConnected()) {
+      this.activeFSM.setReconnection(true);
+      return;
+    }
+
+    if (this._hasLoggedIn && !this._isOffline) {
+      this.info('Will renew socketFSM due to unlocking screen.');
+      this._stopActiveFSM();
+      this._startFSM();
+      return;
+    }
+
+    this.info(
+      `Not renew socketFSM: _hasLoggedIn[${this._hasLoggedIn}], _isOffline[${
+        this._isOffline
+      }]`,
+    );
+  }
+
   private _onReconnect(data: any) {
     // socket emit reconnect
     if (typeof data === 'number') return;
@@ -203,7 +263,7 @@ export class SocketManager {
       const body = JSON.parse(data.body);
       const configDao = daoManager.getKVDao(ConfigDao);
       configDao.put(SOCKET_SERVER_HOST, body.server);
-      notificationCenter.emitConfigPut(CONFIG.SOCKET_SERVER_HOST, body.server);
+      notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, body.server);
     } catch (error) {
       this.warn(`fail on socket reconnect: ${error}`);
     }
@@ -221,6 +281,11 @@ export class SocketManager {
         glipToken,
         this._stateHandler.bind(this),
       );
+
+      if (this._isScreenLocked) {
+        this.activeFSM.setReconnection(false);
+      }
+
       this.activeFSM.start();
     }
 
@@ -230,7 +295,7 @@ export class SocketManager {
   private _stopActiveFSM() {
     if (this.activeFSM) {
       this.activeFSM.stop();
-      // this.closingFSMs[this.activeFSM.name] = this.activeFSM;
+      // this._closingFSMs[this.activeFSM.name] = this.activeFSM;
       this.activeFSM = null;
     }
   }
@@ -240,8 +305,8 @@ export class SocketManager {
       const activeState = this.activeFSM && this.activeFSM.state;
       if (state === activeState) {
         const activeUrl = this.activeFSM.serverUrl;
-        if (this.successConnectedUrls.indexOf(activeUrl) === -1) {
-          this.successConnectedUrls.push(activeUrl);
+        if (this._successConnectedUrls.indexOf(activeUrl) === -1) {
+          this._successConnectedUrls.push(activeUrl);
         }
       } else {
         this.warn(`Invalid activeState: ${activeState}`);

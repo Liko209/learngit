@@ -36,7 +36,7 @@ test(
         });
         team = await userPlatform.createGroup({
           type: 'Team',
-          name: `My Team ${uuid()} `,
+          name: `Team ${uuid()} `,
           members: [user.rcId, users[5].rcId],
         });
       },
@@ -45,7 +45,7 @@ test(
     await h(t).withLog(
       'Make sure the conversations are shown and marked as favorite',
       async () => {
-        const profile = await glipSDK.getProfileByGlipId(user.glipId);
+        const profile = await glipSDK.getProfile(user.rcId);
         const favorites = profile.data.favorite_group_ids || [];
         if (favorites.indexOf(+pvtChat.data.id) < 0) {
           favorites.push(+pvtChat.data.id);
@@ -53,7 +53,7 @@ test(
         if (favorites.indexOf(+team.data.id) < 0) {
           favorites.push(+team.data.id);
         }
-        await glipSDK.updateProfileByGlipId(user.glipId, {
+        await glipSDK.updateProfile(user.rcId, {
           [`hide_group_${pvtChat.data.id}`]: false,
           [`hide_group_${team.data.id}`]: false,
           favorite_group_ids: favorites,

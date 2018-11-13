@@ -4,13 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RouteComponentProps } from 'react-router-dom';
-import { TranslationFunction, i18n } from 'i18next';
+import { WithNamespaces } from 'react-i18next';
 
-type ViewProps = {
-  // homePresenter: HomePresenter;
+type ViewProps = WithNamespaces & {
   create: Function;
-  i18n: i18n;
-  t: TranslationFunction;
   isOpen: boolean;
   disabledOkBtn: boolean;
   isOffline: boolean;
@@ -21,10 +18,12 @@ type ViewProps = {
   teamName: string;
   description: string;
   serverError: boolean;
+  members: (number | string)[];
   updateCreateTeamDialogState: () => void;
   inputReset: () => void;
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSearchContactChange: (items: any) => void;
 } & RouteComponentProps;
 
 export { ViewProps };

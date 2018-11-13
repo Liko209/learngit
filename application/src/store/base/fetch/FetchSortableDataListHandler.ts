@@ -3,11 +3,9 @@
  * @Date: 2018-10-07 00:50:11
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  handleDelete,
-  handleReplaceAll,
-  handleUpsert,
-} from './IncomingDataHandler';
+import { BaseModel } from 'sdk/models';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
+import { handleDelete, handleUpsert } from './IncomingDataHandler';
 
 import { EVENT_TYPES } from 'sdk/service';
 import {
@@ -17,7 +15,6 @@ import {
   ITransformFunc,
   ISortFunc,
   TReplacedData,
-  TChangeHandler,
 } from './types';
 import {
   FetchDataListHandler,
@@ -25,7 +22,6 @@ import {
 } from './FetchDataListHandler';
 
 import { SortableListStore } from './SortableListStore';
-import { IIncomingData } from '../../store';
 import _ from 'lodash';
 
 const transform2Map = (entities: any[]): Map<number, any> => {
@@ -51,17 +47,15 @@ export interface IFetchSortableDataProvider<T> {
   ): Promise<{ data: T[]; hasMore: boolean }>;
 }
 
-export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
-  ISortableModel<T>
-> {
+export class FetchSortableDataListHandler<
+  T extends BaseModel
+> extends FetchDataListHandler<ISortableModel<T>> {
   private _isMatchFunc: IMatchFunc<T | TReplacedData<T>>;
   private _transformFunc: ITransformFunc<T>;
   private _sortableDataProvider: IFetchSortableDataProvider<T>;
   protected _handleIncomingDataByType = {
     [EVENT_TYPES.DELETE]: handleDelete,
     [EVENT_TYPES.REPLACE]: handleUpsert,
-    [EVENT_TYPES.REPLACE_ALL]: handleReplaceAll,
-    [EVENT_TYPES.PUT]: handleUpsert,
     [EVENT_TYPES.UPDATE]: handleUpsert,
   };
 
@@ -76,8 +70,8 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
     this._entityName = options.entityName;
 
     if (options.eventName) {
-      this.subscribeNotification(options.eventName, ({ type, entities }) => {
-        this.onDataChanged({ type, entities });
+      this.subscribeNotification(options.eventName, ({ type, body }) => {
+        this.onDataChanged({ type, body });
       });
     }
   }
@@ -113,57 +107,69 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
       });
   }
 
-  extractModel(
-    entities: Map<number, T | TReplacedData<T>>,
-    key: number,
-    type: EVENT_TYPES,
-  ) {
-    let model: T;
-    if (type === EVENT_TYPES.REPLACE) {
-      model = (entities.get(key) as TReplacedData<T>).data as T;
+  onDataChanged(payload: NotificationEntityPayload<T>) {
+    if (EVENT_TYPES.DELETE === payload.type) {
+      const keys = Array.from(payload.body.ids);
+      this.sortableListStore.removeByIds(keys);
     } else {
-      model = entities.get(key) as T;
+      let entities: Map<number, T>;
+      let keys: number[] = [];
+
+      if (
+        EVENT_TYPES.UPDATE === payload.type ||
+        EVENT_TYPES.REPLACE === payload.type
+      ) {
+        entities = payload.body.entities;
+        keys = Array.from(payload.body.ids);
+      }
+
+      const existKeys = this.sortableListStore.getIds();
+      let notMatchedKeys: number[] = [];
+      const matchedKeys: number[] = _.intersection(keys, existKeys);
+      const matchedSortableModels: ISortableModel<T>[] = [];
+      const matchedEntities: T[] = [];
+
+      matchedKeys.forEach((key: number) => {
+        const model = entities.get(key) as T;
+        if (this._isMatchFunc(model)) {
+          const sortableModel = this._transformFunc(model);
+          matchedSortableModels.push(sortableModel);
+          matchedEntities.push(model);
+        } else {
+          notMatchedKeys.push(key);
+        }
+      });
+
+      if (payload.type === EVENT_TYPES.REPLACE) {
+        notMatchedKeys = matchedKeys;
+      } else {
+        const differentKeys: number[] = _.difference(keys, existKeys);
+        differentKeys.forEach((key: number) => {
+          const model = entities.get(key) as T;
+          if (this._isMatchFunc(model)) {
+            const idSortKey = this._transformFunc(model);
+            if (this._isInRange(idSortKey.sortValue)) {
+              matchedSortableModels.push(idSortKey);
+              matchedEntities.push(model);
+            }
+          }
+        });
+      }
+
+      this.updateEntityStore(matchedEntities);
+      this.sortableListStore.upsert(matchedSortableModels);
+      this.sortableListStore.removeByIds(notMatchedKeys);
+
+      this._dataChangeCallBack &&
+        this._dataChangeCallBack({
+          deleted: notMatchedKeys,
+          added: [],
+          updated: [],
+          direction: FetchDataDirection.DOWN,
+        });
     }
-    return model;
   }
 
-  onDataChanged({ type, entities }: IIncomingData<T | TReplacedData<T>>) {
-    const extractModel = (type: EVENT_TYPES, entity: T | TReplacedData<T>): T =>
-      type === EVENT_TYPES.REPLACE
-        ? (entity as TReplacedData<T>).data
-        : (entity as T);
-
-    const keys = _([...entities.values()])
-      .filter(entity => this._isMatchFunc(extractModel(type, entity)))
-      .map('id')
-      .value();
-
-    const handler = this._handleIncomingDataByType[type] as TChangeHandler<T>;
-    // tslint:disable-next-line
-    let { deleted, updated, updateEntity, added } = handler(
-      keys,
-      entities,
-      this._transformFunc,
-      this.sortableListStore,
-    );
-    added = _(added)
-      .filter(item => this._isInRange(item.sortValue))
-      .value();
-    this.updateEntityStore(updateEntity);
-    this.sortableListStore.removeByIds(deleted);
-    updated &&
-      updated.forEach((item: any) => {
-        this.sortableListStore.replaceAt(item.index, item.value);
-      });
-    this.sortableListStore.upsert(added);
-    this._dataChangeCallBack &&
-      this._dataChangeCallBack({
-        deleted,
-        added,
-        updated,
-        direction: FetchDataDirection.DOWN,
-      });
-  }
   private _isInRange(sortValue: number) {
     let inRange = false;
     const idArray = this.sortableListStore.items;
@@ -207,16 +213,15 @@ export class FetchSortableDataListHandler<T> extends FetchDataListHandler<
   }
 
   upsert(models: T[]) {
-    this.onDataChanged({
-      type: EVENT_TYPES.PUT,
-      entities: transform2Map(models),
-    });
-  }
+    const entityMap = transform2Map(models);
+    const notificationBody = {
+      ids: Array.from(entityMap.keys()),
+      entities: entityMap,
+    };
 
-  replaceAll(models: T[]) {
     this.onDataChanged({
-      type: EVENT_TYPES.REPLACE_ALL,
-      entities: transform2Map(models),
+      type: EVENT_TYPES.UPDATE,
+      body: notificationBody,
     });
   }
 }

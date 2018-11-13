@@ -13,36 +13,25 @@ fixture('ConversationList/LeftRail')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(
-  formalName('Sections Order', ['P0', 'JPT-2', 'LeftRail']),
-  async (t: TestController) => {
+test(formalName('The default view of conversation list.', ['P0', 'JPT-2', 'Chris.Zhan', 'DefaultView',]),
+ async (t: TestController) => {
     const app = new AppRoot(t);
-    const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
-    await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
-      }`,
+    const user = h(t).rcData.mainCompany.users[0];
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
       },
     );
 
-    await h(t).withLog(
-      'I can find the conversation sections in correct order',
-      async () => {
-        const order = ['Favorites', 'Direct Messages', 'Teams'];
-        for (let i = 0; i < order.length; i++) {
-          await t
-            .expect(
-              app.homePage.messagePanel.conversationListSections
-                .nth(i)
-                .getAttribute('data-name'),
-            )
-            .eql(order[i]);
-        }
-      },
-    );
+   await h(t).withLog('The I can find the conversation sections in correct order', async () => {
+     const order = ['Favorites', 'Direct Messages', 'Teams'];
+     for (let i = 0; i < order.length; i++) {
+       await t
+         .expect(app.homePage.messagePanel.conversationListSections.nth(i).getAttribute('data-name'))
+         .eql(order[i]);
+      }
+    });
   },
 );

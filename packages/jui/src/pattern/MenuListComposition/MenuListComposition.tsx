@@ -8,7 +8,7 @@ import React from 'react';
 import styled from '../../foundation/styled-components';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
+import { JuiPaper } from '../../components/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
@@ -28,6 +28,7 @@ type MenuListCompositionProps = {
   menuItems: MenuItems;
   MenuExpandTrigger: MenuExpandTrigger;
   className?: string;
+  automationId?: string;
 };
 
 const MenuListCompositionWrapper = styled.div`
@@ -73,7 +74,7 @@ class JuiMenuListComposition extends React.Component<
 
   render() {
     const { open, anchorEl } = this.state;
-    const { MenuExpandTrigger, menuItems } = this.props;
+    const { MenuExpandTrigger, menuItems, automationId } = this.props;
     return (
       <MenuListCompositionWrapper className={this.props.className}>
         <MenuExpandTrigger aria-haspopup="true" onClick={this.handleToggle} />
@@ -82,6 +83,7 @@ class JuiMenuListComposition extends React.Component<
           anchorEl={anchorEl}
           transition={true}
           disablePortal={true}
+          data-test-automation-id={automationId}
         >
           {({ TransitionProps, placement }) => (
             <Grow
@@ -91,7 +93,7 @@ class JuiMenuListComposition extends React.Component<
                   placement === 'bottom' ? 'center top' : 'center bottom',
               }}
             >
-              <Paper>
+              <JuiPaper>
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList>
                     {menuItems.map((item, index) => {
@@ -110,7 +112,7 @@ class JuiMenuListComposition extends React.Component<
                     })}
                   </MenuList>
                 </ClickAwayListener>
-              </Paper>
+              </JuiPaper>
             </Grow>
           )}
         </MenuWrapper>

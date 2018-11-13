@@ -19,5 +19,11 @@
   "CreateTeam": "新建组",
   "OK": "好的",
   "Cancel": "取消",
-  "Done": "完成"
+  "Done": "完成",
+  "today": "今天",
+  "yesterday": "昨天",
+  "PublicTeam": "公开的群组 (任何同事都可见)",
+  "MembersMayPostMessages": "允许成员发消息",
+  "at": "在",
+  "tomorrow": "明天"
 }

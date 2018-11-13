@@ -38,10 +38,8 @@ describe('LoadingPlugin', () => {
     it('should wrap View with loading', () => {
       const plugin = new LoadingPlugin();
       const View = plugin.wrapView(() => <div>Hello World</div>);
-
       const wrapper = mount(<View loading={true} />);
-
-      expect(wrapper.find(JuiCircularProgress).exists()).toBeTruthy();
+      expect(wrapper.find(JuiCircularProgress)).toBeTruthy();
     });
   });
 

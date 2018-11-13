@@ -6,20 +6,16 @@
 
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { TranslationFunction } from 'i18next';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import styled from 'styled-components';
 import getUrl from './getUrl';
-
+import { observer } from 'mobx-react';
 import EnvSelect from './EnvSelect';
 import Download from './Download';
 import LoginVersionStatus from '../VersionInfo/LoginVersionStatus';
 import { AuthService } from 'sdk/service';
-import { JuiModal } from 'jui/components/Dialog';
-import { grey } from 'jui/foundation/utils/styles';
-import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
-import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
-import { isElectron } from '@/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
+import storeManager from '@/store';
 
 const Form = styled.form`
   width: 300px;
@@ -57,29 +53,26 @@ const Button = styled.button`
     opacity: 0.65;
   }
 `;
-const Param = styled.p`
-  color: ${grey('700')};
-  font-size: ${({ theme }) => theme.typography.body2.fontSize};
-`;
-interface IProps extends RouteComponentProps<{}> {
-  t: TranslationFunction;
-}
+
+type Props = RouteComponentProps<{}> & WithNamespaces;
 
 interface IStates {
   isShowDialog: boolean;
-  appVersion: string;
-  electronVersion: string;
 }
+const globalStore = storeManager.getGlobalStore();
 
-class UnifiedLogin extends React.Component<IProps, IStates> {
-  constructor(props: IProps) {
+@observer
+class UnifiedLogin extends React.Component<Props, IStates> {
+  constructor(props: Props) {
     super(props);
     this._checkIfLogin();
+    window.jupiterElectron = {
+      ...window.jupiterElectron,
+      handleAboutPage: this._handleAboutPage,
+    };
   }
   state = {
     isShowDialog: false,
-    appVersion: '',
-    electronVersion: '',
   };
 
   private _checkIfLogin() {
@@ -90,16 +83,14 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
     }
   }
   private _handleAboutPage = (
-    event?: React.MouseEvent<HTMLElement>,
-    vApp?: string,
-    vElectron?: string,
+    event: React.MouseEvent<HTMLElement>,
+    appVersion: string,
+    electronVersion: string,
   ) => {
     const { isShowDialog } = this.state;
-    this.setState({
-      isShowDialog: !isShowDialog,
-      appVersion: vApp || '',
-      electronVersion: vElectron || '',
-    });
+    globalStore.set(GLOBAL_KEYS.APP_VERSION, appVersion || '');
+    globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion || '');
+    globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !isShowDialog);
   }
 
   // onChange = (event: React.FormEvent<HTMLSelectElement>) => {
@@ -114,11 +105,6 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
 
   render() {
     const { t } = this.props;
-    window.jupiterElectron = {
-      handleAboutPage: this._handleAboutPage,
-    };
-    const { isShowDialog, appVersion, electronVersion } = this.state;
-    const commitHash = gitCommitInfo.commitInfo[0].commitHash;
     return (
       <div>
         <Form onSubmit={this.onSubmit}>
@@ -144,26 +130,6 @@ class UnifiedLogin extends React.Component<IProps, IStates> {
         </Form>
         <LoginVersionStatus />
         <Download />
-        {isElectron ? (
-          <JuiModal
-            open={isShowDialog}
-            title={t('About RingCentral')}
-            okText={t('Done')}
-            onOK={this._handleAboutPage}
-          >
-            <Param>
-              Version: {appVersion} {`(E. ${electronVersion})`}
-            </Param>
-            <Param>Last Commit: {commitHash}</Param>
-            <Param>
-              Build Time: {formatDate(process.env.BUILD_TIME || '')}
-            </Param>
-            <Param>
-              Copyright © 1999-
-              {new Date().getFullYear()} RingCentral, Inc. All rights reserved.
-            </Param>
-          </JuiModal>
-        ) : null}
       </div>
     );
   }

@@ -12,10 +12,11 @@ import {
   TDelta,
   TUpdated,
 } from './fetch/types';
+import { BaseModel } from 'sdk/src/models';
 
-abstract class TransformHandler<T, K> {
-  fetchData: (direction: FetchDataDirection) => any;
-  hasMore: (direction: FetchDataDirection) => boolean;
+abstract class TransformHandler<T, K extends BaseModel> {
+  fetchData: (direction: FetchDataDirection, pageSize?: number) => any;
+
   constructor(
     protected _orderListHandler: FetchSortableDataListHandler<K>,
     public listStore = new ListStore<T>(),
@@ -24,7 +25,10 @@ abstract class TransformHandler<T, K> {
     this.fetchData = async (...args) => {
       await this._orderListHandler.fetchData(...args);
     };
-    this.hasMore = this._orderListHandler.hasMore.bind(_orderListHandler);
+  }
+
+  hasMore(direction: FetchDataDirection) {
+    return this._orderListHandler.hasMore(direction);
   }
 
   get orderListStore() {

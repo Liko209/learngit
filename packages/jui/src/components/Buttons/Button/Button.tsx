@@ -8,19 +8,24 @@ import tinycolor from 'tinycolor2';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
-import styled, { Dependencies } from '../../../foundation/styled-components';
+import styled, { css } from '../../../foundation/styled-components';
 import {
   typography,
   spacing,
   palette,
   width,
   rippleEnter,
+  height,
+  grey,
+  primary,
 } from '../../../foundation/utils/styles';
 import { Omit } from '../../../foundation/utils/typeHelper';
 
-export type JuiButtonProps = Omit<MuiButtonProps, 'innerRef'> & {
+type Variant = 'round' | 'text' | 'contained' | 'outlined' | 'fab';
+
+export type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant'> & {
   size?: 'small' | 'large';
-  variant?: 'text' | 'contained';
+  variant?: Variant;
   disabled?: boolean;
   color?: 'primary' | 'secondary';
 };
@@ -28,21 +33,45 @@ export type JuiButtonProps = Omit<MuiButtonProps, 'innerRef'> & {
 const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
-const WrappedMuiButton = (props: JuiButtonProps) => (
-  <MuiButton
-    classes={{ disabled: 'disabled', contained: 'containedButtonStyle' }}
-    TouchRippleProps={{ classes: touchRippleClasses }}
-    {...props}
-  />
-);
+const WrappedMuiButton = (props: JuiButtonProps) => {
+  const { variant, ...restProps } = props;
+  let _variant = variant;
+  if (_variant === 'round') {
+    _variant = 'fab';
+    restProps.disableRipple = true;
+    restProps.size = 'small';
+  }
+  return (
+    <MuiButton
+      classes={{
+        disabled: 'disabled',
+        contained: 'containedButtonStyle',
+        fab: 'roundButtonStyle',
+      }}
+      TouchRippleProps={{ classes: touchRippleClasses }}
+      variant={_variant}
+      {...restProps}
+    />
+  );
+};
+
+const shadow = (n: number) => {
+  return css<JuiButtonProps>`
+    box-shadow: ${({ theme, variant }) =>
+      variant === 'round' ? theme.shadows[n] : 'unset'};
+  `;
+};
+
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
     min-width: ${({ theme }) => width(26)({ theme })};
     padding-left: ${spacing(4)};
     padding-right: ${spacing(4)};
-    ${typography('button')} &.containedButtonStyle {
-      box-shadow: unset;
-      color: white;
+    text-transform: none;
+    ${typography('button')};
+    &.containedButtonStyle {
+      color: ${palette('common', 'white')};
+      ${shadow(3)}
       &:hover {
         background-color: ${({ theme, color = 'primary' }) =>
           tinycolor(palette(color, 'main')({ theme }))
@@ -50,7 +79,22 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
             .toRgbString()};
       }
       &:active {
-        box-shadow: unset;
+        ${shadow(1)}
+      }
+    }
+
+    &.roundButtonStyle {
+      height: ${({ theme }) => height(7)({ theme })};
+      border-radius: ${({ theme }) => spacing(7)({ theme })};
+      padding: ${({ theme }) => spacing(0, 4)({ theme })};
+      background-color: ${palette('common', 'white')};
+      color:${primary('700')};
+      width:inherit;
+      &:hover {
+        background-color: ${grey('50')}
+      &:active {
+        background-color: ${grey('100')};
+
       }
     }
 
@@ -68,8 +112,9 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   }
 `;
 
-export const JuiButton: React.StatelessComponent<JuiButtonProps> &
-  Dependencies = (props: JuiButtonProps) => <StyledButton {...props} />;
+export const JuiButton: React.StatelessComponent<JuiButtonProps> = (
+  props: JuiButtonProps,
+) => <StyledButton {...props} />;
 
 JuiButton.defaultProps = {
   size: 'large',
@@ -77,5 +122,3 @@ JuiButton.defaultProps = {
   variant: 'contained',
   disabled: false,
 };
-
-JuiButton.dependencies = [MuiButton];

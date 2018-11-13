@@ -13,39 +13,34 @@ import StoreViewModel from '@/store/ViewModel';
 type BuildContainerOptions<T> = {
   ViewModel: new (...args: any[]) => StoreViewModel;
   View: ComponentType<any>;
-  plugins?: IPlugin[];
+  plugins?: { [key: string]: IPlugin };
 };
-type TPrivateProps = {
-  viewRef: (ref: any) => void;
+type TIntrinsticProps = {
+  viewRefs?: any;
 };
 function buildContainer<P = {}, S = {}, SS = any>({
   View,
   ViewModel,
-  plugins = [],
+  plugins = {},
 }: BuildContainerOptions<P>) {
-  type Props = P & Partial<TPrivateProps>;
+  type Props = P & TIntrinsticProps;
+  const ObserverView = observer(View);
+
   @observer
   class Container extends Component<Props, S, SS> {
     @observable
     vm: StoreViewModel;
-    View = View;
+    View = ObserverView;
 
     constructor(props: Props) {
       super(props);
       this.vm = new ViewModel(props);
-      plugins.forEach((plugin: IPlugin) => {
+      _(plugins).forEach((plugin: IPlugin) => {
         plugin.install(this.vm);
         this.View = plugin.wrapView(this.View);
       });
       this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
-      if (this.vm.onReceiveProps) {
-        console.warn(
-          `[${
-            ViewModel.name
-          }] You probably no longer need onReceiveProps(), use this.props to get props, it is observable`,
-        );
-      }
-      this.vm.onReceiveProps && this.vm.onReceiveProps(props);
+      this.vm.onReceiveProps && this.vm.onReceiveProps(this.props);
     }
 
     componentWillUnmount() {
@@ -59,17 +54,23 @@ function buildContainer<P = {}, S = {}, SS = any>({
 
     render() {
       const View = this.View;
-      return <View {...this._viewProps} ref={this.props.viewRef} />;
+      return <View {...this._viewProps} />;
     }
 
     private get _viewProps() {
       const descriptors = Object.getOwnPropertyDescriptors(this.vm);
       const props: any = {};
+
+      Object.keys(this.props).forEach((key: string) => {
+        props[key] = this.props[key];
+      });
+
       Object.keys(descriptors)
         .filter(this._isViewProp)
         .forEach((key: string) => {
           props[key] = this.vm[key];
         });
+      props.plugins = plugins;
       return props;
     }
 

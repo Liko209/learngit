@@ -12,6 +12,5 @@ const StyledMenuWithLogo = styled('div')`
 `;
 
 StyledMenuWithLogo.displayName = 'StyledMenuWithLogo';
-StyledMenuWithLogo.dependencies = [];
 
 export { StyledMenuWithLogo };

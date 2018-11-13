@@ -42,9 +42,17 @@ describe('Service handleData', () => {
     expect(searchService.cancelSearchRequest).toHaveBeenLastCalledWith(2);
   });
   it('Search End with no result', () => {
-    handleData({ results: [], request_id: 1, scroll_request_id: 1, query: '2', response_id: 1 });
+    handleData({
+      results: [],
+      request_id: 1,
+      scroll_request_id: 1,
+      query: '2',
+      response_id: 1,
+    });
     expect(searchService.cancelSearchRequest).toHaveBeenLastCalledWith(1);
-    expect(notificationCenter.emitService).toHaveBeenCalledWith(SERVICE.SEARCH_END);
+    expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
+      SERVICE.SEARCH_END,
+    );
   });
   it('Search Success', () => {
     const post = rawPostFactory.build({ _id: 71680004 });
@@ -56,12 +64,15 @@ describe('Service handleData', () => {
       results: [item, post],
       request_id: 1,
       scroll_request_id: 1,
-      query: '2', response_id: 1,
+      query: '2',
+      response_id: 1,
     });
 
     expect(searchService.cancelSearchRequest).not.toHaveBeenLastCalledWith(1);
-    expect(notificationCenter.emitService)
-      .toHaveBeenCalledWith(SERVICE.SEARCH_SUCCESS, transformedData);
+    expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
+      SERVICE.SEARCH_SUCCESS,
+      transformedData,
+    );
   });
 
   it('Search success with no post', () => {
@@ -76,6 +87,9 @@ describe('Service handleData', () => {
       query: '2',
       response_id: 1,
     });
-    expect(notificationCenter.emitService).toHaveBeenCalledWith(SERVICE.SEARCH_SUCCESS, []);
+    expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
+      SERVICE.SEARCH_SUCCESS,
+      [],
+    );
   });
 });

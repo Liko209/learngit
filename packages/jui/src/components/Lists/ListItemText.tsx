@@ -13,6 +13,5 @@ type JuiListItemTextProps = MuiListItemTextProps;
 const JuiListItemText = styled(MuiListItemText)``;
 
 JuiListItemText.displayName = 'JuiListItemText';
-JuiListItemText.dependencies = [MuiListItemText];
 
 export { JuiListItemText, JuiListItemTextProps };

@@ -1,16 +1,17 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
+import { Selector } from 'testcafe';
 
 class LeftNavigatorEntry extends BaseWebComponent {
 
     public name: string;
 
     async enter() {
-        await this.t.click(this.root);
+        await this.t.click(this.self);
     }
 
     async getUmi() {
-        const umi = this.root.find('.umi');
+        const umi = this.self.find('.umi');
         const text = await umi.innerText;
         if (_.isEmpty(text)) {
             return 0;
@@ -24,7 +25,7 @@ class LeftNavigatorEntry extends BaseWebComponent {
 
 export class LeftPanel extends BaseWebComponent {
 
-    get root() {
+    get self() {
         return this.getSelectorByAutomationId('leftPanel');
     }
 
@@ -43,8 +44,18 @@ export class LeftPanel extends BaseWebComponent {
     }
 
     get messagesEntry() {
-        return this.getEntry('messages');
-    }
+        const sel = Selector('*').filter( node => {
+          const attrName = 'data-test-automation-id'
+          if (!node.hasAttribute(attrName)){ 
+              return false
+            };
+          const attr = node.getAttribute(attrName);
+          return !!attr.match('messages');
+        })
+        const entry = this.getComponent(LeftNavigatorEntry,sel)
+        entry.name = 'messages';
+        return entry;
+      }
 
     get phoneEntry() {
         return this.getEntry('phone');
@@ -80,11 +91,11 @@ export class LeftPanel extends BaseWebComponent {
 
     // actions
     async ensureLoaded() {
-        await this.waitUntilExist(this.root);
+        await this.waitUntilExist(this.self);
     }
 
     async isExpand() {
-        const width = await this.root.offsetWidth;
+        const width = await this.self.offsetWidth;
         return width > 200 * 0.9;
     }
 

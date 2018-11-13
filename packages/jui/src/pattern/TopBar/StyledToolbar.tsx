@@ -17,6 +17,5 @@ const StyledToolbar = styled(JuiToolbar)`
 `;
 
 StyledToolbar.displayName = 'StyledToolbar';
-StyledToolbar.dependencies = [];
 
 export { StyledToolbar };

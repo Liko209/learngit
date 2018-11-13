@@ -12,18 +12,10 @@ enum GROUP_QUERY_TYPE {
 
 enum EVENT_TYPES {
   'REPLACE' = 'replace',
-  'PUT' = 'put',
   'UPDATE' = 'update',
   'DELETE' = 'delete',
-  'REPLACE_ALL' = 'replaceAll',
-  'PARTIAL_UPDATE' = 'partialUpdate',
   'RELOAD' = 'reload',
   'RESET' = 'reset',
-  // LOGIN: 'login',
-  // LOGOUT: 'logout',
-  // INDEX_EXIST: 'fetchIndexDataExist',
-  // INDEX_DONE: 'fetchIndexDataDone',
-  // INDEX_ERROR: 'fetchIndexDataError',
 }
 
 enum PERMISSION_ENUM {
@@ -38,6 +30,15 @@ enum POST_STATUS {
   SUCCESS,
   FAIL,
   INPROGRESS,
+}
+
+enum PRESENCE {
+  NOTREADY = 'NotReady',
+  UNAVAILABLE = 'Unavailable',
+  AVAILABLE = 'Available',
+  ONCALL = 'OnCall',
+  DND = 'DND',
+  INMEETING = 'InMeeting',
 }
 
 const SHOULD_UPDATE_NETWORK_TOKEN = 'should_update_network_token';
@@ -55,4 +56,5 @@ export {
   SHOULD_UPDATE_NETWORK_TOKEN,
   POST_STATUS,
   UMI_METRICS,
+  PRESENCE,
 };

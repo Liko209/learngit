@@ -15,6 +15,7 @@ import { Post, Person } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';
+import { POST_STATUS } from 'sdk/service';
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   implements ConversationCardViewProps {
   @computed
@@ -28,16 +29,34 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   }
 
   @computed
+  get hideText() {
+    const { activityData } = this.post;
+    return activityData && activityData.object_id;
+  }
+
+  @computed
   get creator() {
-    return getEntity<Person, PersonModel>(
-      ENTITY_NAME.PERSON,
-      this.post.creatorId,
-    );
+    if (this.post.creatorId) {
+      return getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        this.post.creatorId,
+      );
+    }
+    return {} as PersonModel;
   }
 
   @computed
   get itemIds() {
-    return this.post.itemIds;
+    // If update some item need get item_id from post data. ItemId just for update item(Example event)
+    return (this.post.itemId && [this.post.itemId]) || this.post.itemIds || [];
+  }
+
+  @computed
+  get showProgressActions() {
+    return (
+      this.post.status === POST_STATUS.INPROGRESS ||
+      this.post.status === POST_STATUS.FAIL
+    );
   }
 
   @computed
