@@ -40,7 +40,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
     const unreadCount = _(groupStates).sumBy((groupState: GroupStateModel) => {
       const group: GroupModel = getEntity(ENTITY_NAME.GROUP, groupState.id);
       const umiCount = group.isTeam
-        ? groupState.unreadCount // groupState.unreadMentionsCount
+        ? groupState.unreadMentionsCount
         : groupState.unreadCount;
       return umiCount || 0;
     });
