@@ -38,7 +38,11 @@ export class SocketFSM extends StateMachine {
           to: 'disconnecting',
         },
         { name: 'finishConnect', from: 'connecting', to: 'connected' },
-        { name: 'failConnect', from: 'connecting', to: 'disconnected' },
+        {
+          name: 'failConnect',
+          from: ['connecting', 'disconnecting'],
+          to: 'disconnected',
+        },
         {
           name: 'fireDisconnect',
           from: ['connecting', 'disconnecting', 'connected'],

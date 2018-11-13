@@ -8,7 +8,9 @@ import GroupDao from '../../dao/group';
 import GroupAPI from '../../api/glip/group';
 import AccountDao from '../../dao/account';
 import { ACCOUNT_USER_ID } from '../../dao/account/constants';
-import notificationCenter from '../notificationCenter';
+import notificationCenter, {
+  NotificationEntityUpdatePayload,
+} from '../notificationCenter';
 import { ENTITY, SERVICE } from '../../service/eventKey';
 import ProfileService from '../../service/profile';
 import { extractHiddenGroupIds } from '../profile/handleData';
@@ -24,8 +26,7 @@ import {
 } from 'sdk/models';
 import StateService from '../state';
 import { mainLogger } from 'foundation';
-import AccountService from '../account';
-import { GROUP_QUERY_TYPE, EVENT_TYPES } from '../constants';
+import { EVENT_TYPES } from '../constants';
 
 async function getExistedAndTransformDataFromPartial(
   groups: Partial<Raw<Group>>[],
@@ -136,7 +137,6 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
 }
 
 async function doNotification(deactivatedData: Group[], groups: Group[]) {
-  const accountService: AccountService = AccountService.getInstance();
   const profileService: ProfileService = ProfileService.getInstance();
   const profile = await profileService.getProfile();
   const hiddenGroupIds = profile ? extractHiddenGroupIds(profile) : [];
@@ -147,13 +147,6 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
 
   const favIds = (profile && profile.favorite_group_ids) || [];
-
-  /**
-   * favorite groups/teams: put/delete
-   * normal groups: put/delete
-   * normal teams: put/delete
-   */
-
   const archivedGroups = normalData.filter((item: Group) => item.is_archived);
   const deactivatedGroups = deactivatedData.concat(archivedGroups);
   const deactivatedGroupIds = _.map(deactivatedGroups, (group: Group) => {
@@ -162,53 +155,17 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   deactivatedGroupIds.length &&
     notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
 
-  // let deactivatedTeams = deactivatedData.filter(
-  //   (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
-  // );
-  // deactivatedTeams = deactivatedTeams.concat(
-  //   archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1),
-  // );
-
-  // let deactivatedFavGroups = deactivatedData.filter(
-  //   (item: Group) => favIds.indexOf(item.id) !== -1,
-  // );
-  // deactivatedFavGroups = deactivatedFavGroups.concat(
-  //   archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1),
-  // );
-
-  // const deactivatedGroups = deactivatedData.filter(
-  //   (item: Group) => !item.is_team && favIds.indexOf(item.id) === -1,
-  // );
-
-  // if (deactivatedFavGroups.length > 0) {
-  //   notificationCenter.emitEntityDelete(
-  //     ENTITY.FAVORITE_GROUPS,
-  //     deactivatedFavGroups,
-  //   );
-  // }
-
-  // if (deactivatedTeams.length > 0) {
-  //   notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, deactivatedTeams);
-  // }
-
-  // if (deactivatedGroups.length > 0) {
-  //   notificationCenter.emitEntityDelete(
-  //     ENTITY.PEOPLE_GROUPS,
-  //     deactivatedGroups,
-  //   );
-  // }
-
-  const limits = accountService.getConversationListLimits();
+  const limit = await profileService.getMaxLeftRailGroup();
 
   let addedTeams = normalData.filter(
     (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
   );
-  addedTeams = await filterGroups(addedTeams, limits[GROUP_QUERY_TYPE.TEAM]);
+  addedTeams = await filterGroups(addedTeams, limit);
 
   let addedGroups = normalData.filter(
     (item: Group) => !item.is_team && favIds.indexOf(item.id) === -1,
   );
-  addedGroups = await filterGroups(addedGroups, limits[GROUP_QUERY_TYPE.GROUP]);
+  addedGroups = await filterGroups(addedGroups, limit);
 
   const addFavorites = normalData.filter(
     (item: Group) => favIds.indexOf(item.id) !== -1,
@@ -249,11 +206,12 @@ async function saveDataAndDoNotification(groups: Group[]) {
 }
 
 export default async function handleData(groups: Raw<Group>[]) {
-  console.time('grouphandleData');
-
   if (groups.length === 0) {
     return;
   }
+
+  const logLabel = `[Performance]grouphandleData ${Date.now()}`;
+  console.time(logLabel);
   // const dao = daoManager.getDao(GroupDao);
   const accountDao = daoManager.getKVDao(AccountDao);
   const userId = Number(accountDao.get(ACCOUNT_USER_ID));
@@ -270,7 +228,7 @@ export default async function handleData(groups: Raw<Group>[]) {
   // if (shouldCheckIncompleteMembers) {
   //   await checkIncompleteGroupsMembers(normalGroups);
   // }
-  console.timeEnd('grouphandleData');
+  console.timeEnd(logLabel);
 }
 
 async function doFavoriteGroupsNotification(favIds: number[]) {
@@ -405,16 +363,13 @@ function getUniqMostRecentPostsByGroup(posts: Post[]): Post[] {
 
 async function handleGroupMostRecentPostChanged({
   type,
-  entities,
-}: {
-  type: EVENT_TYPES;
-  entities: any;
-}) {
-  if (type !== EVENT_TYPES.UPDATE || !entities) {
+  body,
+}: NotificationEntityUpdatePayload<Post>) {
+  if (type !== EVENT_TYPES.UPDATE || !body.entities) {
     return;
   }
   const posts: Post[] = [];
-  entities.forEach((item: Post) => posts.push(item));
+  body.entities.forEach((item: Post) => posts.push(item));
   const uniqMaxPosts = getUniqMostRecentPostsByGroup(posts);
   const groupDao = daoManager.getDao(GroupDao);
   let validGroups: Partial<Raw<Group>>[] = [];
@@ -482,7 +437,16 @@ async function filterGroups(groups: Group[], limit: number) {
       (group: Group, i) => getGroupTime(group) >= oldestUnreadGroupTime,
     );
     if (filteredGroups.length > limit) {
-      return filteredGroups;
+      const result = [];
+      for (let i = 0; i < limit; i++) {
+        result.push(filteredGroups[i]);
+      }
+      for (let i = limit; i < filteredGroups.length; i++) {
+        if (unreadGroupIds.indexOf(filteredGroups[i].id) !== -1) {
+          result.push(filteredGroups[i]);
+        }
+      }
+      return result;
     }
   }
 

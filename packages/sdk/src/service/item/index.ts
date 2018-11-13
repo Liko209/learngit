@@ -7,10 +7,19 @@ import { daoManager, ItemDao } from '../../dao';
 import ItemAPI from '../../api/glip/item';
 import handleData, { sendFileItem, uploadStorageFile } from './handleData';
 import { transform } from '../utils';
-import { StoredFile, Item, FileItem, NoteItem } from '../../models';
+import {
+  StoredFile,
+  Item,
+  FileItem,
+  NoteItem,
+  Post,
+  Raw,
+  IResponseError,
+} from '../../models';
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
 import ErrorParser from '../../utils/error/parser';
+import { IResponse } from '../../api/NetworkClient';
 
 export interface ISendFile {
   file: FormData;
@@ -86,20 +95,38 @@ export default class ItemService extends BaseService<Item> {
     }
     return false;
   }
+
+  async getByPosts(posts: Post[]): Promise<Item[]> {
+    let itemIds: number[] = [];
+    posts.forEach((post: Post) => {
+      if (post.item_ids && post.item_ids[0]) {
+        itemIds = itemIds.concat(post.item_ids);
+      }
+      if (post.at_mention_item_ids && post.at_mention_item_ids[0]) {
+        itemIds = itemIds.concat(post.at_mention_item_ids);
+      }
+    });
+    const itemDao = daoManager.getDao(ItemDao);
+    const items = await itemDao.getItemsByIds([
+      ...Array.from(new Set(itemIds)),
+    ]);
+    return items;
+  }
+
   private async _doUpdateItemModel(
     updatedItemModel: Item,
     type: string,
-  ): Promise<Item | BaseError> {
+  ): Promise<Raw<Item> | BaseError> {
     updatedItemModel.do_not_render = true;
     updatedItemModel._id = updatedItemModel.id;
     delete updatedItemModel.id;
-    let itemData: Item;
+    let itemData: Raw<Item>;
     const resp = ItemAPI.putItem<Item>(
       updatedItemModel._id,
       type,
       updatedItemModel,
     )
-      .then((resolve: any) => {
+      .then((resolve: IResponse<Raw<Item> & IResponseError>) => {
         itemData = resolve.data;
         return itemData;
       })

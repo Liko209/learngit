@@ -94,6 +94,16 @@ export default class StateService extends BaseService<GroupState> {
     }
   }
 
+  async getGroupStatesFromLocalWithUnread(
+    ids: number[],
+  ): Promise<GroupState[]> {
+    const states = await this.getAllGroupStatesFromLocal(ids);
+    const result = states.filter((item: GroupState) => {
+      return item.unread_count || item.unread_mentions_count;
+    });
+    return result;
+  }
+
   getAllGroupStatesFromLocal(ids: number[]): Promise<GroupState[]> {
     const groupStateDao = daoManager.getDao(GroupStateDao);
     return groupStateDao.getByIds(ids);
@@ -174,7 +184,6 @@ export default class StateService extends BaseService<GroupState> {
           _.find(originGroupStates, { id: updatedGroupState.id }),
           UMI_METRICS,
         );
-        console.log('originGroupState', originGroupState);
 
         if (originGroupState) {
           // 1. UMI related check

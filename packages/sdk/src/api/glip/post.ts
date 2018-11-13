@@ -43,6 +43,12 @@ class PostAPI extends Api {
   static editPost(id: number, data: object): Promise<IResponse<Raw<Post>>> {
     return this.putDataById(id, data);
   }
+
+  static requestByIds(ids: number[]): Promise<IResponse<IPostsModel>> {
+    return this.glipNetworkClient.get('/posts_items_by_ids', {
+      post_ids: ids.join(','),
+    });
+  }
 }
 
 export default PostAPI;

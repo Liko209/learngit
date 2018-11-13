@@ -15,7 +15,7 @@ import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 // import { idToPostItemComponent } from '@/containers/PostItems';
 @observer
 export class ConversationCard extends React.Component<
-  ConversationCardViewProps
+ConversationCardViewProps
 > {
   state = {
     isHover: false,
@@ -41,6 +41,7 @@ export class ConversationCard extends React.Component<
       customStatus,
       showProgressActions,
       itemIds,
+      hideText,
     } = this.props;
     const { isHover } = this.state;
     if (!creator.id) {
@@ -68,8 +69,8 @@ export class ConversationCard extends React.Component<
             {!showProgressActions && isHover ? <Actions id={id} /> : null}
           </JuiConversationCardHeader>
           <JuiConversationCardBody data-name="body">
-            <TextMessage id={id} />
-            {idsToConversationSheet(itemIds)}
+            {hideText ? null : <TextMessage id={id} />}
+            {idsToConversationSheet(itemIds, id)}
           </JuiConversationCardBody>
           <Footer id={id} />
         </JuiConversationCard>

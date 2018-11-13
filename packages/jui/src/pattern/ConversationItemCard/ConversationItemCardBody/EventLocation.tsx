@@ -14,7 +14,7 @@ type Props = {
 const StyledEventLocation = styled.div`
   ${typography('body1')};
   color: ${grey('900')};
-  margin-bottom: ${spacing(2)};
+  margin-top: ${spacing(2)};
 `;
 
 const JuiEventLocation = (props: Props) => (

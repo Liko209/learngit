@@ -4,14 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventItem } from '@/store/models/Items';
+import Post from '@/store/models/Post';
 
 type EventProps = {
   ids: number[];
 };
+
+type EventUpdateProps = {
+  postId: number;
+} & EventProps;
 
 type EventViewProps = {
   ids: number[];
   event: EventItem;
 };
 
-export { EventProps, EventViewProps };
+type EventUpdateViewProps = {
+  post: Post;
+  postId: number;
+} & EventViewProps;
+
+export { EventProps, EventViewProps, EventUpdateViewProps, EventUpdateProps };
