@@ -6,7 +6,7 @@
 
 import i18next from 'i18next';
 
-const getLanguage = () => {
+function getLanguage() {
   const lng = i18next.language;
   const arr = lng.split('-');
   const map = {
@@ -27,9 +27,9 @@ const getLanguage = () => {
     return `${arr[0]}-${locals[0]}`;
   }
   return lng;
-};
+}
 
-export default getLanguage;
+export { getLanguage };
 
 // const map = {
 //   'de-DE': 'de-DE', // Deutsch

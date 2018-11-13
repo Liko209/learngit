@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { Post } from 'sdk/src/models';
 import { getGlobalValue } from '../../../../store/utils';
 import { FetchDataDirection, ISortableModel } from '../../../../store/base';
 import { NewMessageSeparatorHandler } from '../NewMessageSeparatorHandler';
@@ -14,6 +13,7 @@ type OnAddedCaseConfig = {
   currentUserId?: number;
   allPosts: ISortableModel[];
   direction?: FetchDataDirection;
+  hasMore?: boolean;
 };
 
 type OnDeletedCaseConfig = {
@@ -31,6 +31,7 @@ function runOnAdded({
   allPosts,
   setup,
   direction,
+  hasMore = false,
 }: OnAddedCaseConfig) {
   (getGlobalValue as jest.Mock).mockReturnValueOnce(currentUserId);
 
@@ -47,6 +48,7 @@ function runOnAdded({
       .clone()
       .reverse(),
     allPosts,
+    hasMore,
   );
   return handler;
 }
@@ -167,14 +169,15 @@ describe('NewMessageSeparatorHandler', () => {
       expect(handler.separatorMap.size).toBe(0);
 
       // load prev page
-      handler.onAdded(FetchDataDirection.UP, [], [
+      const allPosts = [
         { id: 998, sortValue: 1, data: { creator_id: 1 } },
         { id: 999, sortValue: 2, data: { creator_id: 1 } },
         // separator should be here
         { id: 1000, sortValue: 3, data: { creator_id: 1 } },
         { id: 1001, sortValue: 4, data: { creator_id: 1 } },
         { id: 1002, sortValue: 5, data: { creator_id: 1 } },
-      ] as ISortableModel[]);
+      ] as ISortableModel[];
+      handler.onAdded(FetchDataDirection.UP, [], allPosts, false);
 
       expect(handler.separatorMap.get(1000)).toHaveProperty(
         'type',
@@ -198,7 +201,8 @@ describe('NewMessageSeparatorHandler', () => {
       );
     });
 
-    it('should have not separator when readThrough is empty', () => {
+    it('should have not separator when readThrough is empty and hasMore=true', () => {
+      // In this case separator not in current page
       const handler = runOnAdded({
         readThrough: undefined,
         allPosts: [
@@ -206,9 +210,29 @@ describe('NewMessageSeparatorHandler', () => {
           { id: 1001, sortValue: 2 },
           { id: 1002, sortValue: 3 },
         ],
+        hasMore: true,
       });
 
       expect(handler.separatorMap.size).toBe(0);
+    });
+
+    it('should have separator when readThrough is empty and hasMore=false', () => {
+      // In this case, first unread post is the first post
+      const handler = runOnAdded({
+        readThrough: undefined,
+        allPosts: [
+          { id: 1000, sortValue: 1 },
+          { id: 1001, sortValue: 2 },
+          { id: 1002, sortValue: 3 },
+        ],
+        hasMore: false,
+      });
+
+      expect(handler.separatorMap.size).toBe(1);
+      expect(handler.separatorMap.get(1000)).toHaveProperty(
+        'type',
+        SeparatorType.NEW_MSG,
+      );
     });
 
     it('should have not separator when readThrough === last post', () => {

@@ -14,7 +14,7 @@ import {
 } from './fetch/types';
 
 abstract class TransformHandler<T, K> {
-  fetchData: (direction: FetchDataDirection) => any;
+  fetchData: (direction: FetchDataDirection, pageSize?: number) => any;
 
   constructor(
     protected _orderListHandler: FetchSortableDataListHandler<K>,

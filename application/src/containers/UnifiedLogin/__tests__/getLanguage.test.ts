@@ -5,7 +5,7 @@
  */
 
 import i18next from 'i18next';
-import getLanguage from '../getLanguage';
+import { getLanguage } from '../helper';
 
 describe('getLanguage method', () => {
   beforeEach(() => {
@@ -35,5 +35,4 @@ describe('getLanguage method', () => {
     i18next.changeLanguage(lng);
     expect(getLanguage()).toBe('en-US');
   });
-
 });

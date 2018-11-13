@@ -14,7 +14,7 @@ import {
   JuiEventCollapse,
   JuiEventCollapseContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
-import { getDurationTime, getDurationTimeText } from '../../../utils/helper';
+import { getDurationTime, getDurationTimeText } from './helper';
 import { EventUpdateViewProps } from './types';
 
 class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {

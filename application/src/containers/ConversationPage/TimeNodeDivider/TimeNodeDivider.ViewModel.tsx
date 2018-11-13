@@ -7,7 +7,7 @@
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { TimeNodeDividerProps, TimeNodeDividerViewProps } from './types';
-import getDateMessage from '@/utils/getDateMessage';
+import { getDateMessage } from '@/utils/date';
 
 class TimeNodeDividerViewModel extends AbstractViewModel<TimeNodeDividerProps>
   implements TimeNodeDividerViewProps {
