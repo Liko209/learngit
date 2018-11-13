@@ -46,7 +46,7 @@ const FILE_COMPS = {
         key={id}
         previewUrl={previewUrl}
         fileName={name}
-        actions={<>{downloadBtn(downloadUrl)}</>}
+        Actions={downloadBtn(downloadUrl)}
       />
     );
   },
@@ -57,7 +57,7 @@ const FILE_COMPS = {
       <JuiFileWithExpand
         key={id}
         fileName={name}
-        actions={downloadBtn(downloadUrl)}
+        Actions={downloadBtn(downloadUrl)}
       />
     );
   },

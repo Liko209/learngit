@@ -41,7 +41,7 @@ class FilesView extends React.Component<FilesViewProps> {
               ratio={origHeight / origWidth}
               fileName={name}
               url={previewUrl}
-              actions={downloadBtn(downloadUrl)}
+              Actions={downloadBtn(downloadUrl)}
             />
           );
         })}
@@ -56,7 +56,7 @@ class FilesView extends React.Component<FilesViewProps> {
               size={`${getFileSize(size)}`}
               url={previewUrl}
               iconType={iconType}
-              actions={downloadBtn(downloadUrl)}
+              Actions={downloadBtn(downloadUrl)}
             />
           );
         })}
@@ -70,7 +70,7 @@ class FilesView extends React.Component<FilesViewProps> {
               fileName={name}
               size={`${getFileSize(size)}`}
               iconType={iconType}
-              actions={downloadBtn(downloadUrl)}
+              Actions={downloadBtn(downloadUrl)}
             />
           );
         })}
