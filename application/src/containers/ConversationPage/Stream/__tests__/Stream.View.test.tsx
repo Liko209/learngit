@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ConversationCard } from '../../../ConversationCard';
+import { ConversationPost } from '../../../ConversationPost';
 import { StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { LoadingMorePlugin } from '@/plugins';
@@ -25,7 +25,7 @@ const baseProps = {
 
 describe('StreamView', () => {
   describe('render()', () => {
-    it('should render <ConversationCard>', () => {
+    it('should render <ConversationPost>', () => {
       const props = {
         ...baseProps,
         postIds: [1, 2],
@@ -39,7 +39,7 @@ describe('StreamView', () => {
       };
 
       const wrapper = shallow(<StreamView {...props} />);
-      const card = wrapper.find(ConversationCard);
+      const card = wrapper.find(ConversationPost);
       const card0 = card.at(0);
       const card1 = card.at(1);
 
@@ -66,7 +66,7 @@ describe('StreamView', () => {
 
       const wrapper = shallow(<StreamView {...props} />);
 
-      expect(wrapper.find(ConversationCard)).toHaveLength(2);
+      expect(wrapper.find(ConversationPost)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
     });
   });
