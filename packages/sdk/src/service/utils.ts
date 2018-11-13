@@ -6,6 +6,7 @@
 import notificationCenter from './notificationCenter';
 import { daoManager, DeactivatedDao } from '../dao';
 import { mainLogger } from 'foundation';
+import _ from 'lodash';
 
 const isObject = (value: any) =>
   Object.prototype.toString.call(value) === '[object Object]';
@@ -50,7 +51,11 @@ const baseHandleData = async ({ data, dao, eventKey, noSavingToDB }: any) => {
     if (deactivatedData.length > 0) {
       await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
       await dao.bulkDelete(deactivatedData.map((item: any) => item.id));
-      notificationCenter.emitEntityDelete(eventKey, deactivatedData);
+
+      const deactivatedDataIds = _.map(deactivatedData, (data: any) => {
+        return data.id;
+      });
+      notificationCenter.emitEntityDelete(eventKey, deactivatedDataIds);
     }
     // put normalData
     const normalData = data.filter((item: any) => item.deactivated !== true);
@@ -58,7 +63,7 @@ const baseHandleData = async ({ data, dao, eventKey, noSavingToDB }: any) => {
       if (!noSavingToDB) {
         await dao.bulkPut(normalData);
       }
-      notificationCenter.emitEntityPut(eventKey, normalData);
+      notificationCenter.emitEntityUpdate(eventKey, normalData);
     }
     return normalData;
   } catch (e) {

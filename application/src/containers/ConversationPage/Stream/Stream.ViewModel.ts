@@ -9,7 +9,8 @@ import { observable, computed } from 'mobx';
 import { PostService, StateService, ENTITY, ItemService } from 'sdk/service';
 import { Post, GroupState } from 'sdk/models';
 import { ErrorTypes } from 'sdk/utils';
-import storeManager from '@/store';
+import storeManager, { ENTITY_NAME } from '@/store';
+
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
@@ -29,7 +30,6 @@ import { getEntity } from '@/store/utils';
 import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
 import GroupStateModel from '@/store/models/GroupState';
 import { DateSeparatorHandler } from './DateSeparatorHandler';
-import { ENTITY_NAME } from '@/store/constants';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -41,15 +41,37 @@ const transformFunc = (dataModel: Post) => ({
 });
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
-  groupStateStore = storeManager.getEntityMapStore(ENTITY_NAME.GROUP_STATE);
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
+  private _initialized = false;
+
+  @observable
+  private _historyGroupState?: GroupStateModel;
+
+  @observable
+  private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
 
   @observable
   private _transformHandler: PostTransformHandler;
 
-  private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
-  private _initialized = false;
+  @computed
+  get hasHistoryUnread() {
+    return this._newMessageSeparatorHandler.hasUnread;
+  }
+
+  @computed
+  get historyGroupState() {
+    return this._historyGroupState;
+  }
+
+  @computed
+  get firstHistoryUnreadPostId() {
+    return this._newMessageSeparatorHandler.firstUnreadPostId;
+  }
+
+  clearHistoryUnread = () => {
+    this._historyGroupState = undefined;
+  }
 
   @observable
   groupId: number;
@@ -60,12 +82,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   items: StreamItem[] = [];
 
   @computed
-  get _readThrough() {
-    const groupState = getEntity<GroupState, GroupStateModel>(
+  private get _groupState() {
+    return getEntity<GroupState, GroupStateModel>(
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     );
-    return groupState.readThrough;
+  }
+
+  @computed
+  private get _readThrough() {
+    return this._groupState.readThrough;
   }
 
   @computed
@@ -143,12 +169,25 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this._initialized = false;
   }
 
+  updateHistoryGroupState() {
+    this._historyGroupState = _.cloneDeep(this._groupState);
+  }
+
+  @computed
+  get historyUnreadCount() {
+    const unreadCount = this._historyGroupState
+      ? this._historyGroupState.unreadCount || 0
+      : 0;
+    return unreadCount;
+  }
+
   @loading
   async loadInitialPosts() {
     const posts = await this._loadPosts(FetchDataDirection.UP);
     if (posts && posts.length) {
       await this._prepareAllData(posts);
     }
+    this.updateHistoryGroupState();
     this._initialized = true;
     this.markAsRead();
   }
@@ -176,7 +215,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @onScrollToBottom
   markAsRead() {
     const isFocused = document.hasFocus();
-    if (isFocused) {
+    if (isFocused && this._initialized) {
       this._stateService.markAsRead(this.groupId);
     }
   }
@@ -206,9 +245,29 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
   }
 
-  private async _loadPosts(direction: FetchDataDirection) {
-    if (!this._transformHandler.hasMore(direction)) return {};
-    return this._transformHandler.fetchData(direction);
+  private async _loadPosts(direction: FetchDataDirection, limit?: number) {
+    if (!this._transformHandler.hasMore(direction)) return [];
+    return await this._transformHandler.fetchData(direction, limit);
+  }
+
+  loadPostUntilFirstUnread = async () => {
+    if (!this._historyGroupState) return;
+
+    const unreadCount = this._historyGroupState.unreadCount;
+    // const readThrough = this._historyGroupState.readThrough;
+
+    if (!unreadCount) return;
+
+    // Find first unread post id
+    if (unreadCount >= this.postIds.length) {
+      this.enableNewMessageSeparatorHandler();
+      await this._loadPosts(
+        FetchDataDirection.UP,
+        unreadCount - this.postIds.length + 1,
+      );
+    }
+
+    return this.firstHistoryUnreadPostId;
   }
 }
 

@@ -74,15 +74,16 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
   setUpDataChangeCallback(cb: DeltaDataHandler) {
     this._dataChangeCallBack = cb;
   }
-  async fetchData(direction: FetchDataDirection) {
+  async fetchData(direction: FetchDataDirection, pageSize?: number) {
     const offset = this._listStore.size;
+    const size = pageSize ? pageSize : this._pageSize;
     let anchor: T | undefined;
     if (direction === FetchDataDirection.UP) {
       anchor = this._listStore.first();
     } else {
       anchor = this._listStore.last();
     }
-    return this.fetchDataInternal(offset, direction, this._pageSize, anchor);
+    return this.fetchDataInternal(offset, direction, size, anchor);
   }
 
   protected async fetchDataInternal(

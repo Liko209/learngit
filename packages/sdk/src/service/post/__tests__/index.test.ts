@@ -1,5 +1,5 @@
 /// <reference path="../../../__tests__/types.d.ts" />
-import { daoManager, PostDao, ItemDao } from '../../../dao';
+import { daoManager, PostDao, ItemDao, GroupConfigDao } from '../../../dao';
 import PostAPI from '../../../api/glip/post';
 import itemHandleData from '../../item/handleData';
 import { baseHandleData } from '../handleData';
@@ -32,6 +32,7 @@ describe('PostService', () => {
   const profileService = new ProfileService();
   const postDao = new PostDao(null);
   const itemDao = new ItemDao(null);
+  const groupConfigDao = new GroupConfigDao(null);
   const postMockInfo = postFactory.build({
     id: -1,
     created_at: 11111,
@@ -54,6 +55,7 @@ describe('PostService', () => {
     GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     daoManager.getDao.mockReturnValueOnce(postDao);
     daoManager.getDao.mockReturnValueOnce(itemDao);
+    daoManager.getDao.mockReturnValueOnce(groupConfigDao);
   });
 
   describe('getPostsFromLocal()', () => {
@@ -206,14 +208,25 @@ describe('PostService', () => {
     });
 
     it('should return local data', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * We have 2 posts total at local, 0 at remote.
        */
       postService.getPostsFromLocal.mockResolvedValueOnce({
         posts: [{ id: 1 }, { id: 2 }],
         items: [],
+        hasMore: true,
+      });
+
+      postService.getPostsFromRemote.mockResolvedValueOnce({
+        posts: [],
+        items: [],
         hasMore: false,
       });
+
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
       const resultEmpty = await postService.getPostsByGroupId({
         groupId: 1,
         offset: 0,
@@ -234,6 +247,8 @@ describe('PostService', () => {
     });
 
     it('should return remote data', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * 2 posts total, 2 at remote, 0 at local.
        */
@@ -247,6 +262,8 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
 
       baseHandleData.mockResolvedValue([{ id: 1 }, { id: 2 }]);
       itemHandleData.mockResolvedValue([]);
@@ -266,6 +283,8 @@ describe('PostService', () => {
     });
 
     it('should return local+remote data when localData + remoteData < pageSize', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * 4 posts total, 2 at local, 2 at remote.
        * When pageSize is 20, it should return all 4 posts.
@@ -280,9 +299,11 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
-
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
       baseHandleData.mockResolvedValue([{ id: 3 }, { id: 4 }]);
       itemHandleData.mockResolvedValue([]);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
 
       const result = await postService.getPostsByGroupId({
         groupId: 1,
@@ -299,6 +320,8 @@ describe('PostService', () => {
     });
 
     it('should return local+remote data when localData + remoteData > pageSize', async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
       /**
        * 4 posts total, 2 of them at local, 2 at remote.
        * When pageSize is 3, it should return 3 posts (2 local + 1 remote).
@@ -313,7 +336,8 @@ describe('PostService', () => {
         items: [],
         hasMore: false,
       });
-
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
       baseHandleData.mockResolvedValue([{ id: 3 }]);
       itemHandleData.mockResolvedValue([]);
 

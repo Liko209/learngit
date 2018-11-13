@@ -37,19 +37,6 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
     this._atom.reportChanged();
   }
 
-  deleteAndUpsert({
-    deleted,
-    upserted,
-  }: {
-    deleted: number[];
-    upserted: ISortableModel<T>[];
-  }) {
-    deleted.forEach((id: number) => {
-      _.remove(this.items, { id });
-    });
-    this.upsert(upserted);
-  }
-
   getIds() {
     this._atom.reportObserved();
     return _.map(this.items, 'id');

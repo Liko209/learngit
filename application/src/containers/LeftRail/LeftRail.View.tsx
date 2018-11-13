@@ -11,7 +11,7 @@ import { JuiConversationListSectionHeader } from 'jui/pattern/ConversationList/C
 
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
-import { toTitleCase } from '@/utils';
+import { toTitleCase } from '@/utils/string';
 import {
   JuiLeftRail,
   JuiLeftRailStickyTop,

@@ -158,6 +158,11 @@ export type GroupState = {
   trigger_ids?: number[];
 };
 
+export type GroupConfig = {
+  id: number; // group id
+  has_more?: boolean;
+};
+
 export type Post = ExtendedBaseModel & {
   group_id: number;
   company_id: number;

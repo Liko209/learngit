@@ -7,8 +7,8 @@ import {
   isOnlyLetterOrNumbers,
   handleOnlyLetterOrNumbers,
   handleOneOfName,
-} from '@/utils/helper';
-import phoneNumberHelper from '@/utils/phoneNumber';
+  phoneNumberDefaultFormat,
+} from '../helper';
 
 export default class PersonModel extends Base<Person> {
   @observable
@@ -85,7 +85,7 @@ export default class PersonModel extends Base<Person> {
       }
       if (!pseudoUserDisplayName) {
         pseudoUserDisplayName = this.pseudoUserPhoneNumber
-          ? phoneNumberHelper.defaultFormat(this.pseudoUserPhoneNumber)
+          ? phoneNumberDefaultFormat(this.pseudoUserPhoneNumber)
           : this.firstName;
       }
       return pseudoUserDisplayName;

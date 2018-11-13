@@ -22,8 +22,11 @@ const { PostService } = service;
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
   private _isMatchFunc(post: Post) {
-    const existIds = this._sortableListHandler.sortableListStore.getIds();
-    return existIds.includes(post.id) && !post.deactivated;
+    // const mentionPersonIds = post.at_mention_non_item_ids;
+    // if (!mentionPersonIds) {
+    //   return false;
+    // }
+    return this._postIds.includes(post.id) && !post.deactivated;
   }
 
   private _options = {
@@ -98,16 +101,19 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       return store.clear();
     }
     if (this._postIds.length !== props.postIds.length) {
-      this._postIds = this.props.postIds.reverse();
       const added = _(props.postIds)
         .difference(this._postIds)
         .value();
+      this._postIds = props.postIds.reverse();
       if (added.length) {
         const postService = PostService.getInstance() as IPostService;
         const { posts } = await postService.getPostsByIds(added);
         this._sortableListHandler.onDataChanged({
-          type: EVENT_TYPES.PUT,
-          entities: transform2Map(posts),
+          type: EVENT_TYPES.UPDATE,
+          body: {
+            ids: added,
+            entities: transform2Map(posts),
+          },
         });
       }
     }
@@ -132,19 +138,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   hackPostChange() {
-    this.subscribeNotification(ENTITY.POST, ({ type, entities }) => {
+    this.subscribeNotification(ENTITY.POST, ({ type, body }) => {
       if (type !== EVENT_TYPES.DELETE) {
         return;
       }
-      const existIds = this._sortableListHandler.sortableListStore.getIds();
-      const keys = _([...entities.values()])
-        .map('id')
-        .intersection(existIds);
-      const misMatchedKeys = keys
-        .filter(key => !this._isMatchFunc(entities.get(key)))
-        .value();
-
-      this._sortableListHandler.sortableListStore.removeByIds(misMatchedKeys);
+      this._sortableListHandler.onDataChanged({
+        body,
+        type: EVENT_TYPES.DELETE,
+      });
     });
   }
 }

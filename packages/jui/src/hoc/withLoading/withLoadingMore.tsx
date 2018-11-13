@@ -7,6 +7,7 @@ import React, { ComponentType, Fragment } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils/styles';
 import { JuiCircularProgress } from '../../components/Progress';
+import { withDelay } from '../withDelay';
 
 type WithLoadingMoreProps = {
   loadingTop: boolean;
@@ -27,38 +28,6 @@ const DefaultLoadingMore = () => (
     <JuiCircularProgress />
   </StyledLoadingMore>
 );
-
-const withDelay = (Component: ComponentType<any>) => {
-  class ComponentWithDelay extends React.Component<{ delay: number }> {
-    static defaultProps = {
-      delay: 0,
-    };
-
-    state = {
-      visible: false,
-    };
-
-    timer: NodeJS.Timer;
-
-    componentDidMount() {
-      this.timer = setTimeout(() => {
-        this.setState({ visible: true });
-      },                      this.props.delay);
-    }
-
-    componentWillUnmount() {
-      clearTimeout(this.timer);
-    }
-
-    render() {
-      const { delay, ...rest } = this.props;
-      if (!this.state.visible) return null;
-
-      return <Component {...rest} />;
-    }
-  }
-  return ComponentWithDelay;
-};
 
 const DefaultLoadingMoreWithDelay = withDelay(DefaultLoadingMore);
 

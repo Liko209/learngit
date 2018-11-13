@@ -17,6 +17,10 @@ const baseProps = {
     .fn()
     .mockName('enableNewMessageSeparatorHandler'),
   hasMore: true,
+  historyUnreadCount: 0,
+  hasHistoryUnread: false,
+  clearHistoryUnread: jest.fn().mockName('setHasUnread'),
+  loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
 };
 
 describe('StreamView', () => {
@@ -66,44 +70,6 @@ describe('StreamView', () => {
 
       expect(wrapper.find(ConversationCard)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
-    });
-
-    it.skip('should render posts and separators', () => {
-      const props = {
-        ...baseProps,
-        postIds: [1, 2, 3, 4],
-        items: [
-          { type: StreamItemType.POST, value: 1 },
-          { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
-          { type: StreamItemType.POST, value: 2 },
-          { type: StreamItemType.POST, value: 3 },
-          { type: StreamItemType.POST, value: 4 },
-        ],
-        plugins: {
-          loadingMorePlugin: new LoadingMorePlugin(),
-        },
-        loadInitialPosts: async () => {},
-      };
-
-      const wrapper = shallow(<StreamView {...props} />);
-
-      expect(wrapper).toMatchSnapshot();
-    });
-
-    it.skip('should render empty view', () => {
-      const props = {
-        ...baseProps,
-        postIds: [],
-        items: [],
-        plugins: {
-          loadingMorePlugin: new LoadingMorePlugin(),
-        },
-        loadInitialPosts: async () => {},
-      };
-
-      const wrapper = shallow(<StreamView {...props} />);
-
-      expect(wrapper).toMatchSnapshot();
     });
   });
 });

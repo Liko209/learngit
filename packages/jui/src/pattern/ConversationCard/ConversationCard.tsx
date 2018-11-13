@@ -62,7 +62,7 @@ const StyledConversationCard = styled<{ mode?: string }, 'div'>('div')`
   transition: background-color 0.2s ease-in;
   &:hover,
   &:focus {
-    background-color: ${grey('100')};
+    background: ${grey('50')};
   }
   ${navigationStyles}
 `;

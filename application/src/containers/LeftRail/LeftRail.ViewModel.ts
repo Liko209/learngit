@@ -17,8 +17,8 @@ import AccountService from 'sdk/service/account';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import GlobalStore from '@/store/base/GlobalStore';
-import history from '@/utils/history';
 import { POST_LIST_TYPE } from '../PostListPage/types';
+import history from '@/history';
 
 class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   implements LeftRailViewProps {
