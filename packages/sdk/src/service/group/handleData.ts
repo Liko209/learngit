@@ -8,7 +8,9 @@ import GroupDao from '../../dao/group';
 import GroupAPI from '../../api/glip/group';
 import AccountDao from '../../dao/account';
 import { ACCOUNT_USER_ID } from '../../dao/account/constants';
-import notificationCenter from '../notificationCenter';
+import notificationCenter, {
+  NotificationEntityUpdatePayload,
+} from '../notificationCenter';
 import { ENTITY, SERVICE } from '../../service/eventKey';
 import ProfileService from '../../service/profile';
 import { extractHiddenGroupIds } from '../profile/handleData';
@@ -405,10 +407,7 @@ function getUniqMostRecentPostsByGroup(posts: Post[]): Post[] {
 async function handleGroupMostRecentPostChanged({
   type,
   body,
-}: {
-  type: EVENT_TYPES;
-  body: any;
-}) {
+}: NotificationEntityUpdatePayload<Post>) {
   if (type !== EVENT_TYPES.UPDATE || !body.entities) {
     return;
   }
