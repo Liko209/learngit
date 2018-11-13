@@ -7,6 +7,7 @@
 import React, { Component } from 'react';
 import { AddedViewProps } from './types';
 import { translate, WithNamespaces } from 'react-i18next';
+import { renderPerson } from '../utils';
 
 class AddedViewComponent extends Component<AddedViewProps & WithNamespaces> {
   render() {
@@ -18,8 +19,8 @@ class AddedViewComponent extends Component<AddedViewProps & WithNamespaces> {
       createdAt,
       t,
     } = this.props;
-    const inviter = `<a class="user" href="/users/${inviterId}">${inviterName}</a>`;
-    const newUser = `<a class="user" href="/users/${newUserId}">${newUserName}</a>`;
+    const inviter = renderPerson(inviterId, inviterName);
+    const newUser = renderPerson(newUserId, newUserName);
     const html = t('addedToTeam', { inviter, newUser });
     return (
       <React.Fragment>

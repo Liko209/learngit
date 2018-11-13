@@ -8,6 +8,7 @@ import { getEntity } from '../../../../../../store/utils';
 import { AddedViewModel } from '../Added.ViewModel';
 import { ENTITY_NAME } from '@/store';
 import moment from 'moment';
+import { isPlainObject, isFunction } from 'lodash';
 
 jest.mock('../../../../../../store/utils');
 
@@ -31,6 +32,20 @@ const mockPersonData2 = {
   displayName: 'Name2',
 };
 
+const mapMockPersonData = {
+  1: mockPersonData1,
+  2: mockPersonData2,
+};
+
+const judgePersonData = (personId: number) => {
+  return mapMockPersonData[personId];
+};
+
+const mockMapData = {
+  [ENTITY_NAME.POST]: mockPostData,
+  [ENTITY_NAME.PERSON]: judgePersonData,
+};
+
 const props = {
   id: 123,
 };
@@ -39,17 +54,12 @@ const addedViewModel = new AddedViewModel(props);
 describe('Team added', () => {
   beforeAll(() => {
     (getEntity as jest.Mock).mockImplementation((name, id) => {
-      if (name === ENTITY_NAME.POST) {
-        return mockPostData;
+      const data = mockMapData[name];
+      if (isPlainObject(data)) {
+        return data;
       }
-      if (name === ENTITY_NAME.PERSON) {
-        if (id === 1) {
-          return mockPersonData1;
-        }
-        if (id === 2) {
-          return mockPersonData2;
-        }
-        return null;
+      if (isFunction(data)) {
+        return data(id);
       }
       return null;
     });

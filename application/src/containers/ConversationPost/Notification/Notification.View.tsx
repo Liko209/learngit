@@ -5,25 +5,29 @@
  */
 
 import React, { Component } from 'react';
-import { NotificationViewProps } from './types';
+import { NotificationViewProps, ActivityData } from './types';
 import { JuiNotification } from 'jui/pattern/ConversationPage/Notification';
 import { Added, Change, Join } from './Team';
+
+const members = (postId: number, activityData: ActivityData) => {
+  const { new_user_id: newUserId, inviter_id: inviterId } = activityData;
+  if (newUserId === inviterId) {
+    return <Join id={postId} />;
+  }
+  return <Added id={postId} />;
+};
+
+const activityDataKeyMappingComponent = {
+  members,
+  set_abbreviation: Change,
+};
 
 class NotificationView extends Component<NotificationViewProps> {
   private _renderNotificationContent() {
     const { id, activityData } = this.props;
-    switch (activityData.key) {
-      case 'set_abbreviation':
-        return <Change id={id} />;
-      case 'members':
-        const { new_user_id: newUserId, inviter_id: inviterId } = activityData;
-        if (newUserId === inviterId) {
-          return <Join id={id} />;
-        }
-        return <Added id={id} />;
-      default:
-        return null;
-    }
+    const Component = activityDataKeyMappingComponent[activityData.key];
+    const isReactElement = React.isValidElement(Component);
+    return isReactElement ? <Component id={id} /> : Component(id, activityData);
   }
 
   render() {

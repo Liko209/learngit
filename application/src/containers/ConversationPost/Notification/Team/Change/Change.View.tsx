@@ -7,6 +7,7 @@
 import React, { Component } from 'react';
 import { ChangeViewProps } from './types';
 import { translate, WithNamespaces } from 'react-i18next';
+import { renderPerson } from '../utils';
 
 class ChangeViewComponent extends Component<ChangeViewProps & WithNamespaces> {
   render() {
@@ -18,7 +19,7 @@ class ChangeViewComponent extends Component<ChangeViewProps & WithNamespaces> {
       createdAt,
       t,
     } = this.props;
-    const changer = `<a class="user" href="/users/${changerId}">${changerName}</a>`;
+    const changer = renderPerson(changerId, changerName);
     const html = t('changeTeamName', {
       changer,
       value: `"${value}"`,

@@ -7,11 +7,12 @@
 import React, { Component } from 'react';
 import { JoinViewProps } from './types';
 import { translate, WithNamespaces } from 'react-i18next';
+import { renderPerson } from '../utils';
 
 class JoinViewComponent extends Component<JoinViewProps & WithNamespaces> {
   render() {
     const { newUserId, newUserName, createdAt, t } = this.props;
-    const newUser = `<a class="user" href="/users/${newUserId}">${newUserName}</a>`;
+    const newUser = renderPerson(newUserId, newUserName);
     const html = t('joinTheTeam', { newUser });
     return (
       <React.Fragment>
