@@ -9,31 +9,36 @@ import { NotificationViewProps, ActivityData } from './types';
 import { JuiNotification } from 'jui/pattern/ConversationPage/Notification';
 import { Added, Change, Join } from './Team';
 
-const members = (postId: number, activityData: ActivityData) => {
-  const { new_user_id: newUserId, inviter_id: inviterId } = activityData;
-  if (newUserId === inviterId) {
-    return <Join id={postId} />;
-  }
-  return <Added id={postId} />;
-};
-
-const activityDataKeyMappingComponent = {
-  members,
-  set_abbreviation: Change,
-};
-
 class NotificationView extends Component<NotificationViewProps> {
-  private _renderNotificationContent() {
-    const { id, activityData } = this.props;
-    const Component = activityDataKeyMappingComponent[activityData.key];
-    const isReactElement = React.isValidElement(Component);
-    return isReactElement ? <Component id={id} /> : Component(id, activityData);
+  private _Members(activityData: ActivityData) {
+    const { new_user_id: newUserId, inviter_id: inviterId } = activityData;
+    if (newUserId === inviterId) {
+      return Join;
+    }
+    return Added;
+  }
+
+  private _getComponent() {
+    const { activityData } = this.props;
+    const { key } = activityData;
+    const mapComponent = {
+      set_abbreviation: Change,
+      members: this._Members(activityData),
+    };
+    return mapComponent[key] || null;
+  }
+
+  private _renderNotification() {
+    const { id } = this.props;
+    const Component = this._getComponent();
+    if (!Component) {
+      return null;
+    }
+    return <Component id={id} />;
   }
 
   render() {
-    return (
-      <JuiNotification>{this._renderNotificationContent()}</JuiNotification>
-    );
+    return <JuiNotification>{this._renderNotification()}</JuiNotification>;
   }
 }
 
