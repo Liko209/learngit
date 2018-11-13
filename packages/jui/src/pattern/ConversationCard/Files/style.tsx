@@ -20,7 +20,6 @@ import {
   height,
   shape,
   palette,
-  ellipsis,
   typography,
 } from '../../../foundation/utils/styles';
 import pdf from './pdf_conversation_xxh.png';
@@ -36,16 +35,18 @@ const ICON_MAP = {
   sheet,
 };
 
+const ITEM_WIDTH = 84;
+
 type FileIconProps = {
   size?: 'small';
-  iconType: string | null;
+  iconType?: string | null;
 };
 
 const FileItem = styled(MuiListItem)`
   && {
     margin: ${spacing(0, 0, 3, 0)};
     padding: ${spacing(2)};
-    width: ${width(80)};
+    width: ${width(ITEM_WIDTH)};
     border-radius: ${shape('borderRadius', 1)};
     box-shadow: ${props => props.theme.shadows[1]};
   }
@@ -68,7 +69,6 @@ const FileInfo = styled(JuiListItemText)`
     justify-content: space-between;
     padding: ${spacing(0, 0, 0, 3)};
     .file-item-primary {
-      ${ellipsis};
       width: ${width(57)};
       color: ${palette('grey', '900')};
     }
@@ -92,7 +92,7 @@ const FileActionsWrapper = styled.span`
 
 const FileCard = styled(JuiCard)`
   display: inline-block;
-  width: ${width(80)};
+  width: ${width(ITEM_WIDTH)};
   margin: ${spacing(0, 3, 3, 0)};
 `;
 
@@ -109,9 +109,7 @@ const FileCardContent = styled(MuiCardContent)`
 
 const CardFileName = styled(JuiTypography)`
   && {
-    ${ellipsis};
     ${typography('subheading1')};
-    width: ${width(65)};
     color: ${palette('grey', '900')};
     margin: ${spacing(0, 0, 2, 0)};
   }
@@ -164,9 +162,8 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   transform: translate(0, ${height(9)});
   & > b {
     font-weight: 400;
-    ${ellipsis};
     color: ${palette('grey', '700')};
-    width: ${({ ratio }) => (ratio >= 1 ? width(60) : width(86))};
+    width: ${({ ratio }) => (ratio >= 1 ? width(56) : width(82))};
   }
 `;
 
@@ -191,6 +188,18 @@ const ImageMedia = styled(FileCardMedia)`
   }
 `;
 
+const FileExpandItemWrapper = styled.div``;
+
+const FileExpandItem = styled(MuiListItem)`
+  && {
+    margin: ${spacing(0, 0, 3, 0)};
+    padding: ${spacing(4)};
+    width: ${width(ITEM_WIDTH)};
+    border-radius: ${shape('borderRadius', 1)};
+    box-shadow: ${props => props.theme.shadows[1]};
+  }
+`;
+
 export {
   FileItem,
   FileIcon,
@@ -206,4 +215,6 @@ export {
   ImageCard,
   ImageFileInfo,
   ImageMedia,
+  FileExpandItem,
+  FileExpandItemWrapper,
 };

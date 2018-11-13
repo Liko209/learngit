@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { text } from '@storybook/addon-knobs';
+import { text, boolean } from '@storybook/addon-knobs';
 import backgrounds from '@storybook/addon-backgrounds';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
@@ -17,6 +17,7 @@ import {
 import { JuiAvatar } from '../../../components/Avatar';
 import { JuiButtonBar } from '../../../components/Buttons/ButtonBar/ButtonBar';
 import { JuiIconButton } from '../../../components/Buttons/IconButton/IconButton';
+import JuiConversationCardFrom from '../ConversationCardFrom';
 
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiConversationCard, { inline: true }))
@@ -25,9 +26,16 @@ storiesOf('Pattern', module)
   )
   .add('ConversationCard', () => {
     const name = text('name', 'John Smith');
+    const mode = boolean('navigation', false) ? 'navigation' : null;
+    const from = mode && (
+      <JuiConversationCardFrom name="Group" isGroup={true} />
+    );
     return (
-      <JuiConversationCard Avatar={<JuiAvatar size="medium">SH</JuiAvatar>}>
-        <JuiConversationCardHeader name={name} time="3:15 PM">
+      <JuiConversationCard
+        Avatar={<JuiAvatar size="medium">SH</JuiAvatar>}
+        mode={mode}
+      >
+        <JuiConversationCardHeader name={name} time="3:15 PM" from={from}>
           <JuiButtonBar size="small">
             <JuiIconButton variant="plain" tooltipTitle="bookmark">
               bookmark

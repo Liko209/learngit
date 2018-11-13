@@ -9,7 +9,7 @@ import { Group, Profile } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
-import { compareName } from '@/utils/helper';
+import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
@@ -21,7 +21,7 @@ export default class GroupModel extends Base<Group> {
   @observable
   setAbbreviation: string;
   @observable
-  members: number[];
+  members: number[] = [];
   @observable
   description?: string;
   @observable
@@ -150,6 +150,13 @@ export default class GroupModel extends Base<Group> {
     }
 
     return CONVERSATION_TYPES.NORMAL_GROUP;
+  }
+
+  @computed
+  get membersExcludeMe() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+
+    return this.members.filter(member => member !== currentUserId);
   }
 
   @computed

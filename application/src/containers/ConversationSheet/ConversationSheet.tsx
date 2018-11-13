@@ -46,7 +46,7 @@ class ConversationSheet {
       return modules.map((module: RegisterOptions) => {
         const { type } = module;
         if (!sheets[type]) {
-          return () => null;
+          return null;
         }
         return chain({
           type,

@@ -129,9 +129,6 @@ export class NetworkRequestExecutor
       case HTTP_STATUS_CODE.UNAUTHORIZED:
         this._handle401XApiCompletionCallback(response);
         break;
-      case HTTP_STATUS_CODE.FORBIDDEN:
-        this._handle403XApiCompletionCallback(response);
-        break;
       case HTTP_STATUS_CODE.BAD_GATEWAY:
         this._handle502XApiCompletionCallback(response);
         break;
@@ -161,11 +158,6 @@ export class NetworkRequestExecutor
   }
 
   private _handle401XApiCompletionCallback(response: IResponse) {
-    this.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
-    this.responseListener.onAccessTokenInvalid(this.handlerType);
-  }
-
-  private _handle403XApiCompletionCallback(response: IResponse) {
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
     this.responseListener.onAccessTokenInvalid(this.handlerType);
   }

@@ -18,7 +18,7 @@ import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { JuiModal } from '@/containers/Dialog';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { toTitleCase } from '@/utils/helper';
+import { toTitleCase } from '@/utils/string';
 import { CONVERSATION_TYPES } from '@/constants';
 
 type HeaderProps = {
@@ -91,7 +91,6 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
       isFavorite,
       type,
       isPrivate,
-      customStatus,
       onFavoriteButtonHandler,
     } = this.props;
     const onchange = async (
@@ -112,7 +111,6 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
     return (
       <JuiConversationPageHeaderSubtitle>
-        {customStatus ? <span>{customStatus}</span> : null}
         <JuiButtonBar size="small" overlapping={true}>
           <JuiCheckboxButton
             tooltipTitle={
@@ -157,12 +155,13 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 
   render() {
-    const { title } = this.props;
+    const { title, customStatus } = this.props;
 
     return (
       <JuiConversationPageHeader
         data-test-automation-id="conversation-page-header"
         title={title}
+        status={customStatus}
         SubTitle={this._SubTitle()}
         Right={this._ActionButtons()}
         onMouseEnter={this._onHover}

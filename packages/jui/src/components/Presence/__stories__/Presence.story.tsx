@@ -22,13 +22,13 @@ storiesOf('Components', module).add(
     return (
       <div>
         <Wrapper>
-          <JuiPresence presence="online" /> online
+          <JuiPresence presence="Available" /> Available
         </Wrapper>
         <Wrapper>
-          <JuiPresence presence="away" /> away
+          <JuiPresence presence="InMeeting" /> InMeeting
         </Wrapper>
         <Wrapper>
-          <JuiPresence presence="offline" /> offline
+          <JuiPresence presence="Unavailable" /> Unavailable
         </Wrapper>
       </div>
     );

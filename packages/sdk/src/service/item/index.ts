@@ -8,9 +8,9 @@ import ItemAPI from '../../api/glip/item';
 import handleData, { sendFileItem, uploadStorageFile } from './handleData';
 import { transform } from '../utils';
 import { StoredFile, Item, FileItem, NoteItem } from '../../models';
-import { ENTITY, SOCKET } from '../eventKey';
-import notificationCenter from '../notificationCenter';
-import { ErrorParser } from '../../utils/error';
+import { BaseError } from '../../utils';
+import { SOCKET } from '../eventKey';
+import ErrorParser from '../../utils/error/parser';
 
 export interface ISendFile {
   file: FormData;
@@ -70,27 +70,42 @@ export default class ItemService extends BaseService<Item> {
     // should handle errors when error handling ready
     return null;
   }
-  async deleteItem(id: number): Promise<boolean> {
+  async doNotRenderItem(id: number, type: string) {
     const itemDao = daoManager.getDao(ItemDao);
     const item = (await itemDao.get(id)) as Item;
-    notificationCenter.emitEntityDelete(ENTITY.ITEM, [item]);
-    await itemDao.delete(id);
     if (item) {
-      item.deactivated = true;
-      item._id = item.id;
-      delete item.id;
-      try {
-        const resp = await ItemAPI.deleteItem<Item>(id, 'link', {
-          deactivated: true,
-        });
-        if (resp && !resp.data.error) {
-          return true;
-        }
-        throw resp;
-      } catch (e) {
-        throw ErrorParser.parse(e);
-      }
+      return await this.handlePartialUpdate(
+        {
+          id: item.id,
+          _id: item.id,
+          do_not_render: true,
+        },
+        undefined,
+        this._doUpdateItemModel.bind(this, item, type),
+      );
     }
     return false;
+  }
+  private async _doUpdateItemModel(
+    updatedItemModel: Item,
+    type: string,
+  ): Promise<Item | BaseError> {
+    updatedItemModel.do_not_render = true;
+    updatedItemModel._id = updatedItemModel.id;
+    delete updatedItemModel.id;
+    let itemData: Item;
+    const resp = ItemAPI.putItem<Item>(
+      updatedItemModel._id,
+      type,
+      updatedItemModel,
+    )
+      .then((resolve: any) => {
+        itemData = resolve.data;
+        return itemData;
+      })
+      .catch((e: any) => {
+        return ErrorParser.parse(e);
+      });
+    return resp;
   }
 }

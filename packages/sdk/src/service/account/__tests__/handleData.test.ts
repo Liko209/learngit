@@ -9,7 +9,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import accountHandleData from '../handleData';
 
 jest.mock('../../../service/notificationCenter', () => ({
-  emitConfigPut: jest.fn(),
+  emitKVChange: jest.fn(),
 }));
 
 jest.mock('../../../dao', () => ({
@@ -39,7 +39,7 @@ describe('Account Service handleData', () => {
     // expect(userId).toBe(1);
     // expect(companyId).toBe(2);
     // expect(profileId).toBe(3);
-    expect(notificationCenter.emitConfigPut).toHaveBeenCalledTimes(3);
+    expect(notificationCenter.emitKVChange).toHaveBeenCalledTimes(3);
     // expect(daoManager.getDao().put).toHaveBeenCalledTimes(3);
   });
 
@@ -48,25 +48,25 @@ describe('Account Service handleData', () => {
       companyId: 2,
       profileId: 3,
     });
-    expect(notificationCenter.emitConfigPut).toHaveBeenCalledTimes(2);
+    expect(notificationCenter.emitKVChange).toHaveBeenCalledTimes(2);
   });
 
   it('getCurrentUserId()', async () => {
     accountHandleData({
       profileId: 3,
     });
-    expect(notificationCenter.emitConfigPut).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitKVChange).toHaveBeenCalledTimes(1);
   });
 
   it('getCurrentUserId()', async () => {
     accountHandleData({});
-    expect(notificationCenter.emitConfigPut).toHaveBeenCalledTimes(0);
+    expect(notificationCenter.emitKVChange).toHaveBeenCalledTimes(0);
   });
 
   it('clientConfig()', async () => {
     accountHandleData({
       clientConfig: { beta_enable_log_emails: [123] },
     });
-    expect(notificationCenter.emitConfigPut).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitKVChange).toHaveBeenCalledTimes(1);
   });
 });

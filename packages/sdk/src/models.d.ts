@@ -3,7 +3,7 @@
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { POST_STATUS } from './service';
+import { POST_STATUS, PRESENCE } from './service';
 
 export type BaseModel = {
   id: number;
@@ -95,7 +95,7 @@ export type Company = ExtendedBaseModel & {
   domain: string;
   admins: number[];
   custom_emoji: { [index: string]: { data: string } };
-  _delta?: { add_keys?: object; remove_keys: object; };
+  _delta?: { add_keys?: object; remove_keys: object };
   rc_account_id?: number;
 };
 
@@ -157,6 +157,11 @@ export type GroupState = {
   trigger_ids?: number[];
 };
 
+export type GroupConfig = {
+  id: number; // group id
+  has_more?: boolean;
+};
+
 export type Post = ExtendedBaseModel & {
   group_id: number;
   company_id: number;
@@ -165,6 +170,7 @@ export type Post = ExtendedBaseModel & {
   post_ids: number[]; // quoted posts
   likes?: number[];
   activity?: string;
+  activity_data?: object;
   at_mention_item_ids?: number[];
   at_mention_non_item_ids?: number[];
   new_version?: number;
@@ -200,11 +206,12 @@ export type Item = ExtendedBaseModel & {
   type_id: number; // file type
   type: string; // file type .jpg .exe
   versions: ItemVersions[];
-  summary: string;
-  title: string;
+  summary?: string;
+  title?: string;
   url: string;
-  image: string;
+  image?: string;
   deactivated: boolean;
+  do_not_render?: boolean;
 };
 
 export type FileItem = Item & {
@@ -226,13 +233,7 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
 
 export type RawPresence = {
   personId: number;
-  calculatedStatus?:
-  | 'NotReady'
-  | 'Unavailable'
-  | 'Available'
-  | 'OnCall'
-  | 'DND'
-  | 'InMeeting';
+  calculatedStatus?: PRESENCE;
 };
 
 export type Presence = BaseModel & {

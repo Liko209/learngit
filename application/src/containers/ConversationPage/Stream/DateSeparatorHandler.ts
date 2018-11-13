@@ -11,7 +11,6 @@ import { FetchDataDirection, ISortableModel } from '@/store/base';
 import { DateSeparator, SeparatorType } from './types';
 import { ISeparatorHandler } from './ISeparatorHandler';
 
-// TODO
 class DateSeparatorHandler implements ISeparatorHandler {
   priority: number = 1;
 
