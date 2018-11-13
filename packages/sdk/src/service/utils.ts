@@ -67,7 +67,7 @@ const baseHandleData = async ({ data, dao, eventKey, noSavingToDB }: any) => {
     }
     return normalData;
   } catch (e) {
-    mainLogger.error(e);
+    mainLogger.error(`baseHandleData: ${JSON.stringify(e)}`);
     return [];
   }
 };

@@ -174,7 +174,6 @@ export default class StateService extends BaseService<GroupState> {
           _.find(originGroupStates, { id: updatedGroupState.id }),
           UMI_METRICS,
         );
-        console.log('originGroupState', originGroupState);
 
         if (originGroupState) {
           // 1. UMI related check
