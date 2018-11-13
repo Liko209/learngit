@@ -119,24 +119,31 @@ export default class PostService extends BaseService<Post> {
     if (postId) {
       params.post_id = postId;
     }
-
-    const requestResult = await PostAPI.requestPosts(params);
-    const result: IRawPostResult = {
-      posts: [],
-      items: [],
-      hasMore: false,
-    };
-    if (requestResult && requestResult.data) {
-      result.posts = requestResult.data.posts;
-      result.items = requestResult.data.items;
-      if (result.posts.length === limit) {
-        result.hasMore = true;
+    try {
+      const requestResult = await PostAPI.requestPosts(params);
+      const result: IRawPostResult = {
+        posts: [],
+        items: [],
+        hasMore: false,
+      };
+      if (requestResult && requestResult.data) {
+        result.posts = requestResult.data.posts;
+        result.items = requestResult.data.items;
+        if (result.posts.length === limit) {
+          result.hasMore = true;
+        }
       }
+      return result;
+    } catch (e) {
+      return {
+        posts: [],
+        items: [],
+        hasMore: true,
+      };
     }
     // if (!result.hasMore) {
     //   await groupService.markAsNoPost(groupId);
     // }
-    return result;
   }
 
   async getPostsByGroupId({
