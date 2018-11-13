@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import debounce from 'lodash/debounce';
-import React, { ComponentType, RefObject, PureComponent } from 'react';
+import React, { ComponentType, PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { noop } from '../../foundation/utils';
 import _ from 'lodash';
@@ -65,7 +65,7 @@ function withScroller(Comp: ComponentType<any>) {
       triggerScrollToOnMount: false,
     };
     private _scrollElRef: React.RefObject<any> = React.createRef();
-    private _list: RefObject<HTMLElement>;
+    private _list: HTMLElement | null;
 
     private _previousPosition: ScrollerSnapShot;
 
@@ -95,10 +95,13 @@ function withScroller(Comp: ComponentType<any>) {
     }
 
     onListMounted(list: React.RefObject<HTMLElement>) {
-      this._list = list;
+      this._list = list.current;
     }
 
     componentDidMount() {
+      if (this._list) {
+        this._list = this._scrollEl.querySelector('section');
+      }
       this._scrollEl.scrollTop = this.props.initialScrollTop;
       this.attachScrollListener();
     }
@@ -108,13 +111,13 @@ function withScroller(Comp: ComponentType<any>) {
     }
 
     getSnapshotBeforeUpdate() {
-      if (!this._list || !this._list.current) {
+      if (!this._list) {
         return {};
       }
       this._previousPosition = {
         atTop: this._isAtTop(0),
         atBottom: this._isAtBottom(0),
-        height: this._list.current.getBoundingClientRect().height,
+        height: this._list.getBoundingClientRect().height,
       };
       return this._previousPosition;
     }
@@ -133,7 +136,7 @@ function withScroller(Comp: ComponentType<any>) {
     stickToCurrentPosition(snapShot: ScrollerSnapShot) {
       const { atBottom, atTop, height } = snapShot;
       const { stickTo } = this.props;
-      if (!this._list.current) {
+      if (!this._list) {
         return;
       }
       if (stickTo === 'bottom') {
@@ -142,7 +145,7 @@ function withScroller(Comp: ComponentType<any>) {
         }
         if (atTop) {
           const addedHeight =
-            this._list.current.getBoundingClientRect().height - height;
+            this._list.getBoundingClientRect().height - height;
           this._scrollEl.scrollTop += addedHeight;
         }
       }
@@ -200,7 +203,7 @@ function withScroller(Comp: ComponentType<any>) {
       options: ScrollIntoViewOptions | boolean = false,
       itemSelector: string = 'div',
     ) => {
-      const listEl = this._list.current;
+      const listEl = this._list;
       if (!listEl) {
         return;
       }
@@ -220,7 +223,7 @@ function withScroller(Comp: ComponentType<any>) {
       id: string,
       options: ScrollIntoViewOptions | boolean = false,
     ) => {
-      const listEl = this._list.current;
+      const listEl = this._list;
       if (!listEl) {
         return;
       }

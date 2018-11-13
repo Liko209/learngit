@@ -18,7 +18,6 @@ class StreamViewComponent extends Component<Props> {
 
   componentDidMount() {
     this.props.fetchInitialPosts();
-    this.props.plugins.loadingMorePlugin.onListMounted(this.listRef);
   }
   componentDidUpdate(prevProps: Props) {
     if (this.props.type !== prevProps.type) {
