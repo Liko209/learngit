@@ -29,7 +29,6 @@ const downloadBtn = (downloadUrl: string) => (
 class FilesView extends React.Component<FilesViewProps> {
   render() {
     const { files } = this.props;
-    console.log(files, '---file file item');
 
     return (
       <>

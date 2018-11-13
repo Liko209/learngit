@@ -95,7 +95,7 @@ class Task extends React.Component<ViewProps> {
       repeatEnding,
       repeatEndingOn,
     } = task;
-    console.log(files, '-----files');
+
     const time = getDurationTime(start, end);
     const timeText = getDurationTimeText(
       repeat,

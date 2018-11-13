@@ -43,7 +43,6 @@ const baseHandleData = async ({ data, dao, eventKey, noSavingToDB }: any) => {
   // this function only fliter normal data and deactivated data and emit event for them
   // if you have more complex logic, should not use it
   // TODO if is a team, should consider archived case, do delete emit, but no delete it in dao
-  console.log(data, '----file', '-eventkey', eventKey);
   try {
     // delete deactivatedData
     const deactivatedData = data.filter(
