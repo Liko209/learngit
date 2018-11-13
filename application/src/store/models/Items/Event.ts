@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 11:28:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { EventItem } from './items.d';
+import { EventItem } from './';
 
 function setEventData(this: EventItem, data: any) {
   const {

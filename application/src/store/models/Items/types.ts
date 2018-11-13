@@ -5,6 +5,12 @@
  */
 import ItemModel from '../Item';
 
+enum FileType {
+  image = 0,
+  document = 1,
+  others = 2,
+}
+
 type FileItem = {
   type: string;
   downloadUrl: string;
@@ -44,9 +50,27 @@ type EventItem = {
   text: string;
 } & ItemModel;
 
+type TaskItem = {
+  color: string;
+  complete: boolean;
+  notes: string;
+  start: number;
+  end: number;
+  section: string;
+  repeat: string;
+  repeatEnding: string;
+  repeatEndingAfter: string;
+  repeatEndingOn: string;
+  text: string;
+  due: number;
+  complete_type: string;
+  assigned_to_ids: number[];
+  attachment_ids: number[];
+} & ItemModel;
+
 type NoteItem = {
   title: string;
   summary: string;
-} & ItemModel
+} & ItemModel;
 
-export { FileItem, LinkItem, NoteItem, EventItem };
+export { FileItem, FileType, LinkItem, EventItem, TaskItem, NoteItem };

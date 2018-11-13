@@ -3,100 +3,63 @@
  * @Date: 2018-10-25 15:06:10
  * Copyright © RingCentral. All rights reserved.
  */
+import { getEntity } from '../../../../store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
-import ItemModel from '@/store/models/Item';
+import { service } from 'sdk';
+jest.mock('../../../../store/utils');
+// import ItemModel from '@/store/models/Item';
+// import { FileType } from '../types';
 import { FileType } from '../types';
 
-const filesViewModel = new FilesViewModel();
+const { ItemService } = service;
+ItemService.getInstance = jest.fn().mockReturnValue({
 
-describe('File items tests', () => {
-  it('getFileIcon()', () => {
-    const type = filesViewModel.getFileIcon('xlsx');
-    expect(type).toBe('sheet');
-    const type1 = filesViewModel.getFileIcon('xxx');
-    expect(type1).toBeNull();
+});
+
+const filesItemVM = new FilesViewModel();
+filesItemVM.props.ids = [1, 2, 3];
+
+const mockItemValue = {
+  name: 'filename',
+  type: 1,
+  id: 1,
+  pages: {
+    file_id: 11,
+    url: 'http://www.xxx.com',
+  },
+  isNew: false,
+  isDocument: true,
+  url: 'https://material-ui.com/',
+  getFileType: () => mockItemValue,
+};
+
+describe('filesItemVM', () => {
+  beforeEach(() => {
+    (getEntity as jest.Mock).mockReturnValue({
+      ...mockItemValue,
+    });
   });
-  it('isDocument()', () => {
-    const doc = filesViewModel.isDocument({
-      pages: [
-        {
-          url: '213',
-        },
-      ],
-    } as ItemModel);
-    expect(doc).toEqual({
-      isDocument: true,
-      previewUrl: '213',
-    });
-    const doc1 = filesViewModel.isDocument({} as ItemModel);
-    expect(doc1).toEqual({
-      isDocument: false,
-      previewUrl: '',
-    });
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+  it('get _ids', () => {
+    expect(filesItemVM._ids).toEqual([1, 2, 3]);
   });
 
-  it('isImage', () => {
-    const image = filesViewModel.isImage({
-      thumbs: {
-        a: 'http://www.google.com',
-      },
-    } as ItemModel);
-    expect(image).toEqual({
-      isImage: true,
-      previewUrl: 'http://www.google.com',
-    });
-    const image1 = filesViewModel.isImage({
-      thumbs: {},
-    } as ItemModel);
-    expect(image1).toEqual({
-      isImage: false,
-      previewUrl: '',
-    });
-  });
-  it('file is gif', () => {
-    const image = filesViewModel.isImage({
-      type: 'gif',
-      url: '123',
-    } as ItemModel);
-    expect(image).toEqual({
-      isImage: true,
-      previewUrl: '123',
+  it('get files', () => {
+
+    expect(filesItemVM.files).toEqual({
+      [FileType.image]: [],
+      [FileType.document]: [{
+        ...mockItemValue,
+      }, { ...mockItemValue }, { ...mockItemValue }],
+      [FileType.others]: [],
     });
   });
 
-  it('getFileType()', () => {
-    const image = {
-      thumbs: {
-        a: 'http://www.google.com',
-      },
-    } as ItemModel;
-    const document = {
-      pages: [
-        {
-          url: '213',
-        },
-      ],
-    } as ItemModel;
-    const others = {} as ItemModel;
-    const img = filesViewModel.getFileType(image);
-    expect(img).toEqual({
-      item: image,
-      type: FileType.image,
-      previewUrl: 'http://www.google.com',
-    });
-
-    const doc = filesViewModel.getFileType(document);
-    expect(doc).toEqual({
-      item: document,
-      type: FileType.document,
-      previewUrl: '213',
-    });
-
-    const other = filesViewModel.getFileType(others);
-    expect(other).toEqual({
-      item: others,
-      type: FileType.others,
-      previewUrl: '',
-    });
+  it('get items', () => {
+    expect(filesItemVM.items).toMatchObject([{
+      ...mockItemValue,
+    }, { ...mockItemValue }, { ...mockItemValue }]);
   });
 });
