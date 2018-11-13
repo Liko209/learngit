@@ -109,7 +109,7 @@ function withScroller(Comp: ComponentType<any>) {
 
     getSnapshotBeforeUpdate() {
       if (!this._list || !this._list.current) {
-        return;
+        return {};
       }
       this._previousPosition = {
         atTop: this._isAtTop(0),
