@@ -97,23 +97,16 @@ test(
   },
 );
 
-test(
-  formalName('Check the new team can be created successfully', [
-    'P1',
-    'JPT-127',
-  ]),
+test.skip(formalName('Check the new team can be created successfully', ['P1', 'JPT-127']),
   async t => {
     const app = new AppRoot(t);
     const user = h(t).rcData.mainCompany.users[0];
     const uid = uuid();
 
-    await h(t).withLog(
-      `When I login Jupiter with ${user.company.number}#${user.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded();
-      },
-    );
+    await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
 
     // case 3
     await h(t).withLog('Then I can open add menu in home page', async () => {
@@ -121,13 +114,10 @@ test(
     });
 
     const createTeamModal = app.homePage.createTeamModal;
-    await h(t).withLog(
-      'Then I can open Create Team in AddActionMenu',
-      async () => {
-        await app.homePage.addActionMenu.createTeamEntry.enter();
-        await createTeamModal.ensureLoaded();
-      },
-    );
+    await h(t).withLog('Then I can open Create Team in AddActionMenu', async () => {
+      await app.homePage.addActionMenu.createTeamEntry.enter();
+      await createTeamModal.ensureLoaded();
+    });
 
     await h(t).withLog('Then I can input team name randomly', async () => {
       await createTeamModal.inputTeamNameRandom(uid);
@@ -137,12 +127,9 @@ test(
       await createTeamModal.clickPublicTeamButton();
     });
 
-    await h(t).withLog(
-      'Then Turn off the toggle of "Members may post messages"',
-      async () => {
-        await createTeamModal.clickMayPostButton();
-      },
-    );
+    await h(t).withLog('Then Turn off the toggle of "Members may post messages"', async () => {
+      await createTeamModal.clickMayPostButton();
+    });
 
     await h(t).withLog('Then Tap create team button', async () => {
       await createTeamModal.clickCreateButton();

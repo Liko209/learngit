@@ -11,7 +11,11 @@ import { spacing, typography, palette } from '../../foundation/utils/styles';
 
 const ItemCardWrapper = styled(JuiCard)``;
 
-const ItemIcon = styled(MuiIcon)``;
+const ItemIcon = styled(MuiIcon)`
+  && {
+    font-size: ${spacing(5)};
+  }
+`;
 
 const ItemTitle = styled.span`
   margin: ${spacing(0, 0, 0, 1)};
@@ -19,7 +23,7 @@ const ItemTitle = styled.span`
 
 const ItemCardHeader = styled.div`
   padding: 0;
-  margin: ${spacing(0, 0, 0, -7)};
+  margin: ${spacing(0, 0, 2, -6)};
   display: flex;
   align-items: center;
   ${typography('subheading3')};
@@ -28,7 +32,7 @@ const ItemCardHeader = styled.div`
 
 const ItemCardContent = styled(JuiCardContent)`
   && {
-    padding: ${spacing(4, 10, 5, 10)};
+    padding: ${spacing(4, 10, 5, 10)} !important;
     ${typography('subheading3')};
   }
 `;
@@ -40,7 +44,7 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
 `;
 
 type JuiConversationItemCardProps = {
-  title: string;
+  title: string | JSX.Element;
   icon: JSX.Element | string;
   titleColor?: string;
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
@@ -54,7 +58,7 @@ type JuiConversationItemCardProps = {
 
 class JuiConversationItemCard extends React.Component<
   JuiConversationItemCardProps
-> {
+  > {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
     const { titleClick } = this.props;
     titleClick && titleClick(e);
@@ -85,7 +89,11 @@ class JuiConversationItemCard extends React.Component<
           </ItemCardHeader>
           {children}
         </ItemCardContent>
-        <ItemCardFooter footerPadding={footerPadding}>{footer}</ItemCardFooter>
+        {footer && (
+          <ItemCardFooter footerPadding={footerPadding}>
+            {footer}
+          </ItemCardFooter>
+        )}
       </ItemCardWrapper>
     );
   }

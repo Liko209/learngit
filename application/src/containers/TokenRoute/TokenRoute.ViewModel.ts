@@ -12,7 +12,7 @@ import { service } from 'sdk';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { StoreViewModel } from '@/store/ViewModel';
-import history from '@/utils/history';
+import history from '@/history';
 
 const { SERVICE, ProfileService } = service;
 

@@ -157,6 +157,11 @@ export type GroupState = {
   trigger_ids?: number[];
 };
 
+export type GroupConfig = {
+  id: number; // group id
+  has_more?: boolean;
+};
+
 export type Post = ExtendedBaseModel & {
   group_id: number;
   company_id: number;
@@ -165,6 +170,7 @@ export type Post = ExtendedBaseModel & {
   post_ids: number[]; // quoted posts
   likes?: number[];
   activity?: string;
+  activity_data?: object;
   at_mention_item_ids?: number[];
   at_mention_non_item_ids?: number[];
   new_version?: number;

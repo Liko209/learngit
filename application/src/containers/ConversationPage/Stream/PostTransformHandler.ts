@@ -59,13 +59,14 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
 
   onAdded(direction: FetchDataDirection, addedItems: ISortableModel<Post>[]) {
     transaction(() => {
-      this._separatorHandlers.forEach(separatorHandler =>
+      this._separatorHandlers.forEach((separatorHandler: ISeparatorHandler) => {
         separatorHandler.onAdded(
           direction,
           addedItems,
           this.orderListStore.items,
-        ),
-      );
+          this.hasMore(direction),
+        );
+      });
     });
   }
 

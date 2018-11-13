@@ -15,21 +15,24 @@ import {
   palette,
 } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
+import { Theme } from '../../foundation/theme/theme';
+
+type Size = 'small' | 'medium' | 'large' | 'xlarge';
 
 type JuiAvatarProps = {
-  size?: 'small' | 'medium' | 'large' | 'xlarge';
+  size?: Size;
   color?: string;
   presence?: JSX.Element;
 } & Omit<MuiAvatarProps, 'innerRef'>;
 
-const sizes = {
+const sizes: { [key in Size]: number } = {
   xlarge: 20,
   large: 10,
   medium: 8,
   small: 6,
 };
 
-const fonts = {
+const fonts: { [key in Size]: keyof Theme['typography'] } = {
   xlarge: 'title2',
   large: 'title2',
   medium: 'subheading3',
