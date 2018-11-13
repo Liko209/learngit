@@ -8,7 +8,9 @@ import GroupDao from '../../dao/group';
 import GroupAPI from '../../api/glip/group';
 import AccountDao from '../../dao/account';
 import { ACCOUNT_USER_ID } from '../../dao/account/constants';
-import notificationCenter from '../notificationCenter';
+import notificationCenter, {
+  NotificationEntityUpdatePayload,
+} from '../notificationCenter';
 import { ENTITY, SERVICE } from '../../service/eventKey';
 import ProfileService from '../../service/profile';
 import { extractHiddenGroupIds } from '../profile/handleData';
@@ -405,16 +407,13 @@ function getUniqMostRecentPostsByGroup(posts: Post[]): Post[] {
 
 async function handleGroupMostRecentPostChanged({
   type,
-  entities,
-}: {
-  type: EVENT_TYPES;
-  entities: any;
-}) {
-  if (type !== EVENT_TYPES.UPDATE || !entities) {
+  body,
+}: NotificationEntityUpdatePayload<Post>) {
+  if (type !== EVENT_TYPES.UPDATE || !body.entities) {
     return;
   }
   const posts: Post[] = [];
-  entities.forEach((item: Post) => posts.push(item));
+  body.entities.forEach((item: Post) => posts.push(item));
   const uniqMaxPosts = getUniqMostRecentPostsByGroup(posts);
   const groupDao = daoManager.getDao(GroupDao);
   let validGroups: Partial<Raw<Group>>[] = [];
