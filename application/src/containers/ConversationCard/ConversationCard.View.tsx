@@ -43,6 +43,7 @@ export class ConversationCard extends React.Component<
       itemIds,
       mode,
       post,
+      hideText,
       ...rest
     } = this.props;
     const { isHover } = this.state;
@@ -73,8 +74,8 @@ export class ConversationCard extends React.Component<
             {!showProgressActions && isHover ? <Actions id={id} /> : null}
           </JuiConversationCardHeader>
           <JuiConversationCardBody data-name="body">
-            <TextMessage id={id} />
-            {idsToConversationSheet(itemIds)}
+            {hideText ? null : <TextMessage id={id} />}
+            {idsToConversationSheet(itemIds, id)}
           </JuiConversationCardBody>
           <Footer id={id} />
         </JuiConversationCard>

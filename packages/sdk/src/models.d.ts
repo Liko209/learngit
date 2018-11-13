@@ -167,6 +167,7 @@ export type Post = ExtendedBaseModel & {
   group_id: number;
   company_id: number;
   text: string;
+  item_id?: number;
   item_ids: number[];
   post_ids: number[]; // quoted posts
   likes?: number[];

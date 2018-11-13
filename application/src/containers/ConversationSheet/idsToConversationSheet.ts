@@ -6,7 +6,7 @@
 import { GlipTypeUtil } from 'sdk/utils';
 import { conversationSheet } from './ConversationSheet';
 
-function idsToConversationSheet(ids: number[]) {
+function idsToConversationSheet(ids: number[], postId: number) {
   if (!ids.length) {
     return null;
   }
@@ -20,7 +20,7 @@ function idsToConversationSheet(ids: number[]) {
       sheets[typeId] = [id];
     }
   });
-  return conversationSheet.dispatch(sheets);
+  return conversationSheet.dispatch(sheets, postId);
 }
 
 export default idsToConversationSheet;
