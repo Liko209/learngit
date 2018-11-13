@@ -31,7 +31,7 @@ class CreateTeamViewModel extends AbstractViewModel {
   @observable
   serverError: boolean = false;
   @observable
-  members: (number | string)[];
+  members: (number | string)[] = [];
 
   @computed
   get isOpen() {
@@ -110,22 +110,21 @@ class CreateTeamViewModel extends AbstractViewModel {
           canPost,
         },
       );
-      console.log(result, '------creatssse team');
     } catch (err) {
-      console.log(err, '------creatssse err team');
-      this.serverError = true;
+      const { data } = err;
+      if (data) {
+        throw this.createErrorHandler(data as IResponseError);
+      } else {
+        this.serverError = true;
+      }
       return;
-    }
-    console.log(result, '------create team');
-    if (result && (result as IResponseError).error) {
-      throw this.createErrorHandler(result as IResponseError);
     }
 
     return result;
   }
 
-  createErrorHandler(result: IResponseError) {
-    const code = result.error.code;
+  createErrorHandler(error: IResponseError) {
+    const code = error.error.code;
     if (code === 'already_taken') {
       this.errorMsg = 'already taken';
       this.nameError = true;
