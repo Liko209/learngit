@@ -108,14 +108,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (this._oldFavGroupIds.toString() !== newFavIds.toString()) {
       const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
       const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
-
-      this._handlersMap[SECTION_TYPE.FAVORITE].removeByIds(
-        this._oldFavGroupIds,
-      );
-
       this._oldFavGroupIds = newFavIds;
+      // handle favorite section change
       const groupService = GroupService.getInstance<service.GroupService>();
-      this.fetchGroups(SECTION_TYPE.FAVORITE, FetchDataDirection.DOWN);
+      const groups = await groupService.getGroupsByType(
+        GROUP_QUERY_TYPE.FAVORITE,
+      );
+      this._handlersMap[SECTION_TYPE.FAVORITE].replaceAll(groups);
 
       let result: Group[];
       if (more.length) {
