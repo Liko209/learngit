@@ -258,7 +258,9 @@ describe('handleGroupMostRecentPostChanged()', () => {
   it('EVENT_TYPES is not PUT, do not update', async () => {
     await handleGroupMostRecentPostChanged({
       type: EVENT_TYPES.UPDATE,
-      entities: map,
+      body: {
+        entities: map,
+      },
     });
     expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
   });
@@ -274,7 +276,9 @@ describe('handleGroupMostRecentPostChanged()', () => {
     });
     await handleGroupMostRecentPostChanged({
       type: EVENT_TYPES.UPDATE,
-      entities: map,
+      body: {
+        entities: map,
+      },
     });
     expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
   });
@@ -289,7 +293,9 @@ describe('handleGroupMostRecentPostChanged()', () => {
     });
     await handleGroupMostRecentPostChanged({
       type: EVENT_TYPES.UPDATE,
-      entities: map,
+      body: {
+        entities: map,
+      },
     });
     expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
   });
@@ -306,7 +312,9 @@ describe('handleGroupMostRecentPostChanged()', () => {
     });
     await handleGroupMostRecentPostChanged({
       type: EVENT_TYPES.UPDATE,
-      entities: map,
+      body: {
+        entities: map,
+      },
     });
     expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
   });
