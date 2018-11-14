@@ -39,11 +39,12 @@ import ProfileService from './service/profile';
 import SearchService from './service/search';
 import socketManager from './service/SocketManager';
 import { SocketManager } from './service/SocketManager/SocketManager';
-import { splitIO, SplitIO } from './service/splitio';
+import { SplitIO } from './service/splitio';
 import StateService from './service/state';
 import SyncService from './service/sync';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
+const splitio = new SplitIO();
 
 const registerConfigs = {
   classes: [
@@ -116,6 +117,7 @@ const registerConfigs = {
         AccountManager.name,
         ServiceManager.name,
         NetworkManager.name,
+        SplitIO.name,
         SyncService.name,
       ],
     },
@@ -125,7 +127,7 @@ const registerConfigs = {
     // TODO register as class instead
     { name: DaoManager.name, value: daoManager },
     { name: SocketManager.name, value: socketManager },
-    { name: SplitIO.name, value: splitIO },
+    { name: SplitIO.name, value: splitio },
     { name: NetworkManager.name, value: networkManager },
   ],
 };

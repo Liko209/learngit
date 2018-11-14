@@ -4,8 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SplitIO } from './splitio';
-
-const splitIO = SplitIO.getInstance();
-export default splitIO;
-export { splitIO, SplitIO };
+export { SplitIO } from './splitio';

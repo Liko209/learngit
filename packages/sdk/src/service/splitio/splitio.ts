@@ -18,21 +18,12 @@ const LOG_TAG = '[SplitIO]';
 const FEATURE_FLAGS = ['Jupiter_telephony', 'Jupiter_version']; // For test
 
 class SplitIO {
-  private static instance: SplitIO;
   private _clients: {
     [userId: string]: SplitIOClient;
   } = {};
 
   constructor() {
     this._subscribeExternalEvent();
-  }
-
-  public static getInstance() {
-    if (!SplitIO.instance) {
-      SplitIO.instance = new SplitIO();
-    }
-
-    return SplitIO.instance;
   }
 
   public hasCreatedClient(userId: string): boolean {

@@ -25,6 +25,8 @@ SplitIOClient.prototype = {
 };
 
 describe('SplitIO', async () => {
+  const splitio = new SplitIO();
+
   let accountDao: AccountDao;
   const testUserId = '111';
   const companyId = '222';
@@ -54,8 +56,6 @@ describe('SplitIO', async () => {
   });
 
   describe('Login & Logout', async () => {
-    const splitio = SplitIO.getInstance();
-
     it('login - user info ready', () => {
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();
       notificationCenter.emitKVChange(SERVICE.LOGIN);
@@ -87,7 +87,6 @@ describe('SplitIO', async () => {
   });
 
   describe('index done', async () => {
-    const splitio = SplitIO.getInstance();
     it('first index done', () => {
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);
