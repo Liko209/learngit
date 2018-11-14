@@ -9,5 +9,6 @@ export * from './EventDescription';
 export * from './TaskSection';
 export * from './TaskNotes';
 export * from './TaskAvatarName';
+export * from './TaskContent';
 export * from './AvatarName';
 export * from './TimeMessage';

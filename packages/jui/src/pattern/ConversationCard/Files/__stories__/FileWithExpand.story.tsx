@@ -20,7 +20,7 @@ storiesOf('Pattern/ConversationCard', module)
         <JuiFileWithExpand
           fileName={fileName}
           expand={expand}
-          actions={
+          Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
                 get_app
@@ -32,10 +32,10 @@ storiesOf('Pattern/ConversationCard', module)
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
             ratio={0.5}
-            actions={
+            Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
                 get_app
-            </JuiIconButton>
+              </JuiIconButton>
             }
           />
         </JuiFileWithExpand>

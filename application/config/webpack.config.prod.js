@@ -22,6 +22,7 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const { GenerateSW } = require("workbox-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const runtimeCaching = require("./runtimeCaching");
 const paths = require("./paths");
 const getClientEnvironment = require("./env");
 const excludeNodeModulesExcept = require("./excludeNodeModulesExcept");
@@ -419,7 +420,8 @@ module.exports = {
         new RegExp("/[^/]+\\.[^/]+$")
       ],
       globDirectory: paths.appPublic,
-      globPatterns: ["theme/**/*.json", "locales/**/*.json"]
+      globPatterns: ["**/*"],
+      runtimeCaching
     }),
     ...[
       argv.indexOf("--analyze") !== -1 ? new BundleAnalyzerPlugin() : () => {}

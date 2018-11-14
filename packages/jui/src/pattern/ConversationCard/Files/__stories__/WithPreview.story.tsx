@@ -19,7 +19,7 @@ storiesOf('Pattern/ConversationCard', module)
         fileName="fileName"
         size="2.3Mb"
         iconType={'pdf'}
-        actions={
+        Actions={
           <JuiIconButton variant="plain" tooltipTitle="download">
             get_app
           </JuiIconButton>
@@ -30,7 +30,7 @@ storiesOf('Pattern/ConversationCard', module)
         fileName="fileName"
         size="2.3Mb"
         iconType={'pdf'}
-        actions={
+        Actions={
           <JuiIconButton variant="plain" tooltipTitle="download">
             get_app
           </JuiIconButton>
@@ -41,7 +41,7 @@ storiesOf('Pattern/ConversationCard', module)
         fileName="fileName"
         size="2.3Mb"
         iconType={'pdf'}
-        actions={
+        Actions={
           <JuiIconButton variant="plain" tooltipTitle="download">
             get_app
           </JuiIconButton>
@@ -52,7 +52,7 @@ storiesOf('Pattern/ConversationCard', module)
         fileName="fileName"
         size="2.3Mb"
         iconType={'pdf'}
-        actions={
+        Actions={
           <JuiIconButton variant="plain" tooltipTitle="download">
             get_app
           </JuiIconButton>

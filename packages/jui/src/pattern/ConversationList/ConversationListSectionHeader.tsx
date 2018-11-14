@@ -8,7 +8,13 @@ import React from 'react';
 import MuiListItem from '@material-ui/core/ListItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey, height, typography } from '../../foundation/utils';
+import {
+  spacing,
+  grey,
+  height,
+  typography,
+  palette,
+} from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import tinycolor from 'tinycolor2';
@@ -27,6 +33,27 @@ const StyledListItem = styled(MuiListItem)`
     ${typography('body2')};
   }
 
+  &&:active {
+    color: ${palette('primary', 'main')};
+    background: ${palette('primary', '50')};
+  }
+
+  &&:hover {
+    background-color: ${grey('50')};
+  }
+
+  &&.selected {
+    background: white;
+
+    p {
+      color: ${palette('primary', 'main')};
+    }
+
+    > ${StyledJuiIconographyLeft} {
+      color: ${palette('primary', 'main')};
+    }
+  }
+
   && > ${StyledJuiIconographyLeft} {
     font-size: 20px;
     color: ${({ theme }: { theme: Theme }) =>
@@ -42,40 +69,55 @@ const StyledListItem = styled(MuiListItem)`
   }
 `;
 
-type SectionHeaderProps = {
+type JuiSectionHeaderProps = {
   title: string;
   icon: string;
-  umi: JSX.Element;
+  umi?: JSX.Element;
   expanded?: boolean;
   className?: string;
+  hideArrow?: boolean;
+  selected?: boolean;
   onClick?: (e: React.MouseEvent) => any;
   onArrowClick?: (e: React.MouseEvent) => any;
 };
 
-const ConversationListSectionHeader = (props: SectionHeaderProps) => {
+const JuiConversationListSectionHeader = (props: JuiSectionHeaderProps) => {
   const {
     icon,
     title,
     umi,
     expanded,
     className,
+    hideArrow,
     onClick,
     onArrowClick,
+    selected,
+    ...rest
   } = props;
 
   const arrow = expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
 
   return (
-    <StyledListItem className={className} button={true} onClick={onClick}>
+    <StyledListItem
+      className={className}
+      data-test-automation-id="conversation-list-section-header"
+      button={true}
+      selected={selected}
+      classes={{ selected: 'selected' }}
+      onClick={onClick}
+      {...rest}
+    >
       <StyledJuiIconographyLeft>{icon}</StyledJuiIconographyLeft>
       <ItemText>{title}</ItemText>
       {!expanded ? umi : null}
-      <StyledJuiIconography onClick={onArrowClick}>
-        {arrow}
-      </StyledJuiIconography>
+      {!hideArrow ? (
+        <StyledJuiIconography onClick={onArrowClick}>
+          {arrow}
+        </StyledJuiIconography>
+      ) : null}
     </StyledListItem>
   );
 };
 
-export default ConversationListSectionHeader;
-export { ConversationListSectionHeader, SectionHeaderProps };
+export default JuiConversationListSectionHeader;
+export { JuiConversationListSectionHeader, JuiSectionHeaderProps };

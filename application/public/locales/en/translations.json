@@ -34,8 +34,13 @@
   "addedToTeam": "{{inviter}} added {{newUser}} to the team",
   "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
   "joinTheTeam": "{{newUser}} joined the team",
+  "mentions": "mentions",
+  "bookmarks": "bookmarks",
+  "@mentions": "@Mentions",
   "at": "at",
   "tomorrow": "tomorrow",
+  "avatarnamesWithOthers": " and other {{count}} people",
+  "Attachments": "Attachments",
   "repeatingEveryDay": "repeating every day",
   "repeatingEveryWeekday": "repeating every weekday",
   "repeatingEveryWeek": "repeating every week",
@@ -53,5 +58,6 @@
   "forYearlyTimes_interval": "(1){for one year};",
   "until": "until",
   "hideEventHistory": "Hide",
-  "showEventHistory": "Show old"
+  "showEventHistory": "Show old",
+  "download": "download"
 }
