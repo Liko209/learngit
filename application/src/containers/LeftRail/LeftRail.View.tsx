@@ -35,19 +35,19 @@ const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
         ])}
       </JuiLeftRailStickyTop>
       <JuiDivider key="divider-filters" />
-      {props.entries.map((entry, index) => (
-        <JuiConversationListSectionHeader
-          data-test-automation-id="entry-mentions"
-          key={entry.title}
-          title={toTitleCase(props.t(entry.title))}
-          icon={entry.icon}
-          hideArrow={true}
-          selected={entry.selected}
-          onClick={entry.onClick}
-        />
-      ))}
-      <JuiDivider key="divider-entries" />
       <JuiLeftRailMainSection>
+        {props.entries.map((entry, index) => (
+          <JuiConversationListSectionHeader
+            data-test-automation-id="entry-mentions"
+            key={entry.title}
+            title={toTitleCase(props.t(entry.title))}
+            icon={entry.icon}
+            hideArrow={true}
+            selected={entry.selected}
+            onClick={entry.onClick}
+          />
+        ))}
+        <JuiDivider key="divider-entries" />
         {props.sections.map((type, index, array) => [
           index ? <JuiDivider key={`divider${index}`} /> : null,
           <Section key={type} type={type} isLast={index === array.length - 1} />,
