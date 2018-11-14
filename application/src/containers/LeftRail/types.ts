@@ -6,6 +6,13 @@
 import { SECTION_TYPE } from './Section/types';
 
 type LeftRailProps = {};
+type LeftRailEntry = {
+  title: string;
+  icon: string;
+  selected: boolean;
+  onClick: (evt: any) => void;
+};
+
 type LeftRailFilter = {
   label: string;
   value: boolean;
@@ -15,6 +22,7 @@ type LeftRailFilter = {
 type LeftRailViewProps = {
   sections: SECTION_TYPE[];
   filters: LeftRailFilter[];
+  entries: LeftRailEntry[];
 };
 
-export { LeftRailProps, LeftRailViewProps, LeftRailFilter };
+export { LeftRailProps, LeftRailViewProps, LeftRailFilter, LeftRailEntry };

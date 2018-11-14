@@ -6,7 +6,6 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
-import { TScroller } from 'jui/hoc/withScroller';
 import {
   JuiConversationPage,
   JuiStreamWrapper,
@@ -22,17 +21,9 @@ import { ConversationPageViewProps } from './types';
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
-  private _viewRefs: {
-    scroller?: TScroller;
-  } = {};
-
-  scroller: React.Component & {
-    scrollToRow: (n: number) => void;
-  };
-
+  private _scroller: React.RefObject<any> = React.createRef();
   sendHandler = () => {
-    const scroller = this._viewRefs.scroller;
-    scroller && scroller.scrollToRow(-1);
+    this._scroller && this._scroller.current.scrollToRow(-1);
   }
 
   render() {
@@ -46,7 +37,7 @@ class ConversationPageViewComponent extends Component<
       >
         <Header id={groupId} />
         <JuiStreamWrapper>
-          <Stream groupId={groupId} viewRefs={this._viewRefs} />
+          <Stream groupId={groupId} scrollerRef={this._scroller} />
           <div id="jumpToFirstUnreadButtonRoot" />
         </JuiStreamWrapper>
         {canPost ? (

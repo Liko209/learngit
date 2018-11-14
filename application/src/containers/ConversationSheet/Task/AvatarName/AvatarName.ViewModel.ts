@@ -12,8 +12,7 @@ import { ENTITY_NAME } from '@/store';
 import { Person } from 'sdk/models';
 import PersonModel from '@/store/models/Person';
 
-class TaskAvatarNameViewModel extends StoreViewModel<Props>
-  implements ViewProps {
+class AvatarNameViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get id() {
     return this.props.id;
@@ -25,4 +24,4 @@ class TaskAvatarNameViewModel extends StoreViewModel<Props>
   }
 }
 
-export { TaskAvatarNameViewModel };
+export { AvatarNameViewModel };

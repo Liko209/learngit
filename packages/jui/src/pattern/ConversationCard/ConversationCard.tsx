@@ -27,7 +27,8 @@ const StyledNavigationButton = styled<JuiButtonProps>(JuiButton)`
     left: 50%;
     transform: translate(-50%, 0);
     position: absolute;
-    transition: all, 0.3s;
+    transition: all, 0.2s;
+    z-index: ${({ theme }) => theme.zIndex.snackbar};
   }
 `;
 
@@ -57,7 +58,7 @@ const navigationStyles = ({ mode }: { mode?: string }) =>
   `;
 
 const StyledConversationCard = styled<{ mode?: string }, 'div'>('div')`
-  background-color: white;
+  background-color: ${palette('common', 'white')};
   display: flex;
   transition: background-color 0.2s ease-in;
   &:hover,

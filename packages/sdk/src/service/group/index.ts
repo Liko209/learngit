@@ -15,7 +15,6 @@ import {
 import BaseService from '../../service/BaseService';
 import GroupServiceHandler from '../../service/group/groupServiceHandler';
 import ProfileService from '../../service/profile';
-import AccountService from '../../service/account';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
 import GroupAPI from '../../api/glip/group';
@@ -88,8 +87,8 @@ export default class GroupService extends BaseService<Group> {
     offset = 0,
     _limit?: number,
   ): Promise<Group[]> {
-    const accountService: AccountService = AccountService.getInstance();
-    const limit = _limit || accountService.getConversationListLimit(groupType);
+    const profileService: ProfileService = ProfileService.getInstance();
+    const limit = _limit || (await profileService.getMaxLeftRailGroup());
     mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
     let result: Group[] = [];
     const dao = daoManager.getDao(GroupDao);

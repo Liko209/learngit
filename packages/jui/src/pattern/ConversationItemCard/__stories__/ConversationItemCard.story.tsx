@@ -15,14 +15,11 @@ import { JuiConversationItemCard } from '../';
 const CheckboxTest = styled(Checkbox)`
   && {
     padding: 0;
+    font-size: 20px;
   }
 `;
 
-const Wrapper = styled.div`
-  &.checked .itemTitle {
-    text-decoration: line-through;
-  }
-`;
+const Wrapper = styled.div``;
 
 storiesOf('Pattern/ConversationItemCard', module)
   .addDecorator(withInfoDecorator(JuiConversationItemCard, { inline: true }))
@@ -46,16 +43,14 @@ storiesOf('Pattern/ConversationItemCard', module)
         const { checked } = this.state;
 
         return (
-          <Wrapper className={checked ? 'checked' : ''}>
+          <Wrapper>
             <JuiConversationItemCard title={'Event Name'} icon={<EventIcon />}>
               content
             </JuiConversationItemCard>
             <JuiConversationItemCard
+              complete={checked}
               title={'Event Name'}
               titleClick={this.onClick}
-              classes={{
-                itemTitle: 'itemTitle',
-              }}
               icon={<CheckboxTest checked={checked} disableRipple={true} />}
               footer={<div>footer</div>}
             >

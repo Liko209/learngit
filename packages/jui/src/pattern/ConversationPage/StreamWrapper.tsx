@@ -1,9 +1,12 @@
-import { HTMLAttributes } from 'react';
+import React, { HTMLAttributes } from 'react';
 import styled from '../../foundation/styled-components';
 
 type JuiStreamWrapperProps = HTMLAttributes<HTMLElement>;
 
-const JuiStreamWrapper = styled<JuiStreamWrapperProps, 'div'>('div')`
+const Div = (props: JuiStreamWrapperProps) => (
+  <div {...props} data-test-automation-id="jui-stream-wrapper" />
+);
+const JuiStreamWrapper = styled(Div)`
   position: relative;
   display: flex;
   flex-direction: column;

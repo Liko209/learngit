@@ -97,6 +97,21 @@ class ConversationListSection extends BaseWebComponent {
     return this.self.find('.conversation-list-section-header');
   }
 
+  async getHeaderUmi() {
+    const umi = this.header.find('.umi');
+    if (!await umi.exists) {
+      return 0; 
+    }
+    const text = await umi.innerText;
+    if (_.isEmpty(text)) {
+      return 0;
+    }
+    if (text == '99+') {
+      return 100;
+    }
+    return Number(text);
+  }
+
   get collapse() {
     return this.self.find('.conversation-list-section-collapse').parent(2);
   }
@@ -253,6 +268,10 @@ export class MessagePanel extends BaseWebComponent {
 
   get conversationPage() {
     return this.getComponent(ConversationPage);
+  }
+
+  get postListPage() {
+    return this.getSelectorByAutomationId('post-list-page');
   }
 
   get moreMenu() {

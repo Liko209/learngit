@@ -31,9 +31,8 @@ class LeftNav extends Component<LeftNavProps> {
   @computed
   get icons(): JuiLeftNavProps['icons'] {
     const { t, groupIds } = this.props;
-    const currentConversationId = getGlobalValue(
-      GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-    );
+    const currentConversationId =
+      getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID) || '';
     return [
       [
         {

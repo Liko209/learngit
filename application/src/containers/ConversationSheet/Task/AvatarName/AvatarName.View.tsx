@@ -10,12 +10,18 @@ import { JuiAvatarName } from 'jui/pattern/ConversationItemCard/ConversationItem
 import { ViewProps } from './types';
 
 @observer
-class TaskAvatarNameView extends React.Component<ViewProps> {
+class AvatarNameView extends React.Component<ViewProps> {
   render() {
     const { name, id } = this.props;
 
-    return <JuiAvatarName key={id} avatar={<Avatar uid={id} />} name={name} />;
+    return (
+      <JuiAvatarName
+        key={id}
+        Avatar={<Avatar uid={id} size="small" />}
+        name={name}
+      />
+    );
   }
 }
 
-export { TaskAvatarNameView };
+export { AvatarNameView };

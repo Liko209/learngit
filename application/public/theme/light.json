@@ -107,13 +107,22 @@
   },
   "zIndex": {
     "reponsePanel": 1,
-    "reponseResizer": 2
+    "reponseResizer": 2,
+    "loading": 1000,
+    "dragging": 2000
   },
   "size": {
     "width": 4,
     "height": 4
   },
   "typography": {
+    "button": {
+      "fontSize": "0.875rem",
+      "textTransform": "capitalize",
+      "fontWeight": 500,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "color": "rgba(0, 0, 0, 0.87)"
+    },
     "title1": {
       "fontSize": "1.25rem",
       "fontWeight": 400,

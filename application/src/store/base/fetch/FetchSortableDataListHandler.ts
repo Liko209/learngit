@@ -5,7 +5,6 @@
  */
 import { BaseModel } from 'sdk/models';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
-import { handleDelete, handleUpsert } from './IncomingDataHandler';
 
 import { EVENT_TYPES } from 'sdk/service';
 import {
@@ -23,14 +22,8 @@ import {
 
 import { SortableListStore } from './SortableListStore';
 import _ from 'lodash';
+import { transform2Map } from '@/store/utils';
 
-const transform2Map = (entities: any[]): Map<number, any> => {
-  const map = new Map();
-  entities.forEach((item: any) => {
-    map.set(item.id, item);
-  });
-  return map;
-};
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
   isMatchFunc: IMatchFunc<T>;
@@ -53,11 +46,6 @@ export class FetchSortableDataListHandler<
   private _isMatchFunc: IMatchFunc<T | TReplacedData<T>>;
   private _transformFunc: ITransformFunc<T>;
   private _sortableDataProvider: IFetchSortableDataProvider<T>;
-  protected _handleIncomingDataByType = {
-    [EVENT_TYPES.DELETE]: handleDelete,
-    [EVENT_TYPES.REPLACE]: handleUpsert,
-    [EVENT_TYPES.UPDATE]: handleUpsert,
-  };
 
   constructor(
     dataProvider: IFetchSortableDataProvider<T>,
@@ -92,6 +80,7 @@ export class FetchSortableDataListHandler<
       pageSize,
       anchor,
     );
+
     const sortableResult: ISortableModel<T>[] = [];
     data.forEach((element: T) => {
       sortableResult.push(this._transformFunc(element));
@@ -105,6 +94,7 @@ export class FetchSortableDataListHandler<
         added: sortableResult,
         deleted: [],
       });
+    return data;
   }
 
   onDataChanged(payload: NotificationEntityPayload<T>) {
@@ -125,10 +115,15 @@ export class FetchSortableDataListHandler<
 
       const existKeys = this.sortableListStore.getIds();
       let notMatchedKeys: number[] = [];
-      const matchedKeys: number[] = _.intersection(keys, existKeys);
+      let matchedKeys: number[] = _.intersection(keys, existKeys);
       const matchedSortableModels: ISortableModel<T>[] = [];
       const matchedEntities: T[] = [];
 
+      if (payload.type === EVENT_TYPES.REPLACE) {
+        if (payload.body.isReplaceAll) {
+          matchedKeys = keys;
+        }
+      }
       matchedKeys.forEach((key: number) => {
         const model = entities.get(key) as T;
         if (this._isMatchFunc(model)) {
@@ -141,7 +136,11 @@ export class FetchSortableDataListHandler<
       });
 
       if (payload.type === EVENT_TYPES.REPLACE) {
-        notMatchedKeys = matchedKeys;
+        if (payload.body.isReplaceAll) {
+          notMatchedKeys = existKeys;
+        } else {
+          notMatchedKeys = matchedKeys;
+        }
       } else {
         const differentKeys: number[] = _.difference(keys, existKeys);
         differentKeys.forEach((key: number) => {
@@ -157,8 +156,8 @@ export class FetchSortableDataListHandler<
       }
 
       this.updateEntityStore(matchedEntities);
-      this.sortableListStore.upsert(matchedSortableModels);
       this.sortableListStore.removeByIds(notMatchedKeys);
+      this.sortableListStore.upsert(matchedSortableModels);
 
       this._dataChangeCallBack &&
         this._dataChangeCallBack({
@@ -221,6 +220,20 @@ export class FetchSortableDataListHandler<
 
     this.onDataChanged({
       type: EVENT_TYPES.UPDATE,
+      body: notificationBody,
+    });
+  }
+
+  replaceAll(models: T[]) {
+    const entityMap = transform2Map(models);
+    const notificationBody = {
+      ids: Array.from(entityMap.keys()),
+      entities: entityMap,
+      isReplaceAll: true,
+    };
+
+    this.onDataChanged({
+      type: EVENT_TYPES.REPLACE,
       body: notificationBody,
     });
   }

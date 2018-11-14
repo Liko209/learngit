@@ -14,20 +14,26 @@ const ItemCardWrapper = styled(JuiCard)``;
 const ItemIcon = styled(MuiIcon)`
   && {
     font-size: ${spacing(5)};
+    margin: ${spacing(0.5)} 0 0;
   }
 `;
 
-const ItemTitle = styled.span`
+const ItemTitle = styled<{ complete?: boolean }, 'span'>('span')`
   margin: ${spacing(0, 0, 0, 1)};
+  text-decoration: ${({ complete }) => (complete ? 'line-through' : '')};
 `;
 
 const ItemCardHeader = styled.div`
   padding: 0;
   margin: ${spacing(0, 0, 2, -6)};
   display: flex;
-  align-items: center;
   ${typography('subheading3')};
   color: ${({ color }) => color || palette('primary', 'main')};
+  word-break: break-all;
+  svg {
+    font-size: ${spacing(5)};
+    margin: ${spacing(0.5)} 0 0;
+  }
 `;
 
 const ItemCardContent = styled(JuiCardContent)`
@@ -51,14 +57,12 @@ type JuiConversationItemCardProps = {
   children: React.ReactNode;
   footer?: JSX.Element | null;
   footerPadding?: boolean;
-  classes?: {
-    itemTitle: string;
-  };
+  complete?: boolean;
 };
 
 class JuiConversationItemCard extends React.Component<
   JuiConversationItemCardProps
-  > {
+> {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
     const { titleClick } = this.props;
     titleClick && titleClick(e);
@@ -72,20 +76,15 @@ class JuiConversationItemCard extends React.Component<
       footer,
       footerPadding = true,
       titleColor,
-      classes,
+      complete,
     } = this.props;
-    let itemTitle = '';
-
-    if (classes) {
-      itemTitle = classes.itemTitle;
-    }
 
     return (
       <ItemCardWrapper>
         <ItemCardContent>
           <ItemCardHeader onClick={this.titleHandle} color={titleColor}>
             {typeof Icon === 'string' ? <ItemIcon>{Icon}</ItemIcon> : Icon}
-            <ItemTitle className={itemTitle}>{title}</ItemTitle>
+            <ItemTitle complete={complete}>{title}</ItemTitle>
           </ItemCardHeader>
           {children}
         </ItemCardContent>
