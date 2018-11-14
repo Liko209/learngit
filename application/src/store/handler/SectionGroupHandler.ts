@@ -199,6 +199,36 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     );
   }
 
+  private async _handleWithUnread(ids: number[]) {
+    const diff = _.difference(ids, [...this._idSet]);
+    if (diff.length) {
+      const groupService = GroupService.getInstance<service.GroupService>();
+      const result = await groupService.getGroupsByIds(diff);
+      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
+      this._handlersMap[SECTION_TYPE.TEAM].upsert(result);
+      this._updateIdSet(EVENT_TYPES.UPDATE, diff);
+    }
+  }
+
+  private async _handleWithoutUnread(ids: number[]) {
+    const diff = _.intersection(ids, [...this._idSet]);
+    if (!diff.length) {
+      return;
+    }
+    const profileService = ProfileService.getInstance<service.ProfileService>();
+    const limit = await profileService.getMaxLeftRailGroup();
+    const idsShouldBeRemoved: number[] = [];
+    const directIds = this.getGroupIds(SECTION_TYPE.DIRECT_MESSAGE);
+    const teamIds = this.getGroupIds(SECTION_TYPE.TEAM);
+    diff.forEach((id: number) => {
+      if (directIds.indexOf(id) >= limit || teamIds.indexOf(id) >= limit) {
+        idsShouldBeRemoved.push(id);
+      }
+    });
+    this._removeByIds(SECTION_TYPE.DIRECT_MESSAGE, idsShouldBeRemoved);
+    this._removeByIds(SECTION_TYPE.TEAM, idsShouldBeRemoved);
+  }
+
   private async _handleIncomesGroupState(
     payload: NotificationEntityPayload<GroupState>,
   ) {
@@ -210,6 +240,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       return;
     }
     const unreadIds: number[] = [];
+    const withoutUnreadIds: number[] = [];
     payload.body.entities.forEach((state: GroupState) => {
       const hasUnread =
         state.marked_as_unread ||
@@ -217,17 +248,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         state.unread_mentions_count;
       if (hasUnread) {
         unreadIds.push(state.id);
+      } else {
+        withoutUnreadIds.push(state.id);
       }
     });
-
-    const diff = _.difference(unreadIds, [...this._idSet]);
-    if (diff.length) {
-      const groupService = GroupService.getInstance<service.GroupService>();
-      const result = await groupService.getGroupsByIds(diff);
-      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
-      this._handlersMap[SECTION_TYPE.TEAM].upsert(result);
-      this._updateIdSet(EVENT_TYPES.UPDATE, diff);
-    }
+    this._handleWithUnread(unreadIds);
+    this._handleWithoutUnread(withoutUnreadIds);
   }
 
   private _updateUrl(type: EVENT_TYPES, ids: number[]) {

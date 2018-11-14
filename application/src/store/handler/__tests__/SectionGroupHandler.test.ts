@@ -315,12 +315,12 @@ describe('SectionGroupHandler', () => {
       notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [], []);
       expect(handler.getAllGroupIds().length).toBe(2);
     });
-    it('should do nothing because not unread count', async () => {
+    it('should do nothing because not unread count and not over limit', async () => {
       const handler = setup([1, 2]);
       notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [{ id: 1 }], []);
       expect(handler.getAllGroupIds().length).toBe(2);
     });
-    it('should do nothing because this group has already in idset', async () => {
+    it('should do nothing because this group has already in idset and not over limit', async () => {
       const handler = setup([1, 2]);
       notificationCenter.emitEntityUpdate(
         ENTITY.GROUP_STATE,
@@ -346,7 +346,29 @@ describe('SectionGroupHandler', () => {
         [],
       );
       setTimeout(() => {
-        console.log('------>', handler.getAllGroupIds());
+        expect(handler.getAllGroupIds().length).toBe(3);
+        done();
+      });
+    });
+    it('should be removed from id set because it has not unread and over limit', async (done: any) => {
+      const handler = setup([1, 2, 3, 4]);
+      (profileService.getMaxLeftRailGroup as jest.Mock).mockResolvedValue(2);
+      (groupService.getGroupsByIds as jest.Mock).mockResolvedValue([
+        {
+          id: 4,
+          company_id: 1,
+          set_abbreviation: '',
+          email_friendly_abbreviation: '',
+          most_recent_content_modified_at: 1,
+        },
+      ]);
+      notificationCenter.emitEntityUpdate(
+        ENTITY.GROUP_STATE,
+        [{ id: 4, unread_count: 0 }],
+        [],
+      );
+      jest.spyOn(handler, 'getGroupIds').mockReturnValue([1, 2, 3, 4]);
+      setTimeout(() => {
         expect(handler.getAllGroupIds().length).toBe(3);
         done();
       });
