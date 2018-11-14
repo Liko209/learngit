@@ -197,6 +197,9 @@ describe('PostService', () => {
     });
 
     it('should return hasMore = true if request failed', async () => {
+      groupService.getById.mockResolvedValue({
+        most_recent_post_id: 1,
+      });
       PostAPI.requestPosts.mockRejectedValueOnce({});
       const result = await postService.getPostsFromRemote({
         groupId: 1,
