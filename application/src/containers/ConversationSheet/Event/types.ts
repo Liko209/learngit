@@ -21,7 +21,7 @@ type EventViewProps = {
 
 type EventUpdateViewProps = {
   post: Post;
-  postId: number;
-} & EventViewProps;
+  event: EventItem;
+};
 
 export { EventProps, EventViewProps, EventUpdateViewProps, EventUpdateProps };
