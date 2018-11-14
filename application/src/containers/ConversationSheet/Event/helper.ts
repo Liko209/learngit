@@ -21,20 +21,24 @@ function getDurationTime(startTimestamp: number, endTimestamp: number) {
   return `${startTime} - ${endTime}`;
 }
 
+function getI18Text(type: string, count: number) {
+  return t(type, { count, postProcess: 'interval' });
+}
+
 const REPEAT_TEXT = {
   daily: 'repeatingEveryDay', // ', repeating every day',
-  weekdaily: 'repeatingEveryWeek',
+  weekdaily: 'repeatingEveryWeekday',
   weekly: 'repeatingEveryWeek',
   monthly: 'repeatingEveryMonth',
   yearly: 'repeatingEveryYear',
 };
 
 const TIMES_TEXT = {
-  daily: (count: number) => t('forDayTimes', { count }),
-  weekly: (count: number) => t('forWeekTimes', { count }),
-  weekdaily: (count: number) => t('forWeekTimes', { count }),
-  monthly: (count: number) => t('forMonthlyTimes', { count }),
-  yearly: (count: number) => t('forYearlyTimes', { count }),
+  daily: 'forDayTimes_interval',
+  weekly: 'forWeekTimes_interval',
+  weekdaily: 'forWeekdailyTimes_interval',
+  monthly: 'forMonthlyTimes_interval',
+  yearly: 'forYearlyTimes_interval',
 };
 
 function getDurationTimeText(
@@ -44,7 +48,10 @@ function getDurationTimeText(
   repeatEnding: string,
 ) {
   const times =
-    (TIMES_TEXT[repeat] && TIMES_TEXT[repeat](Number(repeatEndingAfter))) || '';
+    (TIMES_TEXT[repeat] &&
+      getI18Text(TIMES_TEXT[repeat], Number(repeatEndingAfter))) ||
+    '';
+
   const date = repeatEndingOn
     ? getDateMessage(repeatEndingOn, 'ddd, MMM D')
     : '';
@@ -52,7 +59,7 @@ function getDurationTimeText(
     repeat === 'none' || repeatEnding === 'none' || repeatEnding === 'after';
   // if has repeat and is forever need hide times
   const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
-    repeatEndingAfter === '1' && repeatEnding === 'none';
+    repeatEnding === 'none' || repeatEnding === 'on';
   const repeatText = ` ${t('until')} ${date}`;
 
   return `${t(REPEAT_TEXT[repeat]) || ''} ${

@@ -88,6 +88,7 @@ export type Profile = ExtendedBaseModel & {
   favorite_post_ids: number[];
   skip_close_conversation_confirmation?: boolean;
   me_tab: boolean;
+  max_leftrail_group_tabs2?: number;
 };
 
 export type Company = ExtendedBaseModel & {
