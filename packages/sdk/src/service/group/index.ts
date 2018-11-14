@@ -29,6 +29,7 @@ import handleData, {
   // handleFavoriteGroupsChanged,
   handleHiddenGroupsChanged,
   sortFavoriteGroups,
+  handleGroupNewIncomeState,
 } from './handleData';
 import Permission from './permission';
 import { IResponse } from '../../api/NetworkClient';
@@ -57,6 +58,7 @@ export default class GroupService extends BaseService<Group> {
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
+      [ENTITY.GROUP_STATE]: handleGroupNewIncomeState,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
   }

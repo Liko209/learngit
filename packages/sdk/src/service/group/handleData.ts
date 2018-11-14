@@ -466,6 +466,20 @@ async function handlePartialData(groups: Partial<Raw<Group>>[]) {
   await doNotification([], transformData);
 }
 
+async function handleGroupNewIncomeState({
+  type,
+  body,
+}: NotificationEntityUpdatePayload<GroupState>) {
+  if (type !== EVENT_TYPES.UPDATE || !body.entities) {
+    return;
+  }
+  const groupIds: number[] = [];
+  body.entities.forEach((item: GroupState) => groupIds.push(item.id));
+  const groupDao = daoManager.getDao(GroupDao);
+  const groups = await groupDao.queryGroupsByIds(groupIds);
+  notificationCenter.emitEntityUpdate(ENTITY.GROUP, groups, groups);
+}
+
 export {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
@@ -476,4 +490,5 @@ export {
   handlePartialData,
   isNeedToUpdateMostRecent4Group,
   getUniqMostRecentPostsByGroup,
+  handleGroupNewIncomeState,
 };
