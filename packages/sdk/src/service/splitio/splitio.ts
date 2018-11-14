@@ -101,21 +101,13 @@ class SplitIO {
   private _getCurrentUserId(): string {
     const dao: AccountDao = daoManager.getKVDao(AccountDao);
     const userId: number = dao.get(ACCOUNT_USER_ID);
-    if (userId) {
-      return userId.toString();
-    }
-
-    return '';
+    return userId ? userId.toString() : '';
   }
 
   private _getCurrentCompanyId(): string {
     const dao: AccountDao = daoManager.getKVDao(AccountDao);
     const companyId: number = dao.get(ACCOUNT_COMPANY_ID);
-    if (companyId) {
-      return companyId.toString();
-    }
-
-    return '';
+    return companyId ? companyId.toString() : '';
   }
 
   private _getAuthKey(): string {

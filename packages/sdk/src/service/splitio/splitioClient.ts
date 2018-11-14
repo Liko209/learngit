@@ -28,31 +28,33 @@ class SplitIOClient {
     public updateHandler: UpdateHandler,
   ) {
     this.trafficType = TRAFFIC_TYPE_USER;
-    this._createClient();
-  }
 
-  public shutdown() {
-    this.client && this.client.destroy();
-  }
-
-  public factorySplitClient(settings: SplitIO.IBrowserSettings) {
-    return SplitFactory(settings).client();
-  }
-
-  private _createClient() {
     const settings: SplitIO.IBrowserSettings = {
       core: {
         authorizationKey: this.authKey,
         trafficType: this.trafficType,
         key: this.identity,
       },
-      storage: {
-        type: 'MEMORY', // 'LOCALSTORAGE',
-      },
-      debug: false,
     };
-
     this.client = this.factorySplitClient(settings);
+    this._subscribeSplitEvents();
+
+    mainLogger.info(
+      `${LOG_TAG} Created client for ${this.trafficType}:${
+        this.identity
+      }, ${JSON.stringify(this.attributes)}`,
+    );
+  }
+
+  public factorySplitClient(settings: SplitIO.IBrowserSettings) {
+    return SplitFactory(settings).client();
+  }
+
+  public shutdown() {
+    this.client && this.client.destroy();
+  }
+
+  private _subscribeSplitEvents() {
     this.client.on(this.client.Event.SDK_READY, () => {
       mainLogger.info(
         `${LOG_TAG} SDK_READY. ${this.trafficType}:${this.identity}`,
@@ -65,12 +67,6 @@ class SplitIOClient {
       );
       this._syncTreatments();
     });
-
-    mainLogger.info(
-      `${LOG_TAG} Created client for ${this.trafficType}:${
-        this.identity
-      }, ${JSON.stringify(this.attributes)}`,
-    );
   }
 
   private _syncTreatments() {
