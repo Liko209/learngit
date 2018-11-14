@@ -22,7 +22,7 @@ import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
-import { ErrorParser } from '../../utils/error';
+import { ErrorParser, BaseError } from '../../utils/error';
 
 export interface IPostResult {
   posts: Post[];
@@ -425,11 +425,40 @@ export default class PostService extends BaseService<Post> {
     return false;
   }
 
+  private async _requestUpdatePost(
+    newPost: Post,
+    handleDataFunc?: (profile: Raw<Post> | null) => Promise<Post | null>,
+  ): Promise<Post | BaseError> {
+    try {
+      newPost._id = newPost.id;
+      delete newPost.id;
+      const response = await PostAPI.putDataById<Post>(newPost._id, newPost);
+
+      if (response.data) {
+        if (handleDataFunc) {
+          const result = await handleDataFunc(response.data);
+          if (result) {
+            return result;
+          }
+        } else {
+          const latestPostModel: Post = transform(response.data);
+          return latestPostModel;
+        }
+      }
+      return ErrorParser.parse(response);
+    } catch (e) {
+      return ErrorParser.parse(e);
+    }
+  }
+
+  private async _doUpdateModel(updatedModel: Post) {
+    return await this._requestUpdatePost(updatedModel);
+  }
+
   async likePost(postId: number, personId: number, toLike: boolean) {
     try {
       const postDao = daoManager.getDao(PostDao);
       const post = await postDao.get(postId);
-      console.log(post);
       if (post) {
         const likes = post.likes || [];
         const index = likes.indexOf(personId);
@@ -442,14 +471,17 @@ export default class PostService extends BaseService<Post> {
             likes.splice(index, 1);
           }
         }
-        await PostAPI.putDataById<Post>(postId, {
+
+        const partialModel = {
+          ...post,
           likes,
-          _id: postId,
-          text: post.text,
-          item_ids: post.item_ids,
-          activity: post.activity,
-          at_mention_non_item_ids: post.at_mention_non_item_ids,
-        });
+        };
+
+        this.handlePartialUpdate(
+          partialModel,
+          undefined,
+          this._doUpdateModel.bind(this),
+        );
       }
     } catch (e) {
       throw ErrorParser.parse(e);
