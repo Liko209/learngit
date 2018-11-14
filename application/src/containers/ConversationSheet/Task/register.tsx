@@ -24,7 +24,7 @@ export default {
     const post = getEntity<Post, PostModel>(ENTITY_NAME.POST, postId);
     const { activityData } = post;
     console.log(post, '----post');
-    if (activityData && activityData.key === 'complete_percentage') {
+    if (activityData && activityData.key) {
       return <TaskUpdate ids={ids} postId={postId} />;
     }
     return <Task ids={ids} />;
