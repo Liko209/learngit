@@ -76,7 +76,7 @@ test(formalName('Data in mention page should be dynamically sync',
   },
 );
 
-test.only(formalName('Jump to conversation bottom when click name',
+test.skip(formalName('Jump to conversation bottom when click name',
     ['P1', 'JPT-314']),
   async (t: TestController) => {
     const app = new AppRoot(t);
