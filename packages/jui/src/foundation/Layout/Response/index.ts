@@ -6,3 +6,5 @@
 
 export * from './ThreeColumnResponse';
 export * from './TwoColumnResponse';
+
+export * from './ColumnResponse';
