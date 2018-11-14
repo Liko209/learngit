@@ -9,10 +9,11 @@ import { Item, Post } from 'sdk/models';
 import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { TaskUpdateViewProps } from './types';
+import { TaskUpdateProps, TaskUpdateViewProps } from './types';
 import { TaskItem } from '@/store/models/Items';
 
-class TaskUpdateViewModel extends StoreViewModel<TaskUpdateViewProps> {
+class TaskUpdateViewModel extends StoreViewModel<TaskUpdateProps>
+  implements TaskUpdateViewProps {
   @computed
   get _id() {
     return this.props.ids[0];

@@ -24,8 +24,8 @@ type ViewProps = WithNamespaces & {
 
 type TaskUpdateViewProps = {
   post: Post;
-  postId: number;
-} & ViewProps;
+  task: TaskItem;
+};
 
 export {
   Props,
