@@ -14,6 +14,7 @@ const RightRail = withRouter(({ match }: RouteComponentProps<Params>) => {
         height: '100%',
         borderLeft: '1px solid #ddd',
       }}
+      data-test-automation-id="rightRail"
     >
       <strong>Conversation right rail: </strong>
       {!isNaN(id) && <div>id: {id}</div>}

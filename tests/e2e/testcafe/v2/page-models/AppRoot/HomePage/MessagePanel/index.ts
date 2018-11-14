@@ -228,7 +228,7 @@ export class MessagePanel extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
     return this.getSelector(
-      '[data-test-automation-id="leftPanel"]',
+      '[data-test-automation-id="messagePanel"]',
     ).nextSibling();
   }
 

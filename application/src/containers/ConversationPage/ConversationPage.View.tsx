@@ -42,6 +42,7 @@ class ConversationPageViewComponent extends Component<
       <JuiConversationPage
         className="conversation-page"
         data-group-id={groupId}
+        data-test-automation-id="messagePanel"
       >
         <Header id={groupId} />
         <JuiStreamWrapper>

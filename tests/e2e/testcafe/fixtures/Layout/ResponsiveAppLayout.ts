@@ -21,7 +21,6 @@ test(
         await app.homePage.ensureLoaded();
       },
     );
-    await t.debug();
 
     await h(t).withLog('When I go to the dashboard', async () => {
       await app.homePage.leftPanel.dashboardEntry.enter();
@@ -35,9 +34,54 @@ test(
       await app.homePage.leftPanel.meetingsEntry.enter();
     });
 
-    await h(t).withLog('resize window', async () => {
-      await t.resizeWindow(750, 700);
-      await t.expect(app.homePage.messagePanel.root.exists).notOk();
+    await h(t).withLog('When I go to the messages', async () => {
+      await app.homePage.leftPanel.messagesEntry.enter();
     });
+
+    await h(t).withLog(`Then I enter a conversation in team section`, async () => {
+      await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
+      await app.homePage.messagePanel.getCurrentGroupIdFromURL();
+    });
+
+    await h(t).withLog('resize window', async () => {
+      // TODO: messagePanel's locator is deprecated?
+      await t.expect(app.homePage.leftRail.visible).ok();
+      await t.expect(app.homePage.rightRail.visible).ok();
+      await t.resizeWindow(750, 700);
+      await t.expect(app.homePage.leftRail.visible).notOk();
+      await t.expect(app.homePage.rightRail.visible).notOk();
+    });
+
+    await h(t).withLog('resize to max window', async () => {
+      await t.maximizeWindow();
+      await t.expect(app.homePage.leftRail.visible).ok();
+      await t.expect(app.homePage.rightRail.visible).ok();
+     // TODO: messagePanel's locator is deprecated?
+    });
+
+    await h(t).withLog('When I go to the Tasks', async () => {
+      await app.homePage.leftPanel.tasksEntry.enter();
+    });
+
+    await h(t).withLog('When I go to the messages', async () => {
+      await app.homePage.leftPanel.messagesEntry.enter();
+    });
+
+    await h(t).withLog('resize window', async () => {
+      await t.expect(app.homePage.leftRail.visible).ok();
+      await t.expect(app.homePage.rightRail.visible).ok();
+      await t.resizeWindow(779, 700);
+      await t.expect(app.homePage.leftRail.visible).notOk();
+      await t.expect(app.homePage.rightRail.visible).notOk();
+      // TODO: messagePanel's locator is deprecated?
+    });
+
+    await h(t).withLog('resize window', async () => {
+      await t.resizeWindow(1440, 700);
+      await t.expect(app.homePage.leftRail.visible).ok();
+      await t.expect(app.homePage.rightRail.visible).ok();
+      // TODO: messagePanel's locator is deprecated?
+    });
+
   },
 );

@@ -48,7 +48,9 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
       <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
         <LeftRail />
         {currentConversationId ? (
-          <ConversationPage groupId={currentConversationId} />
+          <ConversationPage
+            groupId={currentConversationId}
+          />
         ) : null}
         <RightRail />
       </JuiTreeColumnResponse>
