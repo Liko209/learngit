@@ -6,7 +6,7 @@ import { h } from '../../v2/helpers';
 import { SITE_URL } from '../../config';
 
 declare var test: TestFn;
-fixture.skip('CloseConversation')
+fixture('CloseConversation')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
