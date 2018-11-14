@@ -40,3 +40,4 @@ export REPORT_URL=`cat ./reportUrl`
 addEnv E2EResult="> **E2E Url**: $REPORT_URL"
 
 echo "E2E Result: $e2eResult"
+exit $e2eResult

@@ -114,6 +114,13 @@
     "height": 4
   },
   "typography": {
+    "button": {
+      "fontSize": "0.875rem",
+      "textTransform": "capitalize",
+      "fontWeight": 500,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "color": "rgba(0, 0, 0, 0.87)"
+    },
     "title1": {
       "fontSize": "1.25rem",
       "fontWeight": 400,

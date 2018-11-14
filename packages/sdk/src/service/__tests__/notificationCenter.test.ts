@@ -1,11 +1,4 @@
-// import { EventEmitter2 } from 'eventemitter2';
 import notificationCenter from '../notificationCenter';
-
-// jest.mock('eventemitter2', () => ({
-//   EventEmitter2: jest.fn(),
-// }));
-
-// const emitter = new EventEmitter2();
 
 it('emitEntityUpdate()', () => {
   const result = notificationCenter.emitEntityUpdate('KEY', []);
@@ -14,6 +7,22 @@ it('emitEntityUpdate()', () => {
 
 it('emitEntityDelete()', () => {
   const result = notificationCenter.emitEntityDelete('KEY', []);
+  expect(result).toBeUndefined();
+});
+
+it('emitEntityReset()', () => {
+  const result = notificationCenter.emitEntityReset('KEY');
+  expect(result).toBeUndefined();
+});
+
+it('emitEntityReload()', () => {
+  const result = notificationCenter.emitEntityReload('KEY');
+  expect(result).toBeUndefined();
+});
+
+it('emitEntityReplace()', () => {
+  const entitiesMap = new Map<number, any>();
+  const result = notificationCenter.emitEntityReplace('KEY', entitiesMap);
   expect(result).toBeUndefined();
 });
 
