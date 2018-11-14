@@ -39,8 +39,7 @@ import ProfileService from './service/profile';
 import SearchService from './service/search';
 import socketManager from './service/SocketManager';
 import { SocketManager } from './service/SocketManager/SocketManager';
-import splitIO from './service/splitio';
-import { SplitIO } from './service/splitio/splitio';
+import { splitIO, SplitIO } from './service/splitio';
 import StateService from './service/state';
 import SyncService from './service/sync';
 
