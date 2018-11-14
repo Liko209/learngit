@@ -213,7 +213,7 @@ describe('Whether to save to db detection', () => {
     });
   });
 
-  it('should not save if oldest of the posts is newer than the latest in db', async () => {
+  it('should save if oldest of the posts is newer than the latest in db', async () => {
     dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
     dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
     const posts = [
@@ -225,17 +225,17 @@ describe('Whether to save to db detection', () => {
     ];
     await baseHandleData(posts, true);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
-      noSavingToDB: true,
+      noSavingToDB: false,
     });
   });
 
-  it('should not save if oldest of the posts is newer than the latest in db', async () => {
+  it('should save if oldest of the posts is newer than the latest in db', async () => {
     dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
     dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
     const posts = [rawPostFactory.build({ created_at: 101 })];
     await baseHandleData(posts, true);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
-      noSavingToDB: true,
+      noSavingToDB: false,
     });
   });
 

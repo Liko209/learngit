@@ -26,7 +26,6 @@ const ItemCardHeader = styled.div`
   padding: 0;
   margin: ${spacing(0, 0, 0, -6)};
   display: flex;
-  align-items: center;
   ${typography('subheading3')};
   color: ${({ color }) => color || palette('primary', 'main')};
 `;

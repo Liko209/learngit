@@ -9,7 +9,7 @@ import styled from '../../../foundation/styled-components';
 import { typography, grey, spacing } from '../../../foundation/utils/styles';
 
 type Props = {
-  avatarNames: JSX.Element[] | null[] | JSX.Element;
+  children: React.ReactNode;
   count?: number;
   otherText?: string;
 };
@@ -29,7 +29,7 @@ const StyledTaskOther = styled.div`
 
 const JuiTaskAvatarName = (props: Props) => (
   <StyledTaskAvatarName>
-    {props.avatarNames}
+    {props.children}
     {props.otherText && props.count && (
       <StyledTaskOther>
         {props.count > 2 ? props.otherText : ''}

@@ -31,7 +31,6 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   @computed
   get hideText() {
     const { activityData } = this.post;
-    console.log(activityData, 'activityData');
     return activityData && (activityData.object_id || activityData.key);
   }
 

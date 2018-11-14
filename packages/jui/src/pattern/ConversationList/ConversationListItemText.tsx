@@ -3,7 +3,7 @@
  * @Date: 2018-08-17 10:35:05
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component, CSSProperties } from 'react';
+import React, { CSSProperties, PureComponent } from 'react';
 import ReactDOM from 'react-dom';
 
 import MuiTypography from '@material-ui/core/Typography';
@@ -32,7 +32,7 @@ type ItemTextStates = {
   tipOpen: boolean;
 };
 
-class ConversationListItemText extends Component<
+class ConversationListItemText extends PureComponent<
   ItemTextProps,
   ItemTextStates
 > {

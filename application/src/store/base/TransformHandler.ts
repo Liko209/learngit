@@ -23,7 +23,7 @@ abstract class TransformHandler<T, K extends BaseModel> {
   ) {
     this._orderListHandler.setUpDataChangeCallback(this.modificationHandler);
     this.fetchData = async (...args) => {
-      await this._orderListHandler.fetchData(...args);
+      return this._orderListHandler.fetchData(...args);
     };
   }
 

@@ -77,6 +77,27 @@ class Task extends React.Component<ViewProps> {
     ));
   }
 
+  private _getTitleText(text: string) {
+    const { task } = this.props;
+    const {
+      completeType,
+      completePeopleIds,
+      assignedToIds,
+      completePercentage,
+    } = task;
+
+    switch (completeType) {
+      case 'all':
+        return `${completePeopleIds ? completePeopleIds.length : 0}/${
+          assignedToIds.length
+        } ${text}`;
+      case 'percentage':
+        return `${completePercentage || 0}% ${text}`;
+      default:
+        return text;
+    }
+  }
+
   render() {
     const { task, files, t } = this.props;
     const {
@@ -104,14 +125,13 @@ class Task extends React.Component<ViewProps> {
     return (
       <JuiConversationItemCard
         complete={complete}
-        title={text}
+        title={this._getTitleText(text)}
         titleColor={color}
         icon={<JuiTaskCheckbox checked={complete || false} />}
       >
         <JuiTimeMessage time={`${time} ${timeText}`} />
         {assignedToIds && assignedToIds.length > 0 && (
           <JuiTaskAvatarName
-            avatarNames={this._taskAvatarNames}
             count={assignedToIds && assignedToIds.length}
             otherText={
               assignedToIds.length
@@ -120,7 +140,9 @@ class Task extends React.Component<ViewProps> {
                 })
                 : ''
             }
-          />
+          >
+            {this._taskAvatarNames}
+          </JuiTaskAvatarName>
         )}
         <JuiTaskContent>
           <JuiTaskSection section={section} />

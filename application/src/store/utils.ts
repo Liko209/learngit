@@ -18,12 +18,12 @@ function getEntity<T extends BaseModel, K extends Entity>(
 
 function getSingleEntity<T extends BaseModel, K extends Entity>(
   entityName: ENTITY_NAME,
-  id: keyof K,
+  property: keyof K,
 ) {
   const store = storeManager.getEntityMapStore(
     entityName,
   ) as SingleEntityMapStore<T, K>;
-  return store.get(id);
+  return store.get(property);
 }
 
 function getGlobalValue(key: keyof typeof GLOBAL_VALUES) {
@@ -31,4 +31,12 @@ function getGlobalValue(key: keyof typeof GLOBAL_VALUES) {
   return store.get(key);
 }
 
-export { getEntity, getSingleEntity, getGlobalValue };
+const transform2Map = (entities: any[]): Map<number, any> => {
+  const map = new Map();
+  entities.forEach((item: any) => {
+    map.set(item.id, item);
+  });
+  return map;
+};
+
+export { getEntity, getSingleEntity, getGlobalValue, transform2Map };

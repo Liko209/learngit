@@ -2,14 +2,13 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-07-12 13:59:49
  * Copyright © RingCentral. All rights reserved
-*/
+ */
 
 import BaseService from '../../service/BaseService';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_PROFILE_ID,
   ACCOUNT_COMPANY_ID,
-  ACCOUNT_CONVERSATION_LIST_LIMITS,
   UNREAD_TOGGLE_ON,
 } from '../../dao/account/constants';
 import { daoManager, AuthDao } from '../../dao';
@@ -24,19 +23,9 @@ import { refreshToken, ITokenRefreshDelegate, ITokenModel } from '../../api';
 import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware, ErrorTypes } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
-import { GROUP_QUERY_TYPE } from '../constants';
 import ProfileService from '../profile/index';
 
-const DEFAULT_CONVERSATION_LIST_LIMITS = {
-  [GROUP_QUERY_TYPE.ALL]: 20,
-  [GROUP_QUERY_TYPE.TEAM]: 20,
-  [GROUP_QUERY_TYPE.GROUP]: 20,
-  [GROUP_QUERY_TYPE.FAVORITE]: Infinity,
-};
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
-
-type ConversationListLimits = typeof DEFAULT_CONVERSATION_LIST_LIMITS;
-
 class AccountService extends BaseService implements ITokenRefreshDelegate {
   static serviceName = 'AccountService';
 
@@ -49,7 +38,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   getCurrentUserId(): number | null {
     const userId: string = this.accountDao.get(ACCOUNT_USER_ID);
     if (!userId) {
-      mainLogger.warn('there is not UserId Id');
+      mainLogger.info('there is not UserId');
       return null;
     }
     return Number(userId);
@@ -67,7 +56,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   getCurrentCompanyId(): number | null {
     const companyId = this.accountDao.get(ACCOUNT_COMPANY_ID);
     if (!companyId) {
-      mainLogger.warn('there is not companyId Id');
+      mainLogger.info('there is not companyId');
       return null;
     }
     return Number(companyId);
@@ -126,27 +115,6 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
     }
   }
 
-  setConversationListLimits(limits: ConversationListLimits): void {
-    this.accountDao.put(ACCOUNT_CONVERSATION_LIST_LIMITS, limits);
-  }
-
-  setConversationListLimit(type: GROUP_QUERY_TYPE, limit: number): void {
-    const conversationListLimits = this.getConversationListLimits();
-    conversationListLimits[type] = limit;
-    this.setConversationListLimits(conversationListLimits);
-  }
-
-  getConversationListLimits(): ConversationListLimits {
-    return (
-      this.accountDao.get(ACCOUNT_CONVERSATION_LIST_LIMITS) ||
-      DEFAULT_CONVERSATION_LIST_LIMITS
-    );
-  }
-
-  getConversationListLimit(type: GROUP_QUERY_TYPE) {
-    return this.getConversationListLimits()[type];
-  }
-
   async onBoardingPreparation() {
     const profileService: ProfileService = ProfileService.getInstance();
     await profileService.markMeConversationAsFav();
@@ -164,4 +132,3 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
 }
 
 export default AccountService;
-export { ConversationListLimits };

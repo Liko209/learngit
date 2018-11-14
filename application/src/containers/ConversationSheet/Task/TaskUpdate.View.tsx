@@ -21,55 +21,56 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
       <AvatarName key={assignedId} id={assignedId} />
     ))
 
+  private _getTitleText(text: string) {
+    const { post, task } = this.props;
+    const { value, key } = post.activityData;
+    const { assignedToIds } = task;
+
+    switch (key) {
+      case 'complete_people_ids':
+        return `${value ? value.length : 0}/${assignedToIds &&
+          assignedToIds.length} ${text}`;
+      case 'complete_percentage':
+        return `${value || 0}% ${text}`;
+      default:
+        return text;
+    }
+  }
+
   render() {
     const { task, post } = this.props;
     const { color, text, complete } = task;
     const { value, key, old_value } = post.activityData;
 
-    switch (key) {
-      case 'assigned_to_ids':
-        return (
-          <TaskUpdateViewCard
-            title={text}
-            titleColor={color}
-            icon={<JuiTaskCheckbox checked={complete || false} />}
-            footer={
-              <JuiEventCollapse
-                showText={t('showEventHistory')}
-                hideText={t('hideEventHistory')}
-              >
-                {
-                  <JuiEventCollapseContent>
-                    <JuiTaskAvatarName
-                      avatarNames={this._getTaskAvatarNames(old_value)}
-                    />
-                  </JuiEventCollapseContent>
-                }
-              </JuiEventCollapse>
-            }
-          >
-            <JuiTaskAvatarName avatarNames={this._getTaskAvatarNames(value)} />
-          </TaskUpdateViewCard>
-        );
-
-      case 'complete_percentage':
-        return (
-          <TaskUpdateViewCard
-            title={`${value}% ${text}`}
-            titleColor={color}
-            icon={<JuiTaskCheckbox checked={complete || false} />}
-          />
-        );
-
-      default:
-        return (
-          <TaskUpdateViewCard
-            title={text}
-            titleColor={color}
-            icon={<JuiTaskCheckbox checked={complete || false} />}
-          />
-        );
-    }
+    return (
+      <TaskUpdateViewCard
+        title={this._getTitleText(text)}
+        titleColor={color}
+        icon={<JuiTaskCheckbox checked={complete || false} />}
+        footer={
+          key === 'assigned_to_ids' ? (
+            <JuiEventCollapse
+              showText={t('showEventHistory')}
+              hideText={t('hideEventHistory')}
+            >
+              {
+                <JuiEventCollapseContent>
+                  <JuiTaskAvatarName>
+                    {this._getTaskAvatarNames(value)}
+                  </JuiTaskAvatarName>
+                </JuiEventCollapseContent>
+              }
+            </JuiEventCollapse>
+          ) : null
+        }
+      >
+        {key === 'assigned_to_ids' && old_value > 0 ? (
+          <JuiTaskAvatarName>
+            {this._getTaskAvatarNames(old_value)}
+          </JuiTaskAvatarName>
+        ) : null}
+      </TaskUpdateViewCard>
+    );
   }
 }
 

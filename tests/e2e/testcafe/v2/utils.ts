@@ -1,5 +1,9 @@
-import { getLogger } from 'log4js';
+import { v4 as uuid } from 'uuid';
+import * as fs from 'fs';
+import * as path from 'path';
+import { TMPFILE_PATH } from '../config';
 
+import { getLogger } from 'log4js';
 const logger = getLogger(__filename);
 
 export class MiscUtils {
@@ -21,5 +25,12 @@ export class MiscUtils {
         logger.warn('retry on error!');
       }
     }
+  }
+
+  static createTmpFile(content: any, filename?: string) {
+    filename = filename || `${uuid()}.tmp`;
+    const filepath = path.join(TMPFILE_PATH, filename);
+    fs.writeFileSync(filepath, content);
+    return filepath;
   }
 }
