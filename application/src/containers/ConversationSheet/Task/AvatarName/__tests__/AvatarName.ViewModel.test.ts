@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { getEntity } from '../../../../../store/utils';
-import { TaskAvatarNameViewModel } from '../TaskAvatarName.ViewModel';
+import { AvatarNameViewModel } from '../AvatarName.ViewModel';
 jest.mock('../../../../../store/utils');
 
-const ViewModel = new TaskAvatarNameViewModel();
+const ViewModel = new AvatarNameViewModel();
 
-describe('TaskAvatarNameVM', () => {
+describe('AvatarNameVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
   });

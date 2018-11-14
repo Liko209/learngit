@@ -9,7 +9,7 @@ import { FileName } from './FileName';
 
 type JuiFileWithPreviewProps = {
   size: string;
-  actions: JSX.Element;
+  Actions: JSX.Element;
   fileName: string;
   url: string;
   iconType?: string | null;
@@ -17,7 +17,7 @@ type JuiFileWithPreviewProps = {
 
 class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {
   render() {
-    const { size, fileName, url, actions, iconType } = this.props;
+    const { size, fileName, url, Actions, iconType } = this.props;
 
     return (
       <Jui.FileCard>
@@ -31,7 +31,7 @@ class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {
               <Jui.FileIcon iconType={iconType} size="small" />
               {size}
             </Jui.CardSize>
-            <Jui.CardFileActions>{actions}</Jui.CardFileActions>
+            <Jui.CardFileActions>{Actions}</Jui.CardFileActions>
           </Jui.CardFileInfo>
         </Jui.FileCardContent>
       </Jui.FileCard>

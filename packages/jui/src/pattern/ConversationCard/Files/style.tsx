@@ -188,11 +188,15 @@ const ImageMedia = styled(FileCardMedia)`
   }
 `;
 
-const FileExpandItemWrapper = styled.div``;
+const FileExpandItemWrapper = styled.div`
+  margin-bottom: ${spacing(3)};
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
 
 const FileExpandItem = styled(MuiListItem)`
   && {
-    margin: ${spacing(0, 0, 3, 0)};
     padding: ${spacing(4)};
     width: ${width(ITEM_WIDTH)};
     border-radius: ${shape('borderRadius', 1)};

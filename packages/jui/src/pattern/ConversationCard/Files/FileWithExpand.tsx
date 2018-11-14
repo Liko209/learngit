@@ -11,7 +11,7 @@ import styled from '../../../foundation/styled-components';
 
 type JuiFileWithExpandProps = {
   fileName: string;
-  actions: JSX.Element;
+  Actions: JSX.Element;
   expand?: boolean;
   children?: React.ReactNode;
 };
@@ -30,15 +30,17 @@ const FileNameBox = styled.div`
 const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
   props: JuiFileWithExpandProps,
 ) => {
-  const { fileName, actions, children, expand } = props;
+  const { fileName, Actions, children, expand } = props;
 
   return (
     <Jui.FileExpandItemWrapper>
       <Jui.FileExpandItem>
         <Jui.FileIcon size="small" />
         <NameWithActions>
-          <FileNameBox><FileName filename={fileName} /></FileNameBox>
-          <div>{actions}</div>
+          <FileNameBox>
+            <FileName filename={fileName} />
+          </FileNameBox>
+          <div>{Actions}</div>
         </NameWithActions>
       </Jui.FileExpandItem>
       {children && <Collapse in={expand}>{children}</Collapse>}

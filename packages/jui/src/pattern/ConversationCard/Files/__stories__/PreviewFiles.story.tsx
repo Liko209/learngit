@@ -26,7 +26,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
               ratio={2}
               fileName={fileName}
-              actions={
+              Actions={
                 <JuiIconButton variant="plain" tooltipTitle="download">
                   get_app
                 </JuiIconButton>
@@ -44,7 +44,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               fileName="fileName"
               size="2.3Mb"
               iconType={'pdf'}
-              actions={
+              Actions={
                 <JuiIconButton variant="plain" tooltipTitle="download">
                   get_app
                 </JuiIconButton>
@@ -61,7 +61,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               fileName="Conversation Card VxD.pdf"
               size="3.5MB"
               iconType={'pdf'}
-              actions={
+              Actions={
                 <JuiIconButton variant="plain" tooltipTitle="download">
                   get_app
                 </JuiIconButton>
