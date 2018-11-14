@@ -46,9 +46,9 @@ class StreamViewComponent extends Component<Props> {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
     // Scroller's on componentDidMount was called earlier than stream itself
-    this.props.plugins.loadingMorePlugin.onListMounted(this._listRef);
+    this.props.onListAsyncMounted(this._listRef);
     await this.props.loadInitialPosts();
-    this.props.plugins.loadingMorePlugin.scrollToRow(-1);
+    this.props.scrollToRow(-1);
   }
 
   componentWillUnmount() {
@@ -59,7 +59,7 @@ class StreamViewComponent extends Component<Props> {
   async componentDidUpdate(prevProps: Props) {
     if (prevProps.groupId !== this.props.groupId) {
       await this.props.loadInitialPosts();
-      this.props.plugins.loadingMorePlugin.scrollToRow(-1);
+      this.props.scrollToRow(-1);
     }
     if (prevProps.groupId !== this.props.groupId) {
       this._jumpToFirstUnreadLoading = false;

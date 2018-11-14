@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import debounce from 'lodash/debounce';
-import React, { ComponentType, RefObject, PureComponent } from 'react';
+import React, { ComponentType, PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { noop } from '../../foundation/utils';
 import _ from 'lodash';
@@ -41,7 +41,7 @@ type TScroller = {
     options?: ScrollIntoViewOptions | boolean,
     itemSelector?: string,
   ) => void;
-  onListMounted: (el: React.RefObject<HTMLElement>) => void;
+  onListAsyncMounted: (el: React.RefObject<HTMLElement>) => void;
 };
 
 const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
@@ -65,12 +65,10 @@ function withScroller(Comp: ComponentType<any>) {
       triggerScrollToOnMount: false,
     };
     private _scrollElRef: React.RefObject<any> = React.createRef();
-    private _list: RefObject<HTMLElement>;
-
+    private _list: HTMLElement | null;
     private _previousPosition: ScrollerSnapShot;
 
     private get _scrollEl(): HTMLElement {
-      if (!this._scrollElRef.current) throw new Error();
       return this._scrollElRef.current;
     }
 
@@ -89,32 +87,34 @@ function withScroller(Comp: ComponentType<any>) {
             {...this.props}
             setRowVisible={this.scrollToRow}
             atBottom={this._isAtBottom}
+            scrollToRow={this.scrollToRow}
+            onListAsyncMounted={this.onListAsyncMounted}
           />
         </StyledScroller>
       );
     }
 
-    onListMounted(list: React.RefObject<HTMLElement>) {
-      this._list = list;
+    onListAsyncMounted = (list: React.RefObject<HTMLElement>) => {
+      /* This function is called especially when the list is mounted after withScroller mounted*/
+      this._list = list.current;
     }
 
     componentDidMount() {
+      if (this._list) {
+        this._list = this._scrollEl.querySelector('section');
+      }
       this._scrollEl.scrollTop = this.props.initialScrollTop;
       this.attachScrollListener();
     }
 
-    get wrapper() {
-      return this._scrollEl.querySelector('.list-container');
-    }
-
     getSnapshotBeforeUpdate() {
-      if (!this._list || !this._list.current) {
+      if (!this._list) {
         return {};
       }
       this._previousPosition = {
         atTop: this._isAtTop(0),
         atBottom: this._isAtBottom(0),
-        height: this._list.current.getBoundingClientRect().height,
+        height: this._list.getBoundingClientRect().height,
       };
       return this._previousPosition;
     }
@@ -133,7 +133,7 @@ function withScroller(Comp: ComponentType<any>) {
     stickToCurrentPosition(snapShot: ScrollerSnapShot) {
       const { atBottom, atTop, height } = snapShot;
       const { stickTo } = this.props;
-      if (!this._list.current) {
+      if (!this._list) {
         return;
       }
       if (stickTo === 'bottom') {
@@ -142,7 +142,7 @@ function withScroller(Comp: ComponentType<any>) {
         }
         if (atTop) {
           const addedHeight =
-            this._list.current.getBoundingClientRect().height - height;
+            this._list.getBoundingClientRect().height - height;
           this._scrollEl.scrollTop += addedHeight;
         }
       }
@@ -155,6 +155,7 @@ function withScroller(Comp: ComponentType<any>) {
 
     componentWillUnmount() {
       this.detachScrollListener();
+      this._list = null;
     }
 
     attachScrollListener() {
@@ -200,7 +201,7 @@ function withScroller(Comp: ComponentType<any>) {
       options: ScrollIntoViewOptions | boolean = false,
       itemSelector: string = 'div',
     ) => {
-      const listEl = this._list.current;
+      const listEl = this._list;
       if (!listEl) {
         return;
       }
@@ -220,7 +221,7 @@ function withScroller(Comp: ComponentType<any>) {
       id: string,
       options: ScrollIntoViewOptions | boolean = false,
     ) => {
-      const listEl = this._list.current;
+      const listEl = this._list;
       if (!listEl) {
         return;
       }

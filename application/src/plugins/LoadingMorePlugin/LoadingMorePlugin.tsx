@@ -10,7 +10,6 @@ import { withLoadingMore, withScroller, WithScrollerProps } from 'jui/hoc';
 import { IPlugin } from '@/base/IPlugin';
 import { IViewModel } from '@/base/IViewModel';
 import { createLoadingStateDecorator } from '../utils';
-import { TScroller } from 'jui/hoc/withScroller';
 const topListeners = Symbol('topListeners');
 const bottomListeners = Symbol('bottomListeners');
 const scrollListeners = Symbol('scrollListeners');
@@ -30,7 +29,6 @@ type LoadingMorePluginOptions = {
 
 class LoadingMorePlugin implements IPlugin {
   private _options: LoadingMorePluginOptions;
-  private scroller: TScroller;
   constructor(options?: LoadingMorePluginOptions) {
     this._options = options || {};
   }
@@ -73,34 +71,13 @@ class LoadingMorePlugin implements IPlugin {
     }
   }
 
-  private _forwardRefs = (viewRefs?: any) => {
-    return this._setScroller.bind(this, viewRefs);
-  }
-
-  private _setScroller = (viewRefs: any, scroller: TScroller) => {
-    if (scroller) {
-      this.scroller = scroller;
-    }
-    if (viewRefs) {
-      viewRefs.scroller = scroller;
-    }
-  }
-
-  scrollToRow = (n: number) => {
-    this.scroller.scrollToRow(n);
-  }
-
-  onListMounted = (list: React.RefObject<HTMLElement>) => {
-    this.scroller.onListMounted(list);
-  }
-
-  wrapView(View: ComponentType<any>): React.SFC<any> {
+  wrapView(View: ComponentType<any>): ComponentType<any> {
     let WrappedView = View;
     WrappedView = withLoadingMore(WrappedView);
     WrappedView = withScroller(WrappedView);
-    return (props: any) => (
-      <WrappedView {...props} ref={this._forwardRefs(props.viewRefs)} />
-    );
+    return ({ scrollerRef, ...props }) => {
+      return <WrappedView ref={scrollerRef} {...props} />;
+    };
   }
 }
 

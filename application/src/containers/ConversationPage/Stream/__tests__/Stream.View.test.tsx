@@ -3,7 +3,6 @@ import { shallow } from 'enzyme';
 import { ConversationCard } from '../../../ConversationCard';
 import { StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
-import { LoadingMorePlugin } from '@/plugins';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
 
 jest.mock('../../../ConversationSheet', () => ({}));
@@ -33,9 +32,8 @@ describe('StreamView', () => {
           { type: StreamItemType.POST, value: 1 },
           { type: StreamItemType.POST, value: 2 },
         ],
-        plugins: {
-          loadingMorePlugin: new LoadingMorePlugin(),
-        },
+        scrollToRow: () => {},
+        onListAsyncMounted: () => {},
         loadInitialPosts: async () => {},
       };
 
@@ -60,9 +58,8 @@ describe('StreamView', () => {
           { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
           { type: StreamItemType.POST, value: 2 },
         ],
-        plugins: {
-          loadingMorePlugin: new LoadingMorePlugin(),
-        },
+        scrollToRow: () => {},
+        onListAsyncMounted: () => {},
         loadInitialPosts: async () => {},
       };
 

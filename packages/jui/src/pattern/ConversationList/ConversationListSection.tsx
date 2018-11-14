@@ -42,14 +42,14 @@ class JuiConversationListSection extends PureComponent<
   }
 
   render() {
-    const { umi } = this.props;
+    const { umi, onExpand, onCollapse, ...restProps } = this.props;
     const { expanded } = this.state;
 
     return (
       <div>
         <JuiSectionHeader
           className="conversation-list-section-header"
-          {...this.props}
+          {...restProps}
           expanded={expanded}
           umi={umi}
           onClick={this._handleClick}

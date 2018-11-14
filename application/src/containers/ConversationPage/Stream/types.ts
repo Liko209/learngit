@@ -1,5 +1,10 @@
-import { LoadingMorePlugin } from '@/plugins';
+/*
+ * @Author: Andy Hu
+ * @Date: 2018-11-13 18:05:16
+ * Copyright © RingCentral. All rights reserved.
+ */
 import GroupStateModel from '@/store/models/GroupState';
+import { TScroller } from 'jui/hoc/withScroller';
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -57,12 +62,7 @@ type StreamViewProps = {
   historyUnreadCount: number;
   historyGroupState?: GroupStateModel;
   firstHistoryUnreadPostId?: number;
-  plugins: TPluginsProps;
-};
-
-type TPluginsProps = {
-  loadingMorePlugin: LoadingMorePlugin;
-};
+} & TScroller;
 
 export {
   StreamProps,
