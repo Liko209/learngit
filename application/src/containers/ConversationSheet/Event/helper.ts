@@ -49,7 +49,10 @@ function getDurationTimeText(
     ? getDateMessage(repeatEndingOn, 'ddd, MMM D')
     : '';
   const hideUntil = (repeat: string, repeatEnding: string) =>
-    repeat === 'none' || repeatEnding === 'none' || repeatEnding === 'after';
+    repeat === 'none' ||
+    repeatEnding === 'none' ||
+    repeatEnding === 'after' ||
+    repeatEndingOn === null;
   // if has repeat and is forever need hide times
   const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
     repeatEndingAfter === '1' && repeatEnding === 'none';
