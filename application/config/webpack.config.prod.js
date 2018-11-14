@@ -419,7 +419,7 @@ module.exports = {
         new RegExp("/[^/]+\\.[^/]+$")
       ],
       globDirectory: paths.appPublic,
-      globPatterns: ["theme/**/*.json", "locales/**/*.json"],
+      globPatterns: ["theme/**/*.json", "locales/**/*.json", "favicon.ico"],
       runtimeCaching: [
         {
           urlPattern: new RegExp("https://glipdevasia-dev.s3.amazonaws.com"),
@@ -447,6 +447,10 @@ module.exports = {
         },
         {
           urlPattern: new RegExp("https://xmnup.asialab.glip.net:31337"),
+          handler: "staleWhileRevalidate"
+        },
+        {
+          urlPattern: new RegExp("https://fonts.gstatic.com/s/materialicons"),
           handler: "staleWhileRevalidate"
         }
       ]
