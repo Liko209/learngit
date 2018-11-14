@@ -241,6 +241,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
     const unreadIds: number[] = [];
     const withoutUnreadIds: number[] = [];
+    const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     payload.body.entities.forEach((state: GroupState) => {
       const hasUnread =
         state.marked_as_unread ||
@@ -248,7 +249,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         state.unread_mentions_count;
       if (hasUnread) {
         unreadIds.push(state.id);
-      } else {
+      } else if (currentId !== state.id) {
         withoutUnreadIds.push(state.id);
       }
     });
