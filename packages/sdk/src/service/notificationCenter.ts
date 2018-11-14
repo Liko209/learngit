@@ -8,39 +8,39 @@ import { EVENT_TYPES } from './constants';
 import _ from 'lodash';
 import { BaseModel, Raw } from '../models';
 
-type NotificationEntityIds = {
+export type NotificationEntityIds = {
   ids: number[];
 };
 
-type NotificationEntityBody<T> = NotificationEntityIds & {
+export type NotificationEntityBody<T> = NotificationEntityIds & {
   entities: Map<number, T>;
 };
 
-type NotificationEntityUpdateBody<T> = NotificationEntityBody<T> & {
+export type NotificationEntityUpdateBody<T> = NotificationEntityBody<T> & {
   partials?: Map<number, Partial<Raw<T>>>;
 };
 
 // fixed type and body for type binding
-type NotificationEntityReplacePayload<T> = {
+export type NotificationEntityReplacePayload<T> = {
   type: EVENT_TYPES.REPLACE;
   body: NotificationEntityBody<T>;
 };
 
-type NotificationEntityDeletePayload = {
+export type NotificationEntityDeletePayload = {
   type: EVENT_TYPES.DELETE;
   body: NotificationEntityIds;
 };
 
-type NotificationEntityUpdatePayload<T> = {
+export type NotificationEntityUpdatePayload<T> = {
   type: EVENT_TYPES.UPDATE;
   body: NotificationEntityUpdateBody<T>;
 };
 
-type NotificationEntityResetPayload = {
+export type NotificationEntityResetPayload = {
   type: EVENT_TYPES.RESET;
 };
 
-type NotificationEntityReloadPayload = {
+export type NotificationEntityReloadPayload = {
   type: EVENT_TYPES.RELOAD;
 };
 

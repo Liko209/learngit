@@ -78,7 +78,7 @@ class LogControlManager {
     try {
       await LogUploadManager.instance().doUpload(userInfo, logs);
     } catch (err) {
-      mainLogger.error(err);
+      mainLogger.error(`doUpload: ${JSON.stringify(err)}`);
     } finally {
       logManager.clearLogs();
       this._isUploading = false;
