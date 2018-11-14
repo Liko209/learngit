@@ -14,7 +14,7 @@ fixture('Unified Login')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(formalName('Unified Login', ['JPT-67', 'P0', 'Login']), async (t) => {
+test.skip(formalName('Unified Login', ['JPT-67', 'P0', 'Login']), async (t) => {
   const user = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 

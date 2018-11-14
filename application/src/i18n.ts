@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import i18nextXhrBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguagedetector from 'i18next-browser-languagedetector';
+import intervalPlural from 'i18next-intervalplural-postprocessor';
 import moment from 'moment';
 import { reactI18nextModule } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
@@ -9,6 +10,7 @@ i18next
   .use(i18nextXhrBackend)
   .use(i18nextBrowserLanguagedetector)
   .use(reactI18nextModule)
+  .use(intervalPlural)
   .init({
     fallbackLng: 'en',
 

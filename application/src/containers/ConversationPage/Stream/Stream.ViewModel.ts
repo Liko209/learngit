@@ -69,6 +69,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this._newMessageSeparatorHandler.firstUnreadPostId;
   }
 
+  @computed
+  get firstHistoryUnreadInPage() {
+    if (!this.firstHistoryUnreadPostId) return false;
+    return this.postIds.includes(this.firstHistoryUnreadPostId);
+  }
+
   clearHistoryUnread = () => {
     this._historyHandler.clear();
   }
