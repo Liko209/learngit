@@ -419,6 +419,7 @@ module.exports = {
         new RegExp("/[^/]+\\.[^/]+$")
       ],
       globDirectory: paths.appPublic,
+      globPatterns: ["**/*"],
       runtimeCaching: [
         {
           urlPattern: new RegExp("https://glipdevasia-dev.s3.amazonaws.com"),
