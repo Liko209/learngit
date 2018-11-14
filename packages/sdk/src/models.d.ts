@@ -140,6 +140,7 @@ export type State = ExtendedBaseModel & {
   current_plugin: string;
   trigger_ids?: number[];
   last_group_id: number;
+  at_mentioning_post_ids?: number[];
 };
 
 export type MyState = State;

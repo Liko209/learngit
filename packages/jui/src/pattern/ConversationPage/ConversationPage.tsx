@@ -8,7 +8,7 @@ import styled from '../../foundation/styled-components';
 
 type JuiConversationPageProps = {
   className?: string;
-  children: JSX.Element | JSX.Element[];
+  children?: React.ReactNode[] | React.ReactNode;
 };
 
 const StyledDiv = styled<JuiConversationPageProps, 'div'>('div')`

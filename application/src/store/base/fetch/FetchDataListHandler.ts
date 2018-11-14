@@ -101,6 +101,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
       );
       this.handlePageData(result, direction);
       this.updateEntityStore(result);
+      return result;
     }
   }
 

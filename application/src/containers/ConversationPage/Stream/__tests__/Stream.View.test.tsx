@@ -23,6 +23,9 @@ function renderJumpToFirstUnreadButton({
     ...baseProps,
     hasHistoryUnread,
     firstHistoryUnreadInPage,
+    loadInitialPosts: async () => {},
+    scrollToRow: () => {},
+    onListAsyncMounted: () => {},
   };
   const wrapper = shallow(<StreamView {...props} />);
   (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
@@ -67,6 +70,9 @@ describe('StreamView', () => {
           { type: StreamItemType.POST, value: 1 },
           { type: StreamItemType.POST, value: 2 },
         ],
+        scrollToRow: () => {},
+        onListAsyncMounted: () => {},
+        loadInitialPosts: async () => {},
       };
 
       const wrapper = shallow(<StreamView {...props} />);
@@ -90,6 +96,9 @@ describe('StreamView', () => {
           { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
           { type: StreamItemType.POST, value: 2 },
         ],
+        scrollToRow: () => {},
+        onListAsyncMounted: () => {},
+        loadInitialPosts: async () => {},
       };
 
       const wrapper = shallow(<StreamView {...props} />);

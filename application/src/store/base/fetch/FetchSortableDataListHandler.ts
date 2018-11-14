@@ -22,14 +22,8 @@ import {
 
 import { SortableListStore } from './SortableListStore';
 import _ from 'lodash';
+import { transform2Map } from '@/store/utils';
 
-const transform2Map = (entities: any[]): Map<number, any> => {
-  const map = new Map();
-  entities.forEach((item: any) => {
-    map.set(item.id, item);
-  });
-  return map;
-};
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
   isMatchFunc: IMatchFunc<T>;
@@ -86,6 +80,7 @@ export class FetchSortableDataListHandler<
       pageSize,
       anchor,
     );
+
     const sortableResult: ISortableModel<T>[] = [];
     data.forEach((element: T) => {
       sortableResult.push(this._transformFunc(element));
@@ -99,6 +94,7 @@ export class FetchSortableDataListHandler<
         added: sortableResult,
         deleted: [],
       });
+    return data;
   }
 
   onDataChanged(payload: NotificationEntityPayload<T>) {

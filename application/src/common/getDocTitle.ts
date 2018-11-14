@@ -3,10 +3,14 @@ import { Group } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
+import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
 
-function getMessagesTitle(id?: number) {
-  if (id) {
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
+function getMessagesTitle(messagePath?: string) {
+  if (messagePath === POST_LIST_TYPE.mentions) {
+    return 'Mentions';
+  }
+  if (messagePath && /^\d+$/.test(messagePath)) {
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, +messagePath);
     return group.displayName;
   }
   return t('Messages');
@@ -28,10 +32,10 @@ const DOC_TITLE = {
 function getDocTitle(pathname: string) {
   const paths = pathname.split('/');
   const category = paths[1].toLocaleLowerCase();
-  const id = paths[2];
+  const subPath = paths[2];
 
   const docTitle = DOC_TITLE[category];
-  return docTitle(id);
+  return docTitle(subPath);
 }
 
 export default getDocTitle;
