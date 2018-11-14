@@ -44,7 +44,6 @@ import StateService from './service/state';
 import SyncService from './service/sync';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
-const splitio = new SplitIO();
 
 const registerConfigs = {
   classes: [
@@ -117,7 +116,6 @@ const registerConfigs = {
         AccountManager.name,
         ServiceManager.name,
         NetworkManager.name,
-        SplitIO.name,
         SyncService.name,
       ],
     },
@@ -127,7 +125,7 @@ const registerConfigs = {
     // TODO register as class instead
     { name: DaoManager.name, value: daoManager },
     { name: SocketManager.name, value: socketManager },
-    { name: SplitIO.name, value: splitio },
+    { name: SplitIO.name, value: new SplitIO() },
     { name: NetworkManager.name, value: networkManager },
   ],
 };
