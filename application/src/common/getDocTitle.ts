@@ -9,7 +9,7 @@ function getMessagesTitle(messagePath?: string) {
   if (messagePath === POST_LIST_TYPE.mentions) {
     return 'Mentions';
   }
-  if (messagePath && /\d+/.test(messagePath)) {
+  if (messagePath && /^\d+$/.test(messagePath)) {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, +messagePath);
     return group.displayName;
   }
