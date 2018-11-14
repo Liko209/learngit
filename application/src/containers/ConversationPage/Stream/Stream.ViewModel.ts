@@ -39,6 +39,31 @@ const transformFunc = (dataModel: Post) => ({
   data: dataModel,
 });
 
+class HistoryHandler {
+  private _groupState?: GroupStateModel;
+  private _newestPostId?: number;
+
+  takeSnapshot(groupState: GroupStateModel, postIds: number[]) {
+    this._groupState = _.cloneDeep(groupState);
+    this._newestPostId = _.last(postIds);
+  }
+
+  getDistanceOfFirstUnread(currentPostIds: number[]) {
+    if (this._groupState) {
+      const unreadCount = this._groupState.unreadCount;
+      const newestPostId = this._newestPostId;
+
+      if (unreadCount && newestPostId) {
+        const postsCountBeforeNewestPost = currentPostIds.filter(
+          id => id < newestPostId,
+        ).length;
+        return unreadCount - postsCountBeforeNewestPost;
+      }
+    }
+    return 0;
+  }
+}
+
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
@@ -46,6 +71,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @observable
   private _historyGroupState?: GroupStateModel;
+
+  @observable
+  private _historyNewestPostId?: number;
 
   @observable
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
@@ -169,6 +197,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   updateHistoryGroupState() {
     this._historyGroupState = _.cloneDeep(this._groupState);
+    this._historyNewestPostId = _.last(this.postIds);
   }
 
   @computed
@@ -234,23 +263,28 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   loadPostUntilFirstUnread = async () => {
-    if (!this._historyGroupState) return;
-
-    const unreadCount = this._historyGroupState.unreadCount;
-    // const readThrough = this._historyGroupState.readThrough;
-
-    if (!unreadCount) return;
-
-    // Find first unread post id
-    if (unreadCount >= this.postIds.length) {
+    const loadCount = this._getDistanceOfFirstUnread(this.postIds) + 1;
+    if (loadCount > 0) {
       this.enableNewMessageSeparatorHandler();
-      await this._loadPosts(
-        FetchDataDirection.UP,
-        unreadCount - this.postIds.length + 1,
-      );
+      await this._loadPosts(FetchDataDirection.UP, loadCount);
     }
 
     return this.firstHistoryUnreadPostId;
+  }
+
+  private _getDistanceOfFirstUnread(currentPostIds: number[]) {
+    if (this._historyGroupState) {
+      const unreadCount = this._historyGroupState.unreadCount;
+      const historyNewestPostId = this._historyNewestPostId;
+
+      if (unreadCount && historyNewestPostId) {
+        const postsBeforeHistoryNewestPostCount = currentPostIds.filter(
+          id => id < historyNewestPostId,
+        ).length;
+        return unreadCount - postsBeforeHistoryNewestPostCount;
+      }
+    }
+    return 0;
   }
 }
 
