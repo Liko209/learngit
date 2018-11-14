@@ -14,6 +14,7 @@ const ItemCardWrapper = styled(JuiCard)``;
 const ItemIcon = styled(MuiIcon)`
   && {
     font-size: ${spacing(5)};
+    margin: ${spacing(0.5)} 0 0;
   }
 `;
 
@@ -27,6 +28,11 @@ const ItemCardHeader = styled.div`
   display: flex;
   ${typography('subheading3')};
   color: ${({ color }) => color || palette('primary', 'main')};
+  word-break: break-all;
+  svg {
+    font-size: ${spacing(5)};
+    margin: ${spacing(0.5)} 0 0;
+  }
 `;
 
 const ItemCardContent = styled(JuiCardContent)`
