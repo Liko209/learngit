@@ -48,6 +48,7 @@ const FILE_COMPS = {
         previewUrl={previewUrl}
         fileName={name}
         Actions={downloadBtn(downloadUrl)}
+        ImageActions={downloadBtn(downloadUrl)}
       />
     );
   },

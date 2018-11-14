@@ -34,15 +34,17 @@ const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
 
   return (
     <Jui.FileExpandItemWrapper>
-      <Jui.FileExpandItem>
-        <Jui.FileIcon size="small" />
-        <NameWithActions>
-          <FileNameBox>
-            <FileName filename={fileName} />
-          </FileNameBox>
-          <div>{Actions}</div>
-        </NameWithActions>
-      </Jui.FileExpandItem>
+      {!expand && (
+        <Jui.FileExpandItem>
+          <Jui.FileIcon size="small" />
+          <NameWithActions>
+            <FileNameBox>
+              <FileName filename={fileName} />
+            </FileNameBox>
+            <div>{Actions}</div>
+          </NameWithActions>
+        </Jui.FileExpandItem>
+      )}
       {children && <Collapse in={expand}>{children}</Collapse>}
     </Jui.FileExpandItemWrapper>
   );

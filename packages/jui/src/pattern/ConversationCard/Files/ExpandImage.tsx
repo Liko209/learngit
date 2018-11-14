@@ -11,6 +11,7 @@ type Props = {
   fileName: string;
   previewUrl: string;
   Actions: JSX.Element;
+  ImageActions?: JSX.Element;
 };
 
 type State = {
@@ -33,7 +34,7 @@ class JuiExpandImage extends React.Component<Props, State> {
   }
 
   render() {
-    const { Actions, fileName, previewUrl } = this.props;
+    const { Actions, fileName, previewUrl, ImageActions } = this.props;
 
     return (
       <JuiFileWithExpand
@@ -45,9 +46,9 @@ class JuiExpandImage extends React.Component<Props, State> {
             <JuiIconButton
               onClick={this.switchExpand}
               variant="plain"
-              tooltipTitle="expand"
+              tooltipTitle="unfold_more"
             >
-              event
+              unfold_more
             </JuiIconButton>
           </>
         }
@@ -55,8 +56,19 @@ class JuiExpandImage extends React.Component<Props, State> {
         <JuiPreviewImage
           url={previewUrl}
           fileName={fileName}
-          ratio={0.5}
-          Actions={Actions}
+          ratio={1}
+          Actions={
+            <>
+              {ImageActions}
+              <JuiIconButton
+                onClick={this.switchExpand}
+                variant="plain"
+                tooltipTitle="unfold_less"
+              >
+                unfold_less
+              </JuiIconButton>
+            </>
+          }
         />
       </JuiFileWithExpand>
     );
