@@ -48,6 +48,9 @@ class ConversationSheet {
       const renderSheets: any[] = [];
       modules.every((module: RegisterOptions) => {
         const { type, breakIn } = module;
+        if (!sheets[type]) {
+          return true;
+        }
         renderSheets.push(
           chain({
             type,
