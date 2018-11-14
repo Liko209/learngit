@@ -73,6 +73,7 @@ describe('PostServiceHandler', () => {
       company_id: 123,
       deactivated: false,
       status: 2,
+      activity_data: {},
     });
     beforeEach(() => {
       Date.now = jest.fn().mockReturnValue(123123);

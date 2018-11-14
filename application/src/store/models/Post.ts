@@ -15,23 +15,37 @@ export default class PostModel extends Base<Post> {
   @observable
   itemIds: number[];
   @observable
+  activityData: { [index: string]: any };
   itemId?: number;
   @observable
   likes?: number[];
-  groupId: number;
   @observable
-  activityData?: any;
+  groupId: number;
+
   constructor(data: Post) {
     super(data);
-    this.createdAt = data.created_at;
-    this.creatorId = data.creator_id;
-    this.text = data.text;
-    this.status = data.status;
-    this.atMentionNonItemIds = data.at_mention_non_item_ids;
-    this.itemIds = data.item_ids;
-    this.likes = data.likes;
-    this.groupId = data.group_id;
-    this.activityData = data.activity_data;
+    const {
+      created_at,
+      creator_id,
+      text,
+      status,
+      at_mention_non_item_ids,
+      item_ids,
+      likes,
+      activity_data,
+      item_id,
+      group_id,
+    } = data;
+    this.createdAt = created_at;
+    this.creatorId = creator_id;
+    this.activityData = activity_data || {};
+    this.text = text;
+    this.itemId = item_id;
+    this.status = status;
+    this.atMentionNonItemIds = at_mention_non_item_ids;
+    this.itemIds = item_ids;
+    this.likes = likes;
+    this.groupId = group_id;
   }
 
   static fromJS(data: Post) {
