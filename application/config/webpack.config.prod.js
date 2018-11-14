@@ -22,6 +22,7 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const { GenerateSW } = require("workbox-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const runtimeCaching = require("./runtimeCaching");
 const paths = require("./paths");
 const getClientEnvironment = require("./env");
 const excludeNodeModulesExcept = require("./excludeNodeModulesExcept");
@@ -420,40 +421,7 @@ module.exports = {
       ],
       globDirectory: paths.appPublic,
       globPatterns: ["**/*"],
-      runtimeCaching: [
-        {
-          urlPattern: new RegExp("https://glipdevasia-dev.s3.amazonaws.com"),
-          handler: "staleWhileRevalidate"
-        },
-        {
-          urlPattern: new RegExp(
-            "https://glipasialabnet-xmnup.s3.amazonaws.com"
-          ),
-          handler: "staleWhileRevalidate"
-        },
-        {
-          urlPattern: new RegExp("https://d2rbro28ib85bu.cloudfront.net"),
-          handler: "staleWhileRevalidate"
-        },
-        {
-          urlPattern: new RegExp(
-            "https://aws13-g04-uds02.asialab.glip.net:11907"
-          ),
-          handler: "staleWhileRevalidate"
-        },
-        {
-          urlPattern: new RegExp("https://cache.glip.com"),
-          handler: "staleWhileRevalidate"
-        },
-        {
-          urlPattern: new RegExp("https://xmnup.asialab.glip.net:31337"),
-          handler: "staleWhileRevalidate"
-        },
-        {
-          urlPattern: new RegExp("https://fonts.gstatic.com/s/materialicons"),
-          handler: "staleWhileRevalidate"
-        }
-      ]
+      runtimeCaching
     }),
     ...[
       argv.indexOf("--analyze") !== -1 ? new BundleAnalyzerPlugin() : () => {}
