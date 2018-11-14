@@ -82,7 +82,7 @@ class SplitIO {
 
     const companyId = this._getCurrentCompanyId();
     if (!companyId) {
-      mainLogger.info(`${LOG_TAG} no user id`);
+      mainLogger.info(`${LOG_TAG} no company id`);
       return;
     }
 

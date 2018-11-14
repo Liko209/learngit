@@ -9,21 +9,14 @@ import { SplitIOClient } from '../splitioClient';
 import notificationCenter from '../../../service/notificationCenter';
 import { daoManager, AccountDao } from '../../../dao';
 import { SERVICE } from '../../../service/eventKey';
+import { SplitIOSdkClient } from '../__mocks__/splitioSdkClient';
 
 jest.mock('../../../dao');
 
+const sdkClient = new SplitIOSdkClient();
 const mockedFactorySplitClient = jest.fn(
   (settings: SplitIO.IBrowserSettings) => {
-    return {
-      ...settings,
-      _subs: {},
-      Event: {
-        SDK_READY: 'SDK_READY',
-        SDK_UPDATE: 'SDK_UPDATE',
-      },
-      on: (event: string, callback: Function) => {},
-      destroy: jest.fn(),
-    };
+    return sdkClient;
   },
 );
 SplitIOClient.prototype = {
@@ -53,6 +46,9 @@ describe('SplitIO', async () => {
     jest.spyOn(accountDao, 'get').mockImplementation((key: string) => {
       return mock[key];
     });
+  });
+
+  afterEach(() => {
     notificationCenter.emitKVChange(SERVICE.LOGOUT);
     mockedFactorySplitClient.mockClear();
   });
@@ -64,6 +60,8 @@ describe('SplitIO', async () => {
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(splitio.hasCreatedClient(testUserId)).toBeTruthy();
+
+      sdkClient.emit(sdkClient.Event.SDK_READY, {});
     });
 
     it('login - user id not ready', () => {
