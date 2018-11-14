@@ -419,7 +419,6 @@ module.exports = {
         new RegExp("/[^/]+\\.[^/]+$")
       ],
       globDirectory: paths.appPublic,
-      globPatterns: ["theme/**/*.json", "locales/**/*.json", "favicon.ico"],
       runtimeCaching: [
         {
           urlPattern: new RegExp("https://glipdevasia-dev.s3.amazonaws.com"),
