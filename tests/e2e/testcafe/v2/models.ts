@@ -44,6 +44,7 @@ export interface IStep {
   startTime?: number;
   endTime?: number;
   screenshotPath?: string;
+  attachments?: string[];
 }
 
 
