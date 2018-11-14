@@ -7,7 +7,8 @@ import { TypeDictionary } from 'sdk/utils';
 import { Task } from './Task';
 
 export default {
-  priority: 0,
+  priority: 1,
   component: Task,
   type: TypeDictionary.TYPE_ID_TASK,
+  breakIn: true,
 };
