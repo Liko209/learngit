@@ -27,18 +27,17 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
 
     let teamId1, teamId2, conversation1, conversation2;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
-        teamId1 = (await user.sdk.platform.createGroup({
-          type: 'Team',
-          name: `1 ${uuid()}`,
-          members: [user.rcId, users[5].rcId]
-        })).data.id;
-        teamId2 = (await user.sdk.platform.createGroup({
-          type: 'Team',
-          name: `2 ${uuid()}`,
-          members: [user.rcId, users[5].rcId, users[6].rcId]
-        })).data.id;
-      },
-    );
+      teamId1 = (await user.sdk.platform.createGroup({
+        type: 'Team',
+        name: `1 ${uuid()}`,
+        members: [user.rcId, users[5].rcId]
+      })).data.id;
+      teamId2 = (await user.sdk.platform.createGroup({
+        type: 'Team',
+        name: `2 ${uuid()}`,
+        members: [user.rcId, users[5].rcId, users[6].rcId]
+      })).data.id;
+    });
 
     await h(t).withLog('Both conversation should not be hidden before login', async () => {
       await user.sdk.glip.updateProfile(user.rcId, {
