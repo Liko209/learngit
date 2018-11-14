@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { observable, computed, action } from 'mobx';
+import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -36,12 +36,6 @@ class StreamViewComponent extends Component<Props> {
   @observable
   private _firstHistoryUnreadPostViewed = false;
 
-  @computed
-  private get _firstHistoryUnreadInPage() {
-    if (!this.props.firstHistoryUnreadPostId) return false;
-    return this.props.postIds.includes(this.props.firstHistoryUnreadPostId);
-  }
-
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
@@ -60,8 +54,6 @@ class StreamViewComponent extends Component<Props> {
     if (prevProps.groupId !== this.props.groupId) {
       await this.props.loadInitialPosts();
       this.props.scrollToRow(-1);
-    }
-    if (prevProps.groupId !== this.props.groupId) {
       this._jumpToFirstUnreadLoading = false;
       this._firstHistoryUnreadPostViewed = false;
       this._firstUnreadCardRef = null;
@@ -139,13 +131,14 @@ class StreamViewComponent extends Component<Props> {
       hasHistoryUnread,
       historyUnreadCount,
       historyGroupState,
+      firstHistoryUnreadInPage,
     } = this.props;
 
     const shouldHaveJumpButton =
       hasHistoryUnread &&
       historyGroupState &&
       historyUnreadCount > 0 &&
-      (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostViewed);
+      (!firstHistoryUnreadInPage || !this._firstHistoryUnreadPostViewed);
 
     const countText =
       historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
@@ -197,7 +190,6 @@ class StreamViewComponent extends Component<Props> {
 
     clearTimeout(this._timeout);
     this._timeout = null;
-
     this._jumpToFirstUnreadLoading = false;
     if (!firstUnreadPostId) return;
 

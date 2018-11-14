@@ -1,5 +1,5 @@
 {
-  "on_push": {
+  "on_merge": {
     "fixtures": ["./fixtures/**/*.ts"],
     "include_tags": ["P1"],
     "exclude_tags": ["demo"],
