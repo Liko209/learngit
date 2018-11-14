@@ -14,11 +14,9 @@ import handleData, {
   isNeedToUpdateMostRecent4Group,
   getUniqMostRecentPostsByGroup,
   handleHiddenGroupsChanged,
-  handleGroupNewIncomeState,
 } from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
-import { DEFAULT_CONVERSATION_LIST_LIMITS } from '../../account/constants';
 import { transform } from '../../utils';
 import { EVENT_TYPES } from '../..';
 
@@ -472,51 +470,5 @@ describe('handleHiddenGroupsChanged', () => {
   it('handleHiddenGroupsChanged, less hidden', async () => {
     await handleHiddenGroupsChanged([1, 2], []);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(0);
-  });
-});
-
-describe('handleGroupNewIncomeState()', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  const post = {
-    id: 1,
-    modified_at: 100,
-    created_at: 100,
-    is_team: true,
-    group_id: 2,
-  };
-  const map = new Map();
-  map.set(1, post);
-  it('should not emit notification, type is not update', async () => {
-    await handleGroupNewIncomeState({
-      type: EVENT_TYPES.RELOAD,
-      body: {
-        entities: map,
-      },
-    });
-    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(0);
-  });
-  it('should not emit notification, not entities', async () => {
-    await handleGroupNewIncomeState({
-      type: EVENT_TYPES.UPDATE,
-      body: {},
-    });
-    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(0);
-  });
-  it('should emit notification', async () => {
-    daoManager.getDao(GroupDao).queryGroupsByIds.mockResolvedValueOnce([
-      {
-        id: 2,
-      },
-    ]);
-    await handleGroupNewIncomeState({
-      type: EVENT_TYPES.UPDATE,
-      body: {
-        entities: map,
-      },
-    });
-    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
   });
 });

@@ -10,14 +10,18 @@ import {
   ENTITY,
   ProfileService,
   StateService,
+  GroupService,
 } from 'sdk/service';
 
 const profileService = new ProfileService();
 const stateService = new StateService();
+const groupService = new GroupService();
 (ProfileService as any).getInstance = () => profileService;
 (StateService as any).getInstance = () => stateService;
+(GroupService as any).getInstance = () => groupService;
 jest.mock('sdk/service/profile');
 jest.mock('sdk/service/state');
+jest.mock('sdk/service/group');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -290,6 +294,62 @@ describe('SectionGroupHandler', () => {
       });
       await sectionGroupHandler.removeOverLimitGroupByChangingCurrentGroupId();
       expect(directMessageHandler.removeByIds).not.toHaveBeenCalled();
+    });
+  });
+  describe('handleIncomesGroupState', async () => {
+    function setup(ids: number[]) {
+      Object.assign(SectionGroupHandler, { _instance: undefined });
+      const handler = SectionGroupHandler.getInstance();
+      Object.assign(handler, {
+        _idSet: new Set(ids),
+      });
+
+      return handler;
+    }
+    it('should do nothing because idset is empty', async () => {
+      const handler = setup([]);
+      expect(handler.getAllGroupIds().length).toBe(0);
+    });
+    it('should do nothing because not body', async () => {
+      const handler = setup([1, 2]);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [], []);
+      expect(handler.getAllGroupIds().length).toBe(2);
+    });
+    it('should do nothing because not unread count', async () => {
+      const handler = setup([1, 2]);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [{ id: 1 }], []);
+      expect(handler.getAllGroupIds().length).toBe(2);
+    });
+    it('should do nothing because this group has already in idset', async () => {
+      const handler = setup([1, 2]);
+      notificationCenter.emitEntityUpdate(
+        ENTITY.GROUP_STATE,
+        [{ id: 1, unread_count: 1 }],
+        [],
+      );
+      expect(handler.getAllGroupIds().length).toBe(2);
+    });
+    it('should add id into idset', async (done: any) => {
+      const handler = setup([1, 2]);
+      (groupService.getGroupsByIds as jest.Mock).mockResolvedValue([
+        {
+          id: 3,
+          company_id: 1,
+          set_abbreviation: '',
+          email_friendly_abbreviation: '',
+          most_recent_content_modified_at: 1,
+        },
+      ]);
+      notificationCenter.emitEntityUpdate(
+        ENTITY.GROUP_STATE,
+        [{ id: 3, unread_count: 1 }],
+        [],
+      );
+      setTimeout(() => {
+        console.log('------>', handler.getAllGroupIds());
+        expect(handler.getAllGroupIds().length).toBe(3);
+        done();
+      });
     });
   });
 });

@@ -191,6 +191,43 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         });
       },
     );
+    this.subscribeNotification(
+      ENTITY.GROUP_STATE,
+      (payload: NotificationEntityPayload<GroupState>) => {
+        this._handleIncomesGroupState(payload);
+      },
+    );
+  }
+
+  private async _handleIncomesGroupState(
+    payload: NotificationEntityPayload<GroupState>,
+  ) {
+    if (
+      payload.type !== EVENT_TYPES.UPDATE ||
+      !payload.body.entities ||
+      this._idSet.size === 0
+    ) {
+      return;
+    }
+    const unreadIds: number[] = [];
+    payload.body.entities.forEach((state: GroupState) => {
+      const hasUnread =
+        state.marked_as_unread ||
+        state.unread_count ||
+        state.unread_mentions_count;
+      if (hasUnread) {
+        unreadIds.push(state.id);
+      }
+    });
+
+    const diff = _.difference(unreadIds, [...this._idSet]);
+    if (diff.length) {
+      const groupService = GroupService.getInstance<service.GroupService>();
+      const result = await groupService.getGroupsByIds(diff);
+      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
+      this._handlersMap[SECTION_TYPE.TEAM].upsert(result);
+      this._updateIdSet(EVENT_TYPES.UPDATE, diff);
+    }
   }
 
   private _updateUrl(type: EVENT_TYPES, ids: number[]) {
