@@ -18,6 +18,7 @@ export { default as notificationCenter } from './notificationCenter';
 export { default as uploadManager } from './UploadManager';
 export { default as serviceManager } from './serviceManager';
 export { default as socketManager } from './SocketManager';
+export { default as splitIO } from './splitio';
 
 export * from './eventKey';
 export * from './constants';
