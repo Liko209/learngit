@@ -5,6 +5,7 @@
  */
 
 import { SplitIOClient } from './splitioClient';
+import { Api } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
 import { daoManager, AccountDao } from '../../dao';
@@ -102,9 +103,7 @@ class SplitIO {
   }
 
   private _getAuthKey(): string {
-    // TO-DO: should have a global config to manage all third-party auth keys.
-    // return '29hgk2inao6t92k22dubohl2jtf2fdtgsmpn';
-    return 'aiers1fdmskm7paalb3ubhhuumaauv21rnti';
+    return Api.httpConfig.splitio.clientSecret;
   }
 
   private _createClient(identity: string, attributes: any): SplitIOClient {

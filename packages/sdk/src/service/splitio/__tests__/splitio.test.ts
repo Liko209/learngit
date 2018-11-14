@@ -26,6 +26,9 @@ SplitIOClient.prototype = {
 
 describe('SplitIO', async () => {
   const splitio = new SplitIO();
+  jest.spyOn(splitio, '_getAuthKey').mockImplementation(() => {
+    return 'aiers1fdmskm7paalb3ubhhuumaauv21rnti';
+  });
 
   let accountDao: AccountDao;
   const testUserId = '111';
