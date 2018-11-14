@@ -70,10 +70,11 @@ export function setupCase(accountType: string) {
 
 export function teardownCase() {
   return async (t: TestController) => {
+    const consoleLog = await t.getBrowserConsoleMessages()
     h(t).allureHelper.writeReport();
     await h(t).dataHelper.teardown();
     if (ENABLE_REMOTE_DASHBOARD) {
-      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId());
+      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLog);
     }
   }
 }

@@ -39,6 +39,8 @@ const ENV_OPTS = {
 ENV_OPTS.RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
 ENV_OPTS.RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
 
+const TMPFILE_PATH = process.env.TMPFILE_PATH || '/tmp';
+
 const configLoader = new ConfigLoader(
   (process.env.BRANCH || '').toLocaleLowerCase(),
   (process.env.ACTION || '').toLocaleLowerCase(),
@@ -86,6 +88,7 @@ const RUN_NAME = process.env.RUN_NAME || uuid();
 
 export {
   APP_ROOT,
+  TMPFILE_PATH,
   CONFIGS_ROOT,
   DEBUG_MODE,
   SITE_ENV,

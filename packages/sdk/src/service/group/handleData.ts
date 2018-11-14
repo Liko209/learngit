@@ -26,8 +26,7 @@ import {
 } from 'sdk/models';
 import StateService from '../state';
 import { mainLogger } from 'foundation';
-import AccountService from '../account';
-import { GROUP_QUERY_TYPE, EVENT_TYPES } from '../constants';
+import { EVENT_TYPES } from '../constants';
 
 async function getExistedAndTransformDataFromPartial(
   groups: Partial<Raw<Group>>[],
@@ -138,7 +137,6 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
 }
 
 async function doNotification(deactivatedData: Group[], groups: Group[]) {
-  const accountService: AccountService = AccountService.getInstance();
   const profileService: ProfileService = ProfileService.getInstance();
   const profile = await profileService.getProfile();
   const hiddenGroupIds = profile ? extractHiddenGroupIds(profile) : [];
@@ -149,13 +147,6 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
 
   const favIds = (profile && profile.favorite_group_ids) || [];
-
-  /**
-   * favorite groups/teams: put/delete
-   * normal groups: put/delete
-   * normal teams: put/delete
-   */
-
   const archivedGroups = normalData.filter((item: Group) => item.is_archived);
   const deactivatedGroups = deactivatedData.concat(archivedGroups);
   const deactivatedGroupIds = _.map(deactivatedGroups, (group: Group) => {
@@ -164,59 +155,24 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   deactivatedGroupIds.length &&
     notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
 
-  // let deactivatedTeams = deactivatedData.filter(
-  //   (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
-  // );
-  // deactivatedTeams = deactivatedTeams.concat(
-  //   archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1),
-  // );
-
-  // let deactivatedFavGroups = deactivatedData.filter(
-  //   (item: Group) => favIds.indexOf(item.id) !== -1,
-  // );
-  // deactivatedFavGroups = deactivatedFavGroups.concat(
-  //   archivedTeams.filter((item: Group) => favIds.indexOf(item.id) !== -1),
-  // );
-
-  // const deactivatedGroups = deactivatedData.filter(
-  //   (item: Group) => !item.is_team && favIds.indexOf(item.id) === -1,
-  // );
-
-  // if (deactivatedFavGroups.length > 0) {
-  //   notificationCenter.emitEntityDelete(
-  //     ENTITY.FAVORITE_GROUPS,
-  //     deactivatedFavGroups,
-  //   );
-  // }
-
-  // if (deactivatedTeams.length > 0) {
-  //   notificationCenter.emitEntityDelete(ENTITY.TEAM_GROUPS, deactivatedTeams);
-  // }
-
-  // if (deactivatedGroups.length > 0) {
-  //   notificationCenter.emitEntityDelete(
-  //     ENTITY.PEOPLE_GROUPS,
-  //     deactivatedGroups,
-  //   );
-  // }
-
-  const limits = accountService.getConversationListLimits();
+  const limit = await profileService.getMaxLeftRailGroup();
 
   let addedTeams = normalData.filter(
     (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
   );
-  addedTeams = await filterGroups(addedTeams, limits[GROUP_QUERY_TYPE.TEAM]);
+  addedTeams = await filterGroups(addedTeams, limit);
 
   let addedGroups = normalData.filter(
     (item: Group) => !item.is_team && favIds.indexOf(item.id) === -1,
   );
-  addedGroups = await filterGroups(addedGroups, limits[GROUP_QUERY_TYPE.GROUP]);
+  addedGroups = await filterGroups(addedGroups, limit);
 
   const addFavorites = normalData.filter(
     (item: Group) => favIds.indexOf(item.id) !== -1,
   );
   const result = addedTeams.concat(addedGroups).concat(addFavorites);
-  result.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, result);
+  result.length &&
+    notificationCenter.emitEntityUpdate(ENTITY.GROUP, result, result);
   // addedTeams.length > 0 &&
   //   notificationCenter.emitEntityUpdate(ENTITY.TEAM_GROUPS, addedTeams);
   // addedGroups.length > 0 &&
@@ -481,7 +437,16 @@ async function filterGroups(groups: Group[], limit: number) {
       (group: Group, i) => getGroupTime(group) >= oldestUnreadGroupTime,
     );
     if (filteredGroups.length > limit) {
-      return filteredGroups;
+      const result = [];
+      for (let i = 0; i < limit; i++) {
+        result.push(filteredGroups[i]);
+      }
+      for (let i = limit; i < filteredGroups.length; i++) {
+        if (unreadGroupIds.indexOf(filteredGroups[i].id) !== -1) {
+          result.push(filteredGroups[i]);
+        }
+      }
+      return result;
     }
   }
 

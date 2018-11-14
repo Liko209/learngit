@@ -6,12 +6,12 @@ import { h } from '../../v2/helpers';
 import { SITE_URL } from '../../config';
 
 declare var test: TestFn;
-fixture('CloseConversation')
+fixture.skip('CloseConversation')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
 test(formalName('Close current conversation directly, and navigate to blank page (without UMI)',
-    ['JPT-135', 'JPT-130', 'P1', 'ConversationList']),
+  ['JPT-135', 'JPT-130', 'P1', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -121,19 +121,19 @@ test(formalName('Close current conversation directly, and navigate to blank page
     }
 
     await h(t).withLog(`When I click more Icon of a favorite conversation with UMI`, async () => {
-      await favChat.openMoreMenu(); 
+      await favChat.openMoreMenu();
     });
 
     await h(t).withLog('Then the close button should not be show', async () => {
-        await t.expect(app.homePage.messagePanel.moreMenu.close.exists).notOk();
-        await t.pressKey('esc');
-      },
+      await t.expect(app.homePage.messagePanel.moreMenu.close.exists).notOk();
+      await t.pressKey('esc');
+    },
     );
   },
 );
 
 test(formalName('Close other conversation in confirm alert,and still focus on user veiwing conversation(without UMI)',
-    ['JPT-137', 'JPT-130', 'P1', 'ConversationList']),
+  ['JPT-137', 'JPT-130', 'P1', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -227,7 +227,7 @@ const checkboxLabel = "Don't ask me again";
 const button = 'Close Conversation';
 
 test(formalName('Close current conversation in confirm alert(without UMI)',
-    ['JPT-134', 'JPT-130', 'P2', 'ConversationList']),
+  ['JPT-134', 'JPT-130', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -300,7 +300,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
       await t.expect(dialog.getSelector('p').withText(content)).ok();
       await t
         .expect(dialog.dontAskAgainCheckbox.parent('label')
-        .find('span').withText(checkboxLabel).exists)
+          .find('span').withText(checkboxLabel).exists)
         .ok();
       await t.expect(dialog.confirmButton.find('span').withText(button).exists).ok();
     });
@@ -319,9 +319,9 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
     );
 
     await h(t).withLog("When I click conversation B's close buttom", async () => {
-        await team.openMoreMenu();
-        await app.homePage.messagePanel.moreMenu.close.enter();
-      },
+      await team.openMoreMenu();
+      await app.homePage.messagePanel.moreMenu.close.enter();
+    },
     );
 
     await h(t).withLog('Then should be show the confirm dialog again',
@@ -330,7 +330,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
         await t.expect(dialog.getSelector('p').withText(content)).ok();
         await t
           .expect(dialog.dontAskAgainCheckbox.parent('label')
-          .find('span').withText(checkboxLabel).exists)
+            .find('span').withText(checkboxLabel).exists)
           .ok();
         await t.expect(dialog.confirmButton.find('span').withText(button).exists).ok();
       },
@@ -339,7 +339,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
 );
 
 test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation in confirm alert(without UMI)`,
-    ['JPT-134', 'JPT-130', 'P2', 'ConversationList']),
+  ['JPT-134', 'JPT-130', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;

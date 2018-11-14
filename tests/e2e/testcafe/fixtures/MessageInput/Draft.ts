@@ -11,7 +11,7 @@ import { v4 as uuid } from 'uuid';
 import { SITE_URL } from '../../config';
 import { setupCase, teardownCase } from '../../init';
 
-fixture('send messages draft')
+fixture.skip('send messages draft')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
@@ -49,7 +49,7 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
     });
 
     const msg = uuid(); // Have a trap, no spaces
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -67,7 +67,7 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
       await conversation1.enter();
       const inputField = app.homePage.messagePanel.conversationPage.messageInputArea;
       await t.typeText(inputField, msg)
-    },true);
+    }, true);
 
     await h(t).withLog('When I enter conversation B', async () => {
       await conversation2.enter();

@@ -20,10 +20,14 @@ export type NotificationEntityUpdateBody<T> = NotificationEntityBody<T> & {
   partials?: Map<number, Partial<Raw<T>>>;
 };
 
+type NotificationEntityReplaceBody<T> = NotificationEntityBody<T> & {
+  isReplaceAll: boolean;
+};
+
 // fixed type and body for type binding
 export type NotificationEntityReplacePayload<T> = {
   type: EVENT_TYPES.REPLACE;
-  body: NotificationEntityBody<T>;
+  body: NotificationEntityReplaceBody<T>;
 };
 
 export type NotificationEntityDeletePayload = {
@@ -101,12 +105,17 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
-  emitEntityReplace<T>(key: string, payload: Map<number, T>): void {
+  emitEntityReplace<T>(
+    key: string,
+    payload: Map<number, T>,
+    isReplaceAll?: boolean,
+  ): void {
     const idsArr = Array.from(payload.keys());
 
-    const notificationBody: NotificationEntityBody<T> = {
+    const notificationBody: NotificationEntityReplaceBody<T> = {
       ids: idsArr,
       entities: payload,
+      isReplaceAll: isReplaceAll ? isReplaceAll : false,
     };
 
     const notification: NotificationEntityReplacePayload<T> = {

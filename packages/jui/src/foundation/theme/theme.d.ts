@@ -94,6 +94,7 @@ type Theme = {
     reponsePanel: number;
     reponseResizer: number;
     loading: number;
+    dragging: number;
   };
   size: {
     width: number;
