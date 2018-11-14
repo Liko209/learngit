@@ -128,17 +128,10 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private get _jumpToFirstUnreadButton() {
-    const {
-      t,
-      hasHistoryUnread,
-      historyUnreadCount,
-      historyGroupState,
-    } = this.props;
+    const { t, hasHistoryUnread, historyUnreadCount } = this.props;
 
     const shouldHaveJumpButton =
       hasHistoryUnread &&
-      historyGroupState &&
-      historyUnreadCount > 0 &&
       (!this._firstHistoryUnreadInPage || !this._firstHistoryUnreadPostViewed);
 
     const countText =

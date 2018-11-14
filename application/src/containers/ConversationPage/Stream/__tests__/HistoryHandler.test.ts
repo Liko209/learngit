@@ -78,17 +78,19 @@ describe('HistoryHandler', () => {
     });
   });
 
-  describe('get unreadCount()', () => {
+  describe('get unreadCount() / get hasUnread()', () => {
     it('should return unreadCount', () => {
       const handler = setup({
         groupState: { unreadCount: 1 },
       });
       expect(handler.unreadCount).toBe(1);
+      expect(handler.hasUnread).toBeTruthy();
     });
 
     it('should return 0 when no groupState', () => {
       const handler = new HistoryHandler();
       expect(handler.unreadCount).toBe(0);
+      expect(handler.hasUnread).toBeFalsy();
     });
 
     it('should return 0 when no groupState.unreadCount is undefined', () => {

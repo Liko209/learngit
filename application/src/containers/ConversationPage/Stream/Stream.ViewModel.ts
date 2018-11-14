@@ -56,12 +56,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get hasHistoryUnread() {
-    return this._newMessageSeparatorHandler.hasUnread;
-  }
-
-  @computed
-  get historyGroupState() {
-    return this._historyHandler.groupState;
+    return this._historyHandler.hasUnread;
   }
 
   @computed

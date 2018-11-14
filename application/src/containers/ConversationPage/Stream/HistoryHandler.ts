@@ -34,6 +34,11 @@ class HistoryHandler {
     return count;
   }
 
+  @computed
+  get hasUnread() {
+    return this.unreadCount > 0;
+  }
+
   getPostsLteNewest(currentPostIds: number[]) {
     const newestPostId = this.newestPostId;
     if (!newestPostId) return [];
