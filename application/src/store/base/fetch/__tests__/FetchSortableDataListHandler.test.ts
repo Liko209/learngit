@@ -129,15 +129,64 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
     changeMap.set(data.id, data);
     const ids = [data.id];
 
-    const notificationBody = {
-      ids,
-      entities: changeMap,
-    };
+    switch (type) {
+      case EVENT_TYPES.UPDATE:
+        {
+          const notificationBody = {
+            ids,
+            entities: changeMap,
+          };
+          const payload = {
+            type,
+            body: notificationBody,
+          };
+          fetchSortableDataHandler.onDataChanged(payload);
+        }
+        break;
 
-    fetchSortableDataHandler.onDataChanged({
-      type,
-      body: notificationBody,
-    });
+      case EVENT_TYPES.DELETE:
+        {
+          const notificationBody = {
+            ids,
+          };
+          const payload = {
+            type,
+            body: notificationBody,
+          };
+          fetchSortableDataHandler.onDataChanged(payload);
+        }
+        break;
+      case EVENT_TYPES.RELOAD:
+        {
+          const payload = {
+            type,
+          };
+          fetchSortableDataHandler.onDataChanged(payload);
+        }
+        break;
+      case EVENT_TYPES.RESET:
+        {
+          const payload = {
+            type,
+          };
+          fetchSortableDataHandler.onDataChanged(payload);
+        }
+        break;
+      case EVENT_TYPES.REPLACE:
+        {
+          const notificationBody = {
+            ids,
+            entities: changeMap,
+            isReplaceAll: false,
+          };
+          const payload = {
+            type,
+            body: notificationBody,
+          };
+          fetchSortableDataHandler.onDataChanged(payload);
+        }
+        break;
+    }
   }
 
   beforeEach(async () => {
