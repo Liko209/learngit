@@ -22,7 +22,7 @@ SplitIOClient.prototype = {
   factorySplitClient: mockedFactorySplitClient,
 };
 
-describe('SplitIO Client', async () => {
+describe('SplitIO client', async () => {
   const splictIO = new SplitIOClient(
     'auth',
     'test_id',
@@ -36,7 +36,7 @@ describe('SplitIO Client', async () => {
     mockedUpdatedHandler.mockClear();
   });
 
-  it('instance ', () => {
+  it('instance', () => {
     expect(splictIO).toBeInstanceOf(SplitIOClient);
   });
 

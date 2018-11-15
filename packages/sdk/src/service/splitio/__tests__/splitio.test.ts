@@ -58,7 +58,7 @@ describe('SplitIO', async () => {
     mockedFactorySplitClient.mockClear();
   });
 
-  describe('Login & Logout', async () => {
+  describe('login & logout', async () => {
     it('login - user info ready', () => {
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();
       notificationCenter.emitKVChange(SERVICE.LOGIN);
