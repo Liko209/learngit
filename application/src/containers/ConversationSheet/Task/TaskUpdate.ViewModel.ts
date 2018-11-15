@@ -33,6 +33,11 @@ class TaskUpdateViewModel extends StoreViewModel<TaskUpdateProps>
   get task() {
     return getEntity<Item, TaskItem>(ENTITY_NAME.ITEM, this._id);
   }
+
+  @computed
+  get activityData() {
+    return this.post.activityData || {};
+  }
 }
 
 export { TaskUpdateViewModel };

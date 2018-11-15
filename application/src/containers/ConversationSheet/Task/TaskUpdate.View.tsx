@@ -22,8 +22,8 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
     ))
 
   private _getTitleText(text: string) {
-    const { post, task } = this.props;
-    const { value, key } = post.activityData;
+    const { task, activityData } = this.props;
+    const { value, key } = activityData;
     const { assignedToIds } = task;
 
     switch (key) {
@@ -38,9 +38,9 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
   }
 
   render() {
-    const { task, post } = this.props;
+    const { task, activityData } = this.props;
     const { color, text, complete } = task;
-    const { value, key, old_value } = post.activityData;
+    const { value, key, old_value } = activityData;
 
     return (
       <TaskUpdateViewCard

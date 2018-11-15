@@ -33,6 +33,11 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   get event() {
     return getEntity<Item, EventItem>(ENTITY_NAME.ITEM, this._id);
   }
+
+  @computed
+  get activityData() {
+    return this.post.activityData || {};
+  }
 }
 
 export { EventUpdateViewModel };

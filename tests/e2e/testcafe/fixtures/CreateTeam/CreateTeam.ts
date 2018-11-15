@@ -97,7 +97,7 @@ test(
   },
 );
 
-test.skip(formalName('Check the new team can be created successfully', ['P1', 'JPT-127']),
+test(formalName('Check the new team can be created successfully', ['P1', 'JPT-127']),
   async t => {
     const app = new AppRoot(t);
     const user = h(t).rcData.mainCompany.users[0];

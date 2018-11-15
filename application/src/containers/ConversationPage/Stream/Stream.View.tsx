@@ -7,10 +7,10 @@ import React, { Component } from 'react';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
+import { ConversationPost } from '@/containers/ConversationPost';
 import VisibilitySensor from 'react-visibility-sensor';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiLozengeButton } from 'jui/components/Buttons';
-import { ConversationCard } from '@/containers/ConversationCard';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { toTitleCase } from '@/utils/string';
 import { scrollToComponent } from './helper';
@@ -75,7 +75,7 @@ class StreamViewComponent extends Component<Props> {
           offset={VISIBILITY_SENSOR_OFFSET}
           onChange={this._handleFirstUnreadPostVisibilityChange}
         >
-          <ConversationCard
+          <ConversationPost
             ref={this._setFirstUnreadCardRef}
             id={streamItem.value}
             key={`VisibilitySensor${streamItem.value}`}
@@ -84,7 +84,7 @@ class StreamViewComponent extends Component<Props> {
       );
     }
 
-    return <ConversationCard id={streamItem.value} key={streamItem.value} />;
+    return <ConversationPost id={streamItem.value} key={streamItem.value} />;
   }
 
   private _renderNewMessagesDivider(streamItem: StreamItem) {

@@ -4,7 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventItem } from '@/store/models/Items';
-import Post from '@/store/models/Post';
+
+type ActivityData = {
+  [index: string]: any;
+};
 
 type EventProps = {
   ids: number[];
@@ -19,7 +22,7 @@ type EventViewProps = {
 };
 
 type EventUpdateViewProps = {
-  post: Post;
+  activityData: ActivityData;
   event: EventItem;
 };
 

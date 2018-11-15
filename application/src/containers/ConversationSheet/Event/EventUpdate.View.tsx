@@ -55,9 +55,9 @@ class EventUpdateView extends React.Component<EventUpdateViewProps> {
   private _getLocation = (value: any) => value.location;
 
   render() {
-    const { event, post } = this.props;
+    const { event, activityData } = this.props;
     const { color, text } = event;
-    const { old_values, new_values } = post.activityData;
+    const { old_values, new_values } = activityData;
 
     const oldTime = this._getDurationTime(old_values);
     const oldTimeText = this._getTimeText(old_values);

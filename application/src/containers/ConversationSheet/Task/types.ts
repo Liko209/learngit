@@ -4,7 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { TaskItem, FileType, ExtendFileItem } from '@/store/models/Items';
-import Post from '@/store/models/Post';
+
+type ActivityData = {
+  [index: string]: any;
+};
 
 type Props = {
   ids: number[];
@@ -20,7 +23,7 @@ type ViewProps = {
 };
 
 type TaskUpdateViewProps = {
-  post: Post;
+  activityData: ActivityData;
   task: TaskItem;
 };
 

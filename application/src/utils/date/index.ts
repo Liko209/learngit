@@ -1,11 +1,10 @@
 import moment from 'moment';
-import i18next, { t } from 'i18next';
+import { t } from 'i18next';
 
 function getDateMessage(
   timestamp: any,
   format: string = 'ddd, MMM Do',
 ): string {
-  moment.locale(i18next.language);
   const m = moment(timestamp)
     .hour(0)
     .minute(0)
@@ -33,3 +32,19 @@ function getDateMessage(
 }
 
 export { getDateMessage };
+
+// 7 days inside
+// moment().format("ddd, MMM Do");
+// "Tue, Nov 13th"
+
+// 7 days inside + time
+// moment().format("ddd, MMM Do, h:mm A");
+// "Tue, Nov 13th, 8:30 AM"
+
+// 7 days outside
+// moment().format("MMM Do, YYYY");
+// "Nov 13th, 2018"
+
+// 7 days outside + time
+// moment().format('MMM Do YYYY, h:mm A');
+// "Nov 13th 2018, 11:33 AM"
