@@ -9,7 +9,7 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { JuiLeftNav, JuiLeftNavProps } from 'jui/pattern/LeftNav';
 import { Umi } from '../Umi';
 import { LeftNavViewProps } from './types';
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -23,9 +23,17 @@ type LeftNavProps = {
 
 @observer
 class LeftNav extends Component<LeftNavProps> {
-  constructor(props: LeftNavProps) {
-    super(props);
-    this.onRouteChange = this.onRouteChange.bind(this);
+  @observable
+  selectedPath: string = window.location.pathname.split('/')[1];
+
+  componentDidMount() {
+    const { history } = this.props;
+    history.listen(() => {
+      const newSelectedPath = window.location.pathname.split('/')[1];
+      if (this.selectedPath !== newSelectedPath) {
+        this.selectedPath = newSelectedPath;
+      }
+    });
   }
 
   @computed
@@ -92,21 +100,21 @@ class LeftNav extends Component<LeftNavProps> {
     ];
   }
 
-  onRouteChange(url: string) {
+  onRouteChange = (url: string) => {
     const { history, location } = this.props;
     if (url === location.pathname) return;
     history.push(url);
   }
 
   render() {
-    const { isLeftNavOpen, history } = this.props;
+    const { isLeftNavOpen } = this.props;
 
     return (
       <JuiLeftNav
         icons={this.icons}
         expand={isLeftNavOpen}
         onRouteChange={this.onRouteChange}
-        history={history}
+        selectedPath={this.selectedPath}
       />
     );
   }

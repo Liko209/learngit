@@ -26,7 +26,7 @@ class NotificationViewModel extends AbstractViewModel<NotificationProps>
 
   @computed
   get activityData() {
-    return this._post.activityData;
+    return this._post.activityData || {};
   }
 }
 

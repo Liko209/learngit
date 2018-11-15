@@ -8,10 +8,11 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { EventViewProps } from './types';
+import { EventViewProps, EventProps } from './types';
 import { EventItem } from '@/store/models/Items';
 
-class EventViewModel extends StoreViewModel<EventViewProps> {
+class EventViewModel extends StoreViewModel<EventProps>
+  implements EventViewProps {
   @computed
   get _id() {
     return this.props.ids[0];
