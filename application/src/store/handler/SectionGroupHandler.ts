@@ -308,12 +308,16 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     });
   }
   private _addDirectMessageSection() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isMatchFun = (model: Group) => {
       const notInFav =
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         this._hiddenGroupIds.indexOf(model.id) === -1;
       const isDirectInDirectSection = !model.is_team;
-      return notInFav && isDirectInDirectSection;
+      const createdByMeOrHasPostTime: boolean =
+        model.most_recent_post_created_at !== undefined ||
+        model.creator_id === currentUserId;
+      return notInFav && isDirectInDirectSection && createdByMeOrHasPostTime;
     };
     this._addSection(SECTION_TYPE.DIRECT_MESSAGE, GROUP_QUERY_TYPE.GROUP, {
       isMatchFunc: isMatchFun,
@@ -374,11 +378,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _removeOverLimitGroupByChangingCurrentGroupId(
     type: SECTION_TYPE,
     limit: number,
+    lastGroupId: number,
   ) {
-    const lastGroupIndex = this.getGroupIds(type).indexOf(this._lastGroupId);
+    const lastGroupIndex = this.getGroupIds(type).indexOf(lastGroupId);
     if (lastGroupIndex >= limit) {
-      if (!this._hasUnreadInGroups([this._lastGroupId])) {
-        this._removeByIds(type, [this._lastGroupId]);
+      const result = await !this._hasUnreadInGroups([lastGroupId]);
+      if (result) {
+        this._removeByIds(type, [lastGroupId]);
       }
     }
   }
@@ -405,15 +411,18 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   async removeOverLimitGroupByChangingCurrentGroupId() {
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     const profileService = ProfileService.getInstance<service.ProfileService>();
+    const lastGroupId = this._lastGroupId;
     const limit = await profileService.getMaxLeftRailGroup();
-    if (currentId !== this._lastGroupId) {
+    if (currentId !== lastGroupId) {
       await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.DIRECT_MESSAGE,
         limit,
+        lastGroupId,
       );
       await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.TEAM,
         limit,
+        lastGroupId,
       );
       this._lastGroupId = currentId;
     }

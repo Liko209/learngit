@@ -322,7 +322,7 @@ describe('filterGroups()', () => {
 
     const groups = generateFakeGroups(TOTAL_GROUPS);
 
-    const filteredGroups = await filterGroups(groups, LIMIT);
+    const filteredGroups = await filterGroups(groups, LIMIT, false);
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
@@ -332,7 +332,7 @@ describe('filterGroups()', () => {
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(TOTAL_GROUPS);
   });
 
@@ -342,7 +342,7 @@ describe('filterGroups()', () => {
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(TOTAL_GROUPS);
   });
 
@@ -356,7 +356,7 @@ describe('filterGroups()', () => {
       { id: 2, unread_count: 1 },
     ]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(3);
   });
 
@@ -369,7 +369,7 @@ describe('filterGroups()', () => {
       { id: 2, unread_count: 1 },
     ]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
@@ -382,7 +382,7 @@ describe('filterGroups()', () => {
       { id: 2, unread_count: 1 },
     ]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
@@ -396,7 +396,7 @@ describe('filterGroups()', () => {
       { id: 3, unread_mentions_count: 1 },
     ]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(4);
   });
 
@@ -410,7 +410,7 @@ describe('filterGroups()', () => {
       { id: 3, unread_count: 1 },
     ]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(3);
   });
 
@@ -421,8 +421,47 @@ describe('filterGroups()', () => {
     const teams = generateFakeGroups(TOTAL_GROUPS, { hasPost: false });
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(LIMIT);
+  });
+  it('should not return group without post', async () => {
+    const LIMIT = 2;
+    const TOTAL_GROUPS = 5;
+
+    const teams = generateFakeGroups(TOTAL_GROUPS, { hasPost: false });
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
+
+    const filteredGroups = await filterGroups(teams, LIMIT, true);
+    expect(filteredGroups.length).toBe(0);
+  });
+
+  it('should return group without post but is created by current user', async () => {
+    const LIMIT = 2;
+    const TOTAL_GROUPS = 5;
+
+    const group = [
+      {
+        id: 1,
+        creator_id: 2,
+        created_at: 9999,
+      },
+      {
+        id: 2,
+        creator_id: 3,
+        created_at: 10000,
+      },
+      {
+        id: 3,
+        creator_id: 3,
+        most_recent_post_created_at: 22,
+      },
+    ];
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
+    accountService.getCurrentUserId.mockReturnValue(2);
+    const filteredGroups = await filterGroups(group, 2, true);
+    const ids = filteredGroups.map(item => item.id);
+    expect(ids.indexOf(3) !== -1).toBe(true);
+    expect(ids.length).toBe(2);
   });
 });
 
