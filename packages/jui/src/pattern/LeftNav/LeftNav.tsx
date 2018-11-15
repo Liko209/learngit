@@ -10,7 +10,7 @@ import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
 import { JuiArrowTip } from '../../components/index';
 import { height, grey, palette, spacing } from '../../foundation/utils/styles';
-import { History, Location, Action } from 'history';
+import { History } from 'history';
 
 import {
   JuiListItem,
@@ -148,57 +148,42 @@ type JuiLeftNavProps = {
   history: History<any>;
 };
 
-class JuiLeftNav extends PureComponent<
-  JuiLeftNavProps,
-  { selectedPath: string }
-> {
-  constructor(props: JuiLeftNavProps) {
-    super(props);
-    this.state = {
-      selectedPath: '',
-    };
-  }
-
+class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
+  selectedPath: string = window.location.pathname.split('/')[1];
+  onRouteChangeHandlers: {
+    [id: string]: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+  } = {};
   componentDidMount() {
     const { history } = this.props;
-    history.listen((location: Location, action: Action) => {
-      const { pathname } = location;
-      const actIndex = pathname.lastIndexOf('/');
-      const pathSlice = actIndex
-        ? pathname.slice(1, actIndex)
-        : pathname.slice(1);
-      const selectedPath = pathSlice;
-      this.setState({
-        selectedPath,
-      });
+    history.listen(() => {
+      const newSelectedPath = window.location.pathname.split('/')[1];
+      if (this.selectedPath !== newSelectedPath) {
+        this.selectedPath = newSelectedPath;
+        this.forceUpdate();
+      }
     });
   }
 
-  onRouteChange(url: string) {
-    const { onRouteChange } = this.props;
-    onRouteChange(url);
-    this.forceUpdate();
+  onRouteChange = (url: string) => {
+    if (this.onRouteChangeHandlers[url]) {
+      return this.onRouteChangeHandlers[url];
+    }
+    this.onRouteChangeHandlers[url] = () => {
+      const { onRouteChange } = this.props;
+      onRouteChange(url);
+    };
+    return this.onRouteChangeHandlers[url];
   }
 
   renderNavItems = () => {
     const { icons, expand } = this.props;
-    const { selectedPath } = this.state;
     return icons.map((arr, idx) => {
       return (
         <MuiList component="nav" disablePadding={true} key={idx}>
           {arr.map((item, index) => {
             const navUrl = item.url;
-            let selected;
-            if (selectedPath) {
-              selected = selectedPath === navUrl.split('/')[1];
-            } else {
-              const pathname = window.location.pathname;
-              const actIndex = pathname.lastIndexOf('/');
-              const pathSlice = actIndex
-                ? pathname.slice(1, actIndex)
-                : pathname.slice(1);
-              selected = pathSlice === navUrl.substr(1);
-            }
+            const navPath = navUrl.split('/')[1];
+            const selected = this.selectedPath === navPath;
             const NavItem = (
               <StyledListItem
                 button={true}
@@ -212,7 +197,7 @@ class JuiLeftNav extends PureComponent<
               >
                 <ListLink
                   className={`left-link ${selected ? 'active' : ''}`}
-                  onClick={this.onRouteChange.bind(this, navUrl)}
+                  onClick={this.onRouteChange(navUrl)}
                 >
                   <JuiListItemIcon className={'nav-icon'}>
                     <JuiIconography>{item.icon}</JuiIconography>
