@@ -56,8 +56,8 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
     this._sendPost = this._sendPost.bind(this);
     this.reaction(
       () => this._initDraft,
-      () => {
-        if (this.draft !== this._initDraft) {
+      (initDraft: string) => {
+        if (this.draft !== initDraft) {
           this.draft = this._initDraft;
         }
       },
@@ -68,6 +68,7 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
         this.error = '';
       },
     );
+    this.draft = this._initDraft;
   }
 
   @action
