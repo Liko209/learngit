@@ -131,8 +131,8 @@ class Task extends React.Component<taskViewProps> {
         titleColor={color}
         Icon={<JuiTaskCheckbox checked={complete || false} />}
       >
-        <JuiTimeMessage time={`${time} ${timeText}`} />
-        {assignedToIds && assignedToIds.length > 2 && (
+        {start && end && <JuiTimeMessage time={`${time} ${timeText}`} />}
+        {assignedToIds && assignedToIds.length > 0 && (
           <JuiTaskAvatarName
             count={assignedToIds && assignedToIds.length}
             otherText={t('avatarnamesWithOthers', {
