@@ -47,6 +47,8 @@ const FILE_COMPS = {
         key={id}
         previewUrl={previewUrl}
         fileName={name}
+        i18UnfoldLess={t('collapse')}
+        i18UnfoldMore={t('expand')}
         Actions={downloadBtn(downloadUrl)}
         ImageActions={downloadBtn(downloadUrl)}
       />

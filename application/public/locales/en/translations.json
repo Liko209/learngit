@@ -56,5 +56,7 @@
   "until": "until",
   "hideEventHistory": "Hide",
   "showEventHistory": "Show old",
-  "download": "download"
+  "download": "Download",
+  "expand": "Expand",
+  "collapse": "Collapse"
 }
