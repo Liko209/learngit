@@ -308,12 +308,16 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     });
   }
   private _addDirectMessageSection() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isMatchFun = (model: Group) => {
       const notInFav =
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         this._hiddenGroupIds.indexOf(model.id) === -1;
       const isDirectInDirectSection = !model.is_team;
-      return notInFav && isDirectInDirectSection;
+      const createdByMeOrHasPostTime: boolean =
+        model.most_recent_post_created_at !== undefined ||
+        model.creator_id === currentUserId;
+      return notInFav && isDirectInDirectSection && createdByMeOrHasPostTime;
     };
     this._addSection(SECTION_TYPE.DIRECT_MESSAGE, GROUP_QUERY_TYPE.GROUP, {
       isMatchFunc: isMatchFun,
