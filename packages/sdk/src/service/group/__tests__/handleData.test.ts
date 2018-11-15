@@ -17,7 +17,6 @@ import handleData, {
 } from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
-import { DEFAULT_CONVERSATION_LIST_LIMITS } from '../../account/constants';
 import { transform } from '../../utils';
 import { EVENT_TYPES } from '../..';
 
@@ -26,7 +25,6 @@ jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
 jest.mock('../../state');
-jest.mock('../../notificationCenter');
 jest.mock('../../../dao', () => {
   const dao = {
     get: jest.fn().mockReturnValue(1),
