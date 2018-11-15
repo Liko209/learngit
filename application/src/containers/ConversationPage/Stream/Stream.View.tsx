@@ -20,7 +20,10 @@ import { StreamViewProps, StreamItem, StreamItemType } from './types';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 
-type Props = WithNamespaces & StreamViewProps;
+type Props = WithNamespaces &
+  StreamViewProps & {
+    onListAsyncMounted: (ref: React.RefObject<HTMLElement>) => void;
+  };
 
 @observer
 class StreamViewComponent extends Component<Props> {
@@ -128,16 +131,13 @@ class StreamViewComponent extends Component<Props> {
   private get _jumpToFirstUnreadButton() {
     const {
       t,
+      firstHistoryUnreadInPage,
       hasHistoryUnread,
       historyUnreadCount,
-      historyGroupState,
-      firstHistoryUnreadInPage,
     } = this.props;
 
     const shouldHaveJumpButton =
       hasHistoryUnread &&
-      historyGroupState &&
-      historyUnreadCount > 0 &&
       (!firstHistoryUnreadInPage || !this._firstHistoryUnreadPostViewed);
 
     const countText =
