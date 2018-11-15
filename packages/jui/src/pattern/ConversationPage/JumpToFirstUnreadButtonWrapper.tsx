@@ -6,7 +6,7 @@ type JuiJumpToFirstUnreadButtonWrapperProps = HTMLAttributes<HTMLElement>;
 
 const JuiJumpToFirstUnreadButtonWrapper = styled.div`
   position: absolute;
-  top: ${spacing(3)};
+  top: ${spacing(4)};
   left: 0;
   right: 0;
   text-align: center;
