@@ -12,6 +12,7 @@ type Props = {
 };
 
 const StyledTimeMessage = styled.div`
+  text-transform: capitalize;
   margin-top: ${spacing(2)};
   ${typography('body1')};
   color: ${grey('900')};
