@@ -4,17 +4,34 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { TaskItem, FileType, ExtendFileItem } from '@/store/models/Items';
-import { WithNamespaces } from 'react-i18next';
+
+type ActivityData = {
+  [index: string]: any;
+};
 
 type Props = {
   ids: number[];
 };
 
-type ViewProps = WithNamespaces & {
-  ids: number[];
+type TaskUpdateProps = {
+  postId: number;
+} & Props;
+
+type ViewProps = {
   task: TaskItem;
   files: ExtendFileItem[];
-  expandImage: any;
 };
 
-export { Props, ViewProps, FileType, ExtendFileItem };
+type TaskUpdateViewProps = {
+  activityData: ActivityData;
+  task: TaskItem;
+};
+
+export {
+  Props,
+  TaskUpdateProps,
+  ViewProps,
+  TaskUpdateViewProps,
+  FileType,
+  ExtendFileItem,
+};

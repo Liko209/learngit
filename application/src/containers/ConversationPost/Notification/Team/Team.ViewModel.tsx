@@ -29,7 +29,7 @@ class TeamViewModel extends AbstractViewModel<TeamProps>
 
   @computed
   get activityData() {
-    return this._post.activityData;
+    return this._post.activityData || {};
   }
 
   @computed

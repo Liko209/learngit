@@ -15,7 +15,7 @@ export default class PostModel extends Base<Post> {
   @observable
   itemIds: number[];
   @observable
-  activityData: { [index: string]: any };
+  activityData?: { [index: string]: any };
   itemId?: number;
   @observable
   likes?: number[];
@@ -38,7 +38,7 @@ export default class PostModel extends Base<Post> {
     } = data;
     this.createdAt = created_at;
     this.creatorId = creator_id;
-    this.activityData = activity_data || {};
+    this.activityData = activity_data;
     this.text = text;
     this.itemId = item_id;
     this.status = status;

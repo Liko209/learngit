@@ -72,6 +72,8 @@ type TaskItem = {
   completeType: string;
   assignedToIds: number[];
   attachmentIds: number[];
+  completePeopleIds: number[];
+  completePercentage: number;
 } & ItemModel;
 
 type NoteItem = {

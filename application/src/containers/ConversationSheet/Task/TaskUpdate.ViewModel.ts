@@ -1,6 +1,6 @@
 /*
- * @Author: Nello Huang (nello.huang@ringcentral.com)
- * @Date: 2018-11-07 15:45:04
+ * @Author: Shining Miao (shining.miao@ringcentral.com)
+ * @Date: 2018-11-13 16:52:24
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
@@ -9,18 +9,18 @@ import { Item, Post } from 'sdk/models';
 import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { EventUpdateViewProps, EventUpdateProps } from './types';
-import { EventItem } from '@/store/models/Items';
+import { TaskUpdateProps, TaskUpdateViewProps } from './types';
+import { TaskItem } from '@/store/models/Items';
 
-class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
-  implements EventUpdateViewProps {
+class TaskUpdateViewModel extends StoreViewModel<TaskUpdateProps>
+  implements TaskUpdateViewProps {
   @computed
-  get _id() {
+  private get _id() {
     return this.props.ids[0];
   }
 
   @computed
-  get _postId() {
+  private get _postId() {
     return this.props.postId;
   }
 
@@ -30,8 +30,8 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   }
 
   @computed
-  get event() {
-    return getEntity<Item, EventItem>(ENTITY_NAME.ITEM, this._id);
+  get task() {
+    return getEntity<Item, TaskItem>(ENTITY_NAME.ITEM, this._id);
   }
 
   @computed
@@ -40,4 +40,4 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   }
 }
 
-export { EventUpdateViewModel };
+export { TaskUpdateViewModel };

@@ -35,7 +35,7 @@ class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
 
   @computed
   private get _activityData() {
-    return this._post.activityData;
+    return this._post.activityData || {};
   }
 
   @computed
