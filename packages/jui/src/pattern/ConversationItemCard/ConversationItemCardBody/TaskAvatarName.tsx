@@ -9,9 +9,9 @@ import styled from '../../../foundation/styled-components';
 import { typography, grey, spacing } from '../../../foundation/utils/styles';
 
 type Props = {
-  avatarNames: JSX.Element[] | null[] | JSX.Element;
-  count: number;
-  otherText: string;
+  children: React.ReactNode;
+  count?: number;
+  otherText?: string;
 };
 
 const StyledTaskAvatarName = styled.div`
@@ -27,10 +27,12 @@ const StyledTaskOther = styled.div`
   align-items: flex-end;
 `;
 
-const JuiTaskAvatarName = (props: Props) => (
+const JuiTaskAvatarName = ({ children, otherText, count }: Props) => (
   <StyledTaskAvatarName>
-    {props.avatarNames}
-    <StyledTaskOther>{props.count > 2 ? props.otherText : ''}</StyledTaskOther>
+    {children}
+    {otherText && count && (
+      <StyledTaskOther>{count > 2 ? otherText : ''}</StyledTaskOther>
+    )}
   </StyledTaskAvatarName>
 );
 

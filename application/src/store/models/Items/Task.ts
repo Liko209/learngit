@@ -22,6 +22,8 @@ function setTaskData(this: TaskItem, data: any) {
     complete_type,
     assigned_to_ids,
     attachment_ids,
+    complete_people_ids,
+    complete_percentage,
   } = data;
 
   this.color = color;
@@ -39,6 +41,8 @@ function setTaskData(this: TaskItem, data: any) {
   this.completeType = complete_type;
   this.assignedToIds = assigned_to_ids;
   this.attachmentIds = attachment_ids;
+  this.completePeopleIds = complete_people_ids;
+  this.completePercentage = complete_percentage;
 }
 
 export { setTaskData };
