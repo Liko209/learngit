@@ -10,6 +10,7 @@ import { addResizeListener, removeResizeListener } from './optimizer';
 import { cloneDeep } from 'lodash';
 
 import JuiHorizonResizer from './HorizonResizer';
+import JuiHorizonButton from './HorizonButton';
 
 const MAIN_MIN_WIDTH = 400;
 const SIDEBAR_DEFAULT_WIDTH = 268;
@@ -27,6 +28,7 @@ type Panels = {
   localWidth?: number;
   minWidth: number;
   maxWidth?: number;
+  forceShow?: boolean;
 };
 
 type States = {
@@ -44,6 +46,9 @@ const StyledWrapper = styled('div')`
 
 type PropsSidebarPanel = {
   width: number;
+  forceShow: boolean;
+  forcePosition: 'left' | 'right';
+  forceWidth: number;
 };
 
 const StyledSidebarPanel = styled('div')`
@@ -51,6 +56,20 @@ const StyledSidebarPanel = styled('div')`
   flex-basis: ${(props: PropsSidebarPanel) => `${props.width}px`};
   display: ${(props: PropsSidebarPanel) =>
     props.width > 0 ? 'inline-block' : 'none'};
+  background-color: ${({ theme }) => theme.palette.background.paper};
+  overflow: hidden;
+  ${(props: PropsSidebarPanel) =>
+    props.forceShow &&
+    `
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: ${props.forceWidth}px;
+      z-index: ${({ theme }: any) => theme.zIndex.reponseResizer};
+      left: ${props.forcePosition === 'left' ? 0 : 'auto'};
+      right: ${props.forcePosition === 'right' ? 0 : 'auto'};
+    `};
 `;
 
 const StyledMainPanel = styled('div')`
@@ -77,6 +96,9 @@ class JuiColumnResponse extends PureComponent<Props, States> {
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
+    this.onClickShowPanel = this.onClickShowPanel.bind(this);
+    this.onClickHideAllPanel = this.onClickHideAllPanel.bind(this);
+    this.onClickPreventBubble = this.onClickPreventBubble.bind(this);
   }
 
   getPanelsData = () => {
@@ -98,6 +120,7 @@ class JuiColumnResponse extends PureComponent<Props, States> {
         width: localWidth, // current width
         minWidth: SIDEBAR_MIN_WIDTH,
         maxWidth: SIDEBAR_MAX_WIDTH,
+        forceShow: false,
       };
     });
   }
@@ -190,6 +213,13 @@ class JuiColumnResponse extends PureComponent<Props, States> {
       }
     }
 
+    for (let k = 0; k < count; k++) {
+      const panel = clonePanels[k];
+      if (panel.width === 0) {
+        panel.forceShow = false;
+      }
+    }
+
     this.setState({ panels: clonePanels });
   }
 
@@ -253,6 +283,7 @@ class JuiColumnResponse extends PureComponent<Props, States> {
 
     // set resize panel width
     panel.width = width;
+    panel.localWidth = width;
     // reset main panel width
     clonePanels[mainPanelIndex].width =
       wrapperWidth - this.getSumExceptOneself(clonePanels, mainPanelIndex);
@@ -261,11 +292,35 @@ class JuiColumnResponse extends PureComponent<Props, States> {
     this.setState({ panels: clonePanels });
   }
 
+  onClickShowPanel(e: ReactMouseEvent, index: number) {
+    e.stopPropagation();
+    e.preventDefault();
+    const { panels } = this.state;
+    const clonePanels = cloneDeep(panels);
+    clonePanels[index].forceShow = !clonePanels[index].forceShow;
+    this.setState({ panels: clonePanels });
+  }
+
+  onClickHideAllPanel() {
+    const { panels } = this.state;
+    const clonePanels = panels.map((panel: Panels) => {
+      panel.forceShow = false;
+      return panel;
+    });
+    this.setState({
+      panels: clonePanels,
+    });
+  }
+
+  onClickPreventBubble(e: ReactMouseEvent) {
+    e.stopPropagation();
+  }
+
   render() {
     const { children, mainPanelIndex } = this.props;
     const { panels } = this.state;
     return (
-      <StyledWrapper ref={this.wrapperRef}>
+      <StyledWrapper ref={this.wrapperRef} onClick={this.onClickHideAllPanel}>
         {React.Children.map(children, (child: JSX.Element, index: number) => {
           let offset = 0;
           for (let i = 0; i < index; i++) {
@@ -298,10 +353,27 @@ class JuiColumnResponse extends PureComponent<Props, States> {
                   onMouseDown={this.onMouseDown}
                 />
               )}
-              <StyledSidebarPanel width={panels[index].width!}>
+              <StyledSidebarPanel
+                width={panels[index].width!}
+                forceShow={!!panels[index].forceShow}
+                forcePosition={index === 0 ? 'left' : 'right'}
+                forceWidth={panels[index].minWidth}
+                onClick={this.onClickPreventBubble}
+              >
                 {child}
                 {panels[index].width!}
               </StyledSidebarPanel>
+              <JuiHorizonButton
+                offset={
+                  offset -
+                  (index > 0 ? 10 : 0) +
+                  (!!panels[index].forceShow ? panels[index].minWidth : 0)
+                }
+                onClick={(e: ReactMouseEvent) =>
+                  this.onClickShowPanel(e, index)
+                }
+                show={panels[index].width === 0}
+              />
             </React.Fragment>
           );
         })}
