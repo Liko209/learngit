@@ -7,6 +7,7 @@
 import React, { PureComponent } from 'react';
 import styled from '../../styled-components';
 import { addResizeListener, removeResizeListener } from './optimizer';
+import { cloneDeep } from 'lodash';
 
 const MAIN_MIN_WIDTH = 400;
 const SIDEBAR_DEFAULT_WIDTH = 268;
@@ -120,11 +121,12 @@ class JuiColumnResponse extends PureComponent<Props, States> {
     const wrapperWidth = this.wrapperRef.current.getBoundingClientRect().width;
     const mainWidth = this.mainRef.current.getBoundingClientRect().width;
 
-    const clonePanels = JSON.parse(JSON.stringify(panels)); // todo
+    const clonePanels = cloneDeep(panels);
     const count = clonePanels.length;
     const mainPanel = clonePanels[mainPanelIndex];
+    mainPanel.width = mainWidth;
 
-    if (mainWidth <= MAIN_MIN_WIDTH) {
+    if (mainPanel.width <= MAIN_MIN_WIDTH) {
       mainPanel.width = MAIN_MIN_WIDTH; // keep main panel minimum
       for (let i = count - 1; i >= 0; i--) {
         if (i === mainPanelIndex) {
@@ -136,11 +138,12 @@ class JuiColumnResponse extends PureComponent<Props, States> {
         if (panel.width < panel.minWidth) {
           panel.width = 0; // 2. hide panel
           const sum = this.getSumExceptOneself(clonePanels, mainPanelIndex);
+          // note: main panel width is changed
           mainPanel.width = wrapperWidth - sum; // stretch main panel
         }
-        // ensure value is correct, because setState is micro task
+        // note: ensure value is correct
         if (mainPanel.width <= MAIN_MIN_WIDTH) {
-          mainPanel.width = MAIN_MIN_WIDTH;
+          mainPanel.width = MAIN_MIN_WIDTH; // keep main panel minimum
         }
       }
     } else {
@@ -151,20 +154,23 @@ class JuiColumnResponse extends PureComponent<Props, States> {
           continue;
         }
         const panel = clonePanels[j]; // first panel
-        if (panel.width === 0 && mainWidth >= MAIN_MIN_WIDTH + panel.minWidth) {
-          panel.width = panel.minWidth; // 1. show panel
-          const sum = this.getSumExceptOneself(clonePanels, j);
-          mainPanel.width = wrapperWidth - sum;
+        if (mainPanel.width >= MAIN_MIN_WIDTH + panel.minWidth) {
+          if (panel.width < panel.minWidth) {
+            panel.width = panel.minWidth; // 1. show panel
+            const sum = this.getSumExceptOneself(clonePanels, j);
+            mainPanel.width = wrapperWidth - sum;
+          }
         }
         if (panel.width >= panel.minWidth) {
-          if (panel.width < panel.localWidth) {
+          if (panel.width < panel.localWidth!) {
             mainPanel.width = MAIN_MIN_WIDTH;
             const sum = this.getSumExceptOneself(clonePanels, j);
+            // note: current panel width is changed
             panel.width = wrapperWidth - sum; // 2. stretch panel
           }
-          // ensure value is correct, because setState is micro task
-          if (panel.width > panel.localWidth) {
-            panel.width = panel.localWidth; // 3. original panel
+          // note: ensure value is correct
+          if (panel.width > panel.localWidth!) {
+            panel.width = panel.localWidth!; // 3. original panel
             const sum = this.getSumExceptOneself(clonePanels, j);
             mainPanel.width = wrapperWidth - sum;
           }
