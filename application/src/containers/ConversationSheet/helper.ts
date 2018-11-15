@@ -53,6 +53,13 @@ function getDurationTimeText(
   repeatEndingOn: string,
   repeatEnding: string,
 ) {
+  console.log(
+    repeat,
+    repeatEndingAfter,
+    repeatEndingOn,
+    repeatEnding,
+    '-----task time',
+  );
   const times =
     (TIMES_TEXT[repeat] &&
       getI18Text(TIMES_TEXT[repeat], Number(repeatEndingAfter))) ||
@@ -62,6 +69,7 @@ function getDurationTimeText(
     ? getDateMessage(repeatEndingOn, 'ddd, MMM D')
     : '';
   const hideUntil = (repeat: string, repeatEnding: string) =>
+    repeat === '' || // task not set repeat will be ''
     repeat === 'none' ||
     repeatEnding === 'none' ||
     repeatEnding === 'after' ||

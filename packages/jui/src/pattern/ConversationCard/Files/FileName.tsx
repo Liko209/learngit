@@ -12,6 +12,8 @@ type FileNameProps = {
   filename: string;
 };
 
+const FileNameWrapper = styled.div``;
+
 const LeftName = styled.span`
   ${ellipsis};
   max-width: 70%;
@@ -24,10 +26,10 @@ const FileName = (Props: FileNameProps) => {
   const [left, right] = getFileName(filename);
 
   return (
-    <>
+    <FileNameWrapper>
       <LeftName>{left}</LeftName>
       <span>{right}</span>
-    </>
+    </FileNameWrapper>
   );
 };
 
