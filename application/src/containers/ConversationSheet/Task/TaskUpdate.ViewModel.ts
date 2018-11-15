@@ -15,12 +15,12 @@ import { TaskItem } from '@/store/models/Items';
 class TaskUpdateViewModel extends StoreViewModel<TaskUpdateProps>
   implements TaskUpdateViewProps {
   @computed
-  get _id() {
+  private get _id() {
     return this.props.ids[0];
   }
 
   @computed
-  get _postId() {
+  private get _postId() {
     return this.props.postId;
   }
 

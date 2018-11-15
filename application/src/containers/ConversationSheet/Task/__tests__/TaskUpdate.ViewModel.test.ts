@@ -14,14 +14,6 @@ const mockData = {};
 const taskUpdateViewModel = new TaskUpdateViewModel({ ids: [1], postId: 2 });
 
 describe('taskUpdateViewModel', () => {
-  it('computed _id', () => {
-    expect(taskUpdateViewModel._id).toEqual(1);
-  });
-
-  it('computed _postId', () => {
-    expect(taskUpdateViewModel._postId).toEqual(2);
-  });
-
   it('computed post', () => {
     (getEntity as jest.Mock).mockReturnValue(mockData);
     expect(taskUpdateViewModel.post).toBe(mockData);

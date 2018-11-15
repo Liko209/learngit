@@ -27,13 +27,11 @@ const StyledTaskOther = styled.div`
   align-items: flex-end;
 `;
 
-const JuiTaskAvatarName = (props: Props) => (
+const JuiTaskAvatarName = ({ children, otherText, count }: Props) => (
   <StyledTaskAvatarName>
-    {props.children}
-    {props.otherText && props.count && (
-      <StyledTaskOther>
-        {props.count > 2 ? props.otherText : ''}
-      </StyledTaskOther>
+    {children}
+    {otherText && count && (
+      <StyledTaskOther>{count > 2 ? otherText : ''}</StyledTaskOther>
     )}
   </StyledTaskAvatarName>
 );
