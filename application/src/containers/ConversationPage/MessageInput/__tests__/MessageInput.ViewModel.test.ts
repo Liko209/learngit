@@ -13,6 +13,14 @@ import {
 } from '../MessageInput.ViewModel';
 import _ from 'lodash';
 
+const mockGroupEntityData = {
+  draft: 'draft',
+};
+
+jest.mock('@/store/utils', () => ({
+  getEntity: jest.fn(() => mockGroupEntityData),
+}));
+
 const { PostService, GroupService } = service;
 const postService = {
   sendPost: jest.fn(),
@@ -22,12 +30,6 @@ const groupService = {
 };
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-
-const mockGroupEntityData = {
-  draft: 'draft',
-};
-// @ts-ignore
-const getEntity = jest.fn().mockReturnValue(mockGroupEntityData);
 
 const messageInputViewModel = new MessageInputViewModel({ id: 123 });
 
