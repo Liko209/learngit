@@ -173,7 +173,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         <JuiListToggleButton
           data-test-automation-id="CreateTeamToggleList"
           items={items}
-          toggleChange={this.handleSwitchChange}
+          onChange={this.handleSwitchChange}
         />
         {/* <JuiTextWithLink
           TypographyProps={{

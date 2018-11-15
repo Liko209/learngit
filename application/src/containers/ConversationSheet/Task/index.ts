@@ -5,3 +5,4 @@
  */
 
 export * from './Task';
+export * from './TaskUpdate';

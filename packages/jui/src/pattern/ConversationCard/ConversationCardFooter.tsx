@@ -23,7 +23,7 @@ const StyledIconWrapper = styled('div')`
   border-radius: ${shape('borderRadius')};
   padding: ${spacing(1, 1.5)};
   display: inline-block;
-  transition: border-color 0.2s ease-in;
+  transition: all 0.1s ease-in;
   display: inline-flex;
   align-items: center;
   & > div {
@@ -36,6 +36,9 @@ const StyledIconWrapper = styled('div')`
   }
   &:hover {
     border-color: ${palette('primary', '700')};
+  }
+  &:active {
+    background-color: ${palette('primary', '50')};
   }
 `;
 
