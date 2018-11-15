@@ -209,8 +209,7 @@ export class MessagePanel extends BaseWebComponent {
     return this.getSection('Teams');
   }
   get mentionsEntry() {
-    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'),
-    ); 
+    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions')); 
   }
   get conversationPage() {
     return this.getComponent(ConversationPage);

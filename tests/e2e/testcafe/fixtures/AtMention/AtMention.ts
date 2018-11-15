@@ -75,7 +75,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
   },
 );
 
-test.skip(formalName('Jump to conversation bottom when click name', ['P1', 'JPT-314']),
+test(formalName('Jump to conversation bottom when click name', ['P1', 'JPT-314']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -137,7 +137,6 @@ test.skip(formalName('Jump to conversation bottom when click name', ['P1', 'JPT-
     await h(t).withLog('Then I click the conversation name in the group\'s conversation card', async() => {
       await mentionsEntry.enter();
       await postListPage.postItemById(groupPost.data.id).goToConversation();
-
     });
 
     await h(t).withLog('Should jump to the group page and scroll to bottom', async () => {
@@ -148,7 +147,6 @@ test.skip(formalName('Jump to conversation bottom when click name', ['P1', 'JPT-
     await h(t).withLog('Then I click the conversation name in the team\'s conversation card', async() => {
       await mentionsEntry.enter();
       await postListPage.postItemById(teamPost.data.id).goToConversation();
-
     });
 
     await h(t).withLog('Should jump to the team page and scroll to bottom', async () => {
