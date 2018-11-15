@@ -46,8 +46,8 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
       <TaskUpdateViewCard
         title={this._getTitleText(text)}
         titleColor={color}
-        icon={<JuiTaskCheckbox checked={complete || false} />}
-        footer={
+        Icon={<JuiTaskCheckbox checked={complete || false} />}
+        Footer={
           key === 'assigned_to_ids' ? (
             <JuiEventCollapse
               showText={t('showEventHistory')}

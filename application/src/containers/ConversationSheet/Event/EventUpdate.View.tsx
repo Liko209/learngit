@@ -17,7 +17,7 @@ import {
 import { getDurationTime, getDurationTimeText } from '../helper';
 import { EventUpdateViewProps } from './types';
 
-class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
+class EventUpdateView extends React.Component<EventUpdateViewProps> {
   private _getDurationTime = (value: any) => {
     const { event } = this.props;
     const { start, end } = event;
@@ -73,8 +73,8 @@ class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
       <EventUpdateViewCard
         title={text}
         titleColor={color}
-        icon="event"
-        footer={
+        Icon="event"
+        Footer={
           (hasOldTime || oldLocation) && (
             <JuiEventCollapse
               showText={t('showEventHistory')}

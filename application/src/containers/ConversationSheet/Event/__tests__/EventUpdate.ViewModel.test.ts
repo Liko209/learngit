@@ -12,7 +12,7 @@ const mockData = {};
 
 const eventUpdateViewModel = new EventUpdateViewModel({ ids: [1], postId: 2 });
 
-describe('Event update item', () => {
+describe('eventUpdateViewModel', () => {
   it('computed _id', () => {
     expect(eventUpdateViewModel._id).toEqual(1);
   });

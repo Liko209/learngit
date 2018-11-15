@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { t } from 'i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
@@ -25,6 +25,8 @@ import {
 import { AvatarName } from './AvatarName';
 import { getDurationTime, getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
+
+type taskViewProps = WithNamespaces & ViewProps;
 
 const downloadBtn = (downloadUrl: string) => (
   <JuiIconButton
@@ -65,7 +67,7 @@ const FILE_COMPS = {
 };
 
 @observer
-class Task extends React.Component<ViewProps> {
+class Task extends React.Component<taskViewProps> {
   private get _taskAvatarNames() {
     const { task } = this.props;
     const { assignedToIds } = task;
@@ -127,19 +129,15 @@ class Task extends React.Component<ViewProps> {
         complete={complete}
         title={this._getTitleText(text)}
         titleColor={color}
-        icon={<JuiTaskCheckbox checked={complete || false} />}
+        Icon={<JuiTaskCheckbox checked={complete || false} />}
       >
         <JuiTimeMessage time={`${time} ${timeText}`} />
-        {assignedToIds && assignedToIds.length > 0 && (
+        {assignedToIds && assignedToIds.length > 2 && (
           <JuiTaskAvatarName
             count={assignedToIds && assignedToIds.length}
-            otherText={
-              assignedToIds.length
-                ? t('avatarnamesWithOthers', {
-                  count: assignedToIds.length - 2,
-                })
-                : ''
-            }
+            otherText={t('avatarnamesWithOthers', {
+              count: assignedToIds.length - 2,
+            })}
           >
             {this._taskAvatarNames}
           </JuiTaskAvatarName>

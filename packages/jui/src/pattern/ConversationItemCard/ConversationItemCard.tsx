@@ -45,11 +45,11 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
 
 type JuiConversationItemCardProps = {
   title?: string | JSX.Element;
-  icon: JSX.Element | string;
+  Icon: JSX.Element | string;
   titleColor?: string;
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
   children?: React.ReactNode;
-  footer?: JSX.Element | null;
+  Footer?: JSX.Element | null;
   footerPadding?: boolean;
   complete?: boolean;
 };
@@ -66,8 +66,8 @@ class JuiConversationItemCard extends React.Component<
     const {
       children,
       title,
-      icon: Icon,
-      footer,
+      Icon,
+      Footer,
       footerPadding = true,
       titleColor,
       complete,
@@ -82,9 +82,9 @@ class JuiConversationItemCard extends React.Component<
           </ItemCardHeader>
           {children}
         </ItemCardContent>
-        {footer && (
+        {Footer && (
           <ItemCardFooter footerPadding={footerPadding}>
-            {footer}
+            {Footer}
           </ItemCardFooter>
         )}
       </ItemCardWrapper>

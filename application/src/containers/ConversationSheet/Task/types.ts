@@ -5,7 +5,6 @@
  */
 import { TaskItem, FileType, ExtendFileItem } from '@/store/models/Items';
 import Post from '@/store/models/Post';
-import { WithNamespaces } from 'react-i18next';
 
 type Props = {
   ids: number[];
@@ -15,11 +14,9 @@ type TaskUpdateProps = {
   postId: number;
 } & Props;
 
-type ViewProps = WithNamespaces & {
-  ids: number[];
+type ViewProps = {
   task: TaskItem;
   files: ExtendFileItem[];
-  expandImage: any;
 };
 
 type TaskUpdateViewProps = {

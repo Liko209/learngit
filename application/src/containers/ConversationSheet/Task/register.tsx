@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { autorun } from 'mobx';
 import { observer } from 'mobx-react';
 import { TypeDictionary } from 'sdk/utils';
 import { Post } from 'sdk/models';
@@ -21,13 +20,9 @@ type Props = {
 export default {
   priority: 1,
   component: observer((props: Props) => {
-    autorun(() =>
-      console.log(getEntity<Post, PostModel>(ENTITY_NAME.POST, postId)),
-    );
     const { ids, postId } = props;
     const post = getEntity<Post, PostModel>(ENTITY_NAME.POST, postId);
     const { activityData } = post;
-    console.log(post, postId, 'post--------');
 
     if (activityData && activityData.key) {
       return <TaskUpdate ids={ids} postId={postId} />;

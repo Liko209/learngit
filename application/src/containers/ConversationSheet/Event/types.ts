@@ -15,7 +15,6 @@ type EventUpdateProps = {
 } & EventProps;
 
 type EventViewProps = {
-  ids: number[];
   event: EventItem;
 };
 

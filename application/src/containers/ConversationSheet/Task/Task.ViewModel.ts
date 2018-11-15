@@ -8,12 +8,12 @@ import { computed } from 'mobx';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Props } from './types';
+import { Props, ViewProps } from './types';
 import { FileItem, TaskItem } from '@/store/models/Items';
 import { Item } from 'sdk/models';
 import { getFileType } from '../helper';
 
-class TaskViewModel extends StoreViewModel<Props> {
+class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   private get _id() {
     return this.props.ids[0];

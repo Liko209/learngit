@@ -13,7 +13,7 @@ const mockData = {};
 
 const taskUpdateViewModel = new TaskUpdateViewModel({ ids: [1], postId: 2 });
 
-describe('Task update item', () => {
+describe('taskUpdateViewModel', () => {
   it('computed _id', () => {
     expect(taskUpdateViewModel._id).toEqual(1);
   });
