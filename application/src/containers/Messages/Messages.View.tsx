@@ -44,7 +44,6 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
     if (isLeftNavOpen) {
       leftNavWidth = 200;
     }
-
     return (
       <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
         <LeftRail />
@@ -56,7 +55,7 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
             )}
           />
           <Route
-            path="/messages/:id?"
+            path="/messages/:id"
             render={props => (
               <ConversationPage {...props} groupId={currentConversationId} />
             )}
