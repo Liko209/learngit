@@ -93,8 +93,19 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       ENTITY_NAME.PROFILE,
       'hiddenGroupIds',
     );
-    this._hiddenGroupIds = (hiddenGroupIds && hiddenGroupIds.get()) || [];
+    const newIds = (hiddenGroupIds && hiddenGroupIds.get()) || [];
+    this.checkIfGroupOpenedFromHidden(this._hiddenGroupIds, newIds);
+    this._hiddenGroupIds = newIds;
     this._removeGroupsIfExistedInHiddenGroups();
+  }
+
+  // FIJI-1662
+  async checkIfGroupOpenedFromHidden(oldIds: number[], newIds: number[]) {
+    const ids = _.difference(oldIds, newIds);
+    if (ids.length) {
+      await this._changeGroupsInGroupSections(ids, true);
+      this._updateIdSet(EVENT_TYPES.UPDATE, ids);
+    }
   }
 
   private _removeGroupsIfExistedInHiddenGroups() {
@@ -105,6 +116,21 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._removeByIds(key, inters);
       });
       this._updateUrl(EVENT_TYPES.DELETE, inters);
+    }
+  }
+
+  private async _changeGroupsInGroupSections(
+    groupIds: number[],
+    shouldAdd: boolean,
+  ) {
+    const groupService = GroupService.getInstance<service.GroupService>();
+    const groups = await groupService.getGroupsByIds(groupIds);
+    if (shouldAdd) {
+      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(groups);
+      this._handlersMap[SECTION_TYPE.TEAM].upsert(groups);
+    } else {
+      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].removeByIds(groups);
+      this._handlersMap[SECTION_TYPE.TEAM].removeByIds(groups);
     }
   }
 
@@ -126,16 +152,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       );
       this._handlersMap[SECTION_TYPE.FAVORITE].replaceAll(groups);
 
-      let result: Group[];
       if (more.length) {
-        result = await groupService.getGroupsByIds(more);
-        this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
-        this._handlersMap[SECTION_TYPE.TEAM].upsert(result);
+        await this._changeGroupsInGroupSections(more, true);
       }
       if (less.length) {
-        result = await groupService.getGroupsByIds(less);
-        this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].removeByIds(less);
-        this._handlersMap[SECTION_TYPE.TEAM].removeByIds(less);
+        await this._changeGroupsInGroupSections(less, false);
         let shouldReportChanged = false;
         less.forEach((id: number) => {
           if (!this._idSet.has(id)) {
@@ -202,10 +223,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _handleWithUnread(ids: number[]) {
     const diff = _.difference(ids, [...this._idSet]);
     if (diff.length) {
-      const groupService = GroupService.getInstance<service.GroupService>();
-      const result = await groupService.getGroupsByIds(diff);
-      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
-      this._handlersMap[SECTION_TYPE.TEAM].upsert(result);
+      await this._changeGroupsInGroupSections(diff, true);
       this._updateIdSet(EVENT_TYPES.UPDATE, diff);
     }
   }

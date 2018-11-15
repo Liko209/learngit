@@ -478,4 +478,16 @@ describe('SectionGroupHandler', () => {
       });
     });
   });
+  describe('checkIfGroupOpenedFromHidden', async () => {
+    it('should not change because of more hidden group ids', async () => {
+      const handler = SectionGroupHandler.getInstance();
+      await handler.checkIfGroupOpenedFromHidden([], [1]);
+      expect(handler.getAllGroupIds().length).toBe(0);
+    });
+    it('should add groups because of less hidden group ids', async () => {
+      const handler = SectionGroupHandler.getInstance();
+      await handler.checkIfGroupOpenedFromHidden([1, 2], [1]);
+      expect(handler.getAllGroupIds().length).toBe(1);
+    });
+  });
 });
