@@ -7,5 +7,6 @@
 export * from './Files';
 export * from './Link';
 export * from './Event';
+export * from './Task';
 export * from './Note';
-export * from './items.d';
+export * from './types';

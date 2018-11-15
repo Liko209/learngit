@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h } from '../../../../helpers';
+import { ClientFunction } from 'testcafe';
 
 class MoreMenuEntry extends BaseWebComponent {
   async enter() {
@@ -41,7 +42,7 @@ class MoreMenu extends BaseWebComponent {
 class ConversationEntry extends BaseWebComponent {
   get moreMenuEntry() {
     this.warnFlakySelector();
-    return this.self.child().withText('more_vert');
+    return this.self.find('span').withText('more_vert');
   }
 
   async getUmi() {
@@ -57,7 +58,14 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   async openMoreMenu() {
-    await this.t.hover(this.moreMenuEntry).click(this.moreMenuEntry);
+    const moreButton = this.moreMenuEntry;
+    await this.t.expect(moreButton.exists).ok();
+    const displayMoreButton = ClientFunction(
+      () => { moreButton().style["display"] = "inline-block"; },
+      { dependencies: { moreButton } }
+    );
+    await displayMoreButton();
+    await this.t.click(this.moreMenuEntry);
   }
 
   async waitUntilUmiExist(exist: boolean, timeout = 20) {
@@ -100,7 +108,7 @@ class ConversationListSection extends BaseWebComponent {
   async getHeaderUmi() {
     const umi = this.header.find('.umi');
     if (!await umi.exists) {
-      return 0; 
+      return 0;
     }
     const text = await umi.innerText;
     if (_.isEmpty(text)) {
@@ -268,6 +276,10 @@ export class MessagePanel extends BaseWebComponent {
 
   get conversationPage() {
     return this.getComponent(ConversationPage);
+  }
+
+  get postListPage() {
+    return this.getSelectorByAutomationId('post-list-page');
   }
 
   get moreMenu() {

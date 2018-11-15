@@ -3,7 +3,7 @@
  * @Date: 2018-11-07 16:17:22
  * Copyright © RingCentral. All rights reserved.
  */
-import { FileItem } from './items.d';
+import { FileItem } from './';
 
 function setFileData(this: FileItem, data: any) {
   const { type, name, versions, is_document, is_new } = data;

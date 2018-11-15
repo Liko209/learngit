@@ -7,10 +7,10 @@ import React, { Component } from 'react';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
+import { ConversationPost } from '@/containers/ConversationPost';
 import VisibilitySensor from 'react-visibility-sensor';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiLozengeButton } from 'jui/components/Buttons';
-import { ConversationCard } from '@/containers/ConversationCard';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { toTitleCase } from '@/utils/string';
 import { scrollToComponent } from './helper';
@@ -24,6 +24,8 @@ type Props = WithNamespaces & StreamViewProps;
 
 @observer
 class StreamViewComponent extends Component<Props> {
+  private _listRef: React.RefObject<HTMLElement> = React.createRef();
+
   private _firstUnreadCardRef: React.ReactInstance | null = null;
 
   private _timeout: NodeJS.Timeout | null;
@@ -34,9 +36,13 @@ class StreamViewComponent extends Component<Props> {
   @observable
   private _firstHistoryUnreadPostViewed = false;
 
-  componentDidMount() {
+  async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
+    // Scroller's on componentDidMount was called earlier than stream itself
+    this.props.onListAsyncMounted(this._listRef);
+    await this.props.loadInitialPosts();
+    this.props.scrollToRow(-1);
   }
 
   componentWillUnmount() {
@@ -44,12 +50,10 @@ class StreamViewComponent extends Component<Props> {
     window.addEventListener('blur', this._blurHandler);
   }
 
-  componentDidUpdate(prevProps: Props) {
+  async componentDidUpdate(prevProps: Props) {
     if (prevProps.groupId !== this.props.groupId) {
-      // initial scroll to bottom when switch to new group
-      this.props.plugins.loadingMorePlugin.scrollToRow(-1);
-    }
-    if (prevProps.groupId !== this.props.groupId) {
+      await this.props.loadInitialPosts();
+      this.props.scrollToRow(-1);
       this._jumpToFirstUnreadLoading = false;
       this._firstHistoryUnreadPostViewed = false;
       this._firstUnreadCardRef = null;
@@ -71,7 +75,7 @@ class StreamViewComponent extends Component<Props> {
           offset={VISIBILITY_SENSOR_OFFSET}
           onChange={this._handleFirstUnreadPostVisibilityChange}
         >
-          <ConversationCard
+          <ConversationPost
             ref={this._setFirstUnreadCardRef}
             id={streamItem.value}
             key={`VisibilitySensor${streamItem.value}`}
@@ -80,7 +84,7 @@ class StreamViewComponent extends Component<Props> {
       );
     }
 
-    return <ConversationCard id={streamItem.value} key={streamItem.value} />;
+    return <ConversationPost id={streamItem.value} key={streamItem.value} />;
   }
 
   private _renderNewMessagesDivider(streamItem: StreamItem) {
@@ -154,7 +158,10 @@ class StreamViewComponent extends Component<Props> {
       <JuiStream>
         {this._jumpToFirstUnreadButton}
         {this._initialPost}
-        <div>{this._streamItems}</div>
+        <section ref={this._listRef}>
+          {this._streamItems}
+          {this._jumpToFirstUnreadLoading}
+        </section>
       </JuiStream>
     );
   }
@@ -180,7 +187,6 @@ class StreamViewComponent extends Component<Props> {
 
     clearTimeout(this._timeout);
     this._timeout = null;
-
     this._jumpToFirstUnreadLoading = false;
     if (!firstUnreadPostId) return;
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { ConversationPost } from '../../../ConversationPost';
 import GroupStateModel from '@/store/models/GroupState';
 import { LoadingMorePlugin } from '@/plugins';
-import { ConversationCard } from '../../../ConversationCard';
 import { StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
@@ -23,6 +23,9 @@ function renderJumpToFirstUnreadButton({
     ...baseProps,
     hasHistoryUnread,
     firstHistoryUnreadInPage,
+    loadInitialPosts: async () => {},
+    scrollToRow: () => {},
+    onListAsyncMounted: () => {},
   };
   const wrapper = shallow(<StreamView {...props} />);
   (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
@@ -59,7 +62,7 @@ const baseProps = {
 
 describe('StreamView', () => {
   describe('render()', () => {
-    it('should render <ConversationCard>', () => {
+    it('should render <ConversationPost>', () => {
       const props = {
         ...baseProps,
         postIds: [1, 2],
@@ -67,10 +70,13 @@ describe('StreamView', () => {
           { type: StreamItemType.POST, value: 1 },
           { type: StreamItemType.POST, value: 2 },
         ],
+        scrollToRow: () => {},
+        onListAsyncMounted: () => {},
+        loadInitialPosts: async () => {},
       };
 
       const wrapper = shallow(<StreamView {...props} />);
-      const card = wrapper.find(ConversationCard);
+      const card = wrapper.find(ConversationPost);
       const card0 = card.at(0);
       const card1 = card.at(1);
 
@@ -90,11 +96,14 @@ describe('StreamView', () => {
           { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
           { type: StreamItemType.POST, value: 2 },
         ],
+        scrollToRow: () => {},
+        onListAsyncMounted: () => {},
+        loadInitialPosts: async () => {},
       };
 
       const wrapper = shallow(<StreamView {...props} />);
 
-      expect(wrapper.find(ConversationCard)).toHaveLength(2);
+      expect(wrapper.find(ConversationPost)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
     });
 

@@ -11,8 +11,8 @@ import {
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { getFileSize } from './helper';
-
-import { FilesViewProps, FileType, ExtendFile } from './types';
+import { getFileIcon } from '../helper';
+import { FilesViewProps, FileType, ExtendFileItem } from './types';
 
 const downloadBtn = (downloadUrl: string) => (
   <JuiIconButton
@@ -28,11 +28,11 @@ const downloadBtn = (downloadUrl: string) => (
 
 class FilesView extends React.Component<FilesViewProps> {
   render() {
-    const { getFileIcon, files } = this.props;
+    const { files } = this.props;
 
     return (
       <>
-        {files[FileType.image].map((file: ExtendFile) => {
+        {files[FileType.image].map((file: ExtendFileItem) => {
           const { item, previewUrl } = file;
           const { origHeight, id, origWidth, name, downloadUrl } = item;
           return (
@@ -41,11 +41,11 @@ class FilesView extends React.Component<FilesViewProps> {
               ratio={origHeight / origWidth}
               fileName={name}
               url={previewUrl}
-              actions={downloadBtn(downloadUrl)}
+              Actions={downloadBtn(downloadUrl)}
             />
           );
         })}
-        {files[FileType.document].map((file: ExtendFile) => {
+        {files[FileType.document].map((file: ExtendFileItem) => {
           const { item, previewUrl } = file;
           const { size, type, id, name, downloadUrl } = item;
           const iconType = getFileIcon(type);
@@ -56,11 +56,11 @@ class FilesView extends React.Component<FilesViewProps> {
               size={`${getFileSize(size)}`}
               url={previewUrl}
               iconType={iconType}
-              actions={downloadBtn(downloadUrl)}
+              Actions={downloadBtn(downloadUrl)}
             />
           );
         })}
-        {files[FileType.others].map((file: ExtendFile) => {
+        {files[FileType.others].map((file: ExtendFileItem) => {
           const { item } = file;
           const { size, type, name, downloadUrl, id } = item;
           const iconType = getFileIcon(type);
@@ -70,7 +70,7 @@ class FilesView extends React.Component<FilesViewProps> {
               fileName={name}
               size={`${getFileSize(size)}`}
               iconType={iconType}
-              actions={downloadBtn(downloadUrl)}
+              Actions={downloadBtn(downloadUrl)}
             />
           );
         })}

@@ -46,11 +46,10 @@ const withLoadingMore = (
       const { loadingTop, loadingBottom, ...rest } = this.props;
       const LoadingMoreWithDelay =
         CustomizedLoadingWithDelay || DefaultLoadingMoreWithDelay;
-
       return (
         <Fragment>
           {loadingTop ? <LoadingMoreWithDelay /> : null}
-          <Component {...rest}>{rest.children}</Component>
+          <Component {...rest} />
           {loadingBottom ? <LoadingMoreWithDelay /> : null}
         </Fragment>
       );
