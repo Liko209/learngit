@@ -130,7 +130,7 @@ test(formalName('Jump to conversation bottom when click name', ['P1', 'JPT-314']
     });
 
     await h(t).withLog('Should jump to the chat page and scroll to bottom', async () => {
-      await t.expect(conversationPage.currentGroupId).eql(chat.data.id);
+      await t.expect(conversationPage.currentGroupId).eql(chat.data.id, { timeout: 2e3 });
       await conversationPage.expectStreamScrollToBottom();
     });
 
@@ -140,17 +140,17 @@ test(formalName('Jump to conversation bottom when click name', ['P1', 'JPT-314']
     });
 
     await h(t).withLog('Should jump to the group page and scroll to bottom', async () => {
-      await t.expect(conversationPage.currentGroupId).eql(group.data.id);
+      await t.expect(conversationPage.currentGroupId).eql(group.data.id, { timeout: 2e3 });
       await conversationPage.expectStreamScrollToBottom();
     });
 
     await h(t).withLog('Then I click the conversation name in the team\'s conversation card', async() => {
       await mentionsEntry.enter();
       await postListPage.postItemById(teamPost.data.id).goToConversation();
-    });
+     });
 
     await h(t).withLog('Should jump to the team page and scroll to bottom', async () => {
-      await t.expect(conversationPage.currentGroupId).eql(team.data.id);
+      await t.expect(conversationPage.currentGroupId).eql(team.data.id, { timeout: 2e3 });
       await conversationPage.expectStreamScrollToBottom();
     });
   },

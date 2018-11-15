@@ -38,7 +38,7 @@ class BaseConversationPage extends BaseWebComponent {
     const scrollTop = await this.streamWrapper.child(0).scrollTop;
     const streamHeight = await this.stream.clientHeight;
     const streamWrapperHeight = await this.streamWrapper.clientHeight;
-    await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight);
+    await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight,`${scrollTop}, ${streamHeight} - ${streamWrapperHeight}` );
   }
 }
 
@@ -104,12 +104,12 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
-  // mention page only
+  // --- mention page only ---
   get conversationName() {
     return this.self.find('.conversation-name')
   }
 
   async goToConversation() {
-    await this.t.click(this.conversationName);
+    await this.t.click(this.conversationName, { offsetX: 3 }); 
   }
 }
