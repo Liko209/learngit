@@ -9,7 +9,9 @@ import styled from '../../foundation/styled-components';
 import { JuiCardContent, JuiCard } from '../../components/Cards';
 import { spacing, typography, palette } from '../../foundation/utils/styles';
 
-const ItemCardWrapper = styled(JuiCard)``;
+const ItemCardWrapper = styled(JuiCard)`
+  margin: ${spacing(2, 0)};
+`;
 
 const ItemIcon = styled(MuiIcon)`
   && {
