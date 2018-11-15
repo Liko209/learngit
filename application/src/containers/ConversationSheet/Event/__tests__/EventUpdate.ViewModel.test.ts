@@ -10,30 +10,24 @@ jest.mock('../../../../store/utils');
 
 const mockData = {};
 
-const taskUpdateViewModel = new EventUpdateViewModel({ ids: [1], postId: 2 });
+const eventUpdateViewModel = new EventUpdateViewModel({ ids: [1], postId: 2 });
 
-describe('Task update item', () => {
-  beforeAll(() => {
-    (getEntity as jest.Mock).mockReturnValue(mockData);
-  });
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
+describe('Event update item', () => {
   it('computed _id', () => {
-    expect(taskUpdateViewModel._id).toEqual(1);
+    expect(eventUpdateViewModel._id).toEqual(1);
   });
 
   it('computed _postId', () => {
-    expect(taskUpdateViewModel._postId).toEqual(2);
+    expect(eventUpdateViewModel._postId).toEqual(2);
   });
 
   it('computed post', () => {
-    expect(taskUpdateViewModel.post).toBe(mockData);
+    (getEntity as jest.Mock).mockReturnValue(mockData);
+    expect(eventUpdateViewModel.post).toBe(mockData);
   });
 
   it('computed event', () => {
-    expect(taskUpdateViewModel.event).toBe(mockData);
+    (getEntity as jest.Mock).mockReturnValue(mockData);
+    expect(eventUpdateViewModel.event).toBe(mockData);
   });
 });

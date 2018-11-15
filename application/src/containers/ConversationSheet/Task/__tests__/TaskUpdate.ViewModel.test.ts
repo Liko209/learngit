@@ -14,14 +14,6 @@ const mockData = {};
 const taskUpdateViewModel = new TaskUpdateViewModel({ ids: [1], postId: 2 });
 
 describe('Task update item', () => {
-  beforeAll(() => {
-    (getEntity as jest.Mock).mockReturnValue(mockData);
-  });
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('computed _id', () => {
     expect(taskUpdateViewModel._id).toEqual(1);
   });
@@ -31,10 +23,12 @@ describe('Task update item', () => {
   });
 
   it('computed post', () => {
+    (getEntity as jest.Mock).mockReturnValue(mockData);
     expect(taskUpdateViewModel.post).toBe(mockData);
   });
 
   it('computed task', () => {
+    (getEntity as jest.Mock).mockReturnValue(mockData);
     expect(taskUpdateViewModel.task).toBe(mockData);
   });
 });
