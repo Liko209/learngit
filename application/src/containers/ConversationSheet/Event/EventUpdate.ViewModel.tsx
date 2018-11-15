@@ -9,10 +9,11 @@ import { Item, Post } from 'sdk/models';
 import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { EventUpdateViewProps } from './types';
+import { EventUpdateViewProps, EventUpdateProps } from './types';
 import { EventItem } from '@/store/models/Items';
 
-class EventUpdateViewModel extends StoreViewModel<EventUpdateViewProps> {
+class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
+  implements EventUpdateViewProps {
   @computed
   get _id() {
     return this.props.ids[0];
@@ -31,6 +32,11 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateViewProps> {
   @computed
   get event() {
     return getEntity<Item, EventItem>(ENTITY_NAME.ITEM, this._id);
+  }
+
+  @computed
+  get activityData() {
+    return this.post.activityData || {};
   }
 }
 

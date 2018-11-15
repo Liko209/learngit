@@ -294,7 +294,7 @@ test.skip(formalName('Current opened conversation should not display UMI', ['JPT
   },
 );
 
-test(formalName('Should not display UMI when section is expended & Should display UMI when section is collapsed',
+test.skip(formalName('Should not display UMI when section is expended & Should display UMI when section is collapsed',
   ['JPT-98', 'JPT-99', 'P2', 'P1', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
@@ -520,13 +520,6 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     const user = users[7];
     user.sdk = await h(t).getSdk(user);
 
-
-    const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
-    const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
-
     let group1, group2, group3, team1, team2;
     await h(t).withLog('Given I have an extension with a team and a private chat', async () => {
       group1 = await user.sdk.platform.createGroup({
@@ -578,12 +571,17 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
       },
     );
 
+    const directMessagesSection =
+      app.homePage.messagePanel.directMessagesSection;
+    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const favoritesSection = app.homePage.messagePanel.favoritesSection;
     await h(t).withLog('Then I click group3 to make sure other conversations are not selected',
       async () => {
-        await t.click(directMessagesSection.conversations.filter(`[data-group-id="${group3.data.id}"]`));
+        await directMessagesSection.conversationByIdEntry(group3.data.id).enter()
       },
     );
 
+    const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
     await h(t).withLog('Send posts to conversations', async () => {
       await user5Platform.createPost(
         { text: 'TestGroupUMI' },
@@ -601,28 +599,18 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
       await t.wait(1e3);
     });
 
+    const favoriteButton = app.homePage.messagePanel.moreMenu.favoriteToggler;
     await h(t).withLog('Favorite the two groups with UMI', async () => {
-      const item = directMessagesSection.conversations.filter(`[data-group-id="${group1.data.id}"]`);
-      const moreIcon = item.find('span').withText('more_vert');
-      await t.click(moreIcon);
-      const favoriteButton = app.homePage
-        .getSelector('#render-props-menu')
-        .find('li[data-test-automation-id="favToggler"]');
-      await t.click(favoriteButton);
+      await directMessagesSection.conversationByIdEntry(group1.data.id).openMoreMenu();
+      await favoriteButton.enter();
 
-      const item2 = teamsSection.conversations.filter(`[data-group-id="${team1.data.id}"]`);
-      const moreIcon2 = item2.find('span').withText('more_vert');
-      await t.click(moreIcon2);
-      const favoriteButton2 = app.homePage
-        .getSelector('#render-props-menu')
-        .find('li[data-test-automation-id="favToggler"]');
-      await t.click(favoriteButton2);
+      await teamsSection.conversationByIdEntry(team1.data.id).openMoreMenu();
+      await favoriteButton.enter();
     });
 
     await h(t).withLog('Should have 2 umi in header of favorite sections', async () => {
-      const header = favoritesSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('2');
+      const count = await favoritesSection.getHeaderUmi();
+      await t.expect(count).eql(2);
     });
 
     await h(t).withLog('Fold direct messages and teams section', async () => {
@@ -632,25 +620,13 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     });
 
     await h(t).withLog('Should not have umi in header of team sections', async () => {
-      const header = teamsSection.header;
-      const umi = header.child('.umi');
-      const count = await umi.count;
-      if (count === 1) {
-        await t.expect(umi.textContent).eql('');
-      } else {
-        await t.expect(umi.count).eql(0);
-      }
+      const count = await teamsSection.getHeaderUmi();
+      await t.expect(count).eql(0);
     });
 
     await h(t).withLog('Should not have umi in header of direct messages sections', async () => {
-      const header = directMessagesSection.header;
-      const umi = header.child('.umi');
-      const count = await umi.count;
-      if (count === 1) {
-        await t.expect(umi.textContent).eql('');
-      } else {
-        await t.expect(umi.count).eql(0);
-      }
+      const count = await directMessagesSection.getHeaderUmi();
+      await t.expect(count).eql(0);
     });
 
     await h(t).withLog('Expand favorite section', async () => {
@@ -659,25 +635,11 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     });
 
     await h(t).withLog('Remove the two groups with UMI from Favorites', async () => {
-      const item = favoritesSection.conversations.filter(
-        `[data-group-id="${group1.data.id}"]`,
-      );
-      const moreIcon = item.find('span').withText('more_vert');
-      await t.click(moreIcon);
-      const favoriteButton = app.homePage
-        .getSelector('#render-props-menu')
-        .find('li[data-test-automation-id="favToggler"]');
-      await t.click(favoriteButton);
+      await favoritesSection.conversationByIdEntry(group1.data.id).openMoreMenu();
+      await favoriteButton.enter();
 
-      const item2 = favoritesSection.conversations.filter(
-        `[data-group-id="${team1.data.id}"]`,
-      );
-      const moreIcon2 = item2.find('span').withText('more_vert');
-      await t.click(moreIcon2);
-      const favoriteButton2 = app.homePage
-        .getSelector('#render-props-menu')
-        .find('li[data-test-automation-id="favToggler"]');
-      await t.click(favoriteButton2);
+      await favoritesSection.conversationByIdEntry(team1.data.id).openMoreMenu();
+      await favoriteButton.enter();
     });
 
     await h(t).withLog('Fold favorite section', async () => {
@@ -686,26 +648,18 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     });
 
     await h(t).withLog('Should not have umi in header of favorite sections', async () => {
-      const header = favoritesSection.header;
-      const umi = header.child('.umi');
-      const count = await umi.count;
-      if (count === 1) {
-        await t.expect(umi.textContent).eql('');
-      } else {
-        await t.expect(umi.count).eql(0);
-      }
+      const count = await favoritesSection.getHeaderUmi();
+      await t.expect(count).eql(0);
     });
 
     await h(t).withLog('Should have 1 umi in header of direct messages sections', async () => {
-      const header = directMessagesSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('1');
+      const count = await directMessagesSection.getHeaderUmi();
+      await t.expect(count).eql(1);
     });
 
     await h(t).withLog('Should have 1 umi in header of team sections', async () => {
-      const header = teamsSection.header;
-      const umi = header.child('.umi');
-      await t.expect(umi.textContent).eql('1');
+      const count = await teamsSection.getHeaderUmi();
+      await t.expect(count).eql(1);
     });
   },
 );

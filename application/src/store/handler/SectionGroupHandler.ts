@@ -191,6 +191,70 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         });
       },
     );
+    this.subscribeNotification(
+      ENTITY.GROUP_STATE,
+      (payload: NotificationEntityPayload<GroupState>) => {
+        this._handleIncomesGroupState(payload);
+      },
+    );
+  }
+
+  private async _handleWithUnread(ids: number[]) {
+    const diff = _.difference(ids, [...this._idSet]);
+    if (diff.length) {
+      const groupService = GroupService.getInstance<service.GroupService>();
+      const result = await groupService.getGroupsByIds(diff);
+      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(result);
+      this._handlersMap[SECTION_TYPE.TEAM].upsert(result);
+      this._updateIdSet(EVENT_TYPES.UPDATE, diff);
+    }
+  }
+
+  private async _handleWithoutUnread(ids: number[]) {
+    const diff = _.intersection(ids, [...this._idSet]);
+    if (!diff.length) {
+      return;
+    }
+    const profileService = ProfileService.getInstance<service.ProfileService>();
+    const limit = await profileService.getMaxLeftRailGroup();
+    const idsShouldBeRemoved: number[] = [];
+    const directIds = this.getGroupIds(SECTION_TYPE.DIRECT_MESSAGE);
+    const teamIds = this.getGroupIds(SECTION_TYPE.TEAM);
+    diff.forEach((id: number) => {
+      if (directIds.indexOf(id) >= limit || teamIds.indexOf(id) >= limit) {
+        idsShouldBeRemoved.push(id);
+      }
+    });
+    this._removeByIds(SECTION_TYPE.DIRECT_MESSAGE, idsShouldBeRemoved);
+    this._removeByIds(SECTION_TYPE.TEAM, idsShouldBeRemoved);
+  }
+
+  private async _handleIncomesGroupState(
+    payload: NotificationEntityPayload<GroupState>,
+  ) {
+    if (
+      payload.type !== EVENT_TYPES.UPDATE ||
+      !payload.body.entities ||
+      this._idSet.size === 0
+    ) {
+      return;
+    }
+    const unreadIds: number[] = [];
+    const withoutUnreadIds: number[] = [];
+    const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    payload.body.entities.forEach((state: GroupState) => {
+      const hasUnread =
+        state.marked_as_unread ||
+        state.unread_count ||
+        state.unread_mentions_count;
+      if (hasUnread) {
+        unreadIds.push(state.id);
+      } else if (currentId !== state.id) {
+        withoutUnreadIds.push(state.id);
+      }
+    });
+    this._handleWithUnread(unreadIds);
+    this._handleWithoutUnread(withoutUnreadIds);
   }
 
   private _updateUrl(type: EVENT_TYPES, ids: number[]) {
@@ -244,12 +308,16 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     });
   }
   private _addDirectMessageSection() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isMatchFun = (model: Group) => {
       const notInFav =
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         this._hiddenGroupIds.indexOf(model.id) === -1;
       const isDirectInDirectSection = !model.is_team;
-      return notInFav && isDirectInDirectSection;
+      const createdByMeOrHasPostTime: boolean =
+        model.most_recent_post_created_at !== undefined ||
+        model.creator_id === currentUserId;
+      return notInFav && isDirectInDirectSection && createdByMeOrHasPostTime;
     };
     this._addSection(SECTION_TYPE.DIRECT_MESSAGE, GROUP_QUERY_TYPE.GROUP, {
       isMatchFunc: isMatchFun,
@@ -310,11 +378,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _removeOverLimitGroupByChangingCurrentGroupId(
     type: SECTION_TYPE,
     limit: number,
+    lastGroupId: number,
   ) {
-    const lastGroupIndex = this.getGroupIds(type).indexOf(this._lastGroupId);
+    const lastGroupIndex = this.getGroupIds(type).indexOf(lastGroupId);
     if (lastGroupIndex >= limit) {
-      if (!this._hasUnreadInGroups([this._lastGroupId])) {
-        this._removeByIds(type, [this._lastGroupId]);
+      const result = await !this._hasUnreadInGroups([lastGroupId]);
+      if (result) {
+        this._removeByIds(type, [lastGroupId]);
       }
     }
   }
@@ -341,15 +411,18 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   async removeOverLimitGroupByChangingCurrentGroupId() {
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     const profileService = ProfileService.getInstance<service.ProfileService>();
+    const lastGroupId = this._lastGroupId;
     const limit = await profileService.getMaxLeftRailGroup();
-    if (currentId !== this._lastGroupId) {
+    if (currentId !== lastGroupId) {
       await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.DIRECT_MESSAGE,
         limit,
+        lastGroupId,
       );
       await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.TEAM,
         limit,
+        lastGroupId,
       );
       this._lastGroupId = currentId;
     }

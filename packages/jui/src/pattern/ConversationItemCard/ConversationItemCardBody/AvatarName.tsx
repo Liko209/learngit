@@ -9,14 +9,14 @@ import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils/styles';
 
 type Props = {
-  avatar: JSX.Element;
+  Avatar: JSX.Element;
   name: string;
 };
 
 const StyledAvatarName = styled.div`
   display: flex;
   align-items: flex-end;
-  margin-right: ${spacing(1)};
+  margin: ${spacing(0, 1, 1, 0)};
 `;
 
 const StyledName = styled.span`
@@ -27,7 +27,7 @@ const StyledName = styled.span`
 
 const JuiAvatarName = (props: Props) => (
   <StyledAvatarName>
-    {props.avatar} <StyledName>{props.name}</StyledName>
+    {props.Avatar} <StyledName>{props.name}</StyledName>
   </StyledAvatarName>
 );
 

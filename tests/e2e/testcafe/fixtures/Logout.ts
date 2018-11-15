@@ -23,12 +23,11 @@ test(formalName('Logout', ['JPT-70', 'P0', 'Logout']), async (t) => {
     await h(t).withLog('Then I can open setting menu in home page', async () => {
         await app.homePage.openSettingMenu();
         await app.homePage.settingMenu.ensureLoaded();
-    })
+    });
     await h(t).withLog('When I click logout button in setting menu', async () => {
         await app.homePage.settingMenu.clickLogout();
-
-    })
+    });
     await h(t).withLog('Then I should logout from Jupiter and back to login page', async () => {
         await t.expect(h(t).href).contains('unified-login');
-    }, true)
+    }, true);
 });

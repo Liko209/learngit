@@ -1,6 +1,6 @@
 #!/usr/local/bin/bash
 
-if [ "MERGE" != "${gitlabActionType}" ]
+if [ "$gitlabTargetBranch" == "$gitlabSourceBranch" ]
 then
   echo "Skip e2e for action : ${gitlabActionType}"
   exit 0
@@ -17,7 +17,7 @@ export SELENIUM_SERVER=$SELENIUM_SERVER
 export BROWSERS=$BROWSERS
 export RC_PLATFORM_APP_KEY=$RC_PLATFORM_APP_KEY
 export RC_PLATFORM_APP_SECRET=$RC_PLATFORM_APP_SECRET
-export ACTION="ON_${gitlabActionType}"
+export ACTION="ON_MERGE"
 export BRANCH="${gitlabBranch}"
 export ENABLE_REMOTE_DASHBOARD=true
 

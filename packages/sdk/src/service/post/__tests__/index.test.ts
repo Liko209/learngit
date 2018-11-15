@@ -195,6 +195,19 @@ describe('PostService', () => {
       });
       expect(PostAPI.requestPosts).not.toHaveBeenCalled();
     });
+
+    it('should return hasMore = true if request failed', async () => {
+      groupService.getById.mockResolvedValue({
+        most_recent_post_id: 1,
+      });
+      PostAPI.requestPosts.mockRejectedValueOnce({});
+      const result = await postService.getPostsFromRemote({
+        groupId: 1,
+        postId: 1,
+        limit: 1,
+      });
+      expect(result.hasMore).toBe(true);
+    });
   });
 
   describe('getPostsByGroupId()', () => {

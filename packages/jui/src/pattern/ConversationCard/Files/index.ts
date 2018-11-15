@@ -7,3 +7,4 @@ export * from './WithoutPreview';
 export * from './WithPreview';
 export * from './PreviewImage';
 export * from './FileWithExpand';
+export * from './ExpandImage';

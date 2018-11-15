@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import debounce from 'lodash/debounce';
-import React, { Component, ComponentType } from 'react';
+import React, { ComponentType, PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { noop } from '../../foundation/utils';
 import _ from 'lodash';
@@ -41,24 +41,17 @@ type TScroller = {
     options?: ScrollIntoViewOptions | boolean,
     itemSelector?: string,
   ) => void;
+  onListAsyncMounted: (el: React.RefObject<HTMLElement>) => void;
 };
-const stickToBottomStyle = `
-  // display: flex;
-  // flex-direction: column;
-  // && > div {
-  //   margin-top:auto;
-  // }
-`;
 
 const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
   overflow: auto;
   height: 100%;
   position: relative;
-  ${({ stickTo }) => (stickTo === 'bottom' ? stickToBottomStyle : null)};
 `;
 
 function withScroller(Comp: ComponentType<any>) {
-  return class Scroller extends Component<ScrollerProps, ScrollerStates>
+  return class Scroller extends PureComponent<ScrollerProps, ScrollerStates>
     implements TScroller {
     static defaultProps = {
       thresholdUp: 100,
@@ -72,9 +65,10 @@ function withScroller(Comp: ComponentType<any>) {
       triggerScrollToOnMount: false,
     };
     private _scrollElRef: React.RefObject<any> = React.createRef();
+    private _list: HTMLElement | null;
+    private _previousPosition: ScrollerSnapShot;
 
     private get _scrollEl(): HTMLElement {
-      if (!this._scrollElRef.current) throw new Error();
       return this._scrollElRef.current;
     }
 
@@ -93,26 +87,36 @@ function withScroller(Comp: ComponentType<any>) {
             {...this.props}
             setRowVisible={this.scrollToRow}
             atBottom={this._isAtBottom}
+            scrollToRow={this.scrollToRow}
+            onListAsyncMounted={this.onListAsyncMounted}
           />
         </StyledScroller>
       );
     }
 
+    onListAsyncMounted = (list: React.RefObject<HTMLElement>) => {
+      /* This function is called especially when the list is mounted after withScroller mounted*/
+      this._list = list.current;
+    }
+
     componentDidMount() {
+      if (this._list) {
+        this._list = this._scrollEl.querySelector('section');
+      }
       this._scrollEl.scrollTop = this.props.initialScrollTop;
       this.attachScrollListener();
     }
 
     getSnapshotBeforeUpdate() {
-      const wrapper = this._scrollEl.lastElementChild;
-      if (!wrapper) {
-        return;
+      if (!this._list) {
+        return {};
       }
-      return {
+      this._previousPosition = {
         atTop: this._isAtTop(0),
         atBottom: this._isAtBottom(0),
-        height: wrapper.getBoundingClientRect().height,
+        height: this._list.getBoundingClientRect().height,
       };
+      return this._previousPosition;
     }
 
     componentDidUpdate(
@@ -123,10 +127,13 @@ function withScroller(Comp: ComponentType<any>) {
       if (!snapShot) {
         return;
       }
+      this.stickToCurrentPosition(snapShot);
+    }
+
+    stickToCurrentPosition(snapShot: ScrollerSnapShot) {
       const { atBottom, atTop, height } = snapShot;
       const { stickTo } = this.props;
-      const wrapper = this._scrollEl.lastElementChild;
-      if (!wrapper) {
+      if (!this._list) {
         return;
       }
       if (stickTo === 'bottom') {
@@ -134,7 +141,8 @@ function withScroller(Comp: ComponentType<any>) {
           this.scrollToRow(-1);
         }
         if (atTop) {
-          const addedHeight = wrapper.getBoundingClientRect().height - height;
+          const addedHeight =
+            this._list.getBoundingClientRect().height - height;
           this._scrollEl.scrollTop += addedHeight;
         }
       }
@@ -143,11 +151,11 @@ function withScroller(Comp: ComponentType<any>) {
           this.scrollToRow(0);
         }
       }
-      this.attachScrollListener();
     }
 
     componentWillUnmount() {
       this.detachScrollListener();
+      this._list = null;
     }
 
     attachScrollListener() {
@@ -193,7 +201,7 @@ function withScroller(Comp: ComponentType<any>) {
       options: ScrollIntoViewOptions | boolean = false,
       itemSelector: string = 'div',
     ) => {
-      const listEl = this._scrollEl.lastElementChild;
+      const listEl = this._list;
       if (!listEl) {
         return;
       }
@@ -213,7 +221,7 @@ function withScroller(Comp: ComponentType<any>) {
       id: string,
       options: ScrollIntoViewOptions | boolean = false,
     ) => {
-      const listEl = this._scrollEl.firstElementChild;
+      const listEl = this._list;
       if (!listEl) {
         return;
       }

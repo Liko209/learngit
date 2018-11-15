@@ -1,8 +1,8 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2018-10-08 16:29:08
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-10-08 16:29:08
+ * Copyright © RingCentral. All rights reserved.
+ */
 import moment from 'moment';
 import PostModel from '@/store/models/Post';
 import {
@@ -31,7 +31,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   @computed
   get hideText() {
     const { activityData } = this.post;
-    return activityData && activityData.object_id;
+    return activityData && (activityData.object_id || activityData.key);
   }
 
   @computed
