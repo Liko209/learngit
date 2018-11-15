@@ -45,6 +45,10 @@ const StyledListItem = styled(MuiListItem)`
   &&.selected {
     background: white;
 
+    &&:hover {
+      background-color: ${grey('50')};
+    }
+
     p {
       color: ${palette('primary', 'main')};
     }
