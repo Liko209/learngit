@@ -43,7 +43,6 @@ const transformFunc = (dataModel: Post) => ({
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
-  private _postService: PostService = PostService.getInstance();
   private _initialized = false;
 
   @observable
@@ -116,15 +115,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this.groupId === props.groupId) {
       return;
     }
-    if (this._transformHandler) {
-      this.dispose();
-    }
 
     this.groupId = props.groupId;
+
+    this.dispose();
+
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (offset: number, direction, pageSize, anchor) => {
         try {
-          const { posts, hasMore } = await this._postService.getPostsByGroupId({
+          const postService: PostService = PostService.getInstance();
+          const { posts, hasMore } = await postService.getPostsByGroupId({
             offset,
             groupId: props.groupId,
             postId: anchor && anchor.id,
@@ -226,7 +226,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   dispose() {
     super.dispose();
-    this._transformHandler.dispose();
+    if (this._transformHandler) {
+      this._transformHandler.dispose();
+    }
   }
 
   private async _prepareAllData(posts: Post[]) {
