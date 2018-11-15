@@ -20,7 +20,10 @@ import { StreamViewProps, StreamItem, StreamItemType } from './types';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 
-type Props = WithNamespaces & StreamViewProps;
+type Props = WithNamespaces &
+  StreamViewProps & {
+    onListAsyncMounted: (ref: React.RefObject<HTMLElement>) => void;
+  };
 
 @observer
 class StreamViewComponent extends Component<Props> {
