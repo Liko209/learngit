@@ -123,6 +123,41 @@ describe('HistoryHandler', () => {
     });
   });
 
+  describe('getFirstUnreadPostId()', () => {
+    it('should return first unread post id', () => {
+      const unreadCount = 1;
+      const newestPostId = 5;
+      const postIds = [1, 2, 3, 4, 5];
+
+      const handler = setup({ newestPostId, groupState: { unreadCount } });
+      const postId = handler.getFirstUnreadPostId(postIds);
+
+      expect(postId).toBe(5);
+    });
+
+    it('should return undefined when newestPostId not existed', () => {
+      const unreadCount = 1;
+      const newestPostId = undefined;
+      const postIds = [1, 2, 3, 4, 5];
+
+      const handler = setup({ newestPostId, groupState: { unreadCount } });
+      const postId = handler.getFirstUnreadPostId(postIds);
+
+      expect(postId).toBeFalsy();
+    });
+
+    it('should return undefined when first unread posts not in current posts', () => {
+      const unreadCount = 6;
+      const newestPostId = 5;
+      const postIds = [1, 2, 3, 4, 5];
+
+      const handler = setup({ newestPostId, groupState: { unreadCount } });
+      const postId = handler.getFirstUnreadPostId(postIds);
+
+      expect(postId).toBeFalsy();
+    });
+  });
+
   describe('getDistanceToFirstUnread()', () => {
     it('should return distance to first unread', () => {
       const unreadCount = 10;

@@ -3,6 +3,7 @@
  * @Date: 2018-09-17 14:01:06
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
 import React, { Component } from 'react';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
@@ -29,7 +30,7 @@ type Props = WithNamespaces &
 class StreamViewComponent extends Component<Props> {
   private _listRef: React.RefObject<HTMLElement> = React.createRef();
 
-  private _firstUnreadCardRef: React.ReactInstance | null = null;
+  private _postRefs: Map<number, any> = new Map();
 
   private _timeout: NodeJS.Timeout | null;
 
@@ -46,6 +47,9 @@ class StreamViewComponent extends Component<Props> {
     this.props.onListAsyncMounted(this._listRef);
     await this.props.loadInitialPosts();
     this.props.scrollToRow(-1);
+    Object.assign(window, {
+      v: this,
+    });
   }
 
   componentWillUnmount() {
@@ -57,7 +61,7 @@ class StreamViewComponent extends Component<Props> {
     if (prevProps.groupId !== this.props.groupId) {
       this._jumpToFirstUnreadLoading = false;
       this._firstHistoryUnreadPostViewed = false;
-      this._firstUnreadCardRef = null;
+      this._postRefs.clear();
       await this.props.loadInitialPosts();
       this.props.scrollToRow(-1);
     }
@@ -79,7 +83,7 @@ class StreamViewComponent extends Component<Props> {
           onChange={this._handleFirstUnreadPostVisibilityChange}
         >
           <ConversationPost
-            ref={this._setFirstUnreadCardRef}
+            ref={this._setPostRef}
             id={streamItem.value}
             key={`VisibilitySensor${streamItem.value}`}
           />
@@ -87,7 +91,16 @@ class StreamViewComponent extends Component<Props> {
       );
     }
 
-    return <ConversationPost id={streamItem.value} key={streamItem.value} />;
+    if (!firstHistoryUnreadPostId) {
+    }
+
+    return (
+      <ConversationPost
+        ref={this._setPostRef}
+        id={streamItem.value}
+        key={streamItem.value}
+      />
+    );
   }
 
   private _renderNewMessagesDivider(streamItem: StreamItem) {
@@ -121,7 +134,14 @@ class StreamViewComponent extends Component<Props> {
 
   private get _initialPost() {
     const { groupId, hasMore } = this.props;
-    return hasMore ? null : <ConversationInitialPost id={groupId} />;
+    return hasMore ? null : (
+      <VisibilitySensor
+        offset={VISIBILITY_SENSOR_OFFSET}
+        onChange={this._handleFirstUnreadPostVisibilityChange}
+      >
+        <ConversationInitialPost id={groupId} />
+      </VisibilitySensor>
+    );
   }
 
   private get _streamItems() {
@@ -191,10 +211,27 @@ class StreamViewComponent extends Component<Props> {
     clearTimeout(this._timeout);
     this._timeout = null;
     this._jumpToFirstUnreadLoading = false;
-    if (!firstUnreadPostId) return;
+
+    const scrollToPostId = firstUnreadPostId
+      ? firstUnreadPostId
+      : _.first(this.props.postIds);
+
+    if (!scrollToPostId) {
+      console.warn(
+        `scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} scrollToPostId:${scrollToPostId}`,
+      );
+      return;
+    }
 
     window.requestAnimationFrame(() => {
-      scrollToComponent(this._firstUnreadCardRef, {
+      const scrollToPostEl = this._postRefs.get(scrollToPostId);
+
+      if (!scrollToPostEl) {
+        console.warn('scrollToPostEl no found');
+        return;
+      }
+
+      scrollToComponent(scrollToPostEl, {
         behavior: 'smooth',
         block: 'center',
       });
@@ -210,9 +247,9 @@ class StreamViewComponent extends Component<Props> {
     this.props.enableNewMessageSeparatorHandler();
   }
 
-  private _setFirstUnreadCardRef = (card: any) => {
-    if (!card) return;
-    this._firstUnreadCardRef = card;
+  private _setPostRef = (postRef: any) => {
+    if (!postRef) return;
+    this._postRefs.set(postRef.props.id, postRef);
   }
 }
 
