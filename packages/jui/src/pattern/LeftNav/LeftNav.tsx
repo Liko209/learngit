@@ -10,7 +10,6 @@ import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
 import { JuiArrowTip } from '../../components/index';
 import { height, grey, palette, spacing } from '../../foundation/utils/styles';
-import { History } from 'history';
 
 import {
   JuiListItem,
@@ -145,24 +144,13 @@ type JuiLeftNavProps = {
     umi?: JSX.Element;
   }[][];
   onRouteChange: Function;
-  history: History<any>;
+  selectedPath: string;
 };
 
 class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
-  selectedPath: string = window.location.pathname.split('/')[1];
   onRouteChangeHandlers: {
     [id: string]: (event: React.MouseEvent<HTMLAnchorElement>) => void;
   } = {};
-  componentDidMount() {
-    const { history } = this.props;
-    history.listen(() => {
-      const newSelectedPath = window.location.pathname.split('/')[1];
-      if (this.selectedPath !== newSelectedPath) {
-        this.selectedPath = newSelectedPath;
-        this.forceUpdate();
-      }
-    });
-  }
 
   onRouteChange = (url: string) => {
     if (this.onRouteChangeHandlers[url]) {
@@ -176,14 +164,14 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
   }
 
   renderNavItems = () => {
-    const { icons, expand } = this.props;
+    const { icons, expand, selectedPath } = this.props;
     return icons.map((arr, idx) => {
       return (
         <MuiList component="nav" disablePadding={true} key={idx}>
           {arr.map((item, index) => {
             const navUrl = item.url;
             const navPath = navUrl.split('/')[1];
-            const selected = this.selectedPath === navPath;
+            const selected = selectedPath === navPath;
             const NavItem = (
               <StyledListItem
                 button={true}
