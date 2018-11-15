@@ -14,12 +14,14 @@ const SIDEBAR_MIN_WIDTH = 180;
 const SIDEBAR_MAX_WIDTH = 360;
 
 type Props = {
+  tag: string; // This tag is used to record widths of various types
   children: JSX.Element[];
   mainPanelIndex: number;
 };
 
 type Panels = {
   width: number;
+  localWidth?: number;
   minWidth: number;
   maxWidth?: number;
 };
@@ -77,12 +79,29 @@ class JuiColumnResponse extends PureComponent<Props, States> {
           minWidth: MAIN_MIN_WIDTH,
         };
       }
+
+      const localWidth = this.getLocalWidth(index);
       return {
-        width: SIDEBAR_DEFAULT_WIDTH,
+        localWidth,
+        width: localWidth, // current width
         minWidth: SIDEBAR_MIN_WIDTH,
         maxWidth: SIDEBAR_MAX_WIDTH,
       };
     });
+  }
+
+  getLocalKey = (index: number) => {
+    const { tag } = this.props;
+    return `responsive-${tag}-${index}`;
+  }
+
+  getLocalWidth = (index: number) => {
+    const value = localStorage.getItem(this.getLocalKey(index));
+    return Number(value) || SIDEBAR_DEFAULT_WIDTH;
+  }
+
+  setLocalWidth = (index: number, value: number) => {
+    return localStorage.setItem(this.getLocalKey(index), String(value));
   }
 
   componentDidMount() {
@@ -105,25 +124,49 @@ class JuiColumnResponse extends PureComponent<Props, States> {
     const count = clonePanels.length;
     const mainPanel = clonePanels[mainPanelIndex];
 
-    if (mainWidth > MAIN_MIN_WIDTH) {
-      // main panel auto set width (flex: 1)
-      mainPanel.width = mainWidth;
-      // todo stretch sidebar panel
-    } else if (mainWidth <= MAIN_MIN_WIDTH) {
-      mainPanel.width = MAIN_MIN_WIDTH; // Keep minimum
+    if (mainWidth <= MAIN_MIN_WIDTH) {
+      mainPanel.width = MAIN_MIN_WIDTH; // keep main panel minimum
       for (let i = count - 1; i >= 0; i--) {
         if (i === mainPanelIndex) {
           continue;
         }
-        const panel = clonePanels[i];
+        const panel = clonePanels[i]; // last panel
         const sum = this.getSumExceptOneself(clonePanels, i);
-        panel.width = wrapperWidth - sum; // Set panel width
+        panel.width = wrapperWidth - sum; // 1. shrink panel
         if (panel.width < panel.minWidth) {
-          panel.width = 0;
+          panel.width = 0; // 2. hide panel
           const sum = this.getSumExceptOneself(clonePanels, mainPanelIndex);
+          mainPanel.width = wrapperWidth - sum; // stretch main panel
+        }
+        // ensure value is correct, because setState is micro task
+        if (mainPanel.width <= MAIN_MIN_WIDTH) {
+          mainPanel.width = MAIN_MIN_WIDTH;
+        }
+      }
+    } else {
+      for (let j = 0; j < count; j++) {
+        if (j === mainPanelIndex) {
+          const sum = this.getSumExceptOneself(clonePanels, j);
           mainPanel.width = wrapperWidth - sum;
-          if (mainPanel.width <= MAIN_MIN_WIDTH) {
-            mainPanel.width = MAIN_MIN_WIDTH; // Keep minimum
+          continue;
+        }
+        const panel = clonePanels[j]; // first panel
+        if (panel.width === 0 && mainWidth >= MAIN_MIN_WIDTH + panel.minWidth) {
+          panel.width = panel.minWidth; // 1. show panel
+          const sum = this.getSumExceptOneself(clonePanels, j);
+          mainPanel.width = wrapperWidth - sum;
+        }
+        if (panel.width >= panel.minWidth) {
+          if (panel.width < panel.localWidth) {
+            mainPanel.width = MAIN_MIN_WIDTH;
+            const sum = this.getSumExceptOneself(clonePanels, j);
+            panel.width = wrapperWidth - sum; // 2. stretch panel
+          }
+          // ensure value is correct, because setState is micro task
+          if (panel.width > panel.localWidth) {
+            panel.width = panel.localWidth; // 3. original panel
+            const sum = this.getSumExceptOneself(clonePanels, j);
+            mainPanel.width = wrapperWidth - sum;
           }
         }
       }
