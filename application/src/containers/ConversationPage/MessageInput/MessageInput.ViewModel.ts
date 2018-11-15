@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed, when } from 'mobx';
+import { action, observable, computed } from 'mobx';
 import { Quill } from 'quill';
 import { debounce, Cancelable } from 'lodash';
 import { AbstractViewModel } from '@/base';
@@ -30,9 +30,10 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
   private _groupService: GroupService;
   private _postService: PostService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
-  private _isInit: boolean;
-  @observable
-  _id: number;
+  @computed
+  private get _id() {
+    return this.props.id;
+  }
   @observable
   draft: string = '';
   @observable
@@ -53,29 +54,20 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
       500,
     );
     this._sendPost = this._sendPost.bind(this);
-    this._isInit = false;
-  }
-
-  onReceiveProps({ id }: MessageInputProps) {
-    if (id !== this._id) {
-      this._init(id);
-    }
-  }
-
-  @action
-  private _init(id: number) {
-    this._id = id;
-    if (this._isInit) {
-      this.draft = this._initDraft;
-    } else {
-      this._isInit = true;
-      when(
-        () => !!this._initDraft,
-        () => {
+    this.reaction(
+      () => this._initDraft,
+      () => {
+        if (this.draft !== this._initDraft) {
           this.draft = this._initDraft;
-        },
-      );
-    }
+        }
+      },
+    );
+    this.reaction(
+      () => this._id,
+      () => {
+        this.error = '';
+      },
+    );
   }
 
   @action
