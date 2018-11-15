@@ -294,7 +294,7 @@ test.skip(formalName('Current opened conversation should not display UMI', ['JPT
   },
 );
 
-test(formalName('Should not display UMI when section is expended & Should display UMI when section is collapsed',
+test.skip(formalName('Should not display UMI when section is expended & Should display UMI when section is collapsed',
   ['JPT-98', 'JPT-99', 'P2', 'P1', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
@@ -513,7 +513,7 @@ test(formalName('Should not display UMI when section is expended & Should displa
   },
 );
 
-test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123', 'P1', 'ConversationList']),
+test.skip(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123', 'P1', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
