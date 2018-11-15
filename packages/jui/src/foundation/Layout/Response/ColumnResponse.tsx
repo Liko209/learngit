@@ -4,10 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { PureComponent } from 'react';
+import React, { PureComponent, MouseEvent as ReactMouseEvent } from 'react';
 import styled from '../../styled-components';
 import { addResizeListener, removeResizeListener } from './optimizer';
 import { cloneDeep } from 'lodash';
+
+import JuiHorizonResizer from './HorizonResizer';
 
 const MAIN_MIN_WIDTH = 400;
 const SIDEBAR_DEFAULT_WIDTH = 268;
@@ -29,29 +31,31 @@ type Panels = {
 
 type States = {
   panels: Panels[];
+  currentElement: Element | null; // Resizer(vertical line)
+  currentIndex: number;
 };
 
 const StyledWrapper = styled('div')`
   display: flex;
   height: 100%;
   width: 100%;
+  position: relative;
 `;
 
 type PropsSidebarPanel = {
   width: number;
 };
 
-const StyledSidebarPanel = styled('div').attrs({ className: 'panel-sidebar' })`
+const StyledSidebarPanel = styled('div')`
   height: 100%;
   flex-basis: ${(props: PropsSidebarPanel) => `${props.width}px`};
   display: ${(props: PropsSidebarPanel) =>
     props.width > 0 ? 'inline-block' : 'none'};
 `;
 
-const StyledMainPanel = styled('div').attrs({ className: 'panel-main' })`
+const StyledMainPanel = styled('div')`
   height: 100%;
   flex: 1;
-  /* min-width: ${MAIN_MIN_WIDTH}px; */
   border: 1px solid red;
 `;
 
@@ -61,11 +65,18 @@ class JuiColumnResponse extends PureComponent<Props, States> {
 
   constructor(props: Props) {
     super(props);
-    this.state = { panels: this.getPanelsData() };
+    this.state = {
+      panels: this.getPanelsData(),
+      currentElement: null,
+      currentIndex: -1,
+    };
     this.wrapperRef = React.createRef();
     this.mainRef = React.createRef();
 
     this.onResize = this.onResize.bind(this);
+    this.onMouseDown = this.onMouseDown.bind(this);
+    this.onMouseUp = this.onMouseUp.bind(this);
+    this.onMouseMove = this.onMouseMove.bind(this);
   }
 
   getPanelsData = () => {
@@ -107,7 +118,8 @@ class JuiColumnResponse extends PureComponent<Props, States> {
 
   componentDidMount() {
     addResizeListener(this.onResize);
-    this.onResize();
+    setTimeout(this.onResize, 100);
+    // this.onResize();
   }
 
   componentWillUnmount() {
@@ -194,25 +206,103 @@ class JuiColumnResponse extends PureComponent<Props, States> {
     return sum;
   }
 
+  onMouseDown(e: ReactMouseEvent) {
+    document.addEventListener('mouseup', this.onMouseUp);
+    document.addEventListener<'mousemove'>('mousemove', this.onMouseMove); // document mousemove
+    const currentElement = e.target as Element;
+    const parentElement = currentElement!.parentElement;
+    const collectionElement = parentElement!.querySelectorAll('[offset]');
+    const currentIndex = Array.from(collectionElement).indexOf(currentElement!);
+    this.setState({ currentElement, currentIndex });
+  }
+
+  onMouseUp() {
+    document.removeEventListener('mouseup', this.onMouseUp);
+    document.removeEventListener<'mousemove'>('mousemove', this.onMouseMove);
+    if (this.state.currentElement) {
+      this.setState({ currentElement: null, currentIndex: -1 });
+    }
+  }
+
+  onMouseMove(e: MouseEvent) {
+    // mouse move prevent select text
+    e.stopPropagation();
+    e.preventDefault();
+    const { panels, currentElement, currentIndex } = this.state;
+    const { mainPanelIndex } = this.props;
+    const clonePanels = cloneDeep(panels);
+
+    const clientX = e.clientX;
+    const parentElement = currentElement!.parentElement; // except left nav width
+    const parentElementOffsetLeft = parentElement!.getBoundingClientRect().left;
+    const wrapperWidth = this.wrapperRef.current.getBoundingClientRect().width;
+
+    let width = clientX - parentElementOffsetLeft;
+    let index = currentIndex;
+    if (currentIndex === mainPanelIndex) {
+      index += 1;
+      width = wrapperWidth - (clientX - parentElementOffsetLeft);
+    } else {
+      width = clientX - parentElementOffsetLeft;
+    }
+
+    const panel = clonePanels[index];
+    if (width < panel.minWidth || width > panel.maxWidth!) {
+      return;
+    }
+
+    // set resize panel width
+    panel.width = width;
+    // reset main panel width
+    clonePanels[mainPanelIndex].width =
+      wrapperWidth - this.getSumExceptOneself(clonePanels, mainPanelIndex);
+
+    this.setLocalWidth(index, width);
+    this.setState({ panels: clonePanels });
+  }
+
   render() {
     const { children, mainPanelIndex } = this.props;
     const { panels } = this.state;
     return (
       <StyledWrapper ref={this.wrapperRef}>
         {React.Children.map(children, (child: JSX.Element, index: number) => {
+          let offset = 0;
+          for (let i = 0; i < index; i++) {
+            offset += panels[i].width;
+          }
+          const show = index > 0 && panels[index - 1].width > 0;
           if (index === mainPanelIndex) {
             return (
-              <StyledMainPanel ref={this.mainRef}>
-                {child}
-                {panels[index].width!}
-              </StyledMainPanel>
+              <React.Fragment>
+                {index > 0 && (
+                  <JuiHorizonResizer
+                    offset={offset}
+                    show={show}
+                    onMouseDown={this.onMouseDown}
+                  />
+                )}
+                <StyledMainPanel ref={this.mainRef}>
+                  {child}
+                  {panels[index].width!}
+                </StyledMainPanel>
+              </React.Fragment>
             );
           }
           return (
-            <StyledSidebarPanel width={panels[index].width!}>
-              {child}
-              {panels[index].width!}
-            </StyledSidebarPanel>
+            <React.Fragment>
+              {index > 0 && (
+                <JuiHorizonResizer
+                  offset={offset}
+                  show={show}
+                  onMouseDown={this.onMouseDown}
+                />
+              )}
+              <StyledSidebarPanel width={panels[index].width!}>
+                {child}
+                {panels[index].width!}
+              </StyledSidebarPanel>
+            </React.Fragment>
           );
         })}
       </StyledWrapper>
