@@ -189,7 +189,7 @@ async function operateGroupDao(deactivatedData: Group[], normalData: Group[]) {
       dao.bulkDelete(deactivatedData.map(item => item.id));
     }
     if (normalData.length) {
-      await dao.bulkPut(normalData);
+      await dao.bulkUpdate(normalData);
     }
   } catch (e) {
     console.error(`operateGroupDao error ${JSON.stringify(e)}`);
