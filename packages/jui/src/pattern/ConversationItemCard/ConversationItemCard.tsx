@@ -51,6 +51,9 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
   padding: ${({ footerPadding }) => footerPadding && spacing(4, 10, 4, 10)};
   ${typography('subheading3')};
   background-color: ${palette('grey', '100')};
+  .task-avatar-name {
+    margin-top: 0;
+  }
 `;
 
 type JuiConversationItemCardProps = {
@@ -84,7 +87,7 @@ class JuiConversationItemCard extends React.Component<
     } = this.props;
 
     return (
-      <ItemCardWrapper>
+      <ItemCardWrapper className="conversation-item-cards">
         <ItemCardContent>
           <ItemCardHeader onClick={this.titleHandle} color={titleColor}>
             {typeof Icon === 'string' ? <ItemIcon>{Icon}</ItemIcon> : Icon}
