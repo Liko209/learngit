@@ -11,7 +11,7 @@ import { spacing, typography, palette } from '../../foundation/utils/styles';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-all;
-  margin: ${spacing(2, 0)};
+  margin-bottom: ${spacing(3)};
 `;
 
 const ItemIcon = styled(MuiIcon)`
