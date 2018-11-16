@@ -16,7 +16,7 @@ type BuildContainerOptions<T> = {
   plugins?: { [key: string]: IPlugin };
 };
 type TIntrinsticProps = {
-  viewRefs?: any;
+  scrollerRef?: any;
 };
 function buildContainer<P = {}, S = {}, SS = any>({
   View,
@@ -70,7 +70,6 @@ function buildContainer<P = {}, S = {}, SS = any>({
         .forEach((key: string) => {
           props[key] = this.vm[key];
         });
-      props.plugins = plugins;
       return props;
     }
 

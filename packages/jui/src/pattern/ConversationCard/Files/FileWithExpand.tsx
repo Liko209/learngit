@@ -8,10 +8,11 @@ import Collapse from '@material-ui/core/Collapse';
 import * as Jui from './style';
 import { FileName } from './FileName';
 import styled from '../../../foundation/styled-components';
+import { spacing } from '../../../foundation/utils';
 
 type JuiFileWithExpandProps = {
   fileName: string;
-  actions: JSX.Element;
+  Actions: JSX.Element;
   expand?: boolean;
   children?: React.ReactNode;
 };
@@ -23,24 +24,28 @@ const NameWithActions = styled.div`
   width: 90%;
 `;
 
-const FileNameBox = styled.div`
-  flex: 1;
+const FileNameWrapper = styled.div`
+  width: ${spacing(58)};
 `;
 
 const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
   props: JuiFileWithExpandProps,
 ) => {
-  const { fileName, actions, children, expand } = props;
+  const { fileName, Actions, children, expand } = props;
 
   return (
     <Jui.FileExpandItemWrapper>
-      <Jui.FileExpandItem>
-        <Jui.FileIcon size="small" />
-        <NameWithActions>
-          <FileNameBox><FileName filename={fileName} /></FileNameBox>
-          <div>{actions}</div>
-        </NameWithActions>
-      </Jui.FileExpandItem>
+      {!expand && (
+        <Jui.FileExpandItem>
+          <Jui.FileIcon size="small" />
+          <NameWithActions>
+            <FileNameWrapper>
+              <FileName filename={fileName} />
+            </FileNameWrapper>
+            <div>{Actions}</div>
+          </NameWithActions>
+        </Jui.FileExpandItem>
+      )}
       {children && <Collapse in={expand}>{children}</Collapse>}
     </Jui.FileExpandItemWrapper>
   );

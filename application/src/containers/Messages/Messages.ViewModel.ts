@@ -20,13 +20,22 @@ class MessagesViewModel extends AbstractViewModel<MessagesProps> {
     return getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
   }
 
-  updateCurrentConversationId = (currentConversationId: number = 0) => {
+  updateCurrentConversationId = (
+    currentConversationId: number | string = 0,
+  ) => {
+    let id = currentConversationId;
+    if (
+      typeof currentConversationId === 'string' &&
+      !/\d+/.test(currentConversationId)
+    ) {
+      id = 0;
+    }
     storeManager
       .getGlobalStore()
-      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, currentConversationId);
+      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, Number(id));
   }
 
-  getLastGroupId = async (id: number): Promise<number | undefined> => {
+  getLastGroupId = async (): Promise<number | undefined> => {
     let groupId;
     const stateService: service.StateService = StateService.getInstance();
     const myState = await stateService.getMyState();

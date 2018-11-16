@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { NoteItem } from './items.d';
+import { NoteItem } from './';
 
 function setNoteData(this: NoteItem, data: any) {
   const { summary, title } = data;

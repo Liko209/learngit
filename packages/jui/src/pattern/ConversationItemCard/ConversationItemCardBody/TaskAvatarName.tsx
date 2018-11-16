@@ -6,20 +6,19 @@
 
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import { typography, grey } from '../../../foundation/utils/styles';
+import { typography, grey, spacing } from '../../../foundation/utils/styles';
 
-// type person = {
-//   url: string;
-//   name: string;
-// }
 type Props = {
-  avatarNames: JSX.Element[] | null[];
-  count: number;
-  tOther: string;
+  children: React.ReactNode;
+  count?: number;
+  otherText?: string;
 };
 
 const StyledTaskAvatarName = styled.div`
+  margin-top: ${spacing(2)};
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   ${typography('body1')};
   color: ${grey('900')};
 `;
@@ -29,10 +28,12 @@ const StyledTaskOther = styled.div`
   align-items: flex-end;
 `;
 
-const JuiTaskAvatarName = (props: Props) => (
+const JuiTaskAvatarName = ({ children, otherText, count }: Props) => (
   <StyledTaskAvatarName>
-    {props.avatarNames}
-    <StyledTaskOther>{props.count > 2 ? props.tOther : ''}</StyledTaskOther>
+    {children}
+    {otherText && count && (
+      <StyledTaskOther>{count > 2 ? otherText : ''}</StyledTaskOther>
+    )}
   </StyledTaskAvatarName>
 );
 

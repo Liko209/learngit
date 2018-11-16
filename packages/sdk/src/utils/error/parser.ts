@@ -45,20 +45,29 @@ class ErrorParser {
 
   static http(err: any) {
     if (err.statusText === 'Network Error') {
-      return new BaseError(ErrorTypes.NETWORK, 'Network Error: Please check whether server crash');
+      return new BaseError(
+        ErrorTypes.NETWORK,
+        'Network Error: Please check whether server crash',
+      );
     }
 
     if (err.statusText === 'NOT NETWORK CONNECTION') {
-      return new BaseError(ErrorTypes.NETWORK, 'Network Error: Please check network connection');
+      return new BaseError(
+        ErrorTypes.NETWORK,
+        'Network Error: Please check network connection',
+      );
     }
 
     const { data } = err;
 
     if (typeof data.error === 'string') {
-      return new BaseError(ErrorTypes[data.error.toUpperCase()], data.error_description);
+      return new BaseError(
+        ErrorTypes[data.error.toUpperCase()],
+        data.error_description,
+      );
     }
 
-    return new BaseError(err.status + ErrorTypes.HTTP, data.error.message);
+    return err;
   }
 }
 export default ErrorParser;

@@ -9,24 +9,34 @@ import styled from '../../foundation/styled-components';
 import { JuiCardContent, JuiCard } from '../../components/Cards';
 import { spacing, typography, palette } from '../../foundation/utils/styles';
 
-const ItemCardWrapper = styled(JuiCard)``;
+const ItemCardWrapper = styled(JuiCard)`
+  word-break: break-all;
+  margin: ${spacing(2, 0)};
+`;
 
 const ItemIcon = styled(MuiIcon)`
   && {
     font-size: ${spacing(5)};
+    margin: ${spacing(0.5)} 0 0;
   }
 `;
 
-const ItemTitle = styled.span`
+const ItemTitle = styled<{ complete?: boolean }, 'span'>('span')`
   margin: ${spacing(0, 0, 0, 1)};
+  text-decoration: ${({ complete }) => (complete ? 'line-through' : '')};
 `;
 
 const ItemCardHeader = styled.div`
   padding: 0;
-  margin: ${spacing(0, 0, 2, -6)};
+  margin: ${spacing(0, 0, 0, -6)};
   display: flex;
   ${typography('subheading3')};
   color: ${({ color }) => color || palette('primary', 'main')};
+  word-break: break-all;
+  svg {
+    font-size: ${spacing(5)};
+    margin: ${spacing(0.5)} 0 0;
+  }
 `;
 
 const ItemCardContent = styled(JuiCardContent)`
@@ -43,16 +53,14 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
 `;
 
 type JuiConversationItemCardProps = {
-  title: string | JSX.Element;
-  icon: JSX.Element | string;
+  title?: string | JSX.Element;
+  Icon: JSX.Element | string;
   titleColor?: string;
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
-  children: React.ReactNode;
-  footer?: JSX.Element | null;
+  children?: React.ReactNode;
+  Footer?: JSX.Element | null;
   footerPadding?: boolean;
-  classes?: {
-    itemTitle: string;
-  };
+  complete?: boolean;
 };
 
 class JuiConversationItemCard extends React.Component<
@@ -67,30 +75,25 @@ class JuiConversationItemCard extends React.Component<
     const {
       children,
       title,
-      icon: Icon,
-      footer,
+      Icon,
+      Footer,
       footerPadding = true,
       titleColor,
-      classes,
+      complete,
     } = this.props;
-    let itemTitle = '';
-
-    if (classes) {
-      itemTitle = classes.itemTitle;
-    }
 
     return (
       <ItemCardWrapper>
         <ItemCardContent>
           <ItemCardHeader onClick={this.titleHandle} color={titleColor}>
             {typeof Icon === 'string' ? <ItemIcon>{Icon}</ItemIcon> : Icon}
-            <ItemTitle className={itemTitle}>{title}</ItemTitle>
+            {title && <ItemTitle complete={complete}>{title}</ItemTitle>}
           </ItemCardHeader>
           {children}
         </ItemCardContent>
-        {footer && (
+        {Footer && (
           <ItemCardFooter footerPadding={footerPadding}>
-            {footer}
+            {Footer}
           </ItemCardFooter>
         )}
       </ItemCardWrapper>

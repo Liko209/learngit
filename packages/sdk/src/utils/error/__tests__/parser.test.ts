@@ -21,7 +21,14 @@ describe('ErrorParser', () => {
       status: 200,
       data: { error: { message: '' } },
     });
-    expect(ErrorParser.parse(httpError).code).toBe(HTTP_BASE_CODE + httpError.status);
+    expect(ErrorParser.parse(httpError)).toEqual({
+      data: { error: { message: '' } },
+      headers: {},
+      request: undefined,
+      retryAfter: 6000,
+      status: 200,
+      statusText: '',
+    });
 
     const commonError: HttpResponse = createResponse({
       status: 400,

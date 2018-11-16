@@ -12,10 +12,10 @@ import { Actions } from '@/containers/ConversationCard/Actions';
 import { Footer } from '@/containers/ConversationCard/Footer';
 import { idsToConversationSheet } from '@/containers/ConversationSheet';
 import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
-// import { idToPostItemComponent } from '@/containers/PostItems';
+import { From } from './From';
 @observer
 export class ConversationCard extends React.Component<
-ConversationCardViewProps
+  ConversationCardViewProps
 > {
   state = {
     isHover: false,
@@ -41,15 +41,17 @@ ConversationCardViewProps
       customStatus,
       showProgressActions,
       itemIds,
+      mode,
+      post,
       hideText,
+      ...rest
     } = this.props;
     const { isHover } = this.state;
     if (!creator.id) {
       return null;
     }
-
     const avatar = <Avatar uid={creator.id} size="medium" data-name="avatar" />;
-
+    const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
     return (
       <React.Fragment>
         <JuiConversationCard
@@ -58,12 +60,15 @@ ConversationCardViewProps
           Avatar={avatar}
           onMouseEnter={this.handleMouseEnter}
           onMouseLeave={this.handleMouseLeave}
+          mode={mode}
+          {...rest}
         >
           <JuiConversationCardHeader
             data-name="header"
             name={name}
             time={createTime}
             status={customStatus}
+            from={from}
           >
             {showProgressActions ? <ProgressActions id={id} /> : null}
             {!showProgressActions && isHover ? <Actions id={id} /> : null}

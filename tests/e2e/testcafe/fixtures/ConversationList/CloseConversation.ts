@@ -6,7 +6,7 @@ import { h } from '../../v2/helpers';
 import { SITE_URL } from '../../config';
 
 declare var test: TestFn;
-fixture.skip('CloseConversation')
+fixture('CloseConversation')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
@@ -113,9 +113,6 @@ test(formalName('Close current conversation directly, and navigate to blank page
         const open_url = await h(t).href;
         const str = open_url.toString().split('messages');
         await t.expect(str.length).eql(2).expect(str[1]).eql('');
-        await t
-          .expect(app.homePage.messagePanel.conversationPage.messageInputArea.exists)
-          .notOk();
       },
       );
     }

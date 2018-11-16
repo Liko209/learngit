@@ -12,12 +12,13 @@ import {
   primary,
   spacing,
   grey,
-} from 'src/foundation/utils';
+} from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
 
 type ConversationCardFromProps = {
   name: string;
-  isGroup?: boolean;
+  isTeam?: boolean;
+  onClick: (e: React.MouseEvent) => any;
 };
 const StyledName = styled('div')`
   color: ${primary('700')};
@@ -39,9 +40,9 @@ const StyledName = styled('div')`
 `;
 
 const JuiConversationCardFrom = (props: ConversationCardFromProps) => (
-  <StyledName>
+  <StyledName onClick={props.onClick}>
     <span className="preposition">in</span>
-    {props.isGroup ? <MuiIcon fontSize="small">people_outline</MuiIcon> : null}
+    {props.isTeam ? <MuiIcon fontSize="small">people_outline</MuiIcon> : null}
     <span className="conversation-name">{props.name}</span>
   </StyledName>
 );

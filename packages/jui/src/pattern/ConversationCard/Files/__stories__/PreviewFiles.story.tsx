@@ -9,13 +9,17 @@ import { text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import {
   JuiPreviewImage,
-  JuiFileWithoutPreview,
+  JuiFileWithExpand,
   JuiFileWithPreview,
+  JuiExpandImage,
 } from '../';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 
 storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
-  const fileName = text('fileName', '123.jpg');
+  const fileName = text(
+    'filename',
+    'Conversation Card ConversationConversation Card VxD.pdf',
+  );
   return (
     <div>
       <div>
@@ -26,7 +30,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
               ratio={2}
               fileName={fileName}
-              actions={
+              Actions={
                 <JuiIconButton variant="plain" tooltipTitle="download">
                   get_app
                 </JuiIconButton>
@@ -41,10 +45,10 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
             <JuiFileWithPreview
               key={id}
               url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
-              fileName="fileName"
+              fileName={fileName}
               size="2.3Mb"
               iconType={'pdf'}
-              actions={
+              Actions={
                 <JuiIconButton variant="plain" tooltipTitle="download">
                   get_app
                 </JuiIconButton>
@@ -56,15 +60,31 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
       <div>
         {[1, 2, 3, 4].map((id: number) => {
           return (
-            <JuiFileWithoutPreview
+            <JuiFileWithExpand
               key={id}
-              fileName="Conversation Card VxD.pdf"
-              size="3.5MB"
-              iconType={'pdf'}
-              actions={
+              fileName={fileName}
+              Actions={
                 <JuiIconButton variant="plain" tooltipTitle="download">
                   get_app
                 </JuiIconButton>
+              }
+            />
+          );
+        })}
+      </div>
+      <div>
+        {[1, 2, 3, 4].map((id: number) => {
+          return (
+            <JuiExpandImage
+              key={id}
+              fileName={fileName}
+              previewUrl="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+              Actions={
+                <>
+                  <JuiIconButton variant="plain" tooltipTitle="download">
+                    get_app
+                  </JuiIconButton>
+                </>
               }
             />
           );

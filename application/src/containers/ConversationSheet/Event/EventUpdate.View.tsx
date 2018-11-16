@@ -14,10 +14,10 @@ import {
   JuiEventCollapse,
   JuiEventCollapseContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
-import { getDurationTime, getDurationTimeText } from './helper';
+import { getDurationTime, getDurationTimeText } from '../helper';
 import { EventUpdateViewProps } from './types';
 
-class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
+class EventUpdateView extends React.Component<EventUpdateViewProps> {
   private _getDurationTime = (value: any) => {
     const { event } = this.props;
     const { start, end } = event;
@@ -55,9 +55,9 @@ class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
   private _getLocation = (value: any) => value.location;
 
   render() {
-    const { event, post } = this.props;
+    const { event, activityData } = this.props;
     const { color, text } = event;
-    const { old_values, new_values } = post.activityData;
+    const { old_values, new_values } = activityData;
 
     const oldTime = this._getDurationTime(old_values);
     const oldTimeText = this._getTimeText(old_values);
@@ -73,8 +73,8 @@ class EventUpdateView extends React.Component<EventUpdateViewProps, {}> {
       <EventUpdateViewCard
         title={text}
         titleColor={color}
-        icon="event"
-        footer={
+        Icon="event"
+        Footer={
           (hasOldTime || oldLocation) && (
             <JuiEventCollapse
               showText={t('showEventHistory')}
