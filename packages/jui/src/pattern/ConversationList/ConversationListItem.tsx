@@ -22,7 +22,7 @@ const StyledRightWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
 `;
 const rippleEnter = (theme: Theme) => keyframes`
   from {
@@ -98,6 +98,7 @@ const StyledListItem = styled(MuiMenuItem)`
     opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
     transform: scale(1);
     animation-name: ${({ theme }) => rippleEnter(theme)};
+    z-index: ${({ theme }) => theme.zIndex.ripple};
   }
 `;
 
@@ -105,7 +106,7 @@ const StyledPresenceWrapper = styled.div`
   width: ${width(2)};
   height: ${height(2)};
   margin: ${spacing(1.5)};
-  z-index: 1;
+  z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
 `;
 
 type JuiConversationListItemProps = {

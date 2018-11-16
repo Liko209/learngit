@@ -37,7 +37,7 @@ const StyledRightWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
 `;
 const StyledJuiIconographyLeft = styled(JuiIconography)``;
 const StyledJuiIconography = styled(JuiIconography)``;
@@ -83,7 +83,7 @@ const StyledListItem = styled(MuiListItem)`
       tinycolor(grey('600')({ theme }))
         .setAlpha(0.4)
         .toRgbString()};
-    z-index: 1;
+    z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
   }
 
   && > ${StyledJuiIconography} {
@@ -102,6 +102,7 @@ const StyledListItem = styled(MuiListItem)`
     opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
     transform: scale(1);
     animation-name: ${({ theme }) => rippleEnter(theme)};
+    z-index: ${({ theme }) => theme.zIndex.ripple};
   }
 `;
 
