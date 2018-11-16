@@ -31,8 +31,8 @@ test(formalName('Enter text in the conversation input box', ['P0', 'JPT-77']), a
 
   await h(t).withLog('When I enter a conversation', async () => {
     // FIXME: there is a risk that no conversation in the list
-    await app.homePage.messagePanel.directMessagesSection.expand();
-    await app.homePage.messagePanel.directMessagesSection.nthConversationEntry(0).enter();
+    await app.homePage.messagePanel.teamsSection.expand();
+    await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
   });
 
   const identifier = uuid();
