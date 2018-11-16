@@ -21,7 +21,7 @@ fixture('Send Messages')
 test(formalName('Enter text in the conversation input box', ['P0', 'JPT-77']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
 
-  const user = users[3];
+  const user = users[1];
   const app = new AppRoot(t);
 
   await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {

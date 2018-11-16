@@ -6,6 +6,7 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { JuiCheckbox } from '../../../components/Checkbox';
+import { palette } from '../../../foundation/utils';
 
 type Props = {
   checked: boolean;
@@ -14,12 +15,18 @@ type Props = {
 const StyledTaskCheckbox = styled(JuiCheckbox)`
   && {
     padding: 0;
+    &.checked {
+      color: ${palette('primary', 'main')};
+    }
   }
 `;
 
 const JuiTaskCheckbox = (props: Props) => {
   return (
     <StyledTaskCheckbox
+      classes={{
+        checked: 'checked',
+      }}
       checked={props.checked}
       disableRipple={true}
       {...props}

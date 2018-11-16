@@ -428,9 +428,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   async removeOverLimitGroupByChangingCurrentGroupId() {
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    const p = ProfileService.getInstance<service.ProfileService>();
+    const profileService = ProfileService.getInstance<service.ProfileService>();
     const lastGroupId = this._lastGroupId;
-    const limit = await p.getMaxLeftRailGroup();
+    const limit = await profileService.getMaxLeftRailGroup();
     if (currentId !== lastGroupId) {
       await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.DIRECT_MESSAGE,

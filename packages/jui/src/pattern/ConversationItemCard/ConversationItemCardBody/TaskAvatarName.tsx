@@ -18,6 +18,7 @@ const StyledTaskAvatarName = styled.div`
   margin-top: ${spacing(2)};
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   ${typography('body1')};
   color: ${grey('900')};
 `;

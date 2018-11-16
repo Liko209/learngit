@@ -68,6 +68,10 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.click(this.moreMenuEntry);
   }
 
+  get hasDraftMessage() {
+    return this.self.find('.material-icons').withText('border_color').exists;
+  }
+
   async waitUntilUmiExist(exist: boolean, timeout = 20) {
     let tryTime = 0;
     let count = await this.getUmi();
