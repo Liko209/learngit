@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed, when } from 'mobx';
+import { action, observable, computed } from 'mobx';
 import { Quill } from 'quill';
 import { debounce, Cancelable } from 'lodash';
-import { AbstractViewModel } from '@/base';
 import { MessageInputProps, MessageInputViewProps } from './types';
 import { GroupService, PostService } from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
+import StoreViewModel from '@/store/ViewModel';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -25,14 +25,15 @@ type DebounceFunction = (
   params: { id: number; draft: string },
 ) => Promise<boolean>;
 
-class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
+class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
-  private _isInit: boolean;
-  @observable
-  _id: number;
+  @computed
+  private get _id() {
+    return this.props.id;
+  }
   @observable
   draft: string = '';
   @observable
@@ -53,29 +54,21 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
       500,
     );
     this._sendPost = this._sendPost.bind(this);
-    this._isInit = false;
-  }
-
-  onReceiveProps({ id }: MessageInputProps) {
-    if (id !== this._id) {
-      this._init(id);
-    }
-  }
-
-  @action
-  private _init(id: number) {
-    this._id = id;
-    if (this._isInit) {
-      this.draft = this._initDraft;
-    } else {
-      this._isInit = true;
-      when(
-        () => !!this._initDraft,
-        () => {
+    this.reaction(
+      () => this._initDraft,
+      (initDraft: string) => {
+        if (this.draft !== initDraft) {
           this.draft = this._initDraft;
-        },
-      );
-    }
+        }
+      },
+    );
+    this.reaction(
+      () => this._id,
+      () => {
+        this.error = '';
+      },
+    );
+    this.draft = this._initDraft;
   }
 
   @action
