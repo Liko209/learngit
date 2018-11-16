@@ -21,7 +21,7 @@ import { translate, WithNamespaces } from 'react-i18next';
 
 const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
   return (
-    <JuiLeftRail>
+    <JuiLeftRail data-test-automation-id="leftRail">
       <JuiLeftRailStickyTop>
         {props.filters.map((filter, index) => [
           index ? <JuiDivider key={`divider${index}`} /> : null,
