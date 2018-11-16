@@ -64,6 +64,7 @@ export function setupCase(accountType: string) {
       ENV_OPTS.JUPITER_APP_KEY,
     )
     await h(t).logHelper.setup();
+    await t.resizeWindow(1280, 720);
     await t.maximizeWindow();
   }
 }
