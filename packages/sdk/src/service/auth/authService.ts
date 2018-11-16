@@ -1,0 +1,101 @@
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2018-11-15 11:22:31
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { mainLogger } from 'foundation';
+
+import { loginGlip2ByPassword } from '../../api';
+import {
+  RCPasswordAuthenticator,
+  UnifiedLoginAuthenticator,
+} from '../../authenticator';
+import { AuthDao, daoManager } from '../../dao';
+import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
+import { AccountManager } from '../../framework';
+import { Aware, ErrorParser, ErrorTypes } from '../../utils/error';
+import BaseService from '../BaseService';
+import { SERVICE } from '../eventKey';
+import notificationCenter from '../notificationCenter';
+
+interface ILogin {
+  username: string;
+  extension: string;
+  password: string;
+}
+
+interface IUnifiedLogin {
+  code?: string;
+  token?: string;
+}
+
+class AuthService extends BaseService {
+  static serviceName = 'AuthService';
+  private _accountManager: AccountManager;
+
+  constructor(accountManager: AccountManager) {
+    super();
+    this._accountManager = accountManager;
+  }
+
+  async unifiedLogin({ code, token }: IUnifiedLogin) {
+    try {
+      const resp = await this._accountManager.login(
+        UnifiedLoginAuthenticator.name,
+        { code, token },
+      );
+      mainLogger.info(`unifiedLogin finished ${JSON.stringify(resp)}`);
+      this.onLogin();
+    } catch (err) {
+      mainLogger.error(`unified login error: ${err}`);
+      throw ErrorParser.parse(err);
+    }
+  }
+
+  async login(params: ILogin) {
+    await Promise.all([this.loginGlip(params), this.loginGlip2(params)]);
+    this.onLogin();
+  }
+
+  onLogin() {
+    // TODO replace all LOGIN listen on notificationCenter
+    // with accountManager.on(EVENT_LOGIN)
+    notificationCenter.emitKVChange(SERVICE.LOGIN);
+  }
+
+  async loginGlip(params: ILogin) {
+    try {
+      await this._accountManager.login(RCPasswordAuthenticator.name, params);
+    } catch (err) {
+      mainLogger.error(`err: ${err}`);
+      throw ErrorParser.parse(err);
+    }
+  }
+
+  async loginGlip2(params: ILogin) {
+    const authDao = daoManager.getKVDao(AuthDao);
+    try {
+      const glip2AuthData = await loginGlip2ByPassword(params);
+      authDao.put(AUTH_GLIP2_TOKEN, glip2AuthData.data);
+      notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, glip2AuthData.data);
+    } catch (err) {
+      // Since glip2 api is no in use now, we can ignore all it's errors
+      Aware(ErrorTypes.OAUTH, err.message);
+    }
+  }
+
+  async logout() {
+    await this._accountManager.logout();
+
+    // TODO replace all LOGOUT listen on notificationCenter
+    // with accountManager.on(EVENT_LOGOUT)
+    notificationCenter.emitKVChange(SERVICE.LOGOUT);
+  }
+
+  isLoggedIn(): boolean {
+    return this._accountManager.isLoggedIn();
+  }
+}
+
+export { IUnifiedLogin, ILogin, AuthService };

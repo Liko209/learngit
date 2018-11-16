@@ -145,7 +145,7 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
     (group: Group) => hiddenGroupIds.indexOf(group.id) === -1,
   );
 
-  notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
+  notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
 
   const favIds = (profile && profile.favorite_group_ids) || [];
   const archivedGroups = normalData.filter((item: Group) => item.is_archived);

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PresenceAPI from '../../api/glip/presence';
-import socketManager from '../SocketManager';
+import socketManager from '../socket';
 
 class SubscribeWorker {
   constructor(
