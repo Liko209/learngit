@@ -13,6 +13,14 @@ import {
 } from '../MessageInput.ViewModel';
 import _ from 'lodash';
 
+const mockGroupEntityData = {
+  draft: 'draft',
+};
+
+jest.mock('@/store/utils', () => ({
+  getEntity: jest.fn(() => mockGroupEntityData),
+}));
+
 const { PostService, GroupService } = service;
 const postService = {
   sendPost: jest.fn(),
@@ -23,13 +31,7 @@ const groupService = {
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
-const mockGroupEntityData = {
-  draft: 'draft',
-};
-// @ts-ignore
-const getEntity = jest.fn().mockReturnValue(mockGroupEntityData);
-
-const messageInputViewModel = new MessageInputViewModel();
+const messageInputViewModel = new MessageInputViewModel({ id: 123 });
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -37,14 +39,7 @@ beforeEach(() => {
 
 describe.skip('ActionsViewModel', () => {
   it('lifecycle onReceiveProps method', () => {
-    let id = 123;
-    messageInputViewModel.onReceiveProps({ id });
-    expect(messageInputViewModel._id).toBe(id);
-    id = 123;
-    messageInputViewModel.onReceiveProps({ id });
-    expect(messageInputViewModel._id).toBe(id);
-    id = 456;
-    messageInputViewModel.onReceiveProps({ id });
+    expect(messageInputViewModel._id).toBe(123);
     expect(messageInputViewModel.draft).toBe(mockGroupEntityData.draft);
   });
 
