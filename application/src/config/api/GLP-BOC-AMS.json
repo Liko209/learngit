@@ -22,5 +22,8 @@
   "upload": {
     "server": "https://api.glipdemo.com",
     "apiPlatform": ""
+  },
+  "splitio": {
+    "clientSecret": "aiers1fdmskm7paalb3ubhhuumaauv21rnti"
   }
 }
