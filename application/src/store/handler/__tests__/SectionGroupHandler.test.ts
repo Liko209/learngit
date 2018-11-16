@@ -358,7 +358,7 @@ describe('SectionGroupHandler', () => {
       expect(directMessageHandler.removeByIds).not.toHaveBeenCalled();
     });
   });
-  describe.skip('handleIncomesGroupState', async () => {
+  describe('handleIncomesGroupState', async () => {
     function setup(ids: number[]) {
       const handler = SectionGroupHandler.getInstance();
       Object.assign(handler, {
@@ -486,6 +486,13 @@ describe('SectionGroupHandler', () => {
     });
     it('should add groups because of less hidden group ids', async () => {
       const handler = SectionGroupHandler.getInstance();
+      (groupService.getGroupsByIds as jest.Mock).mockResolvedValue([
+        {
+          id: 3,
+          company_id: 1,
+          is_team: false,
+        },
+      ]);
       await handler.checkIfGroupOpenedFromHidden([1, 2], [1]);
       expect(handler.getAllGroupIds().length).toBe(1);
     });
