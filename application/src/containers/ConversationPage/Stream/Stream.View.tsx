@@ -17,6 +17,8 @@ import { scrollToComponent } from './helper';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
+import storeManager from '@/store/base/StoreManager';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 
@@ -51,6 +53,7 @@ class StreamViewComponent extends Component<Props> {
   componentWillUnmount() {
     window.removeEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
   }
 
   async componentDidUpdate(prevProps: Props) {
