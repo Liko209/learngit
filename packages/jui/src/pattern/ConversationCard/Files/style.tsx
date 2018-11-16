@@ -198,6 +198,7 @@ const FileExpandItemWrapper = styled.div`
 const FileExpandItem = styled(MuiListItem)`
   && {
     padding: ${spacing(4)};
+    margin: ${spacing(0, 0, 2, 0)};
     width: ${width(ITEM_WIDTH)};
     border-radius: ${shape('borderRadius', 1)};
     box-shadow: ${props => props.theme.shadows[1]};

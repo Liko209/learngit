@@ -49,7 +49,10 @@ const FILE_COMPS = {
         key={id}
         previewUrl={previewUrl}
         fileName={name}
+        i18UnfoldLess={t('collapse')}
+        i18UnfoldMore={t('expand')}
         Actions={downloadBtn(downloadUrl)}
+        ImageActions={downloadBtn(downloadUrl)}
       />
     );
   },
@@ -116,7 +119,7 @@ class Task extends React.Component<taskViewProps> {
       repeatEnding,
       repeatEndingOn,
     } = task;
-
+    console.log(task, '----task');
     const time = getDurationTime(start, end);
     const timeText = getDurationTimeText(
       repeat,
