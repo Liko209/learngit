@@ -50,6 +50,9 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
   padding: ${({ footerPadding }) => footerPadding && spacing(4, 10, 5, 10)};
   ${typography('subheading3')};
   background-color: ${palette('grey', '100')};
+  .task-avatar-name {
+    margin-top: 0;
+  }
 `;
 
 type JuiConversationItemCardProps = {

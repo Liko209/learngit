@@ -29,7 +29,7 @@ const StyledTaskOther = styled.div`
 `;
 
 const JuiTaskAvatarName = ({ children, otherText, count }: Props) => (
-  <StyledTaskAvatarName>
+  <StyledTaskAvatarName className="task-avatar-name">
     {children}
     {otherText && count && (
       <StyledTaskOther>{count > 2 ? otherText : ''}</StyledTaskOther>

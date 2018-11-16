@@ -31,6 +31,6 @@ const JuiTaskContent = (props: Props) => (
   </StyledWrapper>
 );
 
-JuiTaskContent.displayName = 'JuiTaskAttachments';
+JuiTaskContent.displayName = 'JuiTaskContent';
 
 export { JuiTaskContent };
