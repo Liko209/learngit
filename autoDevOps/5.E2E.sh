@@ -14,16 +14,17 @@ npm i
 export SITE_URL=$appUrl
 export SCREENSHOTS_PATH=./screenshots
 export SELENIUM_SERVER=$SELENIUM_SERVER
-export BROWSERS=$BROWSERS
 export RC_PLATFORM_APP_KEY=$RC_PLATFORM_APP_KEY
 export RC_PLATFORM_APP_SECRET=$RC_PLATFORM_APP_SECRET
 export ACTION="ON_MERGE"
 export BRANCH="${gitlabBranch}"
 export ENABLE_REMOTE_DASHBOARD=true
+export DEBUG_MODE=false
+export QUARANTINE_MODE=true
+
 
 echo "Following environment variables are used by e2e tests to define test scope:"
 echo $SELENIUM_SERVER
-echo $BROWSERS
 echo $RC_PLATFORM_APP_KEY
 echo $RC_PLATFORM_APP_SECRET
 echo $SITE_URL
