@@ -211,10 +211,10 @@ function withScroller(Comp: ComponentType<any>) {
       if (n === -1 && !isIE11) {
         return window.requestAnimationFrame(() => listEl.scrollIntoView(false));
       }
-      return window.requestAnimationFrame(() => {
-        const rowEl = _(listEl.querySelectorAll(itemSelector)).nth(n);
+      return window.setTimeout(() => {
+        const rowEl = _(listEl.children).nth(n);
         rowEl && rowEl.scrollIntoView(false);
-      });
+      },                       0);
     }
 
     scrollToId = (
