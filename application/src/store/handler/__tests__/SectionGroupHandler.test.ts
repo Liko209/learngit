@@ -361,7 +361,7 @@ describe('SectionGroupHandler', () => {
       expect(directMessageHandler.removeByIds).not.toHaveBeenCalled();
     });
   });
-  describe('handleIncomesGroupState', async () => {
+  describe.skip('handleIncomesGroupState', async () => {
     function setup(ids: number[]) {
       const handler = SectionGroupHandler.getInstance();
       Object.assign(handler, {
