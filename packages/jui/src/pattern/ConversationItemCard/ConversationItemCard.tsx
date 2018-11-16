@@ -47,6 +47,7 @@ const ItemCardContent = styled(JuiCardContent)`
 `;
 
 const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
+  margin-top: ${spacing(-2)};
   padding: ${({ footerPadding }) => footerPadding && spacing(4, 10, 4, 10)};
   ${typography('subheading3')};
   background-color: ${palette('grey', '100')};
