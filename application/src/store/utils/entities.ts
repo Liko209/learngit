@@ -1,10 +1,15 @@
-import storeManager from './base/StoreManager';
-import MultiEntityMapStore from './base/MultiEntityMapStore';
-import SingleEntityMapStore from './base/SingleEntityMapStore';
+/*
+ * @Author: Lip Wang (lip.wang@ringcentral.com)
+ * @Date: 2018-11-15 13:14:39
+ * Copyright © RingCentral. All rights reserved.
+ */
+import storeManager from '../base/StoreManager';
+import MultiEntityMapStore from '../base/MultiEntityMapStore';
+import SingleEntityMapStore from '../base/SingleEntityMapStore';
 import { BaseModel } from 'sdk/models';
-import { Entity } from './store';
-import { ENTITY_NAME } from './constants';
-import { GLOBAL_VALUES } from './config';
+import { Entity } from '../store';
+import { ENTITY_NAME } from '../constants';
+import { GLOBAL_VALUES } from '../config';
 
 function getEntity<T extends BaseModel, K extends Entity>(
   entityName: ENTITY_NAME,
@@ -31,12 +36,4 @@ function getGlobalValue(key: keyof typeof GLOBAL_VALUES) {
   return store.get(key);
 }
 
-const transform2Map = (entities: any[]): Map<number, any> => {
-  const map = new Map();
-  entities.forEach((item: any) => {
-    map.set(item.id, item);
-  });
-  return map;
-};
-
-export { getEntity, getSingleEntity, getGlobalValue, transform2Map };
+export { getEntity, getSingleEntity, getGlobalValue };

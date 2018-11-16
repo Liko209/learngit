@@ -111,7 +111,11 @@ export default class GroupService extends BaseService<Group> {
         groupType === GROUP_QUERY_TYPE.TEAM,
         excludeIds,
       );
-      result = await filterGroups(result, limit);
+      result = await filterGroups(
+        result,
+        limit,
+        groupType === GROUP_QUERY_TYPE.GROUP,
+      );
     }
     return result;
   }

@@ -8,7 +8,7 @@ import * as Jui from './style';
 import { FileName } from './FileName';
 
 type JuiPreviewImageProps = {
-  Actions: JSX.Element;
+  Actions?: JSX.Element;
   fileName: string;
   ratio: number;
   url: string;

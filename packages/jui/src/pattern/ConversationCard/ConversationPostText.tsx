@@ -7,7 +7,6 @@ const JuiConversationPostText = styled('div')`
   color: ${grey('700')};
   word-wrap: break-word;
   white-space: pre-wrap;
-  text-align: justify;
   a {
     color: ${({ theme }) => theme.palette.primary.light};
     &:hover {
