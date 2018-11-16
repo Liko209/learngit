@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { observable, action, autorun, Reaction, trace } from 'mobx';
+import { observable, action, autorun, Reaction } from 'mobx';
 import { observer, Disposer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ConversationPost } from '@/containers/ConversationPost';
@@ -180,7 +180,6 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    trace();
     return (
       <ScrollerContext.Consumer>
         {(value: TScroller) => {
@@ -217,7 +216,6 @@ class StreamViewComponent extends Component<Props> {
     },                         500);
 
     const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
-    debugger;
     clearTimeout(this._timeout);
     this._timeout = null;
     this._jumpToFirstUnreadLoading = false;

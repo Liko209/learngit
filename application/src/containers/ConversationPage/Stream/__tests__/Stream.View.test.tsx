@@ -1,15 +1,19 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import { ConversationPost } from '../../../ConversationPost';
 import GroupStateModel from '@/store/models/GroupState';
 import { LoadingMorePlugin } from '@/plugins';
 import { StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
-import { JumpToFirstUnreadButtonWrapper } from '../JumpToFirstUnreadButtonWrapper';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
+import { createMuiTheme } from '@material-ui/core';
 
 jest.mock('../../../ConversationSheet', () => ({}));
-
+const context = {
+  scrollToRow: () => {},
+  onListAsyncMounted: (el: React.RefObject<any>) => {},
+};
 function renderJumpToFirstUnreadButton({
   hasHistoryUnread,
   firstHistoryUnreadInPage,
@@ -24,14 +28,15 @@ function renderJumpToFirstUnreadButton({
     hasHistoryUnread,
     firstHistoryUnreadInPage,
     loadInitialPosts: async () => {},
-    scrollToRow: () => {},
-    onListAsyncMounted: () => {},
   };
-  const wrapper = shallow(<StreamView {...props} />);
+
+  const wrapper = mount(<StreamView {...props} />, {
+    context,
+  });
   (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
   wrapper.instance().forceUpdate();
   const jumpToFirstUnreadButtonWrapper = wrapper.find(
-    JumpToFirstUnreadButtonWrapper,
+    'JumpToFirstUnreadButtonWrapper',
   );
   const hasJumpToFirstUnreadButton =
     jumpToFirstUnreadButtonWrapper.length === 1;
@@ -70,12 +75,10 @@ describe('StreamView', () => {
           { type: StreamItemType.POST, value: 1 },
           { type: StreamItemType.POST, value: 2 },
         ],
-        scrollToRow: () => {},
-        onListAsyncMounted: () => {},
         loadInitialPosts: async () => {},
       };
 
-      const wrapper = shallow(<StreamView {...props} />);
+      const wrapper = mount(<StreamView {...props} />, { context });
       const card = wrapper.find(ConversationPost);
       const card0 = card.at(0);
       const card1 = card.at(1);
@@ -96,13 +99,14 @@ describe('StreamView', () => {
           { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
           { type: StreamItemType.POST, value: 2 },
         ],
-        scrollToRow: () => {},
-        onListAsyncMounted: () => {},
         loadInitialPosts: async () => {},
       };
-
-      const wrapper = shallow(<StreamView {...props} />);
-
+      const theme = { ...createMuiTheme(), size: { height: 20 } };
+      const wrapper = mount(
+        <StyledThemeProvider theme={theme}>
+          <StreamView {...props} />
+        </StyledThemeProvider>,
+      );
       expect(wrapper.find(ConversationPost)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
     });

@@ -3,10 +3,7 @@
  * @Date: 2018-10-29 10:47:27
  * Copyright © RingCentral. All rights reserved.
  */
-<<<<<<< Updated upstream
 import { getGlobalValue } from '../../utils/entities';
-=======
->>>>>>> Stashed changes
 import SectionGroupHandler from '../SectionGroupHandler';
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import {
