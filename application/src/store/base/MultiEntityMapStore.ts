@@ -72,9 +72,7 @@ export default class MultiEntityMapStore<
             this.batchUpdate(partials);
           } else {
             entities.forEach((entity: T) => {
-              if (this._data[entity.id]) {
-                this.set(entity);
-              }
+              this._partialUpdate(entity, entity.id);
             });
           }
         }

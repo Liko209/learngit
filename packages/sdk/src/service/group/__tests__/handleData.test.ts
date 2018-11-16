@@ -140,7 +140,7 @@ describe('handleData()', () => {
     expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
     // expect operateGroupDao function
     expect(daoManager.getDao(GroupDao).bulkDelete).toHaveBeenCalledTimes(1);
-    expect(daoManager.getDao(GroupDao).bulkPut).toHaveBeenCalledTimes(2);
+    expect(daoManager.getDao(GroupDao).bulkPut).toHaveBeenCalledTimes(1);
     // expect doNotification function
     expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
