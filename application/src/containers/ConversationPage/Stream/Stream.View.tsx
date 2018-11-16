@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { observable, action } from 'mobx';
-import { observer } from 'mobx-react';
+import { observable, action, autorun, Reaction } from 'mobx';
+import { observer, Disposer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ConversationPost } from '@/containers/ConversationPost';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -17,18 +17,22 @@ import { scrollToComponent } from './helper';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
+import { ScrollerContext } from 'jui/hoc';
+import { TScroller } from 'jui/hoc/withScroller';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import _ from 'lodash';
+import PostModel from '@/store/models/Post';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 
-type Props = WithNamespaces &
-  StreamViewProps & {
-    onListAsyncMounted: (ref: React.RefObject<HTMLElement>) => void;
-  };
+type Props = WithNamespaces & StreamViewProps;
 
 @observer
 class StreamViewComponent extends Component<Props> {
+  private _context: TScroller;
   private _listRef: React.RefObject<HTMLElement> = React.createRef();
-
+  private _disposers: Disposer[] = [];
   private _firstUnreadCardRef: React.ReactInstance | null = null;
 
   private _timeout: NodeJS.Timeout | null;
@@ -43,20 +47,40 @@ class StreamViewComponent extends Component<Props> {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
     // Scroller's on componentDidMount was called earlier than stream itself
-    this.props.onListAsyncMounted(this._listRef);
+    this._context.onListAsyncMounted(this._listRef);
     await this.props.loadInitialPosts();
-    this.props.scrollToRow(-1);
+    this._context.scrollToRow(-1);
+    this._stickToBottom();
+  }
+  private _stickToBottom() {
+    const disposer = autorun((r: Reaction) => {
+      let item: StreamItem | undefined;
+      let post: PostModel;
+      item = _(this.props.items).nth(-1);
+      if (!item || !item.value) {
+        return;
+      }
+      post = getEntity(ENTITY_NAME.POST, item!.value);
+      const likes = post!.likes || [];
+      if (likes.length === 1) {
+        this._context.scrollToRow(-1, {
+          behavior: 'smooth',
+        });
+      }
+    });
+    this._disposers.push(disposer);
   }
 
   componentWillUnmount() {
     window.removeEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
+    this._disposers.forEach((i: Disposer) => i());
   }
 
   async componentDidUpdate(prevProps: Props) {
     if (prevProps.groupId !== this.props.groupId) {
       await this.props.loadInitialPosts();
-      this.props.scrollToRow(-1);
+      this._context.scrollToRow(-1);
       this._jumpToFirstUnreadLoading = false;
       this._firstHistoryUnreadPostViewed = false;
       this._firstUnreadCardRef = null;
@@ -86,7 +110,6 @@ class StreamViewComponent extends Component<Props> {
         </VisibilitySensor>
       );
     }
-
     return <ConversationPost id={streamItem.value} key={streamItem.value} />;
   }
 
@@ -158,14 +181,21 @@ class StreamViewComponent extends Component<Props> {
 
   render() {
     return (
-      <JuiStream>
-        {this._jumpToFirstUnreadButton}
-        {this._initialPost}
-        <section ref={this._listRef}>
-          {this._streamItems}
-          {this._jumpToFirstUnreadLoading}
-        </section>
-      </JuiStream>
+      <ScrollerContext.Consumer>
+        {(value: TScroller) => {
+          this._context = value;
+          return (
+            <JuiStream>
+              {this._jumpToFirstUnreadButton}
+              {this._initialPost}
+              <section ref={this._listRef}>
+                {this._streamItems}
+                {this._jumpToFirstUnreadLoading}
+              </section>
+            </JuiStream>
+          );
+        }}
+      </ScrollerContext.Consumer>
     );
   }
 
@@ -180,14 +210,12 @@ class StreamViewComponent extends Component<Props> {
   @action.bound
   private _jumpToFirstUnread = async () => {
     if (this._jumpToFirstUnreadLoading || this._timeout) return;
-
     // Delay 500ms then show loading
     this._timeout = setTimeout(() => {
       this._jumpToFirstUnreadLoading = true;
     },                         500);
 
     const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
-
     clearTimeout(this._timeout);
     this._timeout = null;
     this._jumpToFirstUnreadLoading = false;
