@@ -24,7 +24,7 @@ class BookmarkViewComponent extends Component<Props> {
     return (
       <JuiIconButton
         size="small"
-        tooltipTitle={isBookmark ? t('Bookmark') : t('Remove bookmark')}
+        tooltipTitle={isBookmark ? t('Remove bookmark') : t('Bookmark')}
         color={isBookmark ? 'primary' : undefined}
         onClick={this._handleClick}
         variant="plain"
