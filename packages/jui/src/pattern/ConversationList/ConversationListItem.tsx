@@ -9,11 +9,12 @@ import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
 
-import styled from '../../foundation/styled-components';
+import styled, { keyframes } from '../../foundation/styled-components';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
+import { Theme } from '../../foundation/theme/theme';
 
 const StyledRightWrapper = styled.div`
   width: ${width(5)};
@@ -21,8 +22,18 @@ const StyledRightWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 `;
-
+const rippleEnter = (theme: Theme) => keyframes`
+  from {
+    transform: scale(0);
+    opacity: 0.1;
+  }
+  to {
+    transform: scale(1);
+    opacity: ${1 - theme.palette.action.hoverOpacity};
+  }
+`;
 const StyledIconographyMore = styled(JuiIconography)``;
 
 const StyledListItem = styled(MuiMenuItem)`
@@ -78,7 +89,15 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 
   .child {
-    background: ${palette('primary', '50')};
+    color: ${palette('action', 'active')};
+    opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
+  }
+
+  .rippleVisible {
+    color: ${({ theme }) => palette('action', 'active')({ theme })};
+    opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
+    transform: scale(1);
+    animation-name: ${({ theme }) => rippleEnter(theme)};
   }
 `;
 
@@ -86,6 +105,7 @@ const StyledPresenceWrapper = styled.div`
   width: ${width(2)};
   height: ${height(2)};
   margin: ${spacing(1.5)};
+  z-index: 1;
 `;
 
 type JuiConversationListItemProps = {
@@ -106,6 +126,7 @@ type IConversationListItem = {
 
 const touchRippleClasses = {
   child: 'child',
+  rippleVisible: 'rippleVisible',
 };
 
 const JuiConversationListItem: IConversationListItem = (

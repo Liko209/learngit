@@ -21,6 +21,7 @@ const StyledTypography = styled(MuiTypography)`
     text-overflow: ellipsis;
     white-space: nowrap;
     color: inherit;
+    z-index: 1;
   }
 `;
 
