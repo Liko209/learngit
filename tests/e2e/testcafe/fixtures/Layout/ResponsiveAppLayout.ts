@@ -50,14 +50,14 @@ test(
       await t.resizeWindow(750, 700);
       await t.expect(app.homePage.leftRail.visible).notOk();
       await t.expect(app.homePage.rightRail.visible).notOk();
-    });
+    }, true);
 
     await h(t).withLog('resize to max window', async () => {
-      await t.maximizeWindow();
+      await t.resizeWindow(1280, 720);
       await t.expect(app.homePage.leftRail.visible).ok();
       await t.expect(app.homePage.rightRail.visible).ok();
-     // TODO: messagePanel's locator is deprecated?
-    });
+      // TODO: messagePanel's locator is deprecated?
+    }, true);
 
     await h(t).withLog('When I go to the Tasks', async () => {
       await app.homePage.leftPanel.tasksEntry.enter();
@@ -74,14 +74,13 @@ test(
       await t.expect(app.homePage.leftRail.visible).notOk();
       await t.expect(app.homePage.rightRail.visible).notOk();
       // TODO: messagePanel's locator is deprecated?
-    });
+    }, true);
 
     await h(t).withLog('resize window', async () => {
       await t.resizeWindow(1440, 700);
       await t.expect(app.homePage.leftRail.visible).ok();
       await t.expect(app.homePage.rightRail.visible).ok();
       // TODO: messagePanel's locator is deprecated?
-    });
-
+    }, true);
   },
 );
