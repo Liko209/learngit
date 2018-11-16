@@ -5,10 +5,10 @@
  */
 import SubscribeWorker from '../subscribeWorker';
 import PresenceAPI from '../../../api/glip/presence';
-import socketManager from '../../SocketManager';
+import socketManager from '../../socket';
 
 jest.mock('../../../api/glip/presence');
-jest.mock('../../SocketManager');
+jest.mock('../../socket');
 
 const worker = new SubscribeWorker(() => { }, () => { });
 

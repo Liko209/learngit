@@ -37,8 +37,8 @@ import PostService from './service/post';
 import PresenceService from './service/presence';
 import ProfileService from './service/profile';
 import SearchService from './service/search';
-import socketManager from './service/SocketManager';
-import { SocketManager } from './service/SocketManager/SocketManager';
+import socketManager from './service/socket';
+import { SocketManager } from './service/socket/SocketManager';
 import StateService from './service/state';
 import SyncService from './service/sync';
 
