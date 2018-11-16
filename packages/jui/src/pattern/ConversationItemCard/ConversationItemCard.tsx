@@ -83,7 +83,7 @@ class JuiConversationItemCard extends React.Component<
     } = this.props;
 
     return (
-      <ItemCardWrapper>
+      <ItemCardWrapper className="conversation-item-cards">
         <ItemCardContent>
           <ItemCardHeader onClick={this.titleHandle} color={titleColor}>
             {typeof Icon === 'string' ? <ItemIcon>{Icon}</ItemIcon> : Icon}
