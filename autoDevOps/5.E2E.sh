@@ -34,14 +34,17 @@ echo $SITE_URL
 echo $ACTION
 echo $BRANCH
 echo $SCREENSHOTS_PATH
-
 mkdir -p $SCREENSHOTS_PATH
+
+# create dashboard run entity
 npx ts-node create-run-id.ts
+export REPORT_URL=`cat ./reportUrl`
+addEnv E2EResult="> **E2E Url**: $REPORT_URL"
+
+# start to run e2e tests
 npx ts-node multi-run.ts
 e2eResult=$?
 
-export REPORT_URL=`cat ./reportUrl`
-addEnv E2EResult="> **E2E Url**: $REPORT_URL"
 
 echo "E2E Result: $e2eResult"
 exit $e2eResult
