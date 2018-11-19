@@ -22,7 +22,6 @@ import { ScrollerContext } from 'jui/hoc';
 import { TScroller } from 'jui/hoc/withScroller';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import _ from 'lodash';
 import PostModel from '@/store/models/Post';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
