@@ -60,8 +60,9 @@ export default class MultiEntityMapStore<
         break;
       case EVENT_TYPES.REPLACE:
         {
-          const entities = payload.body.entities;
-          this.batchReplace(entities);
+          payload.body.entities.forEach((entity: T) => {
+            this._replace(entity);
+          });
         }
         break;
       case EVENT_TYPES.UPDATE:
@@ -116,13 +117,17 @@ export default class MultiEntityMapStore<
     });
   }
 
-  batchReplace(entities: Map<number, T>) {
-    entities.forEach((entity, id) => {
-      if (this._data[id]) {
-        this.remove(id);
-        this.set(entity);
-      }
+  batchReplace(entities: T[]) {
+    entities.forEach((entity: T) => {
+      this._replace(entity);
     });
+  }
+
+  private _replace(entity: T) {
+    if (entity && this._data[entity.id]) {
+      this.remove(entity.id);
+      this.set(entity);
+    }
   }
 
   remove(id: number) {
