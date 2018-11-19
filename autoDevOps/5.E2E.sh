@@ -23,7 +23,7 @@ export BRANCH="${gitlabBranch}"
 export ENABLE_REMOTE_DASHBOARD=true
 export DEBUG_MODE=false
 export QUARANTINE_MODE=true
-export RUN_NAME="[Pipeline][Merge][${START_TIME}][${gitlabBranch}][${gitlabMergeRequestLastCommit}]"
+export RUN_NAME="[Jupiter][Pipeline][Merge][${START_TIME}][${gitlabBranch}][${gitlabMergeRequestLastCommit}]"
 
 
 echo "Following environment variables are used by e2e tests to define test scope:"

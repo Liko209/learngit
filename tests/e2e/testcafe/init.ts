@@ -41,8 +41,10 @@ export async function getOrCreateRunId() {
     }
     for (const key in process.env) {
       if ([
-        'appUrl',
+        'SELENIUM_SERVER',
+        'HOST_NAME',
         'BUILD_URL',
+        'appUrl',
         'gitlabActionType',
         'gitlabBranch',
         'gitlabMergedByUser',
