@@ -123,14 +123,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     groupIds: number[],
     shouldAdd: boolean,
   ) {
-    const groupService = GroupService.getInstance<service.GroupService>();
-    const groups = await groupService.getGroupsByIds(groupIds);
     if (shouldAdd) {
+      const groupService = GroupService.getInstance<service.GroupService>();
+      const groups = await groupService.getGroupsByIds(groupIds);
       this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(groups);
       this._handlersMap[SECTION_TYPE.TEAM].upsert(groups);
     } else {
-      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].removeByIds(groups);
-      this._handlersMap[SECTION_TYPE.TEAM].removeByIds(groups);
+      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].removeByIds(groupIds);
+      this._handlersMap[SECTION_TYPE.TEAM].removeByIds(groupIds);
     }
   }
 
