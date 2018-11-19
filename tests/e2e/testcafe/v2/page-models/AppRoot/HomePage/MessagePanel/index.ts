@@ -42,6 +42,9 @@ class ConversationEntry extends BaseWebComponent {
 
   async getUmi() {
     const umi = this.self.find('.umi');
+    if (await umi.exists == false) {
+      return 0;
+    }
     const text = await umi.innerText;
     if (_.isEmpty(text)) {
       return 0;
