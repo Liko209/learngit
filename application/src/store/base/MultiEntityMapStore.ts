@@ -72,9 +72,7 @@ export default class MultiEntityMapStore<
             this.batchUpdate(partials);
           } else {
             entities.forEach((entity: T) => {
-              if (this._data[entity.id]) {
-                this.set(entity);
-              }
+              this._partialUpdate(entity, entity.id);
             });
           }
         }
@@ -94,18 +92,27 @@ export default class MultiEntityMapStore<
   @action
   batchUpdate(partials: Map<number, Partial<Raw<T>>>) {
     partials.forEach((partialEntity, id) => {
-      const model = this._data[id];
-      if (model) {
-        Object.keys(partialEntity).forEach((key: string) => {
-          model[_.camelCase(key)] = partialEntity[key];
-        });
-      }
+      this._partialUpdate(partialEntity, id);
     });
+  }
+
+  private _partialUpdate(partialEntity: Partial<Raw<T>> | T, id: number) {
+    const model = this._data[id];
+    if (model) {
+      Object.keys(partialEntity).forEach((key: string) => {
+        model[_.camelCase(key)] = partialEntity[key];
+      });
+    }
   }
 
   batchSet(entities: T[]) {
     entities.forEach((entity: T) => {
-      this.set(entity);
+      const model = this._data[entity.id];
+      if (!model) {
+        this.set(entity);
+      } else {
+        this._partialUpdate(entity, entity.id);
+      }
     });
   }
 

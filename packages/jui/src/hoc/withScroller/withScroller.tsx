@@ -50,6 +50,11 @@ const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
   position: relative;
 `;
 
+const ScrollerContext = React.createContext({
+  scrollToRow: (n: number) => {},
+  onListAsyncMounted: (el: React.RefObject<any>) => {},
+});
+
 function withScroller(Comp: ComponentType<any>) {
   return class Scroller extends PureComponent<ScrollerProps, ScrollerStates>
     implements TScroller {
@@ -79,21 +84,6 @@ function withScroller(Comp: ComponentType<any>) {
         props.throttle,
       );
     }
-
-    render() {
-      return (
-        <StyledScroller ref={this._scrollElRef} stickTo={this.props.stickTo}>
-          <Comp
-            {...this.props}
-            setRowVisible={this.scrollToRow}
-            atBottom={this._isAtBottom}
-            scrollToRow={this.scrollToRow}
-            onListAsyncMounted={this.onListAsyncMounted}
-          />
-        </StyledScroller>
-      );
-    }
-
     onListAsyncMounted = (list: React.RefObject<HTMLElement>) => {
       /* This function is called especially when the list is mounted after withScroller mounted*/
       this._list = list.current;
@@ -198,7 +188,10 @@ function withScroller(Comp: ComponentType<any>) {
 
     scrollToRow = (
       n: number,
-      options: ScrollIntoViewOptions | boolean = false,
+      options: ScrollIntoViewOptions | boolean = {
+        behavior: 'smooth',
+        block: 'end',
+      },
       itemSelector: string = 'div',
     ) => {
       const listEl = this._list;
@@ -231,7 +224,30 @@ function withScroller(Comp: ComponentType<any>) {
       }
       return window.requestAnimationFrame(() => rowEl.scrollIntoView(options));
     }
+    private _context = {
+      scrollToRow: this.scrollToRow,
+      onListAsyncMounted: this.onListAsyncMounted,
+    };
+    render() {
+      return (
+        <StyledScroller ref={this._scrollElRef} stickTo={this.props.stickTo}>
+          <ScrollerContext.Provider value={this._context}>
+            <Comp
+              {...this.props}
+              setRowVisible={this.scrollToRow}
+              atBottom={this._isAtBottom}
+            />
+          </ScrollerContext.Provider>
+        </StyledScroller>
+      );
+    }
   };
 }
 
-export { withScroller, ScrollerProps, WithScrollerProps, TScroller };
+export {
+  withScroller,
+  ScrollerProps,
+  WithScrollerProps,
+  TScroller,
+  ScrollerContext,
+};
