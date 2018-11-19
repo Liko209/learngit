@@ -32,7 +32,7 @@ export async function getOrCreateRunId() {
     const runName = RUN_NAME || uuid();
     const metadata = {};
     for (const key in ENV_OPTS) {
-      metadata[key] = JSON.stringify(RUNNER_OPTS[key]);
+      metadata[key] = JSON.stringify(ENV_OPTS[key]);
     }
     for (const key in RUNNER_OPTS) {
       if ([
