@@ -31,6 +31,9 @@ export async function getOrCreateRunId() {
   if (!runId) {
     const runName = RUN_NAME || uuid();
     const metadata = {};
+    for (const key in ENV_OPTS) {
+      metadata[key] = JSON.stringify(RUNNER_OPTS[key]);
+    }
     for (const key in RUNNER_OPTS) {
       if ([
         'EXCLUDE_TAGS',
