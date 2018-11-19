@@ -55,6 +55,21 @@ class ConversationEntry extends BaseWebComponent {
     return Number(text);
   }
 
+  async expectUmi(n: number, waitTime=10){
+    let i = 0
+    while (true) {
+      await this.t.wait(1000);
+      const count = await this.getUmi()
+      if (count == n){
+        break
+      }
+      i = i + 1
+      if (i == waitTime){
+        break
+      }
+    }
+  }
+
   async openMoreMenu() {
     const moreButton = this.moreMenuEntry;
     await this.t.expect(moreButton.exists).ok();
@@ -120,6 +135,21 @@ class ConversationListSection extends BaseWebComponent {
       return 100;
     }
     return Number(text);
+  }
+
+  async expectHeaderUmi(n: number, waitTime=10){
+    let i = 0
+    while (true) {
+      await this.t.wait(1000);
+      const count = await this.getHeaderUmi()
+      if (count == n){
+        break
+      }
+      i = i + 1
+      if (i == waitTime){
+        break
+      }
+    }
   }
 
   get collapse() {
