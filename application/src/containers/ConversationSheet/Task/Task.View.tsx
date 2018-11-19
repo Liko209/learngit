@@ -49,7 +49,10 @@ const FILE_COMPS = {
         key={id}
         previewUrl={previewUrl}
         fileName={name}
+        i18UnfoldLess={t('collapse')}
+        i18UnfoldMore={t('expand')}
         Actions={downloadBtn(downloadUrl)}
+        ImageActions={downloadBtn(downloadUrl)}
       />
     );
   },
@@ -116,7 +119,7 @@ class Task extends React.Component<taskViewProps> {
       repeatEnding,
       repeatEndingOn,
     } = task;
-
+    console.log(task, '----task');
     const time = getDurationTime(start, end);
     const timeText = getDurationTimeText(
       repeat,
@@ -131,8 +134,8 @@ class Task extends React.Component<taskViewProps> {
         titleColor={color}
         Icon={<JuiTaskCheckbox checked={complete || false} />}
       >
-        <JuiTimeMessage time={`${time} ${timeText}`} />
-        {assignedToIds && assignedToIds.length > 2 && (
+        {start && end && <JuiTimeMessage time={`${time} ${timeText}`} />}
+        {assignedToIds && assignedToIds.length > 0 && (
           <JuiTaskAvatarName
             count={assignedToIds && assignedToIds.length}
             otherText={t('avatarnamesWithOthers', {
@@ -142,10 +145,12 @@ class Task extends React.Component<taskViewProps> {
             {this._taskAvatarNames}
           </JuiTaskAvatarName>
         )}
-        <JuiTaskContent>
-          <JuiTaskSection section={section} />
-          <JuiTaskNotes notes={notes} />
-        </JuiTaskContent>
+        {(section || notes) && (
+          <JuiTaskContent>
+            <JuiTaskSection section={section} />
+            <JuiTaskNotes notes={notes} />
+          </JuiTaskContent>
+        )}
         {files && files.length > 0 && (
           <JuiTaskContent title={t('Attachments')}>
             {files.map((file: ExtendFileItem) => {

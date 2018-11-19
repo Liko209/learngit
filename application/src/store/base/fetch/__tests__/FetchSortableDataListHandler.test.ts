@@ -22,6 +22,7 @@ import { ENTITY_NAME } from '@/store';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import GroupModel from '@/store/models/Group';
 import { ENTITY, notificationCenter, EVENT_TYPES } from 'sdk/service';
+import _ from 'lodash';
 
 class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
   mockData: { data: T[]; hasMore: boolean } = { data: [], hasMore: false };
@@ -324,13 +325,16 @@ describe('FetchSortableDataListHandler - updateEntityStore', () => {
   });
 
   it('handle the group updated', () => {
-    group.most_recent_post_created_at = 1001;
+    group.creator_id = 1001;
     notificationCenter.emitEntityUpdate(ENTITY.GROUP, [group]);
     const groupStore = storeManager.getEntityMapStore(
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
     console.log(JSON.stringify(groupStore.get(group.id)));
-    expect(groupStore.get(group.id)).toEqual(GroupModel.fromJS(group));
+
+    const updatedGroup = groupStore.get(group.id);
+
+    expect(updatedGroup.creatorId).toEqual(1001);
 
     let newGroup: Group = {
       ...group,

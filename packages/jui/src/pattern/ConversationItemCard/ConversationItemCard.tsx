@@ -10,7 +10,8 @@ import { JuiCardContent, JuiCard } from '../../components/Cards';
 import { spacing, typography, palette } from '../../foundation/utils/styles';
 
 const ItemCardWrapper = styled(JuiCard)`
-  margin: ${spacing(2, 0)};
+  word-break: break-all;
+  margin-bottom: ${spacing(3)};
 `;
 
 const ItemIcon = styled(MuiIcon)`
@@ -46,9 +47,13 @@ const ItemCardContent = styled(JuiCardContent)`
 `;
 
 const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
-  padding: ${({ footerPadding }) => footerPadding && spacing(4, 10, 5, 10)};
+  margin-top: ${spacing(-2)};
+  padding: ${({ footerPadding }) => footerPadding && spacing(4, 10, 4, 10)};
   ${typography('subheading3')};
   background-color: ${palette('grey', '100')};
+  .task-avatar-name {
+    margin-top: 0;
+  }
 `;
 
 type JuiConversationItemCardProps = {
@@ -82,7 +87,7 @@ class JuiConversationItemCard extends React.Component<
     } = this.props;
 
     return (
-      <ItemCardWrapper>
+      <ItemCardWrapper className="conversation-item-cards">
         <ItemCardContent>
           <ItemCardHeader onClick={this.titleHandle} color={titleColor}>
             {typeof Icon === 'string' ? <ItemIcon>{Icon}</ItemIcon> : Icon}

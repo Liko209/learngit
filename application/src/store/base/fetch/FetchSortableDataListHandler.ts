@@ -156,8 +156,14 @@ export class FetchSortableDataListHandler<
       }
 
       this.updateEntityStore(matchedEntities);
-      this.sortableListStore.removeByIds(notMatchedKeys);
-      this.sortableListStore.upsert(matchedSortableModels);
+
+      if (payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll) {
+        this.sortableListStore.removeByIds(notMatchedKeys);
+        this.sortableListStore.upsert(matchedSortableModels);
+      } else {
+        this.sortableListStore.upsert(matchedSortableModels);
+        this.sortableListStore.removeByIds(notMatchedKeys);
+      }
 
       this._dataChangeCallBack &&
         this._dataChangeCallBack({

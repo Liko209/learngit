@@ -31,6 +31,7 @@ import { PostTransformHandler } from './PostTransformHandler';
 import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
 import { DateSeparatorHandler } from './DateSeparatorHandler';
 import { HistoryHandler } from './HistoryHandler';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -118,7 +119,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this.groupId === props.groupId) {
       return;
     }
-
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     this.groupId = props.groupId;
 
     this.dispose();
@@ -204,7 +205,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     const atBottom =
       scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
     const isFocused = document.hasFocus();
-    if (atBottom && isFocused && this._initialized) {
+    const shouldHideUmi = atBottom && isFocused;
+    storeManager
+      .getGlobalStore()
+      .set(GLOBAL_KEYS.SHOULD_SHOW_UMI, !shouldHideUmi);
+    if (shouldHideUmi && this._initialized) {
       this._newMessageSeparatorHandler.disable();
     } else {
       this._newMessageSeparatorHandler.enable();

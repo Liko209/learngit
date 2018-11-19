@@ -27,6 +27,7 @@ import {
 import StateService from '../state';
 import { mainLogger } from 'foundation';
 import { EVENT_TYPES } from '../constants';
+import AccountService from '../account';
 
 async function getExistedAndTransformDataFromPartial(
   groups: Partial<Raw<Group>>[],
@@ -144,7 +145,7 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
     (group: Group) => hiddenGroupIds.indexOf(group.id) === -1,
   );
 
-  notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
+  notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
 
   const favIds = (profile && profile.favorite_group_ids) || [];
   const archivedGroups = normalData.filter((item: Group) => item.is_archived);
@@ -160,12 +161,12 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   let addedTeams = normalData.filter(
     (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
   );
-  addedTeams = await filterGroups(addedTeams, limit);
+  addedTeams = await filterGroups(addedTeams, limit, false);
 
   let addedGroups = normalData.filter(
     (item: Group) => !item.is_team && favIds.indexOf(item.id) === -1,
   );
-  addedGroups = await filterGroups(addedGroups, limit);
+  addedGroups = await filterGroups(addedGroups, limit, true);
 
   const addFavorites = normalData.filter(
     (item: Group) => favIds.indexOf(item.id) !== -1,
@@ -188,7 +189,7 @@ async function operateGroupDao(deactivatedData: Group[], normalData: Group[]) {
       dao.bulkDelete(deactivatedData.map(item => item.id));
     }
     if (normalData.length) {
-      await dao.bulkPut(normalData);
+      await dao.bulkUpdate(normalData);
     }
   } catch (e) {
     console.error(`operateGroupDao error ${JSON.stringify(e)}`);
@@ -417,8 +418,23 @@ async function getUnreadGroupIds(groups: Group[]) {
  * extract out groups/teams which are latest than the oldest unread post
  * or just use default limit length
  */
-async function filterGroups(groups: Group[], limit: number) {
-  const sortedGroups = groups.sort(
+async function filterGroups(
+  groups: Group[],
+  limit: number,
+  shouldFilterGroupWithoutPostTime: boolean,
+) {
+  let sortedGroups = groups;
+  if (shouldFilterGroupWithoutPostTime) {
+    const accountService: AccountService = AccountService.getInstance();
+    const currentUserId = accountService.getCurrentUserId();
+    sortedGroups = groups.filter((model: Group) => {
+      return (
+        model.most_recent_post_created_at !== undefined ||
+        model.creator_id === currentUserId
+      );
+    });
+  }
+  sortedGroups = sortedGroups.sort(
     (group1: Group, group2: Group) =>
       getGroupTime(group2) - getGroupTime(group1),
   );

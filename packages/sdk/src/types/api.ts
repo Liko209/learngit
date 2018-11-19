@@ -28,11 +28,16 @@ type GlipConfig = BaseConfig;
 
 type UploadConfig = BaseConfig;
 
+type SplitIOConfig = BaseConfig & {
+  clientSecret: string;
+};
+
 type ApiConfig = {
   rc: RcConfig;
   glip: GlipConfig;
   glip2: Glip2Config;
   upload: UploadConfig;
+  splitio: SplitIOConfig;
 };
 
 type PartialApiConfig = {
@@ -40,11 +45,19 @@ type PartialApiConfig = {
   glip?: Partial<GlipConfig>;
   glip2?: Partial<Glip2Config>;
   upload?: Partial<UploadConfig>;
+  splitio?: Partial<SplitIOConfig>;
 };
 
 type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload' | 'glip_desktop';
 
 export {
-  BaseConfig, RcConfig, Glip2Config, GlipConfig,
-  UploadConfig, ApiConfig, PartialApiConfig, HttpConfigType,
+  BaseConfig,
+  RcConfig,
+  Glip2Config,
+  GlipConfig,
+  SplitIOConfig,
+  UploadConfig,
+  ApiConfig,
+  PartialApiConfig,
+  HttpConfigType,
 };

@@ -21,7 +21,7 @@ fixture('Send Messages')
 test(formalName('Enter text in the conversation input box', ['P0', 'JPT-77']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
 
-  const user = users[3];
+  const user = users[1];
   const app = new AppRoot(t);
 
   await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
@@ -31,8 +31,8 @@ test(formalName('Enter text in the conversation input box', ['P0', 'JPT-77']), a
 
   await h(t).withLog('When I enter a conversation', async () => {
     // FIXME: there is a risk that no conversation in the list
-    await app.homePage.messagePanel.directMessagesSection.expand();
-    await app.homePage.messagePanel.directMessagesSection.nthConversationEntry(0).enter();
+    await app.homePage.messagePanel.teamsSection.expand();
+    await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
   });
 
   const identifier = uuid();

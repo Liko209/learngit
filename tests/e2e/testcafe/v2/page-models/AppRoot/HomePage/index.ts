@@ -4,8 +4,10 @@ import { CreateTeamModal } from './CreateTeamModal';
 import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
-import { MessagePanel } from './MessagePanel'
+import { MessagePanel } from './MessagePanel';
 import { Header } from './header';
+import { LeftRail } from './LeftRail';
+import { RightRail } from './RightRail';
 
 
 export class HomePage extends BaseWebComponent {
@@ -19,6 +21,14 @@ export class HomePage extends BaseWebComponent {
 
     get leftPanel() {
         return this.getComponent(LeftPanel);
+    }
+
+    get leftRail() {
+        return this.getComponent(LeftRail);
+    }
+
+    get rightRail() {
+        return this.getComponent(RightRail);
     }
 
     get messagePanel() {

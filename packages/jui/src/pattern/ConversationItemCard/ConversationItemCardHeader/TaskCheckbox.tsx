@@ -6,6 +6,7 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { JuiCheckbox } from '../../../components/Checkbox';
+import { palette, spacing } from '../../../foundation/utils';
 
 type Props = {
   checked: boolean;
@@ -14,12 +15,21 @@ type Props = {
 const StyledTaskCheckbox = styled(JuiCheckbox)`
   && {
     padding: 0;
+    &.checked {
+      color: ${palette('primary', 'main')};
+    }
+    svg {
+      margin-top: ${spacing(-0.5)};
+    }
   }
 `;
 
 const JuiTaskCheckbox = (props: Props) => {
   return (
     <StyledTaskCheckbox
+      classes={{
+        checked: 'checked',
+      }}
       checked={props.checked}
       disableRipple={true}
       {...props}
