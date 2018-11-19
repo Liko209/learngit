@@ -80,13 +80,11 @@ class StreamViewComponent extends Component<Props> {
 
   async componentDidUpdate(prevProps: Props) {
     if (prevProps.groupId !== this.props.groupId) {
-      await this.props.loadInitialPosts();
-      this._context.scrollToRow(-1);
       this._jumpToFirstUnreadLoading = false;
       this._firstHistoryUnreadPostViewed = false;
       this._postRefs.clear();
       await this.props.loadInitialPosts();
-      this.props.scrollToRow(-1);
+      this._context.scrollToRow(-1);
     }
   }
 
