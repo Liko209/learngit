@@ -145,10 +145,12 @@ class Task extends React.Component<taskViewProps> {
             {this._taskAvatarNames}
           </JuiTaskAvatarName>
         )}
-        <JuiTaskContent>
-          <JuiTaskSection section={section} />
-          <JuiTaskNotes notes={notes} />
-        </JuiTaskContent>
+        {(section || notes) && (
+          <JuiTaskContent>
+            <JuiTaskSection section={section} />
+            <JuiTaskNotes notes={notes} />
+          </JuiTaskContent>
+        )}
         {files && files.length > 0 && (
           <JuiTaskContent title={t('Attachments')}>
             {files.map((file: ExtendFileItem) => {

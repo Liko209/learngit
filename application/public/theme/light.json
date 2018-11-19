@@ -106,6 +106,8 @@
     "unit": 4
   },
   "zIndex": {
+    "ripple": 1,
+    "elementOnRipple": 2,
     "reponsePanel": 1,
     "reponseResizer": 2,
     "loading": 1000,

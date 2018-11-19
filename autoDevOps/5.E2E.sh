@@ -11,6 +11,8 @@ cd $project/tests/e2e/testcafe
 git clean -xdf -e node_modules
 npm i
 
+export HOST_NAME=`hostname -f`
+export START_TIME=`TZ=UTC-8 date +'%F %T'`
 export SITE_URL=$appUrl
 export SCREENSHOTS_PATH=./screenshots
 export SELENIUM_SERVER=$SELENIUM_SERVER
@@ -21,6 +23,7 @@ export BRANCH="${gitlabBranch}"
 export ENABLE_REMOTE_DASHBOARD=true
 export DEBUG_MODE=false
 export QUARANTINE_MODE=true
+export RUN_NAME="[Pipeline][Merge][${START_TIME}][${gitlabBranch}][${gitlabMergeRequestLastCommit}]"
 
 
 echo "Following environment variables are used by e2e tests to define test scope:"

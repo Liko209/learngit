@@ -163,7 +163,7 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   & > b {
     font-weight: 400;
     color: ${palette('grey', '700')};
-    width: ${({ ratio }) => (ratio >= 1 ? width(56) : width(82))};
+    width: ${({ ratio }) => (ratio >= 1 ? width(49) : width(82))};
   }
 `;
 
