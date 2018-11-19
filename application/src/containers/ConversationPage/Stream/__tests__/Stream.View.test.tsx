@@ -126,7 +126,7 @@ describe('StreamView', () => {
 
     describe('hasHistoryUnread=true', () => {
       // JPT-206 / JPT-232
-      it('should not render jumpToFirstUnreadButton when first history unread in current page and was viewed', () => {
+      it.skip('should not render jumpToFirstUnreadButton when first history unread in current page and was viewed', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: true,
           firstHistoryUnreadInPage: true,
