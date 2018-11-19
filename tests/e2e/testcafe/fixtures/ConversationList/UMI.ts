@@ -565,7 +565,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     const favoritesSection = app.homePage.messagePanel.favoritesSection;
     await h(t).withLog('Then I click group3 to make sure other conversations are not selected',
       async () => {
-        await directMessagesSection.conversationByIdEntry(group3.data.id).enter()
+        await directMessagesSection.conversationByIdEntry(group3.data.id).enter();
       },
     );
 
