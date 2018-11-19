@@ -3,8 +3,9 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
+import { MentionPage, ConversationPage } from "./ConversationPage";
 
-class MoreMenuEntry extends BaseWebComponent {
+class Entry extends BaseWebComponent {
   async enter() {
     await this.t.click(this.self);
   }
@@ -17,17 +18,11 @@ class MoreMenu extends BaseWebComponent {
 
   private getEntry(name: string) {
     this.warnFlakySelector();
-    return this.getComponent(
-      MoreMenuEntry,
-      this.self.find('li').withText(name),
-    );
+    return this.getComponent(Entry, this.self.find('li').withText(name));
   }
 
   private getToggler(id: string) {
-    return this.getComponent(
-      MoreMenuEntry,
-      this.getSelectorByAutomationId(id),
-    );
+    return this.getComponent(Entry, this.getSelectorByAutomationId(id));
   }
 
   get favoriteToggler() {
@@ -47,6 +42,9 @@ class ConversationEntry extends BaseWebComponent {
 
   async getUmi() {
     const umi = this.self.find('.umi');
+    if (await umi.exists == false) {
+      return 0;
+    }
     const text = await umi.innerText;
     if (_.isEmpty(text)) {
       return 0;
@@ -165,66 +163,6 @@ class ConversationListSection extends BaseWebComponent {
   }
 }
 
-class PostItem extends BaseWebComponent {
-  get avatar() {
-    return this.self.find(`[data-name="avatar"]`);
-  }
-
-  get name() {
-    return this.self.find(`[data-name="name"]`);
-  }
-
-  get userStatus() {
-    this.warnFlakySelector();
-    return this.name.nextSibling('div')
-  }
-
-  get time() {
-    return this.self.find(`[data-name="time"]`);
-  }
-
-  get body() {
-    return this.self.find(`[data-name="body"]`);
-  }
-
-  get text() {
-    return this.self.find(`[data-name="text"]`);
-  }
-}
-
-class ConversationPage extends BaseWebComponent {
-  get self() {
-    return this.getSelector('.conversation-page');
-  }
-
-  get posts() {
-    return this.self.find('[data-name="conversation-card"]');
-  }
-
-  get header() {
-    return this.getSelectorByAutomationId('conversation-page-header');
-  }
-
-  get messageInputArea() {
-    this.warnFlakySelector();
-    return this.self.child().find('.ql-editor');
-  }
-
-  async sendMessage(message: string) {
-    await this.t
-      .typeText(this.messageInputArea, message)
-      .click(this.messageInputArea)
-      .pressKey('enter');
-  }
-
-  nthPostItem(nth: number) {
-    return this.getComponent(PostItem, this.posts.nth(nth));
-  }
-
-  postItemById(postId: string) {
-    return this.getComponent(PostItem, this.posts.filter(`[data-id="${postId}"]`));
-  }
-}
 
 class CloseConversationModal extends BaseWebComponent {
   get self() {
@@ -277,9 +215,15 @@ export class MessagePanel extends BaseWebComponent {
   get teamsSection() {
     return this.getSection('Teams');
   }
-
+  get mentionsEntry() {
+    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions')); 
+  }
   get conversationPage() {
     return this.getComponent(ConversationPage);
+  }
+
+  get mentionPage() {
+    return this.getComponent(MentionPage);
   }
 
   get postListPage() {

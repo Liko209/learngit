@@ -48,7 +48,7 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
         titleColor={color}
         Icon={<JuiTaskCheckbox checked={complete || false} />}
         Footer={
-          key === 'assigned_to_ids' ? (
+          key === 'assigned_to_ids' && old_value.length > 0 ? (
             <JuiEventCollapse
               showText={t('showEventHistory')}
               hideText={t('hideEventHistory')}
@@ -56,7 +56,7 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
               {
                 <JuiEventCollapseContent>
                   <JuiTaskAvatarName>
-                    {this._getTaskAvatarNames(value)}
+                    {this._getTaskAvatarNames(old_value)}
                   </JuiTaskAvatarName>
                 </JuiEventCollapseContent>
               }
@@ -64,9 +64,9 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
           ) : null
         }
       >
-        {key === 'assigned_to_ids' && old_value > 0 ? (
+        {key === 'assigned_to_ids' ? (
           <JuiTaskAvatarName>
-            {this._getTaskAvatarNames(old_value)}
+            {this._getTaskAvatarNames(value)}
           </JuiTaskAvatarName>
         ) : null}
       </TaskUpdateViewCard>
