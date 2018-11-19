@@ -177,11 +177,12 @@ describe('CreateTeamVM', () => {
     expect(createTeamVM.nameError).toBe(true);
     createTeamVM.createErrorHandler({
       error: {
-        message: '',
+        message: 'This is not a valid email address: q@qq.com .',
         validation: true,
         code: 'invalid_field',
       },
     });
+    expect(createTeamVM.errorEmail).toBe('q@qq.com');
     expect(createTeamVM.emailErrorMsg).toBe('Invalid Email');
     expect(createTeamVM.emailError).toBe(true);
   });

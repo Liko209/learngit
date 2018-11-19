@@ -35,6 +35,9 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
   @observable
   helperText: string;
 
+  @observable
+  errorEmail: string;
+
   constructor(props: ContactSearchProps) {
     super(props);
     this.searchMembers = debounce(this.searchMembers.bind(this), 300);
@@ -47,12 +50,14 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
     placeholder,
     error,
     helperText,
+    errorEmail,
   }: ContactSearchProps) {
     this.label = label;
     this.onChange = onChange;
     this.placeholder = placeholder;
     this.error = error;
     this.helperText = helperText;
+    this.errorEmail = errorEmail;
   }
 
   @action

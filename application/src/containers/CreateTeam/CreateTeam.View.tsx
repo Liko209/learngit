@@ -127,6 +127,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       handleSearchContactChange,
       isOffline,
       serverError,
+      errorEmail,
     } = this.props;
     return (
       <JuiModal
@@ -159,6 +160,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           onChange={handleNameChange}
         />
         <ContactSearch
+          errorEmail={errorEmail}
           onChange={handleSearchContactChange}
           label={t('Members')}
           placeholder={t('Search Contact Placeholder')}

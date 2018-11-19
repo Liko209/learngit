@@ -15,6 +15,7 @@ type ContactSearchProps = {
   placeholder: string;
   error: boolean;
   helperText: string;
+  errorEmail: string;
 };
 
 type ViewProps = {
@@ -25,6 +26,7 @@ type ViewProps = {
   placeholder: string;
   error: boolean;
   helperText: string;
+  errorEmail: string;
 };
 
 export { ViewProps, ContactSearchProps, SelectedMember };

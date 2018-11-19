@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { action, computed, observable } from 'mobx';
-
 import GroupService, { CreateTeamOptions } from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
 import { IResponseError } from 'sdk/models';
@@ -32,6 +31,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   serverError: boolean = false;
   @observable
   members: (number | string)[] = [];
+  @observable
+  errorEmail: string;
 
   @computed
   get isOpen() {
@@ -123,12 +124,16 @@ class CreateTeamViewModel extends AbstractViewModel {
     return result;
   }
 
-  createErrorHandler(error: IResponseError) {
-    const code = error.error.code;
+  createErrorHandler(errorData: IResponseError) {
+    const code = errorData.error.code;
     if (code === 'already_taken') {
       this.errorMsg = 'already taken';
       this.nameError = true;
     } else if (code === 'invalid_field') {
+      const message = errorData.error.message;
+      // 'This is not a valid email address: q@qq.com .'
+      const email = message.substr(0, message.length - 1).split(':')[1];
+      this.errorEmail = email.trim();
       this.emailErrorMsg = 'Invalid Email';
       this.emailError = true;
     }

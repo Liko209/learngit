@@ -27,7 +27,9 @@ class ContactSearch extends React.Component<Props> {
       helperText,
       searchMembers,
       suggestions,
+      errorEmail,
     } = this.props;
+    console.log(errorEmail, '------errorEmail');
     return (
       <JuiContactSearch
         inputChange={searchMembers}
