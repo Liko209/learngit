@@ -61,11 +61,11 @@ class ConversationEntry extends BaseWebComponent {
       await this.t.wait(1000);
       const count = await this.getUmi()
       if (count == n){
-        break
+        return
       }
       i = i + 1
-      if (i == waitTime){
-        break
+      if (i >= waitTime) {
+        throw("UMI amount is Error")
       }
     }
   }
@@ -93,13 +93,13 @@ class ConversationEntry extends BaseWebComponent {
     }
     while (true) {
       if (tryTime >= timeout) {
-        throw (`Wait until conversation without UMI: timeout: ${timeout}s`)
+        throw (`Wait until conversation UMI exist: ${exist}, timeout: ${timeout}s`)
       }
       tryTime = tryTime + 1;
       await this.t.wait(1e3);
       count = await this.getUmi();
       if (exist == !!(count)) {
-        break
+        return
       }
     }
   }
