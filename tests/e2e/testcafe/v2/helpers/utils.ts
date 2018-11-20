@@ -11,6 +11,10 @@ export class H {
     return H.getUserAgent().then(ua => ua.includes('Electron'));
   }
 
+  static isEdge(): Promise<boolean> {
+    return H.getUserAgent().then(ua => ua.includes('Edge'));
+  } 
+
   static getUtcOffset(): Promise<number> {
     return ClientFunction(() => new Date().getTimezoneOffset())();
   }
