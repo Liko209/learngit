@@ -55,6 +55,21 @@ class ConversationEntry extends BaseWebComponent {
     return Number(text);
   }
 
+  async expectUmi(n: number, waitTime=10){
+    let i = 0
+    while (true) {
+      await this.t.wait(1000);
+      const count = await this.getUmi()
+      if (count == n){
+        return
+      }
+      i = i + 1
+      if (i >= waitTime) {
+        throw("UMI amount is Error")
+      }
+    }
+  }
+
   async openMoreMenu() {
     const moreButton = this.moreMenuEntry;
     await this.t.expect(moreButton.exists).ok();
@@ -78,13 +93,13 @@ class ConversationEntry extends BaseWebComponent {
     }
     while (true) {
       if (tryTime >= timeout) {
-        throw (`Wait until conversation without UMI: timeout: ${timeout}s`)
+        throw (`Wait until conversation UMI exist: ${exist}, timeout: ${timeout}s`)
       }
       tryTime = tryTime + 1;
       await this.t.wait(1e3);
       count = await this.getUmi();
       if (exist == !!(count)) {
-        break
+        return
       }
     }
   }
@@ -120,6 +135,21 @@ class ConversationListSection extends BaseWebComponent {
       return 100;
     }
     return Number(text);
+  }
+
+  async expectHeaderUmi(n: number, waitTime=10){
+    let i = 0
+    while (true) {
+      await this.t.wait(1000);
+      const count = await this.getHeaderUmi()
+      if (count == n){
+        break
+      }
+      i = i + 1
+      if (i == waitTime){
+        break
+      }
+    }
   }
 
   get collapse() {
