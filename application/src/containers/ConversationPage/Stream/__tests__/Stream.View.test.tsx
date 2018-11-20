@@ -84,8 +84,8 @@ describe('StreamView', () => {
       expect(card).toHaveLength(2);
       expect(card0.props()).toEqual({ id: 1 });
       expect(card1.props()).toEqual({ id: 2 });
-      expect(card0.key()).toBe('1');
-      expect(card1.key()).toBe('2');
+      expect(card0.key()).toBe('ConversationPost1');
+      expect(card1.key()).toBe('ConversationPost2');
     });
 
     it('should render <TimeNodeDivider>', () => {
