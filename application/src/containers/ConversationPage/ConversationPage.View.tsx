@@ -37,7 +37,11 @@ class ConversationPageViewComponent extends Component<
       >
         <Header id={groupId} />
         <JuiStreamWrapper>
-          <Stream groupId={groupId} scrollerRef={this._scroller} />
+          <Stream
+            key={`Stream_${groupId}`}
+            groupId={groupId}
+            scrollerRef={this._scroller}
+          />
           <div id="jumpToFirstUnreadButtonRoot" />
         </JuiStreamWrapper>
         {canPost ? (
