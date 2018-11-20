@@ -48,7 +48,7 @@ test(formalName('Team section display the conversation which the login user as o
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
       await t
-        .expect(app.homePage.messagePanel.teamsSection.conversationByIdEntry(team.data.id).self.exists)
+        .expect(app.homePage.messagePanel.teamsSection.conversationEntryById(team.data.id).self.exists)
         .ok(team.data.id, { timeout: 5e3 });
     }, true);
 
@@ -91,7 +91,7 @@ test(formalName('Each conversation should be represented by the team name.',
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
       await t
-        .expect(teamsSection.conversationByNameEntry(teamName).self.exists)
+        .expect(teamsSection.conversationEntryByName(teamName).self.exists)
         .ok(teamName, { timeout: 5e3 });
     }, true);
 
@@ -104,7 +104,7 @@ test(formalName('Each conversation should be represented by the team name.',
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
       await t
-        .expect(teamsSection.conversationByNameEntry(newName).self.exists)
+        .expect(teamsSection.conversationEntryByName(newName).self.exists)
         .ok(newName, { timeout: 5e3 });
     }, true);
   },

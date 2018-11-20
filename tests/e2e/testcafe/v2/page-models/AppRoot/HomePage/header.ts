@@ -28,7 +28,7 @@ export class BackNForward extends BaseWebComponent {
   }
 
   get isDisable(): Promise<boolean> {
-    return this.self.hasAttribute('disabled')
+    return this.self.hasAttribute('disabled');
   }
 
   async shouldBeDisabled() {

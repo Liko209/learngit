@@ -68,9 +68,9 @@ test(formalName('Close current conversation directly, and navigate to blank page
       },
     );
 
-    const pvtChat = directMessagesSection.conversationByIdEntry(pvtChatId);
-    const favChat = favoritesSection.conversationByIdEntry(favChatId);
-    const teamChat = teamsSection.conversationByIdEntry(teamId);
+    const pvtChat = directMessagesSection.conversationEntryById(pvtChatId);
+    const favChat = favoritesSection.conversationEntryById(favChatId);
+    const teamChat = teamsSection.conversationEntryById(teamId);
 
     await h(t).withLog('Then I can find the 3 conversations in conversation list', async () => {
       await directMessagesSection.expand();
@@ -94,7 +94,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
           currentGroupId = await app.homePage.messagePanel.conversationPage.self.getAttribute(
             'data-group-id',
           );
-          await item.waitUntilUmiExist(false);
+          await item.expectUmi(0);
           await item.openMoreMenu();
           await app.homePage.messagePanel.moreMenu.close.enter();
         },
@@ -103,7 +103,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
       await h(t).withLog(`Then the ${key} conversation should be remove from conversation list.`,
         async () => {
           await t
-            .expect(directMessagesSection.conversationByIdEntry(currentGroupId).exists)
+            .expect(directMessagesSection.conversationEntryById(currentGroupId).exists)
             .notOk();
         },
       );
@@ -177,8 +177,8 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
       },
     );
 
-    const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
-    const team = teamsSection.conversationByIdEntry(teamId);
+    const pvtChat = dmSection.conversationEntryById(pvtChatId);
+    const team = teamsSection.conversationEntryById(teamId);
 
     await h(t).withLog('Then I clean UMI in the A and B', async () => {
       await dmSection.expand();
@@ -203,7 +203,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
       async () => {
         await t.wait(2e3);
         await t
-          .expect(dmSection.conversationByIdEntry(currentGroupId).exists)
+          .expect(dmSection.conversationEntryById(currentGroupId).exists)
           .notOk();
       },
     );
@@ -273,8 +273,8 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
       },
     );
 
-    const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
-    const team = teamsSection.conversationByIdEntry(teamId);
+    const pvtChat = dmSection.conversationEntryById(pvtChatId);
+    const team = teamsSection.conversationEntryById(teamId);
 
     await h(t).withLog('And I open conversation A', async () => {
       await dmSection.expand();
@@ -283,7 +283,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
     }, true);
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
-      await pvtChat.waitUntilUmiExist(false);
+      await pvtChat.expectUmi(0);
     });
 
     await h(t).withLog("When I click conversation A's close buttom", async () => {
@@ -385,8 +385,8 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
       },
     );
 
-    const pvtChat = dmSection.conversationByIdEntry(pvtChatId);
-    const team = teamsSection.conversationByIdEntry(teamId);
+    const pvtChat = dmSection.conversationEntryById(pvtChatId);
+    const team = teamsSection.conversationEntryById(teamId);
     const dialog = app.homePage.messagePanel.closeConversationModal;
 
     await h(t).withLog('And I open conversation A ', async () => {
@@ -396,7 +396,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     }, true);
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
-      await pvtChat.waitUntilUmiExist(false);
+      await pvtChat.expectUmi(0);
     });
 
     await h(t).withLog("When I click conversation A's close buttom", async () => {
@@ -498,7 +498,7 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
 
     await h(t).withLog('And other user send post to each conversation', async () => {
       await teamsSection.expand();
-      await teamsSection.conversationByIdEntry(teamId2).enter();
+      await teamsSection.conversationEntryById(teamId2).enter();
       const user5Platform = await h(t).getPlatform(users[5]);
       const umiGroupIds = [favGroupId, pvtChatId, teamId1];
       for (const id of umiGroupIds) {
@@ -514,15 +514,15 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
       async () => {
         await t.wait(3e3);
         await favoritesSection.expand();
-        favoriteItem = favoritesSection.conversationByIdEntry(favGroupId);
+        favoriteItem = favoritesSection.conversationEntryById(favGroupId);
         await t.expect(await favoriteItem.getUmi()).eql(1);
         await directMessagesSection.expand();
-        directMessageItem = directMessagesSection.conversationByIdEntry(
+        directMessageItem = directMessagesSection.conversationEntryById(
           pvtChatId,
         );
         await t.expect(await directMessageItem.getUmi()).eql(1);
         await teamsSection.expand();
-        teamItem = teamsSection.conversationByIdEntry(teamId1);
+        teamItem = teamsSection.conversationEntryById(teamId1);
         await t.expect(await teamItem.getUmi()).eql(1);
       },
     );

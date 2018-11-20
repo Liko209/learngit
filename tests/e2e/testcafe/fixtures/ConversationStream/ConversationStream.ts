@@ -40,7 +40,7 @@ test(formalName('The posts in the conversation should be displayed in the order 
     await h(t).withLog('Then I enter the conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      await teamsSection.conversationByIdEntry(teamId).enter();
+      await teamsSection.conversationEntryById(teamId).enter();
     });
 
     await h(t).withLog('When I send 3 posts in order via API', async () => {
@@ -90,7 +90,7 @@ test(formalName('No post in conversation when the conversation', ['P2', 'JPT-53'
     await h(t).withLog('Then I can enter the conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      await teamsSection.conversationByIdEntry(teamId).enter();
+      await teamsSection.conversationEntryById(teamId).enter();
     });
 
     await h(t).withLog('And I should not find any post in the new created conversation', async () => {
@@ -135,7 +135,7 @@ test(formalName('Should be able to read the newest posts once open a conversatio
     await h(t).withLog('And enter the team conversation', async () => {
       const teamsSection = app.homePage.messagePanel.teamsSection;
       await teamsSection.expand();
-      await teamsSection.conversationByIdEntry(teamId).enter();
+      await teamsSection.conversationEntryById(teamId).enter();
     });
 
     await h(t).withLog(`Then I should find post "${msgBeforeLogin}" in the conversation posts history`, async () => {

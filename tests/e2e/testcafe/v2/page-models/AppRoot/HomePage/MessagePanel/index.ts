@@ -60,12 +60,12 @@ class ConversationEntry extends BaseWebComponent {
     while (true) {
       await this.t.wait(1000);
       const count = await this.getUmi()
-      if (count == n){
-        return
+      if (count == n) {
+        return;
       }
       i = i + 1
       if (i >= waitTime) {
-        throw("UMI amount is Error")
+        throw(`UMI amount error: expected ${count} to be ${n}`);
       }
     }
   }
@@ -83,25 +83,6 @@ class ConversationEntry extends BaseWebComponent {
 
   get hasDraftMessage() {
     return this.self.find('.material-icons').withText('border_color').exists;
-  }
-
-  async waitUntilUmiExist(exist: boolean, timeout = 20) {
-    let tryTime = 0;
-    let count = await this.getUmi();
-    if (exist == !!count) {
-      return
-    }
-    while (true) {
-      if (tryTime >= timeout) {
-        throw (`Wait until conversation UMI exist: ${exist}, timeout: ${timeout}s`)
-      }
-      tryTime = tryTime + 1;
-      await this.t.wait(1e3);
-      count = await this.getUmi();
-      if (exist == !!(count)) {
-        return
-      }
-    }
   }
 
   async enter() {
@@ -143,11 +124,11 @@ class ConversationListSection extends BaseWebComponent {
       await this.t.wait(1000);
       const count = await this.getHeaderUmi()
       if (count == n){
-        break
+        return; 
       }
       i = i + 1
-      if (i == waitTime){
-        break
+      if (i >= waitTime) {
+        throw(`UMI amount error: expected ${count} to be ${n}`);
       }
     }
   }
@@ -164,11 +145,11 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.nth(n));
   }
 
-  conversationByIdEntry(groupId: string) {
+  conversationEntryById(groupId: string) {
     return this.getComponent(ConversationEntry, this.conversations.filter(`[data-group-id="${groupId}"]`));
   }
 
-  conversationByNameEntry(name: string) {
+  conversationEntryByName(name: string) {
     return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name));
   }
 
