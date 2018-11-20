@@ -102,11 +102,7 @@ describe('StreamView', () => {
         loadInitialPosts: async () => {},
       };
       const theme = { ...createMuiTheme(), size: { height: 20 } };
-      const wrapper = shallow(
-        <StyledThemeProvider theme={theme}>
-          <StreamView {...props} />
-        </StyledThemeProvider>,
-      );
+      const wrapper = shallow(<StreamView {...props} />);
       expect(wrapper.find(ConversationPost)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
     });

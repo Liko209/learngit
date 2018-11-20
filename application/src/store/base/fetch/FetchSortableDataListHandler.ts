@@ -155,15 +155,10 @@ export class FetchSortableDataListHandler<
         });
       }
 
-      if (payload.type === EVENT_TYPES.REPLACE) {
+      if (payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll) {
         this.replaceEntityStore(matchedEntities);
-        if (payload.body.isReplaceAll) {
-          this.sortableListStore.removeByIds(notMatchedKeys);
-          this.sortableListStore.upsert(matchedSortableModels);
-        } else {
-          this.sortableListStore.upsert(matchedSortableModels);
-          this.sortableListStore.removeByIds(notMatchedKeys);
-        }
+        this.sortableListStore.removeByIds(notMatchedKeys);
+        this.sortableListStore.upsert(matchedSortableModels);
       } else {
         this.updateEntityStore(matchedEntities);
         this.sortableListStore.upsert(matchedSortableModels);
