@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { ConversationPost } from '../../../ConversationPost';
 import GroupStateModel from '@/store/models/GroupState';
 import { LoadingMorePlugin } from '@/plugins';
@@ -12,7 +12,7 @@ import { createMuiTheme } from '@material-ui/core';
 jest.mock('../../../ConversationSheet', () => ({}));
 const context = {
   scrollToRow: () => {},
-  onListAsyncMounted: (el: React.RefObject<any>) => {},
+  onListAsyncshallowed: (el: React.RefObject<any>) => {},
 };
 function renderJumpToFirstUnreadButton({
   hasHistoryUnread,
@@ -30,11 +30,11 @@ function renderJumpToFirstUnreadButton({
     loadInitialPosts: async () => {},
   };
 
-  const wrapper = mount(<StreamView {...props} />, {
+  const wrapper = shallow(<StreamView {...props} />, {
     context,
   });
   (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
-  wrapper.instance().forceUpdate();
+  wrapper.update();
   const jumpToFirstUnreadButtonWrapper = wrapper.find(
     'JumpToFirstUnreadButtonWrapper',
   );
@@ -78,7 +78,7 @@ describe('StreamView', () => {
         loadInitialPosts: async () => {},
       };
 
-      const wrapper = mount(<StreamView {...props} />, { context });
+      const wrapper = shallow(<StreamView {...props} />, { context });
       const card = wrapper.find(ConversationPost);
       const card0 = card.at(0);
       const card1 = card.at(1);
@@ -101,12 +101,7 @@ describe('StreamView', () => {
         ],
         loadInitialPosts: async () => {},
       };
-      const theme = { ...createMuiTheme(), size: { height: 20 } };
-      const wrapper = mount(
-        <StyledThemeProvider theme={theme}>
-          <StreamView {...props} />
-        </StyledThemeProvider>,
-      );
+      const wrapper = shallow(<StreamView {...props} />);
       expect(wrapper.find(ConversationPost)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
     });

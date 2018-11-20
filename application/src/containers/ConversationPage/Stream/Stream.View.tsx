@@ -179,23 +179,24 @@ class StreamViewComponent extends Component<Props> {
     ) : null;
   }
 
+  getContext = (value: TScroller) => {
+    this._context = value;
+    return null;
+  }
+
   render() {
     return (
-      <ScrollerContext.Consumer>
-        {(value: TScroller) => {
-          this._context = value;
-          return (
-            <JuiStream>
-              {this._jumpToFirstUnreadButton}
-              {this._initialPost}
-              <section ref={this._listRef}>
-                {this._streamItems}
-                {this._jumpToFirstUnreadLoading}
-              </section>
-            </JuiStream>
-          );
-        }}
-      </ScrollerContext.Consumer>
+      <>
+        <ScrollerContext.Consumer>{this.getContext}</ScrollerContext.Consumer>
+        <JuiStream>
+          {this._jumpToFirstUnreadButton}
+          {this._initialPost}
+          <section ref={this._listRef}>
+            {this._streamItems}
+            {this._jumpToFirstUnreadLoading}
+          </section>
+        </JuiStream>
+      </>
     );
   }
 
