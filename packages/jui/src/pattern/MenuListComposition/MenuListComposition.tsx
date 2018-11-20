@@ -52,13 +52,10 @@ class JuiMenuListComposition extends React.Component<
   }
 
   handleToggle = (event: React.MouseEvent<HTMLElement>) => {
-    console.log(111);
     this.setState({ open: !this.state.open, anchorEl: event.currentTarget });
   }
 
   handleClose = (event: React.MouseEvent<HTMLElement>) => {
-    console.log(222);
-
     const node = this.state.anchorEl;
     if (node && node.contains(event.target as Node)) {
       return;
