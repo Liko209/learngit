@@ -106,12 +106,18 @@ class StreamViewComponent extends Component<Props> {
           <ConversationPost
             ref={this._setPostRef}
             id={streamItem.value}
-            key={`VisibilitySensor${streamItem.value}`}
+            key={`ConversationPost${streamItem.value}`}
           />
         </VisibilitySensor>
       );
     }
-    return <ConversationPost id={streamItem.value} key={streamItem.value} />;
+    return (
+      <ConversationPost
+        ref={this._setPostRef}
+        id={streamItem.value}
+        key={`ConversationPost${streamItem.value}`}
+      />
+    );
   }
 
   private _renderNewMessagesDivider(streamItem: StreamItem) {
@@ -250,7 +256,7 @@ class StreamViewComponent extends Component<Props> {
 
       scrollToComponent(scrollToPostEl, {
         behavior: 'smooth',
-        block: 'center',
+        block: 'start',
       });
     });
   }
