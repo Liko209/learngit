@@ -49,6 +49,9 @@ describe('StreamViewModel', () => {
         _newMessageSeparatorHandler: {
           enable: jest.fn(),
         },
+        _transformHandler: {
+          hasMore: jest.fn(),
+        },
         _historyHandler: {
           getDistanceToFirstUnread: jest
             .fn()
@@ -74,7 +77,7 @@ describe('StreamViewModel', () => {
       expect(loadPosts).toHaveBeenCalledWith(FetchDataDirection.UP, 6);
     });
 
-    it('should not load posts when distance to first unread is 0', async () => {
+    it('should not load posts when distance to first unread <= 0', async () => {
       const { vm, loadPosts } = setupLoadPostUntilFirstUnread({
         distanceToFirstUnread: -1,
       });
