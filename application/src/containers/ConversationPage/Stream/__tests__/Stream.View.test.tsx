@@ -6,8 +6,6 @@ import { LoadingMorePlugin } from '@/plugins';
 import { StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
-import { ThemeProvider as StyledThemeProvider } from 'styled-components';
-import { createMuiTheme } from '@material-ui/core';
 
 jest.mock('../../../ConversationSheet', () => ({}));
 const context = {
