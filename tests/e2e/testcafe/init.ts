@@ -31,10 +31,32 @@ export async function getOrCreateRunId() {
   if (!runId) {
     const runName = RUN_NAME || uuid();
     const metadata = {};
+    for (const key in ENV_OPTS) {
+      metadata[key] = JSON.stringify(ENV_OPTS[key]);
+    }
     for (const key in RUNNER_OPTS) {
-      if (['REPORTER', 'FIXTURES'].indexOf(key) > 0)
-        continue
-      metadata[key] = JSON.stringify(RUNNER_OPTS[key]);
+      if ([
+        'EXCLUDE_TAGS',
+        'INCLUDE_TAGS',
+        'QUARANTINE_MODE'
+      ].indexOf(key) > 0)
+        metadata[key] = JSON.stringify(RUNNER_OPTS[key]);
+    }
+    for (const key in process.env) {
+      if ([
+        'SELENIUM_SERVER',
+        'HOST_NAME',
+        'BUILD_URL',
+        'appUrl',
+        'gitlabActionType',
+        'gitlabBranch',
+        'gitlabMergedByUser',
+        'gitlabMergeRequestLastCommit',
+        'gitlabMergeRequestTitle',
+        'gitlabSourceBranch',
+        'gitlabTargetBranch',
+      ].indexOf(key) > 0)
+        metadata[key] = process.env[key];
     }
     const run = await beatsClient.createRun({
       name: runName,
