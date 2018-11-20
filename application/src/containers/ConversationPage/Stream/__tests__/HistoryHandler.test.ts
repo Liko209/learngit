@@ -13,7 +13,7 @@ type RunUpdateOptions = {
 
 type SetupOptions = {
   groupState?: Partial<GroupStateModel>;
-  newestPostId?: number | null;
+  latestPostId?: number | null;
 };
 
 function runUpdate({ groupState, postIds }: RunUpdateOptions) {
@@ -22,13 +22,13 @@ function runUpdate({ groupState, postIds }: RunUpdateOptions) {
   return handler;
 }
 
-function setup({ groupState, newestPostId }: SetupOptions) {
+function setup({ groupState, latestPostId }: SetupOptions) {
   const handler = new HistoryHandler();
   if (groupState) {
     handler.groupState = groupState as GroupStateModel;
   }
-  if (newestPostId) {
-    handler.newestPostId = newestPostId;
+  if (latestPostId) {
+    handler.latestPostId = latestPostId;
   }
   return handler;
 }
@@ -50,17 +50,17 @@ describe('HistoryHandler', () => {
       const handler = runUpdate(updateOptions);
 
       expect(handler.groupState).toEqual(updateOptions.groupState);
-      expect(handler.newestPostId).toBe(5);
+      expect(handler.latestPostId).toBe(5);
     });
 
-    it('should set newestPostId to null when postIds is []', () => {
+    it('should set latestPostId to null when postIds is []', () => {
       const updateOptions = {
         postIds: [],
       };
 
       const handler = runUpdate(updateOptions);
 
-      expect(handler.newestPostId).toBe(null);
+      expect(handler.latestPostId).toBe(null);
     });
   });
 
@@ -68,13 +68,13 @@ describe('HistoryHandler', () => {
     it('should clear history state', () => {
       const handler = setup({
         groupState: {},
-        newestPostId: 5,
+        latestPostId: 5,
       });
 
       handler.clear();
 
       expect(handler.groupState).toBe(null);
-      expect(handler.newestPostId).toBe(null);
+      expect(handler.latestPostId).toBe(null);
     });
   });
 
@@ -101,35 +101,70 @@ describe('HistoryHandler', () => {
     });
   });
 
-  describe('getPostsBeforeNewest()', () => {
-    it('should return posts before newest post', () => {
-      const newestPostId = 5;
+  describe('getPostsOrderThanLatest()', () => {
+    it('should return posts before latest post', () => {
+      const latestPostId = 5;
       const postIds = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-      const handler = setup({ newestPostId });
-      const posts = handler.getPostsLteNewest(postIds);
+      const handler = setup({ latestPostId });
+      const posts = handler.getPostsOrderThanLatest(postIds);
 
       expect(posts).toEqual([1, 2, 3, 4, 5]);
     });
 
-    it('should return [] when newestPostId is null', () => {
-      const newestPostId = null;
+    it('should return [] when latestPostId is null', () => {
+      const latestPostId = null;
       const postIds = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-      const handler = setup({ newestPostId });
-      const posts = handler.getPostsLteNewest(postIds);
+      const handler = setup({ latestPostId });
+      const posts = handler.getPostsOrderThanLatest(postIds);
 
       expect(posts).toEqual([]);
+    });
+  });
+
+  describe('getFirstUnreadPostId()', () => {
+    it('should return first unread post id', () => {
+      const unreadCount = 1;
+      const latestPostId = 5;
+      const postIds = [1, 2, 3, 4, 5];
+
+      const handler = setup({ latestPostId, groupState: { unreadCount } });
+      const postId = handler.getFirstUnreadPostId(postIds);
+
+      expect(postId).toBe(5);
+    });
+
+    it('should return undefined when latestPostId not existed', () => {
+      const unreadCount = 1;
+      const latestPostId = undefined;
+      const postIds = [1, 2, 3, 4, 5];
+
+      const handler = setup({ latestPostId, groupState: { unreadCount } });
+      const postId = handler.getFirstUnreadPostId(postIds);
+
+      expect(postId).toBeFalsy();
+    });
+
+    it('should return undefined when first unread posts not in current posts', () => {
+      const unreadCount = 6;
+      const latestPostId = 5;
+      const postIds = [1, 2, 3, 4, 5];
+
+      const handler = setup({ latestPostId, groupState: { unreadCount } });
+      const postId = handler.getFirstUnreadPostId(postIds);
+
+      expect(postId).toBeFalsy();
     });
   });
 
   describe('getDistanceToFirstUnread()', () => {
     it('should return distance to first unread', () => {
       const unreadCount = 10;
-      const newestPostId = 5;
+      const latestPostId = 5;
       const postIds = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-      const handler = setup({ newestPostId, groupState: { unreadCount } });
+      const handler = setup({ latestPostId, groupState: { unreadCount } });
       const distance = handler.getDistanceToFirstUnread(postIds);
 
       expect(distance).toBe(5);

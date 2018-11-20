@@ -53,6 +53,7 @@ describe('StreamViewModel', () => {
           getDistanceToFirstUnread: jest
             .fn()
             .mockReturnValue(obj.distanceToFirstUnread),
+          getFirstUnreadPostId: jest.fn(),
         },
       });
 
