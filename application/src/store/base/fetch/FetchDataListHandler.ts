@@ -114,6 +114,16 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     }
   }
 
+  protected replaceEntityStore<Entity>(entities: Entity[]) {
+    if (!entities.length) {
+      return;
+    }
+
+    if (this._entityName) {
+      storeManager.dispatchReplacedDataModels(this._entityName, entities);
+    }
+  }
+
   protected handlePageData(result: T[], direction: FetchDataDirection) {
     let inFront = false;
     if (direction === FetchDataDirection.UP) {

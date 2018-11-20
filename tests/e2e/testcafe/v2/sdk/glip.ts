@@ -228,7 +228,6 @@ export class GlipSdk {
 
   updatePost(postId, data) {
     const uri = `api/post/${postId}`;
-    console.log('uriiii', uri)
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });

@@ -28,6 +28,10 @@ const FileNameWrapper = styled.div`
   width: ${spacing(58)};
 `;
 
+const ActionWrapper = styled.div`
+  display: flex;
+`;
+
 const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
   props: JuiFileWithExpandProps,
 ) => {
@@ -42,7 +46,7 @@ const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
             <FileNameWrapper>
               <FileName filename={fileName} />
             </FileNameWrapper>
-            <div>{Actions}</div>
+            <ActionWrapper>{Actions}</ActionWrapper>
           </NameWithActions>
         </Jui.FileExpandItem>
       )}

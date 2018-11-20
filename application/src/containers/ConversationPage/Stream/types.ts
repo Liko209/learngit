@@ -3,7 +3,6 @@
  * @Date: 2018-11-13 18:05:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { TScroller } from 'jui/hoc/withScroller';
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -60,7 +59,7 @@ type StreamViewProps = {
   clearHistoryUnread: () => void;
   historyUnreadCount: number;
   firstHistoryUnreadPostId?: number;
-} & TScroller;
+};
 
 export {
   StreamProps,

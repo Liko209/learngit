@@ -6,10 +6,12 @@ import { LoadingMorePlugin } from '@/plugins';
 import { StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
-import { JumpToFirstUnreadButtonWrapper } from '../JumpToFirstUnreadButtonWrapper';
 
 jest.mock('../../../ConversationSheet', () => ({}));
-
+const context = {
+  scrollToRow: () => {},
+  onListAsyncshallowed: (el: React.RefObject<any>) => {},
+};
 function renderJumpToFirstUnreadButton({
   hasHistoryUnread,
   firstHistoryUnreadInPage,
@@ -24,14 +26,15 @@ function renderJumpToFirstUnreadButton({
     hasHistoryUnread,
     firstHistoryUnreadInPage,
     loadInitialPosts: async () => {},
-    scrollToRow: () => {},
-    onListAsyncMounted: () => {},
   };
-  const wrapper = shallow(<StreamView {...props} />);
+
+  const wrapper = shallow(<StreamView {...props} />, {
+    context,
+  });
   (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
-  wrapper.instance().forceUpdate();
+  wrapper.update();
   const jumpToFirstUnreadButtonWrapper = wrapper.find(
-    JumpToFirstUnreadButtonWrapper,
+    'JumpToFirstUnreadButtonWrapper',
   );
   const hasJumpToFirstUnreadButton =
     jumpToFirstUnreadButtonWrapper.length === 1;
@@ -70,12 +73,10 @@ describe('StreamView', () => {
           { type: StreamItemType.POST, value: 1 },
           { type: StreamItemType.POST, value: 2 },
         ],
-        scrollToRow: () => {},
-        onListAsyncMounted: () => {},
         loadInitialPosts: async () => {},
       };
 
-      const wrapper = shallow(<StreamView {...props} />);
+      const wrapper = shallow(<StreamView {...props} />, { context });
       const card = wrapper.find(ConversationPost);
       const card0 = card.at(0);
       const card1 = card.at(1);
@@ -96,13 +97,9 @@ describe('StreamView', () => {
           { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
           { type: StreamItemType.POST, value: 2 },
         ],
-        scrollToRow: () => {},
-        onListAsyncMounted: () => {},
         loadInitialPosts: async () => {},
       };
-
       const wrapper = shallow(<StreamView {...props} />);
-
       expect(wrapper.find(ConversationPost)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
     });
@@ -122,7 +119,7 @@ describe('StreamView', () => {
 
     describe('hasHistoryUnread=true', () => {
       // JPT-206 / JPT-232
-      it('should not render jumpToFirstUnreadButton when first history unread in current page and was viewed', () => {
+      it.skip('should not render jumpToFirstUnreadButton when first history unread in current page and was viewed', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: true,
           firstHistoryUnreadInPage: true,

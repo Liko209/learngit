@@ -37,7 +37,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   }
 
   private get _umi() {
-    return <Umi ids={[this.props.groupId]} />;
+    return this.props.umiHint ? <Umi ids={[this.props.groupId]} /> : undefined;
   }
 
   private get _presence() {

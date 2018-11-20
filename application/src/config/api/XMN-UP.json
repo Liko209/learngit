@@ -17,5 +17,8 @@
     "server": "https://xmnup.asialab.glip.net",
     "apiPlatformVersion": "v1.0",
     "apiPlatform": "/desktop"
+  },
+  "splitio": {
+    "clientSecret": "aiers1fdmskm7paalb3ubhhuumaauv21rnti"
   }
 }
