@@ -47,17 +47,7 @@ export class LeftPanel extends BaseWebComponent {
     }
 
     get messagesEntry() {
-        const sel = Selector('*').filter( node => {
-          const attrName = 'data-test-automation-id'
-          if (!node.hasAttribute(attrName)){ 
-              return false
-            };
-          const attr = node.getAttribute(attrName);
-          return !!attr.match('messages');
-        })
-        const entry = this.getComponent(LeftNavigatorEntry,sel)
-        entry.name = 'messages';
-        return entry;
+      return this.getEntry('messages');
       }
 
     get phoneEntry() {
