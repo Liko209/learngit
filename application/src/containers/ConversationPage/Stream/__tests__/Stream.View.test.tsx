@@ -57,6 +57,7 @@ const baseProps = {
   hasMore: true,
   historyGroupState: {} as GroupStateModel,
   historyUnreadCount: 10,
+  historyReadThrough: 0,
   hasHistoryUnread: false,
   firstHistoryUnreadInPage: false,
   clearHistoryUnread: jest.fn().mockName('setHasUnread'),

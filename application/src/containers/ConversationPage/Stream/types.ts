@@ -59,6 +59,7 @@ type StreamViewProps = {
   hasHistoryUnread: boolean;
   clearHistoryUnread: () => void;
   historyUnreadCount: number;
+  historyReadThrough: number;
   firstHistoryUnreadPostId?: number;
 };
 

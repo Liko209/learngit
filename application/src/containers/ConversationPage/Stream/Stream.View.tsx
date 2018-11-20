@@ -89,11 +89,17 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _renderConversationCard(streamItem: StreamItem) {
-    const { firstHistoryUnreadPostId, hasHistoryUnread } = this.props;
+    const {
+      firstHistoryUnreadPostId,
+      hasHistoryUnread,
+      historyReadThrough,
+    } = this.props;
+
     if (
-      hasHistoryUnread &&
-      firstHistoryUnreadPostId &&
-      streamItem.value <= firstHistoryUnreadPostId
+      (hasHistoryUnread &&
+        (firstHistoryUnreadPostId &&
+          streamItem.value <= firstHistoryUnreadPostId)) ||
+      streamItem.value <= historyReadThrough
     ) {
       // Observe all visibility of posts which are older
       // than the first unread post

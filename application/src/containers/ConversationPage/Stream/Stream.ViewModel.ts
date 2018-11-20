@@ -61,13 +61,23 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
+  get historyReadThrough() {
+    return this._historyHandler.readThrough;
+  }
+
+  @computed
   get historyUnreadCount() {
     return this._historyHandler.unreadCount;
   }
 
   @computed
   get firstHistoryUnreadPostId() {
+    const firstUnreadPostId = this.hasMore // !We need this to fix issues when UMI give us wrong info
+      ? undefined
+      : _.first(this.postIds);
+
     return (
+      firstUnreadPostId ||
       this._newMessageSeparatorHandler.firstUnreadPostId ||
       this._historyHandler.getFirstUnreadPostId(this.postIds)
     );
