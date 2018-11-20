@@ -64,8 +64,7 @@ class JuiMenuListComposition extends React.Component<
     this.setState({ open: false, anchorEl: null });
   }
 
-  handleMenuItemClick = (
-    menuItemEvent: () => void,
+  handleMenuItemClick = (menuItemEvent: Function) => (
     event: React.MouseEvent<HTMLElement>,
   ) => {
     this.handleClose(event);
@@ -102,10 +101,7 @@ class JuiMenuListComposition extends React.Component<
                           <MenuItem
                             key={index}
                             data-test-automation-id={item.automationId}
-                            onClick={this.handleMenuItemClick.bind(
-                              this,
-                              item.onClick,
-                            )}
+                            onClick={this.handleMenuItemClick(item.onClick)}
                           >
                             {item.label}
                           </MenuItem>
