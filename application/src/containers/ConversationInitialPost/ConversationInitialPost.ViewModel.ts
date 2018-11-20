@@ -68,8 +68,10 @@ class ConversationInitialPostViewModel extends StoreViewModel<
 
   @action
   async onReceiveProps() {
-    const groups = await this._groupService.getGroupByPersonId(this.creator.id);
-    this.creatorGroupId = groups[0].id;
+    const group = await this._groupService.getGroupByPersonId(this.creator.id);
+    if (group) {
+      this.creatorGroupId = group.id;
+    }
   }
 }
 

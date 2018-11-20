@@ -148,7 +148,7 @@ class GroupService extends BaseService<Group> {
     return super.getById(id) as Promise<Group | null>;
   }
 
-  async getGroupByPersonId(personId: number): Promise<Group[]> {
+  async getGroupByPersonId(personId: number): Promise<Group | null> {
     try {
       const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
       let members = [Number(personId), Number(userId)];
@@ -156,40 +156,42 @@ class GroupService extends BaseService<Group> {
       return await this.getGroupByMemberList(members);
     } catch (e) {
       mainLogger.error(`getGroupByPersonId error =>${e}`);
-      return [];
+      return null;
     }
   }
 
-  async getGroupByMemberList(members: number[]): Promise<Group[]> {
+  async getGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
       const mem = uniqueArray(members);
       const groupDao = daoManager.getDao(GroupDao);
-      const result = (await groupDao.queryGroupByMemberList(mem)) as Group[];
-      if (result.length !== 0) {
+      const result = await groupDao.queryGroupByMemberList(mem);
+      if (result) {
         return result;
       }
       return await this.requestRemoteGroupByMemberList(mem);
     } catch (e) {
       mainLogger.error(`getGroupByMemberList error =>${e}`);
-      return [];
+      return null;
     }
   }
 
-  async requestRemoteGroupByMemberList(members: number[]): Promise<Group[]> {
+  async requestRemoteGroupByMemberList(
+    members: number[],
+  ): Promise<Group | null> {
     const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(members);
     try {
       const result = await GroupAPI.requestNewGroup(info);
       if (result.data) {
         const group = transform<Group>(result.data);
         await handleData([result.data]);
-        return [group];
+        return group;
       }
-      return [];
+      return null;
     } catch (e) {
       mainLogger.error(
         `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
       );
-      return [];
+      return null;
     }
   }
 
