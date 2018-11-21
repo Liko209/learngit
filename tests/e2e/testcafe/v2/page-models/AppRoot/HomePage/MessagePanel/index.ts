@@ -203,9 +203,7 @@ class CloseConversationModal extends BaseWebComponent {
 export class MessagePanel extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
-    return this.getSelector(
-      '[data-test-automation-id="messagePanel"]',
-    ).nextSibling();
+    return this.getSelectorByAutomationId('leftRail').parent(1);
   }
 
   private getSection(name: string) {

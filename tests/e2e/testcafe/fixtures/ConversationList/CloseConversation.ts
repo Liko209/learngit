@@ -24,8 +24,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
     const teamsSection = app.homePage.messagePanel.teamsSection;
 
     let pvtChatId, favChatId, teamId, currentGroupId;
-    await h(t).withLog(
-      'Given I have an extension with 1 private chat and 1 group chat and I team chat',
+    await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat and I team chat',
       async () => {
         pvtChatId = (await user.sdk.platform.createGroup({
           type: 'PrivateChat',
@@ -52,6 +51,13 @@ test(formalName('Close current conversation directly, and navigate to blank page
         favorite_group_ids: [+favChatId],
       });
     });
+
+    await h(t).withLog('And I clean all UMI before login',
+      async () => {
+        const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
+        await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
+      },
+    );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
@@ -258,6 +264,13 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
       });
     });
 
+    await h(t).withLog('And I clean all UMI before login',
+      async () => {
+        const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
+        await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
+      },
+    );
+
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
       async () => {
         await user.sdk.glip.updateProfile(user.rcId, {
@@ -369,6 +382,13 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
         favorite_group_ids: [],
       });
     });
+
+    await h(t).withLog('And I clean all UMI before login',
+      async () => {
+        const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
+        await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
+      },
+    );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
       async () => {
