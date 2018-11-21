@@ -22,6 +22,7 @@ type ConversationCardViewProps = {
   showProgressActions: boolean;
   likes?: number[];
   mode?: string;
+  onClickAvatar: () => void;
 };
 
 export { ConversationCardProps, ConversationCardViewProps };

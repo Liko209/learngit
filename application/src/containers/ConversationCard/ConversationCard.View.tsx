@@ -50,7 +50,14 @@ export class ConversationCard extends React.Component<
     if (!creator.id) {
       return null;
     }
-    const avatar = <Avatar uid={creator.id} size="medium" data-name="avatar" />;
+    const avatar = (
+      <Avatar
+        uid={creator.id}
+        size="medium"
+        data-name="avatar"
+        onClick={this.props.onClickAvatar}
+      />
+    );
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
     return (
       <React.Fragment>
