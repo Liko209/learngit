@@ -119,9 +119,8 @@ class MenuViewComponent extends Component<Props, State> {
       return;
     }
   }
-
   render() {
-    const { anchorEl, onClose, favoriteText, t } = this.props;
+    const { anchorEl, onClose, favoriteText, t, showGroupOrTeamProfile } = this.props;
     return (
       <JuiMenu
         id="render-props-menu"
@@ -134,6 +133,11 @@ class MenuViewComponent extends Component<Props, State> {
           onClick={this._handleToggleFavorite}
         >
           {t(`conversationMenuItem:${favoriteText}`)}
+        </JuiMenuItem>
+        <JuiMenuItem
+          onClick={showGroupOrTeamProfile}
+        >
+          {t('view profile')}
         </JuiMenuItem>
         {this.renderCloseMenuItem()}
       </JuiMenu>

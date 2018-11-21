@@ -4,22 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { service } from 'sdk';
 import { Profile } from 'sdk/models';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import { MenuProps, MenuViewProps } from './types';
-import { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
-
+import { GLOBAL_KEYS } from '@/store/constants';
+import { MouseEvent } from 'react';
+const globalStore = storeManager.getGlobalStore();
 const { GroupService } = service;
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   private _groupService: service.GroupService = GroupService.getInstance();
-
+  @observable
+  private _isShowGroupTeamProfile = false;
   @computed
   get groupId() {
     return this.props.groupId;
@@ -85,6 +88,13 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
       true,
       shouldSkipNextTime,
     );
+  }
+  @action
+  showGroupOrTeamProfile = (event: MouseEvent<HTMLElement>) => {
+    this._isShowGroupTeamProfile = !this._isShowGroupTeamProfile;
+    globalStore.set(GLOBAL_KEYS.IS_SHOW_GROUP_PROFILE, this._isShowGroupTeamProfile);
+    globalStore.set(GLOBAL_KEYS.GROUP_OR_TEAM_ID, this.groupId);
+    this.onClose(event);
   }
 }
 export { MenuViewModel };
