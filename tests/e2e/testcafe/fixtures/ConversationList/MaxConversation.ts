@@ -14,7 +14,7 @@ fixture('ConversationList/maxConversation')
 
 // FIXME : on Edge, enter a conversation with UMI, but UMI does not disappear.
 test.skip(formalName('JPT-58 Show conversations with limit count conversations, older unread and current opened;JPT-344 The conversation will disappear when removing one older conversation from Fav and the section shows >= limit count conversations',
-    ['JPT-58', 'JPT-344', 'P2', 'ConversationList', 'Mia.Cai']),
+    ['JPT-58', 'JPT-344', 'P2', 'P1', 'ConversationList', 'Mia.Cai']),
   async (t: TestController) => {
     const createdNum = 6;
     const MAX_NUMBER = 3;
