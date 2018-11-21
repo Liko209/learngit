@@ -176,6 +176,17 @@ export class GlipSdk {
       headers: this.headers,
     });
   }
+  
+  async getTeamsIds() {
+    const teamdata = (await this.getTeams()).data.teams
+    let ids = [];
+    teamdata.forEach(team => {
+      if (team['_id']) {
+        ids.push(team['_id']);
+      }
+    });
+    return ids;
+  }
 
   createTeam(name: string, members: string[]) {
     const uri = 'api/team';
