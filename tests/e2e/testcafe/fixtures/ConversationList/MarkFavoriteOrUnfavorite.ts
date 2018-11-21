@@ -17,7 +17,7 @@ fixture('ConversationList/MarkFavoriteOrUnfavorite')
 test(
   formalName(
     'Display Favorite button when user tap more button of a conversation in DM/Teams & When user mark a conversation as favorite, move the conversation to favorite section.',
-    ['P2', 'JPT-181', 'JPT-183', 'ConversationList'],
+    ['P2', 'P1','JPT-181', 'JPT-183', 'ConversationList'],
   ),
   async (t: TestController) => {
     const app = new AppRoot(t);
@@ -100,7 +100,7 @@ test(
 test(
   formalName(
     'Display Unfavorite button when user tap more button of a conversation in favorite section. & When user mark a conversation as unfavorite, remove the conversation from favorite section.',
-    ['P2', 'JPT-182', 'JPT-184', 'ConversationList'],
+    ['P2', 'P1','JPT-182', 'JPT-184', 'ConversationList'],
   ),
   async (t: TestController) => {
     const app = new AppRoot(t);

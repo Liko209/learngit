@@ -21,7 +21,7 @@ test(
     The conversation list is refreshed when the toggle status is changed &
     The conversation should be hidden from the list when turn unread toggle on and navigates from a conversation &
     The opened conversation remain opened, and it should be displayed on the conversation list when turn unread toggle on`,
-    ['JPT-194', 'JPT-198', 'JPT-201', 'JPT-202', 'P2', 'P1', 'ConversationList'],
+    ['JPT-193', 'JPT-194', 'JPT-198', 'JPT-201', 'JPT-202', 'P2', 'P1', 'ConversationList'],
   ),
   async (t: TestController) => {
     const app = new AppRoot(t);
