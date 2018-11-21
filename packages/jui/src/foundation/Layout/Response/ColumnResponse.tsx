@@ -5,30 +5,21 @@
  */
 
 import React, { PureComponent, MouseEvent as ReactMouseEvent } from 'react';
-import styled from '../../styled-components';
 import { addResizeListener, removeResizeListener } from './optimizer';
 import { cloneDeep } from 'lodash';
 
 import JuiHorizonResizer from './HorizonResizer';
 import JuiHorizonButton from './HorizonButton';
 
-const MAIN_MIN_WIDTH = 400;
-const SIDEBAR_DEFAULT_WIDTH = 268;
-const SIDEBAR_MIN_WIDTH = 180;
-const SIDEBAR_MAX_WIDTH = 360;
+import { StyledWrapper } from './StyledWrapper';
+import { StyledMainPanel } from './StyledMainPanel';
+import { StyledSidebarPanel } from './StyledSidebarPanel';
+import { Panels } from './types';
 
 type Props = {
   tag: string; // This tag is used to record widths of various types
   children: JSX.Element[];
   mainPanelIndex: number;
-};
-
-type Panels = {
-  width: number;
-  localWidth?: number;
-  minWidth: number;
-  maxWidth?: number;
-  forceShow?: boolean;
 };
 
 type States = {
@@ -37,46 +28,10 @@ type States = {
   currentIndex: number;
 };
 
-const StyledWrapper = styled('div')`
-  display: flex;
-  height: 100%;
-  width: 100%;
-  position: relative;
-`;
-
-type PropsSidebarPanel = {
-  width: number;
-  forceShow: boolean;
-  forcePosition: 'left' | 'right';
-  forceWidth: number;
-};
-
-const StyledSidebarPanel = styled('div')`
-  height: 100%;
-  flex-basis: ${(props: PropsSidebarPanel) => `${props.width}px`};
-  display: ${(props: PropsSidebarPanel) =>
-    props.width > 0 ? 'inline-block' : 'none'};
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  overflow: hidden;
-  ${(props: PropsSidebarPanel) =>
-    props.forceShow &&
-    `
-      display: inline-block;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: ${props.forceWidth}px;
-      z-index: ${({ theme }: any) => theme.zIndex.reponseResizer};
-      left: ${props.forcePosition === 'left' ? 0 : 'auto'};
-      right: ${props.forcePosition === 'right' ? 0 : 'auto'};
-    `};
-`;
-
-const StyledMainPanel = styled('div')`
-  height: 100%;
-  flex: 1;
-  border: 1px solid red;
-`;
+const MAIN_MIN_WIDTH = 400;
+const SIDEBAR_DEFAULT_WIDTH = 268;
+const SIDEBAR_MIN_WIDTH = 180;
+const SIDEBAR_MAX_WIDTH = 360;
 
 class JuiColumnResponse extends PureComponent<Props, States> {
   private wrapperRef: React.RefObject<any>;
@@ -141,7 +96,7 @@ class JuiColumnResponse extends PureComponent<Props, States> {
 
   componentDidMount() {
     addResizeListener(this.onResize);
-    setTimeout(this.onResize, 100);
+    setTimeout(this.onResize, 0);
     // this.onResize();
   }
 
@@ -386,8 +341,8 @@ export { JuiColumnResponse };
 
 // import { JuiColumnResponse } from 'jui/foundation/Layout/Response/ColumnResponse';
 
-/* <JuiColumnResponse mainPanelIndex={1}>
+/* <JuiColumnResponse mainPanelIndex={1} tag="conversation">
   <div>1</div>
   <div>2</div>
   <div>3</div>
-</JuiColumnResponse>; */
+</JuiColumnResponse> */
