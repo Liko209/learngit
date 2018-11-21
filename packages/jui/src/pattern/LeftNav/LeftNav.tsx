@@ -179,7 +179,7 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
                 selected={selected}
                 classes={{ selected: 'selected' }}
                 disableRipple={true}
-                data-test-automation-id={item.url.slice(1)}
+                data-test-automation-id={navPath}
                 focusVisibleClassName={'left-item-focus'}
                 disableGutters={true}
               >

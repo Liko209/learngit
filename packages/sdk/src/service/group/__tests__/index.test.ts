@@ -113,22 +113,30 @@ describe('GroupService', () => {
   });
 
   it('getGroupByMemberList()', async () => {
-    const mockNormal = [{ id: 1 }, { id: 2 }];
+    const mockNormal = { id: 1 };
+    const memberIDs = [1, 2];
+    // group exist in DB already
     daoManager.getDao.mockReturnValue(groupDao);
-
     groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
-    const result1 = await groupService.getGroupByMemberList([1, 2]);
+
+    const result1 = await groupService.getGroupByMemberList(memberIDs);
     expect(result1).toEqual(mockNormal);
 
-    const mockEmpty: Group[] = [];
-    groupDao.queryGroupByMemberList.mockResolvedValue(mockEmpty);
-    const result2 = await groupService.getGroupByMemberList([1, 2]);
-    expect(result2).toEqual(mockEmpty);
+    jest
+      .spyOn(groupService, 'requestRemoteGroupByMemberList')
+      .mockResolvedValueOnce(mockNormal) // first call
+      .mockResolvedValueOnce(null); // second call
 
-    const mockError = null;
-    groupDao.queryGroupByMemberList.mockResolvedValue(mockError);
-    const result3 = await groupService.getGroupByMemberList([1, 2]);
-    expect(result3).toEqual([]);
+    // group not in db, request from server
+    const nullGroup: Group = null;
+    groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
+    const result2 = await groupService.getGroupByMemberList(memberIDs);
+    expect(result2).toEqual(mockNormal);
+
+    // group not in db and server return null
+    groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
+    const result3 = await groupService.getGroupByMemberList(memberIDs);
+    expect(result3).toBeNull;
   });
 
   it('requestRemoteGroupByMemberList()', async () => {
@@ -139,21 +147,21 @@ describe('GroupService', () => {
     const mockNormal = { data: { _id: 1 } };
     GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
     const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result1).toEqual([{ id: 1 }]);
+    expect(result1).toEqual({ id: 1 });
 
-    const mockEmpty = {};
+    const mockEmpty = null;
     GroupAPI.requestNewGroup.mockResolvedValue(mockEmpty);
     const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result2).toEqual([]);
+    expect(result2).toBeNull;
 
     const mockError = null;
     GroupAPI.requestNewGroup.mockResolvedValue(mockError);
     const result3 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result3).toEqual([]);
+    expect(result3).toBeNull;
   });
 
   it('getGroupByPersonId()', async () => {
-    const mock = [{ id: 1 }, { id: 2 }];
+    const mock = { id: 2 };
     daoManager.getKVDao.mockReturnValueOnce(accountDao);
     daoManager.getDao.mockReturnValueOnce(groupDao);
     accountDao.get.mockReturnValue(1); // userId
