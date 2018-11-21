@@ -18,11 +18,16 @@ import { scrollToComponent } from './helper';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { StreamViewProps, StreamItem, StreamItemType } from './types';
+<<<<<<< HEAD
+import storeManager from '@/store/base/StoreManager';
+import { GLOBAL_KEYS } from '@/store/constants';
+=======
 import { ScrollerContext } from 'jui/hoc';
 import { TScroller } from 'jui/hoc/withScroller';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
+>>>>>>> develop
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 
@@ -75,6 +80,7 @@ class StreamViewComponent extends Component<Props> {
   componentWillUnmount() {
     window.removeEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     this._disposers.forEach((i: Disposer) => i());
   }
 
