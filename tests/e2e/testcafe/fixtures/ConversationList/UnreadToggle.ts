@@ -110,7 +110,7 @@ test(
     await h(t).withLog(
       'And click group3 to make sure other conversations are not selected',
       async () => {
-        await directMessagesSection.conversationByIdEntry(groupId3).enter();
+        await directMessagesSection.conversationEntryById(groupId3).enter();
       },
     );
 
@@ -121,12 +121,12 @@ test(
     }, true);
 
     await h(t).withLog('And All prepared conversation should be visible', async () => {
-      await t.expect(favoritesSection.conversationByIdEntry(favPrivateChatId).self.visible).ok();
-      await t.expect(favoritesSection.conversationByIdEntry(favTeamId).self.visible).ok();
-      await t.expect(directMessagesSection.conversationByIdEntry(groupId1).self.visible).ok();
-      await t.expect(directMessagesSection.conversationByIdEntry(groupId2).self.visible).ok();
-      await t.expect(teamsSection.conversationByIdEntry(teamId1).self.visible).ok();
-      await t.expect(teamsSection.conversationByIdEntry(teamId2).self.visible).ok();
+      await t.expect(favoritesSection.conversationEntryById(favPrivateChatId).self.visible).ok();
+      await t.expect(favoritesSection.conversationEntryById(favTeamId).self.visible).ok();
+      await t.expect(directMessagesSection.conversationEntryById(groupId1).self.visible).ok();
+      await t.expect(directMessagesSection.conversationEntryById(groupId2).self.visible).ok();
+      await t.expect(teamsSection.conversationEntryById(teamId1).self.visible).ok();
+      await t.expect(teamsSection.conversationEntryById(teamId2).self.visible).ok();
     }, true);
 
     await h(t).withLog('When other user send posts to some specific conversations', async () => {
@@ -153,15 +153,15 @@ test(
     // JPT-198,JPT-202
     await h(t).withLog('Then the state of the toggle should be on and conversations without unread messages should be hidden, except  conversations with UMI and the currently opened one', async () => {
       await t.expect(unreadToggler.find('input[type="checkbox"]').checked).ok();
-      await t.expect(favoritesSection.conversationByIdEntry(favPrivateChatId).self.visible).ok();
-      await t.expect(favoritesSection.conversationByIdEntry(favTeamId).self.visible).notOk();
-      await t.expect(directMessagesSection.conversationByIdEntry(groupId1).self.visible).ok();
-      await t.expect(directMessagesSection.conversationByIdEntry(groupId2).self.visible).notOk();
-      await t.expect(teamsSection.conversationByIdEntry(teamId1).self.visible).ok();
-      await t.expect(teamsSection.conversationByIdEntry(teamId2).self.visible).notOk();
+      await t.expect(favoritesSection.conversationEntryById(favPrivateChatId).self.visible).ok();
+      await t.expect(favoritesSection.conversationEntryById(favTeamId).self.visible).notOk();
+      await t.expect(directMessagesSection.conversationEntryById(groupId1).self.visible).ok();
+      await t.expect(directMessagesSection.conversationEntryById(groupId2).self.visible).notOk();
+      await t.expect(teamsSection.conversationEntryById(teamId1).self.visible).ok();
+      await t.expect(teamsSection.conversationEntryById(teamId2).self.visible).notOk();
 
       // currently opened groupId3 should remain visible on the list and the conversation remained opened
-      await t.expect(directMessagesSection.conversationByIdEntry(groupId3).self.visible).ok();
+      await t.expect(directMessagesSection.conversationEntryById(groupId3).self.visible).ok();
       await t.expect(app.homePage.messagePanel.conversationPage.self.getAttribute('data-group-id')).eql(groupId3);
     }, true);
 
@@ -171,23 +171,23 @@ test(
 
     await h(t).withLog('Then the state of the toggle should be off and all prepared conversations should be visible', async () => {
       await t.expect(unreadToggler.find('input[type="checkbox"]').checked).notOk();
-      await t.expect(favoritesSection.conversationByIdEntry(favPrivateChatId).self.visible).ok();
-      await t.expect(favoritesSection.conversationByIdEntry(favTeamId).self.visible).ok();
-      await t.expect(directMessagesSection.conversationByIdEntry(groupId1).self.visible).ok();
-      await t.expect(directMessagesSection.conversationByIdEntry(groupId2).self.visible).ok();
-      await t.expect(teamsSection.conversationByIdEntry(teamId1).self.visible).ok();
-      await t.expect(teamsSection.conversationByIdEntry(teamId2).self.visible).ok();
+      await t.expect(favoritesSection.conversationEntryById(favPrivateChatId).self.visible).ok();
+      await t.expect(favoritesSection.conversationEntryById(favTeamId).self.visible).ok();
+      await t.expect(directMessagesSection.conversationEntryById(groupId1).self.visible).ok();
+      await t.expect(directMessagesSection.conversationEntryById(groupId2).self.visible).ok();
+      await t.expect(teamsSection.conversationEntryById(teamId1).self.visible).ok();
+      await t.expect(teamsSection.conversationEntryById(teamId2).self.visible).ok();
     }, true);
 
     // JPT-201
     await h(t).withLog('When I click the unread toggle to turn it on again and open another conversation', async () => {
       await t.click(unreadToggler.find('.toggle-button'));
       await t.expect(unreadToggler.find('input[type="checkbox"]').checked).ok();
-      await directMessagesSection.conversationByIdEntry(groupId1).enter();
+      await directMessagesSection.conversationEntryById(groupId1).enter();
     });
 
     await h(t).withLog('GroupId3 should be hidden', async () => {
-      await t.expect(directMessagesSection.conversationByIdEntry(groupId3).self.visible).notOk();
+      await t.expect(directMessagesSection.conversationEntryById(groupId3).self.visible).notOk();
     }, true);
 
     await h(t).withLog('Then groupId3 received a new message', async () => {
@@ -198,7 +198,7 @@ test(
     });
 
     await h(t).withLog('GroupId3 should be visible again', async () => {
-      await t.expect(directMessagesSection.conversationByIdEntry(groupId3).self.visible).ok();
+      await t.expect(directMessagesSection.conversationEntryById(groupId3).self.visible).ok();
     }, true);
   },
 );

@@ -56,7 +56,7 @@ test(
 
     let groupItem, teamItem; 
     await h(t).withLog('and I click more button of group', async () => {
-      groupItem = app.homePage.messagePanel.directMessagesSection.conversationByIdEntry(groupId);
+      groupItem = app.homePage.messagePanel.directMessagesSection.conversationEntryById(groupId);
       await groupItem.openMoreMenu(); 
     });
 
@@ -71,12 +71,12 @@ test(
 
     await h(t).withLog('Then the group should be in favorite section but not in direct messages section', async () => {
       await t.expect(groupItem.exists).notOk();
-      groupItem = favoritesSection.conversationByIdEntry(groupId);
+      groupItem = favoritesSection.conversationEntryById(groupId);
       await t.expect(groupItem.exists).ok();
     });
 
     await h(t).withLog('When I click more button of team', async () => {
-      teamItem = app.homePage.messagePanel.teamsSection.conversationByIdEntry(teamId);
+      teamItem = app.homePage.messagePanel.teamsSection.conversationEntryById(teamId);
       await teamItem.openMoreMenu();
     });
 
@@ -91,7 +91,7 @@ test(
 
     await h(t).withLog('Then the team should be in favorite section but not in team section', async () => {
       await t.expect(teamItem.exists).notOk();
-      teamItem = favoritesSection.conversationByIdEntry(teamId);
+      teamItem = favoritesSection.conversationEntryById(teamId);
       await t.expect(teamItem.exists).ok();
     });
   },
@@ -147,7 +147,7 @@ test(
 
     let groupItem, teamItem;
     await h(t).withLog('Then I click more button of group', async () => {
-      groupItem = favoritesSection.conversationByIdEntry(groupId);
+      groupItem = favoritesSection.conversationEntryById(groupId);
       await groupItem.openMoreMenu(); 
     });
 
@@ -162,12 +162,12 @@ test(
 
     await h(t).withLog('Then I can find the item in direct messages section but not in favorite section', async () => {
       await t.expect(groupItem.exists).notOk();
-      groupItem = app.homePage.messagePanel.directMessagesSection.conversationByIdEntry(groupId);
+      groupItem = app.homePage.messagePanel.directMessagesSection.conversationEntryById(groupId);
       await t.expect(groupItem.exists).ok();
     });
 
     await h(t).withLog('Then I click more button of team', async () => {
-      teamItem = favoritesSection.conversationByIdEntry(teamId);
+      teamItem = favoritesSection.conversationEntryById(teamId);
       await teamItem.openMoreMenu();
     });
 
@@ -182,7 +182,7 @@ test(
 
     await h(t).withLog('Then I can find the item in team section but not in favorite section', async () => {
       await t.expect(teamItem.exists).notOk();
-      teamItem = app.homePage.messagePanel.teamsSection.conversationByIdEntry(teamId);
+      teamItem = app.homePage.messagePanel.teamsSection.conversationEntryById(teamId);
       await t.expect(teamItem.exists).ok();
     });
   },
@@ -223,7 +223,7 @@ test(
 
     let meChat;
     await h(t).withLog(`Then I can find Me Conversation in Favorite Section`, async () => {
-      meChat = app.homePage.messagePanel.favoritesSection.conversationByIdEntry(meChatId);
+      meChat = app.homePage.messagePanel.favoritesSection.conversationEntryById(meChatId);
       await t.expect(meChat.exists).ok();
     });
 
@@ -238,9 +238,9 @@ test(
     await h(t).withLog(
       'Then the Me Conversation should be in direct messages section but not in favorite section nor in team section',
       async () => {
-        await t.expect(app.homePage.messagePanel.directMessagesSection.conversationByIdEntry(meChatId).exists).ok();
-        await t.expect(app.homePage.messagePanel.favoritesSection.conversationByIdEntry(meChatId).exists).notOk();
-        await t.expect(app.homePage.messagePanel.teamsSection.conversationByIdEntry(meChatId).exists).notOk();
+        await t.expect(app.homePage.messagePanel.directMessagesSection.conversationEntryById(meChatId).exists).ok();
+        await t.expect(app.homePage.messagePanel.favoritesSection.conversationEntryById(meChatId).exists).notOk();
+        await t.expect(app.homePage.messagePanel.teamsSection.conversationEntryById(meChatId).exists).notOk();
       },
     );
   },
