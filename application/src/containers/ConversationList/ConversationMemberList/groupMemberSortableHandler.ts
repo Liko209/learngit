@@ -12,13 +12,13 @@ import {
 } from '@/store/base/fetch';
 
 import PersonService from 'sdk/service/person';
-
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
+import GroupModel from '@/store/models/Group';
 import { Person, Group } from 'sdk/models';
 import { ENTITY, EVENT_TYPES } from 'sdk/src/service';
 import { ENTITY_NAME } from '@/store/constants';
+import { getEntity } from '@/store/utils';
 import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
-import { GroupDataHandler } from 'sdk/src/service/group';
 import { PersonDataHandler } from 'sdk/src/service/person';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 
@@ -43,12 +43,11 @@ class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
 
 class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private _sortableDataHandler: FetchSortableDataListHandler<Person>;
+  private _group: GroupModel;
 
-  private _group: Group;
-
-  constructor(group: Group) {
+  constructor(groupId: number) {
     super();
-    this._group = group;
+    this._group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
     this._subscribeNotification();
     this._buildSortableMemberListHandler();
   }
@@ -75,14 +74,8 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     ): number => {
       const lPerson = lhs.data!;
       const rPerson = rhs.data!;
-      const isLAdmin = GroupDataHandler.getInstance().isThePersonAdmin(
-        this._group,
-        lPerson.id,
-      );
-      const isRAdmin = GroupDataHandler.getInstance().isThePersonAdmin(
-        this._group,
-        rPerson.id,
-      );
+      const isLAdmin = this._group.isThePersonAdmin(lPerson.id);
+      const isRAdmin = this._group.isThePersonAdmin(rPerson.id);
       if (isLAdmin !== isRAdmin) {
         return isLAdmin ? 1 : -1;
       }
@@ -145,7 +138,11 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
         needReplaceData = true;
       }
 
-      this._group = newGroup;
+      // get again
+      this._group = getEntity<Group, GroupModel>(
+        ENTITY_NAME.GROUP,
+        this._group.id,
+      );
 
       if (needReplaceData) {
         this._replaceData();
