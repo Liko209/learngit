@@ -9,11 +9,11 @@ import { Group, Profile } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
-import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
 import { t } from 'i18next';
+import { GroupService } from 'sdk/service/index';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -104,23 +104,8 @@ export default class GroupModel extends Base<Group> {
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
-      const names: string[] = [];
-      const emails: string[] = [];
-      diffMembers
-        .map(id => getEntity(ENTITY_NAME.PERSON, id))
-        .forEach(({ firstName, lastName, email }) => {
-          if (!firstName && !lastName) {
-            emails.push(email);
-          } else if (firstName) {
-            names.push(firstName);
-          } else if (lastName) {
-            names.push(lastName);
-          }
-        });
-      return names
-        .sort(compareName)
-        .concat(emails.sort(compareName))
-        .join(', ');
+      const groupService = GroupService.getInstance() as GroupService;
+      return groupService.getGroupNameByMultiMembers(members, currentUserId);
     }
 
     return '';
