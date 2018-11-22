@@ -165,7 +165,7 @@ class PostService extends BaseService<Post> {
         if (hasMoreRemote) {
           // should try to get more posts from server
           mainLogger.debug(
-            `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} no data in local DB, should do request`,
+            `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} direction:${direction} no data in local DB, should do request`,
           );
 
           const lastPost = _.last(result.posts);

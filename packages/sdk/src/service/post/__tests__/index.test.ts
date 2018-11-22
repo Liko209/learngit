@@ -214,6 +214,7 @@ describe('PostService', () => {
       jest.clearAllMocks();
       jest.resetAllMocks();
       /**
+       * We have 2 posts total at local, 0 at remote.
        */
       postService.getPostsFromLocal.mockResolvedValueOnce({
         posts: [{ id: 1 }, { id: 2 }],
@@ -251,6 +252,7 @@ describe('PostService', () => {
       jest.clearAllMocks();
       jest.resetAllMocks();
       /**
+       * 2 posts total, 2 at remote, 0 at local.
        */
       postService.getPostsFromLocal.mockResolvedValueOnce({
         posts: [],
