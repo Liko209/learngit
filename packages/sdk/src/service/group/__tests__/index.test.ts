@@ -112,14 +112,14 @@ describe('GroupService', () => {
     expect(result).toEqual(mock);
   });
 
-  it('getGroupByMemberList()', async () => {
+  it('getOrCreateGroupByMemberList()', async () => {
     const mockNormal = { id: 1 };
     const memberIDs = [1, 2];
     // group exist in DB already
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
 
-    const result1 = await groupService.getGroupByMemberList(memberIDs);
+    const result1 = await groupService.getOrCreateGroupByMemberList(memberIDs);
     expect(result1).toEqual(mockNormal);
 
     jest
@@ -130,12 +130,12 @@ describe('GroupService', () => {
     // group not in db, request from server
     const nullGroup: Group = null;
     groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
-    const result2 = await groupService.getGroupByMemberList(memberIDs);
+    const result2 = await groupService.getOrCreateGroupByMemberList(memberIDs);
     expect(result2).toEqual(mockNormal);
 
     // group not in db and server return null
     groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
-    const result3 = await groupService.getGroupByMemberList(memberIDs);
+    const result3 = await groupService.getOrCreateGroupByMemberList(memberIDs);
     expect(result3).toBeNull;
   });
 

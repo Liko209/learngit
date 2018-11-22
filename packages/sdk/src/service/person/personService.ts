@@ -8,11 +8,13 @@ import BaseService from '../../service/BaseService';
 import PersonDao from '../../dao/person';
 import PersonAPI from '../../api/glip/person';
 import handleData from './handleData';
+import GroupService, { FEATURE_ACTION_STATUS, FEATURE_TYPE } from '../group';
 import { daoManager, AuthDao } from '../../dao';
 import { IPagination } from '../../types';
 import { Person } from '../../models'; // eslint-disable-line
 import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
+import { ErrorParser } from '../../utils/error';
 class PersonService extends BaseService<Person> {
   static serviceName = 'PersonService';
 
@@ -78,6 +80,34 @@ class PersonService extends BaseService<Person> {
       });
     }
     return '';
+  }
+
+  async getPersonsByGroupId(groupId: number): Promise<Person[]> {
+    const groupService: GroupService = GroupService.getInstance();
+    const group = await groupService.getGroupById(groupId);
+    if (group) {
+      const memberIds = group.members;
+      const personDao = daoManager.getDao(PersonDao);
+      return await personDao.getPersonsByIds(memberIds);
+    }
+    return [];
+  }
+
+  async buildPersonFeatureActionMap(
+    personId: number,
+  ): Promise<Map<FEATURE_TYPE, FEATURE_ACTION_STATUS>> {
+    try {
+      const actionMap = new Map<FEATURE_TYPE, FEATURE_ACTION_STATUS>();
+      actionMap.set(FEATURE_TYPE.MESSAGE, FEATURE_ACTION_STATUS.ENABLE);
+      actionMap.set(FEATURE_TYPE.CONFERENCE, FEATURE_ACTION_STATUS.INVISIBLE);
+
+      // To-Do
+      actionMap.set(FEATURE_TYPE.VIDEO, FEATURE_ACTION_STATUS.INVISIBLE);
+      actionMap.set(FEATURE_TYPE.CALL, FEATURE_ACTION_STATUS.INVISIBLE);
+      return actionMap;
+    } catch (error) {
+      throw ErrorParser.parse(error);
+    }
   }
 }
 

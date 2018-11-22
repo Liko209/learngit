@@ -48,6 +48,24 @@ type CreateTeamOptions = {
   canPin?: boolean;
 };
 
+enum PROFILE_MODEL_TYPE {
+  PERSON,
+  GROUP,
+}
+
+enum FEATURE_ACTION_STATUS {
+  INVISIBLE,
+  ENABLE,
+  DISABLE,
+}
+
+enum FEATURE_TYPE {
+  MESSAGE,
+  CALL,
+  VIDEO,
+  CONFERENCE,
+}
+
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
 
@@ -148,29 +166,42 @@ class GroupService extends BaseService<Group> {
     return super.getById(id) as Promise<Group | null>;
   }
 
+  async getLocalGroupByMemberIdList(ids: number[]): Promise<Group | null> {
+    try {
+      const mem = uniqueArray(ids);
+      const groupDao = daoManager.getDao(GroupDao);
+      const result = await groupDao.queryGroupByMemberList(mem);
+      if (result) {
+        return result;
+      }
+      return null;
+    } catch (e) {
+      mainLogger.error(`getLocalGroupByMemberIdList error =>${e}`);
+      return null;
+    }
+  }
+
   async getGroupByPersonId(personId: number): Promise<Group | null> {
     try {
       const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-      let members = [Number(personId), Number(userId)];
-      members = uniqueArray(members);
-      return await this.getGroupByMemberList(members);
+      const members = [Number(personId), Number(userId)];
+      return await this.getOrCreateGroupByMemberList(members);
     } catch (e) {
       mainLogger.error(`getGroupByPersonId error =>${e}`);
       return null;
     }
   }
 
-  async getGroupByMemberList(members: number[]): Promise<Group | null> {
+  async getOrCreateGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
-      const mem = uniqueArray(members);
-      const groupDao = daoManager.getDao(GroupDao);
-      const result = await groupDao.queryGroupByMemberList(mem);
+      const uniqueMem = uniqueArray(members);
+      const result = await this.getLocalGroupByMemberIdList(uniqueMem);
       if (result) {
         return result;
       }
-      return await this.requestRemoteGroupByMemberList(mem);
+      return await this.requestRemoteGroupByMemberList(uniqueMem);
     } catch (e) {
-      mainLogger.error(`getGroupByMemberList error =>${e}`);
+      mainLogger.error(`getOrCreateGroupByMemberList error =>${e}`);
       return null;
     }
   }
@@ -444,6 +475,80 @@ class GroupService extends BaseService<Group> {
       throw ErrorParser.parse(error);
     }
   }
+
+  async buildGroupFeatureActionMap(
+    groupId: number,
+  ): Promise<Map<FEATURE_TYPE, FEATURE_ACTION_STATUS>> {
+    try {
+      const actionMap = new Map<FEATURE_TYPE, FEATURE_ACTION_STATUS>();
+      actionMap.set(FEATURE_TYPE.CALL, FEATURE_ACTION_STATUS.INVISIBLE); // can not make call in group
+
+      const group = (await this.getGroupById(groupId)) as Group;
+      actionMap.set(
+        FEATURE_TYPE.MESSAGE,
+        group
+          ? this._checkGroupMessageStatus(group)
+          : FEATURE_ACTION_STATUS.INVISIBLE,
+      );
+
+      // To-Do
+      actionMap.set(FEATURE_TYPE.CONFERENCE, FEATURE_ACTION_STATUS.INVISIBLE); // can not make conference in group for nwo
+      actionMap.set(FEATURE_TYPE.VIDEO, FEATURE_ACTION_STATUS.INVISIBLE); // can not make video in group for now
+      return actionMap;
+    } catch (error) {
+      throw ErrorParser.parse(error);
+    }
+  }
+
+  async isFavorited(id: number, type: PROFILE_MODEL_TYPE): Promise<boolean> {
+    let groupId: number | undefined = undefined;
+    switch (type) {
+      case PROFILE_MODEL_TYPE.PERSON: {
+        const group = await this.getLocalGroupByMemberIdList([id]);
+        if (group) {
+          groupId = group.id;
+        }
+        break;
+      }
+      case PROFILE_MODEL_TYPE.GROUP: {
+        groupId = id;
+        break;
+      }
+      default: {
+        mainLogger.error('isFavorited : should not run to here');
+      }
+    }
+
+    if (groupId) {
+      return await this._isGroupFavorited(groupId);
+    }
+
+    return false;
+  }
+
+  private async _isGroupFavorited(groupId: number): Promise<boolean> {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const profile = await profileService.getProfile();
+    const favoriteGroupIds = profile ? profile.favorite_group_ids || [] : [];
+    return favoriteGroupIds.some((x: number) => groupId === x);
+  }
+
+  private _checkGroupMessageStatus(group: Group) {
+    return this._isCurrentUserInGroup(group)
+      ? FEATURE_ACTION_STATUS.ENABLE
+      : FEATURE_ACTION_STATUS.INVISIBLE;
+  }
+
+  private _isCurrentUserInGroup(group: Group) {
+    const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
+    return group ? group.members.some((x: number) => x === userId) : false;
+  }
 }
 
-export { CreateTeamOptions, GroupService };
+export {
+  CreateTeamOptions,
+  PROFILE_MODEL_TYPE,
+  FEATURE_ACTION_STATUS,
+  FEATURE_TYPE,
+  GroupService,
+};

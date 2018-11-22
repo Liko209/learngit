@@ -36,6 +36,17 @@ export type Raw<T> = Pick<T, Exclude<keyof T, 'id'>> & {
 
 export type PartialWithKey<T> = Pick<T, Extract<keyof T, 'id'>> & Partial<T>;
 
+export type TeamPermission = {
+  admin?: {
+    uids: number[];
+    level?: number;
+  };
+  user?: {
+    uids: number[];
+    level?: number;
+  };
+};
+
 export type GroupCommon = {
   company_id: number;
   set_abbreviation: string;
@@ -52,16 +63,7 @@ export type GroupCommon = {
   converted_to_team?: object;
   converted_from_group?: object;
   pinned_post_ids?: number[];
-  permissions?: {
-    admin?: {
-      uids: number[];
-      level?: number;
-    };
-    user?: {
-      uids: number[];
-      level?: number;
-    };
-  };
+  permissions?: TeamPermission;
   post_cursor?: number;
   drp_post_cursor?: number;
   trigger_ids?: number[];
