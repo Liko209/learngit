@@ -8,10 +8,6 @@ import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
 
 jest.mock('../../../ConversationSheet', () => ({}));
-const context = {
-  scrollToRow: () => {},
-  onListAsyncshallowed: (el: React.RefObject<any>) => {},
-};
 function renderJumpToFirstUnreadButton({
   hasHistoryUnread,
   firstHistoryUnreadInPage,
@@ -28,9 +24,7 @@ function renderJumpToFirstUnreadButton({
     loadInitialPosts: async () => {},
   };
 
-  const wrapper = shallow(<StreamView {...props} />, {
-    context,
-  });
+  const wrapper = shallow(<StreamView {...props} />);
   (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
   wrapper.update();
   const jumpToFirstUnreadButtonWrapper = wrapper.find(
@@ -48,6 +42,7 @@ const baseProps = {
   setRowVisible: jest.fn().mockName('setRowVisible'),
   markAsRead: jest.fn().mockName('markAsRead'),
   atBottom: jest.fn().mockName('atBottom'),
+  atTop: jest.fn().mockName('atTop'),
   enableNewMessageSeparatorHandler: jest
     .fn()
     .mockName('enableNewMessageSeparatorHandler'),
@@ -78,7 +73,7 @@ describe('StreamView', () => {
         ],
       };
 
-      const wrapper = shallow(<StreamView {...props} />, { context });
+      const wrapper = shallow(<StreamView {...props} />);
       const card = wrapper.find(ConversationPost);
       const card0 = card.at(0);
       const card1 = card.at(1);

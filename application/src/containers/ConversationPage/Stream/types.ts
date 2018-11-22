@@ -42,10 +42,11 @@ type StreamItem = {
 
 type StreamProps = {
   groupId: number;
+  setMethods?: (func: Function) => any;
 };
 
 type StreamViewProps = {
-  mostRecentPostId:number;
+  mostRecentPostId: number;
   firstHistoryUnreadInPage: boolean;
   groupId: number;
   postIds: number[];
@@ -56,15 +57,22 @@ type StreamViewProps = {
   markAsRead: () => void;
   loadInitialPosts: () => Promise<void>;
   atBottom: () => boolean;
+  atTop: () => boolean;
   enableNewMessageSeparatorHandler: () => void;
   loadPostUntilFirstUnread: () => Promise<number | undefined>;
   hasHistoryUnread: boolean;
   clearHistoryUnread: () => void;
   historyUnreadCount: number;
   firstHistoryUnreadPostId?: number;
+  setMethods?: (func: Function) => any;
+};
+type StreamSnapshot = {
+  atBottom: boolean;
+  atTop: boolean;
 };
 
 export {
+  StreamSnapshot,
   StreamProps,
   StreamViewProps,
   StreamItemType,

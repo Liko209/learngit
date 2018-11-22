@@ -22,6 +22,7 @@ import {
   onScroll,
   loading,
   loadingTop,
+  loadingBottom,
 } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
@@ -32,6 +33,7 @@ import { DateSeparatorHandler } from './DateSeparatorHandler';
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
+import { onScrollToBottom } from '@/plugins';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -124,13 +126,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   onReceiveProps(props: StreamProps) {
-    this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
-    const globalStore = storeManager.getGlobalStore();
-    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
-
     if (this.groupId === props.groupId) {
       return;
     }
+    this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
     storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     this.groupId = props.groupId;
 
@@ -202,11 +203,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         this.jumpToPostId,
       );
       this._transformHandler.orderListStore.append([transformFunc(post)]);
-      const prevPage = await this._loadPosts(FetchDataDirection.UP);
-      const nextPage = await this._loadPosts(FetchDataDirection.DOWN);
-      posts = [...prevPage, ...nextPage];
+      const result = await Promise.all([
+        this._loadPosts(FetchDataDirection.DOWN),
+        this._loadPosts(FetchDataDirection.UP),
+      ]);
+
+      posts = _(result)
+        .flatten()
+        .value();
     } else {
-      posts = await this._loadPosts(FetchDataDirection.UP);
+      posts = await this.loadPrevPosts();
     }
     if (posts && posts.length) {
       await this._prepareAllData(posts);
@@ -219,7 +225,13 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @onScrollToTop
   @loadingTop
   async loadPrevPosts() {
-    await this._loadPosts(FetchDataDirection.UP);
+    return this._loadPosts(FetchDataDirection.UP);
+  }
+
+  @onScrollToBottom
+  @loadingBottom
+  async loadNextPosts() {
+    return this._loadPosts(FetchDataDirection.DOWN);
   }
 
   @onScroll
@@ -275,7 +287,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
   }
 
-  private async _loadPosts(direction: FetchDataDirection, limit?: number) {
+  private async _loadPosts(
+    direction: FetchDataDirection,
+    limit?: number,
+  ): Promise<Post[]> {
     if (!this._transformHandler.hasMore(direction)) return [];
     return await this._transformHandler.fetchData(direction, limit);
   }

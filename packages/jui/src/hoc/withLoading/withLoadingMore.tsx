@@ -3,7 +3,7 @@
  * @Date: 2018-09-18 10:11:06
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ComponentType, Fragment } from 'react';
+import React, { ComponentType, Fragment, RefObject } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils/styles';
 import { JuiCircularProgress } from '../../components/Progress';
@@ -12,6 +12,7 @@ import { withDelay } from '../withDelay';
 type WithLoadingMoreProps = {
   loadingTop: boolean;
   loadingBottom: boolean;
+  viewRef: RefObject<any>;
   children: JSX.Element;
 };
 
@@ -43,7 +44,7 @@ const withLoadingMore = (
     WithLoadingMoreProps
   > {
     render() {
-      const { loadingTop, loadingBottom, ...rest } = this.props;
+      const { loadingTop, loadingBottom, viewRef, ...rest } = this.props;
       const LoadingMoreWithDelay =
         CustomizedLoadingWithDelay || DefaultLoadingMoreWithDelay;
       return (

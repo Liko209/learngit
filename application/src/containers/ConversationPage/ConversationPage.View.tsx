@@ -21,9 +21,14 @@ import { ConversationPageViewProps } from './types';
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
-  private _scroller: React.RefObject<any> = React.createRef();
+  private _scrollToBottom: () => any;
+
+  private _setScrollMethod = (func: () => any) => {
+    this._scrollToBottom = func;
+  }
+
   sendHandler = () => {
-    this._scroller && this._scroller.current.scrollToRow(-1);
+    this._scrollToBottom();
   }
 
   render() {
@@ -37,7 +42,7 @@ class ConversationPageViewComponent extends Component<
       >
         <Header id={groupId} />
         <JuiStreamWrapper>
-          <Stream groupId={groupId} scrollerRef={this._scroller} />
+          <Stream groupId={groupId} setMethods={this._setScrollMethod} />
           <div id="jumpToFirstUnreadButtonRoot" />
         </JuiStreamWrapper>
         {canPost ? (

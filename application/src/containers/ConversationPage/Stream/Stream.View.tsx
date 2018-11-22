@@ -17,11 +17,14 @@ import { toTitleCase } from '@/utils/string';
 import { scrollToComponent } from './helper';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
-import { StreamViewProps, StreamItem, StreamItemType } from './types';
+import {
+  StreamViewProps,
+  StreamItem,
+  StreamItemType,
+  StreamSnapshot,
+} from './types';
 import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { ScrollerContext } from 'jui/hoc';
-import { TScroller } from 'jui/hoc/withScroller';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
@@ -32,7 +35,6 @@ type Props = WithNamespaces & StreamViewProps;
 
 @observer
 class StreamViewComponent extends Component<Props> {
-  private _context: TScroller;
   private _listRef: React.RefObject<HTMLElement> = React.createRef();
   private _disposers: Disposer[] = [];
   private _postRefs: Map<number, any> = new Map();
@@ -48,10 +50,8 @@ class StreamViewComponent extends Component<Props> {
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
-    // Scroller's on componentDidMount was called earlier than stream itself
-    this._context.onListAsyncMounted(this._listRef);
     await this.props.loadInitialPosts();
-    this._context.scrollToRow(-1);
+    this._scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
     this._stickToBottom();
   }
 
@@ -66,9 +66,7 @@ class StreamViewComponent extends Component<Props> {
       post = getEntity(ENTITY_NAME.POST, item!.value);
       const likes = post!.likes || [];
       if (likes.length === 1) {
-        this._context.scrollToRow(-1, {
-          behavior: 'smooth',
-        });
+        this._scrollToPost(this.props.mostRecentPostId);
       }
     });
     this._disposers.push(disposer);
@@ -81,13 +79,30 @@ class StreamViewComponent extends Component<Props> {
     this._disposers.forEach((i: Disposer) => i());
   }
 
-  async componentDidUpdate(prevProps: Props) {
+  getSnapshotBeforeUpdate(): StreamSnapshot {
+    const { atBottom, atTop } = this.props;
+    return { atBottom: atBottom(), atTop: atTop() };
+  }
+
+  async componentDidUpdate(
+    prevProps: Props,
+    props: Props,
+    snapshot: StreamSnapshot,
+  ) {
     if (prevProps.groupId !== this.props.groupId) {
       this._jumpToFirstUnreadLoading = false;
       this._firstHistoryUnreadPostViewed = false;
       this._postRefs.clear();
       await this.props.loadInitialPosts();
-      this._context.scrollToRow(-1);
+      this.scrollToBottom();
+    }
+    if (this.props.postIds.length > prevProps.postIds.length) {
+      if (snapshot.atBottom) {
+        return this.scrollToBottom();
+      }
+      if (snapshot.atTop) {
+        return this._scrollToPost(prevProps.postIds[0]);
+      }
     }
   }
 
@@ -118,7 +133,7 @@ class StreamViewComponent extends Component<Props> {
       return (
         <VisibilitySensor
           key={`VisibilitySensor${streamItem.value}`}
-          onChange={this._handleMostRecentPostReaded}
+          onChange={this._handleMostRecentPostRead}
         >
           <ConversationPost
             ref={this._setPostRef}
@@ -128,7 +143,13 @@ class StreamViewComponent extends Component<Props> {
         </VisibilitySensor>
       );
     }
-    return <ConversationPost id={streamItem.value} key={streamItem.value} />;
+    return (
+      <ConversationPost
+        id={streamItem.value}
+        key={streamItem.value}
+        ref={this._setPostRef}
+      />
+    );
   }
 
   private _renderNewMessagesDivider(streamItem: StreamItem) {
@@ -204,24 +225,18 @@ class StreamViewComponent extends Component<Props> {
     ) : null;
   }
 
-  getContext = (value: TScroller) => {
-    this._context = value;
-    return null;
-  }
-
   render() {
+    const setMethods = this.props.setMethods;
     return (
-      <>
-        <ScrollerContext.Consumer>{this.getContext}</ScrollerContext.Consumer>
-        <JuiStream>
-          {this._jumpToFirstUnreadButton}
-          {this._initialPost}
-          <section ref={this._listRef}>
-            {this._streamItems}
-            {this._jumpToFirstUnreadLoading}
-          </section>
-        </JuiStream>
-      </>
+      <JuiStream>
+        {setMethods && setMethods(this.scrollToBottom)}
+        {this._jumpToFirstUnreadButton}
+        {this._initialPost}
+        <section ref={this._listRef}>
+          {this._streamItems}
+          {this._jumpToFirstUnreadLoading}
+        </section>
+      </JuiStream>
     );
   }
 
@@ -232,11 +247,12 @@ class StreamViewComponent extends Component<Props> {
       this.props.clearHistoryUnread();
     }
   }
-  private _handleMostRecentPostReaded = (isVisible: boolean) => {
+  private _handleMostRecentPostRead = (isVisible: boolean) => {
     if (isVisible) {
       this.props.markAsRead();
     }
   }
+
   @action.bound
   private _jumpToFirstUnread = async () => {
     if (this._jumpToFirstUnreadLoading || this._timeout) return;
@@ -260,19 +276,30 @@ class StreamViewComponent extends Component<Props> {
       );
       return;
     }
+    this._scrollToPost(scrollToPostId, { behavior: 'smooth', block: 'center' });
+  }
 
+  private scrollToBottom = () => {
+    window.requestAnimationFrame(() => {
+      scrollToComponent(this._listRef.current, false);
+    });
+  }
+
+  private _scrollToPost = (
+    scrollToPostId: number,
+    options?: ScrollIntoViewOptions,
+  ) => {
+    const scrollToViewOpt = options || {
+      behavior: 'auto',
+      block: 'start',
+    };
     window.requestAnimationFrame(() => {
       const scrollToPostEl = this._postRefs.get(scrollToPostId);
-
       if (!scrollToPostEl) {
         console.warn('scrollToPostEl no found');
         return;
       }
-
-      scrollToComponent(scrollToPostEl, {
-        behavior: 'smooth',
-        block: 'center',
-      });
+      scrollToComponent(scrollToPostEl, scrollToViewOpt);
     });
   }
 
