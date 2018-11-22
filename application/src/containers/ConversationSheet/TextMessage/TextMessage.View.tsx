@@ -8,7 +8,6 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationPostText } from 'jui/pattern/ConversationCard';
 import { TextMessageViewProps } from './types';
-import { MiniCard } from '@/containers/MiniCard';
 
 @observer
 class TextMessageView extends React.Component<TextMessageViewProps> {
@@ -16,24 +15,11 @@ class TextMessageView extends React.Component<TextMessageViewProps> {
     super(props);
   }
 
-  onClick(event: React.MouseEvent) {
-    const target = event.target as HTMLElement;
-    const className = target.getAttribute('class') || '';
-    const id = Number(target.getAttribute('id'));
-    if (className.indexOf('at_mention_compose') > -1 && id > 0) {
-      event.stopPropagation();
-      MiniCard.showProfile({
-        id,
-        anchor: target,
-      });
-    }
-  }
-
   render() {
     const { html } = this.props;
     return (
       <React.Fragment>
-        <JuiConversationPostText onClick={this.onClick}>
+        <JuiConversationPostText>
           <div dangerouslySetInnerHTML={{ __html: html }} data-name="text" />
         </JuiConversationPostText>
       </React.Fragment>
