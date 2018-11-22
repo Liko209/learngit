@@ -6,7 +6,6 @@
 
 import _ from 'lodash';
 import { daoManager, PostDao, GroupConfigDao } from '../../dao';
-// import GroupDao from 'dao/group';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
@@ -24,6 +23,7 @@ import { transform } from '../utils';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
 import { ErrorParser, BaseError } from '../../utils/error';
+import { QUERY_DIRECTION } from '../../dao/constants';
 
 interface IPostResult {
   posts: Post[];
@@ -42,7 +42,7 @@ interface IPostQuery {
   groupId: number;
   limit?: number;
   postId?: number;
-  direction?: string;
+  direction?: QUERY_DIRECTION;
 }
 
 type PostData = {
@@ -150,7 +150,7 @@ class PostService extends BaseService<Post> {
     groupId,
     postId = 0,
     limit = 20,
-    direction = 'older',
+    direction = QUERY_DIRECTION.OLDER,
   }: IPostQuery): Promise<IPostResult> {
     try {
       const result = await this.getPostsFromLocal({
@@ -161,7 +161,10 @@ class PostService extends BaseService<Post> {
       });
       if (result.posts.length < limit) {
         const groupConfigDao = daoManager.getDao(GroupConfigDao);
-        const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(groupId);
+        const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(
+          groupId,
+          direction,
+        );
         if (hasMoreRemote) {
           // should try to get more posts from server
           mainLogger.debug(
@@ -186,7 +189,7 @@ class PostService extends BaseService<Post> {
           result.hasMore = remoteResult.hasMore;
           await groupConfigDao.update({
             id: groupId,
-            has_more: remoteResult.hasMore,
+            [`has_more_${direction}`]: remoteResult.hasMore,
           });
         } else {
           result.hasMore = false;
@@ -510,7 +513,12 @@ class PostService extends BaseService<Post> {
 
   async groupHasPostInLocal(groupId: number) {
     const postDao: PostDao = daoManager.getDao(PostDao);
-    const posts: Post[] = await postDao.queryPostsByGroupId(groupId, 0, '', 1);
+    const posts: Post[] = await postDao.queryPostsByGroupId(
+      groupId,
+      0,
+      undefined,
+      1,
+    );
     return posts.length !== 0;
   }
 }

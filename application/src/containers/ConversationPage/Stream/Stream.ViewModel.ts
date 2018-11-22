@@ -15,7 +15,6 @@ import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
 } from '@/store/base/fetch';
-import { FetchDataDirection } from '@/store/base/fetch/types';
 import StoreViewModel from '@/store/ViewModel';
 import {
   onScrollToTop,
@@ -32,8 +31,7 @@ import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
 import { DateSeparatorHandler } from './DateSeparatorHandler';
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
-import GroupModel from '@/store/models/Group';
-import { onScrollToBottom } from '@/plugins';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -116,7 +114,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get hasMore() {
-    return this._transformHandler.hasMore(FetchDataDirection.UP);
+    return this._transformHandler.hasMore(QUERY_DIRECTION.OLDER);
   }
 
   constructor() {
@@ -204,10 +202,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       );
       this._transformHandler.orderListStore.append([transformFunc(post)]);
       const result = await Promise.all([
-        this._loadPosts(FetchDataDirection.DOWN),
-        this._loadPosts(FetchDataDirection.UP),
+        this._loadPosts(QUERY_DIRECTION.OLDER),
+        this._loadPosts(QUERY_DIRECTION.NEWER),
       ]);
-
       posts = _(result)
         .flatten()
         .value();
@@ -225,13 +222,13 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @onScrollToTop
   @loadingTop
   async loadPrevPosts() {
-    return this._loadPosts(FetchDataDirection.UP);
+    return this._loadPosts(QUERY_DIRECTION.OLDER);
   }
 
   @onScrollToBottom
   @loadingBottom
   async loadNextPosts() {
-    return this._loadPosts(FetchDataDirection.DOWN);
+    return this._loadPosts(QUERY_DIRECTION.NEWER);
   }
 
   @onScroll
@@ -288,7 +285,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   private async _loadPosts(
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     limit?: number,
   ): Promise<Post[]> {
     if (!this._transformHandler.hasMore(direction)) return [];
@@ -301,7 +298,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
     if (loadCount > 0) {
       this.enableNewMessageSeparatorHandler();
-      await this._loadPosts(FetchDataDirection.UP, loadCount);
+      await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
     }
 
     return this.firstHistoryUnreadPostId;

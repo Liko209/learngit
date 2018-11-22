@@ -5,6 +5,7 @@
 import { BaseDao } from '../base';
 import { Post } from '../../models';
 import { IDatabase } from 'foundation';
+import { QUERY_DIRECTION } from '../constants';
 
 class PostDao extends BaseDao<Post> {
   static COLLECTION_NAME = 'post';
@@ -15,21 +16,22 @@ class PostDao extends BaseDao<Post> {
 
   async queryPostsByGroupId(
     groupId: number,
-    postId?: number,
-    direction: string = 'older',
+    anchorPostId?: number,
+    direction: QUERY_DIRECTION = QUERY_DIRECTION.OLDER,
     limit: number = Infinity,
   ): Promise<Post[]> {
-    let cursorPost;
-    if (postId) {
-      cursorPost = await this.get(postId);
+    let anchorPost;
+    if (anchorPostId) {
+      anchorPost = await this.get(anchorPostId);
     }
     let query = this.createQuery();
     query = query
-      .orderBy('created_at', direction === 'older')
+      .orderBy('created_at', direction === QUERY_DIRECTION.OLDER)
       .equal('group_id', groupId);
-    if (cursorPost) {
-      const rangeMethod = direction === 'older' ? 'lessThan' : 'greaterThan';
-      query = query[rangeMethod]('created_at', cursorPost.created_at);
+    if (anchorPost) {
+      const rangeMethod =
+        direction === QUERY_DIRECTION.OLDER ? 'lessThan' : 'greaterThan';
+      query = query[rangeMethod]('created_at', anchorPost.created_at);
     }
     query = query.limit(limit);
     const result = await query.toArray();
