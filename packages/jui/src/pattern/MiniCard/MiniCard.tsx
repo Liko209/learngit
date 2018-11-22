@@ -5,30 +5,32 @@
  */
 
 import React, { PureComponent } from 'react';
-import Popper, { PopperProps } from '@material-ui/core/Popper';
+// import Popper, { PopperProps } from '@material-ui/core/Popper';
+
 // import Typography from '@material-ui/core/Typography';
 // import Paper from '@material-ui/core/Paper';
+// import { JuiPopper, JuiPopperProps } from '../../components/Popper';
 
-type JuiMiniCardProps = {} & PopperProps;
+import { StyledWrapper } from './StyledWrapper';
 
-type MiniCardFunction = (
-  id: number,
-) => {
-  destroy: () => void;
+type JuiMiniCardProps = {
+  anchor: HTMLElement;
+  children: JSX.Element[];
 };
 
 class JuiMiniCard extends PureComponent<JuiMiniCardProps> {
-  static profile: MiniCardFunction;
-
   constructor(props: JuiMiniCardProps) {
     super(props);
   }
   render() {
-    const { open, anchorEl } = this.props;
+    const { anchor, children } = this.props;
+    const rect = anchor.getBoundingClientRect();
+    const { left, top } = rect;
     return (
-      <Popper open={open} anchorEl={anchorEl}>
+      <StyledWrapper left={left} top={top}>
+        {children}
         <div>The content of the Popper.</div>
-      </Popper>
+      </StyledWrapper>
     );
   }
 }

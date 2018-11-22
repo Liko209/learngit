@@ -11,10 +11,12 @@ enum PROFILE_MODEL_TYPE {
 
 type ProfileMiniCardProps = {
   id: number; // personId || conversationId
+  anchor: HTMLElement;
 };
 
 type ProfileMiniCardViewProps = {
   id: number;
+  anchor: HTMLElement;
   type: PROFILE_MODEL_TYPE;
 };
 

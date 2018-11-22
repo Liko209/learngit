@@ -7,13 +7,13 @@
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import {
-  PersonProfileMiniCardProps,
-  PersonProfileMiniCardViewProps,
+  ProfileMiniCardPersonHeaderProps,
+  ProfileMiniCardPersonHeaderViewProps,
 } from './types';
 
-class PersonProfileMiniCardViewModel
-  extends AbstractViewModel<PersonProfileMiniCardProps>
-  implements PersonProfileMiniCardViewProps {
+class ProfileMiniCardPersonHeaderViewModel
+  extends AbstractViewModel<ProfileMiniCardPersonHeaderProps>
+  implements ProfileMiniCardPersonHeaderViewProps {
   @computed
   get id() {
     // person id
@@ -21,4 +21,4 @@ class PersonProfileMiniCardViewModel
   }
 }
 
-export { PersonProfileMiniCardViewModel };
+export { ProfileMiniCardPersonHeaderViewModel };

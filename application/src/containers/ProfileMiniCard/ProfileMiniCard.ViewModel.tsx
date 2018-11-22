@@ -21,13 +21,18 @@ class ProfileMiniCardViewModel extends AbstractViewModel<ProfileMiniCardProps>
   }
 
   @computed
+  get anchor() {
+    return this.props.anchor;
+  }
+
+  @computed
   get type(): PROFILE_MODEL_TYPE {
     return this._getProfileModelType(this.id);
   }
 
   private _getProfileModelType(id: number) {
     // todo invoke service api
-    return PROFILE_MODEL_TYPE.GROUP;
+    return PROFILE_MODEL_TYPE.PERSON;
   }
 }
 

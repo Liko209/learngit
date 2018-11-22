@@ -5,10 +5,11 @@
  */
 
 import { Profile } from './Profile';
+import { MiniCardShowProfileParams } from './types';
 
 class MiniCard {
-  static showProfile(id: number) {
-    Profile.instance.show(id);
+  static showProfile({ anchor, id }: MiniCardShowProfileParams) {
+    Profile.instance.show({ anchor, id });
   }
 
   static destroyProfile() {

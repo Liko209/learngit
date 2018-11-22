@@ -76,8 +76,12 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
     return moment(this.post.createdAt).format('hh:mm A');
   }
 
-  onClickAvatar = () => {
-    MiniCard.showProfile(this.creator.id);
+  onClickAvatar = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    MiniCard.showProfile({
+      anchor: event.target as HTMLElement,
+      id: this.creator.id,
+    });
   }
 }
 

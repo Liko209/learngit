@@ -4,4 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { JuiMiniCard, JuiMiniCardProps } from './MiniCard';
+export * from './MiniCard';
+export * from './MiniCardHeader';
+export * from './MiniCardBody';
+export * from './MiniCardFooter';

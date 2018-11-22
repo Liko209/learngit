@@ -6,12 +6,14 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ProfileMiniCard } from '../ProfileMiniCard';
+import ThemeProvider from '@/containers/ThemeProvider';
+import { ProfileMiniCard } from '@/containers/ProfileMiniCard';
+import { MiniCardShowProfileParams } from './types';
 
 class Profile {
   static instance: Profile;
   div: HTMLDivElement;
-  id: number;
+  anchor: HTMLElement;
 
   constructor() {
     if (Profile.instance instanceof Profile) {
@@ -21,15 +23,20 @@ class Profile {
     return this;
   }
 
-  show(id: number) {
-    if (this.id === id) {
+  show({ anchor, id }: MiniCardShowProfileParams) {
+    if (this.anchor === anchor) {
       return;
     }
     this.destroy();
-    this.id = id;
+    this.anchor = anchor;
     this.div = document.createElement('div');
     document.body.appendChild(this.div);
-    ReactDOM.render(<ProfileMiniCard id={id} />, this.div);
+    ReactDOM.render(
+      <ThemeProvider>
+        <ProfileMiniCard id={id} anchor={anchor} />
+      </ThemeProvider>,
+      this.div,
+    );
   }
 
   destroy() {

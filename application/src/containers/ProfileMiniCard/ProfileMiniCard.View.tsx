@@ -7,22 +7,22 @@
 import React, { Component } from 'react';
 import { ProfileMiniCardViewProps, PROFILE_MODEL_TYPE } from './types';
 import { GroupProfileMiniCard } from './GroupProfileMiniCard';
-import { PersonProfileMiniCard } from './PersonProfileMiniCard';
+import { ProfileMiniCardPerson } from './ProfileMiniCardPerson';
 
 const MappingComponent = {
-  [PROFILE_MODEL_TYPE.PERSON]: PersonProfileMiniCard,
+  [PROFILE_MODEL_TYPE.PERSON]: ProfileMiniCardPerson,
   [PROFILE_MODEL_TYPE.GROUP]: GroupProfileMiniCard,
 };
 
-const factory = (type: PROFILE_MODEL_TYPE, id: number) => {
+const factory = (type: PROFILE_MODEL_TYPE, id: number, anchor: HTMLElement) => {
   const Component = MappingComponent[type];
-  return <Component id={id} />;
+  return <Component id={id} anchor={anchor} />;
 };
 
 class ProfileMiniCardView extends Component<ProfileMiniCardViewProps> {
   render() {
-    const { type, id } = this.props;
-    return factory(type, id);
+    const { type, id, anchor } = this.props;
+    return factory(type, id, anchor);
   }
 }
 

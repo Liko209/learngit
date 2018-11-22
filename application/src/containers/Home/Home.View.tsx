@@ -16,15 +16,21 @@ import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 import { HomeViewProps } from './types';
 import { analytics } from '@/Analytics';
+import { MiniCard } from '@/containers/MiniCard';
 
 @observer
 class Home extends Component<HomeViewProps> {
+  onClick = () => {
+    MiniCard.destroyProfile();
+  }
+
   componentDidMount() {
     analytics.identify();
   }
+
   render() {
     return (
-      <Wrapper>
+      <Wrapper onClick={this.onClick}>
         <TopBar />
         <Bottom>
           <LeftNav />
