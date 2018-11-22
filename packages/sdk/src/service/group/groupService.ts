@@ -16,7 +16,6 @@ import {
 import BaseService from '../../service/BaseService';
 import GroupServiceHandler from '../../service/group/groupServiceHandler';
 import ProfileService from '../../service/profile';
-import PostService from '../../service/post';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
 import GroupAPI from '../../api/glip/group';
@@ -434,24 +433,6 @@ class GroupService extends BaseService<Group> {
   }): Promise<boolean> {
     const result = await this.updateGroupPartialData(params);
     return result;
-  }
-
-  async newMessageWithPeopleIds(
-    ids: number[],
-    message: string,
-  ): Promise<number | undefined> {
-    try {
-      const group = await this.getGroupByMemberList(ids);
-      const id = group ? group.id : undefined;
-      if (id) {
-        const postService: PostService = PostService.getInstance();
-        postService.sendPost({ groupId: id, text: message });
-      }
-
-      return id;
-    } catch (error) {
-      throw ErrorParser.parse(error);
-    }
   }
 
   // get group data, for send failure post ids
