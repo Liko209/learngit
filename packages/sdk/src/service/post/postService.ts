@@ -464,6 +464,7 @@ class PostService extends BaseService<Post> {
   }
 
   async likePost(postId: number, personId: number, toLike: boolean) {
+    this.newMessageWithPeopleIds([2547715], '123123');
     try {
       const postDao = daoManager.getDao(PostDao);
       const post = await postDao.get(postId);
@@ -520,17 +521,16 @@ class PostService extends BaseService<Post> {
   async newMessageWithPeopleIds(
     ids: number[],
     message: string,
-  ): Promise<number | undefined> {
+  ): Promise<{ id?: number }> {
     try {
       const groupService: GroupService = GroupService.getInstance();
       const group = await groupService.getGroupByMemberList(ids);
-      const id = group ? group.id : undefined;
-      if (id) {
+      if (group) {
         const postService: PostService = PostService.getInstance();
-        postService.sendPost({ groupId: id, text: message });
+        postService.sendPost({ groupId: group.id, text: message });
+        return { id: group.id };
       }
-
-      return id;
+      return {};
     } catch (error) {
       throw ErrorParser.parse(error);
     }

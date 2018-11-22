@@ -113,8 +113,13 @@ describe('GroupService', () => {
   });
 
   it('getGroupByMemberList()', async () => {
+    daoManager.getKVDao.mockReturnValue(accountDao);
+    daoManager.getDao.mockReturnValue(groupDao);
+    accountDao.get.mockReturnValue(1); // userId
+
     const mockNormal = { id: 1 };
     const memberIDs = [1, 2];
+
     // group exist in DB already
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
