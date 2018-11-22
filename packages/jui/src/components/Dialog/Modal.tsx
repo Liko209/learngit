@@ -51,7 +51,7 @@ type JuiDialogFuncProps = Omit<JuiDialogProps, 'open'>;
 
 type DialogFunc = (
   component: React.ComponentType<any>,
-  props: JuiDialogFuncProps,
+  props?: JuiDialogFuncProps,
 ) => {
   destroy: () => void;
 };
