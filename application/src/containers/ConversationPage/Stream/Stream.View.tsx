@@ -114,6 +114,20 @@ class StreamViewComponent extends Component<Props> {
         </VisibilitySensor>
       );
     }
+    if (streamItem.value === this.props.mostRecentPostId) {
+      return (
+        <VisibilitySensor
+          key={`VisibilitySensor${streamItem.value}`}
+          onChange={this._handleMostRecentPostReaded}
+        >
+          <ConversationPost
+            ref={this._setPostRef}
+            id={streamItem.value}
+            key={`VisibilitySensor${streamItem.value}`}
+          />
+        </VisibilitySensor>
+      );
+    }
     return <ConversationPost id={streamItem.value} key={streamItem.value} />;
   }
 
@@ -218,7 +232,11 @@ class StreamViewComponent extends Component<Props> {
       this.props.clearHistoryUnread();
     }
   }
-
+  private _handleMostRecentPostReaded = (isVisible: boolean) => {
+    if (isVisible) {
+      this.props.markAsRead();
+    }
+  }
   @action.bound
   private _jumpToFirstUnread = async () => {
     if (this._jumpToFirstUnreadLoading || this._timeout) return;
@@ -265,6 +283,7 @@ class StreamViewComponent extends Component<Props> {
 
   private _blurHandler = () => {
     this.props.enableNewMessageSeparatorHandler();
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
   }
 
   private _setPostRef = (postRef: any) => {

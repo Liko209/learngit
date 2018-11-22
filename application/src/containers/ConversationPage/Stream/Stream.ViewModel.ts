@@ -7,7 +7,7 @@
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
 import { PostService, StateService, ENTITY, ItemService } from 'sdk/service';
-import { Post, GroupState } from 'sdk/models';
+import { Post, GroupState, Group } from 'sdk/models';
 import { ErrorTypes } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
 
@@ -22,7 +22,6 @@ import {
   onScroll,
   loading,
   loadingTop,
-  onScrollToBottom,
 } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
@@ -32,6 +31,7 @@ import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
 import { DateSeparatorHandler } from './DateSeparatorHandler';
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
+import GroupModel from '@/store/models/Group';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -99,6 +99,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     );
+  }
+
+  @computed
+  get mostRecentPostId() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.groupId)
+      .mostRecentPostId;
   }
 
   @computed
@@ -234,10 +240,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToBottom
   markAsRead() {
     const isFocused = document.hasFocus();
     if (isFocused && this._initialized) {
+      storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
       this._stateService.markAsRead(this.groupId);
     }
   }
