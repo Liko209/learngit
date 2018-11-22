@@ -16,7 +16,6 @@ import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 import { HomeViewProps } from './types';
 import { analytics } from '@/Analytics';
-import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
 
 @observer
 class Home extends Component<HomeViewProps> {
@@ -36,7 +35,6 @@ class Home extends Component<HomeViewProps> {
           </Switch>
         </Bottom>
         <CreateTeam />
-        <GroupTeamProfile />
       </Wrapper>
     );
   }

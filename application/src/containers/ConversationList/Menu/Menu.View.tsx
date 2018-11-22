@@ -13,6 +13,7 @@ import { JuiModal } from '@/containers/Dialog';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { MenuViewProps } from './types';
+import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -119,8 +120,15 @@ class MenuViewComponent extends Component<Props, State> {
       return;
     }
   }
+  private _handleGroupDialog = (event: MouseEvent<HTMLElement>) => {
+    this.props.showGroupOrTeamProfile(event);
+    // const { showGroupOrTeamProfile } = this.props;
+    JuiModal.open(GroupTeamProfile, { size: 'medium' });
+    const toggleBtn = JuiModal.open(GroupTeamProfile, { size: 'medium' });
+    toggleBtn.destroy();
+  }
   render() {
-    const { anchorEl, onClose, favoriteText, t, showGroupOrTeamProfile } = this.props;
+    const { anchorEl, onClose, favoriteText, t  } = this.props;
     return (
       <JuiMenu
         id="render-props-menu"
@@ -135,7 +143,7 @@ class MenuViewComponent extends Component<Props, State> {
           {t(`conversationMenuItem:${favoriteText}`)}
         </JuiMenuItem>
         <JuiMenuItem
-          onClick={showGroupOrTeamProfile}
+          onClick={this._handleGroupDialog}
         >
           {t('view profile')}
         </JuiMenuItem>

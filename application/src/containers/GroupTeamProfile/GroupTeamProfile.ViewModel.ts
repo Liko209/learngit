@@ -22,10 +22,6 @@ class GroupTeamProfileViewModel extends StoreViewModel<GroupTeamProps> {
     return this._id && getEntity(ENTITY_NAME.GROUP, this._id) as GroupModel;
   }
   @computed
-  get isShowGroupTeamProfileDialog() {
-    return getGlobalValue(GLOBAL_KEYS.IS_SHOW_GROUP_PROFILE);
-  }
-  @computed
   get displayName() {
     return this.groupModel && this.groupModel.displayName;
   }

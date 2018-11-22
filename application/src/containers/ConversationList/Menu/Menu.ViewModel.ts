@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable, action } from 'mobx';
+import { computed, action } from 'mobx';
 import { service } from 'sdk';
 import { Profile } from 'sdk/models';
 import { getEntity, getSingleEntity } from '@/store/utils';
@@ -21,8 +21,6 @@ const { GroupService } = service;
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   private _groupService: service.GroupService = GroupService.getInstance();
-  @observable
-  private _isShowGroupTeamProfile = false;
   @computed
   get groupId() {
     return this.props.groupId;
@@ -91,10 +89,8 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
   @action
   showGroupOrTeamProfile = (event: MouseEvent<HTMLElement>) => {
-    this._isShowGroupTeamProfile = !this._isShowGroupTeamProfile;
-    globalStore.set(GLOBAL_KEYS.IS_SHOW_GROUP_PROFILE, this._isShowGroupTeamProfile);
-    globalStore.set(GLOBAL_KEYS.GROUP_OR_TEAM_ID, this.groupId);
     this.onClose(event);
+    globalStore.set(GLOBAL_KEYS.GROUP_OR_TEAM_ID, this.groupId);
   }
 }
 export { MenuViewModel };
