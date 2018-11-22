@@ -179,7 +179,8 @@ export class GlipSdk {
 
   async getTeamsIds() {
     const teams = (await this.getTeams()).data.teams;
-    const ids = teams.map(team => team['_id']);
+    if (!teams) return [];
+    const ids = teams.filter(team => team['_id']).map(team => team['_id']);
     return ids;
   } 
   
