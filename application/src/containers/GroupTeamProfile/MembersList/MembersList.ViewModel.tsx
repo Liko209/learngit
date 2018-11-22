@@ -9,7 +9,13 @@ import { StoreViewModel } from '@/store/ViewModel';
 // import { ENTITY_NAME } from '@/store';
 // import { GLOBAL_KEYS } from '@/store/constants';
 // import GroupModel from '@/store/models/Group';
-
+// import {
+//   onScrollToTop,
+//   onScroll,
+//   loading,
+//   loadingTop,
+//   onScrollToBottom,
+// } from '@/plugins/InfiniteListPlugin';
 class MembersListViewModel extends StoreViewModel<{id: number}> {
   // @computed
   // private get _id() {

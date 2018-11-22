@@ -12,11 +12,7 @@ import styled from '../../foundation/styled-components';
 //   typography,
 //   palette,
 // } from '../../foundation/utils/styles';
-
-type Props = {
-  text: string;
-  destroy?: () => void;
-};
+import { GroupHeaderProps } from './types';
 
 const StyledHeader = styled.div`
   height: 64px;
@@ -25,8 +21,7 @@ const StyledHeader = styled.div`
   line-height: 64px;
   color: #212121;
   font-size: 20px;
-  //border-bottom: 1px solid #e0e0e0;
-  border: 1px solid red;
+  border-bottom: 1px solid #e0e0e0;
 `;
 const StyledContent = styled.div`
   display: flex;
@@ -44,7 +39,7 @@ const StyledText = styled.p`
   color: #212121;
   font-size: 20px;
 `;
-class JuiGroupProfileHeader extends PureComponent<Props> {
+class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
   render() {
     const { text, destroy } = this.props;
 
