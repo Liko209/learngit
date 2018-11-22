@@ -4,17 +4,26 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-enum GROUP_BODY_TYPES {
+enum GROUP_TYPES {
   TEAM = 'TEAM',
   GROUP = 'GROUP',
 }
+enum GROUP_LIST_TITLE {
+  TEAM_MEMBERS = 'Team members',
+  GROUP_MEMBERS = 'Group members',
+}
 type GroupBodyProps = {
-  type: GROUP_BODY_TYPES;
+  type: GROUP_TYPES;
   displayName: string;
   description?: string;
+};
+type GroupListProps = {
+  counts: number;
+  type: GROUP_TYPES;
+  membersList?: {name: string}[];
 };
 type GroupHeaderProps = {
   text: string;
   destroy?: () => void;
 };
-export { GroupBodyProps, GroupHeaderProps, GROUP_BODY_TYPES };
+export { GroupBodyProps, GroupHeaderProps, GroupListProps, GROUP_TYPES, GROUP_LIST_TITLE };

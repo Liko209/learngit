@@ -5,34 +5,25 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
-import GroupModel from '@/store/models/Group';
+import { translate } from 'react-i18next';
 import { JuiGroupProfileBody, JuiGroupProfileHeader } from 'jui/pattern/GroupTeamProfile';
-type Props = WithNamespaces & {
-  groupModel: GroupModel;
-  description: string;
-  displayName: string;
-  destroy: () => void;
-};
-enum GROUP_BODY_TYPES {
-  TEAM = 'TEAM',
-  GROUP = 'GROUP',
-}
+import { GROUP_TYPES, GroupTeamProps } from './types';
+import { MembersList } from './MembersList';
+
 @observer
-class GroupTeamProfile extends React.Component<Props> {
+class GroupTeamProfile extends React.Component<GroupTeamProps> {
   render() {
     const {
       destroy,
-      // isShowGroupTeamProfileDialog,
-      // // displayName,
-      // // groupModel,
-      // // description,
+      displayName,
+      description,
     } = this.props;
     return (
-      <>
+      <div style={{ position: 'relative', overflow: 'hidden' }}>
         <JuiGroupProfileHeader text="Profile" destroy={destroy} />
-        <JuiGroupProfileBody type={GROUP_BODY_TYPES.TEAM} displayName="asdasdasdsad" description="sdsdsadsa"/>
-      </>
+        <JuiGroupProfileBody type={GROUP_TYPES.TEAM} displayName={displayName} description={description}/>
+        <MembersList />
+      </div>
     );
   }
 }

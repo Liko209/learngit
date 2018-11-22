@@ -5,3 +5,4 @@
  */
 export * from './GroupProfileHeader';
 export * from './GroupProfileBody';
+export * from './GroupProfileList';

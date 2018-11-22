@@ -16,7 +16,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 //   loadingTop,
 //   onScrollToBottom,
 // } from '@/plugins/InfiniteListPlugin';
-class MembersListViewModel extends StoreViewModel<{id: number}> {
+class MembersListViewModel extends StoreViewModel<{id?: number}> {
   // @computed
   // private get _id() {
   //   // console.log('_id', getGlobalValue(GLOBAL_KEYS.GROUP_OR_TEAM_ID));

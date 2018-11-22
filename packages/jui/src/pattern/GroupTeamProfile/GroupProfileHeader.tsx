@@ -25,7 +25,6 @@ const StyledHeader = styled.div`
 `;
 const StyledContent = styled.div`
   display: flex;
-  //margin: 20px;
   height: 64px;
   align-items: center;
   justify-content: space-between;
@@ -34,6 +33,9 @@ const StyledContent = styled.div`
 const StyledIcon = styled.p`
   color: #9e9e9e;
   font-size: 20px;
+  .options {
+    margin-right: 12px;
+  }
 `;
 const StyledText = styled.p`
   color: #212121;
@@ -50,7 +52,7 @@ class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
             {text}
           </StyledText>
           <StyledIcon>
-            <JuiIconography>more_horiz</JuiIconography>
+            <JuiIconography className="options">more_horiz</JuiIconography>
             <JuiIconography onClick={destroy}>close</JuiIconography>
           </StyledIcon>
         </StyledContent>

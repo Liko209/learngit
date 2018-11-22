@@ -14,20 +14,19 @@ import GroupModel from '@/store/models/Group';
 class GroupTeamProfileViewModel extends StoreViewModel<GroupTeamProps> {
   @computed
   private get _id() {
-    // console.log('_id', getGlobalValue(GLOBAL_KEYS.GROUP_OR_TEAM_ID));
     return getGlobalValue(GLOBAL_KEYS.GROUP_OR_TEAM_ID);
   }
   @computed
-  get groupModel() {
+  private get _group() {
     return this._id && getEntity(ENTITY_NAME.GROUP, this._id) as GroupModel;
   }
   @computed
   get displayName() {
-    return this.groupModel && this.groupModel.displayName;
+    return this._group && this._group.displayName;
   }
   @computed
   get description() {
-    return this.groupModel && this.groupModel.description;
+    return this._group && this._group.description;
   }
 }
 export { GroupTeamProfileViewModel };

@@ -8,14 +8,14 @@ import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
 import defaultGroupAvatar from './static/Groups.png';
 import defaultTeamAvatar from './static/Teams.png';
-import { GROUP_BODY_TYPES, GroupBodyProps } from './types';
+import { GROUP_TYPES, GroupBodyProps } from './types';
 
 const StyledBodyWrapper = styled.div`
   border-bottom: 1px solid #e0e0e0;
 `;
 const StyledContent = styled.div`
   display: flex;
-  margin: 24px;
+  margin: 20px 24px 21px 24px;
 `;
 const StyledAvatar = styled.div`
   img {
@@ -27,17 +27,25 @@ const StyledRightColumn = styled.div`
   position: relative;
   width: 100%;
   margin-left: 18px;
-  border: 1px solid black;
 `;
 const StyledName = styled.div`
   position: absolute;
   top: 0;
   left: 0;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 `;
 const StyledDescription = styled.div`
-   margin-top: 16px;
+   margin-top: 24px;
    color: #9e9e9e;
    font-size: 12px;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   display: -webkit-box;
+   -webkit-line-clamp: 3;
+   -webkit-box-orient: vertical;
 `;
 const StyledBottomButton = styled.div`
   display: flex;
@@ -59,7 +67,7 @@ class JuiGroupProfileBody extends PureComponent<GroupBodyProps> {
       <StyledBodyWrapper>
         <StyledContent>
           <StyledAvatar>
-            {type === GROUP_BODY_TYPES.GROUP ? (
+            {type === GROUP_TYPES.GROUP ? (
               <img src={defaultGroupAvatar} alt="group avatar" />
             ) : (
               <img src={defaultTeamAvatar} alt="team avatar" />
