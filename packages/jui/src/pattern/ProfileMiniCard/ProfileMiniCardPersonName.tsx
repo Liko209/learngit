@@ -10,7 +10,6 @@ import {
   ellipsis,
   grey,
   height,
-  width,
 } from '../../foundation/utils/styles';
 
 const JuiProfileMiniCardPersonName = styled('div')`
@@ -18,7 +17,6 @@ const JuiProfileMiniCardPersonName = styled('div')`
   ${ellipsis()};
   color: ${grey('900')};
   height: ${height(5.5)};
-  width: ${width(45)};
 `;
 
 JuiProfileMiniCardPersonName.displayName = 'JuiProfileMiniCardPersonName';

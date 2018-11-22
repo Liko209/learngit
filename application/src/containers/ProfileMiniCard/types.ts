@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-enum PROFILE_MODEL_TYPE {
-  PERSON,
-  GROUP,
-}
+// enum PROFILE_MODEL_TYPE {
+//   PERSON,
+//   GROUP,
+// }
 
 type ProfileMiniCardProps = {
   id: number; // personId || conversationId
@@ -15,7 +15,7 @@ type ProfileMiniCardProps = {
 
 type ProfileMiniCardViewProps = {
   id: number;
-  type: PROFILE_MODEL_TYPE;
+  type: number;
 };
 
-export { ProfileMiniCardProps, ProfileMiniCardViewProps, PROFILE_MODEL_TYPE };
+export { ProfileMiniCardProps, ProfileMiniCardViewProps };

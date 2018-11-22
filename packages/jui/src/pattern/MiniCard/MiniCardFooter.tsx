@@ -11,7 +11,7 @@ const JuiMiniCardFooter = styled('div')`
   height: ${height(13)};
   display: flex;
   align-items: center;
-  padding: ${spacing(2.5, 2)};
+  padding: ${spacing(0, 2)};
   border-top: 1px solid ${grey('300')};
 `;
 

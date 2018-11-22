@@ -9,15 +9,14 @@ import { ProfileMiniCardPersonHeaderViewProps } from './types';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import {
-  JuiProfileMiniCardPersonHeader,
-  JuiProfileMiniCardPersonHeaderLeft,
-  JuiProfileMiniCardPersonHeaderMiddle,
-  JuiProfileMiniCardPersonHeaderRight,
+  JuiProfileMiniCardHeader,
+  JuiProfileMiniCardHeaderLeft,
+  JuiProfileMiniCardHeaderMiddle,
+  JuiProfileMiniCardHeaderRight,
   JuiProfileMiniCardPersonName,
   JuiProfileMiniCardPersonStatus,
   JuiProfileMiniCardPersonTitle,
 } from 'jui/pattern/ProfileMiniCard';
-
 import { JuiIconography } from 'jui/foundation/Iconography';
 
 class ProfileMiniCardPersonHeaderView extends Component<
@@ -28,11 +27,11 @@ class ProfileMiniCardPersonHeaderView extends Component<
     const { displayName, awayStatus, title } = person;
     const presence = <Presence uid={id} size="large" borderSize="large" />;
     return (
-      <JuiProfileMiniCardPersonHeader>
-        <JuiProfileMiniCardPersonHeaderLeft>
+      <JuiProfileMiniCardHeader>
+        <JuiProfileMiniCardHeaderLeft>
           <Avatar uid={id} size="large" presence={presence} />
-        </JuiProfileMiniCardPersonHeaderLeft>
-        <JuiProfileMiniCardPersonHeaderMiddle>
+        </JuiProfileMiniCardHeaderLeft>
+        <JuiProfileMiniCardHeaderMiddle>
           <JuiProfileMiniCardPersonName>
             {displayName}
           </JuiProfileMiniCardPersonName>
@@ -40,11 +39,11 @@ class ProfileMiniCardPersonHeaderView extends Component<
             {awayStatus}
           </JuiProfileMiniCardPersonStatus>
           <JuiProfileMiniCardPersonTitle>{title}</JuiProfileMiniCardPersonTitle>
-        </JuiProfileMiniCardPersonHeaderMiddle>
-        <JuiProfileMiniCardPersonHeaderRight>
+        </JuiProfileMiniCardHeaderMiddle>
+        <JuiProfileMiniCardHeaderRight>
           <JuiIconography fontSize="small">star</JuiIconography>
-        </JuiProfileMiniCardPersonHeaderRight>
-      </JuiProfileMiniCardPersonHeader>
+        </JuiProfileMiniCardHeaderRight>
+      </JuiProfileMiniCardHeader>
     );
   }
 }

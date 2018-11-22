@@ -5,16 +5,18 @@
  */
 
 import React, { Component } from 'react';
-import { ProfileMiniCardViewProps, PROFILE_MODEL_TYPE } from './types';
-import { GroupProfileMiniCard } from './GroupProfileMiniCard';
+import { ProfileMiniCardViewProps } from './types';
+import { ProfileMiniCardGroup } from './ProfileMiniCardGroup';
 import { ProfileMiniCardPerson } from './ProfileMiniCardPerson';
+import { TypeDictionary } from 'sdk/utils';
 
 const MappingComponent = {
-  [PROFILE_MODEL_TYPE.PERSON]: ProfileMiniCardPerson,
-  [PROFILE_MODEL_TYPE.GROUP]: GroupProfileMiniCard,
+  [TypeDictionary.TYPE_ID_PERSON]: ProfileMiniCardPerson,
+  [TypeDictionary.TYPE_ID_GROUP]: ProfileMiniCardGroup,
+  [TypeDictionary.TYPE_ID_TEAM]: ProfileMiniCardGroup,
 };
 
-const factory = (type: PROFILE_MODEL_TYPE, id: number) => {
+const factory = (type: number, id: number) => {
   const Component = MappingComponent[type];
   return <Component id={id} />;
 };

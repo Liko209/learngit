@@ -5,18 +5,12 @@
  */
 
 import styled from '../../foundation/styled-components';
-import {
-  typography,
-  ellipsis,
-  grey,
-  width,
-} from '../../foundation/utils/styles';
+import { typography, ellipsis, grey } from '../../foundation/utils/styles';
 
 const JuiProfileMiniCardPersonStatus = styled('div')`
-  ${typography('body2')};
+  ${typography('body1')};
   ${ellipsis()};
   color: ${grey('500')};
-  width: ${width(45)};
 `;
 
 JuiProfileMiniCardPersonStatus.displayName = 'JuiProfileMiniCardPersonStatus';

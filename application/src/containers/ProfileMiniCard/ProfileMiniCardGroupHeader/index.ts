@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './GroupProfileMiniCard';
+export * from './ProfileMiniCardGroupHeader';

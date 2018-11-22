@@ -6,11 +6,8 @@
 
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
-import {
-  ProfileMiniCardProps,
-  ProfileMiniCardViewProps,
-  PROFILE_MODEL_TYPE,
-} from './types';
+import { ProfileMiniCardProps, ProfileMiniCardViewProps } from './types';
+import { GlipTypeUtil } from 'sdk/utils';
 
 class ProfileMiniCardViewModel extends AbstractViewModel<ProfileMiniCardProps>
   implements ProfileMiniCardViewProps {
@@ -20,13 +17,8 @@ class ProfileMiniCardViewModel extends AbstractViewModel<ProfileMiniCardProps>
   }
 
   @computed
-  get type(): PROFILE_MODEL_TYPE {
-    return this._getProfileModelType(this.id);
-  }
-
-  private _getProfileModelType(id: number) {
-    // todo invoke service api
-    return PROFILE_MODEL_TYPE.PERSON;
+  get type(): number {
+    return GlipTypeUtil.extractTypeId(this.id);
   }
 }
 

@@ -5,10 +5,16 @@
  */
 
 import styled from '../../foundation/styled-components';
-import { typography, grey, height } from '../../foundation/utils/styles';
+import {
+  typography,
+  ellipsis,
+  grey,
+  height,
+} from '../../foundation/utils/styles';
 
 const JuiProfileMiniCardGroupName = styled('div')`
   ${typography('subheading2')};
+  ${ellipsis()};
   color: ${grey('900')};
   height: ${height(11)};
 `;

@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './ProfileMiniCardGroupName';
+export * from './ProfileMiniCardHeader';
 
-export * from './ProfileMiniCardPersonHeader';
 export * from './ProfileMiniCardPersonName';
 export * from './ProfileMiniCardPersonStatus';
 export * from './ProfileMiniCardPersonTitle';
+
+export * from './ProfileMiniCardGroupName';
