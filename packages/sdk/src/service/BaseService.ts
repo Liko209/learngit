@@ -95,8 +95,6 @@ class BaseService<
     return this.getAllFromDao({ offset, limit });
   }
 
-  /*****************************new add ******************************/
-
   isSupportCache(): boolean {
     return this._isSupportCache;
   }
@@ -250,8 +248,6 @@ class BaseService<
         break;
     }
   }
-
-  /*****************************end new add ******************************/
 
   protected onStarted(): void {
     this._subscribe();
