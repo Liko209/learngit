@@ -495,6 +495,9 @@ describe('PostService', () => {
 
       const results = await postService.sendPost({ text: 'abc' });
       console.log(response, info, results);
+      expect(results[0].id).toEqual(-1);
+      expect(results[0].data.id).toEqual(99999);
+      expect(results[0].data.text).toEqual('abc');
     });
 
     it('should send post fail', async () => {

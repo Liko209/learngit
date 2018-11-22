@@ -68,7 +68,6 @@ export class FetchSortableDataListHandler<
   }
 
   protected async fetchDataInternal(
-    // offset: number,
     direction: FetchDataDirection,
     pageSize: number,
     anchor: ISortableModel<T>,

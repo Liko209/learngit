@@ -23,9 +23,6 @@ class PostDao extends BaseDao<Post> {
     if (postId) {
       cursorPost = await this.get(postId);
     }
-    console.log('hihihi cursor post', cursorPost);
-    console.log('hihihi direction', direction);
-
     let query = this.createQuery();
     query = query
       .orderBy('created_at', direction === 'older')
@@ -36,7 +33,6 @@ class PostDao extends BaseDao<Post> {
     }
     query = query.limit(limit);
     const result = await query.toArray();
-    console.log('hihihi result', result.map(({ text }) => text));
     return result;
   }
 

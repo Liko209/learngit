@@ -21,7 +21,6 @@ export interface IFetchDataListHandlerOptions {
 
 export interface IFetchDataProvider<T> {
   fetchData(
-    // offset: number,
     direction: FetchDataDirection,
     pageSize: number,
     anchor?: T,
