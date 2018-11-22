@@ -3,11 +3,12 @@
  * @Date: 2018-10-06 19:39:12
  * Copyright © RingCentral. All rights reserved.
  */
-import { TDelta, FetchDataDirection } from './types';
+import { TDelta } from './types';
 import { ListStore } from './ListStore';
 import { ENTITY_NAME } from '@/store/constants';
 import storeManager from '@/store';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 const PAGE_SIZE = 20;
 type DeltaDataHandler = (delta: TDelta) => any;
@@ -21,7 +22,7 @@ export interface IFetchDataListHandlerOptions {
 
 export interface IFetchDataProvider<T> {
   fetchData(
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: T,
   ): Promise<T[]>;
@@ -58,25 +59,25 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     return this._listStore;
   }
 
-  hasMore(direction: FetchDataDirection) {
-    return direction === FetchDataDirection.UP
+  hasMore(direction: QUERY_DIRECTION) {
+    return direction === QUERY_DIRECTION.OLDER
       ? this.listStore._hasMoreUp
       : this.listStore._hasMoreDown;
   }
 
-  setHasMore(value: boolean, direction: FetchDataDirection) {
+  setHasMore(value: boolean, direction: QUERY_DIRECTION) {
     return this.listStore.setHasMore(
       value,
-      direction === FetchDataDirection.UP,
+      direction === QUERY_DIRECTION.OLDER,
     );
   }
   setUpDataChangeCallback(cb: DeltaDataHandler) {
     this._dataChangeCallBack = cb;
   }
-  async fetchData(direction: FetchDataDirection, pageSize?: number) {
+  async fetchData(direction: QUERY_DIRECTION, pageSize?: number) {
     const size = pageSize ? pageSize : this._pageSize;
     let anchor: T | undefined;
-    if (direction === FetchDataDirection.UP) {
+    if (direction === QUERY_DIRECTION.OLDER) {
       anchor = this._listStore.first();
     } else {
       anchor = this._listStore.last();
@@ -85,7 +86,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
   }
 
   protected async fetchDataInternal(
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: T,
   ): Promise<any> {
@@ -120,9 +121,9 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     }
   }
 
-  protected handlePageData(result: T[], direction: FetchDataDirection) {
+  protected handlePageData(result: T[], direction: QUERY_DIRECTION) {
     let inFront = false;
-    if (direction === FetchDataDirection.UP) {
+    if (direction === QUERY_DIRECTION.OLDER) {
       inFront = true;
     }
     const hasMore = result.length >= this._pageSize;

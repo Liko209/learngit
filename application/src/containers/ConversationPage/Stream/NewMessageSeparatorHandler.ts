@@ -6,11 +6,12 @@
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
 import { Post } from 'sdk/src/models';
-import { FetchDataDirection, ISortableModel } from '@/store/base';
+import { ISortableModel } from '@/store/base';
 import { ISeparatorHandler } from './ISeparatorHandler';
 import { NewSeparator, SeparatorType } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 class NewMessageSeparatorHandler implements ISeparatorHandler {
   priority = 2;
@@ -37,7 +38,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
   }
 
   onAdded(
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     addedPosts: ISortableModel<Post>[],
     allPosts: ISortableModel<Post>[],
     hasMore: boolean,

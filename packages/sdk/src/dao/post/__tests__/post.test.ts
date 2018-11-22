@@ -7,6 +7,7 @@ import { setup } from '../../__tests__/utils';
 import _ from 'lodash';
 import { Post } from '../../../models';
 import { postFactory } from '../../../__tests__/factories';
+import { QUERY_DIRECTION } from '../../constants';
 
 const posts: Post[] = [
   postFactory.build({
@@ -53,9 +54,25 @@ describe('Post Dao', () => {
     });
 
     it('Query posts by group Id', async () => {
-      const result = await postDao.queryPostsByGroupId(9163628546, 0, null, 3);
+      const result = await postDao.queryPostsByGroupId(
+        9163628546,
+        0,
+        undefined,
+        3,
+      );
       expect(result).toHaveLength(3);
-      expect(result[0].created_at).toBe(4);
+      expect(_.last(result).created_at).toBe(2);
+    });
+
+    it('Query posts by group Id', async () => {
+      const result = await postDao.queryPostsByGroupId(
+        9163628546,
+        3752569593860,
+        QUERY_DIRECTION.NEWER,
+        3,
+      );
+      expect(result).toHaveLength(3);
+      expect(_.last(result).created_at).toBe(4);
     });
 
     it('Query last post by group ID', async () => {
