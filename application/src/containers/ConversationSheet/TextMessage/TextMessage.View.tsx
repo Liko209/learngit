@@ -17,11 +17,11 @@ class TextMessageView extends React.Component<TextMessageViewProps> {
   }
 
   onClick(event: React.MouseEvent) {
-    event.stopPropagation();
     const target = event.target as HTMLElement;
     const className = target.getAttribute('class') || '';
     const id = Number(target.getAttribute('id'));
     if (className.indexOf('at_mention_compose') > -1 && id > 0) {
+      event.stopPropagation();
       MiniCard.showProfile({
         id,
         anchor: target,

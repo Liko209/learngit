@@ -14,6 +14,7 @@ import {
   JuiProfileMiniCardGroupName,
 } from 'jui/pattern/ProfileMiniCard';
 import { JuiIconography } from 'jui/foundation/Iconography';
+import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 
 class ProfileMiniCardGroupHeaderView extends Component<
   ProfileMiniCardGroupHeaderViewProps
@@ -23,7 +24,9 @@ class ProfileMiniCardGroupHeaderView extends Component<
     const { displayName, isTeam } = group;
     return (
       <JuiProfileMiniCardHeader>
-        <JuiProfileMiniCardHeaderLeft>{id}</JuiProfileMiniCardHeaderLeft>
+        <JuiProfileMiniCardHeaderLeft>
+          <GroupAvatar cid={id} size="large" />
+        </JuiProfileMiniCardHeaderLeft>
         <JuiProfileMiniCardHeaderMiddle>
           <JuiProfileMiniCardGroupName>
             {displayName}
