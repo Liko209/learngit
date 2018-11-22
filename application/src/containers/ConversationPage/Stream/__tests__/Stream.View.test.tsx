@@ -61,6 +61,8 @@ const baseProps = {
   firstHistoryUnreadInPage: false,
   clearHistoryUnread: jest.fn().mockName('setHasUnread'),
   loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
+  loadInitialPosts: async () => {},
+  mostRecentPostId: 0,
 };
 
 describe('StreamView', () => {
@@ -73,7 +75,6 @@ describe('StreamView', () => {
           { type: StreamItemType.POST, value: 1 },
           { type: StreamItemType.POST, value: 2 },
         ],
-        loadInitialPosts: async () => {},
       };
 
       const wrapper = shallow(<StreamView {...props} />, { context });
@@ -97,7 +98,6 @@ describe('StreamView', () => {
           { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
           { type: StreamItemType.POST, value: 2 },
         ],
-        loadInitialPosts: async () => {},
       };
       const wrapper = shallow(<StreamView {...props} />);
       expect(wrapper.find(ConversationPost)).toHaveLength(2);

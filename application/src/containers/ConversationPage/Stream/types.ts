@@ -45,6 +45,7 @@ type StreamProps = {
 };
 
 type StreamViewProps = {
+  mostRecentPostId:number;
   firstHistoryUnreadInPage: boolean;
   groupId: number;
   postIds: number[];
