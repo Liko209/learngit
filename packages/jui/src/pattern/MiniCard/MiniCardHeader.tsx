@@ -4,12 +4,26 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import styled from '../../foundation/styled-components';
+import React, { PureComponent } from 'react';
+import { StyledMiniCardHeader } from './StyledMiniCardHeader';
 
-const JuiMiniCardHeader = styled('div')`
-  background-color: red;
-`;
+type JuiMiniCardHeaderProps = {
+  emphasize?: boolean;
+  children: any;
+};
 
-JuiMiniCardHeader.displayName = 'JuiMiniCardHeader';
+class JuiMiniCardHeader extends PureComponent<JuiMiniCardHeaderProps> {
+  constructor(props: JuiMiniCardHeaderProps) {
+    super(props);
+  }
+  render() {
+    const { emphasize, children } = this.props;
+    return (
+      <StyledMiniCardHeader emphasize={emphasize}>
+        {children}
+      </StyledMiniCardHeader>
+    );
+  }
+}
 
 export { JuiMiniCardHeader };

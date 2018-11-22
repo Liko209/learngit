@@ -6,9 +6,7 @@
 
 import styled from '../../foundation/styled-components';
 
-const JuiMiniCardBody = styled('div')`
-  background-color: blue;
-`;
+const JuiMiniCardBody = styled('div')``;
 
 JuiMiniCardBody.displayName = 'JuiMiniCardBody';
 

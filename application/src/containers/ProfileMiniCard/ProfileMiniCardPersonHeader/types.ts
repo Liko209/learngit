@@ -4,12 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import PersonModel from '@/store/models/Person';
+
 type ProfileMiniCardPersonHeaderProps = {
   id: number;
 };
 
 type ProfileMiniCardPersonHeaderViewProps = {
   id: number;
+  person: PersonModel;
 };
 
 export {

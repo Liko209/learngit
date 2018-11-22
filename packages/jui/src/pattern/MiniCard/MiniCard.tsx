@@ -11,7 +11,7 @@ import React, { PureComponent } from 'react';
 // import Paper from '@material-ui/core/Paper';
 // import { JuiPopper, JuiPopperProps } from '../../components/Popper';
 
-import { StyledWrapper } from './StyledWrapper';
+import { StyledMiniCard } from './StyledMiniCard';
 
 type JuiMiniCardProps = {
   anchor: HTMLElement;
@@ -27,10 +27,9 @@ class JuiMiniCard extends PureComponent<JuiMiniCardProps> {
     const rect = anchor.getBoundingClientRect();
     const { left, top } = rect;
     return (
-      <StyledWrapper left={left} top={top}>
+      <StyledMiniCard left={left} top={top}>
         {children}
-        <div>The content of the Popper.</div>
-      </StyledWrapper>
+      </StyledMiniCard>
     );
   }
 }

@@ -16,8 +16,7 @@ class ProfileMiniCardViewModel extends AbstractViewModel<ProfileMiniCardProps>
   implements ProfileMiniCardViewProps {
   @computed
   get id() {
-    // personId || conversationId
-    return this.props.id;
+    return this.props.id; // personId || conversationId
   }
 
   @computed

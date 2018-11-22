@@ -12,8 +12,8 @@ import { MiniCardShowProfileParams } from './types';
 
 class Profile {
   static instance: Profile;
-  div: HTMLDivElement;
-  anchor: HTMLElement;
+  div: HTMLDivElement | null;
+  anchor: HTMLElement | null;
 
   constructor() {
     if (Profile.instance instanceof Profile) {
@@ -47,6 +47,8 @@ class Profile {
     if (unmountResult && this.div.parentNode) {
       this.div.parentNode.removeChild(this.div);
     }
+    this.div = null;
+    this.anchor = null;
   }
 }
 

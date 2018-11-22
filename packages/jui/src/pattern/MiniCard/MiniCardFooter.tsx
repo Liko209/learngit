@@ -5,9 +5,14 @@
  */
 
 import styled from '../../foundation/styled-components';
+import { height, spacing, grey } from '../../foundation/utils';
 
 const JuiMiniCardFooter = styled('div')`
-  background-color: yellow;
+  height: ${height(13)};
+  display: flex;
+  align-items: center;
+  padding: ${spacing(2.5, 2)};
+  border-top: 1px solid ${grey('300')};
 `;
 
 JuiMiniCardFooter.displayName = 'JuiMiniCardFooter';

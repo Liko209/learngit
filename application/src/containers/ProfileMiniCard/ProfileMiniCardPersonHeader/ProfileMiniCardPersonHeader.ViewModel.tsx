@@ -11,13 +11,22 @@ import {
   ProfileMiniCardPersonHeaderViewProps,
 } from './types';
 
+import { getEntity } from '@/store/utils';
+import PersonModel from '@/store/models/Person';
+import { Person } from 'sdk/models';
+import { ENTITY_NAME } from '@/store';
+
 class ProfileMiniCardPersonHeaderViewModel
   extends AbstractViewModel<ProfileMiniCardPersonHeaderProps>
   implements ProfileMiniCardPersonHeaderViewProps {
   @computed
   get id() {
-    // person id
-    return this.props.id;
+    return this.props.id; // person id
+  }
+
+  @computed
+  get person() {
+    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.id);
   }
 }
 

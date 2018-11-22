@@ -8,10 +8,11 @@ import React, { Component } from 'react';
 import {
   JuiMiniCard,
   JuiMiniCardHeader,
-  JuiMiniCardBody,
   JuiMiniCardFooter,
 } from 'jui/pattern/MiniCard';
 import { ProfileMiniCardPersonHeader } from './ProfileMiniCardPersonHeader';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 type Props = {
   id: number;
@@ -25,14 +26,12 @@ class ProfileMiniCardPerson extends Component<Props> {
 
   render() {
     const { id, anchor } = this.props;
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     return (
       <JuiMiniCard anchor={anchor}>
-        <JuiMiniCardHeader>
-          <ProfileMiniCardPersonHeader id={id}>
-            header
-          </ProfileMiniCardPersonHeader>
+        <JuiMiniCardHeader emphasize={id === currentUserId}>
+          <ProfileMiniCardPersonHeader id={id} />
         </JuiMiniCardHeader>
-        <JuiMiniCardBody>body</JuiMiniCardBody>
         <JuiMiniCardFooter>footer</JuiMiniCardFooter>
       </JuiMiniCard>
     );
