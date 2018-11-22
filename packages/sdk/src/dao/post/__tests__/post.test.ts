@@ -53,18 +53,24 @@ describe('Post Dao', () => {
       await postDao.bulkPut(posts);
     });
 
-    it('Query posts by group Id', async () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('Query older posts by group Id and post id', async () => {
+      jest.spyOn(postDao, 'get').mockResolvedValue(posts[2]);
       const result = await postDao.queryPostsByGroupId(
         9163628546,
-        0,
-        undefined,
+        1151236399108,
+        QUERY_DIRECTION.OLDER,
         3,
       );
       expect(result).toHaveLength(3);
-      expect(_.last(result).created_at).toBe(2);
+      expect(_.last(result).created_at).toBe(1);
     });
 
-    it('Query posts by group Id', async () => {
+    it('Query newer posts by group Id and post id', async () => {
+      jest.spyOn(postDao, 'get').mockResolvedValue(posts[0]);
       const result = await postDao.queryPostsByGroupId(
         9163628546,
         3752569593860,
@@ -98,35 +104,6 @@ describe('Post Dao', () => {
     });
   });
 
-  describe('purge posts', () => {
-    beforeEach(async () => {
-      await postDao.clear();
-      await postDao.bulkPut(posts);
-    });
-
-    it('purge all posts by group id', async () => {
-      await expect(
-        postDao.queryPostsByGroupId(9163628546),
-      ).resolves.toHaveLength(4);
-      await postDao.purgePostsByGroupId(9163628546);
-      await expect(
-        postDao.queryPostsByGroupId(9163628546),
-      ).resolves.toHaveLength(0);
-    });
-
-    it('purge all posts by group id', async () => {
-      await expect(
-        postDao.queryPostsByGroupId(9163628546),
-      ).resolves.toHaveLength(4);
-      await postDao.purgePostsByGroupId(9163628546, 1);
-      const result = await postDao.queryPostsByGroupId(9163628546);
-      expect(result).toHaveLength(1);
-      expect(result[0]).toMatchObject({
-        id: 1151236399108,
-        created_at: 4,
-      });
-    });
-  });
   describe('local pre-inserted posts', () => {
     beforeEach(async () => {
       await postDao.clear();

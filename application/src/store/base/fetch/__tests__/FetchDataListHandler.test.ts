@@ -8,13 +8,13 @@ import {
   FetchDataListHandler,
 } from '../FetchDataListHandler';
 
-import { FetchDataDirection } from '../types';
 import checkListStore from './checkListStore';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 class TestFetchDataProvider implements IFetchDataProvider<number> {
   fetchData(
     offset: number,
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     pageSize: number,
     anchor: number,
   ): Promise<number[]> {
@@ -31,11 +31,11 @@ describe('FetchDataListHandler', () => {
     });
   });
   it('fetchData', async () => {
-    await fetchDataListHandler.fetchData(FetchDataDirection.DOWN);
-    expect(fetchDataListHandler.hasMore(FetchDataDirection.UP)).toBeFalsy();
-    expect(fetchDataListHandler.hasMore(FetchDataDirection.DOWN)).toBeTruthy();
+    await fetchDataListHandler.fetchData(QUERY_DIRECTION.NEWER);
+    expect(fetchDataListHandler.hasMore(QUERY_DIRECTION.OLDER)).toBeFalsy();
+    expect(fetchDataListHandler.hasMore(QUERY_DIRECTION.NEWER)).toBeTruthy();
     checkListStore(fetchDataListHandler.listStore, [1, 2]);
-    await fetchDataListHandler.fetchData(FetchDataDirection.DOWN);
+    await fetchDataListHandler.fetchData(QUERY_DIRECTION.NEWER);
     checkListStore(fetchDataListHandler.listStore, [1, 2, 1, 2]);
   });
 });

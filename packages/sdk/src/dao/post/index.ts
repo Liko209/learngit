@@ -24,16 +24,17 @@ class PostDao extends BaseDao<Post> {
     if (anchorPostId) {
       anchorPost = await this.get(anchorPostId);
     }
+    if (!anchorPost) {
+      return [];
+    }
+    const rangeMethod =
+      direction === QUERY_DIRECTION.OLDER ? 'lessThan' : 'greaterThan';
     let query = this.createQuery();
     query = query
       .orderBy('created_at', direction === QUERY_DIRECTION.OLDER)
-      .equal('group_id', groupId);
-    if (anchorPost) {
-      const rangeMethod =
-        direction === QUERY_DIRECTION.OLDER ? 'lessThan' : 'greaterThan';
-      query = query[rangeMethod]('created_at', anchorPost.created_at);
-    }
-    query = query.limit(limit);
+      .equal('group_id', groupId)
+      [rangeMethod]('created_at', anchorPost.created_at)
+      .limit(limit);
     const result = await query.toArray();
     return result;
   }
@@ -59,21 +60,6 @@ class PostDao extends BaseDao<Post> {
       .equal('group_id', groupId)
       .filter((item: Post) => !item.deactivated)
       .first();
-  }
-
-  async purgePostsByGroupId(
-    groupId: number,
-    preserveCount: number = 0,
-  ): Promise<void> {
-    const query = this.createQuery();
-    const result = await query
-      .orderBy('created_at', true)
-      .equal('group_id', groupId)
-      .offset(preserveCount)
-      .toArray();
-    if (result.length) {
-      await this.bulkDelete(result.map((item: Post) => item.id));
-    }
   }
 
   async queryPreInsertPost(): Promise<Post[]> {

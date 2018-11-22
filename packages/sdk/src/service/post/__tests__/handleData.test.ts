@@ -39,6 +39,7 @@ jest.mock('../../utils', () => ({
 
 const dao = {
   // db: new noop(),
+  get: jest.fn(),
   getAll: jest.fn().mockReturnValue([{ id: 1 }]),
   bulkDelete: jest.fn(),
   createQuery: jest.fn(),
@@ -48,6 +49,9 @@ const dao = {
 beforeAll(() => {
   jest.spyOn(daoManager, 'getStorageQuotaOccupation').mockReturnValue(0.5);
   jest.spyOn(daoManager, 'getDao').mockReturnValue(dao);
+  jest.spyOn(groupService, 'getById').mockResolvedValue({
+    most_recent_post_id: 123,
+  });
   utilsBaseHandleData.mockReturnValue([]);
 });
 
@@ -172,6 +176,11 @@ describe('handlePreInsertedPosts', () => {
 });
 
 describe('Whether to save to db detection', () => {
+  beforeEach(() => {
+    // GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+
+    dao.get.mockResolvedValue({});
+  });
   it('should not save if latest of the posts is older than the oldest in db', async () => {
     dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
     dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
