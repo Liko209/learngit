@@ -33,7 +33,6 @@ export interface IFetchSortableDataListHandlerOptions<T>
 }
 export interface IFetchSortableDataProvider<T> {
   fetchData(
-    offset: number,
     direction: FetchDataDirection,
     pageSize: number,
     anchor?: ISortableModel<T>,
@@ -69,13 +68,11 @@ export class FetchSortableDataListHandler<
   }
 
   protected async fetchDataInternal(
-    offset: number,
     direction: FetchDataDirection,
     pageSize: number,
     anchor: ISortableModel<T>,
   ) {
     const { data, hasMore } = await this._sortableDataProvider.fetchData(
-      offset,
       direction,
       pageSize,
       anchor,

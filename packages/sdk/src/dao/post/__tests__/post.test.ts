@@ -53,7 +53,7 @@ describe('Post Dao', () => {
     });
 
     it('Query posts by group Id', async () => {
-      const result = await postDao.queryPostsByGroupId(9163628546, 0, 3);
+      const result = await postDao.queryPostsByGroupId(9163628546, 0, null, 3);
       expect(result).toHaveLength(3);
       expect(result[0].created_at).toBe(4);
     });
@@ -88,13 +88,19 @@ describe('Post Dao', () => {
     });
 
     it('purge all posts by group id', async () => {
-      await expect(postDao.queryPostsByGroupId(9163628546)).resolves.toHaveLength(4);
+      await expect(
+        postDao.queryPostsByGroupId(9163628546),
+      ).resolves.toHaveLength(4);
       await postDao.purgePostsByGroupId(9163628546);
-      await expect(postDao.queryPostsByGroupId(9163628546)).resolves.toHaveLength(0);
+      await expect(
+        postDao.queryPostsByGroupId(9163628546),
+      ).resolves.toHaveLength(0);
     });
 
     it('purge all posts by group id', async () => {
-      await expect(postDao.queryPostsByGroupId(9163628546)).resolves.toHaveLength(4);
+      await expect(
+        postDao.queryPostsByGroupId(9163628546),
+      ).resolves.toHaveLength(4);
       await postDao.purgePostsByGroupId(9163628546, 1);
       const result = await postDao.queryPostsByGroupId(9163628546);
       expect(result).toHaveLength(1);
@@ -109,7 +115,7 @@ describe('Post Dao', () => {
       await postDao.clear();
       const processedPosts: Post[] = [];
 
-      posts.forEach((element) => {
+      posts.forEach((element: Post) => {
         const post = _.cloneDeep(element);
         post.id = -post.id;
         processedPosts.push(post);

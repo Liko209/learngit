@@ -41,7 +41,6 @@ describe('PostService', () => {
     version: 2222,
     new_version: 2222,
     is_new: true,
-    model_size: 0,
     text: 'abc',
     group_id: 4,
     from_group_id: 4,
@@ -67,7 +66,6 @@ describe('PostService', () => {
 
       const result = await postService.getPostsFromLocal({
         groupId: 1,
-        offset: 0,
         limit: 20,
       });
 
@@ -76,7 +74,6 @@ describe('PostService', () => {
         items: mockItems,
         posts: mockPosts,
         limit: 20,
-        offset: 0,
       });
     });
 
@@ -88,7 +85,6 @@ describe('PostService', () => {
 
       const result = await postService.getPostsFromLocal({
         groupId: 1,
-        offset: 0,
         limit: 20,
       });
 
@@ -96,7 +92,6 @@ describe('PostService', () => {
         hasMore: true,
         items: [],
         posts: [],
-        offset: 0,
         limit: 20,
       });
     });
@@ -115,7 +110,6 @@ describe('PostService', () => {
       const result = await postService.getPostsFromRemote({
         groupId: 1,
         postId: 11,
-        offset: 0,
         limit: 20,
       });
       expect(result).toEqual({
@@ -125,7 +119,7 @@ describe('PostService', () => {
       });
     });
 
-    it('should handle offset/limit', async () => {
+    it('should handle limit', async () => {
       const mockHasMore = {
         data: {
           posts: [{ _id: 1 }, { _id: 2 }],
@@ -137,7 +131,6 @@ describe('PostService', () => {
       const resultHasMore = await postService.getPostsFromRemote({
         groupId: 1,
         postId: 11,
-        offset: 0,
         limit: 2,
       });
       expect(resultHasMore).toEqual({
@@ -159,7 +152,6 @@ describe('PostService', () => {
       groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultNotPostId = await postService.getPostsFromRemote({
         groupId: 1,
-        offset: 0,
         limit: 2,
       });
       expect(resultNotPostId).toEqual({
@@ -174,7 +166,6 @@ describe('PostService', () => {
       groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultNull = await postService.getPostsFromRemote({
         groupId: 1,
-        offset: 0,
         limit: 2,
       });
       expect(resultNull).toEqual({
@@ -190,7 +181,6 @@ describe('PostService', () => {
       });
       await postService.getPostsFromRemote({
         groupId: 1,
-        offset: 0,
         limit: 2,
       });
       expect(PostAPI.requestPosts).not.toHaveBeenCalled();
@@ -242,20 +232,19 @@ describe('PostService', () => {
       groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
       const resultEmpty = await postService.getPostsByGroupId({
         groupId: 1,
-        offset: 0,
       });
 
       expect(postService.getPostsFromLocal).toHaveBeenCalledWith({
         groupId: 1,
         limit: 20,
-        offset: 0,
+        direction: 'older',
+        postId: 0,
       });
       expect(resultEmpty).toEqual({
         items: [],
         posts: [{ id: 1 }, { id: 2 }],
         hasMore: false,
         limit: 20,
-        offset: 0,
       });
     });
 
@@ -283,14 +272,12 @@ describe('PostService', () => {
 
       const result = await postService.getPostsByGroupId({
         groupId: 1,
-        offset: 0,
         limit: 20,
       });
       expect(result).toEqual({
         posts: [{ id: 1 }, { id: 2 }],
         items: [],
         hasMore: false,
-        offset: 0,
         limit: 20,
       });
     });
@@ -320,14 +307,12 @@ describe('PostService', () => {
 
       const result = await postService.getPostsByGroupId({
         groupId: 1,
-        offset: 0,
         limit: 20,
       });
       expect(result).toEqual({
         posts: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
         items: [],
         hasMore: false,
-        offset: 0,
         limit: 20,
       });
     });
@@ -356,14 +341,12 @@ describe('PostService', () => {
 
       const result = await postService.getPostsByGroupId({
         groupId: 1,
-        offset: 0,
         limit: 3,
       });
       expect(result).toEqual({
         posts: [{ id: 1 }, { id: 2 }, { id: 3 }],
         items: [],
         hasMore: false,
-        offset: 0,
         limit: 3,
       });
     });
@@ -372,14 +355,12 @@ describe('PostService', () => {
       postDao.queryPostsByGroupId.mockResolvedValue(null);
       const result = await postService.getPostsByGroupId({
         groupId: 1,
-        offset: 0,
         limit: 20,
       });
       expect(result).toEqual({
         posts: [],
         items: [],
         hasMore: true,
-        offset: 0,
         limit: 20,
       });
     });
@@ -589,7 +570,7 @@ describe('PostService', () => {
       const result = await postService.likePost(-1, 101, true);
       expect(result).toBe(undefined);
     });
-    it('should return null when post is not eixt in local', async () => {
+    it('should return null when post is not exist in local', async () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       postDao.get.mockResolvedValueOnce(null);
       const result = await postService.likePost(100, 101, true);

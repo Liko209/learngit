@@ -4,7 +4,7 @@
  */
 import { BaseDao } from '../base';
 import { Post } from '../../models';
-import { IDatabase, mainLogger } from 'foundation';
+import { IDatabase } from 'foundation';
 
 class PostDao extends BaseDao<Post> {
   static COLLECTION_NAME = 'post';
@@ -15,19 +15,24 @@ class PostDao extends BaseDao<Post> {
 
   async queryPostsByGroupId(
     groupId: number,
-    offset: number = 0,
+    postId?: number,
+    direction: string = 'older',
     limit: number = Infinity,
   ): Promise<Post[]> {
-    mainLogger.debug(`queryPostsByGroupId groupId:${groupId} offset:${offset} limit:${limit}`);
-    const query = this.createQuery();
-    // logger.time('queryPostsByGroupId');
-    const result = await query
-      .orderBy('created_at', true)
-      .equal('group_id', groupId)
-      .offset(offset)
-      .limit(limit)
-      .toArray();
-    // logger.timeEnd('queryPostsByGroupId');
+    let cursorPost;
+    if (postId) {
+      cursorPost = await this.get(postId);
+    }
+    let query = this.createQuery();
+    query = query
+      .orderBy('created_at', direction === 'older')
+      .equal('group_id', groupId);
+    if (cursorPost) {
+      const rangeMethod = direction === 'older' ? 'lessThan' : 'greaterThan';
+      query = query[rangeMethod]('created_at', cursorPost.created_at);
+    }
+    query = query.limit(limit);
+    const result = await query.toArray();
     return result;
   }
 
@@ -54,7 +59,10 @@ class PostDao extends BaseDao<Post> {
       .first();
   }
 
-  async purgePostsByGroupId(groupId: number, preserveCount: number = 0): Promise<void> {
+  async purgePostsByGroupId(
+    groupId: number,
+    preserveCount: number = 0,
+  ): Promise<void> {
     const query = this.createQuery();
     const result = await query
       .orderBy('created_at', true)

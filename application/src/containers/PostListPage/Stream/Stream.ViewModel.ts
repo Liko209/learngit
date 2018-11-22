@@ -51,7 +51,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   fetchData = async (
-    offset: number,
     direction: FetchDataDirection,
     pageSize: number,
     anchor?: ISortableModel<Post>,
