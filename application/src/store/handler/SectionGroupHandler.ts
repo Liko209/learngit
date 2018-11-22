@@ -43,7 +43,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   }
 
   async fetchData(
-    offset: number,
+    // offset: number,
     direction: FetchDataDirection,
     pageSize: number,
     anchor: ISortableModel<Group>,

@@ -29,7 +29,6 @@ interface IPostResult {
   posts: Post[];
   items: Item[];
   hasMore: boolean;
-  offset?: number;
   limit?: number;
 }
 
@@ -41,7 +40,6 @@ interface IRawPostResult {
 
 interface IPostQuery {
   groupId: number;
-  offset?: number;
   limit?: number;
   postId?: number;
   direction?: string;
@@ -71,17 +69,18 @@ class PostService extends BaseService<Post> {
 
   async getPostsFromLocal({
     groupId,
-    offset,
+    postId,
+    direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
-      offset,
+      postId,
+      direction,
       limit,
     );
     const result: IPostResult = {
-      offset,
       limit,
       posts: [],
       items: [],
@@ -149,7 +148,6 @@ class PostService extends BaseService<Post> {
 
   async getPostsByGroupId({
     groupId,
-    offset = 0,
     postId = 0,
     limit = 20,
     direction = 'older',
@@ -157,7 +155,8 @@ class PostService extends BaseService<Post> {
     try {
       const result = await this.getPostsFromLocal({
         groupId,
-        offset,
+        postId,
+        direction,
         limit,
       });
       if (result.posts.length < limit) {
@@ -166,7 +165,7 @@ class PostService extends BaseService<Post> {
         if (hasMoreRemote) {
           // should try to get more posts from server
           mainLogger.debug(
-            `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`,
+            `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} no data in local DB, should do request`,
           );
 
           const lastPost = _.last(result.posts);
@@ -195,13 +194,11 @@ class PostService extends BaseService<Post> {
       }
 
       result.limit = limit;
-      result.offset = offset;
 
       return result;
     } catch (e) {
       mainLogger.error(`getPostsByGroupId: ${JSON.stringify(e)}`);
       return {
-        offset,
         limit,
         posts: [],
         items: [],
@@ -513,7 +510,7 @@ class PostService extends BaseService<Post> {
 
   async groupHasPostInLocal(groupId: number) {
     const postDao: PostDao = daoManager.getDao(PostDao);
-    const posts: Post[] = await postDao.queryPostsByGroupId(groupId, 0, 1);
+    const posts: Post[] = await postDao.queryPostsByGroupId(groupId, 0, '', 1);
     return posts.length !== 0;
   }
 }

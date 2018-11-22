@@ -24,7 +24,7 @@ import {
   loadingTop,
   onScrollToBottom,
 } from '@/plugins/InfiniteListPlugin';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
 import { StreamProps, StreamItem } from './types';
 import { PostTransformHandler } from './PostTransformHandler';
@@ -87,6 +87,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   groupId: number;
   @observable
   postIds: number[] = [];
+  @observable
+  jumpToPostId: number;
 
   @observable
   items: StreamItem[] = [];
@@ -116,6 +118,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   onReceiveProps(props: StreamProps) {
+    this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
+
     if (this.groupId === props.groupId) {
       return;
     }
@@ -125,11 +131,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.dispose();
 
     const postDataProvider: IFetchSortableDataProvider<Post> = {
-      fetchData: async (offset: number, direction, pageSize, anchor) => {
+      fetchData: async (direction, pageSize, anchor) => {
         try {
           const postService: PostService = PostService.getInstance();
           const { posts, hasMore } = await postService.getPostsByGroupId({
-            offset,
+            direction,
             groupId: props.groupId,
             postId: anchor && anchor.id,
             limit: pageSize,
@@ -149,6 +155,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       {
         transformFunc,
         hasMoreUp: true,
+        hasMoreDown: !!this.jumpToPostId,
         isMatchFunc: isMatchedFunc(props.groupId),
         entityName: ENTITY_NAME.POST,
         eventName: ENTITY.POST,
@@ -183,7 +190,18 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @loading
   async loadInitialPosts() {
-    const posts = await this._loadPosts(FetchDataDirection.UP);
+    let posts: Post[] = [];
+    if (this.jumpToPostId) {
+      const post = await PostService.getInstance<PostService>().getById(
+        this.jumpToPostId,
+      );
+      this._transformHandler.orderListStore.append([transformFunc(post)]);
+      const prevPage = await this._loadPosts(FetchDataDirection.UP);
+      const nextPage = await this._loadPosts(FetchDataDirection.DOWN);
+      posts = [...prevPage, ...nextPage];
+    } else {
+      posts = await this._loadPosts(FetchDataDirection.UP);
+    }
     if (posts && posts.length) {
       await this._prepareAllData(posts);
     }

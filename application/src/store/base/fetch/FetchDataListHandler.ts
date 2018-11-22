@@ -21,7 +21,7 @@ export interface IFetchDataListHandlerOptions {
 
 export interface IFetchDataProvider<T> {
   fetchData(
-    offset: number,
+    // offset: number,
     direction: FetchDataDirection,
     pageSize: number,
     anchor?: T,
@@ -75,7 +75,6 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     this._dataChangeCallBack = cb;
   }
   async fetchData(direction: FetchDataDirection, pageSize?: number) {
-    const offset = this._listStore.size;
     const size = pageSize ? pageSize : this._pageSize;
     let anchor: T | undefined;
     if (direction === FetchDataDirection.UP) {
@@ -83,18 +82,16 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     } else {
       anchor = this._listStore.last();
     }
-    return this.fetchDataInternal(offset, direction, size, anchor);
+    return this.fetchDataInternal(direction, size, anchor);
   }
 
   protected async fetchDataInternal(
-    offset: number,
     direction: FetchDataDirection,
     pageSize: number,
     anchor?: T,
   ): Promise<any> {
     if (this._fetchDataProvider) {
       const result = await this._fetchDataProvider.fetchData(
-        offset,
         direction,
         this._pageSize,
         anchor,

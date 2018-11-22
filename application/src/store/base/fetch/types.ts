@@ -7,8 +7,8 @@ import { SortableListStore } from './SortableListStore';
  */
 
 export enum FetchDataDirection {
-  UP = 0,
-  DOWN,
+  UP = 'older',
+  DOWN = 'newer',
 }
 
 export interface ISortableModel<T = any> {
