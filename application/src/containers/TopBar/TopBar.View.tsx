@@ -23,6 +23,7 @@ type TopBarProps = WithNamespaces & {
   signOut: Function;
   updateLeftNavState: (event: React.MouseEvent<HTMLElement>) => void;
   updateCreateTeamDialogState: Function;
+  updateNewMessageDialogState: Function;
   brandName: string;
   currentUserId: number;
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
@@ -125,7 +126,11 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   private _AddMenu(menuProps: MenuListCompositionProps) {
-    const { updateCreateTeamDialogState, t } = this.props;
+    const {
+      updateCreateTeamDialogState,
+      updateNewMessageDialogState,
+      t,
+    } = this.props;
 
     return (
       <JuiAddMenu
@@ -133,6 +138,10 @@ class TopBar extends React.Component<TopBarProps> {
           {
             label: t('CreateTeam'),
             onClick: updateCreateTeamDialogState,
+          },
+          {
+            label: t('SendNewMessage'),
+            onClick: updateNewMessageDialogState,
           },
         ]}
         MenuExpandTrigger={this._AddMenuTrigger}

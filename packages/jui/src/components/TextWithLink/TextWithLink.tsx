@@ -23,7 +23,8 @@ const TipsText = styled(MuiTypography)`
 type Props = {
   text: string;
   linkText: string;
-  href: string;
+  href?: string;
+  onClick?: Function;
   TypographyProps?: TypographyProps;
   JuiLinkProps?: JuiLinkProps;
 };
