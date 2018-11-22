@@ -10,18 +10,18 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { JuiSearchTitle } from '../';
+import { text, array } from '@storybook/addon-knobs';
+import { JuiSearchItemValue } from '../';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { text } from '@storybook/addon-knobs';
 
 storiesOf('Pattern/SearchBar', module)
-  .addDecorator(withInfoDecorator(JuiSearchTitle, { inline: true }))
-  .add('SearchTitle', () => {
-    const href = text('href', 'href');
-    const title = text('title', 'People');
+  .addDecorator(withInfoDecorator(JuiSearchItemValue, { inline: true }))
+  .add('JuiSearchItemValue', () => {
+    const value = text('value', 'abcdefg');
+    const terms = array('array', ['a', 'c', 'fg']);
     return (
       <div>
-        <JuiSearchTitle title={title} href={href} />
+        <JuiSearchItemValue value={value} terms={terms} />
       </div>
     );
   });

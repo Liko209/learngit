@@ -6,3 +6,6 @@
 
 export * from './SearchBar';
 export * from './SearchTitle';
+export * from './SearchInput';
+export * from './SearchItem';
+export * from './SearchItemValue';

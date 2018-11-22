@@ -33,12 +33,12 @@ const ShowMoreBtn = styled(JuiLink)`
   text-decoration: none;
 `;
 
-type SearchTitleProps = {
+type JuiSearchTitleProps = {
   title: String;
   href?: string;
 };
 
-const SearchTitle = (props: SearchTitleProps) => {
+const JuiSearchTitle = (props: JuiSearchTitleProps) => {
   const { title, href } = props;
 
   return (
@@ -53,4 +53,4 @@ const SearchTitle = (props: SearchTitleProps) => {
   );
 };
 
-export { SearchTitle };
+export { JuiSearchTitle, JuiSearchTitleProps };
