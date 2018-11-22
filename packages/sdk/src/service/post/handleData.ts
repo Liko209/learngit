@@ -29,11 +29,23 @@ export async function isContinuousWithLocalData(posts: Post[]) {
 
   const postDao = daoManager.getDao(PostDao);
   const groupId = posts[0].group_id;
+  const group = await GroupService.getInstance<GroupService>().getById(groupId);
+  const hasPost = !!group.most_recent_post_id;
+  const mostRecentPostExistsLocally =
+    group.most_recent_post_id &&
+    !!(await postDao.get(group.most_recent_post_id));
+  const mostRecentPostAmongIncomingData = !!_.find(
+    posts,
+    ({ id }) => id === group.most_recent_post_id,
+  );
   const localOldest = await postDao.queryOldestPostByGroupId(groupId);
   const sortedPosts = _.sortBy(posts, ['created_at']);
   const incomingLatest = sortedPosts[posts.length - 1];
   const notContinuous =
-    localOldest && incomingLatest.created_at < localOldest.created_at;
+    (hasPost &&
+      !mostRecentPostExistsLocally &&
+      !mostRecentPostAmongIncomingData) ||
+    (localOldest && incomingLatest.created_at < localOldest.created_at);
 
   return !notContinuous;
 }

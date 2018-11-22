@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import { getGlobalValue } from '../../../../store/utils';
-import { FetchDataDirection, ISortableModel } from '../../../../store/base';
+import { ISortableModel } from '../../../../store/base';
 import { NewMessageSeparatorHandler } from '../NewMessageSeparatorHandler';
 import { SeparatorType } from '../types';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 jest.mock('../../../../store/utils');
 
@@ -12,7 +13,7 @@ type OnAddedCaseConfig = {
   postCreatorId?: number;
   currentUserId?: number;
   allPosts: ISortableModel[];
-  direction?: FetchDataDirection;
+  direction?: QUERY_DIRECTION;
   hasMore?: boolean;
 };
 
@@ -43,7 +44,7 @@ function runOnAdded({
   setup && setup(handler);
   readThrough && handler.setReadThroughIfNoSeparator(readThrough);
   handler.onAdded(
-    direction || FetchDataDirection.UP,
+    direction || QUERY_DIRECTION.OLDER,
     _(allPosts)
       .clone()
       .reverse(),
@@ -177,7 +178,7 @@ describe('NewMessageSeparatorHandler', () => {
         { id: 1001, sortValue: 4, data: { creator_id: 1 } },
         { id: 1002, sortValue: 5, data: { creator_id: 1 } },
       ] as ISortableModel[];
-      handler.onAdded(FetchDataDirection.UP, [], allPosts, false);
+      handler.onAdded(QUERY_DIRECTION.OLDER, [], allPosts, false);
 
       expect(handler.separatorMap.get(1000)).toHaveProperty(
         'type',
@@ -289,7 +290,7 @@ describe('NewMessageSeparatorHandler', () => {
           handler.disable();
         },
         readThrough: 1001,
-        direction: FetchDataDirection.DOWN,
+        direction: QUERY_DIRECTION.NEWER,
         allPosts: [{ id: 1000, sortValue: 1 }],
       });
 
@@ -302,7 +303,7 @@ describe('NewMessageSeparatorHandler', () => {
           handler.disable();
           handler.enable();
         },
-        direction: FetchDataDirection.DOWN,
+        direction: QUERY_DIRECTION.NEWER,
         readThrough: 620249092,
         allPosts: [
           { id: 620232708, sortValue: 1540461821422 },

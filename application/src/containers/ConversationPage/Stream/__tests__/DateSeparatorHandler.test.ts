@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { DateSeparatorHandler } from '../DateSeparatorHandler';
-import { FetchDataDirection, ISortableModel } from '../../../../store/base';
+import { ISortableModel } from '../../../../store/base';
 import { SeparatorType } from '../types';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 type OnAddedCaseConfig = {
   setup?: (handler: DateSeparatorHandler) => void;
@@ -13,7 +14,7 @@ function runOnAdded({ addedPosts, setup }: OnAddedCaseConfig) {
   const handler = new DateSeparatorHandler();
   setup && setup(handler);
   handler.onAdded(
-    FetchDataDirection.UP,
+    QUERY_DIRECTION.OLDER,
     _(addedPosts)
       .clone()
       .reverse(),
