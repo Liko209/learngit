@@ -693,6 +693,7 @@ describe('PostService', () => {
       postService.isInPreInsert.mockResolvedValueOnce(true);
       postDao.get.mockResolvedValueOnce({ id: -1, text: 'good' });
       const result = await postService.reSendPost(-1);
+      expect(result[0].data).toBe('good');
       jest.clearAllMocks();
     });
   });
