@@ -178,9 +178,12 @@ export type Post = ExtendedBaseModel & {
   at_mention_non_item_ids?: number[];
   new_version?: number;
   from_group_id?: number;
+  item_data?: object;
   links?: object[];
   items?: object[];
   status?: POST_STATUS;
+  source?: string;
+  parent_id?: number;
 };
 
 export type ItemVersionPage = {

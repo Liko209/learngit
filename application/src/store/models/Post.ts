@@ -21,6 +21,12 @@ export default class PostModel extends Base<Post> {
   likes?: number[];
   @observable
   groupId: number;
+  @observable
+  itemData?: object;
+  @observable
+  source?: string;
+  @observable
+  parentId?: number;
 
   constructor(data: Post) {
     super(data);
@@ -35,6 +41,9 @@ export default class PostModel extends Base<Post> {
       activity_data,
       item_id,
       group_id,
+      item_data,
+      source,
+      parent_id,
     } = data;
     this.createdAt = created_at;
     this.creatorId = creator_id;
@@ -46,6 +55,9 @@ export default class PostModel extends Base<Post> {
     this.itemIds = item_ids;
     this.likes = likes;
     this.groupId = group_id;
+    this.itemData = item_data;
+    this.source = source;
+    this.parentId = parent_id;
   }
 
   static fromJS(data: Post) {

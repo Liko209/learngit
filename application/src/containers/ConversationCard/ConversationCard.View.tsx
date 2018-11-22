@@ -13,6 +13,8 @@ import { Footer } from '@/containers/ConversationCard/Footer';
 import { idsToConversationSheet } from '@/containers/ConversationSheet';
 import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 import { From } from './From';
+import { Activity } from './Activity';
+
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
@@ -51,6 +53,7 @@ export class ConversationCard extends React.Component<
       return null;
     }
     const avatar = <Avatar uid={creator.id} size="medium" data-name="avatar" />;
+    const activity = <Activity id={id} />;
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
     return (
       <React.Fragment>
@@ -69,6 +72,7 @@ export class ConversationCard extends React.Component<
             time={createTime}
             status={customStatus}
             from={from}
+            notification={activity}
           >
             {showProgressActions ? <ProgressActions id={id} /> : null}
             {!showProgressActions && isHover ? <Actions id={id} /> : null}
