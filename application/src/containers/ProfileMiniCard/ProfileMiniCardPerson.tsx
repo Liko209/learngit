@@ -16,7 +16,6 @@ import { GLOBAL_KEYS } from '@/store/constants';
 
 type Props = {
   id: number;
-  anchor: HTMLElement;
 };
 
 class ProfileMiniCardPerson extends Component<Props> {
@@ -25,10 +24,10 @@ class ProfileMiniCardPerson extends Component<Props> {
   }
 
   render() {
-    const { id, anchor } = this.props;
+    const { id } = this.props;
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     return (
-      <JuiMiniCard anchor={anchor}>
+      <JuiMiniCard>
         <JuiMiniCardHeader emphasize={id === currentUserId}>
           <ProfileMiniCardPersonHeader id={id} />
         </JuiMiniCardHeader>

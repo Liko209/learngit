@@ -30,13 +30,30 @@ class Profile {
     this.destroy();
     this.anchor = anchor;
     this.div = document.createElement('div');
+    this._setPosition();
     document.body.appendChild(this.div);
     ReactDOM.render(
       <ThemeProvider>
-        <ProfileMiniCard id={id} anchor={anchor} />
+        <ProfileMiniCard id={id} />
       </ThemeProvider>,
       this.div,
     );
+  }
+
+  private _setPosition() {
+    if (!this.div || !this.anchor) {
+      return;
+    }
+    const rect = this.anchor.getBoundingClientRect();
+    const { left, top } = rect;
+    this.div.setAttribute(
+      'style',
+      `position: absolute; left: 0; top: 0; will-change: transform; transform: translate3d(${left}px, ${top}px, 0px); z-index: 1;`,
+    );
+  }
+
+  refresh() {
+    this._setPosition();
   }
 
   destroy() {

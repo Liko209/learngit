@@ -15,6 +15,10 @@ class MiniCard {
   static destroyProfile() {
     Profile.instance.destroy();
   }
+
+  static refreshProfile() {
+    Profile.instance.refresh();
+  }
 }
 
 export { MiniCard };

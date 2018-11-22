@@ -20,11 +20,6 @@ class ProfileMiniCardViewModel extends AbstractViewModel<ProfileMiniCardProps>
   }
 
   @computed
-  get anchor() {
-    return this.props.anchor;
-  }
-
-  @computed
   get type(): PROFILE_MODEL_TYPE {
     return this._getProfileModelType(this.id);
   }

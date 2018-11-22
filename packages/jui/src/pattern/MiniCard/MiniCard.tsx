@@ -14,7 +14,6 @@ import React, { PureComponent } from 'react';
 import { StyledMiniCard } from './StyledMiniCard';
 
 type JuiMiniCardProps = {
-  anchor: HTMLElement;
   children: JSX.Element[];
 };
 
@@ -22,15 +21,10 @@ class JuiMiniCard extends PureComponent<JuiMiniCardProps> {
   constructor(props: JuiMiniCardProps) {
     super(props);
   }
+
   render() {
-    const { anchor, children } = this.props;
-    const rect = anchor.getBoundingClientRect();
-    const { left, top } = rect;
-    return (
-      <StyledMiniCard left={left} top={top}>
-        {children}
-      </StyledMiniCard>
-    );
+    const { children } = this.props;
+    return <StyledMiniCard>{children}</StyledMiniCard>;
   }
 }
 

@@ -14,15 +14,15 @@ const MappingComponent = {
   [PROFILE_MODEL_TYPE.GROUP]: GroupProfileMiniCard,
 };
 
-const factory = (type: PROFILE_MODEL_TYPE, id: number, anchor: HTMLElement) => {
+const factory = (type: PROFILE_MODEL_TYPE, id: number) => {
   const Component = MappingComponent[type];
-  return <Component id={id} anchor={anchor} />;
+  return <Component id={id} />;
 };
 
 class ProfileMiniCardView extends Component<ProfileMiniCardViewProps> {
   render() {
-    const { type, id, anchor } = this.props;
-    return factory(type, id, anchor);
+    const { type, id } = this.props;
+    return factory(type, id);
   }
 }
 

@@ -24,13 +24,17 @@ class Home extends Component<HomeViewProps> {
     MiniCard.destroyProfile();
   }
 
+  onScroll = () => {
+    MiniCard.refreshProfile();
+  }
+
   componentDidMount() {
     analytics.identify();
   }
 
   render() {
     return (
-      <Wrapper onClick={this.onClick}>
+      <Wrapper onClick={this.onClick} onScroll={this.onScroll}>
         <TopBar />
         <Bottom>
           <LeftNav />
