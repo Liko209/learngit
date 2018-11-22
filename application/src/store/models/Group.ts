@@ -154,9 +154,11 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get membersExcludeMe() {
+    const members = this.members || [];
+
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
-    return this.members.filter(member => member !== currentUserId);
+    return members.filter(member => member !== currentUserId);
   }
 
   @computed
