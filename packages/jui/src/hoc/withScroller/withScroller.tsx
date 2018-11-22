@@ -3,7 +3,7 @@
  * @Date: 2018-09-18 10:10:47
  * Copyright © RingCentral. All rights reserved.
  */
-import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 import React, { ComponentType, PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { noop } from '../../foundation/utils';
@@ -62,7 +62,7 @@ function withScroller(Comp: ComponentType<any>) {
 
     constructor(props: ScrollerProps) {
       super(props);
-      this._handleScroll = debounce(
+      this._handleScroll = throttle(
         this._handleScroll.bind(this),
         props.throttle,
       );

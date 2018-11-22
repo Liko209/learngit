@@ -94,10 +94,10 @@ class StreamViewComponent extends Component<Props> {
       this._firstHistoryUnreadPostViewed = false;
       this._postRefs.clear();
       await this.props.loadInitialPosts();
-      this.scrollToBottom();
+      return this.scrollToBottom();
     }
     if (this.props.postIds.length > prevProps.postIds.length) {
-      if (snapshot.atBottom) {
+      if (snapshot.atBottom && !prevProps.hasMoreDown) {
         return this.scrollToBottom();
       }
       if (snapshot.atTop) {
@@ -182,8 +182,8 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private get _initialPost() {
-    const { groupId, hasMore } = this.props;
-    return hasMore ? null : (
+    const { groupId, hasMoreUp } = this.props;
+    return hasMoreUp ? null : (
       <VisibilitySensor
         offset={VISIBILITY_SENSOR_OFFSET}
         onChange={this._handleFirstUnreadPostVisibilityChange}

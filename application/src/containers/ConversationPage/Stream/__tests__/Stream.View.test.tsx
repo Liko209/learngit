@@ -49,7 +49,8 @@ const baseProps = {
   plugins: {
     loadingMorePlugin: new LoadingMorePlugin(),
   },
-  hasMore: true,
+  hasMoreUp: true,
+  hasMoreDown: true,
   historyGroupState: {} as GroupStateModel,
   historyUnreadCount: 10,
   hasHistoryUnread: false,

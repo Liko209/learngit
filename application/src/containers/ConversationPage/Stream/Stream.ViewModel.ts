@@ -32,6 +32,8 @@ import { DateSeparatorHandler } from './DateSeparatorHandler';
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import GroupModel from '@/store/models/Group';
+import { onScrollToBottom } from '@/plugins';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);
@@ -113,8 +115,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
-  get hasMore() {
+  get hasMoreUp() {
     return this._transformHandler.hasMore(QUERY_DIRECTION.OLDER);
+  }
+  @computed
+  get hasMoreDown() {
+    return this._transformHandler.hasMore(QUERY_DIRECTION.NEWER);
   }
 
   constructor() {
