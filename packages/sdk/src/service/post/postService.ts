@@ -516,6 +516,25 @@ class PostService extends BaseService<Post> {
     const posts: Post[] = await postDao.queryPostsByGroupId(groupId, 0, 1);
     return posts.length !== 0;
   }
+
+  async newMessageWithPeopleIds(
+    ids: number[],
+    message: string,
+  ): Promise<number | undefined> {
+    try {
+      const groupService: GroupService = GroupService.getInstance();
+      const group = await groupService.getGroupByMemberList(ids);
+      const id = group ? group.id : undefined;
+      if (id && message.length > 0) {
+        this.sendPost({ groupId: id, text: message });
+      }
+
+      return id;
+    } catch (e) {
+      mainLogger.error(`newMessageWithPeopleIds: ${JSON.stringify(e)}`);
+      throw ErrorParser.parse(e);
+    }
+  }
 }
 
 export {
