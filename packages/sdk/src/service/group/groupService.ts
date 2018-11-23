@@ -100,9 +100,6 @@ class GroupService extends BaseService<Group> {
     offset = 0,
     _limit?: number,
   ): Promise<Group[]> {
-    const res = await this.isFavorited(2547715, TypeDictionary.TYPE_ID_PERSON);
-    console.log('getGroupById---', res);
-
     const profileService: ProfileService = ProfileService.getInstance();
     const limit = _limit || (await profileService.getMaxLeftRailGroup());
     mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
@@ -498,7 +495,6 @@ class GroupService extends BaseService<Group> {
     switch (type) {
       case TypeDictionary.TYPE_ID_PERSON: {
         const group = await this.getLocalGroupByMemberIdList([id]);
-        console.log('isFavorited, getLocalGroupByMemberIdList', group);
         if (group) {
           groupId = group.id;
         }
