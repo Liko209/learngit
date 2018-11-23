@@ -1,8 +1,8 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2018-09-14 14:43:42
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-09-14 14:43:42
+ * Copyright © RingCentral. All rights reserved.
+ */
 import PersonModel from '../../../store/models/Person';
 import { Person } from 'sdk/src/models';
 

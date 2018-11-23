@@ -5,7 +5,7 @@
  */
 import { observable, computed } from 'mobx';
 import _ from 'lodash';
-import { Group, Profile } from 'sdk/models';
+import { Group, Profile, TeamPermission } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
@@ -34,6 +34,10 @@ export default class GroupModel extends Base<Group> {
   sendFailurePostIds?: number[];
   @observable
   creatorId: number;
+  @observable
+  guest_user_company_ids: number[] | undefined;
+  @observable
+  permissions?: TeamPermission;
 
   latestTime: number;
 
@@ -51,6 +55,8 @@ export default class GroupModel extends Base<Group> {
       most_recent_post_created_at,
       created_at,
       creator_id,
+      guest_user_company_ids,
+      permissions,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -65,6 +71,8 @@ export default class GroupModel extends Base<Group> {
       ? most_recent_post_created_at
       : created_at;
     this.creatorId = creator_id;
+    this.guest_user_company_ids = guest_user_company_ids;
+    this.permissions = permissions;
   }
 
   @computed
@@ -154,14 +162,45 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get membersExcludeMe() {
+    const members = this.members || [];
+
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
-    return this.members.filter(member => member !== currentUserId);
+    return members.filter(member => member !== currentUserId);
   }
 
   @computed
   get creator() {
     return getEntity(ENTITY_NAME.PERSON, this.creatorId);
+  }
+
+  isThePersonAdmin(personId: number) {
+    if (this.type !== CONVERSATION_TYPES.TEAM) {
+      return true;
+    }
+
+    if (this.isThePersonGuest(personId)) {
+      return false;
+    }
+
+    let adminUserIds: number[] = [];
+    if (this.permissions && this.permissions.admin) {
+      adminUserIds = this.permissions.admin.uids;
+    }
+    return adminUserIds.some((x: number) => x === personId);
+  }
+
+  isThePersonGuest(personId: number) {
+    if (this.guest_user_company_ids && this.guest_user_company_ids.length > 0) {
+      const person = getEntity(ENTITY_NAME.PERSON, personId);
+      if (person) {
+        return this.guest_user_company_ids.some(
+          (x: number) => x === person.companyId,
+        );
+      }
+    }
+
+    return false;
   }
 
   static fromJS(data: Group) {

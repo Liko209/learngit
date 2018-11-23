@@ -12,8 +12,8 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
-import defaultGroupAvatar from './defaultGroupAvatar.svg';
-import defaultTeamAvatar from './defaultTeamAvatar.svg';
+import defaultGroupAvatar from './defaultGroupAvatar.png';
+import defaultTeamAvatar from './defaultTeamAvatar.png';
 
 class GroupAvatarViewModel extends AbstractViewModel<GroupAvatarProps>
   implements GroupAvatarViewProps {

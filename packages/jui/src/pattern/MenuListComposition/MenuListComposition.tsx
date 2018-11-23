@@ -33,6 +33,7 @@ type MenuListCompositionProps = {
 
 const MenuListCompositionWrapper = styled.div`
   display: flex;
+  justify-content: flex-end;
   margin-right: ${({ theme }) => `${1 * theme.spacing.unit}px`};
 `;
 
@@ -51,21 +52,19 @@ class JuiMenuListComposition extends React.Component<
   }
 
   handleToggle = (event: React.MouseEvent<HTMLElement>) => {
-    // this.setState(state => ({ open: !state.open }));
     this.setState({ open: !this.state.open, anchorEl: event.currentTarget });
   }
 
   handleClose = (event: React.MouseEvent<HTMLElement>) => {
     const node = this.state.anchorEl;
-    if (node && node.contains(event.currentTarget)) {
+    if (node && node.contains(event.target as Node)) {
       return;
     }
 
     this.setState({ open: false, anchorEl: null });
   }
 
-  handleMenuItemClick = (
-    menuItemEvent: () => void,
+  handleMenuItemClick = (menuItemEvent: Function) => (
     event: React.MouseEvent<HTMLElement>,
   ) => {
     this.handleClose(event);
@@ -94,24 +93,23 @@ class JuiMenuListComposition extends React.Component<
               }}
             >
               <JuiPaper>
-                <ClickAwayListener onClickAway={this.handleClose}>
-                  <MenuList>
-                    {menuItems.map((item, index) => {
-                      return (
-                        <MenuItem
-                          key={index}
-                          data-test-automation-id={item.automationId}
-                          onClick={this.handleMenuItemClick.bind(
-                            this,
-                            item.onClick,
-                          )}
-                        >
-                          {item.label}
-                        </MenuItem>
-                      );
-                    })}
-                  </MenuList>
-                </ClickAwayListener>
+                {open && (
+                  <ClickAwayListener onClickAway={this.handleClose}>
+                    <MenuList>
+                      {menuItems.map((item, index) => {
+                        return (
+                          <MenuItem
+                            key={index}
+                            data-test-automation-id={item.automationId}
+                            onClick={this.handleMenuItemClick(item.onClick)}
+                          >
+                            {item.label}
+                          </MenuItem>
+                        );
+                      })}
+                    </MenuList>
+                  </ClickAwayListener>
+                )}
               </JuiPaper>
             </Grow>
           )}
