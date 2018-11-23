@@ -10,6 +10,13 @@ export type BaseModel = {
   _id?: number;
 };
 
+export type SortableModel<T> = {
+  id: number;
+  displayName: string;
+  sortKey: string;
+  entity: T;
+};
+
 export type ExtendedBaseModel = BaseModel & {
   created_at: number;
   modified_at: number;
