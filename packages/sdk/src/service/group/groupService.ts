@@ -38,6 +38,7 @@ import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
+import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
 
 type CreateTeamOptions = {
@@ -47,11 +48,6 @@ type CreateTeamOptions = {
   canAddIntegrations?: boolean;
   canPin?: boolean;
 };
-
-enum PROFILE_MODEL_TYPE {
-  PERSON,
-  GROUP,
-}
 
 enum FEATURE_ACTION_STATUS {
   INVISIBLE,
@@ -500,17 +496,18 @@ class GroupService extends BaseService<Group> {
     }
   }
 
-  async isFavorited(id: number, type: PROFILE_MODEL_TYPE): Promise<boolean> {
+  async isFavorited(id: number, type: number): Promise<boolean> {
     let groupId: number | undefined = undefined;
     switch (type) {
-      case PROFILE_MODEL_TYPE.PERSON: {
+      case TypeDictionary.TYPE_ID_PERSON: {
         const group = await this.getLocalGroupByMemberIdList([id]);
         if (group) {
           groupId = group.id;
         }
         break;
       }
-      case PROFILE_MODEL_TYPE.GROUP: {
+      case TypeDictionary.TYPE_ID_GROUP:
+      case TypeDictionary.TYPE_ID_TEAM: {
         groupId = id;
         break;
       }
@@ -545,10 +542,4 @@ class GroupService extends BaseService<Group> {
   }
 }
 
-export {
-  CreateTeamOptions,
-  PROFILE_MODEL_TYPE,
-  FEATURE_ACTION_STATUS,
-  FEATURE_TYPE,
-  GroupService,
-};
+export { CreateTeamOptions, FEATURE_ACTION_STATUS, FEATURE_TYPE, GroupService };
