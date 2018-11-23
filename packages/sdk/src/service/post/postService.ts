@@ -464,7 +464,6 @@ class PostService extends BaseService<Post> {
   }
 
   async likePost(postId: number, personId: number, toLike: boolean) {
-    this.newMessageWithPeopleIds([2547715], '123123');
     try {
       const postDao = daoManager.getDao(PostDao);
       const post = await postDao.get(postId);

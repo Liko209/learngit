@@ -82,4 +82,12 @@ describe('PersonService', () => {
       expect(result).toBe(mock);
     });
   });
+
+  describe('doFuzzySearchPersons', () => {
+    it('doFuzzySearchPersons, with empty', async () => {
+      personService.setSupportCache(true);
+      const result = await personService.doFuzzySearchPersons('name', false);
+      expect(result.sortableModels.length).toBe(0);
+    });
+  });
 });
