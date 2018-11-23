@@ -61,5 +61,13 @@
   "showEventHistory": "Show old",
   "download": "Download",
   "expand": "Expand",
-  "collapse": "Collapse"
+  "collapse": "Collapse",
+  "currentStateIsFavorite": "Current state is favorite",
+  "currentStateIsUnFavorite": "Current state is unFavorite",
+  "currentStateIsPublic": "Current status is public",
+  "currentStateIsPrivate": "Current status is private",
+  "addToFavorites": "Add to Favorites",
+  "removeFromFavorites": "Remove from Favorites",
+  "markFavoriteServerErrorContent": "We weren't able to favorite this conversation. Try again.",
+  "markUnFavoriteServerErrorContent": "We weren't able to remove this conversation from favorites. Try again."
 }
