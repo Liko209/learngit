@@ -8,11 +8,10 @@ import { mainLogger } from 'sdk';
 const logTag = '[Upgrade]';
 
 class Upgrade {
-  public queryInterval = 60 * 1000;
   private _hasNewVersion: boolean = false;
   private _swURL: string;
 
-  constructor() {
+  constructor(public queryInterval = 20 * 60 * 1000) {
     mainLogger.info(
       `${logTag}constructor with interval: ${this.queryInterval}`,
     );
@@ -35,13 +34,8 @@ class Upgrade {
         `${logTag}Will auto reload due to new version is detected`,
       );
 
-      window.location.reload();
+      this._reloadApp();
     }
-  }
-
-  private _canDoReload() {
-    // TO-DO in future, disallow reload when there is any call or meeting.
-    return true;
   }
 
   private _queryIfHasNewVersion() {
@@ -52,6 +46,15 @@ class Upgrade {
           registration.update();
         });
     }
+  }
+
+  private _canDoReload() {
+    // TO-DO in future, disallow reload when there is any call or meeting.
+    return true;
+  }
+
+  private _reloadApp() {
+    window.location.reload();
   }
 }
 
