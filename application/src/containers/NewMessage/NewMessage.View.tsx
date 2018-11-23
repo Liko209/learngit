@@ -16,7 +16,7 @@ import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactSearch } from '@/containers/ContactSearch';
 import { ViewProps } from './types';
 
-type IState = {
+type State = {
   message: string;
 };
 
@@ -86,7 +86,7 @@ class NewMessage extends React.Component<NewMessageProps, IState> {
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {t('Create Direct Message Error')}
+              {t('New Message Error')}
             </StyledSnackbarsContent>
           )
         }
