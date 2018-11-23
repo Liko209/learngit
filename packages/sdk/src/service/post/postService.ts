@@ -520,16 +520,16 @@ class PostService extends BaseService<Post> {
   async newMessageWithPeopleIds(
     ids: number[],
     message: string,
-  ): Promise<number | undefined> {
+  ): Promise<{ id?: number }> {
     try {
       const groupService: GroupService = GroupService.getInstance();
       const group = await groupService.getGroupByMemberList(ids);
-      const id = group ? group.id : undefined;
-      if (id && message.length > 0) {
-        this.sendPost({ groupId: id, text: message });
+      const gID = group ? group.id : undefined;
+      if (gID && message.length > 0) {
+        this.sendPost({ groupId: gID, text: message });
       }
 
-      return id;
+      return { id: gID };
     } catch (e) {
       mainLogger.error(`newMessageWithPeopleIds: ${JSON.stringify(e)}`);
       throw ErrorParser.parse(e);

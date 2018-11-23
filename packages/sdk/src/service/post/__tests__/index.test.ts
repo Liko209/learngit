@@ -753,7 +753,7 @@ describe('PostService', () => {
         'text message',
       );
 
-      expect(result).toEqual(g.id);
+      expect(result).toEqual({ id: 44 });
     });
 
     it('get group failed', async () => {
