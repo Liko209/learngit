@@ -7,11 +7,13 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
+import * as _ from 'lodash';
 
 fixture('ConversationList/maxConversation')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
+const DEFAULT_MAX_NUMBER = 20;
 // FIXME : on Edge, enter a conversation with UMI, but UMI does not disappear.
 test.skip(formalName('JPT-58 Show conversations with limit count conversations, older unread and current opened;JPT-344 The conversation will disappear when removing one older conversation from Fav and the section shows >= limit count conversations',
     ['JPT-58', 'JPT-344', 'P2', 'P1', 'ConversationList', 'Mia.Cai']),
@@ -45,6 +47,7 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
     });
 
     const newTeamIds = [];
+    const umiIds = [1, 5 ,6];
     await h(t).withLog(`And I create ${createdNum} new teams`, async () => {
       for (let i = createdNum; i > 0; i--) {
         const newTeam = await user.sdk.platform.createGroup({
@@ -52,7 +55,7 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
           name: i + '====' + uuid(),
           members: [user.rcId, users[5].rcId],
         });
-        if (i === 1 || i === 5 || i === 6) {
+        if (_.includes(umiIds, i)) {
           await h(t).withLog(`And make conversation${i} has unread`, async () => {
             await user5Platform.createPost({ text: `${uuid()} ![:Person](${user.rcId})` }, newTeam.data.id);
           })
@@ -138,9 +141,10 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
 
     await h(t).withLog('The older fav team will disappear', async () => {
       await t.expect(favConversation.exists).notOk();
+      await user.sdk.glip.updateProfile(user.rcId, { max_leftrail_group_tabs2: DEFAULT_MAX_NUMBER });
     });
-
-  });
+  }
+);
 
 
 test(formalName('JPT-353 maxConversation=limit conversation count(without unread); JPT-310 Shouldn\'t automatically bring up an older conversation when remove one conversation;JPT-342 The conversation will be back to the section when removing one conversation from Fav and it isn\'t older than the conversation list',
@@ -157,8 +161,8 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
 
     await h(t).withLog('Given clear all UMIs before login', async () => {
-      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
-      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+      const  teamIds = await user.sdk.glip.getTeamsIds();
+      await user.sdk.glip.markAsRead(user.rcId, teamIds);
     });
 
     await h(t).withLog(`And set limit conversation count=${MAX_NUMBER}(JPT-353)`, async () => {
@@ -201,11 +205,11 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     await h(t).withLog(`When I refresh page`, async () => {
       await h(t).refresh();
-      await app.homePage.messagePanel.ensureLoaded();  // todo
+      await app.homePage.messagePanel.ensureLoaded(10e3);  // todo
     });
 
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
-      await t.wait(3e3);
+      await t.wait(5e3);
       const count = await teamsSection.conversations.count;
       await t.expect(count).eql(realNum);
     });
@@ -221,6 +225,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = MAX_NUMBER - 1;
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
+      await t.wait(1e3);
       const count = await teamsSection.conversations.count;
       await t.expect(count).eql(realNum);
     });
@@ -232,6 +237,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = realNum - 1;
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
+      await t.wait(1e3);
       const count = await teamsSection.conversations.count;
       await t.expect(count).eql(realNum);
     });
@@ -249,8 +255,10 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = realNum + 1;
     await h(t).withLog(`And max conversation count = ${realNum}`, async () => {
+      await t.wait(1e3);
       const count = await teamsSection.conversations.count;
       await t.expect(count).eql(realNum);
+      await user.sdk.glip.updateProfile(user.rcId, { max_leftrail_group_tabs2: DEFAULT_MAX_NUMBER });
     });
-
-  });
+  }
+);
