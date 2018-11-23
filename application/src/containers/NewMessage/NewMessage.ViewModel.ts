@@ -8,14 +8,12 @@ import { action, computed, observable } from 'mobx';
 import PostService from 'sdk/service/post';
 // import GroupService from 'sdk/service/group';
 import { IResponseError } from 'sdk/models';
-import { AbstractViewModel } from '@/base';
+import { StoreViewModel } from '@/store/ViewModel';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 
-class NewMessageViewModel extends AbstractViewModel {
-  @observable
-  disabledOkBtn: boolean = true;
+class NewMessageViewModel extends StoreViewModel {
   @observable
   emailError: boolean = false;
   @observable
@@ -24,6 +22,11 @@ class NewMessageViewModel extends AbstractViewModel {
   serverError: boolean = false;
   @observable
   members: (number | string)[] = [];
+
+  @computed
+  get disabledOkBtn() {
+    return this.isOffline || this.members.length === 0;
+  }
 
   @computed
   get isOpen() {
@@ -38,13 +41,7 @@ class NewMessageViewModel extends AbstractViewModel {
   @action
   updateNewMessageDialogState = () => {
     const globalStore = storeManager.getGlobalStore();
-    const isShowNewMessageDialog = !globalStore.get(
-      GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG,
-    );
-    globalStore.set(
-      GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG,
-      isShowNewMessageDialog,
-    );
+    globalStore.set(GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG, !this.isOpen);
   }
 
   @action
@@ -63,22 +60,19 @@ class NewMessageViewModel extends AbstractViewModel {
   @action
   inputReset = () => {
     this.emailErrorMsg = '';
-    this.disabledOkBtn = true;
     this.emailError = false;
     this.serverError = false;
   }
 
   handleSearchContactChange = (items: any) => {
-    const members = items.map((item: any) => {
+    this.members = items.map((item: any) => {
       if (item.id) {
         return item.id;
       }
       return item.email;
     });
-    this.disabledOkBtn = members.length === 0;
     this.emailErrorMsg = '';
     this.emailError = false;
-    this.members = members;
   }
 
   @action
@@ -92,7 +86,7 @@ class NewMessageViewModel extends AbstractViewModel {
     } catch (err) {
       const { data } = err;
       if (data) {
-        throw this.newMessageErrorHandler(data as IResponseError);
+        this.newMessageErrorHandler(data as IResponseError);
       } else {
         this.serverError = true;
       }

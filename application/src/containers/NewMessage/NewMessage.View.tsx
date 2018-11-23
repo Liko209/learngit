@@ -16,9 +16,9 @@ import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactSearch } from '@/containers/ContactSearch';
 import { ViewProps } from './types';
 
-interface IState {
+type IState = {
   message: string;
-}
+};
 
 type NewMessageProps = WithNamespaces & ViewProps;
 
@@ -46,11 +46,9 @@ class NewMessage extends React.Component<NewMessageProps, IState> {
   sendNewMessage = async () => {
     const { message } = this.state;
     const { history, newMessage, members } = this.props;
-    try {
-      const result = await newMessage(members, message);
-      history.push(`/messages/${result.id}`);
-      this.onClose();
-    } catch (err) {}
+    const result = await newMessage(members, message);
+    history.push(`/messages/${result.id}`);
+    this.onClose();
   }
 
   onClose = () => {
