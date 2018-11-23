@@ -160,10 +160,7 @@ class GroupService extends BaseService<Group> {
 
   async getGroupByPersonId(personId: number): Promise<Group | null> {
     try {
-      const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-      let members = [Number(personId), Number(userId)];
-      members = uniqueArray(members);
-      return await this.getGroupByMemberList(members);
+      return await this.getGroupByMemberList([personId]);
     } catch (e) {
       mainLogger.error(`getGroupByPersonId error =>${e}`);
       return null;
@@ -172,6 +169,8 @@ class GroupService extends BaseService<Group> {
 
   async getGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
+      const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
+      members.push(userId);
       const mem = uniqueArray(members);
       const groupDao = daoManager.getDao(GroupDao);
       const result = await groupDao.queryGroupByMemberList(mem);
