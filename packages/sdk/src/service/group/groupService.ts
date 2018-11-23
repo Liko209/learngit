@@ -45,7 +45,7 @@ import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
-import { AccountService } from '../account/accountService';
+import AccountService from '../account';
 import PersonService from '../person';
 import { compareName } from '../../utils/helper';
 
@@ -169,15 +169,19 @@ class GroupService extends BaseService<Group> {
 
   async getGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
-      const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-      members.push(userId);
-      const mem = uniqueArray(members);
-      const groupDao = daoManager.getDao(GroupDao);
-      const result = await groupDao.queryGroupByMemberList(mem);
-      if (result) {
-        return result;
+      const accountService: AccountService = AccountService.getInstance();
+      const userId = accountService.getCurrentUserId();
+      if (userId) {
+        members.push(userId);
+        const mem = uniqueArray(members);
+        const groupDao = daoManager.getDao(GroupDao);
+        const result = await groupDao.queryGroupByMemberList(mem);
+        if (result) {
+          return result;
+        }
+        return await this.requestRemoteGroupByMemberList(mem);
       }
-      return await this.requestRemoteGroupByMemberList(mem);
+      return null;
     } catch (e) {
       mainLogger.error(`getGroupByMemberList error =>${e}`);
       throw ErrorParser.parse(e);
