@@ -38,7 +38,6 @@ const TitleWrapper = styled<TypographyProps>(Typography)`
     color: ${grey('900')};
     ${typography('title2')};
     ${ellipsis()};
-    padding-right: ${spacing(2)};
   }
 `;
 
@@ -47,7 +46,8 @@ const StatusWrapper = styled.div`
   color: ${grey('600')};
   white-space: nowrap;
   ${ellipsis()};
-  padding-right: ${spacing(4)};
+  padding-left: ${spacing(2)};
+  padding-right: ${spacing(2)};
   flex-shrink: 1;
 `;
 const WrappedAppBar = ({ Right, ...rest }: JuiConversationPageHeaderProps) => (
@@ -62,8 +62,8 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
     z-index: ${({ theme }) => `${theme.zIndex.drawer + 10}`};
     > div {
       min-height: ${height(12)};
-      padding-left: ${spacing(6)};
-      padding-right: ${spacing(6)};
+      padding-left: ${spacing(4)};
+      padding-right: ${spacing(4)};
     }
 
     .left-wrapper {
