@@ -62,12 +62,16 @@
   "download": "Download",
   "expand": "Expand",
   "collapse": "Collapse",
-  "currentStateIsFavorite": "Current state is favorite",
-  "currentStateIsUnFavorite": "Current state is unFavorite",
-  "currentStateIsPublic": "Current status is public",
-  "currentStateIsPrivate": "Current status is private",
-  "addToFavorites": "Add to Favorites",
-  "removeFromFavorites": "Remove from Favorites",
+  "currentStateFavorite": "Current state is favorite",
+  "currentStateUnFavorite": "Current state is unFavorite",
+  "currentStatePublic": "Current status is public",
+  "currentStatePrivate": "Current status is private",
+  "setStateFavorites": "Add to Favorites",
+  "setStateUnFavorites": "Remove from Favorites",
+  "setStatePublic": "Set Public",
+  "setStatePrivate": "Set private",
   "markFavoriteServerErrorContent": "We weren't able to favorite this conversation. Try again.",
-  "markUnFavoriteServerErrorContent": "We weren't able to remove this conversation from favorites. Try again."
+  "markUnFavoriteServerErrorContent": "We weren't able to remove this conversation from favorites. Try again.",
+  "markPublicServerErrorContent": "We weren't able to public this conversation. Try again.",
+  "markPrivateServerErrorContent": "We weren't able to private this conversation. Try again."
 }

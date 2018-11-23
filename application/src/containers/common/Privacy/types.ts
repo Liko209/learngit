@@ -4,17 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-// import GroupModel from '@/store/models/Group';
-// import { JuiAvatarProps } from 'jui/components/Avatar';
+import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
+import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 
 type PrivacyProps = {
   id: number;
-  forDisplay?: boolean;
-  forAction?: boolean;
+  size?: IconButtonSize;
+  isAction?: boolean;
 };
 
 type PrivacyViewProps = {
+  size: IconButtonSize;
+  variant: IconButtonVariant;
+  color: string;
+  isAction: boolean;
   isPublic: boolean;
+  setPrivacy: () => Promise<ServiceCommonErrorType>;
 };
 
 export { PrivacyProps, PrivacyViewProps };

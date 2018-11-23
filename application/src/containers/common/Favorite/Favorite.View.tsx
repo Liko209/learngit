@@ -46,9 +46,9 @@ class FavoriteViewComponent extends Component<Props> {
   getTooltipKey = () => {
     const { isAction, isFavorite } = this.props;
     if (isAction) {
-      return isFavorite ? 'removeFromFavorites' : 'addToFavorites';
+      return isFavorite ? 'setStateUnFavorites' : 'setStateFavorites';
     }
-    return isFavorite ? 'currentStateIsFavorite' : 'currentStateIsUnFavorite';
+    return isFavorite ? 'currentStateFavorite' : 'currentStateUnFavorite';
   }
 
   render() {
