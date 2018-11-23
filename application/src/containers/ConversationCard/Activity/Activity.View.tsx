@@ -14,7 +14,7 @@ type Props = WithNamespaces & ActivityViewProps;
 class Activity extends Component<Props> {
   render() {
     const { activity, t } = this.props;
-    const { action, quantifier, type } = activity;
+    const { action, quantifier, type = '' } = activity;
     return (
       <div>{action ? t(`${action}${type}`, { count: quantifier }) : ''}</div>
     );
