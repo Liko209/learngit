@@ -8,19 +8,28 @@ import { observable, computed } from 'mobx';
 import GroupStateModel from '@/store/models/GroupState';
 
 class HistoryHandler {
+  /**
+   * The group state when `update()` was called.
+   */
   @observable
   groupState: GroupStateModel | null = null;
 
-  newestPostId: number | null = null;
+  /**
+   * The latest post when `update()` was called.
+   */
+  latestPostId: number | null = null;
 
+  /**
+   * Remember the current groupState and latestPostId
+   */
   update(groupState: GroupStateModel, postIds: number[]) {
     this.groupState = _.cloneDeep(groupState);
-    this.newestPostId = _.last(postIds) || null;
+    this.latestPostId = _.last(postIds) || null;
   }
 
   clear() {
     this.groupState = null;
-    this.newestPostId = null;
+    this.latestPostId = null;
   }
 
   @computed
@@ -39,14 +48,22 @@ class HistoryHandler {
     return this.unreadCount > 0;
   }
 
-  getPostsLteNewest(currentPostIds: number[]) {
-    const newestPostId = this.newestPostId;
+  getPostsOrderThanLatest(currentPostIds: number[]) {
+    const newestPostId = this.latestPostId;
     if (!newestPostId) return [];
     return currentPostIds.filter(id => id <= newestPostId);
   }
 
+  getFirstUnreadPostId(currentPostIds: number[]) {
+    if (!this.latestPostId) return;
+    const posts = this.getPostsOrderThanLatest(currentPostIds);
+    return posts[posts.length - this.unreadCount];
+  }
+
   getDistanceToFirstUnread(currentPostIds: number[]) {
-    return this.unreadCount - this.getPostsLteNewest(currentPostIds).length;
+    return (
+      this.unreadCount - this.getPostsOrderThanLatest(currentPostIds).length
+    );
   }
 }
 
