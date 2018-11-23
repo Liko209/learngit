@@ -20,6 +20,7 @@ type keyMapValue =
   };
 
 type HotKeysProps = {
+  el?: Element;
   children(props: ChildrenProps): JSX.Element;
   keyMap: {
     [key: string]: keyMapValue;
@@ -30,7 +31,7 @@ class HotKeys extends Component<HotKeysProps, {}> {
   private _mousetrap: MousetrapInstance;
   constructor(props: HotKeysProps) {
     super(props);
-    this._mousetrap = new Mousetrap(document.body);
+    this._mousetrap = new Mousetrap(props.el ? props.el : document.body);
   }
 
   componentDidMount() {
