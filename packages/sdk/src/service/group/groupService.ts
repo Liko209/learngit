@@ -7,7 +7,13 @@
 import { daoManager, ConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Group, GroupApiType, Raw, IResponseError } from '../../models';
+import {
+  Group,
+  GroupApiType,
+  Raw,
+  IResponseError,
+  SortableModel,
+} from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -40,6 +46,10 @@ import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
+import AccountService from '../account';
+import PersonService from '../person';
+import { compareName } from '../../utils/helper';
+import { FEATURE_ACTION_STATUS, FEATURE_TYPE } from './types';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -48,19 +58,6 @@ type CreateTeamOptions = {
   canAddIntegrations?: boolean;
   canPin?: boolean;
 };
-
-enum FEATURE_ACTION_STATUS {
-  INVISIBLE,
-  ENABLE,
-  DISABLE,
-}
-
-enum FEATURE_TYPE {
-  MESSAGE,
-  CALL,
-  VIDEO,
-  CONFERENCE,
-}
 
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
@@ -74,6 +71,7 @@ class GroupService extends BaseService<Group> {
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
+    this.setSupportCache(true);
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
@@ -179,26 +177,31 @@ class GroupService extends BaseService<Group> {
 
   async getGroupByPersonId(personId: number): Promise<Group | null> {
     try {
-      const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-      const members = [Number(personId), Number(userId)];
-      return await this.getOrCreateGroupByMemberList(members);
+      return await this.getOrCreateGroupByMemberList([personId]);
     } catch (e) {
       mainLogger.error(`getGroupByPersonId error =>${e}`);
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
   async getOrCreateGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
-      const uniqueMem = uniqueArray(members);
-      const result = await this.getLocalGroupByMemberIdList(uniqueMem);
-      if (result) {
-        return result;
+      const accountService: AccountService = AccountService.getInstance();
+      const userId = accountService.getCurrentUserId();
+      if (userId) {
+        members.push(userId);
+        const mem = uniqueArray(members);
+        const groupDao = daoManager.getDao(GroupDao);
+        const result = await groupDao.queryGroupByMemberList(mem);
+        if (result) {
+          return result;
+        }
+        return await this.requestRemoteGroupByMemberList(mem);
       }
-      return await this.requestRemoteGroupByMemberList(uniqueMem);
+      return null;
     } catch (e) {
       mainLogger.error(`getOrCreateGroupByMemberList error =>${e}`);
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
@@ -218,7 +221,7 @@ class GroupService extends BaseService<Group> {
       mainLogger.error(
         `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
       );
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
@@ -540,6 +543,99 @@ class GroupService extends BaseService<Group> {
     const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
     return group ? group.members.some((x: number) => x === userId) : false;
   }
+
+  async doFuzzySearchGroups(
+    searchKey: string,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  } | null> {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    if (!currentUserId) {
+      return null;
+    }
+    return this.searchEntitiesFromCache(
+      (group: Group, terms: string[]) => {
+        if (
+          !group.is_team &&
+          !group.is_archived &&
+          !group.deactivated &&
+          group.members &&
+          group.members.length > 2
+        ) {
+          const groupName = this.getGroupNameByMultiMembers(
+            group.members,
+            currentUserId,
+          );
+
+          if (this.isFuzzyMatched(groupName, terms)) {
+            return {
+              id: group.id,
+              displayName: groupName,
+              sortKey: groupName.toLowerCase(),
+              entity: group,
+            };
+          }
+        }
+        return null;
+      },
+      searchKey,
+      undefined,
+      this.sortEntitiesByName.bind(this),
+    );
+  }
+
+  async doFuzzySearchTeams(
+    searchKey: string,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  } | null> {
+    return this.searchEntitiesFromCache(
+      (group: Group, terms: string[]) => {
+        if (group.is_team && !group.is_archived && !group.deactivated) {
+          if (this.isFuzzyMatched(group.set_abbreviation, terms)) {
+            return {
+              id: group.id,
+              displayName: group.set_abbreviation,
+              sortKey: group.set_abbreviation.toLowerCase(),
+              entity: group,
+            };
+          }
+        }
+        return null;
+      },
+      searchKey,
+      undefined,
+      this.sortEntitiesByName.bind(this),
+    );
+  }
+
+  getGroupNameByMultiMembers(members: number[], currentUserId: number) {
+    const names: string[] = [];
+    const emails: string[] = [];
+
+    const personService: PersonService = PersonService.getInstance();
+    const diffMembers = _.difference(members, [currentUserId]);
+
+    diffMembers.forEach((id: number) => {
+      const person = personService.getEntityFromCache(id);
+      if (person) {
+        const name = personService.getName(person);
+        if (name.length > 0) {
+          names.push(name);
+        } else {
+          emails.push(person.email);
+        }
+      }
+    });
+
+    return names
+      .sort(compareName)
+      .concat(emails.sort(compareName))
+      .join(', ');
+  }
 }
 
-export { CreateTeamOptions, FEATURE_ACTION_STATUS, FEATURE_TYPE, GroupService };
+export { CreateTeamOptions, GroupService };

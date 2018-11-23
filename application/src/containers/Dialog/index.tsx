@@ -3,10 +3,19 @@
  * @Date: 2018-10-11 13:38:49
  * Copyright © RingCentral. All rights reserved.
  */
-import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
+import {
+  JuiModal,
+  JuiModalProps,
+  JuiDialogFuncProps,
+} from 'jui/components/Dialog';
 import { modal } from './Modal';
+import { dialog } from './Dialog';
 
-JuiModal.alert = function (props: JuiModalProps) {
+type ReturnFunc = {
+  destroy: () => void;
+};
+
+JuiModal.alert = function (props: JuiModalProps): ReturnFunc {
   const config = {
     isAlert: true,
     ...props,
@@ -14,8 +23,19 @@ JuiModal.alert = function (props: JuiModalProps) {
   return modal(config);
 };
 
-JuiModal.confirm = function (props: JuiModalProps) {
+JuiModal.confirm = function (props: JuiModalProps): ReturnFunc {
   return modal(props);
+};
+
+JuiModal.open = function (
+  component: React.ComponentType<any>,
+  config?: JuiDialogFuncProps,
+): ReturnFunc {
+  const newConfig = {
+    open: true,
+    ...config,
+  };
+  return dialog(component, newConfig);
 };
 
 export { JuiModal };
