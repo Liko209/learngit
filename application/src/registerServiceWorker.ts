@@ -22,7 +22,7 @@ const isLocalhost = Boolean(
 );
 
 export default function register(
-  onRegisteredHandler: (registration: ServiceWorkerRegistration) => void,
+  onRegisteredHandler: (swURL: string) => void,
   onUpdateInstalledHandler: VoidFunction,
 ) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
@@ -67,7 +67,7 @@ export default function register(
 
 function registerValidSW(
   swUrl: string,
-  onRegisteredHandler: (registration: ServiceWorkerRegistration) => void,
+  onRegisteredHandler: (swURL: string) => void,
   onUpdateInstalledHandler: VoidFunction,
 ) {
   console.log(`${logTag}registerValidSW: ${swUrl}`);
@@ -102,7 +102,7 @@ function registerValidSW(
         }
       };
 
-      onRegisteredHandler(registration);
+      onRegisteredHandler(swUrl);
     })
     .catch((error: any) => {
       console.error(
@@ -114,7 +114,7 @@ function registerValidSW(
 
 function checkValidServiceWorker(
   swUrl: string,
-  onRegisteredHandler: (registration: ServiceWorkerRegistration) => void,
+  onRegisteredHandler: (swURL: string) => void,
   onUpdateInstalledHandler: VoidFunction,
 ) {
   // Check if the service worker can be found. If it can't reload the page.

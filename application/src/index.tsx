@@ -14,8 +14,8 @@ import '@/i18n';
   ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
 
   registerServiceWorker(
-    (registration: ServiceWorkerRegistration) => {
-      upgradeHandler.setRegistration(registration);
+    (swURL: string) => {
+      upgradeHandler.setServiceWorkerURL(swURL);
     },
     () => {
       upgradeHandler.onNewContentAvailable();

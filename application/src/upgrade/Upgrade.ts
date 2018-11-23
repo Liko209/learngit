@@ -9,16 +9,16 @@ const logTag = '[Upgrade]';
 class Upgrade {
   public queryInterval = 60 * 1000;
   private _hasNewVersion: boolean = false;
-  private _serviceWorkerRegistration: ServiceWorkerRegistration;
+  private _swURL: string;
 
   constructor() {
     console.log(`${logTag} constructor with interval: ${this.queryInterval}`);
     setInterval(this._queryIfHasNewVersion.bind(this), this.queryInterval);
   }
 
-  public setRegistration(registration: ServiceWorkerRegistration) {
-    console.log(`${logTag} setQueryHandler`);
-    this._serviceWorkerRegistration = registration;
+  public setServiceWorkerURL(swURL: string) {
+    console.log(`${logTag} setServiceWorkerURL: ${swURL}`);
+    this._swURL = swURL;
   }
 
   public onNewContentAvailable() {
@@ -41,8 +41,12 @@ class Upgrade {
 
   private _queryIfHasNewVersion() {
     console.log(`${logTag} _queryIfHasNewVersion`);
-    if (this._serviceWorkerRegistration) {
-      this._serviceWorkerRegistration.update();
+    if (this._swURL && navigator.serviceWorker) {
+      navigator.serviceWorker
+        .getRegistration(this._swURL)
+        .then((registration: ServiceWorkerRegistration) => {
+          registration.update();
+        });
     }
   }
 }
