@@ -43,7 +43,7 @@ class ActivityViewModel extends StoreViewModel<ActivityProps>
   }
 
   @computed
-  get _activityData() {
+  private get _activityData() {
     const activity = {};
     Object.keys(this._typeIds).forEach((type: string) => {
       if (config[type]) {
@@ -62,33 +62,34 @@ class ActivityViewModel extends StoreViewModel<ActivityProps>
   @computed
   get activity() {
     const { source, parentId } = this._post;
-    if (source) {
-      return {
-        action: ACTION.VIA,
-        type: source,
-      };
-    }
-    if (parentId) {
-      return {
-        action: ACTION.REPLIED,
-      };
-    }
     const types = Object.keys(this._activityData);
-    if (types.length > 1) {
-      return {
-        action: ACTION.SHARED,
-        type: -1,
-      };
+    let activity: any = {};
+    switch (true) {
+      case !!source:
+        activity = {
+          action: ACTION.VIA,
+          type: source,
+        };
+        break;
+      case !!parentId:
+        activity = {
+          action: ACTION.REPLIED,
+        };
+        break;
+      case types.length > 1:
+        activity = {
+          action: ACTION.SHARED,
+          type: -1,
+        };
+        break;
+      case !!types.length:
+        activity = {
+          ...this._activityData[types[0]],
+          type: types[0],
+        };
+        break;
     }
-
-    if (types.length) {
-      return {
-        ...this._activityData[types[0]],
-        type: types[0],
-      };
-    }
-
-    return {};
+    return activity;
   }
 }
 
