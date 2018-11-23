@@ -44,12 +44,47 @@ class Test extends React.Component<{}, {}> {
   }
 }
 
+class Test1 extends React.Component<{}, {}> {
+  onEsc(e, combo) {
+    console.log('---Test1 onEsc', e, combo);
+  }
+
+  save(e, combo) {
+    console.log('-----Test1 command + s', e, combo);
+    return false; // same as jquery event return false
+  }
+
+  render() {
+    return (
+      <HotKeys
+        keyMap={{
+          esc: {
+            handler: this.onEsc,
+            action: 'keyup',
+          },
+          'mod+s': this.save,
+        }}
+      >
+        {({ unbind }) => {
+          return (
+            <ul>
+              <li className="li">1</li>
+              <li className="li">2</li>
+            </ul>
+          );
+        }}
+      </HotKeys>
+    );
+  }
+}
+
 storiesOf('HoC/HotKeys', module).add('demo', () => {
   const show = boolean('show', true);
-  // if component ummount will unbind all keyboard events
-  return show ? (
-    <Test />
-  ) : (
-    <div>if component ummount will unbind all keyboard events</div>
+  return (
+    <div>
+      if component ummount will unbind all keyboard events
+      {show ? <Test1 /> : null}
+      <Test />
+    </div>
   );
 });
