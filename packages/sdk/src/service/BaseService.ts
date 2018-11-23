@@ -43,7 +43,7 @@ class BaseService<
 
   protected async shouldSaveItemFetchedById(
     item: Raw<SubModel>,
-  ): Promise<boolean> {
+  ): Promise<boolean | undefined> {
     return true;
   }
 

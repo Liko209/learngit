@@ -58,9 +58,11 @@ type PostSendData = {
 class PostService extends BaseService<Post> {
   static serviceName = 'PostService';
 
-  protected async shouldSaveItemFetchedById(item: Raw<Post>): Promise<boolean> {
+  protected async shouldSaveItemFetchedById(
+    item: Raw<Post>,
+  ): Promise<boolean | undefined> {
     if (item.group_id) {
-      return this.isNewestSaved(item.group_id);
+      return this.isNewestSaved(item.group_id) && undefined;
     }
     return false;
   }
