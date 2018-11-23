@@ -22,7 +22,7 @@ test(
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
     const favoritesSection = app.homePage.messagePanel.favoritesSection;
@@ -105,7 +105,7 @@ test(
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
    
     const favoritesSection = app.homePage.messagePanel.favoritesSection;
@@ -196,7 +196,7 @@ test(
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
     let meChatId;
