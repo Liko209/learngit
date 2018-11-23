@@ -69,7 +69,7 @@ class GroupService extends BaseService<Group> {
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
-    this.setSupportCache(true);
+    this.enableCache();
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
