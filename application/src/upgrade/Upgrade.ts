@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { mainLogger } from 'sdk';
 const logTag = '[Upgrade]';
 
 class Upgrade {
@@ -12,23 +13,27 @@ class Upgrade {
   private _swURL: string;
 
   constructor() {
-    console.log(`${logTag} constructor with interval: ${this.queryInterval}`);
+    mainLogger.info(
+      `${logTag}constructor with interval: ${this.queryInterval}`,
+    );
     setInterval(this._queryIfHasNewVersion.bind(this), this.queryInterval);
   }
 
   public setServiceWorkerURL(swURL: string) {
-    console.log(`${logTag} setServiceWorkerURL: ${swURL}`);
+    mainLogger.info(`${logTag}setServiceWorkerURL: ${swURL}`);
     this._swURL = swURL;
   }
 
   public onNewContentAvailable() {
-    console.log(`${logTag} onNewContentAvailable`);
+    mainLogger.info(`${logTag}onNewContentAvailable`);
     this._hasNewVersion = true;
   }
 
   public upgradeIfAvailable() {
     if (this._hasNewVersion && this._canDoReload()) {
-      console.log(`${logTag} Will auto reload due to new version is detected`);
+      mainLogger.info(
+        `${logTag}Will auto reload due to new version is detected`,
+      );
 
       window.location.reload();
     }
@@ -40,7 +45,6 @@ class Upgrade {
   }
 
   private _queryIfHasNewVersion() {
-    console.log(`${logTag} _queryIfHasNewVersion`);
     if (this._swURL && navigator.serviceWorker) {
       navigator.serviceWorker
         .getRegistration(this._swURL)

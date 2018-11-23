@@ -74,6 +74,7 @@ function registerValidSW(
   navigator.serviceWorker
     .register(swUrl)
     .then((registration: ServiceWorkerRegistration) => {
+      console.log(`${logTag}registered ${swUrl}`);
       registration.onupdatefound = () => {
         console.log(`${logTag}onupdatefound`);
         const installingWorker = registration.installing;
