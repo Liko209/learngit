@@ -12,10 +12,12 @@ class Upgrade {
   private _queryHandler: VoidFunction;
 
   constructor() {
+    console.log(`${logTag} constructor with interval: ${this.queryInterval}`);
     setInterval(this._queryIfHasNewVersion.bind(this), this.queryInterval);
   }
 
   public setQueryHandler(handler: VoidFunction) {
+    console.log(`${logTag} setQueryHandler`);
     this._queryHandler = handler;
   }
 
