@@ -46,9 +46,10 @@ import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
-import { AccountService } from '../account/accountService';
+import AccountService from '../account';
 import PersonService from '../person';
 import { compareName } from '../../utils/helper';
+import { FEATURE_ACTION_STATUS, FEATURE_TYPE } from './types';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -57,19 +58,6 @@ type CreateTeamOptions = {
   canAddIntegrations?: boolean;
   canPin?: boolean;
 };
-
-enum FEATURE_ACTION_STATUS {
-  INVISIBLE,
-  ENABLE,
-  DISABLE,
-}
-
-enum FEATURE_TYPE {
-  MESSAGE,
-  CALL,
-  VIDEO,
-  CONFERENCE,
-}
 
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
@@ -174,9 +162,7 @@ class GroupService extends BaseService<Group> {
 
   async getLocalGroupByMemberIdList(ids: number[]): Promise<Group | null> {
     try {
-      const mem = uniqueArray(ids);
-      const groupDao = daoManager.getDao(GroupDao);
-      const result = await groupDao.queryGroupByMemberList(mem);
+      const result = this._queryGroupByMemberList(ids);
       if (result) {
         return result;
       }
@@ -189,33 +175,31 @@ class GroupService extends BaseService<Group> {
 
   async getGroupByPersonId(personId: number): Promise<Group | null> {
     try {
-      const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-      const members = [Number(personId), Number(userId)];
-      return await this.getOrCreateGroupByMemberList(members);
+      return await this.getOrCreateGroupByMemberList([personId]);
     } catch (e) {
       mainLogger.error(`getGroupByPersonId error =>${e}`);
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
   async getOrCreateGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
-      const uniqueMem = uniqueArray(members);
-      const result = await this.getLocalGroupByMemberIdList(uniqueMem);
+      const result = await this._queryGroupByMemberList(members);
       if (result) {
         return result;
       }
-      return await this.requestRemoteGroupByMemberList(uniqueMem);
+      return await this.requestRemoteGroupByMemberList(members);
     } catch (e) {
       mainLogger.error(`getOrCreateGroupByMemberList error =>${e}`);
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
   async requestRemoteGroupByMemberList(
     members: number[],
   ): Promise<Group | null> {
-    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(members);
+    const mem = this._addCurrentUserToMemList(members);
+    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(mem);
     try {
       const result = await GroupAPI.requestNewGroup(info);
       if (result.data) {
@@ -228,7 +212,7 @@ class GroupService extends BaseService<Group> {
       mainLogger.error(
         `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
       );
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
@@ -643,6 +627,21 @@ class GroupService extends BaseService<Group> {
       .concat(emails.sort(compareName))
       .join(', ');
   }
+
+  private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
+    const mem = this._addCurrentUserToMemList(ids);
+    const groupDao = daoManager.getDao(GroupDao);
+    return await groupDao.queryGroupByMemberList(mem);
+  }
+
+  private _addCurrentUserToMemList(ids: number[]) {
+    const accountService: AccountService = AccountService.getInstance();
+    const userId = accountService.getCurrentUserId();
+    if (userId) {
+      ids.push(userId);
+    }
+    return uniqueArray(ids);
+  }
 }
 
-export { CreateTeamOptions, FEATURE_ACTION_STATUS, FEATURE_TYPE, GroupService };
+export { CreateTeamOptions, GroupService };
