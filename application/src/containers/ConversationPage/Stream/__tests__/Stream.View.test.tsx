@@ -6,6 +6,7 @@ import { LoadingMorePlugin } from '@/plugins';
 import { StreamViewComponent as StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
+import { i18n } from 'i18next';
 
 jest.mock('../../../ConversationSheet', () => ({}));
 function renderJumpToFirstUnreadButton({
@@ -36,6 +37,8 @@ function renderJumpToFirstUnreadButton({
 }
 
 const baseProps = {
+  i18n: {} as i18n,
+  tReady: true,
   postIds: [],
   t: () => 'a',
   items: [],

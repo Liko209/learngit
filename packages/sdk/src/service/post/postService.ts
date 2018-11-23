@@ -58,6 +58,13 @@ type PostSendData = {
 class PostService extends BaseService<Post> {
   static serviceName = 'PostService';
 
+  protected async shouldSaveItemFetchedById(item: Raw<Post>): Promise<boolean> {
+    if (item.group_id) {
+      return this.isNewestSaved(item.group_id);
+    }
+    return false;
+  }
+
   private _postStatusHandler: PostStatusHandler;
   constructor() {
     const subscriptions = {
@@ -180,8 +187,18 @@ class PostService extends BaseService<Post> {
             limit: limit - result.posts.length,
           });
 
+          let shouldSave;
+          const includeNewest = await this.includeNewest(
+            remoteResult.posts.map(({ _id }) => _id),
+            groupId,
+          );
+          if (includeNewest) {
+            shouldSave = true;
+          } else {
+            shouldSave = await this.isNewestSaved(groupId);
+          }
           const posts: Post[] =
-            (await baseHandleData(remoteResult.posts, true, true)) || [];
+            (await baseHandleData(remoteResult.posts, shouldSave)) || [];
           const items = (await itemHandleData(remoteResult.items)) || [];
 
           result.posts.push(...posts);
@@ -223,7 +240,8 @@ class PostService extends BaseService<Post> {
     const restIds = _.difference(ids, localPosts.map(({ id }) => id));
     if (restIds.length) {
       const remoteResult = (await PostAPI.requestByIds(restIds)).data;
-      const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
+      const posts: Post[] =
+        (await baseHandleData(remoteResult.posts, false)) || [];
       const items = (await itemHandleData(remoteResult.items)) || [];
 
       result.posts.push(...posts);
@@ -520,6 +538,51 @@ class PostService extends BaseService<Post> {
       1,
     );
     return posts.length !== 0;
+  }
+
+  async getNewestPostIdOfGroup(groupId: number): Promise<number | null> {
+    const params: any = {
+      limit: 1,
+      group_id: groupId,
+    };
+    try {
+      const requestResult = await PostAPI.requestPosts(params);
+      const post = requestResult.data.posts[0];
+      if (post) {
+        return post._id;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async includeNewest(postIds: number[], groupId: number): Promise<boolean> {
+    const newestPostId = await this.getNewestPostIdOfGroup(groupId);
+    if (!newestPostId) {
+      return false;
+    }
+    return postIds.indexOf(newestPostId) >= 0;
+  }
+
+  async isNewestSaved(groupId: number): Promise<boolean> {
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    console.log('dao', groupConfigDao);
+    let isNewestSaved = await groupConfigDao.isNewestSaved(groupId);
+    if (isNewestSaved) {
+      return true;
+    }
+    const newestPostId = await this.getNewestPostIdOfGroup(groupId);
+    if (!newestPostId) {
+      return false;
+    }
+    const dao = daoManager.getDao(this.DaoClass);
+    isNewestSaved = !!(await dao.get(newestPostId));
+    await groupConfigDao.update({
+      id: groupId,
+      is_newest_saved: isNewestSaved,
+    });
+    return isNewestSaved;
   }
 }
 

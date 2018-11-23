@@ -13,7 +13,6 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 
 class TestFetchDataProvider implements IFetchDataProvider<number> {
   fetchData(
-    offset: number,
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor: number,

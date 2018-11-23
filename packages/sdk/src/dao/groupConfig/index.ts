@@ -25,6 +25,11 @@ class GroupConfigDao extends BaseDao<GroupConfig> {
     }
     return true;
   }
+
+  async isNewestSaved(groupId: number): Promise<boolean> {
+    const result = await this.get(groupId);
+    return !!(result && result.is_newest_saved);
+  }
 }
 
 export default GroupConfigDao;

@@ -319,7 +319,7 @@ class StreamViewComponent extends Component<Props> {
     this._postRefs.set(postRef.props.id, postRef);
   }
 }
-const view = extractView<WithNamespaces>(StreamViewComponent);
+const view = extractView<WithNamespaces & StreamViewProps>(StreamViewComponent);
 const StreamView = translate('Conversations')(view);
 
 export { StreamView, StreamViewComponent };
