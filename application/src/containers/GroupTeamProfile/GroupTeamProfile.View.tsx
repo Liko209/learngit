@@ -26,7 +26,7 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
         <ProfileHeader destroy={destroy} id={id} />
         <ProfileBody id={id}/>
         {/*<JuiGroupProfileBody type={GROUP_TYPES.TEAM} displayName={displayName} description={description}/>*/}
-        <MembersList />
+        <MembersList id={id}/>
       </div>
     );
   }
