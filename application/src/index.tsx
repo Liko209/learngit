@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from '@/App';
+import { upgradeHandler } from '@/upgrade';
 import registerServiceWorker from '@/registerServiceWorker';
 import { initAll } from '@/init';
 
@@ -12,5 +13,5 @@ import '@/i18n';
 
   ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
 
-  registerServiceWorker();
+  registerServiceWorker(upgradeHandler);
 })();

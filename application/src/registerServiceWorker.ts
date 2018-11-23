@@ -21,7 +21,7 @@ const isLocalhost = Boolean(
     ),
 );
 
-export default function register() {
+export default function register(upgradeHandler: any) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(
@@ -40,7 +40,7 @@ export default function register() {
 
       if (isLocalhost) {
         // This is running on localhost. Lets check if a service worker still exists or not.
-        checkValidServiceWorker(swUrl);
+        checkValidServiceWorker(swUrl, upgradeHandler);
 
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
@@ -52,13 +52,13 @@ export default function register() {
         });
       } else {
         // Is not local host. Just register service worker
-        registerValidSW(swUrl);
+        registerValidSW(swUrl, upgradeHandler);
       }
     });
   }
 }
 
-function registerValidSW(swUrl: string) {
+function registerValidSW(swUrl: string, upgradeHandler: any) {
   console.log(`${logTag}registerValidSW: ${swUrl}`);
   navigator.serviceWorker
     .register(swUrl)
@@ -78,6 +78,9 @@ function registerValidSW(swUrl: string) {
                 console.log(
                   `${logTag}New content is available; please refresh.`,
                 );
+                if (upgradeHandler) {
+                  upgradeHandler.onNewContentAvailable();
+                }
               } else {
                 // At this point, everything has been precached.
                 // It's the perfect time to display a
@@ -88,6 +91,12 @@ function registerValidSW(swUrl: string) {
           };
         }
       };
+
+      if (upgradeHandler) {
+        upgradeHandler.setQueryHandler(() => {
+          registration.update();
+        });
+      }
     })
     .catch((error: any) => {
       console.error(
@@ -97,7 +106,7 @@ function registerValidSW(swUrl: string) {
     });
 }
 
-function checkValidServiceWorker(swUrl: string) {
+function checkValidServiceWorker(swUrl: string, upgradeHandler: any) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl)
     .then((response: any) => {
@@ -114,7 +123,7 @@ function checkValidServiceWorker(swUrl: string) {
         });
       } else {
         // Service worker found. Proceed as normal.
-        registerValidSW(swUrl);
+        registerValidSW(swUrl, upgradeHandler);
       }
     })
     .catch(() => {
