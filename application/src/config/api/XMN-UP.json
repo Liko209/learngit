@@ -2,12 +2,12 @@
   "rc": {
     "server": "https://api-xmnup.lab.nordigy.ru",
     "clientId": "YCWFuqW8T7-GtSTb6KBS6g",
-    "clientSecret": "bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ"
+    "clientSecret": "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA"
   },
   "glip2": {
     "server": "https://api-xmnup.lab.nordigy.ru",
     "clientId": "YCWFuqW8T7-GtSTb6KBS6g",
-    "clientSecret": "bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ"
+    "clientSecret": "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA"
   },
   "glip": {
     "server": "https://xmnup.asialab.glip.net",
