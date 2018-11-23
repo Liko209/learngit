@@ -5,18 +5,18 @@
  */
 
 import styled from '../../foundation/styled-components';
-import {
-  typography,
-  ellipsis,
-  grey,
-  height,
-} from '../../foundation/utils/styles';
+import { typography, grey, height } from '../../foundation/utils/styles';
 
 const JuiProfileMiniCardGroupName = styled('div')`
   ${typography('subheading2')};
-  ${ellipsis()};
+
   color: ${grey('900')};
   height: ${height(11)};
+
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 `;
 
 JuiProfileMiniCardGroupName.displayName = 'JuiProfileMiniCardGroupName';
