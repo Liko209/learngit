@@ -18,6 +18,7 @@ type FavoriteViewProps = {
   variant: IconButtonVariant;
   isAction: boolean;
   isFavorite: boolean;
+  getFavorite: () => void;
   handlerFavorite: () => Promise<ServiceCommonErrorType>;
 };
 

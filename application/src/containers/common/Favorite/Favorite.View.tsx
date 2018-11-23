@@ -19,6 +19,10 @@ class FavoriteViewComponent extends Component<Props> {
     super(props);
   }
 
+  componentDidMount() {
+    this.props.getFavorite();
+  }
+
   onClick = async () => {
     const { isAction, handlerFavorite, isFavorite, t } = this.props;
     if (!isAction) {

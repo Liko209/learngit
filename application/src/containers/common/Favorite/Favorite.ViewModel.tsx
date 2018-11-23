@@ -4,24 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { FavoriteProps, FavoriteViewProps } from './types';
-
-import { getEntity } from '@/store/utils';
-import GroupModel from '@/store/models/Group';
-import { Group } from 'sdk/models';
-import { ENTITY_NAME } from '@/store';
-
 import { service } from 'sdk';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
+import { GlipTypeUtil } from 'sdk/utils';
 
 const { GroupService } = service;
 
 class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   implements FavoriteViewProps {
   private _groupService: service.GroupService = GroupService.getInstance();
+
+  @observable
+  isFavorite: boolean;
 
   @computed
   get id() {
@@ -43,14 +41,10 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
     return this.isAction ? 'round' : 'plain';
   }
 
-  @computed
-  private get _group() {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
-  }
-
-  @computed
-  get isFavorite() {
-    return this._group.isFavorite;
+  getFavorite = async () => {
+    const type = GlipTypeUtil.extractTypeId(this.id);
+    const result = await this._groupService.isFavorited(this.id, type);
+    this.isFavorite = result;
   }
 
   handlerFavorite = async (): Promise<ServiceCommonErrorType> => {
