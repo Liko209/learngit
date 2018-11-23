@@ -47,6 +47,7 @@ type StreamProps = {
 type StreamViewProps = {
   firstHistoryUnreadInPage: boolean;
   groupId: number;
+  postIds: number[];
   items: StreamItem[];
   hasMore: boolean;
   setRowVisible: (n: number) => void;

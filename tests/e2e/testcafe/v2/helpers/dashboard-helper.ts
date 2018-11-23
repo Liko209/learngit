@@ -44,7 +44,7 @@ export class DashboardHelper {
     }
   }
 
-  private async createTestInDashboard(runId: number, consoleLog: any) {
+  private async createTestInDashboard(runId: number, consoleLogPath) {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
@@ -67,7 +67,6 @@ export class DashboardHelper {
       attachments: [],
     };
     detailStep.startTime = Date.now();
-    const consoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog, null, 2));
     detailStep.attachments.push(consoleLogPath);
     if (status === Status.FAILED) {
       const errorDetailPath = MiscUtils.createTmpFile(JSON.stringify(errs, null, 2))
