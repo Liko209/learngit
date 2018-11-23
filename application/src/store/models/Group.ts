@@ -176,10 +176,6 @@ export default class GroupModel extends Base<Group> {
     return this.isTeam ? this.privacy !== 'privacy' : true;
   }
 
-  isMeInGroup() {
-    return this.members.some(getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID));
-  }
-
   isThePersonAdmin(personId: number) {
     if (this.type !== CONVERSATION_TYPES.TEAM) {
       return true;

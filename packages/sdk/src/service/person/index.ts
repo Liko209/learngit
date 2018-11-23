@@ -5,4 +5,3 @@
  */
 
 export { PersonService as default } from './personService';
-export { PersonDataHandler } from './PersonDataHandler';

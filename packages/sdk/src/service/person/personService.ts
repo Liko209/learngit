@@ -109,6 +109,28 @@ class PersonService extends BaseService<Person> {
       throw ErrorParser.parse(error);
     }
   }
+
+  generatePersonDisplayName(
+    firstName: string | undefined,
+    lastName: string | undefined,
+    email: string,
+  ) {
+    let name = '';
+    if (firstName && firstName.length > 0) {
+      name += firstName;
+    }
+
+    if (lastName && lastName.length > 0) {
+      name += ' ';
+      name += lastName;
+    }
+
+    if (name) {
+      name = email;
+    }
+
+    return name;
+  }
 }
 
 export { PersonService };

@@ -12,14 +12,12 @@ import {
 } from '@/store/base/fetch';
 
 import PersonService from 'sdk/service/person';
+import GroupService, { GroupDataHandler } from 'sdk/service/group';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
-import GroupModel from '@/store/models/Group';
 import { Person, Group } from 'sdk/models';
 import { ENTITY, EVENT_TYPES } from 'sdk/src/service';
 import { ENTITY_NAME } from '@/store/constants';
-import { getEntity } from '@/store/utils';
 import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
-import { PersonDataHandler } from 'sdk/src/service/person';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 
 class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
@@ -43,11 +41,21 @@ class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
 
 class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private _sortableDataHandler: FetchSortableDataListHandler<Person>;
-  private _group: GroupModel;
+  private _group: Group;
 
-  constructor(groupId: number) {
+  static async createSortableGroupMemberHandler(groupId: number) {
+    const group = await GroupService.getInstance<GroupService>().getGroupById(
+      groupId,
+    );
+    if (group) {
+      return new SortableGroupMemberHandler(group);
+    }
+    return group;
+  }
+
+  constructor(group: Group) {
     super();
-    this._group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
+    this._group = group;
     this._subscribeNotification();
     this._buildSortableMemberListHandler();
   }
@@ -68,21 +76,36 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       } as ISortableModel<Person>;
     };
 
+    const personService = PersonService.getInstance<PersonService>();
     const sortMemberFunc = (
       lhs: ISortableModel<Person>,
       rhs: ISortableModel<Person>,
     ): number => {
       const lPerson = lhs.data!;
       const rPerson = rhs.data!;
-      const isLAdmin = this._group.isThePersonAdmin(lPerson.id);
-      const isRAdmin = this._group.isThePersonAdmin(rPerson.id);
+      const isLAdmin = GroupDataHandler.getInstance().isThePersonAdmin(
+        this._group,
+        lPerson.id,
+      );
+      const isRAdmin = GroupDataHandler.getInstance().isThePersonAdmin(
+        this._group,
+        rPerson.id,
+      );
       if (isLAdmin !== isRAdmin) {
         return isLAdmin ? 1 : -1;
       }
 
       return natureCompare(
-        PersonDataHandler.getInstance().getPersonDisplayName(lPerson),
-        PersonDataHandler.getInstance().getPersonDisplayName(rPerson),
+        personService.generatePersonDisplayName(
+          lPerson.first_name,
+          lPerson.last_name,
+          lPerson.email,
+        ),
+        personService.generatePersonDisplayName(
+          rPerson.first_name,
+          rPerson.last_name,
+          rPerson.email,
+        ),
       );
     };
 
@@ -139,10 +162,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       }
 
       // get again
-      this._group = getEntity<Group, GroupModel>(
-        ENTITY_NAME.GROUP,
-        this._group.id,
-      );
+      this._group = newGroup;
 
       if (needReplaceData) {
         this._replaceData();
