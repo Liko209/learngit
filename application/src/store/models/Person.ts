@@ -9,6 +9,7 @@ import {
   handleOneOfName,
   phoneNumberDefaultFormat,
 } from '../helper';
+import PersonService from 'sdk/service/person';
 
 export default class PersonModel extends Base<Person> {
   @observable
@@ -90,23 +91,13 @@ export default class PersonModel extends Base<Person> {
       }
       return pseudoUserDisplayName;
     }
-    let dName = '';
-    if (this.firstName) {
-      dName += this.firstName;
-    }
 
-    if (this.lastName) {
-      if (dName.length > 0) {
-        dName += ' ';
-      }
-      dName += this.lastName;
-    }
-
-    if (dName.length === 0) {
-      dName = this.email;
-    }
-
-    return dName;
+    const personService = PersonService.getInstance<PersonService>();
+    return personService.generatePersonDisplayName(
+      this.firstName,
+      this.lastName,
+      this.email,
+    );
   }
 
   @computed

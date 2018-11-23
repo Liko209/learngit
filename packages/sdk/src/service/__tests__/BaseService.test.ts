@@ -357,4 +357,287 @@ describe('BaseService', () => {
       expect(result).toEqual(true);
     });
   });
+
+  describe('Check Support Cache', () => {
+    it('isSupportCache', async () => {
+      const service = new AService();
+      let result = service.isSupportCache();
+      expect(result).toEqual(false);
+
+      service.setSupportCache(true);
+      result = service.isSupportCache();
+      expect(result).toEqual(true);
+      const cacheManager = service.getCacheManager();
+      expect(cacheManager).toBeTruthy();
+    });
+  });
+
+  describe('Check Cache Search', () => {
+    it('get from cache', async () => {
+      const service = new AService();
+      service.setSupportCache(true);
+
+      const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      const cacheManager = service.getCacheManager();
+      cacheManager.set(entityA);
+      cacheManager.set(entityB);
+      cacheManager.set(entityC);
+
+      const entity1 = service.getEntityFromCache(entityA.id);
+      expect(entity1).toBe(entityA);
+      const entity2 = service.getEntityFromCache(entityB.id);
+      expect(entity2).toBe(entityB);
+      const entity3 = service.getEntityFromCache(entityC.id);
+      expect(entity3).toBe(entityC);
+
+      const entities = await service.getEntitiesFromCache(
+        (entity: BaseServiceTestModel) => {
+          return entity.id === entityB.id;
+        },
+      );
+      expect(entities.length).toBe(1);
+      expect(entities[0]).toBe(entityB);
+    });
+
+    it('searchEntitiesFromCache, no arrangeIds, has searchKey, has sort', async () => {
+      const service = new AService();
+      service.setSupportCache(true);
+
+      const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      const cacheManager = service.getCacheManager();
+      cacheManager.set(entityA);
+      cacheManager.set(entityB);
+      cacheManager.set(entityC);
+
+      const result = await service.searchEntitiesFromCache(
+        (entity: BaseServiceTestModel, terms: string[]) => {
+          if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              sortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        'Mr',
+        undefined,
+        service.sortEntitiesByName,
+      );
+
+      expect(result.sortableModels.length).toBe(2);
+      expect(result.sortableModels[0].entity).toBe(entityB);
+      expect(result.sortableModels[1].entity).toBe(entityA);
+    });
+
+    it('searchEntitiesFromCache, has arrangeIds, has search key, has sort', async () => {
+      const service = new AService();
+      service.setSupportCache(true);
+
+      const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      const cacheManager = service.getCacheManager();
+      cacheManager.set(entityA);
+      cacheManager.set(entityB);
+      cacheManager.set(entityC);
+
+      const result = await service.searchEntitiesFromCache(
+        (entity: BaseServiceTestModel, terms: string[]) => {
+          if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              sortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        'Mr',
+        [entityA.id, entityC.id],
+        service.sortEntitiesByName,
+      );
+
+      expect(result.sortableModels.length).toBe(1);
+      expect(result.sortableModels[0].entity).toBe(entityA);
+    });
+
+    it('searchEntitiesFromCache, has arrangeIds, no search key, has sort', async () => {
+      const service = new AService();
+      service.setSupportCache(true);
+
+      const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      const cacheManager = service.getCacheManager();
+      cacheManager.set(entityA);
+      cacheManager.set(entityB);
+      cacheManager.set(entityC);
+
+      const result = await service.searchEntitiesFromCache(
+        (entity: BaseServiceTestModel, terms: string[]) => {
+          if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              sortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        undefined,
+        [entityA.id, entityC.id],
+        service.sortEntitiesByName,
+      );
+
+      expect(result.sortableModels.length).toBe(2);
+      expect(result.sortableModels[0].entity).toBe(entityC);
+      expect(result.sortableModels[1].entity).toBe(entityA);
+    });
+
+    it('searchEntitiesFromCache, has arrangeIds, no search key, no sort', async () => {
+      const service = new AService();
+      service.setSupportCache(true);
+
+      const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      const cacheManager = service.getCacheManager();
+      cacheManager.set(entityA);
+      cacheManager.set(entityB);
+      cacheManager.set(entityC);
+
+      const result = await service.searchEntitiesFromCache(
+        (entity: BaseServiceTestModel, terms: string[]) => {
+          if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              sortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        undefined,
+        [entityA.id, entityC.id],
+        undefined,
+      );
+
+      expect(result.sortableModels.length).toBe(2);
+      expect(result.sortableModels[0].entity).toBe(entityA);
+      expect(result.sortableModels[1].entity).toBe(entityC);
+    });
+
+    it('searchEntitiesFromCache, no arrangeIds, no search key, no sort', async () => {
+      const service = new AService();
+      service.setSupportCache(true);
+
+      const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      const cacheManager = service.getCacheManager();
+      cacheManager.set(entityA);
+      cacheManager.set(entityB);
+      cacheManager.set(entityC);
+
+      const result = await service.searchEntitiesFromCache(
+        (entity: BaseServiceTestModel, terms: string[]) => {
+          if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              sortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        undefined,
+        undefined,
+        undefined,
+      );
+
+      expect(result.sortableModels.length).toBe(3);
+      expect(result.sortableModels[0].entity).toBe(entityA);
+      expect(result.sortableModels[1].entity).toBe(entityB);
+      expect(result.sortableModels[2].entity).toBe(entityC);
+    });
+
+    it('searchEntitiesFromCache, no arrangeIds, has search key, no sort', async () => {
+      const service = new AService();
+      service.setSupportCache(true);
+
+      const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      const cacheManager = service.getCacheManager();
+      cacheManager.set(entityA);
+      cacheManager.set(entityB);
+      cacheManager.set(entityC);
+
+      const result = await service.searchEntitiesFromCache(
+        (entity: BaseServiceTestModel, terms: string[]) => {
+          if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              sortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        'Mr',
+        undefined,
+        undefined,
+      );
+
+      expect(result.sortableModels.length).toBe(2);
+      expect(result.sortableModels[0].entity).toBe(entityA);
+      expect(result.sortableModels[1].entity).toBe(entityB);
+    });
+
+    it('searchEntitiesFromCache, no arrangeIds, no search key, has sort', async () => {
+      const service = new AService();
+      service.setSupportCache(true);
+
+      const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      const cacheManager = service.getCacheManager();
+      cacheManager.set(entityA);
+      cacheManager.set(entityB);
+      cacheManager.set(entityC);
+
+      const result = await service.searchEntitiesFromCache(
+        (entity: BaseServiceTestModel, terms: string[]) => {
+          if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              sortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        undefined,
+        undefined,
+        service.sortEntitiesByName,
+      );
+
+      expect(result.sortableModels.length).toBe(3);
+      expect(result.sortableModels[0].entity).toBe(entityC);
+      expect(result.sortableModels[1].entity).toBe(entityB);
+      expect(result.sortableModels[2].entity).toBe(entityA);
+    });
+  });
 });

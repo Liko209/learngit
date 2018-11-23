@@ -525,4 +525,14 @@ describe('GroupService', () => {
       expect(result).toBe(ServiceCommonErrorType.UNKNOWN_ERROR);
     });
   });
+
+  describe('doFuzzySearch', () => {
+    it('doFuzzySearch, with empty', async () => {
+      groupService.setSupportCache(true);
+      const result = await groupService.doFuzzySearchTeams('name');
+      expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(1);
+      expect(result.terms[0]).toBe('name');
+    });
+  });
 });

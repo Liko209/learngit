@@ -12,14 +12,12 @@ import {
 } from '@/store/base/fetch';
 
 import PersonService from 'sdk/service/person';
-
+import GroupService, { GroupDataHandler } from 'sdk/service/group';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { Person, Group } from 'sdk/models';
 import { ENTITY, EVENT_TYPES } from 'sdk/src/service';
 import { ENTITY_NAME } from '@/store/constants';
 import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
-import { GroupDataHandler } from 'sdk/src/service/group';
-import { PersonDataHandler } from 'sdk/src/service/person';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 
 class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
@@ -43,8 +41,17 @@ class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
 
 class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private _sortableDataHandler: FetchSortableDataListHandler<Person>;
-
   private _group: Group;
+
+  static async createSortableGroupMemberHandler(groupId: number) {
+    const group = await GroupService.getInstance<GroupService>().getGroupById(
+      groupId,
+    );
+    if (group) {
+      return new SortableGroupMemberHandler(group);
+    }
+    return group;
+  }
 
   constructor(group: Group) {
     super();
@@ -69,6 +76,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       } as ISortableModel<Person>;
     };
 
+    const personService = PersonService.getInstance<PersonService>();
     const sortMemberFunc = (
       lhs: ISortableModel<Person>,
       rhs: ISortableModel<Person>,
@@ -88,8 +96,16 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       }
 
       return natureCompare(
-        PersonDataHandler.getInstance().getPersonDisplayName(lPerson),
-        PersonDataHandler.getInstance().getPersonDisplayName(rPerson),
+        personService.generatePersonDisplayName(
+          lPerson.first_name,
+          lPerson.last_name,
+          lPerson.email,
+        ),
+        personService.generatePersonDisplayName(
+          rPerson.first_name,
+          rPerson.last_name,
+          rPerson.email,
+        ),
       );
     };
 
@@ -145,6 +161,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
         needReplaceData = true;
       }
 
+      // get again
       this._group = newGroup;
 
       if (needReplaceData) {

@@ -1,7 +1,7 @@
 /*
  * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-04-18 17:10:45
+ * @Date: 2018-11-21 16:33:48
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { PersonService as default } from './personService';
+export * from './GroupAvatar';
