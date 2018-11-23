@@ -163,7 +163,7 @@ class GroupService extends BaseService<Group> {
       return await this.getGroupByMemberList([personId]);
     } catch (e) {
       mainLogger.error(`getGroupByPersonId error =>${e}`);
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
@@ -180,7 +180,7 @@ class GroupService extends BaseService<Group> {
       return await this.requestRemoteGroupByMemberList(mem);
     } catch (e) {
       mainLogger.error(`getGroupByMemberList error =>${e}`);
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
@@ -200,7 +200,7 @@ class GroupService extends BaseService<Group> {
       mainLogger.error(
         `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
       );
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
