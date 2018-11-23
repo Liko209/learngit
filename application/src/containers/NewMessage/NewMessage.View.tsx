@@ -35,7 +35,7 @@ const StyledTextWithLink = styled.div`
 `;
 
 @observer
-class NewMessage extends React.Component<NewMessageProps, IState> {
+class NewMessage extends React.Component<NewMessageProps, State> {
   constructor(props: NewMessageProps) {
     super(props);
     this.state = {
