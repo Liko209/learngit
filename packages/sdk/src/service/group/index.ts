@@ -6,7 +6,6 @@
 export {
   GroupService as default,
   CreateTeamOptions,
-  PROFILE_MODEL_TYPE,
   FEATURE_ACTION_STATUS,
   FEATURE_TYPE,
 } from './groupService';
