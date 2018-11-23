@@ -29,7 +29,7 @@ const StyledRightColumn = styled.div`
   margin-left: 18px;
 `;
 const StyledName = styled.div`
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   text-overflow: ellipsis;
@@ -38,21 +38,21 @@ const StyledName = styled.div`
   -webkit-box-orient: vertical;
 `;
 const StyledDescription = styled.div`
-   margin-top: 24px;
-   color: #9e9e9e;
-   font-size: 12px;
-   overflow: hidden;
-   text-overflow: ellipsis;
-   display: -webkit-box;
-   -webkit-line-clamp: 3;
-   -webkit-box-orient: vertical;
+  margin-top: 24px;
+  color: #9e9e9e;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 `;
 const StyledBottomButton = styled.div`
+  margin-top: 12px;
   display: flex;
 `;
 const StyledMessageBtn = styled.div`
   display: flex;
-  margin-top: 12px;
   color: #0684bd;
   font-size: 14px;
   span {
@@ -75,7 +75,9 @@ class JuiGroupProfileBody extends PureComponent<GroupBodyProps> {
           </StyledAvatar>
           <StyledRightColumn>
             <StyledName>{displayName}</StyledName>
-            <StyledDescription>{description}</StyledDescription>
+            {description ? (
+              <StyledDescription>{description}</StyledDescription>
+            ) : null}
             <StyledBottomButton>
               <StyledMessageBtn>
                 <JuiIconography>chat_bubble</JuiIconography>

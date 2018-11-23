@@ -31,8 +31,10 @@ const StyledContent = styled.div`
   margin: 0 24px;
 `;
 const StyledIcon = styled.p`
-  color: #9e9e9e;
-  font-size: 20px;
+  span {
+    color: #9e9e9e;
+    font-size: 20px;
+  }
   .options {
     margin-right: 12px;
   }

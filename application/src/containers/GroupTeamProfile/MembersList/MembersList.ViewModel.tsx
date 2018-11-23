@@ -9,18 +9,26 @@ import { StoreViewModel } from '@/store/ViewModel';
 // import { ENTITY_NAME } from '@/store';
 // import { GLOBAL_KEYS } from '@/store/constants';
 // import GroupModel from '@/store/models/Group';
-// import {
-//   onScrollToTop,
-//   onScroll,
-//   loading,
-//   loadingTop,
-//   onScrollToBottom,
-// } from '@/plugins/InfiniteListPlugin';
+import {
+  // onScrollToTop,
+  // onScroll,
+  // loading,
+  // loadingTop,
+  onScrollToBottom,
+} from '@/plugins/InfiniteListPlugin';
 class MembersListViewModel extends StoreViewModel<{id?: number}> {
+  constructor() {
+    super();
+    this.test = this.test.bind(this);
+  }
   // @computed
   // private get _id() {
   //   // console.log('_id', getGlobalValue(GLOBAL_KEYS.GROUP_OR_TEAM_ID));
   //   return getGlobalValue(GLOBAL_KEYS.GROUP_OR_TEAM_ID);
   // }
+  @onScrollToBottom
+  test() {
+    console.log('onScrollToBottom');
+  }
 }
 export { MembersListViewModel };

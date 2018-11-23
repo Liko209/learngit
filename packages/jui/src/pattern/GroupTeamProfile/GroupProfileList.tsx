@@ -8,10 +8,10 @@ import { GroupListProps, GROUP_TYPES, GROUP_LIST_TITLE } from './types';
 import styled from '../../foundation/styled-components';
 
 const StyledListWrapper = styled.div`
-  height: 320px;
+  max-height: 100%;
 `;
 const StyledContent = styled.div`
-  margin: 16px 16px 24px 24px;
+  margin-left: 24px;
 `;
 const StyledTitleBar = styled.div``;
 const StyledTitle = styled.p`
@@ -19,14 +19,23 @@ const StyledTitle = styled.p`
   color: #212121;
 `;
 const StyledList = styled.ul`
-  height: 294px;
+  max-height: 48vh;
   overflow: scroll;
   list-style: none;
   padding:0;
   margin:0;
 `;
 const StyledItem = styled.li`
-  padding:0; margin:0;
+  display: flex;
+  height: 48px;
+  background-color: #fff;
+  align-items: center;
+  &:hover{
+    background-color: #f5f5f5;
+  }
+  &:nth-last-child(1) {
+    margin-bottom: 24px;
+  }
 `;
 const StyledBottomBar = styled.div`
   position: absolute;
