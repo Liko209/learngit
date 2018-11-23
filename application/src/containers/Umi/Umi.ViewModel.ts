@@ -1,10 +1,10 @@
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 /*
  * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed } from 'mobx';
+import { computed, untracked } from 'mobx';
 import _ from 'lodash';
 
 import { StoreViewModel } from '@/store/ViewModel';
@@ -39,9 +39,18 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
     });
     const unreadCount = _(groupStates).sumBy((groupState: GroupStateModel) => {
       const group: GroupModel = getEntity(ENTITY_NAME.GROUP, groupState.id);
-      const umiCount = group.isTeam
+      let umiCount = group.isTeam
         ? groupState.unreadMentionsCount
         : groupState.unreadCount;
+      untracked(() => {
+        const currentConversation = getGlobalValue(
+          GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+        );
+        const shouldShowUMI = getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI);
+        if (group.id === currentConversation && !shouldShowUMI) {
+          umiCount = 0;
+        }
+      });
       return umiCount || 0;
     });
     return {

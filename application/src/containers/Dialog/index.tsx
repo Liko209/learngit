@@ -29,7 +29,7 @@ JuiModal.confirm = function (props: JuiModalProps): ReturnFunc {
 
 JuiModal.open = function (
   component: React.ComponentType<any>,
-  config: JuiDialogFuncProps,
+  config?: JuiDialogFuncProps,
 ): ReturnFunc {
   const newConfig = {
     open: true,
