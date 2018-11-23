@@ -174,11 +174,6 @@ export default class GroupModel extends Base<Group> {
     return getEntity(ENTITY_NAME.PERSON, this.creatorId);
   }
 
-  @computed
-  get isPublic() {
-    return this.isTeam ? this.privacy !== 'privacy' : true;
-  }
-
   isThePersonAdmin(personId: number) {
     if (this.type !== CONVERSATION_TYPES.TEAM) {
       return true;
