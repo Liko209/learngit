@@ -16,12 +16,14 @@ type JuiSnackbarContentProps = {
   messageAlign: MessageAlignment;
   bgColor: SnackbarContentColor;
   radius: number;
+  fullWidth: boolean;
 } & SnackbarContentProps;
 
 const WrapperContent = ({
   messageAlign,
   bgColor,
   radius,
+  fullWidth,
   ...rest
 }: JuiSnackbarContentProps) => <MuiSnackbarContent {...rest} />;
 
@@ -33,7 +35,7 @@ const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
     box-shadow: none;
     width: 100% !important;
     border-radius: ${props => props.radius} !important;
-    max-width: 100% !important;
+    max-width: ${props => (props.fullWidth ? '100%' : '640')} !important;
     box-sizing: border-box;
   }
   .message {
