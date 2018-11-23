@@ -89,7 +89,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   groupId: number;
   @observable
   postIds: number[] = [];
-  @observable
+
   jumpToPostId: number;
 
   @observable
@@ -133,70 +133,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this.groupId === props.groupId) {
       return;
     }
-    this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
-    const globalStore = storeManager.getGlobalStore();
-    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
-    this.groupId = props.groupId;
-
-    this.dispose();
-
-    const postDataProvider: IFetchSortableDataProvider<Post> = {
-      fetchData: async (direction, pageSize, anchor) => {
-        try {
-          const postService: PostService = PostService.getInstance();
-          const { posts, hasMore } = await postService.getPostsByGroupId({
-            direction,
-            groupId: props.groupId,
-            postId: anchor && anchor.id,
-            limit: pageSize,
-          });
-          return { hasMore, data: posts };
-        } catch (err) {
-          if (err.code === ErrorTypes.NETWORK) {
-            // TODO error handle
-          }
-          return { data: [], hasMore: true };
-        }
-      },
-    };
-
-    const orderListHandler = new FetchSortableDataListHandler(
-      postDataProvider,
-      {
-        transformFunc,
-        hasMoreUp: true,
-        hasMoreDown: !!this.jumpToPostId,
-        isMatchFunc: isMatchedFunc(props.groupId),
-        entityName: ENTITY_NAME.POST,
-        eventName: ENTITY.POST,
-        dataChangeCallBack: () => {},
-      },
-    );
-
-    this._historyHandler = new HistoryHandler();
-    this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
-    this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
-      this._readThrough,
-    );
-
-    this._transformHandler = new PostTransformHandler({
-      separatorHandlers: [
-        this._newMessageSeparatorHandler,
-        new DateSeparatorHandler(),
-      ],
-      handler: orderListHandler,
-    });
-
-    this.autorun(() => (this.postIds = this._transformHandler.postIds));
-    this.autorun(() => (this.items = this._transformHandler.items));
-    this.autorun(() =>
-      this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
-        this._readThrough,
-      ),
-    );
-
-    this._initialized = false;
+    this.resetAll(props.groupId);
   }
 
   @loading
@@ -215,7 +152,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         .flatten()
         .value();
     } else {
-      posts = await this.loadPrevPosts();
+      posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
     }
     if (posts && posts.length) {
       await this._prepareAllData(posts);
@@ -306,8 +243,77 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this.enableNewMessageSeparatorHandler();
       await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
     }
-
     return this.firstHistoryUnreadPostId;
+  }
+
+  resetJumpToPostId = () => {
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
+    this.jumpToPostId = 0;
+  }
+
+  resetAll = (groupId: number) => {
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
+    this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
+    this.groupId = groupId;
+    this.dispose();
+    const postDataProvider: IFetchSortableDataProvider<Post> = {
+      fetchData: async (direction, pageSize, anchor) => {
+        try {
+          const postService: PostService = PostService.getInstance();
+          const { posts, hasMore } = await postService.getPostsByGroupId({
+            direction,
+            groupId,
+            postId: anchor && anchor.id,
+            limit: pageSize,
+          });
+          console.log('anchor is', posts);
+          return { hasMore, data: posts };
+        } catch (err) {
+          if (err.code === ErrorTypes.NETWORK) {
+            // TODO error handle
+          }
+          return { data: [], hasMore: true };
+        }
+      },
+    };
+
+    const orderListHandler = new FetchSortableDataListHandler(
+      postDataProvider,
+      {
+        transformFunc,
+        hasMoreUp: true,
+        hasMoreDown: !!this.jumpToPostId,
+        isMatchFunc: isMatchedFunc(groupId),
+        entityName: ENTITY_NAME.POST,
+        eventName: ENTITY.POST,
+        dataChangeCallBack: () => {},
+      },
+    );
+
+    this._historyHandler = new HistoryHandler();
+    this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
+    this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
+      this._readThrough,
+    );
+
+    this._transformHandler = new PostTransformHandler({
+      separatorHandlers: [
+        this._newMessageSeparatorHandler,
+        new DateSeparatorHandler(),
+      ],
+      handler: orderListHandler,
+    });
+
+    this.autorun(() => (this.postIds = this._transformHandler.postIds));
+    this.autorun(() => (this.items = this._transformHandler.items));
+    this.autorun(() =>
+      this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
+        this._readThrough,
+      ),
+    );
+
+    this._initialized = false;
   }
 }
 

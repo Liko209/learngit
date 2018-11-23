@@ -64,6 +64,8 @@ const baseProps = {
   jumpToPostId: 0,
   loadInitialPosts: async () => {},
   mostRecentPostId: 0,
+  resetJumpToPostId: () => null,
+  resetAll: (id: number) => {},
 };
 
 describe('StreamView', () => {

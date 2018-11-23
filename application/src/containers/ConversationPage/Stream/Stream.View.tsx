@@ -48,9 +48,9 @@ class StreamViewComponent extends Component<Props> {
   private _firstHistoryUnreadPostViewed = false;
 
   async componentDidMount() {
+    await this.props.loadInitialPosts();
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
-    await this.props.loadInitialPosts();
     this.scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
     this._stickToBottom();
   }
@@ -90,9 +90,7 @@ class StreamViewComponent extends Component<Props> {
     snapshot: StreamSnapshot,
   ) {
     if (prevProps.groupId !== this.props.groupId) {
-      this._jumpToFirstUnreadLoading = false;
-      this._firstHistoryUnreadPostViewed = false;
-      this._postRefs.clear();
+      this._tidiesBeforeDestory();
       await this.props.loadInitialPosts();
       return this.scrollToBottom();
     }
@@ -115,41 +113,13 @@ class StreamViewComponent extends Component<Props> {
     ) {
       // Observe all visibility of posts which are older
       // than the first unread post
-      return (
-        <VisibilitySensor
-          key={`VisibilitySensor${streamItem.value}`}
-          offset={VISIBILITY_SENSOR_OFFSET}
-          onChange={this._handleFirstUnreadPostVisibilityChange}
-        >
-          <ConversationPost
-            ref={this._setPostRef}
-            id={streamItem.value}
-            key={`VisibilitySensor${streamItem.value}`}
-          />
-        </VisibilitySensor>
-      );
+
+      return this._viewedPostFactory(streamItem);
     }
     if (streamItem.value === this.props.mostRecentPostId) {
-      return (
-        <VisibilitySensor
-          key={`VisibilitySensor${streamItem.value}`}
-          onChange={this._handleMostRecentPostRead}
-        >
-          <ConversationPost
-            ref={this._setPostRef}
-            id={streamItem.value}
-            key={`VisibilitySensor${streamItem.value}`}
-          />
-        </VisibilitySensor>
-      );
+      return this._mostRecentPostFactory(streamItem);
     }
-    return (
-      <ConversationPost
-        id={streamItem.value}
-        key={streamItem.value}
-        ref={this._setPostRef}
-      />
-    );
+    return this._ordinaryPostFactory(streamItem);
   }
 
   private _renderNewMessagesDivider(streamItem: StreamItem) {
@@ -171,14 +141,14 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
-  private _renderStreamItem(streamItem: StreamItem) {
+  private _renderStreamItem(streamItem: StreamItem, index: number) {
     const RENDERER_MAP = {
       [StreamItemType.POST]: this._renderConversationCard,
       [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
       [StreamItemType.DATE_SEPARATOR]: this._renderDateDivider,
     };
     const streamItemRenderer = RENDERER_MAP[streamItem.type];
-    return streamItemRenderer.call(this, streamItem);
+    return streamItemRenderer.call(this, streamItem, index);
   }
 
   private get _initialPost() {
@@ -193,8 +163,49 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
+  private _viewedPostFactory(streamItem: StreamItem) {
+    return (
+      <VisibilitySensor
+        key={`VisibilitySensor${streamItem.value}`}
+        offset={VISIBILITY_SENSOR_OFFSET}
+        onChange={this._handleFirstUnreadPostVisibilityChange}
+      >
+        <ConversationPost
+          ref={this._setPostRef}
+          id={streamItem.value}
+          key={`VisibilitySensor${streamItem.value}`}
+        />
+      </VisibilitySensor>
+    );
+  }
+
+  private _mostRecentPostFactory(streamItem: StreamItem) {
+    return (
+      <VisibilitySensor
+        key={`VisibilitySensor${streamItem.value}`}
+        onChange={this._handleMostRecentPostRead}
+      >
+        <ConversationPost
+          ref={this._setPostRef}
+          id={streamItem.value}
+          key={`VisibilitySensor${streamItem.value}`}
+        />
+      </VisibilitySensor>
+    );
+  }
+
+  private _ordinaryPostFactory(streamItem: StreamItem) {
+    return (
+      <ConversationPost
+        id={streamItem.value}
+        key={streamItem.value}
+        ref={this._setPostRef}
+      />
+    );
+  }
+
   private get _streamItems() {
-    return this.props.items.map(item => this._renderStreamItem(item));
+    return this.props.items.map(this._renderStreamItem.bind(this));
   }
 
   private get _jumpToFirstUnreadButton() {
@@ -277,7 +288,7 @@ class StreamViewComponent extends Component<Props> {
     this.scrollToPost(scrollToPostId, { behavior: 'smooth', block: 'center' });
   }
 
-  private scrollToBottom = () => {
+  scrollToBottom = () => {
     const lastItem = _(this.props.items).nth(-1);
     if (lastItem) {
       window.requestAnimationFrame(() => {
@@ -317,6 +328,12 @@ class StreamViewComponent extends Component<Props> {
   private _setPostRef = (postRef: any) => {
     if (!postRef) return;
     this._postRefs.set(postRef.props.id, postRef);
+  }
+
+  private _tidiesBeforeDestory = () => {
+    this._jumpToFirstUnreadLoading = false;
+    this._firstHistoryUnreadPostViewed = false;
+    this._postRefs.clear();
   }
 }
 const view = extractView<WithNamespaces & StreamViewProps>(StreamViewComponent);
