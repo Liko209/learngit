@@ -32,12 +32,10 @@ class ProfileMiniCardGroupHeaderView extends Component<
             {displayName}
           </JuiProfileMiniCardGroupName>
         </JuiProfileMiniCardHeaderMiddle>
-        {isTeam && (
-          <JuiProfileMiniCardHeaderRight>
-            <JuiIconography fontSize="small">star</JuiIconography>
-            <JuiIconography fontSize="small">star</JuiIconography>
-          </JuiProfileMiniCardHeaderRight>
-        )}
+        <JuiProfileMiniCardHeaderRight>
+          {isTeam && <JuiIconography fontSize="small">lock</JuiIconography>}
+          <JuiIconography fontSize="small">star</JuiIconography>
+        </JuiProfileMiniCardHeaderRight>
       </JuiProfileMiniCardHeader>
     );
   }

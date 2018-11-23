@@ -5,7 +5,7 @@
  */
 
 import styled from '../../foundation/styled-components';
-import { width } from '../../foundation/utils/styles';
+import { width, spacing } from '../../foundation/utils/styles';
 
 const JuiProfileMiniCardHeader = styled('div')`
   display: flex;
@@ -24,6 +24,7 @@ const JuiProfileMiniCardHeaderMiddle = styled('div')`
 
 const JuiProfileMiniCardHeaderRight = styled('div')`
   display: inline-flex;
+  margin-left: ${spacing(1.5)};
 `;
 
 JuiProfileMiniCardHeader.displayName = 'JuiProfileMiniCardHeader';

@@ -13,7 +13,7 @@ type StyledMiniCardHeaderProps = {
 };
 
 const StyledMiniCardHeader = styled<StyledMiniCardHeaderProps, 'div'>('div')`
-  padding: ${spacing(4, 5)};
+  padding: ${spacing(4, 4, 4, 5)};
   ${({ emphasize }: StyledMiniCardHeaderProps) =>
     emphasize &&
     css`

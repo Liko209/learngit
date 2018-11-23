@@ -8,7 +8,7 @@ import styled from '../../foundation/styled-components';
 import { typography, ellipsis, grey } from '../../foundation/utils/styles';
 
 const JuiProfileMiniCardPersonTitle = styled('div')`
-  ${typography('caption1')};
+  ${typography('body1')};
   ${ellipsis()};
   color: ${grey('500')};
 `;
