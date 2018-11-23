@@ -19,7 +19,6 @@ type ColorMap = {
 };
 
 type JuiSnackbarsProps = {
-  open?: boolean;
   type: JuiSnackbarsType;
   messageAlign?: MessageAlignment;
   children: React.ReactNode;
@@ -50,7 +49,7 @@ function getColor(type: JuiSnackbarsType, map: ColorMap): ColorType {
 const JuiSnackbarContent: React.SFC<JuiSnackbarsProps> = (
   pros: JuiSnackbarsProps,
 ) => {
-  const { children, type, fullWidth, ...rest } = pros;
+  const { children, type, fullWidth, actions, ...rest } = pros;
   const { color } = getColor(type, COLOR_MAP);
   const radius = pros.radius ? pros.radius : 0;
   const messageAlign = pros.messageAlign ? pros.messageAlign : 'left';
@@ -60,6 +59,8 @@ const JuiSnackbarContent: React.SFC<JuiSnackbarsProps> = (
       radius={radius}
       messageAlign={messageAlign}
       fullWidth={fullWidth}
+      action={actions}
+      message={children}
       {...rest}
     />
   );
