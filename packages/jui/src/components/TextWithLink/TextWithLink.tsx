@@ -23,14 +23,13 @@ const TipsText = styled(MuiTypography)`
 type Props = {
   text: string;
   linkText: string;
-  href?: string;
-  onClick?: Function;
+  onClick?: (event: React.MouseEvent<HTMLSpanElement>) => void;
   TypographyProps?: TypographyProps;
   JuiLinkProps?: JuiLinkProps;
 };
 
 const JuiTextWithLink = (props: Props) => {
-  const { text, linkText, href, TypographyProps, JuiLinkProps } = props;
+  const { text, linkText, onClick, TypographyProps, JuiLinkProps } = props;
   let textProps;
   if (TypographyProps) {
     const { innerRef, ...rest } = TypographyProps;
@@ -40,7 +39,7 @@ const JuiTextWithLink = (props: Props) => {
   return (
     <TipsText {...textProps}>
       {text}
-      <JuiLink href={href} {...JuiLinkProps}>
+      <JuiLink handleOnClick={onClick} {...JuiLinkProps}>
         {linkText}
       </JuiLink>
     </TipsText>

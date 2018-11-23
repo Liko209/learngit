@@ -28,6 +28,12 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
   }
 `;
 
+const StyledTextWithLink = styled.div`
+  && {
+    margin-top: ${spacing(4)};
+  }
+`;
+
 @observer
 class NewMessage extends React.Component<NewMessageProps, IState> {
   constructor(props: NewMessageProps) {
@@ -65,6 +71,7 @@ class NewMessage extends React.Component<NewMessageProps, IState> {
       emailErrorMsg,
       disabledOkBtn,
       handleSearchContactChange,
+      updateCreateTeamDialogState,
       isOffline,
       serverError,
     } = this.props;
@@ -99,11 +106,13 @@ class NewMessage extends React.Component<NewMessageProps, IState> {
           fullWidth={true}
           onChange={this.handleMessageChange}
         />
-        <JuiTextWithLink
-          text={t('newMessageTip')}
-          linkText={t('newMessageTipLink')}
-          href=""
-        />
+        <StyledTextWithLink>
+          <JuiTextWithLink
+            text={t('newMessageTip')}
+            linkText={t('newMessageTipLink')}
+            onClick={updateCreateTeamDialogState}
+          />
+        </StyledTextWithLink>
       </JuiModal>
     );
   }

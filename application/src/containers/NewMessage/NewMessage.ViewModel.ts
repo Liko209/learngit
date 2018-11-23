@@ -6,6 +6,7 @@
 import { action, computed, observable } from 'mobx';
 
 import PostService from 'sdk/service/post';
+// import GroupService from 'sdk/service/group';
 import { IResponseError } from 'sdk/models';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
@@ -47,6 +48,19 @@ class NewMessageViewModel extends AbstractViewModel {
   }
 
   @action
+  updateCreateTeamDialogState = () => {
+    const globalStore = storeManager.getGlobalStore();
+    const isShowCreateTeamDialog = !globalStore.get(
+      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
+    );
+    globalStore.set(
+      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
+      isShowCreateTeamDialog,
+    );
+    this.updateNewMessageDialogState();
+  }
+
+  @action
   inputReset = () => {
     this.emailErrorMsg = '';
     this.disabledOkBtn = true;
@@ -70,9 +84,11 @@ class NewMessageViewModel extends AbstractViewModel {
   @action
   newMessage = async (memberIds: number[], message: string) => {
     const postService: PostService = PostService.getInstance();
+    // const groupService: GroupService = GroupService.getInstance();
     let result;
     try {
       result = await postService.newMessageWithPeopleIds(memberIds, message);
+      // result = await groupService.getGroupByMemberList(memberIds);
     } catch (err) {
       const { data } = err;
       if (data) {
