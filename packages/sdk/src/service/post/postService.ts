@@ -525,7 +525,7 @@ class PostService extends BaseService<Post> {
       const groupService: GroupService = GroupService.getInstance();
       const group = await groupService.getGroupByMemberList(ids);
       const id = group ? group.id : undefined;
-      if (id && message.length > 0) {
+      if (id && this._isValidTextMessage(message)) {
         this.sendPost({ groupId: id, text: message });
       }
 
@@ -534,6 +534,10 @@ class PostService extends BaseService<Post> {
       mainLogger.error(`newMessageWithPeopleIds: ${JSON.stringify(e)}`);
       throw ErrorParser.parse(e);
     }
+  }
+
+  private _isValidTextMessage(message: string) {
+    return message.trim().length === 0;
   }
 }
 

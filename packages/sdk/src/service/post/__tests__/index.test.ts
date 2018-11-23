@@ -766,5 +766,18 @@ describe('PostService', () => {
       );
       expect(result).toBeUndefined;
     });
+
+    it('send invalid message with people', async () => {
+      const g = { id: 44 };
+      groupService.getGroupByMemberList.mockResolvedValue(g);
+
+      expect(jest.spyOn(postService, 'sendPost')).not.toBeCalled();
+
+      let result = await postService.newMessageWithPeopleIds([1, 2, 3], '   ');
+      expect(result).toEqual({ id: 44 });
+
+      result = await postService.newMessageWithPeopleIds([1, 2, 3], '');
+      expect(result).toEqual({ id: 44 });
+    });
   });
 });
