@@ -21,7 +21,10 @@ const isLocalhost = Boolean(
     ),
 );
 
-export default function register(upgradeHandler: any) {
+export default function register(
+  onRegisteredHandler: (registration: ServiceWorkerRegistration) => void,
+  onUpdateInstalledHandler: VoidFunction,
+) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(
@@ -40,7 +43,11 @@ export default function register(upgradeHandler: any) {
 
       if (isLocalhost) {
         // This is running on localhost. Lets check if a service worker still exists or not.
-        checkValidServiceWorker(swUrl, upgradeHandler);
+        checkValidServiceWorker(
+          swUrl,
+          onRegisteredHandler,
+          onUpdateInstalledHandler,
+        );
 
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
@@ -52,17 +59,21 @@ export default function register(upgradeHandler: any) {
         });
       } else {
         // Is not local host. Just register service worker
-        registerValidSW(swUrl, upgradeHandler);
+        registerValidSW(swUrl, onRegisteredHandler, onUpdateInstalledHandler);
       }
     });
   }
 }
 
-function registerValidSW(swUrl: string, upgradeHandler: any) {
+function registerValidSW(
+  swUrl: string,
+  onRegisteredHandler: (registration: ServiceWorkerRegistration) => void,
+  onUpdateInstalledHandler: VoidFunction,
+) {
   console.log(`${logTag}registerValidSW: ${swUrl}`);
   navigator.serviceWorker
     .register(swUrl)
-    .then((registration: any) => {
+    .then((registration: ServiceWorkerRegistration) => {
       registration.onupdatefound = () => {
         console.log(`${logTag}onupdatefound`);
         const installingWorker = registration.installing;
@@ -78,9 +89,8 @@ function registerValidSW(swUrl: string, upgradeHandler: any) {
                 console.log(
                   `${logTag}New content is available; please refresh.`,
                 );
-                if (upgradeHandler) {
-                  upgradeHandler.onNewContentAvailable();
-                }
+
+                onUpdateInstalledHandler();
               } else {
                 // At this point, everything has been precached.
                 // It's the perfect time to display a
@@ -92,11 +102,7 @@ function registerValidSW(swUrl: string, upgradeHandler: any) {
         }
       };
 
-      if (upgradeHandler) {
-        upgradeHandler.setQueryHandler(() => {
-          registration.update();
-        });
-      }
+      onRegisteredHandler(registration);
     })
     .catch((error: any) => {
       console.error(
@@ -106,7 +112,11 @@ function registerValidSW(swUrl: string, upgradeHandler: any) {
     });
 }
 
-function checkValidServiceWorker(swUrl: string, upgradeHandler: any) {
+function checkValidServiceWorker(
+  swUrl: string,
+  onRegisteredHandler: (registration: ServiceWorkerRegistration) => void,
+  onUpdateInstalledHandler: VoidFunction,
+) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl)
     .then((response: any) => {
@@ -116,14 +126,16 @@ function checkValidServiceWorker(swUrl: string, upgradeHandler: any) {
         response.headers.get('content-type')!.indexOf('javascript') === -1
       ) {
         // No service worker found. Probably a different app. Reload the page.
-        navigator.serviceWorker.ready.then((registration: any) => {
-          registration.unregister().then(() => {
-            window.location.reload();
-          });
-        });
+        navigator.serviceWorker.ready.then(
+          (registration: ServiceWorkerRegistration) => {
+            registration.unregister().then(() => {
+              window.location.reload();
+            });
+          },
+        );
       } else {
         // Service worker found. Proceed as normal.
-        registerValidSW(swUrl, upgradeHandler);
+        registerValidSW(swUrl, onRegisteredHandler, onUpdateInstalledHandler);
       }
     })
     .catch(() => {
@@ -135,8 +147,10 @@ function checkValidServiceWorker(swUrl: string, upgradeHandler: any) {
 
 export function unregister() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then((registration: any) => {
-      registration.unregister();
-    });
+    navigator.serviceWorker.ready.then(
+      (registration: ServiceWorkerRegistration) => {
+        registration.unregister();
+      },
+    );
   }
 }

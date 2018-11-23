@@ -9,16 +9,16 @@ const logTag = '[Upgrade]';
 class Upgrade {
   public queryInterval = 60 * 1000;
   private _hasNewVersion: boolean = false;
-  private _queryHandler: VoidFunction;
+  private _serviceWorkerRegistration: ServiceWorkerRegistration;
 
   constructor() {
     console.log(`${logTag} constructor with interval: ${this.queryInterval}`);
     setInterval(this._queryIfHasNewVersion.bind(this), this.queryInterval);
   }
 
-  public setQueryHandler(handler: VoidFunction) {
+  public setRegistration(registration: ServiceWorkerRegistration) {
     console.log(`${logTag} setQueryHandler`);
-    this._queryHandler = handler;
+    this._serviceWorkerRegistration = registration;
   }
 
   public onNewContentAvailable() {
@@ -41,8 +41,8 @@ class Upgrade {
 
   private _queryIfHasNewVersion() {
     console.log(`${logTag} _queryIfHasNewVersion`);
-    if (this._queryHandler) {
-      this._queryHandler();
+    if (this._serviceWorkerRegistration) {
+      this._serviceWorkerRegistration.update();
     }
   }
 }
