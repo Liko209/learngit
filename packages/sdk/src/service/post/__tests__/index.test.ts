@@ -209,6 +209,7 @@ describe('PostService', () => {
       jest.spyOn(postService, 'getPostsFromRemote');
       jest.spyOn(postService, 'includeNewest').mockResolvedValue(true);
       jest.spyOn(postService, 'isNewestSaved').mockResolvedValue(true);
+      jest.spyOn(postService, 'getById').mockResolvedValue({});
       daoManager.getDao.mockReturnValueOnce(groupConfigDao);
       groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
     });

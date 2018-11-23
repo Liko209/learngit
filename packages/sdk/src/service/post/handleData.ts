@@ -53,7 +53,7 @@ export async function checkIncompletePostsOwnedGroups(
 
 /**
  * @param posts
- * @param save：Explicitly specify whether should save to DB, if not specified, depends on the result of continuty check.
+ * @param save：Explicitly specify whether should save to DB, if not specified, depends on the result of continuity check.
  */
 export async function handleDeactivatedAndNormalPosts(
   posts: Post[],
@@ -134,7 +134,7 @@ export default async function (data: Raw<Post>[], maxPostsExceed: boolean) {
 /**
  * @param data
  * @param needTransformed
- * @param save：Explicitly specify whether should save to DB, if not specified, depends on the result of continuty check.
+ * @param save：Explicitly specify whether should save to DB, if not specified, depends on the result of continuity check.
  */
 export function baseHandleData(
   data: Raw<Post>[] | Raw<Post> | Post[] | Post,

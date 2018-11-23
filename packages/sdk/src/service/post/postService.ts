@@ -153,6 +153,10 @@ class PostService extends BaseService<Post> {
     direction = QUERY_DIRECTION.OLDER,
   }: IPostQuery): Promise<IPostResult> {
     try {
+      const anchorPost = await this.getById(postId);
+      if (!anchorPost) {
+        throw ErrorParser.parse(new Error('Anchor post does not exist'));
+      }
       const result = await this.getPostsFromLocal({
         groupId,
         postId,
