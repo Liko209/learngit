@@ -169,7 +169,8 @@ class GroupService extends BaseService<Group> {
       }
       return await this.requestRemoteGroupByMemberList(mem);
     } catch (e) {
-      throw ErrorParser.parse(e);
+      mainLogger.error(`getGroupByMemberList error =>${e}`);
+      return null;
     }
   }
 
@@ -186,7 +187,10 @@ class GroupService extends BaseService<Group> {
       }
       return null;
     } catch (e) {
-      throw ErrorParser.parse(e);
+      mainLogger.error(
+        `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
+      );
+      return null;
     }
   }
 
