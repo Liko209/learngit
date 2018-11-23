@@ -231,7 +231,7 @@ describe('PostService', () => {
         groupId: 1,
       });
 
-      expect(baseHandleData.mock.calls[0][2]).toBe(true);
+      expect(baseHandleData.mock.calls[0][1]).toBe(true);
       expect(postService.isNewestSaved).not.toHaveBeenCalled();
     });
 
@@ -253,7 +253,7 @@ describe('PostService', () => {
         groupId: 1,
       });
 
-      expect(baseHandleData.mock.calls[0][2]).toBe(true);
+      expect(baseHandleData.mock.calls[0][1]).toBe(true);
       expect(postService.isNewestSaved).toHaveBeenCalled();
     });
     it('should not save if newest is not saved and incoming do not include newest', async () => {
@@ -276,7 +276,7 @@ describe('PostService', () => {
         groupId: 1,
       });
 
-      expect(baseHandleData.mock.calls[0][2]).toBe(false);
+      expect(baseHandleData.mock.calls[0][1]).toBe(false);
     });
 
     it('should return local data', async () => {

@@ -138,14 +138,11 @@ export default async function (data: Raw<Post>[], maxPostsExceed: boolean) {
  */
 export function baseHandleData(
   data: Raw<Post>[] | Raw<Post> | Post[] | Post,
-  needTransformed = true,
   save?: boolean,
 ): Promise<Post[]> {
-  const transformedData: Post[] = needTransformed
-    ? transformData(data as Raw<Post>[] | Raw<Post>)
-    : Array.isArray(data)
-    ? (data as Post[])
-    : [data as Post];
+  const transformedData: Post[] = transformData(data as
+    | Raw<Post>[]
+    | Raw<Post>);
   return handleDeactivatedAndNormalPosts(transformedData, save);
 }
 

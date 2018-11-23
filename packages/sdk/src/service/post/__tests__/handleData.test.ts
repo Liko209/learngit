@@ -120,16 +120,9 @@ describe('handleDataFromSexio', () => {
 
 describe('baseHandleData', () => {
   beforeEach(() => {});
-  it('false', async () => {
-    const ret = await baseHandleData([], false, true);
-    expect(ret).toEqual([]);
-    expect(transform).toHaveBeenCalledTimes(0);
-  });
-
   it('true', async () => {
     const ret = await baseHandleData(
       [rawPostFactory.build({ _id: 1 }), rawPostFactory.build({ _id: 2 })],
-      true,
       true,
     );
     expect(ret).toMatchObject([{ _id: 1 }, { _id: 2 }]);
@@ -186,7 +179,7 @@ describe('Whether to save to db detection', () => {
       rawPostFactory.build({ created_at: 3 }),
       rawPostFactory.build({ created_at: 4 }),
     ];
-    await baseHandleData(posts, true, false);
+    await baseHandleData(posts, false);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
       noSavingToDB: true,
     });
@@ -279,7 +272,7 @@ describe('Whether to save to db detection', () => {
       rawPostFactory.build({ created_at: 99 }),
       rawPostFactory.build({ created_at: 100 }),
     ];
-    await baseHandleData(posts, true, true);
+    await baseHandleData(posts, true);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
       noSavingToDB: false,
     });
@@ -290,7 +283,7 @@ describe('Whether to save to db detection', () => {
       rawPostFactory.build({ created_at: 99 }),
       rawPostFactory.build({ created_at: 100 }),
     ];
-    await baseHandleData(posts, true, false);
+    await baseHandleData(posts, false);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
       noSavingToDB: true,
     });

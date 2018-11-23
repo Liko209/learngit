@@ -41,6 +41,12 @@ class BaseService<
     return container.get(this.name) as T;
   }
 
+  protected async shouldSaveItemFetchedById(
+    item: Raw<SubModel>,
+  ): Promise<boolean> {
+    return true;
+  }
+
   async getById(id: number): Promise<SubModel> {
     let result = await this.getByIdFromDao(id);
     if (!result) {
@@ -66,7 +72,8 @@ class BaseService<
     let result = await this.ApiClass.getDataById(id);
     if (result && result.data) {
       const arr = [].concat(result.data).map(transform); // normal transform
-      await this.handleData(arr);
+      const shouldSaveToDB = await this.shouldSaveItemFetchedById(result.data);
+      await this.handleData(arr, shouldSaveToDB);
       result = arr.length > 0 ? arr[0] : null;
     }
     return result;
@@ -138,8 +145,8 @@ class BaseService<
     const id: number = partialModel.id
       ? partialModel.id
       : partialModel._id
-        ? partialModel._id
-        : 0;
+      ? partialModel._id
+      : 0;
     let result: SubModel | BaseError;
 
     do {

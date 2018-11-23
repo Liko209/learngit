@@ -58,6 +58,13 @@ type PostSendData = {
 class PostService extends BaseService<Post> {
   static serviceName = 'PostService';
 
+  protected async shouldSaveItemFetchedById(item: Raw<Post>): Promise<boolean> {
+    if (item.group_id) {
+      return this.isNewestSaved(item.group_id);
+    }
+    return false;
+  }
+
   private _postStatusHandler: PostStatusHandler;
   constructor() {
     const subscriptions = {
@@ -153,10 +160,6 @@ class PostService extends BaseService<Post> {
     direction = QUERY_DIRECTION.OLDER,
   }: IPostQuery): Promise<IPostResult> {
     try {
-      const anchorPost = await this.getById(postId);
-      if (!anchorPost) {
-        throw ErrorParser.parse(new Error('Anchor post does not exist'));
-      }
       const result = await this.getPostsFromLocal({
         groupId,
         postId,
@@ -195,7 +198,7 @@ class PostService extends BaseService<Post> {
             shouldSave = await this.isNewestSaved(groupId);
           }
           const posts: Post[] =
-            (await baseHandleData(remoteResult.posts, true, shouldSave)) || [];
+            (await baseHandleData(remoteResult.posts, shouldSave)) || [];
           const items = (await itemHandleData(remoteResult.items)) || [];
 
           result.posts.push(...posts);
@@ -238,7 +241,7 @@ class PostService extends BaseService<Post> {
     if (restIds.length) {
       const remoteResult = (await PostAPI.requestByIds(restIds)).data;
       const posts: Post[] =
-        (await baseHandleData(remoteResult.posts, true, false)) || [];
+        (await baseHandleData(remoteResult.posts, false)) || [];
       const items = (await itemHandleData(remoteResult.items)) || [];
 
       result.posts.push(...posts);
