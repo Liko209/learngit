@@ -524,15 +524,20 @@ class PostService extends BaseService<Post> {
     try {
       const groupService: GroupService = GroupService.getInstance();
       const group = await groupService.getGroupByMemberList(ids);
-      if (group) {
-        const postService: PostService = PostService.getInstance();
-        postService.sendPost({ groupId: group.id, text: message });
-        return { id: group.id };
+      const id = group ? group.id : undefined;
+      if (id && this._isValidTextMessage(message)) {
+        this.sendPost({ groupId: id, text: message });
       }
-      return {};
-    } catch (error) {
-      throw ErrorParser.parse(error);
+
+      return { id };
+    } catch (e) {
+      mainLogger.error(`newMessageWithPeopleIds: ${JSON.stringify(e)}`);
+      throw ErrorParser.parse(e);
     }
+  }
+
+  private _isValidTextMessage(message: string) {
+    return message.trim().length === 0;
   }
 }
 
