@@ -116,13 +116,21 @@ function withScroller(Comp: ComponentType<any>) {
     }
 
     render() {
+      const {
+        stickTo,
+        thresholdUp,
+        thresholdDown,
+        throttle,
+        initialScrollTop,
+        onScroll,
+        onScrollToTop,
+        onScrollToBottom,
+        triggerScrollToOnMount,
+        ...rest
+      } = this.props;
       return (
         <StyledScroller ref={this._scrollElRef} stickTo={this.props.stickTo}>
-          <Comp
-            {...this.props}
-            atBottom={this._isAtBottom}
-            atTop={this._isAtTop}
-          />
+          <Comp {...rest} atBottom={this._isAtBottom} atTop={this._isAtTop} />
         </StyledScroller>
       );
     }

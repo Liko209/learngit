@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { ConversationPost } from '../../../ConversationPost';
 import GroupStateModel from '@/store/models/GroupState';
 import { LoadingMorePlugin } from '@/plugins';
-import { StreamView } from '../Stream.View';
+import { StreamViewComponent as StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
 
@@ -37,6 +37,7 @@ function renderJumpToFirstUnreadButton({
 
 const baseProps = {
   postIds: [],
+  t: () => 'a',
   items: [],
   groupId: 1,
   setRowVisible: jest.fn().mockName('setRowVisible'),

@@ -42,7 +42,7 @@ type StreamItem = {
 
 type StreamProps = {
   groupId: number;
-  setMethods?: (func: Function) => any;
+  viewRef: React.RefObject<any>;
 };
 
 type StreamViewProps = {
@@ -65,7 +65,6 @@ type StreamViewProps = {
   clearHistoryUnread: () => void;
   historyUnreadCount: number;
   firstHistoryUnreadPostId?: number;
-  setMethods?: (func: Function) => any;
 };
 type StreamSnapshot = {
   atBottom: boolean;

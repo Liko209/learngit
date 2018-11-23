@@ -44,7 +44,7 @@ const withLoadingMore = (
     WithLoadingMoreProps
   > {
     render() {
-      const { loadingTop, loadingBottom, viewRef, ...rest } = this.props;
+      const { loadingTop, loadingBottom, ...rest } = this.props;
       const LoadingMoreWithDelay =
         CustomizedLoadingWithDelay || DefaultLoadingMoreWithDelay;
       return (

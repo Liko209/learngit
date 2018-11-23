@@ -14,21 +14,22 @@ import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 
 import { Header } from './Header';
 import { MessageInput } from './MessageInput';
-import { Stream } from './Stream';
 import { ConversationPageViewProps } from './types';
+
+import { StreamViewComponent } from './Stream/Stream.View';
+import { Stream } from './Stream';
 
 @observer
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
-  private _scrollToBottom: () => any;
-
-  private _setScrollMethod = (func: () => any) => {
-    this._scrollToBottom = func;
-  }
+  private _streamRef: React.RefObject<StreamViewComponent> = React.createRef();
 
   sendHandler = () => {
-    this._scrollToBottom();
+    const stream = this._streamRef.current;
+    if (stream) {
+      stream.scrollToPost(stream.props.mostRecentPostId);
+    }
   }
 
   render() {
@@ -42,7 +43,7 @@ class ConversationPageViewComponent extends Component<
       >
         <Header id={groupId} />
         <JuiStreamWrapper>
-          <Stream groupId={groupId} setMethods={this._setScrollMethod} />
+          <Stream groupId={groupId} viewRef={this._streamRef} />
           <div id="jumpToFirstUnreadButtonRoot" />
         </JuiStreamWrapper>
         {canPost ? (

@@ -27,12 +27,12 @@ import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { extractView } from 'jui/hoc/extractView';
 import PostModel from '@/store/models/Post';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 
 type Props = WithNamespaces & StreamViewProps;
-
 @observer
 class StreamViewComponent extends Component<Props> {
   private _listRef: React.RefObject<HTMLElement> = React.createRef();
@@ -51,7 +51,7 @@ class StreamViewComponent extends Component<Props> {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
     await this.props.loadInitialPosts();
-    this._scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
+    this.scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
     this._stickToBottom();
   }
 
@@ -66,7 +66,7 @@ class StreamViewComponent extends Component<Props> {
       post = getEntity(ENTITY_NAME.POST, item!.value);
       const likes = post!.likes || [];
       if (likes.length === 1) {
-        this._scrollToPost(this.props.mostRecentPostId);
+        this.scrollToPost(this.props.mostRecentPostId);
       }
     });
     this._disposers.push(disposer);
@@ -101,7 +101,7 @@ class StreamViewComponent extends Component<Props> {
         return this.scrollToBottom();
       }
       if (snapshot.atTop) {
-        return this._scrollToPost(prevProps.postIds[0]);
+        return this.scrollToPost(prevProps.postIds[0]);
       }
     }
   }
@@ -226,10 +226,8 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    const setMethods = this.props.setMethods;
     return (
       <JuiStream>
-        {setMethods && setMethods(this.scrollToBottom)}
         {this._jumpToFirstUnreadButton}
         {this._initialPost}
         <section ref={this._listRef}>
@@ -276,18 +274,21 @@ class StreamViewComponent extends Component<Props> {
       );
       return;
     }
-    this._scrollToPost(scrollToPostId, { behavior: 'smooth', block: 'center' });
+    this.scrollToPost(scrollToPostId, { behavior: 'smooth', block: 'center' });
   }
 
   private scrollToBottom = () => {
-    window.requestAnimationFrame(() => {
-      scrollToComponent(this._listRef.current, false);
-    });
+    const lastItem = _(this.props.items).nth(-1);
+    if (lastItem) {
+      window.requestAnimationFrame(() => {
+        this.scrollToPost(lastItem.value, false);
+      });
+    }
   }
 
-  private _scrollToPost = (
+  public scrollToPost = (
     scrollToPostId: number,
-    options?: ScrollIntoViewOptions,
+    options?: ScrollIntoViewOptions | boolean,
   ) => {
     const scrollToViewOpt = options || {
       behavior: 'auto',
@@ -318,7 +319,7 @@ class StreamViewComponent extends Component<Props> {
     this._postRefs.set(postRef.props.id, postRef);
   }
 }
+const view = extractView<WithNamespaces>(StreamViewComponent);
+const StreamView = translate('Conversations')(view);
 
-const StreamView = translate('Conversations')(StreamViewComponent);
-
-export { StreamView };
+export { StreamView, StreamViewComponent };
