@@ -24,7 +24,7 @@ class Upgrade {
   }
 
   public onNewContentAvailable() {
-    mainLogger.info(`${logTag}New Content Available`);
+    mainLogger.info(`${logTag}New content available`);
     this._hasNewVersion = true;
   }
 
@@ -40,6 +40,7 @@ class Upgrade {
 
   private _queryIfHasNewVersion() {
     if (this._swURL && navigator.serviceWorker) {
+      mainLogger.info(`${logTag}Checking new version`);
       navigator.serviceWorker
         .getRegistration(this._swURL)
         .then((registration: ServiceWorkerRegistration) => {
