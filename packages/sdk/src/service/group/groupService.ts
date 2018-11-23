@@ -100,6 +100,9 @@ class GroupService extends BaseService<Group> {
     offset = 0,
     _limit?: number,
   ): Promise<Group[]> {
+    const res = await this.isFavorited(2547715, TypeDictionary.TYPE_ID_PERSON);
+    console.log('getGroupById---', res);
+
     const profileService: ProfileService = ProfileService.getInstance();
     const limit = _limit || (await profileService.getMaxLeftRailGroup());
     mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
@@ -162,9 +165,7 @@ class GroupService extends BaseService<Group> {
 
   async getLocalGroupByMemberIdList(ids: number[]): Promise<Group | null> {
     try {
-      const mem = uniqueArray(ids);
-      const groupDao = daoManager.getDao(GroupDao);
-      const result = await groupDao.queryGroupByMemberList(mem);
+      const result = this._queryGroupByMemberList(ids);
       if (result) {
         return result;
       }
@@ -186,19 +187,11 @@ class GroupService extends BaseService<Group> {
 
   async getOrCreateGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
-      const accountService: AccountService = AccountService.getInstance();
-      const userId = accountService.getCurrentUserId();
-      if (userId) {
-        members.push(userId);
-        const mem = uniqueArray(members);
-        const groupDao = daoManager.getDao(GroupDao);
-        const result = await groupDao.queryGroupByMemberList(mem);
-        if (result) {
-          return result;
-        }
-        return await this.requestRemoteGroupByMemberList(mem);
+      const result = await this._queryGroupByMemberList(members);
+      if (result) {
+        return result;
       }
-      return null;
+      return await this.requestRemoteGroupByMemberList(members);
     } catch (e) {
       mainLogger.error(`getOrCreateGroupByMemberList error =>${e}`);
       throw ErrorParser.parse(e);
@@ -208,7 +201,8 @@ class GroupService extends BaseService<Group> {
   async requestRemoteGroupByMemberList(
     members: number[],
   ): Promise<Group | null> {
-    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(members);
+    const mem = this._addCurrentUserToMemList(members);
+    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(mem);
     try {
       const result = await GroupAPI.requestNewGroup(info);
       if (result.data) {
@@ -504,6 +498,7 @@ class GroupService extends BaseService<Group> {
     switch (type) {
       case TypeDictionary.TYPE_ID_PERSON: {
         const group = await this.getLocalGroupByMemberIdList([id]);
+        console.log('isFavorited, getLocalGroupByMemberIdList', group);
         if (group) {
           groupId = group.id;
         }
@@ -635,6 +630,21 @@ class GroupService extends BaseService<Group> {
       .sort(compareName)
       .concat(emails.sort(compareName))
       .join(', ');
+  }
+
+  private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
+    const mem = this._addCurrentUserToMemList(ids);
+    const groupDao = daoManager.getDao(GroupDao);
+    return await groupDao.queryGroupByMemberList(mem);
+  }
+
+  private _addCurrentUserToMemList(ids: number[]) {
+    const accountService: AccountService = AccountService.getInstance();
+    const userId = accountService.getCurrentUserId();
+    if (userId) {
+      ids.push(userId);
+    }
+    return uniqueArray(ids);
   }
 }
 
