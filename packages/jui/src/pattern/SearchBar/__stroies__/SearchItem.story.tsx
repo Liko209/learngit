@@ -12,14 +12,20 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiSearchItem } from '../';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
+import { JuiAvatar } from '../../../components/Avatar';
 import { text } from '@storybook/addon-knobs';
 
 storiesOf('Pattern/SearchBar', module)
   .addDecorator(withInfoDecorator(JuiSearchItem, { inline: true }))
   .add('JuiSearchItem', () => {
     return (
-      <div>
-        <JuiSearchItem avatar={<div>123</div>} />
-      </div>
+      <JuiSearchItem
+        avatar={
+          <JuiAvatar
+            size="small"
+            src="http://tvax2.sinaimg.cn/crop.11.0.1103.1103.180/6c546c01ly8flmqvtjhycj20v90undhk.jpg"
+          />
+        }
+      />
     );
   });
