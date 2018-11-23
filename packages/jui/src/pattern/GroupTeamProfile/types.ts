@@ -13,9 +13,9 @@ enum GROUP_LIST_TITLE {
   GROUP_MEMBERS = 'Group members',
 }
 type GroupBodyProps = {
-  type: GROUP_TYPES;
   displayName: string;
   description?: string;
+  avatar: any;
 };
 type GroupListProps = {
   counts: number;

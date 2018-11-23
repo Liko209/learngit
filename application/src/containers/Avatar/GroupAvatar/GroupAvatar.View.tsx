@@ -6,12 +6,12 @@
 
 import React, { Component } from 'react';
 import { GroupAvatarViewProps } from './types';
-import { JuiAvatar } from 'jui/components/Avatar';
+// import { JuiAvatar } from 'jui/components/Avatar';
 
 class GroupAvatarView extends Component<GroupAvatarViewProps> {
   render() {
-    const { src, size } = this.props;
-    return <JuiAvatar src={src} size={size} />;
+    const { src } = this.props;
+    return <img src={src} alt=""/>;
   }
 }
 

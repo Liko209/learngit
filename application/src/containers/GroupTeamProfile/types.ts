@@ -5,6 +5,7 @@
  */
 import GroupModel from '@/store/models/Group';
 import { WithNamespaces } from 'react-i18next';
+// import { TranslationFunction } from 'i18next';
 
 enum GROUP_TYPES {
   TEAM = 'TEAM',
@@ -15,6 +16,7 @@ type GroupTeamProps = WithNamespaces & {
   description: string;
   displayName: string;
   destroy: () => void;
+  id: number;
 };
 
 export { GroupTeamProps, GROUP_TYPES };

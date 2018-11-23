@@ -124,8 +124,6 @@ class MenuViewComponent extends Component<Props, State> {
     this.props.showGroupOrTeamProfile(event);
     // const { showGroupOrTeamProfile } = this.props;
     JuiModal.open(GroupTeamProfile, { size: 'medium' });
-    const toggleBtn = JuiModal.open(GroupTeamProfile, { size: 'medium' });
-    toggleBtn.destroy();
   }
   render() {
     const { anchorEl, onClose, favoriteText, t  } = this.props;

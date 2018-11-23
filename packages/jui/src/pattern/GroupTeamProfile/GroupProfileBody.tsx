@@ -6,9 +6,7 @@
 import React, { PureComponent } from 'react';
 import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
-import defaultGroupAvatar from './static/Groups.png';
-import defaultTeamAvatar from './static/Teams.png';
-import { GROUP_TYPES, GroupBodyProps } from './types';
+import { GroupBodyProps } from './types';
 
 const StyledBodyWrapper = styled.div`
   border-bottom: 1px solid #e0e0e0;
@@ -62,16 +60,12 @@ const StyledMessageBtn = styled.div`
 `;
 class JuiGroupProfileBody extends PureComponent<GroupBodyProps> {
   render() {
-    const { type, displayName, description } = this.props;
+    const { displayName, description, avatar } = this.props;
     return (
       <StyledBodyWrapper>
         <StyledContent>
           <StyledAvatar>
-            {type === GROUP_TYPES.GROUP ? (
-              <img src={defaultGroupAvatar} alt="group avatar" />
-            ) : (
-              <img src={defaultTeamAvatar} alt="team avatar" />
-            )}
+            {avatar}
           </StyledAvatar>
           <StyledRightColumn>
             <StyledName>{displayName}</StyledName>

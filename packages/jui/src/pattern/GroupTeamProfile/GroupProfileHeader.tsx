@@ -28,15 +28,18 @@ const StyledContent = styled.div`
   height: 64px;
   align-items: center;
   justify-content: space-between;
-  margin: 0 24px;
+  margin: 0 12px 0 24px;
 `;
 const StyledIcon = styled.p`
   span {
     color: #9e9e9e;
     font-size: 20px;
-  }
-  .options {
     margin-right: 12px;
+  }
+  .close {
+    border-left: 1px solid #9e9e9e;
+    padding-left: 12px;
+    height: 20px;
   }
 `;
 const StyledText = styled.p`
@@ -45,7 +48,7 @@ const StyledText = styled.p`
 `;
 class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
   render() {
-    const { text, destroy } = this.props;
+    const { text, destroy, children } = this.props;
 
     return (
       <StyledHeader>
@@ -54,8 +57,8 @@ class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
             {text}
           </StyledText>
           <StyledIcon>
-            <JuiIconography className="options">more_horiz</JuiIconography>
-            <JuiIconography onClick={destroy}>close</JuiIconography>
+            {children}
+            <JuiIconography onClick={destroy} className="close">close</JuiIconography>
           </StyledIcon>
         </StyledContent>
       </StyledHeader>
