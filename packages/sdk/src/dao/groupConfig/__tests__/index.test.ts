@@ -68,4 +68,26 @@ describe('groupConfig Dao', async () => {
       expect(hasMoreRemotePost).toBe(false);
     });
   });
+
+  describe.only('isNewestSaved', () => {
+    it('should return false if item not exists', async () => {
+      await expect(groupConfigDao.isNewestSaved(123)).resolves.toBe(false);
+    });
+
+    it('should return true', async () => {
+      await groupConfigDao.update({
+        id: 123,
+        is_newest_saved: true,
+      });
+      await expect(groupConfigDao.isNewestSaved(123)).resolves.toBe(true);
+    });
+
+    it('should return false', async () => {
+      await groupConfigDao.update({
+        id: 123,
+        is_newest_saved: false,
+      });
+      await expect(groupConfigDao.isNewestSaved(123)).resolves.toBe(false);
+    });
+  });
 });

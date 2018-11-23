@@ -121,16 +121,17 @@ describe('handleDataFromSexio', () => {
 describe('baseHandleData', () => {
   beforeEach(() => {});
   it('false', async () => {
-    const ret = await baseHandleData([], false);
+    const ret = await baseHandleData([], false, true);
     expect(ret).toEqual([]);
     expect(transform).toHaveBeenCalledTimes(0);
   });
 
   it('true', async () => {
-    const ret = await baseHandleData([
-      rawPostFactory.build({ _id: 1 }),
-      rawPostFactory.build({ _id: 2 }),
-    ]);
+    const ret = await baseHandleData(
+      [rawPostFactory.build({ _id: 1 }), rawPostFactory.build({ _id: 2 })],
+      true,
+      true,
+    );
     expect(ret).toMatchObject([{ _id: 1 }, { _id: 2 }]);
     expect(transform).toHaveBeenCalledTimes(2);
   });
@@ -176,16 +177,25 @@ describe('handlePreInsertedPosts', () => {
 });
 
 describe('Whether to save to db detection', () => {
-  beforeEach(() => {
-    // GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-
-    dao.get.mockResolvedValue({});
+  it('should not save if incoming post is not self continuous', async () => {
+    dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
+    dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
+    const posts = [
+      rawPostFactory.build({ created_at: 1 }),
+      rawPostFactory.build({ created_at: 2 }),
+      rawPostFactory.build({ created_at: 3 }),
+      rawPostFactory.build({ created_at: 4 }),
+    ];
+    await baseHandleData(posts, true, false);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: true,
+    });
   });
   it('should not save if latest of the posts is older than the oldest in db', async () => {
     dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
     dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
     const posts = [rawPostFactory.build({ created_at: 1 })];
-    await baseHandleData(posts, true);
+    await baseHandleData(posts);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
       noSavingToDB: true,
     });
@@ -200,7 +210,7 @@ describe('Whether to save to db detection', () => {
       rawPostFactory.build({ created_at: 3 }),
       rawPostFactory.build({ created_at: 4 }),
     ];
-    await baseHandleData(posts, true);
+    await baseHandleData(posts);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
       noSavingToDB: true,
     });
@@ -216,7 +226,7 @@ describe('Whether to save to db detection', () => {
       rawPostFactory.build({ created_at: 12 }),
       rawPostFactory.build({ created_at: 13 }),
     ];
-    await baseHandleData(posts, true);
+    await baseHandleData(posts);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
       noSavingToDB: false,
     });
@@ -232,7 +242,7 @@ describe('Whether to save to db detection', () => {
       rawPostFactory.build({ created_at: 104 }),
       rawPostFactory.build({ created_at: 105 }),
     ];
-    await baseHandleData(posts, true);
+    await baseHandleData(posts);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
       noSavingToDB: false,
     });
@@ -242,7 +252,7 @@ describe('Whether to save to db detection', () => {
     dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
     dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
     const posts = [rawPostFactory.build({ created_at: 101 })];
-    await baseHandleData(posts, true);
+    await baseHandleData(posts);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
       noSavingToDB: false,
     });
@@ -258,9 +268,31 @@ describe('Whether to save to db detection', () => {
       rawPostFactory.build({ created_at: 102 }),
       rawPostFactory.build({ created_at: 103 }),
     ];
-    await baseHandleData(posts, true);
+    await baseHandleData(posts);
     expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
       noSavingToDB: false,
+    });
+  });
+
+  it('should save if explicitly specified', async () => {
+    const posts = [
+      rawPostFactory.build({ created_at: 99 }),
+      rawPostFactory.build({ created_at: 100 }),
+    ];
+    await baseHandleData(posts, true, true);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: false,
+    });
+  });
+
+  it('should not save if explicitly specified', async () => {
+    const posts = [
+      rawPostFactory.build({ created_at: 99 }),
+      rawPostFactory.build({ created_at: 100 }),
+    ];
+    await baseHandleData(posts, true, false);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: true,
     });
   });
 });
