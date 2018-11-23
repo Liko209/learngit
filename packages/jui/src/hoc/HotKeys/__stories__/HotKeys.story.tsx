@@ -1,6 +1,6 @@
 /*
- * @Author: Valor Lin (valor.lin@ringcentral.com)
- * @Date: 2018-09-18 10:10:56
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2018-11-23 13:57:46
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Fragment, PureComponent } from 'react';
