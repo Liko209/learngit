@@ -31,7 +31,6 @@ class BaseService<
 > extends AbstractService {
   static serviceName = 'BaseService';
   private _cachedManager: EntityCacheManager<SubModel>;
-  private _isSupportCache: boolean = false;
 
   constructor(
     public DaoClass?: any,
@@ -95,15 +94,13 @@ class BaseService<
     return this.getAllFromDao({ offset, limit });
   }
 
-  isSupportCache(): boolean {
-    return this._isSupportCache;
+  isCacheEnable(): boolean {
+    return this._cachedManager ? true : false;
   }
 
-  setSupportCache(isSupportCache: boolean) {
-    this._isSupportCache = isSupportCache;
-    if (this._isSupportCache) {
+  enableCache() {
+    if (!this._cachedManager) {
       this._cachedManager = new EntityCacheManager<SubModel>();
-
       notificationCenter.on(SERVICE.LOGIN, () => {
         this.initialCacheManager();
       });
