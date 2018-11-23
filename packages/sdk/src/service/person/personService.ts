@@ -116,16 +116,18 @@ class PersonService extends BaseService<Person> {
     email: string,
   ) {
     let name = '';
-    if (firstName && firstName.length > 0) {
+    if (firstName) {
       name += firstName;
     }
 
-    if (lastName && lastName.length > 0) {
-      name += ' ';
+    if (lastName) {
+      if (name.length > 0) {
+        name += ' ';
+      }
       name += lastName;
     }
 
-    if (name) {
+    if (name.length === 0) {
       name = email;
     }
 
