@@ -24,7 +24,7 @@ class Upgrade {
   }
 
   public onNewContentAvailable() {
-    mainLogger.info(`${logTag}onNewContentAvailable`);
+    mainLogger.info(`${logTag}New Content Available`);
     this._hasNewVersion = true;
   }
 
