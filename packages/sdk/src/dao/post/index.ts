@@ -4,7 +4,8 @@
  */
 import { BaseDao } from '../base';
 import { Post } from '../../models';
-import { IDatabase, mainLogger } from 'foundation';
+import { IDatabase } from 'foundation';
+import { QUERY_DIRECTION } from '../constants';
 
 class PostDao extends BaseDao<Post> {
   static COLLECTION_NAME = 'post';
@@ -15,19 +16,26 @@ class PostDao extends BaseDao<Post> {
 
   async queryPostsByGroupId(
     groupId: number,
-    offset: number = 0,
+    anchorPostId?: number,
+    direction: QUERY_DIRECTION = QUERY_DIRECTION.OLDER,
     limit: number = Infinity,
   ): Promise<Post[]> {
-    mainLogger.debug(`queryPostsByGroupId groupId:${groupId} offset:${offset} limit:${limit}`);
-    const query = this.createQuery();
-    // logger.time('queryPostsByGroupId');
-    const result = await query
-      .orderBy('created_at', true)
+    let anchorPost;
+    if (anchorPostId) {
+      anchorPost = await this.get(anchorPostId);
+    }
+    if (!anchorPost) {
+      return [];
+    }
+    const rangeMethod =
+      direction === QUERY_DIRECTION.OLDER ? 'lessThan' : 'greaterThan';
+    let query = this.createQuery();
+    query = query
+      .orderBy('created_at', direction === QUERY_DIRECTION.OLDER)
       .equal('group_id', groupId)
-      .offset(offset)
-      .limit(limit)
-      .toArray();
-    // logger.timeEnd('queryPostsByGroupId');
+      [rangeMethod]('created_at', anchorPost.created_at)
+      .limit(limit);
+    const result = await query.toArray();
     return result;
   }
 
@@ -52,18 +60,6 @@ class PostDao extends BaseDao<Post> {
       .equal('group_id', groupId)
       .filter((item: Post) => !item.deactivated)
       .first();
-  }
-
-  async purgePostsByGroupId(groupId: number, preserveCount: number = 0): Promise<void> {
-    const query = this.createQuery();
-    const result = await query
-      .orderBy('created_at', true)
-      .equal('group_id', groupId)
-      .offset(preserveCount)
-      .toArray();
-    if (result.length) {
-      await this.bulkDelete(result.map((item: Post) => item.id));
-    }
   }
 
   async queryPreInsertPost(): Promise<Post[]> {

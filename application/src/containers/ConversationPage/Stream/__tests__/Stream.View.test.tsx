@@ -61,6 +61,7 @@ const baseProps = {
   firstHistoryUnreadInPage: false,
   clearHistoryUnread: jest.fn().mockName('setHasUnread'),
   loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
+  jumpToPostId: 0,
 };
 
 describe('StreamView', () => {
