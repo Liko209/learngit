@@ -14,12 +14,16 @@ import { JuiArrowTip } from '../../Tooltip/ArrowTip';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import { Theme, Palette } from '../../../foundation/theme/theme';
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+type IconButtonVariant = 'round' | 'plain';
+type IconButtonSize = 'small' | 'medium' | 'large';
+
 type JuiIconButtonProps = {
   tooltipTitle?: string;
   invisible?: boolean;
   awake?: boolean;
-  variant?: 'round' | 'plain';
-  size?: 'small' | 'medium' | 'large';
+  variant?: IconButtonVariant;
+  size?: IconButtonSize;
   color?: string;
   innerRef?: RefObject<HTMLElement>;
 } & Omit<MuiIconButtonProps, 'color'> &
@@ -198,4 +202,4 @@ JuiIconButton.defaultProps = {
   tooltipTitle: '',
 };
 
-export { JuiIconButtonProps };
+export { JuiIconButtonProps, IconButtonVariant, IconButtonSize };
