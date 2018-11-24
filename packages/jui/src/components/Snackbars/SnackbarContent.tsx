@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import * as Jui from './Style';
+import * as Jui from './style';
 import { Palette } from '../../foundation/theme/theme';
 
 type JuiSnackbarsType = 'warn' | 'success' | 'error' | 'info';
@@ -21,10 +21,10 @@ type ColorMap = {
 type JuiSnackbarsProps = {
   type: JuiSnackbarsType;
   messageAlign?: MessageAlignment;
-  children: React.ReactNode;
+  message: React.ReactNode;
   actions?: [];
   radius?: number;
-  fullWidth: boolean;
+  fullWidth?: boolean;
 };
 
 const COLOR_MAP: ColorMap = {
@@ -49,18 +49,31 @@ function getColor(type: JuiSnackbarsType, map: ColorMap): ColorType {
 const JuiSnackbarContent: React.SFC<JuiSnackbarsProps> = (
   pros: JuiSnackbarsProps,
 ) => {
-  const { children, type, fullWidth, actions, ...rest } = pros;
-  const { color } = getColor(type, COLOR_MAP);
-  const radius = pros.radius ? pros.radius : 0;
-  const messageAlign = pros.messageAlign ? pros.messageAlign : 'left';
+  const {
+    message,
+    type,
+    fullWidth,
+    actions,
+    radius,
+    messageAlign,
+    ...rest
+  } = pros;
+  const result = getColor(type, COLOR_MAP);
+  const color = result.color;
+  const rradius = radius ? radius : 0;
+  const rfullWidth = fullWidth ? fullWidth : true;
+  const rmessageAlign = messageAlign ? messageAlign : 'left';
   return (
     <Jui.SnackbarContent
+      classes={{
+        message: 'message',
+      }}
       bgColor={color}
-      radius={radius}
-      messageAlign={messageAlign}
-      fullWidth={fullWidth}
+      radius={rradius}
+      messageAlign={rmessageAlign}
+      fullWidth={rfullWidth}
       action={actions}
-      message={children}
+      message={message}
       {...rest}
     />
   );
@@ -71,4 +84,5 @@ export {
   JuiSnackbarsProps,
   MessageAlignment,
   SnackbarContentColor,
+  JuiSnackbarsType,
 };

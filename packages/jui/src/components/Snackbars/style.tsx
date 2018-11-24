@@ -8,7 +8,7 @@ import MuiSnackbarContent, {
   SnackbarContentProps,
 } from '@material-ui/core/SnackbarContent';
 
-import { spacing, palette, grey } from '../../foundation/utils/styles';
+import { spacing, palette } from '../../foundation/utils/styles';
 import { MessageAlignment, SnackbarContentColor } from './SnackbarContent';
 
 import styled from '../../foundation/styled-components';
@@ -30,8 +30,7 @@ const WrapperContent = ({
 const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
   && {
     padding: ${spacing(2, 6)};
-    color: ${grey('900')};
-    background: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 1)};
+    background-color: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 0)};
     box-shadow: none;
     width: 100% !important;
     border-radius: ${props => props.radius} !important;
@@ -39,7 +38,7 @@ const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
     box-sizing: border-box;
   }
   .message {
-    display: "flex";
+    flex: 1;
     text-align: ${props => props.messageAlign};
   }
 `;
