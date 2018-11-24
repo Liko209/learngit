@@ -12,6 +12,7 @@ import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
 import { ErrorParser, BaseError, TypeDictionary } from '../../../utils';
+import { FEATURE_TYPE, FEATURE_STATUS } from '../../group';
 
 jest.mock('../../../dao');
 // jest.mock('../../utils');
@@ -639,6 +640,36 @@ describe('GroupService', () => {
         TypeDictionary.TYPE_ID_ACCOUNT,
       );
       expect(res).toBeFalsy;
+    });
+  });
+
+  describe('buildGroupFeatureMap', () => {
+    const userId = 3;
+    beforeEach(() => {
+      accountService.getCurrentUserId.mockReturnValueOnce(userId);
+    });
+
+    it('should have message permission when the user is not in group', async () => {
+      const group = { id: 10, members: [1, 2, 3] };
+      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+      const res = await groupService.buildGroupFeatureMap(group.id);
+      expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.ENABLE);
+    });
+
+    it('should not have message permission when the user is not in group', async () => {
+      const group = { id: 10, members: [4, 5, 6] };
+      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+      const res = await groupService.buildGroupFeatureMap(group.id);
+      expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(
+        FEATURE_STATUS.INVISIBLE,
+      );
+    });
+
+    it('should has no call permission for group', async () => {
+      const group = { id: 10, members: [1, 2, 3] };
+      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+      const res = await groupService.buildGroupFeatureMap(group.id);
+      expect(res.get(FEATURE_TYPE.CALL)).toBe(FEATURE_STATUS.INVISIBLE);
     });
   });
 });

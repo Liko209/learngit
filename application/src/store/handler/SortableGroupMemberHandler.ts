@@ -15,7 +15,7 @@ import PersonService from 'sdk/service/person';
 import GroupService, { GroupDataHandler } from 'sdk/service/group';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { Person, Group } from 'sdk/models';
-import { ENTITY, EVENT_TYPES } from 'sdk/src/service';
+import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
 import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
@@ -183,4 +183,4 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   }
 }
 
-export { SortableGroupMemberHandler };
+export default SortableGroupMemberHandler;

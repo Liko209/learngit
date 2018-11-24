@@ -4,5 +4,5 @@
  */
 
 export { GroupService as default, CreateTeamOptions } from './groupService';
-export { FEATURE_ACTION_STATUS, FEATURE_TYPE } from './types';
+export { FEATURE_STATUS, FEATURE_TYPE } from './types';
 export { GroupDataHandler } from './GroupDataHandler';
