@@ -25,6 +25,7 @@ type JuiIconButtonProps = {
   variant?: IconButtonVariant;
   size?: IconButtonSize;
   color?: string;
+  isShowToolTip?: boolean;
   innerRef?: RefObject<HTMLElement>;
 } & Omit<MuiIconButtonProps, 'color'> &
   Omit<MuiIconProps, 'color'>;
@@ -150,7 +151,15 @@ const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
 export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
   props: JuiIconButtonProps,
 ) => {
-  const { className, children, tooltipTitle, innerRef, color, ...rest } = props;
+  const {
+    className,
+    children,
+    tooltipTitle,
+    innerRef,
+    color,
+    isShowToolTip = true,
+    ...rest
+  } = props;
   const { size, variant, awake, disabled, invisible } = rest;
   let colorScope: keyof Palette = 'primary';
   let colorName: string = 'main';
@@ -164,9 +173,8 @@ export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
       colorName = 'main';
     }
   }
-
-  return (
-    <JuiArrowTip title={tooltipTitle}>
+  const renderToolTip = () => {
+    return (
       <WrapperForTooltip
         className={className}
         innerRef={innerRef}
@@ -190,8 +198,12 @@ export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
           </StyledIcon>
         </StyledIconButton>
       </WrapperForTooltip>
-    </JuiArrowTip>
-  );
+    );
+  };
+  if (isShowToolTip) {
+    return <JuiArrowTip title={tooltipTitle}>{renderToolTip()}</JuiArrowTip>;
+  }
+  return renderToolTip();
 };
 
 JuiIconButton.defaultProps = {

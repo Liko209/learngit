@@ -16,6 +16,8 @@ import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { MouseEvent } from 'react';
+import { BaseProfileHandler } from '@/containers/GroupTeamProfile/TypeIdHandler';
+
 const globalStore = storeManager.getGlobalStore();
 const { GroupService } = service;
 
@@ -91,6 +93,13 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   showGroupOrTeamProfile = (event: MouseEvent<HTMLElement>) => {
     this.onClose(event);
     globalStore.set(GLOBAL_KEYS.GROUP_OR_TEAM_ID, this.groupId);
+    const baseProfileHandler = new BaseProfileHandler(this.groupId);
+    return baseProfileHandler.isTeamOrGroup;
+  }
+  @computed
+  get isShowGroupTeamProfile() {
+    const baseProfileHandler = new BaseProfileHandler(this.groupId);
+    return baseProfileHandler.isTeamOrGroup;
   }
 }
 export { MenuViewModel };

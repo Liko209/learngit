@@ -4,47 +4,47 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
-// import {
-//   shape,
-//   spacing,
-//   typography,
-//   palette,
-// } from '../../foundation/utils/styles';
+import { JuiIconButton } from '../../components/Buttons/IconButton';
+import {
+  spacing,
+  grey,
+  height,
+} from '../../foundation/utils/styles';
 import { GroupHeaderProps } from './types';
 
 const StyledHeader = styled.div`
-  height: 64px;
+  height: ${height(16)};
   width: 100%;
   background-color: #fff;
-  line-height: 64px;
-  color: #212121;
+  line-height: ${height(16)};
+  color: ${grey('900')};
   font-size: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid ${grey('300')};
 `;
 const StyledContent = styled.div`
   display: flex;
-  height: 64px;
   align-items: center;
   justify-content: space-between;
-  margin: 0 12px 0 24px;
+  height: ${height(16)};
+  margin: 0 ${spacing(3)} 0 ${spacing(6)};
 `;
-const StyledIcon = styled.p`
-  span {
-    color: #9e9e9e;
-    font-size: 20px;
-    margin-right: 12px;
-  }
+const StyledIcon = styled.div`
+  display: flex;
+  height: 100%;
   .close {
-    border-left: 1px solid #9e9e9e;
-    padding-left: 12px;
-    height: 20px;
+    color: ${grey('500')};
+    font-size: 20px;
+    height: ${height(5)};
+  }
+  div {
+    z-index: 99999;
+    margin-right: ${spacing(3)};
   }
 `;
 const StyledText = styled.p`
-  color: #212121;
-  font-size: 20px;
+  color: ${grey('900')};
+  font-size: ${({ theme }) => theme.typography.h6.fontSize};
 `;
 class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
   render() {
@@ -58,7 +58,7 @@ class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
           </StyledText>
           <StyledIcon>
             {children}
-            <JuiIconography onClick={destroy} className="close">close</JuiIconography>
+            <JuiIconButton onClick={destroy} className="close" isShowToolTip={false}>close</JuiIconButton>
           </StyledIcon>
         </StyledContent>
       </StyledHeader>

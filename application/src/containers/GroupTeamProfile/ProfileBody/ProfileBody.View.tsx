@@ -5,37 +5,30 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
-import { ID_TYPE } from './types';
+import { translate } from 'react-i18next';
+import { ID_TYPE } from '../types';
 import { JuiGroupProfileBody } from 'jui/pattern/GroupTeamProfile';
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Avatar } from '@/containers/Avatar';
+import { ProfileHeaderViewProps } from './types';
 
-// import { ProfileBodyProps } from './types';
-type Props = WithNamespaces & {
-  id: number;
-  displayName: string;
-  description?: string;
-  idType: ID_TYPE;
-};
 @observer
-class ProfileBody extends React.Component<Props> {
+class ProfileBody extends React.Component<ProfileHeaderViewProps> {
   render() {
-    const {
-      displayName,
-      description,
-      id,
-      idType,
-    } = this.props;
+    const { displayName, description, id, idType } = this.props;
     let avatar;
     if (idType === ID_TYPE.GROUP || idType === ID_TYPE.TEAM) {
       avatar = <GroupAvatar cid={id} />;
     } else if (idType === ID_TYPE.PERSON) {
-      avatar = <Avatar uid={id}/>;
+      avatar = <Avatar uid={id} />;
     }
     return (
       <>
-        <JuiGroupProfileBody avatar={avatar} displayName={displayName} description={description}/>
+        <JuiGroupProfileBody
+          avatar={avatar}
+          displayName={displayName}
+          description={description}
+        />
       </>
     );
   }

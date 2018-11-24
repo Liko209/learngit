@@ -1,13 +1,19 @@
-// import { WithNamespaces } from 'react-i18next';
-// import { TranslationFunction } from 'i18next';
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-11-24 17:29:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 
-type ProfileHeaderVMProps = {
-  id: number;
-};
+import { WithNamespaces } from 'react-i18next';
 
-type ProfileHeaderViewProps = {
+type ProfileHeaderViewProps = WithNamespaces & {
   text?: string;
   destroy: () => void;
-  id: number;
+  groupId: number;
 };
-export { ProfileHeaderViewProps, ProfileHeaderVMProps };
+type ProfileHeaderProps = {
+  text?: string;
+  id: number;
+  destroy: () => void;
+};
+export { ProfileHeaderViewProps, ProfileHeaderProps };

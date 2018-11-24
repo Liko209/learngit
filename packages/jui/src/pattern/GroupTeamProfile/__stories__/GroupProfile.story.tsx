@@ -7,6 +7,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { GROUP_TYPES } from '../types';
+// import defaultGroupAvatar from '../static/Groups';
 
 import {
   JuiGroupProfileHeader,

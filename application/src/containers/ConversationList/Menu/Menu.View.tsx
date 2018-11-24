@@ -122,11 +122,16 @@ class MenuViewComponent extends Component<Props, State> {
   }
   private _handleGroupDialog = (event: MouseEvent<HTMLElement>) => {
     this.props.showGroupOrTeamProfile(event);
-    // const { showGroupOrTeamProfile } = this.props;
     JuiModal.open(GroupTeamProfile, { size: 'medium' });
   }
   render() {
-    const { anchorEl, onClose, favoriteText, t  } = this.props;
+    const {
+      anchorEl,
+      onClose,
+      favoriteText,
+      isShowGroupTeamProfile,
+      t,
+    } = this.props;
     return (
       <JuiMenu
         id="render-props-menu"
@@ -140,11 +145,11 @@ class MenuViewComponent extends Component<Props, State> {
         >
           {t(`conversationMenuItem:${favoriteText}`)}
         </JuiMenuItem>
-        <JuiMenuItem
-          onClick={this._handleGroupDialog}
-        >
-          {t('view profile')}
-        </JuiMenuItem>
+        {isShowGroupTeamProfile ? (
+          <JuiMenuItem onClick={this._handleGroupDialog}>
+            {t('view profile')}
+          </JuiMenuItem>
+        ) : null}
         {this.renderCloseMenuItem()}
       </JuiMenu>
     );

@@ -3,20 +3,15 @@
  * @Date: 2018-11-21 15:09:02
  * Copyright © RingCentral. All rights reserved.
  */
-import GroupModel from '@/store/models/Group';
 import { WithNamespaces } from 'react-i18next';
-// import { TranslationFunction } from 'i18next';
 
-enum GROUP_TYPES {
-  TEAM = 'TEAM',
-  GROUP = 'GROUP',
-}
 type GroupTeamProps = WithNamespaces & {
-  groupModel: GroupModel;
-  description: string;
-  displayName: string;
   destroy: () => void;
   id: number;
 };
-
-export { GroupTeamProps, GROUP_TYPES };
+enum ID_TYPE  {
+  TEAM = 'TEAM',
+  GROUP = 'GROUP',
+  PERSON = 'PERSON',
+}
+export { GroupTeamProps, ID_TYPE };

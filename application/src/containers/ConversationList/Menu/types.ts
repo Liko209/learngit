@@ -23,6 +23,7 @@ type MenuViewProps = {
   onClose: (event: MouseEvent<HTMLElement>) => void;
   toggleFavorite: () => Promise<ServiceCommonErrorType>;
   showGroupOrTeamProfile: (event: MouseEvent<HTMLElement>) => void;
+  isShowGroupTeamProfile?: boolean;
   closeConversation: (
     shouldSkipNextTime: boolean,
   ) => Promise<ServiceCommonErrorType>;

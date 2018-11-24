@@ -6,8 +6,12 @@
 import { StoreViewModel } from '@/store/ViewModel';
 // import { getEntity, getGlobalValue } from '@/store/utils';
 import { computed } from 'mobx';
-// import { getEntity } from '@/store/utils';
-import { SortableGroupMemberHandler } from '@/store/handler/groupMemberSortableHandler';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
+import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
+import { ID_TYPE } from '../types';
+// import { SortableGroupMemberHandler } from '@/store/handler/groupMemberSortableHandler';
 // import { ENTITY_NAME } from '@/store';
 // import { GLOBAL_KEYS } from '@/store/constants';
 // import GroupModel from '@/store/models/Group';
@@ -26,17 +30,37 @@ class MembersListViewModel extends StoreViewModel<{id: number}> {
   get _id() {
     return this.props.id;
   }
-  _sortMemberIds = async () => {
-    const handler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(this._id);
-    return handler && handler.getSortedGroupMembersIds();
+  @computed
+  get _group() {
+    return getEntity(ENTITY_NAME.GROUP, this._id);
   }
+  // _sortMemberIds = async () => {
+  //   return getEntity(ENTITY_NAME.GROUP, this._id);
+  //   // const handler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(this._id);
+  //   // return handler && handler.getSortedGroupMembersIds();
+  // }
   @computed
   get membersList() {
     // return this._sortMemberIds && this._sortMemberIds.map((item) => {
     //   return getEntity(ENTITY_NAME.PERSON)
     // });
-    console.log('membersList', this._sortMemberIds());
-    return 1;
+    return this._group && this._group.members.map((item: number) => {
+      return getEntity(ENTITY_NAME.PERSON, item);
+    });
+    // console.log('membersList', this._group.members);
+  }
+  @computed
+  get idType() {
+    const typeId = GlipTypeUtil.extractTypeId(this._id);
+    const PROFILE_DATA_HANDLER_MAP = {
+      [TypeDictionary.TYPE_ID_GROUP]: ID_TYPE.GROUP,
+      [TypeDictionary.TYPE_ID_TEAM]: ID_TYPE.TEAM,
+    };
+    return PROFILE_DATA_HANDLER_MAP[typeId];
+  }
+  @computed
+  get counts() {
+    return this._group.members.length;
   }
   // @computed
   // private get _id() {

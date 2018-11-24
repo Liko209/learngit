@@ -170,6 +170,9 @@
     "heading1": {
       "lineHeight": "1.5em",
       "maxHeight": "3em"
+    },
+    "h6": {
+      "fontSize": "1.25rem"
     }
   },
   "boxShadow": {

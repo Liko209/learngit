@@ -4,6 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 type MoreHorizProps = {
-  // anchorEl: HTMLElement | null;
+  id: number;
 };
 export { MoreHorizProps };

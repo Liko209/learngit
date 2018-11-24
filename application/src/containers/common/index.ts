@@ -6,3 +6,4 @@
 
 export * from './Favorite';
 export * from './Privacy';
+export * from './MoreHoriz';

@@ -18,8 +18,6 @@ type GroupBodyProps = {
   avatar: any;
 };
 type GroupListProps = {
-  counts: number;
-  type: GROUP_TYPES;
   membersList?: {name: string}[];
 };
 type GroupHeaderProps = {

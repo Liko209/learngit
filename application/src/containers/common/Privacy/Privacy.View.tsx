@@ -44,13 +44,14 @@ class PrivacyViewComponent extends Component<Props> {
   }
 
   render() {
-    const { isPublic, size, variant, color, t } = this.props;
+    const { isPublic, size, variant, color, isShowTooltip, t } = this.props;
     return (
       <JuiIconButton
         size={size}
         variant={variant}
         color={color}
         onClick={this.onClick}
+        isShowToolTip={isShowTooltip}
         tooltipTitle={t(this.getTooltipKey())}
       >
         {isPublic ? 'lock_open' : 'lock'}

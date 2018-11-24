@@ -4,14 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { StoreViewModel } from '@/store/ViewModel';
-// import { getEntity } from '@/store/utils';
 import { computed } from 'mobx';
-// import { ENTITY_NAME } from '@/store';
-// import GroupModel from '@/store/models/Group';
-import { ProfileBodyProps, ID_TYPE } from './types';
+import { ProfileBodyProps } from './types';
 import { BaseProfileHandler } from '../TypeIdHandler';
-import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
-import { GlipTypeUtil } from 'sdk/utils';
 
 class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   constructor() {
@@ -23,12 +18,12 @@ class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   }
   @computed
   private get _group() {
-    const baseProfileHandler = new BaseProfileHandler();
-    return baseProfileHandler.handler(this.id);
+    const baseProfileHandler = new BaseProfileHandler(this.id);
+    return baseProfileHandler.getGroupOrPersonData();
   }
   @computed
   private get _person() {
-    return new BaseProfileHandler().handler(this.id);
+    return new BaseProfileHandler(this.id).getGroupOrPersonData();
   }
   @computed
   private get _profileData() {
@@ -36,8 +31,6 @@ class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   }
   @computed
   get displayName() {
-    console.log('_group', this._group);
-    console.log('_person', this._person);
     return this._profileData && this._profileData.displayName;
   }
   @computed
@@ -46,13 +39,7 @@ class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   }
   @computed
   get idType() {
-    const typeId = GlipTypeUtil.extractTypeId(this.id);
-    const PROFILE_DATA_HANDLER_MAP = {
-      [TypeDictionary.TYPE_ID_GROUP]: ID_TYPE.GROUP,
-      [TypeDictionary.TYPE_ID_PERSON]: ID_TYPE.PERSON,
-      [TypeDictionary.TYPE_ID_TEAM]: ID_TYPE.TEAM,
-    };
-    return PROFILE_DATA_HANDLER_MAP[typeId];
+    return new BaseProfileHandler(this.id).idType;
   }
 }
 export { ProfileBodyViewModel };

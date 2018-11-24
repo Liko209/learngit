@@ -52,12 +52,13 @@ class FavoriteViewComponent extends Component<Props> {
   }
 
   render() {
-    const { isFavorite, size, variant, t } = this.props;
+    const { isFavorite, size, variant, isShowTooltip, t } = this.props;
     return (
       <JuiIconButton
         size={size}
         variant={variant}
         color="accent.gold"
+        isShowToolTip={isShowTooltip}
         onClick={this.onClick}
         tooltipTitle={t(this.getTooltipKey())}
       >

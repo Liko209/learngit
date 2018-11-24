@@ -10,7 +10,6 @@ import { GroupTeamProps } from './types';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
-import { GlipTypeUtil } from 'sdk/utils';
 
 class GroupTeamProfileViewModel extends StoreViewModel<GroupTeamProps> {
   @computed
@@ -19,8 +18,6 @@ class GroupTeamProfileViewModel extends StoreViewModel<GroupTeamProps> {
   }
   @computed
   private get _group() {
-    const typeId = GlipTypeUtil.extractTypeId(this.id);
-    console.log('typeId', typeId);
     return this.id && getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
   }
   @computed

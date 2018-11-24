@@ -3,20 +3,13 @@
  * @Date: 2018-11-24 17:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { WithNamespaces } from 'react-i18next';
+import PersonModel from '@/store/models/Person';
 import { ID_TYPE } from '../types';
 
-type ProfileHeaderViewProps = WithNamespaces & {
-  id: number;
-  displayName: string;
-  description?: string;
+type MemberListViewProps = WithNamespaces & {
+  membersList: PersonModel[];
   idType: ID_TYPE;
+  counts: number;
 };
-
-type ProfileBodyProps = {
-  id: number;
-  displayName?: string;
-};
-
-export { ProfileHeaderViewProps, ProfileBodyProps };
+export { MemberListViewProps };

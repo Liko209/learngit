@@ -36,7 +36,7 @@ const StyledName = styled.div`
   -webkit-box-orient: vertical;
 `;
 const StyledDescription = styled.div`
-  margin-top: 24px;
+  margin-top: 6px;
   color: #9e9e9e;
   font-size: 12px;
   overflow: hidden;

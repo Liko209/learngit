@@ -34,7 +34,7 @@ type MenuListCompositionProps = {
 const MenuListCompositionWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-right: ${({ theme }) => `${1 * theme.spacing.unit}px`};
+  margin-right: ${({ theme }) => `${theme.spacing.unit}px`};
 `;
 
 const MenuWrapper = styled(Popper)``;

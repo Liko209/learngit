@@ -6,9 +6,9 @@
 import { buildContainer } from '@/base';
 import { ProfileHeaderView } from './ProfileHeader.View';
 import { ProfileHeaderViewModel } from './ProfileHeader.ViewModel';
-import { ProfileHeaderViewProps } from './types';
+import { ProfileHeaderProps } from './types';
 
-const ProfileHeader = buildContainer<ProfileHeaderViewProps>({
+const ProfileHeader = buildContainer<ProfileHeaderProps>({
   View: ProfileHeaderView,
   ViewModel: ProfileHeaderViewModel,
 });

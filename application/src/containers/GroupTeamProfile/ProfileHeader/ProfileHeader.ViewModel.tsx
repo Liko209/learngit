@@ -4,21 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { StoreViewModel } from '@/store/ViewModel';
-// import { getEntity, getGlobalValue } from '@/store/utils';
 import { computed } from 'mobx';
-// import { ENTITY_NAME } from '@/store';
-// import { GLOBAL_KEYS } from '@/store/constants';
-// import GroupModel from '@/store/models/Group';
-import { ProfileHeaderViewProps } from './types';
 
-class ProfileHeaderViewModel extends StoreViewModel<ProfileHeaderViewProps> {
-  // private get _id() {
-  //   return getGlobalValue(GLOBAL_KEYS.GROUP_OR_TEAM_ID);
-  // }
-  // @computed
-  // private get _group() {
-  //   return this._id && getEntity(ENTITY_NAME.GROUP, this._id) as GroupModel;
-  // }
+import { ProfileHeaderProps } from './types';
+
+class ProfileHeaderViewModel extends StoreViewModel<ProfileHeaderProps> {
+  @computed
+  get groupId() {
+    return this.props.id;
+  }
   destroy() {
     return this.props.destroy;
   }
