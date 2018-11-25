@@ -16,12 +16,14 @@ import ReactDOM from 'react-dom';
 import { genDivAndDestroy } from '@/common/genDivAndDestroy';
 import ThemeProvider from '@/containers/ThemeProvider';
 import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 type JuiNotificationPros = {
   type: JuiSnackbarsType;
   message: React.ReactNode;
-  actions?: [];
-  autoHiddenDuration?: number;
+  actions?: React.ReactNode[];
+  needCloseButton?: boolean;
 };
 
 type ReturnFunc = {
@@ -29,7 +31,7 @@ type ReturnFunc = {
 };
 
 type innerNotificationProps = {
-  autoHiddenDuration?: number;
+  autoHideDuration?: number;
   needCloseButton?: boolean;
 } & JuiNotificationPros;
 
@@ -37,14 +39,44 @@ function transitionDown(props: any) {
   return <Slide {...props} direction="down" />;
 }
 
+function getCloseButton(onClose: () => void) {
+  return (
+    <IconButton
+      key="close"
+      aria-label="Close"
+      color="inherit"
+      className={'closeButton'}
+      onClick={onClose}
+    >
+      <CloseIcon className={'fontSize: 20'} />
+    </IconButton>
+  );
+}
+
 function showNotification(props: innerNotificationProps) {
   const { container, destroy } = genDivAndDestroy();
-  const { autoHiddenDuration, needCloseButton, ...rest } = props;
-  const config = { ...rest };
+  const { autoHideDuration, needCloseButton, ...rest } = props;
+  const actions = [];
+  const closeFunction = () => {
+    destroy();
+  };
+  if (needCloseButton) {
+    actions.push(getCloseButton(closeFunction));
+  }
+
+
+  const config = { ...rest, actions };
+  const state = true;
+
   function render(params: JuiSnackbarsProps) {
     ReactDOM.render(
       <ThemeProvider>
-        <Snackbar open={true} TransitionComponent={transitionDown}>
+        <Snackbar
+          open={state}
+          TransitionComponent={transitionDown}
+          onClose={closeFunction}
+          autoHideDuration={autoHideDuration}
+        >
           <JuiSnackbarContent {...params} />
         </Snackbar>
       </ThemeProvider>,
@@ -67,8 +99,25 @@ class JuiNotification extends Component<JuiNotificationPros, {}> {
     };
     return showNotification(config);
   }
-  static flashToast(props: JuiNotificationPros) {}
-  static flagToast(props: JuiNotificationPros) {}
+  static flashToast(props: JuiNotificationPros) {
+    const config = {
+      messageAlign: 'left',
+      fullWidth: false,
+      radius: 4,
+      autoHideDuration: 2000,
+      ...props,
+    };
+    return showNotification(config);
+  }
+  static flagToast(props: JuiNotificationPros) {
+    const config = {
+      messageAlign: 'left',
+      fullWidth: false,
+      radius: 4,
+      ...props,
+    };
+    return showNotification(config);
+  }
 }
 
 export { JuiNotification, JuiNotificationPros };

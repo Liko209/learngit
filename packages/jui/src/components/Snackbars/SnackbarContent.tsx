@@ -22,7 +22,7 @@ type JuiSnackbarsProps = {
   type: JuiSnackbarsType;
   messageAlign?: MessageAlignment;
   message: React.ReactNode;
-  actions?: [];
+  actions?: React.ReactNode[];
   radius?: number;
   fullWidth?: boolean;
 };

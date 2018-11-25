@@ -36,6 +36,7 @@ const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
     border-radius: ${props => props.radius} !important;
     max-width: ${props => (props.fullWidth ? '100%' : '640')} !important;
     box-sizing: border-box;
+    height: 48px;
   }
   .message {
     flex: 1;
