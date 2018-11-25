@@ -1,7 +1,7 @@
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
-import { Person } from 'sdk/models';
+import { Person, RcPhoneNumberModel } from 'sdk/models';
 import Base from './Base';
 import {
   isOnlyLetterOrNumbers,
@@ -9,6 +9,8 @@ import {
   handleOneOfName,
   phoneNumberDefaultFormat,
 } from '../helper';
+
+const MainCompanyNumberType: string = 'MainCompanyNumber';
 
 export default class PersonModel extends Base<Person> {
   @observable
@@ -26,7 +28,7 @@ export default class PersonModel extends Base<Person> {
   @observable
   email: string;
   @observable
-  rcPhoneNumbers?: object[];
+  rcPhoneNumbers?: RcPhoneNumberModel[];
   @observable
   isPseudoUser?: boolean;
   @observable
@@ -130,5 +132,17 @@ export default class PersonModel extends Base<Person> {
   @computed
   get hasHeadShot() {
     return this.headShotVersion || this.headshot;
+  }
+
+  @computed
+  get phoneNumbers() {
+    // filter out company main number
+    if (this.rcPhoneNumbers !== undefined) {
+      return this.rcPhoneNumbers.filter(
+        (phoneInfo: RcPhoneNumberModel) =>
+          phoneInfo.usageType !== MainCompanyNumberType,
+      );
+    }
+    return [];
   }
 }
