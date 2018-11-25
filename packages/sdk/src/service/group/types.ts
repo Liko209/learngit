@@ -19,4 +19,15 @@ enum FEATURE_TYPE {
   CONFERENCE,
 }
 
-export { GroupQueryType, FEATURE_STATUS, FEATURE_TYPE };
+type TeamPermission = {
+  admin?: {
+    uids: number[];
+    level?: number;
+  };
+  user?: {
+    uids: number[];
+    level?: number;
+  };
+};
+
+export { GroupQueryType, FEATURE_STATUS, FEATURE_TYPE, TeamPermission };

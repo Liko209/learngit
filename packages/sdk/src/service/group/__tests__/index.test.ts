@@ -12,7 +12,7 @@ import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
 import { ErrorParser, BaseError, TypeDictionary } from '../../../utils';
-import { FEATURE_TYPE, FEATURE_STATUS } from '../../group';
+import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
 
 jest.mock('../../../dao');
 // jest.mock('../../utils');
@@ -660,9 +660,7 @@ describe('GroupService', () => {
       const group = { id: 10, members: [4, 5, 6] };
       jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
       const res = await groupService.buildGroupFeatureMap(group.id);
-      expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(
-        FEATURE_STATUS.INVISIBLE,
-      );
+      expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.INVISIBLE);
     });
 
     it('should has no call permission for group', async () => {
@@ -670,6 +668,33 @@ describe('GroupService', () => {
       jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
       const res = await groupService.buildGroupFeatureMap(group.id);
       expect(res.get(FEATURE_TYPE.CALL)).toBe(FEATURE_STATUS.INVISIBLE);
+    });
+  });
+
+  describe('isAdminOfTheGroup', async () => {
+    it('shuld return true if this is not a team', async () => {
+      expect(groupService.isAdminOfTheGroup(false, undefined, 11)).toBeTruthy;
+    });
+
+    it('should return true if no team permission model', async () => {
+      expect(groupService.isAdminOfTheGroup(true, undefined, 11)).toBeTruthy;
+    });
+
+    it('should return true if person is in admin id list', async () => {
+      const permission: TeamPermission = {
+        admin: {
+          uids: [1, 2, 3],
+          level: 31,
+        },
+        user: {
+          uids: [1, 2, 3, 4],
+          level: 15,
+        },
+      };
+      expect(groupService.isAdminOfTheGroup(true, permission, 1)).toBeTruthy;
+      expect(groupService.isAdminOfTheGroup(true, permission, 2)).toBeTruthy;
+      expect(groupService.isAdminOfTheGroup(true, permission, 3)).toBeTruthy;
+      expect(groupService.isAdminOfTheGroup(true, permission, 3)).toBeFalsy;
     });
   });
 });

@@ -49,7 +49,7 @@ import _ from 'lodash';
 import AccountService from '../account';
 import PersonService from '../person';
 import { compareName } from '../../utils/helper';
-import { FEATURE_STATUS, FEATURE_TYPE } from './types';
+import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -475,9 +475,7 @@ class GroupService extends BaseService<Group> {
     const group = await this.getGroupById(groupId);
     actionMap.set(
       FEATURE_TYPE.MESSAGE,
-      group
-        ? this._checkGroupMessageStatus(group)
-        : FEATURE_STATUS.INVISIBLE,
+      group ? this._checkGroupMessageStatus(group) : FEATURE_STATUS.INVISIBLE,
     );
 
     // To-Do
@@ -640,6 +638,21 @@ class GroupService extends BaseService<Group> {
       ids.push(userId);
     }
     return uniqueArray(ids);
+  }
+
+  isAdminOfTheGroup(
+    isTeam: boolean | undefined,
+    permission: TeamPermission | undefined,
+    personId: number,
+  ) {
+    if (isTeam && permission) {
+      let adminUserIds: number[] = [];
+      if (permission && permission.admin) {
+        adminUserIds = permission.admin.uids;
+      }
+      return adminUserIds.some((x: number) => x === personId);
+    }
+    return true;
   }
 }
 
