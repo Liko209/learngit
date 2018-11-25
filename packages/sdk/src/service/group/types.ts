@@ -6,7 +6,7 @@
 
 type GroupQueryType = 'all' | 'group' | 'team' | 'favorite';
 
-enum FEATURE_ACTION_STATUS {
+enum FEATURE_STATUS {
   INVISIBLE,
   ENABLE,
   DISABLE,
@@ -19,4 +19,15 @@ enum FEATURE_TYPE {
   CONFERENCE,
 }
 
-export { GroupQueryType, FEATURE_ACTION_STATUS, FEATURE_TYPE };
+type TeamPermission = {
+  admin?: {
+    uids: number[];
+    level?: number;
+  };
+  user?: {
+    uids: number[];
+    level?: number;
+  };
+};
+
+export { GroupQueryType, FEATURE_STATUS, FEATURE_TYPE, TeamPermission };
