@@ -62,6 +62,12 @@ export default function register(
         registerValidSW(swUrl, registeredHandler, updateInstalledHandler);
       }
     });
+  } else {
+    console.log(
+      `${logTag}Can not register. NODE_ENV: ${
+        process.env.NODE_ENV
+      }, has service worker ${'serviceWorker' in navigator}`,
+    );
   }
 }
 
