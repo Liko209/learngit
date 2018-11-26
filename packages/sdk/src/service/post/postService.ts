@@ -569,7 +569,6 @@ class PostService extends BaseService<Post> {
 
   async isNewestSaved(groupId: number): Promise<boolean> {
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    console.log('dao', groupConfigDao);
     let isNewestSaved = await groupConfigDao.isNewestSaved(groupId);
     if (isNewestSaved) {
       return true;

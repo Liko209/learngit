@@ -13,6 +13,9 @@ import { translate } from 'react-i18next';
 
 @observer
 class PostListPageViewComponent extends Component<PostListPageViewProps> {
+  componentWillUnmount() {
+    this.props.unsetCurrentPostListValue();
+  }
   render() {
     const { type, caption, ids, t } = this.props;
     return (

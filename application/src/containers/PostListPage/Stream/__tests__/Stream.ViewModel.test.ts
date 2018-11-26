@@ -2,12 +2,11 @@
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-12 20:31:07
  * @Last Modified by: Chris Zhan (chris.zhan@ringcentral.com)
- * @Last Modified time: 2018-11-13 10:01:37
+ * @Last Modified time: 2018-11-26 22:59:09
  */
 import { StreamViewModel } from '../Stream.ViewModel';
 import { POST_LIST_TYPE } from '../../types';
 import { service } from 'sdk';
-import { notificationCenter } from 'sdk/service';
 const { ENTITY, EVENT_TYPES, PostService } = service;
 function setup(obj: any) {
   const vm = new StreamViewModel();
@@ -62,6 +61,7 @@ describe('StreamViewModel', () => {
         },
       ],
     });
+    vm._type = POST_LIST_TYPE.mentions;
     await vm.onReceiveProps(localProps);
     const returnedEntity = new Map();
     returnedEntity.set(1, { id: 1 });

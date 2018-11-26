@@ -22,8 +22,9 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 const { PostService } = service;
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
+  private _type: string;
   private _isMatchFunc(post: Post) {
-    return this._postIds.includes(post.id) && !post.deactivated;
+    return !post.deactivated;
   }
 
   private _options = {
@@ -93,16 +94,21 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   async onReceiveProps(props: StreamProps) {
     const store = this._sortableListHandler.sortableListStore;
-    if (this.props.type !== props.type) {
-      return store.clear();
+    if (this._type !== props.type) {
+      this._type = props.type;
+      store.clear();
+      this.fetchInitialPosts();
+      return;
     }
     if (this._postIds.length !== props.postIds.length) {
       const added = _(props.postIds)
         .difference(this._postIds)
         .value();
-      this._postIds = props.postIds.reverse();
+      const deleted = _(this._postIds)
+        .difference(props.postIds)
+        .value();
+      const postService = PostService.getInstance() as IPostService;
       if (added.length) {
-        const postService = PostService.getInstance() as IPostService;
         const { posts } = await postService.getPostsByIds(added);
         this._sortableListHandler.onDataChanged({
           type: EVENT_TYPES.UPDATE,
@@ -112,6 +118,15 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           },
         });
       }
+      if (deleted.length) {
+        this._sortableListHandler.onDataChanged({
+          type: EVENT_TYPES.DELETE,
+          body: {
+            ids: deleted,
+          },
+        });
+      }
+      this._postIds = props.postIds.reverse();
     }
   }
 
