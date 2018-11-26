@@ -97,6 +97,7 @@ export type Company = ExtendedBaseModel & {
   custom_emoji: { [index: string]: { data: string } };
   _delta?: { add_keys?: object; remove_keys: object };
   rc_account_id?: number;
+  webmail_person_id?: number;
 };
 
 export type Person = ExtendedBaseModel & {
