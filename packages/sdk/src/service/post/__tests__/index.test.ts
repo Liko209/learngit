@@ -866,7 +866,7 @@ describe('PostService', () => {
       });
     });
   });
-  describe.only('newMessageWithPeopleIds', async () => {
+  describe('newMessageWithPeopleIds', async () => {
     const accountDao = new AccountDao(null);
     daoManager.getKVDao.mockReturnValue(accountDao);
     accountDao.get.mockReturnValue(1); // userId
