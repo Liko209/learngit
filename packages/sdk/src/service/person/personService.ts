@@ -23,7 +23,7 @@ class PersonService extends BaseService<Person> {
       [SOCKET.ITEM]: handleData,
     };
     super(PersonDao, PersonAPI, handleData, subscription);
-    this.setSupportCache(true);
+    this.enableCache();
   }
 
   async getPersonsByIds(ids: number[]): Promise<(Person | null)[]> {
@@ -86,6 +86,7 @@ class PersonService extends BaseService<Person> {
   async doFuzzySearchPersons(
     searchKey: string,
     excludeSelf: boolean,
+    arrangeIds?: number[],
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Person>[];
@@ -103,7 +104,7 @@ class PersonService extends BaseService<Person> {
         let name: string = this.getName(person);
         if (
           this.isFuzzyMatched(name, terms) ||
-          this.isFuzzyMatched(person.email, terms)
+          (person.email && this.isFuzzyMatched(person.email, terms))
         ) {
           if (name.length <= 0) {
             name = this.getEmailAsName(person);
@@ -119,7 +120,7 @@ class PersonService extends BaseService<Person> {
         return null;
       },
       searchKey,
-      undefined,
+      arrangeIds,
       this.sortEntitiesByName.bind(this),
     );
   }
@@ -135,18 +136,21 @@ class PersonService extends BaseService<Person> {
   }
 
   getEmailAsName(person: Person) {
-    const name = person.email.split('@')[0];
-    const firstUpperCase = (parseString: string) => {
-      if (!parseString[0]) {
-        return '';
-      }
-      return parseString[0].toUpperCase().concat(parseString.slice(1));
-    };
+    if (person.email) {
+      const name = person.email.split('@')[0];
+      const firstUpperCase = (parseString: string) => {
+        if (!parseString[0]) {
+          return '';
+        }
+        return parseString[0].toUpperCase().concat(parseString.slice(1));
+      };
 
-    return name
-      .split('.')
-      .map((v: string) => firstUpperCase(v))
-      .join(' ');
+      return name
+        .split('.')
+        .map((v: string) => firstUpperCase(v))
+        .join(' ');
+    }
+    return '';
   }
 
   getFullName(person: Person) {
