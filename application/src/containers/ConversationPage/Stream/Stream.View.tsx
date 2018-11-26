@@ -53,6 +53,7 @@ class StreamViewComponent extends Component<Props> {
     window.addEventListener('blur', this._blurHandler);
     this.scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
     this._stickToBottom();
+    this.props.resetJumpToPostId();
   }
 
   private _stickToBottom() {
@@ -86,15 +87,15 @@ class StreamViewComponent extends Component<Props> {
 
   async componentDidUpdate(
     prevProps: Props,
-    props: Props,
+    state: Props,
     snapshot: StreamSnapshot,
   ) {
     if (prevProps.groupId !== this.props.groupId) {
-      this._tidiesBeforeDestory();
+      this._tidiesBeforeDestroy();
       await this.props.loadInitialPosts();
       return this.scrollToBottom();
     }
-    if (this.props.postIds.length > prevProps.postIds.length) {
+    if (this.props.postIds.length === prevProps.postIds.length + 1) {
       if (snapshot.atBottom && !prevProps.hasMoreDown) {
         return this.scrollToBottom();
       }
@@ -330,7 +331,7 @@ class StreamViewComponent extends Component<Props> {
     this._postRefs.set(postRef.props.id, postRef);
   }
 
-  private _tidiesBeforeDestory = () => {
+  private _tidiesBeforeDestroy = () => {
     this._jumpToFirstUnreadLoading = false;
     this._firstHistoryUnreadPostViewed = false;
     this._postRefs.clear();

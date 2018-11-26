@@ -34,7 +34,7 @@ const StyledLoading = styled.div<TStyledLoading>`
 const DefaultLoading = (props: any) => (
   <>
     {props.children}
-    <JuiFade in={props.isVisible} style={{ transitionDelay: '400ms' }}>
+    <JuiFade in={props.isVisible} style={{ transitionDelay: '100ms' }}>
       <StyledLoading isVisible={props.isVisible}>
         <div>
           <JuiCircularProgress />
