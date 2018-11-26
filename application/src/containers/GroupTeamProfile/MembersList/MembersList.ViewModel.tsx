@@ -4,61 +4,87 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { StoreViewModel } from '@/store/ViewModel';
-import { computed } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { BaseProfileHandler } from '../TypeIdHandler';
+import { BaseProfileTypeHandler } from '../TypeIdHandler';
+import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
+import { MemberListProps } from './types';
 
-// import { SortableGroupMemberHandler } from '@/store/handler/groupMemberSortableHandler';
-// import { ENTITY_NAME } from '@/store';
-// import { GLOBAL_KEYS } from '@/store/constants';
-// import GroupModel from '@/store/models/Group';
-// import {
-//   // onScrollToTop,
-//   onScroll,
-//   // loading,
-//   // loadingTop,
-//   onScrollToBottom,
-// } from '@/plugins/InfiniteListPlugin';
-class MembersListViewModel extends StoreViewModel<{id: number}> {
+import {
+  loadingBottom,
+  // onScroll,
+  onScrollToBottom,
+} from '@/plugins/InfiniteListPlugin';
+class MembersListViewModel extends StoreViewModel<MemberListProps> {
+  @observable
+  private _MemberListHandler : SortableGroupMemberHandler | null = null;
+  private _allMemberIds: number[] = [];
+  @observable
+  private pagination: number = 1;
+  private _PAGE_COUNT = 20;
+  // isShowBottomShadow = false;
   constructor() {
     super();
+    this.toBottom = this.toBottom.bind(this);
+    // this.onScrollEvent = this.onScrollEvent.bind(this);
   }
   @computed
-  get _id() {
+  private get _id() {
     return this.props.id;
   }
-  @computed
-  get _group() {
-    return getEntity(ENTITY_NAME.GROUP, this._id);
+  @action
+  private _createSortableMemberIds = async () => {
+    if (!this._MemberListHandler) {
+      this._MemberListHandler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(this._id);
+    }
   }
-  // _sortMemberIds = async () => {
-  //   return getEntity(ENTITY_NAME.GROUP, this._id);
-  //   // const handler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(this._id);
-  //   // return handler && handler.getSortedGroupMembersIds();
-  // }
   @computed
-  get membersList() {
-    // return this._sortMemberIds && this._sortMemberIds.map((item) => {
-    //   return getEntity(ENTITY_NAME.PERSON)
-    // });
-    return this._group && this._group.members.map((item: number) => {
-      return getEntity(ENTITY_NAME.PERSON, item);
+  private get _paginationMemberIds() {
+    this._createSortableMemberIds();
+    this._allMemberIds = (this._MemberListHandler && this._MemberListHandler.getSortedGroupMembersIds()) || [];
+    return this._allMemberIds.slice(0, this.pagination * this._PAGE_COUNT);
+  }
+  @computed
+  get isThePersonGuest() {
+    return this._paginationMemberIds && this._paginationMemberIds.map((id: number) => {
+      return getEntity(ENTITY_NAME.GROUP, this._id).isThePersonGuest(id);
     });
-    // console.log('membersList', this._group.members);
+  }
+  @computed
+  get isThePersonAdmin() {
+    return this._paginationMemberIds && this._paginationMemberIds.map((id: number) => {
+      return getEntity(ENTITY_NAME.GROUP, this._id).isThePersonAdmin(id);
+    });
   }
   @computed
   get idType() {
-    return new BaseProfileHandler(this._id).idType;
+    return new BaseProfileTypeHandler(this._id).idType;
   }
   @computed
-  get counts() {
-    return this._group.members.length;
+  @loadingBottom
+  get membersList() {
+    return this._paginationMemberIds && this._paginationMemberIds.map((id: number) => {
+      return getEntity(ENTITY_NAME.PERSON, id);
+    });
   }
-  // @computed
-  // private get _id() {
-  //   // console.log('_id', getGlobalValue(GLOBAL_KEYS.GROUP_OR_TEAM_ID));
-  //   return getGlobalValue(GLOBAL_KEYS.GROUP_OR_TEAM_ID);
+  @action
+  @onScrollToBottom
+  toBottom() {
+    this.pagination++;
+  }
+  // @onScroll
+  // onScrollEvent(event: any) {
+  //   const clientHeight = event.target.clientHeight;
+  //   const scrollTop = event.target.scrollTop;
+  //   const isBottom = clientHeight + scrollTop === event.target.scrollHeight;
+  //   if (scrollTop > 20) {
+  //     this.isShowBottomShadow = !this.isShowBottomShadow;
+  //   }
+  //   if (isBottom) {
+  //     this.isShowBottomShadow = false;
+  //   }
+  //   console.log('isBottom', isBottom);
   // }
 }
 export { MembersListViewModel };

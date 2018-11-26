@@ -6,19 +6,20 @@
 import { buildContainer } from '@/base';
 import { MembersListView } from './MembersList.View';
 import { MembersListViewModel } from './MembersList.ViewModel';
-// import { LoadingMorePlugin, LoadingPlugin } from '@/plugins';
+import { LoadingMorePlugin, LoadingPlugin } from '@/plugins';
+import { MemberListProps } from './types';
 
-const MembersList = buildContainer<{id: number}>({
+const MembersList = buildContainer<MemberListProps>({
   View: MembersListView,
   ViewModel: MembersListViewModel,
-  // plugins: {
-  //   loadingMorePlugin: new LoadingMorePlugin({
-  //     thresholdDown: 300,
-  //     initialScrollTop: 0,
-  //     stickTo: 'top',
-  //   }),
-  //   loadingPlugin: new LoadingPlugin(),
-  // },
+  plugins: {
+    loadingMorePlugin: new LoadingMorePlugin({
+      thresholdDown: 300,
+      initialScrollTop: 0,
+      stickTo: 'top',
+    }),
+    loadingPlugin: new LoadingPlugin(),
+  },
 });
 
 export { MembersList };

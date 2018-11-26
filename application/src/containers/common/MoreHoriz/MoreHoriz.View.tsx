@@ -30,6 +30,7 @@ class MoreHoriz extends React.Component<Props> {
   render() {
     return (
       <JuiHorizMenu
+        className="horiz-menu"
         menuItems={[{
           label: 'copy email',
           onClick: this._onEmailCopied,

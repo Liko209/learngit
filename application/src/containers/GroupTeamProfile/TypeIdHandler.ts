@@ -10,7 +10,7 @@ import { computed, observable } from 'mobx';
 import { ENTITY_NAME } from '@/store';
 import { ID_TYPE } from './types';
 
-class BaseProfileHandler {
+class BaseProfileTypeHandler {
   @observable
   private _id: number;
   @observable
@@ -50,4 +50,4 @@ class BaseProfileHandler {
     return PROFILE_DATA_HANDLER_MAP[typeId];
   }
 }
-export { BaseProfileHandler };
+export { BaseProfileTypeHandler };

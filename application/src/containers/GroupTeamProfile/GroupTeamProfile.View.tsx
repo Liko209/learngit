@@ -6,11 +6,19 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
+import styled from 'jui/foundation/styled-components';
 import { GroupTeamProps } from './types';
 import { MembersList } from './MembersList';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileBody } from './ProfileBody';
+import { MemberListHeader } from './MembersList/MemberListHeader';
 
+const StyledProfileView = styled.div`
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+`;
 @observer
 class GroupTeamProfile extends React.Component<GroupTeamProps> {
   render() {
@@ -19,11 +27,12 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
       id,
     } = this.props;
     return (
-      <div style={{ position: 'relative', overflow: 'hidden' }}>
+      <StyledProfileView>
         <ProfileHeader destroy={destroy} id={id} />
         <ProfileBody id={id}/>
+        <MemberListHeader id={id}/>
         <MembersList id={id}/>
-      </div>
+      </StyledProfileView>
     );
   }
 }

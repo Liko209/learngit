@@ -10,6 +10,7 @@ import {
   spacing,
   grey,
   height,
+  width,
 } from '../../foundation/utils/styles';
 import { GroupHeaderProps } from './types';
 
@@ -40,6 +41,9 @@ const StyledIcon = styled.div`
   div {
     z-index: 99999;
     margin-right: ${spacing(3)};
+  }
+  .horiz-menu {
+    width: ${width(5)};
   }
 `;
 const StyledText = styled.p`

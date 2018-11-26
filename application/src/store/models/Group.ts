@@ -177,7 +177,7 @@ export default class GroupModel extends Base<Group> {
 
   isThePersonAdmin(personId: number) {
     const groupService: GroupService = GroupService.getInstance();
-    groupService.isAdminOfTheGroup(this.isTeam, this.permissions, personId);
+    return groupService.isAdminOfTheGroup(this.isTeam, this.permissions, personId);
   }
 
   isThePersonGuest(personId: number) {

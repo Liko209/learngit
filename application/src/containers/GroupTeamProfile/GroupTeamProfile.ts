@@ -6,8 +6,9 @@
 import { buildContainer } from '@/base';
 import { GroupTeamProfileView } from './GroupTeamProfile.View';
 import { GroupTeamProfileViewModel } from './GroupTeamProfile.ViewModel';
+import { GroupTeamProps } from './types';
 
-const GroupTeamProfile = buildContainer({
+const GroupTeamProfile = buildContainer<GroupTeamProps>({
   View: GroupTeamProfileView,
   ViewModel: GroupTeamProfileViewModel,
 });

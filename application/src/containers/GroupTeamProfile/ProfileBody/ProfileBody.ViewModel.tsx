@@ -6,7 +6,7 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { computed } from 'mobx';
 import { ProfileBodyProps } from './types';
-import { BaseProfileHandler } from '../TypeIdHandler';
+import { BaseProfileTypeHandler } from '../TypeIdHandler';
 
 class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   constructor() {
@@ -18,12 +18,12 @@ class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   }
   @computed
   private get _group() {
-    const baseProfileHandler = new BaseProfileHandler(this.id);
+    const baseProfileHandler = new BaseProfileTypeHandler(this.id);
     return baseProfileHandler.getGroupOrPersonData();
   }
   @computed
   private get _person() {
-    return new BaseProfileHandler(this.id).getGroupOrPersonData();
+    return new BaseProfileTypeHandler(this.id).getGroupOrPersonData();
   }
   @computed
   private get _profileData() {
@@ -39,7 +39,7 @@ class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   }
   @computed
   get idType() {
-    return new BaseProfileHandler(this.id).idType;
+    return new BaseProfileTypeHandler(this.id).idType;
   }
 }
 export { ProfileBodyViewModel };

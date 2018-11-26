@@ -10,6 +10,11 @@ import { ID_TYPE } from '../types';
 type MemberListViewProps = WithNamespaces & {
   membersList: PersonModel[];
   idType: ID_TYPE;
-  counts: number;
+  isThePersonAdmin: boolean[];
+  isThePersonGuest: boolean[];
+  isShowBottomShadow: boolean;
 };
-export { MemberListViewProps };
+type MemberListProps = {
+  id: number;
+};
+export { MemberListViewProps, MemberListProps };
