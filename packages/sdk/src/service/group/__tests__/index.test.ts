@@ -13,19 +13,21 @@ import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
 import { ErrorParser, BaseError, TypeDictionary } from '../../../utils';
 import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
+import CompanyService from '../../company';
+import { Api } from '../../../api';
 
 jest.mock('../../../dao');
-// jest.mock('../../utils');
 jest.mock('../handleData');
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
+jest.mock('../../../service/company');
+jest.mock('../../../api/glip/group');
+
 const profileService = new ProfileService();
 const personService = new PersonService();
 const accountService = new AccountService();
-
-jest.mock('../../../api/glip/group');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -872,5 +874,47 @@ describe('GroupService', () => {
       expect(groupService.isAdminOfTheGroup(true, permission, 3)).toBeTruthy;
       expect(groupService.isAdminOfTheGroup(true, permission, 3)).toBeFalsy;
     });
+  });
+
+  describe('getGroupEmail', () => {
+    const envDomain = 'aws13-g04-uds02.asialab.glip.net';
+    const config = {
+      glip: {
+        server: `https://${envDomain}:11904`,
+        cacheServer: 'https://aws13-g04-uds02.asialab.glip.net:11907',
+      },
+    };
+
+    const companyReplyDomain = 'companyDomain';
+    const companyService = new CompanyService();
+    beforeEach(() => {
+      CompanyService.getInstance = jest.fn().mockReturnValue(companyService);
+      companyService.getReplyToDomain.mockResolvedValueOnce(companyReplyDomain);
+
+      Object.assign(Api, {
+        _httpConfig: config,
+      });
+    });
+
+    it('should return email address combined with group abbreviation, company domian, env domain', async () => {
+      const group = { id: 1, email_friendly_abbreviation: 'group' };
+      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+
+      const res = await groupService.getGroupEmail(group.id);
+      expect(res).toBe(
+        `${
+          group.email_friendly_abbreviation
+        }@${companyReplyDomain}.${envDomain}`,
+      );
+    });
+
+    it('should return email address combined with group id, company domian, env domain', async () => {
+      const group = { id: 1 };
+      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+
+      const res = await groupService.getGroupEmail(group.id);
+      expect(res).toBe(`${group.id}@${companyReplyDomain}.${envDomain}`);
+    });
+
   });
 });

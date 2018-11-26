@@ -676,23 +676,24 @@ class GroupService extends BaseService<Group> {
         group.company_id,
       );
 
-      const envDomain = this._getDomain();
+      if (companyReplyDomain) {
+        const envDomain = this._getENVDomain();
+        if (group.email_friendly_abbreviation) {
+          email = `${
+            group.email_friendly_abbreviation
+          }@${companyReplyDomain}.${envDomain}`;
+        }
 
-      email = `${
-        group.email_friendly_abbreviation
-      }@${companyReplyDomain}.${envDomain}`;
-
-      if (!isValidEmailAddress(email)) {
-        email = `${groupId}@${companyReplyDomain}.${envDomain}`;
+        if (!isValidEmailAddress(email)) {
+          email = `${group.id}@${companyReplyDomain}.${envDomain}`;
+        }
       }
     }
-    console.log('---getGroupEmail', email);
     return email;
   }
 
-  private _getDomain() {
-    // eg: https://aws13-g04-uds02.asialab.glip.net:11904
-    let apiServer = Api.httpConfig.glip.server;
+  private _getENVDomain() {
+    let apiServer = Api.httpConfig['glip'].server;
     if (apiServer) {
       let index = apiServer.indexOf('://');
       if (index > -1) {
