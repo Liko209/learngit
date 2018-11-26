@@ -53,7 +53,7 @@ function networkErr<T, E extends BaseError = BaseError>(
   headers: object,
   message?: string,
 ) {
-  const error = ErrorParser.parse({ status });
+  const error = ErrorParser.parse({ status }) as E;
   error.message = message || error.message || `Error: ${code}`;
   return new NetworkResultErr<T, E>(error, status, headers);
 }

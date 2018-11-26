@@ -16,7 +16,7 @@ import {
 // import BaseResponse from 'foundation/network/BaseResponse';
 
 class ErrorParser {
-  static parse(err: any) {
+  static parse(err: any): BaseError {
     // need refactor ** +1
     // if (!err) return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Server Crash');
     if (err instanceof DBCriticalError) {

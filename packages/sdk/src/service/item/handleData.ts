@@ -29,14 +29,15 @@ const itemHandleData = async (items: Raw<Item>[]) => {
 
 const uploadStorageFile = async (params: ISendFile): Promise<StoredFile> => {
   const { file, groupId } = params;
-  const resp = await ItemAPI.uploadFileItem(file, (e: ProgressEventInit) => {
+  const result = await ItemAPI.uploadFileItem(file, (e: ProgressEventInit) => {
     const { loaded, total } = e;
     if (loaded && total) {
       const percent = loaded / total;
       UploadManager.emit(String(groupId), (percent * 100).toFixed(0));
     }
   });
-  return resp.data;
+  const storedFile = result.expect('Failed to upload file item.');
+  return storedFile;
 };
 
 const extractFileNameAndType = (storagePath: string) => {
@@ -88,7 +89,8 @@ const sendFileItem = async (options: Options): Promise<Raw<FileItem>> => {
     is_new: true,
   };
   const result = await ItemAPI.sendFileItem(fileItemOptions);
-  return result.data;
+  const rawFileItem = result.expect('Failed to send file item.');
+  return rawFileItem;
 };
 
 export { uploadStorageFile, extractFileNameAndType, sendFileItem };
