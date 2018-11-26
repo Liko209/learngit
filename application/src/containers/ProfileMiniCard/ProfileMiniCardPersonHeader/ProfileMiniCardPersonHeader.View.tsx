@@ -17,7 +17,7 @@ import {
   JuiProfileMiniCardPersonStatus,
   JuiProfileMiniCardPersonTitle,
 } from 'jui/pattern/ProfileMiniCard';
-import { JuiIconography } from 'jui/foundation/Iconography';
+import { Favorite } from '@/containers/common';
 
 class ProfileMiniCardPersonHeaderView extends Component<
   ProfileMiniCardPersonHeaderViewProps
@@ -41,7 +41,7 @@ class ProfileMiniCardPersonHeaderView extends Component<
           <JuiProfileMiniCardPersonTitle>{title}</JuiProfileMiniCardPersonTitle>
         </JuiProfileMiniCardHeaderMiddle>
         <JuiProfileMiniCardHeaderRight>
-          <JuiIconography fontSize="small">star</JuiIconography>
+          <Favorite id={id} />
         </JuiProfileMiniCardHeaderRight>
       </JuiProfileMiniCardHeader>
     );

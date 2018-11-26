@@ -13,8 +13,8 @@ import {
   JuiProfileMiniCardHeaderRight,
   JuiProfileMiniCardGroupName,
 } from 'jui/pattern/ProfileMiniCard';
-import { JuiIconography } from 'jui/foundation/Iconography';
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
+import { Favorite, Privacy } from '@/containers/common';
 
 class ProfileMiniCardGroupHeaderView extends Component<
   ProfileMiniCardGroupHeaderViewProps
@@ -33,8 +33,8 @@ class ProfileMiniCardGroupHeaderView extends Component<
           </JuiProfileMiniCardGroupName>
         </JuiProfileMiniCardHeaderMiddle>
         <JuiProfileMiniCardHeaderRight>
-          {isTeam && <JuiIconography fontSize="small">lock</JuiIconography>}
-          <JuiIconography fontSize="small">star</JuiIconography>
+          {isTeam && <Privacy id={id} />}
+          <Favorite id={id} />
         </JuiProfileMiniCardHeaderRight>
       </JuiProfileMiniCardHeader>
     );

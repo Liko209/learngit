@@ -1,14 +1,14 @@
 /*
  * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-11-21 16:13:56
+ * @Date: 2018-11-26 10:58:25
  * Copyright © RingCentral. All rights reserved.
  */
 
 import styled from '../../foundation/styled-components';
 
-const JuiProfileMiniCardHeader = styled('div')`
-  display: flex;
-  flex-direction: row;
+const JuiProfileMiniCardHeaderMiddle = styled('div')`
+  flex: 1;
+  overflow: hidden;
 `;
 
-export { JuiProfileMiniCardHeader };
+export { JuiProfileMiniCardHeaderMiddle };

@@ -5,6 +5,9 @@
  */
 
 export * from './ProfileMiniCardHeader';
+export * from './ProfileMiniCardHeaderLeft';
+export * from './ProfileMiniCardHeaderMiddle';
+export * from './ProfileMiniCardHeaderRight';
 
 export * from './ProfileMiniCardPersonName';
 export * from './ProfileMiniCardPersonStatus';
