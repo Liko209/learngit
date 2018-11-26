@@ -137,20 +137,20 @@ class GroupService extends BaseService<Group> {
 
   async getGroupsByIds(ids: number[]): Promise<Group[]> {
     if (ids.length) {
-      const groups = (await Promise.all(
+      const groups = await Promise.all(
         ids.map(async (id: number) => {
           const group = await this.getById(id);
           return group;
         }),
-      )) as (Group | null)[];
+      );
       return groups.filter(group => group !== null) as Group[];
     }
     return [];
   }
 
-  async getGroupById(id: number): Promise<Group | null> {
+  async getGroupById(id: number) {
     console.warn('getGroupById() is deprecated use getById() instead.');
-    return super.getById(id) as Promise<Group | null>;
+    return super.getById(id);
   }
 
   async getGroupByPersonId(personId: number): Promise<Group | null> {
@@ -252,7 +252,7 @@ class GroupService extends BaseService<Group> {
       const rawGroup = result.expect('Failed to pin post.');
 
       const newGroup = await this.handleRawGroup(rawGroup);
-      return ok(newGroup);
+      return newGroup;
     }
     return null;
   }
@@ -270,8 +270,11 @@ class GroupService extends BaseService<Group> {
     type: PERMISSION_ENUM,
   ): Promise<boolean> {
     const groupInfo = await this.getById(group_id);
-    const permissionList = this.getPermissions(groupInfo);
-    return permissionList.includes(type);
+    if (groupInfo) {
+      const permissionList = this.getPermissions(groupInfo);
+      return permissionList.includes(type);
+    }
+    return false;
   }
 
   hasPermissionWithGroup(group: Group, type: PERMISSION_ENUM): boolean {

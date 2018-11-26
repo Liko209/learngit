@@ -12,7 +12,7 @@ import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
 import { ErrorParser, BaseError } from '../../../utils';
-import notificationCenter from '../../notificationCenter';
+import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
 
 jest.mock('../../../dao');
 // jest.mock('../../utils');
@@ -37,7 +37,7 @@ describe('GroupService', () => {
     .spyOn(groupService, 'updatePartialModel2Db')
     .mockImplementation(() => {});
   jest
-    .spyOn(groupService, '_doDefaultPartialNotify')
+    .spyOn<GroupService, any>(groupService, '_doDefaultPartialNotify')
     .mockImplementation(() => {});
 
   const accountDao = new AccountDao(null);
@@ -139,25 +139,25 @@ describe('GroupService', () => {
     expect(result3).toBeNull;
   });
 
-  it('requestRemoteGroupByMemberList()', async () => {
+  it.only('requestRemoteGroupByMemberList()', async () => {
     daoManager.getKVDao.mockReturnValue(accountDao);
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.get.mockResolvedValue(1); // userId
 
-    const mockNormal = { data: { _id: 1 } };
+    const mockNormal = new NetworkResultOk({ _id: 1 }, 200, {});
     GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
     const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
     expect(result1).toEqual({ id: 1 });
 
-    const mockEmpty = null;
+    const mockEmpty = new NetworkResultOk(null, 200, {});
     GroupAPI.requestNewGroup.mockResolvedValue(mockEmpty);
     const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result2).toBeNull;
+    expect(result2).toBeNull();
 
-    const mockError = null;
+    const mockError = new NetworkResultErr(null, 403, {});
     GroupAPI.requestNewGroup.mockResolvedValue(mockError);
     const result3 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result3).toBeNull;
+    expect(result3).toBeNull();
   });
 
   it('getGroupByPersonId()', async () => {
@@ -367,17 +367,17 @@ describe('GroupService', () => {
     });
 
     it('should return null if request failed', async () => {
-      jest.spyOn(groupService, 'handleResponse');
-      groupService.handleResponse.mockImplementationOnce(() => {});
+      jest.spyOn<GroupService, any>(groupService, 'handleRawGroup');
+      groupService.handleRawGroup.mockImplementationOnce(() => {});
       GroupAPI.addTeamMembers.mockResolvedValueOnce(null);
 
       await groupService.addTeamMembers(1, []);
-      expect(groupService.handleResponse).toHaveBeenCalledWith(null);
+      expect(groupService.handleRawGroup).not.toHaveBeenCalled();
 
       GroupAPI.addTeamMembers.mockResolvedValueOnce({ data: null });
 
       await groupService.addTeamMembers(1, []);
-      expect(groupService.handleResponse).toHaveBeenCalledWith({ data: null });
+      expect(groupService.handleRawGroup).toHaveBeenCalledWith({ data: null });
     });
   });
 

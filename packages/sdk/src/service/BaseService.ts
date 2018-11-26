@@ -3,15 +3,16 @@
  * @Date: 2018-04-16 09:47:05
  * Copyright © RingCentral. All rights reserved.
  */
+import { mainLogger } from 'foundation';
 import { transform, isFunction } from '../service/utils';
 import { BaseError, ErrorParser } from '../utils';
 import { daoManager, DeactivatedDao } from '../dao';
 import { BaseModel, Raw } from '../models'; // eslint-disable-line
-import { mainLogger } from 'foundation';
 import { AbstractService } from '../framework';
 import notificationCenter from './notificationCenter';
 import { container } from '../container';
 import dataDispatcher from '../component/DataDispatcher';
+import { NetworkResult } from '../api/NetworkResult';
 import { SOCKET } from './eventKey';
 import _ from 'lodash';
 
@@ -41,10 +42,10 @@ class BaseService<
     return container.get(this.name) as T;
   }
 
-  async getById(id: number): Promise<SubModel> {
-    let result = await this.getByIdFromDao(id);
+  async getById(id: number): Promise<SubModel | null> {
+    const result = await this.getByIdFromDao(id);
     if (!result) {
-      result = await this.getByIdFromAPI(id);
+      return this.getByIdFromAPI(id);
     }
     return result;
   }
@@ -56,20 +57,21 @@ class BaseService<
     return result || daoManager.getDao(DeactivatedDao).get(id);
   }
 
-  async getByIdFromAPI(id: number): Promise<SubModel> {
+  async getByIdFromAPI(id: number): Promise<SubModel | null> {
     if (!this.ApiClass || !isFunction(this.handleData)) {
       throwError('ApiClass || HandleData');
     }
     if (id <= 0) {
       throwError('invalid id, should not do network request');
     }
-    let result = await this.ApiClass.getDataById(id);
-    if (result && result.data) {
-      const arr = [].concat(result.data).map(transform); // normal transform
+    const result: NetworkResult<any> = await this.ApiClass.getDataById(id);
+    if (result.isOk()) {
+      const arr: any[] = [].concat(result.data).map(transform); // normal transform
       await this.handleData(arr);
-      result = arr.length > 0 ? arr[0] : null;
+      const model = arr[0];
+      return model ? model : null;
     }
-    return result;
+    return null;
   }
 
   async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<
@@ -138,8 +140,8 @@ class BaseService<
     const id: number = partialModel.id
       ? partialModel.id
       : partialModel._id
-        ? partialModel._id
-        : 0;
+      ? partialModel._id
+      : 0;
     let result: SubModel | BaseError;
 
     do {
