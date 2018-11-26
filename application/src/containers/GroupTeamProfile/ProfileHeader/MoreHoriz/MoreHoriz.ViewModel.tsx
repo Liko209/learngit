@@ -10,6 +10,7 @@ import { GroupService } from 'sdk/service';
 
 class MoreHorizViewModel extends StoreViewModel<MoreHorizProps> {
   private _groupService: GroupService = GroupService.getInstance();
+  private _email = '';
   @computed
   private _id() {
     return this.props.id;
@@ -18,9 +19,13 @@ class MoreHorizViewModel extends StoreViewModel<MoreHorizProps> {
   get groupUrl() {
     return `${window.location.origin}/messages/${this._id}`;
   }
+  private _getEmail = async () => {
+    this._email = await this._groupService.getGroupEmail(this._id);
+  }
   @computed
   get email() {
-    return this._groupService.getGroupEmail(this._id);
+    this._getEmail();
+    return this._email;
   }
 }
 export { MoreHorizViewModel };

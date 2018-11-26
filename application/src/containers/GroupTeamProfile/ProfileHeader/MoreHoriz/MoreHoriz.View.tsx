@@ -12,6 +12,7 @@ import copy from 'copy-to-clipboard';
 
 type Props = WithNamespaces & {
   groupUrl: string;
+  email: string;
 };
 @observer
 class MoreHoriz extends React.Component<Props> {
@@ -22,7 +23,11 @@ class MoreHoriz extends React.Component<Props> {
       </JuiIconButton>
     );
   }
-  private _onEmailCopied = () => {};
+  private _onEmailCopied = () => {
+    const { email } = this.props;
+    console.log('email', email);
+    copy(email);
+  }
   private _onUrlCopied = () => {
     const { groupUrl } = this.props;
     copy(groupUrl);
