@@ -51,7 +51,7 @@ describe('jumpToConversationViewModel', () => {
       jest.clearAllMocks();
     });
     it('groupService return value', async () => {
-      (groupService.getGroupByMemberList as jest.Mock).mockResolvedValue({
+      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
         id: 2,
       });
       await jumpToConversationViewModel.getConversationId();
@@ -59,7 +59,7 @@ describe('jumpToConversationViewModel', () => {
     });
 
     it('groupService return null', async () => {
-      (groupService.getGroupByMemberList as jest.Mock).mockResolvedValue(null);
+      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(null);
       await jumpToConversationViewModel.getConversationId();
       expect(jumpToConversationViewModel.conversationId).toEqual(0);
     });
