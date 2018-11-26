@@ -9,13 +9,9 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileButtonViewProps } from './types';
 // import { JuiModal } from '@/containers/Dialog';
 type Props = ProfileButtonViewProps & WithNamespaces;
-import styled from 'jui/foundation/styled-components';
+// import styled from 'jui/foundation/styled-components';
+import { JuiButton } from 'jui/components/Buttons';
 
-const StyledParam = styled.p`
-  color: ${({ theme }) => theme.palette.primary.main};
-  font-size: ${({ theme }) => theme.typography.button.fontSize};
-  cursor: pointer;
-`;
 class ProfileButton extends Component<Props> {
   private onClick = (event: MouseEvent<HTMLElement>) => {
     this.props.handleGlobalGroupId(event);
@@ -24,7 +20,9 @@ class ProfileButton extends Component<Props> {
   render() {
     const { t } = this.props;
     return (
-      <StyledParam onClick={this.onClick}>{t('Profile')}</StyledParam>
+      <JuiButton onClick={this.onClick} variant="text" color="primary">
+        {t('Profile')}
+      </JuiButton>
     );
   }
 }
