@@ -155,7 +155,7 @@ class BaseService<
     const sortableEntities: SortableModel<SubModel>[] = [];
 
     if (searchKey) {
-      terms = this.getTermsFromSearchKey(searchKey);
+      terms = this.getTermsFromSearchKey(searchKey.trim());
     }
 
     if (arrangeIds) {
