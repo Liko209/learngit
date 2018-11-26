@@ -8,13 +8,22 @@ import PersonService from 'sdk/service/person';
 import GroupService from 'sdk/service/group';
 
 class SearchBarViewModel extends StoreViewModel {
+  personService: PersonService;
+  groupService: GroupService;
+
+  constructor() {
+    super();
+    this.personService = PersonService.getInstance();
+    this.groupService = GroupService.getInstance();
+  }
+
   search = async (key: string) => {
-    const personService: PersonService = PersonService.getInstance();
-    const groupService: GroupService = GroupService.getInstance();
-    const result1 = await personService.doFuzzySearchPersons(key, true);
-    const result2 = await groupService.doFuzzySearchGroups(key);
-    console.log(result1, '----------result people');
-    console.log(result2, '----------result group');
+    const persons = await this.personService.doFuzzySearchPersons(key, true);
+    const groups = await this.groupService.doFuzzySearchGroups(key);
+    const teams = await this.groupService.doFuzzySearchTeams(key);
+    console.log(key, persons, '----------result people');
+    console.log(groups, '----------result group');
+    console.log(teams, '----------result teams');
   }
 }
 

@@ -4,10 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from '../../../foundation/styled-components';
 import MenuItem from '@material-ui/core/MenuItem';
-import tinycolor from 'tinycolor2';
-
+import { JuiSearchItemValue } from '../';
+import styled from '../../../foundation/styled-components';
 import { height, spacing, palette } from '../../../foundation/utils/styles';
 
 const SearchItemWrapper = styled(MenuItem)`
@@ -15,16 +14,10 @@ const SearchItemWrapper = styled(MenuItem)`
     height: ${height(6)};
     padding: ${spacing(1, 4)};
     &:hover {
-      background: ${({ theme }) =>
-        tinycolor(palette('grey', '500')({ theme }))
-          .setAlpha(theme.palette.action.hoverOpacity)
-          .toRgbString()};
+      background: ${({ theme }) => palette('grey', '500', 1)};
     }
     &:active {
-      background: ${({ theme }) =>
-        tinycolor(palette('primary', 'main')({ theme }))
-          .setAlpha(theme.palette.action.hoverOpacity)
-          .toRgbString()};
+      background: ${({ theme }) => palette('primary', 'main', 1)};
     }
   }
 `;
@@ -35,6 +28,8 @@ const SearchItemAvatar = styled.div`
 
 const SearchItemValueWrapper = styled.div`
   flex: 1;
+  min-width: 0;
+  padding: ${spacing(0, 1, 0, 0)};
 `;
 
 const SearchItemActions = styled.div`
@@ -42,18 +37,21 @@ const SearchItemActions = styled.div`
 `;
 
 type JuiSearchItemProps = {
-  avatar: JSX.Element;
-  itemValue: JSX.Element;
-  actions?: JSX.Element[];
+  Avatar: JSX.Element;
+  value: string;
+  terms: string[];
+  Actions?: JSX.Element;
 };
 
 const JuiSearchItem = (props: JuiSearchItemProps) => {
-  const { avatar, itemValue, actions } = props;
+  const { Avatar, Actions, value, terms } = props;
   return (
     <SearchItemWrapper disableRipple={true}>
-      <SearchItemAvatar>{avatar}</SearchItemAvatar>
-      <SearchItemValueWrapper>{itemValue}</SearchItemValueWrapper>
-      {actions && <SearchItemActions>{actions}</SearchItemActions>}
+      <SearchItemAvatar>{Avatar}</SearchItemAvatar>
+      <SearchItemValueWrapper>
+        <JuiSearchItemValue value={value} terms={terms} />
+      </SearchItemValueWrapper>
+      {Actions && <SearchItemActions>{Actions}</SearchItemActions>}
     </SearchItemWrapper>
   );
 };

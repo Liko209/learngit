@@ -8,7 +8,6 @@ import React, { ComponentType } from 'react';
 import { StyledAppBar } from './StyledAppBar';
 import { StyledToolbar } from './StyledToolbar';
 import { StyledMenuWithLogo } from './StyledMenuWithLogo';
-// import { StyledSearchBar } from './StyledSearchBar';
 import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { StyledLeft } from './StyledLeft';
 import { StyledRight } from './StyledRight';

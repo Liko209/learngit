@@ -20,6 +20,7 @@ const SearchTitleWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid ${grey('200')};
 `;
 
 const SearchTitleText = styled(JuiTypography)`

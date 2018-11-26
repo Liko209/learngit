@@ -13,7 +13,6 @@ import { storiesOf } from '@storybook/react';
 import { text, array } from '@storybook/addon-knobs';
 import { JuiSearchItem } from '../';
 import { JuiAvatar } from '../../../components/Avatar';
-import { JuiSearchItemValue } from '../../../pattern/SearchBar/SearchItemValue';
 import { JuiIconography } from '../../../foundation/Iconography';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
@@ -31,7 +30,8 @@ storiesOf('Pattern/SearchBar', module)
       <div>
         <JuiSearchItem
           avatar={<JuiAvatar src={avatar} size="small" />}
-          itemValue={<JuiSearchItemValue value={value} terms={terms} />}
+          value={value}
+          terms={terms}
           actions={[
             <JuiIconography key="call" style={{ display: 'flex' }}>
               call
@@ -43,7 +43,8 @@ storiesOf('Pattern/SearchBar', module)
         />
         <JuiSearchItem
           avatar={<JuiAvatar src={avatar} size="small" />}
-          itemValue={<JuiSearchItemValue value={value} terms={terms} />}
+          value={value}
+          terms={terms}
           actions={[
             <JuiIconography key="call" style={{ display: 'flex' }}>
               videocam
