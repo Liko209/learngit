@@ -4,13 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { StoreViewModel } from '@/store/ViewModel';
-// import { getEntity, getGlobalValue } from '@/store/utils';
 import { computed } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
-import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
-import { ID_TYPE } from '../types';
+import { BaseProfileHandler } from '../TypeIdHandler';
+
 // import { SortableGroupMemberHandler } from '@/store/handler/groupMemberSortableHandler';
 // import { ENTITY_NAME } from '@/store';
 // import { GLOBAL_KEYS } from '@/store/constants';
@@ -51,12 +49,7 @@ class MembersListViewModel extends StoreViewModel<{id: number}> {
   }
   @computed
   get idType() {
-    const typeId = GlipTypeUtil.extractTypeId(this._id);
-    const PROFILE_DATA_HANDLER_MAP = {
-      [TypeDictionary.TYPE_ID_GROUP]: ID_TYPE.GROUP,
-      [TypeDictionary.TYPE_ID_TEAM]: ID_TYPE.TEAM,
-    };
-    return PROFILE_DATA_HANDLER_MAP[typeId];
+    return new BaseProfileHandler(this._id).idType;
   }
   @computed
   get counts() {

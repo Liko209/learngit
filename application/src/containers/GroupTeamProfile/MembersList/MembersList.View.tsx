@@ -33,6 +33,7 @@ const StyledListWrapper = styled.div`
 const StyledContent = styled.div``;
 
 const StyledList = styled.ul`
+  position: relative;
   max-height: 48vh;
   overflow: scroll;
   list-style: none;
@@ -41,6 +42,12 @@ const StyledList = styled.ul`
 `;
 @observer
 class MembersList extends React.Component<MemberListViewProps> {
+  private _onScrollEvent(event: any) {
+    const clientHeight = event.target.clientHeight;
+    const isBottom = clientHeight + event.target.scrollTop === event.target.scrollHeight;
+    console.log('isBottom', isBottom);
+    console.log('scrollTop', event.target.scrollTop);
+  }
   render() {
     const { membersList, idType, counts, t } = this.props;
     return (
@@ -53,7 +60,7 @@ class MembersList extends React.Component<MemberListViewProps> {
                 : `${t(GROUP_LIST_TITLE.GROUP_MEMBERS)} (${counts})`}
             </StyledTitle>
           </StyledTitleBar>
-          <StyledList>
+          <StyledList onScrollCapture={(event: any) => this._onScrollEvent(event)}>
             {membersList.map((item: any, idx: number) => {
               return (
                 <JuiGroupProfileList key={idx}>
