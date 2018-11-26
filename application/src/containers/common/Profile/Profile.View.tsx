@@ -6,9 +6,9 @@
 
 import React, { Component, MouseEvent } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { ProfileButtonProps } from './types';
+import { ProfileButtonViewProps } from './types';
 // import { JuiModal } from '@/containers/Dialog';
-type Props = ProfileButtonProps & WithNamespaces;
+type Props = ProfileButtonViewProps & WithNamespaces;
 import styled from 'jui/foundation/styled-components';
 
 const StyledParam = styled.p`

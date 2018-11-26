@@ -6,6 +6,8 @@
 import { MouseEvent } from 'react';
 type ProfileButtonProps = {
   id: number;
-  handleGlobalGroupId: (event: MouseEvent<HTMLElement>) => void
 };
-export { ProfileButtonProps };
+type ProfileButtonViewProps = {
+  handleGlobalGroupId: (event: MouseEvent<HTMLElement>) => void;
+};
+export { ProfileButtonProps, ProfileButtonViewProps };
