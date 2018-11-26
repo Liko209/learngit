@@ -29,8 +29,8 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
     const favoritesSection = app.homePage.messagePanel.favoritesSection;
 
     await h(t).withLog('Given I clear all UMIs before login', async () => {
-      const  teamIds = await user.sdk.glip.getTeamsIds();
-      await user.sdk.glip.markAsRead(user.rcId, teamIds);
+      const  unReadTeamIds = await user.sdk.glip.getTeamsIds();
+      await user.sdk.glip.markAsRead(user.rcId, unReadTeamIds);
     });
 
     let newTeam1;
@@ -161,8 +161,8 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
 
     await h(t).withLog('Given clear all UMIs before login', async () => {
-      const  teamIds = await user.sdk.glip.getTeamsIds();
-      await user.sdk.glip.markAsRead(user.rcId, teamIds);
+      const  unReadTeamIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
+      await user.sdk.glip.markAsRead(user.rcId, unReadTeamIds);
     });
 
     await h(t).withLog(`And set limit conversation count=${MAX_NUMBER}(JPT-353)`, async () => {
@@ -198,20 +198,16 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     // case JPT-353
     await h(t).withLog(`Then max conversation count should be limited, total number should be ${realNum}`, async () => {
-      await t.wait(3e3);
-      const count = await teamsSection.conversations.count;
-      await t.expect(count).eql(realNum);
+      await teamsSection.expectConversationCount(realNum);
     });
 
     await h(t).withLog(`When I refresh page`, async () => {
       await h(t).refresh();
-      await app.homePage.messagePanel.ensureLoaded(10e3);  // todo
+      await app.homePage.messagePanel.ensureLoaded(10e3);
     });
 
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
-      await t.wait(5e3);
-      const count = await teamsSection.conversations.count;
-      await t.expect(count).eql(realNum);
+      await teamsSection.expectConversationCount(realNum);
     });
 
     // case JPT-310
@@ -225,9 +221,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = MAX_NUMBER - 1;
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
-      await t.wait(1e3);
-      const count = await teamsSection.conversations.count;
-      await t.expect(count).eql(realNum);
+      await teamsSection.expectConversationCount(realNum);
     });
 
     await h(t).withLog("When I click conversation.2's favorite buttom", async () => {
@@ -237,9 +231,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = realNum - 1;
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
-      await t.wait(1e3);
-      const count = await teamsSection.conversations.count;
-      await t.expect(count).eql(realNum);
+      await teamsSection.expectConversationCount(realNum);
     });
 
     // case JPT-342
@@ -255,9 +247,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = realNum + 1;
     await h(t).withLog(`And max conversation count = ${realNum}`, async () => {
-      await t.wait(1e3);
-      const count = await teamsSection.conversations.count;
-      await t.expect(count).eql(realNum);
+      await teamsSection.expectConversationCount(realNum);
       await user.sdk.glip.updateProfile(user.rcId, { max_leftrail_group_tabs2: DEFAULT_MAX_NUMBER });
     });
   }
