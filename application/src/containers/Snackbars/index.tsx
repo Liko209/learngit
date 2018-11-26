@@ -64,7 +64,6 @@ function showNotification(props: innerNotificationProps) {
     actions.push(getCloseButton(closeFunction));
   }
 
-
   const config = { ...rest, actions };
   const state = true;
 
