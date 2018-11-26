@@ -10,6 +10,7 @@ import ProfileService from '../../profile';
 import GroupService from '../../group';
 import _ from 'lodash';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
+import { ResultOk, ResultErr } from 'foundation/src';
 
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
@@ -104,12 +105,11 @@ describe('PostService', () => {
 
   describe('getPostsFromRemote()', () => {
     it('should return posts', async () => {
-      const mockNormal = {
-        data: {
-          posts: [{ _id: 1 }, { _id: 2 }],
-          items: [{ _id: 11 }, { _id: 22 }],
-        },
+      const data = {
+        posts: [{ _id: 1 }, { _id: 2 }],
+        items: [{ _id: 11 }, { _id: 22 }],
       };
+      const mockNormal = new ResultOk(data);
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
       groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const result = await postService.getPostsFromRemote({
@@ -119,19 +119,18 @@ describe('PostService', () => {
         limit: 20,
       });
       expect(result).toEqual({
-        posts: mockNormal.data.posts,
-        items: mockNormal.data.items,
+        posts: data.posts,
+        items: data.items,
         hasMore: false,
       });
     });
 
     it('should handle offset/limit', async () => {
-      const mockHasMore = {
-        data: {
-          posts: [{ _id: 1 }, { _id: 2 }],
-          items: [{ _id: 11 }, { _id: 22 }],
-        },
+      const data = {
+        posts: [{ _id: 1 }, { _id: 2 }],
+        items: [{ _id: 11 }, { _id: 22 }],
       };
+      const mockHasMore = new ResultOk(data);
       PostAPI.requestPosts.mockResolvedValue(mockHasMore);
       groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultHasMore = await postService.getPostsFromRemote({
@@ -141,20 +140,19 @@ describe('PostService', () => {
         limit: 2,
       });
       expect(resultHasMore).toEqual({
-        posts: mockHasMore.data.posts,
-        items: mockHasMore.data.items,
+        posts: data.posts,
+        items: data.items,
         hasMore: true,
       });
     });
 
     it('should return remote posts', async () => {
       // test not postId
-      const mockNotPostId = {
-        data: {
-          posts: [{ _id: 1 }, { _id: 2 }],
-          items: [{ _id: 11 }, { _id: 22 }],
-        },
+      const data = {
+        posts: [{ _id: 1 }, { _id: 2 }],
+        items: [{ _id: 11 }, { _id: 22 }],
       };
+      const mockNotPostId = new ResultOk(data);
       PostAPI.requestPosts.mockResolvedValue(mockNotPostId);
       groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultNotPostId = await postService.getPostsFromRemote({
@@ -163,14 +161,16 @@ describe('PostService', () => {
         limit: 2,
       });
       expect(resultNotPostId).toEqual({
-        posts: mockNotPostId.data.posts,
-        items: mockNotPostId.data.items,
+        posts: data.posts,
+        items: data.items,
         hasMore: true,
       });
     });
 
     it('should return [] when no matched', async () => {
-      PostAPI.requestPosts.mockResolvedValue(null);
+      PostAPI.requestPosts.mockResolvedValue(
+        new ResultOk({ posts: [], items: [] }),
+      );
       groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultNull = await postService.getPostsFromRemote({
         groupId: 1,
@@ -407,9 +407,8 @@ describe('PostService', () => {
       const localPosts = [{ id: 3 }, { id: 4 }, { id: 5 }];
       const remotePosts = [{ id: 1 }, { id: 2 }];
       postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
-      PostAPI.requestByIds.mockResolvedValue({
-        data: { posts: [...remotePosts], items: [] },
-      });
+      const data = { posts: [...remotePosts], items: [] };
+      PostAPI.requestByIds.mockResolvedValue(new ResultOk(data));
       baseHandleData.mockImplementationOnce((data: any) => data);
       itemService.getByPosts.mockResolvedValue([]);
       const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
@@ -427,10 +426,9 @@ describe('PostService', () => {
         { id: 4 },
         { id: 5 },
       ];
+      const data = { posts: [...remotePosts], items: [] };
       postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
-      PostAPI.requestByIds.mockResolvedValue({
-        data: { posts: [...remotePosts], items: [] },
-      });
+      PostAPI.requestByIds.mockResolvedValue(new ResultOk(data));
       baseHandleData.mockImplementationOnce((data: any) => data);
       itemService.getByPosts.mockResolvedValue([]);
       const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
@@ -460,9 +458,11 @@ describe('PostService', () => {
         { id: 102 },
       ]);
       postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
-      PostAPI.requestByIds.mockResolvedValue({
-        data: { posts: [...remotePosts], items: [{ id: 103 }, { id: 104 }] },
-      });
+      const data = {
+        posts: [...remotePosts],
+        items: [{ id: 103 }, { id: 104 }],
+      };
+      PostAPI.requestByIds.mockResolvedValue(new ResultOk(data));
       baseHandleData.mockImplementationOnce((data: any) => data);
       itemHandleData.mockImplementationOnce((data: any) => data);
       const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
@@ -507,15 +507,12 @@ describe('PostService', () => {
       const info = _.cloneDeep(postMockInfo);
       const responseData = _.cloneDeep(postMockInfo);
       responseData.id = 99999;
-      const response = {
-        data: responseData,
-      };
+ 
       PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
-      PostAPI.sendPost.mockResolvedValueOnce(response);
+      PostAPI.sendPost.mockResolvedValueOnce(new ResultOk(responseData));
       groupService.getGroupSendFailurePostIds.mockResolvedValue([]);
 
       const results = await postService.sendPost({ text: 'abc' });
-      console.log(response, info, results);
       expect(results[0].id).toEqual(-1);
       expect(results[0].data.id).toEqual(99999);
       expect(results[0].data.text).toEqual('abc');
@@ -574,7 +571,7 @@ describe('PostService', () => {
 
     it('should call PostAPI.editPost()', async () => {
       PostServiceHandler.buildModifiedPostInfo.mockResolvedValue({});
-      PostAPI.editPost.mockResolvedValueOnce({ data: {} });
+      PostAPI.editPost.mockResolvedValueOnce(new ResultOk({}));
       baseHandleData.mockResolvedValueOnce([{ id: 1 }, { id: 2 }]);
 
       const result = await postService.modifyPost({ postId: 1, text: 'abc' });
@@ -599,9 +596,8 @@ describe('PostService', () => {
       const post = { id: 100, likes: [] };
       daoManager.getDao.mockReturnValueOnce(postDao);
       postDao.get.mockResolvedValueOnce(post);
-      PostAPI.putDataById.mockResolvedValueOnce({
-        data: { _id: 100, likes: [101] },
-      });
+      const data = { _id: 100, likes: [101] };
+      PostAPI.putDataById.mockResolvedValueOnce(new ResultOk(data));
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
       expect(post.likes).toEqual([101]);
@@ -657,9 +653,9 @@ describe('PostService', () => {
       postDao.get.mockResolvedValueOnce({
         id: 100,
       });
-      PostAPI.putDataById.mockResolvedValueOnce({
-        data: { id: 100, deactivated: true },
-      });
+      PostAPI.putDataById.mockResolvedValueOnce(
+        new ResultOk({ id: 100, deactivated: true }),
+      );
       baseHandleData.mockResolvedValueOnce([{ id: 100, deactivated: true }]);
       const result = await postService.deletePost(100);
       expect(result).toEqual(true);
