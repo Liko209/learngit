@@ -3,23 +3,20 @@
  * @Date: 2018-11-23 16:26:42
  * Copyright © RingCentral. All rights reserved.
  */
+import { observable, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import PersonService from 'sdk/service/person';
 import GroupService from 'sdk/service/group';
-import { Person, Group, SortableModel } from 'sdk/src/models'; // eslint-disable-line
+import { Person, Group } from 'sdk/src/models';
+import { SectionTypes, SectionType } from './types';
 
-type SortableModels = SortableModel<Person>[] | SortableModel<Group>[] | null;
-
-type SectionTypes = SectionType<Person> | SectionType<Group>;
-
-type SectionType<T> = {
-  terms: string[];
-  sortableModels: SortableModel<T>[];
-} | null;
+const ONLY_ONE_SECTION_LENGTH = 9;
+const MORE_SECTION_LENGTH = 3;
 
 class SearchBarViewModel extends StoreViewModel {
   personService: PersonService;
   groupService: GroupService;
+  @observable value: string = '';
 
   constructor() {
     super();
@@ -27,58 +24,47 @@ class SearchBarViewModel extends StoreViewModel {
     this.groupService = GroupService.getInstance();
   }
 
-  private _getModels(
-    preModels: SortableModels,
-    current: SectionTypes,
-    currentIndex: number,
-  ) {
-    return {
-      sortableModels: preModels
-        ? preModels
-        : currentIndex === 0
-        ? current!.sortableModels
-        : null,
-    };
+  @computed
+  get searchValue() {
+    return this.value;
   }
 
-  private _filterExistSection(
+  setValue = (value: string) => {
+    this.value = value;
+  }
+
+  private _existSectionNum(
     persons: SectionType<Person>,
     groups: SectionType<Group>,
     teams: SectionType<Group>,
   ) {
-    const allSections = [persons, groups, teams];
-    const defaultSection = {
-      existNum: 0,
-      persons: {
-        sortableModels: null,
-      },
-      groups: {
-        sortableModels: null,
-      },
-      teams: {
-        sortableModels: null,
-      },
-    };
+    return [persons, groups, teams].reduce((prev, current, currentIndex) => {
+      return current && current.sortableModels.length > 0 ? prev + 1 : prev;
+    },                                     0);
+  }
 
-    return allSections.reduce((prev, current, currentIndex) => {
-      if (current && current.sortableModels.length > 0) {
-        const { existNum, persons, groups, teams } = prev;
-        console.log(persons, '----------result allSections');
-        console.log(groups, '----------result allSections');
-        console.log(teams, '----------result allSections');
-        return {
-          existNum: existNum + 1,
-          persons: this._getModels(
-            persons.sortableModels,
-            current,
-            currentIndex,
-          ),
-          groups: this._getModels(groups.sortableModels, current, currentIndex),
-          teams: this._getModels(teams.sortableModels, current, currentIndex),
-        };
-      }
-      return prev;
-    },                        defaultSection);
+  private _needSliceNum(existSectionNum: number) {
+    return existSectionNum < 1 ? ONLY_ONE_SECTION_LENGTH : MORE_SECTION_LENGTH;
+  }
+
+  private _hasMore(section: SectionTypes, existSectionNum: number) {
+    return (
+      section &&
+      section.sortableModels.length > this._needSliceNum(existSectionNum)
+    );
+  }
+
+  private _getSection(section: SectionTypes, existSectionNum: number) {
+    return {
+      sortableModel:
+        (section &&
+          section.sortableModels.slice(
+            0,
+            this._needSliceNum(existSectionNum),
+          )) ||
+        [],
+      hasMore: this._hasMore(section, existSectionNum),
+    };
   }
 
   search = async (key: string) => {
@@ -87,17 +73,17 @@ class SearchBarViewModel extends StoreViewModel {
       this.groupService.doFuzzySearchGroups(key),
       this.groupService.doFuzzySearchTeams(key),
     ]);
-
-    console.log(key, persons, '----------result people');
-    console.log(groups, '----------result group');
-    console.log(teams, '----------result teams');
-    const existSections = this._filterExistSection(persons, groups, teams);
-    console.log(existSections, '-----result exist');
+    const existSectionNum = this._existSectionNum(persons, groups, teams);
 
     return {
-      persons,
-      groups,
-      teams,
+      terms:
+        (persons && persons.terms) ||
+        (groups && groups.terms) ||
+        (teams && teams.terms) ||
+        [],
+      persons: this._getSection(persons, existSectionNum),
+      groups: this._getSection(groups, existSectionNum),
+      teams: this._getSection(teams, existSectionNum),
     };
   }
 }

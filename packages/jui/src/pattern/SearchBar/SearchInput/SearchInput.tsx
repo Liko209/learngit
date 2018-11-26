@@ -3,36 +3,34 @@
  * @Date: 2018-11-22 10:16:03
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, createRef, FocusEventHandler } from 'react';
 import * as Jui from './style';
 
-type State = {
+type JuiSearchInputProps = {
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: FocusEventHandler<HTMLInputElement>) => void;
+  onFocus?: (e: FocusEventHandler<HTMLInputElement>) => void;
+  onClear: () => void;
   focus: boolean;
 };
 
-type JuiSearchInputProps = {
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-};
-
-class JuiSearchInput extends React.Component<JuiSearchInputProps, State> {
-  state = {
-    focus: false,
-  };
+class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
+  private _inputDom = createRef<HTMLInputElement>();
 
   constructor(props: JuiSearchInputProps) {
     super(props);
   }
 
-  onFocus = () => {
-    this.setState({
-      focus: true,
-    });
-  }
+  onClose = (e: React.MouseEvent<HTMLSpanElement>) => {
+    e.stopPropagation();
 
-  onBlur = () => {
-    this.setState({
-      focus: false,
-    });
+    const { onClear } = this.props;
+    const node = this._inputDom.current;
+    if (node) {
+      node.focus();
+    }
+    onClear();
   }
 
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -41,20 +39,23 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, State> {
   }
 
   render() {
-    const { focus } = this.state;
+    const { value, focus, onFocus, onBlur } = this.props;
+    console.log(value, '-result value input');
 
     return (
       <Jui.SearchWrapper focus={focus}>
         <Jui.SearchIcon>search</Jui.SearchIcon>
         <Jui.SearchInput
           onChange={this.onChange}
-          onFocus={this.onFocus}
-          onBlur={this.onBlur}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          inputRef={this._inputDom}
           InputProps={{
+            value,
             disableUnderline: true,
           }}
         />
-        <Jui.CloseBtn>close</Jui.CloseBtn>
+        <Jui.CloseBtn onClick={this.onClose}>close</Jui.CloseBtn>
       </Jui.SearchWrapper>
     );
   }

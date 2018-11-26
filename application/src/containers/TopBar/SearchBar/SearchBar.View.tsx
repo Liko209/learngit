@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import { t } from 'i18next';
+import { debounce } from 'lodash';
 import {
   JuiSearchBar,
   JuiSearchList,
@@ -14,8 +15,7 @@ import {
 } from 'jui/pattern/SearchBar';
 import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
 import { Avatar } from '@/containers/Avatar';
-import { ViewProps } from './types';
-import { debounce } from 'lodash';
+import { ViewProps, SearchResult, SearchSection } from './types';
 
 const Actions = () => {
   return (
@@ -27,65 +27,129 @@ const Actions = () => {
   );
 };
 
-class SearchBarView extends React.Component<ViewProps, {}> {
+type State = {
+  terms: string[];
+  focus: boolean;
+  persons: SearchResult['persons'];
+  groups: SearchResult['groups'];
+  teams: SearchResult['teams'];
+};
+
+const defaultSection = {
+  sortableModel: [],
+  hasMore: false,
+};
+
+class SearchBarView extends React.Component<ViewProps, State> {
   private _debounceSearch: Function;
+
+  state = {
+    terms: [],
+    focus: false,
+    persons: defaultSection,
+    groups: defaultSection,
+    teams: defaultSection,
+  };
 
   constructor(props: ViewProps) {
     super(props);
     const { search } = this.props;
     this._debounceSearch = debounce(async (value: string) => {
-      await search(value);
+      const ret = await search(value);
+      const { terms, persons, groups, teams } = ret;
+
+      this.setState({
+        terms,
+        groups,
+        persons,
+        teams,
+      });
     },                              300);
   }
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist();
-    this._debounceSearch(e.target.value);
+    const { value } = e.target;
+    const { setValue } = this.props;
+    setValue(value);
+    if (!value.trim()) {
+      this.setState({
+        terms: [],
+        persons: defaultSection,
+        groups: defaultSection,
+        teams: defaultSection,
+      });
+      return;
+    }
+    this._debounceSearch(value);
   }
 
-  private _Avatar() {
-    return <Avatar uid={1234} size="small" />;
+  onFocus = () => {
+    this.setState({
+      focus: true,
+    });
+  }
+
+  onClear = () => {
+    const { setValue } = this.props;
+    setValue('');
+  }
+
+  onClose = () => {
+    this.setState({
+      focus: false,
+    });
+  }
+
+  private _Avatar(uid: number) {
+    return <Avatar uid={uid} size="small" />;
+  }
+
+  private _renderSuggestion<T>(
+    type: SearchSection<T>,
+    title: string,
+    terms: string[],
+  ) {
+    return (
+      <>
+        {type.sortableModel.length > 0 && <JuiSearchTitle title={title} />}
+        {type.sortableModel.map((item: any) => {
+          const { id, displayName } = item;
+          return (
+            <>
+              <JuiSearchItem
+                Avatar={this._Avatar(id)}
+                value={displayName}
+                terms={terms}
+                Actions={Actions()}
+              />
+            </>
+          );
+        })}
+      </>
+    );
   }
 
   render() {
+    const { terms, persons, groups, teams, focus } = this.state;
+    const { searchValue } = this.props;
+
     return (
-      <JuiSearchBar>
-        <JuiSearchInput onChange={this.onChange} />
-        <JuiSearchList>
-          <JuiSearchTitle title="People" />
-          <JuiSearchItem
-            Avatar={this._Avatar()}
-            value={'123'}
-            terms={['1']}
-            Actions={Actions()}
-          />
-          <JuiSearchTitle title="Groups" />
-          <JuiSearchItem
-            Avatar={this._Avatar()}
-            value={'123'}
-            terms={['1']}
-            Actions={Actions()}
-          />
-          <JuiSearchItem
-            Avatar={this._Avatar()}
-            value={'123'}
-            terms={['1']}
-            Actions={Actions()}
-          />
-          <JuiSearchItem
-            Avatar={this._Avatar()}
-            value={'123'}
-            terms={['1']}
-            Actions={Actions()}
-          />
-          <JuiSearchTitle title="Teams" />
-          <JuiSearchItem
-            Avatar={this._Avatar()}
-            value={'123'}
-            terms={['1']}
-            Actions={Actions()}
-          />
-        </JuiSearchList>
+      <JuiSearchBar onClose={this.onClose} focus={focus}>
+        <JuiSearchInput
+          focus={focus}
+          onFocus={this.onFocus}
+          onClear={this.onClear}
+          value={searchValue}
+          onChange={this.onChange}
+        />
+        {focus && searchValue && (
+          <JuiSearchList>
+            {this._renderSuggestion(persons, 'People', terms)}
+            {this._renderSuggestion(groups, 'Groups', terms)}
+            {this._renderSuggestion(teams, 'Teams', terms)}
+          </JuiSearchList>
+        )}
       </JuiSearchBar>
     );
   }
