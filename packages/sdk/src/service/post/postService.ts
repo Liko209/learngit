@@ -103,49 +103,49 @@ class PostService extends BaseService<Post> {
   }: IPostQuery): Promise<IRawPostResult> {
     const groupService: GroupService = GroupService.getInstance();
     const group = await groupService.getById(groupId);
-    if (group && !group.most_recent_post_id) {
-      // The group has no post
-      return {
-        posts: [],
-        items: [],
-        hasMore: false,
+    if (group && group.most_recent_post_id) {
+      const params: any = {
+        limit,
+        direction,
+        group_id: groupId,
       };
+      if (postId) {
+        params.post_id = postId;
+      }
+      try {
+        const requestResult = await PostAPI.requestPosts(params);
+        const result: IRawPostResult = {
+          posts: [],
+          items: [],
+          hasMore: false,
+        };
+        const data = requestResult.expect('Get Remote post failed');
+        if (data) {
+          result.posts = data.posts;
+          result.items = data.items;
+          if (result.posts.length === limit) {
+            result.hasMore = true;
+          }
+        }
+        return result;
+      } catch (e) {
+        return {
+          posts: [],
+          items: [],
+          hasMore: true,
+        };
+      }
+      // if (!result.hasMore) {
+      //   await groupService.markAsNoPost(groupId);
+      // }
     }
 
-    const params: any = {
-      limit,
-      direction,
-      group_id: groupId,
+    // The group has no post
+    return {
+      posts: [],
+      items: [],
+      hasMore: false,
     };
-    if (postId) {
-      params.post_id = postId;
-    }
-    try {
-      const requestResult = await PostAPI.requestPosts(params);
-      const result: IRawPostResult = {
-        posts: [],
-        items: [],
-        hasMore: false,
-      };
-      const data = requestResult.expect('Get Remote post failed');
-      if (data) {
-        result.posts = data.posts;
-        result.items = data.items;
-        if (result.posts.length === limit) {
-          result.hasMore = true;
-        }
-      }
-      return result;
-    } catch (e) {
-      return {
-        posts: [],
-        items: [],
-        hasMore: true,
-      };
-    }
-    // if (!result.hasMore) {
-    //   await groupService.markAsNoPost(groupId);
-    // }
   }
 
   async getPostsByGroupId({
@@ -360,9 +360,9 @@ class PostService extends BaseService<Post> {
         };
         const info = PostServiceHandler.buildPostInfo(options);
         delete info.id; // should merge sendItemFile function into sendPost
-        const resp = await PostAPI.sendPost(info);
-        const data = resp.expect('sendPost failed');
-        const posts = await baseHandleData(data);
+        const sendPostResult = await PostAPI.sendPost(info);
+        const rawPost = sendPostResult.expect('Send post failed.');
+        const posts = await baseHandleData(rawPost);
         return posts[0];
       }
       return null;
