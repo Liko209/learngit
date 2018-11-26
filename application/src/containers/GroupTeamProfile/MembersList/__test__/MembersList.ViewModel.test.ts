@@ -7,6 +7,6 @@
 // import { MembersListViewModel } from '../MembersList.ViewModel';
 
 // const membersListVM = new MembersListViewModel();
-describe('MembersListViewModel', () => {
-
-});
+// describe('MembersListViewModel', () => {
+//
+// });
