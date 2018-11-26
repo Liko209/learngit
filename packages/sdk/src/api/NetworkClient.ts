@@ -110,8 +110,7 @@ export default class NetworkClient {
         if (resp.status >= 200 && resp.status < 300) {
           resolve(networkOk(resp.data, resp.status, resp.headers));
         } else {
-          console.log('Network reject', resp);
-          resolve(networkErr(resp.data.error.code, resp.status, resp.headers));
+          resolve(networkErr(resp));
         }
       });
       this.apiMap.delete(apiMapKey);

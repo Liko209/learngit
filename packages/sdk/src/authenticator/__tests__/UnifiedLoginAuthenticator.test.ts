@@ -33,24 +33,20 @@ describe('UnifiedLoginAuthenticator', () => {
     expect(resp.success).toBe(false);
   });
   it('UnifiedLoginAuthenticator rc account', async () => {
-    const oauthTokenResult = new NetworkResultOk({ data: 'token' }, 200, {});
-    const oauthTokenResult = new NetworkResultOk({ data: 'token' }, 200, {});
+    const oauthTokenResult = new NetworkResultOk('token', 200, {});
+    const loginGlipResult = new NetworkResultOk('', 200, {
+      'x-authorization': 'glip_token',
+    });
     const generateCodeResult = new NetworkResultOk(
       {
-        data: 'glip_token',
+        code: 'code',
       },
       200,
-      {
-        'x-authorization': 'glip_token',
-      },
+      {},
     );
 
     oauthTokenViaAuthCode.mockResolvedValue(oauthTokenResult);
-    generateCode.mockResolvedValueOnce({
-      data: {
-        code: 'code',
-      },
-    });
+    generateCode.mockResolvedValueOnce(generateCodeResult);
     loginGlip.mockResolvedValueOnce(loginGlipResult);
     Api.init({}, networkManager);
 

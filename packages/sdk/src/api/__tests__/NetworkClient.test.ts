@@ -14,10 +14,10 @@ import {
 } from 'foundation';
 import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
-
+import { NetworkResultOk, NetworkResultErr } from '../NetworkResult';
 // Using manual mock to improve mock priority.
-jest.mock('foundation/network', () =>
-  jest.genMockFromModule<any>('foundation/network'),
+jest.mock('foundation/src/network', () =>
+  jest.genMockFromModule<any>('foundation/src/network'),
 );
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
@@ -97,7 +97,7 @@ const setup = () => {
   };
 };
 
-describe('apiRequest', () => {
+describe('NetworkClient', () => {
   beforeAll(() => {});
   beforeEach(() => {
     NetworkRequestBuilder.mockReset();
@@ -117,7 +117,7 @@ describe('apiRequest', () => {
     });
 
     it('should only send request once when request is totally same', async () => {
-      expect.assertions(3);
+      expect.assertions(5);
       const { getRequest, rcNetworkClient } = setup();
 
       const promise1 = rcNetworkClient.request(getRequest);
@@ -130,31 +130,38 @@ describe('apiRequest', () => {
       const response2 = await promise2;
       expect(response1).toHaveProperty('status', 200);
       expect(response2).toHaveProperty('status', 200);
-      console.log(response1);
       expect(response1).toHaveProperty('data', { a: 1 });
       expect(response2).toHaveProperty('data', { a: 1 });
     });
   });
 
   describe('buildCallback()', () => {
-    it('promise should resolve with response', async () => {
-      expect.assertions(1);
+    it('promise should resolve with response', (done: jest.DoneCallback) => {
+      expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
-      const promise = rcNetworkClient.request(getRequest);
 
+      rcNetworkClient
+        .request(getRequest)
+        .then((result: NetworkResultOk<any>) => {
+          expect(result).toHaveProperty('status', 200);
+          expect(result).toHaveProperty('data', { a: 1 });
+          done();
+        });
       mockRequest.callback({ status: 200, data: { a: 1 } });
-      await expect(promise).resolves.toEqual({ status: 200, data: { a: 1 } });
     });
 
-    it('promise should reject with response', async () => {
+    it('promise should reject with response', (done: jest.DoneCallback) => {
+      expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
-      const promise = rcNetworkClient.request(getRequest);
 
-      mockRequest.callback({ status: 500, data: { a: 'fail' } });
-      await expect(promise).rejects.toEqual({
-        data: { a: 'fail' },
-        status: 500,
-      });
+      rcNetworkClient
+        .request(getRequest)
+        .then((result: NetworkResultErr<any>) => {
+          expect(result.status).toBe(500);
+          expect(result.error.code).toBe(1500);
+          done();
+        });
+      mockRequest.callback({ status: 500, data: { a: 'fail' }, headers: {} });
     });
   });
 

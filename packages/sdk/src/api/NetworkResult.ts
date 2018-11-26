@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ResultOk, BaseError, ResultErr } from 'foundation';
+import { ResultOk, BaseError, ResultErr, BaseResponse } from 'foundation';
 import { ErrorParser } from '../utils';
 
 class NetworkResultOk<T, E extends BaseError = BaseError> extends ResultOk<
@@ -47,15 +47,10 @@ function networkOk<T>(
   return new NetworkResultOk(data, status, headers);
 }
 
-function networkErr<T, E extends BaseError = BaseError>(
-  code: number,
-  status: number,
-  headers: object,
-  message?: string,
-) {
-  const error = ErrorParser.parse({ status }) as E;
-  error.message = message || error.message || `Error: ${code}`;
-  return new NetworkResultErr<T, E>(error, status, headers);
+function networkErr<T, E extends BaseError = BaseError>(resp: BaseResponse) {
+  const error = ErrorParser.parse(resp) as E;
+  error.message = error.message || `Error: ${error.code}`;
+  return new NetworkResultErr<T, E>(error, resp.status, resp.headers);
 }
 
 export {
