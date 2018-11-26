@@ -50,6 +50,7 @@ class PrivacyViewComponent extends Component<Props> {
         size={size}
         variant={variant}
         color={color}
+        className="privacy"
         onClick={this.onClick}
         isShowToolTip={isShowTooltip}
         tooltipTitle={t(this.getTooltipKey())}

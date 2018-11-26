@@ -5,19 +5,24 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { Link } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
+import history from '@/history';
 import { ViewProps } from './types';
-
+type Props = RouteComponentProps & ViewProps;
 @observer
-class JumpToConversationView extends React.Component<ViewProps> {
+class JumpToConversationView extends React.Component<Props> {
   componentDidMount() {
     const { getConversationId } = this.props;
     getConversationId();
   }
+  jumpToConversation = () => {
+    const { conversationId } = this.props;
+    history.push(`/messages/${conversationId}`);
+  }
   render() {
-    const { conversationId, children } = this.props;
+    const { children } = this.props;
     return (
-      <Link to={`/messages/${conversationId}`}>{children && children}</Link>
+      <div onClick={this.jumpToConversation}>{children && children}</div>
     );
   }
 }

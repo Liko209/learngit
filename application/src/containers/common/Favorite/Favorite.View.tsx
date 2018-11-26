@@ -60,6 +60,7 @@ class FavoriteViewComponent extends Component<Props> {
       <JuiIconButton
         size={size}
         variant={variant}
+        className="favorite"
         color="accent.gold"
         isShowToolTip={isShowTooltip}
         onClick={this.onClick}

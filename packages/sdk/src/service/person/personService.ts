@@ -148,9 +148,10 @@ class PersonService extends BaseService<Person> {
   }
 
   async doFuzzySearchPersons(
-    searchKey: string,
-    excludeSelf: boolean,
+    searchKey?: string,
+    excludeSelf?: boolean,
     arrangeIds?: number[],
+    fetchAllIfSearchKeyEmpty?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Person>[];
@@ -162,13 +163,18 @@ class PersonService extends BaseService<Person> {
     }
     return this.searchEntitiesFromCache(
       (person: Person, terms: string[]) => {
-        if (currentUserId && person.id === currentUserId) {
+        if (
+          !this._isValid(person) ||
+          (currentUserId && person.id === currentUserId)
+        ) {
           return null;
         }
         let name: string = this.getName(person);
         if (
-          this.isFuzzyMatched(name, terms) ||
-          (person.email && this.isFuzzyMatched(person.email, terms))
+          (fetchAllIfSearchKeyEmpty && terms.length === 0) ||
+          (terms.length > 0 &&
+            (this.isFuzzyMatched(name, terms) ||
+              (person.email && this.isFuzzyMatched(person.email, terms))))
         ) {
           if (name.length <= 0) {
             name = this.getEmailAsName(person);
@@ -224,6 +230,10 @@ class PersonService extends BaseService<Person> {
 
   private _canMessageWithPerson(person: Person) {
     return !person.is_pseudo_user;
+  }
+
+  private _isValid(person: Person) {
+    return !person.deactivated && !person.is_pseudo_user;
   }
 }
 

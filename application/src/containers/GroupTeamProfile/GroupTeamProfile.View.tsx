@@ -12,12 +12,21 @@ import { MembersList } from './MembersList';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileBody } from './ProfileBody';
 import { MemberListHeader } from './MembersList/MemberListHeader';
+import { width } from 'jui/foundation/utils';
 
 const StyledProfileView = styled.div`
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+`;
+const StyledBottomBar = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border: ${width(3)} solid ${({ theme }) => theme.palette.common.white};
+  box-shadow: 0 -2px 4px -2px rgba(0, 0, 0, 0.14);
 `;
 @observer
 class GroupTeamProfile extends React.Component<GroupTeamProps> {
@@ -32,6 +41,7 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
         <ProfileBody id={id}/>
         <MemberListHeader id={id}/>
         <MembersList id={id}/>
+        <StyledBottomBar />
       </StyledProfileView>
     );
   }

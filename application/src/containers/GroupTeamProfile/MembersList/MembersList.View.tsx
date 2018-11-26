@@ -22,14 +22,7 @@ const StyledList = styled.ul`
   padding: 0;
   margin: 0;
 `;
-const StyledBottomBar = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border: ${width(3)} solid ${({ theme }) => theme.palette.common.white};
-  box-shadow: 0 -2px 4px -2px rgba(0, 0, 0, 0.14);
-`;
+
 const StyledGuestIdentifier = styled.span`
   width: ${width(12)};
   height: ${height(4)};
@@ -70,7 +63,6 @@ class MembersList extends React.Component<MemberListViewProps> {
             );
           })}
         </StyledList>
-        <StyledBottomBar />
       </>
     );
   }

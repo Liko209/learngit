@@ -6,8 +6,9 @@
 import { buildContainer } from '@/base';
 import { JumpToConversationView } from './JumpToConversation.View';
 import { JumpToConversationViewModel } from './JumpToConversation.ViewModel';
+import { Props } from './types';
 
-const JumpToConversation = buildContainer({
+const JumpToConversation = buildContainer<Props>({
   View: JumpToConversationView,
   ViewModel: JumpToConversationViewModel,
 });

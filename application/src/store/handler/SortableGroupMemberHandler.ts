@@ -7,7 +7,6 @@
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-  FetchDataDirection,
   ISortableModel,
 } from '@/store/base/fetch';
 
@@ -19,7 +18,7 @@ import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
 import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
-
+import { QUERY_DIRECTION } from 'sdk/dao';
 class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
   private _groupId: number;
 
@@ -28,8 +27,7 @@ class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
   }
 
   async fetchData(
-    offset: number,
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     pageSize: number,
     anchor: ISortableModel<Person>,
   ): Promise<{ data: Person[]; hasMore: boolean }> {
@@ -143,7 +141,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   }
 
   private _fetchAllGroupMembers() {
-    this._sortableDataHandler.fetchData(FetchDataDirection.DOWN);
+    this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
   }
 
   private _handleGroupUpdate(newGroup: Group) {

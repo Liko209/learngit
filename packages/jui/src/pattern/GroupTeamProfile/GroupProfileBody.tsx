@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
 import { GroupBodyProps } from './types';
 import {
@@ -40,6 +39,7 @@ const StyledName = styled.div`
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  overflow: hidden;
 `;
 const StyledDescription = styled.div`
   margin-top: ${spacing(1.5)};
@@ -55,18 +55,10 @@ const StyledBottomButton = styled.div`
   margin-top: ${spacing(3)};
   display: flex;
 `;
-const StyledMessageBtn = styled.div`
-  display: flex;
-  color: #0684bd;
-  font-size: ${({ theme }) => theme.typography.body1.fontSize};
-  span {
-    font-size: ${({ theme }) => theme.typography.h6.fontSize};
-    margin-right: ${spacing(3)};
-  }
-`;
+
 class JuiGroupProfileBody extends PureComponent<GroupBodyProps> {
   render() {
-    const { displayName, description, avatar } = this.props;
+    const { displayName, description, avatar, children } = this.props;
     return (
       <StyledBodyWrapper>
         <StyledContent>
@@ -79,10 +71,7 @@ class JuiGroupProfileBody extends PureComponent<GroupBodyProps> {
               <StyledDescription>{description}</StyledDescription>
             ) : null}
             <StyledBottomButton>
-              <StyledMessageBtn>
-                <JuiIconography>chat_bubble</JuiIconography>
-                Message
-              </StyledMessageBtn>
+              {children}
             </StyledBottomButton>
           </StyledRightColumn>
         </StyledContent>

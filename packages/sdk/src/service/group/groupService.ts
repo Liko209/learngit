@@ -537,6 +537,7 @@ class GroupService extends BaseService<Group> {
 
   async doFuzzySearchGroups(
     searchKey: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
@@ -548,19 +549,16 @@ class GroupService extends BaseService<Group> {
     }
     return this.searchEntitiesFromCache(
       (group: Group, terms: string[]) => {
-        if (
-          !group.is_team &&
-          !group.is_archived &&
-          !group.deactivated &&
-          group.members &&
-          group.members.length > 2
-        ) {
+        if (this._isValidGroup(group) && group.members.length > 2) {
           const groupName = this.getGroupNameByMultiMembers(
             group.members,
             currentUserId,
           );
 
-          if (this.isFuzzyMatched(groupName, terms)) {
+          if (
+            (terms.length > 0 && this.isFuzzyMatched(groupName, terms)) ||
+            (fetchAllIfSearchKeyEmpty && terms.length === 0)
+          ) {
             return {
               id: group.id,
               displayName: groupName,
@@ -578,7 +576,8 @@ class GroupService extends BaseService<Group> {
   }
 
   async doFuzzySearchTeams(
-    searchKey: string,
+    searchKey?: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
@@ -590,20 +589,20 @@ class GroupService extends BaseService<Group> {
     }
 
     return this.searchEntitiesFromCache(
-      (group: Group, terms: string[]) => {
-        return !group.deactivated &&
-          group.is_team &&
-          !group.is_archived &&
-          this.isFuzzyMatched(group.set_abbreviation, terms) &&
-          (group.is_public ||
-            group.members.find((id: number) => {
+      (team: Group, terms: string[]) => {
+        return this._idValidTeam(team) &&
+          ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
+            (terms.length > 0 &&
+              this.isFuzzyMatched(team.set_abbreviation, terms))) &&
+          (team.is_public ||
+            team.members.find((id: number) => {
               return id === currentUserId;
             }))
           ? {
-            id: group.id,
-            displayName: group.set_abbreviation,
-            sortKey: group.set_abbreviation.toLowerCase(),
-            entity: group,
+            id: team.id,
+            displayName: team.set_abbreviation,
+            sortKey: team.set_abbreviation.toLowerCase(),
+            entity: team,
           }
           : null;
       },
@@ -711,6 +710,18 @@ class GroupService extends BaseService<Group> {
       }
     }
     return apiServer;
+  }
+
+  private _isValidGroup(group: Group) {
+    return this._isValid(group) && !group.is_team;
+  }
+
+  private _idValidTeam(group: Group) {
+    return this._isValid(group) && group.is_team;
+  }
+
+  private _isValid(group: Group) {
+    return !group.is_archived && !group.deactivated && group.members;
   }
 }
 

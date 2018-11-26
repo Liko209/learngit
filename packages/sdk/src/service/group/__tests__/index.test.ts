@@ -598,13 +598,6 @@ describe('GroupService', () => {
 
     prepareGroupsForSearch();
 
-    it('do fuzzy search of groups', async () => {
-      const result = await groupService.doFuzzySearchGroups('ben');
-      expect(result.sortableModels.length).toBe(500);
-      expect(result.terms.length).toBe(1);
-      expect(result.terms[0]).toBe('ben');
-    });
-
     it('do fuzzy search of groups, two name match', async () => {
       const result = await groupService.doFuzzySearchGroups('ben, tu');
       expect(result.sortableModels.length).toBe(500);
@@ -613,8 +606,61 @@ describe('GroupService', () => {
       expect(result.terms[1]).toBe('tu');
     });
 
-    it('do fuzzy search of teams', async () => {
+    it('do fuzzy search of groups, empty search key', async () => {
+      const result = await groupService.doFuzzySearchGroups('');
+      expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('do fuzzy search of groups, empty search key, support fetch all if search key is empty', async () => {
+      const result = await groupService.doFuzzySearchGroups('', true);
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('do fuzzy search of groups, search key is not empty, not support fetch all if search key is empty ', async () => {
+      const result = await groupService.doFuzzySearchGroups('ben');
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(1);
+      expect(result.terms[0]).toBe('ben');
+    });
+
+    it('do fuzzy search of groups, search key is not empty, support fetch all if search key is empty ', async () => {
+      const result = await groupService.doFuzzySearchGroups('ben', true);
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(1);
+      expect(result.terms[0]).toBe('ben');
+    });
+
+    it('do fuzzy search of teams, empty search key', async () => {
+      const result = await groupService.doFuzzySearchTeams('');
+      expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('do fuzzy search of teams, empty search key, support fetch all if search key is empty', async () => {
+      const result = await groupService.doFuzzySearchTeams('', true);
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('do fuzzy search of teams, undefined search key, support fetch all if search key is empty', async () => {
+      const result = await groupService.doFuzzySearchTeams(undefined, true);
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('do fuzzy search of teams, search key is not empty, not support fetch all if search key is empty ', async () => {
       const result = await groupService.doFuzzySearchTeams('a team name');
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(3);
+      expect(result.terms[0]).toBe('a');
+      expect(result.terms[1]).toBe('team');
+      expect(result.terms[2]).toBe('name');
+    });
+
+    it('do fuzzy search of teams, search key is not empty, support fetch all if search key is empty ', async () => {
+      const result = await groupService.doFuzzySearchTeams('a team name', true);
       expect(result.sortableModels.length).toBe(500);
       expect(result.terms.length).toBe(3);
       expect(result.terms[0]).toBe('a');

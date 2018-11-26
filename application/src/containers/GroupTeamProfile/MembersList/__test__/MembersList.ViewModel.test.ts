@@ -3,9 +3,9 @@
  * @Date: 2018-11-26 17:29:02
  * Copyright © RingCentral. All rights reserved.
  */
+import { getEntity } from '../../../../store/utils';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
 import { MembersListViewModel } from '../MembersList.ViewModel';
-import { getEntity } from '@/store/utils';
 jest.mock('../../../../store/utils');
 jest.mock('../../../../store/handler/SortableGroupMemberHandler');
 
@@ -25,17 +25,15 @@ const group = {
 };
 const MemberListHandler : SortableGroupMemberHandler = new SortableGroupMemberHandler(group);
 describe('MembersListViewModel', () => {
-  // it('isThePersonGuest', () => {
-  //
-  // }
   it('should return isThePersonGuest if get members id', async() => {
     SortableGroupMemberHandler.createSortableGroupMemberHandler = jest.fn().mockResolvedValue(MemberListHandler);
     MemberListHandler.getSortedGroupMembersIds = jest.fn().mockReturnValue([1, 2, 3]);
     MemberListHandler && MemberListHandler.getSortedGroupMembersIds();
+    (getEntity as jest.Mock).mockReturnValue();
     expect(membersListVM.isThePersonGuest).toMatchObject([true, false]);
   });
-  it('membersList', () => {
-    (getEntity as jest.Mock).mockReturnValue({ members: [123, 345, 677, 90023] });
-
-  });
+  // it('membersList', () => {
+  //   (getEntity as jest.Mock).mockReturnValue({ members: [123, 345, 677, 90023] });
+  //
+  // });
 });

@@ -11,11 +11,33 @@ import { JuiGroupProfileBody } from 'jui/pattern/GroupTeamProfile';
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Avatar } from '@/containers/Avatar';
 import { ProfileHeaderViewProps } from './types';
+import { JumpToConversation } from '../../JumpToConversation';
+import { JuiIconography } from 'jui/foundation/Iconography';
+import styled from 'jui/foundation/styled-components';
+import { spacing } from 'jui/foundation/utils';
 
+const StyledMessageBtn = styled.div`
+  display: flex;
+  color: #0684bd;
+  font-size: ${({ theme }) => theme.typography.body1.fontSize};
+  span {
+    font-size: ${({ theme }) => theme.typography.h6.fontSize};
+    margin-right: ${spacing(3)};
+  }
+`;
 @observer
 class ProfileBody extends React.Component<ProfileHeaderViewProps> {
+  renderMessageBtn = () => {
+    return (
+      <StyledMessageBtn>
+        <JuiIconography>chat_bubble</JuiIconography>
+        Message
+      </StyledMessageBtn>
+    );
+  }
   render() {
     const { displayName, description, id, idType } = this.props;
+    const message = <JumpToConversation id={id}>{this.renderMessageBtn()}</JumpToConversation>;
     let avatar;
     if (idType === ID_TYPE.GROUP || idType === ID_TYPE.TEAM) {
       avatar = <GroupAvatar cid={id} />;
@@ -23,13 +45,13 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
       avatar = <Avatar uid={id} />;
     }
     return (
-      <>
-        <JuiGroupProfileBody
-          avatar={avatar}
-          displayName={displayName}
-          description={description}
-        />
-      </>
+      <JuiGroupProfileBody
+        avatar={avatar}
+        displayName={displayName}
+        description={description}
+      >
+        {message}
+      </JuiGroupProfileBody>
     );
   }
 }
