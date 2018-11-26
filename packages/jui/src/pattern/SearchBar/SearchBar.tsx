@@ -5,10 +5,15 @@
  */
 import React from 'react';
 import { JuiBackdrop, JuiBackdropProps } from '../../components/Backdrop';
+import { width, spacing } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
 
 const JuiSearchBarWrapper = styled.div`
   position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: ${width(327)};
+  margin: ${spacing(0, 5)};
 `;
 
 const StyledBackdrop = styled<JuiBackdropProps>(JuiBackdrop)`
@@ -26,7 +31,7 @@ class JuiSearchBar extends React.Component<Props, {}> {
   render() {
     const { children, focus, onClose } = this.props;
     return (
-      <JuiSearchBarWrapper>
+      <JuiSearchBarWrapper className="search-bar">
         <StyledBackdrop onClick={onClose} open={focus} />
         {children}
       </JuiSearchBarWrapper>

@@ -8,4 +8,3 @@ export * from './AvatarMenu';
 export * from './Logo';
 export * from './AddMenu';
 export * from './TopBar';
-export * from './SearchBarWrapper';

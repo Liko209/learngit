@@ -12,7 +12,6 @@ import {
   JuiTopBar,
   JuiAvatarMenu,
   JuiAddMenu,
-  JuiSearchBarWrapper,
 } from 'jui/pattern/TopBar';
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
@@ -144,11 +143,7 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   private _SearchBar() {
-    return (
-      <JuiSearchBarWrapper>
-        <SearchBar />
-      </JuiSearchBarWrapper>
-    );
+    return <SearchBar />;
   }
 
   render() {
