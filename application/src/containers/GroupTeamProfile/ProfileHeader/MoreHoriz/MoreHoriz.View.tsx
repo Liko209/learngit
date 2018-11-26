@@ -25,7 +25,6 @@ class MoreHoriz extends React.Component<Props> {
   }
   private _onEmailCopied = () => {
     const { email } = this.props;
-    console.log('email', email);
     copy(email);
   }
   private _onUrlCopied = () => {
@@ -33,14 +32,15 @@ class MoreHoriz extends React.Component<Props> {
     copy(groupUrl);
   }
   render() {
+    const { t } = this.props;
     return (
       <JuiHorizMenu
         className="horiz-menu"
         menuItems={[{
-          label: 'copy email',
+          label: t('copy email'),
           onClick: this._onEmailCopied,
         }, {
-          label: 'copy url',
+          label: t('copy url'),
           onClick: this._onUrlCopied,
         }]}
         MenuExpandTrigger={this._onMenuClick}

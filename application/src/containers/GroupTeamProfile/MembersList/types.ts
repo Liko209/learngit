@@ -12,7 +12,6 @@ type MemberListViewProps = WithNamespaces & {
   idType: ID_TYPE;
   isThePersonAdmin: boolean[];
   isThePersonGuest: boolean[];
-  isShowBottomShadow: boolean;
 };
 type MemberListProps = {
   id: number;

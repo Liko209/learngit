@@ -20,7 +20,7 @@ const StyledHeader = styled.div`
   background-color: #fff;
   line-height: ${height(16)};
   color: ${grey('900')};
-  font-size: 20px;
+  font-size: ${({ theme }) => theme.typography.h6.fontSize};
   border-bottom: 1px solid ${grey('300')};
 `;
 const StyledContent = styled.div`

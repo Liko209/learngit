@@ -10,9 +10,14 @@ import { JuiGroupProfileList } from 'jui/pattern/GroupTeamProfile';
 import { Avatar } from '@/containers/Avatar';
 import styled from 'jui/foundation/styled-components';
 import { MemberListViewProps } from './types';
+import {
+  spacing,
+  grey,
+  width,
+  height,
+} from 'jui/foundation/utils/styles';
 
 const StyledList = styled.ul`
-  position: relative;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -22,22 +27,22 @@ const StyledBottomBar = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  border: 12px solid #fff;
+  border: ${width(3)} solid ${({ theme }) => theme.palette.common.white};
   box-shadow: 0 -2px 4px -2px rgba(0, 0, 0, 0.14);
 `;
 const StyledGuestIdentifier = styled.span`
-  width: 48px;
-  height: 16px;
-  color: #fff;
-  background-color: #bdbdbd;
-  border-radius: 8px;
-  line-height: 16px;
+  width: ${width(12)};
+  height: ${height(4)};
+  color: ${({ theme }) => theme.palette.common.white};
+  background-color: ${grey('400')};
+  border-radius: ${({ theme }) => theme.shape.borderRadius * 2}px;
+  line-height: ${height(4)};
   text-align: center;
-  font-size: 12px;
-  margin-left: 12px;
+  font-size: ${({ theme }) => theme.typography.caption.fontSize};
+  margin-left: ${spacing(3)};
 `;
 const StyledAdminIdentifier = styled(StyledGuestIdentifier)`
-  background-color: #ff8800;
+  background-color: ${({ theme }) => theme.palette.secondary.main};
 `;
 @observer
 class MembersList extends React.Component<MemberListViewProps> {
@@ -46,26 +51,27 @@ class MembersList extends React.Component<MemberListViewProps> {
       membersList,
       isThePersonAdmin,
       isThePersonGuest,
-      isShowBottomShadow,
     } = this.props;
     return (
-      <StyledList>
-        {membersList.map((item: any, idx: number) => {
-          return (
-            <JuiGroupProfileList key={idx}>
-              <Avatar uid={item.id} />
-              {item.displayName}
-              {isThePersonGuest[idx] ? (
-                <StyledGuestIdentifier>Guest</StyledGuestIdentifier>
-              ) : null}
-              {isThePersonAdmin[idx] ? (
-                <StyledAdminIdentifier>Admin</StyledAdminIdentifier>
-              ) : null}
-            </JuiGroupProfileList>
-          );
-        })}
-        {isShowBottomShadow ? <StyledBottomBar /> : null}
-      </StyledList>
+      <>
+        <StyledList>
+          {membersList.map((item: any, idx: number) => {
+            return (
+              <JuiGroupProfileList key={idx}>
+                <Avatar uid={item.id} />
+                {item.userDisplayName}
+                {isThePersonGuest[idx] ? (
+                  <StyledGuestIdentifier>Guest</StyledGuestIdentifier>
+                ) : null}
+                {isThePersonAdmin[idx] ? (
+                  <StyledAdminIdentifier>Admin</StyledAdminIdentifier>
+                ) : null}
+              </JuiGroupProfileList>
+            );
+          })}
+        </StyledList>
+        <StyledBottomBar />
+      </>
     );
   }
 }

@@ -14,7 +14,7 @@ import {
   grey,
 } from 'jui/foundation/utils/styles';
 const StyledTitle = styled.p`
-  font-size: 16px;
+  font-size: ${({ theme }) => theme.typography.subheading.fontSize};
   color: ${grey('900')};
   margin-left: ${spacing(6)};
 `;
