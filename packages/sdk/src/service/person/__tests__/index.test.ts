@@ -5,11 +5,20 @@
  */
 /// <reference path="../../../__tests__/types.d.ts" />
 import PersonService from '../../../service/person';
+import GroupService, {
+  FEATURE_TYPE,
+  FEATURE_STATUS,
+} from '../../../service/group';
 import { daoManager, PersonDao } from '../../../dao';
-
 jest.mock('../../../dao');
+jest.mock('../../../service/group');
 
 describe('PersonService', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+  });
+
   const personService = new PersonService();
   const personDao = new PersonDao(null);
 
@@ -88,6 +97,68 @@ describe('PersonService', () => {
       personService.setSupportCache(true);
       const result = await personService.doFuzzySearchPersons('name', false);
       expect(result.sortableModels.length).toBe(0);
+    });
+  });
+
+  describe('getPersonsByGroupId', () => {
+    const groupService = new GroupService();
+    const group = { id: 10, members: [1, 2, 3] };
+
+    beforeEach(() => {
+      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+    });
+
+    it('should return group members if has the group', async () => {
+      const persons = [{ id: 1 }, { id: 2 }, { id: 3 }];
+      daoManager.getDao.mockReturnValue(personDao);
+      personDao.getPersonsByIds.mockResolvedValueOnce(persons);
+      groupService.getGroupById.mockResolvedValueOnce(group);
+
+      const res = await personService.getPersonsByGroupId(group.id);
+      expect(res).toMatchObject(persons);
+      expect(personDao.getPersonsByIds).toBeCalledWith(group.members);
+      expect(groupService.getGroupById).toBeCalledWith(group.id);
+    });
+
+    it('should return null when no group exist', async () => {
+      daoManager.getDao.mockReturnValue(personDao);
+      groupService.getGroupById.mockResolvedValueOnce(null);
+
+      const res = await personService.getPersonsByGroupId(group.id);
+      expect(res).toMatchObject([]);
+      expect(personDao.getPersonsByIds).not.toBeCalled();
+      expect(groupService.getGroupById).toBeCalledWith(group.id);
+    });
+  });
+
+  describe('buildPersonFeatureMap', () => {
+    const personId = 1;
+    const person = { id: personId };
+    it('should not have conference permission for person', async () => {
+      const spy = jest.spyOn(personService, 'getById');
+      spy.mockResolvedValueOnce(person);
+      const res = await personService.buildPersonFeatureMap(personId);
+      expect(res.get(FEATURE_TYPE.CONFERENCE)).toBeFalsy;
+      expect(spy).toBeCalled;
+    });
+
+    it('should have message for person', async () => {
+      const spy = jest.spyOn(personService, 'getById');
+      spy.mockResolvedValueOnce(person);
+      const res = await personService.buildPersonFeatureMap(personId);
+      expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.ENABLE);
+      expect(spy).toBeCalledWith(person.id);
+    });
+
+    it('should not have message for pseudo person', async () => {
+      const pseudoPerson = { id: personId, is_pseudo_user: true };
+      const spy = jest.spyOn(personService, 'getById');
+      spy.mockResolvedValueOnce(pseudoPerson);
+      const res = await personService.buildPersonFeatureMap(personId);
+      expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(
+        FEATURE_STATUS.INVISIBLE,
+      );
+      expect(spy).toBeCalledWith(pseudoPerson.id);
     });
   });
 });

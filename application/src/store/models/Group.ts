@@ -5,7 +5,7 @@
  */
 import { observable, computed } from 'mobx';
 import _ from 'lodash';
-import { Group, Profile, TeamPermission } from 'sdk/models';
+import { Group, Profile } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
@@ -14,6 +14,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
 import { t } from 'i18next';
+import GroupService, { TeamPermission } from 'sdk/service/group';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -175,19 +176,8 @@ export default class GroupModel extends Base<Group> {
   }
 
   isThePersonAdmin(personId: number) {
-    if (this.type !== CONVERSATION_TYPES.TEAM) {
-      return true;
-    }
-
-    if (this.isThePersonGuest(personId)) {
-      return false;
-    }
-
-    let adminUserIds: number[] = [];
-    if (this.permissions && this.permissions.admin) {
-      adminUserIds = this.permissions.admin.uids;
-    }
-    return adminUserIds.some((x: number) => x === personId);
+    const groupService: GroupService = GroupService.getInstance();
+    groupService.isAdminOfTheGroup(this.isTeam, this.permissions, personId);
   }
 
   isThePersonGuest(personId: number) {

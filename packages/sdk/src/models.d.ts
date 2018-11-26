@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { POST_STATUS, PRESENCE } from './service';
+import { TeamPermission } from './service/group';
 
 export type BaseModel = {
   id: number;
@@ -42,17 +43,6 @@ export type Raw<T> = Pick<T, Exclude<keyof T, 'id'>> & {
 } & IResponseError;
 
 export type PartialWithKey<T> = Pick<T, Extract<keyof T, 'id'>> & Partial<T>;
-
-export type TeamPermission = {
-  admin?: {
-    uids: number[];
-    level?: number;
-  };
-  user?: {
-    uids: number[];
-    level?: number;
-  };
-};
 
 export type GroupCommon = {
   company_id: number;
