@@ -132,7 +132,6 @@ export type Person = ExtendedBaseModel & {
   away_status?: string;
   pseudo_user_phone_number?: string;
   rc_account_id?: number;
-  privacy?: string; // 'public'|'protected'|'private'
 };
 
 export type UserInfo = {
