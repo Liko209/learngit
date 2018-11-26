@@ -32,6 +32,13 @@ export default function register(
       window.location.toString(),
     );
     if (publicUrl.origin !== window.location.origin) {
+      console.log(
+        `${logTag}Can not register. PUBLIC_URL: ${
+          process.env.PUBLIC_URL
+        }, location ${window.location.toString()}, publicUrl.origin ${
+          publicUrl.origin
+        }, window.location.origin ${window.location.origin}`,
+      );
       // Our service worker won't work if PUBLIC_URL is on a different origin
       // from what our page is served on. This might happen if a CDN is used to
       // serve assets; see https://github.com/facebookincubator/create-react-app/issues/2374
