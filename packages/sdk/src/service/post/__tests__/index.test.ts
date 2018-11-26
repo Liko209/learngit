@@ -11,6 +11,7 @@ import GroupService from '../../group';
 import _ from 'lodash';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 import { ResultOk, ResultErr } from 'foundation/src';
+import { NetworkResultOk } from 'sdk/src/api/NetworkResult';
 
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
@@ -528,7 +529,7 @@ describe('PostService', () => {
   describe('sendItemFile()', () => {
     it('should send file', async () => {
       itemService.sendFile.mockResolvedValueOnce({ id: 1 });
-      PostAPI.sendPost.mockResolvedValueOnce({ data: { _id: 1 } });
+      PostAPI.sendPost.mockResolvedValueOnce(new NetworkResultOk({ _id: 1 }, 200, {}));
       baseHandleData.mockResolvedValueOnce([{ id: 1 }]);
       PostServiceHandler.buildPostInfo.mockResolvedValue({ id: -123 });
 

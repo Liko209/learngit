@@ -16,7 +16,9 @@ import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
 
 // Using manual mock to improve mock priority.
-jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
+jest.mock('foundation/network', () =>
+  jest.genMockFromModule<any>('foundation/network'),
+);
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 const mockRequest: any = {};
@@ -124,8 +126,13 @@ describe('apiRequest', () => {
       mockRequest.callback({ status: 200, data: { a: 1 } });
 
       expect(networkManager.addApiRequest).toHaveBeenCalledTimes(1);
-      await expect(promise1).resolves.toEqual({ status: 200, data: { a: 1 } });
-      await expect(promise2).resolves.toEqual({ status: 200, data: { a: 1 } });
+      const response1 = await promise1;
+      const response2 = await promise2;
+      expect(response1).toHaveProperty('status', 200);
+      expect(response2).toHaveProperty('status', 200);
+      console.log(response1);
+      expect(response1).toHaveProperty('data', { a: 1 });
+      expect(response2).toHaveProperty('data', { a: 1 });
     });
   });
 

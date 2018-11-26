@@ -11,6 +11,7 @@ import dataDispatcher from '../../component/DataDispatcher/index';
 import { BaseModel, Raw } from '../../models'; // eslint-disable-line
 import { BaseError, ErrorParser } from '../../utils';
 import _ from 'lodash';
+import { NetworkResultOk } from '../../api/NetworkResult';
 
 jest.mock('../../dao/base/BaseDao');
 jest.mock('../../dao/base/Query');
@@ -87,11 +88,13 @@ describe('BaseService', () => {
     it('should return data from API when Dao not return value', async () => {
       const service = new AService();
       jest.spyOn(service, 'getByIdFromDao').mockResolvedValue(null);
-      jest.spyOn(service, 'getByIdFromAPI').mockResolvedValue({ id: 2 });
+      jest
+        .spyOn(service, 'getByIdFromAPI')
+        .mockResolvedValue(new NetworkResultOk({ id: 2 }, 200, {}));
 
       const result = await service.getById(2);
 
-      expect(result).toEqual({ id: 2 });
+      expect(result).toHaveProperty('data', { id: 2 });
     });
   });
 
@@ -110,7 +113,9 @@ describe('BaseService', () => {
   describe('getByIdFromAPI()', () => {
     it('should return data from API', async () => {
       const service = new AService();
-      fakeApi.getDataById.mockResolvedValue({ data: { _id: 4 } });
+      fakeApi.getDataById.mockResolvedValue(
+        new NetworkResultOk({ _id: 4 }, 200, {}),
+      );
 
       const result = await service.getByIdFromAPI(4);
 
