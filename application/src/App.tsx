@@ -28,23 +28,21 @@ import { upgradeHandler } from '@/upgrade';
 @observer
 class App extends React.Component {
   private appName = process.env.APP_NAME || '';
-  private _unregisterCallback: VoidFunction;
+  private _unregisterHistoryCallback: VoidFunction;
 
-  componentWillMount() {
-    this._unregisterCallback = history.listen(
+  componentWillUnmount() {
+    this._unregisterHistoryCallback && this._unregisterHistoryCallback();
+  }
+
+  componentDidMount() {
+    this._unregisterHistoryCallback = history.listen(
       (location: any, action: string) => {
         if (action === 'PUSH') {
           upgradeHandler.upgradeIfAvailable();
         }
       },
     );
-  }
 
-  componentWillUnmount() {
-    this._unregisterCallback && this._unregisterCallback();
-  }
-
-  componentDidMount() {
     analytics.bootstrap();
   }
 
