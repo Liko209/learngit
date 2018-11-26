@@ -38,7 +38,7 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
     return (
       <StyledProfileView>
         <ProfileHeader destroy={destroy} id={id} />
-        <ProfileBody id={id}/>
+        <ProfileBody id={id} destroy={destroy}/>
         <MemberListHeader id={id}/>
         <MembersList id={id}/>
         <StyledBottomBar />

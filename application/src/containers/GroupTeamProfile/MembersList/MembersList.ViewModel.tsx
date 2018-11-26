@@ -10,6 +10,8 @@ import { ENTITY_NAME } from '@/store';
 import { BaseProfileTypeHandler } from '../TypeIdHandler';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
 import { MemberListProps } from './types';
+import { GlipTypeUtil } from 'sdk/utils';
+import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 
 import {
   loadingBottom,
@@ -53,9 +55,12 @@ class MembersListViewModel extends StoreViewModel<MemberListProps> {
   }
   @computed
   get isThePersonAdmin() {
-    return this._paginationMemberIds && this._paginationMemberIds.map((id: number) => {
-      return getEntity(ENTITY_NAME.GROUP, this._id).isThePersonAdmin(id);
-    });
+    if (GlipTypeUtil.extractTypeId(this._id) === TypeDictionary.TYPE_ID_TEAM) {
+      return this._paginationMemberIds && this._paginationMemberIds.map((id: number) => {
+        return getEntity(ENTITY_NAME.GROUP, this._id).isThePersonAdmin(id);
+      });
+    }
+    return false;
   }
   @computed
   get idType() {

@@ -4,14 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { getEntity } from '../../../../store/utils';
-import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
 import { MembersListViewModel } from '../MembersList.ViewModel';
 jest.mock('../../../../store/utils');
 jest.mock('../../../../store/handler/SortableGroupMemberHandler');
 
 const membersListVM = new MembersListViewModel();
 const group = {
-  id: 123, members: [1, 2, 3], ompany_id: 22333,
+  id: 123,
+  members: [1, 2, 3],
+  ompany_id: 22333,
   set_abbreviation: 'ddd',
   email_friendly_abbreviation: 'ddd',
   most_recent_content_modified_at: 23,
@@ -23,17 +24,20 @@ const group = {
   version: 123,
   company_id: 12,
 };
-const MemberListHandler : SortableGroupMemberHandler = new SortableGroupMemberHandler(group);
 describe('MembersListViewModel', () => {
-  it('should return isThePersonGuest if get members id', async() => {
-    SortableGroupMemberHandler.createSortableGroupMemberHandler = jest.fn().mockResolvedValue(MemberListHandler);
-    MemberListHandler.getSortedGroupMembersIds = jest.fn().mockReturnValue([1, 2, 3]);
-    MemberListHandler && MemberListHandler.getSortedGroupMembersIds();
-    (getEntity as jest.Mock).mockReturnValue();
-    expect(membersListVM.isThePersonGuest).toMatchObject([true, false]);
+  it('should return isThePersonGuest if get members id', () => {
+    (getEntity as jest.Mock) = jest.fn().mockReturnValue({
+      isThePersonGuest: jest.fn(() => {
+        return true;
+      }),
+    });
+    jest.spyOn<MembersListViewModel, any>(membersListVM, '_paginationMemberIds', 'get').mockReturnValue([1, 2, 3]);
+
+    expect(membersListVM.isThePersonGuest).toMatchObject([true, true, true]);
   });
-  // it('membersList', () => {
-  //   (getEntity as jest.Mock).mockReturnValue({ members: [123, 345, 677, 90023] });
-  //
-  // });
+  it('should return membersList if group id is provided', () => {
+    jest.spyOn<MembersListViewModel, any>(membersListVM, '_paginationMemberIds', 'get').mockReturnValue([1]);
+    (getEntity as jest.Mock).mockReturnValue(group);
+    expect(membersListVM.membersList).toMatchObject([group]);
+  });
 });

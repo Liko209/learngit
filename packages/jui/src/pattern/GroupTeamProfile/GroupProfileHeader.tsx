@@ -41,7 +41,7 @@ const StyledIcon = styled.div`
     z-index: 99999;
   }
   .privacy, .favorite {
-    margin-left: 12px;
+    margin-left: ${spacing(3)};
   }
 `;
 const StyledText = styled.p`

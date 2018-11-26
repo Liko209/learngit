@@ -18,7 +18,7 @@ import { spacing } from 'jui/foundation/utils';
 
 const StyledMessageBtn = styled.div`
   display: flex;
-  color: #0684bd;
+  color: ${({ theme }) => theme.palette.primary.main};
   font-size: ${({ theme }) => theme.typography.body1.fontSize};
   span {
     font-size: ${({ theme }) => theme.typography.h6.fontSize};
@@ -36,8 +36,8 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
     );
   }
   render() {
-    const { displayName, description, id, idType } = this.props;
-    const message = <JumpToConversation id={id}>{this.renderMessageBtn()}</JumpToConversation>;
+    const { displayName, description, id, idType, destroy } = this.props;
+    const message = <JumpToConversation id={id} onSuccess={destroy}>{this.renderMessageBtn()}</JumpToConversation>;
     let avatar;
     if (idType === ID_TYPE.GROUP || idType === ID_TYPE.TEAM) {
       avatar = <GroupAvatar cid={id} />;

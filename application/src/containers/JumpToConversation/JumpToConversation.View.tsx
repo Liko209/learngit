@@ -4,25 +4,28 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import { observer } from 'mobx-react';
-import { RouteComponentProps } from 'react-router-dom';
 import history from '@/history';
+import { observer } from 'mobx-react';
 import { ViewProps } from './types';
-type Props = RouteComponentProps & ViewProps;
+
 @observer
-class JumpToConversationView extends React.Component<Props> {
+class JumpToConversationView extends React.Component<ViewProps> {
   componentDidMount() {
     const { getConversationId } = this.props;
     getConversationId();
   }
   jumpToConversation = () => {
-    const { conversationId } = this.props;
+    const { conversationId, onSuccess } = this.props;
     history.push(`/messages/${conversationId}`);
+
+    onSuccess && onSuccess();
   }
   render() {
     const { children } = this.props;
     return (
-      <div onClick={this.jumpToConversation}>{children && children}</div>
+      <div style={{ cursor: 'pointer' }} onClick={this.jumpToConversation}>
+        {children && children}
+      </div>
     );
   }
 }

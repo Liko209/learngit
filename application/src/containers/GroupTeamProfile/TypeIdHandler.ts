@@ -37,7 +37,7 @@ class BaseProfileTypeHandler {
   }
   @computed
   get isTeamOrGroup() {
-    return this._typeId === 2 || this._typeId === 6;
+    return this._typeId === TypeDictionary.TYPE_ID_GROUP || this._typeId === TypeDictionary.TYPE_ID_TEAM;
   }
   @computed
   get idType() {
