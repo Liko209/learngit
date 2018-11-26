@@ -9,6 +9,8 @@ import PersonService from 'sdk/service/person';
 import GroupService from 'sdk/service/group';
 import { Person, Group } from 'sdk/src/models';
 import { SectionTypes, SectionType } from './types';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue } from '@/store/utils';
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -25,6 +27,11 @@ class SearchBarViewModel extends StoreViewModel {
   }
 
   @computed
+  get myId() {
+    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  }
+
+  @computed
   get searchValue() {
     return this.value;
   }
@@ -33,7 +40,7 @@ class SearchBarViewModel extends StoreViewModel {
     this.value = value;
   }
 
-  private _existSectionNum(
+  existSectionNum(
     persons: SectionType<Person>,
     groups: SectionType<Group>,
     teams: SectionType<Group>,
@@ -43,27 +50,28 @@ class SearchBarViewModel extends StoreViewModel {
     },                                     0);
   }
 
-  private _needSliceNum(existSectionNum: number) {
-    return existSectionNum < 1 ? ONLY_ONE_SECTION_LENGTH : MORE_SECTION_LENGTH;
+  needSliceNum(existSectionNum: number) {
+    return existSectionNum <= 1 ? ONLY_ONE_SECTION_LENGTH : MORE_SECTION_LENGTH;
   }
 
-  private _hasMore(section: SectionTypes, existSectionNum: number) {
+  hasMore(section: SectionTypes, existSectionNum: number) {
     return (
-      section &&
-      section.sortableModels.length > this._needSliceNum(existSectionNum)
+      (section &&
+        section.sortableModels.length > this.needSliceNum(existSectionNum)) ||
+      false
     );
   }
 
-  private _getSection(section: SectionTypes, existSectionNum: number) {
+  getSection(section: SectionTypes, existSectionNum: number) {
     return {
       sortableModel:
         (section &&
           section.sortableModels.slice(
             0,
-            this._needSliceNum(existSectionNum),
+            this.needSliceNum(existSectionNum),
           )) ||
         [],
-      hasMore: this._hasMore(section, existSectionNum),
+      hasMore: this.hasMore(section, existSectionNum),
     };
   }
 
@@ -73,7 +81,7 @@ class SearchBarViewModel extends StoreViewModel {
       this.groupService.doFuzzySearchGroups(key),
       this.groupService.doFuzzySearchTeams(key),
     ]);
-    const existSectionNum = this._existSectionNum(persons, groups, teams);
+    const existSectionNum = this.existSectionNum(persons, groups, teams);
 
     return {
       terms:
@@ -81,9 +89,9 @@ class SearchBarViewModel extends StoreViewModel {
         (groups && groups.terms) ||
         (teams && teams.terms) ||
         [],
-      persons: this._getSection(persons, existSectionNum),
-      groups: this._getSection(groups, existSectionNum),
-      teams: this._getSection(teams, existSectionNum),
+      persons: this.getSection(persons, existSectionNum),
+      groups: this.getSection(groups, existSectionNum),
+      teams: this.getSection(teams, existSectionNum),
     };
   }
 }
