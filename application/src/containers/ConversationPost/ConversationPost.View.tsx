@@ -14,15 +14,15 @@ const PostTypeMappingComponent = {
   [POST_TYPE.NOTIFICATION]: Notification,
 };
 
-const factory = (type: POST_TYPE, postId: number) => {
-  const Component = PostTypeMappingComponent[type];
-  return <Component id={postId} />;
+const factory = (type: POST_TYPE, postId: number, highlight: boolean) => {
+  const Component: any = PostTypeMappingComponent[type];
+  return <Component id={postId} highlight={highlight} />;
 };
 
 class ConversationPostView extends Component<ConversationPostViewProps> {
   render() {
-    const { type, id } = this.props;
-    return factory(type, id);
+    const { type, id, highlight } = this.props;
+    return factory(type, id, highlight);
   }
 }
 

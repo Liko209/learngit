@@ -17,6 +17,7 @@ type ConversationCardProps = {
   Avatar: React.ReactNode;
   children: (React.ReactChild | null)[];
   mode?: string;
+  highlight?: boolean;
   onClick?: (e: React.MouseEvent) => any;
 } & React.DOMAttributes<{}>;
 
@@ -49,15 +50,12 @@ const navigationStyles = ({ mode }: { mode?: string }) =>
         opacity: 1;
       }
     }
-    &.highlight {
-      background: ${({ theme }) =>
-        tinycolor(palette('semantic', 'critical')({ theme }))
-          .setAlpha(theme.palette.action.hoverOpacity)
-          .toRgbString()};
-    }
   `;
 
-const StyledConversationCard = styled<{ mode?: string }, 'div'>('div')`
+const StyledConversationCard = styled<
+  { mode?: string; highlight?: boolean },
+  'div'
+>('div')`
   background-color: ${palette('common', 'white')};
   display: flex;
   transition: background-color 0.2s ease-in;
@@ -65,7 +63,19 @@ const StyledConversationCard = styled<{ mode?: string }, 'div'>('div')`
   &:focus {
     background: ${grey('50')};
   }
-  ${navigationStyles}
+  ${navigationStyles};
+  animation: ${({ highlight }) => (highlight ? 'highlight' : '')} 3s;
+  @keyframes highlight {
+    from {
+      background: ${({ theme }) =>
+        tinycolor(palette('semantic', 'critical')({ theme }))
+          .setAlpha(theme.palette.action.hoverOpacity)
+          .toRgbString()};
+    }
+    to {
+      background: ${palette('common', 'white')};
+    }
+  }
 `;
 
 const JuiConversationCard = ({

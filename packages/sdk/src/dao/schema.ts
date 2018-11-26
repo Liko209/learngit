@@ -1,7 +1,7 @@
 /*
-* @Author: Steve Chen (steve.chen@ringcentral.com)
-* @Date: 2018-02-23 23:42:59
-*/
+ * @Author: Steve Chen (steve.chen@ringcentral.com)
+ * @Date: 2018-02-23 23:42:59
+ */
 import { ISchema } from 'foundation';
 
 /**
@@ -27,7 +27,7 @@ const gen = (
 
 const schema: ISchema = {
   name: 'Glip',
-  version: 2, // Should update this number if all the old data in client db need to be deleted.
+  version: 3, // Should update this number if all the old data in client db need to be deleted.
   schema: {
     1: {
       person: gen(),

@@ -24,6 +24,12 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   }
 
   @computed
+  get highlight() {
+    // return true;
+    return !!this.props.highlight;
+  }
+
+  @computed
   get post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
   }
