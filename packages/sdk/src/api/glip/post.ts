@@ -30,7 +30,7 @@ class PostAPI extends Api {
    *  /api/post
    */
   static sendPost(data: object) {
-    return this.postData<Raw<Post>>(data);
+    return this.postData<Post>(data);
   }
 
   static requestById(id: number) {
