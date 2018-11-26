@@ -22,6 +22,7 @@ import {
 import BaseService from '../../service/BaseService';
 import GroupServiceHandler from '../../service/group/groupServiceHandler';
 import ProfileService from '../../service/profile';
+import CompanyService from '../../service/company';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
 import GroupAPI from '../../api/glip/group';
@@ -50,6 +51,8 @@ import AccountService from '../account';
 import PersonService from '../person';
 import { compareName } from '../../utils/helper';
 import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
+import { isValidEmailAddress } from '../../utils/regexUtils';
+import { Api } from '../../api';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -653,6 +656,51 @@ class GroupService extends BaseService<Group> {
       return adminUserIds.some((x: number) => x === personId);
     }
     return true;
+  }
+
+  async getGroupEmail(groupId: number) {
+    const group = await this.getGroupById(groupId);
+    let email = '';
+    if (group) {
+      const companyService: CompanyService = CompanyService.getInstance();
+      const companyReplyDomain = await companyService.getReplyToDomain(
+        group.company_id,
+      );
+
+      const envDomain = this._getDomain();
+
+      email = `${
+        group.email_friendly_abbreviation
+      }@${companyReplyDomain}.${envDomain}`;
+
+      if (!isValidEmailAddress(email)) {
+        email = `${groupId}@${companyReplyDomain}.${envDomain}`;
+      }
+    }
+    console.log('---getGroupEmail', email);
+    return email;
+  }
+
+  private _getDomain() {
+    // eg: https://aws13-g04-uds02.asialab.glip.net:11904
+    let apiServer = Api.httpConfig.glip.server;
+    if (apiServer) {
+      let index = apiServer.indexOf('://');
+      if (index > -1) {
+        apiServer = apiServer.substr(index + 3);
+      }
+
+      index = apiServer.lastIndexOf(':');
+      if (index > -1) {
+        apiServer = apiServer.substring(0, index);
+      }
+
+      index = apiServer.indexOf('.');
+      if (index !== -1 && apiServer.substr(0, index) === 'app') {
+        apiServer = apiServer.substr(index + 1);
+      }
+    }
+    return apiServer;
   }
 }
 
