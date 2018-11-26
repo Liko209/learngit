@@ -455,7 +455,7 @@ describe('filterGroups()', () => {
         creator_id: 3,
         most_recent_post_created_at: 22,
       },
-    ];
+    ] as Group[];
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
     accountService.getCurrentUserId.mockReturnValue(2);
     const filteredGroups = await filterGroups(group, 2, true);

@@ -3,6 +3,7 @@
  * @Date: 2018-04-16 09:35:30
  * Copyright © RingCentral. All rights reserved.
  */
+import { mainLogger } from 'foundation';
 import { daoManager, DeactivatedDao } from '../../dao';
 import GroupDao from '../../dao/group';
 import GroupAPI from '../../api/glip/group';
@@ -23,9 +24,8 @@ import {
   Profile,
   PartialWithKey,
   GroupState,
-} from 'sdk/models';
+} from '../../models';
 import StateService from '../state';
-import { mainLogger } from 'foundation';
 import { EVENT_TYPES } from '../constants';
 import AccountService from '../account';
 
@@ -120,9 +120,9 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
         if (calculated) {
           return calculated;
         }
-        const resp = await GroupAPI.requestGroupById(item._id);
-        if (resp && resp.data) {
-          finalItem = resp.data;
+        const result = await GroupAPI.requestGroupById(item._id);
+        if (result.isOk()) {
+          finalItem = result.data;
         } else {
           return null;
         }
