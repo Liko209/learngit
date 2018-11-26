@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { StreamViewModel } from '../Stream.ViewModel';
-import { FetchDataDirection } from '@/store/base';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
@@ -71,7 +71,7 @@ describe('StreamViewModel', () => {
 
       await vm.loadPostUntilFirstUnread();
 
-      expect(loadPosts).toHaveBeenCalledWith(FetchDataDirection.UP, 6);
+      expect(loadPosts).toHaveBeenCalledWith(QUERY_DIRECTION.OLDER, 6);
     });
 
     it('should not load posts when distance to first unread is 0', async () => {

@@ -21,7 +21,7 @@ function transformData(data: Raw<Post>[] | Raw<Post>): Post[] {
 
 export async function isContinuousWithLocalData(posts: Post[]) {
   if (!posts.length) {
-    return [];
+    return true;
   }
   if (!posts.every(({ group_id }) => group_id === posts[0].group_id)) {
     throw new Error('Posts should belong to same group');
@@ -51,9 +51,13 @@ export async function checkIncompletePostsOwnedGroups(
   return [];
 }
 
-export async function handleDeactivedAndNormalPosts(
+/**
+ * @param posts
+ * @param save：Explicitly specify whether should save to DB, if not specified, depends on the result of continuity check.
+ */
+export async function handleDeactivatedAndNormalPosts(
   posts: Post[],
-  isContinuous: boolean = false,
+  save?: boolean,
 ): Promise<Post[]> {
   const groups = _.groupBy(posts, 'group_id');
   const postDao = daoManager.getDao(PostDao);
@@ -62,13 +66,17 @@ export async function handleDeactivedAndNormalPosts(
   const normalPosts = _.flatten(
     await Promise.all(
       Object.values(groups).map(async (posts: Post[]) => {
-        const _isContinuous =
-          isContinuous || (await isContinuousWithLocalData(posts));
+        let shouldSave;
+        if (typeof save === 'boolean') {
+          shouldSave = save;
+        } else {
+          shouldSave = !!(await isContinuousWithLocalData(posts));
+        }
         const normalPosts = await utilsBaseHandleData({
           data: posts,
           dao: postDao,
           eventKey: ENTITY.POST,
-          noSavingToDB: !_isContinuous,
+          noSavingToDB: !shouldSave,
         });
         return normalPosts;
       }),
@@ -92,7 +100,7 @@ export async function handleDataFromSexio(data: Raw<Post>[]): Promise<void> {
   );
   await handlePreInsertPosts(validPosts);
   if (validPosts.length) {
-    await handleDeactivedAndNormalPosts(validPosts);
+    await handleDeactivatedAndNormalPosts(validPosts, true);
   }
 }
 
@@ -116,24 +124,26 @@ export async function handleDataFromIndex(
   const result = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
     exceedPostsHandled,
   );
-  handleDeactivedAndNormalPosts(result);
+  handleDeactivatedAndNormalPosts(result, true);
 }
 
 export default async function (data: Raw<Post>[], maxPostsExceed: boolean) {
   return handleDataFromIndex(data, maxPostsExceed);
 }
 
+/**
+ * @param data
+ * @param needTransformed
+ * @param save：Explicitly specify whether should save to DB, if not specified, depends on the result of continuity check.
+ */
 export function baseHandleData(
   data: Raw<Post>[] | Raw<Post> | Post[] | Post,
-  needTransformed = true,
-  isContinuous: boolean = false,
+  save?: boolean,
 ): Promise<Post[]> {
-  const transformedData: Post[] = needTransformed
-    ? transformData(data as Raw<Post>[] | Raw<Post>)
-    : Array.isArray(data)
-    ? (data as Post[])
-    : [data as Post];
-  return handleDeactivedAndNormalPosts(transformedData, isContinuous);
+  const transformedData: Post[] = transformData(data as
+    | Raw<Post>[]
+    | Raw<Post>);
+  return handleDeactivatedAndNormalPosts(transformedData, save);
 }
 
 export async function handlePreInsertPosts(posts: Post[] = []) {

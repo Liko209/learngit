@@ -48,6 +48,7 @@ type StreamViewProps = {
   firstHistoryUnreadInPage: boolean;
   groupId: number;
   postIds: number[];
+  jumpToPostId: number;
   items: StreamItem[];
   hasMore: boolean;
   setRowVisible: (n: number) => void;

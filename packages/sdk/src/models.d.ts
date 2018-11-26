@@ -168,7 +168,9 @@ export type GroupState = {
 
 export type GroupConfig = {
   id: number; // group id
-  has_more?: boolean;
+  has_more_older?: boolean;
+  has_more_newer?: boolean;
+  is_newest_saved?: boolean;
 };
 
 export type Post = ExtendedBaseModel & {
