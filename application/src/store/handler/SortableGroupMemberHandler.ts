@@ -96,7 +96,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
         rPerson.id,
       );
       if (isLAdmin !== isRAdmin) {
-        return isLAdmin ? 1 : -1;
+        return isLAdmin ? -1 : 1;
       }
 
       return natureCompare(
