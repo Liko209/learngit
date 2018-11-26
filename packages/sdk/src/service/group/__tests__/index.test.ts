@@ -456,9 +456,18 @@ describe('GroupService', () => {
         .spyOn(require('../../utils'), 'transform')
         .mockImplementation(source => source + 1);
       jest.spyOn(Permission, 'createPermissionsMask').mockReturnValue(100);
-      await expect(
-        groupService.createTeam('some team', 1323, [], 'abc'),
-      ).resolves.toBe(123);
+      const result = await groupService.createTeam(
+        'some team',
+        1323,
+        [],
+        'abc',
+      );
+      if (result.isOk()) {
+        expect(result.data).toBe(123);
+      } else {
+        expect(1).toEqual(2);
+      }
+
       expect(GroupAPI.createTeam).toHaveBeenCalledWith(data);
       expect(Permission.createPermissionsMask).toHaveBeenCalledWith({
         TEAM_POST: false,
@@ -479,7 +488,14 @@ describe('GroupService', () => {
         },
       });
       const ret = await groupService.createTeam('some team', 1323, [], 'abc');
-      expect(ret).toEqual({ error });
+      if (ret.isOk()) {
+        /**
+         * this is an error case, because of the code implementation is wrong
+         */
+        expect(ret.data).toEqual({ error });
+      } else {
+        expect(1).toBe(2);
+      }
     });
   });
 

@@ -40,7 +40,7 @@ class ErrorParser {
   }
 
   static iResponse(err: any) {
-    return new BaseError(err.status + ErrorTypes.HTTP, '');
+    return new BaseError(err.status + ErrorTypes.HTTP, err.message || '');
   }
 
   static http(err: any) {

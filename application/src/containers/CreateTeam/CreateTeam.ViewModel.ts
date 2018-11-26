@@ -5,13 +5,16 @@
  */
 import { action, computed, observable } from 'mobx';
 
-import GroupService, { CreateTeamOptions } from 'sdk/service/group';
+import GroupService, {
+  CreateTeamOptions,
+  GroupErrorTypes,
+} from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
-import { IResponseError } from 'sdk/models';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { BaseError } from 'sdk/utils';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -98,37 +101,28 @@ class CreateTeamViewModel extends AbstractViewModel {
     const groupService: GroupService = GroupService.getInstance();
     const accountService: AccountService = AccountService.getInstance();
     const creatorId = Number(accountService.getCurrentUserId());
-    let result;
-    try {
-      result = await groupService.createTeam(
-        name,
-        creatorId,
-        memberIds,
-        description,
-        {
-          isPublic,
-          canPost,
-        },
-      );
-    } catch (err) {
-      const { data } = err;
-      if (data) {
-        throw this.createErrorHandler(data as IResponseError);
-      } else {
-        this.serverError = true;
-      }
-      return;
+    const result = await groupService.createTeam(
+      name,
+      creatorId,
+      memberIds,
+      description,
+      {
+        isPublic,
+        canPost,
+      },
+    );
+    if (result.isErr()) {
+      this.createErrorHandler(result.error);
     }
-
     return result;
   }
 
-  createErrorHandler(error: IResponseError) {
-    const code = error.error.code;
-    if (code === 'already_taken') {
+  createErrorHandler(error: BaseError) {
+    const code = error.code;
+    if (code === GroupErrorTypes.ALREADY_TAKEN) {
       this.errorMsg = 'already taken';
       this.nameError = true;
-    } else if (code === 'invalid_field') {
+    } else if (code === GroupErrorTypes.INVALID_FIELD) {
       this.emailErrorMsg = 'Invalid Email';
       this.emailError = true;
     }
