@@ -12,10 +12,10 @@ import {
 } from '@/store/base/fetch';
 
 import PersonService from 'sdk/service/person';
-import GroupService, { GroupDataHandler } from 'sdk/service/group';
+import GroupService from 'sdk/service/group';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { Person, Group } from 'sdk/models';
-import { ENTITY, EVENT_TYPES } from 'sdk/src/service';
+import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
 import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
@@ -73,6 +73,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       return {
         id: model.id,
         sortValue: model.id,
+        data: model,
       } as ISortableModel<Person>;
     };
 
@@ -83,12 +84,15 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     ): number => {
       const lPerson = lhs.data!;
       const rPerson = rhs.data!;
-      const isLAdmin = GroupDataHandler.getInstance().isThePersonAdmin(
-        this._group,
+      const groupService = GroupService.getInstance<GroupService>();
+      const isLAdmin = groupService.isAdminOfTheGroup(
+        this._group.is_team,
+        this._group.permissions,
         lPerson.id,
       );
-      const isRAdmin = GroupDataHandler.getInstance().isThePersonAdmin(
-        this._group,
+      const isRAdmin = groupService.isAdminOfTheGroup(
+        this._group.is_team,
+        this._group.permissions,
         rPerson.id,
       );
       if (isLAdmin !== isRAdmin) {
@@ -183,4 +187,4 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   }
 }
 
-export { SortableGroupMemberHandler };
+export default SortableGroupMemberHandler;
