@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { observable, action, autorun, Reaction } from 'mobx';
+import { observable, action, autorun } from 'mobx';
 import { observer, Disposer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ConversationPost } from '@/containers/ConversationPost';
@@ -24,10 +24,9 @@ import {
   StreamSnapshot,
 } from './types';
 import storeManager from '@/store/base/StoreManager';
-import { GLOBAL_KEYS } from '@/store/constants';
-import { getEntity } from '@/store/utils';
-import { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { extractView } from 'jui/hoc/extractView';
+import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
@@ -47,17 +46,8 @@ class StreamViewComponent extends Component<Props> {
   @observable
   private _firstHistoryUnreadPostViewed = false;
 
-  async componentDidMount() {
-    await this.props.loadInitialPosts();
-    window.addEventListener('focus', this._focusHandler);
-    window.addEventListener('blur', this._blurHandler);
-    this.scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
-    this._stickToBottom();
-    this.props.resetJumpToPostId();
-  }
-
   private _stickToBottom() {
-    const disposer = autorun((r: Reaction) => {
+    const disposer = autorun(() => {
       let item: StreamItem | undefined;
       let post: PostModel;
       item = _(this.props.items).nth(-1);
@@ -71,6 +61,15 @@ class StreamViewComponent extends Component<Props> {
       }
     });
     this._disposers.push(disposer);
+  }
+
+  async componentDidMount() {
+    await this.props.loadInitialPosts();
+    window.addEventListener('focus', this._focusHandler);
+    window.addEventListener('blur', this._blurHandler);
+    this.scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
+    this._stickToBottom();
+    this.props.resetJumpToPostId();
   }
 
   componentWillUnmount() {
@@ -90,17 +89,24 @@ class StreamViewComponent extends Component<Props> {
     state: Props,
     snapshot: StreamSnapshot,
   ) {
-    if (prevProps.groupId !== this.props.groupId) {
+    const { groupId, postIds, loadInitialPosts } = this.props;
+    const { groupId: prevGroupId, postIds: prevPostIds } = prevProps;
+    const { atTop, atBottom } = snapshot;
+    if (groupId !== prevGroupId) {
       this._tidiesBeforeDestroy();
-      await this.props.loadInitialPosts();
+      await loadInitialPosts();
       return this.scrollToBottom();
     }
+
+    // User scroll up and load more posts
+    const MorePostsInserted = postIds.length > prevPostIds.length;
+    if (atTop && MorePostsInserted) {
+      return this.scrollToPost(prevProps.postIds[0]);
+    }
+    // One new message came in
     if (this.props.postIds.length === prevProps.postIds.length + 1) {
-      if (snapshot.atBottom && !prevProps.hasMoreDown) {
+      if (atBottom && !prevProps.hasMoreDown) {
         return this.scrollToBottom();
-      }
-      if (snapshot.atTop) {
-        return this.scrollToPost(prevProps.postIds[0]);
       }
     }
   }

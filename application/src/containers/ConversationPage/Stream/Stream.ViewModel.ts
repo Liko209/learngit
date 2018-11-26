@@ -267,7 +267,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
             postId: anchor && anchor.id,
             limit: pageSize,
           });
-          console.log('anchor is', posts);
           return { hasMore, data: posts };
         } catch (err) {
           if (err.code === ErrorTypes.NETWORK) {
