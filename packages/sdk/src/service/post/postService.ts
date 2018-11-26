@@ -58,9 +58,11 @@ type PostSendData = {
 class PostService extends BaseService<Post> {
   static serviceName = 'PostService';
 
-  protected async shouldSaveItemFetchedById(item: Raw<Post>): Promise<boolean> {
+  protected async shouldSaveItemFetchedById(
+    item: Raw<Post>,
+  ): Promise<boolean | undefined> {
     if (item.group_id) {
-      return this.isNewestSaved(item.group_id);
+      return this.isNewestSaved(item.group_id) && undefined;
     }
     return false;
   }
@@ -583,6 +585,29 @@ class PostService extends BaseService<Post> {
       is_newest_saved: isNewestSaved,
     });
     return isNewestSaved;
+  }
+
+  async newMessageWithPeopleIds(
+    ids: number[],
+    message: string,
+  ): Promise<{ id?: number }> {
+    try {
+      const groupService: GroupService = GroupService.getInstance();
+      const group = await groupService.getGroupByMemberList(ids);
+      const id = group ? group.id : undefined;
+      if (id && this._isValidTextMessage(message)) {
+        this.sendPost({ groupId: id, text: message });
+      }
+
+      return { id };
+    } catch (e) {
+      mainLogger.error(`newMessageWithPeopleIds: ${JSON.stringify(e)}`);
+      throw ErrorParser.parse(e);
+    }
+  }
+
+  private _isValidTextMessage(message: string) {
+    return message.trim().length === 0;
   }
 }
 

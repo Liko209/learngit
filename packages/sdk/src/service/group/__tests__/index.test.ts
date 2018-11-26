@@ -6,13 +6,12 @@ import GroupAPI from '../../../api/glip/group';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../../constants';
 import GroupService from '../index';
 import { daoManager, AccountDao, GroupDao, ConfigDao } from '../../../dao';
-import { Group } from '../../../models';
+import { Group, Person } from '../../../models';
 import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
 import { ErrorParser, BaseError } from '../../../utils';
-import notificationCenter from '../../notificationCenter';
 
 jest.mock('../../../dao');
 // jest.mock('../../utils');
@@ -24,11 +23,16 @@ jest.mock('../../notificationCenter');
 const profileService = new ProfileService();
 const personService = new PersonService();
 const accountService = new AccountService();
-PersonService.getInstance = jest.fn().mockReturnValue(personService);
-ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 
 jest.mock('../../../api/glip/group');
+
+beforeEach(() => {
+  jest.clearAllMocks();
+
+  PersonService.getInstance = jest.fn().mockReturnValue(personService);
+  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+  AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+});
 
 describe('GroupService', () => {
   const groupService: GroupService = new GroupService();
@@ -44,9 +48,7 @@ describe('GroupService', () => {
   const groupDao = new GroupDao(null);
   const configDao = new ConfigDao(null);
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+  beforeEach(() => {});
 
   it('getGroupsByType()', async () => {
     const mock = [{ id: 1 }, { id: 2 }];
@@ -112,56 +114,9 @@ describe('GroupService', () => {
     expect(result).toEqual(mock);
   });
 
-  it('getGroupByMemberList()', async () => {
-    const mockNormal = { id: 1 };
-    const memberIDs = [1, 2];
-    // group exist in DB already
-    daoManager.getDao.mockReturnValue(groupDao);
-    groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
-
-    const result1 = await groupService.getGroupByMemberList(memberIDs);
-    expect(result1).toEqual(mockNormal);
-
-    jest
-      .spyOn(groupService, 'requestRemoteGroupByMemberList')
-      .mockResolvedValueOnce(mockNormal) // first call
-      .mockResolvedValueOnce(null); // second call
-
-    // group not in db, request from server
-    const nullGroup: Group = null;
-    groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
-    const result2 = await groupService.getGroupByMemberList(memberIDs);
-    expect(result2).toEqual(mockNormal);
-
-    // group not in db and server return null
-    groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
-    const result3 = await groupService.getGroupByMemberList(memberIDs);
-    expect(result3).toBeNull;
-  });
-
-  it('requestRemoteGroupByMemberList()', async () => {
-    daoManager.getKVDao.mockReturnValue(accountDao);
-    daoManager.getDao.mockReturnValue(groupDao);
-    groupDao.get.mockResolvedValue(1); // userId
-
-    const mockNormal = { data: { _id: 1 } };
-    GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
-    const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result1).toEqual({ id: 1 });
-
-    const mockEmpty = null;
-    GroupAPI.requestNewGroup.mockResolvedValue(mockEmpty);
-    const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result2).toBeNull;
-
-    const mockError = null;
-    GroupAPI.requestNewGroup.mockResolvedValue(mockError);
-    const result3 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result3).toBeNull;
-  });
-
   it('getGroupByPersonId()', async () => {
     const mock = { id: 2 };
+    accountService.getCurrentUserId.mockResolvedValue(1);
     daoManager.getKVDao.mockReturnValueOnce(accountDao);
     daoManager.getDao.mockReturnValueOnce(groupDao);
     accountDao.get.mockReturnValue(1); // userId
@@ -197,6 +152,7 @@ describe('GroupService', () => {
     const group_id = 6037741574;
     const type = PERMISSION_ENUM.TEAM_PIN_POST;
     jest.spyOn(groupService, 'getById');
+    daoManager.getKVDao.mockReturnValueOnce(accountDao);
     groupService.getById.mockResolvedValue({
       created_at: 1511918848032,
       creator_id: 1394810883,
@@ -361,7 +317,7 @@ describe('GroupService', () => {
       GroupAPI.addTeamMembers.mockResolvedValueOnce({ data: 122 });
       jest
         .spyOn(require('../../utils'), 'transform')
-        .mockImplementation(source => source + 1);
+        .mockImplementationOnce(source => source + 1);
       await expect(groupService.addTeamMembers(1, [])).resolves.toBe(123);
       expect(GroupAPI.addTeamMembers).toHaveBeenCalledWith(1, []);
     });
@@ -454,7 +410,7 @@ describe('GroupService', () => {
       GroupAPI.createTeam.mockResolvedValueOnce({ data: 122 });
       jest
         .spyOn(require('../../utils'), 'transform')
-        .mockImplementation(source => source + 1);
+        .mockImplementationOnce(source => source + 1);
       jest.spyOn(Permission, 'createPermissionsMask').mockReturnValue(100);
       await expect(
         groupService.createTeam('some team', 1323, [], 'abc'),
@@ -523,6 +479,219 @@ describe('GroupService', () => {
       );
       const result = await groupService.hideConversation(1, false, true);
       expect(result).toBe(ServiceCommonErrorType.UNKNOWN_ERROR);
+    });
+  });
+
+  describe('doFuzzySearch', () => {
+    function prepareGroupsForSearch() {
+      personService.enableCache();
+      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+
+      const person1: Person = {
+        id: 11001,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const person2: Person = {
+        id: 12001,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'tu1.tu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'tu1',
+        last_name: 'tu1',
+        display_name: 'tu1 tu1',
+      };
+
+      personService.getEntityFromCache = jest
+        .fn()
+        .mockImplementation((id: number) => (id <= 12000 ? person1 : person2));
+
+      personService.getName = jest
+        .fn()
+        .mockImplementation((person: Person) =>
+          person.id > 12000 ? 'ben1' : 'tu1',
+        );
+
+      groupService.enableCache();
+
+      const userId = 1;
+      // prepare one : one
+      for (let i = 10000; i <= 11000; i += 1) {
+        const group: Group = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          deactivated: i % 2 === 0,
+          version: i,
+          members: [userId, i],
+          company_id: i,
+          set_abbreviation: '',
+          email_friendly_abbreviation: '',
+          most_recent_content_modified_at: i,
+        };
+        groupService.getCacheManager().set(group);
+      }
+
+      // prepare multi members as a group
+      for (let i = 11001; i <= 12000; i += 1) {
+        const group: Group = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          is_team: false,
+          deactivated: i % 2 === 0,
+          version: i,
+          members: [userId, i, i + 1000],
+          company_id: i,
+          set_abbreviation: '',
+          email_friendly_abbreviation: '',
+          most_recent_content_modified_at: i,
+        };
+        groupService.getCacheManager().set(group);
+      }
+
+      // prepare teams
+      // prepare multi members as a group
+      for (let i = 12001; i <= 13000; i += 1) {
+        const group: Group = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_team: true,
+          is_new: false,
+          is_archived: false,
+          is_public: i % 2 === 0,
+          deactivated: i % 2 !== 0,
+          version: i,
+          members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
+          company_id: i,
+          set_abbreviation: `this is a team name${i.toString()}`,
+          email_friendly_abbreviation: '',
+          most_recent_content_modified_at: i,
+        };
+        groupService.getCacheManager().set(group);
+      }
+    }
+
+    prepareGroupsForSearch();
+
+    it('do fuzzy search of groups', async () => {
+      const result = await groupService.doFuzzySearchGroups('ben');
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(1);
+      expect(result.terms[0]).toBe('ben');
+    });
+
+    it('do fuzzy search of groups, two name match', async () => {
+      const result = await groupService.doFuzzySearchGroups('ben, tu');
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(2);
+      expect(result.terms[0]).toBe('ben');
+      expect(result.terms[1]).toBe('tu');
+    });
+
+    it('do fuzzy search of teams', async () => {
+      const result = await groupService.doFuzzySearchTeams('a team name');
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(3);
+      expect(result.terms[0]).toBe('a');
+      expect(result.terms[1]).toBe('team');
+      expect(result.terms[2]).toBe('name');
+    });
+  });
+
+  describe('getGroupByMemberList', () => {
+    const groupDao = new GroupDao(null);
+    const groupService: GroupService = new GroupService();
+
+    beforeEach(() => {
+      accountService.getCurrentUserId.mockResolvedValue(1);
+    });
+
+    const mockNormal = { id: 1 };
+    const memberIDs = [1, 2];
+    const nullGroup: Group = null;
+    it('group exist in DB already', async () => {
+      // group exist in DB already
+
+      daoManager.getDao.mockReturnValue(groupDao);
+      groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
+      const result1 = await groupService.getGroupByMemberList(memberIDs);
+      expect(result1).toEqual(mockNormal);
+    });
+
+    it('group not exist in DB already, request from server', async () => {
+      jest
+        .spyOn(groupService, 'requestRemoteGroupByMemberList')
+        .mockResolvedValueOnce(mockNormal); // first call
+      groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
+      const result2 = await groupService.getGroupByMemberList(memberIDs);
+      expect(result2).toEqual(mockNormal);
+    });
+
+    it('throw error ', async () => {
+      jest
+        .spyOn(groupService, 'requestRemoteGroupByMemberList')
+        .mockRejectedValueOnce(new Error('error'));
+      daoManager.getDao.mockReturnValue(groupDao);
+      groupDao.queryGroupByMemberList.mockResolvedValue(null);
+      await expect(
+        groupService.getGroupByMemberList(memberIDs),
+      ).rejects.toThrow();
+    });
+  });
+
+  describe('requestRemoteGroupByMemberList', () => {
+    const groupService: GroupService = new GroupService();
+    const accountDao = new AccountDao(null);
+    const groupDao = new GroupDao(null);
+
+    it('requestRemoteGroupByMemberList success', async () => {
+      daoManager.getKVDao.mockReturnValue(accountDao);
+      // accountDao.get.mockReturnValue(1);
+      daoManager.getDao.mockReturnValue(groupDao);
+      groupDao.get.mockResolvedValue(1); // userId
+
+      const mockNormal = { data: { _id: 1 } };
+      GroupAPI.requestNewGroup.mockResolvedValueOnce(mockNormal);
+      const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
+      expect(result1).toMatchObject({ id: 1 });
+    });
+
+    it('requestRemoteGroupByMemberList server return null', async () => {
+      const mockEmpty = { data: null };
+      GroupAPI.requestNewGroup.mockResolvedValueOnce(mockEmpty);
+      const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
+      expect(result2).toBeNull;
+    });
+
+    it('requestRemoteGroupByMemberList throw error ', async () => {
+      GroupAPI.requestNewGroup.mockRejectedValueOnce(new Error('error'));
+      await expect(
+        groupService.requestRemoteGroupByMemberList([1, 2]),
+      ).rejects.toThrow();
     });
   });
 });
