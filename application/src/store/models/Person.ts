@@ -38,6 +38,8 @@ export default class PersonModel extends Base<Person> {
   pseudoUserPhoneNumber?: string;
   rcAccountId?: number;
   inviterId?: number;
+  @observable
+  displayName?: string;
   constructor(data: Person) {
     super(data);
     const {
@@ -54,6 +56,7 @@ export default class PersonModel extends Base<Person> {
       pseudo_user_phone_number,
       rc_account_id,
       inviter_id,
+      display_name,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -68,6 +71,7 @@ export default class PersonModel extends Base<Person> {
     this.pseudoUserPhoneNumber = pseudo_user_phone_number;
     this.rcAccountId = rc_account_id;
     this.inviterId = inviter_id;
+    this.displayName = display_name;
   }
 
   static fromJS(data: Person) {
@@ -75,7 +79,7 @@ export default class PersonModel extends Base<Person> {
   }
 
   @computed
-  get displayName(): string {
+  get userDisplayName(): string {
     if (this.isPseudoUser) {
       let pseudoUserDisplayName = '';
       if (this.glipUserId) {
@@ -92,8 +96,13 @@ export default class PersonModel extends Base<Person> {
       return pseudoUserDisplayName;
     }
 
+    if (this.displayName) {
+      return this.displayName;
+    }
+
     const personService = PersonService.getInstance<PersonService>();
     return personService.generatePersonDisplayName(
+      this.displayName,
       this.firstName,
       this.lastName,
       this.email,

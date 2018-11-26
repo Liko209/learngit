@@ -44,10 +44,12 @@ import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
+import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
-import { AccountService } from '../account/accountService';
+import AccountService from '../account';
 import PersonService from '../person';
 import { compareName } from '../../utils/helper';
+import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -56,24 +58,6 @@ type CreateTeamOptions = {
   canAddIntegrations?: boolean;
   canPin?: boolean;
 };
-
-enum PROFILE_MODEL_TYPE {
-  PERSON,
-  GROUP,
-}
-
-enum FEATURE_ACTION_STATUS {
-  INVISIBLE,
-  ENABLE,
-  DISABLE,
-}
-
-enum FEATURE_TYPE {
-  MESSAGE,
-  CALL,
-  VIDEO,
-  CONFERENCE,
-}
 
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
@@ -178,9 +162,7 @@ class GroupService extends BaseService<Group> {
 
   async getLocalGroupByMemberIdList(ids: number[]): Promise<Group | null> {
     try {
-      const mem = uniqueArray(ids);
-      const groupDao = daoManager.getDao(GroupDao);
-      const result = await groupDao.queryGroupByMemberList(mem);
+      const result = this._queryGroupByMemberList(ids);
       if (result) {
         return result;
       }
@@ -193,33 +175,31 @@ class GroupService extends BaseService<Group> {
 
   async getGroupByPersonId(personId: number): Promise<Group | null> {
     try {
-      const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-      const members = [Number(personId), Number(userId)];
-      return await this.getOrCreateGroupByMemberList(members);
+      return await this.getOrCreateGroupByMemberList([personId]);
     } catch (e) {
       mainLogger.error(`getGroupByPersonId error =>${e}`);
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
   async getOrCreateGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
-      const uniqueMem = uniqueArray(members);
-      const result = await this.getLocalGroupByMemberIdList(uniqueMem);
+      const result = await this._queryGroupByMemberList(members);
       if (result) {
         return result;
       }
-      return await this.requestRemoteGroupByMemberList(uniqueMem);
+      return await this.requestRemoteGroupByMemberList(members);
     } catch (e) {
       mainLogger.error(`getOrCreateGroupByMemberList error =>${e}`);
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
   async requestRemoteGroupByMemberList(
     members: number[],
   ): Promise<Group | null> {
-    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(members);
+    const mem = this._addCurrentUserToMemList(members);
+    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(mem);
     try {
       const result = await GroupAPI.requestNewGroup(info);
       if (result.data) {
@@ -232,7 +212,7 @@ class GroupService extends BaseService<Group> {
       mainLogger.error(
         `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
       );
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
@@ -486,41 +466,36 @@ class GroupService extends BaseService<Group> {
     }
   }
 
-  async buildGroupFeatureActionMap(
+  async buildGroupFeatureMap(
     groupId: number,
-  ): Promise<Map<FEATURE_TYPE, FEATURE_ACTION_STATUS>> {
-    try {
-      const actionMap = new Map<FEATURE_TYPE, FEATURE_ACTION_STATUS>();
-      actionMap.set(FEATURE_TYPE.CALL, FEATURE_ACTION_STATUS.INVISIBLE); // can not make call in group
+  ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>> {
+    const actionMap = new Map<FEATURE_TYPE, FEATURE_STATUS>();
+    actionMap.set(FEATURE_TYPE.CALL, FEATURE_STATUS.INVISIBLE); // can not make call in group
 
-      const group = (await this.getGroupById(groupId)) as Group;
-      actionMap.set(
-        FEATURE_TYPE.MESSAGE,
-        group
-          ? this._checkGroupMessageStatus(group)
-          : FEATURE_ACTION_STATUS.INVISIBLE,
-      );
+    const group = await this.getGroupById(groupId);
+    actionMap.set(
+      FEATURE_TYPE.MESSAGE,
+      group ? this._checkGroupMessageStatus(group) : FEATURE_STATUS.INVISIBLE,
+    );
 
-      // To-Do
-      actionMap.set(FEATURE_TYPE.CONFERENCE, FEATURE_ACTION_STATUS.INVISIBLE); // can not make conference in group for nwo
-      actionMap.set(FEATURE_TYPE.VIDEO, FEATURE_ACTION_STATUS.INVISIBLE); // can not make video in group for now
-      return actionMap;
-    } catch (error) {
-      throw ErrorParser.parse(error);
-    }
+    // To-Do
+    actionMap.set(FEATURE_TYPE.CONFERENCE, FEATURE_STATUS.INVISIBLE); // can not make conference in group for nwo
+    actionMap.set(FEATURE_TYPE.VIDEO, FEATURE_STATUS.INVISIBLE); // can not make video in group for now
+    return actionMap;
   }
 
-  async isFavorited(id: number, type: PROFILE_MODEL_TYPE): Promise<boolean> {
+  async isFavorited(id: number, type: number): Promise<boolean> {
     let groupId: number | undefined = undefined;
     switch (type) {
-      case PROFILE_MODEL_TYPE.PERSON: {
+      case TypeDictionary.TYPE_ID_PERSON: {
         const group = await this.getLocalGroupByMemberIdList([id]);
         if (group) {
           groupId = group.id;
         }
         break;
       }
-      case PROFILE_MODEL_TYPE.GROUP: {
+      case TypeDictionary.TYPE_ID_GROUP:
+      case TypeDictionary.TYPE_ID_TEAM: {
         groupId = id;
         break;
       }
@@ -545,13 +520,16 @@ class GroupService extends BaseService<Group> {
 
   private _checkGroupMessageStatus(group: Group) {
     return this._isCurrentUserInGroup(group)
-      ? FEATURE_ACTION_STATUS.ENABLE
-      : FEATURE_ACTION_STATUS.INVISIBLE;
+      ? FEATURE_STATUS.ENABLE
+      : FEATURE_STATUS.INVISIBLE;
   }
 
   private _isCurrentUserInGroup(group: Group) {
-    const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-    return group ? group.members.some((x: number) => x === userId) : false;
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    return group
+      ? group.members.some((x: number) => x === currentUserId)
+      : false;
   }
 
   async doFuzzySearchGroups(
@@ -646,12 +624,36 @@ class GroupService extends BaseService<Group> {
       .concat(emails.sort(compareName))
       .join(', ');
   }
+
+  private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
+    const mem = this._addCurrentUserToMemList(ids);
+    const groupDao = daoManager.getDao(GroupDao);
+    return await groupDao.queryGroupByMemberList(mem);
+  }
+
+  private _addCurrentUserToMemList(ids: number[]) {
+    const accountService: AccountService = AccountService.getInstance();
+    const userId = accountService.getCurrentUserId();
+    if (userId) {
+      ids.push(userId);
+    }
+    return uniqueArray(ids);
+  }
+
+  isAdminOfTheGroup(
+    isTeam: boolean | undefined,
+    permission: TeamPermission | undefined,
+    personId: number,
+  ) {
+    if (isTeam && permission) {
+      let adminUserIds: number[] = [];
+      if (permission && permission.admin) {
+        adminUserIds = permission.admin.uids;
+      }
+      return adminUserIds.some((x: number) => x === personId);
+    }
+    return true;
+  }
 }
 
-export {
-  CreateTeamOptions,
-  PROFILE_MODEL_TYPE,
-  FEATURE_ACTION_STATUS,
-  FEATURE_TYPE,
-  GroupService,
-};
+export { CreateTeamOptions, GroupService };
