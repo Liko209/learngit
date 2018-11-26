@@ -5,36 +5,61 @@
  */
 
 import React, { Component } from 'react';
+import { translate, WithNamespaces } from 'react-i18next';
 import {
   JuiMiniCard,
   JuiMiniCardHeader,
   JuiMiniCardFooter,
 } from 'jui/pattern/MiniCard';
+import {
+  JuiProfileMiniCardFooterLeft,
+  JuiProfileMiniCardFooterRight,
+} from 'jui/pattern/ProfileMiniCard';
 import { ProfileMiniCardPersonHeader } from './ProfileMiniCardPersonHeader';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { Profile } from '@/containers/common/Profile';
+import { JuiIconButton } from 'jui/components/Buttons';
 
-type Props = {
+type Props = WithNamespaces & {
   id: number;
 };
 
-class ProfileMiniCardPerson extends Component<Props> {
+class ProfileMiniCardPersonComponent extends Component<Props> {
   constructor(props: Props) {
     super(props);
   }
 
   render() {
-    const { id } = this.props;
+    const { id, t } = this.props;
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     return (
       <JuiMiniCard>
         <JuiMiniCardHeader emphasize={id === currentUserId}>
           <ProfileMiniCardPersonHeader id={id} />
         </JuiMiniCardHeader>
-        <JuiMiniCardFooter>footer</JuiMiniCardFooter>
+        <JuiMiniCardFooter>
+          <JuiProfileMiniCardFooterLeft>
+            <Profile id={id} />
+          </JuiProfileMiniCardFooterLeft>
+          <JuiProfileMiniCardFooterRight>
+            <JuiIconButton
+              size="medium"
+              color="primary"
+              variant="plain"
+              tooltipTitle={t('Messages')}
+            >
+              chat_bubble
+            </JuiIconButton>
+          </JuiProfileMiniCardFooterRight>
+        </JuiMiniCardFooter>
       </JuiMiniCard>
     );
   }
 }
+
+const ProfileMiniCardPerson = translate('translations')(
+  ProfileMiniCardPersonComponent,
+);
 
 export { ProfileMiniCardPerson };

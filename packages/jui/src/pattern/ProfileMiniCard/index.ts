@@ -9,6 +9,9 @@ export * from './ProfileMiniCardHeaderLeft';
 export * from './ProfileMiniCardHeaderMiddle';
 export * from './ProfileMiniCardHeaderRight';
 
+export * from './ProfileMiniCardFooterLeft';
+export * from './ProfileMiniCardFooterRight';
+
 export * from './ProfileMiniCardPersonName';
 export * from './ProfileMiniCardPersonStatus';
 export * from './ProfileMiniCardPersonTitle';

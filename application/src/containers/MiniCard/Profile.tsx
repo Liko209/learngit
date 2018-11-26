@@ -71,7 +71,7 @@ class Profile {
 
     this.div.setAttribute(
       'style',
-      `position: absolute; ${x}; ${y}; z-index: 9999;`,
+      `position: absolute; ${x}; ${y}; z-index: 1500;`,
     );
   }
 
