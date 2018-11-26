@@ -8,7 +8,7 @@ import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 
 type PrivacyProps = {
-  id: number;
+  id: number; // teamId
   size?: IconButtonSize;
   isAction?: boolean;
 };
