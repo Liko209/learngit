@@ -41,7 +41,7 @@ describe('jumpToConversationViewModel', () => {
     expect(jumpToConversationViewModel.conversationId).toEqual(1);
   });
 
-  describe.only('getConversationId() with person type conversationId', () => {
+  describe('getConversationId() with person type conversationId', () => {
     beforeAll(() => {
       (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
         TypeDictionary.TYPE_ID_PERSON,
