@@ -133,6 +133,21 @@ class ConversationListSection extends BaseWebComponent {
     }
   }
 
+  async expectConversationCount(n: number, waitTime=8){
+    let i = 0
+    while (true) {
+      await this.t.wait(1000);
+      const count = await this.conversations.count;
+      if (count == n){
+        return;
+      }
+      i = i + 1
+      if (i >= waitTime) {
+        throw(`conversation amount error: expected ${count} to be ${n}`);
+      }
+    }
+  }
+
   get collapse() {
     return this.self.find('.conversation-list-section-collapse').parent(2);
   }
