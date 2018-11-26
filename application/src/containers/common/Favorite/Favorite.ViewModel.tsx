@@ -27,7 +27,7 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   conversationId: number;
 
   @computed
-  get id() {
+  get _id() {
     return this.props.id; // personId || conversationId
   }
 
@@ -52,17 +52,17 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   }
 
   getFavorite = async () => {
-    const type = GlipTypeUtil.extractTypeId(this.id);
+    const type = GlipTypeUtil.extractTypeId(this._id);
     if (
       type === TypeDictionary.TYPE_ID_GROUP ||
       type === TypeDictionary.TYPE_ID_TEAM
     ) {
-      this.conversationId = this.id;
+      this.conversationId = this._id;
       return;
     }
     if (type === TypeDictionary.TYPE_ID_PERSON) {
       const group = await this._groupService.getLocalGroupByMemberIdList([
-        this.id,
+        this._id,
       ]);
       if (group) {
         this.conversationId = group.id;
@@ -92,7 +92,10 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   }
 
   handlerFavorite = async (): Promise<ServiceCommonErrorType> => {
-    return this._groupService.markGroupAsFavorite(this.id, !this.isFavorite);
+    return this._groupService.markGroupAsFavorite(
+      this.conversationId,
+      !this.isFavorite,
+    );
   }
 }
 

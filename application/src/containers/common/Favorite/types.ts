@@ -8,7 +8,7 @@ import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
 
 type FavoriteProps = {
-  id: number;
+  id: number; // personId || conversationId
   size?: IconButtonSize;
   isAction?: boolean;
   hideUnFavorite?: boolean;
