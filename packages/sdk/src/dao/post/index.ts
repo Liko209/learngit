@@ -21,7 +21,11 @@ class PostDao extends BaseDao<Post> {
     limit: number = Infinity,
   ): Promise<Post[]> {
     let anchorPost;
-    if (anchorPostId) {
+    if (!anchorPostId) {
+      anchorPost = await (direction === QUERY_DIRECTION.OLDER
+        ? this.queryLastPostByGroupId(groupId)
+        : this.queryOldestPostByGroupId(groupId));
+    } else {
       anchorPost = await this.get(anchorPostId);
     }
     if (!anchorPost) {

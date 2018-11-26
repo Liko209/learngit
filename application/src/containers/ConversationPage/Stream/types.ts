@@ -46,6 +46,7 @@ type StreamProps = {
 };
 
 type StreamViewProps = {
+  resetJumpToPostId: () => void;
   mostRecentPostId: number;
   firstHistoryUnreadInPage: boolean;
   groupId: number;
