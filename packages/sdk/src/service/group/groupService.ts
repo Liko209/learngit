@@ -7,7 +7,13 @@
 import { daoManager, ConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Group, GroupApiType, Raw, IResponseError } from '../../models';
+import {
+  Group,
+  GroupApiType,
+  Raw,
+  IResponseError,
+  SortableModel,
+} from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -39,6 +45,9 @@ import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
+import AccountService from '../account';
+import PersonService from '../person';
+import { compareName } from '../../utils/helper';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -60,6 +69,7 @@ class GroupService extends BaseService<Group> {
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
+    this.enableCache();
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
@@ -150,28 +160,31 @@ class GroupService extends BaseService<Group> {
 
   async getGroupByPersonId(personId: number): Promise<Group | null> {
     try {
-      const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-      let members = [Number(personId), Number(userId)];
-      members = uniqueArray(members);
-      return await this.getGroupByMemberList(members);
+      return await this.getGroupByMemberList([personId]);
     } catch (e) {
       mainLogger.error(`getGroupByPersonId error =>${e}`);
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
   async getGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
-      const mem = uniqueArray(members);
-      const groupDao = daoManager.getDao(GroupDao);
-      const result = await groupDao.queryGroupByMemberList(mem);
-      if (result) {
-        return result;
+      const accountService: AccountService = AccountService.getInstance();
+      const userId = accountService.getCurrentUserId();
+      if (userId) {
+        members.push(userId);
+        const mem = uniqueArray(members);
+        const groupDao = daoManager.getDao(GroupDao);
+        const result = await groupDao.queryGroupByMemberList(mem);
+        if (result) {
+          return result;
+        }
+        return await this.requestRemoteGroupByMemberList(mem);
       }
-      return await this.requestRemoteGroupByMemberList(mem);
+      return null;
     } catch (e) {
       mainLogger.error(`getGroupByMemberList error =>${e}`);
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
@@ -191,7 +204,7 @@ class GroupService extends BaseService<Group> {
       mainLogger.error(
         `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
       );
-      return null;
+      throw ErrorParser.parse(e);
     }
   }
 
@@ -443,6 +456,109 @@ class GroupService extends BaseService<Group> {
     } catch (error) {
       throw ErrorParser.parse(error);
     }
+  }
+
+  async doFuzzySearchGroups(
+    searchKey: string,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  } | null> {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    if (!currentUserId) {
+      return null;
+    }
+    return this.searchEntitiesFromCache(
+      (group: Group, terms: string[]) => {
+        if (
+          !group.is_team &&
+          !group.is_archived &&
+          !group.deactivated &&
+          group.members &&
+          group.members.length > 2
+        ) {
+          const groupName = this.getGroupNameByMultiMembers(
+            group.members,
+            currentUserId,
+          );
+
+          if (this.isFuzzyMatched(groupName, terms)) {
+            return {
+              id: group.id,
+              displayName: groupName,
+              sortKey: groupName.toLowerCase(),
+              entity: group,
+            };
+          }
+        }
+        return null;
+      },
+      searchKey,
+      undefined,
+      this.sortEntitiesByName.bind(this),
+    );
+  }
+
+  async doFuzzySearchTeams(
+    searchKey: string,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  } | null> {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    if (!currentUserId) {
+      return null;
+    }
+
+    return this.searchEntitiesFromCache(
+      (group: Group, terms: string[]) => {
+        return !group.deactivated &&
+          group.is_team &&
+          !group.is_archived &&
+          this.isFuzzyMatched(group.set_abbreviation, terms) &&
+          (group.is_public ||
+            group.members.find((id: number) => {
+              return id === currentUserId;
+            }))
+          ? {
+            id: group.id,
+            displayName: group.set_abbreviation,
+            sortKey: group.set_abbreviation.toLowerCase(),
+            entity: group,
+          }
+          : null;
+      },
+      searchKey,
+      undefined,
+      this.sortEntitiesByName.bind(this),
+    );
+  }
+
+  getGroupNameByMultiMembers(members: number[], currentUserId: number) {
+    const names: string[] = [];
+    const emails: string[] = [];
+
+    const personService: PersonService = PersonService.getInstance();
+    const diffMembers = _.difference(members, [currentUserId]);
+
+    diffMembers.forEach((id: number) => {
+      const person = personService.getEntityFromCache(id);
+      if (person) {
+        const name = personService.getName(person);
+        if (name.length > 0) {
+          names.push(name);
+        } else {
+          emails.push(person.email);
+        }
+      }
+    });
+
+    return names
+      .sort(compareName)
+      .concat(emails.sort(compareName))
+      .join(', ');
   }
 }
 

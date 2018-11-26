@@ -1,5 +1,11 @@
 /// <reference path="../../../__tests__/types.d.ts" />
-import { daoManager, PostDao, ItemDao, GroupConfigDao } from '../../../dao';
+import {
+  daoManager,
+  PostDao,
+  ItemDao,
+  GroupConfigDao,
+  AccountDao,
+} from '../../../dao';
 import PostAPI from '../../../api/glip/post';
 import itemHandleData from '../../item/handleData';
 import { baseHandleData } from '../handleData';
@@ -858,6 +864,50 @@ describe('PostService', () => {
         id: 1,
         is_newest_saved: false,
       });
+    });
+  });
+  describe('newMessageWithPeopleIds', async () => {
+    const accountDao = new AccountDao(null);
+    daoManager.getKVDao.mockReturnValue(accountDao);
+    accountDao.get.mockReturnValue(1); // userId
+    it('get group success then send post', async () => {
+      const g = { id: 44 };
+      groupService.getGroupByMemberList.mockResolvedValue(g);
+
+      jest
+        .spyOn(postService, 'sendPost')
+        .mockResolvedValue([{ id: 10, data: 'good' }]);
+
+      const result = await postService.newMessageWithPeopleIds(
+        [1, 2, 3],
+        'text message',
+      );
+
+      expect(result).toEqual({ id: 44 });
+    });
+
+    it('get group failed', async () => {
+      const spy = jest.spyOn(postService, 'sendPost');
+      expect(spy).not.toBeCalled();
+      groupService.getGroupByMemberList.mockResolvedValue(null);
+      const result = await postService.newMessageWithPeopleIds(
+        [1, 2, 3],
+        'text message',
+      );
+      expect(result).toBeUndefined;
+    });
+
+    it('send invalid message with people', async () => {
+      const g = { id: 44 };
+      groupService.getGroupByMemberList.mockResolvedValue(g);
+
+      expect(jest.spyOn(postService, 'sendPost')).not.toBeCalled();
+
+      let result = await postService.newMessageWithPeopleIds([1, 2, 3], '   ');
+      expect(result).toEqual({ id: 44 });
+
+      result = await postService.newMessageWithPeopleIds([1, 2, 3], '');
+      expect(result).toEqual({ id: 44 });
     });
   });
 });
