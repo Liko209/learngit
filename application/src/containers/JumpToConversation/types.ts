@@ -4,16 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+type ChildrenProps = {
+  jumpToConversation: (id: number) => void;
+};
+
 type Props = {
   id: number;
-  children?: React.ReactNode;
   onSuccess?: () => void;
+  children(props: ChildrenProps): JSX.Element;
 };
 
 type ViewProps = {
-  conversationId: number;
-  getConversationId: () => void;
+  id: number;
+  getConversationId: (id: number) => Promise<number>;
   onSuccess?: () => void;
+  children(props: ChildrenProps): JSX.Element;
 };
 
 export { Props, ViewProps };

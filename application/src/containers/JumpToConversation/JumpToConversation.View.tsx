@@ -10,21 +10,22 @@ import { ViewProps } from './types';
 
 @observer
 class JumpToConversationView extends React.Component<ViewProps> {
-  componentDidMount() {
-    const { getConversationId } = this.props;
-    getConversationId();
-  }
-  jumpToConversation = () => {
-    const { conversationId, onSuccess } = this.props;
+  jumpToConversation = (id: number) => async () => {
+    const { onSuccess, getConversationId } = this.props;
+    const conversationId = await getConversationId(id);
     history.push(`/messages/${conversationId}`);
 
     onSuccess && onSuccess();
   }
+
   render() {
-    const { children } = this.props;
+    const { id, children } = this.props;
+    const renderedChildren = children({
+      jumpToConversation: this.jumpToConversation,
+    });
     return (
-      <div style={{ cursor: 'pointer' }} onClick={this.jumpToConversation}>
-        {children && children}
+      <div style={{ cursor: 'pointer' }} onClick={this.jumpToConversation(id)}>
+        {renderedChildren && React.Children.only(renderedChildren)}
       </div>
     );
   }
