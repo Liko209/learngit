@@ -8,10 +8,6 @@ enum GROUP_TYPES {
   TEAM = 'TEAM',
   GROUP = 'GROUP',
 }
-enum GROUP_LIST_TITLE {
-  TEAM_MEMBERS = 'Team members',
-  GROUP_MEMBERS = 'Group members',
-}
 type GroupBodyProps = {
   displayName: string;
   description?: string;
@@ -24,4 +20,4 @@ type GroupHeaderProps = {
   title: string;
   destroy?: () => void;
 };
-export { GroupBodyProps, GroupHeaderProps, GroupListProps, GROUP_TYPES, GROUP_LIST_TITLE };
+export { GroupBodyProps, GroupHeaderProps, GroupListProps, GROUP_TYPES };

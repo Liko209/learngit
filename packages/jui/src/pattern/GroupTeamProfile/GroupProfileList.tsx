@@ -6,21 +6,25 @@
 import React, { PureComponent } from 'react';
 import { GroupListProps } from './types';
 import styled from '../../foundation/styled-components';
-
+import {
+  spacing,
+  grey,
+  height,
+} from '../../foundation/utils/styles';
 const StyledItem = styled.li`
   display: flex;
-  height: 48px;
-  background-color: #fff;
+  height: ${height(12)};
+  background-color: ${({ theme }) => theme.palette.common.white};
   align-items: center;
   &:hover{
-    background-color: #f5f5f5;
+    background-color: ${grey('100')};
   }
   &:nth-last-child(1) {
-    margin-bottom: 44px;
+    margin-bottom: ${spacing(11)};
   }
   div {
-    margin-right: 14px;
-    margin-left: 24px;
+    margin-right: ${spacing(3.5)};
+    margin-left: ${spacing(6)};
   }
 `;
 

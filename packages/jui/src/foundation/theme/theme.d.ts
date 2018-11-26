@@ -158,6 +158,7 @@ type Theme = {
   };
   boxShadow: {
     val1: string;
+    val2: string;
   };
 } & MuiTheme;
 

@@ -26,7 +26,7 @@ const StyledBottomBar = styled.div`
   left: 0;
   right: 0;
   border: ${width(3)} solid ${({ theme }) => theme.palette.common.white};
-  box-shadow: 0 -2px 4px -2px rgba(0, 0, 0, 0.14);
+  box-shadow: ${({ theme }) => theme.boxShadow.val2};
 `;
 @observer
 class GroupTeamProfile extends React.Component<GroupTeamProps> {

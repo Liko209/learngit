@@ -34,7 +34,7 @@ const StyledIcon = styled.div`
   height: 100%;
   .close {
     color: ${grey('500')};
-    font-size: 20px;
+    font-size: ${({ theme }) => theme.typography.h6.fontSize};
     height: ${height(5)};
   }
   div {
