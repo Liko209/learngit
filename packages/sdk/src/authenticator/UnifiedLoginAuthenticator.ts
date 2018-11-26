@@ -2,7 +2,7 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-07-10 14:00:31
  * Copyright © RingCentral. All rights reserved
-*/
+ */
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
 import { Api, loginGlip } from '../api';
 import notificationCenter from '../service/notificationCenter';
@@ -65,27 +65,34 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     const { rc } = Api.httpConfig;
 
     // fetch rc token
-    const authData = await oauthTokenViaAuthCode({
+    const rcOauthResult = await oauthTokenViaAuthCode({
       code,
       redirect_uri: window.location.origin,
     });
-    await setRcToken(authData.data);
+    const rcToken = rcOauthResult.expect(
+      'Failed to oauth token via auth code.',
+    );
+    await setRcToken(rcToken);
     await setRcAccountType();
     notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN);
 
     // fetch new code for glip token
-    const authCode = await generateCode(rc.clientId, rc.redirectUri);
-    const newCode = authCode.data.code;
+    const codeResult = await generateCode(rc.clientId, rc.redirectUri);
+    const codeData = codeResult.expect('Failed to generate code');
+    const newCode = codeData.code;
 
     // fetch request params for glip token
-    const newData = await oauthTokenViaAuthCode(
+    const glipParamsResult = await oauthTokenViaAuthCode(
       { code: newCode, redirect_uri: 'glip://rclogin' },
       { Authorization: `Basic ${btoa(`${rc.clientId}:${rc.clientSecret}`)}` },
     );
-
+    const glipParams = glipParamsResult.expect(
+      'Failed to oauth token via auth code.',
+    );
     // fetch glip token
-    const glipAuthData = await loginGlip(newData.data);
-    const glipToken = glipAuthData.headers['x-authorization'];
+    const glipLoginResult = await loginGlip(glipParams);
+    glipLoginResult.expect('Failed to login Glip.');
+    const glipToken = glipLoginResult.headers['x-authorization'];
     await setGlipToken(glipToken);
 
     return {
@@ -93,11 +100,11 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
       accountInfos: [
         {
           type: RCAccount.name,
-          data: authData.data,
+          data: rcToken,
         },
         {
           type: GlipAccount.name,
-          data: glipToken,
+          data: glipParams,
         },
       ],
     };

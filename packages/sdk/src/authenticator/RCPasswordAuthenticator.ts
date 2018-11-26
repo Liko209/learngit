@@ -17,15 +17,19 @@ interface IRCPasswordAuthenticateParams extends IAuthParams {
 }
 
 class RCPasswordAuthenticator implements IAuthenticator {
-  async authenticate(params: IRCPasswordAuthenticateParams): Promise<IAuthResponse> {
+  async authenticate(
+    params: IRCPasswordAuthenticateParams,
+  ): Promise<IAuthResponse> {
     params.username = this.parsePhoneNumber(params.username);
 
-    const rcAuthData = await loginRCByPassword(params);
-    const glipAuthData = await loginGlip(rcAuthData.data);
+    const rcLoginResult = await loginRCByPassword(params);
+    const rcAuthData = rcLoginResult.expect('Failed to login RC By password.');
+    const glipAuthResult = await loginGlip(rcAuthData);
+    glipAuthResult.expect('Failed to login Glip.');
 
     const authDao = daoManager.getKVDao(AuthDao);
-    authDao.put(AUTH_RC_TOKEN, rcAuthData.data);
-    authDao.put(AUTH_GLIP_TOKEN, glipAuthData.headers['x-authorization']);
+    authDao.put(AUTH_RC_TOKEN, rcAuthData);
+    authDao.put(AUTH_GLIP_TOKEN, glipAuthResult.headers['x-authorization']);
 
     const configDao = daoManager.getKVDao(ConfigDao);
     configDao.put(ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM.RC);
@@ -35,11 +39,11 @@ class RCPasswordAuthenticator implements IAuthenticator {
       accountInfos: [
         {
           type: RCAccount.name,
-          data: rcAuthData,
+          data: rcLoginResult,
         },
         {
           type: GlipAccount.name,
-          data: glipAuthData,
+          data: glipAuthResult,
         },
       ],
     };
@@ -48,7 +52,7 @@ class RCPasswordAuthenticator implements IAuthenticator {
   parsePhoneNumber(phoneNumber: string): string {
     return phoneNumber.length >= 10
       ? `${(phoneNumber.substring(0, phoneNumber.length - 10) || '1') +
-      phoneNumber.substring(phoneNumber.length - 10, phoneNumber.length)}`
+          phoneNumber.substring(phoneNumber.length - 10, phoneNumber.length)}`
       : phoneNumber;
   }
 }

@@ -28,7 +28,7 @@ class ResultOk<T, E extends BaseError = BaseError> extends Result<T, E> {
     return this.data;
   }
 
-  expect() {
+  expect(message: string) {
     return this.data;
   }
 }

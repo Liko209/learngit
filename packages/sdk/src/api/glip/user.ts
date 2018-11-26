@@ -49,7 +49,7 @@ type IndexResponse = IResponse<IndexDataModel & IResponseError>;
  * @param {boolean} mobile(option)
  * get glip 1.0 api's request header (x-authorization) by authData
  */
-function loginGlip(authData: object): Promise<IResponse<Object>> {
+function loginGlip(authData: object) {
   const model = {
     rc_access_token_data: btoa(JSON.stringify(authData)),
   };
@@ -59,7 +59,10 @@ function loginGlip(authData: object): Promise<IResponse<Object>> {
     data: model,
     authFree: true,
   };
-  return Api.glipNetworkClient.http({ ...query, via: NETWORK_VIA.HTTP });
+  return Api.glipNetworkClient.http<Object>({
+    ...query,
+    via: NETWORK_VIA.HTTP,
+  });
 }
 
 /**
@@ -68,12 +71,8 @@ function loginGlip(authData: object): Promise<IResponse<Object>> {
  * @param {string} password
  * index data api
  */
-function indexData(
-  params: object,
-  requestConfig = {},
-  headers = {},
-): Promise<IResponse<IndexDataModel & IResponseError>> {
-  return Api.glipNetworkClient.get(
+function indexData(params: object, requestConfig = {}, headers = {}) {
+  return Api.glipNetworkClient.get<IndexDataModel>(
     '/index',
     params,
     NETWORK_VIA.HTTP,
@@ -82,12 +81,8 @@ function indexData(
   );
 }
 
-function initialData(
-  params: object,
-  requestConfig = {},
-  headers = {},
-): Promise<IndexResponse> {
-  return Api.glipDesktopNetworkClient.get(
+function initialData(params: object, requestConfig = {}, headers = {}) {
+  return Api.glipDesktopNetworkClient.get<IndexResponse>(
     '/initial',
     params,
     NETWORK_VIA.HTTP,
@@ -96,12 +91,8 @@ function initialData(
   );
 }
 
-function remainingData(
-  params: object,
-  requestConfig = {},
-  headers = {},
-): Promise<IndexResponse> {
-  return Api.glipDesktopNetworkClient.get(
+function remainingData(params: object, requestConfig = {}, headers = {}) {
+  return Api.glipDesktopNetworkClient.get<IndexResponse>(
     '/remaining',
     params,
     NETWORK_VIA.HTTP,

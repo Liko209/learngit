@@ -16,6 +16,7 @@ import {
 
 // import logger from './logger';
 import { serializeUrlParams } from '../utils';
+import { NetworkResult, networkOk, networkErr } from './NetworkResult';
 
 export interface IQuery {
   via?: NETWORK_VIA;
@@ -40,8 +41,8 @@ export interface INetworkRequests {
   readonly handlerType: IHandleType;
 }
 
-export interface IResponseResolveFn<T = {}> {
-  (value: IResponse<T> | PromiseLike<IResponse<T>>): void;
+export interface IResultResolveFn<T = {}> {
+  (value: NetworkResult<T> | PromiseLike<NetworkResult<T>>): void;
 }
 
 export interface IResponseRejectFn {
@@ -63,7 +64,7 @@ export default class NetworkClient {
   apiPlatformVersion: string;
   apiMap: Map<
     string,
-    { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]
+    { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
   >;
   defaultVia: NETWORK_VIA;
   networkManager: NetworkManager;
@@ -83,7 +84,7 @@ export default class NetworkClient {
     this.networkManager = networkManager;
   }
 
-  request<T>(query: IQuery): Promise<IResponse<T>> {
+  request<T>(query: IQuery): Promise<NetworkResult<T>> {
     const { via, path, method, params } = query;
     return new Promise((resolve, reject) => {
       const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
@@ -105,21 +106,14 @@ export default class NetworkClient {
     return (resp: BaseResponse) => {
       const promiseResolvers = this.apiMap.get(apiMapKey);
       if (!promiseResolvers) return;
-
-      if (resp.status >= 200 && resp.status < 300) {
-        promiseResolvers.forEach(({ resolve }) =>
-          resolve({
-            status: resp.status,
-            headers: resp.headers,
-            data: resp.data as T,
-          }),
-        );
-      } else {
-        promiseResolvers.forEach(({ reject }) => {
+      promiseResolvers.forEach(({ resolve }) => {
+        if (resp.status >= 200 && resp.status < 300) {
+          resolve(networkOk(resp.data, resp.status, resp.headers));
+        } else {
           console.log('Network reject', resp);
-          reject(resp);
-        });
-      }
+          resolve(networkErr(resp.data.error.code, resp.status, resp.headers));
+        }
+      });
       this.apiMap.delete(apiMapKey);
     };
   }

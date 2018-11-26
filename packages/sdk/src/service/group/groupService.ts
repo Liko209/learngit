@@ -7,7 +7,7 @@
 import { daoManager, ConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Group, GroupApiType, Raw, IResponseError } from '../../models';
+import { Group, GroupApiType, Raw } from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -32,8 +32,7 @@ import handleData, {
   sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
-import { IResponse } from '../../api/NetworkClient';
-import { mainLogger } from 'foundation';
+import { mainLogger, ok } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
@@ -179,20 +178,21 @@ class GroupService extends BaseService<Group> {
     members: number[],
   ): Promise<Group | null> {
     const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(members);
-    try {
-      const result = await GroupAPI.requestNewGroup(info);
-      if (result.data) {
-        const group = transform<Group>(result.data);
-        await handleData([result.data]);
+
+    const result = await GroupAPI.requestNewGroup(info);
+    return result.match({
+      Ok: async (data: Raw<Group>) => {
+        const group = transform<Group>(data);
+        await handleData([data]);
         return group;
-      }
-      return null;
-    } catch (e) {
-      mainLogger.error(
-        `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
-      );
-      return null;
-    }
+      },
+      Err: (e: BaseError) => {
+        mainLogger.error(
+          `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
+        );
+        return null;
+      },
+    });
   }
 
   async getLatestGroup(): Promise<Group | null> {
@@ -214,11 +214,7 @@ class GroupService extends BaseService<Group> {
     return false;
   }
 
-  async pinPost(
-    postId: number,
-    groupId: number,
-    toPin: boolean,
-  ): Promise<Group | IResponseError | null> {
+  async pinPost(postId: number, groupId: number, toPin: boolean) {
     const groupDao = daoManager.getDao(GroupDao);
     const group = await groupDao.get(groupId);
     if (group && this.canPinPost(postId, group)) {
@@ -245,8 +241,12 @@ class GroupService extends BaseService<Group> {
       group._id = group.id;
       delete group.id;
       const path = group.is_team ? `/team/${group._id}` : `/group/${group._id}`;
-      const response = await GroupAPI.pinPost(path, group);
-      return this.handleResponse(response);
+
+      const result = await GroupAPI.pinPost(path, group);
+      const rawGroup = result.expect('Failed to pin post.');
+
+      const newGroup = await this.handleRawGroup(rawGroup);
+      return ok(newGroup);
     }
     return null;
   }
@@ -273,12 +273,11 @@ class GroupService extends BaseService<Group> {
     return permissionList.includes(type);
   }
 
-  async addTeamMembers(
-    groupId: number,
-    memberIds: number[],
-  ): Promise<Group | IResponseError | null> {
-    const resp = await GroupAPI.addTeamMembers(groupId, memberIds);
-    return this.handleResponse(resp);
+  async addTeamMembers(groupId: number, memberIds: number[]) {
+    const result = await GroupAPI.addTeamMembers(groupId, memberIds);
+    const rawGroup = result.expect('Failed to get new group');
+    const newGroup = await this.handleRawGroup(rawGroup);
+    return ok(newGroup);
   }
 
   async createTeam(
@@ -322,8 +321,11 @@ class GroupService extends BaseService<Group> {
           },
         },
       };
-      const resp = await GroupAPI.createTeam(team);
-      return this.handleResponse(resp);
+      const result = await GroupAPI.createTeam(team);
+      const rawGroup = result.expect('Failed to create team.');
+
+      const newGroup = await this.handleRawGroup(rawGroup);
+      return ok(newGroup);
     } catch (error) {
       throw ErrorParser.parse(error);
     }
@@ -343,12 +345,9 @@ class GroupService extends BaseService<Group> {
     return ServiceCommonErrorType.NONE;
   }
 
-  async handleResponse(resp: IResponse<Raw<Group>>) {
-    if (resp && resp.data && resp.data.error) {
-      return resp.data;
-    }
-    const group = transform<Group>(resp.data);
-    await handleData([resp.data]);
+  async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
+    const group = transform<Group>(rawGroup);
+    await handleData([rawGroup]);
     return group;
   }
 
