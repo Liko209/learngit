@@ -86,7 +86,7 @@ class NewMessageViewModel extends StoreViewModel {
     } catch (err) {
       const { data } = err;
       if (data) {
-        this.newMessageErrorHandler(data as IResponseError);
+        throw this.newMessageErrorHandler(data as IResponseError);
       } else {
         this.serverError = true;
       }
