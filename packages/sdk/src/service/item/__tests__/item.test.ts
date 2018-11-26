@@ -164,7 +164,7 @@ describe('ItemService', () => {
       expect(ret).toEqual(transformedData);
     });
 
-    it.only('should return null if response data not exists', async () => {
+    it('should return null if response data not exists', async () => {
       itemDao.get.mockResolvedValue(null);
       ItemAPI.getNote.mockResolvedValue(new NetworkResultOk(null, 200, {}));
       const ret = await itemService.getNoteById(1);
