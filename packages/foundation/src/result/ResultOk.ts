@@ -6,7 +6,7 @@
 
 import { Result } from './Result';
 import { BaseError } from './BaseError';
-import { ResultType, Cases } from './types';
+import { ResultType, ResultCases } from './types';
 
 class ResultOk<T, E extends BaseError = BaseError> extends Result<T, E> {
   readonly data: T;
@@ -20,7 +20,7 @@ class ResultOk<T, E extends BaseError = BaseError> extends Result<T, E> {
     return true;
   }
 
-  match<R1, R2>(cases: Cases<T, E, R1, R2>): R1 | R2 {
+  match<R1, R2>(cases: ResultCases<T, E, R1, R2>): R1 | R2 {
     return cases.Ok(this.data);
   }
 

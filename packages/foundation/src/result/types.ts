@@ -9,9 +9,9 @@ enum ResultType {
   Err = 'Err',
 }
 
-type Cases<T, E, R1, R2> = {
+type ResultCases<T, E, R1, R2> = {
   Ok: (data: T) => R1;
   Err: (error: E) => R2;
 };
 
-export { ResultType, Cases };
+export { ResultType, ResultCases };

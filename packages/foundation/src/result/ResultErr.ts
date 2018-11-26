@@ -6,7 +6,7 @@
 
 import { Result } from './Result';
 import { BaseError } from './BaseError';
-import { ResultType, Cases } from './types';
+import { ResultType, ResultCases } from './types';
 
 class ResultErr<T, E extends BaseError = BaseError> extends Result<T, E> {
   readonly error: E;
@@ -20,7 +20,7 @@ class ResultErr<T, E extends BaseError = BaseError> extends Result<T, E> {
     return true;
   }
 
-  match<R1, R2>(cases: Cases<T, E, R1, R2>): R1 | R2 {
+  match<R1, R2>(cases: ResultCases<T, E, R1, R2>): R1 | R2 {
     return cases.Err(this.error);
   }
 
