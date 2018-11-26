@@ -25,7 +25,7 @@ class Home extends Component<HomeViewProps> {
   }
 
   onScroll = () => {
-    MiniCard.refreshProfile();
+    MiniCard.destroyProfile();
   }
 
   componentDidMount() {
