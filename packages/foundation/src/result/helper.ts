@@ -13,12 +13,9 @@ function ok<T>(data: T): ResultOk<T, BaseError> {
 }
 
 function err<T, E extends BaseError = BaseError>(
-  code: number,
-  message?: string,
+  error: BaseError,
 ): ResultErr<T, E> {
-  const msg = message || `Error: ${code}`;
-  const error = new BaseError(code, msg) as E;
-  return new ResultErr(error);
+  return new ResultErr(error as E);
 }
 
 export { ok, err };

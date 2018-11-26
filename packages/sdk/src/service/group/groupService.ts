@@ -32,7 +32,7 @@ import handleData, {
   sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
-import { mainLogger, ok } from 'foundation';
+import { mainLogger, err, ok, Result } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
@@ -45,6 +45,12 @@ type CreateTeamOptions = {
   canPost?: boolean;
   canAddIntegrations?: boolean;
   canPin?: boolean;
+};
+
+const GroupErrorTypes = {
+  ALREADY_TAKEN: 1,
+  INVALID_FIELD: 2,
+  UNKNOWN: 99,
 };
 
 class GroupService extends BaseService<Group> {
@@ -286,7 +292,7 @@ class GroupService extends BaseService<Group> {
     memberIds: (number | string)[],
     description: string,
     options: CreateTeamOptions = {},
-  ) {
+  ): Promise<Result<Group | Raw<Group>>> {
     try {
       const {
         isPublic = false,
@@ -327,8 +333,20 @@ class GroupService extends BaseService<Group> {
       const newGroup = await this.handleRawGroup(rawGroup);
       return ok(newGroup);
     } catch (error) {
-      throw ErrorParser.parse(error);
+      return err<Group>(this.handleCreateTeamError(error.data));
     }
+  }
+
+  getGroupErrorCode(key: string) {
+    const code = GroupErrorTypes[key.toUpperCase()];
+    return code || GroupErrorTypes.UNKNOWN;
+  }
+
+  handleCreateTeamError(data: any) {
+    return new BaseError(
+      this.getGroupErrorCode(data.error.code),
+      data.error.message,
+    );
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
@@ -445,4 +463,4 @@ class GroupService extends BaseService<Group> {
   }
 }
 
-export { CreateTeamOptions, GroupService };
+export { CreateTeamOptions, GroupService, GroupErrorTypes };
