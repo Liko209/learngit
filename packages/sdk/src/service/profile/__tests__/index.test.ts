@@ -9,6 +9,12 @@ import handleData, {
   handlePartialProfileUpdate,
 } from '../../profile/handleData';
 import { BaseError } from '../../../utils';
+import {
+  NetworkResultOk,
+  networkErr,
+  NetworkResultErr,
+} from '../../../api/NetworkResult';
+import { setupMaster } from 'cluster';
 
 const profileService = new ProfileService();
 
@@ -97,12 +103,16 @@ describe('ProfileService', () => {
       };
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
       profileService.getById = jest.fn().mockImplementation(id => profile);
-      ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: {
-          _id: 2,
-          favorite_post_ids: [100, 101, 102, 103],
-        },
-      });
+      ProfileAPI.putDataById.mockResolvedValueOnce(
+        new NetworkResultOk(
+          {
+            _id: 2,
+            favorite_post_ids: [100, 101, 102, 103],
+          },
+          200,
+          {},
+        ),
+      );
       handlePartialProfileUpdate.mockResolvedValueOnce({
         id: 2,
         favorite_post_ids: [100, 101, 102, 103],
@@ -119,12 +129,16 @@ describe('ProfileService', () => {
       };
       mockAccountService.getCurrentUserProfileId.mockImplementation(() => 2);
       profileService.getById = jest.fn().mockImplementation(id => profile);
-      ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: {
-          _id: 2,
-          favorite_post_ids: [100, 101, 102],
-        },
-      });
+      ProfileAPI.putDataById.mockResolvedValueOnce(
+        new NetworkResultOk(
+          {
+            _id: 2,
+            favorite_post_ids: [100, 101, 102],
+          },
+          200,
+          {},
+        ),
+      );
       handlePartialProfileUpdate.mockResolvedValueOnce({
         id: 2,
         favorite_post_ids: [100, 101],
@@ -137,12 +151,7 @@ describe('ProfileService', () => {
   });
 
   describe('reorderFavoriteGroups', () => {
-    it('reorder back to forward', async () => {
-      const profile = {
-        id: 2,
-        favorite_group_ids: [1, 2, 3],
-      };
-
+    function setupMock(profile: any, returnValue: any) {
       jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
 
       jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
@@ -153,14 +162,21 @@ describe('ProfileService', () => {
         .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
+      ProfileAPI.putDataById.mockResolvedValueOnce(
+        new NetworkResultOk(returnValue, 200, {}),
+      );
+      handleData.mockResolvedValueOnce(returnValue);
+    }
+    it('reorder back to forward', async () => {
+      const profile = {
+        id: 2,
+        favorite_group_ids: [1, 2, 3],
+      };
       const returnValue = {
         id: 2,
         favorite_group_ids: [2, 1, 3],
       };
-      ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: returnValue,
-      });
-      handleData.mockResolvedValueOnce(returnValue);
+      setupMock(profile, returnValue);
       const result = (await profileService.reorderFavoriteGroups(1, 0)) || {
         favorite_group_ids: [],
       };
@@ -172,25 +188,12 @@ describe('ProfileService', () => {
         id: 2,
         favorite_group_ids: [1, 2, 3],
       };
-
-      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
-
-      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
-      jest
-        .spyOn(profileService, 'updatePartialModel2Db')
-        .mockImplementation(() => {});
-      jest
-        .spyOn(profileService, '_doDefaultPartialNotify')
-        .mockImplementation(() => {});
-
       const returnValue = {
         id: 2,
         favorite_group_ids: [3, 2, 1],
       };
-      ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: returnValue,
-      });
-      handleData.mockResolvedValueOnce(returnValue);
+      setupMock(profile, returnValue);
+
       const result = (await profileService.reorderFavoriteGroups(0, 2)) || {
         favorite_group_ids: [],
       };
@@ -198,12 +201,7 @@ describe('ProfileService', () => {
     });
   });
   describe('markMeGroupAsFavorite', () => {
-    it('markMeGroupAsFavorite if a new user logs in', async () => {
-      const profile = {
-        id: 2,
-        favorite_group_ids: [],
-      };
-
+    function setupMock(profile: any, returnValue: any) {
       jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
 
       jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
@@ -213,15 +211,22 @@ describe('ProfileService', () => {
       jest
         .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
+      ProfileAPI.putDataById.mockResolvedValueOnce(
+        new NetworkResultOk(returnValue, 200, {}),
+      );
+      handleData.mockResolvedValueOnce(returnValue);
+    }
+    it('markMeGroupAsFavorite if a new user logs in', async () => {
+      const profile = {
+        id: 2,
+        favorite_group_ids: [],
+      };
 
       const returnValue = {
         id: 2,
         favorite_group_ids: [2],
       };
-      ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: returnValue,
-      });
-      handleData.mockResolvedValueOnce(returnValue);
+      setupMock(profile, returnValue);
       const result = (await profileService.markMeConversationAsFav()) || {
         favorite_group_ids: [],
       };
@@ -233,16 +238,7 @@ describe('ProfileService', () => {
         favorite_group_ids: [2],
         me_tab: true,
       };
-
-      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
-
-      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
-      jest
-        .spyOn(profileService, 'updatePartialModel2Db')
-        .mockImplementation(() => {});
-      jest
-        .spyOn(profileService, '_doDefaultPartialNotify')
-        .mockImplementation(() => {});
+      setupMock(profile, {});
 
       const result = (await profileService.markMeConversationAsFav()) || {
         favorite_group_ids: [],
@@ -251,11 +247,7 @@ describe('ProfileService', () => {
     });
   });
   describe('hideConversation()', () => {
-    it('hideConversation, hidden === true, success', async () => {
-      const profile = {
-        id: 2,
-      };
-
+    function setupMock(profile: any, returnValue: any) {
       jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
 
       jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
@@ -265,16 +257,21 @@ describe('ProfileService', () => {
       jest
         .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
-
+      ProfileAPI.putDataById.mockResolvedValueOnce(
+        new NetworkResultOk(returnValue, 200, {}),
+      );
+      handleData.mockResolvedValueOnce(returnValue);
+    }
+    it('hideConversation, hidden === true, success', async () => {
+      const profile = {
+        id: 2,
+      };
       const returnValue = {
         id: 2,
         hide_group_222233333: true,
         skip_close_conversation_confirmation: true,
       };
-      ProfileAPI.putDataById.mockResolvedValueOnce({
-        data: returnValue,
-      });
-      handleData.mockResolvedValueOnce(returnValue);
+      setupMock(profile, returnValue);
       const result = await profileService.hideConversation(
         222233333,
         true,
@@ -292,20 +289,11 @@ describe('ProfileService', () => {
       const profile = {
         id: 2,
       };
-      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
+      setupMock(profile, {});
 
-      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
-
-      jest
-        .spyOn(profileService, 'updatePartialModel2Db')
-        .mockImplementation(() => {});
-      jest
-        .spyOn(profileService, '_doDefaultPartialNotify')
-        .mockImplementation(() => {});
-
-      ProfileAPI.putDataById.mockResolvedValueOnce({
-        status: 403,
-      });
+      ProfileAPI.putDataById.mockResolvedValueOnce(
+        new NetworkResultErr(new BaseError(403, ''), 403, {}),
+      );
 
       const result = await profileService.hideConversation(1, true, false);
       if (result instanceof BaseError) {

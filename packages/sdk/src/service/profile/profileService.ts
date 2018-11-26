@@ -74,7 +74,7 @@ class ProfileService extends BaseService<Profile> {
       profile,
     );
     let result: Profile | null;
-    if (response.data) {
+    if (response.isOk()) {
       result = await handlePartialProfileUpdate(response.data, oldKey);
     } else {
       // roll back
@@ -178,29 +178,32 @@ class ProfileService extends BaseService<Profile> {
       return ErrorParser.parse('none profile error');
     }
     const personService = await PersonService.getInstance<PersonService>();
-    const { me_group_id } = await personService.getById(currentId);
+    const result = await personService.getById(currentId);
+    if (result) {
+      const { me_group_id } = result;
+      const partialProfile: any = {
+        id: profileId,
+        _id: profileId,
+      };
+      const preHandlePartialModel = (
+        partialModel: Partial<Raw<Profile>>,
+        originalModel: Profile,
+      ): Partial<Raw<Profile>> => {
+        const favIds = originalModel.favorite_group_ids || [];
+        if (favIds.indexOf(currentId) === -1) {
+          partialModel['favorite_group_ids'] = [me_group_id].concat(favIds);
+        }
+        partialModel['me_tab'] = true;
+        return partialModel;
+      };
 
-    const partialProfile: any = {
-      id: profileId,
-      _id: profileId,
-    };
-    const preHandlePartialModel = (
-      partialModel: Partial<Raw<Profile>>,
-      originalModel: Profile,
-    ): Partial<Raw<Profile>> => {
-      const favIds = originalModel.favorite_group_ids || [];
-      if (favIds.indexOf(currentId) === -1) {
-        partialModel['favorite_group_ids'] = [me_group_id].concat(favIds);
-      }
-      partialModel['me_tab'] = true;
-      return partialModel;
-    };
-
-    return await this.handlePartialUpdate(
-      partialProfile,
-      preHandlePartialModel,
-      this._doUpdateModel.bind(this),
-    );
+      return await this.handlePartialUpdate(
+        partialProfile,
+        preHandlePartialModel,
+        this._doUpdateModel.bind(this),
+      );
+    }
+    return new BaseError(500, 'getById failed');
   }
 
   async putFavoritePost(
@@ -348,14 +351,16 @@ class ProfileService extends BaseService<Profile> {
         newProfile,
       );
 
-      if (response.data) {
+      const data = response.expect('profile put dat failed');
+
+      if (data) {
         if (handleDataFunc) {
-          const result = await handleDataFunc(response.data);
+          const result = await handleDataFunc(data);
           if (result) {
             return result;
           }
         } else {
-          const latestProfileModel: Profile = transform(response.data);
+          const latestProfileModel: Profile = transform(data);
           return latestProfileModel;
         }
       }
