@@ -10,6 +10,8 @@ import { grey, typography } from '../../../foundation/utils/styles';
 const SearchItemValueWrapper = styled.div`
   color: ${grey('900')};
   ${typography('body1')};
+  overflow: hidden;
+  text-overflow: ellipsis;
   span {
     font-weight: bold;
     ${typography('body2')};

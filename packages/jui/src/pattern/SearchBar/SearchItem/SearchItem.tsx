@@ -5,26 +5,55 @@
  */
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-// import {
-//   grey,
-//   spacing,
-//   height,
-//   typography,
-// } from '../../../foundation/utils/styles';
+import MenuItem from '@material-ui/core/MenuItem';
+import tinycolor from 'tinycolor2';
 
-const SearchItemWrapper = styled.div``;
+import { height, spacing, palette } from '../../../foundation/utils/styles';
 
-const SearchItemAvatar = styled.div``;
+const SearchItemWrapper = styled(MenuItem)`
+  && {
+    height: ${height(6)};
+    padding: ${spacing(1, 4)};
+    &:hover {
+      background: ${({ theme }) =>
+        tinycolor(palette('grey', '500')({ theme }))
+          .setAlpha(theme.palette.action.hoverOpacity)
+          .toRgbString()};
+    }
+    &:active {
+      background: ${({ theme }) =>
+        tinycolor(palette('primary', 'main')({ theme }))
+          .setAlpha(theme.palette.action.hoverOpacity)
+          .toRgbString()};
+    }
+  }
+`;
+
+const SearchItemAvatar = styled.div`
+  margin-right: ${spacing(2)};
+`;
+
+const SearchItemValueWrapper = styled.div`
+  flex: 1;
+`;
+
+const SearchItemActions = styled.div`
+  display: flex;
+`;
 
 type JuiSearchItemProps = {
   avatar: JSX.Element;
+  itemValue: JSX.Element;
+  actions?: JSX.Element[];
 };
 
 const JuiSearchItem = (props: JuiSearchItemProps) => {
-  const { avatar } = props;
+  const { avatar, itemValue, actions } = props;
   return (
-    <SearchItemWrapper>
+    <SearchItemWrapper disableRipple={true}>
       <SearchItemAvatar>{avatar}</SearchItemAvatar>
+      <SearchItemValueWrapper>{itemValue}</SearchItemValueWrapper>
+      {actions && <SearchItemActions>{actions}</SearchItemActions>}
     </SearchItemWrapper>
   );
 };
