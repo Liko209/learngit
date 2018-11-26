@@ -6,8 +6,10 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { computed } from 'mobx';
 import { MoreHorizProps } from './types';
+import { GroupService } from 'sdk/service';
 
 class MoreHorizViewModel extends StoreViewModel<MoreHorizProps> {
+  private _groupService: GroupService = GroupService.getInstance();
   @computed
   get groupUrl() {
     return `${window.location.origin}/messages/${this.props.id}`;
