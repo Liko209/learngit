@@ -6,6 +6,7 @@
 import { BaseDao } from '../base';
 import { GroupConfig } from '../../models';
 import { IDatabase } from 'foundation';
+import { QUERY_DIRECTION } from '../constants';
 
 class GroupConfigDao extends BaseDao<GroupConfig> {
   static COLLECTION_NAME = 'groupConfig';
@@ -14,12 +15,20 @@ class GroupConfigDao extends BaseDao<GroupConfig> {
     super(GroupConfigDao.COLLECTION_NAME, db);
   }
 
-  async hasMoreRemotePost(groupId: number): Promise<boolean> {
+  async hasMoreRemotePost(
+    groupId: number,
+    direction: QUERY_DIRECTION,
+  ): Promise<boolean> {
     const result = await this.get(groupId);
-    if (result && result.has_more !== undefined) {
-      return result.has_more;
+    if (result && result[`has_more_${direction}`] !== undefined) {
+      return result[`has_more_${direction}`];
     }
     return true;
+  }
+
+  async isNewestSaved(groupId: number): Promise<boolean> {
+    const result = await this.get(groupId);
+    return !!(result && result.is_newest_saved);
   }
 }
 

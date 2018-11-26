@@ -361,11 +361,11 @@ describe('BaseService', () => {
   describe('Check Support Cache', () => {
     it('isSupportCache', async () => {
       const service = new AService();
-      let result = service.isSupportCache();
+      let result = service.isCacheEnable();
       expect(result).toEqual(false);
 
-      service.setSupportCache(true);
-      result = service.isSupportCache();
+      service.enableCache();
+      result = service.isCacheEnable();
       expect(result).toEqual(true);
       const cacheManager = service.getCacheManager();
       expect(cacheManager).toBeTruthy();
@@ -375,7 +375,7 @@ describe('BaseService', () => {
   describe('Check Cache Search', () => {
     it('get from cache', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -403,7 +403,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, no arrangeIds, has searchKey, has sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -437,7 +437,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, has arrangeIds, has search key, has sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -470,7 +470,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, has arrangeIds, no search key, has sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -504,7 +504,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, has arrangeIds, no search key, no sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -538,7 +538,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, no arrangeIds, no search key, no sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -573,7 +573,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, no arrangeIds, has search key, no sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -607,7 +607,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, no arrangeIds, no search key, has sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };

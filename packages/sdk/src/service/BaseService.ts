@@ -31,7 +31,6 @@ class BaseService<
 > extends AbstractService {
   static serviceName = 'BaseService';
   private _cachedManager: EntityCacheManager<SubModel>;
-  private _isSupportCache: boolean = false;
 
   constructor(
     public DaoClass?: any,
@@ -45,6 +44,12 @@ class BaseService<
 
   static getInstance<T extends BaseService<any>>(): T {
     return container.get(this.name) as T;
+  }
+
+  protected async shouldSaveItemFetchedById(
+    item: Raw<SubModel>,
+  ): Promise<boolean | undefined> {
+    return true;
   }
 
   async getById(id: number): Promise<SubModel> {
@@ -72,7 +77,8 @@ class BaseService<
     let result = await this.ApiClass.getDataById(id);
     if (result && result.data) {
       const arr = [].concat(result.data).map(transform); // normal transform
-      await this.handleData(arr);
+      const shouldSaveToDB = await this.shouldSaveItemFetchedById(result.data);
+      await this.handleData(arr, shouldSaveToDB);
       result = arr.length > 0 ? arr[0] : null;
     }
     return result;
@@ -95,15 +101,13 @@ class BaseService<
     return this.getAllFromDao({ offset, limit });
   }
 
-  isSupportCache(): boolean {
-    return this._isSupportCache;
+  isCacheEnable(): boolean {
+    return this._cachedManager ? true : false;
   }
 
-  setSupportCache(isSupportCache: boolean) {
-    this._isSupportCache = isSupportCache;
-    if (this._isSupportCache) {
+  enableCache() {
+    if (!this._cachedManager) {
       this._cachedManager = new EntityCacheManager<SubModel>();
-
       notificationCenter.on(SERVICE.LOGIN, () => {
         this.initialCacheManager();
       });
@@ -151,7 +155,7 @@ class BaseService<
     const sortableEntities: SortableModel<SubModel>[] = [];
 
     if (searchKey) {
-      terms = this.getTermsFromSearchKey(searchKey);
+      terms = this.getTermsFromSearchKey(searchKey.trim());
     }
 
     if (arrangeIds) {

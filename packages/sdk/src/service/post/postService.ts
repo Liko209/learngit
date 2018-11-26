@@ -6,7 +6,6 @@
 
 import _ from 'lodash';
 import { daoManager, PostDao, GroupConfigDao } from '../../dao';
-// import GroupDao from 'dao/group';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
@@ -24,12 +23,12 @@ import { transform } from '../utils';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
 import { ErrorParser, BaseError } from '../../utils/error';
+import { QUERY_DIRECTION } from '../../dao/constants';
 
 interface IPostResult {
   posts: Post[];
   items: Item[];
   hasMore: boolean;
-  offset?: number;
   limit?: number;
 }
 
@@ -41,10 +40,9 @@ interface IRawPostResult {
 
 interface IPostQuery {
   groupId: number;
-  offset?: number;
   limit?: number;
   postId?: number;
-  direction?: string;
+  direction?: QUERY_DIRECTION;
 }
 
 type PostData = {
@@ -60,6 +58,15 @@ type PostSendData = {
 class PostService extends BaseService<Post> {
   static serviceName = 'PostService';
 
+  protected async shouldSaveItemFetchedById(
+    item: Raw<Post>,
+  ): Promise<boolean | undefined> {
+    if (item.group_id) {
+      return this.isNewestSaved(item.group_id) && undefined;
+    }
+    return false;
+  }
+
   private _postStatusHandler: PostStatusHandler;
   constructor() {
     const subscriptions = {
@@ -71,17 +78,18 @@ class PostService extends BaseService<Post> {
 
   async getPostsFromLocal({
     groupId,
-    offset,
+    postId,
+    direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
-      offset,
+      postId,
+      direction,
       limit,
     );
     const result: IPostResult = {
-      offset,
       limit,
       posts: [],
       items: [],
@@ -149,24 +157,27 @@ class PostService extends BaseService<Post> {
 
   async getPostsByGroupId({
     groupId,
-    offset = 0,
     postId = 0,
     limit = 20,
-    direction = 'older',
+    direction = QUERY_DIRECTION.OLDER,
   }: IPostQuery): Promise<IPostResult> {
     try {
       const result = await this.getPostsFromLocal({
         groupId,
-        offset,
+        postId,
+        direction,
         limit,
       });
       if (result.posts.length < limit) {
         const groupConfigDao = daoManager.getDao(GroupConfigDao);
-        const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(groupId);
+        const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(
+          groupId,
+          direction,
+        );
         if (hasMoreRemote) {
           // should try to get more posts from server
           mainLogger.debug(
-            `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`,
+            `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} direction:${direction} no data in local DB, should do request`,
           );
 
           const lastPost = _.last(result.posts);
@@ -178,8 +189,18 @@ class PostService extends BaseService<Post> {
             limit: limit - result.posts.length,
           });
 
+          let shouldSave;
+          const includeNewest = await this.includeNewest(
+            remoteResult.posts.map(({ _id }) => _id),
+            groupId,
+          );
+          if (includeNewest) {
+            shouldSave = true;
+          } else {
+            shouldSave = await this.isNewestSaved(groupId);
+          }
           const posts: Post[] =
-            (await baseHandleData(remoteResult.posts, true, true)) || [];
+            (await baseHandleData(remoteResult.posts, shouldSave)) || [];
           const items = (await itemHandleData(remoteResult.items)) || [];
 
           result.posts.push(...posts);
@@ -187,7 +208,7 @@ class PostService extends BaseService<Post> {
           result.hasMore = remoteResult.hasMore;
           await groupConfigDao.update({
             id: groupId,
-            has_more: remoteResult.hasMore,
+            [`has_more_${direction}`]: remoteResult.hasMore,
           });
         } else {
           result.hasMore = false;
@@ -195,13 +216,11 @@ class PostService extends BaseService<Post> {
       }
 
       result.limit = limit;
-      result.offset = offset;
 
       return result;
     } catch (e) {
       mainLogger.error(`getPostsByGroupId: ${JSON.stringify(e)}`);
       return {
-        offset,
         limit,
         posts: [],
         items: [],
@@ -223,7 +242,8 @@ class PostService extends BaseService<Post> {
     const restIds = _.difference(ids, localPosts.map(({ id }) => id));
     if (restIds.length) {
       const remoteResult = (await PostAPI.requestByIds(restIds)).data;
-      const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
+      const posts: Post[] =
+        (await baseHandleData(remoteResult.posts, false)) || [];
       const items = (await itemHandleData(remoteResult.items)) || [];
 
       result.posts.push(...posts);
@@ -513,8 +533,58 @@ class PostService extends BaseService<Post> {
 
   async groupHasPostInLocal(groupId: number) {
     const postDao: PostDao = daoManager.getDao(PostDao);
-    const posts: Post[] = await postDao.queryPostsByGroupId(groupId, 0, 1);
+    const posts: Post[] = await postDao.queryPostsByGroupId(
+      groupId,
+      0,
+      undefined,
+      1,
+    );
     return posts.length !== 0;
+  }
+
+  async getNewestPostIdOfGroup(groupId: number): Promise<number | null> {
+    const params: any = {
+      limit: 1,
+      group_id: groupId,
+    };
+    try {
+      const requestResult = await PostAPI.requestPosts(params);
+      const post = requestResult.data.posts[0];
+      if (post) {
+        return post._id;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async includeNewest(postIds: number[], groupId: number): Promise<boolean> {
+    const newestPostId = await this.getNewestPostIdOfGroup(groupId);
+    if (!newestPostId) {
+      return false;
+    }
+    return postIds.indexOf(newestPostId) >= 0;
+  }
+
+  async isNewestSaved(groupId: number): Promise<boolean> {
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    console.log('dao', groupConfigDao);
+    let isNewestSaved = await groupConfigDao.isNewestSaved(groupId);
+    if (isNewestSaved) {
+      return true;
+    }
+    const newestPostId = await this.getNewestPostIdOfGroup(groupId);
+    if (!newestPostId) {
+      return false;
+    }
+    const dao = daoManager.getDao(this.DaoClass);
+    isNewestSaved = !!(await dao.get(newestPostId));
+    await groupConfigDao.update({
+      id: groupId,
+      is_newest_saved: isNewestSaved,
+    });
+    return isNewestSaved;
   }
 
   async newMessageWithPeopleIds(
