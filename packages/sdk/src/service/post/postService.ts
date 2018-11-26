@@ -127,9 +127,10 @@ class PostService extends BaseService<Post> {
         items: [],
         hasMore: false,
       };
-      if (requestResult && requestResult.data) {
-        result.posts = requestResult.data.posts;
-        result.items = requestResult.data.items;
+      const data = requestResult.expect('Get Remote post failed');
+      if (data) {
+        result.posts = data.posts;
+        result.items = data.items;
         if (result.posts.length === limit) {
           result.hasMore = true;
         }
@@ -222,9 +223,10 @@ class PostService extends BaseService<Post> {
     };
     const restIds = _.difference(ids, localPosts.map(({ id }) => id));
     if (restIds.length) {
-      const remoteResult = (await PostAPI.requestByIds(restIds)).data;
-      const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
-      const items = (await itemHandleData(remoteResult.items)) || [];
+      const remoteResult = await PostAPI.requestByIds(restIds);
+      const remoteData = remoteResult.expect('getPostsByIds failed');
+      const posts: Post[] = (await baseHandleData(remoteData.posts)) || [];
+      const items = (await itemHandleData(remoteData.items)) || [];
 
       result.posts.push(...posts);
       result.items.push(...items);
@@ -263,12 +265,8 @@ class PostService extends BaseService<Post> {
 
     try {
       const resp = await PostAPI.sendPost(buildPost);
-      if (resp && !resp.data.error) {
-        return this.handleSendPostSuccess(resp.data, preInsertId);
-      }
-
-      // error, notifiy, should add error handle after IResponse give back error info
-      throw resp;
+      const data = resp.expect('send post failed');
+      return this.handleSendPostSuccess(data, preInsertId);
     } catch (e) {
       this.handleSendPostFail(preInsertId);
       throw ErrorParser.parse(e);
@@ -382,7 +380,8 @@ class PostService extends BaseService<Post> {
       const post = await PostServiceHandler.buildModifiedPostInfo(params);
       if (params.postId && post) {
         const resp = await PostAPI.editPost(params.postId, post);
-        const result = await baseHandleData(resp.data);
+        const data = resp.expect('modified post fail');
+        const result = await baseHandleData(data);
         return result[0];
       }
       return null;
@@ -422,10 +421,8 @@ class PostService extends BaseService<Post> {
       delete post.id;
       try {
         const resp = await PostAPI.putDataById<Post>(id, post);
-        if (resp && !resp.data.error) {
-          return true;
-        }
-        throw resp;
+        resp.expect('delete post failed');
+        return true;
       } catch (e) {
         throw ErrorParser.parse(e);
       }
@@ -441,17 +438,15 @@ class PostService extends BaseService<Post> {
       newPost._id = newPost.id;
       delete newPost.id;
       const response = await PostAPI.putDataById<Post>(newPost._id, newPost);
-
-      if (response.data) {
-        if (handleDataFunc) {
-          const result = await handleDataFunc(response.data);
-          if (result) {
-            return result;
-          }
-        } else {
-          const latestPostModel: Post = transform(response.data);
-          return latestPostModel;
+      const data = response.expect('update post failed');
+      if (handleDataFunc) {
+        const result = await handleDataFunc(data);
+        if (result) {
+          return result;
         }
+      } else {
+        const latestPostModel: Post = transform(data);
+        return latestPostModel;
       }
       return ErrorParser.parse(response);
     } catch (e) {
