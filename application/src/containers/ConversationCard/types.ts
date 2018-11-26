@@ -15,6 +15,7 @@ type ConversationCardViewProps = {
   post: PostModel;
   hideText: boolean;
   creator: PersonModel;
+  groupId: number;
   name: string;
   customStatus?: string;
   createTime: string;

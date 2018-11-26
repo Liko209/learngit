@@ -15,14 +15,14 @@ import { MoreHorizIcon } from './MoreHoriz';
 class ProfileHeader extends React.Component<ProfileHeaderViewProps> {
   render() {
     const {
-      text = 'Profile',
+      title = 'Profile',
       destroy,
       groupId,
       t,
     } = this.props;
     return (
       <>
-        <JuiGroupProfileHeader text={t(text)} destroy={destroy}>
+        <JuiGroupProfileHeader title={t(title)} destroy={destroy}>
           <Privacy id={groupId} isShowTooltip={false}/>
           <Favorite id={groupId} isShowTooltip={false} isAction={false}/>
           <MoreHorizIcon id={groupId}/>

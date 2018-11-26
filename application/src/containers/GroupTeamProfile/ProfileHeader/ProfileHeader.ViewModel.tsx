@@ -17,8 +17,8 @@ class ProfileHeaderViewModel extends StoreViewModel<ProfileHeaderProps> {
     return this.props.destroy;
   }
   @computed
-  get text() {
-    return this.props.text;
+  get title() {
+    return this.props.title;
   }
 }
 export { ProfileHeaderViewModel };

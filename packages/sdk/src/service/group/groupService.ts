@@ -74,7 +74,7 @@ class GroupService extends BaseService<Group> {
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
-    this.setSupportCache(true);
+    this.enableCache();
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
@@ -583,19 +583,29 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    if (!currentUserId) {
+      return null;
+    }
+
     return this.searchEntitiesFromCache(
       (group: Group, terms: string[]) => {
-        if (group.is_team && !group.is_archived && !group.deactivated) {
-          if (this.isFuzzyMatched(group.set_abbreviation, terms)) {
-            return {
-              id: group.id,
-              displayName: group.set_abbreviation,
-              sortKey: group.set_abbreviation.toLowerCase(),
-              entity: group,
-            };
+        return !group.deactivated &&
+          group.is_team &&
+          !group.is_archived &&
+          this.isFuzzyMatched(group.set_abbreviation, terms) &&
+          (group.is_public ||
+            group.members.find((id: number) => {
+              return id === currentUserId;
+            }))
+          ? {
+            id: group.id,
+            displayName: group.set_abbreviation,
+            sortKey: group.set_abbreviation.toLowerCase(),
+            entity: group,
           }
-        }
-        return null;
+          : null;
       },
       searchKey,
       undefined,

@@ -52,13 +52,13 @@ const StyledText = styled.p`
 `;
 class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
   render() {
-    const { text, destroy, children } = this.props;
+    const { title, destroy, children } = this.props;
 
     return (
       <StyledHeader>
         <StyledContent>
           <StyledText>
-            {text}
+            {title}
           </StyledText>
           <StyledIcon>
             {children}

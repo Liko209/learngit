@@ -21,7 +21,7 @@ type GroupListProps = {
   membersList?: {name: string}[];
 };
 type GroupHeaderProps = {
-  text: string;
+  title: string;
   destroy?: () => void;
 };
 export { GroupBodyProps, GroupHeaderProps, GroupListProps, GROUP_TYPES, GROUP_LIST_TITLE };

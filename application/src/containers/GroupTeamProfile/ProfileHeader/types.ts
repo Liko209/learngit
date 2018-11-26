@@ -7,12 +7,12 @@
 import { WithNamespaces } from 'react-i18next';
 
 type ProfileHeaderViewProps = WithNamespaces & {
-  text?: string;
+  title?: string;
   destroy: () => void;
   groupId: number;
 };
 type ProfileHeaderProps = {
-  text?: string;
+  title?: string;
   id: number;
   destroy: () => void;
 };
