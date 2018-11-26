@@ -103,7 +103,7 @@ class PostService extends BaseService<Post> {
   }: IPostQuery): Promise<IRawPostResult> {
     const groupService: GroupService = GroupService.getInstance();
     const group = await groupService.getById(groupId);
-    if (!group.most_recent_post_id) {
+    if (group && !group.most_recent_post_id) {
       // The group has no post
       return {
         posts: [],
@@ -361,7 +361,8 @@ class PostService extends BaseService<Post> {
         const info = PostServiceHandler.buildPostInfo(options);
         delete info.id; // should merge sendItemFile function into sendPost
         const resp = await PostAPI.sendPost(info);
-        const posts = await baseHandleData(resp.data);
+        const data = resp.expect('sendPost failed');
+        const posts = await baseHandleData(data);
         return posts[0];
       }
       return null;
