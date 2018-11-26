@@ -166,8 +166,9 @@ class ProfileService extends BaseService<Profile> {
     if (me_tab) {
       return ErrorParser.parse('does not need mark me');
     }
-    const accountService = await AccountService.getInstance<AccountService>();
+    const accountService = AccountService.getInstance<AccountService>();
     const currentId = accountService.getCurrentUserId();
+
     if (!currentId) {
       mainLogger.warn('please make sure that currentId is available');
       return ErrorParser.parse('none current user id');
