@@ -26,7 +26,7 @@ function checkDisplayName(userInfo: UserInfo, matchName: string) {
     first_name: firstName,
     last_name: lastName,
   } as Person);
-  const display = pm.displayName;
+  const display = pm.userDisplayName;
   expect(display).toBe(matchName);
 }
 

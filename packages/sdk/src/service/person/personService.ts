@@ -119,10 +119,15 @@ class PersonService extends BaseService<Person> {
   }
 
   generatePersonDisplayName(
+    displayName: string | undefined,
     firstName: string | undefined,
     lastName: string | undefined,
     email: string,
   ) {
+    if (displayName) {
+      return displayName;
+    }
+
     let name = '';
     if (firstName) {
       name += firstName;

@@ -23,7 +23,7 @@ const mockPostData = {
 
 const mockPersonData = {
   id: 1,
-  displayName: 'Name1',
+  userDisplayName: 'Name1',
 };
 
 const mockMap = {
@@ -54,9 +54,9 @@ describe('Team change', () => {
   });
 
   it('computed changerName', () => {
-    expect(changeViewModel.changerName).toBe(mockPersonData.displayName);
-    mockPersonData.displayName = 'Name2';
-    expect(changeViewModel.changerName).toBe(mockPersonData.displayName);
+    expect(changeViewModel.changerName).toBe(mockPersonData.userDisplayName);
+    mockPersonData.userDisplayName = 'Name2';
+    expect(changeViewModel.changerName).toBe(mockPersonData.userDisplayName);
   });
 
   it('computed value', () => {
