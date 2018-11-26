@@ -14,6 +14,7 @@ import handleData, {
 import { daoManager } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
 import { postFactory } from '../../../__tests__/factories';
+import { NetworkResultOk } from '../../../api/NetworkResult';
 // import BaseDao from '../../../dao/base/BaseDao';
 
 const itemService = new ItemService();
@@ -71,11 +72,15 @@ describe('ItemService', () => {
 
     beforeAll(() => {
       handleData.mockClear();
-      ItemAPI.requestRightRailItems = jest.fn().mockResolvedValue({
-        data: {
-          items: [],
-        },
-      });
+      ItemAPI.requestRightRailItems = jest.fn().mockResolvedValue(
+        new NetworkResultOk(
+          {
+            items: [],
+          },
+          200,
+          {},
+        ),
+      );
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
     });
 
@@ -91,11 +96,15 @@ describe('ItemService', () => {
     });
 
     it('should call handleData if api gets the data', (done: any) => {
-      ItemAPI.requestRightRailItems.mockResolvedValue({
-        data: {
-          items: [{ _id: 1 }, { _id: 2 }],
-        },
-      });
+      ItemAPI.requestRightRailItems.mockResolvedValue(
+        new NetworkResultOk(
+          {
+            items: [{ _id: 1 }, { _id: 2 }],
+          },
+          200,
+          {},
+        ),
+      );
       itemService.getRightRailItemsOfGroup(123);
       setTimeout(() => {
         expect(handleData).toHaveBeenCalled();
@@ -130,9 +139,9 @@ describe('ItemService', () => {
     beforeAll(() => {
       handleData.mockClear();
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
-      ItemAPI.getNote = jest.fn().mockResolvedValue({
-        data: rawData,
-      });
+      ItemAPI.getNote = jest
+        .fn()
+        .mockResolvedValue(new NetworkResultOk(rawData, 200, {}));
     });
 
     afterAll(() => {
@@ -155,9 +164,9 @@ describe('ItemService', () => {
       expect(ret).toEqual(transformedData);
     });
 
-    it('should return null if response data not exists', async () => {
+    it.only('should return null if response data not exists', async () => {
       itemDao.get.mockResolvedValue(null);
-      ItemAPI.getNote.mockResolvedValue({});
+      ItemAPI.getNote.mockResolvedValue(new NetworkResultOk(null, 200, {}));
       const ret = await itemService.getNoteById(1);
       expect(ret).toBeNull();
     });

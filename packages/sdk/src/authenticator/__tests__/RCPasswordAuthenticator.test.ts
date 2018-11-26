@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved
  */
 
-import { loginRCByPassword } from '../../api/ringcentral/login';
+import { loginRCByPassword, ITokenModel } from '../../api/ringcentral/login';
 import { loginGlip } from '../../api/glip/user';
 import { RCPasswordAuthenticator } from '..';
 import { NetworkResultOk } from '../../api/NetworkResult';
@@ -19,22 +19,26 @@ jest.mock('../../api/ringcentral/login', () => ({
 
 describe('RCPasswordAuthenticator', () => {
   it('should login success', async () => {
-    const loginRCResult = new NetworkResultOk(
+    const loginRCResult = new NetworkResultOk<ITokenModel>(
       {
-        data: 'rc_token',
+        access_token: 'rc_token',
+        endpoint_id: 'endpoint_id',
+        expires_in: 1,
+        owner_id: 'owner_id',
+        refresh_token: 'refresh_token',
+        refresh_token_expires_in: 1,
+        scope: 'scope',
+        token_type: 'token_type',
+        timestamp: 1,
+        accessTokenExpireIn: 2,
+        refreshTokenExpireIn: 2,
       },
       200,
       {},
     );
-    const loginGlipResult = new NetworkResultOk(
-      {
-        data: 'glip_token',
-      },
-      200,
-      {
-        'x-authorization': 'glip_token',
-      },
-    );
+    const loginGlipResult = new NetworkResultOk({}, 200, {
+      'x-authorization': 'glip_token',
+    });
 
     loginRCByPassword.mockResolvedValueOnce(loginRCResult);
     loginGlip.mockResolvedValueOnce(loginGlipResult);

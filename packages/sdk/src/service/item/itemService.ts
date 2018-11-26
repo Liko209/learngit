@@ -68,9 +68,9 @@ class ItemService extends BaseService<Item> {
     const result = await ItemAPI.getNote(id);
 
     return result.match({
-      Ok: async (data: Raw<NoteItem>) => {
-        const note = transform<NoteItem>(data);
-        await handleData([data]);
+      Ok: async (rawNoteItem: Raw<NoteItem>) => {
+        const note = transform<NoteItem>(rawNoteItem);
+        await handleData([rawNoteItem]);
         return note;
       },
       Err: () => null,
