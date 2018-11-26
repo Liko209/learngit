@@ -44,11 +44,34 @@ class Profile {
     if (!this.div || !this.anchor) {
       return;
     }
-    const rect = this.anchor.getBoundingClientRect();
-    const { left, top } = rect;
+    const OFFSET_LEFT = 20;
+    const OFFSET_TOP = 16;
+    const CONSTANT_WIDTH = 288;
+    const CONSTANT_HEIGHT = 146;
+    const anchorRect = this.anchor.getBoundingClientRect();
+    let { left, top } = anchorRect;
+    left = left - OFFSET_LEFT;
+    top = top - OFFSET_TOP;
+
+    const { clientHeight, clientWidth } = document.body;
+
+    let y = `top: ${top}px;`;
+    if (top + CONSTANT_HEIGHT > clientHeight) {
+      const bottom =
+        clientHeight - anchorRect.top - anchorRect.height - OFFSET_TOP;
+      y = `bottom: ${bottom}px`;
+    }
+
+    let x = `left: ${left}px;`;
+    if (left + CONSTANT_WIDTH > clientWidth) {
+      const right =
+        clientWidth - anchorRect.left - anchorRect.width - OFFSET_LEFT;
+      x = `right: ${right}px`;
+    }
+
     this.div.setAttribute(
       'style',
-      `position: absolute; left: 0; top: 0; will-change: transform; transform: translate3d(${left}px, ${top}px, 0px); z-index: 1;`,
+      `position: absolute; ${x}; ${y}; z-index: 9999;`,
     );
   }
 

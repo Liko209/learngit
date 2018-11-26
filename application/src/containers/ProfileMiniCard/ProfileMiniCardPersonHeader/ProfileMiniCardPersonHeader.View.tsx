@@ -24,7 +24,7 @@ class ProfileMiniCardPersonHeaderView extends Component<
 > {
   render() {
     const { id, person } = this.props;
-    const { displayName, awayStatus, title } = person;
+    const { userDisplayName, awayStatus, title } = person;
     const presence = <Presence uid={id} size="large" borderSize="large" />;
     return (
       <JuiProfileMiniCardHeader>
@@ -33,7 +33,7 @@ class ProfileMiniCardPersonHeaderView extends Component<
         </JuiProfileMiniCardHeaderLeft>
         <JuiProfileMiniCardHeaderMiddle>
           <JuiProfileMiniCardPersonName>
-            {displayName}
+            {userDisplayName}
           </JuiProfileMiniCardPersonName>
           <JuiProfileMiniCardPersonStatus>
             {awayStatus}
