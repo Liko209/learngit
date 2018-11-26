@@ -61,7 +61,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
 
   @computed
   get name() {
-    return this.creator.displayName;
+    return this.creator.userDisplayName;
   }
 
   @computed
