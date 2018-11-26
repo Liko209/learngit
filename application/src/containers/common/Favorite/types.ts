@@ -11,6 +11,7 @@ type FavoriteProps = {
   id: number;
   size?: IconButtonSize;
   isAction?: boolean;
+  hideUnFavorite?: boolean;
 };
 
 type FavoriteViewProps = {
@@ -18,6 +19,7 @@ type FavoriteViewProps = {
   variant: IconButtonVariant;
   isAction: boolean;
   isFavorite: boolean;
+  hideUnFavorite: boolean;
   getFavorite: () => void;
   handlerFavorite: () => Promise<ServiceCommonErrorType>;
 };
