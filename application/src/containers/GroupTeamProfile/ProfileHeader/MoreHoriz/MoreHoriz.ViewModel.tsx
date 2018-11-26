@@ -11,8 +11,16 @@ import { GroupService } from 'sdk/service';
 class MoreHorizViewModel extends StoreViewModel<MoreHorizProps> {
   private _groupService: GroupService = GroupService.getInstance();
   @computed
+  private _id() {
+    return this.props.id;
+  }
+  @computed
   get groupUrl() {
-    return `${window.location.origin}/messages/${this.props.id}`;
+    return `${window.location.origin}/messages/${this._id}`;
+  }
+  @computed
+  get email() {
+    return this._groupService.getGroupEmail(this._id);
   }
 }
 export { MoreHorizViewModel };

@@ -10,7 +10,12 @@ import { FavoriteProps, FavoriteViewProps } from './types';
 import { service } from 'sdk';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
-import { GlipTypeUtil } from 'sdk/utils';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+
+import { getEntity } from '@/store/utils';
+import GroupModel from '@/store/models/Group';
+import { Group } from 'sdk/models';
+import { ENTITY_NAME } from '@/store';
 
 const { GroupService } = service;
 
@@ -19,16 +24,21 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   private _groupService: service.GroupService = GroupService.getInstance();
 
   @observable
-  isFavorite: boolean;
+  conversationId: number;
 
   @computed
-  get id() {
+  get _id() {
     return this.props.id; // personId || conversationId
   }
 
   @computed
   get isAction() {
     return !!this.props.isAction;
+  }
+
+  @computed
+  get hideUnFavorite() {
+    return !!this.props.hideUnFavorite;
   }
 
   @computed
@@ -42,13 +52,50 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   }
 
   getFavorite = async () => {
-    const type = GlipTypeUtil.extractTypeId(this.id);
-    const result = await this._groupService.isFavorited(this.id, type);
-    this.isFavorite = result;
+    const type = GlipTypeUtil.extractTypeId(this._id);
+    if (
+      type === TypeDictionary.TYPE_ID_GROUP ||
+      type === TypeDictionary.TYPE_ID_TEAM
+    ) {
+      this.conversationId = this._id;
+      return;
+    }
+    if (type === TypeDictionary.TYPE_ID_PERSON) {
+      const group = await this._groupService.getLocalGroupByMemberIdList([
+        this._id,
+      ]);
+      if (group) {
+        this.conversationId = group.id;
+      } else {
+        this.conversationId = 0;
+      }
+    }
+  }
+
+  @computed
+  private get _group() {
+    if (this.conversationId) {
+      return getEntity<Group, GroupModel>(
+        ENTITY_NAME.GROUP,
+        this.conversationId,
+      );
+    }
+    return null;
+  }
+
+  @computed
+  get isFavorite() {
+    if (this._group) {
+      return this._group.isFavorite;
+    }
+    return false;
   }
 
   handlerFavorite = async (): Promise<ServiceCommonErrorType> => {
-    return this._groupService.markGroupAsFavorite(this.id, !this.isFavorite);
+    return this._groupService.markGroupAsFavorite(
+      this.conversationId,
+      !this.isFavorite,
+    );
   }
 }
 

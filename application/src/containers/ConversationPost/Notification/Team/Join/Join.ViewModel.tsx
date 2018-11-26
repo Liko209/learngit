@@ -17,7 +17,7 @@ class JoinViewModel extends TeamViewModel implements JoinViewProps {
 
   @computed
   get newUserName() {
-    return this.getPerson(this.newUserId).displayName;
+    return this.getPerson(this.newUserId).userDisplayName;
   }
 }
 

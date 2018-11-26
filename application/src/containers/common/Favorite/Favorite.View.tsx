@@ -52,7 +52,10 @@ class FavoriteViewComponent extends Component<Props> {
   }
 
   render() {
-    const { isFavorite, size, variant, isShowTooltip, t } = this.props;
+    const { hideUnFavorite, isFavorite, size, variant, isShowTooltip, t } = this.props;
+    if (hideUnFavorite && !isFavorite) {
+      return null;
+    }
     return (
       <JuiIconButton
         size={size}

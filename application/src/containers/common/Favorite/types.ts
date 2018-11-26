@@ -8,10 +8,11 @@ import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
 
 type FavoriteProps = {
-  id: number;
+  id: number; // personId || conversationId
   size?: IconButtonSize;
   isShowTooltip?: boolean;
   isAction?: boolean;
+  hideUnFavorite?: boolean;
 };
 
 type FavoriteViewProps = {
@@ -20,6 +21,7 @@ type FavoriteViewProps = {
   variant: IconButtonVariant;
   isAction: boolean;
   isFavorite: boolean;
+  hideUnFavorite: boolean;
   getFavorite: () => void;
   handlerFavorite: () => Promise<ServiceCommonErrorType>;
 };
