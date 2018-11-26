@@ -7,11 +7,13 @@
 type Props = {
   id: number;
   children?: React.ReactNode;
+  onSuccess?: () => void;
 };
 
 type ViewProps = {
   conversationId: number;
   getConversationId: () => void;
+  onSuccess?: () => void;
 };
 
 export { Props, ViewProps };

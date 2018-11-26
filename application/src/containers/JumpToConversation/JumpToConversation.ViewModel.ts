@@ -26,6 +26,7 @@ class JumpToConversationViewModel extends StoreViewModel<Props>
   private get _id() {
     return this.props.id;
   }
+
   getConversationId = async () => {
     const type = GlipTypeUtil.extractTypeId(this._id);
     if (

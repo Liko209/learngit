@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
+import history from '@/history';
 import { observer } from 'mobx-react';
-import { Link } from 'react-router-dom';
 import { ViewProps } from './types';
 
 @observer
@@ -14,10 +14,18 @@ class JumpToConversationView extends React.Component<ViewProps> {
     const { getConversationId } = this.props;
     getConversationId();
   }
+  jumpToConversation = () => {
+    const { conversationId, onSuccess } = this.props;
+    history.push(`/messages/${conversationId}`);
+
+    onSuccess && onSuccess();
+  }
   render() {
-    const { conversationId, children } = this.props;
+    const { children } = this.props;
     return (
-      <Link to={`/messages/${conversationId}`}>{children && children}</Link>
+      <div style={{ cursor: 'pointer' }} onClick={this.jumpToConversation}>
+        {children && children}
+      </div>
     );
   }
 }
