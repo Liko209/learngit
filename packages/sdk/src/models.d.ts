@@ -107,7 +107,7 @@ export type Company = ExtendedBaseModel & {
   rc_account_id?: number;
 };
 
-export type RcPhoneNumberModel = {
+export type PhoneNumberModel = {
   id: number;
   phoneNumber: string;
   usageType: string;
@@ -131,7 +131,7 @@ export type Person = ExtendedBaseModel & {
   headshot_version?: string;
   locked?: boolean;
   inviter_id?: number;
-  rc_phone_numbers?: RcPhoneNumberModel[];
+  rc_phone_numbers?: PhoneNumberModel[];
   sanitized_rc_extension?: object;
   is_pseudo_user?: boolean;
   glip_user_id?: number;

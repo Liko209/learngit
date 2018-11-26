@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PersonModel from '../../../store/models/Person';
-import { Person, RcPhoneNumberModel } from 'sdk/src/models';
+import { Person, PhoneNumberModel } from 'sdk/src/models';
 
 type UserInfo = {
   firstName?: string;
@@ -115,7 +115,7 @@ describe('PersonModel', () => {
 
       const pm: PersonModel = new PersonModel(person);
 
-      const expectRes: RcPhoneNumberModel[] = [
+      const expectRes: PhoneNumberModel[] = [
         { id: 12, phoneNumber: '234567', usageType: 'DirectNumber' },
         { id: 13, phoneNumber: '345678', usageType: 'ExtensionNumber' },
       ];
