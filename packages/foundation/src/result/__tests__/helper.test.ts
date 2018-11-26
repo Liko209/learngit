@@ -7,6 +7,7 @@
 import { ok, err } from '../helper';
 import { ResultOk } from '../ResultOk';
 import { ResultErr } from '../ResultErr';
+import { BaseError } from '../BaseError';
 
 describe('ok()', () => {
   it('should create a ResultOk', () => {
@@ -21,7 +22,7 @@ describe('err()', () => {
     const CODE = 1;
     const MESSAGE = 'Something wrong happened.';
 
-    const result = err(CODE, MESSAGE);
+    const result = err(new BaseError(CODE, MESSAGE));
 
     expect(result).toBeInstanceOf(ResultErr);
     expect(result.error.code).toBe(CODE);
@@ -32,10 +33,10 @@ describe('err()', () => {
     const CODE = 1;
     const MESSAGE = undefined;
 
-    const result = err(CODE, MESSAGE);
+    const result = err(new BaseError(CODE, MESSAGE));
 
     expect(result).toBeInstanceOf(ResultErr);
     expect(result.error.code).toBe(CODE);
-    expect(result.error.message).toBe(`Error: ${CODE}`);
+    expect(result.error.message).toBe('');
   });
 });
