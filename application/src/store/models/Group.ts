@@ -39,7 +39,6 @@ export default class GroupModel extends Base<Group> {
   guest_user_company_ids: number[] | undefined;
   @observable
   permissions?: TeamPermission;
-
   latestTime: number;
 
   constructor(data: Group) {
@@ -83,6 +82,7 @@ export default class GroupModel extends Base<Group> {
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
+
     return favoriteGroupIds.some(groupId => groupId === this.id);
   }
 
@@ -177,7 +177,11 @@ export default class GroupModel extends Base<Group> {
 
   isThePersonAdmin(personId: number) {
     const groupService: GroupService = GroupService.getInstance();
-    groupService.isAdminOfTheGroup(this.isTeam, this.permissions, personId);
+    return groupService.isAdminOfTheGroup(
+      this.isTeam,
+      this.permissions,
+      personId,
+    );
   }
 
   isThePersonGuest(personId: number) {
@@ -189,7 +193,6 @@ export default class GroupModel extends Base<Group> {
         );
       }
     }
-
     return false;
   }
 
