@@ -168,7 +168,6 @@ class ProfileService extends BaseService<Profile> {
     }
     const accountService = AccountService.getInstance<AccountService>();
     const currentId = accountService.getCurrentUserId();
-
     if (!currentId) {
       mainLogger.warn('please make sure that currentId is available');
       return ErrorParser.parse('none current user id');
@@ -178,7 +177,7 @@ class ProfileService extends BaseService<Profile> {
     if (!profileId) {
       return ErrorParser.parse('none profile error');
     }
-    const personService = await PersonService.getInstance<PersonService>();
+    const personService = PersonService.getInstance<PersonService>();
     const result = await personService.getById(currentId);
     if (result) {
       const { me_group_id } = result;
