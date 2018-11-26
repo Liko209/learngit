@@ -15,6 +15,7 @@ const JuiSearchList = styled.div`
   background: #fff;
   padding: ${spacing(2, 0)};
   flex-direction: column;
+  z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
 `;
 
 export { JuiSearchList };

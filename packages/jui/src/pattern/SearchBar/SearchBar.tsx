@@ -4,13 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import MuiBackdrop from '@material-ui/core/Backdrop';
+import { JuiBackdrop, JuiBackdropProps } from '../../components/Backdrop';
 import styled from '../../foundation/styled-components';
 
 const JuiSearchBarWrapper = styled.div`
   position: relative;
-  .backdrop-invisible {
-    z-index: 1;
+`;
+
+const StyledBackdrop = styled<JuiBackdropProps>(JuiBackdrop)`
+  && {
+    z-index: ${({ open }) => (open ? 1 : -1)};
   }
 `;
 
@@ -24,7 +27,7 @@ class JuiSearchBar extends React.Component<Props, {}> {
     const { children, focus, onClose } = this.props;
     return (
       <JuiSearchBarWrapper>
-        <MuiBackdrop onClick={onClose} open={focus} />
+        <StyledBackdrop onClick={onClose} open={focus} />
         {children}
       </JuiSearchBarWrapper>
     );

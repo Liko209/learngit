@@ -37,18 +37,6 @@ class JuiTopBar extends React.Component<Props, States> {
     };
   }
 
-  // handleMouseOver = () => {
-  //   this.setState({ topBarState: 'hover' });
-  // }
-
-  // handleMouseLeave = () => {
-  //   this.setState({ topBarState: 'resting' });
-  // }
-
-  setSearchBarState = (isShowSearchBar: boolean) => {
-    this.setState({ isShowSearchBar });
-  }
-
   showSearchBar = () => {
     this.setState({ isShowSearchBar: true });
   }

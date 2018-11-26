@@ -6,7 +6,7 @@
 
 import styled from '../../foundation/styled-components';
 import { width } from '../../foundation/utils';
-import { StyledJuiSearchBar } from './StyledSearchBar';
+import { JuiSearchBarWrapper } from './SearchBarWrapper';
 import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { JuiLogo } from './Logo';
 
@@ -28,7 +28,7 @@ const StyledLeft = styled<Props, 'div'>('div')`
   }
   @media (max-width: 600px) {
     justify-content: space-between;
-    ${StyledJuiSearchBar} {
+    ${JuiSearchBarWrapper} {
       display: ${({ isShowSearchBar }) => (isShowSearchBar ? 'block' : 'none')};
     }
     ${StyledSearchIconButton} {

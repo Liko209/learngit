@@ -41,6 +41,7 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
             border-bottom: 1px solid ${grey('200')};
           `
         : null};
+  z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
 `;
 
 const SearchIcon = styled(MuiIcon)`
