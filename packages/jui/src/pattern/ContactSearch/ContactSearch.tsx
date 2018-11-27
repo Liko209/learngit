@@ -114,9 +114,12 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       !inputValue.length &&
       keycode(event) === 'backspace'
     ) {
-      this.setState({
-        selectedItem: selectedItem.slice(0, selectedItem.length - 1),
-      });
+      this.setState(
+        { selectedItem: selectedItem.slice(0, selectedItem.length - 1) },
+        () => {
+          this.props.onChange(this.state.selectedItem);
+        },
+      );
     }
   }
 

@@ -98,11 +98,13 @@ class NewMessage extends React.Component<NewMessageProps, State> {
           placeholder={t('Search Contact Placeholder')}
           error={emailError}
           helperText={emailError && t(emailErrorMsg)}
+          data-test-automation-id="newMessageContactSearch"
         />
         <JuiTextarea
           placeholder={t('Type new message')}
           fullWidth={true}
           onChange={this.handleMessageChange}
+          data-test-automation-id="newMessageTextarea"
         />
         <StyledTextWithLink>
           <JuiTextWithLink

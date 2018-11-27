@@ -118,6 +118,7 @@ class TopBar extends React.Component<TopBarProps> {
       <JuiIconButton
         size="medium"
         tooltipTitle={t('Plus')}
+        data-test-automation-id="addMenuBtn"
         {...addMenuTriggerProps}
       >
         add_circle
@@ -142,6 +143,7 @@ class TopBar extends React.Component<TopBarProps> {
           {
             label: t('SendNewMessage'),
             onClick: updateNewMessageDialogState,
+            automationId: 'sendNewMessage',
           },
         ]}
         MenuExpandTrigger={this._AddMenuTrigger}

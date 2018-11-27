@@ -36,7 +36,7 @@ class Home extends Component<HomeViewProps> {
           </Switch>
         </Bottom>
         <CreateTeam />
-        <NewMessage />
+        <NewMessage data-test-automation-id="newMessageModal" />
       </Wrapper>
     );
   }
