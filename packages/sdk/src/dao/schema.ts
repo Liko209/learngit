@@ -1,6 +1,7 @@
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-23 23:42:59
+ * Copyright © RingCentral. All rights reserved.
  */
 import { ISchema } from 'foundation';
 
