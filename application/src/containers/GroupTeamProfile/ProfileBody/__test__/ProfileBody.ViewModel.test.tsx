@@ -17,7 +17,7 @@ describe('ProfileBodyViewModel', () => {
   beforeEach(() => {
     const wrapper = shallow(<ProfileBody id={8839174} destroy={destroy} />);
     wrapper.setProps({ id: 8839174 });
-  })
+  });
   it('should return displayName if team/group id provided', () => {
     (getEntity as jest.Mock).mockReturnValue({
       displayName: 'test',
