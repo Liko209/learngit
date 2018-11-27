@@ -776,7 +776,7 @@ describe('GroupService', () => {
       accountService.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it("should return true when the person's conversion isfavorted", async () => {
-      const spy = jest.spyOn(groupService, 'getLocalGroupByMemberIdList');
+      const spy = jest.spyOn(groupService, 'getLocalGroup');
       const ids: number[] = [personId, curUserId];
       spy.mockResolvedValueOnce(favGroup);
       const res = await groupService.isFavorited(
@@ -787,9 +787,7 @@ describe('GroupService', () => {
     });
 
     it('should return false when local has no conversation with the person', async () => {
-      jest
-        .spyOn(groupService, 'getLocalGroupByMemberIdList')
-        .mockResolvedValue(null);
+      jest.spyOn(groupService, 'getLocalGroup').mockResolvedValue(null);
 
       const res = await groupService.isFavorited(
         personId,
@@ -849,13 +847,9 @@ describe('GroupService', () => {
     });
   });
 
-  describe('isAdminOfTheGroup', async () => {
-    it('shuld return true if this is not a team', async () => {
-      expect(groupService.isAdminOfTheGroup(false, undefined, 11)).toBeTruthy;
-    });
-
+  describe('isTeamAdmin', async () => {
     it('should return true if no team permission model', async () => {
-      expect(groupService.isAdminOfTheGroup(true, undefined, 11)).toBeTruthy;
+      expect(groupService.isTeamAdmin(undefined, 11)).toBeTruthy;
     });
 
     it('should return true if person is in admin id list', async () => {
@@ -869,10 +863,10 @@ describe('GroupService', () => {
           level: 15,
         },
       };
-      expect(groupService.isAdminOfTheGroup(true, permission, 1)).toBeTruthy;
-      expect(groupService.isAdminOfTheGroup(true, permission, 2)).toBeTruthy;
-      expect(groupService.isAdminOfTheGroup(true, permission, 3)).toBeTruthy;
-      expect(groupService.isAdminOfTheGroup(true, permission, 3)).toBeFalsy;
+      expect(groupService.isTeamAdmin(permission, 1)).toBeTruthy;
+      expect(groupService.isTeamAdmin(permission, 2)).toBeTruthy;
+      expect(groupService.isTeamAdmin(permission, 3)).toBeTruthy;
+      expect(groupService.isTeamAdmin(permission, 4)).toBeFalsy;
     });
   });
 
@@ -889,7 +883,9 @@ describe('GroupService', () => {
     const companyService = new CompanyService();
     beforeEach(() => {
       CompanyService.getInstance = jest.fn().mockReturnValue(companyService);
-      companyService.getReplyToDomain.mockResolvedValueOnce(companyReplyDomain);
+      companyService.getCompanyEmailDomain.mockResolvedValueOnce(
+        companyReplyDomain,
+      );
 
       Object.assign(Api, {
         _httpConfig: config,
@@ -915,6 +911,5 @@ describe('GroupService', () => {
       const res = await groupService.getGroupEmail(group.id);
       expect(res).toBe(`${group.id}@${companyReplyDomain}.${envDomain}`);
     });
-
   });
 });

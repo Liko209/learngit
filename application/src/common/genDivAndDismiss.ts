@@ -5,11 +5,11 @@
  */
 import ReactDOM from 'react-dom';
 
-function genDivAndDestroy() {
+function genDivAndDismiss() {
   const container = document.createElement('div');
   document.getElementById('root')!.appendChild(container);
 
-  function destroy() {
+  function dismiss() {
     const unmountResult = ReactDOM.unmountComponentAtNode(container);
     if (unmountResult && container.parentNode) {
       container.parentNode.removeChild(container);
@@ -17,8 +17,8 @@ function genDivAndDestroy() {
   }
   return {
     container,
-    destroy,
+    dismiss,
   };
 }
 
-export { genDivAndDestroy };
+export { genDivAndDismiss };

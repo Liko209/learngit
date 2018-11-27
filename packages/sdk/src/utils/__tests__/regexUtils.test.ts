@@ -19,11 +19,12 @@ describe('regexUtils', () => {
         { key: 'text@ringcentral.c', isValid: false },
         { key: 'text@ringcentral@ringcentral.c', isValid: false },
         { key: 'text%ringcentral@ringcentral.c', isValid: false },
+        { key: 'Test()@ringcentral.com', isValid: false },
+        { key: 'Test()@ringcentral', isValid: false },
+
         { key: 'text@ringcentral.com', isValid: true },
         { key: 'text@ringcentral.mobile', isValid: true },
         { key: 'text_test123@ringcentral.mobile', isValid: true },
-        { key: 'Test()@ringcentral.com', isValid: false },
-        { key: 'Test()@ringcentral', isValid: false },
         {
           key: "TESTtest123.!#$%&'*+/=?^_`{|}~-@ringcentral.com",
           isValid: true,

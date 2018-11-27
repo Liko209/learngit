@@ -81,12 +81,8 @@ describe('SortableGroupMemberHandler', () => {
     groupService.getGroupById.mockResolvedValueOnce(group);
     personService.getPersonsByGroupId.mockResolvedValueOnce(persons);
 
-    groupService.isAdminOfTheGroup.mockImplementation(
-      (
-        isTeam: boolean | undefined,
-        permission: TeamPermission | undefined,
-        personId: number,
-      ) => {
+    groupService.isTeamAdmin.mockImplementation(
+      (permission: TeamPermission | undefined, personId: number) => {
         return personId < 4;
       },
     ); // first 3 is admin;

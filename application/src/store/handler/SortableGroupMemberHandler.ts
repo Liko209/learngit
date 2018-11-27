@@ -83,18 +83,19 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       const lPerson = lhs.data!;
       const rPerson = rhs.data!;
       const groupService = GroupService.getInstance<GroupService>();
-      const isLAdmin = groupService.isAdminOfTheGroup(
-        this._group.is_team,
-        this._group.permissions,
-        lPerson.id,
-      );
-      const isRAdmin = groupService.isAdminOfTheGroup(
-        this._group.is_team,
-        this._group.permissions,
-        rPerson.id,
-      );
-      if (isLAdmin !== isRAdmin) {
-        return isLAdmin ? -1 : 1;
+
+      if (this._group.is_team) {
+        const isLAdmin = groupService.isTeamAdmin(
+          this._group.permissions,
+          lPerson.id,
+        );
+        const isRAdmin = groupService.isTeamAdmin(
+          this._group.permissions,
+          rPerson.id,
+        );
+        if (isLAdmin !== isRAdmin) {
+          return isLAdmin ? -1 : 1;
+        }
       }
 
       return natureCompare(

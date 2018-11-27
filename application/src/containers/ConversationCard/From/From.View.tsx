@@ -15,7 +15,8 @@ type Props = FromViewProps & WithNamespaces;
 
 @observer
 class FromViewComponent extends Component<Props> {
-  jumpToConversation = () => {
+  jumpToConversation = (evt: React.MouseEvent) => {
+    evt.stopPropagation();
     history.push(`/messages/${this.props.id}`);
   }
   render() {

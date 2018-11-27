@@ -38,7 +38,7 @@ test(formalName('The posts in the conversation should be displayed in the order 
     });
 
     await h(t).withLog('Then I enter the conversation', async () => {
-      const teamsSection = app.homePage.messagePanel.teamsSection;
+      const teamsSection = app.homePage.messageTab.teamsSection;
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId).enter();
     });
@@ -51,12 +51,12 @@ test(formalName('The posts in the conversation should be displayed in the order 
     });
 
     await h(t).withLog('Then I will receive those 3 posts', async () => {
-      const posts = await app.homePage.messagePanel.conversationPage.posts;
+      const posts = await app.homePage.messageTab.conversationPage.posts;
       await t.expect(posts.withText(new RegExp(msgList.join('|'))).count).eql(3, { timeout: 5e3 });
     }, true);
 
     await h(t).withLog('And the 3 posts must be in correct order', async () => {
-      const posts = await app.homePage.messagePanel.conversationPage.posts;
+      const posts = await app.homePage.messageTab.conversationPage.posts;
       for (let i = 0; i < msgList.length; i++) {
         await t.expect(posts.nth(-msgList.length + i).withText(msgList[i]).exists).ok();
       }
@@ -88,14 +88,14 @@ test(formalName('No post in conversation when the conversation', ['P2', 'JPT-53'
     });
 
     await h(t).withLog('Then I can enter the conversation', async () => {
-      const teamsSection = app.homePage.messagePanel.teamsSection;
+      const teamsSection = app.homePage.messageTab.teamsSection;
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId).enter();
     });
 
     await h(t).withLog('And I should not find any post in the new created conversation', async () => {
       await t.wait(2e3);
-      const postsSelector = await app.homePage.messagePanel.conversationPage.posts;
+      const postsSelector = await app.homePage.messageTab.conversationPage.posts;
       await t.expect(postsSelector.exists).notOk();
     });
   }
@@ -133,13 +133,13 @@ test(formalName('Should be able to read the newest posts once open a conversatio
     });
 
     await h(t).withLog('And enter the team conversation', async () => {
-      const teamsSection = app.homePage.messagePanel.teamsSection;
+      const teamsSection = app.homePage.messageTab.teamsSection;
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId).enter();
     });
 
     await h(t).withLog(`Then I should find post "${msgBeforeLogin}" in the conversation posts history`, async () => {
-      const posts = await app.homePage.messagePanel.conversationPage.posts;
+      const posts = await app.homePage.messageTab.conversationPage.posts;
       await t.expect(posts.nth(-1).withText(msgBeforeLogin).exists).ok();
     })
 
@@ -148,7 +148,7 @@ test(formalName('Should be able to read the newest posts once open a conversatio
     });
 
     await h(t).withLog(`Then I should find this post "${msgAfterLogin}" at the end of conversation`, async () => {
-      const posts = await app.homePage.messagePanel.conversationPage.posts;
+      const posts = await app.homePage.messageTab.conversationPage.posts;
       await t.expect(posts.nth(-1).withText(msgAfterLogin).exists).ok();
     });
   }
