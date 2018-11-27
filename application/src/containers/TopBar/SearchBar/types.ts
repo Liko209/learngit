@@ -13,7 +13,7 @@ type SearchSection<T> = {
 };
 
 type SearchResult = {
-  terms: string[] | [];
+  terms: string[];
   persons: SearchSection<Person>;
   groups: SearchSection<Group>;
   teams: SearchSection<Group>;

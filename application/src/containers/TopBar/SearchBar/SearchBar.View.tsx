@@ -18,6 +18,8 @@ import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
 import { Avatar } from '@/containers/Avatar';
 import { ViewProps, SearchResult, SearchSection } from './types';
 
+const SEARCH_DELAY = 300;
+
 const Actions = () => {
   return (
     <JuiButtonBar size="small">
@@ -67,10 +69,10 @@ class SearchBarView extends React.Component<ViewProps, State> {
         persons,
         teams,
       });
-    },                              300);
+    },                              SEARCH_DELAY);
   }
 
-  private _initData() {
+  private _resetData() {
     this.setState({
       terms: [],
       persons: defaultSection,
@@ -86,7 +88,7 @@ class SearchBarView extends React.Component<ViewProps, State> {
     const { setValue } = this.props;
     setValue(value);
     if (!value.trim()) {
-      this._initData();
+      this._resetData();
       return;
     }
     this._debounceSearch(value);
@@ -101,7 +103,7 @@ class SearchBarView extends React.Component<ViewProps, State> {
   onClear = () => {
     const { setValue } = this.props;
     setValue('');
-    this._initData();
+    this._resetData();
   }
 
   onClose = () => {
@@ -136,7 +138,8 @@ class SearchBarView extends React.Component<ViewProps, State> {
               Actions={Actions()}
               isPrivate={entity.is_team && entity.privacy === 'private'}
               isJoined={
-                entity.is_team && entity.members.includes(currentUserId)
+                entity.is_team &&
+                (!entity.is_public || entity.members.includes(currentUserId))
               }
             />
           );
@@ -159,10 +162,11 @@ class SearchBarView extends React.Component<ViewProps, State> {
     const { selectIndex } = this.state;
     let index: number;
     if (type === 'up') {
-      index = selectIndex - 1 < 0 ? 0 : selectIndex - 1;
+      index = selectIndex < 1 ? 0 : selectIndex - 1;
     } else {
       const { length } = this._searchItems;
-      index = selectIndex + 1 > length - 1 ? length - 1 : selectIndex + 1;
+      const max = length - 1;
+      index = selectIndex < max ? selectIndex + 1 : max;
     }
     return index;
   }

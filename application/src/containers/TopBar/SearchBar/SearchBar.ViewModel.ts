@@ -40,7 +40,7 @@ class SearchBarViewModel extends StoreViewModel {
     this.value = value;
   }
 
-  existSectionNum(
+  calculateSectionCount(
     persons: SectionType<Person>,
     groups: SectionType<Group>,
     teams: SectionType<Group>,
@@ -50,28 +50,29 @@ class SearchBarViewModel extends StoreViewModel {
     },                                     0);
   }
 
-  needSliceNum(existSectionNum: number) {
-    return existSectionNum <= 1 ? ONLY_ONE_SECTION_LENGTH : MORE_SECTION_LENGTH;
+  getSectionItemSize(sectionCount: number) {
+    return sectionCount <= 1 ? ONLY_ONE_SECTION_LENGTH : MORE_SECTION_LENGTH;
   }
 
-  hasMore(section: SectionTypes, existSectionNum: number) {
+  hasMore(section: SectionTypes, sectionCount: number) {
     return (
       (section &&
-        section.sortableModels.length > this.needSliceNum(existSectionNum)) ||
+        section.sortableModels.length >
+          this.getSectionItemSize(sectionCount)) ||
       false
     );
   }
 
-  getSection(section: SectionTypes, existSectionNum: number) {
+  getSection(section: SectionTypes, sectionCount: number) {
     return {
       sortableModel:
         (section &&
           section.sortableModels.slice(
             0,
-            this.needSliceNum(existSectionNum),
+            this.getSectionItemSize(sectionCount),
           )) ||
         [],
-      hasMore: this.hasMore(section, existSectionNum),
+      hasMore: this.hasMore(section, sectionCount),
     };
   }
 
@@ -81,7 +82,7 @@ class SearchBarViewModel extends StoreViewModel {
       this.groupService.doFuzzySearchGroups(key),
       this.groupService.doFuzzySearchTeams(key),
     ]);
-    const existSectionNum = this.existSectionNum(persons, groups, teams);
+    const sectionCount = this.calculateSectionCount(persons, groups, teams);
 
     return {
       terms:
@@ -89,9 +90,9 @@ class SearchBarViewModel extends StoreViewModel {
         (groups && groups.terms) ||
         (teams && teams.terms) ||
         [],
-      persons: this.getSection(persons, existSectionNum),
-      groups: this.getSection(groups, existSectionNum),
-      teams: this.getSection(teams, existSectionNum),
+      persons: this.getSection(persons, sectionCount),
+      groups: this.getSection(groups, sectionCount),
+      teams: this.getSection(teams, sectionCount),
     };
   }
 }
