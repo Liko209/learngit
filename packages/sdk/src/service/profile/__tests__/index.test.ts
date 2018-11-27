@@ -333,13 +333,11 @@ describe('ProfileService', () => {
         id: 2,
         hide_group_222233333: true,
       };
-
-      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
-      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
+      jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
+      jest.spyOn(profileService, 'getById').mockReturnValue(profile);
       jest
         .spyOn<ProfileService, any>(profileService, '_doPartialSaveAndNotify')
         .mockImplementation(() => {});
-
       const returnValue = {
         id: 2,
         hide_group_222233333: false,
