@@ -13,6 +13,7 @@ import { Footer } from '@/containers/ConversationCard/Footer';
 import { idsToConversationSheet } from '@/containers/ConversationSheet';
 import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 import { From } from './From';
+import { MiniCard } from '@/containers/MiniCard';
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
@@ -29,6 +30,15 @@ export class ConversationCard extends React.Component<
   handleMouseLeave = () => {
     this.setState({
       isHover: false,
+    });
+  }
+
+  onClickAvatar = (event: React.MouseEvent) => {
+    const { creator } = this.props;
+    event.stopPropagation();
+    MiniCard.showProfile({
+      anchor: event.target as HTMLElement,
+      id: creator.id,
     });
   }
 
@@ -55,7 +65,7 @@ export class ConversationCard extends React.Component<
         uid={creator.id}
         size="medium"
         data-name="avatar"
-        onClick={this.props.onClickAvatar}
+        onClick={this.onClickAvatar}
       />
     );
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;

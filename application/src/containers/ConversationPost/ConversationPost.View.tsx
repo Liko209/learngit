@@ -18,10 +18,10 @@ const PostTypeMappingComponent = {
 class ConversationPostView extends Component<ConversationPostViewProps> {
   constructor(props: ConversationPostViewProps) {
     super(props);
-    this.onClick = this.onClick.bind(this);
+    this.onClickAtMention = this.onClickAtMention.bind(this);
   }
 
-  onClick(event: React.MouseEvent) {
+  onClickAtMention(event: React.MouseEvent) {
     const target = event.target as HTMLElement;
     const className = target.getAttribute('class') || '';
     const id = Number(target.getAttribute('id'));
@@ -37,7 +37,7 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
   render() {
     const { type, id } = this.props;
     const Component = PostTypeMappingComponent[type];
-    return <Component id={id} onClick={this.onClick} />;
+    return <Component id={id} onClick={this.onClickAtMention} />;
   }
 }
 

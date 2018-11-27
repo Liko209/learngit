@@ -12,8 +12,8 @@ class MiniCard {
     Profile.instance.show({ anchor, id });
   }
 
-  static destroyProfile() {
-    Profile.instance.destroy();
+  static dismissProfile() {
+    Profile.instance.dismiss();
   }
 
   static refreshProfile() {

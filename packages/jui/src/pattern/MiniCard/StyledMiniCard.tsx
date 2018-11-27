@@ -10,7 +10,6 @@ import { width, palette, spacing } from '../../foundation/utils';
 type StyledMiniCardProps = {};
 
 const StyledMiniCard = styled<StyledMiniCardProps, 'div'>('div')`
-  /* z-index: ${({ theme }) => `${theme.zIndex.modal}`}; */
   width: ${width(72)};
   background-color: ${palette('common', 'white')};
   box-shadow: ${props => props.theme.shadows[5]};

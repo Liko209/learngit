@@ -21,11 +21,15 @@ import { MiniCard } from '@/containers/MiniCard';
 @observer
 class Home extends Component<HomeViewProps> {
   onClick = () => {
-    MiniCard.destroyProfile();
+    this.dismissProfile();
   }
 
   onScroll = () => {
-    MiniCard.destroyProfile();
+    this.dismissProfile();
+  }
+
+  dismissProfile = () => {
+    MiniCard.dismissProfile();
   }
 
   componentDidMount() {

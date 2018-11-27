@@ -27,7 +27,7 @@ class Profile {
     if (this.anchor === anchor) {
       return;
     }
-    this.destroy();
+    this.dismiss();
     this.anchor = anchor;
     this.div = document.createElement('div');
     this._setPosition();
@@ -79,7 +79,7 @@ class Profile {
     this._setPosition();
   }
 
-  destroy() {
+  dismiss() {
     if (!this.div) {
       return;
     }

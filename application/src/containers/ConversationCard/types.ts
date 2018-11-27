@@ -22,7 +22,6 @@ type ConversationCardViewProps = {
   showProgressActions: boolean;
   likes?: number[];
   mode?: string;
-  onClickAvatar: (e: React.MouseEvent) => void;
 };
 
 export { ConversationCardProps, ConversationCardViewProps };
