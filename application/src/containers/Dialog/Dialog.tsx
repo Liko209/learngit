@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { genDivAndDestroy } from '@/common/genDivAndDestroy';
+import { genDivAndDismiss } from '@/common/genDivAndDismiss';
 import ThemeProvider from '@/containers/ThemeProvider';
 import { JuiDialog, JuiDialogProps } from 'jui/components/Dialog';
 
@@ -13,26 +13,27 @@ type Props = {
   componentProps?: any;
 } & JuiDialogProps;
 
-function dialog(component: React.ComponentType<any>, config: Props) {
+function dialog(component: React.ComponentType<any>, props: Props) {
   const Component = component;
-  const { container, destroy } = genDivAndDestroy();
+  const { container, dismiss } = genDivAndDismiss();
 
-  function render(currentConfig: Props) {
-    const { componentProps, ...rest } = currentConfig;
+  function render(currentProps: Props) {
+    const { componentProps, ...rest } = currentProps;
+
     ReactDOM.render(
       <ThemeProvider>
         <JuiDialog {...rest}>
-          <Component {...componentProps} destroy={destroy} />
+          <Component {...componentProps} dismiss={dismiss} />
         </JuiDialog>
       </ThemeProvider>,
       container,
     );
   }
 
-  render(config);
+  render(props);
 
   return {
-    destroy,
+    dismiss,
   };
 }
 

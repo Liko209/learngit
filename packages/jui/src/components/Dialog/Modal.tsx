@@ -44,7 +44,7 @@ type JuiModalProps = {
 type ModalFunc = (
   props: JuiModalProps,
 ) => {
-  destroy: () => void;
+  dismiss: () => void;
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
@@ -56,7 +56,7 @@ type DialogFunc = (
   component: React.ComponentType<any>,
   props?: JuiDialogFuncProps,
 ) => {
-  destroy: () => void;
+  dismiss: () => void;
 };
 
 class JuiModal extends Component<JuiModalProps, {}> {
