@@ -9,7 +9,6 @@ import {
   handleOneOfName,
   phoneNumberDefaultFormat,
 } from '../helper';
-import PersonService from 'sdk/service/person';
 
 const MainCompanyNumberType: string = 'MainCompanyNumber';
 
