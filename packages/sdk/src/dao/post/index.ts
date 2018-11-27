@@ -21,21 +21,20 @@ class PostDao extends BaseDao<Post> {
     limit: number = Infinity,
   ): Promise<Post[]> {
     let anchorPost;
-    if (anchorPostId) {
-      anchorPost = await this.get(anchorPostId);
-    }
-    if (!anchorPost) {
-      return [];
-    }
-    const rangeMethod =
-      direction === QUERY_DIRECTION.OLDER ? 'lessThan' : 'greaterThan';
     let query = this.createQuery();
     query = query
       .orderBy('created_at', direction === QUERY_DIRECTION.OLDER)
-      .equal('group_id', groupId)
-      [rangeMethod]('created_at', anchorPost.created_at)
-      .limit(limit);
-    const result = await query.toArray();
+      .equal('group_id', groupId);
+    if (anchorPostId) {
+      anchorPost = await this.get(anchorPostId);
+      if (!anchorPost) {
+        return [];
+      }
+      const rangeMethod =
+        direction === QUERY_DIRECTION.OLDER ? 'lessThan' : 'greaterThan';
+      query = query[rangeMethod]('created_at', anchorPost.created_at);
+    }
+    const result = await query.limit(limit).toArray();
     return result;
   }
 
