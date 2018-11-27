@@ -17,6 +17,8 @@ import ProfileService from '../../profile';
 import GroupService from '../../group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 import { NetworkResultOk } from '../../../api/NetworkResult';
+import { NetworkResultErr } from '../../../../../../../packages/sdk/src/api/NetworkResult';
+import { BaseError } from 'sdk/src/utils';
 
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
@@ -786,27 +788,24 @@ describe('PostService', () => {
 
   describe('getNewestPostIdOfGroup', async () => {
     it('should return api result if success', async () => {
-      PostAPI.requestPosts.mockResolvedValue({
-        data: {
-          posts: [{ _id: 123 }],
-        },
-      });
+      const data = { posts: [{ _id: 123 }] };
+      PostAPI.requestPosts.mockResolvedValue(
+        new NetworkResultOk(data, 200, {}),
+      );
 
       await expect(postService.getNewestPostIdOfGroup(1)).resolves.toBe(123);
     });
 
     it('should return null if api result is empty', async () => {
-      PostAPI.requestPosts.mockResolvedValue({
-        data: {
-          posts: [],
-        },
-      });
+      PostAPI.requestPosts.mockResolvedValue(new NetworkResultOk({}, 200, {}));
 
       await expect(postService.getNewestPostIdOfGroup(1)).resolves.toBe(null);
     });
 
     it('should return null if error', async () => {
-      PostAPI.requestPosts.mockRejectedValue(new Error());
+      PostAPI.requestPosts.mockRejectedValue(
+        new NetworkResultErr(new BaseError(500, ''), 500, {}),
+      );
 
       await expect(postService.getNewestPostIdOfGroup(1)).resolves.toBe(null);
     });

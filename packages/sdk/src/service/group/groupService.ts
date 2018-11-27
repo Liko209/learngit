@@ -187,25 +187,14 @@ class GroupService extends BaseService<Group> {
     }
   }
 
-  async requestRemoteGroupByMemberList(
-    members: number[],
-  ): Promise<Group | null> {
+  async requestRemoteGroupByMemberList(members: number[]): Promise<Group> {
     const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(members);
 
     const result = await GroupAPI.requestNewGroup(info);
-    return result.match({
-      Ok: async (data: Raw<Group>) => {
-        const group = transform<Group>(data);
-        await handleData([data]);
-        return group;
-      },
-      Err: (e: BaseError) => {
-        mainLogger.error(
-          `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
-        );
-        return null;
-      },
-    });
+    const data = result.expect('request remote group by member list error');
+    const group = transform<Group>(data);
+    await handleData([data]);
+    return group;
   }
 
   async getLatestGroup(): Promise<Group | null> {
@@ -339,13 +328,14 @@ class GroupService extends BaseService<Group> {
     };
     const result = await GroupAPI.createTeam(team);
 
-    return result.match({
+    const a = result.match({
       Ok: async (rawGroup: Raw<Group>) => {
         const newGroup = await this.handleRawGroup(rawGroup);
         return ok(newGroup);
       },
       Err: (error: BaseError) => err(error),
     });
+    return a;
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {

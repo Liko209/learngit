@@ -159,10 +159,11 @@ describe('GroupService', () => {
     const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
     expect(result2).toBeNull();
 
-    const mockError = new NetworkResultErr(null, 403, {});
+    const mockError = new NetworkResultErr(new BaseError(403, ''), 403, {});
     GroupAPI.requestNewGroup.mockResolvedValue(mockError);
-    const result3 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result3).toBeNull();
+    await expect(
+      groupService.requestRemoteGroupByMemberList([1, 2]),
+    ).rejects.toThrow();
   });
 
   it('getGroupByPersonId()', async () => {
@@ -469,12 +470,12 @@ describe('GroupService', () => {
     });
 
     it('should call dependency apis with correct data', async () => {
-      GroupAPI.createTeam.mockResolvedValueOnce({ data: 122 });
       jest
         .spyOn(require('../../utils'), 'transform')
         .mockImplementationOnce(source => source + 1);
       jest.spyOn(Permission, 'createPermissionsMask').mockReturnValue(100);
-
+      jest.spyOn<GroupService, any>(groupService, 'handleRawGroup');
+      groupService.handleRawGroup.mockImplementationOnce(() => group);
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
         new NetworkResultOk(group, 200, {}),
@@ -486,7 +487,6 @@ describe('GroupService', () => {
         [],
         'abc',
       );
-
       expect(result.isOk()).toBeTruthy();
       expect(result).toHaveProperty('data', group);
 
@@ -802,21 +802,26 @@ describe('GroupService', () => {
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.get.mockResolvedValue(1); // userId
 
-      const mockNormal = { data: { _id: 1 } };
-      GroupAPI.requestNewGroup.mockResolvedValueOnce(mockNormal);
+      const data = { _id: 1 };
+      GroupAPI.requestNewGroup.mockResolvedValueOnce(
+        new NetworkResultOk(data, 200, {}),
+      );
       const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
       expect(result1).toMatchObject({ id: 1 });
     });
 
     it('requestRemoteGroupByMemberList server return null', async () => {
-      const mockEmpty = { data: null };
-      GroupAPI.requestNewGroup.mockResolvedValueOnce(mockEmpty);
+      GroupAPI.requestNewGroup.mockResolvedValueOnce(
+        new NetworkResultOk(null, 200, {}),
+      );
       const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
       expect(result2).toBeNull;
     });
 
     it('requestRemoteGroupByMemberList throw error ', async () => {
-      GroupAPI.requestNewGroup.mockRejectedValueOnce(new Error('error'));
+      GroupAPI.requestNewGroup.mockResolvedValueOnce(
+        new NetworkResultErr(new BaseError(500, ''), 500, {}),
+      );
       await expect(
         groupService.requestRemoteGroupByMemberList([1, 2]),
       ).rejects.toThrow();
