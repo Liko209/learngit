@@ -45,7 +45,7 @@ export default function register(
       return;
     }
 
-    window.addEventListener('load', () => {
+    const registerServiceWorker = () => {
       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
       if (isLocalhost) {
@@ -68,7 +68,20 @@ export default function register(
         // Is not local host. Just register service worker
         registerValidSW(swUrl, registeredHandler, updateInstalledHandler);
       }
-    });
+    };
+
+    const readyState = document.readyState;
+    if (readyState === 'complete') {
+      console.log(
+        `${logTag}registerServiceWorker. document.readyState: ${readyState}`,
+      );
+      registerServiceWorker();
+    } else {
+      console.log(
+        `${logTag}registerServiceWorker on load. document.readyState: ${readyState}`,
+      );
+      window.addEventListener('load', registerServiceWorker);
+    }
   } else {
     console.log(
       `${logTag}Can not register. NODE_ENV: ${
