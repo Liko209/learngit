@@ -30,7 +30,7 @@ export default class CompanyService extends BaseService<Company> {
     let result = '';
     if (company) {
       if (company.webmail_person_id && company.webmail_person_id > 0) {
-        result = company.webmail_person_id.toString();
+        result = company.id.toString();
       } else {
         const domains: string[] = JSON.parse(company.domain);
         result = domains.length > 0 ? domains[0] : '';

@@ -3,7 +3,6 @@ import CompanyAPI from '../../../api/glip/company';
 import handleData from '../handleData';
 
 import CompanyService from '../index';
-import { components } from 'react-select';
 
 describe('CompanyService', () => {
   let companyService: CompanyService = undefined;
@@ -11,6 +10,7 @@ describe('CompanyService', () => {
   beforeEach(() => {
     companyService = new CompanyService();
     jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   afterAll(() => {
@@ -26,21 +26,27 @@ describe('CompanyService', () => {
     });
   });
 
-  describe('getCompanyEmailDomain()', async () => {
-    const spy = jest.spyOn(companyService, 'getCompanyById');
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-    it('should return webmail_person_id when has', async () => {
-      const company = { id: 1, webmail_person_id: 123 };
+  describe('getCompanyEmailDomain()', () => {
+    it('should return company id when webmail_person_id > 0 ', async () => {
+      const spy = jest.spyOn(companyService, 'getCompanyById');
+      const company = {
+        id: 1,
+        domain: '["aaa", "bbb", "ccc"]',
+        webmail_person_id: 123,
+      };
       spy.mockResolvedValueOnce(company);
       const res = await companyService.getCompanyEmailDomain(company.id);
-      expect(res).toBe(company.webmail_person_id.toString());
+      expect(res).toBe(company.id.toString());
       expect(spy).toBeCalledWith(company.id);
     });
 
-    it('should return first company domain when dont have webmail_person_id, and has multiple domains', async () => {
-      const company = { id: 1, domain: '["aaa", "bbb", "ccc"]' };
+    it('should return first company domain when webmail_person_id < 0, and has multiple domains', async () => {
+      const spy = jest.spyOn(companyService, 'getCompanyById');
+      const company = {
+        id: 1,
+        domain: '["aaa", "bbb", "ccc"]',
+        webmail_person_id: -123,
+      };
       spy.mockResolvedValueOnce(company);
       const res = await companyService.getCompanyEmailDomain(company.id);
       expect(res).toBe('aaa');
@@ -48,6 +54,7 @@ describe('CompanyService', () => {
     });
 
     it('should return company domain when dont have webmail_person_id  and has one domain', async () => {
+      const spy = jest.spyOn(companyService, 'getCompanyById');
       const company = { id: 1, domain: '["ddd"]' };
       spy.mockResolvedValueOnce(company);
       const res = await companyService.getCompanyEmailDomain(company.id);
