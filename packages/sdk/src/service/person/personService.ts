@@ -89,8 +89,20 @@ class PersonService extends BaseService<Person> {
     const group = await groupService.getGroupById(groupId);
     if (group) {
       const memberIds = group.members;
-      const personDao = daoManager.getDao(PersonDao);
-      return await personDao.getPersonsByIds(memberIds);
+      if (memberIds.length > 0) {
+        const catchData = await this.getMultiEntitiesFromCache(
+          memberIds,
+          (entity: Person) => {
+            return this._isValid(entity);
+          },
+        );
+        if (catchData.length > 0) {
+          return catchData;
+        }
+
+        const personDao = daoManager.getDao(PersonDao);
+        return await personDao.getPersonsByIds(memberIds);
+      }
     }
     return [];
   }
@@ -116,35 +128,6 @@ class PersonService extends BaseService<Person> {
       actionMap.set(FEATURE_TYPE.CALL, FEATURE_STATUS.INVISIBLE);
     }
     return actionMap;
-  }
-
-  generatePersonDisplayName(
-    displayName: string | undefined,
-    firstName: string | undefined,
-    lastName: string | undefined,
-    email: string,
-  ) {
-    if (displayName) {
-      return displayName;
-    }
-
-    let name = '';
-    if (firstName) {
-      name += firstName;
-    }
-
-    if (lastName) {
-      if (name.length > 0) {
-        name += ' ';
-      }
-      name += lastName;
-    }
-
-    if (name.length === 0) {
-      name = email;
-    }
-
-    return name;
   }
 
   async doFuzzySearchPersons(
