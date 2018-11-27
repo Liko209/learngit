@@ -33,7 +33,7 @@ describe('SearchBarViewModel', () => {
     jest.spyOn(PersonService, 'getInstance').mockReturnValue(personService);
     jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
   });
-  describe('test needSliceNum()', () => {
+  describe('needSliceNum()', () => {
     it('If existSectionNum < 1 should return ONLY_ONE_SECTION_LENGTH', () => {
       const num1 = searchBarViewModel.needSliceNum(1);
       const num2 = searchBarViewModel.needSliceNum(0);
@@ -47,7 +47,7 @@ describe('SearchBarViewModel', () => {
       expect(num2).toBe(MORE_SECTION_LENGTH);
     });
   });
-  describe('test hasMore()', () => {
+  describe('hasMore()', () => {
     it('If sortableModels.length > needSliceNum should be true', () => {
       const hasMore = searchBarViewModel.hasMore(
         {
@@ -67,7 +67,7 @@ describe('SearchBarViewModel', () => {
       expect(hasMore).toBe(false);
     });
   });
-  describe('test getSection()', () => {
+  describe('getSection()', () => {
     it('Should return section', () => {
       const section = searchBarViewModel.getSection(
         {
@@ -108,18 +108,18 @@ describe('SearchBarViewModel', () => {
       });
     });
   });
-  describe('test existSectionNum()', () => {
+  describe('existSectionNum()', () => {
     it('If persons and groups and teams length = 0 should return 0', () => {
       const existNum = searchBarViewModel.existSectionNum(
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
       );
       expect(existNum).toBe(0);
     });
@@ -127,37 +127,37 @@ describe('SearchBarViewModel', () => {
       const existNum1 = searchBarViewModel.existSectionNum(
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
       );
       expect(existNum1).toBe(1);
       const existNum2 = searchBarViewModel.existSectionNum(
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
       );
       expect(existNum2).toBe(1);
       const existNum3 = searchBarViewModel.existSectionNum(
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
       );
       expect(existNum3).toBe(1);
     });
@@ -165,37 +165,37 @@ describe('SearchBarViewModel', () => {
       const existNum1 = searchBarViewModel.existSectionNum(
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
       );
       expect(existNum1).toBe(2);
       const existNum2 = searchBarViewModel.existSectionNum(
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
       );
       expect(existNum2).toBe(2);
       const existNum3 = searchBarViewModel.existSectionNum(
         {
           sortableModels: [],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
       );
       expect(existNum3).toBe(2);
     });
@@ -203,19 +203,19 @@ describe('SearchBarViewModel', () => {
       const existNum = searchBarViewModel.existSectionNum(
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
         {
           sortableModels: [1],
-        } as SectionType,
+        } as any,
       );
       expect(existNum).toBe(3);
     });
   });
 
-  describe('test search()', async () => {
+  describe('search()', async () => {
     // jest.spyOn(searchBarViewModel, 'existSectionNum');
     // jest.spyOn(searchBarViewModel, 'getSection');
     const ret = await searchBarViewModel.search('123');

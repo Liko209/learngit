@@ -27,7 +27,7 @@ class SearchBarViewModel extends StoreViewModel {
   }
 
   @computed
-  get myId() {
+  get currentUserId() {
     return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 

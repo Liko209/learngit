@@ -23,7 +23,7 @@ type ViewProps = {
   search: (key: string) => SearchResult;
   searchValue: string;
   setValue: (value: string) => void;
-  myId: number;
+  currentUserId: number;
 };
 
 type SectionTypes = SectionType<Person> | SectionType<Group>;

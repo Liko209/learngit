@@ -10,6 +10,7 @@ import {
   height,
   grey,
   typography,
+  palette,
 } from '../../../foundation/utils/styles';
 import { JuiTextField } from '../../../components/Forms';
 
@@ -24,7 +25,8 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   display: flex;
   position: relative;
   box-sizing: border-box;
-  background: ${({ focus }) => (focus ? '#fff' : grey('100'))}
+  background: ${({ focus }) =>
+      focus ? palette('common', 'white') : grey('100')}
     ${({ focus }) => {
       return focus
         ? css`

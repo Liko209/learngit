@@ -61,20 +61,23 @@ class SearchBarView extends React.Component<ViewProps, State> {
     this._debounceSearch = debounce(async (value: string) => {
       const ret = await search(value);
       const { terms, persons, groups, teams } = ret;
-      this.setState(
-        {
-          terms,
-          groups,
-          persons,
-          teams,
-        },
-        () => {
-          this._searchItems = Array.from(
-            document.querySelectorAll('.search-items'),
-          );
-        },
-      );
+      this.setState({
+        terms,
+        groups,
+        persons,
+        teams,
+      });
     },                              300);
+  }
+
+  private _initData() {
+    this.setState({
+      terms: [],
+      persons: defaultSection,
+      groups: defaultSection,
+      teams: defaultSection,
+      selectIndex: -1,
+    });
   }
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,12 +86,7 @@ class SearchBarView extends React.Component<ViewProps, State> {
     const { setValue } = this.props;
     setValue(value);
     if (!value.trim()) {
-      this.setState({
-        terms: [],
-        persons: defaultSection,
-        groups: defaultSection,
-        teams: defaultSection,
-      });
+      this._initData();
       return;
     }
     this._debounceSearch(value);
@@ -103,11 +101,13 @@ class SearchBarView extends React.Component<ViewProps, State> {
   onClear = () => {
     const { setValue } = this.props;
     setValue('');
+    this._initData();
   }
 
   onClose = () => {
     this.setState({
       focus: false,
+      selectIndex: -1,
     });
   }
 
@@ -120,23 +120,25 @@ class SearchBarView extends React.Component<ViewProps, State> {
     title: string,
     terms: string[],
   ) {
-    const { myId } = this.props;
+    const { currentUserId } = this.props;
+
     return (
       <>
         {type.sortableModel.length > 0 && <JuiSearchTitle title={title} />}
         {type.sortableModel.map((item: any) => {
           const { id, displayName, entity } = item;
           return (
-            <>
-              <JuiSearchItem
-                Avatar={this._Avatar(id)}
-                value={displayName}
-                terms={terms}
-                Actions={Actions()}
-                isPrivate={entity.is_team && entity.privacy === 'private'}
-                isJoined={entity.is_team && entity.members.includes(myId)}
-              />
-            </>
+            <JuiSearchItem
+              key={id}
+              Avatar={this._Avatar(id)}
+              value={displayName}
+              terms={terms}
+              Actions={Actions()}
+              isPrivate={entity.is_team && entity.privacy === 'private'}
+              isJoined={
+                entity.is_team && entity.members.includes(currentUserId)
+              }
+            />
           );
         })}
       </>
@@ -153,6 +155,7 @@ class SearchBarView extends React.Component<ViewProps, State> {
   }
 
   private _getSelectIndex(type: string): number {
+    this._searchItems = Array.from(document.querySelectorAll('.search-items'));
     const { selectIndex } = this.state;
     let index: number;
     if (type === 'up') {
@@ -195,10 +198,6 @@ class SearchBarView extends React.Component<ViewProps, State> {
     const selectItem = searchItems[selectIndex];
     if (selectItem) {
       // TODO go to conversation
-      console.log(
-        selectItem,
-        '---result ,selectItem and need go to conversation',
-      );
     }
   }
 

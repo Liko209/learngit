@@ -16,6 +16,7 @@ import {
   width,
   shape,
   typography,
+  primary,
 } from '../../../foundation/utils/styles';
 
 const SearchItemWrapper = styled(MenuItem)`
@@ -24,10 +25,10 @@ const SearchItemWrapper = styled(MenuItem)`
     padding: ${spacing(1, 4)};
     &.hover,
     &:hover {
-      background: ${({ theme }) => palette('grey', '500', 1)};
+      background: ${grey('500', 1)};
     }
     &:active {
-      background: ${({ theme }) => palette('primary', 'main', 1)};
+      background: ${primary('main', 1)};
     }
   }
 `;
@@ -61,7 +62,7 @@ const Joined = styled.span`
   height: ${height(4)};
   color: ${palette('common', 'white')};
   border-radius: ${shape('borderRadius', 4)};
-  background: ${palette('primary', '700', 2)};
+  background: ${primary('700', 2)};
   ${typography('caption1')}
 `;
 

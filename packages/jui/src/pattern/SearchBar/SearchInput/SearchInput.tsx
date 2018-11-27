@@ -40,7 +40,6 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
 
   render() {
     const { value, focus, onFocus, onBlur } = this.props;
-    console.log(value, '-result value input');
 
     return (
       <Jui.SearchWrapper focus={focus}>
