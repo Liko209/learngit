@@ -86,12 +86,12 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
 
       if (this._group.is_team) {
         const isLAdmin = groupService.isTeamAdmin(
-          this._group.permissions,
           lPerson.id,
+          this._group.permissions,
         );
         const isRAdmin = groupService.isTeamAdmin(
-          this._group.permissions,
           rPerson.id,
+          this._group.permissions,
         );
         if (isLAdmin !== isRAdmin) {
           return isLAdmin ? -1 : 1;
@@ -99,18 +99,8 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       }
 
       return natureCompare(
-        personService.generatePersonDisplayName(
-          lPerson.display_name,
-          lPerson.first_name,
-          lPerson.last_name,
-          lPerson.email,
-        ),
-        personService.generatePersonDisplayName(
-          rPerson.display_name,
-          rPerson.first_name,
-          rPerson.last_name,
-          rPerson.email,
-        ),
+        personService.getFullName(lPerson),
+        personService.getFullName(rPerson),
       );
     };
 

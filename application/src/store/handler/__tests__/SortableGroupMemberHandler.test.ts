@@ -10,8 +10,10 @@ import {
   notificationCenter,
   ENTITY,
 } from 'sdk/service';
+
 import { TeamPermission } from 'sdk/service/group';
 import SortableGroupMemberHandler from '../SortableGroupMemberHandler';
+import { Person } from '../../../../../packages/sdk/src/models';
 
 jest.mock('sdk/service/group');
 jest.mock('sdk/service/person');
@@ -82,20 +84,14 @@ describe('SortableGroupMemberHandler', () => {
     personService.getPersonsByGroupId.mockResolvedValueOnce(persons);
 
     groupService.isTeamAdmin.mockImplementation(
-      (permission: TeamPermission | undefined, personId: number) => {
+      (personId: number, permission?: TeamPermission) => {
         return personId < 4;
       },
     ); // first 3 is admin;
-    personService.generatePersonDisplayName.mockImplementation(
-      (
-        displayName: string | undefined,
-        firstName: string | undefined,
-        lastName: string | undefined,
-        email: string,
-      ) => {
-        return email;
-      },
-    );
+
+    personService.getFullName.mockImplementation((person: Person) => {
+      return person.email;
+    });
 
     const handler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
       groupId,
