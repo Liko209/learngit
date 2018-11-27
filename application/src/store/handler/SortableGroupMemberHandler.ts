@@ -48,7 +48,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     if (group) {
       return new SortableGroupMemberHandler(group);
     }
-    return group;
+    return null;
   }
 
   constructor(group: Group) {
