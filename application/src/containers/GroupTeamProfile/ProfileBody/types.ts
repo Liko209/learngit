@@ -12,12 +12,12 @@ type ProfileHeaderViewProps = WithNamespaces & {
   displayName: string;
   description?: string;
   type: ProfileType;
-  destroy: () => void;
+  dismiss: () => void;
 };
 
 type ProfileBodyProps = {
   id: number;
-  destroy: () => void;
+  dismiss: () => void;
   type?: ProfileType;
 };
 

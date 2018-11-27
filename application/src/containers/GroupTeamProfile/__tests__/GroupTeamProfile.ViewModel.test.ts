@@ -3,19 +3,26 @@
  * @Date: 2018-11-21 15:09:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { GLOBAL_KEYS } from '@/store/constants';
-import storeManager from '@/store';
-const globalStore = storeManager.getGlobalStore();
 import { GroupTeamProfileViewModel } from '../GroupTeamProfile.ViewModel';
+import { CONVERSATION_TYPES } from '@/constants';
+import { getEntity } from '@/store/utils';
 
 jest.mock('../../../store/utils');
-const groupTeamProfileVM = new GroupTeamProfileViewModel();
-describe('GroupTeamProfileViewModel', () => {
-  beforeAll(() => {
-    jest.resetAllMocks();
+const groupId = 12345;
+const groupTeamProfileVM = new GroupTeamProfileViewModel({ id: groupId });
+
+function mockReturnGroupType(type: CONVERSATION_TYPES) {
+  return (getEntity as jest.Mock) = jest.fn().mockReturnValue({
+    type,
   });
+}
+describe('GroupTeamProfileViewModel', () => {
   it('should return group id if group id provided', () => {
-    globalStore.set(GLOBAL_KEYS.GROUP_OR_TEAM_ID, 1234);
-    expect(groupTeamProfileVM.id).toBe(1234);
+    new GroupTeamProfileViewModel({ id: groupId });
+    expect(groupTeamProfileVM.id).toBe(groupId);
+  });
+  it('should return group type if group id provided', () => {
+    mockReturnGroupType(CONVERSATION_TYPES.NORMAL_GROUP);
+    expect(groupTeamProfileVM.type).toBe(CONVERSATION_TYPES.NORMAL_GROUP);
   });
 });

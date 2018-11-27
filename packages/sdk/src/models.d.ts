@@ -100,6 +100,12 @@ export type Company = ExtendedBaseModel & {
   webmail_person_id?: number;
 };
 
+export type PhoneNumberModel = {
+  id: number;
+  phoneNumber: string;
+  usageType: string;
+};
+
 export type Person = ExtendedBaseModel & {
   company_id: number;
   email: string;
@@ -118,7 +124,7 @@ export type Person = ExtendedBaseModel & {
   headshot_version?: string;
   locked?: boolean;
   inviter_id?: number;
-  rc_phone_numbers?: object[];
+  rc_phone_numbers?: PhoneNumberModel[];
   sanitized_rc_extension?: object;
   is_pseudo_user?: boolean;
   glip_user_id?: number;

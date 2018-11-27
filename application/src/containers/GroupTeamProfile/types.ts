@@ -7,9 +7,11 @@ import { WithNamespaces } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
 
 type ProfileType = CONVERSATION_TYPES;
+type DismissProps = {
+  dismiss: () => void;
+};
 type GroupTeamProps = WithNamespaces & {
-  destroy: () => void;
   id: number;
   type: ProfileType;
-};
-export { GroupTeamProps, ProfileType };
+} & DismissProps;
+export { GroupTeamProps, ProfileType, DismissProps };

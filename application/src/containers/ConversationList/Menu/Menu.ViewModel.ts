@@ -4,20 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, action } from 'mobx';
+import { computed } from 'mobx';
 import { service } from 'sdk';
 import { Profile } from 'sdk/models';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import { MenuProps, MenuViewProps } from './types';
-import storeManager, { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
-import { GLOBAL_KEYS } from '@/store/constants';
 import { CONVERSATION_TYPES } from '@/constants';
 
-const globalStore = storeManager.getGlobalStore();
 const { GroupService } = service;
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
@@ -88,14 +86,10 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
       shouldSkipNextTime,
     );
   }
-  @action
-  handleGlobalGroupId = () => {
-    globalStore.set(GLOBAL_KEYS.GROUP_OR_TEAM_ID, this.groupId);
-  }
   @computed
   get isShowGroupTeamProfile() {
     const type = this._group.type;
-    return type === CONVERSATION_TYPES.TEAM || type === CONVERSATION_TYPES.NORMAL_GROUP;
+    return (type === CONVERSATION_TYPES.TEAM) || (type === CONVERSATION_TYPES.NORMAL_GROUP);
   }
 }
 export { MenuViewModel };

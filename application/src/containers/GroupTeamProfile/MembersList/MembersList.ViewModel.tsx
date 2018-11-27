@@ -16,8 +16,8 @@ class MembersListViewModel extends StoreViewModel<MemberListProps> {
   private _memberListHandler : SortableGroupMemberHandler | null = null;
   private _allMemberIds: number[] = [];
   @observable
-  private pagination: number = 1;
-  private _PAGE_COUNT = 20;
+  private _pagination: number = 1;
+  private _PAGE_COUNT = 30;
   constructor() {
     super();
     this.toBottom = this.toBottom.bind(this);
@@ -36,13 +36,13 @@ class MembersListViewModel extends StoreViewModel<MemberListProps> {
   get memberIds() {
     this._createSortableMemberIds();
     this._allMemberIds = (this._memberListHandler && this._memberListHandler.getSortedGroupMembersIds()) || [];
-    return this._allMemberIds.slice(0, this.pagination * this._PAGE_COUNT);
+    return this._allMemberIds.slice(0, this._pagination * this._PAGE_COUNT);
   }
   @action
   @onScrollToBottom
   toBottom() {
     if (this._allMemberIds.length === this.memberIds.length) return;
-    this.pagination++;
+    this._pagination++;
   }
 }
 export { MembersListViewModel };

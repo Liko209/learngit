@@ -122,8 +122,13 @@ class MenuViewComponent extends Component<Props, State> {
   }
   private _handleGroupDialog = (event: MouseEvent<HTMLElement>) => {
     this.props.onClose(event);
-    this.props.handleGlobalGroupId(event);
-    JuiModal.open(GroupTeamProfile, { size: 'medium' });
+    const { groupId } = this.props;
+    JuiModal.open(GroupTeamProfile, {
+      componentProps: {
+        id: groupId,
+      },
+      size: 'medium',
+    });
   }
   render() {
     const {

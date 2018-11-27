@@ -28,9 +28,9 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
     );
   }
   render() {
-    const { displayName, description, id, type, destroy } = this.props;
+    const { displayName, description, id, type, dismiss } = this.props;
     const message = (
-      <JumpToConversation id={id} onSuccess={destroy}>
+      <JumpToConversation id={id} onSuccess={dismiss}>
         {this.renderMessageBtn()}
       </JumpToConversation>
     );

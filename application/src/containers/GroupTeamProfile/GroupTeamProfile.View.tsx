@@ -18,14 +18,14 @@ import { CONVERSATION_TYPES } from '@/constants';
 class GroupTeamProfile extends React.Component<GroupTeamProps> {
   render() {
     const {
-      destroy,
+      dismiss,
       id,
       type,
     } = this.props;
     return (
       <StyledProfileView>
-        <ProfileHeader destroy={destroy} id={id} />
-        <ProfileBody id={id} destroy={destroy} type={type} />
+        <ProfileHeader dismiss={dismiss} id={id} />
+        <ProfileBody id={id} dismiss={dismiss} type={type} />
         {
           type === CONVERSATION_TYPES.TEAM || type === CONVERSATION_TYPES.NORMAL_GROUP ? (
            <>

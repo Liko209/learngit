@@ -48,7 +48,7 @@ const MAP = {
   circular: DefaultLoading,
 };
 
-const withLoading = <P extends object>(
+const withLoading = <P extends { loading: boolean }>(
   Component: ComponentType<P>,
   CustomizedLoading?: ComponentType<any>,
 ): React.SFC<P & WithLoadingProps> => {
@@ -61,7 +61,7 @@ const withLoading = <P extends object>(
     const Loading = CustomizedLoading || MAP[variant || 'circular'];
     return (
       <Loading transitionDelay={transitionDelay} isVisible={loading}>
-        <Component {...props} />
+        <Component {...props} loading={loading} />
       </Loading>
     );
   };

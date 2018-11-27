@@ -4,10 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-enum GROUP_TYPES {
-  TEAM = 'TEAM',
-  GROUP = 'GROUP',
-}
 type GroupBodyProps = {
   displayName: string;
   description?: string;
@@ -18,6 +14,6 @@ type GroupListProps = {
 };
 type GroupHeaderProps = {
   title: string;
-  destroy?: () => void;
+  dismiss: () => void;
 };
-export { GroupBodyProps, GroupHeaderProps, GroupListProps, GROUP_TYPES };
+export { GroupBodyProps, GroupHeaderProps, GroupListProps };

@@ -880,7 +880,7 @@ describe('PostService', () => {
     accountDao.get.mockReturnValue(1); // userId
     it('should get group success then send post', async () => {
       const g = { id: 44 };
-      groupService.getOrCreateGroupByMemberList.mockResolvedValue(g);
+      groupService.getGroupByMemberList.mockResolvedValue(g);
 
       const msg = '  text message  ';
       const spy = jest.spyOn(postService, 'sendPost');
@@ -893,7 +893,7 @@ describe('PostService', () => {
 
     it('should not call send post when get group failed', async () => {
       const spy = jest.spyOn(postService, 'sendPost');
-      groupService.getOrCreateGroupByMemberList.mockResolvedValue(null);
+      groupService.getGroupByMemberList.mockResolvedValue(null);
       const result = await postService.newMessageWithPeopleIds(
         [1, 2, 3],
         'text message',
@@ -904,15 +904,15 @@ describe('PostService', () => {
 
     it('should not call send post when send empty message ', async () => {
       const g = { id: 44 };
-      groupService.getOrCreateGroupByMemberList.mockResolvedValue(g);
+      groupService.getGroupByMemberList.mockResolvedValue(g);
+      jest.spyOn(postService, 'sendPost');
 
       let result = await postService.newMessageWithPeopleIds([1, 2, 3], '   ');
       expect(result).toEqual({ id: 44 });
-
       result = await postService.newMessageWithPeopleIds([1, 2, 3], '');
       expect(result).toEqual({ id: 44 });
 
-      expect(jest.spyOn(postService, 'sendPost')).not.toBeCalled();
+      expect(postService.sendPost).not.toBeCalled();
     });
   });
 });

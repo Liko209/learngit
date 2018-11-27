@@ -13,9 +13,6 @@ class ProfileHeaderViewModel extends StoreViewModel<ProfileHeaderProps> {
   get groupId() {
     return this.props.id;
   }
-  destroy() {
-    return this.props.destroy;
-  }
   @computed
   get title() {
     return this.props.title;

@@ -50,7 +50,7 @@ const StyledText = styled.p`
 `;
 class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
   render() {
-    const { title, destroy, children } = this.props;
+    const { title, dismiss, children } = this.props;
 
     return (
       <StyledHeader>
@@ -60,7 +60,7 @@ class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
           </StyledText>
           <StyledIcon>
             {children}
-            <JuiIconButton onClick={destroy} className="close" disableToolTip={true}>close</JuiIconButton>
+            <JuiIconButton onClick={dismiss} className="close" disableToolTip={true}>close</JuiIconButton>
           </StyledIcon>
         </StyledContent>
       </StyledHeader>

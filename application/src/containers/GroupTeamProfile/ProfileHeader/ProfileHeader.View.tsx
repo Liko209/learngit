@@ -16,13 +16,13 @@ class ProfileHeader extends React.Component<ProfileHeaderViewProps> {
   render() {
     const {
       title = 'Profile',
-      destroy,
+      dismiss,
       groupId,
       t,
     } = this.props;
     return (
       <>
-        <JuiGroupProfileHeader title={t(title)} destroy={destroy}>
+        <JuiGroupProfileHeader title={t(title)} dismiss={dismiss}>
           <Privacy id={groupId} disableToolTip={true}/>
           <Favorite id={groupId} disableToolTip={true} isAction={false}/>
           <MoreHorizIcon id={groupId}/>

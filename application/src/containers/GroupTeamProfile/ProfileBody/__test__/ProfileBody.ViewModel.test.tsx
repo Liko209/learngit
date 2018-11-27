@@ -4,20 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { getEntity } from '../../../../store/utils';
-import React from 'react';
-import { shallow } from 'enzyme';
-import { ProfileBody } from '..';
 jest.mock('../../../../store/utils');
 import { ProfileBodyViewModel } from '../ProfileBody.ViewModel';
 
-const profileBodyVM = new ProfileBodyViewModel();
+const profileBodyVM = new ProfileBodyViewModel({ id: 123, dismiss( ) {} });
 
-const destroy = function () {};
 describe('ProfileBodyViewModel', () => {
-  beforeEach(() => {
-    const wrapper = shallow(<ProfileBody id={8839174} destroy={destroy} />);
-    wrapper.setProps({ id: 8839174 });
-  });
   it('should return displayName if team/group id provided', () => {
     (getEntity as jest.Mock).mockReturnValue({
       displayName: 'test',

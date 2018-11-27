@@ -21,7 +21,7 @@ type Props = WithNamespaces & MembersViewProps;
 class MembersItem extends React.PureComponent<Props> {
   private _presence = (id: number) => {
     return <Presence uid={id} borderSize="medium" />;
-  }x
+  }
   render() {
     const { pid, member, t, isThePersonGuest, isThePersonAdmin } = this.props;
     return (
