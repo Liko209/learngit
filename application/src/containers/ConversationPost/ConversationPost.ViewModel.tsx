@@ -30,7 +30,7 @@ class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
 
   @computed
   get highlight() {
-    return this.props.highlight;
+    return this.props.highlight || false;
   }
 
   @computed

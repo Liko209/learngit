@@ -11,7 +11,7 @@ enum POST_TYPE {
 
 type ConversationPostProps = {
   id: number;
-  highlight: boolean;
+  highlight?: boolean;
 };
 
 type ConversationPostViewProps = {

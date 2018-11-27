@@ -25,7 +25,6 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
 
   @computed
   get highlight() {
-    // return true;
     return !!this.props.highlight;
   }
 

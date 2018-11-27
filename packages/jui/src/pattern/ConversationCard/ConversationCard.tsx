@@ -64,7 +64,8 @@ const StyledConversationCard = styled<
     background: ${grey('50')};
   }
   ${navigationStyles};
-  animation: ${({ highlight }) => (highlight ? 'highlight' : '')} 3s;
+  animation: ${({ highlight }) => (highlight ? 'highlight' : '')} 3s
+    cubic-bezier(0.575, 0.105, 0.835, 0.295);
   @keyframes highlight {
     from {
       background: ${({ theme }) =>
