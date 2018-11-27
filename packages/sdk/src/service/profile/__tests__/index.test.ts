@@ -331,14 +331,11 @@ describe('ProfileService', () => {
         id: 2,
         hide_group_222233333: true,
       };
-
-      jest.spyOn(profileService, 'getCurrentProfileId').mockResolvedValue(2);
-      jest.spyOn(profileService, 'getById').mockResolvedValue(profile);
-
+      jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
+      jest.spyOn(profileService, 'getById').mockReturnValue(profile);
       jest
-        .spyOn(profileService, '_doDefaultPartialNotify')
+        .spyOn(profileService, '_doPartialSaveAndNotify')
         .mockImplementation(() => {});
-
       const returnValue = {
         id: 2,
         hide_group_222233333: false,
@@ -352,7 +349,6 @@ describe('ProfileService', () => {
       const result = await profileService.handleGroupIncomesNewPost([
         222233333,
       ]);
-      console.log('------------>', result);
       expect(result['hide_group_222233333']).toBe(false);
     });
     it('has not hidden group, do nothing', async () => {
@@ -360,8 +356,8 @@ describe('ProfileService', () => {
         id: 2,
         hide_group_222233333: false,
       };
-
-      jest.spyOn(profileService, 'getProfile').mockResolvedValue(profile);
+      jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
+      jest.spyOn(profileService, 'getById').mockReturnValue(profile);
 
       jest
         .spyOn(profileService, '_doDefaultPartialNotify')
