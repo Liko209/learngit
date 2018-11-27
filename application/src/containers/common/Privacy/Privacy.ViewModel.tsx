@@ -57,7 +57,7 @@ class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
     return this._group.isTeam ? this._group.privacy !== 'private' : true;
   }
 
-  setPrivacy = async (): Promise<ServiceCommonErrorType> => {
+  handlePrivacy = async (): Promise<ServiceCommonErrorType> => {
     alert('The service is not currently supported');
     // const result = await this._groupService.set(this.id);
     return ServiceCommonErrorType.NONE;
