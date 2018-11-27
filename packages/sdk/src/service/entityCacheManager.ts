@@ -3,6 +3,23 @@ import _ from 'lodash';
 
 class EntityCacheManager<T extends BaseModel = BaseModel> {
   private _entities: { [id: number]: T } = {};
+  private _isInitialized: boolean;
+
+  constructor() {
+    this._isInitialized = false;
+  }
+
+  isInitialized() {
+    return this._isInitialized;
+  }
+
+  initialize(entities: T[]) {
+    this._isInitialized = true;
+    this.clear();
+    _.forEach(entities, (model: T) => {
+      this.set(model);
+    });
+  }
 
   async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
     if (filterFunc) {
