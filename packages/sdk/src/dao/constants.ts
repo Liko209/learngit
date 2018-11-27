@@ -6,3 +6,8 @@ export const STORAGE_TYPES = {
   KV: 1,
   DB: 2,
 };
+
+export enum QUERY_DIRECTION {
+  OLDER = 'older',
+  NEWER = 'newer',
+}

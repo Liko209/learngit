@@ -28,7 +28,7 @@ test.skip(
     const userGlip = await h(t).getGlip(user);
     const user5Glip = await h(t).getGlip(users[5]);
     const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
+      app.homePage.messageTab.directMessagesSection;
 
     let chat;
     await h(t).withLog(
@@ -82,7 +82,7 @@ test.skip(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.header.find(
+            app.homePage.messageTab.conversationPage.header.find(
               '[data-test-automation-id="conversation-page-header-status"]',
             ).textContent,
           )
@@ -104,7 +104,7 @@ test.skip(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.header.find(
+            app.homePage.messageTab.conversationPage.header.find(
               '[data-test-automation-id="conversation-page-header-status"]',
             ).textContent,
           )
@@ -124,7 +124,7 @@ test.skip(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.header.find(
+            app.homePage.messageTab.conversationPage.header.find(
               '[data-test-automation-id="conversation-page-header-status"]',
             ).textContent,
           )

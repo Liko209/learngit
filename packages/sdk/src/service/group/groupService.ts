@@ -69,7 +69,7 @@ class GroupService extends BaseService<Group> {
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
-    this.setSupportCache(true);
+    this.enableCache();
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
@@ -460,6 +460,7 @@ class GroupService extends BaseService<Group> {
 
   async doFuzzySearchGroups(
     searchKey: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
@@ -471,19 +472,16 @@ class GroupService extends BaseService<Group> {
     }
     return this.searchEntitiesFromCache(
       (group: Group, terms: string[]) => {
-        if (
-          !group.is_team &&
-          !group.is_archived &&
-          !group.deactivated &&
-          group.members &&
-          group.members.length > 2
-        ) {
+        if (this._isValidGroup(group) && group.members.length > 2) {
           const groupName = this.getGroupNameByMultiMembers(
             group.members,
             currentUserId,
           );
 
-          if (this.isFuzzyMatched(groupName, terms)) {
+          if (
+            (terms.length > 0 && this.isFuzzyMatched(groupName, terms)) ||
+            (fetchAllIfSearchKeyEmpty && terms.length === 0)
+          ) {
             return {
               id: group.id,
               displayName: groupName,
@@ -501,24 +499,35 @@ class GroupService extends BaseService<Group> {
   }
 
   async doFuzzySearchTeams(
-    searchKey: string,
+    searchKey?: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    if (!currentUserId) {
+      return null;
+    }
+
     return this.searchEntitiesFromCache(
-      (group: Group, terms: string[]) => {
-        if (group.is_team && !group.is_archived && !group.deactivated) {
-          if (this.isFuzzyMatched(group.set_abbreviation, terms)) {
-            return {
-              id: group.id,
-              displayName: group.set_abbreviation,
-              sortKey: group.set_abbreviation.toLowerCase(),
-              entity: group,
-            };
+      (team: Group, terms: string[]) => {
+        return this._idValidTeam(team) &&
+          ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
+            (terms.length > 0 &&
+              this.isFuzzyMatched(team.set_abbreviation, terms))) &&
+          (team.is_public ||
+            team.members.find((id: number) => {
+              return id === currentUserId;
+            }))
+          ? {
+            id: team.id,
+            displayName: team.set_abbreviation,
+            sortKey: team.set_abbreviation.toLowerCase(),
+            entity: team,
           }
-        }
-        return null;
+          : null;
       },
       searchKey,
       undefined,
@@ -549,6 +558,18 @@ class GroupService extends BaseService<Group> {
       .sort(compareName)
       .concat(emails.sort(compareName))
       .join(', ');
+  }
+
+  private _isValidGroup(group: Group) {
+    return this._isValid(group) && !group.is_team;
+  }
+
+  private _idValidTeam(group: Group) {
+    return this._isValid(group) && group.is_team;
+  }
+
+  private _isValid(group: Group) {
+    return !group.is_archived && !group.deactivated && group.members;
   }
 }
 
