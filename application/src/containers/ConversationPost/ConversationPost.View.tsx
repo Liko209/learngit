@@ -5,7 +5,11 @@
  */
 
 import React, { Component } from 'react';
-import { ConversationPostViewProps, POST_TYPE } from './types';
+import {
+  ConversationPostViewProps,
+  POST_TYPE,
+  ConversationPostProps,
+} from './types';
 import { ConversationCard } from '../ConversationCard';
 import { Notification } from './Notification';
 
@@ -15,7 +19,8 @@ const PostTypeMappingComponent = {
 };
 
 const factory = (type: POST_TYPE, postId: number, highlight: boolean) => {
-  const Component: any = PostTypeMappingComponent[type];
+  const Component: React.ComponentType<ConversationPostProps> =
+    PostTypeMappingComponent[type];
   return <Component id={postId} highlight={highlight} />;
 };
 
