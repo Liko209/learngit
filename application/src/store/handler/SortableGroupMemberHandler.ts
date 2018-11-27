@@ -48,7 +48,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     if (group) {
       return new SortableGroupMemberHandler(group);
     }
-    return group;
+    return null;
   }
 
   constructor(group: Group) {
@@ -83,33 +83,24 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       const lPerson = lhs.data!;
       const rPerson = rhs.data!;
       const groupService = GroupService.getInstance<GroupService>();
-      const isLAdmin = groupService.isAdminOfTheGroup(
-        this._group.is_team,
-        this._group.permissions,
-        lPerson.id,
-      );
-      const isRAdmin = groupService.isAdminOfTheGroup(
-        this._group.is_team,
-        this._group.permissions,
-        rPerson.id,
-      );
-      if (isLAdmin !== isRAdmin) {
-        return isLAdmin ? -1 : 1;
+
+      if (this._group.is_team) {
+        const isLAdmin = groupService.isTeamAdmin(
+          lPerson.id,
+          this._group.permissions,
+        );
+        const isRAdmin = groupService.isTeamAdmin(
+          rPerson.id,
+          this._group.permissions,
+        );
+        if (isLAdmin !== isRAdmin) {
+          return isLAdmin ? -1 : 1;
+        }
       }
 
       return natureCompare(
-        personService.generatePersonDisplayName(
-          lPerson.display_name,
-          lPerson.first_name,
-          lPerson.last_name,
-          lPerson.email,
-        ),
-        personService.generatePersonDisplayName(
-          rPerson.display_name,
-          rPerson.first_name,
-          rPerson.last_name,
-          rPerson.email,
-        ),
+        personService.getFullName(lPerson),
+        personService.getFullName(rPerson),
       );
     };
 
@@ -147,12 +138,11 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private _handleGroupUpdate(newGroup: Group) {
     if (newGroup) {
       const sortFunc = (lhs: number, rhs: number) => lhs - rhs;
-
       const sortedNewMemberList = newGroup.members.sort(sortFunc);
       const sortedOldMemberList = this._group.members.sort(sortFunc);
 
       let needReplaceData = false;
-      if (sortedNewMemberList.toString !== sortedOldMemberList.toString) {
+      if (sortedNewMemberList.toString() !== sortedOldMemberList.toString()) {
         needReplaceData = true;
       }
 
@@ -171,8 +161,6 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       if (needReplaceData) {
         this._replaceData();
       }
-
-      this._sortableDataHandler.replaceAll;
     }
   }
 

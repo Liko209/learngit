@@ -18,6 +18,7 @@ import { SOCKET, SERVICE } from './eventKey';
 import _ from 'lodash';
 import EntityCacheManager from './entityCacheManager';
 import { EVENT_TYPES } from './constants';
+import { filter } from 'minimatch';
 
 const throwError = (text: string): never => {
   throw new Error(
@@ -127,6 +128,24 @@ class BaseService<
 
   getEntityFromCache(id: number): SubModel | null {
     return this.getCacheManager().getEntity(id);
+  }
+
+  async getMultiEntitiesFromCache(
+    ids: number[],
+    filterFunc?: (entity: SubModel) => boolean,
+  ): Promise<SubModel[]> {
+    const entities = await this.getCacheManager().getMultiEntities(ids);
+
+    if (filterFunc) {
+      const filteredResult: SubModel[] = [];
+      entities.forEach((entity: SubModel) => {
+        if (filterFunc(entity)) {
+          filteredResult.push(entity);
+        }
+      });
+      return filteredResult;
+    }
+    return entities;
   }
 
   async getEntitiesFromCache(

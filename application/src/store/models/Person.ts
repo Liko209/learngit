@@ -98,17 +98,23 @@ export default class PersonModel extends Base<Person> {
       return pseudoUserDisplayName;
     }
 
-    if (this.displayName) {
-      return this.displayName;
+    let dName = '';
+    if (this.firstName) {
+      dName += this.firstName;
     }
 
-    const personService = PersonService.getInstance<PersonService>();
-    return personService.generatePersonDisplayName(
-      this.displayName,
-      this.firstName,
-      this.lastName,
-      this.email,
-    );
+    if (this.lastName) {
+      if (dName.length > 0) {
+        dName += ' ';
+      }
+      dName += this.lastName;
+    }
+
+    if (dName.length === 0) {
+      dName = this.email;
+    }
+
+    return dName;
   }
 
   @computed

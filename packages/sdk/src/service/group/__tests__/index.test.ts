@@ -13,19 +13,21 @@ import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
 import { ErrorParser, BaseError, TypeDictionary } from '../../../utils';
 import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
+import CompanyService from '../../company';
+import { Api } from '../../../api';
 
 jest.mock('../../../dao');
-// jest.mock('../../utils');
 jest.mock('../handleData');
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
+jest.mock('../../../service/company');
+jest.mock('../../../api/glip/group');
+
 const profileService = new ProfileService();
 const personService = new PersonService();
 const accountService = new AccountService();
-
-jest.mock('../../../api/glip/group');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -774,7 +776,7 @@ describe('GroupService', () => {
       accountService.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it("should return true when the person's conversion isfavorted", async () => {
-      const spy = jest.spyOn(groupService, 'getLocalGroupByMemberIdList');
+      const spy = jest.spyOn(groupService, 'getLocalGroup');
       const ids: number[] = [personId, curUserId];
       spy.mockResolvedValueOnce(favGroup);
       const res = await groupService.isFavorited(
@@ -785,9 +787,7 @@ describe('GroupService', () => {
     });
 
     it('should return false when local has no conversation with the person', async () => {
-      jest
-        .spyOn(groupService, 'getLocalGroupByMemberIdList')
-        .mockResolvedValue(null);
+      jest.spyOn(groupService, 'getLocalGroup').mockResolvedValue(null);
 
       const res = await groupService.isFavorited(
         personId,
@@ -847,13 +847,9 @@ describe('GroupService', () => {
     });
   });
 
-  describe('isAdminOfTheGroup', async () => {
-    it('shuld return true if this is not a team', async () => {
-      expect(groupService.isAdminOfTheGroup(false, undefined, 11)).toBeTruthy;
-    });
-
+  describe('isTeamAdmin', async () => {
     it('should return true if no team permission model', async () => {
-      expect(groupService.isAdminOfTheGroup(true, undefined, 11)).toBeTruthy;
+      expect(groupService.isTeamAdmin(11, undefined)).toBeTruthy;
     });
 
     it('should return true if person is in admin id list', async () => {
@@ -867,10 +863,53 @@ describe('GroupService', () => {
           level: 15,
         },
       };
-      expect(groupService.isAdminOfTheGroup(true, permission, 1)).toBeTruthy;
-      expect(groupService.isAdminOfTheGroup(true, permission, 2)).toBeTruthy;
-      expect(groupService.isAdminOfTheGroup(true, permission, 3)).toBeTruthy;
-      expect(groupService.isAdminOfTheGroup(true, permission, 3)).toBeFalsy;
+      expect(groupService.isTeamAdmin(1, permission)).toBeTruthy;
+      expect(groupService.isTeamAdmin(2, permission)).toBeTruthy;
+      expect(groupService.isTeamAdmin(3, permission)).toBeTruthy;
+      expect(groupService.isTeamAdmin(4, permission)).toBeFalsy;
+    });
+  });
+
+  describe('getGroupEmail', () => {
+    const envDomain = 'aws13-g04-uds02.asialab.glip.net';
+    const config = {
+      glip: {
+        server: `https://${envDomain}:11904`,
+        cacheServer: 'https://aws13-g04-uds02.asialab.glip.net:11907',
+      },
+    };
+
+    const companyReplyDomain = 'companyDomain';
+    const companyService = new CompanyService();
+    beforeEach(() => {
+      CompanyService.getInstance = jest.fn().mockReturnValue(companyService);
+      companyService.getCompanyEmailDomain.mockResolvedValueOnce(
+        companyReplyDomain,
+      );
+
+      Object.assign(Api, {
+        _httpConfig: config,
+      });
+    });
+
+    it('should return email address combined with group abbreviation, company domian, env domain', async () => {
+      const group = { id: 1, email_friendly_abbreviation: 'group' };
+      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+
+      const res = await groupService.getGroupEmail(group.id);
+      expect(res).toBe(
+        `${
+          group.email_friendly_abbreviation
+        }@${companyReplyDomain}.${envDomain}`,
+      );
+    });
+
+    it('should return email address combined with group id, company domian, env domain', async () => {
+      const group = { id: 1 };
+      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+
+      const res = await groupService.getGroupEmail(group.id);
+      expect(res).toBe(`${group.id}@${companyReplyDomain}.${envDomain}`);
     });
   });
 });
