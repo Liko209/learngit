@@ -19,6 +19,11 @@ describe('SortableGroupMemberHandler', async () => {
     GroupService.getInstance = jest.fn().mockReturnValue(groupService);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+  });
+
   it('should return SortableGroupMemberHandler', async () => {
     const groupId = 3;
     const group = { id: groupId };
@@ -29,13 +34,12 @@ describe('SortableGroupMemberHandler', async () => {
     ];
     groupService.getGroupById.mockResolvedValue(group);
     personService.getPersonsByGroupId.mockResolvedValue(persons);
-    const res: SortableGroupMemberHandler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
+    const res = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
       groupId,
     );
+    expect(res).not.toBeNull();
     expect(res).toBeInstanceOf(SortableGroupMemberHandler);
     expect(res.getSortedGroupMembersIds()).toEqual([]);
     expect(personService.getPersonsByGroupId).toBeCalledWith(groupId);
   });
-
-  it('should receive change and get group members', async () => {});
 });
