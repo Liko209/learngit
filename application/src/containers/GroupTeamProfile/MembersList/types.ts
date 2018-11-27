@@ -4,16 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { WithNamespaces } from 'react-i18next';
-import PersonModel from '@/store/models/Person';
-import { ID_TYPE } from '../types';
+import { ProfileType } from '../types';
 
 type MemberListViewProps = WithNamespaces & {
-  membersList: PersonModel[];
-  idType: ID_TYPE;
-  isThePersonAdmins: boolean[];
-  isThePersonGuests: boolean[];
+  memberIds: number[];
+  gid: number;
 };
 type MemberListProps = {
   id: number;
+  type: ProfileType;
 };
 export { MemberListViewProps, MemberListProps };

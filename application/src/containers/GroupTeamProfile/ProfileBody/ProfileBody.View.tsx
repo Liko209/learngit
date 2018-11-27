@@ -6,13 +6,16 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
-import { JuiGroupProfileBody, StyledMessageBtn } from 'jui/pattern/GroupTeamProfile';
+import {
+  JuiGroupProfileBody,
+  StyledMessageBtn,
+} from 'jui/pattern/GroupTeamProfile';
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Avatar } from '@/containers/Avatar';
 import { ProfileHeaderViewProps } from './types';
 import { JumpToConversation } from '../../JumpToConversation';
 import { JuiIconography } from 'jui/foundation/Iconography';
-import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
+import { CONVERSATION_TYPES } from '@/constants';
 
 @observer
 class ProfileBody extends React.Component<ProfileHeaderViewProps> {
@@ -25,12 +28,22 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
     );
   }
   render() {
-    const { displayName, description, id, idType, destroy } = this.props;
-    const message = <JumpToConversation id={id} onSuccess={destroy}>{this.renderMessageBtn()}</JumpToConversation>;
+    const { displayName, description, id, type, destroy } = this.props;
+    const message = (
+      <JumpToConversation id={id} onSuccess={destroy}>
+        {this.renderMessageBtn()}
+      </JumpToConversation>
+    );
     let avatar;
-    if (idType === TypeDictionary.TYPE_ID_GROUP || idType === TypeDictionary.TYPE_ID_TEAM) {
+    if (
+      type === CONVERSATION_TYPES.NORMAL_GROUP ||
+      type === CONVERSATION_TYPES.TEAM
+    ) {
       avatar = <GroupAvatar cid={id} />;
-    } else if (idType === TypeDictionary.TYPE_ID_PERSON) {
+    } else if (
+      type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ||
+      type === CONVERSATION_TYPES.ME
+    ) {
       avatar = <Avatar uid={id} />;
     }
     return (

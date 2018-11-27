@@ -1,3 +1,8 @@
+/*
+ * @Author: Alvin Huang (alvin.huang@ringcentral.com)
+ * @Date: 2018-11-27 14:33:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { width, palette } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
 

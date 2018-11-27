@@ -6,15 +6,11 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { computed } from 'mobx';
 import { ProfileBodyProps } from './types';
-import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
-import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { CONVERSATION_TYPES } from '@/constants';
 
 class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
-  constructor() {
-    super();
-  }
   @computed
   get id() {
     return this.props.id;
@@ -29,19 +25,15 @@ class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   }
   @computed
   private get _profileData() {
-    switch (this.idType) {
-      case TypeDictionary.TYPE_ID_GROUP:
-      case TypeDictionary.TYPE_ID_TEAM:
+    switch (this.props.type) {
+      case CONVERSATION_TYPES.NORMAL_GROUP:
+      case CONVERSATION_TYPES.TEAM:
         return this._group;
-      case TypeDictionary.TYPE_ID_PERSON:
+      case CONVERSATION_TYPES.NORMAL_ONE_TO_ONE:
         return this._person;
       default:
         return this._group;
     }
-  }
-  @computed
-  get idType() {
-    return GlipTypeUtil.extractTypeId(this.id);
   }
   @computed
   get displayName() {

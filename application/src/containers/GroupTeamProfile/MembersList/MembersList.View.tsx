@@ -7,32 +7,20 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
 import {
-  JuiGroupProfileList,
-  StyledGuestIdentifier,
-  StyledAdminIdentifier,
   StyledList,
 } from 'jui/pattern/GroupTeamProfile';
-import { Avatar } from '@/containers/Avatar';
 import { MemberListViewProps } from './types';
+import { MembersItem } from './MembersItem';
 
 @observer
-class MembersList extends React.Component<MemberListViewProps> {
+class MembersList extends React.PureComponent<MemberListViewProps> {
   render() {
-    const { membersList, isThePersonAdmins, isThePersonGuests, t } = this.props;
+    const { memberIds, gid } = this.props;
     return (
       <StyledList>
-        {membersList.map((item: any, idx: number) => {
+        {memberIds.map((id: number, index: number) => {
           return (
-            <JuiGroupProfileList key={idx}>
-              <Avatar uid={item.id} />
-              {item.userDisplayName}
-              {isThePersonGuests[idx] ? (
-                <StyledGuestIdentifier>{t('Guest')}</StyledGuestIdentifier>
-              ) : null}
-              {isThePersonAdmins[idx] ? (
-                <StyledAdminIdentifier>{t('Admin')}</StyledAdminIdentifier>
-              ) : null}
-            </JuiGroupProfileList>
+            <MembersItem key={index} gid={gid} pid={id}/>
           );
         })}
       </StyledList>

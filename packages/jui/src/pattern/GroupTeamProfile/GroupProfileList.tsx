@@ -23,8 +23,8 @@ const StyledItem = styled.li`
     margin-bottom: ${spacing(11)};
   }
   div {
-    margin-right: ${spacing(3.5)};
-    margin-left: ${spacing(6)};
+    margin-right: ${spacing(1)};
+    margin-left: ${spacing(3)};
   }
 `;
 

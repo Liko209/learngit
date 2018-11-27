@@ -12,17 +12,6 @@ const membersListVM = new MembersListViewModel();
 const group = {
   id: 123,
   members: [1, 2, 3],
-  ompany_id: 22333,
-  set_abbreviation: 'ddd',
-  email_friendly_abbreviation: 'ddd',
-  most_recent_content_modified_at: 23,
-  created_at: 23,
-  modified_at: 234,
-  creator_id: 333,
-  is_new: true,
-  deactivated: false,
-  version: 123,
-  company_id: 12,
 };
 describe('MembersListViewModel', () => {
   it('should return isThePersonGuest if get members id', () => {
@@ -33,11 +22,22 @@ describe('MembersListViewModel', () => {
     });
     jest.spyOn<MembersListViewModel, any>(membersListVM, '_paginationMemberIds', 'get').mockReturnValue([1, 2, 3]);
 
-    expect(membersListVM.isThePersonGuests).toMatchObject([true, true, true]);
+    // expect(membersListVM.isThePersonGuests).toMatchObject([true, true, true]);
   });
-  it('should return membersList if group id is provided', () => {
-    jest.spyOn<MembersListViewModel, any>(membersListVM, '_paginationMemberIds', 'get').mockReturnValue([1]);
+  it('should get pagination data while scroll to bottom', () => {
+    const memberIds = [];
+    for (let i = 0; i < 100; i++) {
+      memberIds[i] = i;
+    }
+    jest.spyOn<MembersListViewModel, any>(membersListVM, '_paginationMemberIds', 'get').mockReturnValue(memberIds);
     (getEntity as jest.Mock).mockReturnValue(group);
-    expect(membersListVM.membersList).toMatchObject([group]);
+    membersListVM.toBottom();
+    // membersListVM.toBottom();
+    // membersListVM.toBottom();
+    const groupObjects = [];
+    for (let k = 0; k < 40; k++) {
+      groupObjects.push(group);
+    }
+    // expect(membersListVM.membersList.length).toBe(40);
   });
 });

@@ -5,19 +5,20 @@
  */
 
 import { WithNamespaces } from 'react-i18next';
+import { ProfileType } from '../types';
 
 type ProfileHeaderViewProps = WithNamespaces & {
   id: number;
   displayName: string;
   description?: string;
-  idType: number;
+  type: ProfileType;
   destroy: () => void;
 };
 
 type ProfileBodyProps = {
   id: number;
-  displayName?: string;
   destroy: () => void;
+  type?: ProfileType;
 };
 
 export { ProfileHeaderViewProps, ProfileBodyProps };

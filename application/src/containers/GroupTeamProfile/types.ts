@@ -4,14 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { WithNamespaces } from 'react-i18next';
+import { CONVERSATION_TYPES } from '@/constants';
 
+type ProfileType = CONVERSATION_TYPES;
 type GroupTeamProps = WithNamespaces & {
   destroy: () => void;
   id: number;
+  type: ProfileType;
 };
-enum ID_TYPE  {
-  TEAM = 'TEAM',
-  GROUP = 'GROUP',
-  PERSON = 'PERSON',
-}
-export { GroupTeamProps, ID_TYPE };
+export { GroupTeamProps, ProfileType };

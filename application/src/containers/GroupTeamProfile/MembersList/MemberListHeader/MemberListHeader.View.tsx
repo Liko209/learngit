@@ -7,16 +7,16 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
 import { MemberListHeaderViewProps, GROUP_LIST_TITLE } from './types';
-import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 import { StyledTitle } from 'jui/pattern/GroupTeamProfile';
+import { CONVERSATION_TYPES } from '@/constants';
 
 @observer
 class MemberListHeader extends React.Component<MemberListHeaderViewProps> {
   render() {
-    const { counts, idType, t } = this.props;
+    const { counts, type, t } = this.props;
     return (
       <StyledTitle>
-        {idType === TypeDictionary.TYPE_ID_TEAM
+        {type === CONVERSATION_TYPES.TEAM
           ? `${t(GROUP_LIST_TITLE.TEAM_MEMBERS)} (${counts})`
           : `${t(GROUP_LIST_TITLE.GROUP_MEMBERS)} (${counts})`}
       </StyledTitle>

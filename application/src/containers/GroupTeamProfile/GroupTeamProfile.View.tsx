@@ -11,7 +11,8 @@ import { MembersList } from './MembersList';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileBody } from './ProfileBody';
 import { MemberListHeader } from './MembersList/MemberListHeader';
-import { StyledProfileView, StyledBottomBar } from 'jui/pattern/GroupTeamProfile';
+import { StyledBottomBar, StyledProfileView } from 'jui/pattern/GroupTeamProfile';
+import { CONVERSATION_TYPES } from '@/constants';
 
 @observer
 class GroupTeamProfile extends React.Component<GroupTeamProps> {
@@ -19,14 +20,21 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
     const {
       destroy,
       id,
+      type,
     } = this.props;
     return (
       <StyledProfileView>
         <ProfileHeader destroy={destroy} id={id} />
-        <ProfileBody id={id} destroy={destroy}/>
-        <MemberListHeader id={id}/>
-        <MembersList id={id}/>
-        <StyledBottomBar />
+        <ProfileBody id={id} destroy={destroy} type={type} />
+        {
+          type === CONVERSATION_TYPES.TEAM || type === CONVERSATION_TYPES.NORMAL_GROUP ? (
+           <>
+             <MemberListHeader id={id} type={type}/>
+             <MembersList id={id} type={type}/>
+             <StyledBottomBar />
+           </>
+          ) : null
+        }
       </StyledProfileView>
     );
   }
