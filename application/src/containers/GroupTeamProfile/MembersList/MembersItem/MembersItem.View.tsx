@@ -18,15 +18,15 @@ import { MembersViewProps } from './types';
 
 type Props = WithNamespaces & MembersViewProps;
 @observer
-class MembersItem extends React.PureComponent<Props> {
+class MembersItem extends React.Component<Props> {
   private _presence = (id: number) => {
     return <Presence uid={id} borderSize="medium" />;
   }
   render() {
-    const { pid, member, t, isThePersonGuest, isThePersonAdmin } = this.props;
+    const { uid, member, t, isThePersonGuest, isThePersonAdmin } = this.props;
     return (
       <JuiGroupProfileList>
-        <Avatar uid={pid} presence={this._presence(pid)} />
+        <Avatar uid={uid} presence={this._presence(uid)} />
         <StyledName>{member.userDisplayName}</StyledName>
         {isThePersonGuest ? (
           <StyledGuestIdentifier>{t('Guest')}</StyledGuestIdentifier>

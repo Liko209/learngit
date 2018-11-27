@@ -13,14 +13,14 @@ import { MemberListViewProps } from './types';
 import { MembersItem } from './MembersItem';
 
 @observer
-class MembersList extends React.PureComponent<MemberListViewProps> {
+class MembersList extends React.Component<MemberListViewProps> {
   render() {
     const { memberIds, gid } = this.props;
     return (
       <StyledList>
-        {memberIds.map((id: number, index: number) => {
+        {memberIds.map((id: number) => {
           return (
-            <MembersItem key={index} gid={gid} pid={id}/>
+            <MembersItem key={id} gid={gid} uid={id}/>
           );
         })}
       </StyledList>

@@ -6,15 +6,14 @@
 import PersonModel from '@/store/models/Person';
 
 type MembersViewProps = {
-  pid: number;
-  gid: number;
+  uid: number;
   member: PersonModel;
   isThePersonGuest: boolean;
   isThePersonAdmin: boolean;
 };
 type MembersItemProps = {
   gid: number;
-  pid: number;
+  uid: number;
 };
 
 export { MembersViewProps, MembersItemProps };

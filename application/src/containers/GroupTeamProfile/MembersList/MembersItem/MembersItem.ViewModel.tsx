@@ -11,8 +11,8 @@ import { MembersItemProps } from './types';
 
 class MembersItemViewModel extends StoreViewModel<MembersItemProps> {
   @computed
-  private get _pid() {
-    return this.props.pid;
+  private get _uid() {
+    return this.props.uid;
   }
   @computed
   private get _gid() {
@@ -24,15 +24,15 @@ class MembersItemViewModel extends StoreViewModel<MembersItemProps> {
   }
   @computed
   get isThePersonGuest() {
-    return this._group.isThePersonGuest(this._pid);
+    return this._group.isThePersonGuest(this._uid);
   }
   @computed
   get isThePersonAdmin() {
-    return this._group.isThePersonAdmin(this._pid);
+    return this._group.isThePersonAdmin(this._uid);
   }
   @computed
   get member() {
-    return getEntity(ENTITY_NAME.PERSON, this._pid);
+    return getEntity(ENTITY_NAME.PERSON, this._uid);
   }
 }
 export { MembersItemViewModel };

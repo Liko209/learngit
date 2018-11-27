@@ -16,7 +16,7 @@ class MemberListHeaderViewModel extends StoreViewModel<MemberListHeaderProps> {
   }
   @computed
   get counts() {
-    return this._group && this._group.members.length;
+    return this._group.members.length;
   }
 }
 export { MemberListHeaderViewModel };

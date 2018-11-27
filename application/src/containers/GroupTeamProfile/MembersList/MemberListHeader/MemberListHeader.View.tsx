@@ -6,7 +6,7 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
-import { MemberListHeaderViewProps, GROUP_LIST_TITLE } from './types';
+import { MemberListHeaderViewProps } from './types';
 import { StyledTitle } from 'jui/pattern/GroupTeamProfile';
 import { CONVERSATION_TYPES } from '@/constants';
 
@@ -17,8 +17,8 @@ class MemberListHeader extends React.Component<MemberListHeaderViewProps> {
     return (
       <StyledTitle>
         {type === CONVERSATION_TYPES.TEAM
-          ? `${t(GROUP_LIST_TITLE.TEAM_MEMBERS)} (${counts})`
-          : `${t(GROUP_LIST_TITLE.GROUP_MEMBERS)} (${counts})`}
+          ? `${t('Team Members')} (${counts})`
+          : `${t('Group Members')} (${counts})`}
       </StyledTitle>
     );
   }

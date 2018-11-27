@@ -7,7 +7,7 @@ import { getEntity } from '../../../../../store/utils';
 import { MembersItemViewModel } from '../MembersItem.ViewModel';
 import { CONVERSATION_TYPES } from '@/constants';
 
-const membersItemViewModel = new MembersItemViewModel({ pid: 123, gid: 123456 });
+const membersItemViewModel = new MembersItemViewModel({ uid: 123, gid: 123456 });
 
 jest.mock('../../../../../store/utils');
 function mockReturnGuest(isGuest: boolean) {

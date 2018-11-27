@@ -12,6 +12,6 @@ type MemberListViewProps = WithNamespaces & {
 };
 type MemberListProps = {
   id: number;
-  type: ProfileType;
+  type?: ProfileType;
 };
 export { MemberListViewProps, MemberListProps };

@@ -1,9 +1,11 @@
 import styled from '../../foundation/styled-components';
-import { grey, spacing, typography } from '../../foundation/utils';
+import { grey, height, spacing, typography } from '../../foundation/utils';
 
 const StyledTitle = styled.p`
   ${typography('subheading')};
   color: ${grey('900')};
-  margin-left: ${spacing(6)};
+  height: ${height(12.5)};
+  margin: 0 0 0 ${spacing(6)};
+  line-height: ${height(12.5)};
 `;
 export { StyledTitle };
