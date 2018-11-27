@@ -112,7 +112,7 @@ export default class MultiEntityMapStore<
       if (!model) {
         this.set(entity);
       } else {
-        // this._partialUpdate(entity, entity.id);
+        this._partialUpdate(entity, entity.id);
       }
     });
   }

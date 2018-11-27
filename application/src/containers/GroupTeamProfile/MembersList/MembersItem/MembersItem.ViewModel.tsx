@@ -8,7 +8,6 @@ import { computed } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { MembersItemProps } from './types';
-import { CONVERSATION_TYPES } from '@/constants';
 
 class MembersItemViewModel extends StoreViewModel<MembersItemProps> {
   @computed
@@ -29,10 +28,7 @@ class MembersItemViewModel extends StoreViewModel<MembersItemProps> {
   }
   @computed
   get isThePersonAdmin() {
-    if (this._group.type === CONVERSATION_TYPES.TEAM) {
-      return this._group.isThePersonAdmin(this._pid);
-    }
-    return false;
+    return this._group.isThePersonAdmin(this._pid);
   }
   @computed
   get member() {
