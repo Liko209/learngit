@@ -19,6 +19,9 @@ class ErrorParser {
   static parse(err: any): BaseError {
     // need refactor ** +1
     // if (!err) return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Server Crash');
+    if (err instanceof BaseError) {
+      return err;
+    }
     if (err instanceof DBCriticalError) {
       return new BaseError(ErrorTypes.DB_CRITICAL_ERROR, err.message);
     }
