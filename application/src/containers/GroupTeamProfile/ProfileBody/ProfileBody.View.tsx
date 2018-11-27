@@ -6,25 +6,14 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
-import { JuiGroupProfileBody } from 'jui/pattern/GroupTeamProfile';
+import { JuiGroupProfileBody, StyledMessageBtn } from 'jui/pattern/GroupTeamProfile';
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Avatar } from '@/containers/Avatar';
 import { ProfileHeaderViewProps } from './types';
 import { JumpToConversation } from '../../JumpToConversation';
 import { JuiIconography } from 'jui/foundation/Iconography';
-import styled from 'jui/foundation/styled-components';
-import { spacing } from 'jui/foundation/utils';
 import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 
-const StyledMessageBtn = styled.div`
-  display: flex;
-  color: ${({ theme }) => theme.palette.primary.main};
-  font-size: ${({ theme }) => theme.typography.body1.fontSize};
-  span {
-    font-size: ${({ theme }) => theme.typography.h6.fontSize};
-    margin-right: ${spacing(3)};
-  }
-`;
 @observer
 class ProfileBody extends React.Component<ProfileHeaderViewProps> {
   renderMessageBtn = () => {

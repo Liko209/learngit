@@ -7,18 +7,9 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
 import { MemberListHeaderViewProps, GROUP_LIST_TITLE } from './types';
-import styled from 'jui/foundation/styled-components';
-import {
-  spacing,
-  grey,
-  typography,
-} from 'jui/foundation/utils/styles';
 import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
-const StyledTitle = styled.p`
-  ${typography('subheading')};
-  color: ${grey('900')};
-  margin-left: ${spacing(6)};
-`;
+import { StyledTitle } from 'jui/pattern/GroupTeamProfile';
+
 @observer
 class MemberListHeader extends React.Component<MemberListHeaderViewProps> {
   render() {

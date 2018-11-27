@@ -15,7 +15,6 @@ import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { MouseEvent } from 'react';
 import { CONVERSATION_TYPES } from '@/constants';
 
 const globalStore = storeManager.getGlobalStore();
@@ -90,8 +89,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
     );
   }
   @action
-  handleGlobalGroupId = (event: MouseEvent<HTMLElement>) => {
-    this.onClose(event);
+  handleGlobalGroupId = () => {
     globalStore.set(GLOBAL_KEYS.GROUP_OR_TEAM_ID, this.groupId);
   }
   @computed

@@ -7,3 +7,8 @@ export * from './GroupProfileHeader';
 export * from './GroupProfileBody';
 export * from './GroupProfileList';
 export * from './MoreIcons';
+export * from './GroupProfileView';
+export * from './MemberListHeader';
+export * from './MessageBtn';
+export * from './MembersIdenfier';
+export * from './MemberList';
