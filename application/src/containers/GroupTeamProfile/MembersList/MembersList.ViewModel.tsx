@@ -17,7 +17,7 @@ class MembersListViewModel extends StoreViewModel<MemberListProps> {
   private _allMemberIds: number[] = [];
   @observable
   private _pagination: number = 1;
-  private _PAGE_COUNT = 30;
+  private _PAGE_COUNT = 20;
   constructor() {
     super();
     this.toBottom = this.toBottom.bind(this);
