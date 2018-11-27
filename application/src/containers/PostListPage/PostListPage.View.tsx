@@ -27,7 +27,7 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
           data-test-automation-id="post-list-page-header"
           title={t(caption)}
         />
-        {ids ? <Stream postIds={ids} type={type} /> : null}
+        {ids ? <Stream postIds={ids} type={type} key={type} /> : null}
       </JuiConversationPage>
     );
   }
