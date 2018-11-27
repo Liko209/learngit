@@ -69,7 +69,7 @@ describe('groupConfig Dao', async () => {
     });
   });
 
-  describe.only('isNewestSaved', () => {
+  describe('isNewestSaved', () => {
     it('should return false if item not exists', async () => {
       await expect(groupConfigDao.isNewestSaved(123)).resolves.toBe(false);
     });

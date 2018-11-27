@@ -99,18 +99,8 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       }
 
       return natureCompare(
-        personService.generatePersonDisplayName(
-          lPerson.display_name,
-          lPerson.first_name,
-          lPerson.last_name,
-          lPerson.email,
-        ),
-        personService.generatePersonDisplayName(
-          rPerson.display_name,
-          rPerson.first_name,
-          rPerson.last_name,
-          rPerson.email,
-        ),
+        personService.getFullName(lPerson),
+        personService.getFullName(rPerson),
       );
     };
 

@@ -118,35 +118,6 @@ class PersonService extends BaseService<Person> {
     return actionMap;
   }
 
-  generatePersonDisplayName(
-    displayName: string | undefined,
-    firstName: string | undefined,
-    lastName: string | undefined,
-    email: string,
-  ) {
-    if (displayName) {
-      return displayName;
-    }
-
-    let name = '';
-    if (firstName) {
-      name += firstName;
-    }
-
-    if (lastName) {
-      if (name.length > 0) {
-        name += ' ';
-      }
-      name += lastName;
-    }
-
-    if (name.length === 0) {
-      name = email;
-    }
-
-    return name;
-  }
-
   async doFuzzySearchPersons(
     searchKey?: string,
     excludeSelf?: boolean,
