@@ -171,22 +171,35 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _viewedPostFactory(streamItem: StreamItem) {
-    return (
-      <VisibilitySensor
-        key={`VisibilitySensor${streamItem.value}`}
-        offset={VISIBILITY_SENSOR_OFFSET}
-        onChange={this._handleFirstUnreadPostVisibilityChange}
-      >
-        <ConversationPost
-          ref={this._setPostRef}
-          id={streamItem.value}
-          key={`VisibilitySensor${streamItem.value}`}
-        />
-      </VisibilitySensor>
+    return this._visibilityPostWrapper(
+      this._handleFirstUnreadPostVisibilityChange,
+      streamItem,
     );
   }
 
   private _mostRecentPostFactory(streamItem: StreamItem) {
+    return this._visibilityPostWrapper(
+      this._handleMostRecentPostRead,
+      streamItem,
+    );
+  }
+
+  private _ordinaryPostFactory(streamItem: StreamItem) {
+    const { jumpToPostId, loading } = this.props;
+    return (
+      <ConversationPost
+        id={streamItem.value}
+        key={streamItem.value}
+        ref={this._setPostRef}
+        highlight={streamItem.value === jumpToPostId && !loading}
+      />
+    );
+  }
+  private _visibilityPostWrapper(
+    onChangeHandler: Function,
+    streamItem: StreamItem,
+  ) {
+    const { jumpToPostId, loading } = this.props;
     return (
       <VisibilitySensor
         key={`VisibilitySensor${streamItem.value}`}
@@ -196,21 +209,11 @@ class StreamViewComponent extends Component<Props> {
           ref={this._setPostRef}
           id={streamItem.value}
           key={`VisibilitySensor${streamItem.value}`}
+          highlight={streamItem.value === jumpToPostId && !loading}
         />
       </VisibilitySensor>
     );
   }
-
-  private _ordinaryPostFactory(streamItem: StreamItem) {
-    return (
-      <ConversationPost
-        id={streamItem.value}
-        key={streamItem.value}
-        ref={this._setPostRef}
-      />
-    );
-  }
-
   private get _streamItems() {
     return this.props.items.map(this._renderStreamItem.bind(this));
   }
@@ -244,7 +247,7 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    return (
+    return this.props.loading ? null : (
       <JuiStream>
         {this._jumpToFirstUnreadButton}
         {this._initialPost}

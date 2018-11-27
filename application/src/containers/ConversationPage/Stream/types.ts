@@ -66,6 +66,7 @@ type StreamViewProps = {
   clearHistoryUnread: () => void;
   historyUnreadCount: number;
   firstHistoryUnreadPostId?: number;
+  loading?: boolean;
 };
 type StreamSnapshot = {
   atBottom: boolean;

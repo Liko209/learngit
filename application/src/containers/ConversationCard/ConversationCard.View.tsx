@@ -53,6 +53,7 @@ export class ConversationCard extends React.Component<
       mode,
       post,
       hideText,
+      highlight,
       ...rest
     } = this.props;
     const { isHover } = this.state;
@@ -70,6 +71,7 @@ export class ConversationCard extends React.Component<
           onMouseEnter={this.handleMouseEnter}
           onMouseLeave={this.handleMouseLeave}
           mode={mode}
+          highlight={highlight}
           onClick={this.jumpToPost}
           {...rest}
         >

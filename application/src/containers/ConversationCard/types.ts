@@ -8,10 +8,12 @@ import PersonModel from '@/store/models/Person';
 type ConversationCardProps = {
   id: number; // post id
   mode?: 'navigation';
+  highlight?: boolean;
 };
 
 type ConversationCardViewProps = {
   id: number;
+  highlight: boolean;
   post: PostModel;
   hideText: boolean;
   creator: PersonModel;

@@ -905,14 +905,14 @@ describe('PostService', () => {
     it('should not call send post when send empty message ', async () => {
       const g = { id: 44 };
       groupService.getGroupByMemberList.mockResolvedValue(g);
+      jest.spyOn(postService, 'sendPost');
 
       let result = await postService.newMessageWithPeopleIds([1, 2, 3], '   ');
       expect(result).toEqual({ id: 44 });
-
       result = await postService.newMessageWithPeopleIds([1, 2, 3], '');
       expect(result).toEqual({ id: 44 });
 
-      expect(jest.spyOn(postService, 'sendPost')).not.toBeCalled();
+      expect(postService.sendPost).not.toBeCalled();
     });
   });
 });

@@ -86,8 +86,8 @@ describe('StreamView', () => {
       const card1 = card.at(1);
 
       expect(card).toHaveLength(2);
-      expect(card0.props()).toEqual({ id: 1 });
-      expect(card1.props()).toEqual({ id: 2 });
+      expect(card0.props()).toEqual({ id: 1, highlight: false });
+      expect(card1.props()).toEqual({ id: 2, highlight: false });
       expect(card0.key()).toBe('1');
       expect(card1.key()).toBe('2');
     });

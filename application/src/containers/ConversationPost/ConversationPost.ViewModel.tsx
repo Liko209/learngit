@@ -29,6 +29,11 @@ class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
   }
 
   @computed
+  get highlight() {
+    return this.props.highlight || false;
+  }
+
+  @computed
   private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
   }
