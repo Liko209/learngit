@@ -49,6 +49,9 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
           onFocus={onFocus}
           onBlur={onBlur}
           inputRef={this._inputDom}
+          inputProps={{
+            maxLength: 200,
+          }}
           InputProps={{
             value,
             disableUnderline: true,

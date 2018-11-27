@@ -12,14 +12,20 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiSearchInput } from '../';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { text } from '@storybook/addon-knobs';
+import { text, boolean } from '@storybook/addon-knobs';
 
 storiesOf('Pattern/SearchBar', module)
   .addDecorator(withInfoDecorator(JuiSearchInput, { inline: true }))
   .add('SearchInput', () => {
+    const focus = boolean('focus', false);
     return (
       <div>
-        <JuiSearchInput />
+        <JuiSearchInput
+          focus={focus}
+          value=""
+          onChange={() => {}}
+          onClear={() => {}}
+        />
       </div>
     );
   });
