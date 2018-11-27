@@ -16,10 +16,8 @@ import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
 import GroupService from '../../group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
-import { NetworkResultOk } from '../../../api/NetworkResult';
-import { NetworkResultErr } from '../../../../../../../packages/sdk/src/api/NetworkResult';
-import { BaseError } from 'sdk/src/utils';
-
+import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
+import { BaseError } from '../../../utils';
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
 jest.mock('../../serviceManager');
@@ -30,7 +28,7 @@ jest.mock('../postStatusHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
 jest.mock('../../group');
-// PostAPI.getDataById = jest.fn();
+
 PostAPI.putDataById = jest.fn();
 PostAPI.requestByIds = jest.fn();
 
