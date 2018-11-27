@@ -53,7 +53,6 @@ import { compareName } from '../../utils/helper';
 import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
 import { isValidEmailAddress } from '../../utils/regexUtils';
 import { Api } from '../../api';
-import { TeamPermission } from 'sdk/service/group';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
