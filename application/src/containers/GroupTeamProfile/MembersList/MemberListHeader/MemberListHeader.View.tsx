@@ -17,8 +17,8 @@ class MemberListHeader extends React.Component<MemberListHeaderViewProps> {
     return (
       <StyledTitle>
         {type === CONVERSATION_TYPES.TEAM
-          ? `${t('Team Members')} (${counts})`
-          : `${t('Group Members')} (${counts})`}
+          ? `${t('TeamMembers')} (${counts})`
+          : `${t('GroupMembers')} (${counts})`}
       </StyledTitle>
     );
   }

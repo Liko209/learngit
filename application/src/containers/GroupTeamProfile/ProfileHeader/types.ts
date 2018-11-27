@@ -5,14 +5,16 @@
  */
 
 import { WithNamespaces } from 'react-i18next';
-import { DismissProps } from '../types';
+import { DismissProps, ProfileType } from '../types';
 
 type ProfileHeaderViewProps = WithNamespaces & {
   title?: string;
   groupId: number;
+  type: ProfileType;
 } & DismissProps;
 type ProfileHeaderProps = DismissProps & {
   title?: string;
   id: number;
+  type: ProfileType;
 };
 export { ProfileHeaderViewProps, ProfileHeaderProps };

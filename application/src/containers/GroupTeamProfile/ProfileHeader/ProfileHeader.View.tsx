@@ -18,6 +18,7 @@ class ProfileHeader extends React.Component<ProfileHeaderViewProps> {
       title = 'Profile',
       dismiss,
       groupId,
+      type,
       t,
     } = this.props;
     return (
@@ -25,7 +26,7 @@ class ProfileHeader extends React.Component<ProfileHeaderViewProps> {
         <JuiGroupProfileHeader title={t(title)} dismiss={dismiss}>
           <Privacy id={groupId} disableToolTip={true}/>
           <Favorite id={groupId} disableToolTip={true} isAction={false}/>
-          <MoreHorizIcon id={groupId}/>
+          <MoreHorizIcon id={groupId} type={type}/>
         </JuiGroupProfileHeader>
       </>
     );

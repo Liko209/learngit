@@ -26,6 +26,7 @@ type JuiIconButtonProps = {
   size?: IconButtonSize;
   color?: string;
   disableToolTip?: boolean;
+  ariaLabel?: string;
   innerRef?: RefObject<HTMLElement>;
 } & Omit<MuiIconButtonProps, 'color'> &
   Omit<MuiIconProps, 'color'>;
@@ -158,6 +159,7 @@ export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
     innerRef,
     color,
     disableToolTip = false,
+    ariaLabel,
     ...rest
   } = props;
   const { size, variant, awake, disabled, invisible } = rest;
@@ -185,6 +187,7 @@ export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
           disableRipple={rest.variant === 'plain'}
           colorScope={colorScope}
           colorName={colorName}
+          aria-label={ariaLabel}
           {...rest}
         >
           <StyledIcon

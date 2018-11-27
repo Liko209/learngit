@@ -75,5 +75,14 @@
   "markPublicServerErrorContent": "We weren't able to public this conversation. Try again.",
   "markPrivateServerErrorContent": "We weren't able to private this conversation. Try again.",
   "TeamMembers": "Team Members",
-  "GroupMembers": "Group Members"
+  "GroupMembers": "Group Members",
+  "checkMoreGroupOption": "Check more options you have with this group",
+  "checkMoreTeamOption": "Check more options you have with this team",
+  "copyGroupUrl": "Copy group's url",
+  "copyTeamUrl": "Copy team's url",
+  "copyProfileEmail": "copy email",
+  "copyProfileUrl": "copy url",
+  "Profile": "Profile",
+  "Guest": "Guest",
+  "Admin": "Admin"
 }

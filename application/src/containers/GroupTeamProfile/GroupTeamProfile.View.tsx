@@ -24,7 +24,7 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
     } = this.props;
     return (
       <StyledProfileView>
-        <ProfileHeader dismiss={dismiss} id={id} />
+        <ProfileHeader dismiss={dismiss} id={id} type={type} />
         <ProfileBody id={id} dismiss={dismiss} type={type} />
         {
           type === CONVERSATION_TYPES.TEAM || type === CONVERSATION_TYPES.NORMAL_GROUP ? (

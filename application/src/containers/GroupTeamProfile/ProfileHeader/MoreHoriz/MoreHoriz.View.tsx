@@ -9,19 +9,25 @@ import { JuiHorizMenu } from 'jui/pattern/GroupTeamProfile';
 import { JuiIconButton, JuiIconButtonProps } from 'jui/components/Buttons';
 import { translate, WithNamespaces } from 'react-i18next';
 import copy from 'copy-to-clipboard';
+import { CONVERSATION_TYPES } from '@/constants';
+import { accessHandler } from './AccessHandler';
 
 type Props = WithNamespaces & {
   groupUrl: string;
   email: string;
+  type: CONVERSATION_TYPES;
 };
 @observer
 class MoreHoriz extends React.Component<Props> {
   private _onMenuClick = (moreMenuTriggerProps: JuiIconButtonProps) => {
+    const { t, type } = this.props;
+    const checkMoreOption = accessHandler(type).checkMoreOption;
     return (
       <JuiIconButton
         {...moreMenuTriggerProps}
         disableToolTip={true}
         size="medium"
+        ariaLabel={t(checkMoreOption)}
       >
         more_horiz
       </JuiIconButton>
@@ -36,18 +42,21 @@ class MoreHoriz extends React.Component<Props> {
     copy(groupUrl);
   }
   render() {
-    const { t } = this.props;
+    const { t, type } = this.props;
+    const { copyUrl } = accessHandler(type);
     return (
       <JuiHorizMenu
         className="horiz-menu"
         menuItems={[
           {
-            label: t('copy email'),
+            label: t('copyProfileEmail'),
             onClick: this._onEmailCopied,
+            ariaLabel: t(copyUrl),
           },
           {
-            label: t('copy url'),
+            label: t('copyProfileUrl'),
             onClick: this._onUrlCopied,
+            ariaLabel: t('copyUrl'),
           },
         ]}
         MenuExpandTrigger={this._onMenuClick}
