@@ -6,7 +6,7 @@
 
 import { BaseError } from '../BaseError';
 
-describe.only('BaseError', () => {
+describe('BaseError', () => {
   describe('constructor()', () => {
     it('should be instanceof Error', () => {
       const error = new BaseError(1, 'Something wrong happened.');

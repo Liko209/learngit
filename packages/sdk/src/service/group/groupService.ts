@@ -249,10 +249,11 @@ class GroupService extends BaseService<Group> {
       const path = group.is_team ? `/team/${group._id}` : `/group/${group._id}`;
 
       const result = await GroupAPI.pinPost(path, group);
-      const rawGroup = result.expect('Failed to pin post.');
 
-      const newGroup = await this.handleRawGroup(rawGroup);
-      return newGroup;
+      return result.match({
+        Ok: async rawGroup => await this.handleRawGroup(rawGroup),
+        Err: () => null,
+      });
     }
     return null;
   }
@@ -284,9 +285,9 @@ class GroupService extends BaseService<Group> {
 
   async addTeamMembers(groupId: number, memberIds: number[]) {
     const result = await GroupAPI.addTeamMembers(groupId, memberIds);
-    const rawGroup = result.expect('Failed to get new group');
+    const rawGroup = result.expect('Failed to add team members.');
     const newGroup = await this.handleRawGroup(rawGroup);
-    return ok(newGroup);
+    return newGroup;
   }
 
   async createTeam(
@@ -296,48 +297,48 @@ class GroupService extends BaseService<Group> {
     description: string,
     options: CreateTeamOptions = {},
   ): Promise<Result<Group | Raw<Group>>> {
-    try {
-      const {
-        isPublic = false,
-        canAddMember = false,
-        canPost = false,
-        canAddIntegrations = false,
-        canPin = false,
-      } = options;
-      const privacy = isPublic ? 'protected' : 'private';
-      const permissionFlags = {
-        TEAM_ADD_MEMBER: privacy === 'protected' ? true : canAddMember,
-        TEAM_POST: canPost,
-        TEAM_ADD_INTEGRATIONS: canPost ? canAddIntegrations : false,
-        TEAM_PIN_POST: canPost ? canPin : false,
-        TEAM_ADMIN: false,
-      };
-      const userPermissionMask = Permission.createPermissionsMask(
-        permissionFlags,
-      );
-      const team: Partial<GroupApiType> = {
-        privacy,
-        description,
-        set_abbreviation: name,
-        members: memberIds.concat(creator),
-        permissions: {
-          admin: {
-            uids: [creator],
-          },
-          user: {
-            uids: [],
-            level: userPermissionMask,
-          },
+    const {
+      isPublic = false,
+      canAddMember = false,
+      canPost = false,
+      canAddIntegrations = false,
+      canPin = false,
+    } = options;
+    const privacy = isPublic ? 'protected' : 'private';
+    const permissionFlags = {
+      TEAM_ADD_MEMBER: privacy === 'protected' ? true : canAddMember,
+      TEAM_POST: canPost,
+      TEAM_ADD_INTEGRATIONS: canPost ? canAddIntegrations : false,
+      TEAM_PIN_POST: canPost ? canPin : false,
+      TEAM_ADMIN: false,
+    };
+    const userPermissionMask = Permission.createPermissionsMask(
+      permissionFlags,
+    );
+    const team: Partial<GroupApiType> = {
+      privacy,
+      description,
+      set_abbreviation: name,
+      members: memberIds.concat(creator),
+      permissions: {
+        admin: {
+          uids: [creator],
         },
-      };
-      const result = await GroupAPI.createTeam(team);
-      const rawGroup = result.expect('Failed to create team.');
+        user: {
+          uids: [],
+          level: userPermissionMask,
+        },
+      },
+    };
+    const result = await GroupAPI.createTeam(team);
 
-      const newGroup = await this.handleRawGroup(rawGroup);
-      return ok(newGroup);
-    } catch (error) {
-      return err<Group>(this.handleCreateTeamError(error.data));
-    }
+    return result.match({
+      Ok: async (rawGroup: Raw<Group>) => {
+        const newGroup = await this.handleRawGroup(rawGroup);
+        return ok(newGroup);
+      },
+      Err: (resp: any) => err<Group>(this.handleCreateTeamError(resp.data)),
+    });
   }
 
   getGroupErrorCode(key: string) {

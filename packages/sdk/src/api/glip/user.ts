@@ -5,7 +5,6 @@
  */
 
 import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
-import { IResponse, IResponseError } from '../NetworkClient';
 import Api from '../api';
 import { GLIP_API } from './constants';
 import {
@@ -39,9 +38,6 @@ export type IndexDataModel = {
   client_config: IFlag;
   static_http_server: string;
 };
-
-type IndexResponse = IResponse<IndexDataModel & IResponseError>;
-
 /**
  * @param {string} rcAccessTokenData
  * @param {string} username
@@ -82,7 +78,7 @@ function indexData(params: object, requestConfig = {}, headers = {}) {
 }
 
 function initialData(params: object, requestConfig = {}, headers = {}) {
-  return Api.glipDesktopNetworkClient.get<IndexResponse>(
+  return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/initial',
     params,
     NETWORK_VIA.HTTP,
@@ -92,7 +88,7 @@ function initialData(params: object, requestConfig = {}, headers = {}) {
 }
 
 function remainingData(params: object, requestConfig = {}, headers = {}) {
-  return Api.glipDesktopNetworkClient.get<IndexResponse>(
+  return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/remaining',
     params,
     NETWORK_VIA.HTTP,

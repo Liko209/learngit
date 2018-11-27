@@ -1,4 +1,5 @@
 /// <reference path="../../../__tests__/types.d.ts" />
+import _ from 'lodash';
 import PersonService from '../../person';
 import ProfileService from '../../profile';
 import AccountService from '../../account';
@@ -6,13 +7,14 @@ import GroupAPI from '../../../api/glip/group';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../../constants';
 import GroupService from '../index';
 import { daoManager, AccountDao, GroupDao, ConfigDao } from '../../../dao';
-import { Group } from '../../../models';
+import { Group, Raw } from '../../../models';
 import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
 import { ErrorParser, BaseError } from '../../../utils';
 import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
+import { GroupErrorTypes } from '../groupService';
 
 jest.mock('../../../dao');
 // jest.mock('../../utils');
@@ -139,7 +141,7 @@ describe('GroupService', () => {
     expect(result3).toBeNull;
   });
 
-  it.only('requestRemoteGroupByMemberList()', async () => {
+  it('requestRemoteGroupByMemberList()', async () => {
     daoManager.getKVDao.mockReturnValue(accountDao);
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.get.mockResolvedValue(1); // userId
@@ -294,16 +296,16 @@ describe('GroupService', () => {
       groupService.canPinPost.mockReturnValue(true);
       groupDao.get.mockResolvedValue(mockGroup);
 
-      GroupAPI.pinPost.mockResolvedValueOnce({
-        data: { _id: 1, pinned_post_ids: [10] },
-      });
+      GroupAPI.pinPost.mockResolvedValueOnce(
+        new NetworkResultOk({ _id: 1, pinned_post_ids: [10] }, 200, {}),
+      );
       await handleData.mockResolvedValueOnce(null);
       let pinResult = await groupService.pinPost(10, 1, true);
       expect(pinResult.pinned_post_ids).toEqual([10]);
 
-      GroupAPI.pinPost.mockResolvedValueOnce({
-        data: { _id: 1, pinned_post_ids: [] },
-      });
+      GroupAPI.pinPost.mockResolvedValueOnce(
+        new NetworkResultOk({ _id: 1, pinned_post_ids: [] }, 200, {}),
+      );
       await handleData.mockResolvedValueOnce(null);
       pinResult = await groupService.pinPost(10, 1, false);
       console.log(pinResult);
@@ -343,10 +345,12 @@ describe('GroupService', () => {
       groupDao.get.mockResolvedValue(mockGroup);
       groupService.canPinPost.mockReturnValueOnce(true);
 
-      GroupAPI.pinPost.mockResolvedValueOnce({ error: {} });
+      GroupAPI.pinPost.mockResolvedValueOnce(
+        new NetworkResultErr(new BaseError(1, 'error'), 403, {}),
+      );
       const pinResult = await groupService.pinPost(11, 1, true);
 
-      expect(pinResult).toBe(undefined);
+      expect(pinResult).toBe(null);
 
       jest.clearAllMocks();
     });
@@ -358,7 +362,9 @@ describe('GroupService', () => {
     });
 
     it('should return api result if request success', async () => {
-      GroupAPI.addTeamMembers.mockResolvedValueOnce({ data: 122 });
+      GroupAPI.addTeamMembers.mockResolvedValueOnce(
+        new NetworkResultOk(122, 200, {}),
+      );
       jest
         .spyOn(require('../../utils'), 'transform')
         .mockImplementation(source => source + 1);
@@ -369,15 +375,13 @@ describe('GroupService', () => {
     it('should return null if request failed', async () => {
       jest.spyOn<GroupService, any>(groupService, 'handleRawGroup');
       groupService.handleRawGroup.mockImplementationOnce(() => {});
-      GroupAPI.addTeamMembers.mockResolvedValueOnce(null);
+
+      GroupAPI.addTeamMembers.mockResolvedValueOnce(
+        new NetworkResultOk(null, 403, {}),
+      );
 
       await groupService.addTeamMembers(1, []);
-      expect(groupService.handleRawGroup).not.toHaveBeenCalled();
-
-      GroupAPI.addTeamMembers.mockResolvedValueOnce({ data: null });
-
-      await groupService.addTeamMembers(1, []);
-      expect(groupService.handleRawGroup).toHaveBeenCalledWith({ data: null });
+      expect(groupService.handleRawGroup).toHaveBeenCalledWith(null);
     });
   });
 
@@ -398,17 +402,22 @@ describe('GroupService', () => {
       },
     };
     beforeEach(() => {
+      jest.restoreAllMocks();
       jest.clearAllMocks();
     });
 
     it('privacy should be protected if it is public', async () => {
-      jest.spyOn(groupService, 'handleResponse');
-      groupService.handleResponse.mockImplementationOnce(() => {});
+      jest.spyOn(groupService, 'handleRawGroup');
+      groupService.handleRawGroup.mockImplementationOnce(() => {});
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.createTeam.mockResolvedValue(
+        new NetworkResultOk(group, 200, {}),
+      );
       await groupService.createTeam('some team', 1323, [], 'abc', {
         isPublic: true,
       });
       expect(GroupAPI.createTeam).toHaveBeenCalledWith(
-        Object.assign({}, data, {
+        Object.assign({}, _.cloneDeep(data), {
           privacy: 'protected',
           permissions: {
             admin: {
@@ -421,12 +430,16 @@ describe('GroupService', () => {
           },
         }),
       );
-      expect(groupService.handleResponse).toHaveBeenCalled();
+      expect(groupService.handleRawGroup).toHaveBeenCalled();
     });
 
     it('data should have correct permission level if passed in options', async () => {
-      jest.spyOn(groupService, 'handleResponse');
-      groupService.handleResponse.mockImplementationOnce(() => {});
+      jest.spyOn(groupService, 'handleRawGroup');
+      groupService.handleRawGroup.mockImplementationOnce(() => {});
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.createTeam.mockResolvedValue(
+        new NetworkResultOk(group, 200, {}),
+      );
       await groupService.createTeam('some team', 1323, [], 'abc', {
         isPublic: true,
         canAddIntegrations: true,
@@ -435,7 +448,7 @@ describe('GroupService', () => {
         canPost: true,
       });
       expect(GroupAPI.createTeam).toHaveBeenCalledWith(
-        Object.assign({}, data, {
+        Object.assign({}, _.cloneDeep(data), {
           privacy: 'protected',
           permissions: {
             admin: {
@@ -451,22 +464,22 @@ describe('GroupService', () => {
     });
 
     it('should call dependency apis with correct data', async () => {
-      GroupAPI.createTeam.mockResolvedValueOnce({ data: 122 });
-      jest
-        .spyOn(require('../../utils'), 'transform')
-        .mockImplementation(source => source + 1);
       jest.spyOn(Permission, 'createPermissionsMask').mockReturnValue(100);
+
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.createTeam.mockResolvedValue(
+        new NetworkResultOk(group, 200, {}),
+      );
+
       const result = await groupService.createTeam(
         'some team',
         1323,
         [],
         'abc',
       );
-      if (result.isOk()) {
-        expect(result.data).toBe(123);
-      } else {
-        expect(1).toEqual(2);
-      }
+
+      expect(result.isOk()).toBeTruthy();
+      expect(result).toHaveProperty('data', group);
 
       expect(GroupAPI.createTeam).toHaveBeenCalledWith(data);
       expect(Permission.createPermissionsMask).toHaveBeenCalledWith({
@@ -479,23 +492,23 @@ describe('GroupService', () => {
     });
 
     it('should return error object if duplicate name', async () => {
-      const error = {
-        message: 'duplicate name',
-      };
-      GroupAPI.createTeam.mockResolvedValueOnce({
-        data: {
-          error,
-        },
-      });
-      const ret = await groupService.createTeam('some team', 1323, [], 'abc');
-      if (ret.isOk()) {
-        /**
-         * this is an error case, because of the code implementation is wrong
-         */
-        expect(ret.data).toEqual({ error });
-      } else {
-        expect(1).toBe(2);
-      }
+      const error = new BaseError(
+        GroupErrorTypes.ALREADY_TAKEN,
+        'Already taken',
+      );
+      GroupAPI.createTeam.mockResolvedValue(
+        new NetworkResultErr(error, 403, {}),
+      );
+
+      const result = await groupService.createTeam(
+        'some team',
+        1323,
+        [],
+        'abc',
+      );
+
+      expect(result.isErr()).toBeTruthy();
+      expect(result).toHaveProperty('error', error);
     });
   });
 
