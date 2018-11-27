@@ -18,7 +18,6 @@ import { SOCKET, SERVICE } from './eventKey';
 import _ from 'lodash';
 import EntityCacheManager from './entityCacheManager';
 import { EVENT_TYPES } from './constants';
-import { filter } from 'minimatch';
 
 const throwError = (text: string): never => {
   throw new Error(
