@@ -870,45 +870,41 @@ describe('PostService', () => {
     const accountDao = new AccountDao(null);
     daoManager.getKVDao.mockReturnValue(accountDao);
     accountDao.get.mockReturnValue(1); // userId
-    it('get group success then send post', async () => {
+    it('should get group success then send post', async () => {
       const g = { id: 44 };
-      groupService.getOrCreateGroupByMemberList.mockResolvedValue(g);
+      groupService.getGroupByMemberList.mockResolvedValue(g);
 
-      jest
-        .spyOn(postService, 'sendPost')
-        .mockResolvedValue([{ id: 10, data: 'good' }]);
+      const msg = '  text message  ';
+      const spy = jest.spyOn(postService, 'sendPost');
+      spy.mockResolvedValue([{ id: 10, data: 'good' }]);
+      const result = await postService.newMessageWithPeopleIds([1, 2, 3], msg);
 
-      const result = await postService.newMessageWithPeopleIds(
-        [1, 2, 3],
-        'text message',
-      );
-
+      expect(spy).toBeCalledWith({ groupId: g.id, text: msg });
       expect(result).toEqual({ id: 44 });
     });
 
-    it('get group failed', async () => {
+    it('should not call send post when get group failed', async () => {
       const spy = jest.spyOn(postService, 'sendPost');
-      expect(spy).not.toBeCalled();
-      groupService.getOrCreateGroupByMemberList.mockResolvedValue(null);
+      groupService.getGroupByMemberList.mockResolvedValue(null);
       const result = await postService.newMessageWithPeopleIds(
         [1, 2, 3],
         'text message',
       );
+      expect(spy).not.toBeCalled();
       expect(result).toBeUndefined;
     });
 
-    it('send invalid message with people', async () => {
+    it('should not call send post when send empty message ', async () => {
       const g = { id: 44 };
-
-      groupService.getOrCreateGroupByMemberList.mockResolvedValue(g);
-
-      expect(jest.spyOn(postService, 'sendPost')).not.toBeCalled();
+      groupService.getGroupByMemberList.mockResolvedValue(g);
 
       let result = await postService.newMessageWithPeopleIds([1, 2, 3], '   ');
       expect(result).toEqual({ id: 44 });
 
       result = await postService.newMessageWithPeopleIds([1, 2, 3], '');
       expect(result).toEqual({ id: 44 });
+
+      expect(jest.spyOn(postService, 'sendPost')).not.toBeCalled();
     });
   });
 });

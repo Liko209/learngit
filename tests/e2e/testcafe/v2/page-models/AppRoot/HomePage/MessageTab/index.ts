@@ -215,7 +215,7 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
-export class MessagePanel extends BaseWebComponent {
+export class MessageTab extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
     return this.getSelectorByAutomationId('leftRail').parent(1);
