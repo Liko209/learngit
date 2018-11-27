@@ -101,7 +101,7 @@ test(formalName('Check the new team can be created successfully', ['P1', 'JPT-12
   async t => {
     const app = new AppRoot(t);
     const user = h(t).rcData.mainCompany.users[0];
-    const uid = uuid();
+    const teamName = `Team ${uuid()}`;
 
     await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
@@ -120,7 +120,7 @@ test(formalName('Check the new team can be created successfully', ['P1', 'JPT-12
     });
 
     await h(t).withLog('Then I can input team name randomly', async () => {
-      await createTeamModal.inputTeamNameRandom(uid);
+      await createTeamModal.setTeamName(teamName);
     });
 
     await h(t).withLog('Then I can set the team as Public', async () => {
@@ -138,7 +138,38 @@ test(formalName('Check the new team can be created successfully', ['P1', 'JPT-12
     await h(t).withLog('Then Check the created team', async () => {
       const teamSection = app.homePage.messageTab.teamsSection;
       await teamSection.expand();
-      await t.expect(teamSection.conversations.withText(`${uid}`).exists).ok();
+      await t.expect(teamSection.conversations.withText(`${teamName}`).exists).ok();
     });
+  },
+);
+
+test(formalName('Check the Create button is disabled when user create team without team name', ['P2', 'JPT-92']),
+  async t => {
+    const app = new AppRoot(t);
+    const user = h(t).rcData.mainCompany.users[0];
+    const teamName = `Team ${uuid()}`;
+
+    await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
+
+    // case 4
+    await h(t).withLog('Then I can open add menu in home page', async () => {
+      await app.homePage.openAddActionMenu();
+    });
+
+    const createTeamModal = app.homePage.createTeamModal;
+    await h(t).withLog('Then CreateTeam button is disabled', async () => {
+      await app.homePage.addActionMenu.createTeamEntry.enter();
+      await createTeamModal.ensureLoaded();
+      await createTeamModal.createTeamButtonShouldBeDisabled();
+    }, true);
+
+    await h(t).withLog('Then CreateTeam button is enabled', async () => {
+      await createTeamModal.setTeamName(teamName);
+      await createTeamModal.createdTeamButtonShouldBeEnabled();
+    }, true);
+
   },
 );
