@@ -113,15 +113,9 @@ class BaseService<
         this.initialEntitiesCache();
       });
 
-      const eventKey: string = this._getModelEventKey();
-      if (eventKey.length > 0) {
-        notificationCenter.on(
-          eventKey,
-          (payload: NotificationEntityPayload<SubModel>) => {
-            this.onCacheEntitiesChange(payload);
-          },
-        );
-      }
+      notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+        this.initialEntitiesCache();
+      });
     }
   }
 
@@ -219,6 +213,16 @@ class BaseService<
   protected async initialEntitiesCache() {
     mainLogger.debug('initialEntitiesCache begin');
     if (this._cachedManager && !this._cachedManager.isInitialized()) {
+      const eventKey: string = this._getModelEventKey();
+      if (eventKey.length > 0) {
+        notificationCenter.on(
+          eventKey,
+          (payload: NotificationEntityPayload<SubModel>) => {
+            this.onCacheEntitiesChange(payload);
+          },
+        );
+      }
+
       const dao = daoManager.getDao(this.DaoClass);
       const models = await dao.getAll();
       this._cachedManager.initialize(models);
@@ -379,13 +383,11 @@ class BaseService<
   }
 
   private _getModelEventKey(): string {
-    if (this.DaoClass && daoManager) {
+    if (this.DaoClass) {
       const dao = daoManager.getDao(this.DaoClass);
-      if (dao && dao.modelName) {
-        const modelName = dao.modelName.toUpperCase();
-        const eventKey: string = `ENTITY.${modelName}`;
-        return eventKey;
-      }
+      const modelName = dao.modelName.toUpperCase();
+      const eventKey: string = `ENTITY.${modelName}`;
+      return eventKey;
     }
     return '';
   }
