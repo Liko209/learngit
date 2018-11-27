@@ -9,11 +9,8 @@ type GroupBodyProps = {
   description?: string;
   avatar: any;
 };
-type GroupListProps = {
-  membersList?: {name: string}[];
-};
 type GroupHeaderProps = {
   title: string;
   dismiss: () => void;
 };
-export { GroupBodyProps, GroupHeaderProps, GroupListProps };
+export { GroupBodyProps, GroupHeaderProps };

@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import { GroupListProps } from './types';
 import styled from '../../foundation/styled-components';
 import {
   spacing,
@@ -28,7 +27,7 @@ const StyledItem = styled.li`
   }
 `;
 
-class JuiGroupProfileList extends PureComponent<GroupListProps> {
+class JuiGroupProfileList extends PureComponent {
   render() {
     const { children } = this.props;
     return (

@@ -24,7 +24,7 @@ storiesOf('Pattern', module)
   .add('GroupProfile', () => {
     return (
       <>
-        <JuiGroupProfileHeader title="Profile" />
+        <JuiGroupProfileHeader title="Profile" dismiss={() => {}} />
         <JuiGroupProfileBody
           displayName="Jupiter Design team"
           description={desc}
