@@ -15,12 +15,12 @@ import { JuiModal } from '@/containers/Dialog';
 type Props = PrivacyViewProps & WithNamespaces;
 
 class PrivacyViewComponent extends Component<Props> {
-  onClick = async () => {
-    const { isAction, setPrivacy, isPublic, t } = this.props;
+  onClickPrivacy = async () => {
+    const { isAction, handlePrivacy, isPublic, t } = this.props;
     if (!isAction) {
       return;
     }
-    const result = await setPrivacy();
+    const result = await handlePrivacy();
     if (result === ServiceCommonErrorType.SERVER_ERROR) {
       const content = isPublic
         ? t('markPrivateServerErrorContent')
@@ -50,7 +50,7 @@ class PrivacyViewComponent extends Component<Props> {
         size={size}
         variant={variant}
         color={color}
-        onClick={this.onClick}
+        onClick={this.onClickPrivacy}
         tooltipTitle={t(this.getTooltipKey())}
       >
         {isPublic ? 'lock_open' : 'lock'}

@@ -19,7 +19,7 @@ type PrivacyViewProps = {
   color: string;
   isAction: boolean;
   isPublic: boolean;
-  setPrivacy: () => Promise<ServiceCommonErrorType>;
+  handlePrivacy: () => Promise<ServiceCommonErrorType>;
 };
 
 export { PrivacyProps, PrivacyViewProps };

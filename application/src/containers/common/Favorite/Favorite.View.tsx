@@ -23,7 +23,7 @@ class FavoriteViewComponent extends Component<Props> {
     this.props.getFavorite();
   }
 
-  onClick = async () => {
+  onClickFavorite = async () => {
     const { isAction, handlerFavorite, isFavorite, t } = this.props;
     if (!isAction) {
       return;
@@ -61,7 +61,7 @@ class FavoriteViewComponent extends Component<Props> {
         size={size}
         variant={variant}
         color="accent.gold"
-        onClick={this.onClick}
+        onClick={this.onClickFavorite}
         tooltipTitle={t(this.getTooltipKey())}
       >
         {isFavorite ? 'star' : 'star_border'}
