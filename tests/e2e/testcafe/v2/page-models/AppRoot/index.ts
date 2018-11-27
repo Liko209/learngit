@@ -27,7 +27,7 @@ export class AppRoot extends BaseWebComponent {
         await this.t.eval(() => location.reload(true));
     }
     
-    async openConversationByUrl(groupId) {
+    async openConversationByUrl(groupId: number | string) {
         const url = new URL(SITE_URL);
         const conversationUrl = `${url.protocol}//${url.hostname}/messages/${groupId}`;
         await this.t.navigateTo(conversationUrl);
