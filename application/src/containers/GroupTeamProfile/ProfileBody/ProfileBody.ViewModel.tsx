@@ -6,7 +6,10 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { computed } from 'mobx';
 import { ProfileBodyProps } from './types';
-import { BaseProfileTypeHandler } from '../TypeIdHandler';
+import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
+import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
 
 class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   constructor() {
@@ -18,16 +21,27 @@ class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   }
   @computed
   private get _group() {
-    const baseProfileHandler = new BaseProfileTypeHandler(this.id);
-    return baseProfileHandler.getGroupOrPersonData();
+    return getEntity(ENTITY_NAME.GROUP, this.id);
   }
   @computed
   private get _person() {
-    return new BaseProfileTypeHandler(this.id).getGroupOrPersonData();
+    return getEntity(ENTITY_NAME.PERSON, this.id);
   }
   @computed
   private get _profileData() {
-    return this._group || this._person;
+    switch (this.idType) {
+      case TypeDictionary.TYPE_ID_GROUP:
+      case TypeDictionary.TYPE_ID_TEAM:
+        return this._group;
+      case TypeDictionary.TYPE_ID_PERSON:
+        return this._person;
+      default:
+        return this._group;
+    }
+  }
+  @computed
+  get idType() {
+    return GlipTypeUtil.extractTypeId(this.id);
   }
   @computed
   get displayName() {
@@ -36,10 +50,6 @@ class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   @computed
   get description() {
     return this._profileData && this._profileData.description;
-  }
-  @computed
-  get idType() {
-    return new BaseProfileTypeHandler(this.id).idType;
   }
 }
 export { ProfileBodyViewModel };

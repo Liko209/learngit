@@ -33,7 +33,7 @@ describe('MembersListViewModel', () => {
     });
     jest.spyOn<MembersListViewModel, any>(membersListVM, '_paginationMemberIds', 'get').mockReturnValue([1, 2, 3]);
 
-    expect(membersListVM.isThePersonGuest).toMatchObject([true, true, true]);
+    expect(membersListVM.isThePersonGuests).toMatchObject([true, true, true]);
   });
   it('should return membersList if group id is provided', () => {
     jest.spyOn<MembersListViewModel, any>(membersListVM, '_paginationMemberIds', 'get').mockReturnValue([1]);

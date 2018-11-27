@@ -18,7 +18,11 @@ type Props = WithNamespaces & {
 class MoreHoriz extends React.Component<Props> {
   private _onMenuClick = (moreMenuTriggerProps: JuiIconButtonProps) => {
     return (
-      <JuiIconButton {...moreMenuTriggerProps} isShowToolTip={false} tooltipTitle="more" size="medium">
+      <JuiIconButton
+        {...moreMenuTriggerProps}
+        disableToolTip={true}
+        size="medium"
+      >
         more_horiz
       </JuiIconButton>
     );
@@ -36,13 +40,16 @@ class MoreHoriz extends React.Component<Props> {
     return (
       <JuiHorizMenu
         className="horiz-menu"
-        menuItems={[{
-          label: t('copy email'),
-          onClick: this._onEmailCopied,
-        }, {
-          label: t('copy url'),
-          onClick: this._onUrlCopied,
-        }]}
+        menuItems={[
+          {
+            label: t('copy email'),
+            onClick: this._onEmailCopied,
+          },
+          {
+            label: t('copy url'),
+            onClick: this._onUrlCopied,
+          },
+        ]}
         MenuExpandTrigger={this._onMenuClick}
       />
     );

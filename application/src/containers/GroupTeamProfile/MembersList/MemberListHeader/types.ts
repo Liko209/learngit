@@ -1,13 +1,12 @@
 import { WithNamespaces } from 'react-i18next';
-import { ID_TYPE } from '../../types';
 
 type MemberListHeaderViewProps = WithNamespaces & {
   counts: number;
-  idType: ID_TYPE;
+  idType: number;
 };
 enum GROUP_LIST_TITLE {
-  TEAM_MEMBERS = 'Team members',
-  GROUP_MEMBERS = 'Group members',
+  TEAM_MEMBERS = 'TeamMembers',
+  GROUP_MEMBERS = 'GroupMembers',
 }
 type MemberListHeaderProps = {
   id: number;

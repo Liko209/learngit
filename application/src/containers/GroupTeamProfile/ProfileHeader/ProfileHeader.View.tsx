@@ -23,8 +23,8 @@ class ProfileHeader extends React.Component<ProfileHeaderViewProps> {
     return (
       <>
         <JuiGroupProfileHeader title={t(title)} destroy={destroy}>
-          <Privacy id={groupId} isShowTooltip={false}/>
-          <Favorite id={groupId} isShowTooltip={false} isAction={false}/>
+          <Privacy id={groupId} disableToolTip={true}/>
+          <Favorite id={groupId} disableToolTip={true} isAction={false}/>
           <MoreHorizIcon id={groupId}/>
         </JuiGroupProfileHeader>
       </>

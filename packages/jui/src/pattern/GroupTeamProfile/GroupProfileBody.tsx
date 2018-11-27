@@ -11,6 +11,7 @@ import {
   grey,
   height,
   width,
+  typography,
 } from '../../foundation/utils/styles';
 
 const StyledBodyWrapper = styled.div`
@@ -40,6 +41,7 @@ const StyledName = styled.div`
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  ${typography('subheading2')};
 `;
 const StyledDescription = styled.div`
   margin-top: ${spacing(1.5)};

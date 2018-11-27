@@ -97,6 +97,7 @@ type Theme = {
     reponseResizer: number;
     loading: number;
     dragging: number;
+    moreMenu: number;
   };
   size: {
     width: number;
@@ -160,6 +161,9 @@ type Theme = {
     val1: string;
     val2: string;
   };
+  maxHeight: {
+    dialog: string;
+  }
 } & MuiTheme;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;

@@ -38,7 +38,7 @@ const StyledIcon = styled.div`
     height: ${height(5)};
   }
   div {
-    z-index: 99999;
+    z-index: ${({ theme }) => theme.zIndex.moreMenu};
   }
   .privacy, .favorite {
     margin-left: ${spacing(3)};
@@ -60,7 +60,7 @@ class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
           </StyledText>
           <StyledIcon>
             {children}
-            <JuiIconButton onClick={destroy} className="close" isShowToolTip={false}>close</JuiIconButton>
+            <JuiIconButton onClick={destroy} className="close" disableToolTip={true}>close</JuiIconButton>
           </StyledIcon>
         </StyledContent>
       </StyledHeader>

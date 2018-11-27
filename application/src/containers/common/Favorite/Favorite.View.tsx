@@ -52,7 +52,7 @@ class FavoriteViewComponent extends Component<Props> {
   }
 
   render() {
-    const { hideUnFavorite, isFavorite, size, variant, isShowTooltip, t } = this.props;
+    const { hideUnFavorite, isFavorite, size, variant, disableToolTip, t } = this.props;
     if (hideUnFavorite && !isFavorite) {
       return null;
     }
@@ -62,7 +62,7 @@ class FavoriteViewComponent extends Component<Props> {
         variant={variant}
         className="favorite"
         color="accent.gold"
-        isShowToolTip={isShowTooltip}
+        disableToolTip={disableToolTip}
         onClick={this.onClick}
         tooltipTitle={t(this.getTooltipKey())}
       >

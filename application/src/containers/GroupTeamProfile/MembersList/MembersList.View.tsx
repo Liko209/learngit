@@ -15,6 +15,8 @@ import {
   grey,
   width,
   height,
+  palette,
+  typography,
 } from 'jui/foundation/utils/styles';
 
 const StyledList = styled.ul`
@@ -26,44 +28,42 @@ const StyledList = styled.ul`
 const StyledGuestIdentifier = styled.span`
   width: ${width(12)};
   height: ${height(4)};
-  color: ${({ theme }) => theme.palette.common.white};
+  color: ${palette('common', 'white')};
   background-color: ${grey('400')};
   border-radius: ${({ theme }) => theme.shape.borderRadius * 2}px;
   line-height: ${height(4)};
   text-align: center;
-  font-size: ${({ theme }) => theme.typography.caption.fontSize};
+  ${typography('caption1')};
   margin-left: ${spacing(3)};
 `;
 const StyledAdminIdentifier = styled(StyledGuestIdentifier)`
-  background-color: ${({ theme }) => theme.palette.secondary.main};
+  background-color: ${palette('secondary', 'main')};
 `;
 @observer
 class MembersList extends React.Component<MemberListViewProps> {
   render() {
     const {
       membersList,
-      isThePersonAdmin,
-      isThePersonGuest,
+      isThePersonAdmins,
+      isThePersonGuests,
     } = this.props;
     return (
-      <>
-        <StyledList>
-          {membersList.map((item: any, idx: number) => {
-            return (
-              <JuiGroupProfileList key={idx}>
-                <Avatar uid={item.id} />
-                {item.userDisplayName}
-                {isThePersonGuest[idx] ? (
-                  <StyledGuestIdentifier>Guest</StyledGuestIdentifier>
-                ) : null}
-                {isThePersonAdmin[idx] ? (
-                  <StyledAdminIdentifier>Admin</StyledAdminIdentifier>
-                ) : null}
-              </JuiGroupProfileList>
-            );
-          })}
-        </StyledList>
-      </>
+      <StyledList>
+        {membersList.map((item: any, idx: number) => {
+          return (
+            <JuiGroupProfileList key={idx}>
+              <Avatar uid={item.id} />
+              {item.userDisplayName}
+              {isThePersonGuests[idx] ? (
+                <StyledGuestIdentifier>Guest</StyledGuestIdentifier>
+              ) : null}
+              {isThePersonAdmins[idx] ? (
+                <StyledAdminIdentifier>Admin</StyledAdminIdentifier>
+              ) : null}
+            </JuiGroupProfileList>
+          );
+        })}
+      </StyledList>
     );
   }
 }

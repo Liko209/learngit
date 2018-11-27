@@ -7,7 +7,6 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { computed, observable, action } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { BaseProfileTypeHandler } from '../TypeIdHandler';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
 import { MemberListProps } from './types';
 import { GlipTypeUtil } from 'sdk/utils';
@@ -15,21 +14,18 @@ import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 
 import {
   loadingBottom,
-  // onScroll,
   onScrollToBottom,
 } from '@/plugins/InfiniteListPlugin';
 class MembersListViewModel extends StoreViewModel<MemberListProps> {
   @observable
-  private _MemberListHandler : SortableGroupMemberHandler | null = null;
+  private _memberListHandler : SortableGroupMemberHandler | null = null;
   private _allMemberIds: number[] = [];
   @observable
   private pagination: number = 1;
   private _PAGE_COUNT = 20;
-  // isShowBottomShadow = false;
   constructor() {
     super();
     this.toBottom = this.toBottom.bind(this);
-    // this.onScrollEvent = this.onScrollEvent.bind(this);
   }
   @computed
   private get _id() {
@@ -37,34 +33,34 @@ class MembersListViewModel extends StoreViewModel<MemberListProps> {
   }
   @action
   private _createSortableMemberIds = async () => {
-    if (!this._MemberListHandler) {
-      this._MemberListHandler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(this._id);
+    if (!this._memberListHandler) {
+      this._memberListHandler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(this._id);
     }
+  }
+  @computed
+  private get _group() {
+    return getEntity(ENTITY_NAME.GROUP, this._id);
   }
   @computed
   private get _paginationMemberIds() {
     this._createSortableMemberIds();
-    this._allMemberIds = (this._MemberListHandler && this._MemberListHandler.getSortedGroupMembersIds()) || [];
+    this._allMemberIds = (this._memberListHandler && this._memberListHandler.getSortedGroupMembersIds()) || [];
     return this._allMemberIds.slice(0, this.pagination * this._PAGE_COUNT);
   }
   @computed
-  get isThePersonGuest() {
+  get isThePersonGuests() {
     return this._paginationMemberIds && this._paginationMemberIds.map((id: number) => {
-      return getEntity(ENTITY_NAME.GROUP, this._id).isThePersonGuest(id);
+      return this._group.isThePersonGuest(id);
     });
   }
   @computed
-  get isThePersonAdmin() {
+  get isThePersonAdmins() {
     if (GlipTypeUtil.extractTypeId(this._id) === TypeDictionary.TYPE_ID_TEAM) {
       return this._paginationMemberIds && this._paginationMemberIds.map((id: number) => {
-        return getEntity(ENTITY_NAME.GROUP, this._id).isThePersonAdmin(id);
+        return this._group.isThePersonAdmin(id);
       });
     }
     return false;
-  }
-  @computed
-  get idType() {
-    return new BaseProfileTypeHandler(this._id).idType;
   }
   @computed
   @loadingBottom
@@ -76,20 +72,8 @@ class MembersListViewModel extends StoreViewModel<MemberListProps> {
   @action
   @onScrollToBottom
   toBottom() {
+    if (this._allMemberIds.length === this._paginationMemberIds.length) return;
     this.pagination++;
   }
-  // @onScroll
-  // onScrollEvent(event: any) {
-  //   const clientHeight = event.target.clientHeight;
-  //   const scrollTop = event.target.scrollTop;
-  //   const isBottom = clientHeight + scrollTop === event.target.scrollHeight;
-  //   if (scrollTop > 20) {
-  //     this.isShowBottomShadow = !this.isShowBottomShadow;
-  //   }
-  //   if (isBottom) {
-  //     this.isShowBottomShadow = false;
-  //   }
-  //   console.log('isBottom', isBottom);
-  // }
 }
 export { MembersListViewModel };

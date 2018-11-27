@@ -51,7 +51,7 @@ const JuiDialog = styled(({ size = 'small', ...restProps }: JuiDialogProps) => {
     width: 800px;
   }
   & .paperScrollPaper {
-    max-height: 72vh;
+    max-height: ${({ theme }) => theme.maxHeight.dialog};
   }
   & .paperFullScreen {
     width: 100%;

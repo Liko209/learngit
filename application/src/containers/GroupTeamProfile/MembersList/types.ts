@@ -10,8 +10,8 @@ import { ID_TYPE } from '../types';
 type MemberListViewProps = WithNamespaces & {
   membersList: PersonModel[];
   idType: ID_TYPE;
-  isThePersonAdmin: boolean[];
-  isThePersonGuest: boolean[];
+  isThePersonAdmins: boolean[];
+  isThePersonGuests: boolean[];
 };
 type MemberListProps = {
   id: number;

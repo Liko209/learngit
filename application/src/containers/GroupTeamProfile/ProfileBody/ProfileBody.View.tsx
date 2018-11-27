@@ -6,7 +6,6 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
-import { ID_TYPE } from '../types';
 import { JuiGroupProfileBody } from 'jui/pattern/GroupTeamProfile';
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Avatar } from '@/containers/Avatar';
@@ -15,6 +14,7 @@ import { JumpToConversation } from '../../JumpToConversation';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
+import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 
 const StyledMessageBtn = styled.div`
   display: flex;
@@ -39,9 +39,9 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
     const { displayName, description, id, idType, destroy } = this.props;
     const message = <JumpToConversation id={id} onSuccess={destroy}>{this.renderMessageBtn()}</JumpToConversation>;
     let avatar;
-    if (idType === ID_TYPE.GROUP || idType === ID_TYPE.TEAM) {
+    if (idType === TypeDictionary.TYPE_ID_GROUP || idType === TypeDictionary.TYPE_ID_TEAM) {
       avatar = <GroupAvatar cid={id} />;
-    } else if (idType === ID_TYPE.PERSON) {
+    } else if (idType === TypeDictionary.TYPE_ID_PERSON) {
       avatar = <Avatar uid={id} />;
     }
     return (

@@ -10,13 +10,13 @@ import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
 type FavoriteProps = {
   id: number; // personId || conversationId
   size?: IconButtonSize;
-  isShowTooltip?: boolean;
+  disableToolTip?: boolean;
   isAction?: boolean;
   hideUnFavorite?: boolean;
 };
 
 type FavoriteViewProps = {
-  isShowTooltip?: boolean;
+  disableToolTip?: boolean;
   size: IconButtonSize;
   variant: IconButtonVariant;
   isAction: boolean;

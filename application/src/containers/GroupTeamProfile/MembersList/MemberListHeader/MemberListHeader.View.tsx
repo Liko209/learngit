@@ -6,15 +6,16 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
-import { ID_TYPE } from '../../types';
 import { MemberListHeaderViewProps, GROUP_LIST_TITLE } from './types';
 import styled from 'jui/foundation/styled-components';
 import {
   spacing,
   grey,
+  typography,
 } from 'jui/foundation/utils/styles';
+import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 const StyledTitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.subheading.fontSize};
+  ${typography('subheading')};
   color: ${grey('900')};
   margin-left: ${spacing(6)};
 `;
@@ -24,7 +25,7 @@ class MemberListHeader extends React.Component<MemberListHeaderViewProps> {
     const { counts, idType, t } = this.props;
     return (
       <StyledTitle>
-        {idType === ID_TYPE.TEAM
+        {idType === TypeDictionary.TYPE_ID_TEAM
           ? `${t(GROUP_LIST_TITLE.TEAM_MEMBERS)} (${counts})`
           : `${t(GROUP_LIST_TITLE.GROUP_MEMBERS)} (${counts})`}
       </StyledTitle>

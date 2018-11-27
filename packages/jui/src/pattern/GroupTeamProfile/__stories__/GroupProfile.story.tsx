@@ -6,13 +6,12 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { GROUP_TYPES } from '../types';
-// import defaultGroupAvatar from '../static/Groups';
+import defaultGroupAvatar from '../static/Groups.png';
 
+const avatar = <img src={defaultGroupAvatar} alt=""/>;
 import {
   JuiGroupProfileHeader,
   JuiGroupProfileBody,
-  JuiGroupProfileList,
 } from '..';
 const desc =
   'It is a great teamIt is a great teamIt is a great teamIt ' +
@@ -20,43 +19,16 @@ const desc =
   'is a great teamIt is a great teamIt is a great teamIt is.It is a great ' +
   'teamIt is a great teamIt is a great teamIt is a great teamIt is a great ' +
   'It is a great teamIt is a great teamIt is a great teamIt is a great teamIt is a great teamIt is.';
-const membersList = [
-  { name: 'sssss1' },
-  { name: 'sssss2' },
-  { name: 'sssss3' },
-  { name: 'sssss4' },
-  { name: 'sssss5' },
-  { name: 'sssss6' },
-  { name: 'sssss7' },
-  { name: 'sssss8' },
-  { name: 'sssss9' },
-  { name: 'sssss' },
-  { name: 'sssss' },
-  { name: 'sssss' },
-  { name: 'sssss' },
-  { name: 'sssss' },
-  { name: 'sssss' },
-  { name: 'sssss' },
-  { name: 'sssss' },
-  { name: 'sssss' },
-  { name: 'sssss' },
-  { name: 'sssss' },
-];
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiGroupProfileHeader, { inline: true }))
   .add('GroupProfile', () => {
     return (
       <>
-        <JuiGroupProfileHeader text="Profile" />
+        <JuiGroupProfileHeader title="Profile" />
         <JuiGroupProfileBody
-          type={GROUP_TYPES.TEAM}
           displayName="Jupiter Design team"
           description={desc}
-        />
-        <JuiGroupProfileList
-          counts={10}
-          type={GROUP_TYPES.TEAM}
-          membersList={membersList}
+          avatar={avatar}
         />
       </>
     );

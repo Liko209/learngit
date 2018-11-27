@@ -12,7 +12,7 @@ import { MembersList } from './MembersList';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileBody } from './ProfileBody';
 import { MemberListHeader } from './MembersList/MemberListHeader';
-import { width } from 'jui/foundation/utils';
+import { width, palette } from 'jui/foundation/utils';
 
 const StyledProfileView = styled.div`
   position: relative;
@@ -25,7 +25,7 @@ const StyledBottomBar = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  border: ${width(3)} solid ${({ theme }) => theme.palette.common.white};
+  border: ${width(3)} solid ${palette('common', 'white')};
   box-shadow: ${({ theme }) => theme.boxShadow.val2};
 `;
 @observer
