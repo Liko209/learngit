@@ -74,7 +74,7 @@ class GroupService extends BaseService<Group> {
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
-    this.setSupportCache(true);
+    this.enableCache();
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
@@ -163,15 +163,15 @@ class GroupService extends BaseService<Group> {
     return super.getById(id) as Promise<Group | null>;
   }
 
-  async getLocalGroupByMemberIdList(ids: number[]): Promise<Group | null> {
+  async getLocalGroup(personIds: number[]): Promise<Group | null> {
     try {
-      const result = this._queryGroupByMemberList(ids);
+      const result = this._queryGroupByMemberList(personIds);
       if (result) {
         return result;
       }
       return null;
     } catch (e) {
-      mainLogger.error(`getLocalGroupByMemberIdList error =>${e}`);
+      mainLogger.error(`getLocalGroup error =>${e}`);
       return null;
     }
   }
@@ -201,8 +201,10 @@ class GroupService extends BaseService<Group> {
   async requestRemoteGroupByMemberList(
     members: number[],
   ): Promise<Group | null> {
-    const mem = this._addCurrentUserToMemList(members);
-    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(mem);
+    const memberIds = this._addCurrentUserToMemList(members);
+    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(
+      memberIds,
+    );
     try {
       const result = await GroupAPI.requestNewGroup(info);
       if (result.data) {
@@ -491,7 +493,7 @@ class GroupService extends BaseService<Group> {
     let groupId: number | undefined = undefined;
     switch (type) {
       case TypeDictionary.TYPE_ID_PERSON: {
-        const group = await this.getLocalGroupByMemberIdList([id]);
+        const group = await this.getLocalGroup([id]);
         if (group) {
           groupId = group.id;
         }
@@ -517,7 +519,8 @@ class GroupService extends BaseService<Group> {
   private async _isGroupFavorited(groupId: number): Promise<boolean> {
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
-    const favoriteGroupIds = profile ? profile.favorite_group_ids || [] : [];
+    const favoriteGroupIds =
+      profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
     return favoriteGroupIds.some((x: number) => groupId === x);
   }
 
@@ -537,6 +540,7 @@ class GroupService extends BaseService<Group> {
 
   async doFuzzySearchGroups(
     searchKey: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
@@ -548,19 +552,16 @@ class GroupService extends BaseService<Group> {
     }
     return this.searchEntitiesFromCache(
       (group: Group, terms: string[]) => {
-        if (
-          !group.is_team &&
-          !group.is_archived &&
-          !group.deactivated &&
-          group.members &&
-          group.members.length > 2
-        ) {
+        if (this._isValidGroup(group) && group.members.length > 2) {
           const groupName = this.getGroupNameByMultiMembers(
             group.members,
             currentUserId,
           );
 
-          if (this.isFuzzyMatched(groupName, terms)) {
+          if (
+            (terms.length > 0 && this.isFuzzyMatched(groupName, terms)) ||
+            (fetchAllIfSearchKeyEmpty && terms.length === 0)
+          ) {
             return {
               id: group.id,
               displayName: groupName,
@@ -578,24 +579,35 @@ class GroupService extends BaseService<Group> {
   }
 
   async doFuzzySearchTeams(
-    searchKey: string,
+    searchKey?: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    if (!currentUserId) {
+      return null;
+    }
+
     return this.searchEntitiesFromCache(
-      (group: Group, terms: string[]) => {
-        if (group.is_team && !group.is_archived && !group.deactivated) {
-          if (this.isFuzzyMatched(group.set_abbreviation, terms)) {
-            return {
-              id: group.id,
-              displayName: group.set_abbreviation,
-              sortKey: group.set_abbreviation.toLowerCase(),
-              entity: group,
-            };
+      (team: Group, terms: string[]) => {
+        return this._idValidTeam(team) &&
+          ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
+            (terms.length > 0 &&
+              this.isFuzzyMatched(team.set_abbreviation, terms))) &&
+          (team.is_public ||
+            team.members.find((id: number) => {
+              return id === currentUserId;
+            }))
+          ? {
+            id: team.id,
+            displayName: team.set_abbreviation,
+            sortKey: team.set_abbreviation.toLowerCase(),
+            entity: team,
           }
-        }
-        return null;
+          : null;
       },
       searchKey,
       undefined,
@@ -629,9 +641,9 @@ class GroupService extends BaseService<Group> {
   }
 
   private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
-    const mem = this._addCurrentUserToMemList(ids);
+    const memberIds = this._addCurrentUserToMemList(ids);
     const groupDao = daoManager.getDao(GroupDao);
-    return await groupDao.queryGroupByMemberList(mem);
+    return await groupDao.queryGroupByMemberList(memberIds);
   }
 
   private _addCurrentUserToMemList(ids: number[]) {
@@ -643,14 +655,11 @@ class GroupService extends BaseService<Group> {
     return uniqueArray(ids);
   }
 
-  isAdminOfTheGroup(
-    isTeam: boolean | undefined,
-    permission: TeamPermission | undefined,
-    personId: number,
-  ) {
-    if (isTeam && permission) {
+  isTeamAdmin(permission: TeamPermission | undefined, personId: number) {
+    if (permission) {
+      // for some old team, thy don't have permission, so all member are admin
       let adminUserIds: number[] = [];
-      if (permission && permission.admin) {
+      if (permission.admin) {
         adminUserIds = permission.admin.uids;
       }
       return adminUserIds.some((x: number) => x === personId);
@@ -663,27 +672,28 @@ class GroupService extends BaseService<Group> {
     let email = '';
     if (group) {
       const companyService: CompanyService = CompanyService.getInstance();
-      const companyReplyDomain = await companyService.getReplyToDomain(
+      const companyReplyDomain = await companyService.getCompanyEmailDomain(
         group.company_id,
       );
 
-      const envDomain = this._getDomain();
+      if (companyReplyDomain) {
+        const envDomain = this._getENVDomain();
+        if (group.email_friendly_abbreviation) {
+          email = `${
+            group.email_friendly_abbreviation
+          }@${companyReplyDomain}.${envDomain}`;
+        }
 
-      email = `${
-        group.email_friendly_abbreviation
-      }@${companyReplyDomain}.${envDomain}`;
-
-      if (!isValidEmailAddress(email)) {
-        email = `${groupId}@${companyReplyDomain}.${envDomain}`;
+        if (!isValidEmailAddress(email)) {
+          email = `${group.id}@${companyReplyDomain}.${envDomain}`;
+        }
       }
     }
-    console.log('---getGroupEmail', email);
     return email;
   }
 
-  private _getDomain() {
-    // eg: https://aws13-g04-uds02.asialab.glip.net:11904
-    let apiServer = Api.httpConfig.glip.server;
+  private _getENVDomain() {
+    let apiServer = Api.httpConfig['glip'].server;
     if (apiServer) {
       let index = apiServer.indexOf('://');
       if (index > -1) {
@@ -701,6 +711,18 @@ class GroupService extends BaseService<Group> {
       }
     }
     return apiServer;
+  }
+
+  private _isValidGroup(group: Group) {
+    return this._isValid(group) && !group.is_team;
+  }
+
+  private _idValidTeam(group: Group) {
+    return this._isValid(group) && group.is_team;
+  }
+
+  private _isValid(group: Group) {
+    return !group.is_archived && !group.deactivated && group.members;
   }
 }
 

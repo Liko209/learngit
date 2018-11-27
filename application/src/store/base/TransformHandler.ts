@@ -6,16 +6,12 @@
 import _ from 'lodash';
 import { FetchSortableDataListHandler } from './fetch/FetchSortableDataListHandler';
 import { ListStore } from './fetch/ListStore';
-import {
-  FetchDataDirection,
-  ISortableModel,
-  TDelta,
-  TUpdated,
-} from './fetch/types';
+import { ISortableModel, TDelta, TUpdated } from './fetch/types';
 import { BaseModel } from 'sdk/src/models';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 abstract class TransformHandler<T, K extends BaseModel> {
-  fetchData: (direction: FetchDataDirection, pageSize?: number) => any;
+  fetchData: (direction: QUERY_DIRECTION, pageSize?: number) => any;
 
   constructor(
     protected _orderListHandler: FetchSortableDataListHandler<K>,
@@ -27,7 +23,7 @@ abstract class TransformHandler<T, K extends BaseModel> {
     };
   }
 
-  hasMore(direction: FetchDataDirection) {
+  hasMore(direction: QUERY_DIRECTION) {
     return this._orderListHandler.hasMore(direction);
   }
 
@@ -49,7 +45,7 @@ abstract class TransformHandler<T, K extends BaseModel> {
   }
 
   abstract onAdded(
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     addedItems: ISortableModel[],
   ): any;
 

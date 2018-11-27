@@ -100,6 +100,12 @@ export type Company = ExtendedBaseModel & {
   webmail_person_id?: number;
 };
 
+export type PhoneNumberModel = {
+  id: number;
+  phoneNumber: string;
+  usageType: string;
+};
+
 export type Person = ExtendedBaseModel & {
   company_id: number;
   email: string;
@@ -118,7 +124,7 @@ export type Person = ExtendedBaseModel & {
   headshot_version?: string;
   locked?: boolean;
   inviter_id?: number;
-  rc_phone_numbers?: object[];
+  rc_phone_numbers?: PhoneNumberModel[];
   sanitized_rc_extension?: object;
   is_pseudo_user?: boolean;
   glip_user_id?: number;
@@ -162,7 +168,9 @@ export type GroupState = {
 
 export type GroupConfig = {
   id: number; // group id
-  has_more?: boolean;
+  has_more_older?: boolean;
+  has_more_newer?: boolean;
+  is_newest_saved?: boolean;
 };
 
 export type Post = ExtendedBaseModel & {

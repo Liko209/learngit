@@ -88,7 +88,7 @@ const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
     /* color: ${({ awake }) =>
       awake ? grey('500') : palette('accent', 'ash')}; */
     color: ${({ theme, colorScope, colorName }) =>
-      palette(colorScope, colorName)({ theme })}
+      palette(colorScope, colorName)({ theme })};
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
     padding: 0;
     ${StyledIcon} {

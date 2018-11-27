@@ -35,9 +35,15 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
   }
 
   render() {
-    const { type, id } = this.props;
+    const { type, id, highlight } = this.props;
     const Component = PostTypeMappingComponent[type];
-    return <Component id={id} onClick={this.onClickAtMention} />;
+    return (
+      <Component
+        id={id}
+        onClick={this.onClickAtMention}
+        highlight={highlight}
+      />
+    );
   }
 }
 

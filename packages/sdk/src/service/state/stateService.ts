@@ -57,7 +57,7 @@ class StateService extends BaseService<GroupState> {
   //   return groupStateDao.get(groupId);
   // }
   async getById(id: number): Promise<GroupState> {
-    const result = await this.getByIdFromDao(id); // groupid
+    const result = await this.getByIdFromDao(id); // groupId
     // if (!result) {
     //   const myState = await this.getMyState();
     //   if (myState) {

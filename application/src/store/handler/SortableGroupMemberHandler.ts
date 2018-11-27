@@ -7,7 +7,6 @@
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-  FetchDataDirection,
   ISortableModel,
 } from '@/store/base/fetch';
 
@@ -19,7 +18,7 @@ import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
 import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
-
+import { QUERY_DIRECTION } from 'sdk/dao';
 class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
   private _groupId: number;
 
@@ -28,8 +27,7 @@ class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
   }
 
   async fetchData(
-    offset: number,
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     pageSize: number,
     anchor: ISortableModel<Person>,
   ): Promise<{ data: Person[]; hasMore: boolean }> {
@@ -50,7 +48,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     if (group) {
       return new SortableGroupMemberHandler(group);
     }
-    return group;
+    return null;
   }
 
   constructor(group: Group) {
@@ -85,18 +83,19 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       const lPerson = lhs.data!;
       const rPerson = rhs.data!;
       const groupService = GroupService.getInstance<GroupService>();
-      const isLAdmin = groupService.isAdminOfTheGroup(
-        this._group.is_team,
-        this._group.permissions,
-        lPerson.id,
-      );
-      const isRAdmin = groupService.isAdminOfTheGroup(
-        this._group.is_team,
-        this._group.permissions,
-        rPerson.id,
-      );
-      if (isLAdmin !== isRAdmin) {
-        return isLAdmin ? -1 : 1;
+
+      if (this._group.is_team) {
+        const isLAdmin = groupService.isTeamAdmin(
+          this._group.permissions,
+          lPerson.id,
+        );
+        const isRAdmin = groupService.isTeamAdmin(
+          this._group.permissions,
+          rPerson.id,
+        );
+        if (isLAdmin !== isRAdmin) {
+          return isLAdmin ? -1 : 1;
+        }
       }
 
       return natureCompare(
@@ -143,18 +142,17 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   }
 
   private _fetchAllGroupMembers() {
-    this._sortableDataHandler.fetchData(FetchDataDirection.DOWN);
+    this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
   }
 
   private _handleGroupUpdate(newGroup: Group) {
     if (newGroup) {
       const sortFunc = (lhs: number, rhs: number) => lhs - rhs;
-
       const sortedNewMemberList = newGroup.members.sort(sortFunc);
       const sortedOldMemberList = this._group.members.sort(sortFunc);
 
       let needReplaceData = false;
-      if (sortedNewMemberList.toString !== sortedOldMemberList.toString) {
+      if (sortedNewMemberList.toString() !== sortedOldMemberList.toString()) {
         needReplaceData = true;
       }
 
@@ -173,8 +171,6 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       if (needReplaceData) {
         this._replaceData();
       }
-
-      this._sortableDataHandler.replaceAll;
     }
   }
 

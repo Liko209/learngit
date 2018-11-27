@@ -14,6 +14,9 @@ import { idsToConversationSheet } from '@/containers/ConversationSheet';
 import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 import { From } from './From';
 import { MiniCard } from '@/containers/MiniCard';
+import history from '@/history';
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
@@ -42,6 +45,12 @@ export class ConversationCard extends React.Component<
     });
   }
 
+  jumpToPost = () => {
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, this.props.id);
+    history.push(`/messages/${this.props.groupId}`);
+  }
+
   render() {
     const {
       id,
@@ -54,6 +63,7 @@ export class ConversationCard extends React.Component<
       mode,
       post,
       hideText,
+      highlight,
       ...rest
     } = this.props;
     const { isHover } = this.state;
@@ -78,6 +88,8 @@ export class ConversationCard extends React.Component<
           onMouseEnter={this.handleMouseEnter}
           onMouseLeave={this.handleMouseLeave}
           mode={mode}
+          highlight={highlight}
+          onClick={this.jumpToPost}
           {...rest}
         >
           <JuiConversationCardHeader

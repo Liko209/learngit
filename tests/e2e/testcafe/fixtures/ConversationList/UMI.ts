@@ -5,7 +5,7 @@
  */
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
@@ -19,7 +19,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user)
     const user5Platform = await h(t).getPlatform(users[5]);
 
@@ -64,12 +64,12 @@ test(formalName('UMI should be added received messages count in conversations', 
     );
 
     await h(t).withLog('And I click a private chat', async () => {
-      await app.homePage.messagePanel.directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
+      await app.homePage.messageTab.directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
 
     });
 
-    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog(`And make preconditions: group ${group.data.id} and team ${team.data.id} both with UMI=1`, async () => {
       await user5Platform.createPost(
         { text: `![:Person](${user.rcId}), ${uuid()}` },
@@ -138,11 +138,16 @@ test(formalName('UMI should be added received messages count in conversations', 
   },
 );
 
-test.skip(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'ConversationList']),
+test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'ConversationList']),
   async (t: TestController) => {
+    if (await H.isEdge()) {
+      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
+      return;
+    }
+
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
     let pvtChat, team;
@@ -187,8 +192,8 @@ test.skip(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Con
       },
     );
 
-    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then I click private chat to make sure the group is not selected', async () => {
       await directMessagesSection.conversationEntryById(pvtChat.data.id).enter()
     });
@@ -197,8 +202,7 @@ test.skip(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Con
       const item = teamsSection.conversationEntryById(team.data.id);
       const umi = item.self.find('.umi');
       const text = item.self.find('p');
-      const count = await item.getUmi();
-      await t.expect(count).eql(1);
+      await item.expectUmi(1);
       const umiBgColor = (await umi.style)['background-color'];
       await t.expect(umiBgColor).eql('rgb(255, 136, 0)');
       const textFontWeight = (await text.style)['font-weight'];
@@ -207,29 +211,34 @@ test.skip(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Con
 
     await h(t).withLog('Then I click the team to open the team conversation', async () => {
       await teamsSection.conversationEntryById(team.data.id).enter();
-      await t.wait(1e3);
+      await t.wait(3e3);
     });
 
     await h(t).withLog('And I can no longer find the UMI on the team', async () => {
       const item = teamsSection.conversationEntryById(team.data.id);
       const text = item.self.find('p');
-      const count = await item.getUmi();
-      await t.expect(count).eql(0);
+
+      await item.expectUmi(0,20);
       const textFontWeight = (await text.style)['font-weight'];
       await t.expect(textFontWeight).match(/400|normal/);
     });
   },
 );
 
-test.skip(formalName('Current opened conversation should not display UMI', ['JPT-105', 'P1', 'ConversationList']),
+test(formalName('Current opened conversation should not display UMI', ['JPT-105', 'P1', 'ConversationList']),
   async (t: TestController) => {
+    if (await H.isEdge()) {
+      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
+      return;
+    }
+
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
-    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
     const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
 
     let pvtChatId, teamId, pvtChat, team;
@@ -277,8 +286,7 @@ test.skip(formalName('Current opened conversation should not display UMI', ['JPT
 
     // FIXME: When run cases concurrently, current browser will be lost focus, and fail.
     await h(t).withLog('Then I should not have UMI in the private chat', async () => {
-      const umi = await pvtChat.getUmi();
-      await t.expect(umi).eql(0);
+      await pvtChat.expectUmi(0);
     });
 
     await h(t).withLog('When I open other conversation and reload web page', async () => {
@@ -288,8 +296,7 @@ test.skip(formalName('Current opened conversation should not display UMI', ['JPT
     });
 
     await h(t).withLog('Then I should not have UMI in the private chat too', async () => {
-      const umi = await pvtChat.getUmi();
-      await t.expect(umi).eql(0);
+      await pvtChat.expectUmi(0);
     });
   },
 );
@@ -299,13 +306,13 @@ test(formalName('Should not display UMI when section is expended & Should displa
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
     const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+      app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
 
     let favPrivateChat, favTeam, group1, group2, group3, team1, team2;
     await h(t).withLog('Given I have an extension with a team and a private chat',
@@ -505,7 +512,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
     let group1, group2, group3, team1, team2;
@@ -560,9 +567,9 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     );
 
     const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+      app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
     await h(t).withLog('Then I click group3 to make sure other conversations are not selected',
       async () => {
         await directMessagesSection.conversationEntryById(group3.data.id).enter();
@@ -587,7 +594,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
       await t.wait(1e3);
     });
 
-    const favoriteButton = app.homePage.messagePanel.moreMenu.favoriteToggler;
+    const favoriteButton = app.homePage.messageTab.moreMenu.favoriteToggler;
     await h(t).withLog('Favorite the two groups with UMI', async () => {
       await directMessagesSection.conversationEntryById(group1.data.id).openMoreMenu();
       await favoriteButton.enter();

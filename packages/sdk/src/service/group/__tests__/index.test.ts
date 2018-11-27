@@ -6,26 +6,28 @@ import GroupAPI from '../../../api/glip/group';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../../constants';
 import GroupService from '../index';
 import { daoManager, AccountDao, GroupDao, ConfigDao } from '../../../dao';
-import { Group } from '../../../models';
+import { Group, Person } from '../../../models';
 import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
 import { ErrorParser, BaseError, TypeDictionary } from '../../../utils';
 import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
+import CompanyService from '../../company';
+import { Api } from '../../../api';
 
 jest.mock('../../../dao');
-// jest.mock('../../utils');
 jest.mock('../handleData');
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
+jest.mock('../../../service/company');
+jest.mock('../../../api/glip/group');
+
 const profileService = new ProfileService();
 const personService = new PersonService();
 const accountService = new AccountService();
-
-jest.mock('../../../api/glip/group');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -484,12 +486,188 @@ describe('GroupService', () => {
   });
 
   describe('doFuzzySearch', () => {
-    it('doFuzzySearch, with empty', async () => {
-      groupService.setSupportCache(true);
-      const result = await groupService.doFuzzySearchTeams('name');
+    function prepareGroupsForSearch() {
+      personService.enableCache();
+      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+
+      const person1: Person = {
+        id: 11001,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'ben1.niu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'ben1',
+        last_name: 'niu1',
+        display_name: 'ben1 niu1',
+      };
+
+      const person2: Person = {
+        id: 12001,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_new: false,
+        deactivated: false,
+        version: 1,
+        company_id: 1,
+        email: 'tu1.tu1@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'tu1',
+        last_name: 'tu1',
+        display_name: 'tu1 tu1',
+      };
+
+      personService.getEntityFromCache = jest
+        .fn()
+        .mockImplementation((id: number) => (id <= 12000 ? person1 : person2));
+
+      personService.getName = jest
+        .fn()
+        .mockImplementation((person: Person) =>
+          person.id > 12000 ? 'ben1' : 'tu1',
+        );
+
+      groupService.enableCache();
+
+      const userId = 1;
+      // prepare one : one
+      for (let i = 10000; i <= 11000; i += 1) {
+        const group: Group = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          deactivated: i % 2 === 0,
+          version: i,
+          members: [userId, i],
+          company_id: i,
+          set_abbreviation: '',
+          email_friendly_abbreviation: '',
+          most_recent_content_modified_at: i,
+        };
+        groupService.getCacheManager().set(group);
+      }
+
+      // prepare multi members as a group
+      for (let i = 11001; i <= 12000; i += 1) {
+        const group: Group = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          is_team: false,
+          deactivated: i % 2 === 0,
+          version: i,
+          members: [userId, i, i + 1000],
+          company_id: i,
+          set_abbreviation: '',
+          email_friendly_abbreviation: '',
+          most_recent_content_modified_at: i,
+        };
+        groupService.getCacheManager().set(group);
+      }
+
+      // prepare teams
+      // prepare multi members as a group
+      for (let i = 12001; i <= 13000; i += 1) {
+        const group: Group = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_team: true,
+          is_new: false,
+          is_archived: false,
+          is_public: i % 2 === 0,
+          deactivated: i % 2 !== 0,
+          version: i,
+          members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
+          company_id: i,
+          set_abbreviation: `this is a team name${i.toString()}`,
+          email_friendly_abbreviation: '',
+          most_recent_content_modified_at: i,
+        };
+        groupService.getCacheManager().set(group);
+      }
+    }
+
+    prepareGroupsForSearch();
+
+    it('do fuzzy search of groups, two name match', async () => {
+      const result = await groupService.doFuzzySearchGroups('ben, tu');
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(2);
+      expect(result.terms[0]).toBe('ben');
+      expect(result.terms[1]).toBe('tu');
+    });
+
+    it('do fuzzy search of groups, empty search key', async () => {
+      const result = await groupService.doFuzzySearchGroups('');
       expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('do fuzzy search of groups, empty search key, support fetch all if search key is empty', async () => {
+      const result = await groupService.doFuzzySearchGroups('', true);
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('do fuzzy search of groups, search key is not empty, not support fetch all if search key is empty ', async () => {
+      const result = await groupService.doFuzzySearchGroups('ben');
+      expect(result.sortableModels.length).toBe(500);
       expect(result.terms.length).toBe(1);
-      expect(result.terms[0]).toBe('name');
+      expect(result.terms[0]).toBe('ben');
+    });
+
+    it('do fuzzy search of groups, search key is not empty, support fetch all if search key is empty ', async () => {
+      const result = await groupService.doFuzzySearchGroups('ben', true);
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(1);
+      expect(result.terms[0]).toBe('ben');
+    });
+
+    it('do fuzzy search of teams, empty search key', async () => {
+      const result = await groupService.doFuzzySearchTeams('');
+      expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('do fuzzy search of teams, empty search key, support fetch all if search key is empty', async () => {
+      const result = await groupService.doFuzzySearchTeams('', true);
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('do fuzzy search of teams, undefined search key, support fetch all if search key is empty', async () => {
+      const result = await groupService.doFuzzySearchTeams(undefined, true);
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('do fuzzy search of teams, search key is not empty, not support fetch all if search key is empty ', async () => {
+      const result = await groupService.doFuzzySearchTeams('a team name');
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(3);
+      expect(result.terms[0]).toBe('a');
+      expect(result.terms[1]).toBe('team');
+      expect(result.terms[2]).toBe('name');
+    });
+
+    it('do fuzzy search of teams, search key is not empty, support fetch all if search key is empty ', async () => {
+      const result = await groupService.doFuzzySearchTeams('a team name', true);
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(3);
+      expect(result.terms[0]).toBe('a');
+      expect(result.terms[1]).toBe('team');
+      expect(result.terms[2]).toBe('name');
     });
   });
 
@@ -598,7 +776,7 @@ describe('GroupService', () => {
       accountService.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it("should return true when the person's conversion isfavorted", async () => {
-      const spy = jest.spyOn(groupService, 'getLocalGroupByMemberIdList');
+      const spy = jest.spyOn(groupService, 'getLocalGroup');
       const ids: number[] = [personId, curUserId];
       spy.mockResolvedValueOnce(favGroup);
       const res = await groupService.isFavorited(
@@ -609,9 +787,7 @@ describe('GroupService', () => {
     });
 
     it('should return false when local has no conversation with the person', async () => {
-      jest
-        .spyOn(groupService, 'getLocalGroupByMemberIdList')
-        .mockResolvedValue(null);
+      jest.spyOn(groupService, 'getLocalGroup').mockResolvedValue(null);
 
       const res = await groupService.isFavorited(
         personId,
@@ -671,13 +847,9 @@ describe('GroupService', () => {
     });
   });
 
-  describe('isAdminOfTheGroup', async () => {
-    it('shuld return true if this is not a team', async () => {
-      expect(groupService.isAdminOfTheGroup(false, undefined, 11)).toBeTruthy;
-    });
-
+  describe('isTeamAdmin', async () => {
     it('should return true if no team permission model', async () => {
-      expect(groupService.isAdminOfTheGroup(true, undefined, 11)).toBeTruthy;
+      expect(groupService.isTeamAdmin(undefined, 11)).toBeTruthy;
     });
 
     it('should return true if person is in admin id list', async () => {
@@ -691,10 +863,53 @@ describe('GroupService', () => {
           level: 15,
         },
       };
-      expect(groupService.isAdminOfTheGroup(true, permission, 1)).toBeTruthy;
-      expect(groupService.isAdminOfTheGroup(true, permission, 2)).toBeTruthy;
-      expect(groupService.isAdminOfTheGroup(true, permission, 3)).toBeTruthy;
-      expect(groupService.isAdminOfTheGroup(true, permission, 3)).toBeFalsy;
+      expect(groupService.isTeamAdmin(permission, 1)).toBeTruthy;
+      expect(groupService.isTeamAdmin(permission, 2)).toBeTruthy;
+      expect(groupService.isTeamAdmin(permission, 3)).toBeTruthy;
+      expect(groupService.isTeamAdmin(permission, 4)).toBeFalsy;
+    });
+  });
+
+  describe('getGroupEmail', () => {
+    const envDomain = 'aws13-g04-uds02.asialab.glip.net';
+    const config = {
+      glip: {
+        server: `https://${envDomain}:11904`,
+        cacheServer: 'https://aws13-g04-uds02.asialab.glip.net:11907',
+      },
+    };
+
+    const companyReplyDomain = 'companyDomain';
+    const companyService = new CompanyService();
+    beforeEach(() => {
+      CompanyService.getInstance = jest.fn().mockReturnValue(companyService);
+      companyService.getCompanyEmailDomain.mockResolvedValueOnce(
+        companyReplyDomain,
+      );
+
+      Object.assign(Api, {
+        _httpConfig: config,
+      });
+    });
+
+    it('should return email address combined with group abbreviation, company domian, env domain', async () => {
+      const group = { id: 1, email_friendly_abbreviation: 'group' };
+      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+
+      const res = await groupService.getGroupEmail(group.id);
+      expect(res).toBe(
+        `${
+          group.email_friendly_abbreviation
+        }@${companyReplyDomain}.${envDomain}`,
+      );
+    });
+
+    it('should return email address combined with group id, company domian, env domain', async () => {
+      const group = { id: 1 };
+      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+
+      const res = await groupService.getGroupEmail(group.id);
+      expect(res).toBe(`${group.id}@${companyReplyDomain}.${envDomain}`);
     });
   });
 });
