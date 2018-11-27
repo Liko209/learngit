@@ -36,6 +36,7 @@ const StyledIcon = styled.div`
     color: ${grey('500')};
     font-size: ${({ theme }) => theme.typography.h6.fontSize};
     height: ${height(5)};
+    margin-left: ${spacing(-3)};
   }
   div {
     z-index: ${({ theme }) => theme.zIndex.moreMenu};
