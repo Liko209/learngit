@@ -849,7 +849,7 @@ describe('GroupService', () => {
 
   describe('isTeamAdmin', async () => {
     it('should return true if no team permission model', async () => {
-      expect(groupService.isTeamAdmin(undefined, 11)).toBeTruthy;
+      expect(groupService.isTeamAdmin(11, undefined)).toBeTruthy;
     });
 
     it('should return true if person is in admin id list', async () => {
@@ -863,10 +863,10 @@ describe('GroupService', () => {
           level: 15,
         },
       };
-      expect(groupService.isTeamAdmin(permission, 1)).toBeTruthy;
-      expect(groupService.isTeamAdmin(permission, 2)).toBeTruthy;
-      expect(groupService.isTeamAdmin(permission, 3)).toBeTruthy;
-      expect(groupService.isTeamAdmin(permission, 4)).toBeFalsy;
+      expect(groupService.isTeamAdmin(1, permission)).toBeTruthy;
+      expect(groupService.isTeamAdmin(2, permission)).toBeTruthy;
+      expect(groupService.isTeamAdmin(3, permission)).toBeTruthy;
+      expect(groupService.isTeamAdmin(4, permission)).toBeFalsy;
     });
   });
 

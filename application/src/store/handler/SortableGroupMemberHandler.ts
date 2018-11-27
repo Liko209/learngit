@@ -86,12 +86,12 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
 
       if (this._group.is_team) {
         const isLAdmin = groupService.isTeamAdmin(
-          this._group.permissions,
           lPerson.id,
+          this._group.permissions,
         );
         const isRAdmin = groupService.isTeamAdmin(
-          this._group.permissions,
           rPerson.id,
+          this._group.permissions,
         );
         if (isLAdmin !== isRAdmin) {
           return isLAdmin ? -1 : 1;

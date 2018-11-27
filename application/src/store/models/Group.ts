@@ -181,7 +181,7 @@ export default class GroupModel extends Base<Group> {
   isThePersonAdmin(personId: number) {
     const groupService: GroupService = GroupService.getInstance();
     return this.type === CONVERSATION_TYPES.TEAM
-      ? groupService.isTeamAdmin(this.permissions, personId)
+      ? groupService.isTeamAdmin(personId, this.permissions)
       : false;
   }
 

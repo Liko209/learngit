@@ -89,8 +89,20 @@ class PersonService extends BaseService<Person> {
     const group = await groupService.getGroupById(groupId);
     if (group) {
       const memberIds = group.members;
-      const personDao = daoManager.getDao(PersonDao);
-      return await personDao.getPersonsByIds(memberIds);
+      if (memberIds.length > 0) {
+        const catchData = await this.getMultiEntitiesFromCache(
+          memberIds,
+          (entity: Person) => {
+            return this._isValid(entity);
+          },
+        );
+        if (catchData.length > 0) {
+          return catchData;
+        }
+
+        const personDao = daoManager.getDao(PersonDao);
+        return await personDao.getPersonsByIds(memberIds);
+      }
     }
     return [];
   }
