@@ -5,7 +5,7 @@
  */
 import { service } from 'sdk';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-import { getConversationId } from '@/common/goToConversation';
+import { goToConversation } from '@/common/goToConversation';
 
 jest.mock('sdk/service/group');
 jest.mock('sdk/utils');
@@ -20,21 +20,21 @@ describe('goToConversation()', () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_GROUP,
     );
-    expect(await getConversationId(1)).toEqual(1);
+    expect(await goToConversation(1)).toEqual(true);
   });
 
   it('getConversationId() with team type conversationId', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_TEAM,
     );
-    expect(await getConversationId(1)).toEqual(1);
+    expect(await goToConversation(1)).toEqual(true);
   });
 
   it('getConversationId() with other type conversationId', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_CALL,
     );
-    expect(await getConversationId(1)).toEqual(null);
+    expect(await goToConversation(1)).toEqual(false);
   });
 
   describe('getConversationId() with person type conversationId', () => {
@@ -48,12 +48,19 @@ describe('goToConversation()', () => {
       (groupService.getGroupByMemberList as jest.Mock).mockResolvedValue({
         id: 2,
       });
-      expect(await getConversationId(1)).toEqual(2);
+      expect(await goToConversation(1)).toEqual(true);
+    });
+
+    it('groupService reject value', async () => {
+      (groupService.getGroupByMemberList as jest.Mock).mockRejectedValue({
+        id: 2,
+      });
+      expect(await goToConversation(1)).toEqual(false);
     });
 
     it('groupService return null', async () => {
       (groupService.getGroupByMemberList as jest.Mock).mockResolvedValue(null);
-      expect(await getConversationId(1)).toEqual(null);
+      expect(await goToConversation(1)).toEqual(false);
     });
   });
 });
