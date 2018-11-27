@@ -337,20 +337,8 @@ class GroupService extends BaseService<Group> {
         const newGroup = await this.handleRawGroup(rawGroup);
         return ok(newGroup);
       },
-      Err: (resp: any) => err<Group>(this.handleCreateTeamError(resp.data)),
+      Err: (error: BaseError) => err(error),
     });
-  }
-
-  getGroupErrorCode(key: string) {
-    const code = GroupErrorTypes[key.toUpperCase()];
-    return code || GroupErrorTypes.UNKNOWN;
-  }
-
-  handleCreateTeamError(data: any) {
-    return new BaseError(
-      this.getGroupErrorCode(data.error.code),
-      data.error.message,
-    );
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {

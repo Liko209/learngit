@@ -12,9 +12,9 @@ function ok<T>(data: T): ResultOk<T, BaseError> {
   return new ResultOk(data);
 }
 
-function err<T, E extends BaseError = BaseError>(
+function err<E extends BaseError = BaseError>(
   error: BaseError,
-): ResultErr<T, E> {
+): ResultErr<any, E> {
   return new ResultErr(error as E);
 }
 
