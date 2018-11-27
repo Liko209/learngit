@@ -31,7 +31,8 @@ const StyledStatus = styled('div')`
   color: ${grey('600')};
   flex-shrink: 1;
   white-space: nowrap;
-  ${typography('caption2')} ${ellipsis()};
+  ${typography('caption2')};
+  ${ellipsis()};
 `;
 const StyledTime = styled('div')`
   margin-left: ${spacing(2)};
@@ -41,6 +42,7 @@ const StyledTime = styled('div')`
 `;
 const StyledFrom = styled('div')`
   margin-left: ${spacing(1)};
+  margin-right: ${spacing(1)};
   color: ${primary('700')};
   font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
 `;

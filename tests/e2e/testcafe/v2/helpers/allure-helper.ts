@@ -1,8 +1,10 @@
 import 'testcafe';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as Runtime from 'allure-js-commons/runtime';
 import * as Allure from 'allure-js-commons';
 import { identity } from 'lodash';
+import { IStep } from '../models'
 
 const testStatusEnum = {
   passed: 'passed',
@@ -71,7 +73,7 @@ export class AllureHelper {
     this.allure.addArgument(argument, value);
   }
 
-  writeReport() {
+  writeReport(consoleLogPath: string) {
     this.configure();
     const testRun = this.t['testRun'];
     const {
@@ -98,28 +100,34 @@ export class AllureHelper {
     this.startSuite(fixtureName, fixtureStartTime);
     this.startCase(testCaseName, testCaseStartTime, userAgent);
     this.writeSteps(steps);
-    if (failScreenShotPath) this.addScreenshot(failScreenShotPath, 'Screenshot On Fail');
+    if (failScreenShotPath) this.addAttachment(failScreenShotPath, 'Screenshot On Fail');
+    this.addAttachment(consoleLogPath, 'Console Log');
     this.endCase(testStatus, testInfo, Date.now());
     this.endSuite(Date.now());
   }
 
-  writeSteps(steps) {
+  writeSteps(steps: IStep[]) {
     for (const step of steps) {
       this.startStep(step.message, step.startTime);
-      if (step.children && step.children.length) {
-        this.writeSteps(step.children);
-      }
       if (step.screenshotPath) {
-        this.addScreenshot(step.screenshotPath);
+        this.addAttachment(step.screenshotPath, 'screenshot');
+      }
+      if (step.attachments) {
+        for (const attachment of step.attachments) {
+          this.addAttachment(attachment);
+        }
       }
       this.endStep(step.status, step.endTime);
     }
   }
 
-  addScreenshot(screenshotPath, screenshotName = 'screenshot') {
-    if (screenshotPath && fs.existsSync(screenshotPath)) {
-      const img = fs.readFileSync(screenshotPath);
-      this.allureReporter.addAttachment(screenshotName, img);
+  addAttachment(attachmentPath: string, attachmentName?: string) {
+    if (attachmentName === undefined)
+      attachmentName = path.basename(attachmentPath)
+
+    if (attachmentPath && fs.existsSync(attachmentPath)) {
+      const img = fs.readFileSync(attachmentPath);
+      this.allureReporter.addAttachment(attachmentName, img);
     }
   }
 

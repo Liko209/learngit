@@ -19,13 +19,12 @@ test(formalName('Close current conversation directly, and navigate to blank page
     user.sdk = await h(t).getSdk(user);
 
     const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+      app.homePage.messageTab.directMessagesSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
 
     let pvtChatId, favChatId, teamId, currentGroupId;
-    await h(t).withLog(
-      'Given I have an extension with 1 private chat and 1 group chat and I team chat',
+    await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat and I team chat',
       async () => {
         pvtChatId = (await user.sdk.platform.createGroup({
           type: 'PrivateChat',
@@ -52,6 +51,13 @@ test(formalName('Close current conversation directly, and navigate to blank page
         favorite_group_ids: [+favChatId],
       });
     });
+
+    await h(t).withLog('And I clean all UMI before login',
+      async () => {
+        const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
+        await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
+      },
+    );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
@@ -91,12 +97,12 @@ test(formalName('Close current conversation directly, and navigate to blank page
       await h(t).withLog(`When I open a ${key} conversation and then click close conversation button`,
         async () => {
           await item.enter();
-          currentGroupId = await app.homePage.messagePanel.conversationPage.self.getAttribute(
+          currentGroupId = await app.homePage.messageTab.conversationPage.self.getAttribute(
             'data-group-id',
           );
           await item.expectUmi(0);
           await item.openMoreMenu();
-          await app.homePage.messagePanel.moreMenu.close.enter();
+          await app.homePage.messageTab.moreMenu.close.enter();
         },
       );
 
@@ -122,7 +128,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
     });
 
     await h(t).withLog('Then the close button should not be show', async () => {
-      await t.expect(app.homePage.messagePanel.moreMenu.close.exists).notOk();
+      await t.expect(app.homePage.messageTab.moreMenu.close.exists).notOk();
       await t.pressKey('esc');
     },
     );
@@ -137,8 +143,8 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
     const user = users[7];
     user.sdk = await h(t).getSdk(user);
 
-    const dmSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const dmSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
 
     let pvtChatId, teamId, urlBeforeClose, urlAfterClose, currentGroupId;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B', async () => {
@@ -187,7 +193,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
       await teamsSection.expand();
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
       await team.enter();
-      currentGroupId = await app.homePage.messagePanel.conversationPage.self.getAttribute(
+      currentGroupId = await app.homePage.messageTab.conversationPage.self.getAttribute(
         'data-group-id',
       );
     });
@@ -196,7 +202,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
       await pvtChat.enter();
       urlBeforeClose = await h(t).href;
       await team.openMoreMenu();
-      await app.homePage.messagePanel.moreMenu.close.enter();
+      await app.homePage.messageTab.moreMenu.close.enter();
     });
 
     await h(t).withLog('Then  conversation A should be remove from conversation list.',
@@ -231,8 +237,8 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
     const user = users[7];
     user.sdk = await h(t).getSdk(user);
 
-    const dmSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const dmSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
 
     let pvtChatId, teamId;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B',
@@ -257,6 +263,13 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
         favorite_group_ids: [],
       });
     });
+
+    await h(t).withLog('And I clean all UMI before login',
+      async () => {
+        const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
+        await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
+      },
+    );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
       async () => {
@@ -288,10 +301,10 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
 
     await h(t).withLog("When I click conversation A's close buttom", async () => {
       await pvtChat.openMoreMenu();
-      await app.homePage.messagePanel.moreMenu.close.enter();
+      await app.homePage.messageTab.moreMenu.close.enter();
     });
 
-    const dialog = app.homePage.messagePanel.closeConversationModal;
+    const dialog = app.homePage.messageTab.closeConversationModal;
     await h(t).withLog('Then a confirm dialog should be popup', async () => {
       await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
       await t.expect(dialog.getSelector('p').withText(content)).ok();
@@ -317,7 +330,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
 
     await h(t).withLog("When I click conversation B's close buttom", async () => {
       await team.openMoreMenu();
-      await app.homePage.messagePanel.moreMenu.close.enter();
+      await app.homePage.messageTab.moreMenu.close.enter();
     },
     );
 
@@ -343,8 +356,8 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     const user = users[7];
     user.sdk = await h(t).getSdk(user);
 
-    const dmSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const dmSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
 
     let pvtChatId, teamId;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B',
@@ -370,6 +383,13 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
       });
     });
 
+    await h(t).withLog('And I clean all UMI before login',
+      async () => {
+        const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
+        await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
+      },
+    );
+
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
       async () => {
         await user.sdk.glip.updateProfile(user.rcId, {
@@ -387,7 +407,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
     const pvtChat = dmSection.conversationEntryById(pvtChatId);
     const team = teamsSection.conversationEntryById(teamId);
-    const dialog = app.homePage.messagePanel.closeConversationModal;
+    const dialog = app.homePage.messageTab.closeConversationModal;
 
     await h(t).withLog('And I open conversation A ', async () => {
       await dmSection.expand();
@@ -401,7 +421,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
     await h(t).withLog("When I click conversation A's close buttom", async () => {
       await pvtChat.openMoreMenu();
-      await app.homePage.messagePanel.moreMenu.close.enter();
+      await app.homePage.messageTab.moreMenu.close.enter();
     });
 
     await h(t).withLog('Then a confirm dialog should be popup', async () => {
@@ -431,7 +451,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
     await h(t).withLog("When I click conversation B's close buttom", async () => {
       await team.openMoreMenu();
-      await app.homePage.messagePanel.moreMenu.close.enter();
+      await app.homePage.messageTab.moreMenu.close.enter();
     });
 
     await h(t).withLog('Then should not show  the confirm dialog agin', async () => {
@@ -452,10 +472,10 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
     await h(t).resetGlipAccount(user);
     user.sdk = await h(t).getSdk(user);
 
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
     const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+      app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
 
     let favGroupId, pvtChatId, teamId1, teamId2;
     await h(t).withLog('Given I have an extension with 1 private chat, 2 team chat, and 1 group team',
@@ -532,7 +552,7 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
       directMessage: directMessageItem,
       team: teamItem,
     };
-    const closeButton = app.homePage.messagePanel.moreMenu.close;
+    const closeButton = app.homePage.messageTab.moreMenu.close;
     for (const key in groupList) {
       const item = groupList[key];
       await h(t).withLog(`When I click more Icon of a ${key} conversation with UMI`,

@@ -5,6 +5,7 @@ import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
 import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
 import { BeatsClient, Run } from 'bendapi';
+import { MiscUtils } from './v2/utils'
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
@@ -94,10 +95,11 @@ export function setupCase(accountType: string) {
 export function teardownCase() {
   return async (t: TestController) => {
     const consoleLog = await t.getBrowserConsoleMessages()
-    h(t).allureHelper.writeReport();
+    const consoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog, null, 2));
+    h(t).allureHelper.writeReport(consoleLogPath);
     await h(t).dataHelper.teardown();
     if (ENABLE_REMOTE_DASHBOARD) {
-      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLog);
+      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLogPath);
     }
   }
 }

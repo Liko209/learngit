@@ -41,12 +41,12 @@ test(formalName('Resize windows', ['P0', 'JPT-24', 'LeftRail']),
     });
 
     await h(t).withLog(`Then I enter a conversation in team section`, async () => {
-      await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
-      await app.homePage.messagePanel.getCurrentGroupIdFromURL();
+      await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
+      await app.homePage.messageTab.getCurrentGroupIdFromURL();
     });
 
     await h(t).withLog('resize window', async () => {
-      // TODO: messagePanel's locator is deprecated?
+      // TODO: messageTab's locator is deprecated?
       await t.expect(app.homePage.leftRail.visible).ok();
       await t.expect(app.homePage.rightRail.visible).ok();
       await t.resizeWindow(750, 700);
@@ -58,7 +58,7 @@ test(formalName('Resize windows', ['P0', 'JPT-24', 'LeftRail']),
       await t.resizeWindow(1280, 720);
       await t.expect(app.homePage.leftRail.visible).ok();
       await t.expect(app.homePage.rightRail.visible).ok();
-      // TODO: messagePanel's locator is deprecated?
+      // TODO: messageTab's locator is deprecated?
     }, true);
 
     await h(t).withLog('When I go to the Tasks', async () => {
@@ -75,14 +75,14 @@ test(formalName('Resize windows', ['P0', 'JPT-24', 'LeftRail']),
       await t.resizeWindow(779, 700);
       await t.expect(app.homePage.leftRail.visible).notOk();
       await t.expect(app.homePage.rightRail.visible).notOk();
-      // TODO: messagePanel's locator is deprecated?
+      // TODO: messageTab's locator is deprecated?
     }, true);
 
     await h(t).withLog('resize window', async () => {
       await t.resizeWindow(1440, 700);
       await t.expect(app.homePage.leftRail.visible).ok();
       await t.expect(app.homePage.rightRail.visible).ok();
-      // TODO: messagePanel's locator is deprecated?
+      // TODO: messageTab's locator is deprecated?
     }, true);
   },
 );

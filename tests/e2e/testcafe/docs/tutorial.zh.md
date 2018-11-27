@@ -29,14 +29,14 @@ test(formalName('Send message', ['P0', 'JPT-77']), async (t) => {
   });
 
   await h(t).withLog('When I enter a conversation', async () => {
-    await app.homePage.messagePanel.directMessagesSection.expand();
-    await app.homePage.messagePanel.directMessagesSection.nthConversationEntry(0).enter();
+    await app.homePage.messageTab.directMessagesSection.expand();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).enter();
   });
 
   const identifier = uuid();
   const message = `${faker.lorem.sentence()} ${identifier}`;
 
-  const conversationSection = app.homePage.messagePanel.conversationSection;
+  const conversationSection = app.homePage.messageTab.conversationSection;
   await h(t).withLog('Then I can send message to this conversation', async () => {
     await conversationSection.sendMessage(message);
   });

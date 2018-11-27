@@ -21,7 +21,7 @@ test(
     The conversation list is refreshed when the toggle status is changed &
     The conversation should be hidden from the list when turn unread toggle on and navigates from a conversation &
     The opened conversation remain opened, and it should be displayed on the conversation list when turn unread toggle on`,
-    ['JPT-194', 'JPT-198', 'JPT-201', 'JPT-202', 'P2', 'P1', 'ConversationList'],
+    ['JPT-193', 'JPT-194', 'JPT-198', 'JPT-201', 'JPT-202', 'P2', 'P1', 'ConversationList'],
   ),
   async (t: TestController) => {
     const app = new AppRoot(t);
@@ -30,10 +30,10 @@ test(
     const userPlatform = await h(t).getPlatform(user);
     const glipSDK: GlipSdk = await h(t).getGlip(user);
 
-    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
-    const unreadToggler = app.homePage.messagePanel.getSelectorByAutomationId('unreadOnlyToggler');
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
+    const unreadToggler = app.homePage.messageTab.getSelectorByAutomationId('unreadOnlyToggler');
     const user5Platform = await h(t).getPlatform(users[5]);
     
     let favPrivateChatId, favTeamId, groupId1, groupId2, groupId3, teamId1, teamId2;
@@ -162,7 +162,7 @@ test(
 
       // currently opened groupId3 should remain visible on the list and the conversation remained opened
       await t.expect(directMessagesSection.conversationEntryById(groupId3).self.visible).ok();
-      await t.expect(app.homePage.messagePanel.conversationPage.self.getAttribute('data-group-id')).eql(groupId3);
+      await t.expect(app.homePage.messageTab.conversationPage.self.getAttribute('data-group-id')).eql(groupId3);
     }, true);
 
     await h(t).withLog('When I click the unread toggle to turn it off', async () => {

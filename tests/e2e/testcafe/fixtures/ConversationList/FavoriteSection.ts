@@ -24,7 +24,7 @@ test(
     const user = users[7];
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
     const glipSDK: GlipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
 
     let pvtChat, team;
     await h(t).withLog(

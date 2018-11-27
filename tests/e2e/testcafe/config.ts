@@ -32,7 +32,7 @@ const ENV_OPTS = {
     RC_PLATFORM_BASE_URL: 'https://api-xmnup.lab.nordigy.ru',
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
-    JUPITER_APP_KEY: 'FVKGRbLRTxGxPempqg5f9g',
+    JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
   },
 }[SITE_ENV];
 
