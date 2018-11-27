@@ -69,7 +69,6 @@ class StreamViewComponent extends Component<Props> {
     window.addEventListener('blur', this._blurHandler);
     this.scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
     this._stickToBottom();
-    this.props.resetJumpToPostId();
   }
 
   componentWillUnmount() {
@@ -192,6 +191,7 @@ class StreamViewComponent extends Component<Props> {
         key={streamItem.value}
         ref={this._setPostRef}
         highlight={streamItem.value === jumpToPostId && !loading}
+        onHighlightAnimationEnd={this.props.resetJumpToPostId}
       />
     );
   }
@@ -210,6 +210,7 @@ class StreamViewComponent extends Component<Props> {
           id={streamItem.value}
           key={`VisibilitySensor${streamItem.value}`}
           highlight={streamItem.value === jumpToPostId && !loading}
+          onHighlightAnimationEnd={this.props.resetJumpToPostId}
         />
       </VisibilitySensor>
     );
