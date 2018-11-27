@@ -9,15 +9,20 @@ import { genDivAndDestroy } from '@/common/genDivAndDestroy';
 import ThemeProvider from '@/containers/ThemeProvider';
 import { JuiDialog, JuiDialogProps } from 'jui/components/Dialog';
 
-function dialog(component: React.ComponentType<any>, config: JuiDialogProps) {
+type Props = {
+  componentProps?: any;
+} & JuiDialogProps;
+
+function dialog(component: React.ComponentType<any>, config: Props) {
   const Component = component;
   const { container, destroy } = genDivAndDestroy();
 
-  function render(currentConfig: JuiDialogProps) {
+  function render(currentConfig: Props) {
+    const { componentProps, ...rest } = currentConfig;
     ReactDOM.render(
       <ThemeProvider>
-        <JuiDialog {...currentConfig}>
-          <Component destroy={destroy} />
+        <JuiDialog {...rest}>
+          <Component {...componentProps} destroy={destroy} />
         </JuiDialog>
       </ThemeProvider>,
       container,

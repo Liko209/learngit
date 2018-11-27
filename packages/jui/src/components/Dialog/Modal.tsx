@@ -47,7 +47,10 @@ type ModalFunc = (
   destroy: () => void;
 };
 
-type JuiDialogFuncProps = Omit<JuiDialogProps, 'open'>;
+type JuiDialogFuncProps = { componentProps?: any } & Omit<
+  JuiDialogProps,
+  'open'
+>;
 
 type DialogFunc = (
   component: React.ComponentType<any>,
