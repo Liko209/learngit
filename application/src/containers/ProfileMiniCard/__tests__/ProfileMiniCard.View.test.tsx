@@ -12,19 +12,19 @@ import { ProfileMiniCardGroup } from '../ProfileMiniCardGroup';
 import { ProfileMiniCardPerson } from '../ProfileMiniCardPerson';
 
 describe('Profile mini card view model', () => {
-  it('should be a team conversation', () => {
+  it('should be display a team profile mini card', () => {
     const type = TypeDictionary.TYPE_ID_TEAM;
     const Wrapper = shallow(<ProfileMiniCardView id={1} type={type} />);
     expect(Wrapper.find(ProfileMiniCardGroup)).toHaveLength(1);
   });
 
-  it('should be a group conversation', () => {
+  it('should be display a group profile mini card', () => {
     const type = TypeDictionary.TYPE_ID_GROUP;
     const Wrapper = shallow(<ProfileMiniCardView id={1} type={type} />);
     expect(Wrapper.find(ProfileMiniCardGroup)).toHaveLength(1);
   });
 
-  it('should be a person type', () => {
+  it('should be display a person profile mini card', () => {
     const type = TypeDictionary.TYPE_ID_PERSON;
     const Wrapper = shallow(<ProfileMiniCardView id={1} type={type} />);
     expect(Wrapper.find(ProfileMiniCardPerson)).toHaveLength(1);

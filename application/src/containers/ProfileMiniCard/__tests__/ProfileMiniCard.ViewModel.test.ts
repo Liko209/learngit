@@ -8,12 +8,12 @@ import { ProfileMiniCardViewModel } from '../ProfileMiniCard.ViewModel';
 import { TypeDictionary } from 'sdk/utils';
 
 describe('Profile mini card view model', () => {
-  it('should be a team conversation', () => {
+  it('should be a team type', () => {
     const vm = new ProfileMiniCardViewModel({ id: 11370502 });
     expect(vm.type).toBe(TypeDictionary.TYPE_ID_TEAM);
   });
 
-  it('should be a group conversation', () => {
+  it('should be a group type', () => {
     const vm = new ProfileMiniCardViewModel({ id: 14974978 });
     expect(vm.type).toBe(TypeDictionary.TYPE_ID_GROUP);
   });
