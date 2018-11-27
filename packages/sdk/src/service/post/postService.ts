@@ -606,7 +606,7 @@ class PostService extends BaseService<Post> {
   }
 
   private _isValidTextMessage(message: string) {
-    return message.trim().length === 0;
+    return message.trim().length !== 0;
   }
 }
 

@@ -136,7 +136,7 @@ test(formalName('Check the new team can be created successfully', ['P1', 'JPT-12
     });
 
     await h(t).withLog('Then Check the created team', async () => {
-      const teamSection = app.homePage.messagePanel.teamsSection;
+      const teamSection = app.homePage.messageTab.teamsSection;
       await teamSection.expand();
       await t.expect(teamSection.conversations.withText(`${uid}`).exists).ok();
     });

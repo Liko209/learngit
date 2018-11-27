@@ -43,16 +43,16 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
     );
 
     await h(t).withLog(`Then I enter a random conversation in teams section`, async () => {
-      const conversations = app.homePage.messagePanel.teamsSection.conversations;
+      const conversations = app.homePage.messageTab.teamsSection.conversations;
       const count = await conversations.count;
       const n = Math.floor(Math.random() * count);
-      await app.homePage.messagePanel.teamsSection.nthConversationEntry(n).enter();
-      groupId = await app.homePage.messagePanel.getCurrentGroupIdFromURL();
+      await app.homePage.messageTab.teamsSection.nthConversationEntry(n).enter();
+      groupId = await app.homePage.messageTab.getCurrentGroupIdFromURL();
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
       postData = (await userPlatform.createPost({ text: postContent }, groupId)).data;
-      targetPost = app.homePage.messagePanel.conversationPage.postItemById(postData.id);
+      targetPost = app.homePage.messageTab.conversationPage.postItemById(postData.id);
       await t.expect(targetPost.exists).ok(postData)
     });
 
@@ -82,13 +82,13 @@ test(formalName('When update user name, can sync dynamically in message metadata
     });
 
     await h(t).withLog(`Then I enter a conversation in team section`, async () => {
-      await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
-      groupId = await app.homePage.messagePanel.getCurrentGroupIdFromURL();
+      await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
+      groupId = await app.homePage.messageTab.getCurrentGroupIdFromURL();
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
       postData = (await userGlip.sendPost(groupId, postContent)).data;
-      targetPost = app.homePage.messagePanel.conversationPage.posts.withAttribute('data-id', postData.id)
+      targetPost = app.homePage.messageTab.conversationPage.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok();
     });
 
@@ -120,13 +120,13 @@ test(formalName('When update custom status, can sync dynamically in message meta
     });
 
     await h(t).withLog(`Then I enter a conversation in team section`, async () => {
-      await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
-      groupId = await app.homePage.messagePanel.getCurrentGroupIdFromURL();
+      await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
+      groupId = await app.homePage.messageTab.getCurrentGroupIdFromURL();
     });
 
     await h(t).withLog(`And I send one text post to current conversation`, async () => {
       postData = (await userGlip.sendPost(groupId, postContent)).data;
-      targetPost = app.homePage.messagePanel.conversationPage.postItemById(postData['_id']);
+      targetPost = app.homePage.messageTab.conversationPage.postItemById(postData['_id']);
       await t.expect(targetPost.exists).ok(postData);
     });
 
