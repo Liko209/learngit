@@ -14,6 +14,13 @@ JuiModal.open(Test);
 
 const Test1 = JuiModal.open(Test, { size: "large" });
 Test1.destroy();
+
+// But also we can pass props to component use componentProps
+JuiModal.open(Test, {
+  componentProps: {
+    id: 123
+  }
+});
 ```
 
 ## JuiModal.alert && JuiModal.confirm
