@@ -64,12 +64,12 @@ test(formalName('UMI should be added received messages count in conversations', 
     );
 
     await h(t).withLog('And I click a private chat', async () => {
-      await app.homePage.messagePanel.directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
+      await app.homePage.messageTab.directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
 
     });
 
-    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog(`And make preconditions: group ${group.data.id} and team ${team.data.id} both with UMI=1`, async () => {
       await user5Platform.createPost(
         { text: `![:Person](${user.rcId}), ${uuid()}` },
@@ -192,8 +192,8 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
       },
     );
 
-    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then I click private chat to make sure the group is not selected', async () => {
       await directMessagesSection.conversationEntryById(pvtChat.data.id).enter()
     });
@@ -211,13 +211,14 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
 
     await h(t).withLog('Then I click the team to open the team conversation', async () => {
       await teamsSection.conversationEntryById(team.data.id).enter();
-      await t.wait(1e3);
+      await t.wait(3e3);
     });
 
     await h(t).withLog('And I can no longer find the UMI on the team', async () => {
       const item = teamsSection.conversationEntryById(team.data.id);
       const text = item.self.find('p');
-      await item.expectUmi(0);
+
+      await item.expectUmi(0,20);
       const textFontWeight = (await text.style)['font-weight'];
       await t.expect(textFontWeight).match(/400|normal/);
     });
@@ -236,8 +237,8 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
-    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
     const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
 
     let pvtChatId, teamId, pvtChat, team;
@@ -309,9 +310,9 @@ test(formalName('Should not display UMI when section is expended & Should displa
     user.sdk = await h(t).getSdk(user);
 
     const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+      app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
 
     let favPrivateChat, favTeam, group1, group2, group3, team1, team2;
     await h(t).withLog('Given I have an extension with a team and a private chat',
@@ -566,9 +567,9 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     );
 
     const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+      app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
     await h(t).withLog('Then I click group3 to make sure other conversations are not selected',
       async () => {
         await directMessagesSection.conversationEntryById(group3.data.id).enter();
@@ -593,7 +594,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
       await t.wait(1e3);
     });
 
-    const favoriteButton = app.homePage.messagePanel.moreMenu.favoriteToggler;
+    const favoriteButton = app.homePage.messageTab.moreMenu.favoriteToggler;
     await h(t).withLog('Favorite the two groups with UMI', async () => {
       await directMessagesSection.conversationEntryById(group1.data.id).openMoreMenu();
       await favoriteButton.enter();
