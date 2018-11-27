@@ -39,6 +39,7 @@ export default class GroupModel extends Base<Group> {
   guestUserCompanyIds?: number[];
   @observable
   permissions?: TeamPermission;
+  mostRecentPostId?: number;
   latestTime: number;
 
   constructor(data: Group) {
@@ -54,6 +55,7 @@ export default class GroupModel extends Base<Group> {
       send_failure_post_ids,
       most_recent_post_created_at,
       created_at,
+      most_recent_post_id,
       creator_id,
       guest_user_company_ids,
       permissions,
@@ -73,6 +75,7 @@ export default class GroupModel extends Base<Group> {
     this.creatorId = creator_id;
     this.guestUserCompanyIds = guest_user_company_ids;
     this.permissions = permissions;
+    this.mostRecentPostId = most_recent_post_id;
   }
 
   @computed

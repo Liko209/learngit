@@ -27,7 +27,7 @@ const StyledName = styled('div')`
   flex-shrink: 1;
   ${ellipsis()};
   .preposition {
-    margin: ${spacing(0, 2)};
+    margin: ${spacing(0, 2, 0, 1)};
     color: ${grey('900')};
   }
   span {

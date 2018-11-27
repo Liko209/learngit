@@ -15,24 +15,21 @@ type BuildContainerOptions<T> = {
   View: ComponentType<any>;
   plugins?: { [key: string]: IPlugin };
 };
-type TIntrinsticProps = {
-  scrollerRef?: any;
-};
+
 function buildContainer<P = {}, S = {}, SS = any>({
   View,
   ViewModel,
   plugins = {},
 }: BuildContainerOptions<P>) {
-  type Props = P & TIntrinsticProps;
   const ObserverView = observer(View);
 
   @observer
-  class Container extends Component<Props, S, SS> {
+  class Container extends Component<P, S, SS> {
     @observable
     vm: StoreViewModel;
     View = ObserverView;
 
-    constructor(props: Props) {
+    constructor(props: P) {
       super(props);
       this.vm = new ViewModel(props);
       _(plugins).forEach((plugin: IPlugin) => {

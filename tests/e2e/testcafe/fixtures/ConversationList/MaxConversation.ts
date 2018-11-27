@@ -25,8 +25,8 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
     const user = users[7];
     user.sdk = await h(t).getSdk(user);
     const user5Platform = await h(t).getPlatform(users[5]);
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
 
     await h(t).withLog('Given I clear all UMIs before login', async () => {
       const  unReadTeamIds = await user.sdk.glip.getTeamsIds();
@@ -136,7 +136,7 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
     const favConversation = favoritesSection.conversationEntryById(newTeam1.data.id);
     await h(t).withLog(`When remove the team ${newTeam1} from fav`, async () => {
       await favConversation.openMoreMenu();
-      await app.homePage.messagePanel.moreMenu.favoriteToggler.enter();
+      await app.homePage.messageTab.moreMenu.favoriteToggler.enter();
     });
 
     await h(t).withLog('The older fav team will disappear', async () => {
@@ -156,8 +156,8 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
     user.sdk = await h(t).getSdk(user);
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
 
 
     await h(t).withLog('Given clear all UMIs before login', async () => {
@@ -203,7 +203,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     await h(t).withLog(`When I refresh page`, async () => {
       await h(t).refresh();
-      await app.homePage.messagePanel.ensureLoaded(10e3);
+      await app.homePage.messageTab.ensureLoaded(10e3);
     });
 
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
@@ -216,7 +216,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     await h(t).withLog("When I click conversation.3's close buttom", async () => {
       await conversation3.openMoreMenu();
-      await app.homePage.messagePanel.moreMenu.close.enter();
+      await app.homePage.messageTab.moreMenu.close.enter();
     });
 
     realNum = MAX_NUMBER - 1;
@@ -226,7 +226,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     await h(t).withLog("When I click conversation.2's favorite buttom", async () => {
       await conversation2.openMoreMenu();
-      await app.homePage.messagePanel.moreMenu.favoriteToggler.enter();
+      await app.homePage.messageTab.moreMenu.favoriteToggler.enter();
     });
 
     realNum = realNum - 1;
@@ -238,7 +238,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
     const favConversation = favoritesSection.nthConversationEntry(0);
     await h(t).withLog("When I remove conversation.2 from favorite", async () => {
       await favConversation.openMoreMenu();
-      await app.homePage.messagePanel.moreMenu.favoriteToggler.enter();
+      await app.homePage.messageTab.moreMenu.favoriteToggler.enter();
     });
 
     await h(t).withLog('Then conversation.2 is back to the section', async () => {

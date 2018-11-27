@@ -4,7 +4,7 @@ import { CreateTeamModal } from './CreateTeamModal';
 import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
-import { MessagePanel } from './MessagePanel';
+import { MessageTab } from './MessageTab';
 import { Header } from './header';
 import { LeftRail } from './LeftRail';
 import { RightRail } from './RightRail';
@@ -31,8 +31,8 @@ export class HomePage extends BaseWebComponent {
         return this.getComponent(RightRail);
     }
 
-    get messagePanel() {
-        return this.getComponent(MessagePanel);
+    get messageTab() {
+        return this.getComponent(MessageTab);
     }
 
     get header(){
