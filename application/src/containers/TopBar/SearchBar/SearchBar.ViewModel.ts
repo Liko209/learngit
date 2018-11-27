@@ -78,7 +78,7 @@ class SearchBarViewModel extends StoreViewModel {
 
   search = async (key: string) => {
     const [persons, groups, teams] = await Promise.all([
-      this.personService.doFuzzySearchPersons(key, true),
+      this.personService.doFuzzySearchPersons(key, false),
       this.groupService.doFuzzySearchGroups(key),
       this.groupService.doFuzzySearchTeams(key),
     ]);
