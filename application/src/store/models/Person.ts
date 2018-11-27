@@ -54,7 +54,7 @@ export default class PersonModel extends Base<Person> {
       is_pseudo_user,
       glip_user_id,
       away_status,
-      title,
+      job_title,
       headshot_version,
       pseudo_user_phone_number,
       rc_account_id,
@@ -71,7 +71,7 @@ export default class PersonModel extends Base<Person> {
     this.isPseudoUser = is_pseudo_user;
     this.glipUserId = glip_user_id;
     this.awayStatus = away_status;
-    this.title = title;
+    this.title = job_title;
     this.pseudoUserPhoneNumber = pseudo_user_phone_number;
     this.rcAccountId = rc_account_id;
     this.inviterId = inviter_id;
