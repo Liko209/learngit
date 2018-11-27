@@ -362,7 +362,10 @@ class GroupService extends BaseService<Group> {
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
     const profileService: ProfileService = ProfileService.getInstance();
-    const result = profileService.markGroupAsFavorite(groupId, markAsFavorite);
+    const result = await profileService.markGroupAsFavorite(
+      groupId,
+      markAsFavorite,
+    );
     if (result instanceof BaseError && result.code >= 5300) {
       return ServiceCommonErrorType.SERVER_ERROR;
     }
@@ -655,13 +658,10 @@ class GroupService extends BaseService<Group> {
     return uniqueArray(ids);
   }
 
-  isTeamAdmin(permission: TeamPermission | undefined, personId: number) {
+  isTeamAdmin(personId: number, permission?: TeamPermission) {
     if (permission) {
       // for some old team, thy don't have permission, so all member are admin
-      let adminUserIds: number[] = [];
-      if (permission.admin) {
-        adminUserIds = permission.admin.uids;
-      }
+      const adminUserIds = this._getTeamAdmins(permission);
       return adminUserIds.some((x: number) => x === personId);
     }
     return true;
@@ -723,6 +723,10 @@ class GroupService extends BaseService<Group> {
 
   private _isValid(group: Group) {
     return !group.is_archived && !group.deactivated && group.members;
+  }
+
+  private _getTeamAdmins(permission?: TeamPermission) {
+    return permission && permission.admin ? permission.admin.uids : [];
   }
 }
 

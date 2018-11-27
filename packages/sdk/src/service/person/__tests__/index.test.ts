@@ -325,9 +325,30 @@ describe('PersonService', () => {
       GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     });
 
-    it('should return group members if has the group', async () => {
+    it('should return group members from cache if has cache', async () => {
+      const persons = [{ id: 3 }, { id: 4 }, { id: 5 }];
+
+      daoManager.getDao.mockReturnValue(personDao);
+      jest
+        .spyOn(personService, 'getMultiEntitiesFromCache')
+        .mockResolvedValueOnce(persons);
+
+      personDao.getPersonsByIds.mockResolvedValueOnce(persons);
+      groupService.getGroupById.mockResolvedValueOnce(group);
+
+      const res = await personService.getPersonsByGroupId(group.id);
+      expect(res).toMatchObject(persons);
+      expect(personDao.getPersonsByIds).not.toBeCalled();
+      expect(groupService.getGroupById).toBeCalledWith(group.id);
+    });
+
+    it('should return group members from DB if has the group and no cache', async () => {
       const persons = [{ id: 1 }, { id: 2 }, { id: 3 }];
       daoManager.getDao.mockReturnValue(personDao);
+
+      const spy = jest.spyOn(personService, 'getMultiEntitiesFromCache');
+
+      spy.mockResolvedValueOnce([]);
       personDao.getPersonsByIds.mockResolvedValueOnce(persons);
       groupService.getGroupById.mockResolvedValueOnce(group);
 
@@ -335,6 +356,7 @@ describe('PersonService', () => {
       expect(res).toMatchObject(persons);
       expect(personDao.getPersonsByIds).toBeCalledWith(group.members);
       expect(groupService.getGroupById).toBeCalledWith(group.id);
+      expect(spy).toBeCalledTimes(1);
     });
 
     it('should return null when no group exist', async () => {
