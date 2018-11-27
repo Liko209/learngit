@@ -111,7 +111,7 @@ class PostService extends BaseService<Post> {
   }: IPostQuery): Promise<IRawPostResult> {
     const groupService: GroupService = GroupService.getInstance();
     const group = await groupService.getById(groupId);
-    if (!group.most_recent_post_id) {
+    if (!group.most_recent_post_created_at) {
       // The group has no post
       return {
         posts: [],
@@ -607,7 +607,7 @@ class PostService extends BaseService<Post> {
   }
 
   private _isValidTextMessage(message: string) {
-    return message.trim().length === 0;
+    return message.trim() !== '';
   }
 }
 

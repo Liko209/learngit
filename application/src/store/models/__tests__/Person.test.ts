@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PersonModel from '../../../store/models/Person';
-import { Person } from 'sdk/src/models';
+import { Person, PhoneNumberModel } from 'sdk/src/models';
 
 type UserInfo = {
   firstName?: string;
@@ -90,6 +90,37 @@ describe('PersonModel', () => {
     } as Person);
     it('should return non false value if headshot_version or headshot has value', () => {
       expect(!!pm.hasHeadShot).toBe(true);
+    });
+  });
+
+  describe('phoneNumbers', () => {
+    it('should filter non CompanyMainNumber', () => {
+      const person: Person = {
+        id: 1,
+        company_id: 1,
+        email: '1@1.com',
+        me_group_id: 2,
+        rc_phone_numbers: [
+          { id: 11, phoneNumber: '123456', usageType: 'MainCompanyNumber' },
+          { id: 12, phoneNumber: '234567', usageType: 'DirectNumber' },
+          { id: 13, phoneNumber: '345678', usageType: 'ExtensionNumber' },
+        ],
+        created_at: 111,
+        modified_at: 222,
+        creator_id: 11,
+        is_new: true,
+        deactivated: false,
+        version: 123,
+      };
+
+      const pm: PersonModel = new PersonModel(person);
+
+      const expectRes: PhoneNumberModel[] = [
+        { id: 12, phoneNumber: '234567', usageType: 'DirectNumber' },
+        { id: 13, phoneNumber: '345678', usageType: 'ExtensionNumber' },
+      ];
+      const res = pm.phoneNumbers;
+      expect(res).toEqual(expectRes);
     });
   });
 });

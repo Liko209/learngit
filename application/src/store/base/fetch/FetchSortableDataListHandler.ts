@@ -77,7 +77,6 @@ export class FetchSortableDataListHandler<
       pageSize,
       anchor,
     );
-
     const sortableResult: ISortableModel<T>[] = [];
     data.forEach((element: T) => {
       sortableResult.push(this._transformFunc(element));

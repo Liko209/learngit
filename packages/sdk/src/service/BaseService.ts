@@ -108,8 +108,13 @@ class BaseService<
   enableCache() {
     if (!this._cachedManager) {
       this._cachedManager = new EntityCacheManager<SubModel>();
+
       notificationCenter.on(SERVICE.LOGIN, () => {
-        this.initialCacheManager();
+        this.initialEntitiesCache();
+      });
+
+      notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+        this.initialEntitiesCache();
       });
     }
   }
@@ -205,29 +210,27 @@ class BaseService<
     return searchKey.split(/[\s,]+/);
   }
 
-  protected async initialCacheManager() {
-    const eventKey: string = this._getModelEventKey();
-    if (eventKey.length > 0) {
-      notificationCenter.on(
-        eventKey,
-        (payload: NotificationEntityPayload<SubModel>) => {
-          this.onCacheEntitiesChange(payload);
-        },
-      );
-    }
-    await this.clearCache();
-    await this.initialEntitiesCache();
-  }
-
   protected async initialEntitiesCache() {
-    if (this._cachedManager) {
+    mainLogger.debug('initialEntitiesCache begin');
+    if (this._cachedManager && !this._cachedManager.isInitialized()) {
+      const eventKey: string = this._getModelEventKey();
+      if (eventKey.length > 0) {
+        notificationCenter.on(
+          eventKey,
+          (payload: NotificationEntityPayload<SubModel>) => {
+            this.onCacheEntitiesChange(payload);
+          },
+        );
+      }
+
       const dao = daoManager.getDao(this.DaoClass);
       const models = await dao.getAll();
-      _.forEach(models, (model: SubModel) => {
-        this._cachedManager.set(model);
-      });
+      this._cachedManager.initialize(models);
+      mainLogger.debug('initialEntitiesCache done');
     } else {
-      mainLogger.debug('initial cache without permission');
+      mainLogger.debug(
+        'initial cache without permission or already initialized',
+      );
     }
   }
 

@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { genDivAndDestroy } from '@/common/genDivAndDestroy';
+import { genDivAndDismiss } from '@/common/genDivAndDismiss';
 import ThemeProvider from '@/containers/ThemeProvider';
 import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
 import { translate, WithNamespaces } from 'react-i18next';
@@ -38,7 +38,7 @@ const BaseModal = (props: BaseModalType) => {
 const TranslateModal = translate('translates')(BaseModal);
 
 function modal(config: BaseType) {
-  const { container, destroy } = genDivAndDestroy();
+  const { container, dismiss } = genDivAndDismiss();
 
   const { onOK, onCancel, isAlert, ...newConfig } = config;
 
@@ -48,11 +48,11 @@ function modal(config: BaseType) {
     open: true,
     async onOK() {
       onOK && (await onOK());
-      destroy();
+      dismiss();
     },
     onCancel() {
       onCancel && onCancel();
-      destroy();
+      dismiss();
     },
   };
 
@@ -68,7 +68,7 @@ function modal(config: BaseType) {
   render(currentConfig);
 
   return {
-    destroy,
+    dismiss,
   };
 }
 
