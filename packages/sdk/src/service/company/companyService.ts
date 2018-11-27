@@ -25,7 +25,7 @@ export default class CompanyService extends BaseService<Company> {
     return super.getById(id) as Promise<Company | null>;
   }
 
-  async getReplyToDomain(id: number): Promise<string | null> {
+  async getCompanyEmailDomain(id: number): Promise<string | null> {
     const company = await this.getCompanyById(id);
     let result = '';
     if (company) {

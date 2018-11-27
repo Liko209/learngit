@@ -6,9 +6,10 @@ import CompanyService from '../index';
 import { components } from 'react-select';
 
 describe('CompanyService', () => {
-  const companyService: CompanyService = new CompanyService();
+  let companyService: CompanyService = undefined;
 
   beforeEach(() => {
+    companyService = new CompanyService();
     jest.clearAllMocks();
   });
 
@@ -25,7 +26,7 @@ describe('CompanyService', () => {
     });
   });
 
-  describe('getReplyToDomain', async () => {
+  describe('getCompanyEmailDomain()', async () => {
     const spy = jest.spyOn(companyService, 'getCompanyById');
     beforeEach(() => {
       jest.clearAllMocks();
@@ -33,7 +34,7 @@ describe('CompanyService', () => {
     it('should return webmail_person_id when has', async () => {
       const company = { id: 1, webmail_person_id: 123 };
       spy.mockResolvedValueOnce(company);
-      const res = await companyService.getReplyToDomain(company.id);
+      const res = await companyService.getCompanyEmailDomain(company.id);
       expect(res).toBe(company.webmail_person_id.toString());
       expect(spy).toBeCalledWith(company.id);
     });
@@ -41,7 +42,7 @@ describe('CompanyService', () => {
     it('should return first company domain when dont have webmail_person_id, and has multiple domains', async () => {
       const company = { id: 1, domain: '["aaa", "bbb", "ccc"]' };
       spy.mockResolvedValueOnce(company);
-      const res = await companyService.getReplyToDomain(company.id);
+      const res = await companyService.getCompanyEmailDomain(company.id);
       expect(res).toBe('aaa');
       expect(spy).toBeCalledWith(company.id);
     });
@@ -49,7 +50,7 @@ describe('CompanyService', () => {
     it('should return company domain when dont have webmail_person_id  and has one domain', async () => {
       const company = { id: 1, domain: '["ddd"]' };
       spy.mockResolvedValueOnce(company);
-      const res = await companyService.getReplyToDomain(company.id);
+      const res = await companyService.getCompanyEmailDomain(company.id);
       expect(res).toBe('ddd');
       expect(spy).toBeCalledWith(company.id);
     });

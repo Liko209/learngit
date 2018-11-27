@@ -317,7 +317,7 @@ describe('PersonService', () => {
     });
   });
 
-  describe('getPersonsByGroupId', () => {
+  describe('getPersonsByGroupId()', () => {
     const groupService = new GroupService();
     const group = { id: 10, members: [1, 2, 3] };
 
@@ -348,7 +348,7 @@ describe('PersonService', () => {
     });
   });
 
-  describe('buildPersonFeatureMap', () => {
+  describe('buildPersonFeatureMap()', () => {
     const personId = 1;
     const person = { id: personId };
     it('should not have conference permission for person', async () => {

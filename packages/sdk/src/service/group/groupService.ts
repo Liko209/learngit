@@ -163,15 +163,15 @@ class GroupService extends BaseService<Group> {
     return super.getById(id) as Promise<Group | null>;
   }
 
-  async getLocalGroupByMemberIdList(ids: number[]): Promise<Group | null> {
+  async getLocalGroup(personIds: number[]): Promise<Group | null> {
     try {
-      const result = this._queryGroupByMemberList(ids);
+      const result = this._queryGroupByMemberList(personIds);
       if (result) {
         return result;
       }
       return null;
     } catch (e) {
-      mainLogger.error(`getLocalGroupByMemberIdList error =>${e}`);
+      mainLogger.error(`getLocalGroup error =>${e}`);
       return null;
     }
   }
@@ -201,8 +201,10 @@ class GroupService extends BaseService<Group> {
   async requestRemoteGroupByMemberList(
     members: number[],
   ): Promise<Group | null> {
-    const mem = this._addCurrentUserToMemList(members);
-    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(mem);
+    const memberIds = this._addCurrentUserToMemList(members);
+    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(
+      memberIds,
+    );
     try {
       const result = await GroupAPI.requestNewGroup(info);
       if (result.data) {
@@ -491,7 +493,7 @@ class GroupService extends BaseService<Group> {
     let groupId: number | undefined = undefined;
     switch (type) {
       case TypeDictionary.TYPE_ID_PERSON: {
-        const group = await this.getLocalGroupByMemberIdList([id]);
+        const group = await this.getLocalGroup([id]);
         if (group) {
           groupId = group.id;
         }
@@ -517,7 +519,8 @@ class GroupService extends BaseService<Group> {
   private async _isGroupFavorited(groupId: number): Promise<boolean> {
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
-    const favoriteGroupIds = profile ? profile.favorite_group_ids || [] : [];
+    const favoriteGroupIds =
+      profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
     return favoriteGroupIds.some((x: number) => groupId === x);
   }
 
@@ -638,9 +641,9 @@ class GroupService extends BaseService<Group> {
   }
 
   private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
-    const mem = this._addCurrentUserToMemList(ids);
+    const memberIds = this._addCurrentUserToMemList(ids);
     const groupDao = daoManager.getDao(GroupDao);
-    return await groupDao.queryGroupByMemberList(mem);
+    return await groupDao.queryGroupByMemberList(memberIds);
   }
 
   private _addCurrentUserToMemList(ids: number[]) {
@@ -652,14 +655,11 @@ class GroupService extends BaseService<Group> {
     return uniqueArray(ids);
   }
 
-  isAdminOfTheGroup(
-    isTeam: boolean | undefined,
-    permission: TeamPermission | undefined,
-    personId: number,
-  ) {
-    if (isTeam && permission) {
+  isTeamAdmin(permission: TeamPermission | undefined, personId: number) {
+    if (permission) {
+      // for some old team, thy don't have permission, so all member are admin
       let adminUserIds: number[] = [];
-      if (permission && permission.admin) {
+      if (permission.admin) {
         adminUserIds = permission.admin.uids;
       }
       return adminUserIds.some((x: number) => x === personId);
@@ -672,7 +672,7 @@ class GroupService extends BaseService<Group> {
     let email = '';
     if (group) {
       const companyService: CompanyService = CompanyService.getInstance();
-      const companyReplyDomain = await companyService.getReplyToDomain(
+      const companyReplyDomain = await companyService.getCompanyEmailDomain(
         group.company_id,
       );
 

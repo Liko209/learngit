@@ -36,7 +36,7 @@ export default class GroupModel extends Base<Group> {
   @observable
   creatorId: number;
   @observable
-  guest_user_company_ids: number[] | undefined;
+  guestUserCompanyIds?: number[];
   @observable
   permissions?: TeamPermission;
   latestTime: number;
@@ -71,7 +71,7 @@ export default class GroupModel extends Base<Group> {
       ? most_recent_post_created_at
       : created_at;
     this.creatorId = creator_id;
-    this.guest_user_company_ids = guest_user_company_ids;
+    this.guestUserCompanyIds = guest_user_company_ids;
     this.permissions = permissions;
   }
 
@@ -177,18 +177,16 @@ export default class GroupModel extends Base<Group> {
 
   isThePersonAdmin(personId: number) {
     const groupService: GroupService = GroupService.getInstance();
-    return groupService.isAdminOfTheGroup(
-      this.isTeam,
-      this.permissions,
-      personId,
-    );
+    return this.type === CONVERSATION_TYPES.TEAM
+      ? groupService.isTeamAdmin(this.permissions, personId)
+      : true;
   }
 
   isThePersonGuest(personId: number) {
-    if (this.guest_user_company_ids && this.guest_user_company_ids.length > 0) {
+    if (this.guestUserCompanyIds && this.guestUserCompanyIds.length > 0) {
       const person = getEntity(ENTITY_NAME.PERSON, personId);
       if (person) {
-        return this.guest_user_company_ids.some(
+        return this.guestUserCompanyIds.some(
           (x: number) => x === person.companyId,
         );
       }
