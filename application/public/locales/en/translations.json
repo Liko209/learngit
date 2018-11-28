@@ -80,5 +80,7 @@
   "markPrivateServerErrorContent": "We weren't able to private this conversation. Try again.",
   "contacts": "Contacts",
   "suggested people": "suggested people",
-  "team members": "team members"
+  "team members": "team members",
+  "alreadyTaken": "already taken",
+  "InvalidEmail": "Invalid Email"
 }

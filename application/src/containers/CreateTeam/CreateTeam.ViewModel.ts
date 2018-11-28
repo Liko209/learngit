@@ -122,10 +122,10 @@ class CreateTeamViewModel extends AbstractViewModel {
   createErrorHandler(error: BaseError) {
     const code = error.code;
     if (code === GroupErrorTypes.ALREADY_TAKEN) {
-      this.errorMsg = 'already taken';
+      this.errorMsg = t('alreadyTaken');
       this.nameError = true;
     } else if (code === GroupErrorTypes.INVALID_FIELD) {
-      this.emailErrorMsg = 'Invalid Email';
+      this.emailErrorMsg = t('InvalidEmail');
       this.emailError = true;
     } else {
       const message = t('WeWerentAbleToCreateTheTeamTryAgain');
