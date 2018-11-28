@@ -16,6 +16,7 @@ import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';
 import { POST_STATUS } from 'sdk/service';
+
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   implements ConversationCardViewProps {
   @computed
