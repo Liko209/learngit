@@ -26,11 +26,8 @@ export default function ({
         verb = value ? 'completed' : 'marked';
         break;
       case 'complete_percentage':
-        buildText = buildVerbNounText;
-        verb = 'completed';
-        break;
       case 'complete_people_ids':
-        if (old_value && old_value.length > value.length) {
+        if (value === 0 || (old_value && old_value.length > value.length)) {
           buildText = buildVerbNounAdjectivesText;
           verb = 'marked';
           break;
