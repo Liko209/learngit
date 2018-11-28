@@ -52,7 +52,7 @@ test(formalName('JPT-285 Check New Message popup can be opened and closed', ['P1
 });
 
 // todo  need 8m to run this case 
-test.only(formalName('JPT-288 Check the maximum length of the “Type new message" Text Field', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-288',]), async t => {
+test(formalName('JPT-288 Check the maximum length of the “Type new message" Text Field', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-288',]), async t => {
     const app = new AppRoot(t);
     const user = h(t).rcData.mainCompany.users[0];
     const sendNewMessageModal = app.homePage.sendNewMessageModal;
@@ -86,7 +86,6 @@ test.only(formalName('JPT-288 Check the maximum length of the “Type new messag
     }, true);
 
     await h(t).withLog(`When I input new message with ${lessThanMax} character`, async () => {
-        // await sendNewMessageModal.inputNewMessageByLength(lessThanMax);
         const newMessage = await sendNewMessageModal.gteNewMessage(lessThanMax);
         await sendNewMessageModal.setNewMessage(newMessage);
     });
@@ -119,19 +118,17 @@ test.only(formalName('JPT-288 Check the maximum length of the “Type new messag
 });
 
 // Todo have bug when useing display_name
-test(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-286']),
+test.skip(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-286']),
     async t => {
         const app = new AppRoot(t);
         const user = h(t).rcData.mainCompany.users[0];
         const sendNewMessageModal = app.homePage.sendNewMessageModal;
         const sendNewMessageEntry = app.homePage.addActionMenu.sendNewMessageEntry;
         const dmSection = app.homePage.messageTab.directMessagesSection;
-
         const user2 = h(t).rcData.mainCompany.users[1];
         user2.sdk = await h(t).getSdk(user2);
         // todo have bug when useing display_name
-        // const user2Name = (await user2.sdk.glip.getPerson()).data.display_name;
-        const user2Name = (await user2.sdk.glip.getPerson()).data.first_name;
+        const user2Name = (await user2.sdk.glip.getPerson()).data.display_name;
         const newMessages = `new message ${uuid()}`;
 
         await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {

@@ -57,13 +57,13 @@ export class SendNewMessageModal extends BaseWebComponent {
     }
 
     async setMemeber(name: string) {
-        await this.t.typeText(this.membersInput, `${name}`, { replace: true, });
+        await this.t.typeText(this.membersInput, `${name}`, { replace: true, paste: true });
         await this.t.wait(1000);
         await this.t.pressKey('enter');
     }
 
     async setNewMessage(message: string) {
-        await this.t.typeText(this.newMessageInput, `${message}`, { replace: true, });
+        await this.t.typeText(this.newMessageInput, `${message}`, { replace: true, paste: true });
     }
 
     async gteNewMessage(num: number) {
