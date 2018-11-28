@@ -8,9 +8,12 @@ import { AbstractViewModel } from '@/base';
 import { POST_LIST_TYPE, PostListPageProps } from './types';
 import { computed, observable } from 'mobx';
 import { getSingleEntity } from '@/store/utils';
-import { ENTITY_NAME } from '@/store/constants';
+import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { MyState } from 'sdk/src/models';
 import MyStateModel from '../../store/models/MyState';
+import { Profile } from '../../../../packages/sdk/src/models';
+import ProfileModel from '@/store/models/Profile';
+import storeManager from '@/store';
 
 type DataMap = {
   [key: string]: {
@@ -22,11 +25,20 @@ type DataMap = {
 class PostListPageViewModel extends AbstractViewModel {
   private _dataMap: DataMap = {
     [POST_LIST_TYPE.mentions]: {
-      caption: '@mentions',
+      caption: '@mentions_title',
       idListProvider: () => {
         return getSingleEntity<MyState, MyStateModel>(
           ENTITY_NAME.MY_STATE,
           'atMentionPostIds',
+        );
+      },
+    },
+    [POST_LIST_TYPE.bookmarks]: {
+      caption: 'bookmarks_title',
+      idListProvider: () => {
+        return getSingleEntity<Profile, ProfileModel>(
+          ENTITY_NAME.PROFILE,
+          'favoritePostIds',
         );
       },
     },
@@ -62,7 +74,18 @@ class PostListPageViewModel extends AbstractViewModel {
       this._type !== props.type
     ) {
       this._type = props.type as POST_LIST_TYPE;
+      this._updateCurrentPostListValue();
     }
+  }
+
+  private _updateCurrentPostListValue() {
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.CURRENT_POST_LIST_TYPE, this._type);
+  }
+
+  unsetCurrentPostListValue = () => {
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.CURRENT_POST_LIST_TYPE, '');
   }
 }
 

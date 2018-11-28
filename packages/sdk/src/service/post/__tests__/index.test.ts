@@ -881,7 +881,7 @@ describe('PostService', () => {
     const accountDao = new AccountDao(null);
     daoManager.getKVDao.mockReturnValue(accountDao);
     accountDao.get.mockReturnValue(1); // userId
-    it('should get group success then send post', async () => {
+    it.skip('should get group success then send post', async () => {
       const g = { id: 44 };
       groupService.getGroupByMemberList.mockResolvedValue(g);
 
