@@ -7,7 +7,7 @@
 import { StreamViewModel } from '../Stream.ViewModel';
 import { POST_LIST_TYPE } from '../../types';
 import { service } from 'sdk';
-import { QUERY_DIRECTION } from 'sdk/src/dao/constants';
+import { QUERY_DIRECTION } from 'sdk/dao';
 const { PostService } = service;
 function setup(obj: any) {
   const vm = new StreamViewModel();

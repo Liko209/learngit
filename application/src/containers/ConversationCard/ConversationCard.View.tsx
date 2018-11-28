@@ -63,6 +63,7 @@ export class ConversationCard extends React.Component<
     }
     const avatar = <Avatar uid={creator.id} size="medium" data-name="avatar" />;
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
+    const onClickHandler = mode ? this.jumpToPost : undefined;
     return (
       <React.Fragment>
         <JuiConversationCard
@@ -73,7 +74,7 @@ export class ConversationCard extends React.Component<
           onMouseLeave={this.handleMouseLeave}
           mode={mode}
           highlight={highlight}
-          onClick={this.jumpToPost}
+          onClick={onClickHandler}
           onAnimationEnd={onAnimationEnd}
           {...rest}
         >
