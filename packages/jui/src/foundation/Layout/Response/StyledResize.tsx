@@ -4,19 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { MouseEvent } from 'react';
 import styled from '../../styled-components';
 
-type InternalProps = {
+type Props = {
   offset: number;
   show: boolean;
 };
 
-type ExternalProps = InternalProps & {
-  onMouseDown: (e: MouseEvent) => void;
-};
-
-const Wrapper = styled.div`
+const StyledResize = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
@@ -26,12 +21,8 @@ const Wrapper = styled.div`
   z-index: ${({ theme }) => theme.zIndex.reponseResizer};
   margin-left: ${({ theme }) => -theme.spacing.unit}px;
   padding: ${({ theme }) => theme.spacing.unit}px;
-  left: ${({ offset }: InternalProps) => `${offset}px`};
-  display: ${({ show }: InternalProps) => show ? 'block' : 'none'};
+  left: ${({ offset }: Props) => `${offset}px`};
+  display: ${({ show }: Props) => (show ? 'block' : 'none')};
 `;
 
-const JuiHorizonResizer = ({ offset, show, onMouseDown }: ExternalProps) => {
-  return <Wrapper onMouseDown={onMouseDown} offset={offset} show={show} />;
-};
-
-export default JuiHorizonResizer;
+export { StyledResize };

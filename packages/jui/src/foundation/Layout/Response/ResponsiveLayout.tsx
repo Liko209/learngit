@@ -5,12 +5,10 @@
  */
 
 import React, { PureComponent, MouseEvent as ReactMouseEvent } from 'react';
-import { addResizeListener, removeResizeListener } from './optimizer';
 import { cloneDeep } from 'lodash';
-
-import JuiHorizonResizer from './HorizonResizer';
-import JuiHorizonButton from './HorizonButton';
-
+import { addResizeListener, removeResizeListener } from './optimizer';
+import { StyledResize } from './StyledResize';
+import { StyledButton } from './StyledButton';
 import { StyledWrapper } from './StyledWrapper';
 import { StyledMainPanel } from './StyledMainPanel';
 import { StyledSidebarPanel } from './StyledSidebarPanel';
@@ -24,7 +22,7 @@ type Props = {
 
 type States = {
   panels: Panels[];
-  currentElement: Element | null; // Resizer(vertical line)
+  currentElement: Element | null; // Resize line
   currentIndex: number;
 };
 
@@ -33,7 +31,7 @@ const SIDEBAR_DEFAULT_WIDTH = 268;
 const SIDEBAR_MIN_WIDTH = 180;
 const SIDEBAR_MAX_WIDTH = 360;
 
-class JuiColumnResponse extends PureComponent<Props, States> {
+class JuiResponsiveLayout extends PureComponent<Props, States> {
   private wrapperRef: React.RefObject<any>;
   private mainRef: React.RefObject<any>;
 
@@ -97,7 +95,6 @@ class JuiColumnResponse extends PureComponent<Props, States> {
   componentDidMount() {
     addResizeListener(this.onResize);
     setTimeout(this.onResize, 0);
-    // this.onResize();
   }
 
   componentWillUnmount() {
@@ -148,7 +145,7 @@ class JuiColumnResponse extends PureComponent<Props, States> {
           if (panel.width < panel.minWidth) {
             panel.width = panel.minWidth; // 1. show panel
             const sum = this.getSumExceptOneself(clonePanels, j);
-            mainPanel.width = wrapperWidth - sum;
+            mainPanel.width = wrapperWidth - sum; // shrink main panel
           }
         }
         if (panel.width >= panel.minWidth) {
@@ -247,7 +244,7 @@ class JuiColumnResponse extends PureComponent<Props, States> {
     this.setState({ panels: clonePanels });
   }
 
-  onClickShowPanel(e: ReactMouseEvent, index: number) {
+  onClickShowPanel(index: number, e: ReactMouseEvent) {
     e.stopPropagation();
     e.preventDefault();
     const { panels } = this.state;
@@ -277,57 +274,52 @@ class JuiColumnResponse extends PureComponent<Props, States> {
     return (
       <StyledWrapper ref={this.wrapperRef} onClick={this.onClickHideAllPanel}>
         {React.Children.map(children, (child: JSX.Element, index: number) => {
+          const panel = panels[index];
+          const { width, minWidth, forceShow } = panel;
+
           let offset = 0;
           for (let i = 0; i < index; i++) {
             offset += panels[i].width;
           }
-          const show = index > 0 && panels[index - 1].width > 0;
+
+          const showResize = index > 0 && panels[index - 1].width > 0;
+          const resize = showResize && (
+            <StyledResize
+              offset={offset}
+              show={showResize}
+              onMouseDown={this.onMouseDown}
+            />
+          );
+
           if (index === mainPanelIndex) {
             return (
               <React.Fragment>
-                {index > 0 && (
-                  <JuiHorizonResizer
-                    offset={offset}
-                    show={show}
-                    onMouseDown={this.onMouseDown}
-                  />
-                )}
+                {resize}
                 <StyledMainPanel ref={this.mainRef}>
-                  {child}
-                  {panels[index].width!}
+                  {child} {width}
                 </StyledMainPanel>
               </React.Fragment>
             );
           }
           return (
             <React.Fragment>
-              {index > 0 && (
-                <JuiHorizonResizer
-                  offset={offset}
-                  show={show}
-                  onMouseDown={this.onMouseDown}
-                />
-              )}
+              {resize}
               <StyledSidebarPanel
-                width={panels[index].width!}
-                forceShow={!!panels[index].forceShow}
+                width={width}
+                forceShow={!!forceShow}
                 forcePosition={index === 0 ? 'left' : 'right'}
-                forceWidth={panels[index].minWidth}
+                forceWidth={minWidth}
                 onClick={this.onClickPreventBubble}
               >
-                {child}
-                {panels[index].width!}
+                {child} {width}
               </StyledSidebarPanel>
-              <JuiHorizonButton
-                offset={
-                  offset -
-                  (index > 0 ? 10 : 0) +
-                  (!!panels[index].forceShow ? panels[index].minWidth : 0)
-                }
-                onClick={(e: ReactMouseEvent) =>
-                  this.onClickShowPanel(e, index)
-                }
-                show={panels[index].width === 0}
+              <StyledButton
+                show={width === 0}
+                left={
+                  index === 0 ? (forceShow ? `${minWidth}px` : '0px') : 'auto'}
+                right={
+                  index === 0 ? 'auto' : forceShow ? `${minWidth}px` : '0px'}
+                onClick={this.onClickShowPanel.bind(this, index)}
               />
             </React.Fragment>
           );
@@ -337,7 +329,7 @@ class JuiColumnResponse extends PureComponent<Props, States> {
   }
 }
 
-export { JuiColumnResponse };
+export { JuiResponsiveLayout };
 
 // import { JuiColumnResponse } from 'jui/foundation/Layout/Response/ColumnResponse';
 
