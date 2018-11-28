@@ -60,7 +60,7 @@ class NewMessageViewModel extends StoreViewModel {
   @action
   inputReset = () => {
     this.emailErrorMsg = '';
-    this.members = [];
+    // this.members = [];
     this.emailError = false;
     this.serverError = false;
   }
