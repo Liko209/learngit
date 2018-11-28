@@ -18,6 +18,8 @@ import {
 import { ProfileMiniCardGroupHeader } from './ProfileMiniCardGroupHeader';
 import { Profile } from '@/containers/common/Profile';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { goToConversation } from '@/common/goToConversation';
+import { MiniCard } from '@/containers/MiniCard';
 
 type Props = WithNamespaces & {
   id: number;
@@ -26,6 +28,14 @@ type Props = WithNamespaces & {
 class ProfileMiniCardGroupComponent extends Component<Props> {
   constructor(props: Props) {
     super(props);
+  }
+
+  onClickMessage = () => {
+    const { id } = this.props;
+    const result = goToConversation(id);
+    if (result) {
+      MiniCard.dismissProfile();
+    }
   }
 
   render() {
@@ -45,6 +55,7 @@ class ProfileMiniCardGroupComponent extends Component<Props> {
               color="primary"
               variant="plain"
               tooltipTitle={t('Messages')}
+              onClick={this.onClickMessage}
             >
               chat_bubble
             </JuiIconButton>
