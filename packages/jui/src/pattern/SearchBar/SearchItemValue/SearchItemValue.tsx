@@ -25,9 +25,8 @@ type JuiSearchItemValueProps = {
 
 function highlight(value: string, terms: string[]) {
   let v = value;
-  terms.forEach((term: string) => {
-    v = v.replace(term, `<span>${term}</span>`);
-  });
+  const reg = terms.join('|');
+  v = v.replace(new RegExp(reg, 'g'), (term: string) => `<span>${term}</span>`);
   return {
     __html: v,
   };
