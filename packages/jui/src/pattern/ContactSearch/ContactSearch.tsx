@@ -36,6 +36,7 @@ export type Props = {
   ContactSearchItem?: React.ComponentType<any>;
   error?: boolean;
   helperText?: string;
+  automationId?: string;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -212,6 +213,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       ContactSearchItem,
       error,
       helperText,
+      automationId,
     } = this.props;
     const { inputValue, selectedItem, shrink, showPlaceholder } = this.state;
 
@@ -229,6 +231,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
         selectedItem={selectedItem}
         defaultHighlightedIndex={0}
         itemToString={item => (item ? item.label : '')}
+        data-test-automation-id={automationId}
       >
         {({
           getInputProps,
