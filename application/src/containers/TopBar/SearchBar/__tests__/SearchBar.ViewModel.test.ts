@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { service } from 'sdk';
+import { goToConversation } from '../../../../common/goToConversation';
 import { SearchBarViewModel } from '../SearchBar.ViewModel';
+jest.mock('../../../../common/goToConversation');
 
 const searchBarViewModel = new SearchBarViewModel();
 const { PersonService, GroupService } = service;
@@ -33,6 +35,12 @@ describe('SearchBarViewModel', () => {
     jest.spyOn(PersonService, 'getInstance').mockReturnValue(personService);
     jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
   });
+
+  it('goToConversation()', async () => {
+    await searchBarViewModel.goToConversation(1);
+    expect(goToConversation).toHaveBeenCalledWith(1);
+  });
+
   describe('getSectionItemSize()', () => {
     it('If calculateSectionCount < 1 should return ONLY_ONE_SECTION_LENGTH', () => {
       const num1 = searchBarViewModel.getSectionItemSize(1);
