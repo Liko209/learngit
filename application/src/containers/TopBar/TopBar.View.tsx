@@ -17,6 +17,7 @@ import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { BackNForward } from '@/containers/BackNForward';
+import { SearchBar } from './SearchBar';
 import isElectron from '@/common/isElectron';
 
 type TopBarProps = WithNamespaces & {
@@ -152,6 +153,10 @@ class TopBar extends React.Component<TopBarProps> {
     );
   }
 
+  private _SearchBar() {
+    return <SearchBar />;
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -159,6 +164,7 @@ class TopBar extends React.Component<TopBarProps> {
           MainMenu={this._MainMenu}
           AvatarMenu={this._AvatarMenu}
           AddMenu={this._AddMenu}
+          SearchBar={this._SearchBar}
           Logo={this._Logo}
           BackNForward={isElectron ? BackNForward : undefined}
         />
