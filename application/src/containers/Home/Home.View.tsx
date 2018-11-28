@@ -36,7 +36,7 @@ class Home extends Component<HomeViewProps> {
           </Switch>
         </Bottom>
         <CreateTeam />
-        {this.props.isOpen && (
+        {this.props.isShowNewMessageDialog && (
           <NewMessage data-test-automation-id="newMessageModal" />
         )}
       </Wrapper>

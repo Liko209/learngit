@@ -26,7 +26,7 @@ class HomeViewModel extends StoreViewModel {
   }
 
   @computed
-  get isOpen() {
+  get isShowNewMessageDialog() {
     return getGlobalValue(GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG) || false;
   }
 
