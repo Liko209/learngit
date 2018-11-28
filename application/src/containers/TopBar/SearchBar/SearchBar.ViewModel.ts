@@ -11,7 +11,6 @@ import { Person, Group } from 'sdk/src/models';
 import { SectionTypes, SectionType } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
-import { goToConversation } from '@/common/goToConversation';
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -39,10 +38,6 @@ class SearchBarViewModel extends StoreViewModel {
 
   setValue = (value: string) => {
     this.value = value;
-  }
-
-  goToConversation = async (id: number) => {
-    await goToConversation(id);
   }
 
   calculateSectionCount(

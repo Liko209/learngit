@@ -24,7 +24,6 @@ type ViewProps = {
   searchValue: string;
   setValue: (value: string) => void;
   currentUserId: number;
-  goToConversation: (id: number) => void;
 };
 
 type SectionTypes = SectionType<Person> | SectionType<Group>;

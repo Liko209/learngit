@@ -16,6 +16,8 @@ import {
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
 import { Avatar } from '@/containers/Avatar';
+import { goToConversation } from '@/common/goToConversation';
+
 import {
   ViewProps,
   SearchResult,
@@ -114,11 +116,14 @@ class SearchBarView extends React.Component<ViewProps, State> {
     return <Avatar uid={uid} size="small" />;
   }
 
-  searchItemClickHandler = (id: number) => async () => {
-    const { goToConversation } = this.props;
-    await goToConversation(id);
+  private _goToConversation = async (id: number) => {
     this.onClear();
     this.onClose();
+    await goToConversation(id);
+  }
+
+  searchItemClickHandler = (id: number) => async () => {
+    await this._goToConversation(id);
   }
 
   private _Actions = () => {
@@ -217,9 +222,8 @@ class SearchBarView extends React.Component<ViewProps, State> {
     this._setSelectIndex(index);
   }
 
-  onEnter = () => {
+  onEnter = async (e: any) => {
     const { persons, groups, teams, selectIndex } = this.state;
-    const { goToConversation } = this.props;
 
     const searchItems = [
       ...persons.sortableModel,
@@ -230,9 +234,7 @@ class SearchBarView extends React.Component<ViewProps, State> {
       Person | Group
     >;
     if (selectItem) {
-      goToConversation(selectItem.id);
-      this.onClear();
-      this.onClose();
+      await this._goToConversation(selectItem.id);
     }
   }
 
