@@ -103,7 +103,5 @@ class Notification extends Component<NotificationPros, {}> {
     return showNotification(config);
   }
 }
-Object.assign(window, {
-  n: Notification,
-});
+
 export { Notification, NotificationPros };

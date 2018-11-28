@@ -23,8 +23,6 @@ import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import { GLOBAL_KEYS } from './store/constants';
 import { analytics } from '@/Analytics';
 import { AboutView } from './containers/About';
-import { Notification } from './containers/Notification';
-console.log('Notification: ', Notification);
 
 @observer
 class App extends React.Component {
