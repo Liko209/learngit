@@ -11,7 +11,7 @@ class Upgrade {
   private _hasNewVersion: boolean = false;
   private _swURL: string;
 
-  constructor(public queryInterval = 60 * 1000) {
+  constructor(public queryInterval = 20 * 60 * 1000) {
     mainLogger.info(
       `${logTag}constructor with interval: ${this.queryInterval}`,
     );
