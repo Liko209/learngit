@@ -3,14 +3,16 @@
  * @Date: 2018-09-20 14:56:18
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { err, ok } from 'foundation';
 import { service } from 'sdk';
+import { GroupErrorTypes } from 'sdk/service/group';
+import { BaseError } from 'sdk/utils';
+
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { GroupErrorTypes } from 'sdk/service/group';
-import { BaseError } from 'sdk/utils';
-import { err, ok, Result } from 'foundation';
+
+jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
 
@@ -40,6 +42,7 @@ describe('CreateTeamVM', () => {
     };
     jest.spyOn(storeManager, 'getGlobalStore').mockReturnValue(gs);
   });
+
   it('create team success', async () => {
     const creatorId = 1;
     accountService.getCurrentUserId = jest
