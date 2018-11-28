@@ -15,6 +15,7 @@ type ContactSearchProps = {
   placeholder: string;
   error: boolean;
   helperText: string;
+  isExcludeMe?: boolean;
 };
 
 type ViewProps = {
@@ -25,7 +26,6 @@ type ViewProps = {
   placeholder: string;
   error: boolean;
   helperText: string;
-  automationId: string;
 };
 
 export { ViewProps, ContactSearchProps, SelectedMember };

@@ -3,14 +3,13 @@
  * @Date: 2018-09-18 14:33:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { debounce } from 'lodash';
 
-import SearchService from 'sdk/service/search';
-import { Person } from 'sdk/src/models';
+import PersonService from 'sdk/service/person';
+import { Person, SortableModel } from 'sdk/src/models';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactSearchProps, ViewProps, SelectedMember } from './types';
-import { getName } from './helper/getName';
 
 class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
   implements ViewProps {
@@ -20,23 +19,35 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
   @observable
   suggestions: SelectedMember[] = [];
 
-  @observable
-  label: string;
+  @computed
+  get label() {
+    return this.props.label;
+  }
 
-  @observable
-  onChange: (item: any) => void;
+  @computed
+  get onChange() {
+    return this.props.onChange;
+  }
 
-  @observable
-  placeholder: string;
+  @computed
+  get placeholder() {
+    return this.props.placeholder;
+  }
 
-  @observable
-  error: boolean;
+  @computed
+  get error() {
+    return this.props.error;
+  }
 
-  @observable
-  helperText: string;
+  @computed
+  get helperText() {
+    return this.props.helperText;
+  }
 
-  @observable
-  automationId: string;
+  @computed
+  private get _isExcludeMe() {
+    return this.props.isExcludeMe;
+  }
 
   constructor(props: ContactSearchProps) {
     super(props);
@@ -44,28 +55,24 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
   }
 
   @action
-  onReceiveProps({
-    label,
-    onChange,
-    placeholder,
-    error,
-    helperText,
-  }: ContactSearchProps) {
-    this.label = label;
-    this.onChange = onChange;
-    this.placeholder = placeholder;
-    this.error = error;
-    this.helperText = helperText;
-  }
-
-  @action
   fetchSearch = async (query: string) => {
-    const searchService = SearchService.getInstance<SearchService>();
-    const result = await searchService.searchMembers(query);
-    const filterMembers = result.filter((member: Person) => {
-      return !this.existMembers.find(existMember => existMember === member.id);
-    });
-    return filterMembers;
+    const personService = PersonService.getInstance<PersonService>();
+    const result = await personService.doFuzzySearchPersons(
+      query,
+      this._isExcludeMe ? true : false,
+    );
+
+    if (result) {
+      const filterMembers = result.sortableModels.filter(
+        (member: SortableModel<Person>) => {
+          return !this.existMembers.find(
+            existMember => existMember === member.id,
+          );
+        },
+      );
+      return filterMembers;
+    }
+    return null;
   }
 
   @action
@@ -75,14 +82,12 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
       return;
     }
     let members: SelectedMember[] = [];
-    this.fetchSearch(value).then((data: Person[]) => {
-      console.log('------data----', data);
+    this.fetchSearch(value).then((data: SortableModel<Person>[]) => {
       members = data.map(member => ({
         id: member.id,
-        label: getName(member),
-        email: member.email,
+        label: member.displayName,
+        email: member.entity.email,
       }));
-      // console.log('------members----', members);
       this.suggestions = members;
     });
   }

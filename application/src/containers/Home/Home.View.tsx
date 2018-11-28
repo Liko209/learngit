@@ -50,7 +50,10 @@ class Home extends Component<HomeViewProps> {
           </Switch>
         </Bottom>
         <CreateTeam />
-        <NewMessage data-test-automation-id="newMessageModal" />
+        {/* TODO Dialog shouldn't append to Home */}
+        {this.props.isShowNewMessageDialog && (
+          <NewMessage data-test-automation-id="newMessageModal" />
+        )}
       </Wrapper>
     );
   }
