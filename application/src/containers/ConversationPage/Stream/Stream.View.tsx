@@ -196,14 +196,15 @@ class StreamViewComponent extends Component<Props> {
     );
   }
   private _visibilityPostWrapper(
-    onChangeHandler: Function,
+    onChangeHandler: (isVisible: boolean) => void,
     streamItem: StreamItem,
   ) {
     const { jumpToPostId, loading } = this.props;
     return (
       <VisibilitySensor
         key={`VisibilitySensor${streamItem.value}`}
-        onChange={this._handleMostRecentPostRead}
+        offset={VISIBILITY_SENSOR_OFFSET}
+        onChange={onChangeHandler}
       >
         <ConversationPost
           ref={this._setPostRef}
