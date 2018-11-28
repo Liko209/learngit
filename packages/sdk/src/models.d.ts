@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { POST_STATUS, PRESENCE } from './service';
+import { TeamPermission } from './service/group';
 
 export type BaseModel = {
   id: number;
@@ -59,16 +60,7 @@ export type GroupCommon = {
   converted_to_team?: object;
   converted_from_group?: object;
   pinned_post_ids?: number[];
-  permissions?: {
-    admin?: {
-      uids: number[];
-      level?: number;
-    };
-    user?: {
-      uids: number[];
-      level?: number;
-    };
-  };
+  permissions?: TeamPermission;
   post_cursor?: number;
   drp_post_cursor?: number;
   trigger_ids?: number[];
@@ -105,6 +97,7 @@ export type Company = ExtendedBaseModel & {
   custom_emoji: { [index: string]: { data: string } };
   _delta?: { add_keys?: object; remove_keys: object };
   rc_account_id?: number;
+  webmail_person_id?: number;
 };
 
 export type PhoneNumberModel = {
@@ -136,6 +129,7 @@ export type Person = ExtendedBaseModel & {
   is_pseudo_user?: boolean;
   glip_user_id?: number;
   away_status?: string;
+  job_title?: string;
   pseudo_user_phone_number?: string;
   rc_account_id?: number;
 };

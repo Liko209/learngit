@@ -20,6 +20,24 @@ export default class CompanyService extends BaseService<Company> {
     };
     super(CompanyDao, CompanyAPI, handleData, subscriptions);
   }
+
+  async getCompanyById(id: number) {
+    return super.getById(id) as Promise<Company | null>;
+  }
+
+  async getCompanyEmailDomain(id: number): Promise<string | null> {
+    const company = await this.getCompanyById(id);
+    let result = '';
+    if (company) {
+      if (company.webmail_person_id && company.webmail_person_id > 0) {
+        result = company.id.toString();
+      } else {
+        const domains: string[] = JSON.parse(company.domain);
+        result = domains.length > 0 ? domains[0] : '';
+      }
+    }
+    return result;
+  }
 }
 
 export { CompanyService };
