@@ -75,6 +75,7 @@ export class ConversationCard extends React.Component<
           mode={mode}
           highlight={highlight}
           onClick={onClickHandler}
+          onAnimationEnd={onAnimationEnd}
           {...rest}
         >
           <JuiConversationCardHeader

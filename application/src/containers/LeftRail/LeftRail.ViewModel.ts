@@ -18,7 +18,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import GlobalStore from '@/store/base/GlobalStore';
 import { POST_LIST_TYPE } from '../PostListPage/types';
-import history from '@/history';
+import { getGlobalValue } from '@/store/utils';
 
 class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   implements LeftRailViewProps {
@@ -28,6 +28,11 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   @computed
   private get _unreadOnly() {
     return this._globalStore.get(GLOBAL_KEYS.UNREAD_TOGGLE_ON);
+  }
+
+  @computed
+  get currentPostListType() {
+    return getGlobalValue(GLOBAL_KEYS.CURRENT_POST_LIST_TYPE);
   }
 
   constructor() {
@@ -42,14 +47,12 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
       {
         title: 'mention_plural',
         icon: 'alternate_email',
-        onClick: (evt: any) => {
-          history.push(`/messages/${POST_LIST_TYPE.mentions}`);
-        },
-        get selected() {
-          return new RegExp(`^/messages/${POST_LIST_TYPE.mentions}$`).test(
-            history.location.pathname,
-          );
-        },
+        type: POST_LIST_TYPE.mentions,
+      },
+      {
+        title: 'bookmark_plural',
+        icon: 'bookmark_border',
+        type: POST_LIST_TYPE.bookmarks,
       },
     ];
   }

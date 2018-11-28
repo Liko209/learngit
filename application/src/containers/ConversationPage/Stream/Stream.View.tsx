@@ -28,6 +28,7 @@ import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { extractView } from 'jui/hoc/extractView';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
+import { mainLogger } from 'sdk';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 
@@ -320,7 +321,7 @@ class StreamViewComponent extends Component<Props> {
     window.requestAnimationFrame(() => {
       const scrollToPostEl = this._postRefs.get(scrollToPostId);
       if (!scrollToPostEl) {
-        console.warn('scrollToPostEl no found');
+        mainLogger.warn('scrollToPostEl no found');
         return;
       }
       scrollToComponent(scrollToPostEl, scrollToViewOpt);
