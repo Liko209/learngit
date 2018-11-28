@@ -54,6 +54,7 @@ export class ConversationCard extends React.Component<
       post,
       hideText,
       highlight,
+      onAnimationEnd,
       ...rest
     } = this.props;
     const { isHover } = this.state;
