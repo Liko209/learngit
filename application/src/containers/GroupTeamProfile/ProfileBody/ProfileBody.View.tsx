@@ -13,27 +13,19 @@ import {
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Avatar } from '@/containers/Avatar';
 import { ProfileHeaderViewProps } from './types';
-import { JumpToConversation } from '../../JumpToConversation';
+import { goToConversation } from '../../../common/goToConversation';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { CONVERSATION_TYPES } from '@/constants';
 
 @observer
 class ProfileBody extends React.Component<ProfileHeaderViewProps> {
-  renderMessageBtn = () => {
-    return (
-      <StyledMessageBtn>
-        <JuiIconography>chat_bubble</JuiIconography>
-        Message
-      </StyledMessageBtn>
-    );
+  OnMessageClick = async () => {
+    const { id, dismiss } = this.props;
+    await goToConversation(id);
+    dismiss();
   }
   render() {
-    const { displayName, description, id, type, dismiss } = this.props;
-    const message = (
-      <JumpToConversation id={id} onSuccess={dismiss}>
-        {this.renderMessageBtn()}
-      </JumpToConversation>
-    );
+    const { displayName, description, id, type } = this.props;
     let avatar;
     if (
       type === CONVERSATION_TYPES.NORMAL_GROUP ||
@@ -52,7 +44,10 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
         displayName={displayName}
         description={description}
       >
-        {message}
+        <StyledMessageBtn onClick={this.OnMessageClick} tabIndex={0}>
+          <JuiIconography>chat_bubble</JuiIconography>
+          Message
+        </StyledMessageBtn>
       </JuiGroupProfileBody>
     );
   }

@@ -12,7 +12,7 @@ const StyledMessageBtn = styled.div`
   font-size: ${({ theme }) => theme.typography.body1.fontSize};
   span {
     font-size: ${({ theme }) => theme.typography.h6.fontSize};
-    margin-right: ${spacing(3)};
+    margin-right: ${spacing(2)};
   }
 `;
 export { StyledMessageBtn };

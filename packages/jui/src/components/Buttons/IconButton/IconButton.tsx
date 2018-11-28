@@ -135,20 +135,6 @@ const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
   }
 `;
 
-// Tooltip does not work on disabled IconButton without this: https://github.com/mui-org/material-ui/issues/8416
-const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
-  display: inline-block;
-  width: ${({ variant, size = 'medium', theme }) =>
-    width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
-      theme,
-    })};
-  height: ${({ variant, size = 'medium', theme }) =>
-    width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
-      theme,
-    })};
-  font-size: 0;
-`;
-
 export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
   props: JuiIconButtonProps,
 ) => {
@@ -156,7 +142,6 @@ export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
     className,
     children,
     tooltipTitle,
-    innerRef,
     color,
     disableToolTip = false,
     ariaLabel,
@@ -177,30 +162,24 @@ export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
   }
   const renderToolTip = () => {
     return (
-      <WrapperForTooltip
+      <StyledIconButton
+        disableRipple={rest.variant === 'plain'}
+        colorScope={colorScope}
+        colorName={colorName}
+        aria-label={ariaLabel}
         className={className}
-        innerRef={innerRef}
-        variant={variant}
-        size={size}
+        {...rest}
       >
-        <StyledIconButton
-          disableRipple={rest.variant === 'plain'}
-          colorScope={colorScope}
-          colorName={colorName}
-          aria-label={ariaLabel}
-          {...rest}
+        <StyledIcon
+          size={size}
+          variant={variant}
+          awake={awake}
+          disabled={disabled}
+          invisible={invisible}
         >
-          <StyledIcon
-            size={size}
-            variant={variant}
-            awake={awake}
-            disabled={disabled}
-            invisible={invisible}
-          >
-            {children}
-          </StyledIcon>
-        </StyledIconButton>
-      </WrapperForTooltip>
+          {children}
+        </StyledIcon>
+      </StyledIconButton>
     );
   };
   if (!disableToolTip) {

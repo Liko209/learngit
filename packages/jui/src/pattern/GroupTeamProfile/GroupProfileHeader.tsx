@@ -31,12 +31,15 @@ const StyledContent = styled.div`
 `;
 const StyledIcon = styled.div`
   display: flex;
+  align-items: center;
   height: 100%;
   .close {
     color: ${grey('500')};
     font-size: ${({ theme }) => theme.typography.h6.fontSize};
-    height: ${height(5)};
+    height: ${height(10)};
     margin-left: ${spacing(-3)};
+    width: 40px;
+    border-radius: 50%;
   }
   div {
     z-index: ${({ theme }) => theme.zIndex.moreMenu};
@@ -61,7 +64,9 @@ class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
           </StyledText>
           <StyledIcon>
             {children}
-            <JuiIconButton onClick={dismiss} className="close" disableToolTip={true}>close</JuiIconButton>
+            <div>
+              <JuiIconButton onClick={dismiss} className="close" disableToolTip={true}>close</JuiIconButton>
+            </div>
           </StyledIcon>
         </StyledContent>
       </StyledHeader>
