@@ -16,6 +16,7 @@ import { ProfileHeaderViewProps } from './types';
 import { goToConversation } from '../../../common/goToConversation';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { CONVERSATION_TYPES } from '@/constants';
+import { accessHandler } from '../AccessHandler';
 
 @observer
 class ProfileBody extends React.Component<ProfileHeaderViewProps> {
@@ -25,7 +26,8 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
     dismiss();
   }
   render() {
-    const { displayName, description, id, type } = this.props;
+    const { displayName, description, id, type, t } = this.props;
+    const { goToMessageInfo } = accessHandler(type);
     let avatar;
     if (
       type === CONVERSATION_TYPES.NORMAL_GROUP ||
@@ -44,7 +46,7 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
         displayName={displayName}
         description={description}
       >
-        <StyledMessageBtn onClick={this.OnMessageClick} tabIndex={0}>
+        <StyledMessageBtn onClick={this.OnMessageClick} tabIndex={0} aria-label={t(goToMessageInfo)}>
           <JuiIconography>chat_bubble</JuiIconography>
           Message
         </StyledMessageBtn>

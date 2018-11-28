@@ -10,7 +10,7 @@ import { JuiIconButton, JuiIconButtonProps } from 'jui/components/Buttons';
 import { translate, WithNamespaces } from 'react-i18next';
 import copy from 'copy-to-clipboard';
 import { CONVERSATION_TYPES } from '@/constants';
-import { accessHandler } from './AccessHandler';
+import { accessHandler } from '../../AccessHandler';
 
 type Props = WithNamespaces & {
   groupUrl: string;

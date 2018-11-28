@@ -8,15 +8,19 @@ import { CONVERSATION_TYPES } from '@/constants';
 export function accessHandler(type: CONVERSATION_TYPES) {
   let checkMoreOption = '';
   let copyUrl = '';
+  let goToMessageInfo = '';
   if (type === CONVERSATION_TYPES.NORMAL_GROUP) {
     checkMoreOption = 'checkMoreGroupOption';
     copyUrl = 'copyGroupUrl';
+    goToMessageInfo = 'goToGroupConversation';
   } else if (type === CONVERSATION_TYPES.TEAM) {
     checkMoreOption = 'checkMoreTeamOption';
     copyUrl = 'copyTeamUrl';
+    goToMessageInfo = 'goToTeamConversation';
   }
   return {
     checkMoreOption,
     copyUrl,
+    goToMessageInfo,
   };
 }
