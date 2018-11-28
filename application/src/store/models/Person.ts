@@ -36,9 +36,13 @@ export default class PersonModel extends Base<Person> {
   @observable
   awayStatus?: string;
   @observable
+  jobTitle?: string;
+  @observable
   pseudoUserPhoneNumber?: string;
   rcAccountId?: number;
   inviterId?: number;
+  @observable
+  displayName?: string;
   constructor(data: Person) {
     super(data);
     const {
@@ -51,10 +55,12 @@ export default class PersonModel extends Base<Person> {
       is_pseudo_user,
       glip_user_id,
       away_status,
+      job_title,
       headshot_version,
       pseudo_user_phone_number,
       rc_account_id,
       inviter_id,
+      display_name,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -66,9 +72,11 @@ export default class PersonModel extends Base<Person> {
     this.isPseudoUser = is_pseudo_user;
     this.glipUserId = glip_user_id;
     this.awayStatus = away_status;
+    this.jobTitle = job_title;
     this.pseudoUserPhoneNumber = pseudo_user_phone_number;
     this.rcAccountId = rc_account_id;
     this.inviterId = inviter_id;
+    this.displayName = display_name;
   }
 
   static fromJS(data: Person) {
@@ -76,7 +84,7 @@ export default class PersonModel extends Base<Person> {
   }
 
   @computed
-  get displayName(): string {
+  get userDisplayName(): string {
     if (this.isPseudoUser) {
       let pseudoUserDisplayName = '';
       if (this.glipUserId) {
@@ -92,6 +100,7 @@ export default class PersonModel extends Base<Person> {
       }
       return pseudoUserDisplayName;
     }
+
     let dName = '';
     if (this.firstName) {
       dName += this.firstName;

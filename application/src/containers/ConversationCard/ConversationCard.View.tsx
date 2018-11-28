@@ -13,6 +13,7 @@ import { Footer } from '@/containers/ConversationCard/Footer';
 import { idsToConversationSheet } from '@/containers/ConversationSheet';
 import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 import { From } from './From';
+import { MiniCard } from '@/containers/MiniCard';
 import history from '@/history';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -32,6 +33,15 @@ export class ConversationCard extends React.Component<
   handleMouseLeave = () => {
     this.setState({
       isHover: false,
+    });
+  }
+
+  onClickAvatar = (event: React.MouseEvent) => {
+    const { creator } = this.props;
+    event.stopPropagation();
+    MiniCard.showProfile({
+      anchor: event.target as HTMLElement,
+      id: creator.id,
     });
   }
 
@@ -61,7 +71,14 @@ export class ConversationCard extends React.Component<
     if (!creator.id) {
       return null;
     }
-    const avatar = <Avatar uid={creator.id} size="medium" data-name="avatar" />;
+    const avatar = (
+      <Avatar
+        uid={creator.id}
+        size="medium"
+        data-name="avatar"
+        onClick={this.onClickAvatar}
+      />
+    );
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
     const onClickHandler = mode ? this.jumpToPost : undefined;
     return (

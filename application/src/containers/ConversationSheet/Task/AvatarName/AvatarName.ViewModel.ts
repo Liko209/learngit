@@ -20,7 +20,7 @@ class AvatarNameViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get name() {
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.id)
-      .displayName;
+      .userDisplayName;
   }
 }
 

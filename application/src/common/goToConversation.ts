@@ -19,7 +19,7 @@ const _getConversationId = async (id: number) => {
   }
   if (type === TypeDictionary.TYPE_ID_PERSON) {
     try {
-      const group = await groupService.getGroupByMemberList([id]);
+      const group = await groupService.getOrCreateGroupByMemberList([id]);
       if (group) {
         return group.id;
       }

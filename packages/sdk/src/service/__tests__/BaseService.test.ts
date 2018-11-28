@@ -640,4 +640,37 @@ describe('BaseService', () => {
       expect(result.sortableModels[2].entity).toBe(entityA);
     });
   });
+
+  describe('getMultiEntitiesFromCache()', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+    });
+
+    it('should filter invalid model and return expected models', async () => {
+      const service = new AService();
+      service.enableCache();
+
+      const models = [
+        { id: 1, name: 'name', note: 'note' },
+        { id: 2, name: 'name', note: 'note' },
+        { id: 3, name: 'name', note: 'note' },
+        { id: 4, name: 'name', note: 'note' },
+        { id: 5, name: 'name', note: 'note' },
+        { id: 6, name: 'name', note: 'note' },
+      ];
+
+      const cacheManager = service.getCacheManager();
+      models.forEach(element => {
+        cacheManager.set(element);
+      });
+      const res = await service.getMultiEntitiesFromCache(
+        [1, 2, 3, 4, 5],
+        (entity: BaseServiceTestModel) => {
+          return entity.id > 3;
+        },
+      );
+      expect(res).toEqual(models.splice(3, 2));
+    });
+  });
 });

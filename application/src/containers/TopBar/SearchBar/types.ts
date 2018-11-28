@@ -40,4 +40,7 @@ export {
   SectionType,
   SearchSection,
   SearchResult,
+  SortableModel,
+  Person,
+  Group,
 };

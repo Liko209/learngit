@@ -592,7 +592,7 @@ class PostService extends BaseService<Post> {
   ): Promise<{ id?: number }> {
     try {
       const groupService: GroupService = GroupService.getInstance();
-      const group = await groupService.getGroupByMemberList(ids);
+      const group = await groupService.getOrCreateGroupByMemberList(ids);
       const id = group ? group.id : undefined;
       if (id && this._isValidTextMessage(message)) {
         setTimeout(() => {
