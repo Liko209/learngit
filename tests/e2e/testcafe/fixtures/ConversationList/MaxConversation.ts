@@ -198,7 +198,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     // case JPT-353
     await h(t).withLog(`Then max conversation count should be limited, total number should be ${realNum}`, async () => {
-      await teamsSection.expectConversationCount(realNum);
+      await t.expect(teamsSection.conversations.count).eql(realNum);
     });
 
     await h(t).withLog(`When I refresh page`, async () => {
@@ -207,7 +207,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
     });
 
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
-      await teamsSection.expectConversationCount(realNum);
+      await t.expect(teamsSection.conversations.count).eql(realNum);
     });
 
     // case JPT-310
@@ -221,7 +221,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = MAX_NUMBER - 1;
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
-      await teamsSection.expectConversationCount(realNum);
+      await t.expect(teamsSection.conversations.count).eql(realNum);
     });
 
     await h(t).withLog("When I click conversation.2's favorite buttom", async () => {
@@ -231,7 +231,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = realNum - 1;
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
-      await teamsSection.expectConversationCount(realNum);
+      await t.expect(teamsSection.conversations.count).eql(realNum);
     });
 
     // case JPT-342
@@ -247,7 +247,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = realNum + 1;
     await h(t).withLog(`And max conversation count = ${realNum}`, async () => {
-      await teamsSection.expectConversationCount(realNum);
+      await t.expect(teamsSection.conversations.count).eql(realNum);
       await user.sdk.glip.updateProfile(user.rcId, { max_leftrail_group_tabs2: DEFAULT_MAX_NUMBER });
     });
   }

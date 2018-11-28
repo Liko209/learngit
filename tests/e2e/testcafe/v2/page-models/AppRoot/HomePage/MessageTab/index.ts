@@ -55,17 +55,18 @@ class ConversationEntry extends BaseWebComponent {
     return Number(text);
   }
 
-  async expectUmi(n: number, waitTime=10){
-    let i = 0
+  async expectUmi(n: number, waitTime: number = 10) {
+    let i = 0;
     while (true) {
-      await this.t.wait(1000);
-      const count = await this.getUmi()
-      if (count == n) {
+      await this.t.wait(1e3);
+      try {
+        await this.t.expect(await this.getUmi()).eql(n);
         return;
-      }
-      i = i + 1
-      if (i >= waitTime) {
-        throw(`UMI amount error: expected ${count} to be ${n}`);
+      } catch (err) {
+        if (i >= waitTime) {
+          throw err;
+        }
+        i = i + 1;
       }
     }
   }
@@ -118,32 +119,18 @@ class ConversationListSection extends BaseWebComponent {
     return Number(text);
   }
 
-  async expectHeaderUmi(n: number, waitTime=10){
-    let i = 0
+  async expectHeaderUmi(n: number, waitTime: number = 10) {
+    let i = 0;
     while (true) {
-      await this.t.wait(1000);
-      const count = await this.getHeaderUmi()
-      if (count == n){
-        return; 
-      }
-      i = i + 1
-      if (i >= waitTime) {
-        throw(`UMI amount error: expected ${count} to be ${n}`);
-      }
-    }
-  }
-
-  async expectConversationCount(n: number, waitTime=8){
-    let i = 0
-    while (true) {
-      await this.t.wait(1000);
-      const count = await this.conversations.count;
-      if (count == n){
+      await this.t.wait(1e3);
+      try {
+        await this.t.expect(await this.getHeaderUmi()).eql(n);
         return;
-      }
-      i = i + 1
-      if (i >= waitTime) {
-        throw(`conversation amount error: expected ${count} to be ${n}`);
+      } catch (err) {
+        if (i >= waitTime) {
+          throw err;
+        }
+        i = i + 1;
       }
     }
   }
@@ -240,7 +227,7 @@ export class MessageTab extends BaseWebComponent {
     return this.getSection('Teams');
   }
   get mentionsEntry() {
-    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions')); 
+    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'));
   }
   get conversationPage() {
     return this.getComponent(ConversationPage);
