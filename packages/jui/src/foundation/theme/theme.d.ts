@@ -98,6 +98,7 @@ type Theme = {
     loading: number;
     dragging: number;
     moreMenu: number;
+    memberListHeader: number
   };
   size: {
     width: number;
@@ -160,6 +161,7 @@ type Theme = {
   boxShadow: {
     val1: string;
     val2: string;
+    val3: string;
   };
   maxHeight: {
     dialog: string;

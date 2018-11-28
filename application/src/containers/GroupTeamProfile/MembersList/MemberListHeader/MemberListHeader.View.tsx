@@ -13,9 +13,9 @@ import { CONVERSATION_TYPES } from '@/constants';
 @observer
 class MemberListHeader extends React.Component<MemberListHeaderViewProps> {
   render() {
-    const { counts, type, t } = this.props;
+    const { counts, type, t , isShowHeaderShadow } = this.props;
     return (
-      <StyledTitle>
+      <StyledTitle className={isShowHeaderShadow ? 'shadow' : ''}>
         {type === CONVERSATION_TYPES.TEAM
           ? `${t('TeamMembers')} (${counts})`
           : `${t('GroupMembers')} (${counts})`}
