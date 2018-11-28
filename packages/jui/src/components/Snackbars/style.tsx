@@ -8,11 +8,17 @@ import MuiSnackbarContent, {
   SnackbarContentProps,
 } from '@material-ui/core/SnackbarContent';
 
-import { spacing, palette } from '../../foundation/utils/styles';
-import { JuiButton, JuiIconButton } from '../Buttons';
-import { MessageAlignment, SnackbarContentColor } from './SnackbarContent';
-
 import styled from '../../foundation/styled-components';
+import {
+  spacing,
+  palette,
+  height,
+  typography,
+} from '../../foundation/utils/styles';
+
+import { MessageAlignment, SnackbarContentColor } from './SnackbarContent';
+import { JuiSnackbarAction } from './SnackbarAction';
+
 type JuiSnackbarContentProps = {
   messageAlign: MessageAlignment;
   bgColor: SnackbarContentColor;
@@ -29,27 +35,31 @@ const WrapperContent = ({
 }: JuiSnackbarContentProps) => <MuiSnackbarContent {...rest} />;
 
 const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
+
   && {
-    padding: ${spacing(2, 6)};
+    ${typography('body1')}
+    padding: ${spacing(2, 4)};
+    overflow: hidden;
     background-color: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 0)};
     box-shadow: none;
-    border-radius: ${props => props.radius} !important;
+    border-radius: ${({ fullWidth, theme }) =>
+      fullWidth ? 0 : `${theme.shape.borderRadius}px`} !important;
     max-width: ${props => (props.fullWidth ? '100%' : '640px')} !important;
     box-sizing: border-box;
-    height: 48px;
     margin: 0 auto;
   }
+
   .message {
     flex: 1;
     text-align: ${props => props.messageAlign};
   }
 
-  && > ${JuiIconButton} {
-    color: ${palette('common', 'white')};
+  .action {
+    margin-right: 0;
   }
 
-  && > ${JuiButton} {
-    color: ${palette('common', 'white')};
+  ${JuiSnackbarAction} + ${JuiSnackbarAction} {
+    margin-left: ${spacing(3)};
   }
 `;
 

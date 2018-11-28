@@ -13,19 +13,45 @@ import { JuiSnackbarContent, JuiSnackbarAction } from '..';
 const Wrapper = styled.div`
   text-align: center;
   background: #f1f1f1;
-  padding: 0 24px;
+  padding: 12px 24px;
   margin: 12px 0;
+
+  && > div {
+    margin-bottom: 10px;
+  }
 `;
 
-storiesOf('Components|Snackbars', module)
+storiesOf('Components/Snackbars', module)
   .addDecorator(withInfoDecorator(JuiSnackbarContent, { inline: true }))
   .add('toast', () => (
     <Wrapper>
       <JuiSnackbarContent
-        fullWidth={false}
-        messageAlign="center"
         type="success"
-        message="yo hello"
+        message="This is an success message."
+      />
+      <JuiSnackbarContent
+        type="error"
+        message="This is an error message."
+        action={<JuiSnackbarAction key="action1">Action</JuiSnackbarAction>}
+      />
+      <JuiSnackbarContent
+        type="warn"
+        message="This is an warning message."
+        action={[
+          <JuiSnackbarAction key="action1">Action</JuiSnackbarAction>,
+          <JuiSnackbarAction key="action2">Action</JuiSnackbarAction>,
+        ]}
+      />
+      <JuiSnackbarContent
+        type="info"
+        message="This is an informational message."
+        action={[
+          <JuiSnackbarAction key="action1">Action</JuiSnackbarAction>,
+          <JuiSnackbarAction key="action2">Action</JuiSnackbarAction>,
+          <JuiSnackbarAction key="action2" variant="icon">
+            close
+          </JuiSnackbarAction>,
+        ]}
       />
     </Wrapper>
   ))
@@ -33,12 +59,34 @@ storiesOf('Components|Snackbars', module)
     <Wrapper>
       <JuiSnackbarContent
         fullWidth={true}
-        messageAlign="center"
         type="success"
-        message="yo hello"
-        actions={[
+        message="This is an success message."
+      />
+      <JuiSnackbarContent
+        fullWidth={true}
+        type="error"
+        message="This is an error message."
+        action={<JuiSnackbarAction key="action1">Action</JuiSnackbarAction>}
+      />
+      <JuiSnackbarContent
+        fullWidth={true}
+        type="warn"
+        message="This is an warning message."
+        action={[
           <JuiSnackbarAction key="action1">Action</JuiSnackbarAction>,
-          <JuiSnackbarAction key="close">close</JuiSnackbarAction>,
+          <JuiSnackbarAction key="action2">Action</JuiSnackbarAction>,
+        ]}
+      />
+      <JuiSnackbarContent
+        fullWidth={true}
+        type="info"
+        message="This is an informational message."
+        action={[
+          <JuiSnackbarAction key="action1">Action</JuiSnackbarAction>,
+          <JuiSnackbarAction key="action2">Action</JuiSnackbarAction>,
+          <JuiSnackbarAction key="action2" variant="icon">
+            close
+          </JuiSnackbarAction>,
         ]}
       />
     </Wrapper>

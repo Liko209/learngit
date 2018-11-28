@@ -7,6 +7,7 @@
 import React from 'react';
 import * as Jui from './style';
 import { Palette } from '../../foundation/theme/theme';
+import { SnackbarContentProps as MuiSnackbarContentProps } from '@material-ui/core/SnackbarContent';
 
 type JuiSnackbarsType = 'warn' | 'success' | 'error' | 'info';
 type SnackbarContentColor = [keyof Palette, string];
@@ -18,12 +19,9 @@ type ColorMap = {
   [key: string]: ColorType;
 };
 
-type JuiSnackbarsProps = {
+type JuiSnackbarsProps = MuiSnackbarContentProps & {
   type: JuiSnackbarsType;
-  message: React.ReactNode;
   messageAlign: MessageAlignment;
-  actions?: React.ReactNode[];
-  radius: number;
   fullWidth: boolean;
 };
 
@@ -38,7 +36,7 @@ const COLOR_MAP: ColorMap = {
     color: ['semantic', 'negative'],
   },
   info: {
-    color: ['primary', 'main'],
+    color: ['grey', '700'],
   },
 };
 
@@ -53,17 +51,16 @@ class JuiSnackbarContent extends React.PureComponent<JuiSnackbarsProps> {
   };
 
   render() {
-    const { message, type, actions, ...rest } = this.props;
+    const { type, ...rest } = this.props;
     const result = getColor(type, COLOR_MAP);
     const color = result.color;
     return (
       <Jui.SnackbarContent
         classes={{
           message: 'message',
+          action: 'action',
         }}
         bgColor={color}
-        action={actions}
-        message={message}
         {...rest}
       />
     );
