@@ -135,7 +135,7 @@ const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
 
 // Tooltip does not work on disabled IconButton without this: https://github.com/mui-org/material-ui/issues/8416
 const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
-  display: inline-block;
+  display: inline-flex;
   width: ${({ variant, size = 'medium', theme }) =>
     width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
       theme,

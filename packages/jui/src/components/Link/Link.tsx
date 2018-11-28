@@ -16,7 +16,9 @@ type JuiLinkProps = {
   disabled?: boolean;
   color?: 'primary' | 'secondary';
   Component?: React.ComponentType | keyof JSX.IntrinsicElements;
-  href?: string;
+  handleOnClick?:
+    | ((event: React.MouseEvent<HTMLSpanElement>) => void)
+    | undefined;
 };
 
 const StyledComponent = styled<JuiLinkProps, 'span'>('span')`
@@ -36,10 +38,14 @@ const StyledComponent = styled<JuiLinkProps, 'span'>('span')`
 `;
 
 type ILink = React.ComponentType<JuiLinkProps>;
-const JuiLink: ILink = ({ Component, ...rest }: JuiLinkProps) => {
+const JuiLink: ILink = ({
+  Component,
+  handleOnClick,
+  ...rest
+}: JuiLinkProps) => {
   return Component ? (
     <Component {...rest}>
-      <StyledComponent {...rest} />
+      <StyledComponent onClick={handleOnClick} {...rest} />
     </Component>
   ) : null;
 };

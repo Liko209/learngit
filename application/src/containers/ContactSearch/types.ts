@@ -25,6 +25,7 @@ type ViewProps = {
   placeholder: string;
   error: boolean;
   helperText: string;
+  automationId: string;
 };
 
 export { ViewProps, ContactSearchProps, SelectedMember };

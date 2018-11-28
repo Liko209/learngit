@@ -28,6 +28,7 @@ import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { extractView } from 'jui/hoc/extractView';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
+import { mainLogger } from 'sdk';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 
@@ -69,7 +70,6 @@ class StreamViewComponent extends Component<Props> {
     window.addEventListener('blur', this._blurHandler);
     this.scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
     this._stickToBottom();
-    this.props.resetJumpToPostId();
   }
 
   componentWillUnmount() {
@@ -192,24 +192,27 @@ class StreamViewComponent extends Component<Props> {
         key={streamItem.value}
         ref={this._setPostRef}
         highlight={streamItem.value === jumpToPostId && !loading}
+        onHighlightAnimationEnd={this.props.resetJumpToPostId}
       />
     );
   }
   private _visibilityPostWrapper(
-    onChangeHandler: Function,
+    onChangeHandler: (isVisible: boolean) => void,
     streamItem: StreamItem,
   ) {
     const { jumpToPostId, loading } = this.props;
     return (
       <VisibilitySensor
         key={`VisibilitySensor${streamItem.value}`}
-        onChange={this._handleMostRecentPostRead}
+        offset={VISIBILITY_SENSOR_OFFSET}
+        onChange={onChangeHandler}
       >
         <ConversationPost
           ref={this._setPostRef}
           id={streamItem.value}
           key={`VisibilitySensor${streamItem.value}`}
           highlight={streamItem.value === jumpToPostId && !loading}
+          onHighlightAnimationEnd={this.props.resetJumpToPostId}
         />
       </VisibilitySensor>
     );
@@ -318,7 +321,7 @@ class StreamViewComponent extends Component<Props> {
     window.requestAnimationFrame(() => {
       const scrollToPostEl = this._postRefs.get(scrollToPostId);
       if (!scrollToPostEl) {
-        console.warn('scrollToPostEl no found');
+        mainLogger.warn('scrollToPostEl no found');
         return;
       }
       scrollToComponent(scrollToPostEl, scrollToViewOpt);

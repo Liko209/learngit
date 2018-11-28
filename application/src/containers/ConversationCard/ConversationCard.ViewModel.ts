@@ -84,6 +84,12 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   get createTime() {
     return moment(this.post.createdAt).format('hh:mm A');
   }
+
+  onAnimationEnd = (evt: React.AnimationEvent) => {
+    if (this.highlight && this.props.onHighlightAnimationEnd) {
+      this.props.onHighlightAnimationEnd(evt);
+    }
+  }
 }
 
 export { ConversationCardViewModel };
