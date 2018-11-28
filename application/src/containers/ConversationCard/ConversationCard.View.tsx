@@ -64,7 +64,7 @@ export class ConversationCard extends React.Component<
       post,
       hideText,
       highlight,
-      onAnimationEnd,
+      onAnimationStart,
       ...rest
     } = this.props;
     const { isHover } = this.state;
@@ -92,7 +92,7 @@ export class ConversationCard extends React.Component<
           mode={mode}
           highlight={highlight}
           onClick={onClickHandler}
-          onAnimationEnd={onAnimationEnd}
+          onAnimationStart={onAnimationStart}
           {...rest}
         >
           <JuiConversationCardHeader

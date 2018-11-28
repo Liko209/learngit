@@ -192,7 +192,7 @@ class StreamViewComponent extends Component<Props> {
         key={streamItem.value}
         ref={this._setPostRef}
         highlight={streamItem.value === jumpToPostId && !loading}
-        onHighlightAnimationEnd={this.props.resetJumpToPostId}
+        onHighlightAnimationStart={this.props.resetJumpToPostId}
       />
     );
   }
@@ -212,7 +212,7 @@ class StreamViewComponent extends Component<Props> {
           id={streamItem.value}
           key={`VisibilitySensor${streamItem.value}`}
           highlight={streamItem.value === jumpToPostId && !loading}
-          onHighlightAnimationEnd={this.props.resetJumpToPostId}
+          onHighlightAnimationStart={this.props.resetJumpToPostId}
         />
       </VisibilitySensor>
     );
