@@ -3,13 +3,19 @@
  * @Date: 2018-11-22 21:43:12
  * Copyright © RingCentral. All rights reserved.
  */
-import { ACTION } from '../../types';
-
 import conference from '../conference';
 
 describe('Conference', () => {
-  it('Should return a object that contains action is equal to the ACTION.STARTED', () => {
+  it('Should return a object that key is equal to the verb-article-noun', () => {
     const data = conference();
-    expect(data.action).toEqual(ACTION.STARTED);
+    expect(data).toEqual({
+      parameter: {
+        translated: {
+          verb: 'started',
+          noun: 'audio conference',
+        },
+      },
+      key: 'verb-article-noun',
+    });
   });
 });

@@ -7,8 +7,14 @@ import linkHander from './handler/link';
 import pageHander from './handler/page';
 import taskHander from './handler/task';
 import videoHander from './handler/video';
+import sourceHander from './handler/source';
+import childrenHander from './handler/children';
+import itemsHander from './handler/items';
 
 export default {
+  source: sourceHander,
+  children: childrenHander,
+  items: itemsHander,
   [TypeDictionary.TYPE_ID_EVENT]: eventHander,
   [TypeDictionary.TYPE_ID_TASK]: taskHander,
   [TypeDictionary.TYPE_ID_CODE]: codeHander,

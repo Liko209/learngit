@@ -4,30 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-enum ACTION {
-  CREATED = 'CREATED',
-  COMPLETED = 'COMPLETED',
-  INCOMPLETE = 'INCOMPLETE',
-  SHARED = 'SHARED',
-  STARTED = 'STARTED',
-  ASSIGNED = 'ASSIGNED',
-  REASSIGNED = 'REASSIGNED',
-  UPDATED = 'UPDATED',
-  REPLIED = 'REPLIED',
-  UPLOADED = 'UPLOADED',
-  VIA = 'VIA',
-}
-
 type ActivityProps = {
   id: number; // post id
 };
 
 type ActivityViewProps = {
   activity: {
-    action: string;
-    type?: string | number;
-    quantifier?: number;
+    key: string;
+    parameter: {
+      translated?: object;
+      numerals?: number;
+    };
   };
 };
 
-export { ACTION, ActivityProps, ActivityViewProps };
+export { ActivityProps, ActivityViewProps };

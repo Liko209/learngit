@@ -11,7 +11,7 @@ import { ENTITY_NAME } from '@/store';
 import { GlipTypeUtil } from 'sdk/utils';
 import { Post } from 'sdk/models';
 import config from './config';
-import { ActivityViewProps, ActivityProps, ACTION } from './types';
+import { ActivityViewProps, ActivityProps } from './types';
 
 class ActivityViewModel extends StoreViewModel<ActivityProps>
   implements ActivityViewProps {
@@ -66,27 +66,16 @@ class ActivityViewModel extends StoreViewModel<ActivityProps>
     let activity: any = {};
     switch (true) {
       case !!source:
-        activity = {
-          action: ACTION.VIA,
-          type: source,
-        };
+        activity = config.source(source!);
         break;
       case !!parentId:
-        activity = {
-          action: ACTION.REPLIED,
-        };
+        activity = config.children();
         break;
       case types.length > 1:
-        activity = {
-          action: ACTION.SHARED,
-          type: -1,
-        };
+        activity = config.items();
         break;
       case !!types.length:
-        activity = {
-          ...this._activityData[types[0]],
-          type: types[0],
-        };
+        activity = this._activityData[types[0]];
         break;
     }
     return activity;

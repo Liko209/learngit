@@ -3,7 +3,9 @@
  * @Date: 2018-11-22 21:43:49
  * Copyright © RingCentral. All rights reserved.
  */
-import { ACTION } from '../types';
+import buildVerbNounNumeralsText from './text/buildVerbNounNumeralsText';
+import buildVerbNumeralsNounText from './text/buildVerbNumeralsNounText';
+import buildVerbArticleNounText from './text/buildVerbArticleNounText';
 
 export default function ({
   ids,
@@ -13,10 +15,21 @@ export default function ({
   itemData: { version_map: { [key: number]: number } };
 }) {
   const version = itemData.version_map[ids[0]];
-  const action =
-    ids.length === 1 && version !== 1 ? ACTION.UPLOADED : ACTION.SHARED;
-  return {
-    action,
-    quantifier: ids.length === 1 ? version : ids.length,
-  };
+  if (ids.length === 1) {
+    return version !== 1
+      ? buildVerbNounNumeralsText({
+        verb: 'uploaded',
+        noun: 'version',
+        numerals: version,
+      })
+      : buildVerbArticleNounText({
+        verb: 'shared',
+        noun: 'file',
+      });
+  }
+  return buildVerbNumeralsNounText({
+    verb: 'shared',
+    numerals: ids.length,
+    noun: 'file',
+  });
 }

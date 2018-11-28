@@ -3,37 +3,76 @@
  * @Date: 2018-11-22 21:43:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { ACTION } from '../../types';
-
 import task from '../task';
 
 describe('Task', () => {
-  it('Should return a object that contains action is ACTION.CREATED when activityData is undefined', () => {
+  it('Should return a object that key is equal to the verb-article-noun', () => {
     const activityData = undefined;
     const data = task({ activityData });
-    expect(data.action).toEqual(ACTION.CREATED);
+    expect(data).toEqual({
+      parameter: {
+        translated: {
+          verb: 'created',
+          noun: 'task',
+        },
+      },
+      key: 'verb-article-noun',
+    });
   });
-  it('Should return a object that contains action is ACTION.ASSIGNED when activityData is {key: "assigned_to_ids", old_value: [] }', () => {
+  it('Should return a object that key is equal to the verb-noun', () => {
     const activityData = { key: 'assigned_to_ids', old_value: [] };
     const data = task({ activityData });
-    expect(data.action).toEqual(ACTION.ASSIGNED);
+    expect(data).toEqual({
+      parameter: {
+        translated: {
+          verb: 'assigned',
+          noun: 'task',
+        },
+      },
+      key: 'verb-noun',
+    });
   });
 
-  it('Should return a object that contains action is ACTION.REASSIGNED when activityData is {key: "assigned_to_ids", old_value: [1] }', () => {
+  it('Should return a object that key is equal to the verb-noun', () => {
     const activityData = { key: 'assigned_to_ids', old_value: [1] };
     const data = task({ activityData });
-    expect(data.action).toEqual(ACTION.REASSIGNED);
+    expect(data).toEqual({
+      parameter: {
+        translated: {
+          verb: 'reassigned',
+          noun: 'task',
+        },
+      },
+      key: 'verb-noun',
+    });
   });
 
-  it('Should return a object that contains action is ACTION.COMPLETED when activityData is {key: "complete_boolean", value: true }', () => {
+  it('Should return a object that key is equal to the verb-noun', () => {
     const activityData = { key: 'complete_boolean', value: true };
     const data = task({ activityData });
-    expect(data.action).toEqual(ACTION.COMPLETED);
+    expect(data).toEqual({
+      parameter: {
+        translated: {
+          verb: 'completed',
+          noun: 'task',
+        },
+      },
+      key: 'verb-noun',
+    });
   });
 
-  it('Should return a object that contains action is ACTION.COMPLETED when activityData is {key: "complete_boolean", value: false }', () => {
+  it('Should return a object that key is equal to the verb-noun-adjectives', () => {
     const activityData = { key: 'complete_boolean', value: false };
     const data = task({ activityData });
-    expect(data.action).toEqual(ACTION.INCOMPLETE);
+    expect(data).toEqual({
+      parameter: {
+        translated: {
+          verb: 'marked',
+          noun: 'task',
+          adjectives: 'incomplete',
+        },
+      },
+      key: 'verb-noun-adjectives',
+    });
   });
 });

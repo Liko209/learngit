@@ -3,23 +3,47 @@
  * @Date: 2018-11-22 21:43:19
  * Copyright © RingCentral. All rights reserved.
  */
-import { ACTION } from '../../types';
-
 import file from '../file';
 
 describe('File', () => {
-  it('Should return a object that contains action is ACTION.UPLOADED and number is 2 when ids is [1] and itemData is {version_map: {1: 2}}', () => {
+  it('Should return a object that key is equal to the verb-noun-numerals', () => {
     const ids = [1];
     const itemData = {
       version_map: {
         1: 2,
       },
     };
-    const activityData = file({ ids, itemData });
-    expect(activityData.action).toEqual(ACTION.UPLOADED);
-    expect(activityData.quantifier).toEqual(2);
+    const data = file({ ids, itemData });
+    expect(data).toEqual({
+      parameter: {
+        numerals: 2,
+        translated: {
+          verb: 'uploaded',
+          noun: 'version',
+        },
+      },
+      key: 'verb-noun-numerals',
+    });
   });
-  it('Should return a object that contains action is ACTION.SHARED and number is 2 when ids is [1, 2] and itemData is {version_map: {1: 1, 2: 1}}', () => {
+  it('Should return a object that key is equal to the verb-article-noun', () => {
+    const ids = [1];
+    const itemData = {
+      version_map: {
+        1: 1,
+      },
+    };
+    const data = file({ ids, itemData });
+    expect(data).toEqual({
+      parameter: {
+        translated: {
+          verb: 'shared',
+          noun: 'file',
+        },
+      },
+      key: 'verb-article-noun',
+    });
+  });
+  it('Should return a object that key is equal to the verb-numerals-noun', () => {
     const ids = [1, 2];
     const itemData = {
       version_map: {
@@ -27,19 +51,16 @@ describe('File', () => {
         2: 1,
       },
     };
-    const activityData = file({ ids, itemData });
-    expect(activityData.action).toEqual(ACTION.SHARED);
-    expect(activityData.quantifier).toEqual(2);
-  });
-  it('Should return a object that contains action is ACTION.SHARED and number is 2 when ids is [1] and itemData is {version_map: {1: 1}}', () => {
-    const ids = [1];
-    const itemData = {
-      version_map: {
-        1: 1,
+    const data = file({ ids, itemData });
+    expect(data).toEqual({
+      parameter: {
+        numerals: 2,
+        translated: {
+          verb: 'shared',
+          noun: 'file',
+        },
       },
-    };
-    const activityData = file({ ids, itemData });
-    expect(activityData.action).toEqual(ACTION.SHARED);
-    expect(activityData.quantifier).toEqual(1);
+      key: 'verb-numerals-noun',
+    });
   });
 });

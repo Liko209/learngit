@@ -3,11 +3,11 @@
  * @Date: 2018-11-22 21:43:39
  * Copyright © RingCentral. All rights reserved.
  */
-import buildVerbArticleNounText from './text/buildVerbArticleNounText';
+import buildVerbNounText from './text/buildVerbNounText';
 
 export default function () {
-  return buildVerbArticleNounText({
+  return buildVerbNounText({
     verb: 'shared',
-    noun: 'snippet',
+    noun: 'items',
   });
 }

@@ -3,10 +3,11 @@
  * @Date: 2018-11-22 21:43:42
  * Copyright © RingCentral. All rights reserved.
  */
-import { ACTION } from '../types';
+import buildVerbArticleNounText from './text/buildVerbArticleNounText';
 
 export default function () {
-  return {
-    action: ACTION.STARTED,
-  };
+  return buildVerbArticleNounText({
+    verb: 'started',
+    noun: 'audio conference',
+  });
 }

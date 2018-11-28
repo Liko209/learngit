@@ -3,19 +3,33 @@
  * @Date: 2018-11-22 21:43:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { ACTION } from '../../types';
-
 import event from '../event';
 
 describe('Event', () => {
-  it('Should return a object that contains action is equal to the ACTION.UPDATED when activityData is not undefined', () => {
+  it('Should return a object that key is equal to the verb-noun', () => {
     const activityData = {};
     const data = event({ activityData });
-    expect(data.action).toEqual(ACTION.UPDATED);
+    expect(data).toEqual({
+      parameter: {
+        translated: {
+          verb: 'updated',
+          noun: 'event',
+        },
+      },
+      key: 'verb-noun',
+    });
   });
-  it('Should return a object that contains action is equal to the ACTION.CREATED when activityData is undefined', () => {
+  it('Should return a object that key is equal to the verb-article-noun', () => {
     const activityData = undefined;
     const data = event({ activityData });
-    expect(data.action).toEqual(ACTION.CREATED);
+    expect(data).toEqual({
+      parameter: {
+        translated: {
+          verb: 'created',
+          noun: 'event',
+        },
+      },
+      key: 'verb-article-noun',
+    });
   });
 });
