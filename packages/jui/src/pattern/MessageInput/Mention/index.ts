@@ -20,6 +20,7 @@ type MentionOptions = {
   keyboardEventHandlers?: KeyboardEventHandler[];
   minChars?: number;
   maxChars?: number;
+  blankNoShow?: boolean;
 };
 
 type Options = QuillOptionsStatic & MentionOptions;
@@ -35,6 +36,7 @@ class Mention {
     minChars: 0,
     maxChars: 31,
     isolateCharacter: true,
+    blankNoShow: true,
   };
   constructor(quill: Quill, options: Options) {
     Object.assign(this._options, options);
@@ -105,6 +107,14 @@ class Mention {
           mentionCharIndex === 0 ||
           !!beforeCursorPos[mentionCharIndex - 1].match(/\s/g)
         )
+      ) {
+        this._options.onMention(false);
+        return;
+      }
+      if (
+        this._options.blankNoShow &&
+        beforeCursorPos[mentionCharIndex + 1] &&
+        beforeCursorPos[mentionCharIndex + 1].match(/\s/g)
       ) {
         this._options.onMention(false);
         return;
