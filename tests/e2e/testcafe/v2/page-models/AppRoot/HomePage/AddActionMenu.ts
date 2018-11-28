@@ -20,4 +20,12 @@ export class AddActionMenu extends BaseWebComponent {
   get createTeamEntry() {
     return this.nthEntry(0);
   }
+
+  private getEntry(id: string) {
+    return this.getComponent(AddActionMenuEntry, this.getSelectorByAutomationId(id));
+  }
+
+  get sendNewMessageEntry() {
+    return this.getEntry('sendNewMessage');
+  }
 }
