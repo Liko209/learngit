@@ -8,6 +8,7 @@ import BaseService from '../../service/BaseService';
 import PersonDao from '../../dao/person';
 import PersonAPI from '../../api/glip/person';
 import handleData from './handleData';
+import GroupService, { FEATURE_STATUS, FEATURE_TYPE } from '../group';
 import { daoManager, AuthDao } from '../../dao';
 import { IPagination } from '../../types';
 import { Person, SortableModel } from '../../models'; // eslint-disable-line
@@ -81,6 +82,52 @@ class PersonService extends BaseService<Person> {
       });
     }
     return '';
+  }
+
+  async getPersonsByGroupId(groupId: number): Promise<Person[]> {
+    const groupService: GroupService = GroupService.getInstance();
+    const group = await groupService.getGroupById(groupId);
+    if (group) {
+      const memberIds = group.members;
+      if (memberIds.length > 0) {
+        const catchData = await this.getMultiEntitiesFromCache(
+          memberIds,
+          (entity: Person) => {
+            return this._isValid(entity);
+          },
+        );
+        if (catchData.length > 0) {
+          return catchData;
+        }
+
+        const personDao = daoManager.getDao(PersonDao);
+        return await personDao.getPersonsByIds(memberIds);
+      }
+    }
+    return [];
+  }
+
+  async buildPersonFeatureMap(
+    personId: number,
+  ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>> {
+    const actionMap = new Map<FEATURE_TYPE, FEATURE_STATUS>();
+
+    const person = (await this.getById(personId)) as Person;
+    if (person) {
+      actionMap.set(FEATURE_TYPE.CONFERENCE, FEATURE_STATUS.INVISIBLE);
+
+      actionMap.set(
+        FEATURE_TYPE.MESSAGE,
+        this._canMessageWithPerson(person)
+          ? FEATURE_STATUS.ENABLE
+          : FEATURE_STATUS.INVISIBLE,
+      );
+
+      // To-Do
+      actionMap.set(FEATURE_TYPE.VIDEO, FEATURE_STATUS.INVISIBLE);
+      actionMap.set(FEATURE_TYPE.CALL, FEATURE_STATUS.INVISIBLE);
+    }
+    return actionMap;
   }
 
   async doFuzzySearchPersons(
@@ -162,6 +209,10 @@ class PersonService extends BaseService<Person> {
   getFullName(person: Person) {
     const name = this.getName(person);
     return name.length > 0 ? name : this.getEmailAsName(person);
+  }
+
+  private _canMessageWithPerson(person: Person) {
+    return !person.is_pseudo_user;
   }
 
   private _isValid(person: Person) {

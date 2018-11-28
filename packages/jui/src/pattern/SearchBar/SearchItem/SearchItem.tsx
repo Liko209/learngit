@@ -73,12 +73,17 @@ type JuiSearchItemProps = {
   Actions?: JSX.Element;
   isJoined?: boolean;
   isPrivate?: boolean;
+  onClick: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
 const JuiSearchItem = (props: JuiSearchItemProps) => {
-  const { Avatar, Actions, value, terms, isPrivate, isJoined } = props;
+  const { Avatar, Actions, value, terms, isPrivate, isJoined, onClick } = props;
   return (
-    <SearchItemWrapper className="search-items" disableRipple={true}>
+    <SearchItemWrapper
+      onClick={onClick}
+      className="search-items"
+      disableRipple={true}
+    >
       <SearchItemAvatar>{Avatar}</SearchItemAvatar>
       <SearchItemValueWrapper>
         <JuiSearchItemValue value={value} terms={terms} />

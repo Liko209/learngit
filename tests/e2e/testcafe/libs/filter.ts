@@ -68,3 +68,9 @@ export function filterByTags(
     return flag;
   };
 }
+
+export function getTmtId(tags: string[]) {
+  return tags.filter((tag) => {
+    return /^[a-zA-Z_$]+-[$0-9]+$/.test(tag);
+  })
+}

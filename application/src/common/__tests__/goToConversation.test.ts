@@ -45,21 +45,27 @@ describe('goToConversation()', () => {
     });
 
     it('groupService return value', async () => {
-      (groupService.getGroupByMemberList as jest.Mock).mockResolvedValue({
-        id: 2,
-      });
+      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
+        {
+          id: 2,
+        },
+      );
       expect(await goToConversation(1)).toEqual(true);
     });
 
     it('groupService reject value', async () => {
-      (groupService.getGroupByMemberList as jest.Mock).mockRejectedValue({
-        id: 2,
-      });
+      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValue(
+        {
+          id: 2,
+        },
+      );
       expect(await goToConversation(1)).toEqual(false);
     });
 
     it('groupService return null', async () => {
-      (groupService.getGroupByMemberList as jest.Mock).mockResolvedValue(null);
+      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
+        null,
+      );
       expect(await goToConversation(1)).toEqual(false);
     });
   });
