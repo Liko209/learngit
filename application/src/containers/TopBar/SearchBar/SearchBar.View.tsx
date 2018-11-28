@@ -16,19 +16,16 @@ import {
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
 import { Avatar } from '@/containers/Avatar';
-import { ViewProps, SearchResult, SearchSection } from './types';
+import {
+  ViewProps,
+  SearchResult,
+  SearchSection,
+  SortableModel,
+  Person,
+  Group,
+} from './types';
 
 const SEARCH_DELAY = 300;
-
-const Actions = () => {
-  return (
-    <JuiButtonBar size="small">
-      <JuiIconButton variant="plain" tooltipTitle={t('contacts')}>
-        contacts
-      </JuiIconButton>
-    </JuiButtonBar>
-  );
-};
 
 type State = {
   terms: string[];
@@ -117,6 +114,31 @@ class SearchBarView extends React.Component<ViewProps, State> {
     return <Avatar uid={uid} size="small" />;
   }
 
+  searchItemClickHandler = (id: number) => async () => {
+    const { goToConversation } = this.props;
+    await goToConversation(id);
+    this.onClear();
+    this.onClose();
+  }
+
+  private _Actions = () => {
+    return (
+      <JuiButtonBar size="small">
+        <JuiIconButton
+          onClick={this.goToContacts()}
+          variant="plain"
+          tooltipTitle={t('contacts')}
+        >
+          contacts
+        </JuiIconButton>
+      </JuiButtonBar>
+    );
+  }
+
+  goToContacts = () => (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+  }
+
   private _renderSuggestion<T>(
     type: SearchSection<T>,
     title: string,
@@ -134,10 +156,11 @@ class SearchBarView extends React.Component<ViewProps, State> {
           return (
             <JuiSearchItem
               key={id}
+              onClick={this.searchItemClickHandler(id)}
               Avatar={this._Avatar(id)}
               value={displayName}
               terms={terms}
-              Actions={Actions()}
+              Actions={this._Actions()}
               isPrivate={entity.is_team && entity.privacy === 'private'}
               isJoined={
                 entity.is_team &&
@@ -196,14 +219,20 @@ class SearchBarView extends React.Component<ViewProps, State> {
 
   onEnter = () => {
     const { persons, groups, teams, selectIndex } = this.state;
+    const { goToConversation } = this.props;
+
     const searchItems = [
       ...persons.sortableModel,
       ...groups.sortableModel,
       ...teams.sortableModel,
     ];
-    const selectItem = searchItems[selectIndex];
+    const selectItem = searchItems[selectIndex] as SortableModel<
+      Person | Group
+    >;
     if (selectItem) {
-      // TODO go to conversation
+      goToConversation(selectItem.id);
+      this.onClear();
+      this.onClose();
     }
   }
 
