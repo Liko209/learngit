@@ -15,6 +15,8 @@ import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { BaseError } from 'sdk/utils';
+import { t } from 'i18next';
+import { Notification } from '../Notification';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -125,6 +127,14 @@ class CreateTeamViewModel extends AbstractViewModel {
     } else if (code === GroupErrorTypes.INVALID_FIELD) {
       this.emailErrorMsg = 'Invalid Email';
       this.emailError = true;
+    } else {
+      const message = t('WeWerentAbleToCreateTheTeamTryAgain');
+      Notification.flashToast({
+        message,
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+      });
     }
   }
 }

@@ -64,5 +64,6 @@
   "download": "Download",
   "expand": "Expand",
   "collapse": "Collapse",
-  "contacts": "Contacts"
+  "contacts": "Contacts",
+  "WeWerentAbleToCreateTheTeamTryAgain.": "We weren't able to create the team. Try again."
 }

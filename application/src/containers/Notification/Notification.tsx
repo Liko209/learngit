@@ -11,7 +11,7 @@ import {
 import Slide from '@material-ui/core/Slide';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { genDivAndDestroy } from '@/common/genDivAndDestroy';
+import { genDivAndDismiss } from '@/common/genDivAndDismiss';
 import ThemeProvider from '@/containers/ThemeProvider';
 import Snackbar from '@material-ui/core/Snackbar';
 
@@ -33,7 +33,7 @@ function transitionDown(props: any) {
 }
 
 function showNotification(props: ShowNotificationOptions) {
-  const { container, destroy: dismiss } = genDivAndDestroy();
+  const { container, dismiss } = genDivAndDismiss();
   const { autoHideDuration, dismissible, ...rest } = props;
   const action = [];
 
