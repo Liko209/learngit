@@ -102,7 +102,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   private _onMention = (
     match: boolean,
     searchTerm: string,
-    denotationChar?: string,
+    denotationChar: string,
   ) => {
     if (!match) {
       this.open = false;

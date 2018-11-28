@@ -115,7 +115,6 @@ describe('ActionsViewModel send post', () => {
     // @ts-ignore
     markdownFromDelta = jest.fn().mockReturnValue(content);
     const handler = enterHandler.bind(that);
-    const handler = enterHandler.bind(that);
     handler();
     expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
   });
