@@ -79,6 +79,5 @@
   "verb-noun": "{{verb}} {{noun}}",
   "verb": "{{verb}}",
   "verb-article-noun": "{{verb}} {{noun, en-handle-an}} $t({{noun}})",
-  "verb-numerals-noun": "{{verb}} {{count}} $t({{noun}})",
-  "verb-numerals": "{{verb}} {{count}}% of"
+  "verb-numerals-noun": "{{verb}} {{count}} $t({{noun}})"
 }

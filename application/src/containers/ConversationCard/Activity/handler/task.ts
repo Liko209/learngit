@@ -6,7 +6,6 @@
 import buildVerbNounText from './text/buildVerbNounText';
 import buildVerbNounAdjectivesText from './text/buildVerbNounAdjectivesText';
 import buildVerbArticleNounText from './text/buildVerbArticleNounText';
-import buildVerbNumeralsText from './text/buildVerbNumeralsText';
 
 export default function ({
   activityData,
@@ -15,7 +14,6 @@ export default function ({
 }) {
   let buildText: any = buildVerbArticleNounText;
   let verb = 'created';
-  let numerals = 0;
   if (activityData) {
     const { key, value, old_value } = activityData;
     switch (key) {
@@ -28,8 +26,7 @@ export default function ({
         verb = value ? 'completed' : 'marked';
         break;
       case 'complete_percentage':
-        buildText = value === 100 ? buildVerbNounText : buildVerbNumeralsText;
-        numerals = value;
+        buildText = buildVerbNounText;
         verb = 'completed';
         break;
       case 'complete_people_ids':
@@ -46,7 +43,6 @@ export default function ({
 
   return buildText({
     verb,
-    numerals,
     noun: 'task',
     adjectives: 'incomplete',
   });
