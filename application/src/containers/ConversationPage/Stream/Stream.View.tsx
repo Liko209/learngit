@@ -69,7 +69,6 @@ class StreamViewComponent extends Component<Props> {
     window.addEventListener('blur', this._blurHandler);
     this.scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
     this._stickToBottom();
-    this.props.resetJumpToPostId();
   }
 
   componentWillUnmount() {
@@ -192,24 +191,27 @@ class StreamViewComponent extends Component<Props> {
         key={streamItem.value}
         ref={this._setPostRef}
         highlight={streamItem.value === jumpToPostId && !loading}
+        onHighlightAnimationEnd={this.props.resetJumpToPostId}
       />
     );
   }
   private _visibilityPostWrapper(
-    onChangeHandler: Function,
+    onChangeHandler: (isVisible: boolean) => void,
     streamItem: StreamItem,
   ) {
     const { jumpToPostId, loading } = this.props;
     return (
       <VisibilitySensor
         key={`VisibilitySensor${streamItem.value}`}
-        onChange={this._handleMostRecentPostRead}
+        offset={VISIBILITY_SENSOR_OFFSET}
+        onChange={onChangeHandler}
       >
         <ConversationPost
           ref={this._setPostRef}
           id={streamItem.value}
           key={`VisibilitySensor${streamItem.value}`}
           highlight={streamItem.value === jumpToPostId && !loading}
+          onHighlightAnimationEnd={this.props.resetJumpToPostId}
         />
       </VisibilitySensor>
     );

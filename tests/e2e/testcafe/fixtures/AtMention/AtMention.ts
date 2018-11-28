@@ -75,7 +75,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
   },
 );
 
-test(formalName('Jump to conversation bottom when click name', ['P1', 'JPT-314']),
+test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;

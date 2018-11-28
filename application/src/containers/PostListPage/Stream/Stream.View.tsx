@@ -15,16 +15,6 @@ type Props = WithNamespaces & StreamViewProps;
 @observer
 class StreamViewComponent extends Component<Props> {
   listRef: React.RefObject<HTMLElement> = React.createRef();
-
-  componentDidMount() {
-    this.props.fetchInitialPosts();
-  }
-  componentDidUpdate(prevProps: Props) {
-    if (this.props.type !== prevProps.type) {
-      this.props.fetchInitialPosts();
-    }
-  }
-
   render() {
     const { ids } = this.props;
     return (
