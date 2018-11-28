@@ -10,9 +10,9 @@ import {
   spacing,
   height,
   typography,
+  palette,
 } from '../../../foundation/utils/styles';
 import { JuiTypography } from '../../../foundation/Typography';
-import { JuiLink } from '../../../components/Link';
 
 const SearchTitleWrapper = styled.div`
   padding: ${spacing(0, 4)};
@@ -30,26 +30,25 @@ const SearchTitleText = styled(JuiTypography)`
   }
 `;
 
-const ShowMoreBtn = styled(JuiLink)`
+const ShowMoreBtn = styled.span`
+  color: ${palette('primary', 'main')};
+  ${typography('caption1')};
   text-decoration: none;
+  cursor: pointer;
 `;
 
 type JuiSearchTitleProps = {
   title: String;
-  href?: string;
+  showMore?: boolean;
 };
 
 const JuiSearchTitle = (props: JuiSearchTitleProps) => {
-  const { title, href } = props;
+  const { title, showMore } = props;
 
   return (
     <SearchTitleWrapper>
       <SearchTitleText>{title}</SearchTitleText>
-      {href && (
-        <ShowMoreBtn size="small" href={href}>
-          Show More
-        </ShowMoreBtn>
-      )}
+      {showMore && <ShowMoreBtn>Show More</ShowMoreBtn>}
     </SearchTitleWrapper>
   );
 };
