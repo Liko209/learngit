@@ -10,11 +10,13 @@ type ActivityData = {
 
 type NotificationProps = {
   id: number;
+  onClick?: (e: React.MouseEvent) => void;
 };
 
 type NotificationViewProps = {
   id: number;
   activityData: ActivityData;
+  onClick?: (e: React.MouseEvent) => void;
 };
 
 export { NotificationProps, NotificationViewProps, ActivityData };

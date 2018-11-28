@@ -12,6 +12,7 @@ import {
   CONTENT_LENGTH,
 } from '../MessageInput.ViewModel';
 import _ from 'lodash';
+import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 
 const mockGroupEntityData = {
   draft: 'draft',
@@ -91,6 +92,8 @@ describe('ActionsViewModel send post', () => {
   it('send post content is empty should be not send', () => {
     const content = '';
     const that = mockThis(content);
+    // @ts-ignore
+    markdownFromDelta = jest.fn().mockReturnValue(content);
     const handler = enterHandler.bind(that);
     handler();
     expect(postService.sendPost).toBeCalledTimes(0);
@@ -99,6 +102,8 @@ describe('ActionsViewModel send post', () => {
   it('send post should be illegal error', () => {
     const content = CONTENT_ILLEGAL;
     const that = mockThis(content);
+    // @ts-ignore
+    markdownFromDelta = jest.fn().mockReturnValue(content);
     const handler = enterHandler.bind(that);
     handler();
     expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
@@ -107,6 +112,8 @@ describe('ActionsViewModel send post', () => {
   it('send post should be over length error', () => {
     const content = _.pad('test', CONTENT_LENGTH + 1);
     const that = mockThis(content);
+    // @ts-ignore
+    markdownFromDelta = jest.fn().mockReturnValue(content);
     const handler = enterHandler.bind(that);
     handler();
     expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);

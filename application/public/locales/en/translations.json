@@ -66,4 +66,20 @@
   "collapse": "Collapse",
   "contacts": "Contacts",
   "WeWerentAbleToCreateTheTeamTryAgain.": "We weren't able to create the team. Try again."
+  "currentStateFavorite": "Conversation in Favorites",
+  "currentStateUnFavorite": "Conversation not in Favorites",
+  "currentStatePublic": "Conversation not in public",
+  "currentStatePrivate": "Conversation in private",
+  "setStateFavorites": "Add to Favorites",
+  "setStateUnFavorites": "Remove from Favorites",
+  "setStatePublic": "Set Public",
+  "setStatePrivate": "Set private",
+  "markFavoriteServerErrorContent": "We weren't able to favorite this conversation. Try again.",
+  "markUnFavoriteServerErrorContent": "We weren't able to remove this conversation from favorites. Try again.",
+  "markPublicServerErrorContent": "We weren't able to public this conversation. Try again.",
+  "markPrivateServerErrorContent": "We weren't able to private this conversation. Try again.",
+  "contacts": "Contacts",
+  "suggested people": "suggested people",
+  "team members": "team members"
+>>>>>>> develop
 }

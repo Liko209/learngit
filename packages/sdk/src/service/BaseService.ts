@@ -137,6 +137,24 @@ class BaseService<
     return this.getCacheManager().getEntity(id);
   }
 
+  async getMultiEntitiesFromCache(
+    ids: number[],
+    filterFunc?: (entity: SubModel) => boolean,
+  ): Promise<SubModel[]> {
+    const entities = await this.getCacheManager().getMultiEntities(ids);
+
+    if (filterFunc) {
+      const filteredResult: SubModel[] = [];
+      entities.forEach((entity: SubModel) => {
+        if (filterFunc(entity)) {
+          filteredResult.push(entity);
+        }
+      });
+      return filteredResult;
+    }
+    return entities;
+  }
+
   async getEntitiesFromCache(
     filterFunc?: (entity: SubModel) => boolean,
   ): Promise<SubModel[]> {

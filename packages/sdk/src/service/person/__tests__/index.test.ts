@@ -5,13 +5,23 @@
  */
 /// <reference path="../../../__tests__/types.d.ts" />
 import PersonService from '../../../service/person';
+import GroupService, {
+  FEATURE_TYPE,
+  FEATURE_STATUS,
+} from '../../../service/group';
 import { daoManager, PersonDao } from '../../../dao';
 import { Person } from '../../../models';
 import { AccountService } from '../../account/accountService';
 
 jest.mock('../../../dao');
+jest.mock('../../../service/group');
 
 describe('PersonService', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+  });
+
   const personService = new PersonService();
   const personDao = new PersonDao(null);
 
@@ -304,6 +314,88 @@ describe('PersonService', () => {
       );
       expect(result.sortableModels.length).toBe(0);
       expect(result.terms.length).toBe(0);
+    });
+  });
+
+  describe('getPersonsByGroupId()', () => {
+    const groupService = new GroupService();
+    const group = { id: 10, members: [1, 2, 3] };
+
+    beforeEach(() => {
+      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+    });
+
+    it('should return group members from cache if has cache', async () => {
+      const persons = [{ id: 3 }, { id: 4 }, { id: 5 }];
+
+      daoManager.getDao.mockReturnValue(personDao);
+      jest
+        .spyOn(personService, 'getMultiEntitiesFromCache')
+        .mockResolvedValueOnce(persons);
+
+      personDao.getPersonsByIds.mockResolvedValueOnce(persons);
+      groupService.getGroupById.mockResolvedValueOnce(group);
+
+      const res = await personService.getPersonsByGroupId(group.id);
+      expect(res).toMatchObject(persons);
+      expect(personDao.getPersonsByIds).not.toBeCalled();
+      expect(groupService.getGroupById).toBeCalledWith(group.id);
+    });
+
+    it('should return group members from DB if has the group and no cache', async () => {
+      const persons = [{ id: 1 }, { id: 2 }, { id: 3 }];
+      daoManager.getDao.mockReturnValue(personDao);
+
+      const spy = jest.spyOn(personService, 'getMultiEntitiesFromCache');
+
+      spy.mockResolvedValueOnce([]);
+      personDao.getPersonsByIds.mockResolvedValueOnce(persons);
+      groupService.getGroupById.mockResolvedValueOnce(group);
+
+      const res = await personService.getPersonsByGroupId(group.id);
+      expect(res).toMatchObject(persons);
+      expect(personDao.getPersonsByIds).toBeCalledWith(group.members);
+      expect(groupService.getGroupById).toBeCalledWith(group.id);
+      expect(spy).toBeCalledTimes(1);
+    });
+
+    it('should return null when no group exist', async () => {
+      daoManager.getDao.mockReturnValue(personDao);
+      groupService.getGroupById.mockResolvedValueOnce(null);
+
+      const res = await personService.getPersonsByGroupId(group.id);
+      expect(res).toMatchObject([]);
+      expect(personDao.getPersonsByIds).not.toBeCalled();
+      expect(groupService.getGroupById).toBeCalledWith(group.id);
+    });
+  });
+
+  describe('buildPersonFeatureMap()', () => {
+    const personId = 1;
+    const person = { id: personId };
+    it('should not have conference permission for person', async () => {
+      const spy = jest.spyOn(personService, 'getById');
+      spy.mockResolvedValueOnce(person);
+      const res = await personService.buildPersonFeatureMap(personId);
+      expect(res.get(FEATURE_TYPE.CONFERENCE)).toBeFalsy;
+      expect(spy).toBeCalled;
+    });
+
+    it('should have message for person', async () => {
+      const spy = jest.spyOn(personService, 'getById');
+      spy.mockResolvedValueOnce(person);
+      const res = await personService.buildPersonFeatureMap(personId);
+      expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.ENABLE);
+      expect(spy).toBeCalledWith(person.id);
+    });
+
+    it('should not have message for pseudo person', async () => {
+      const pseudoPerson = { id: personId, is_pseudo_user: true };
+      const spy = jest.spyOn(personService, 'getById');
+      spy.mockResolvedValueOnce(pseudoPerson);
+      const res = await personService.buildPersonFeatureMap(personId);
+      expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.INVISIBLE);
+      expect(spy).toBeCalledWith(pseudoPerson.id);
     });
   });
 });

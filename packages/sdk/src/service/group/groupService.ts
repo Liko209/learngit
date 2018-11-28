@@ -16,6 +16,7 @@ import {
 import BaseService from '../../service/BaseService';
 import GroupServiceHandler from '../../service/group/groupServiceHandler';
 import ProfileService from '../../service/profile';
+import CompanyService from '../../service/company';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
 import GroupAPI from '../../api/glip/group';
@@ -37,10 +38,14 @@ import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
+import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
 import AccountService from '../account';
 import PersonService from '../person';
 import { compareName } from '../../utils/helper';
+import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
+import { isValidEmailAddress } from '../../utils/regexUtils';
+import { Api } from '../../api';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -157,39 +162,48 @@ class GroupService extends BaseService<Group> {
     return super.getById(id);
   }
 
+  async getLocalGroup(personIds: number[]): Promise<Group | null> {
+    try {
+      const result = this._queryGroupByMemberList(personIds);
+      if (result) {
+        return result;
+      }
+      return null;
+    } catch (e) {
+      mainLogger.error(`getLocalGroup error =>${e}`);
+      return null;
+    }
+  }
+
   async getGroupByPersonId(personId: number): Promise<Group | null> {
     try {
-      return await this.getGroupByMemberList([personId]);
+      return await this.getOrCreateGroupByMemberList([personId]);
     } catch (e) {
       mainLogger.error(`getGroupByPersonId error =>${e}`);
       throw ErrorParser.parse(e);
     }
   }
 
-  async getGroupByMemberList(members: number[]): Promise<Group | null> {
+  async getOrCreateGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
-      const accountService: AccountService = AccountService.getInstance();
-      const userId = accountService.getCurrentUserId();
-      if (userId) {
-        members.push(userId);
-        const mem = uniqueArray(members);
-        const groupDao = daoManager.getDao(GroupDao);
-        const result = await groupDao.queryGroupByMemberList(mem);
-        if (result) {
-          return result;
-        }
-        return await this.requestRemoteGroupByMemberList(mem);
+      const result = await this._queryGroupByMemberList(members);
+      if (result) {
+        return result;
       }
-      return null;
+      return await this.requestRemoteGroupByMemberList(members);
     } catch (e) {
-      mainLogger.error(`getGroupByMemberList error =>${e}`);
+      mainLogger.error(`getOrCreateGroupByMemberList error =>${e}`);
       throw ErrorParser.parse(e);
     }
   }
 
-  async requestRemoteGroupByMemberList(members: number[]): Promise<Group> {
-    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(members);
-
+  async requestRemoteGroupByMemberList(
+    members: number[],
+  ): Promise<Group | null> {
+    const memberIds = this._addCurrentUserToMemList(members);
+    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(
+      memberIds,
+    );
     const result = await GroupAPI.requestNewGroup(info);
     const data = result.expect('request remote group by member list error');
     const group = transform<Group>(data);
@@ -345,7 +359,10 @@ class GroupService extends BaseService<Group> {
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
     const profileService: ProfileService = ProfileService.getInstance();
-    const result = profileService.markGroupAsFavorite(groupId, markAsFavorite);
+    const result = await profileService.markGroupAsFavorite(
+      groupId,
+      markAsFavorite,
+    );
     if (result instanceof BaseError && result.code >= 5300) {
       return ServiceCommonErrorType.SERVER_ERROR;
     }
@@ -451,6 +468,73 @@ class GroupService extends BaseService<Group> {
     }
   }
 
+  async buildGroupFeatureMap(
+    groupId: number,
+  ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>> {
+    const actionMap = new Map<FEATURE_TYPE, FEATURE_STATUS>();
+    actionMap.set(FEATURE_TYPE.CALL, FEATURE_STATUS.INVISIBLE); // can not make call in group
+
+    const group = await this.getGroupById(groupId);
+    actionMap.set(
+      FEATURE_TYPE.MESSAGE,
+      group ? this._checkGroupMessageStatus(group) : FEATURE_STATUS.INVISIBLE,
+    );
+
+    // To-Do
+    actionMap.set(FEATURE_TYPE.CONFERENCE, FEATURE_STATUS.INVISIBLE); // can not make conference in group for nwo
+    actionMap.set(FEATURE_TYPE.VIDEO, FEATURE_STATUS.INVISIBLE); // can not make video in group for now
+    return actionMap;
+  }
+
+  async isFavorited(id: number, type: number): Promise<boolean> {
+    let groupId: number | undefined = undefined;
+    switch (type) {
+      case TypeDictionary.TYPE_ID_PERSON: {
+        const group = await this.getLocalGroup([id]);
+        if (group) {
+          groupId = group.id;
+        }
+        break;
+      }
+      case TypeDictionary.TYPE_ID_GROUP:
+      case TypeDictionary.TYPE_ID_TEAM: {
+        groupId = id;
+        break;
+      }
+      default: {
+        mainLogger.error('isFavorited : should not run to here');
+      }
+    }
+
+    if (groupId) {
+      return await this._isGroupFavorited(groupId);
+    }
+
+    return false;
+  }
+
+  private async _isGroupFavorited(groupId: number): Promise<boolean> {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const profile = await profileService.getProfile();
+    const favoriteGroupIds =
+      profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
+    return favoriteGroupIds.some((x: number) => groupId === x);
+  }
+
+  private _checkGroupMessageStatus(group: Group) {
+    return this._isCurrentUserInGroup(group)
+      ? FEATURE_STATUS.ENABLE
+      : FEATURE_STATUS.INVISIBLE;
+  }
+
+  private _isCurrentUserInGroup(group: Group) {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    return group
+      ? group.members.some((x: number) => x === currentUserId)
+      : false;
+  }
+
   async doFuzzySearchGroups(
     searchKey: string,
     fetchAllIfSearchKeyEmpty?: boolean,
@@ -553,6 +637,76 @@ class GroupService extends BaseService<Group> {
       .join(', ');
   }
 
+  private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
+    const memberIds = this._addCurrentUserToMemList(ids);
+    const groupDao = daoManager.getDao(GroupDao);
+    return await groupDao.queryGroupByMemberList(memberIds);
+  }
+
+  private _addCurrentUserToMemList(ids: number[]) {
+    const accountService: AccountService = AccountService.getInstance();
+    const userId = accountService.getCurrentUserId();
+    if (userId) {
+      ids.push(userId);
+    }
+    return uniqueArray(ids);
+  }
+
+  isTeamAdmin(personId: number, permission?: TeamPermission) {
+    if (permission) {
+      // for some old team, thy don't have permission, so all member are admin
+      const adminUserIds = this._getTeamAdmins(permission);
+      return adminUserIds.some((x: number) => x === personId);
+    }
+    return true;
+  }
+
+  async getGroupEmail(groupId: number) {
+    const group = await this.getGroupById(groupId);
+    let email = '';
+    if (group) {
+      const companyService: CompanyService = CompanyService.getInstance();
+      const companyReplyDomain = await companyService.getCompanyEmailDomain(
+        group.company_id,
+      );
+
+      if (companyReplyDomain) {
+        const envDomain = this._getENVDomain();
+        if (group.email_friendly_abbreviation) {
+          email = `${
+            group.email_friendly_abbreviation
+          }@${companyReplyDomain}.${envDomain}`;
+        }
+
+        if (!isValidEmailAddress(email)) {
+          email = `${group.id}@${companyReplyDomain}.${envDomain}`;
+        }
+      }
+    }
+    return email;
+  }
+
+  private _getENVDomain() {
+    let apiServer = Api.httpConfig['glip'].server;
+    if (apiServer) {
+      let index = apiServer.indexOf('://');
+      if (index > -1) {
+        apiServer = apiServer.substr(index + 3);
+      }
+
+      index = apiServer.lastIndexOf(':');
+      if (index > -1) {
+        apiServer = apiServer.substring(0, index);
+      }
+
+      index = apiServer.indexOf('.');
+      if (index !== -1 && apiServer.substr(0, index) === 'app') {
+        apiServer = apiServer.substr(index + 1);
+      }
+    }
+    return apiServer;
+  }
+
   private _isValidGroup(group: Group) {
     return this._isValid(group) && !group.is_team;
   }
@@ -563,6 +717,10 @@ class GroupService extends BaseService<Group> {
 
   private _isValid(group: Group) {
     return !group.is_archived && !group.deactivated && group.members;
+  }
+
+  private _getTeamAdmins(permission?: TeamPermission) {
+    return permission && permission.admin ? permission.admin.uids : [];
   }
 }
 
