@@ -13,6 +13,7 @@ type PostListPageViewProps = WithNamespaces & {
   type: POST_LIST_TYPE;
   caption: string;
   ids: number[];
+  unsetCurrentPostListValue: Function;
 };
 
 type PostListPageProps = {

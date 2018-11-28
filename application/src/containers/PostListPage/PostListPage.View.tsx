@@ -13,6 +13,9 @@ import { translate } from 'react-i18next';
 
 @observer
 class PostListPageViewComponent extends Component<PostListPageViewProps> {
+  componentWillUnmount() {
+    this.props.unsetCurrentPostListValue();
+  }
   render() {
     const { type, caption, ids, t } = this.props;
     return (
@@ -24,7 +27,7 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
           data-test-automation-id="post-list-page-header"
           title={t(caption)}
         />
-        {ids ? <Stream postIds={ids} type={type} /> : null}
+        {ids ? <Stream postIds={ids} type={type} key={type} /> : null}
       </JuiConversationPage>
     );
   }
