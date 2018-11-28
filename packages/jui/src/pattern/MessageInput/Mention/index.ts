@@ -67,14 +67,17 @@ class Mention {
       name,
       denotationChar,
     };
-    this._quill.deleteText(
-      this._mentionCharPos,
-      this._cursorPos - this._mentionCharPos,
-      'api',
-    );
-    this._quill.insertEmbed(this._mentionCharPos, 'mention', data, 'user');
-    this._quill.insertText(this._mentionCharPos + 1, ' ', 'user');
-    this._quill.setSelection(this._mentionCharPos + 2, 0, 'user');
+    requestAnimationFrame(() => {
+      this._quill.setSelection(this._cursorPos, 0);
+      this._quill.deleteText(
+        this._mentionCharPos,
+        this._cursorPos - this._mentionCharPos,
+        'user',
+      );
+      this._quill.insertEmbed(this._mentionCharPos, 'mention', data, 'user');
+      this._quill.insertText(this._mentionCharPos + 1, ' ', 'user');
+      this._quill.setSelection(this._mentionCharPos + 2, 0, 'user');
+    });
   }
 
   onSomethingChange() {

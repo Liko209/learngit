@@ -15,6 +15,7 @@ import Keys from 'jui/pattern/MessageInput/keys';
 import Quill from 'quill';
 import 'jui/pattern/MessageInput/Mention';
 
+const DELAY = 300;
 class MentionViewModel extends StoreViewModel<MentionProps>
   implements MentionViewProps {
   @computed
@@ -67,7 +68,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
         this._canDoFuzzySearch = true;
       },
       {
-        delay: 300,
+        delay: DELAY,
         equals: comparer.structural,
       },
     );

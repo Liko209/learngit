@@ -23,19 +23,6 @@ class MentionViewComponent extends Component<
     return <Avatar uid={id} size="small" />;
   }
 
-  private _AvatarCache: {
-    [id: number]: () => JSX.Element;
-  } = {};
-
-  private _getAvatar(id: number) {
-    let Avatar = this._AvatarCache[id];
-    if (!Avatar) {
-      Avatar = () => this._Avatar(id);
-      this._AvatarCache[id] = Avatar;
-    }
-    return Avatar;
-  }
-
   render() {
     const {
       open,
@@ -46,37 +33,36 @@ class MentionViewComponent extends Component<
       groupType,
       selectHandler,
     } = this.props;
-    return (
-      <>
-        {open && members.length ? (
-          <JuiMentionPanel>
-            <JuiMentionPanelSection
-              hasPadding={groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE}
-            >
-              {groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ? null : (
-                <JuiMentionPanelSectionHeader
-                  title={t(searchTerm ? 'suggested people' : 'team members')}
+    if (open && members.length) {
+      return (
+        <JuiMentionPanel>
+          <JuiMentionPanelSection
+            hasPadding={groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE}
+          >
+            {groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ? null : (
+              <JuiMentionPanelSectionHeader
+                title={t(searchTerm ? 'suggested people' : 'team members')}
+              />
+            )}
+            {members.map(
+              (
+                { displayName, id }: { displayName: string; id: number },
+                index: number,
+              ) => (
+                <JuiMentionPanelSectionItem
+                  Avatar={this._Avatar(id)}
+                  displayName={displayName}
+                  key={id}
+                  selected={currentIndex === index}
+                  selectHandler={selectHandler(index)}
                 />
-              )}
-              {members.map(
-                (
-                  { displayName, id }: { displayName: string; id: number },
-                  index: number,
-                ) => (
-                  <JuiMentionPanelSectionItem
-                    Avatar={this._getAvatar(id)}
-                    displayName={displayName}
-                    key={id}
-                    selected={currentIndex === index}
-                    selectHandler={selectHandler(index)}
-                  />
-                ),
-              )}
-            </JuiMentionPanelSection>
-          </JuiMentionPanel>
-        ) : null}
-      </>
-    );
+              ),
+            )}
+          </JuiMentionPanelSection>
+        </JuiMentionPanel>
+      );
+    }
+    return null;
   }
 }
 

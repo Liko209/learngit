@@ -1,4 +1,4 @@
-import React, { PureComponent, ComponentType, RefObject } from 'react';
+import React, { PureComponent, RefObject } from 'react';
 import styled from '../../../foundation/styled-components';
 import {
   height,
@@ -30,7 +30,7 @@ const DisplayName = styled.span`
 `;
 
 type Props = {
-  Avatar: ComponentType<any>;
+  Avatar: JSX.Element;
   displayName: string;
   selected: boolean;
   selectHandler: (event: React.MouseEvent<HTMLDivElement>) => void;
@@ -78,7 +78,7 @@ class JuiMentionPanelSectionItem extends PureComponent<Props> {
         onMouseDown={selectHandler}
         ref={this._itemRef}
       >
-        {<Avatar />}
+        {Avatar}
         <DisplayName>{displayName}</DisplayName>
       </Wrapper>
     );
