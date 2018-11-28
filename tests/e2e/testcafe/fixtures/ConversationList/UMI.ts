@@ -139,7 +139,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   },
 );
 
-test.skip(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'ConversationList']),
+test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'ConversationList']),
   async (t: TestController) => {
     if (await H.isEdge()) {
       await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
@@ -226,7 +226,7 @@ test.skip(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Con
   },
 );
 
-test.skip(formalName('Current opened conversation should not display UMI', ['JPT-105', 'P1', 'ConversationList']),
+test(formalName('Current opened conversation should not display UMI', ['JPT-105', 'P1', 'ConversationList']),
   async (t: TestController) => {
     if (await H.isEdge()) {
       await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
