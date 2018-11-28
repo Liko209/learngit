@@ -596,7 +596,9 @@ class PostService extends BaseService<Post> {
       const group = await groupService.getGroupByMemberList(ids);
       const id = group ? group.id : undefined;
       if (id && this._isValidTextMessage(message)) {
-        this.sendPost({ groupId: id, text: message });
+        setTimeout(() => {
+          this.sendPost({ groupId: id, text: message });
+        },         1000);
       }
 
       return { id };
