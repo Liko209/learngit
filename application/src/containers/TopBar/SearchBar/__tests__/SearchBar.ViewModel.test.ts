@@ -33,6 +33,7 @@ describe('SearchBarViewModel', () => {
     jest.spyOn(PersonService, 'getInstance').mockReturnValue(personService);
     jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
   });
+
   describe('getSectionItemSize()', () => {
     it('If calculateSectionCount < 1 should return ONLY_ONE_SECTION_LENGTH', () => {
       const num1 = searchBarViewModel.getSectionItemSize(1);
