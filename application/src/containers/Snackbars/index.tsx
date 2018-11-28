@@ -55,15 +55,15 @@ function getCloseButton(onClose: () => void) {
 function showNotification(props: innerNotificationProps) {
   const { container, destroy } = genDivAndDestroy();
   const { autoHideDuration, needCloseButton, ...rest } = props;
-  const actions = [];
+  const action = [];
   const closeFunction = () => {
     destroy();
   };
   if (needCloseButton) {
-    actions.push(getCloseButton(closeFunction));
+    action.push(getCloseButton(closeFunction));
   }
 
-  const config = { ...rest, actions };
+  const config = { ...rest, action };
   const state = true;
 
   function render(params: JuiSnackbarsProps) {

@@ -9,12 +9,7 @@ import MuiSnackbarContent, {
 } from '@material-ui/core/SnackbarContent';
 
 import styled from '../../foundation/styled-components';
-import {
-  spacing,
-  palette,
-  height,
-  typography,
-} from '../../foundation/utils/styles';
+import { spacing, palette, typography } from '../../foundation/utils/styles';
 
 import { MessageAlignment, SnackbarContentColor } from './SnackbarContent';
 import { JuiSnackbarAction } from './SnackbarAction';
@@ -22,14 +17,12 @@ import { JuiSnackbarAction } from './SnackbarAction';
 type JuiSnackbarContentProps = {
   messageAlign: MessageAlignment;
   bgColor: SnackbarContentColor;
-  radius: number;
   fullWidth: boolean;
 } & SnackbarContentProps;
 
 const WrapperContent = ({
   messageAlign,
   bgColor,
-  radius,
   fullWidth,
   ...rest
 }: JuiSnackbarContentProps) => <MuiSnackbarContent {...rest} />;
