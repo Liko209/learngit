@@ -1,6 +1,6 @@
 /*
- * @Author: Nello Huang (nello.huang@ringcentral.com)
- * @Date: 2018-10-16 10:46:08
+ * @Author: Lip Wang (lip.wang@ringcentral.com)
+ * @Date: 2018-11-22 15:45:22
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
@@ -9,50 +9,51 @@ import MuiSnackbarContent, {
 } from '@material-ui/core/SnackbarContent';
 
 import styled from '../../foundation/styled-components';
-import { spacing, palette, grey } from '../../foundation/utils/styles';
-import { JuiIconography } from '../../foundation/Iconography';
-import { SnackbarContentColor } from './SnackbarContent';
+import { spacing, palette, typography } from '../../foundation/utils/styles';
+
+import { MessageAlignment, SnackbarContentColor } from './SnackbarContent';
+import { JuiSnackbarAction } from './SnackbarAction';
 
 type JuiSnackbarContentProps = {
+  messageAlign: MessageAlignment;
   bgColor: SnackbarContentColor;
+  fullWidth: boolean;
 } & SnackbarContentProps;
 
-type JuiSnackbarIcon = {
-  color: SnackbarContentColor;
-};
-
-const WrapperSnackbarIcon = ({ color, ...rest }: JuiSnackbarIcon) => (
-  <JuiIconography {...rest} />
-);
-
-const SnackbarIcon = styled<JuiSnackbarIcon>(WrapperSnackbarIcon)`
-  margin: ${spacing(0, 2, 0, 0)};
-  color: ${({ color }) => palette(...color)};
-`;
-
-const WrapperContent = ({ bgColor, ...rest }: JuiSnackbarContentProps) => (
-  <MuiSnackbarContent {...rest} />
-);
+const WrapperContent = ({
+  messageAlign,
+  bgColor,
+  fullWidth,
+  ...rest
+}: JuiSnackbarContentProps) => <MuiSnackbarContent {...rest} />;
 
 const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
+
   && {
-    padding: ${spacing(2, 6)};
-    color: ${grey('900')};
-    background: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 1)};
+    ${typography('body1')}
+    padding: ${spacing(2, 4)};
+    overflow: hidden;
+    background-color: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 0)};
     box-shadow: none;
-    width: 100% !important;
-    border-radius: 0 !important;
-    max-width: 100% !important;
+    border-radius: ${({ fullWidth, theme }) =>
+      fullWidth ? 0 : `${theme.shape.borderRadius}px`} !important;
+    max-width: ${props => (props.fullWidth ? '100%' : '640px')} !important;
     box-sizing: border-box;
+    margin: 0 auto;
   }
+
   .message {
-    padding: 0;
+    flex: 1;
+    text-align: ${props => props.messageAlign};
+  }
+
+  .action {
+    margin-right: 0;
+  }
+
+  ${JuiSnackbarAction} + ${JuiSnackbarAction} {
+    margin-left: ${spacing(3)};
   }
 `;
 
-const MessageWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-export { SnackbarContent, MessageWrapper, SnackbarIcon };
+export { SnackbarContent };
