@@ -19,7 +19,7 @@ type ColorMap = {
   [key: string]: ColorType;
 };
 
-type JuiSnackbarsProps = MuiSnackbarContentProps & {
+type JuiSnackbarProps = MuiSnackbarContentProps & {
   type: JuiSnackbarsType;
   messageAlign: MessageAlignment;
   fullWidth: boolean;
@@ -43,7 +43,7 @@ const COLOR_MAP: ColorMap = {
 function getColor(type: JuiSnackbarsType, map: ColorMap): ColorType {
   return map[type];
 }
-class JuiSnackbarContent extends React.PureComponent<JuiSnackbarsProps> {
+class JuiSnackbarContent extends React.PureComponent<JuiSnackbarProps> {
   static defaultProps = {
     radius: 0,
     messageAlign: 'left',
@@ -69,7 +69,7 @@ class JuiSnackbarContent extends React.PureComponent<JuiSnackbarsProps> {
 
 export {
   JuiSnackbarContent,
-  JuiSnackbarsProps,
+  JuiSnackbarProps,
   MessageAlignment,
   SnackbarContentColor,
   JuiSnackbarsType,

@@ -5,12 +5,9 @@
  */
 import {
   JuiSnackbarContent,
-  JuiSnackbarsProps,
-  // MessageAlignment,
-  // SnackbarContentColor,
-  JuiSnackbarsType,
+  JuiSnackbarAction,
+  JuiSnackbarProps,
 } from 'jui/components/Snackbars';
-import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import Slide from '@material-ui/core/Slide';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
@@ -18,61 +15,51 @@ import { genDivAndDestroy } from '@/common/genDivAndDestroy';
 import ThemeProvider from '@/containers/ThemeProvider';
 import Snackbar from '@material-ui/core/Snackbar';
 
-type JuiNotificationPros = {
-  type: JuiSnackbarsType;
-  message: React.ReactNode;
-  actions?: React.ReactNode[];
-  needCloseButton?: boolean;
+type NotificationPros = JuiSnackbarProps & {
+  dismissible?: boolean;
 };
 
 type ReturnFunc = {
-  destroy: () => void;
+  dismiss: () => void;
 };
 
-type innerNotificationProps = {
+type ShowNotificationOptions = JuiSnackbarProps & {
+  dismissible?: boolean;
   autoHideDuration?: number;
-  needCloseButton?: boolean;
-} & JuiNotificationPros;
+};
 
 function transitionDown(props: any) {
   return <Slide {...props} direction="down" />;
 }
 
-function getCloseButton(onClose: () => void) {
-  return (
-    <JuiIconButton
-      key="close"
-      aria-label="Close"
-      color="inherit"
-      size="medium"
-      onClick={onClose}
-    >
-      close
-    </JuiIconButton>
-  );
-}
-
-function showNotification(props: innerNotificationProps) {
-  const { container, destroy } = genDivAndDestroy();
-  const { autoHideDuration, needCloseButton, ...rest } = props;
+function showNotification(props: ShowNotificationOptions) {
+  const { container, destroy: dismiss } = genDivAndDestroy();
+  const { autoHideDuration, dismissible, ...rest } = props;
   const action = [];
-  const closeFunction = () => {
-    destroy();
-  };
-  if (needCloseButton) {
-    action.push(getCloseButton(closeFunction));
+
+  if (dismissible) {
+    action.push(
+      <JuiSnackbarAction
+        key="dismiss"
+        variant="icon"
+        aria-label="Dismiss"
+        onClick={dismiss}
+      >
+        close
+      </JuiSnackbarAction>,
+    );
   }
 
   const config = { ...rest, action };
-  const state = true;
 
-  function render(params: JuiSnackbarsProps) {
+  function render(params: JuiSnackbarProps) {
     ReactDOM.render(
       <ThemeProvider>
         <Snackbar
-          open={state}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={true}
           TransitionComponent={transitionDown}
-          onClose={closeFunction}
+          onClose={dismiss}
           autoHideDuration={autoHideDuration}
         >
           <JuiSnackbarContent {...params} />
@@ -83,41 +70,40 @@ function showNotification(props: innerNotificationProps) {
   }
   render(config);
   return {
-    destroy,
+    dismiss,
   };
 }
 
-class JuiNotification extends Component<JuiNotificationPros, {}> {
-  static topHat(props: JuiNotificationPros): ReturnFunc {
+class Notification extends Component<NotificationPros, {}> {
+  static topHat(props: NotificationPros): ReturnFunc {
     const config = {
       messageAlign: 'center',
       fullWidth: true,
-      radius: 0,
       ...props,
     };
     return showNotification(config);
   }
-  static flashToast(props: JuiNotificationPros) {
+
+  static flashToast(props: NotificationPros) {
     const config = {
       messageAlign: 'left',
       fullWidth: false,
-      radius: 4,
       autoHideDuration: 2000,
       ...props,
     };
     return showNotification(config);
   }
-  static flagToast(props: JuiNotificationPros) {
+
+  static flagToast(props: NotificationPros) {
     const config = {
       messageAlign: 'left',
       fullWidth: false,
-      radius: 4,
       ...props,
     };
     return showNotification(config);
   }
 }
 Object.assign(window, {
-  JuiNotification,
+  n: Notification,
 });
-export { JuiNotification, JuiNotificationPros };
+export { Notification, NotificationPros };
