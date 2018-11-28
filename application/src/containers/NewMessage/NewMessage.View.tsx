@@ -102,6 +102,9 @@ class NewMessage extends React.Component<NewMessageProps, State> {
         <JuiTextarea
           placeholder={t('Type new message')}
           fullWidth={true}
+          inputProps={{
+            maxLength: 10000,
+          }}
           onChange={this.handleMessageChange}
           data-test-automation-id="newMessageTextarea"
         />

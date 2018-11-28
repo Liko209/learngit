@@ -231,7 +231,6 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
         selectedItem={selectedItem}
         defaultHighlightedIndex={0}
         itemToString={item => (item ? item.label : '')}
-        data-test-automation-id={automationId}
       >
         {({
           getInputProps,
@@ -296,7 +295,10 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                   } as any), // Downshift startAdornment is not include in getInputProps interface
                 })}
                 {isOpen && filterSuggestions.length ? (
-                  <StyledPaper square={true}>
+                  <StyledPaper
+                    square={true}
+                    data-test-automation-id={automationId}
+                  >
                     {filterSuggestions.map((suggestion: TSuggestion, index) =>
                       this.renderSuggestion({
                         ContactSearchItem,
