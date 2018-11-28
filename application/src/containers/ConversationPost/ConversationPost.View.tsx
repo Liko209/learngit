@@ -18,16 +18,27 @@ const PostTypeMappingComponent = {
   [POST_TYPE.NOTIFICATION]: Notification,
 };
 
-const factory = (type: POST_TYPE, postId: number, highlight: boolean) => {
+const factory = (
+  type: POST_TYPE,
+  postId: number,
+  highlight: boolean,
+  onHighlightAnimationStart?: React.AnimationEventHandler,
+) => {
   const Component: React.ComponentType<ConversationPostProps> =
     PostTypeMappingComponent[type];
-  return <Component id={postId} highlight={highlight} />;
+  return (
+    <Component
+      id={postId}
+      highlight={highlight}
+      onHighlightAnimationStart={onHighlightAnimationStart}
+    />
+  );
 };
 
 class ConversationPostView extends Component<ConversationPostViewProps> {
   render() {
-    const { type, id, highlight } = this.props;
-    return factory(type, id, highlight);
+    const { type, id, highlight, onHighlightAnimationStart } = this.props;
+    return factory(type, id, highlight, onHighlightAnimationStart);
   }
 }
 
