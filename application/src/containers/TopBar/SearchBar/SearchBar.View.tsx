@@ -222,7 +222,7 @@ class SearchBarView extends React.Component<ViewProps, State> {
     this._setSelectIndex(index);
   }
 
-  onEnter = async (e: any) => {
+  onEnter = async () => {
     const { persons, groups, teams, selectIndex } = this.state;
 
     const searchItems = [
