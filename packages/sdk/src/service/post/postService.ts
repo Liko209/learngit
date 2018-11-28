@@ -598,7 +598,7 @@ class PostService extends BaseService<Post> {
       if (id && this._isValidTextMessage(message)) {
         setTimeout(() => {
           this.sendPost({ groupId: id, text: message });
-        },         1000);
+        },         2000);
       }
 
       return { id };
