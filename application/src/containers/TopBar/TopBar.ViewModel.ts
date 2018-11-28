@@ -34,6 +34,17 @@ class TopBarViewModel extends AbstractViewModel {
     );
   }
 
+  @action
+  updateNewMessageDialogState = () => {
+    const isShowNewMessageDialog = !globalStore.get(
+      GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG,
+    );
+    globalStore.set(
+      GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG,
+      isShowNewMessageDialog,
+    );
+  }
+
   @computed
   get currentUserId() {
     return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);

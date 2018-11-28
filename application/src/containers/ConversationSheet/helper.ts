@@ -53,13 +53,6 @@ function getDurationTimeText(
   repeatEndingOn: string,
   repeatEnding: string,
 ) {
-  console.log(
-    repeat,
-    repeatEndingAfter,
-    repeatEndingOn,
-    repeatEnding,
-    '-----task time',
-  );
   const times =
     (TIMES_TEXT[repeat] &&
       getI18Text(TIMES_TEXT[repeat], Number(repeatEndingAfter))) ||

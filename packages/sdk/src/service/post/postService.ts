@@ -111,7 +111,7 @@ class PostService extends BaseService<Post> {
   }: IPostQuery): Promise<IRawPostResult> {
     const groupService: GroupService = GroupService.getInstance();
     const group = await groupService.getById(groupId);
-    if (!group.most_recent_post_id) {
+    if (!group.most_recent_post_created_at) {
       // The group has no post
       return {
         posts: [],
@@ -569,7 +569,6 @@ class PostService extends BaseService<Post> {
 
   async isNewestSaved(groupId: number): Promise<boolean> {
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    console.log('dao', groupConfigDao);
     let isNewestSaved = await groupConfigDao.isNewestSaved(groupId);
     if (isNewestSaved) {
       return true;
@@ -596,7 +595,9 @@ class PostService extends BaseService<Post> {
       const group = await groupService.getGroupByMemberList(ids);
       const id = group ? group.id : undefined;
       if (id && this._isValidTextMessage(message)) {
-        this.sendPost({ groupId: id, text: message });
+        setTimeout(() => {
+          this.sendPost({ groupId: id, text: message });
+        },         2000);
       }
 
       return { id };
@@ -607,7 +608,7 @@ class PostService extends BaseService<Post> {
   }
 
   private _isValidTextMessage(message: string) {
-    return message.trim().length === 0;
+    return message.trim() !== '';
   }
 }
 

@@ -53,6 +53,8 @@ export class ConversationCard extends React.Component<
       mode,
       post,
       hideText,
+      highlight,
+      onAnimationEnd,
       ...rest
     } = this.props;
     const { isHover } = this.state;
@@ -61,6 +63,7 @@ export class ConversationCard extends React.Component<
     }
     const avatar = <Avatar uid={creator.id} size="medium" data-name="avatar" />;
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
+    const onClickHandler = mode ? this.jumpToPost : undefined;
     return (
       <React.Fragment>
         <JuiConversationCard
@@ -70,7 +73,9 @@ export class ConversationCard extends React.Component<
           onMouseEnter={this.handleMouseEnter}
           onMouseLeave={this.handleMouseLeave}
           mode={mode}
-          onClick={this.jumpToPost}
+          highlight={highlight}
+          onClick={onClickHandler}
+          onAnimationEnd={onAnimationEnd}
           {...rest}
         >
           <JuiConversationCardHeader

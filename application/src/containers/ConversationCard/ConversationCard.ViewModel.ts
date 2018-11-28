@@ -24,6 +24,11 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   }
 
   @computed
+  get highlight() {
+    return !!this.props.highlight;
+  }
+
+  @computed
   get post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
   }
@@ -77,6 +82,12 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   @computed
   get createTime() {
     return moment(this.post.createdAt).format('hh:mm A');
+  }
+
+  onAnimationEnd = (evt: React.AnimationEvent) => {
+    if (this.highlight && this.props.onHighlightAnimationEnd) {
+      this.props.onHighlightAnimationEnd(evt);
+    }
   }
 }
 

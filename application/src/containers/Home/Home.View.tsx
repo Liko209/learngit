@@ -11,6 +11,7 @@ import { TopBar } from '@/containers/TopBar';
 import { Messages } from '@/containers/Messages';
 import { LeftNav } from '@/containers/LeftNav';
 import { CreateTeam } from '@/containers/CreateTeam';
+import { NewMessage } from '@/containers/NewMessage';
 import NotFound from '@/containers/NotFound';
 import Wrapper from './Wrapper';
 import Bottom from './Bottom';
@@ -35,6 +36,7 @@ class Home extends Component<HomeViewProps> {
           </Switch>
         </Bottom>
         <CreateTeam />
+        <NewMessage data-test-automation-id="newMessageModal" />
       </Wrapper>
     );
   }

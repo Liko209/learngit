@@ -31,14 +31,14 @@ test(formalName('Enter text in the conversation input box', ['P0', 'JPT-77']), a
 
   await h(t).withLog('When I enter a conversation', async () => {
     // FIXME: there is a risk that no conversation in the list
-    await app.homePage.messagePanel.teamsSection.expand();
-    await app.homePage.messagePanel.teamsSection.nthConversationEntry(0).enter();
+    await app.homePage.messageTab.teamsSection.expand();
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
   });
 
   const identifier = uuid();
   const message = `${faker.lorem.sentence()} ${identifier}`;
 
-  const conversationSection = app.homePage.messagePanel.conversationPage;
+  const conversationSection = app.homePage.messageTab.conversationPage;
   await h(t).withLog('Then I can send message to this conversation', async () => {
     await conversationSection.sendMessage(message);
   });

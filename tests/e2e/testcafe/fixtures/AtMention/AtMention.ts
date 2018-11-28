@@ -23,8 +23,8 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
     await h(t).resetGlipAccount(user);
     const userPlatform = await h(t).getPlatform(user);
     const user5Platform = await h(t).getPlatform(users[5]);
-    const mentionsEntry = app.homePage.messagePanel.mentionsEntry;
-    const postListPage = app.homePage.messagePanel.postListPage;
+    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+    const postListPage = app.homePage.messageTab.postListPage;
     let group;
     await h(t).withLog('Given I have an extension with 2 at-mention posts', async () => {
       group = await userPlatform.createGroup({
@@ -75,7 +75,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
   },
 );
 
-test(formalName('Jump to conversation bottom when click name', ['P1', 'JPT-314']),
+test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -83,9 +83,9 @@ test(formalName('Jump to conversation bottom when click name', ['P1', 'JPT-314']
     await h(t).resetGlipAccount(user);
     const userPlatform = await h(t).getPlatform(user);
     const user5Platform = await h(t).getPlatform(users[5]);
-    const mentionsEntry = app.homePage.messagePanel.mentionsEntry;
-    const postListPage = app.homePage.messagePanel.mentionPage;
-    const conversationPage = app.homePage.messagePanel.conversationPage;
+    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+    const postListPage = app.homePage.messageTab.mentionPage;
+    const conversationPage = app.homePage.messageTab.conversationPage;
 
     let chat, group, team;
     let chatPost, groupPost, teamPost;

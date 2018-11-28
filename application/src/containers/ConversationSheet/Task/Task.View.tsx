@@ -119,7 +119,6 @@ class Task extends React.Component<taskViewProps> {
       repeatEnding,
       repeatEndingOn,
     } = task;
-    console.log(task, '----task');
     const time = getDurationTime(start, end);
     const timeText = getDurationTimeText(
       repeat,

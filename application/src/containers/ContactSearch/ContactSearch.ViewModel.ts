@@ -35,6 +35,9 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
   @observable
   helperText: string;
 
+  @observable
+  automationId: string;
+
   constructor(props: ContactSearchProps) {
     super(props);
     this.searchMembers = debounce(this.searchMembers.bind(this), 300);

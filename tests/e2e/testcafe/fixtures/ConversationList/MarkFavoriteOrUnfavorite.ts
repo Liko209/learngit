@@ -15,15 +15,15 @@ fixture('ConversationList/MarkFavoriteOrUnfavorite')
   .afterEach(teardownCase());
 
 test(formalName('Display Favorite button when user tap more button of a conversation in DM/Teams & When user mark a conversation as favorite, move the conversation to favorite section.',
-    ['P2', 'JPT-181', 'JPT-183', 'ConversationList']),
+    ['P1', 'P2', 'JPT-181', 'JPT-183', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
-    const favoriteToggler = app.homePage.messagePanel.moreMenu.favoriteToggler;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
+    const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
 
     let groupId, teamId;
     await h(t).withLog('Given I have an extension with a group and a team conversation', async () => {
@@ -53,7 +53,7 @@ test(formalName('Display Favorite button when user tap more button of a conversa
 
     let groupItem, teamItem; 
     await h(t).withLog('and I click more button of group', async () => {
-      groupItem = app.homePage.messagePanel.directMessagesSection.conversationEntryById(groupId);
+      groupItem = app.homePage.messageTab.directMessagesSection.conversationEntryById(groupId);
       await groupItem.openMoreMenu(); 
     });
 
@@ -73,7 +73,7 @@ test(formalName('Display Favorite button when user tap more button of a conversa
     });
 
     await h(t).withLog('When I click more button of team', async () => {
-      teamItem = app.homePage.messagePanel.teamsSection.conversationEntryById(teamId);
+      teamItem = app.homePage.messageTab.teamsSection.conversationEntryById(teamId);
       await teamItem.openMoreMenu();
     });
 
@@ -95,15 +95,15 @@ test(formalName('Display Favorite button when user tap more button of a conversa
 );
 
 test(formalName('Display Unfavorite button when user tap more button of a conversation in favorite section. & When user mark a conversation as unfavorite, remove the conversation from favorite section.',
-    ['P2', 'JPT-182', 'JPT-184', 'ConversationList']),
+    ['P1', 'P2', 'JPT-182', 'JPT-184', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
     user.sdk = await h(t).getSdk(user);
    
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
-    const favoriteToggler = app.homePage.messagePanel.moreMenu.favoriteToggler;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
+    const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
 
     let groupId, teamId;
     await h(t).withLog('Given I have an extension with a group and a team conversation', async () => {
@@ -152,7 +152,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
 
     await h(t).withLog('Then I can find the item in direct messages section but not in favorite section', async () => {
       await t.expect(groupItem.exists).notOk();
-      groupItem = app.homePage.messagePanel.directMessagesSection.conversationEntryById(groupId);
+      groupItem = app.homePage.messageTab.directMessagesSection.conversationEntryById(groupId);
       await t.expect(groupItem.exists).ok();
     });
 
@@ -172,7 +172,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
 
     await h(t).withLog('Then I can find the item in team section but not in favorite section', async () => {
       await t.expect(teamItem.exists).notOk();
-      teamItem = app.homePage.messagePanel.teamsSection.conversationEntryById(teamId);
+      teamItem = app.homePage.messageTab.teamsSection.conversationEntryById(teamId);
       await t.expect(teamItem.exists).ok();
     });
   },
@@ -207,7 +207,7 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
 
     let meChat;
     await h(t).withLog(`Then I can find Me Conversation in Favorite Section`, async () => {
-      meChat = app.homePage.messagePanel.favoritesSection.conversationEntryById(meChatId);
+      meChat = app.homePage.messageTab.favoritesSection.conversationEntryById(meChatId);
       await t.expect(meChat.exists).ok();
     });
 
@@ -216,14 +216,14 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
     });
 
     await h(t).withLog('and I click the unfavorite button', async () => {
-      await app.homePage.messagePanel.moreMenu.favoriteToggler.enter();
+      await app.homePage.messageTab.moreMenu.favoriteToggler.enter();
     });
 
     await h(t).withLog('Then the Me Conversation should be in direct messages section but not in favorite section nor in team section',
       async () => {
-        await t.expect(app.homePage.messagePanel.directMessagesSection.conversationEntryById(meChatId).exists).ok();
-        await t.expect(app.homePage.messagePanel.favoritesSection.conversationEntryById(meChatId).exists).notOk();
-        await t.expect(app.homePage.messagePanel.teamsSection.conversationEntryById(meChatId).exists).notOk();
+        await t.expect(app.homePage.messageTab.directMessagesSection.conversationEntryById(meChatId).exists).ok();
+        await t.expect(app.homePage.messageTab.favoritesSection.conversationEntryById(meChatId).exists).notOk();
+        await t.expect(app.homePage.messageTab.teamsSection.conversationEntryById(meChatId).exists).notOk();
       },
     );
   },
