@@ -4,3 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './SnackbarContent';
+export * from './SnackbarAction';

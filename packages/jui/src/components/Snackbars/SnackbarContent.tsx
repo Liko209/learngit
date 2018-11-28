@@ -20,11 +20,11 @@ type ColorMap = {
 
 type JuiSnackbarsProps = {
   type: JuiSnackbarsType;
-  messageAlign?: MessageAlignment;
   message: React.ReactNode;
+  messageAlign: MessageAlignment;
   actions?: React.ReactNode[];
-  radius?: number;
-  fullWidth?: boolean;
+  radius: number;
+  fullWidth: boolean;
 };
 
 const COLOR_MAP: ColorMap = {
@@ -45,39 +45,30 @@ const COLOR_MAP: ColorMap = {
 function getColor(type: JuiSnackbarsType, map: ColorMap): ColorType {
   return map[type];
 }
+class JuiSnackbarContent extends React.PureComponent<JuiSnackbarsProps> {
+  static defaultProps = {
+    radius: 0,
+    messageAlign: 'left',
+    fullWidth: false,
+  };
 
-const JuiSnackbarContent: React.SFC<JuiSnackbarsProps> = (
-  pros: JuiSnackbarsProps,
-) => {
-  const {
-    message,
-    type,
-    fullWidth,
-    actions,
-    radius,
-    messageAlign,
-    ...rest
-  } = pros;
-  const result = getColor(type, COLOR_MAP);
-  const color = result.color;
-  const rradius = radius ? radius : 0;
-  const rfullWidth = fullWidth ? fullWidth : true;
-  const rmessageAlign = messageAlign ? messageAlign : 'left';
-  return (
-    <Jui.SnackbarContent
-      classes={{
-        message: 'message',
-      }}
-      bgColor={color}
-      radius={rradius}
-      messageAlign={rmessageAlign}
-      fullWidth={rfullWidth}
-      action={actions}
-      message={message}
-      {...rest}
-    />
-  );
-};
+  render() {
+    const { message, type, actions, ...rest } = this.props;
+    const result = getColor(type, COLOR_MAP);
+    const color = result.color;
+    return (
+      <Jui.SnackbarContent
+        classes={{
+          message: 'message',
+        }}
+        bgColor={color}
+        action={actions}
+        message={message}
+        {...rest}
+      />
+    );
+  }
+}
 
 export {
   JuiSnackbarContent,

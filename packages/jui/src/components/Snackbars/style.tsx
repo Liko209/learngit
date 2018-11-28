@@ -9,6 +9,7 @@ import MuiSnackbarContent, {
 } from '@material-ui/core/SnackbarContent';
 
 import { spacing, palette } from '../../foundation/utils/styles';
+import { JuiButton, JuiIconButton } from '../Buttons';
 import { MessageAlignment, SnackbarContentColor } from './SnackbarContent';
 
 import styled from '../../foundation/styled-components';
@@ -32,15 +33,23 @@ const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
     padding: ${spacing(2, 6)};
     background-color: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 0)};
     box-shadow: none;
-    width: 100% !important;
     border-radius: ${props => props.radius} !important;
-    max-width: ${props => (props.fullWidth ? '100%' : '640')} !important;
+    max-width: ${props => (props.fullWidth ? '100%' : '640px')} !important;
     box-sizing: border-box;
     height: 48px;
+    margin: 0 auto;
   }
   .message {
     flex: 1;
     text-align: ${props => props.messageAlign};
+  }
+
+  && > ${JuiIconButton} {
+    color: ${palette('common', 'white')};
+  }
+
+  && > ${JuiButton} {
+    color: ${palette('common', 'white')};
   }
 `;
 

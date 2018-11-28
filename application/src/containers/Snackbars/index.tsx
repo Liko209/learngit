@@ -10,14 +10,13 @@ import {
   // SnackbarContentColor,
   JuiSnackbarsType,
 } from 'jui/components/Snackbars';
+import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import Slide from '@material-ui/core/Slide';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { genDivAndDestroy } from '@/common/genDivAndDestroy';
 import ThemeProvider from '@/containers/ThemeProvider';
 import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 
 type JuiNotificationPros = {
   type: JuiSnackbarsType;
@@ -41,15 +40,15 @@ function transitionDown(props: any) {
 
 function getCloseButton(onClose: () => void) {
   return (
-    <IconButton
+    <JuiIconButton
       key="close"
       aria-label="Close"
       color="inherit"
-      className={'closeButton'}
+      size="medium"
       onClick={onClose}
     >
-      <CloseIcon className={'fontSize: 20'} />
-    </IconButton>
+      close
+    </JuiIconButton>
   );
 }
 
@@ -118,5 +117,7 @@ class JuiNotification extends Component<JuiNotificationPros, {}> {
     return showNotification(config);
   }
 }
-
+Object.assign(window, {
+  JuiNotification,
+});
 export { JuiNotification, JuiNotificationPros };
