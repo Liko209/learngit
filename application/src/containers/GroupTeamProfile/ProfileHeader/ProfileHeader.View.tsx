@@ -15,7 +15,13 @@ import { CONVERSATION_TYPES } from '@/constants';
 @observer
 class ProfileHeader extends React.Component<ProfileHeaderViewProps> {
   render() {
-    const { title = 'Profile', dismiss, groupId, type, t } = this.props;
+    const {
+      title = 'Profile',
+      dismiss,
+      groupId,
+      type,
+      t,
+    } = this.props;
     return (
       <>
         <JuiGroupProfileHeader title={t(title)} dismiss={dismiss}>
