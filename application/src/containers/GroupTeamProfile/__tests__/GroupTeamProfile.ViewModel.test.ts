@@ -4,25 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { GroupTeamProfileViewModel } from '../GroupTeamProfile.ViewModel';
-import { CONVERSATION_TYPES } from '@/constants';
-import { getEntity } from '@/store/utils';
+import { TypeDictionary } from 'sdk/utils';
 
 jest.mock('../../../store/utils');
-const groupId = 12345;
+const groupId = 15417346;
 const groupTeamProfileVM = new GroupTeamProfileViewModel({ id: groupId });
 
-function mockReturnGroupType(type: CONVERSATION_TYPES) {
-  return (getEntity as jest.Mock) = jest.fn().mockReturnValue({
-    type,
-  });
-}
 describe('GroupTeamProfileViewModel', () => {
   it('should return group id if group id provided', () => {
     new GroupTeamProfileViewModel({ id: groupId });
     expect(groupTeamProfileVM.id).toBe(groupId);
   });
   it('should return group type if group id provided', () => {
-    mockReturnGroupType(CONVERSATION_TYPES.NORMAL_GROUP);
-    expect(groupTeamProfileVM.type).toBe(CONVERSATION_TYPES.NORMAL_GROUP);
+    expect(groupTeamProfileVM.type).toBe(TypeDictionary.TYPE_ID_GROUP);
   });
 });
