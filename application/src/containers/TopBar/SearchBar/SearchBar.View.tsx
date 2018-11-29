@@ -101,11 +101,6 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     });
   }
 
-  onBlur = () => {
-    // this.props.showSearchBar();
-    // this.onClose();
-  }
-
   onClear = () => {
     const { setValue } = this.props;
     setValue('');
@@ -127,7 +122,6 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     e: React.MouseEvent<HTMLElement>,
   ) => {
     e.stopPropagation();
-    console.log(1111111111, '-----------------');
     MiniCard.showProfile({ anchor: e.target as HTMLElement, id: uid });
   }
 
@@ -282,7 +276,6 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
                   focus={focus}
                   onFocus={this.onFocus}
                   onClear={this.onClear}
-                  onBlur={this.onBlur}
                   value={searchValue}
                   onChange={this.onChange}
                   placeholder={t('search')}
