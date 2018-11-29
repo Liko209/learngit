@@ -1,9 +1,5 @@
-import Quill, {
-  QuillOptionsStatic,
-  RangeStatic,
-  DeltaStatic,
-  Sources,
-} from 'quill';
+import { QuillOptionsStatic, RangeStatic, DeltaStatic, Sources } from 'quill';
+import { Quill } from 'react-quill';
 import './blots/mention';
 import Keys from '../keys';
 
@@ -32,7 +28,7 @@ class Mention {
   private _options: Options = {
     onMention: () => {},
     mentionDenotationChars: ['@'],
-    allowedChars: /^[a-zA-Z0-9_]*$/,
+    allowedChars: /^[a-zA-Z0-9_\s]*$/,
     minChars: 0,
     maxChars: 31,
     isolateCharacter: true,

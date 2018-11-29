@@ -17,6 +17,8 @@ type SearchResult = {
   teams: SearchSection<Group>;
 };
 
+type Props = {};
+
 type ViewProps = {
   search: (key: string) => Promise<SearchResult>;
   searchValue: string;
@@ -31,6 +33,7 @@ type SectionType<T> = {
 } | null;
 
 export {
+  Props,
   ViewProps,
   SectionType,
   SearchSection,

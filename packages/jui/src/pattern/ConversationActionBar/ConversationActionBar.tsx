@@ -31,8 +31,10 @@ const StyledWrapper = styled('div')`
     }
     & > div {
       width: ${height(7)};
-      text-align: center;
+      justify-content: center;
     }
+    display: flex;
+    align-items: center;
   }
 `;
 

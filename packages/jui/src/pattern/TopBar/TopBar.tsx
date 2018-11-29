@@ -38,7 +38,9 @@ class JuiTopBar extends React.Component<Props, States> {
   }
 
   showSearchBar = () => {
-    this.setState({ isShowSearchBar: true });
+    this.setState(prevState => ({
+      isShowSearchBar: !prevState.isShowSearchBar,
+    }));
   }
 
   render() {
@@ -60,7 +62,7 @@ class JuiTopBar extends React.Component<Props, States> {
               <Logo />
             </StyledMenuWithLogo>
             {BackNForward ? <BackNForward /> : null}
-            <SearchBar />
+            <SearchBar showSearchBar={this.showSearchBar} />
             <StyledSearchIconButton
               onClick={this.showSearchBar}
               tooltipTitle="Search"

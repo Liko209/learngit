@@ -10,7 +10,6 @@ import { MessageInputViewProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
 import { Mention } from './Mention';
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
-// import ReactQuill from 'react-quill';
 import { observer } from 'mobx-react';
 
 @observer

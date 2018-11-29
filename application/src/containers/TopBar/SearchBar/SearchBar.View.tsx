@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-// import { t } from 'i18next';
+import { t } from 'i18next';
 import { debounce } from 'lodash';
 import {
   JuiSearchBar,
@@ -43,7 +43,10 @@ const defaultSection = {
   hasMore: false,
 };
 
-class SearchBarView extends React.Component<ViewProps, State> {
+class SearchBarView extends React.Component<
+  ViewProps & { showSearchBar: () => void },
+  State
+> {
   private _debounceSearch: Function;
   private _searchItems: HTMLElement[];
 
@@ -56,7 +59,7 @@ class SearchBarView extends React.Component<ViewProps, State> {
     selectIndex: -1,
   };
 
-  constructor(props: ViewProps) {
+  constructor(props: ViewProps & { showSearchBar: () => void }) {
     super(props);
     const { search } = this.props;
     this._debounceSearch = debounce(async (value: string) => {
@@ -97,6 +100,11 @@ class SearchBarView extends React.Component<ViewProps, State> {
     this.setState({
       focus: true,
     });
+  }
+
+  onBlur = () => {
+    this.props.showSearchBar();
+    this.onClose();
   }
 
   onClear = () => {
@@ -254,7 +262,6 @@ class SearchBarView extends React.Component<ViewProps, State> {
   render() {
     const { terms, persons, groups, teams, focus } = this.state;
     const { searchValue } = this.props;
-
     return (
       <JuiSearchBar onClose={this.onClose} focus={focus}>
         <HotKeys
@@ -271,8 +278,11 @@ class SearchBarView extends React.Component<ViewProps, State> {
                   focus={focus}
                   onFocus={this.onFocus}
                   onClear={this.onClear}
+                  onBlur={this.onBlur}
                   value={searchValue}
                   onChange={this.onChange}
+                  placeholder={t('search')}
+                  showCloseBtn={!!searchValue}
                 />
                 {focus && searchValue && (
                   <JuiSearchList>

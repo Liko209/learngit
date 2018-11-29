@@ -7,7 +7,7 @@ import { observable, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import PersonService from 'sdk/service/person';
 import GroupService from 'sdk/service/group';
-import { SectionType, ViewProps, Person, Group } from './types';
+import { SectionType, ViewProps, Person, Group, Props } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
@@ -15,7 +15,7 @@ import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
 
-class SearchBarViewModel extends StoreViewModel implements ViewProps {
+class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   personService: PersonService;
   groupService: GroupService;
   @observable value: string = '';

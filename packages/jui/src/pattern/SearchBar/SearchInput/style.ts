@@ -44,6 +44,11 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
           `
         : null};
   z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
+  transition: all 0.3s ${({ theme }) => theme.transitions.easing.easeInOut};
+  &:hover {
+    background: ${({ focus }) =>
+      focus ? palette('common', 'white') : grey('300')};
+  }
 `;
 
 const SearchIcon = styled(MuiIcon)`
@@ -60,6 +65,23 @@ const SearchInput = styled(JuiTextField)`
     margin: 0 ${spacing(2)};
     ${typography('body1')};
     color: ${grey('500')};
+    .search-input {
+      ::-webkit-input-placeholder {
+        color: ${grey('500')};
+      }
+
+      ::-moz-placeholder {
+        color: ${grey('500')};
+      }
+
+      ::-ms-placeholder {
+        color: ${grey('500')};
+      }
+
+      ::placeholder {
+        color: ${grey('500')};
+      }
+    }
   }
 `;
 
