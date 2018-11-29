@@ -260,6 +260,8 @@ class SearchBarView extends React.Component<ViewProps, State> {
                   onClear={this.onClear}
                   value={searchValue}
                   onChange={this.onChange}
+                  placeholder={t('search')}
+                  showCloseBtn={!!searchValue}
                 />
                 {focus && searchValue && (
                   <JuiSearchList>
