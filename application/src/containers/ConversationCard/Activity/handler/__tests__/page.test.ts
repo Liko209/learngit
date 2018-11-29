@@ -10,10 +10,8 @@ describe('Page', () => {
     const data = page();
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'shared',
-          noun: 'note',
-        },
+        verb: 'shared',
+        noun: 'note',
       },
       key: 'verb-article-noun',
     });

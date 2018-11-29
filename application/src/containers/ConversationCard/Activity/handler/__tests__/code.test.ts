@@ -11,10 +11,8 @@ describe('Code', () => {
     const data = code();
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'shared',
-          noun: 'snippet',
-        },
+        verb: 'shared',
+        noun: 'snippet',
       },
       key: 'verb-article-noun',
     });

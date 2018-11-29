@@ -11,10 +11,8 @@ describe('Event', () => {
     const data = event({ activityData });
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'updated',
-          noun: 'event',
-        },
+        verb: 'updated',
+        noun: 'event',
       },
       key: 'verb-noun',
     });
@@ -24,10 +22,8 @@ describe('Event', () => {
     const data = event({ activityData });
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'created',
-          noun: 'event',
-        },
+        verb: 'created',
+        noun: 'event',
       },
       key: 'verb-article-noun',
     });

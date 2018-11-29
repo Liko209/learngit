@@ -11,10 +11,8 @@ describe('Task', () => {
     const data = task({ activityData });
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'created',
-          noun: 'task',
-        },
+        verb: 'created',
+        noun: 'task',
       },
       key: 'verb-article-noun',
     });
@@ -24,10 +22,8 @@ describe('Task', () => {
     const data = task({ activityData });
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'assigned',
-          noun: 'task',
-        },
+        verb: 'assigned',
+        noun: 'task',
       },
       key: 'verb-noun',
     });
@@ -38,10 +34,8 @@ describe('Task', () => {
     const data = task({ activityData });
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'reassigned',
-          noun: 'task',
-        },
+        verb: 'reassigned',
+        noun: 'task',
       },
       key: 'verb-noun',
     });
@@ -52,10 +46,8 @@ describe('Task', () => {
     const data = task({ activityData });
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'completed',
-          noun: 'task',
-        },
+        verb: 'completed',
+        noun: 'task',
       },
       key: 'verb-noun',
     });
@@ -66,11 +58,9 @@ describe('Task', () => {
     const data = task({ activityData });
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'marked',
-          noun: 'task',
-          adjectives: 'incomplete',
-        },
+        verb: 'marked',
+        noun: 'task',
+        adjectives: 'incomplete',
       },
       key: 'verb-noun-adjectives',
     });

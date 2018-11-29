@@ -7,11 +7,9 @@ type Parameter = {
 export default ({ verb, numerals, noun }: Parameter) => {
   return {
     parameter: {
-      numerals,
-      translated: {
-        verb,
-        noun,
-      },
+      verb,
+      noun,
+      count: numerals,
     },
     key: 'verb-numerals-noun',
   };

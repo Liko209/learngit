@@ -11,11 +11,9 @@ describe('Link', () => {
     const data = link({ ids });
     expect(data).toEqual({
       parameter: {
-        numerals: 3,
-        translated: {
-          verb: 'shared',
-          noun: 'link',
-        },
+        count: 3,
+        verb: 'shared',
+        noun: 'link',
       },
       key: 'verb-numerals-noun',
     });
@@ -25,10 +23,8 @@ describe('Link', () => {
     const data = link({ ids });
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'shared',
-          noun: 'link',
-        },
+        verb: 'shared',
+        noun: 'link',
       },
       key: 'verb-article-noun',
     });

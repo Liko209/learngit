@@ -10,10 +10,8 @@ describe('Video', () => {
     const data = video();
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'started',
-          noun: 'video chat',
-        },
+        verb: 'started',
+        noun: 'video chat',
       },
       key: 'verb-article-noun',
     });

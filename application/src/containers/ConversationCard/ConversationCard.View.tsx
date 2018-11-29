@@ -42,7 +42,7 @@ export class ConversationCard extends React.Component<
       createTime,
       customStatus,
       showProgressActions,
-      itemIds,
+      itemTypeIds,
       mode,
       post,
       hideText,
@@ -79,7 +79,7 @@ export class ConversationCard extends React.Component<
           </JuiConversationCardHeader>
           <JuiConversationCardBody data-name="body">
             {hideText ? null : <TextMessage id={id} />}
-            {idsToConversationSheet(itemIds, id)}
+            {idsToConversationSheet(itemTypeIds, id)}
           </JuiConversationCardBody>
           <Footer id={id} />
         </JuiConversationCard>

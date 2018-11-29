@@ -6,10 +6,8 @@ type Parameter = {
 export default ({ verb, noun }: Parameter) => {
   return {
     parameter: {
-      translated: {
-        verb,
-        noun,
-      },
+      verb,
+      noun,
     },
     key: 'verb-noun',
   };

@@ -10,10 +10,8 @@ describe('Conference', () => {
     const data = conference();
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'started',
-          noun: 'audio conference',
-        },
+        verb: 'started',
+        noun: 'audio conference',
       },
       key: 'verb-article-noun',
     });

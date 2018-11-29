@@ -12,8 +12,6 @@ jest.mock('../../../../store/utils');
 
 let activityViewModel: ActivityViewModel;
 const mockPostEntityData: {
-  itemId?: number;
-  itemIds?: number[];
   activityData?: {
     key: string;
     value: boolean | number[];
@@ -26,6 +24,7 @@ const mockPostEntityData: {
   };
   source?: string;
   parentId?: number;
+  itemTypeIds?: { [key: number]: number[] };
 } = {};
 
 beforeAll(() => {
@@ -43,30 +42,13 @@ describe('activityViewModel', () => {
     expect(activityViewModel._post).toBe(mockPostEntityData);
   });
 
-  it('_itemIds', () => {
-    expect(activityViewModel._itemIds).toBe(undefined);
-    const itemIds = [1, 2, 3];
-    mockPostEntityData.itemIds = itemIds;
-    expect(activityViewModel._itemIds).toBe(itemIds);
-    const itemId = 1;
-    mockPostEntityData.itemId = itemId;
-    expect(activityViewModel._itemIds).toEqual([itemId]);
-  });
-
-  it('_typeIds', () => {
-    const itemIds = [
-      TypeDictionary.TYPE_ID_PAGE,
-      TypeDictionary.TYPE_ID_FILE,
-      TypeDictionary.TYPE_ID_CONFERENCE,
-      TypeDictionary.TYPE_ID_EVENT,
-      TypeDictionary.TYPE_ID_TASK,
-      TypeDictionary.TYPE_ID_CODE,
-      TypeDictionary.TYPE_ID_LINK,
-      TypeDictionary.TYPE_ID_RC_VIDEO,
-    ];
-    mockPostEntityData.itemId = undefined;
-    mockPostEntityData.itemIds = itemIds;
-    expect(activityViewModel._typeIds).toEqual({
+  it('_activityData', () => {
+    const itemData = {
+      version_map: {
+        10: 2,
+      },
+    };
+    mockPostEntityData.itemTypeIds = {
       [TypeDictionary.TYPE_ID_EVENT]: [TypeDictionary.TYPE_ID_EVENT],
       [TypeDictionary.TYPE_ID_TASK]: [TypeDictionary.TYPE_ID_TASK],
       [TypeDictionary.TYPE_ID_CODE]: [TypeDictionary.TYPE_ID_CODE],
@@ -75,87 +57,63 @@ describe('activityViewModel', () => {
       [TypeDictionary.TYPE_ID_CONFERENCE]: [TypeDictionary.TYPE_ID_CONFERENCE],
       [TypeDictionary.TYPE_ID_FILE]: [TypeDictionary.TYPE_ID_FILE],
       [TypeDictionary.TYPE_ID_PAGE]: [TypeDictionary.TYPE_ID_PAGE],
-    });
-  });
-
-  it('_activityData', () => {
-    const itemData = {
-      version_map: {
-        10: 2,
-      },
     };
     mockPostEntityData.itemData = itemData;
     expect(activityViewModel._activityData).toEqual({
       [TypeDictionary.TYPE_ID_EVENT]: {
         parameter: {
-          translated: {
-            verb: 'created',
-            noun: 'event',
-          },
+          verb: 'created',
+          noun: 'event',
         },
         key: 'verb-article-noun',
       },
       [TypeDictionary.TYPE_ID_TASK]: {
         parameter: {
-          translated: {
-            verb: 'created',
-            noun: 'task',
-          },
+          verb: 'created',
+          noun: 'task',
         },
         key: 'verb-article-noun',
       },
       [TypeDictionary.TYPE_ID_CODE]: {
         parameter: {
-          translated: {
-            verb: 'shared',
-            noun: 'snippet',
-          },
+          verb: 'shared',
+          noun: 'snippet',
         },
         key: 'verb-article-noun',
       },
       [TypeDictionary.TYPE_ID_LINK]: {
         parameter: {
-          translated: {
-            verb: 'shared',
-            noun: 'link',
-          },
+          verb: 'shared',
+          noun: 'link',
         },
         key: 'verb-article-noun',
       },
       [TypeDictionary.TYPE_ID_RC_VIDEO]: {
         parameter: {
-          translated: {
-            verb: 'started',
-            noun: 'video chat',
-          },
+          verb: 'started',
+          noun: 'video chat',
         },
         key: 'verb-article-noun',
       },
       [TypeDictionary.TYPE_ID_CONFERENCE]: {
         parameter: {
-          translated: {
-            verb: 'started',
-            noun: 'audio conference',
-          },
+          verb: 'started',
+          noun: 'audio conference',
         },
         key: 'verb-article-noun',
       },
       [TypeDictionary.TYPE_ID_FILE]: {
         parameter: {
-          numerals: 2,
-          translated: {
-            verb: 'uploaded',
-            noun: 'version',
-          },
+          count: 2,
+          verb: 'uploaded',
+          noun: 'version',
         },
         key: 'verb-noun-numerals',
       },
       [TypeDictionary.TYPE_ID_PAGE]: {
         parameter: {
-          translated: {
-            verb: 'shared',
-            noun: 'note',
-          },
+          verb: 'shared',
+          noun: 'note',
         },
         key: 'verb-article-noun',
       },
@@ -168,10 +126,8 @@ describe('activityViewModel', () => {
     mockPostEntityData.source = source;
     expect(activityViewModel.activity).toEqual({
       parameter: {
-        translated: {
-          verb: 'via',
-          noun: source,
-        },
+        verb: 'via',
+        noun: source,
       },
       key: 'verb-noun',
     });
@@ -179,9 +135,7 @@ describe('activityViewModel', () => {
     mockPostEntityData.parentId = parentId;
     expect(activityViewModel.activity).toEqual({
       parameter: {
-        translated: {
-          verb: 'replied',
-        },
+        verb: 'replied',
       },
       key: 'verb',
     });
@@ -191,10 +145,8 @@ describe('activityViewModel', () => {
 
     expect(activityViewModel.activity).toEqual({
       parameter: {
-        translated: {
-          verb: 'shared',
-          noun: 'items',
-        },
+        verb: 'shared',
+        noun: 'items',
       },
       key: 'verb-noun',
     });

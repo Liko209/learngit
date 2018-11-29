@@ -16,11 +16,9 @@ describe('File', () => {
     const data = file({ ids, itemData });
     expect(data).toEqual({
       parameter: {
-        numerals: 2,
-        translated: {
-          verb: 'uploaded',
-          noun: 'version',
-        },
+        count: 2,
+        verb: 'uploaded',
+        noun: 'version',
       },
       key: 'verb-noun-numerals',
     });
@@ -35,10 +33,8 @@ describe('File', () => {
     const data = file({ ids, itemData });
     expect(data).toEqual({
       parameter: {
-        translated: {
-          verb: 'shared',
-          noun: 'file',
-        },
+        verb: 'shared',
+        noun: 'file',
       },
       key: 'verb-article-noun',
     });
@@ -54,11 +50,9 @@ describe('File', () => {
     const data = file({ ids, itemData });
     expect(data).toEqual({
       parameter: {
-        numerals: 2,
-        translated: {
-          verb: 'shared',
-          noun: 'file',
-        },
+        count: 2,
+        verb: 'shared',
+        noun: 'file',
       },
       key: 'verb-numerals-noun',
     });

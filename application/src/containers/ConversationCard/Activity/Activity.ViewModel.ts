@@ -8,7 +8,6 @@ import StoreViewModel from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
-import { GlipTypeUtil } from 'sdk/utils';
 import { Post } from 'sdk/models';
 import config from './config';
 import { ActivityViewProps, ActivityProps } from './types';
@@ -23,35 +22,18 @@ class ActivityViewModel extends StoreViewModel<ActivityProps>
   private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._id);
   }
-  @computed
-  private get _itemIds() {
-    return this._post.itemId ? [this._post.itemId] : this._post.itemIds;
-  }
-  @computed
-  private get _typeIds() {
-    const typeIds = {};
-    this._itemIds.forEach((id: number) => {
-      const typeId = GlipTypeUtil.extractTypeId(id);
-      if (typeIds[typeId]) {
-        typeIds[typeId].push(id);
-      } else {
-        typeIds[typeId] = [id];
-      }
-    });
-
-    return typeIds;
-  }
 
   @computed
   private get _activityData() {
     const activity = {};
-    Object.keys(this._typeIds).forEach((type: string) => {
+    const { itemTypeIds } = this._post;
+    Object.keys(itemTypeIds).forEach((type: string) => {
       if (config[type]) {
         const { activityData, itemData } = this._post;
         const props = {
           activityData,
           itemData,
-          ids: this._typeIds[type],
+          ids: itemTypeIds[type],
         };
         activity[type] = config[type](props);
       }
