@@ -8,7 +8,7 @@ import React from 'react';
 import { translate } from 'react-i18next';
 import { MemberListHeaderViewProps } from './types';
 import { StyledTitle } from 'jui/pattern/GroupTeamProfile';
-import { CONVERSATION_TYPES } from '@/constants';
+import { TypeDictionary } from 'sdk/utils';
 
 @observer
 class MemberListHeader extends React.Component<MemberListHeaderViewProps> {
@@ -16,7 +16,7 @@ class MemberListHeader extends React.Component<MemberListHeaderViewProps> {
     const { counts, type, t , isShowHeaderShadow } = this.props;
     return (
       <StyledTitle className={isShowHeaderShadow ? 'shadow' : ''}>
-        {type === CONVERSATION_TYPES.TEAM
+        {type === TypeDictionary.TYPE_ID_TEAM
           ? `${t('TeamMembers')} (${counts})`
           : `${t('GroupMembers')} (${counts})`}
       </StyledTitle>

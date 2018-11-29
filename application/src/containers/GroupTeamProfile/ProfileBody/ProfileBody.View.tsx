@@ -34,7 +34,7 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
   }
   render() {
     const { name, description, isShowMessageButton, id, type, t } = this.props;
-    const { goToMessageInfo } = accessHandler(type);
+    const { goToMessageInfo } = accessHandler(type, name);
     let avatar;
     if (
       type === TypeDictionary.TYPE_ID_GROUP ||
