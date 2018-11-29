@@ -54,6 +54,7 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
     } else if (type === TypeDictionary.TYPE_ID_PERSON) {
       avatar = <Avatar uid={id} presence={this._presence(id)} size="xlarge" />;
     }
+    const isGroup = (type === TypeDictionary.TYPE_ID_GROUP);
     return (
       <JuiGroupProfileBody
         avatar={avatar}
@@ -61,6 +62,7 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
         jobTitle={jobTitle}
         className={isCurrentUser ? 'current' : ''}
         displayName={name}
+        isGroup={isGroup}
         description={description}
       >
         {isShowMessageButton ? (
