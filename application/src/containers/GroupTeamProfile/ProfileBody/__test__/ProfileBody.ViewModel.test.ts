@@ -21,7 +21,7 @@ const mockPersonProperty = (key: string, value1: string, value2: string) => {
     awayStatus: value2,
   });
   expect(profileBodyVM[key]).toBe(value2);
-}
+};
 describe('ProfileBodyViewModel', () => {
   it('should return displayName if team/group id provided', () => {
     (getEntity as jest.Mock).mockReturnValue({
