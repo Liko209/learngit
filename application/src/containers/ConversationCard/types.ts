@@ -27,6 +27,7 @@ type ConversationCardViewProps = {
   likes?: number[];
   mode?: string;
   onAnimationStart?: React.AnimationEventHandler;
+  onHighlightAnimationStart?: React.AnimationEventHandler;
 };
 
 export { ConversationCardProps, ConversationCardViewProps };
