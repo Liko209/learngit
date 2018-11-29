@@ -11,7 +11,6 @@ type StreamViewProps = {
   hasMore: boolean;
   plugins: TPluginsProps;
   type: POST_LIST_TYPE;
-  fetchInitialPosts: () => any;
 };
 
 type TPluginsProps = {

@@ -9,10 +9,11 @@ import { ProfileType } from '../types';
 
 type ProfileHeaderViewProps = WithNamespaces & {
   id: number;
-  displayName: string;
+  name: string;
   description?: string;
   type: ProfileType;
   dismiss: () => void;
+  isShowMessageButton: boolean;
 };
 
 type ProfileBodyProps = {

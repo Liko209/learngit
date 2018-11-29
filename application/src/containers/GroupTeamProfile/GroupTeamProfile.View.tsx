@@ -12,7 +12,7 @@ import { ProfileHeader } from './ProfileHeader';
 import { ProfileBody } from './ProfileBody';
 import { MemberListHeader } from './MembersList/MemberListHeader';
 import { StyledBottomBar, StyledProfileView } from 'jui/pattern/GroupTeamProfile';
-import { CONVERSATION_TYPES } from '@/constants';
+import { TypeDictionary } from 'sdk/utils';
 
 @observer
 class GroupTeamProfile extends React.Component<GroupTeamProps> {
@@ -27,7 +27,7 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
         <ProfileHeader dismiss={dismiss} id={id} type={type} />
         <ProfileBody id={id} dismiss={dismiss} type={type} />
         {
-          type === CONVERSATION_TYPES.TEAM || type === CONVERSATION_TYPES.NORMAL_GROUP ? (
+          type === TypeDictionary.TYPE_ID_TEAM || type === TypeDictionary.TYPE_ID_GROUP ? (
            <>
              <MemberListHeader id={id} type={type}/>
              <MembersList id={id} type={type}/>

@@ -4,18 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component, MouseEvent } from 'react';
+import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileButtonViewProps } from './types';
-// import { JuiModal } from '@/containers/Dialog';
+import { JuiModal } from '@/containers/Dialog';
+import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
+
 type Props = ProfileButtonViewProps & WithNamespaces;
-// import styled from 'jui/foundation/styled-components';
 import { JuiButton } from 'jui/components/Buttons';
 
 class ProfileButton extends Component<Props> {
-  private onClick = (event: MouseEvent<HTMLElement>) => {
-    this.props.handleGlobalGroupId(event);
-    // JuiModal.open(GroupTeamProfile, { size: 'medium' });
+  private onClick = () => {
+    const { id } = this.props;
+    JuiModal.open(GroupTeamProfile, {
+      componentProps: { id },
+      size: 'medium',
+    });
   }
   render() {
     const { t } = this.props;

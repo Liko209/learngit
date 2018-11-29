@@ -141,7 +141,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              We are having trouble creating this team. Please try again later.
+              {t('Create Team Error')}
             </StyledSnackbarsContent>
           )
         }
@@ -164,6 +164,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           placeholder={t('Search Contact Placeholder')}
           error={emailError}
           helperText={emailError && t(emailErrorMsg)}
+          isExcludeMe={true}
         />
         <JuiTextarea
           placeholder={t('Team Description')}

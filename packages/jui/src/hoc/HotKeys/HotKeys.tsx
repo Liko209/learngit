@@ -13,9 +13,15 @@ type ChildrenProps = {
 };
 
 type keyMapValue =
-  | ((e: KeyboardEvent, combo: string) => void | boolean)
+  | ((
+      e: KeyboardEvent,
+      combo: string,
+    ) => (void | boolean) | Promise<void | boolean>)
   | {
-    handler: (e: KeyboardEvent, combo: string) => void | boolean;
+    handler: (
+        e: KeyboardEvent,
+        combo: string,
+      ) => (void | boolean) | Promise<void | boolean>;
     action: string;
   };
 

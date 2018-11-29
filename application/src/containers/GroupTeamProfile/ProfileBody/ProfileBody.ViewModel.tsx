@@ -6,9 +6,10 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { computed } from 'mobx';
 import { ProfileBodyProps } from './types';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { CONVERSATION_TYPES } from '@/constants';
+import { TypeDictionary } from 'sdk/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   @computed
@@ -26,22 +27,34 @@ class ProfileBodyViewModel extends StoreViewModel<ProfileBodyProps> {
   @computed
   private get _profileData() {
     switch (this.props.type) {
-      case CONVERSATION_TYPES.NORMAL_GROUP:
-      case CONVERSATION_TYPES.TEAM:
+      case TypeDictionary.TYPE_ID_GROUP:
+      case TypeDictionary.TYPE_ID_TEAM:
         return this._group;
-      case CONVERSATION_TYPES.NORMAL_ONE_TO_ONE:
+      case TypeDictionary.TYPE_ID_PERSON:
         return this._person;
       default:
         return this._group;
     }
   }
   @computed
-  get displayName() {
+  get _displayName() {
     return this._profileData && this._profileData.displayName;
+  }
+  @computed
+  get _userDisplayName() {
+    return this._profileData && this._profileData.userDisplayName;
+  }
+  @computed
+  get name() {
+    return this._displayName || this._userDisplayName;
   }
   @computed
   get description() {
     return this._profileData && this._profileData.description;
+  }
+  @computed
+  get isShowMessageButton() {
+    return getGlobalValue(GLOBAL_KEYS.IS_SHOW_PROFILE_MSG_BUTTON);
   }
 }
 export { ProfileBodyViewModel };

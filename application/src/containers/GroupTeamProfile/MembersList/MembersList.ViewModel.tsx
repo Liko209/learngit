@@ -25,6 +25,11 @@ class MembersListViewModel extends StoreViewModel<MemberListProps> {
   constructor() {
     super();
     this.toBottom = this.toBottom.bind(this);
+    this.reaction(() => this._allMemberIds, (allMemberId: number[]) => {
+      const currentUserId = globalStore.get(GLOBAL_KEYS.CURRENT_USER_ID);
+      const isShowMessage = allMemberId.indexOf(currentUserId) > -1;
+      globalStore.set(GLOBAL_KEYS.IS_SHOW_PROFILE_MSG_BUTTON, isShowMessage);
+    });
   }
   @computed
   get gid() {

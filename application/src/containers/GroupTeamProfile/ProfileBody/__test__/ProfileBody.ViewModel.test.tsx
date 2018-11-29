@@ -14,7 +14,7 @@ describe('ProfileBodyViewModel', () => {
     (getEntity as jest.Mock).mockReturnValue({
       displayName: 'test',
     });
-    expect(profileBodyVM.displayName).toBe('test');
+    expect(profileBodyVM.name).toBe('test');
   });
   it('should return description if team/group id provided', () => {
     (getEntity as jest.Mock).mockReturnValue({

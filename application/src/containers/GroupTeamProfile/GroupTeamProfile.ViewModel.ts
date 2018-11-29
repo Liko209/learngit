@@ -4,11 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { StoreViewModel } from '@/store/ViewModel';
-import { getEntity } from '@/store/utils';
 import { computed } from 'mobx';
 import { GroupTeamProps } from './types';
-import { ENTITY_NAME } from '@/store';
-import GroupModel from '@/store/models/Group';
+import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 
 class GroupTeamProfileViewModel extends StoreViewModel<GroupTeamProps> {
   @computed
@@ -16,12 +14,8 @@ class GroupTeamProfileViewModel extends StoreViewModel<GroupTeamProps> {
     return this.props.id;
   }
   @computed
-  private get _group() {
-    return getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
-  }
-  @computed
   get type() {
-    return this._group.type;
+    return GlipTypeUtil.extractTypeId(this.id);
   }
 }
 export { GroupTeamProfileViewModel };

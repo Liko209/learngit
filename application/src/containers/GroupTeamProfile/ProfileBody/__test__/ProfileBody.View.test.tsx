@@ -15,7 +15,7 @@ import { goToConversation } from '../../../../common/goToConversation';
 const dismiss = jest.fn();
 describe('ProfileBodyView', () => {
   it('OnMessageClick should be called while jump to message', async () => {
-    const wrapper = shallow(<ProfileBodyView displayName="dda" type={CONVERSATION_TYPES.TEAM} id={47988738} dismiss={dismiss}/>);
+    const wrapper = shallow(<ProfileBodyView isShowMessageButton={true} name="dda" type={CONVERSATION_TYPES.TEAM} id={47988738} dismiss={dismiss}/>);
     expect(wrapper.find(StyledMessageBtn)).toHaveLength(1);
     wrapper.find(StyledMessageBtn).simulate('click');
     expect(dismiss).toHaveBeenCalledTimes(1);
