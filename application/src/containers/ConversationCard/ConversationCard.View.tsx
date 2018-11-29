@@ -67,6 +67,7 @@ export class ConversationCard extends React.Component<
       hideText,
       highlight,
       onAnimationStart,
+      onHighlightAnimationStart,
       ...rest
     } = this.props;
     const { isHover } = this.state;
