@@ -43,10 +43,9 @@ const defaultSection = {
   hasMore: false,
 };
 
-class SearchBarView extends React.Component<
-  ViewProps & { showSearchBar: () => void },
-  State
-> {
+type Props = { closeSearchBar: () => void; isShowSearchBar: boolean };
+
+class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _debounceSearch: Function;
   private _searchItems: HTMLElement[];
 
@@ -59,7 +58,7 @@ class SearchBarView extends React.Component<
     selectIndex: -1,
   };
 
-  constructor(props: ViewProps & { showSearchBar: () => void }) {
+  constructor(props: ViewProps & Props) {
     super(props);
     const { search } = this.props;
     this._debounceSearch = debounce(async (value: string) => {
@@ -103,8 +102,8 @@ class SearchBarView extends React.Component<
   }
 
   onBlur = () => {
-    this.props.showSearchBar();
-    this.onClose();
+    // this.props.showSearchBar();
+    // this.onClose();
   }
 
   onClear = () => {
@@ -114,6 +113,10 @@ class SearchBarView extends React.Component<
   }
 
   onClose = () => {
+    const { closeSearchBar, isShowSearchBar } = this.props;
+    if (isShowSearchBar) {
+      closeSearchBar();
+    }
     this.setState({
       focus: false,
       selectIndex: -1,
@@ -124,6 +127,7 @@ class SearchBarView extends React.Component<
     e: React.MouseEvent<HTMLElement>,
   ) => {
     e.stopPropagation();
+    console.log(1111111111, '-----------------');
     MiniCard.showProfile({ anchor: e.target as HTMLElement, id: uid });
   }
 
