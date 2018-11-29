@@ -6,10 +6,14 @@
 
 import styled from '../../styled-components';
 
-const StyledMainPanel = styled('div')`
+type Props = {
+  width: number;
+};
+
+const StyledMainPanel = styled<Props, 'div'>('div')`
   height: 100%;
   flex: 1;
-  border: 1px solid red;
+  overflow: hidden;
 `;
 
 export { StyledMainPanel };

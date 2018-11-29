@@ -11,6 +11,7 @@ const StyledWrapper = styled('div')`
   height: 100%;
   width: 100%;
   /* flex: 1; */
+  overflow: hidden;
   position: relative;
 `;
 

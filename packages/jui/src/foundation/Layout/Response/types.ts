@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type Panels = {
+type Panel = {
   width: number;
   localWidth?: number;
   minWidth: number;
@@ -12,4 +12,4 @@ type Panels = {
   forceShow?: boolean;
 };
 
-export { Panels };
+export { Panel };

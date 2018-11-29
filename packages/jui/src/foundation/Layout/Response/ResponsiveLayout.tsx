@@ -12,20 +12,22 @@ import { StyledButton } from './StyledButton';
 import { StyledWrapper } from './StyledWrapper';
 import { StyledMainPanel } from './StyledMainPanel';
 import { StyledSidebarPanel } from './StyledSidebarPanel';
-import { Panels } from './types';
+import { Panel } from './types';
 
 type Props = {
   tag: string; // This tag is used to record widths of various types
   children: JSX.Element[];
   mainPanelIndex: number;
+  leftNavWidth: number;
 };
 
 type States = {
-  panels: Panels[];
+  panels: Panel[];
   currentElement: Element | null; // Resize line
   currentIndex: number;
 };
 
+const MAX_WIDTH = 1920;
 const MAIN_MIN_WIDTH = 400;
 const SIDEBAR_DEFAULT_WIDTH = 268;
 const SIDEBAR_MIN_WIDTH = 180;
@@ -94,7 +96,13 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
 
   componentDidMount() {
     addResizeListener(this.onResize);
-    setTimeout(this.onResize, 0);
+    this.onResize();
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.leftNavWidth !== prevProps.leftNavWidth) {
+      this.onResize(); // need to recalculate
+    }
   }
 
   componentWillUnmount() {
@@ -102,13 +110,18 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
   }
 
   onResize() {
-    const { mainPanelIndex } = this.props;
+    const { mainPanelIndex, leftNavWidth } = this.props;
     const { panels } = this.state;
-
-    const wrapperWidth = this.wrapperRef.current.getBoundingClientRect().width;
-    const mainWidth = this.mainRef.current.getBoundingClientRect().width;
-
     const clonePanels = cloneDeep(panels);
+
+    // const wrapperWidth = this.wrapperRef.current.getBoundingClientRect().width;
+    let bodyWidth = document.body.getBoundingClientRect().width;
+    bodyWidth = bodyWidth > MAX_WIDTH ? MAX_WIDTH : bodyWidth;
+    const wrapperWidth = bodyWidth - leftNavWidth;
+    // const mainWidth = this.mainRef.current.getBoundingClientRect().width;
+    const sum = this.getSumExceptOneself(clonePanels, mainPanelIndex);
+    const mainWidth = wrapperWidth - sum;
+
     const count = clonePanels.length;
     const mainPanel = clonePanels[mainPanelIndex];
     mainPanel.width = mainWidth;
@@ -175,7 +188,7 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
     this.setState({ panels: clonePanels });
   }
 
-  getSumExceptOneself(panels: Panels[], index: number) {
+  getSumExceptOneself(panels: Panel[], index: number) {
     const count = panels.length;
     let sum = 0;
     for (let i = count - 1; i >= 0; i--) {
@@ -255,7 +268,7 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
 
   onClickHideAllPanel() {
     const { panels } = this.state;
-    const clonePanels = panels.map((panel: Panels) => {
+    const clonePanels = panels.map((panel: Panel) => {
       panel.forceShow = false;
       return panel;
     });
@@ -268,59 +281,92 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
     e.stopPropagation();
   }
 
+  renderMainPanel = (index: number, child: JSX.Element) => {
+    const { panels } = this.state;
+    const panel = panels[index];
+    const { width } = panel;
+    return (
+      <StyledMainPanel ref={this.mainRef} width={width}>
+        {child}
+      </StyledMainPanel>
+    );
+  }
+
+  renderSidebarPanel = (index: number, child: JSX.Element) => {
+    const { panels } = this.state;
+    const panel = panels[index];
+    const { width, minWidth, forceShow } = panel;
+    return (
+      <StyledSidebarPanel
+        width={width}
+        forceShow={!!forceShow}
+        forcePosition={index === 0 ? 'left' : 'right'}
+        forceWidth={minWidth}
+        onClick={this.onClickPreventBubble}
+      >
+        {child}
+      </StyledSidebarPanel>
+    );
+  }
+
+  renderResize = (index: number) => {
+    // Resize is added after Panel
+    const { mainPanelIndex } = this.props;
+    const { panels } = this.state;
+    let showResize = index !== panels.length - 1; // The last one is not added
+    if (index === mainPanelIndex) {
+      showResize = showResize && panels[index + 1].width > 0;
+    } else {
+      showResize = showResize && panels[index].width > 0;
+    }
+    if (showResize) {
+      let offset = 0;
+      for (let i = 0; i <= index; i++) {
+        offset += panels[i].width;
+      }
+      return (
+        <StyledResize
+          offset={offset}
+          show={showResize}
+          onMouseDown={this.onMouseDown}
+        />
+      );
+    }
+    return null;
+  }
+
+  renderButton = (index: number) => {
+    const { panels } = this.state;
+    const panel = panels[index];
+    const { width, minWidth, forceShow } = panel;
+    return (
+      <StyledButton
+        show={width === 0}
+        left={index === 0 ? (forceShow ? `${minWidth}px` : '0px') : 'auto'}
+        right={index === 0 ? 'auto' : forceShow ? `${minWidth}px` : '0px'}
+        onClick={this.onClickShowPanel.bind(this, index)}
+      />
+    );
+  }
+
   render() {
     const { children, mainPanelIndex } = this.props;
-    const { panels } = this.state;
     return (
       <StyledWrapper ref={this.wrapperRef} onClick={this.onClickHideAllPanel}>
         {React.Children.map(children, (child: JSX.Element, index: number) => {
-          const panel = panels[index];
-          const { width, minWidth, forceShow } = panel;
-
-          let offset = 0;
-          for (let i = 0; i < index; i++) {
-            offset += panels[i].width;
-          }
-
-          const showResize = index > 0 && panels[index - 1].width > 0;
-          const resize = showResize && (
-            <StyledResize
-              offset={offset}
-              show={showResize}
-              onMouseDown={this.onMouseDown}
-            />
-          );
-
           if (index === mainPanelIndex) {
             return (
               <React.Fragment>
-                {resize}
-                <StyledMainPanel ref={this.mainRef}>
-                  {child} {width}
-                </StyledMainPanel>
+                {this.renderMainPanel(index, child)}
+                {this.renderResize(index)}
               </React.Fragment>
             );
           }
           return (
             <React.Fragment>
-              {resize}
-              <StyledSidebarPanel
-                width={width}
-                forceShow={!!forceShow}
-                forcePosition={index === 0 ? 'left' : 'right'}
-                forceWidth={minWidth}
-                onClick={this.onClickPreventBubble}
-              >
-                {child} {width}
-              </StyledSidebarPanel>
-              <StyledButton
-                show={width === 0}
-                left={
-                  index === 0 ? (forceShow ? `${minWidth}px` : '0px') : 'auto'}
-                right={
-                  index === 0 ? 'auto' : forceShow ? `${minWidth}px` : '0px'}
-                onClick={this.onClickShowPanel.bind(this, index)}
-              />
+              {this.renderSidebarPanel(index, child)}
+              {this.renderResize(index)}
+              {this.renderButton(index)}
             </React.Fragment>
           );
         })}
@@ -331,10 +377,10 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
 
 export { JuiResponsiveLayout };
 
-// import { JuiColumnResponse } from 'jui/foundation/Layout/Response/ColumnResponse';
+// import { JuiResponsiveLayout } from 'jui/foundation/Layout/Response';
 
-/* <JuiColumnResponse mainPanelIndex={1} tag="conversation">
+/* <JuiResponsiveLayout mainPanelIndex={1} tag="conversation">
   <div>1</div>
   <div>2</div>
   <div>3</div>
-</JuiColumnResponse> */
+</JuiResponsiveLayout> */

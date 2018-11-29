@@ -18,7 +18,7 @@ const StyledResize = styled.div`
   right: auto;
   cursor: col-resize;
   background-color: transparent;
-  z-index: ${({ theme }) => theme.zIndex.reponseResizer};
+  z-index: ${({ theme }) => theme.zIndex.modal};
   margin-left: ${({ theme }) => -theme.spacing.unit}px;
   padding: ${({ theme }) => theme.spacing.unit}px;
   left: ${({ offset }: Props) => `${offset}px`};

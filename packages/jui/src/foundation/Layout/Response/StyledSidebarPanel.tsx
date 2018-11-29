@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import styled from '../../styled-components';
+import styled, { css } from '../../styled-components';
 
 type Props = {
   width: number;
@@ -16,18 +16,18 @@ type Props = {
 const StyledSidebarPanel = styled('div')`
   height: 100%;
   flex-basis: ${(props: Props) => `${props.width}px`};
-  display: ${(props: Props) => (props.width > 0 ? 'inline-block' : 'none')};
+  display: ${(props: Props) => (props.width > 0 ? 'block' : 'none')};
   background-color: ${({ theme }) => theme.palette.background.paper};
   overflow: hidden;
   ${(props: Props) =>
     props.forceShow &&
-    `
-      display: inline-block;
+    css`
+      display: block;
       position: absolute;
       top: 0;
       bottom: 0;
       width: ${props.forceWidth}px;
-      z-index: ${({ theme }: any) => theme.zIndex.reponseResizer};
+      z-index: ${({ theme }: any) => theme.zIndex.modal};
       left: ${props.forcePosition === 'left' ? 0 : 'auto'};
       right: ${props.forcePosition === 'right' ? 0 : 'auto'};
     `};

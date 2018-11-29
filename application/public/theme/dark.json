@@ -58,8 +58,6 @@
     "unit": 4
   },
   "zIndex": {
-    "reponsePanel": 1,
-    "reponseResizer": 2,
     "loading": 1000,
     "dragging": 2000
   },

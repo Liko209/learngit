@@ -91,8 +91,6 @@ type Theme = {
     unit: number;
   };
   zIndex: {
-    reponsePanel: number;
-    reponseResizer: number;
     loading: number;
     dragging: number;
   };
