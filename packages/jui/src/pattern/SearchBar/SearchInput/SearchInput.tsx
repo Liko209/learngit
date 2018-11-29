@@ -40,15 +40,13 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
     onChange(e);
   }
 
+  onBlur = (e: FocusEventHandler<HTMLInputElement>) => {
+    const { onBlur } = this.props;
+    onBlur && onBlur(e);
+  }
+
   render() {
-    const {
-      value,
-      focus,
-      onFocus,
-      onBlur,
-      placeholder,
-      showCloseBtn,
-    } = this.props;
+    const { value, focus, onFocus, placeholder, showCloseBtn } = this.props;
 
     return (
       <Jui.SearchWrapper focus={focus}>
@@ -56,10 +54,11 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
         <Jui.SearchInput
           onChange={this.onChange}
           onFocus={onFocus}
-          onBlur={onBlur}
+          onBlur={this.onBlur}
           inputRef={this._inputDom}
           inputProps={{
             placeholder,
+            className: 'search-input',
             maxLength: 200,
           }}
           InputProps={{
