@@ -28,7 +28,7 @@ class Mention {
   private _options: Options = {
     onMention: () => {},
     mentionDenotationChars: ['@'],
-    allowedChars: /^[a-zA-Z0-9_]*$/,
+    allowedChars: /^[a-zA-Z0-9_\s]*$/,
     minChars: 0,
     maxChars: 31,
     isolateCharacter: true,
