@@ -16,6 +16,7 @@ const StyledGuestIdentifier = styled.span`
   text-align: center;
   ${typography('caption1')};
   margin-left: ${spacing(3)};
+  margin-right: ${spacing(4)};
 `;
 const StyledAdminIdentifier = styled(StyledGuestIdentifier)`
   background-color: ${palette('secondary', 'main')};

@@ -10,8 +10,8 @@ import { JuiAvatar } from 'jui/components/Avatar';
 
 class GroupAvatarView extends Component<GroupAvatarViewProps> {
   render() {
-    const { src } = this.props;
-    return <JuiAvatar src={src} />;
+    const { src, ...rest } = this.props;
+    return <JuiAvatar src={src} {...rest}/>;
   }
 }
 
