@@ -14,6 +14,9 @@ type ProfileHeaderViewProps = WithNamespaces & {
   type: ProfileType;
   dismiss: () => void;
   isShowMessageButton: boolean;
+  awayStatus?: string;
+  jobTitle?: string;
+  isCurrentUser?: string;
 };
 
 type ProfileBodyProps = {

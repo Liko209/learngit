@@ -6,14 +6,13 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { GroupBodyProps } from './types';
-import {
-  spacing,
-  grey,
-  typography,
-} from '../../foundation/utils/styles';
+import { spacing, grey, typography } from '../../foundation/utils/styles';
 
 const StyledBodyWrapper = styled.div`
   border-bottom: 1px solid ${grey('300')};
+  &.current {
+    background-color: #e1f4fb;
+  }
 `;
 const StyledContent = styled.div`
   display: flex;
@@ -49,12 +48,22 @@ const StyledBottomButton = styled.div`
   margin-top: ${spacing(3)};
   display: flex;
 `;
-
+const StyledParam = styled.p`
+  ${typography('body2')}
+`;
 class JuiGroupProfileBody extends PureComponent<GroupBodyProps> {
   render() {
-    const { displayName, description, avatar, children } = this.props;
+    const {
+      displayName,
+      className,
+      description,
+      avatar,
+      children,
+      awayStatus,
+      jobTitle,
+    } = this.props;
     return (
-      <StyledBodyWrapper>
+      <StyledBodyWrapper className={className}>
         <StyledContent>
           {avatar}
           <StyledRightColumn>
@@ -62,9 +71,9 @@ class JuiGroupProfileBody extends PureComponent<GroupBodyProps> {
             {description ? (
               <StyledDescription>{description}</StyledDescription>
             ) : null}
-            <StyledBottomButton>
-              {children}
-            </StyledBottomButton>
+            {awayStatus ? <StyledParam>{awayStatus}</StyledParam> : null}
+            {jobTitle ? <StyledParam>{jobTitle}</StyledParam> : null}
+            <StyledBottomButton>{children}</StyledBottomButton>
           </StyledRightColumn>
         </StyledContent>
       </StyledBodyWrapper>
