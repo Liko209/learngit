@@ -179,12 +179,12 @@ describe('CreateTeamVM', () => {
   it('createErrorHandle()', () => {
     let error = getNewBaseError(GroupErrorTypes.ALREADY_TAKEN);
     createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.errorMsg).toBe('already taken');
+    expect(createTeamVM.errorMsg).toBe('alreadyTaken');
     expect(createTeamVM.nameError).toBe(true);
 
     error = getNewBaseError(GroupErrorTypes.INVALID_FIELD);
     createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.emailErrorMsg).toBe('Invalid Email');
+    expect(createTeamVM.emailErrorMsg).toBe('InvalidEmail');
     expect(createTeamVM.emailError).toBe(true);
   });
 });
