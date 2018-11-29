@@ -3,7 +3,7 @@
  * @Date: 2018-11-23 16:31:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { Person, Group, SortableModel } from 'sdk/models';
+import { Person, Group, SortableModel } from 'sdk/src/models'; // eslint-disable-line
 
 type Props = {};
 

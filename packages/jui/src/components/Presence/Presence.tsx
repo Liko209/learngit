@@ -37,7 +37,7 @@ const borderSizes = {
   xlarge: 3,
 };
 
-const divSizes = {
+const presenceSizes = {
   small: [1, 0.5],
   medium: [1.5, 0.5],
   large: [1.5, 0.5],
@@ -87,8 +87,8 @@ const StyledPresence = styled<JuiPresenceProps, 'div'>('div')`
 `;
 
 const StyledDiv = styled<JuiPresenceProps, 'div'>('div')`
-  width: ${props => width(divSizes[props.size || 'medium'][0])};
-  height: ${props => height(divSizes[props.size || 'medium'][1])};
+  width: ${props => width(presenceSizes[props.size || 'medium'][0])};
+  height: ${props => height(presenceSizes[props.size || 'medium'][1])};
   background: ${palette('common', 'white')};
 `;
 
