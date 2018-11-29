@@ -16,7 +16,7 @@ import { Panel } from './types';
 
 type Props = {
   tag: string; // This tag is used to record widths of various types
-  children: JSX.Element[];
+  children: (JSX.Element | null)[];
   mainPanelIndex: number;
   leftNavWidth: number;
 };
@@ -58,26 +58,32 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
 
   getPanelsData = () => {
     const { children, mainPanelIndex } = this.props;
-    if (mainPanelIndex > React.Children.count(children) - 1) {
+    const count = React.Children.count(children);
+    if (mainPanelIndex > count - 1) {
       throw new Error('Main container panel index overflow!');
     }
-    return React.Children.map(children, (child: JSX.Element, index: number) => {
+    const panels: Panel[] = [];
+    React.Children.forEach(children, (child: JSX.Element, index: number) => {
+      // if (!child) {
+      //   return;
+      // }
       if (index === mainPanelIndex) {
-        return {
+        panels.push({
           width: 0,
           minWidth: MAIN_MIN_WIDTH,
-        };
+        });
+        return;
       }
-
       const localWidth = this.getLocalWidth(index);
-      return {
+      panels.push({
         localWidth,
         width: localWidth, // current width
         minWidth: SIDEBAR_MIN_WIDTH,
         maxWidth: SIDEBAR_MAX_WIDTH,
         forceShow: false,
-      };
+      });
     });
+    return panels;
   }
 
   getLocalKey = (index: number) => {
@@ -114,6 +120,7 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
     const { panels } = this.state;
     const clonePanels = cloneDeep(panels);
 
+    // Reason: The width read will become the width of the body
     // const wrapperWidth = this.wrapperRef.current.getBoundingClientRect().width;
     let bodyWidth = document.body.getBoundingClientRect().width;
     bodyWidth = bodyWidth > MAX_WIDTH ? MAX_WIDTH : bodyWidth;
@@ -282,14 +289,10 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
   }
 
   renderMainPanel = (index: number, child: JSX.Element) => {
-    const { panels } = this.state;
-    const panel = panels[index];
-    const { width } = panel;
-    return (
-      <StyledMainPanel ref={this.mainRef} width={width}>
-        {child}
-      </StyledMainPanel>
-    );
+    // const { panels } = this.state;
+    // const panel = panels[index];
+    // const { width } = panel;
+    return <StyledMainPanel ref={this.mainRef}>{child}</StyledMainPanel>;
   }
 
   renderSidebarPanel = (index: number, child: JSX.Element) => {
@@ -311,9 +314,9 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
 
   renderResize = (index: number) => {
     // Resize is added after Panel
-    const { mainPanelIndex } = this.props;
+    const { mainPanelIndex, children } = this.props;
     const { panels } = this.state;
-    let showResize = index !== panels.length - 1; // The last one is not added
+    let showResize = index !== panels.length - 1 && !!children[index + 1]; // The last one is not added
     if (index === mainPanelIndex) {
       showResize = showResize && panels[index + 1].width > 0;
     } else {
@@ -354,6 +357,9 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
     return (
       <StyledWrapper ref={this.wrapperRef} onClick={this.onClickHideAllPanel}>
         {React.Children.map(children, (child: JSX.Element, index: number) => {
+          if (!child) {
+            return null;
+          }
           if (index === mainPanelIndex) {
             return (
               <React.Fragment>
@@ -376,11 +382,3 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
 }
 
 export { JuiResponsiveLayout };
-
-// import { JuiResponsiveLayout } from 'jui/foundation/Layout/Response';
-
-/* <JuiResponsiveLayout mainPanelIndex={1} tag="conversation">
-  <div>1</div>
-  <div>2</div>
-  <div>3</div>
-</JuiResponsiveLayout> */

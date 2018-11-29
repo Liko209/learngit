@@ -7,7 +7,7 @@
 import styled from '../../styled-components';
 
 type Props = {
-  width: number;
+  width?: number;
 };
 
 const StyledMainPanel = styled<Props, 'div'>('div')`
