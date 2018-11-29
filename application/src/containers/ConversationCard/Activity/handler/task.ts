@@ -28,7 +28,7 @@ export default function ({
         verb = value ? 'completed' : 'marked';
         break;
       case 'complete_percentage':
-        numerals = value - old_value;
+        numerals = old_value ? value - old_value : value;
         buildText =
           value === 100
             ? buildVerbNounText
