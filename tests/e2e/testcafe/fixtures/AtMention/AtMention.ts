@@ -11,7 +11,6 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
-import { ClientFunction } from 'testcafe';
 
 fixture('AtMention/AtMention')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
@@ -237,18 +236,9 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   const user5Platform = await h(t).getPlatform(users[5]);
   const mentionsEntry = app.homePage.messageTab.mentionsEntry;
   const postMentionPage = app.homePage.messageTab.mentionPage;
+  const conversationPage =app.homePage.messageTab.conversationPage;
   user.sdk = await h(t).getSdk(user);
   const msgList = _.range(20).map(i => `${i} ${uuid()}`);
-
-    // Scroll function should enhance to page model in the future
-    const scrollToMiddle = ClientFunction((y: number) => {
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTo(0,y);
-    });
-    const scrollToBottom = ClientFunction((y: number) => {
-      let scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
-      console.log(scrollHeight);
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop=scrollHeight;
-    });
 
   let group;
   let newPost;
@@ -294,13 +284,12 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   });
 
   await h(t).withLog('And I scroll to middle should still 1 UMI', async () => {
-    await scrollToMiddle(400);
+    await conversationPage.scrollToMiddle();
     await directMessagesSection.expectHeaderUmi(1);
   },true);
 
   await h(t).withLog('When I scroll to conversation bottom should remove UMI', async () => {
-    await scrollToBottom();
-    await t.debug();
+    await conversationPage.scrollToBottom();
     await directMessagesSection.expectHeaderUmi(0);
   });
 });
