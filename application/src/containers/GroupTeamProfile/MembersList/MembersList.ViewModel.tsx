@@ -54,7 +54,7 @@ class MembersListViewModel extends StoreViewModel<MemberListProps> {
     this._pagination++;
   }
   @onScroll
-  onScrollEvent(event: any) {
+  onScrollEvent(event:  { target: HTMLElement }) {
     const scrollTop = event.target.scrollTop;
     if (scrollTop > 20) {
       globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, true);

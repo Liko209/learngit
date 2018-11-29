@@ -20,10 +20,13 @@ import { accessHandler } from '../AccessHandler';
 
 @observer
 class ProfileBody extends React.Component<ProfileHeaderViewProps> {
+  constructor(props: ProfileHeaderViewProps) {
+    super(props);
+  }
   OnMessageClick = async () => {
     const { id, dismiss } = this.props;
-    await goToConversation(id);
     dismiss();
+    await goToConversation(id);
   }
   render() {
     const { displayName, description, id, type, t } = this.props;
