@@ -12,7 +12,7 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 import Keys from 'jui/pattern/MessageInput/keys';
-import Quill from 'quill';
+import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
 
 const DELAY = 300;
