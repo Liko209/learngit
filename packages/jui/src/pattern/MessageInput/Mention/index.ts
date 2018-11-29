@@ -1,9 +1,5 @@
-import Quill, {
-  QuillOptionsStatic,
-  RangeStatic,
-  DeltaStatic,
-  Sources,
-} from 'quill';
+import { QuillOptionsStatic, RangeStatic, DeltaStatic, Sources } from 'quill';
+import { Quill } from 'react-quill';
 import './blots/mention';
 import Keys from '../keys';
 
