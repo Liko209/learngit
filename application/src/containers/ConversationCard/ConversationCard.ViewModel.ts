@@ -16,11 +16,17 @@ import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';
 import { POST_STATUS } from 'sdk/service';
+
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   implements ConversationCardViewProps {
   @computed
   get id() {
     return this.props.id;
+  }
+
+  @computed
+  get highlight() {
+    return !!this.props.highlight;
   }
 
   @computed
@@ -46,6 +52,11 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   }
 
   @computed
+  get groupId() {
+    return this.post.groupId;
+  }
+
+  @computed
   get itemIds() {
     // If update some item need get item_id from post data. ItemId just for update item(Example event)
     return (this.post.itemId && [this.post.itemId]) || this.post.itemIds || [];
@@ -61,7 +72,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
 
   @computed
   get name() {
-    return this.creator.displayName;
+    return this.creator.userDisplayName;
   }
 
   @computed
@@ -72,6 +83,12 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   @computed
   get createTime() {
     return moment(this.post.createdAt).format('hh:mm A');
+  }
+
+  onAnimationStart = (evt: React.AnimationEvent) => {
+    if (this.highlight && this.props.onHighlightAnimationStart) {
+      this.props.onHighlightAnimationStart(evt);
+    }
   }
 }
 

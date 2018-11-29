@@ -50,7 +50,8 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     width: ${({ size = 'medium', theme }) => width(sizes[size])({ theme })};
     height: ${({ size = 'medium', theme }) => height(sizes[size])({ theme })};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    background-color: ${({ color = 'lake' }) => palette('avatar', color)};
+    background-color: ${({ color }) =>
+      color ? palette('avatar', color) : palette('common', 'white')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;
@@ -84,7 +85,6 @@ const JuiAvatar = (props: JuiAvatarProps) => {
 
 JuiAvatar.defaultProps = {
   size: 'medium',
-  color: 'lake',
 };
 JuiAvatar.displayName = 'JuiAvatar';
 JuiAvatar.dependencies = [MuiAvatar];

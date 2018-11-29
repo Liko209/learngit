@@ -14,12 +14,16 @@ import { JuiArrowTip } from '../../Tooltip/ArrowTip';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import { Theme, Palette } from '../../../foundation/theme/theme';
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+type IconButtonVariant = 'round' | 'plain';
+type IconButtonSize = 'small' | 'medium' | 'large';
+
 type JuiIconButtonProps = {
   tooltipTitle?: string;
   invisible?: boolean;
   awake?: boolean;
-  variant?: 'round' | 'plain';
-  size?: 'small' | 'medium' | 'large';
+  variant?: IconButtonVariant;
+  size?: IconButtonSize;
   color?: string;
   innerRef?: RefObject<HTMLElement>;
 } & Omit<MuiIconButtonProps, 'color'> &
@@ -84,7 +88,7 @@ const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
     /* color: ${({ awake }) =>
       awake ? grey('500') : palette('accent', 'ash')}; */
     color: ${({ theme, colorScope, colorName }) =>
-      palette(colorScope, colorName)({ theme })}
+      palette(colorScope, colorName)({ theme })};
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
     padding: 0;
     ${StyledIcon} {
@@ -131,7 +135,7 @@ const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
 
 // Tooltip does not work on disabled IconButton without this: https://github.com/mui-org/material-ui/issues/8416
 const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
-  display: inline-block;
+  display: inline-flex;
   width: ${({ variant, size = 'medium', theme }) =>
     width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
       theme,
@@ -198,4 +202,4 @@ JuiIconButton.defaultProps = {
   tooltipTitle: '',
 };
 
-export { JuiIconButtonProps };
+export { JuiIconButtonProps, IconButtonVariant, IconButtonSize };

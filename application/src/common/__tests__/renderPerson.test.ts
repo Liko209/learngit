@@ -11,7 +11,7 @@ describe('render person utils', () => {
     const personId = 1;
     const personName = 'Name';
     const regExp = new RegExp(
-      `.+?class="user".+?${personId}.+?${personName}`,
+      `.+?class="at_mention_compose".+?id="${personId}".+?${personName}`,
       'g',
     );
     expect(renderPerson(personId, personName)).toMatch(regExp);

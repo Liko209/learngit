@@ -21,7 +21,7 @@ type TokenRouteProps = RouteComponentProps<{}> &
 
 @observer
 class TokenRoute extends Component<TokenRouteProps> {
-  private _alert: { destroy: () => void };
+  private _alert: { dismiss: () => void };
 
   constructor(props: TokenRouteProps) {
     super(props);
@@ -54,7 +54,7 @@ class TokenRoute extends Component<TokenRouteProps> {
     }
     if (content) {
       if (this._alert) {
-        this._alert.destroy();
+        this._alert.dismiss();
       }
       this._alert = JuiModal.alert({
         content,

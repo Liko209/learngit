@@ -2,7 +2,8 @@ import 'testcafe';
 import { getLogger } from 'log4js';
 import { IStep, Status } from "../models";
 import { BeatsClient, Step, Attachment } from 'bendapi';
-import { MiscUtils } from '../utils'
+import { MiscUtils } from '../utils';
+import { getTmtId, parseFormalName } from '../../libs/filter';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -44,17 +45,20 @@ export class DashboardHelper {
     }
   }
 
-  private async createTestInDashboard(runId: number, consoleLog: any) {
+  private async createTestInDashboard(runId: number, consoleLogPath) {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
+    const tags = parseFormalName(testRun.test.name).tags;
+    const tmtId = getTmtId(tags);
     // FIXME: remove user-agent from case name when dashboard is ready
     const beatsTest = await this.beatsClient.createTest({
       name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})`,
       status: StatusMap[status],
       metadata: {
         user_agent: testRun.browserConnection.browserInfo.userAgent,
-      }
+      },
+      tmtId: tmtId[0]
     } as any, runId);
     for (const step of this.t.ctx.logs) {
       await this.createStepInDashboard(step, beatsTest.id);
@@ -67,7 +71,6 @@ export class DashboardHelper {
       attachments: [],
     };
     detailStep.startTime = Date.now();
-    const consoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog, null, 2));
     detailStep.attachments.push(consoleLogPath);
     if (status === Status.FAILED) {
       const errorDetailPath = MiscUtils.createTmpFile(JSON.stringify(errs, null, 2))

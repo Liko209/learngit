@@ -8,7 +8,6 @@ import React, { ComponentType } from 'react';
 import { StyledAppBar } from './StyledAppBar';
 import { StyledToolbar } from './StyledToolbar';
 import { StyledMenuWithLogo } from './StyledMenuWithLogo';
-import { StyledSearchBar } from './StyledSearchBar';
 import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { StyledLeft } from './StyledLeft';
 import { StyledRight } from './StyledRight';
@@ -23,6 +22,7 @@ type Props = {
   AddMenu: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   AvatarMenu: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   BackNForward?: ComponentType<any>;
+  SearchBar: ComponentType<any>;
 };
 
 type States = {
@@ -37,25 +37,20 @@ class JuiTopBar extends React.Component<Props, States> {
     };
   }
 
-  // handleMouseOver = () => {
-  //   this.setState({ topBarState: 'hover' });
-  // }
-
-  // handleMouseLeave = () => {
-  //   this.setState({ topBarState: 'resting' });
-  // }
-
-  setSearchBarState = (isShowSearchBar: boolean) => {
-    this.setState({ isShowSearchBar });
-  }
-
   showSearchBar = () => {
     this.setState({ isShowSearchBar: true });
   }
 
   render() {
     const { isShowSearchBar } = this.state;
-    const { MainMenu, Logo, AddMenu, AvatarMenu, BackNForward } = this.props;
+    const {
+      MainMenu,
+      Logo,
+      AddMenu,
+      AvatarMenu,
+      BackNForward,
+      SearchBar,
+    } = this.props;
     return (
       <StyledAppBar>
         <StyledToolbar>
@@ -65,7 +60,7 @@ class JuiTopBar extends React.Component<Props, States> {
               <Logo />
             </StyledMenuWithLogo>
             {BackNForward ? <BackNForward /> : null}
-            <StyledSearchBar setSearchBarState={this.setSearchBarState} />
+            <SearchBar />
             <StyledSearchIconButton
               onClick={this.showSearchBar}
               tooltipTitle="Search"

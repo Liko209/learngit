@@ -3,13 +3,13 @@
  * @Date: 2018-09-18 10:08:03
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ComponentType } from 'react';
 
 import { action } from 'mobx';
 import { withLoadingMore, withScroller, WithScrollerProps } from 'jui/hoc';
 import { IPlugin } from '@/base/IPlugin';
 import { IViewModel } from '@/base/IViewModel';
 import { createLoadingStateDecorator } from '../utils';
+import { ComponentType } from 'react';
 const topListeners = Symbol('topListeners');
 const bottomListeners = Symbol('bottomListeners');
 const scrollListeners = Symbol('scrollListeners');
@@ -71,13 +71,11 @@ class LoadingMorePlugin implements IPlugin {
     }
   }
 
-  wrapView(View: ComponentType<any>): ComponentType<any> {
+  wrapView(View: ComponentType<any>) {
     let WrappedView = View;
     WrappedView = withLoadingMore(WrappedView);
     WrappedView = withScroller(WrappedView);
-    return ({ scrollerRef, ...props }) => {
-      return <WrappedView ref={scrollerRef} {...props} />;
-    };
+    return WrappedView;
   }
 }
 

@@ -42,18 +42,24 @@ type StreamItem = {
 
 type StreamProps = {
   groupId: number;
+  viewRef: React.RefObject<any>;
 };
 
 type StreamViewProps = {
+  resetJumpToPostId: () => void;
+  mostRecentPostId: number;
   firstHistoryUnreadInPage: boolean;
   groupId: number;
   postIds: number[];
+  jumpToPostId: number;
   items: StreamItem[];
-  hasMore: boolean;
+  hasMoreUp: boolean;
+  hasMoreDown: boolean;
   setRowVisible: (n: number) => void;
   markAsRead: () => void;
   loadInitialPosts: () => Promise<void>;
   atBottom: () => boolean;
+  atTop: () => boolean;
   enableNewMessageSeparatorHandler: () => void;
   loadPostUntilFirstUnread: () => Promise<number | undefined>;
   hasHistoryUnread: boolean;
@@ -61,9 +67,15 @@ type StreamViewProps = {
   historyUnreadCount: number;
   historyReadThrough: number;
   firstHistoryUnreadPostId?: number;
+  loading?: boolean;
+};
+type StreamSnapshot = {
+  atBottom: boolean;
+  atTop: boolean;
 };
 
 export {
+  StreamSnapshot,
   StreamProps,
   StreamViewProps,
   StreamItemType,
