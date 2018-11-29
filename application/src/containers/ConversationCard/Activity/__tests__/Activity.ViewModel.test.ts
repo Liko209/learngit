@@ -134,10 +134,7 @@ describe('activityViewModel', () => {
     mockPostEntityData.source = '';
     mockPostEntityData.parentId = parentId;
     expect(activityViewModel.activity).toEqual({
-      parameter: {
-        verb: 'replied',
-      },
-      key: 'verb',
+      key: 'replied',
     });
 
     mockPostEntityData.source = '';
