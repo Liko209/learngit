@@ -112,10 +112,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   @computed
   get _users() {
     return this._membersExcludeMe.map((id: number) => {
-      const { displayName } = getEntity(ENTITY_NAME.PERSON, id) as PersonModel;
+      const { userDisplayName } = getEntity(ENTITY_NAME.PERSON, id) as PersonModel;
       return {
         id,
-        display: displayName,
+        display: userDisplayName,
       };
     });
   }
@@ -145,12 +145,13 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private async _sendPost(content: string) {
     this.changeDraft('');
+    const atMentions = isAtMentions(content);
     try {
       await this._postService.sendPost({
+        atMentions,
         text: content,
         groupId: this.id,
-        users: this._users,
-        atMentions: isAtMentions(content),
+        users: atMentions ? this._users : undefined,
       });
     } catch (e) {
       // You do not need to handle the error because the message will display a resend

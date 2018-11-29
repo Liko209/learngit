@@ -15,8 +15,10 @@ const Wrapper = styled.div`
   align-items: center;
   transition: background-color 0.2s ease-in;
   cursor: pointer;
+  color: ${grey('900')};
   &&.selected {
     background-color: ${palette('primary', '700')};
+    color: ${palette('common', 'white')};
   }
   &:hover {
     background-color: ${palette('grey', '50')};
@@ -25,7 +27,6 @@ const Wrapper = styled.div`
 
 const DisplayName = styled.span`
   ${typography('subheading3')};
-  color: ${grey('900')};
   margin-left: ${spacing(3)};
 `;
 
