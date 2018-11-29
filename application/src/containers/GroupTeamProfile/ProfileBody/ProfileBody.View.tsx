@@ -40,7 +40,7 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
       type === TypeDictionary.TYPE_ID_GROUP ||
       type === TypeDictionary.TYPE_ID_TEAM
     ) {
-      avatar = <GroupAvatar cid={id} size="large"/>;
+      avatar = <GroupAvatar cid={id} size="xlarge"/>;
     } else if (
       type === TypeDictionary.TYPE_ID_PERSON
     ) {
