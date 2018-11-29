@@ -17,7 +17,7 @@ import { HotKeys } from 'jui/hoc/HotKeys';
 // import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
 import { Avatar, GroupAvatar } from '@/containers/Avatar';
 import { goToConversation } from '@/common/goToConversation';
-
+import { MiniCard } from '@/containers/MiniCard';
 import {
   ViewProps,
   SearchResult,
@@ -112,13 +112,20 @@ class SearchBarView extends React.Component<ViewProps, State> {
     });
   }
 
+  private _openMiniCard = (uid: number) => (
+    e: React.MouseEvent<HTMLElement>,
+  ) => {
+    e.stopPropagation();
+    MiniCard.showProfile({ anchor: e.target as HTMLElement, id: uid });
+  }
+
   private _Avatar(uid: number) {
     const { isTeamOrGroup } = this.props;
 
     return isTeamOrGroup(uid) ? (
-      <GroupAvatar cid={uid} size="small" />
+      <GroupAvatar cid={uid} size="small" onClick={this._openMiniCard(uid)} />
     ) : (
-      <Avatar uid={uid} size="small" />
+      <Avatar uid={uid} size="small" onClick={this._openMiniCard(uid)} />
     );
   }
 
