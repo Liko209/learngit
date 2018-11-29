@@ -115,8 +115,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
 
 });
 
-// Todo have bug when using display_name(FIJI-1239)
-test.skip(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-286']),
+test.only(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-286']),
     async t => {
         const app = new AppRoot(t);
         const user = h(t).rcData.mainCompany.users[0];
@@ -125,7 +124,6 @@ test.skip(formalName('JPT-286 New Message can be created successfully', ['P1', '
         const dmSection = app.homePage.messageTab.directMessagesSection;
         const user2 = h(t).rcData.mainCompany.users[1];
         user2.sdk = await h(t).getSdk(user2);
-        // todo have bug when using display_name
         const user2Name = (await user2.sdk.glip.getPerson()).data.display_name;
         const newMessages = `new message ${uuid()}`;
 
