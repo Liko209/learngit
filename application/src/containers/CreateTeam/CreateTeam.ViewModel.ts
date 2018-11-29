@@ -128,11 +128,12 @@ class CreateTeamViewModel extends AbstractViewModel {
       this.emailError = true;
     } else {
       const message = 'WeWerentAbleToCreateTheTeamTryAgain';
-      Notification.flashToast({
+      Notification.flagToast({
         message,
         type: 'error',
         messageAlign: 'left',
         fullWidth: false,
+        dismissible: true,
       });
     }
   }

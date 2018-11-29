@@ -65,7 +65,7 @@
   "expand": "Expand",
   "collapse": "Collapse",
   "contacts": "Contacts",
-  "WeWerentAbleToCreateTheTeamTryAgain.": "We weren't able to create the team. Try again.",
+  "WeWerentAbleToCreateTheTeamTryAgain": "We weren't able to create the team. Try again.",
   "currentStateFavorite": "Conversation in Favorites",
   "currentStateUnFavorite": "Conversation not in Favorites",
   "currentStatePublic": "Conversation not in public",
@@ -80,7 +80,5 @@
   "markPrivateServerErrorContent": "We weren't able to private this conversation. Try again.",
   "contacts": "Contacts",
   "suggested people": "suggested people",
-  "team members": "team members",
-  "alreadyTaken": "already taken",
-  "InvalidEmail": "Invalid Email"
+  "team members": "team members"
 }
