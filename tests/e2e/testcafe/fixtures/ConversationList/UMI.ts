@@ -654,7 +654,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   },
 );
 
-test(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList']),
+test(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -681,18 +681,22 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
       });
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+    await h(t).withLog('Clear all UMIs before login', async () => {
+      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
+        user.rcId,
+      );
+      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => { 
       await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
       await directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
     });
 
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
-      await t.wait(3000);
-      const scrollToMiddle = ClientFunction(() => {
-        document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTo(0, 300);
-      });
-      await scrollToMiddle();
+      await t.wait(3e3);
+      await app.homePage.messageTab.conversationPage.scrollToMiddle();
       await user5Platform.createPost(
         { text: 'test again' },
         pvtChat.data.id,
@@ -704,12 +708,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('When I scroll down content page', async () => {
-      const scrollToBottom = ClientFunction(() => {
-        let scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
-        console.log(scrollHeight);
-        document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop=scrollHeight;
-      });
-      await scrollToBottom();
+      await app.homePage.messageTab.conversationPage.scrollToBottom();
     });
 
     await h(t).withLog('Then UMI dismiss', async () => {
@@ -718,7 +717,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
   },
 );
 
-test(formalName('Should not show UMI and scroll up automatically when receive post', ['JPT-191', 'P2', 'ConversationList']),
+test(formalName('Should not show UMI and scroll up automatically when receive post', ['JPT-191', 'P2', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -727,7 +726,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
     const user5Platform = await h(t).getPlatform(users[5]);
 
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-    const postcontent = `JPT-191, ${uuid()}`;
+    const postContent = `JPT-191, ${uuid()}`;
 
     let pvtChat;
     await h(t).withLog('Given have a conversation', async () => {
@@ -744,6 +743,13 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
       });
     });
 
+    await h(t).withLog('Clear all UMIs before login', async () => {
+      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
+        user.rcId,
+      );
+      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+    });
+
     await h(t).withLog(`Given I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
@@ -752,7 +758,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
     await h(t).withLog('When Open a conversation and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
       await user5Platform.createPost(
-        { text: postcontent },
+        { text: postContent },
         pvtChat.data.id,
       );
     });
@@ -760,14 +766,14 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
     await h(t).withLog(`Then should not show UMI and scroll up automatically`, async () => {
       await directMessagesSection.conversationEntryById(pvtChat.data.id).expectUmi(0);
       const posts = await app.homePage.messageTab.conversationPage.posts;
-      await t.expect(posts.nth(-1).withText(postcontent).exists).ok();
-      await t.expect(posts.nth(-1).withText(postcontent).visible).ok();
+      await t.expect(posts.nth(-1).withText(postContent).exists).ok();
+      await t.expect(posts.nth(-1).withText(postContent).visible).ok();
     });
   },
 );
 
 //Need investigate how to unfocus page.
-test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P2', 'ConversationList']),
+test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P2', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
