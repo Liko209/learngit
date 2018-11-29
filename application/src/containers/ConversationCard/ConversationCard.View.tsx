@@ -17,6 +17,8 @@ import { MiniCard } from '@/containers/MiniCard';
 import history from '@/history';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { Activity } from './Activity';
+
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
@@ -59,7 +61,7 @@ export class ConversationCard extends React.Component<
       createTime,
       customStatus,
       showProgressActions,
-      itemIds,
+      itemTypeIds,
       mode,
       post,
       hideText,
@@ -79,6 +81,7 @@ export class ConversationCard extends React.Component<
         onClick={this.onClickAvatar}
       />
     );
+    const activity = <Activity id={id} />;
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
     const onClickHandler = mode ? this.jumpToPost : undefined;
     return (
@@ -101,13 +104,14 @@ export class ConversationCard extends React.Component<
             time={createTime}
             status={customStatus}
             from={from}
+            notification={activity}
           >
             {showProgressActions ? <ProgressActions id={id} /> : null}
             {!showProgressActions && isHover ? <Actions id={id} /> : null}
           </JuiConversationCardHeader>
           <JuiConversationCardBody data-name="body">
             {hideText ? null : <TextMessage id={id} />}
-            {idsToConversationSheet(itemIds, id)}
+            {idsToConversationSheet(itemTypeIds, id)}
           </JuiConversationCardBody>
           <Footer id={id} />
         </JuiConversationCard>

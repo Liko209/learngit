@@ -55,6 +55,13 @@ const StyledConversationCardHeader = styled('div')`
   display: flex;
   align-items: center;
 `;
+const StyledNotification = styled.div`
+  margin-left: 8px;
+  div {
+    font-size: ${({ theme }) => theme.typography.caption.fontSize};
+    color: ${grey('500')};
+  }
+`;
 
 type ConversationCardHeaderProps = {
   name: string;
@@ -62,6 +69,7 @@ type ConversationCardHeaderProps = {
   time: string;
   children?: React.ReactNode;
   from?: JSX.Element;
+  notification?: React.ReactNode;
 };
 
 const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
@@ -71,6 +79,9 @@ const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
       {props.status ? <StyledStatus>{props.status}</StyledStatus> : null}
       {props.from ? <StyledFrom>{props.from}</StyledFrom> : null}
       <StyledTime data-name="time">{props.time}</StyledTime>
+      {props.notification ? (
+        <StyledNotification>{props.notification}</StyledNotification>
+      ) : null}
     </StyledLeftSection>
     <RightSection>{props.children}</RightSection>
   </StyledConversationCardHeader>
