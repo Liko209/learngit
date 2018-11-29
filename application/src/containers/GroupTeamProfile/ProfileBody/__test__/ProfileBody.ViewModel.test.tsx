@@ -6,7 +6,6 @@
 import { getEntity } from '../../../../store/utils';
 jest.mock('../../../../store/utils');
 import { ProfileBodyViewModel } from '../ProfileBody.ViewModel';
-
 const profileBodyVM = new ProfileBodyViewModel({ id: 123, dismiss( ) {} });
 
 describe('ProfileBodyViewModel', () => {
@@ -14,7 +13,7 @@ describe('ProfileBodyViewModel', () => {
     (getEntity as jest.Mock).mockReturnValue({
       displayName: 'test',
     });
-    expect(profileBodyVM.displayName).toBe('test');
+    expect(profileBodyVM.name).toBe('test');
   });
   it('should return description if team/group id provided', () => {
     (getEntity as jest.Mock).mockReturnValue({

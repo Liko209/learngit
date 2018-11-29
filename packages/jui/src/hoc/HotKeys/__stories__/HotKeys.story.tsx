@@ -49,7 +49,7 @@ class Test1 extends React.Component<{}, {}> {
     console.log('---Test1 onEsc', e, combo);
   }
 
-  save(e, combo) {
+  save = async (e, combo) => {
     console.log('-----Test1 command + s', e, combo);
     return false; // same as jquery event return false
   }

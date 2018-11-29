@@ -8,17 +8,21 @@ jest.mock('../../../../store/utils');
 jest.mock('../../../../store/handler/SortableGroupMemberHandler');
 
 const membersListVM = new MembersListViewModel();
+const ID_1 = 23121;
+const ID_2 = 56789;
 
-const memberIds: number[] = [];
-for (let i = 0; i < 100; i++) {
-  memberIds[i] = i;
-}
 const twentyItems: number[] = [];
 for (let i = 0; i < 20; i++) {
   twentyItems[i] = i;
 }
 
 describe('MembersListViewModel', () => {
+  it('should computed gid while id changed', () => {
+    membersListVM.props.id = ID_1;
+    expect(membersListVM.gid).toEqual(ID_1);
+    membersListVM.props.id = ID_2;
+    expect(membersListVM.gid).toEqual(ID_2);
+  });
   it('should return memberIds if get group id', () => {
     jest.spyOn<MembersListViewModel, any>(membersListVM, 'memberIds', 'get').mockReturnValue(twentyItems);
 

@@ -36,6 +36,8 @@ export default class PersonModel extends Base<Person> {
   @observable
   awayStatus?: string;
   @observable
+  jobTitle?: string;
+  @observable
   pseudoUserPhoneNumber?: string;
   rcAccountId?: number;
   inviterId?: number;
@@ -53,6 +55,7 @@ export default class PersonModel extends Base<Person> {
       is_pseudo_user,
       glip_user_id,
       away_status,
+      job_title,
       headshot_version,
       pseudo_user_phone_number,
       rc_account_id,
@@ -69,6 +72,7 @@ export default class PersonModel extends Base<Person> {
     this.isPseudoUser = is_pseudo_user;
     this.glipUserId = glip_user_id;
     this.awayStatus = away_status;
+    this.jobTitle = job_title;
     this.pseudoUserPhoneNumber = pseudo_user_phone_number;
     this.rcAccountId = rc_account_id;
     this.inviterId = inviter_id;

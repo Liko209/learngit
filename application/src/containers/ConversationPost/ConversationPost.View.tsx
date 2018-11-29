@@ -5,29 +5,46 @@
  */
 
 import React, { Component } from 'react';
-import {
-  ConversationPostViewProps,
-  POST_TYPE,
-  ConversationPostProps,
-} from './types';
+import { ConversationPostViewProps, POST_TYPE } from './types';
 import { ConversationCard } from '../ConversationCard';
 import { Notification } from './Notification';
+import { MiniCard } from '@/containers/MiniCard';
 
 const PostTypeMappingComponent = {
   [POST_TYPE.POST]: ConversationCard,
   [POST_TYPE.NOTIFICATION]: Notification,
 };
 
-const factory = (type: POST_TYPE, postId: number, highlight: boolean) => {
-  const Component: React.ComponentType<ConversationPostProps> =
-    PostTypeMappingComponent[type];
-  return <Component id={postId} highlight={highlight} />;
-};
-
 class ConversationPostView extends Component<ConversationPostViewProps> {
+  constructor(props: ConversationPostViewProps) {
+    super(props);
+    this.onClickAtMention = this.onClickAtMention.bind(this);
+  }
+
+  onClickAtMention(event: React.MouseEvent) {
+    const target = event.target as HTMLElement;
+    const className = target.getAttribute('class') || '';
+    const id = Number(target.getAttribute('id'));
+    if (className.indexOf('at_mention_compose') > -1 && id > 0) {
+      event.stopPropagation();
+      MiniCard.showProfile({
+        id,
+        anchor: target,
+      });
+    }
+  }
+
   render() {
-    const { type, id, highlight } = this.props;
-    return factory(type, id, highlight);
+    const { type, id, highlight, onHighlightAnimationStart } = this.props;
+    const Component = PostTypeMappingComponent[type];
+    return (
+      <Component
+        id={id}
+        onClick={this.onClickAtMention}
+        highlight={highlight}
+        onHighlightAnimationStart={onHighlightAnimationStart}
+      />
+    );
   }
 }
 

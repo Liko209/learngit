@@ -12,12 +12,14 @@ enum POST_TYPE {
 type ConversationPostProps = {
   id: number;
   highlight?: boolean;
+  onHighlightAnimationStart?: React.AnimationEventHandler;
 };
 
 type ConversationPostViewProps = {
   id: number;
   type: POST_TYPE;
   highlight: boolean;
+  onHighlightAnimationStart?: React.AnimationEventHandler;
 };
 
 export { ConversationPostProps, ConversationPostViewProps, POST_TYPE };

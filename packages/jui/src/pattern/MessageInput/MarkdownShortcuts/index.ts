@@ -25,7 +25,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-import Quill, { QuillOptionsStatic, RangeStatic } from 'quill';
+import { QuillOptionsStatic, RangeStatic } from 'quill';
+import { Quill } from 'react-quill';
 import HorizontalRule from './formats/hr';
 
 type IMatches = {
