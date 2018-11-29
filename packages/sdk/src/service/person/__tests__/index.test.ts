@@ -12,6 +12,7 @@ import GroupService, {
 import { daoManager, PersonDao } from '../../../dao';
 import { Person } from '../../../models';
 import { AccountService } from '../../account/accountService';
+import { PHONE_NUMBER_TYPE, PhoneNumberInfo } from '../types';
 
 jest.mock('../../../dao');
 jest.mock('../../../service/group');
@@ -397,5 +398,37 @@ describe('PersonService', () => {
       expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.INVISIBLE);
       expect(spy).toBeCalledWith(pseudoPerson.id);
     });
+  });
+
+  describe('getAvailablePhoneNumbers()', () => {
+    const rcPhoneNumbers = [
+      { id: 11, phoneNumber: '1', usageType: 'MainCompanyNumber' },
+      { id: 11, phoneNumber: '2', usageType: 'CompanyNumber' },
+      { id: 11, phoneNumber: '3', usageType: 'AdditionalCompanyNumber' },
+      { id: 11, phoneNumber: '4', usageType: 'ForwardedNumber' },
+      { id: 11, phoneNumber: '5', usageType: 'MainCompanyNumber' },
+      { id: 12, phoneNumber: '234567', usageType: 'DirectNumber' },
+    ];
+    const sanitizedRcExtension = { extensionNumber: '4711', type: 'User' };
+    const ext = {
+      type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+      phoneNumber: '4711',
+    };
+    const did = {
+      type: PHONE_NUMBER_TYPE.DIRECT_NUMBER,
+      phoneNumber: '234567',
+    };
+    it.each([
+      [rcPhoneNumbers, sanitizedRcExtension, [ext, did]],
+      [rcPhoneNumbers, undefined, [did]],
+      [undefined, sanitizedRcExtension, [ext]],
+    ])(
+      'should return all available phone numbers, case index: %#',
+      (rcPhones, rcExt, expectRes) => {
+        expect(personService.getAvailablePhoneNumbers(rcPhones, rcExt)).toEqual(
+          expectRes,
+        );
+      },
+    );
   });
 });
