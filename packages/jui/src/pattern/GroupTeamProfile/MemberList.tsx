@@ -6,6 +6,7 @@
 import styled from '../../foundation/styled-components';
 import {
   spacing,
+  ellipsis,
 } from '../../foundation/utils/styles';
 const StyledList = styled.ul`
   list-style: none;
@@ -14,5 +15,6 @@ const StyledList = styled.ul`
 `;
 const StyledName = styled.p`
   margin-left: ${spacing(3)};
+  ${ellipsis()}
 `;
 export { StyledList, StyledName };
