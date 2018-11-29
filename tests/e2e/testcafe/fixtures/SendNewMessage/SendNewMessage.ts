@@ -51,8 +51,7 @@ test(formalName('JPT-285 Check New Message popup can be opened and closed', ['P1
     }, true);
 });
 
-// todo  need 8m to run this case 
-test(formalName('JPT-288 Check the maximum length of the “Type new message" Text Field', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-288',]), async t => {
+test(formalName('JPT-288 Check the maximum length of the “Type new message" Text Field', ['P3', 'SendNewMessage', 'Mia.Cai', 'JPT-288',]), async t => {
     const app = new AppRoot(t);
     const user = h(t).rcData.mainCompany.users[0];
     const sendNewMessageModal = app.homePage.sendNewMessageModal;
@@ -74,7 +73,6 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
         await sendNewMessageEntry.exists;
     });
 
-    await sendNewMessageModal.setNewMessage('0-908fj77rjhfdgnfmjhjfuuertgjfhbgnmnmbmngfghdshhfddnvndnnvmbnmfmn');
     await h(t).withLog('Then I click the Send New Message button', async () => {
         await sendNewMessageEntry.enter();
         await sendNewMessageModal.ensureLoaded();
@@ -86,7 +84,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
     }, true);
 
     await h(t).withLog(`When I input new message with ${lessThanMax} character`, async () => {
-        const newMessage = await sendNewMessageModal.gteNewMessage(lessThanMax);
+        const newMessage = await sendNewMessageModal.getNewMessage(lessThanMax);
         await sendNewMessageModal.setNewMessage(newMessage);
     });
 
@@ -96,7 +94,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
     });
 
     await h(t).withLog(`When I input new message with ${MAX} character`, async () => {
-        const newMessage = await sendNewMessageModal.gteNewMessage(MAX);
+        const newMessage = await sendNewMessageModal.getNewMessage(MAX);
         await sendNewMessageModal.setNewMessage(newMessage);
     });
 
@@ -106,7 +104,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
     });
 
     await h(t).withLog(`When I input new message with more than ${moreThanMAX} character`, async () => {
-        const newMessage = await sendNewMessageModal.gteNewMessage(moreThanMAX);
+        const newMessage = await sendNewMessageModal.getNewMessage(moreThanMAX);
         await sendNewMessageModal.setNewMessage(newMessage);
     });
 
@@ -117,7 +115,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
 
 });
 
-// Todo have bug when useing display_name
+// Todo have bug when using display_name(FIJI-1239)
 test.skip(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-286']),
     async t => {
         const app = new AppRoot(t);
@@ -127,7 +125,7 @@ test.skip(formalName('JPT-286 New Message can be created successfully', ['P1', '
         const dmSection = app.homePage.messageTab.directMessagesSection;
         const user2 = h(t).rcData.mainCompany.users[1];
         user2.sdk = await h(t).getSdk(user2);
-        // todo have bug when useing display_name
+        // todo have bug when using display_name
         const user2Name = (await user2.sdk.glip.getPerson()).data.display_name;
         const newMessages = `new message ${uuid()}`;
 

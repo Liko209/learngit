@@ -66,7 +66,7 @@ export class SendNewMessageModal extends BaseWebComponent {
         await this.t.typeText(this.newMessageInput, `${message}`, { replace: true, paste: true });
     }
 
-    async gteNewMessage(num: number) {
+    async getNewMessage(num: number) {
         const name = [];
         for (let i = 0; i < num; i++) {
             name.push(1);
