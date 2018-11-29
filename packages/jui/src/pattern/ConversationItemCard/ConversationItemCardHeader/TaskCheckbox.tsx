@@ -6,7 +6,7 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { JuiCheckbox } from '../../../components/Checkbox';
-import { palette } from '../../../foundation/utils';
+import { palette, spacing } from '../../../foundation/utils';
 
 type Props = {
   checked: boolean;
@@ -17,6 +17,9 @@ const StyledTaskCheckbox = styled(JuiCheckbox)`
     padding: 0;
     &.checked {
       color: ${palette('primary', 'main')};
+    }
+    svg {
+      margin-top: ${spacing(-0.5)};
     }
   }
 `;

@@ -8,7 +8,6 @@ import {
   IFetchSortableDataProvider,
 } from '../FetchSortableDataListHandler';
 import {
-  FetchDataDirection,
   ISortableModel,
   ITransformFunc,
   IMatchFunc,
@@ -22,13 +21,14 @@ import { ENTITY_NAME } from '@/store';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import GroupModel from '@/store/models/Group';
 import { ENTITY, notificationCenter, EVENT_TYPES } from 'sdk/service';
+import _ from 'lodash';
+import { QUERY_DIRECTION } from '../../../../../../packages/sdk/src/dao/constants';
 
 class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
   mockData: { data: T[]; hasMore: boolean } = { data: [], hasMore: false };
 
   fetchData(
-    offset: number,
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: ISortableModel<T>,
   ): Promise<{ data: T[]; hasMore: boolean }> {
@@ -73,25 +73,23 @@ describe('FetchSortableDataListHandler - fetchData', () => {
   });
 
   it('fetchData', async () => {
-    await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
-    expect(fetchSortableDataHandler.hasMore(FetchDataDirection.UP)).toBeFalsy();
+    await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
+    expect(fetchSortableDataHandler.hasMore(QUERY_DIRECTION.OLDER)).toBeFalsy();
     expect(
-      fetchSortableDataHandler.hasMore(FetchDataDirection.DOWN),
+      fetchSortableDataHandler.hasMore(QUERY_DIRECTION.NEWER),
     ).toBeTruthy();
     checkListStore<ISortableModel>(fetchSortableDataHandler.listStore, [
       buildNumberSortableModel(1),
       buildNumberSortableModel(2),
     ]);
     dataProvider.mockData = { data: [{ id: 3 }], hasMore: false };
-    await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
+    await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
     checkListStore<ISortableModel>(fetchSortableDataHandler.listStore, [
       buildNumberSortableModel(1),
       buildNumberSortableModel(2),
       buildNumberSortableModel(3),
     ]);
-    expect(
-      fetchSortableDataHandler.hasMore(FetchDataDirection.DOWN),
-    ).toBeFalsy();
+    expect(fetchSortableDataHandler.hasMore(QUERY_DIRECTION.NEWER)).toBeFalsy();
   });
 });
 
@@ -200,7 +198,7 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
       dataProvider,
       { isMatchFunc, transformFunc, sortFunc, pageSize: 2 },
     );
-    await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
+    await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
   });
 
   it('update in front', () => {
@@ -244,7 +242,7 @@ describe('FetchSortableDataListHandler - onDataChange', () => {
       dataProvider,
       { isMatchFunc, transformFunc, sortFunc, pageSize: 2 },
     );
-    await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
+    await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
     handleChangeMap(buildSortableNumber(3, 9), EVENT_TYPES.UPDATE);
     checkListStore(fetchSortableDataHandler.listStore, [
       sortableTransformFunc(buildSortableNumber(6)),
@@ -313,7 +311,7 @@ describe('FetchSortableDataListHandler - updateEntityStore', () => {
         eventName: ENTITY.GROUP,
       },
     );
-    await fetchSortableDataHandler.fetchData(FetchDataDirection.DOWN);
+    await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
   });
 
   it('should have the group in group store', () => {
@@ -324,13 +322,16 @@ describe('FetchSortableDataListHandler - updateEntityStore', () => {
   });
 
   it('handle the group updated', () => {
-    group.most_recent_post_created_at = 1001;
+    group.creator_id = 1001;
     notificationCenter.emitEntityUpdate(ENTITY.GROUP, [group]);
     const groupStore = storeManager.getEntityMapStore(
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
     console.log(JSON.stringify(groupStore.get(group.id)));
-    expect(groupStore.get(group.id)).toEqual(GroupModel.fromJS(group));
+
+    const updatedGroup = groupStore.get(group.id);
+
+    expect(updatedGroup.creatorId).toEqual(1001);
 
     let newGroup: Group = {
       ...group,

@@ -5,6 +5,7 @@ import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
 import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
 import { BeatsClient, Run } from 'bendapi';
+import { MiscUtils } from './v2/utils'
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
@@ -31,10 +32,32 @@ export async function getOrCreateRunId() {
   if (!runId) {
     const runName = RUN_NAME || uuid();
     const metadata = {};
+    for (const key in ENV_OPTS) {
+      metadata[key] = JSON.stringify(ENV_OPTS[key]);
+    }
     for (const key in RUNNER_OPTS) {
-      if (['REPORTER', 'FIXTURES'].indexOf(key) > 0)
-        continue
-      metadata[key] = JSON.stringify(RUNNER_OPTS[key]);
+      if ([
+        'EXCLUDE_TAGS',
+        'INCLUDE_TAGS',
+        'QUARANTINE_MODE'
+      ].indexOf(key) > 0)
+        metadata[key] = JSON.stringify(RUNNER_OPTS[key]);
+    }
+    for (const key in process.env) {
+      if ([
+        'SELENIUM_SERVER',
+        'HOST_NAME',
+        'BUILD_URL',
+        'appUrl',
+        'gitlabActionType',
+        'gitlabBranch',
+        'gitlabMergedByUser',
+        'gitlabMergeRequestLastCommit',
+        'gitlabMergeRequestTitle',
+        'gitlabSourceBranch',
+        'gitlabTargetBranch',
+      ].indexOf(key) > 0)
+        metadata[key] = process.env[key];
     }
     const run = await beatsClient.createRun({
       name: runName,
@@ -64,6 +87,7 @@ export function setupCase(accountType: string) {
       ENV_OPTS.JUPITER_APP_KEY,
     )
     await h(t).logHelper.setup();
+    await t.resizeWindow(1280, 720);
     await t.maximizeWindow();
   }
 }
@@ -71,10 +95,11 @@ export function setupCase(accountType: string) {
 export function teardownCase() {
   return async (t: TestController) => {
     const consoleLog = await t.getBrowserConsoleMessages()
-    h(t).allureHelper.writeReport();
+    const consoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog, null, 2));
+    h(t).allureHelper.writeReport(consoleLogPath);
     await h(t).dataHelper.teardown();
     if (ENABLE_REMOTE_DASHBOARD) {
-      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLog);
+      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLogPath);
     }
   }
 }

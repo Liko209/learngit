@@ -91,6 +91,8 @@ type Theme = {
     unit: number;
   };
   zIndex: {
+    ripple: number;
+    elementOnRipple: number;
     loading: number;
     dragging: number;
   };

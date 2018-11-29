@@ -2,17 +2,18 @@
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-12 20:31:07
  * @Last Modified by: Chris Zhan (chris.zhan@ringcentral.com)
- * @Last Modified time: 2018-11-13 10:01:37
+ * @Last Modified time: 2018-11-26 22:59:09
  */
 import { StreamViewModel } from '../Stream.ViewModel';
 import { POST_LIST_TYPE } from '../../types';
 import { service } from 'sdk';
-import { notificationCenter } from 'sdk/service';
-const { ENTITY, EVENT_TYPES, PostService } = service;
+import { QUERY_DIRECTION } from 'sdk/dao';
+const { PostService } = service;
 function setup(obj: any) {
   const vm = new StreamViewModel();
   vm.props.type = POST_LIST_TYPE.mentions;
   vm.props.postIds = [1];
+  vm._postIds = [1, 2, 3];
   Object.assign(vm, obj);
   return vm;
 }
@@ -34,13 +35,14 @@ describe('StreamViewModel', () => {
         clear: jest.fn(),
         removeByIds: jest.fn(),
       },
+      fetchData: jest.fn(),
       onDataChanged: jest.fn(),
+      hasMore: jest.fn().mockReturnValue(true),
     };
     oldProps = {
       _sortableListHandler: mockedSortableListHandler,
     };
     newProps = {
-      type: POST_LIST_TYPE.bookmarks,
       postIds: [1, 2],
     };
     vm = setup(oldProps);
@@ -48,13 +50,9 @@ describe('StreamViewModel', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-  it('should reset the store if the router changed', () => {
-    vm.onReceiveProps(newProps);
-    expect(mockedSortableListHandler.sortableListStore.clear).toBeCalled();
-  });
 
   it('should add new post if the postIds added', async () => {
-    const localProps = { ...newProps, type: POST_LIST_TYPE.mentions };
+    const localProps = { ...newProps };
     postService.getPostsByIds.mockResolvedValue({
       posts: [
         {
@@ -62,15 +60,46 @@ describe('StreamViewModel', () => {
         },
       ],
     });
+    vm._postIds = [1];
     await vm.onReceiveProps(localProps);
     const returnedEntity = new Map();
     returnedEntity.set(1, { id: 1 });
     expect(mockedSortableListHandler.onDataChanged).toBeCalledWith({
       body: {
         entities: returnedEntity,
-        ids: [1, 2],
+        ids: [2],
       },
       type: 'update',
     });
+  });
+  it('should delete post if the postIds shortened', async () => {
+    const localProps = { ...newProps };
+    postService.getPostsByIds.mockResolvedValue({
+      posts: [],
+    });
+    vm._postIds = [1, 2, 3];
+    await vm.onReceiveProps(localProps);
+    expect(mockedSortableListHandler.onDataChanged).toBeCalledWith({
+      body: {
+        ids: [3],
+      },
+      type: 'delete',
+    });
+  });
+  it('should fetch initial data if the postIds added while the previous postIds is empty', async () => {
+    const localProps = { ...newProps };
+    postService.getPostsByIds.mockResolvedValue({
+      posts: [
+        {
+          id: 1,
+        },
+      ],
+    });
+    vm._postIds = [];
+    await vm.onReceiveProps(localProps);
+    expect(mockedSortableListHandler.fetchData).toBeCalledWith(
+      QUERY_DIRECTION.NEWER,
+    );
+    expect(vm._postIds).toEqual([2, 1]);
   });
 });

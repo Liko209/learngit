@@ -18,6 +18,7 @@ const StyledTaskAvatarName = styled.div`
   margin-top: ${spacing(2)};
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   ${typography('body1')};
   color: ${grey('900')};
 `;
@@ -28,7 +29,7 @@ const StyledTaskOther = styled.div`
 `;
 
 const JuiTaskAvatarName = ({ children, otherText, count }: Props) => (
-  <StyledTaskAvatarName>
+  <StyledTaskAvatarName className="task-avatar-name">
     {children}
     {otherText && count && (
       <StyledTaskOther>{count > 2 ? otherText : ''}</StyledTaskOther>

@@ -52,17 +52,17 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
       },
     );
 
-    const teamSection = app.homePage.messagePanel.teamsSection;
+    const teamSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then I can check conversation A and B exist', async () => {
       await teamSection.expand();
-      conversation1 = teamSection.conversationByIdEntry(teamId1);
-      conversation2 = teamSection.conversationByIdEntry(teamId2);
+      conversation1 = teamSection.conversationEntryById(teamId1);
+      conversation2 = teamSection.conversationEntryById(teamId2);
       await t.expect(conversation1.exists).ok();
       await t.expect(conversation2.exists).ok();
     });
 
     const msg = uuid();
-    const inputField = app.homePage.messagePanel.conversationPage.messageInputArea;
+    const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
     await h(t).withLog(`And I enter conversation A to type message "${msg}"`, async () => {
       await conversation1.enter();
       await t.typeText(inputField, msg)

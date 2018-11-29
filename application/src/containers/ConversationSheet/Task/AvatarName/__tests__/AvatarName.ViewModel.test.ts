@@ -15,7 +15,7 @@ describe('AvatarNameVM', () => {
   });
 
   it('name()', () => {
-    (getEntity as jest.Mock).mockReturnValue({ displayName: 'Alan' });
+    (getEntity as jest.Mock).mockReturnValue({ userDisplayName: 'Alan' });
     expect(ViewModel.name).toEqual('Alan');
   });
 });

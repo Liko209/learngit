@@ -18,7 +18,7 @@ const StyledBox = styled('div')`
   text-align: center;
   ${typography('body1')};
   color: ${grey('700')};
-  .user {
+  .at_mention_compose {
     ${typography('body2')};
     color: ${primary('700')};
   }
@@ -33,11 +33,12 @@ const StyledBox = styled('div')`
 `;
 
 type Props = {
+  onClick?: (e: React.MouseEvent) => any;
   children: JSX.Element | null;
 };
 
-const JuiNotification = ({ children }: Props) => {
-  return <StyledBox>{children}</StyledBox>;
+const JuiNotification = ({ onClick, children }: Props) => {
+  return <StyledBox onClick={onClick}>{children}</StyledBox>;
 };
 
 export { JuiNotification };

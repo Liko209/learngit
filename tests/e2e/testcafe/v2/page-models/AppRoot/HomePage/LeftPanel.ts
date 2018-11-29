@@ -12,6 +12,9 @@ class LeftNavigatorEntry extends BaseWebComponent {
 
     async getUmi() {
         const umi = this.self.find('.umi');
+        if (!await umi.exists) {
+            return 0;
+          }
         const text = await umi.innerText;
         if (_.isEmpty(text)) {
             return 0;
@@ -44,17 +47,7 @@ export class LeftPanel extends BaseWebComponent {
     }
 
     get messagesEntry() {
-        const sel = Selector('*').filter( node => {
-          const attrName = 'data-test-automation-id'
-          if (!node.hasAttribute(attrName)){ 
-              return false
-            };
-          const attr = node.getAttribute(attrName);
-          return !!attr.match('messages');
-        })
-        const entry = this.getComponent(LeftNavigatorEntry,sel)
-        entry.name = 'messages';
-        return entry;
+      return this.getEntry('messages');
       }
 
     get phoneEntry() {

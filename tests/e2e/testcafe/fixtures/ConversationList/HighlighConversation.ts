@@ -26,7 +26,7 @@ test(
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
     const glipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
     const directMessageSection =
-      app.homePage.messagePanel.directMessagesSection;
+      app.homePage.messageTab.directMessagesSection;
 
     let group;
     await h(t).withLog(
@@ -87,7 +87,7 @@ test(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.self.withAttribute(
+            app.homePage.messageTab.conversationPage.self.withAttribute(
               'data-group-id',
               group.data.id,
             ).exists,

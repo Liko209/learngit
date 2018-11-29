@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { Component } from 'react';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiConversationListFilter } from 'jui/pattern/ConversationList/ConversationListFilter';
 import { JuiConversationListSectionHeader } from 'jui/pattern/ConversationList/ConversationListSectionHeader';
@@ -17,45 +17,64 @@ import {
   JuiLeftRailStickyTop,
   JuiLeftRailMainSection,
 } from 'jui/pattern/LeftRail/LeftRail';
+import history from '@/history';
 import { translate, WithNamespaces } from 'react-i18next';
+import { observer } from 'mobx-react';
+import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
 
-const LeftRailViewComponent = (props: LeftRailViewProps & WithNamespaces) => {
-  return (
-    <JuiLeftRail>
-      <JuiLeftRailStickyTop>
-        {props.filters.map((filter, index) => [
-          index ? <JuiDivider key={`divider${index}`} /> : null,
-          <JuiConversationListFilter
-            data-test-automation-id="unreadOnlyToggler"
-            checked={filter.value}
-            key={filter.label}
-            label={toTitleCase(props.t(filter.label))}
-            onChange={filter.onChange}
-          />,
-        ])}
-      </JuiLeftRailStickyTop>
-      <JuiDivider key="divider-filters" />
-      <JuiLeftRailMainSection>
-        {props.entries.map((entry, index) => (
-          <JuiConversationListSectionHeader
-            data-test-automation-id="entry-mentions"
-            key={entry.title}
-            title={toTitleCase(props.t(entry.title))}
-            icon={entry.icon}
-            hideArrow={true}
-            selected={entry.selected}
-            onClick={entry.onClick}
-          />
-        ))}
-        <JuiDivider key="divider-entries" />
-        {props.sections.map((type, index, array) => [
-          index ? <JuiDivider key={`divider${index}`} /> : null,
-          <Section key={type} type={type} isLast={index === array.length - 1} />,
-        ])}
-      </JuiLeftRailMainSection>
-    </JuiLeftRail>
-  );
-};
+@observer
+class LeftRailViewComponent extends Component<
+  LeftRailViewProps & WithNamespaces
+> {
+  onEntryClick = (type: POST_LIST_TYPE) => {
+    history.push(`/messages/${type}`);
+  }
+
+  render() {
+    const { filters, entries, sections, currentPostListType, t } = this.props;
+    return (
+      <JuiLeftRail data-test-automation-id="leftRail">
+        <JuiLeftRailStickyTop>
+          {filters.map((filter, index) => [
+            index ? <JuiDivider key={`divider${index}`} /> : null,
+            <JuiConversationListFilter
+              data-test-automation-id="unreadOnlyToggler"
+              checked={filter.value}
+              key={filter.label}
+              label={toTitleCase(t(filter.label))}
+              onChange={filter.onChange}
+            />,
+          ])}
+        </JuiLeftRailStickyTop>
+        <JuiDivider key="divider-filters" />
+        <JuiLeftRailMainSection>
+          {entries.map((entry, index) => (
+            <JuiConversationListSectionHeader
+              data-test-automation-id="entry-mentions"
+              key={entry.title}
+              title={toTitleCase(t(entry.title))}
+              icon={entry.icon}
+              hideArrow={true}
+              selected={entry.type === currentPostListType}
+              onClick={() => {
+                this.onEntryClick(entry.type);
+              }}
+            />
+          ))}
+          <JuiDivider key="divider-entries" />
+          {sections.map((type, index, array) => [
+            index ? <JuiDivider key={`divider${index}`} /> : null,
+            <Section
+              key={type}
+              type={type}
+              isLast={index === array.length - 1}
+            />,
+          ])}
+        </JuiLeftRailMainSection>
+      </JuiLeftRail>
+    );
+  }
+}
 
 const LeftRailView = translate('Conversations')(LeftRailViewComponent);
 

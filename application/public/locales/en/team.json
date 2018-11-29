@@ -10,5 +10,12 @@
   "Members": "Members",
   "already taken": "The name is already taken, please choose another one.",
   "Invalid Email": "Invalid Email",
-  "Search Contact Placeholder": "Members (enter names or email addresses)"
+  "Search Contact Placeholder": "Members (enter names or email addresses)",
+  "New Message": "New Message",
+  "Send": "Send",
+  "New Message Error": "We are having trouble creating this new message. Please try again later.",
+  "Create Team Error": "We are having trouble creating this team. Please try again later.",
+  "Type new message": "Type new message",
+  "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
+  "newMessageTipLink": "create a Team instead."
 }

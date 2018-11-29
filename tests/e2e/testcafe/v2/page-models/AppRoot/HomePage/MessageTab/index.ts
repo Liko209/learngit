@@ -3,8 +3,9 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
+import { MentionPage, ConversationPage } from "./ConversationPage";
 
-class MoreMenuEntry extends BaseWebComponent {
+class Entry extends BaseWebComponent {
   async enter() {
     await this.t.click(this.self);
   }
@@ -17,17 +18,11 @@ class MoreMenu extends BaseWebComponent {
 
   private getEntry(name: string) {
     this.warnFlakySelector();
-    return this.getComponent(
-      MoreMenuEntry,
-      this.self.find('li').withText(name),
-    );
+    return this.getComponent(Entry, this.self.find('li').withText(name));
   }
 
   private getToggler(id: string) {
-    return this.getComponent(
-      MoreMenuEntry,
-      this.getSelectorByAutomationId(id),
-    );
+    return this.getComponent(Entry, this.getSelectorByAutomationId(id));
   }
 
   get favoriteToggler() {
@@ -47,6 +42,9 @@ class ConversationEntry extends BaseWebComponent {
 
   async getUmi() {
     const umi = this.self.find('.umi');
+    if (await umi.exists == false) {
+      return 0;
+    }
     const text = await umi.innerText;
     if (_.isEmpty(text)) {
       return 0;
@@ -55,6 +53,22 @@ class ConversationEntry extends BaseWebComponent {
       return 100;
     }
     return Number(text);
+  }
+
+  async expectUmi(n: number, waitTime: number = 10) {
+    let i = 0;
+    while (true) {
+      await this.t.wait(1e3);
+      try {
+        await this.t.expect(await this.getUmi()).eql(n);
+        return;
+      } catch (err) {
+        if (i >= waitTime) {
+          throw err;
+        }
+        i = i + 1;
+      }
+    }
   }
 
   async openMoreMenu() {
@@ -70,25 +84,6 @@ class ConversationEntry extends BaseWebComponent {
 
   get hasDraftMessage() {
     return this.self.find('.material-icons').withText('border_color').exists;
-  }
-
-  async waitUntilUmiExist(exist: boolean, timeout = 20) {
-    let tryTime = 0;
-    let count = await this.getUmi();
-    if (exist == !!count) {
-      return
-    }
-    while (true) {
-      if (tryTime >= timeout) {
-        throw (`Wait until conversation without UMI: timeout: ${timeout}s`)
-      }
-      tryTime = tryTime + 1;
-      await this.t.wait(1e3);
-      count = await this.getUmi();
-      if (exist == !!(count)) {
-        break
-      }
-    }
   }
 
   async enter() {
@@ -124,6 +119,22 @@ class ConversationListSection extends BaseWebComponent {
     return Number(text);
   }
 
+  async expectHeaderUmi(n: number, waitTime: number = 10) {
+    let i = 0;
+    while (true) {
+      await this.t.wait(1e3);
+      try {
+        await this.t.expect(await this.getHeaderUmi()).eql(n);
+        return;
+      } catch (err) {
+        if (i >= waitTime) {
+          throw err;
+        }
+        i = i + 1;
+      }
+    }
+  }
+
   get collapse() {
     return this.self.find('.conversation-list-section-collapse').parent(2);
   }
@@ -136,11 +147,11 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.nth(n));
   }
 
-  conversationByIdEntry(groupId: string) {
+  conversationEntryById(groupId: string) {
     return this.getComponent(ConversationEntry, this.conversations.filter(`[data-group-id="${groupId}"]`));
   }
 
-  conversationByNameEntry(name: string) {
+  conversationEntryByName(name: string) {
     return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name));
   }
 
@@ -165,66 +176,6 @@ class ConversationListSection extends BaseWebComponent {
   }
 }
 
-class PostItem extends BaseWebComponent {
-  get avatar() {
-    return this.self.find(`[data-name="avatar"]`);
-  }
-
-  get name() {
-    return this.self.find(`[data-name="name"]`);
-  }
-
-  get userStatus() {
-    this.warnFlakySelector();
-    return this.name.nextSibling('div')
-  }
-
-  get time() {
-    return this.self.find(`[data-name="time"]`);
-  }
-
-  get body() {
-    return this.self.find(`[data-name="body"]`);
-  }
-
-  get text() {
-    return this.self.find(`[data-name="text"]`);
-  }
-}
-
-class ConversationPage extends BaseWebComponent {
-  get self() {
-    return this.getSelector('.conversation-page');
-  }
-
-  get posts() {
-    return this.self.find('[data-name="conversation-card"]');
-  }
-
-  get header() {
-    return this.getSelectorByAutomationId('conversation-page-header');
-  }
-
-  get messageInputArea() {
-    this.warnFlakySelector();
-    return this.self.child().find('.ql-editor');
-  }
-
-  async sendMessage(message: string) {
-    await this.t
-      .typeText(this.messageInputArea, message)
-      .click(this.messageInputArea)
-      .pressKey('enter');
-  }
-
-  nthPostItem(nth: number) {
-    return this.getComponent(PostItem, this.posts.nth(nth));
-  }
-
-  postItemById(postId: string) {
-    return this.getComponent(PostItem, this.posts.filter(`[data-id="${postId}"]`));
-  }
-}
 
 class CloseConversationModal extends BaseWebComponent {
   get self() {
@@ -251,12 +202,10 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
-export class MessagePanel extends BaseWebComponent {
+export class MessageTab extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
-    return this.getSelector(
-      '[data-test-automation-id="leftPanel"]',
-    ).nextSibling();
+    return this.getSelectorByAutomationId('leftRail').parent(1);
   }
 
   private getSection(name: string) {
@@ -277,9 +226,15 @@ export class MessagePanel extends BaseWebComponent {
   get teamsSection() {
     return this.getSection('Teams');
   }
-
+  get mentionsEntry() {
+    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'));
+  }
   get conversationPage() {
     return this.getComponent(ConversationPage);
+  }
+
+  get mentionPage() {
+    return this.getComponent(MentionPage);
   }
 
   get postListPage() {

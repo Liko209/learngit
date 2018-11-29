@@ -12,6 +12,15 @@ import {
   CONTENT_LENGTH,
 } from '../MessageInput.ViewModel';
 import _ from 'lodash';
+import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
+
+const mockGroupEntityData = {
+  draft: 'draft',
+};
+
+jest.mock('@/store/utils', () => ({
+  getEntity: jest.fn(() => mockGroupEntityData),
+}));
 
 const { PostService, GroupService } = service;
 const postService = {
@@ -23,13 +32,7 @@ const groupService = {
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
-const mockGroupEntityData = {
-  draft: 'draft',
-};
-// @ts-ignore
-const getEntity = jest.fn().mockReturnValue(mockGroupEntityData);
-
-const messageInputViewModel = new MessageInputViewModel();
+const messageInputViewModel = new MessageInputViewModel({ id: 123 });
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -37,14 +40,7 @@ beforeEach(() => {
 
 describe.skip('ActionsViewModel', () => {
   it('lifecycle onReceiveProps method', () => {
-    let id = 123;
-    messageInputViewModel.onReceiveProps({ id });
-    expect(messageInputViewModel._id).toBe(id);
-    id = 123;
-    messageInputViewModel.onReceiveProps({ id });
-    expect(messageInputViewModel._id).toBe(id);
-    id = 456;
-    messageInputViewModel.onReceiveProps({ id });
+    expect(messageInputViewModel._id).toBe(123);
     expect(messageInputViewModel.draft).toBe(mockGroupEntityData.draft);
   });
 
@@ -96,6 +92,8 @@ describe('ActionsViewModel send post', () => {
   it('send post content is empty should be not send', () => {
     const content = '';
     const that = mockThis(content);
+    // @ts-ignore
+    markdownFromDelta = jest.fn().mockReturnValue(content);
     const handler = enterHandler.bind(that);
     handler();
     expect(postService.sendPost).toBeCalledTimes(0);
@@ -104,6 +102,8 @@ describe('ActionsViewModel send post', () => {
   it('send post should be illegal error', () => {
     const content = CONTENT_ILLEGAL;
     const that = mockThis(content);
+    // @ts-ignore
+    markdownFromDelta = jest.fn().mockReturnValue(content);
     const handler = enterHandler.bind(that);
     handler();
     expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
@@ -112,6 +112,8 @@ describe('ActionsViewModel send post', () => {
   it('send post should be over length error', () => {
     const content = _.pad('test', CONTENT_LENGTH + 1);
     const that = mockThis(content);
+    // @ts-ignore
+    markdownFromDelta = jest.fn().mockReturnValue(content);
     const handler = enterHandler.bind(that);
     handler();
     expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);

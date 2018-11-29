@@ -60,8 +60,9 @@ export default class MultiEntityMapStore<
         break;
       case EVENT_TYPES.REPLACE:
         {
-          const entities = payload.body.entities;
-          this.batchReplace(entities);
+          payload.body.entities.forEach((entity: T) => {
+            this._replace(entity);
+          });
         }
         break;
       case EVENT_TYPES.UPDATE:
@@ -72,9 +73,7 @@ export default class MultiEntityMapStore<
             this.batchUpdate(partials);
           } else {
             entities.forEach((entity: T) => {
-              if (this._data[entity.id]) {
-                this.set(entity);
-              }
+              this._partialUpdate(entity, entity.id);
             });
           }
         }
@@ -94,28 +93,41 @@ export default class MultiEntityMapStore<
   @action
   batchUpdate(partials: Map<number, Partial<Raw<T>>>) {
     partials.forEach((partialEntity, id) => {
-      const model = this._data[id];
-      if (model) {
-        Object.keys(partialEntity).forEach((key: string) => {
-          model[_.camelCase(key)] = partialEntity[key];
-        });
-      }
+      this._partialUpdate(partialEntity, id);
     });
+  }
+
+  private _partialUpdate(partialEntity: Partial<Raw<T>> | T, id: number) {
+    const model = this._data[id];
+    if (model) {
+      Object.keys(partialEntity).forEach((key: string) => {
+        model[_.camelCase(key)] = partialEntity[key];
+      });
+    }
   }
 
   batchSet(entities: T[]) {
     entities.forEach((entity: T) => {
-      this.set(entity);
+      const model = this._data[entity.id];
+      if (!model) {
+        this.set(entity);
+      } else {
+        this._partialUpdate(entity, entity.id);
+      }
     });
   }
 
-  batchReplace(entities: Map<number, T>) {
-    entities.forEach((entity, id) => {
-      if (this._data[id]) {
-        this.remove(id);
-        this.set(entity);
-      }
+  batchReplace(entities: T[]) {
+    entities.forEach((entity: T) => {
+      this._replace(entity);
     });
+  }
+
+  private _replace(entity: T) {
+    if (entity && this._data[entity.id]) {
+      this.remove(entity.id);
+      this.set(entity);
+    }
   }
 
   remove(id: number) {

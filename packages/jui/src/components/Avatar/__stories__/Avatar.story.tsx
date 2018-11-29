@@ -9,6 +9,7 @@ import { select } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiAvatar } from '..';
+import { JuiPresence, PRESENCE } from '../../Presence';
 
 import avatar from './img/avatar.jpg';
 
@@ -39,6 +40,17 @@ const knobs = {
       },
       'lake',
     ),
+  presence: () =>
+    select(
+      'presence',
+      {
+        available: PRESENCE.AVAILABLE,
+        unavailable: PRESENCE.UNAVAILABLE,
+        DND: PRESENCE.DND,
+        inMeeting: PRESENCE.INMEETING,
+      },
+      PRESENCE.AVAILABLE,
+    ),
 };
 storiesOf('Components/Avatar', module)
   .addDecorator(withInfoDecorator(JuiAvatar, { inline: true }))
@@ -48,6 +60,23 @@ storiesOf('Components/Avatar', module)
   .add('Name', () => {
     return (
       <JuiAvatar size={knobs.size()} color={knobs.color()}>
+        SH
+      </JuiAvatar>
+    );
+  })
+  .add('With presence', () => {
+    return (
+      <JuiAvatar
+        size={knobs.size()}
+        color={knobs.color()}
+        presence={
+          <JuiPresence
+            presence={knobs.presence()}
+            size={knobs.size()}
+            borderSize={knobs.size()}
+          />
+        }
+      >
         SH
       </JuiAvatar>
     );

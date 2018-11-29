@@ -145,7 +145,7 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
     (group: Group) => hiddenGroupIds.indexOf(group.id) === -1,
   );
 
-  notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
+  notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
 
   const favIds = (profile && profile.favorite_group_ids) || [];
   const archivedGroups = normalData.filter((item: Group) => item.is_archived);
@@ -172,8 +172,7 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
     (item: Group) => favIds.indexOf(item.id) !== -1,
   );
   const result = addedTeams.concat(addedGroups).concat(addFavorites);
-  result.length &&
-    notificationCenter.emitEntityUpdate(ENTITY.GROUP, result, result);
+  result.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, result);
   // addedTeams.length > 0 &&
   //   notificationCenter.emitEntityUpdate(ENTITY.TEAM_GROUPS, addedTeams);
   // addedGroups.length > 0 &&
@@ -189,7 +188,7 @@ async function operateGroupDao(deactivatedData: Group[], normalData: Group[]) {
       dao.bulkDelete(deactivatedData.map(item => item.id));
     }
     if (normalData.length) {
-      await dao.bulkPut(normalData);
+      await dao.bulkUpdate(normalData);
     }
   } catch (e) {
     console.error(`operateGroupDao error ${JSON.stringify(e)}`);

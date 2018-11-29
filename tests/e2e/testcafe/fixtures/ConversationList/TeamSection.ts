@@ -45,10 +45,10 @@ test(formalName('Team section display the conversation which the login user as o
     );
 
     await h(t).withLog('Then I can find the team in Teams section', async () => {
-      const teamsSection = app.homePage.messagePanel.teamsSection;
+      const teamsSection = app.homePage.messageTab.teamsSection;
       await teamsSection.expand();
       await t
-        .expect(app.homePage.messagePanel.teamsSection.conversationByIdEntry(team.data.id).self.exists)
+        .expect(app.homePage.messageTab.teamsSection.conversationEntryById(team.data.id).exists)
         .ok(team.data.id, { timeout: 5e3 });
     }, true);
 
@@ -88,10 +88,10 @@ test(formalName('Each conversation should be represented by the team name.',
     );
 
     await h(t).withLog('Then I can find the team by name in Teams section', async () => {
-      const teamsSection = app.homePage.messagePanel.teamsSection;
+      const teamsSection = app.homePage.messageTab.teamsSection;
       await teamsSection.expand();
       await t
-        .expect(teamsSection.conversationByNameEntry(teamName).self.exists)
+        .expect(teamsSection.conversationEntryByName(teamName).exists)
         .ok(teamName, { timeout: 5e3 });
     }, true);
 
@@ -101,10 +101,10 @@ test(formalName('Each conversation should be represented by the team name.',
     });
 
     await h(t).withLog('Then I should find the team by new name in Teams section', async () => {
-      const teamsSection = app.homePage.messagePanel.teamsSection;
+      const teamsSection = app.homePage.messageTab.teamsSection;
       await teamsSection.expand();
       await t
-        .expect(teamsSection.conversationByNameEntry(newName).self.exists)
+        .expect(teamsSection.conversationEntryByName(newName).exists)
         .ok(newName, { timeout: 5e3 });
     }, true);
   },
@@ -154,7 +154,7 @@ test(formalName('Conversation that received post should be moved to top',
       },
     );
 
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then I can find team1 on the top of Team section', async () => {
       await teamsSection.expand();
       await t
@@ -191,7 +191,7 @@ test(formalName('Can expand and collapse the team section by clicking the sectio
       await app.homePage.ensureLoaded();
     })
     
-    let teamSection = app.homePage.messagePanel.teamsSection;
+    let teamSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then Team section should be expanded by default', async () => {
       await t.expect(await teamSection.isExpand()).ok();
     }); 

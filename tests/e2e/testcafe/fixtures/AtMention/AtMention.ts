@@ -15,17 +15,16 @@ fixture('AtMention/AtMention')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(formalName('Data in mention page should be dynamically sync',
-    ['P2', 'JPT-311']),
+test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-311']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
     await h(t).resetGlipAccount(user);
-    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+    const userPlatform = await h(t).getPlatform(user);
     const user5Platform = await h(t).getPlatform(users[5]);
-    const mentionsEntry = app.homePage.messagePanel.getSelectorByAutomationId('entry-mentions');
-    const postListPage = app.homePage.messagePanel.postListPage;
+    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+    const postListPage = app.homePage.messageTab.postListPage;
     let group;
     await h(t).withLog('Given I have an extension with 2 at-mention posts', async () => {
       group = await userPlatform.createGroup({
@@ -47,7 +46,7 @@ test(formalName('Data in mention page should be dynamically sync',
     });
 
     await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
-      await t.click(mentionsEntry);
+      await mentionsEntry.enter();
       await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(2);
     }, true);
 
@@ -60,7 +59,7 @@ test(formalName('Data in mention page should be dynamically sync',
     });
 
     await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
-      await t.click(mentionsEntry);
+      await mentionsEntry.enter();
       await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(3);
     }, true);
 
@@ -70,26 +69,24 @@ test(formalName('Data in mention page should be dynamically sync',
     });
 
     await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
-      await t.click(mentionsEntry);
+      await mentionsEntry.enter();
       await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(2);
     }, true);
   },
 );
 
-test.skip(formalName('Jump to conversation bottom when click name',
-    ['P1', 'JPT-314']),
+test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
     await h(t).resetGlipAccount(user);
-    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+    const userPlatform = await h(t).getPlatform(user);
     const user5Platform = await h(t).getPlatform(users[5]);
-    const mentionsEntry = app.homePage.messagePanel.getSelectorByAutomationId('entry-mentions');
-    const postListPage = app.homePage.messagePanel.postListPage;
-    const conversationPage = app.homePage.messagePanel.conversationPage;
-    const streamWrapper = conversationPage.getSelectorByAutomationId('jui-stream-wrapper');
-    const stream = conversationPage.getSelectorByAutomationId('jui-stream');
+    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+    const postListPage = app.homePage.messageTab.mentionPage;
+    const conversationPage = app.homePage.messageTab.conversationPage;
+
     let chat, group, team;
     let chatPost, groupPost, teamPost;
     await h(t).withLog('Given I have an extension with 3 different types of conversations and each has a post with mention', async () => {
@@ -124,44 +121,37 @@ test.skip(formalName('Jump to conversation bottom when click name',
     });
 
     await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
-      await t.click(mentionsEntry);
-      await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(3);
+      await mentionsEntry.enter();
+      await t.expect(postListPage.posts.count).eql(3);
     }, true);
 
-    async function expectStreamScrollToBottom() {
-      const scrollTop = await streamWrapper.child(0).scrollTop;
-      const streamHeight = await stream.clientHeight;
-      const streamWrapperHeight = await streamWrapper.clientHeight;
-      await t.expect(scrollTop).eql(streamHeight - streamWrapperHeight);
-    }
-
     await h(t).withLog('Then I click the conversation name in the chat\'s conversation card', async() => {
-      await t.click(postListPage.find(`[data-name="conversation-card"][data-id="${chatPost.data.id}"]`).find('.conversation-name'));
+      await postListPage.postItemById(chatPost.data.id).goToConversation();
     });
 
     await h(t).withLog('Should jump to the chat page and scroll to bottom', async () => {
-      await t.expect(conversationPage.self.filter(`[data-group-id="${chat.data.id}"]`).exists).ok();
-      await expectStreamScrollToBottom();
+      await t.expect(conversationPage.currentGroupId).eql(chat.data.id, { timeout: 2e3 });
+      await conversationPage.expectStreamScrollToBottom();
     });
 
     await h(t).withLog('Then I click the conversation name in the group\'s conversation card', async() => {
-      await t.click(mentionsEntry);
-      await t.click(postListPage.find(`[data-name="conversation-card"][data-id="${groupPost.data.id}"]`).find('.conversation-name'));
+      await mentionsEntry.enter();
+      await postListPage.postItemById(groupPost.data.id).goToConversation();
     });
 
     await h(t).withLog('Should jump to the group page and scroll to bottom', async () => {
-      await t.expect(conversationPage.self.filter(`[data-group-id="${group.data.id}"]`).exists).ok();
-      await expectStreamScrollToBottom();
+      await t.expect(conversationPage.currentGroupId).eql(group.data.id, { timeout: 2e3 });
+      await conversationPage.expectStreamScrollToBottom();
     });
 
     await h(t).withLog('Then I click the conversation name in the team\'s conversation card', async() => {
-      await t.click(mentionsEntry);
-      await t.click(postListPage.find(`[data-name="conversation-card"][data-id="${teamPost.data.id}"]`).find('.conversation-name'));
-    });
+      await mentionsEntry.enter();
+      await postListPage.postItemById(teamPost.data.id).goToConversation();
+     });
 
     await h(t).withLog('Should jump to the team page and scroll to bottom', async () => {
-      await t.expect(conversationPage.self.filter(`[data-group-id="${team.data.id}"]`).exists).ok();
-      await expectStreamScrollToBottom();
+      await t.expect(conversationPage.currentGroupId).eql(team.data.id, { timeout: 2e3 });
+      await conversationPage.expectStreamScrollToBottom();
     });
   },
 );

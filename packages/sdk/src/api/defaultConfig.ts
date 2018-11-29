@@ -26,6 +26,10 @@ const defaultConfig: ApiConfig = {
     server: '',
     apiPlatform: '',
   },
+  splitio: {
+    apiPlatform: '',
+    clientSecret: '',
+  },
 };
 
 export { defaultConfig };

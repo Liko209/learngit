@@ -42,7 +42,10 @@ class GroupDao extends BaseDao<Group> {
       });
   }
 
-  async queryAllGroups(offset: number = 0, limit: number = Infinity): Promise<Group[]> {
+  async queryAllGroups(
+    offset: number = 0,
+    limit: number = Infinity,
+  ): Promise<Group[]> {
     mainLogger.debug('queryAllGroups');
     return this.createQuery()
       .orderBy('most_recent_post_created_at', true)
@@ -62,12 +65,13 @@ class GroupDao extends BaseDao<Group> {
           // !item.is_archived &&
           typeof item.set_abbreviation === 'string' &&
           new RegExp(`${key}`, 'i').test(item.set_abbreviation),
-    )
+      )
       .toArray();
   }
 
-  async queryGroupByMemberList(members: number[]): Promise<Group[]> {
+  async queryGroupByMemberList(members: number[]): Promise<Group | null> {
     mainLogger.debug(`queryGroupByMemberList members ==> ${members}`);
+
     return this.createQuery()
       .equal('is_team', false)
       .filter(
@@ -75,8 +79,8 @@ class GroupDao extends BaseDao<Group> {
           !item.is_archived &&
           item.members &&
           item.members.sort().toString() === members.sort().toString(),
-    )
-      .toArray();
+      )
+      .first();
   }
 
   async getLatestGroup(): Promise<Group | null> {

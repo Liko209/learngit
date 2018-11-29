@@ -7,7 +7,7 @@ import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils';
 
 const JuiConversationCardAvatarArea = styled('div')`
-  padding: ${spacing(4, 3, 4, 4)};
+  padding: ${spacing(3, 3, 4, 4)};
 `;
 
 export { JuiConversationCardAvatarArea };
