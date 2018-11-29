@@ -10,7 +10,7 @@ import { JuiGroupProfileHeader } from 'jui/pattern/GroupTeamProfile';
 import { Favorite, Privacy } from '@/containers/common';
 import { ProfileHeaderViewProps } from './types';
 import { MoreHorizIcon } from './MoreHoriz';
-import { CONVERSATION_TYPES } from '@/constants';
+import { TypeDictionary } from 'sdk/utils';
 
 @observer
 class ProfileHeader extends React.Component<ProfileHeaderViewProps> {
@@ -25,7 +25,7 @@ class ProfileHeader extends React.Component<ProfileHeaderViewProps> {
     return (
       <>
         <JuiGroupProfileHeader title={t(title)} dismiss={dismiss}>
-          {type === CONVERSATION_TYPES.TEAM ? (
+          {type === TypeDictionary.TYPE_ID_TEAM ? (
             <>
               <Privacy id={groupId} disableToolTip={false} />
               <Favorite id={groupId} disableToolTip={false} isAction={false} />
