@@ -89,7 +89,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
     });
 
     await h(t).withLog(`Then New Message input show ${lessThanMax} characters`, async () => {
-        const teamNameValue = await sendNewMessageModal.newMessageInput.value;
+        const teamNameValue = await sendNewMessageModal.newMessageTextarea.value;
         await t.expect(teamNameValue.length).eql(lessThanMax);
     });
 
@@ -99,7 +99,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
     });
 
     await h(t).withLog(`Then New Message input show ${MAX} characters`, async () => {
-        const teamNameValue = await sendNewMessageModal.newMessageInput.value;
+        const teamNameValue = await sendNewMessageModal.newMessageTextarea.value;
         await t.expect(teamNameValue.length).eql(MAX);
     });
 
@@ -109,7 +109,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
     });
 
     await h(t).withLog(`Then New Message input show only ${MAX} characters`, async () => {
-        const teamNameValue = await sendNewMessageModal.newMessageInput.value;
+        const teamNameValue = await sendNewMessageModal.newMessageTextarea.value;
         await t.expect(teamNameValue.length).eql(MAX);
     });
 

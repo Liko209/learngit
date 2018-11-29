@@ -21,11 +21,11 @@ export class AddActionMenu extends BaseWebComponent {
     return this.nthEntry(0);
   }
 
-  private getEntry(id: string) {
+  private getEntryById(id: string) {
     return this.getComponent(AddActionMenuEntry, this.getSelectorByAutomationId(id));
   }
 
   get sendNewMessageEntry() {
-    return this.getEntry('sendNewMessage');
+    return this.getEntryById('sendNewMessage');
   }
 }

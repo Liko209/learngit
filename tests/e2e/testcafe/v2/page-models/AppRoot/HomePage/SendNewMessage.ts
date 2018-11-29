@@ -7,7 +7,7 @@ export class SendNewMessageModal extends BaseWebComponent {
         return this.getSelector('*[role="dialog"]');
     }
 
-    get CTself() {
+    get createMessageButton() {
         this.warnFlakySelector();
         return this.self.find('button').nth(1);
     }
@@ -28,7 +28,7 @@ export class SendNewMessageModal extends BaseWebComponent {
 
     }
 
-    get newMessageInput() {
+    get newMessageTextarea() {
         return this.getSelectorByAutomationId('newMessageTextarea').find('textarea');
     }
 
@@ -45,7 +45,7 @@ export class SendNewMessageModal extends BaseWebComponent {
     }
 
     get isDisable(): Promise<boolean> {
-        return this.CTself.hasAttribute('disabled');
+        return this.createMessageButton.hasAttribute('disabled');
     }
 
     async sendButtonShouldBeDisabled() {
@@ -58,12 +58,13 @@ export class SendNewMessageModal extends BaseWebComponent {
 
     async setMemeber(name: string) {
         await this.t.typeText(this.membersInput, `${name}`, { replace: true, paste: true });
+        // Need time to wait for serached members to display
         await this.t.wait(1000);
         await this.t.pressKey('enter');
     }
 
     async setNewMessage(message: string) {
-        await this.t.typeText(this.newMessageInput, `${message}`, { replace: true, paste: true });
+        await this.t.typeText(this.newMessageTextarea, `${message}`, { replace: true, paste: true });
     }
 
     async getNewMessage(num: number) {
