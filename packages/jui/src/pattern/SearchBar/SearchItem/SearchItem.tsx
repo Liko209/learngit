@@ -44,7 +44,7 @@ const PrivateIcon = styled(MuiLock)`
   && {
     font-size: ${spacing(4)};
     color: ${grey('500')};
-    margin: ${spacing(0, 2, 0, 1)};
+    margin: ${spacing(0, 0, 0, 1)};
   }
 `;
 
@@ -66,6 +66,7 @@ const Joined = styled.span`
   border-radius: ${shape('borderRadius', 4)};
   background: ${primary('700', 2)};
   ${typography('caption1')}
+  margin: ${spacing(0, 0, 0, 1.5)}; // icon and joined will has 2px spacing
 `;
 
 type JuiSearchItemProps = {
