@@ -6,7 +6,6 @@
 import { getEntity } from '../../../../store/utils';
 jest.mock('../../../../store/utils');
 import { ProfileBodyViewModel } from '../ProfileBody.ViewModel';
-
 const profileBodyVM = new ProfileBodyViewModel({ id: 123, dismiss( ) {} });
 
 describe('ProfileBodyViewModel', () => {

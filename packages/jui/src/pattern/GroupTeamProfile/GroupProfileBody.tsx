@@ -9,8 +9,6 @@ import { GroupBodyProps } from './types';
 import {
   spacing,
   grey,
-  height,
-  width,
   typography,
 } from '../../foundation/utils/styles';
 
@@ -20,12 +18,6 @@ const StyledBodyWrapper = styled.div`
 const StyledContent = styled.div`
   display: flex;
   margin: ${spacing(5)} ${spacing(6)} ${spacing(5)} ${spacing(6)};
-`;
-const StyledAvatar = styled.div`
-  img {
-    width: ${width(20)};
-    height: ${height(20)};
-  }
 `;
 const StyledRightColumn = styled.div`
   position: relative;
@@ -64,9 +56,7 @@ class JuiGroupProfileBody extends PureComponent<GroupBodyProps> {
     return (
       <StyledBodyWrapper>
         <StyledContent>
-          <StyledAvatar>
-            {avatar}
-          </StyledAvatar>
+          {avatar}
           <StyledRightColumn>
             <StyledName>{displayName}</StyledName>
             {description ? (

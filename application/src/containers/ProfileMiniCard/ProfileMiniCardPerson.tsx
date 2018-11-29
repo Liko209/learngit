@@ -18,7 +18,7 @@ import {
 import { ProfileMiniCardPersonHeader } from './ProfileMiniCardPersonHeader';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { Profile } from '@/containers/common/Profile';
+import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';
 import { MiniCard } from '@/containers/MiniCard';
@@ -51,7 +51,7 @@ class ProfileMiniCardPersonComponent extends Component<Props> {
         </JuiMiniCardHeader>
         <JuiMiniCardFooter>
           <JuiProfileMiniCardFooterLeft>
-            {TypeDictionary.TYPE_ID_PERSON ? null : <Profile id={id} />}
+            {TypeDictionary.TYPE_ID_PERSON ? null : <ProfileButton id={id} />}
           </JuiProfileMiniCardFooterLeft>
           <JuiProfileMiniCardFooterRight>
             <JuiIconButton

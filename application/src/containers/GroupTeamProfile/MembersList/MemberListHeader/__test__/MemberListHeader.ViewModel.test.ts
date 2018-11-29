@@ -10,8 +10,10 @@ const memberListHeaderVM = new MemberListHeaderViewModel();
 jest.mock('../../../../../store/utils');
 
 describe('MemberListHeaderViewModel', () => {
-  it('should return members length if group id provided', () => {
+  it('should computed members length if members id changed', () => {
     (getEntity as jest.Mock).mockReturnValue({ members: [123, 345, 677, 90023] });
     expect(memberListHeaderVM.counts).toBe(4);
+    (getEntity as jest.Mock).mockReturnValue({ members: [123] });
+    expect(memberListHeaderVM.counts).toBe(1);
   });
 });

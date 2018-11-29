@@ -7,11 +7,11 @@ import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ProfileButtonProps } from './types';
 
-class ProfileViewModel extends AbstractViewModel<ProfileButtonProps> {
+class ProfileButtonViewModel extends AbstractViewModel<ProfileButtonProps> {
   @computed
   get id() {
     return this.props.id;
   }
 }
 
-export { ProfileViewModel };
+export { ProfileButtonViewModel };
