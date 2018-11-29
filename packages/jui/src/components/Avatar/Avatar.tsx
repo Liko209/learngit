@@ -39,16 +39,16 @@ const fonts: { [key in Size]: keyof Theme['typography'] } = {
   small: 'caption2',
 };
 
-const StyledWrapper = styled.div`
-  height: ${height(10)};
-  width: ${width(10)};
+const StyledWrapper = styled.div<{ size?: Size }>`
+  width: ${({ size = 'medium' }) => width(sizes[size])};
+  height: ${({ size = 'medium' }) => height(sizes[size])};
   position: relative;
 `;
 
 const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
   && {
-    width: ${({ size = 'medium', theme }) => width(sizes[size])({ theme })};
-    height: ${({ size = 'medium', theme }) => height(sizes[size])({ theme })};
+    width: ${({ size = 'medium' }) => width(sizes[size])};
+    height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
     background-color: ${({ color }) =>
       color ? palette('avatar', color) : palette('common', 'white')};
@@ -63,18 +63,16 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
 `;
 
 const StyledPresenceWrapper = styled.div`
-  height: ${height(3.5)};
-  width: ${width(3.5)};
   position: absolute;
   bottom: 0;
   right: 0;
 `;
 
 const JuiAvatar = (props: JuiAvatarProps) => {
-  const { presence } = props;
+  const { presence, size } = props;
 
   return presence ? (
-    <StyledWrapper>
+    <StyledWrapper size={size}>
       <StyledAvatar {...props} />
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
     </StyledWrapper>
