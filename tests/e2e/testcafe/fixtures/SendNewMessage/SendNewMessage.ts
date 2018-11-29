@@ -31,7 +31,7 @@ test(formalName('JPT-285 Check New Message popup can be opened and closed', ['P1
         await app.homePage.addActionMenu.sendNewMessageEntry.exists;
     });
 
-    await h(t).withLog('Then I click the Send New Message button', async () => {
+    await h(t).withLog('When I click the Send New Message button', async () => {
         await app.homePage.addActionMenu.sendNewMessageEntry.enter();
         await sendNewMessageModal.ensureLoaded();
     });
@@ -73,7 +73,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
         await sendNewMessageEntry.exists;
     });
 
-    await h(t).withLog('Then I click the Send New Message button', async () => {
+    await h(t).withLog('When I click the Send New Message button', async () => {
         await sendNewMessageEntry.enter();
         await sendNewMessageModal.ensureLoaded();
     });
@@ -115,7 +115,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
 
 });
 
-test.only(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-286']),
+test(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-286']),
     async t => {
         const app = new AppRoot(t);
         const user = h(t).rcData.mainCompany.users[0];
@@ -140,7 +140,7 @@ test.only(formalName('JPT-286 New Message can be created successfully', ['P1', '
             await sendNewMessageEntry.exists;
         });
 
-        await h(t).withLog('Then I click the Send New Message button', async () => {
+        await h(t).withLog('When I click the Send New Message button', async () => {
             await sendNewMessageEntry.enter();
             await sendNewMessageModal.ensureLoaded();
         });
@@ -150,7 +150,7 @@ test.only(formalName('JPT-286 New Message can be created successfully', ['P1', '
             await h(t).waitUntilExist(sendNewMessageModal.membersInput);
         }, true);
 
-        await h(t).withLog('And I input one memeber name', async () => {
+        await h(t).withLog('When I input one memeber name', async () => {
             await sendNewMessageModal.setMemeber(user2Name);
 
         });
@@ -159,7 +159,7 @@ test.only(formalName('JPT-286 New Message can be created successfully', ['P1', '
             await sendNewMessageModal.sendButtonShouldBeEnabled();
         });
 
-        await h(t).withLog('And I input new message', async () => {
+        await h(t).withLog('When I input new message', async () => {
             await sendNewMessageModal.setNewMessage(newMessages);
         });
 
@@ -167,7 +167,7 @@ test.only(formalName('JPT-286 New Message can be created successfully', ['P1', '
             await sendNewMessageModal.clickSendButton();
         });
 
-        await h(t).withLog('Then I check the created DM conversation at the top of DM section', async () => {
+        await h(t).withLog('Then the created conversation is at the top of the section', async () => {
             await dmSection.expand();
             await t.expect(dmSection.conversations.nth(0).withText(`${user2Name}`).exists).ok();
         });
@@ -182,7 +182,7 @@ test.only(formalName('JPT-286 New Message can be created successfully', ['P1', '
             await app.homePage.messageTab.directMessagesSection.ensureLoaded();
         });
 
-        await h(t).withLog('Then check the created DM conversation at the top of DM section', async () => {
+        await h(t).withLog('Then the created conversation is at the top of the section', async () => {
             await dmSection.expand();
             await t.expect(dmSection.conversations.nth(0).withText(`${user2Name}`).exists).ok();
         });
@@ -199,7 +199,7 @@ test(formalName('JPT-293 The Send button is disabled when user create new messag
         const user = h(t).rcData.mainCompany.users[0];
         const sendNewMessageModal = app.homePage.sendNewMessageModal;
         const sendNewMessageEntry = app.homePage.addActionMenu.sendNewMessageEntry;
-        const newMessage = `new message ${uuid}`;
+        const newMessage = `new message ${uuid()}`;
 
         await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
             await h(t).directLoginWithUser(SITE_URL, user);
