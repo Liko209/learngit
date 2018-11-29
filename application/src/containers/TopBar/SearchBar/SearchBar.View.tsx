@@ -99,6 +99,11 @@ class SearchBarView extends React.Component<ViewProps, State> {
     });
   }
 
+  onBlur = () => {
+    this.props.showSearchBar();
+    this.onClose();
+  }
+
   onClear = () => {
     const { setValue } = this.props;
     setValue('');
@@ -241,7 +246,6 @@ class SearchBarView extends React.Component<ViewProps, State> {
   render() {
     const { terms, persons, groups, teams, focus } = this.state;
     const { searchValue } = this.props;
-
     return (
       <JuiSearchBar onClose={this.onClose} focus={focus}>
         <HotKeys
@@ -258,8 +262,11 @@ class SearchBarView extends React.Component<ViewProps, State> {
                   focus={focus}
                   onFocus={this.onFocus}
                   onClear={this.onClear}
+                  onBlur={this.onBlur}
                   value={searchValue}
                   onChange={this.onChange}
+                  placeholder={t('search')}
+                  showCloseBtn={!!searchValue}
                 />
                 {focus && searchValue && (
                   <JuiSearchList>

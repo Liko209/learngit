@@ -5,8 +5,6 @@
  */
 import { Person, Group, SortableModel } from 'sdk/src/models'; // eslint-disable-line
 
-type Props = {};
-
 type SearchSection<T> = {
   sortableModel: SortableModel<T>[];
   hasMore: boolean;
@@ -24,6 +22,7 @@ type ViewProps = {
   searchValue: string;
   setValue: (value: string) => void;
   currentUserId: number;
+  showSearchBar: () => void;
 };
 
 type SectionTypes = SectionType<Person> | SectionType<Group>;
@@ -34,7 +33,6 @@ type SectionType<T> = {
 } | null;
 
 export {
-  Props,
   ViewProps,
   SectionTypes,
   SectionType,
