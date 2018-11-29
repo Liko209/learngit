@@ -16,7 +16,6 @@ import { ProfileHeaderViewProps } from './types';
 import { goToConversation } from '../../../common/goToConversation';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { accessHandler } from '../AccessHandler';
-import { TypeDictionary } from 'sdk/utils';
 import { Presence } from '@/containers/Presence';
 
 @observer
@@ -42,19 +41,20 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
       awayStatus,
       jobTitle,
       isCurrentUser,
+      isGroupOrTeam,
+      isPerson,
+      isGroup,
       t,
     } = this.props;
     const { goToMessageInfo } = accessHandler(type, name);
     let avatar;
     if (
-      type === TypeDictionary.TYPE_ID_GROUP ||
-      type === TypeDictionary.TYPE_ID_TEAM
+      isGroupOrTeam
     ) {
       avatar = <GroupAvatar cid={id} size="xlarge" />;
-    } else if (type === TypeDictionary.TYPE_ID_PERSON) {
+    } else if (isPerson) {
       avatar = <Avatar uid={id} presence={this._presence(id)} size="xlarge" />;
     }
-    const isGroup = (type === TypeDictionary.TYPE_ID_GROUP);
     return (
       <JuiGroupProfileBody
         avatar={avatar}

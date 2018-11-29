@@ -21,7 +21,8 @@ const StyledContent = styled.div`
 const StyledRightColumn = styled.div`
   position: relative;
   width: 100%;
-  word-break: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
   margin-left: ${spacing(2.5)};
 `;
 const StyledName = styled.div`
