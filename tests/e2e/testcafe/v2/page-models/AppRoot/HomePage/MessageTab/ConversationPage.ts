@@ -1,4 +1,5 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
+import { ClientFunction } from 'testcafe';
 
 
 class BaseConversationPage extends BaseWebComponent {
@@ -40,6 +41,26 @@ class BaseConversationPage extends BaseWebComponent {
     const streamHeight = await this.stream.clientHeight;
     const streamWrapperHeight = await this.streamWrapper.clientHeight;
     await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+  }
+
+  async scrollToY(y: number) {
+    await this.t.eval(() => {
+      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
+    }, {
+      dependencies: { y }
+    });
+  }
+
+  async scrollToMiddle() {
+    const scrollHeight = await this.streamWrapper.clientHeight;
+    this.scrollToY(scrollHeight/2);
+  }
+
+  async scrollToBottom() {
+    await this.t.eval(() => {
+      const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
+      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
+    });
   }
 }
 
