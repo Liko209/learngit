@@ -9,7 +9,12 @@ import MuiSnackbarContent, {
 } from '@material-ui/core/SnackbarContent';
 
 import styled from '../../foundation/styled-components';
-import { spacing, palette, typography } from '../../foundation/utils/styles';
+import {
+  spacing,
+  palette,
+  typography,
+  width,
+} from '../../foundation/utils/styles';
 
 import { MessageAlignment, SnackbarContentColor } from './SnackbarContent';
 import { JuiSnackbarAction } from './SnackbarAction';
@@ -37,7 +42,7 @@ const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
     box-shadow: none;
     border-radius: ${({ fullWidth, theme }) =>
       fullWidth ? 0 : `${theme.shape.borderRadius}px`} !important;
-    max-width: ${props => (props.fullWidth ? '100%' : '640px')} !important;
+    max-width: ${props => (props.fullWidth ? '100%' : width(160))} !important;
     box-sizing: border-box;
     margin: 0 auto;
   }

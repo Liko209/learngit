@@ -14,6 +14,7 @@ import ReactDOM from 'react-dom';
 import { genDivAndDismiss } from '@/common/genDivAndDismiss';
 import ThemeProvider from '@/containers/ThemeProvider';
 import Snackbar from '@material-ui/core/Snackbar';
+import { t } from 'i18next';
 
 type NotificationPros = JuiSnackbarProps & {
   dismissible?: boolean;
@@ -34,7 +35,7 @@ function transitionDown(props: any) {
 
 function showNotification(props: ShowNotificationOptions) {
   const { container, dismiss } = genDivAndDismiss();
-  const { autoHideDuration, dismissible, ...rest } = props;
+  const { autoHideDuration, dismissible, message, ...rest } = props;
   const action = [];
 
   if (dismissible) {
@@ -49,8 +50,11 @@ function showNotification(props: ShowNotificationOptions) {
       </JuiSnackbarAction>,
     );
   }
-
-  const config = { ...rest, action };
+  let ms = message;
+  if (typeof message === 'string') {
+    ms = t(message);
+  }
+  const config = { ...rest, action, message: ms };
 
   function render(params: JuiSnackbarProps) {
     ReactDOM.render(

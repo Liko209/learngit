@@ -15,7 +15,6 @@ import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { BaseError } from 'sdk/utils';
-import { t } from 'i18next';
 import { Notification } from '../Notification';
 
 class CreateTeamViewModel extends AbstractViewModel {
@@ -122,13 +121,13 @@ class CreateTeamViewModel extends AbstractViewModel {
   createErrorHandler(error: BaseError) {
     const code = error.code;
     if (code === GroupErrorTypes.ALREADY_TAKEN) {
-      this.errorMsg = t('alreadyTaken');
+      this.errorMsg = 'alreadyTaken';
       this.nameError = true;
     } else if (code === GroupErrorTypes.INVALID_FIELD) {
-      this.emailErrorMsg = t('InvalidEmail');
+      this.emailErrorMsg = 'InvalidEmail';
       this.emailError = true;
     } else {
-      const message = t('WeWerentAbleToCreateTheTeamTryAgain');
+      const message = 'WeWerentAbleToCreateTheTeamTryAgain';
       Notification.flashToast({
         message,
         type: 'error',
