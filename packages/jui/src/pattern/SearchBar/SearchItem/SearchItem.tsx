@@ -13,11 +13,15 @@ import {
   spacing,
   palette,
   grey,
-  width,
   shape,
   typography,
   primary,
 } from '../../../foundation/utils/styles';
+
+const SearchItemActions = styled.div`
+  display: flex;
+  display: none;
+`;
 
 const SearchItemWrapper = styled(MenuItem)`
   && {
@@ -26,6 +30,9 @@ const SearchItemWrapper = styled(MenuItem)`
     &.hover,
     &:hover {
       background: ${grey('500', 1)};
+      ${SearchItemActions} {
+        display: block;
+      }
     }
     &:active {
       background: ${primary('main', 1)};
@@ -53,13 +60,8 @@ const SearchItemValueWrapper = styled.div`
   padding: ${spacing(0, 1, 0, 0)};
 `;
 
-const SearchItemActions = styled.div`
-  display: flex;
-`;
-
 const Joined = styled.span`
-  width: ${width(9)};
-  height: ${height(4)};
+  padding: ${spacing(0, 1)};
   color: ${palette('common', 'white')};
   border-radius: ${shape('borderRadius', 4)};
   background: ${primary('700', 2)};

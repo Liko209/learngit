@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
+// import { t } from 'i18next';
 import { debounce } from 'lodash';
 import {
   JuiSearchBar,
@@ -14,8 +14,8 @@ import {
   JuiSearchItem,
 } from 'jui/pattern/SearchBar';
 import { HotKeys } from 'jui/hoc/HotKeys';
-import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
-import { Avatar } from '@/containers/Avatar';
+// import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
+import { Avatar, GroupAvatar } from '@/containers/Avatar';
 import { goToConversation } from '@/common/goToConversation';
 
 import {
@@ -113,7 +113,13 @@ class SearchBarView extends React.Component<ViewProps, State> {
   }
 
   private _Avatar(uid: number) {
-    return <Avatar uid={uid} size="small" />;
+    const { isTeamOrGroup } = this.props;
+
+    return isTeamOrGroup(uid) ? (
+      <GroupAvatar cid={uid} size="small" />
+    ) : (
+      <Avatar uid={uid} size="small" />
+    );
   }
 
   private _goToConversation = async (id: number) => {
@@ -126,19 +132,19 @@ class SearchBarView extends React.Component<ViewProps, State> {
     await this._goToConversation(id);
   }
 
-  private _Actions = () => {
-    return (
-      <JuiButtonBar size="small">
-        <JuiIconButton
-          onClick={this.goToContacts()}
-          variant="plain"
-          tooltipTitle={t('contacts')}
-        >
-          contacts
-        </JuiIconButton>
-      </JuiButtonBar>
-    );
-  }
+  // private _Actions = () => {
+  //   return (
+  //     <JuiButtonBar size="small">
+  //       <JuiIconButton
+  //         onClick={this.goToContacts()}
+  //         variant="plain"
+  //         tooltipTitle={t('contacts')}
+  //       >
+  //         contacts
+  //       </JuiIconButton>
+  //     </JuiButtonBar>
+  //   );
+  // }
 
   goToContacts = () => (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -165,7 +171,7 @@ class SearchBarView extends React.Component<ViewProps, State> {
               Avatar={this._Avatar(id)}
               value={displayName}
               terms={terms}
-              Actions={this._Actions()}
+              // Actions={this._Actions()}
               isPrivate={entity.is_team && entity.privacy === 'private'}
               isJoined={
                 entity.is_team &&

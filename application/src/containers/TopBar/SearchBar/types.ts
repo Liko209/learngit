@@ -3,9 +3,7 @@
  * @Date: 2018-11-23 16:31:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { Person, Group, SortableModel } from 'sdk/src/models'; // eslint-disable-line
-
-type Props = {};
+import { Person, Group, SortableModel } from 'sdk/models';
 
 type SearchSection<T> = {
   sortableModel: SortableModel<T>[];
@@ -20,13 +18,12 @@ type SearchResult = {
 };
 
 type ViewProps = {
-  search: (key: string) => SearchResult;
+  search: (key: string) => Promise<SearchResult>;
   searchValue: string;
   setValue: (value: string) => void;
   currentUserId: number;
+  isTeamOrGroup: (id: number) => boolean;
 };
-
-type SectionTypes = SectionType<Person> | SectionType<Group>;
 
 type SectionType<T> = {
   terms: string[];
@@ -34,9 +31,7 @@ type SectionType<T> = {
 } | null;
 
 export {
-  Props,
   ViewProps,
-  SectionTypes,
   SectionType,
   SearchSection,
   SearchResult,
