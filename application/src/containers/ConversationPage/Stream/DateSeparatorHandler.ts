@@ -6,12 +6,12 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { observable, computed, transaction } from 'mobx';
-import { Post } from 'sdk/src/models';
-import { FetchDataDirection, ISortableModel } from '@/store/base';
+import { Post } from 'sdk/models';
+import { ISortableModel } from '@/store/base';
 import { DateSeparator, SeparatorType } from './types';
 import { ISeparatorHandler } from './ISeparatorHandler';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
-// TODO
 class DateSeparatorHandler implements ISeparatorHandler {
   priority: number = 1;
 
@@ -38,7 +38,7 @@ class DateSeparatorHandler implements ISeparatorHandler {
   }
 
   onAdded(
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     addedPosts: ISortableModel<Post>[],
     allPosts: ISortableModel<Post>[],
   ): void {

@@ -6,12 +6,13 @@
 import React from 'react';
 
 import * as Jui from './style';
+import { FileName } from './FileName';
 
 type JuiFileWithoutPreviewProps = {
   fileName: string;
   size: string;
-  actions: JSX.Element;
-  iconType: string | null;
+  Actions: JSX.Element;
+  iconType?: string | null;
 };
 
 const FileSecondary = (secondary: string, children: JSX.Element) => {
@@ -26,7 +27,7 @@ const FileSecondary = (secondary: string, children: JSX.Element) => {
 const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
   props: JuiFileWithoutPreviewProps,
 ) => {
-  const { size, fileName, actions, iconType } = props;
+  const { size, fileName, Actions, iconType } = props;
 
   return (
     <Jui.FileItem disableGutters={true}>
@@ -39,8 +40,8 @@ const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
           primary: 'file-item-primary',
           secondary: 'file-item-secondary',
         }}
-        primary={fileName}
-        secondary={FileSecondary(size, actions)}
+        primary={<FileName filename={fileName} />}
+        secondary={FileSecondary(size, Actions)}
       />
     </Jui.FileItem>
   );

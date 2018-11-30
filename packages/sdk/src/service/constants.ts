@@ -2,7 +2,7 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-07-09 15:32:58
  * Copyright © RingCentral. All rights reserved
-*/
+ */
 enum GROUP_QUERY_TYPE {
   ALL = 'all',
   GROUP = 'group',
@@ -12,17 +12,10 @@ enum GROUP_QUERY_TYPE {
 
 enum EVENT_TYPES {
   'REPLACE' = 'replace',
-  'PUT' = 'put',
   'UPDATE' = 'update',
   'DELETE' = 'delete',
-  'REPLACE_ALL' = 'replaceAll',
   'RELOAD' = 'reload',
   'RESET' = 'reset',
-  // LOGIN: 'login',
-  // LOGOUT: 'logout',
-  // INDEX_EXIST: 'fetchIndexDataExist',
-  // INDEX_DONE: 'fetchIndexDataDone',
-  // INDEX_ERROR: 'fetchIndexDataError',
 }
 
 enum PERMISSION_ENUM {

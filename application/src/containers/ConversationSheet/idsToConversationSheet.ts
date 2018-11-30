@@ -3,24 +3,16 @@
  * @Date: 2018-10-25 10:09:11
  * Copyright © RingCentral. All rights reserved.
  */
-import { GlipTypeUtil } from 'sdk/utils';
 import { conversationSheet } from './ConversationSheet';
 
-function idsToConversationSheet(ids: number[]) {
-  if (!ids.length) {
+function idsToConversationSheet(
+  itemTypeIds: { [key: number]: number[] },
+  postId: number,
+) {
+  if (!Object.keys(itemTypeIds).length) {
     return null;
   }
-  const sheets = {};
-
-  ids.forEach((id: number) => {
-    const typeId = GlipTypeUtil.extractTypeId(id);
-    if (sheets[typeId]) {
-      sheets[typeId].push(id);
-    } else {
-      sheets[typeId] = [id];
-    }
-  });
-  return conversationSheet.dispatch(sheets);
+  return conversationSheet.dispatch(itemTypeIds, postId);
 }
 
 export default idsToConversationSheet;

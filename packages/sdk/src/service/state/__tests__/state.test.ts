@@ -40,7 +40,6 @@ jest.mock('../../post');
 jest.mock('../../../api/glip/state');
 jest.mock('../../../service/notificationCenter', () => ({
   emitEntityUpdate: jest.fn(),
-  emitEntityPut: jest.fn(),
 }));
 describe('StateService', () => {
   const stateService: StateService = new StateService();
@@ -83,7 +82,7 @@ describe('StateService', () => {
     });
 
     it('should call dependencies', async () => {
-      await stateService.updateState(12, 3, () => ({}));
+      await stateService.updateState({ id: 12 }, 3, () => ({}));
       expect(stateDao.getFirst).toHaveBeenCalledTimes(1);
       expect(groupStateDao.get).toHaveBeenCalledTimes(1);
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
@@ -93,7 +92,7 @@ describe('StateService', () => {
       postService.getLastPostOfGroup.mockResolvedValueOnce({});
       stateDao.getFirst.mockResolvedValueOnce({});
       groupStateDao.get.mockReturnValue(null);
-      await stateService.updateState(12, 3, () => ({}));
+      await stateService.updateState({ id: 12 }, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
     });
 
@@ -101,11 +100,11 @@ describe('StateService', () => {
       postService.getLastPostOfGroup.mockResolvedValueOnce({});
       stateDao.getFirst.mockResolvedValueOnce({});
       groupStateDao.get.mockReturnValue({});
-      await stateService.updateState(12, 3, () => ({}));
+      await stateService.updateState({ id: 12 }, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
 
       groupStateDao.get.mockReturnValue({ unread_count: 0 });
-      await stateService.updateState(12, 3, () => ({}));
+      await stateService.updateState({ id: 12 }, 3, () => ({}));
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
     });
 
@@ -113,7 +112,17 @@ describe('StateService', () => {
       postService.getLastPostOfGroup.mockResolvedValueOnce({});
       stateDao.getFirst.mockResolvedValueOnce({});
       groupStateDao.get.mockReturnValue({ unread_count: 1 });
-      await stateService.updateState(12, 3, () => ({}));
+      await stateService.updateState(
+        {
+          id: 12,
+          unread_count: 0,
+          unread_mentions_count: 0,
+          read_through: 3,
+          last_read_through: 3,
+        },
+        3,
+        () => ({}),
+      );
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(1);
     });
   });
@@ -135,8 +144,10 @@ describe('StateService', () => {
     it('should call StateAPI.saveStatePartial()', async () => {
       stateService.getLastPostOfGroup.mockResolvedValue({ id: 1 });
       stateService.getMyState.mockResolvedValueOnce({ id: 1 });
+      groupStateDao.get.mockReturnValue({ id: 1, unread_count: 1 });
 
       await stateService.markAsRead(1);
+
       expect(notificationCenter.emitEntityUpdate).toBeCalled();
 
       expect(StateAPI.saveStatePartial).toHaveBeenCalledWith(1, {

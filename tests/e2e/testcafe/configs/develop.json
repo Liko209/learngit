@@ -1,14 +1,14 @@
 {
   "on_merge": {
     "fixtures": ["./fixtures/**/*.ts"],
-    "include_tags": [],
-    "exclude_tags": ["demo"],
-    "browsers": ["selenium:chrome", "selenium:firefox", "selenium:safari"]
+    "include_tags": ["P0", "P1"],
+    "exclude_tags": [],
+    "browsers": ["selenium:chrome"]
   },
   "on_push": {
     "fixtures": ["./fixtures/**/*.ts"],
-    "include_tags": [],
-    "exclude_tags": ["demo"],
+    "include_tags": ["P0"],
+    "exclude_tags": [],
     "browsers": ["selenium:chrome"]
   },
   "on_debug": {

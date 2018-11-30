@@ -6,13 +6,10 @@
 import { computed, transaction } from 'mobx';
 import { Post } from 'sdk/models';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
-import {
-  FetchDataDirection,
-  ISortableModel,
-  TUpdated,
-} from '@/store/base/fetch/types';
+import { ISortableModel, TUpdated } from '@/store/base/fetch/types';
 import { TransformHandler } from '@/store/base/TransformHandler';
 import { ISeparatorHandler } from './ISeparatorHandler';
+import { QUERY_DIRECTION } from 'sdk/dao';
 import {
   Separator,
   StreamItem,
@@ -57,15 +54,16 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
     this._separatorHandlers.push(...separatorHandlers);
   }
 
-  onAdded(direction: FetchDataDirection, addedItems: ISortableModel<Post>[]) {
+  onAdded(direction: QUERY_DIRECTION, addedItems: ISortableModel<Post>[]) {
     transaction(() => {
-      this._separatorHandlers.forEach(separatorHandler =>
+      this._separatorHandlers.forEach((separatorHandler: ISeparatorHandler) => {
         separatorHandler.onAdded(
           direction,
           addedItems,
           this.orderListStore.items,
-        ),
-      );
+          this.hasMore(direction),
+        );
+      });
     });
   }
 

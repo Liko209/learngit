@@ -25,7 +25,6 @@ import { ViewProps } from './types';
 
 interface IState {
   items: JuiListToggleItemProps[];
-  members: (number | string)[];
 }
 
 const StyledSnackbarsContent = styled(JuiSnackbarContent)`
@@ -39,7 +38,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
   constructor(props: ViewProps) {
     super(props);
     this.state = {
-      members: [],
       items: [],
     };
   }
@@ -48,12 +46,12 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     return [
       {
         type: 'isPublic',
-        text: t('Public Team'),
+        text: t('PublicTeam'),
         checked: false,
       },
       {
         type: 'canPost',
-        text: t('Members may post messages'),
+        text: t('MembersMayPostMessages'),
         checked: true,
       },
     ];
@@ -61,6 +59,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
 
   static getDerivedStateFromProps(props: any, state: any) {
     let items = [];
+
     if (props.isOpen) {
       items = CreateTeam.initItems;
     }
@@ -88,19 +87,9 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     });
   }
 
-  handleSearchContactChange = (items: any) => {
-    const members = items.map((item: any) => {
-      if (item.id) {
-        return item.id;
-      }
-      return item.email;
-    });
-    this.setState({ members });
-  }
-
   createTeam = async () => {
-    const { items, members } = this.state;
-    const { teamName, description } = this.props;
+    const { items } = this.state;
+    const { teamName, description, members } = this.props;
     const { history, create } = this.props;
     const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
     const canPost = items.filter(item => item.type === 'canPost')[0].checked;
@@ -135,6 +124,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       errorMsg,
       handleNameChange,
       handleDescChange,
+      handleSearchContactChange,
       isOffline,
       serverError,
     } = this.props;
@@ -151,7 +141,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              We are having trouble creating this team. Please try again later.
+              {t('Create Team Error')}
             </StyledSnackbarsContent>
           )
         }
@@ -169,11 +159,12 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           onChange={handleNameChange}
         />
         <ContactSearch
-          onChange={this.handleSearchContactChange}
+          onChange={handleSearchContactChange}
           label={t('Members')}
           placeholder={t('Search Contact Placeholder')}
           error={emailError}
           helperText={emailError && t(emailErrorMsg)}
+          isExcludeMe={true}
         />
         <JuiTextarea
           placeholder={t('Team Description')}
@@ -181,8 +172,9 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           onChange={handleDescChange}
         />
         <JuiListToggleButton
+          data-test-automation-id="CreateTeamToggleList"
           items={items}
-          toggleChange={this.handleSwitchChange}
+          onChange={this.handleSwitchChange}
         />
         {/* <JuiTextWithLink
           TypographyProps={{

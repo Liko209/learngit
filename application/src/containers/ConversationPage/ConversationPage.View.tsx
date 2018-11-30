@@ -1,30 +1,48 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-11-08 09:21:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { JuiConversationPage } from 'jui/pattern/ConversationPage';
-import { JuiDivider } from 'jui/components/Divider';
 import { translate } from 'react-i18next';
-import { Header } from './Header';
-import { Stream } from './Stream';
-import { MessageInput } from './MessageInput';
+import {
+  JuiConversationPage,
+  JuiStreamWrapper,
+} from 'jui/pattern/ConversationPage';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
+
+import { Header } from './Header';
+import { MessageInput } from './MessageInput';
 import { ConversationPageViewProps } from './types';
-import { TScroller } from 'jui/hoc/withScroller';
+import { action, observable } from 'mobx';
+
+import { StreamViewComponent } from './Stream/Stream.View';
+import { Stream } from './Stream';
 
 @observer
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
-  private _viewRefs: {
-    scroller?: TScroller;
-  } = {};
+  private _streamRef: React.RefObject<StreamViewComponent> = React.createRef();
 
-  scroller: React.Component & {
-    scrollToRow: (n: number) => void;
-  };
+  @observable
+  streamKey = 0;
 
   sendHandler = () => {
-    const scroller = this._viewRefs.scroller;
-    scroller && scroller.scrollToRow(-1);
+    const stream = this._streamRef.current;
+    if (!stream) {
+      return;
+    }
+    if (stream.props.hasMoreDown) {
+      return this.remountStream();
+    }
+    return stream.scrollToBottom();
+  }
+
+  @action.bound
+  remountStream() {
+    return this.streamKey++;
   }
 
   render() {
@@ -34,10 +52,17 @@ class ConversationPageViewComponent extends Component<
       <JuiConversationPage
         className="conversation-page"
         data-group-id={groupId}
+        data-test-automation-id="messagePanel"
       >
         <Header id={groupId} />
-        <JuiDivider />
-        <Stream groupId={groupId} viewRefs={this._viewRefs} />
+        <JuiStreamWrapper>
+          <Stream
+            groupId={groupId}
+            viewRef={this._streamRef}
+            key={this.streamKey}
+          />
+          <div id="jumpToFirstUnreadButtonRoot" />
+        </JuiStreamWrapper>
         {canPost ? (
           <MessageInput id={groupId} onPost={this.sendHandler} />
         ) : (

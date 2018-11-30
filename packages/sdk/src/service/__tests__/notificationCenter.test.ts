@@ -1,16 +1,4 @@
-// import { EventEmitter2 } from 'eventemitter2';
 import notificationCenter from '../notificationCenter';
-
-// jest.mock('eventemitter2', () => ({
-//   EventEmitter2: jest.fn(),
-// }));
-
-// const emitter = new EventEmitter2();
-
-it('emitEntityPut()', () => {
-  const result = notificationCenter.emitEntityPut('KEY', [{ id: 1 }]);
-  expect(result).toBeUndefined();
-});
 
 it('emitEntityUpdate()', () => {
   const result = notificationCenter.emitEntityUpdate('KEY', []);
@@ -22,17 +10,23 @@ it('emitEntityDelete()', () => {
   expect(result).toBeUndefined();
 });
 
-it('emitConfigPut()', () => {
-  const result = notificationCenter.emitConfigPut('KEY', []);
+it('emitEntityReset()', () => {
+  const result = notificationCenter.emitEntityReset('KEY');
   expect(result).toBeUndefined();
 });
 
-it('emitConfigDelete()', () => {
-  const result = notificationCenter.emitConfigDelete('KEY');
+it('emitEntityReload()', () => {
+  const result = notificationCenter.emitEntityReload('KEY');
   expect(result).toBeUndefined();
 });
 
-it('emitService()', () => {
-  const result = notificationCenter.emitService('KEY', []);
+it('emitEntityReplace()', () => {
+  const entitiesMap = new Map<number, any>();
+  const result = notificationCenter.emitEntityReplace('KEY', entitiesMap);
+  expect(result).toBeUndefined();
+});
+
+it('emitKVChange()', () => {
+  const result = notificationCenter.emitKVChange('KEY', []);
   expect(result).toBeUndefined();
 });

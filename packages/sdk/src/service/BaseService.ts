@@ -6,14 +6,18 @@
 import { transform, isFunction } from '../service/utils';
 import { BaseError, ErrorParser } from '../utils';
 import { daoManager, DeactivatedDao } from '../dao';
-import { BaseModel, Raw } from '../models'; // eslint-disable-line
+import { BaseModel, Raw, SortableModel } from '../models'; // eslint-disable-line
 import { mainLogger } from 'foundation';
 import { AbstractService } from '../framework';
-import notificationCenter from './notificationCenter';
+import notificationCenter, {
+  NotificationEntityPayload,
+} from './notificationCenter';
 import { container } from '../container';
 import dataDispatcher from '../component/DataDispatcher';
-import { SOCKET } from './eventKey';
+import { SOCKET, SERVICE } from './eventKey';
 import _ from 'lodash';
+import EntityCacheManager from './entityCacheManager';
+import { EVENT_TYPES } from './constants';
 
 const throwError = (text: string): never => {
   throw new Error(
@@ -26,6 +30,7 @@ class BaseService<
   SubModel extends BaseModel = BaseModel
 > extends AbstractService {
   static serviceName = 'BaseService';
+  private _cachedManager: EntityCacheManager<SubModel>;
 
   constructor(
     public DaoClass?: any,
@@ -39,6 +44,12 @@ class BaseService<
 
   static getInstance<T extends BaseService<any>>(): T {
     return container.get(this.name) as T;
+  }
+
+  protected async shouldSaveItemFetchedById(
+    item: Raw<SubModel>,
+  ): Promise<boolean | undefined> {
+    return true;
   }
 
   async getById(id: number): Promise<SubModel> {
@@ -66,7 +77,8 @@ class BaseService<
     let result = await this.ApiClass.getDataById(id);
     if (result && result.data) {
       const arr = [].concat(result.data).map(transform); // normal transform
-      await this.handleData(arr);
+      const shouldSaveToDB = await this.shouldSaveItemFetchedById(result.data);
+      await this.handleData(arr, shouldSaveToDB);
       result = arr.length > 0 ? arr[0] : null;
     }
     return result;
@@ -87,6 +99,179 @@ class BaseService<
 
   async getAll({ offset = 0, limit = Infinity } = {}): Promise<SubModel[]> {
     return this.getAllFromDao({ offset, limit });
+  }
+
+  isCacheEnable(): boolean {
+    return this._cachedManager ? true : false;
+  }
+
+  enableCache() {
+    if (!this._cachedManager) {
+      this._cachedManager = new EntityCacheManager<SubModel>();
+
+      notificationCenter.on(SERVICE.LOGIN, () => {
+        this.initialEntitiesCache();
+      });
+
+      notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+        this.initialEntitiesCache();
+      });
+    }
+  }
+
+  async clearCache() {
+    this.getCacheManager().clear();
+  }
+
+  getCacheManager() {
+    if (!this._cachedManager) {
+      mainLogger.error('cache manager is not initialized');
+    }
+    return this._cachedManager;
+  }
+
+  getEntityFromCache(id: number): SubModel | null {
+    return this.getCacheManager().getEntity(id);
+  }
+
+  async getMultiEntitiesFromCache(
+    ids: number[],
+    filterFunc?: (entity: SubModel) => boolean,
+  ): Promise<SubModel[]> {
+    const entities = await this.getCacheManager().getMultiEntities(ids);
+
+    if (filterFunc) {
+      const filteredResult: SubModel[] = [];
+      entities.forEach((entity: SubModel) => {
+        if (filterFunc(entity)) {
+          filteredResult.push(entity);
+        }
+      });
+      return filteredResult;
+    }
+    return entities;
+  }
+
+  async getEntitiesFromCache(
+    filterFunc?: (entity: SubModel) => boolean,
+  ): Promise<SubModel[]> {
+    return this.getCacheManager().getEntities(filterFunc);
+  }
+
+  async searchEntitiesFromCache(
+    genSortableModelFunc: (
+      entity: SubModel,
+      terms: string[],
+    ) => SortableModel<SubModel> | null,
+    searchKey?: string,
+    arrangeIds?: number[],
+    sortFunc?: (
+      entityA: SortableModel<SubModel>,
+      entityB: SortableModel<SubModel>,
+    ) => number,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<SubModel>[];
+  } | null> {
+    let terms: string[] = [];
+    let entities: SubModel[];
+    const sortableEntities: SortableModel<SubModel>[] = [];
+
+    if (searchKey) {
+      terms = this.getTermsFromSearchKey(searchKey.trim());
+    }
+
+    if (arrangeIds) {
+      entities = await this.getCacheManager().getMultiEntities(arrangeIds);
+    } else {
+      entities = await this.getEntitiesFromCache();
+    }
+
+    entities.forEach((entity: SubModel) => {
+      const result = genSortableModelFunc(entity, terms);
+      if (result) {
+        sortableEntities.push(result);
+      }
+    });
+
+    if (sortFunc) {
+      sortableEntities.sort(sortFunc);
+    }
+
+    return { terms, sortableModels: sortableEntities };
+  }
+
+  isFuzzyMatched(srcText: string, terms: string[]): boolean {
+    return srcText.length > 0
+      ? terms.reduce(
+          (prev: boolean, key: string) =>
+            prev && new RegExp(`${key}`, 'i').test(srcText),
+          true,
+        )
+      : false;
+  }
+
+  sortEntitiesByName(
+    entityA: SortableModel<SubModel>,
+    entityB: SortableModel<SubModel>,
+  ) {
+    if (entityA.sortKey < entityB.sortKey) {
+      return -1;
+    }
+    if (entityA.sortKey > entityB.sortKey) {
+      return 1;
+    }
+    return 0;
+  }
+
+  protected getTermsFromSearchKey(searchKey: string) {
+    return searchKey.split(/[\s,]+/);
+  }
+
+  protected async initialEntitiesCache() {
+    mainLogger.debug('initialEntitiesCache begin');
+    if (this._cachedManager && !this._cachedManager.isInitialized()) {
+      const eventKey: string = this._getModelEventKey();
+      if (eventKey.length > 0) {
+        notificationCenter.on(
+          eventKey,
+          (payload: NotificationEntityPayload<SubModel>) => {
+            this.onCacheEntitiesChange(payload);
+          },
+        );
+      }
+
+      const dao = daoManager.getDao(this.DaoClass);
+      const models = await dao.getAll();
+      this._cachedManager.initialize(models);
+      mainLogger.debug('initialEntitiesCache done');
+    } else {
+      mainLogger.debug(
+        'initial cache without permission or already initialized',
+      );
+    }
+  }
+
+  protected async onCacheEntitiesChange(
+    payload: NotificationEntityPayload<SubModel>,
+  ) {
+    switch (payload.type) {
+      case EVENT_TYPES.REPLACE:
+        await this._cachedManager.replace(
+          payload.body.ids,
+          payload.body.entities,
+        );
+        break;
+      case EVENT_TYPES.UPDATE:
+        await this._cachedManager.update(
+          payload.body.entities,
+          payload.body.partials,
+        );
+        break;
+      case EVENT_TYPES.DELETE:
+        await this._cachedManager.delete(payload.body.ids);
+        break;
+    }
   }
 
   protected onStarted(): void {
@@ -131,14 +316,15 @@ class BaseService<
     doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
     doPartialNotify?: (
       originalModels: SubModel[],
+      updatedModels: SubModel[],
       partialModels: Partial<Raw<SubModel>>[],
     ) => void,
   ): Promise<SubModel | BaseError> {
     const id: number = partialModel.id
       ? partialModel.id
       : partialModel._id
-        ? partialModel._id
-        : 0;
+      ? partialModel._id
+      : 0;
     let result: SubModel | BaseError;
 
     do {
@@ -214,15 +400,30 @@ class BaseService<
     await dao.bulkUpdate(transformedModels);
   }
 
-  doDefaultPartialNotify(partialModels: Partial<Raw<SubModel>>[]) {
+  private _getModelEventKey(): string {
     if (this.DaoClass) {
       const dao = daoManager.getDao(this.DaoClass);
       const modelName = dao.modelName.toUpperCase();
       const eventKey: string = `ENTITY.${modelName}`;
-      mainLogger.info(`doDefaultPartialNotify: eventKey= ${eventKey}`);
-      notificationCenter.emitEntityUpdate(eventKey, partialModels);
+      return eventKey;
+    }
+    return '';
+  }
+
+  private _doDefaultPartialNotify(
+    updatedModels: SubModel[],
+    partialModels: Partial<Raw<SubModel>>[],
+  ) {
+    const eventKey: string = this._getModelEventKey();
+    if (eventKey.length > 0) {
+      mainLogger.info(`_doDefaultPartialNotify: eventKey= ${eventKey}`);
+      notificationCenter.emitEntityUpdate(
+        eventKey,
+        updatedModels,
+        partialModels,
+      );
     } else {
-      mainLogger.warn('doDefaultPartialNotify: no dao class');
+      mainLogger.warn('_doDefaultPartialNotify: no dao class');
     }
   }
 
@@ -232,6 +433,7 @@ class BaseService<
     doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
     doPartialNotify?: (
       originalModels: SubModel[],
+      updatedModels: SubModel[],
       partialModels: Partial<Raw<SubModel>>[],
     ) => void,
   ): Promise<SubModel | BaseError> {
@@ -253,20 +455,28 @@ class BaseService<
         break;
       }
 
+      const mergedModel = this.getMergedModel(partialModel, originalModel);
+
       mainLogger.info('handlePartialUpdate: trigger partial update');
       await this._doPartialSaveAndNotify(
         originalModel,
+        mergedModel,
         partialModel,
         doPartialNotify,
       );
 
       mainLogger.info('handlePartialUpdate: trigger doUpdateModel');
-      const mergedModel = this.getMergedModel(partialModel, originalModel);
+
       const resp = await doUpdateModel(mergedModel);
       if (resp instanceof BaseError) {
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
+        const fullRollbackModel = this.getMergedModel(
+          rollbackPartialModel,
+          mergedModel,
+        );
         await this._doPartialSaveAndNotify(
           mergedModel,
+          fullRollbackModel,
           rollbackPartialModel,
           doPartialNotify,
         );
@@ -280,21 +490,24 @@ class BaseService<
 
   private async _doPartialSaveAndNotify(
     originalModel: SubModel,
-    model: Partial<Raw<SubModel>>,
+    updatedModel: SubModel,
+    partialModel: Partial<Raw<SubModel>>,
     doPartialNotify?: (
       originalModels: SubModel[],
+      updatedModels: SubModel[],
       partialModels: Partial<Raw<SubModel>>[],
     ) => void,
   ): Promise<void> {
     const originalModels: SubModel[] = [originalModel];
-    const partialModels: Partial<Raw<SubModel>>[] = [model];
+    const updatedModels: SubModel[] = [updatedModel];
+    const partialModels: Partial<Raw<SubModel>>[] = [partialModel];
 
     await this.updatePartialModel2Db(partialModels);
 
     if (doPartialNotify) {
-      doPartialNotify(originalModels, partialModels);
+      doPartialNotify(originalModels, updatedModels, partialModels);
     } else {
-      this.doDefaultPartialNotify(partialModels);
+      this._doDefaultPartialNotify(updatedModels, partialModels);
     }
   }
 }

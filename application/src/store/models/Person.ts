@@ -1,14 +1,16 @@
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
-import { Person } from 'sdk/models';
+import { Person, PhoneNumberModel } from 'sdk/models';
 import Base from './Base';
 import {
   isOnlyLetterOrNumbers,
   handleOnlyLetterOrNumbers,
   handleOneOfName,
-} from '@/utils/helper';
-import phoneNumberHelper from '@/utils/phoneNumber';
+  phoneNumberDefaultFormat,
+} from '../helper';
+
+const MainCompanyNumberType: string = 'MainCompanyNumber';
 
 export default class PersonModel extends Base<Person> {
   @observable
@@ -26,7 +28,7 @@ export default class PersonModel extends Base<Person> {
   @observable
   email: string;
   @observable
-  rcPhoneNumbers?: object[];
+  rcPhoneNumbers?: PhoneNumberModel[];
   @observable
   isPseudoUser?: boolean;
   @observable
@@ -34,9 +36,13 @@ export default class PersonModel extends Base<Person> {
   @observable
   awayStatus?: string;
   @observable
+  jobTitle?: string;
+  @observable
   pseudoUserPhoneNumber?: string;
   rcAccountId?: number;
   inviterId?: number;
+  @observable
+  displayName?: string;
   constructor(data: Person) {
     super(data);
     const {
@@ -49,10 +55,12 @@ export default class PersonModel extends Base<Person> {
       is_pseudo_user,
       glip_user_id,
       away_status,
+      job_title,
       headshot_version,
       pseudo_user_phone_number,
       rc_account_id,
       inviter_id,
+      display_name,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -60,13 +68,15 @@ export default class PersonModel extends Base<Person> {
     this.headshot = headshot;
     this.headShotVersion = headshot_version;
     this.email = email;
-    this.rcPhoneNumbers = rc_phone_numbers;
+    this.rcPhoneNumbers = rc_phone_numbers || [];
     this.isPseudoUser = is_pseudo_user;
     this.glipUserId = glip_user_id;
     this.awayStatus = away_status;
+    this.jobTitle = job_title;
     this.pseudoUserPhoneNumber = pseudo_user_phone_number;
     this.rcAccountId = rc_account_id;
     this.inviterId = inviter_id;
+    this.displayName = display_name;
   }
 
   static fromJS(data: Person) {
@@ -74,7 +84,7 @@ export default class PersonModel extends Base<Person> {
   }
 
   @computed
-  get displayName(): string {
+  get userDisplayName(): string {
     if (this.isPseudoUser) {
       let pseudoUserDisplayName = '';
       if (this.glipUserId) {
@@ -85,11 +95,12 @@ export default class PersonModel extends Base<Person> {
       }
       if (!pseudoUserDisplayName) {
         pseudoUserDisplayName = this.pseudoUserPhoneNumber
-          ? phoneNumberHelper.defaultFormat(this.pseudoUserPhoneNumber)
+          ? phoneNumberDefaultFormat(this.pseudoUserPhoneNumber)
           : this.firstName;
       }
       return pseudoUserDisplayName;
     }
+
     let dName = '';
     if (this.firstName) {
       dName += this.firstName;
@@ -130,5 +141,17 @@ export default class PersonModel extends Base<Person> {
   @computed
   get hasHeadShot() {
     return this.headShotVersion || this.headshot;
+  }
+
+  @computed
+  get phoneNumbers() {
+    // filter out company main number
+    if (this.rcPhoneNumbers && this.rcPhoneNumbers.length > 0) {
+      return this.rcPhoneNumbers.filter(
+        (phoneInfo: PhoneNumberModel) =>
+          phoneInfo.usageType !== MainCompanyNumberType,
+      );
+    }
+    return [];
   }
 }

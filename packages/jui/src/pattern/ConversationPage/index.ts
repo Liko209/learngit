@@ -5,5 +5,8 @@
  */
 export * from './ConversationPage';
 export * from './Stream';
+export * from './StreamWrapper';
 export * from './TimeNodeDivider';
+export * from './Notification';
+export * from './JumpToFirstUnreadButtonWrapper';
 export { default } from './ConversationPage';

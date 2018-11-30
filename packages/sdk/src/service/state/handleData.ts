@@ -113,14 +113,15 @@ export function getStates(state: Raw<State>[]) {
 }
 
 export default async function stateHandleData(state: Raw<State>[]) {
-  console.time('stateHandleData');
-
   if (state.length === 0) {
     return;
   }
+
+  const logLabel = `[Performance]stateHandleData ${Date.now()}`;
+  console.time(logLabel);
   const { myState, groupStates } = getStates(state);
   await operateDaoAndDoNotification(myState, groupStates);
-  console.timeEnd('stateHandleData');
+  console.timeEnd(logLabel);
 }
 
 async function operateDaoAndDoNotification(
@@ -131,20 +132,24 @@ async function operateDaoAndDoNotification(
   const groupStateDao = daoManager.getDao(GroupStateDao);
   if (myState) {
     await stateDao.bulkUpdate(myState);
-    notificationCenter.emitEntityPut(ENTITY.MY_STATE, myState);
+    notificationCenter.emitEntityUpdate(ENTITY.MY_STATE, myState, myState);
   }
   if (groupStates) {
     const stateService: StateService = StateService.getInstance();
-    console.time('calculateUMI');
+    const calculateLabel = `[Performance]calculateUMI ${Date.now()}`;
+    console.time(calculateLabel);
     const result = await stateService.calculateUMI(groupStates);
-    console.timeEnd('calculateUMI');
+    console.timeEnd(calculateLabel);
 
     if (result.length) {
-      console.time(`result.length ${result.length}`);
+      const updateLabel = `[Performance]groupState bulkUpdate(${
+        result.length
+      }) ${Date.now()}`;
+      console.time(updateLabel);
       await groupStateDao.bulkUpdate(result);
-      console.timeEnd(`result.length ${result.length}`);
+      console.timeEnd(updateLabel);
 
-      notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, result);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, result, result);
     }
   }
 }

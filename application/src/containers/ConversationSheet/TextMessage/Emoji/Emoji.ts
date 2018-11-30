@@ -4,20 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import mapEmojiOne from './mapEmojiOne';
-import mapAscii from './mapAscii';
-import mapUnicode from './mapUnicode';
+import { mapEmojiOne, mapSpecial, mapUnescape } from './map';
+import { convertMapAscii, convertMapUnicode, regExpColon, regExpAscii, regExpUnicode, regExpSpecial, regExpUnescape } from './convertKeys';
 import { CustomEmojiMap } from '../types';
-import getEscapeKeys from './getEscapeKeys';
-
-// Regular expression for colon (EmojiOne, Custom)
-const regExpColon = /:([^:]\S*?)(?=:)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
-
-// Ascii keys regular expression, only ascii character, an exact match
-const regExpAscii = new RegExp(`^${getEscapeKeys(Object.keys(mapAscii)).join('$|^')}$`, 'g');
-
-// Unicode keys regular expression
-const regExpUnicode = new RegExp(`${getEscapeKeys(Object.keys(mapUnicode)).join('|')}`, 'g');
 
 class Emoji {
   text: string;
@@ -25,6 +14,9 @@ class Emoji {
   private _customEmojiMap: CustomEmojiMap;
 
   constructor(text: string, staticHttpServer: string, customEmojiMap: CustomEmojiMap) {
+    // Note: about text value.
+    // 1. Cannot be dissected with Glipdown, otherwise it will result in an XXS attack.
+    // 2. The original value (Glipdown) cannot be changed through regular expression, otherwise the regular mismatch will be caused.
     this.text = text;
     this._staticHttpServer = staticHttpServer;
     this._customEmojiMap = customEmojiMap;
@@ -35,7 +27,7 @@ class Emoji {
   }
 
   formatEmojiOne() {
-    this.text = this.text.trim().replace(regExpColon, (match: string) => {
+    this.text = this.text.replace(regExpColon, (match: string) => {
       // console.log(match); // :smile
       const obj = mapEmojiOne[`${match}:`]; // :smile:
       if (obj instanceof Object) {
@@ -50,7 +42,7 @@ class Emoji {
   }
 
   formatCustom() {
-    this.text = this.text.trim().replace(regExpColon, (match: string) => {
+    this.text = this.text.replace(regExpColon, (match: string) => {
       // console.log(match); // :rc
       const obj = this._customEmojiMap[match.slice(1)]; // rc
       if (obj instanceof Object) {
@@ -63,17 +55,19 @@ class Emoji {
   }
 
   formatAscii() {
-    return this.formatExactMatch(regExpAscii, mapAscii);
+    return this.formatExactMatch(regExpAscii, convertMapAscii);
   }
 
   formatUnicode() {
-    return this.formatExactMatch(regExpUnicode, mapUnicode);
+    return this.formatExactMatch(regExpUnicode, convertMapUnicode);
   }
 
   formatExactMatch(regExp: RegExp, mapData: Object) {
-    this.text = this.text.trim().replace(regExp, (match: string) => {
-      // console.log(match); // <3  🇭🇰
-      const unicode = mapData[match];
+    this.text = this.text.replace(regExp, (match: string) => {
+      // console.log(match); // <3 🇭🇰 ⛹️
+      // Note: Glipdown does not convert regular expression special characters
+      const key = match.trim().replace(regExpSpecial, (match: string) => mapSpecial[match]);
+      const unicode = mapData[key];
       return this._getImg(match, unicode);
     });
     return this;
@@ -84,7 +78,9 @@ class Emoji {
   }
 
   private _getImg(match: string, unicode: string) {
-    return `<img class="${this._getClassName(match)}" alt="${this._getAlt(unicode)}" title="${match}" src="${this._getSrc(unicode)}">`;
+    // Note: Convert to raw data
+    const title = match.replace(regExpUnescape, (match: string) => mapUnescape[match]);
+    return `<img class="${this._getClassName(match)}" alt="${this._getAlt(unicode)}" title="${title}" src="${this._getSrc(unicode)}">`;
   }
 
   private _getClassName(match: string) {
@@ -104,8 +100,11 @@ class Emoji {
 
   private _getAlt(unicode: string) {
     // ES6 implementation
-    const params: number[] = unicode.split('-').map((u: string) => parseInt(`0x${u}`, 16));
-    return String.fromCodePoint(...params);
+    if (typeof unicode === 'string') {
+      const params: number[] = unicode.split('-').map((u: string) => parseInt(`0x${u}`, 16));
+      return String.fromCodePoint(...params);
+    }
+    return unicode;
     // ES5 implementation (Glip back-end implementation)
     // if (unicode.indexOf('-') > -1) {
     //   const parts = [];

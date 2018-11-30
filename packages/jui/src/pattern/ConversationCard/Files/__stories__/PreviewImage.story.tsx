@@ -20,7 +20,7 @@ storiesOf('Pattern/ConversationCard', module)
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
           ratio={2}
           fileName={fileName}
-          actions={
+          Actions={
             <JuiIconButton variant="plain" tooltipTitle="download">
               get_app
             </JuiIconButton>
@@ -29,8 +29,8 @@ storiesOf('Pattern/ConversationCard', module)
         <JuiPreviewImage
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
           fileName={fileName}
-          ratio={1}
-          actions={
+          ratio={0.5}
+          Actions={
             <JuiIconButton variant="plain" tooltipTitle="download">
               get_app
             </JuiIconButton>
@@ -39,8 +39,8 @@ storiesOf('Pattern/ConversationCard', module)
         <JuiPreviewImage
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
           fileName={fileName}
-          ratio={1}
-          actions={
+          ratio={0.5}
+          Actions={
             <JuiIconButton variant="plain" tooltipTitle="download">
               get_app
             </JuiIconButton>
@@ -49,8 +49,8 @@ storiesOf('Pattern/ConversationCard', module)
         <JuiPreviewImage
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
           fileName={fileName}
-          ratio={1}
-          actions={
+          ratio={1.2}
+          Actions={
             <JuiIconButton variant="plain" tooltipTitle="download">
               get_app
             </JuiIconButton>

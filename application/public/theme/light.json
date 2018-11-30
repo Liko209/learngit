@@ -73,7 +73,8 @@
     "borderRadius": 4,
     "border1": "1px solid rgba(255,55,55,.1)",
     "border2": "1px solid #dbdbdb",
-    "border3": "1px solid rgba(0, 0, 0, 0.36)"
+    "border3": "1px solid rgba(0, 0, 0, 0.36)",
+    "border4": "1px solid #eee"
   },
   "shadows": [
     "none",
@@ -106,14 +107,25 @@
     "unit": 4
   },
   "zIndex": {
+    "ripple": 1,
+    "elementOnRipple": 2,
     "reponsePanel": 1,
-    "reponseResizer": 2
+    "reponseResizer": 2,
+    "loading": 1000,
+    "dragging": 2000
   },
   "size": {
     "width": 4,
     "height": 4
   },
   "typography": {
+    "button": {
+      "fontSize": "0.875rem",
+      "textTransform": "capitalize",
+      "fontWeight": 500,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "color": "rgba(0, 0, 0, 0.87)"
+    },
     "title1": {
       "fontSize": "1.25rem",
       "fontWeight": 400,

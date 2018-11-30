@@ -39,13 +39,20 @@ jest.mock('../../utils', () => ({
 
 const dao = {
   // db: new noop(),
+  get: jest.fn(),
   getAll: jest.fn().mockReturnValue([{ id: 1 }]),
-  purgePostsByGroupId: jest.fn(),
+  bulkDelete: jest.fn(),
   createQuery: jest.fn(),
+  queryOldestPostByGroupId: jest.fn(),
+  queryLastPostByGroupId: jest.fn(),
 };
 beforeAll(() => {
   jest.spyOn(daoManager, 'getStorageQuotaOccupation').mockReturnValue(0.5);
   jest.spyOn(daoManager, 'getDao').mockReturnValue(dao);
+  jest.spyOn(groupService, 'getById').mockResolvedValue({
+    most_recent_post_id: 123,
+  });
+  utilsBaseHandleData.mockReturnValue([]);
 });
 
 beforeEach(() => {
@@ -113,43 +120,23 @@ describe('handleDataFromSexio', () => {
 
 describe('baseHandleData', () => {
   beforeEach(() => {});
-  it('false', async () => {
-    const ret = await baseHandleData([], false);
-    expect(ret).toEqual([]);
-    expect(transform).toHaveBeenCalledTimes(0);
-  });
-
   it('true', async () => {
-    const ret = await baseHandleData([
-      rawPostFactory.build({ _id: 1 }),
-      rawPostFactory.build({ _id: 2 }),
-    ]);
+    const ret = await baseHandleData(
+      [rawPostFactory.build({ _id: 1 }), rawPostFactory.build({ _id: 2 })],
+      true,
+    );
     expect(ret).toMatchObject([{ _id: 1 }, { _id: 2 }]);
     expect(transform).toHaveBeenCalledTimes(2);
   });
 });
 
-describe('handlePreInstedPosts', () => {
-  const postDao = {
-    bulkDelete: jest.fn(),
-  };
-
-  beforeAll(() => {
-    jest.restoreAllMocks();
-    jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-    daoManager.getDao.mockReturnValueOnce(postDao);
-  });
-
-  it('handlePreInstedPosts should be [] with invalid parameters', async () => {
+describe('handlePreInsertedPosts', () => {
+  it('handlePreInsertedPosts should be [] with invalid parameters', async () => {
     const result = await handlePreInsertPosts([]);
     expect(result.length).toBe(0);
   });
 
-  it('handlePreInstedPosts should be [] with valid parameter', async () => {
+  it('handlePreInsertedPosts should be [] with valid parameter', async () => {
     const result = await handlePreInsertPosts([
       postFactory.build({
         id: 1,
@@ -164,7 +151,7 @@ describe('handlePreInstedPosts', () => {
     expect(result.length).toBe(0);
   });
 
-  it('handlePreInstedPosts should be [1] with valid parameter', async () => {
+  it('handlePreInsertedPosts should be [1] with valid parameter', async () => {
     postService.isInPreInsert.mockResolvedValueOnce(true);
     const result = await handlePreInsertPosts([
       postFactory.build({
@@ -179,5 +166,126 @@ describe('handlePreInstedPosts', () => {
     ]);
 
     expect(result[0]).toBe(100);
+  });
+});
+
+describe('Whether to save to db detection', () => {
+  it('should not save if incoming post is not self continuous', async () => {
+    dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
+    dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
+    const posts = [
+      rawPostFactory.build({ created_at: 1 }),
+      rawPostFactory.build({ created_at: 2 }),
+      rawPostFactory.build({ created_at: 3 }),
+      rawPostFactory.build({ created_at: 4 }),
+    ];
+    await baseHandleData(posts, false);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: true,
+    });
+  });
+  it('should not save if latest of the posts is older than the oldest in db', async () => {
+    dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
+    dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
+    const posts = [rawPostFactory.build({ created_at: 1 })];
+    await baseHandleData(posts);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: true,
+    });
+  });
+
+  it('should not save if latest of the posts is older than the oldest in db', async () => {
+    dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
+    dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
+    const posts = [
+      rawPostFactory.build({ created_at: 1 }),
+      rawPostFactory.build({ created_at: 2 }),
+      rawPostFactory.build({ created_at: 3 }),
+      rawPostFactory.build({ created_at: 4 }),
+    ];
+    await baseHandleData(posts);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: true,
+    });
+  });
+
+  it('should save if latest of the posts is not older than the oldest in db', async () => {
+    dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
+    dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
+    const posts = [
+      rawPostFactory.build({ created_at: 9 }),
+      rawPostFactory.build({ created_at: 10 }),
+      rawPostFactory.build({ created_at: 11 }),
+      rawPostFactory.build({ created_at: 12 }),
+      rawPostFactory.build({ created_at: 13 }),
+    ];
+    await baseHandleData(posts);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: false,
+    });
+  });
+
+  it('should save if oldest of the posts is newer than the latest in db', async () => {
+    dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
+    dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
+    const posts = [
+      rawPostFactory.build({ created_at: 101 }),
+      rawPostFactory.build({ created_at: 102 }),
+      rawPostFactory.build({ created_at: 103 }),
+      rawPostFactory.build({ created_at: 104 }),
+      rawPostFactory.build({ created_at: 105 }),
+    ];
+    await baseHandleData(posts);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: false,
+    });
+  });
+
+  it('should save if oldest of the posts is newer than the latest in db', async () => {
+    dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
+    dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
+    const posts = [rawPostFactory.build({ created_at: 101 })];
+    await baseHandleData(posts);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: false,
+    });
+  });
+
+  it('should save if oldest of the posts is not newer than the latest in db', async () => {
+    dao.queryOldestPostByGroupId.mockReturnValue({ created_at: 10 });
+    dao.queryLastPostByGroupId.mockReturnValue({ created_at: 100 });
+    const posts = [
+      rawPostFactory.build({ created_at: 99 }),
+      rawPostFactory.build({ created_at: 100 }),
+      rawPostFactory.build({ created_at: 101 }),
+      rawPostFactory.build({ created_at: 102 }),
+      rawPostFactory.build({ created_at: 103 }),
+    ];
+    await baseHandleData(posts);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: false,
+    });
+  });
+
+  it('should save if explicitly specified', async () => {
+    const posts = [
+      rawPostFactory.build({ created_at: 99 }),
+      rawPostFactory.build({ created_at: 100 }),
+    ];
+    await baseHandleData(posts, true);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: false,
+    });
+  });
+
+  it('should not save if explicitly specified', async () => {
+    const posts = [
+      rawPostFactory.build({ created_at: 99 }),
+      rawPostFactory.build({ created_at: 100 }),
+    ];
+    await baseHandleData(posts, false);
+    expect(utilsBaseHandleData.mock.calls[0][0]).toMatchObject({
+      noSavingToDB: true,
+    });
   });
 });

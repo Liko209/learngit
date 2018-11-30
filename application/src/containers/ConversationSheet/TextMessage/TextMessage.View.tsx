@@ -14,12 +14,13 @@ class TextMessageView extends React.Component<TextMessageViewProps> {
   constructor(props: TextMessageViewProps) {
     super(props);
   }
+
   render() {
     const { html } = this.props;
     return (
       <React.Fragment>
         <JuiConversationPostText>
-          <div dangerouslySetInnerHTML={{ __html: html }} />
+          <div dangerouslySetInnerHTML={{ __html: html }} data-name="text" />
         </JuiConversationPostText>
       </React.Fragment>
     );

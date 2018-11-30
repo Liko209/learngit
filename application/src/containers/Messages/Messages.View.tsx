@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import { JuiTreeColumnResponse } from 'jui/foundation/Layout/Response/ThreeColumnResponse';
 import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
@@ -13,6 +13,8 @@ import { RightRail } from '@/containers/RightRail';
 
 import { MessagesViewProps } from './types';
 import { observer } from 'mobx-react';
+import { PostListPage } from '../PostListPage';
+import { POST_LIST_TYPE } from '../PostListPage/types';
 
 @observer
 class MessagesViewComponent extends Component<MessagesViewProps> {
@@ -21,11 +23,11 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
   }
 
   async componentDidMount() {
-    const conversationIdOfUrl = Number(this.props.match.params.id);
+    const conversationIdOfUrl = this.props.match.params.id;
     let groupId;
     if (!conversationIdOfUrl) {
-      groupId = await this.props.getLastGroupId(conversationIdOfUrl);
-      this.props.history.replace(`/messages/${groupId}`);
+      groupId = await this.props.getLastGroupId();
+      this.props.history.replace(`/messages/${groupId || ''}`);
     } else {
       groupId = conversationIdOfUrl;
     }
@@ -33,8 +35,7 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
   }
 
   componentWillReceiveProps(props: MessagesViewProps) {
-    const id = Number(props.match.params.id);
-    this.props.updateCurrentConversationId(id);
+    this.props.updateCurrentConversationId(props.match.params.id);
   }
 
   render() {
@@ -43,14 +44,30 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
     if (isLeftNavOpen) {
       leftNavWidth = 200;
     }
-
     return (
       <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
         <LeftRail />
-        {currentConversationId ? (
-          <ConversationPage groupId={currentConversationId} />
-        ) : null}
-        <RightRail />
+        <Switch>
+          <Route
+            path={`/messages/${POST_LIST_TYPE.mentions}`}
+            render={props => (
+              <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
+            )}
+          />
+          <Route
+            path={`/messages/${POST_LIST_TYPE.bookmarks}`}
+            render={props => (
+              <PostListPage {...props} type={POST_LIST_TYPE.bookmarks} />
+            )}
+          />
+          <Route
+            path="/messages/:id"
+            render={props => (
+              <ConversationPage {...props} groupId={currentConversationId} />
+            )}
+          />
+        </Switch>
+        {currentConversationId ? <RightRail /> : null}
       </JuiTreeColumnResponse>
     );
   }

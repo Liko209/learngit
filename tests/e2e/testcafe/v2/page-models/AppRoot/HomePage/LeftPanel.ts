@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
+import { Selector } from 'testcafe';
 
 class LeftNavigatorEntry extends BaseWebComponent {
 
@@ -11,6 +12,9 @@ class LeftNavigatorEntry extends BaseWebComponent {
 
     async getUmi() {
         const umi = this.self.find('.umi');
+        if (!await umi.exists) {
+            return 0;
+          }
         const text = await umi.innerText;
         if (_.isEmpty(text)) {
             return 0;
@@ -43,8 +47,8 @@ export class LeftPanel extends BaseWebComponent {
     }
 
     get messagesEntry() {
-        return this.getEntry('messages');
-    }
+      return this.getEntry('messages');
+      }
 
     get phoneEntry() {
         return this.getEntry('phone');

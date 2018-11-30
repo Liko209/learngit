@@ -45,18 +45,18 @@ export class LogHelper {
     this.writeStep(step);
   }
 
-  async withLog(step: IStep | string, cb: () => Promise<any>, takeScreenShot: boolean = false) {
+  async withLog(step: IStep | string, cb: (step?: IStep) => Promise<any>, takeScreenShot: boolean = false) {
     if (typeof step == 'string') {
       step = <IStep>{ message: step }
     }
     step.startTime = Date.now();
     try {
-      const ret = await cb()
+      const ret = await cb(step);
       step.status = Status.PASSED;
       return ret;
     } catch (error) {
       step.status = Status.FAILED;
-      takeScreenShot = true;
+      takeScreenShot = false;
       throw error;
     } finally {
       step.endTime = Date.now();

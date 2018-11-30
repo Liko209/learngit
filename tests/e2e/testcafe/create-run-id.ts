@@ -12,7 +12,7 @@ logger.level = 'info';
 
 function getReportUrl(dashboardBaseUrl: string, runId: number) {
   const url = new URL(dashboardBaseUrl);
-  return `${url.protocol}://${url.hostname}/run/${runId}`;
+  return `${url.protocol}//${url.hostname}/run/${runId}`;
 }
 
 (async () => {

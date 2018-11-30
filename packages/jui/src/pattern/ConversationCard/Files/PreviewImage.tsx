@@ -5,9 +5,10 @@
  */
 import React from 'react';
 import * as Jui from './style';
+import { FileName } from './FileName';
 
 type JuiPreviewImageProps = {
-  actions: JSX.Element;
+  Actions?: JSX.Element;
   fileName: string;
   ratio: number;
   url: string;
@@ -16,13 +17,16 @@ type JuiPreviewImageProps = {
 const JuiPreviewImage: React.SFC<JuiPreviewImageProps> = (
   props: JuiPreviewImageProps,
 ) => {
-  const { actions, ratio, fileName, url } = props;
+  const { Actions, ratio, fileName, url } = props;
+
   return (
     <Jui.ImageCard ratio={ratio}>
       <Jui.ImageMedia image={url} />
       <Jui.ImageFileInfo ratio={ratio} component="div">
-        <b>{fileName}</b>
-        <Jui.FileActionsWrapper>{actions}</Jui.FileActionsWrapper>
+        <b>
+          <FileName filename={fileName} />
+        </b>
+        <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>
       </Jui.ImageFileInfo>
     </Jui.ImageCard>
   );

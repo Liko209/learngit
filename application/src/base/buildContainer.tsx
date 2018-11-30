@@ -15,22 +15,21 @@ type BuildContainerOptions<T> = {
   View: ComponentType<any>;
   plugins?: { [key: string]: IPlugin };
 };
-type TIntrinsticProps = {
-  viewRefs?: any;
-};
+
 function buildContainer<P = {}, S = {}, SS = any>({
   View,
   ViewModel,
   plugins = {},
 }: BuildContainerOptions<P>) {
-  type Props = P & TIntrinsticProps;
+  const ObserverView = observer(View);
+
   @observer
-  class Container extends Component<Props, S, SS> {
+  class Container extends Component<P, S, SS> {
     @observable
     vm: StoreViewModel;
-    View = View;
+    View = ObserverView;
 
-    constructor(props: Props) {
+    constructor(props: P) {
       super(props);
       this.vm = new ViewModel(props);
       _(plugins).forEach((plugin: IPlugin) => {
@@ -38,14 +37,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
         this.View = plugin.wrapView(this.View);
       });
       this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
-      if (this.vm.onReceiveProps) {
-        console.warn(
-          `[${
-            ViewModel.name
-          }] You probably no longer need onReceiveProps(), use this.props to get props, it is observable`,
-        );
-      }
-      this.vm.onReceiveProps && this.vm.onReceiveProps(props);
+      this.vm.onReceiveProps && this.vm.onReceiveProps(this.props);
     }
 
     componentWillUnmount() {
@@ -75,7 +67,6 @@ function buildContainer<P = {}, S = {}, SS = any>({
         .forEach((key: string) => {
           props[key] = this.vm[key];
         });
-      props.plugins = plugins;
       return props;
     }
 

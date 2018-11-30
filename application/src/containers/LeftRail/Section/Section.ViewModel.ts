@@ -10,7 +10,7 @@ import { Group } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
-import { ISortableModel, FetchDataDirection } from '@/store/base/fetch';
+import { ISortableModel } from '@/store/base/fetch';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import {
   SectionProps,
@@ -21,6 +21,7 @@ import {
 } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
+import { QUERY_DIRECTION } from 'sdk/dao';
 const { GroupService } = service;
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
@@ -113,7 +114,7 @@ class SectionViewModel extends StoreViewModel<SectionProps>
 
   @computed
   get groupIds() {
-    return SectionGroupHandler.getInstance().groupIds(this._type);
+    return SectionGroupHandler.getInstance().getGroupIds(this._type);
   }
 
   onSortEnd = ({
@@ -141,7 +142,7 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   async fetchGroups() {
     await SectionGroupHandler.getInstance().fetchGroups(
       this._type,
-      FetchDataDirection.DOWN,
+      QUERY_DIRECTION.NEWER,
     );
   }
 

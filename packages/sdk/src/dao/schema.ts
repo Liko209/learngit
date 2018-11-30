@@ -1,7 +1,8 @@
 /*
-* @Author: Steve Chen (steve.chen@ringcentral.com)
-* @Date: 2018-02-23 23:42:59
-*/
+ * @Author: Steve Chen (steve.chen@ringcentral.com)
+ * @Date: 2018-02-23 23:42:59
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { ISchema } from 'foundation';
 
 /**
@@ -10,7 +11,11 @@ import { ISchema } from 'foundation';
  * @param {Array} indices
  * return {*}
  */
-const gen = (unique: string = 'id', indices: string[] = [], onUpgrade?: (item: any) => void) => ({
+const gen = (
+  unique: string = 'id',
+  indices: string[] = [],
+  onUpgrade?: (item: any) => void,
+) => ({
   unique,
   indices,
   onUpgrade,
@@ -23,7 +28,7 @@ const gen = (unique: string = 'id', indices: string[] = [], onUpgrade?: (item: a
 
 const schema: ISchema = {
   name: 'Glip',
-  version: 2, // Should update this number if all the old data in client db need to be deleted.
+  version: 3, // Should update this number if all the old data in client db need to be deleted.
   schema: {
     1: {
       person: gen(),
@@ -53,17 +58,7 @@ const schema: ISchema = {
     7: {
       item: gen('id', ['*group_ids']),
     },
-    // 1: {
-    //   person: gen('id', ['first_name', 'last_name', 'display_name', 'email']),
-    //   group: gen('id', ['most_recent_post_created_at']),
-    //   post: gen('id', ['group_id', 'created_at', '[group_id+created_at]']),
-    //   item: gen('id', ['*group_ids']),
-    //   company: gen('id', []),
-    //   profile: gen('id', ['favorite_group_ids']),
-    //   state: gen('id', ['person_id']),
-    //   groupState: gen('id', []),
-    //   deactivated: gen('id', [])
-    // }
+    8: { groupConfig: gen() },
   },
 };
 

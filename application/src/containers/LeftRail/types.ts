@@ -4,8 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SECTION_TYPE } from './Section/types';
+import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
 
 type LeftRailProps = {};
+type LeftRailEntry = {
+  title: string;
+  icon: string;
+  type: POST_LIST_TYPE;
+};
+
 type LeftRailFilter = {
   label: string;
   value: boolean;
@@ -15,6 +22,8 @@ type LeftRailFilter = {
 type LeftRailViewProps = {
   sections: SECTION_TYPE[];
   filters: LeftRailFilter[];
+  entries: LeftRailEntry[];
+  currentPostListType: string;
 };
 
-export { LeftRailProps, LeftRailViewProps, LeftRailFilter };
+export { LeftRailProps, LeftRailViewProps, LeftRailFilter, LeftRailEntry };

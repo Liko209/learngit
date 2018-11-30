@@ -150,7 +150,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const returnValue = {
@@ -180,7 +180,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const returnValue = {
@@ -211,7 +211,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const returnValue = {
@@ -241,7 +241,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const result = (await profileService.markMeConversationAsFav()) || {
@@ -263,7 +263,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const returnValue = {
@@ -280,7 +280,6 @@ describe('ProfileService', () => {
         true,
         false,
       );
-      console.log('result----------------', result);
       expect(result['hide_group_222233333']).toBe(true);
       expect(result['skip_close_conversation_confirmation']).toBe(true);
     });
@@ -301,7 +300,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       ProfileAPI.putDataById.mockResolvedValueOnce({
@@ -330,7 +329,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const returnValue = {
@@ -361,7 +360,7 @@ describe('ProfileService', () => {
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementation(() => {});
       jest
-        .spyOn(profileService, 'doDefaultPartialNotify')
+        .spyOn(profileService, '_doDefaultPartialNotify')
         .mockImplementation(() => {});
 
       const result = await profileService.handleGroupIncomesNewPost([
@@ -369,6 +368,30 @@ describe('ProfileService', () => {
       ]);
 
       expect(result).toEqual(profile);
+    });
+  });
+
+  describe('getMaxLeftRailGroup()', async () => {
+    it('should return default value 20 because of not profile', async () => {
+      profileService.getProfile = jest.fn().mockImplementation(() => undefined);
+      const result = await profileService.getMaxLeftRailGroup();
+      expect(result).toBe(20);
+    });
+    it('should return default value 20 because of key max_leftrail_group_tabs2 in profile', async () => {
+      profileService.getProfile = jest.fn().mockImplementation(() => {});
+      const result = await profileService.getMaxLeftRailGroup();
+      expect(result).toBe(20);
+    });
+
+    it('should return 5 because of max_leftrail_group_tabs2 in profile is 5', async () => {
+      profileService.getProfile = jest.fn().mockImplementation(() => {
+        return {
+          id: 1,
+          max_leftrail_group_tabs2: 5,
+        };
+      });
+      const result = await profileService.getMaxLeftRailGroup();
+      expect(result).toBe(5);
     });
   });
 });

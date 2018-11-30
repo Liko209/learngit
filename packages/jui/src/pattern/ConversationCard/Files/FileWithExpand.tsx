@@ -1,0 +1,58 @@
+/*
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2018-11-08 19:45:01
+ * Copyright © RingCentral. All rights reserved.
+ */
+import React from 'react';
+import Collapse from '@material-ui/core/Collapse';
+import * as Jui from './style';
+import { FileName } from './FileName';
+import styled from '../../../foundation/styled-components';
+import { spacing } from '../../../foundation/utils';
+
+type JuiFileWithExpandProps = {
+  fileName: string;
+  Actions: JSX.Element;
+  expand?: boolean;
+  children?: React.ReactNode;
+};
+
+const NameWithActions = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 90%;
+`;
+
+const FileNameWrapper = styled.div`
+  width: ${spacing(58)};
+`;
+
+const ActionWrapper = styled.div`
+  display: flex;
+`;
+
+const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
+  props: JuiFileWithExpandProps,
+) => {
+  const { fileName, Actions, children, expand } = props;
+
+  return (
+    <Jui.FileExpandItemWrapper>
+      {!expand && (
+        <Jui.FileExpandItem>
+          <Jui.FileIcon size="small" />
+          <NameWithActions>
+            <FileNameWrapper>
+              <FileName filename={fileName} />
+            </FileNameWrapper>
+            <ActionWrapper>{Actions}</ActionWrapper>
+          </NameWithActions>
+        </Jui.FileExpandItem>
+      )}
+      {children && <Collapse in={expand}>{children}</Collapse>}
+    </Jui.FileExpandItemWrapper>
+  );
+};
+
+export { JuiFileWithExpand, JuiFileWithExpandProps };

@@ -4,16 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Post } from 'sdk/src/models';
-import { FetchDataDirection, ISortableModel } from '@/store/base';
+import { ISortableModel } from '@/store/base';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 interface IPostHandler {
   /**
    * On post added
    */
   onAdded(
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     addedItems: ISortableModel<Post>[],
     allItems: ISortableModel<Post>[],
+    hasMore: boolean,
   ): void;
   /**
    * On post deleted

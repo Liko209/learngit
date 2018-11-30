@@ -177,6 +177,20 @@ export class GlipSdk {
     });
   }
 
+  async getTeamsIds() {
+    const teams = (await this.getTeams()).data.teams;
+    if (!teams) return [];
+    const ids = teams.filter(team => team['_id']).map(team => team['_id']);
+    return ids;
+  } 
+  
+  async getInitRcTeamId() {
+    const teams = (await this.getTeams()).data.teams;
+    if (!teams) return [];
+    const ids = teams.filter(team => team["set_abbreviation"] =="Team RingCentral Inc.").map(team => team['_id']);
+    return ids;
+  }
+
   createTeam(name: string, members: string[]) {
     const uri = 'api/team';
     const data = {
@@ -224,6 +238,17 @@ export class GlipSdk {
     return this.axiosClient.post(uri, data, {
       headers: this.headers,
     });
+  }
+
+  updatePost(postId, data) {
+    const uri = `api/post/${postId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  deletePost(postId, groupId) {
+    return this.updatePost(postId, { _id: postId, deactivated: true, group_id: groupId, });
   }
 
 
@@ -284,7 +309,9 @@ export class GlipSdk {
     }
     const params = _.assign(
       {},
-      ...groupIds.map(id => ({
+      ...groupIds.filter(id => {
+        return readThrough[id]; 
+      }).map(id => ({
         [`unread_count:${id}`]: 0,
         [`unread_mentions_count:${id}`]: 0,
         [`unread_deactivated_count:${id}`]: 0,
@@ -306,6 +333,8 @@ export class GlipSdk {
         );
       })
       .map((key: string) => key.replace(/[^\d]+/, ''));
+    const initRcTeamId = await this.getInitRcTeamId();
+    unreadGroups.push(...initRcTeamId);
     return unreadGroups;
   }
 

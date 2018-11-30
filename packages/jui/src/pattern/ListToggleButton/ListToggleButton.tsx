@@ -52,11 +52,11 @@ type JuiListToggleItemProps = {
 
 type Props = {
   items: JuiListToggleItemProps[];
-  toggleChange(item: JuiListToggleItemProps, checked: boolean): void;
-  ListProps?: ListProps;
-  ListItemProps?: ListItemProps;
-  ListItemSecondaryActionProps?: ListItemSecondaryActionProps;
-  ListItemTextProps?: ListItemTextProps;
+  onChange(item: JuiListToggleItemProps, checked: boolean): void;
+  listProps?: ListProps;
+  listItemProps?: ListItemProps;
+  listItemSecondaryActionProps?: ListItemSecondaryActionProps;
+  listItemTextProps?: ListItemTextProps;
 };
 
 class JuiListToggleButton extends Component<Props, {}> {
@@ -65,16 +65,16 @@ class JuiListToggleButton extends Component<Props, {}> {
     event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
   ) {
-    this.props.toggleChange(item, checked);
+    this.props.onChange(item, checked);
   }
 
   render() {
-    const { items } = this.props;
+    const { items, onChange, listProps, listItemProps, ...rest } = this.props;
 
     return (
-      <List dense={true}>
+      <List dense={true} {...listProps} {...rest}>
         {items.map(toggleItem => (
-          <ListItem key={toggleItem.text} dense={true}>
+          <ListItem {...listItemProps} key={toggleItem.text} dense={true}>
             <ListItemText>{toggleItem.text}</ListItemText>
             <ListItemSecondaryAction>
               <JuiToggleButton

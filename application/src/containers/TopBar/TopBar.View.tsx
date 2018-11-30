@@ -17,12 +17,14 @@ import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { BackNForward } from '@/containers/BackNForward';
-import { isElectron } from '@/utils';
+import { SearchBar } from './SearchBar';
+import isElectron from '@/common/isElectron';
 
 type TopBarProps = WithNamespaces & {
   signOut: Function;
   updateLeftNavState: (event: React.MouseEvent<HTMLElement>) => void;
   updateCreateTeamDialogState: Function;
+  updateNewMessageDialogState: Function;
   brandName: string;
   currentUserId: number;
   handleAboutPage: (event: React.MouseEvent<HTMLElement>) => void;
@@ -117,6 +119,7 @@ class TopBar extends React.Component<TopBarProps> {
       <JuiIconButton
         size="medium"
         tooltipTitle={t('Plus')}
+        data-test-automation-id="addMenuBtn"
         {...addMenuTriggerProps}
       >
         add_circle
@@ -125,7 +128,11 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   private _AddMenu(menuProps: MenuListCompositionProps) {
-    const { updateCreateTeamDialogState, t } = this.props;
+    const {
+      updateCreateTeamDialogState,
+      updateNewMessageDialogState,
+      t,
+    } = this.props;
 
     return (
       <JuiAddMenu
@@ -133,6 +140,11 @@ class TopBar extends React.Component<TopBarProps> {
           {
             label: t('CreateTeam'),
             onClick: updateCreateTeamDialogState,
+          },
+          {
+            label: t('SendNewMessage'),
+            onClick: updateNewMessageDialogState,
+            automationId: 'sendNewMessage',
           },
         ]}
         MenuExpandTrigger={this._AddMenuTrigger}
@@ -148,6 +160,7 @@ class TopBar extends React.Component<TopBarProps> {
           MainMenu={this._MainMenu}
           AvatarMenu={this._AvatarMenu}
           AddMenu={this._AddMenu}
+          SearchBar={SearchBar}
           Logo={this._Logo}
           BackNForward={isElectron ? BackNForward : undefined}
         />

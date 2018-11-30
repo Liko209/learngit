@@ -6,7 +6,7 @@
 import config from './config';
 import { Sdk, LogControlManager, service } from 'sdk';
 import storeManager from '@/store';
-import history from '@/utils/history';
+import history from '@/history';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { parse } from 'qs';
 
@@ -53,9 +53,13 @@ export async function initAll() {
   const updateAccountInfoForGlobalStore = () => {
     const accountService: service.AccountService = AccountService.getInstance();
     const currentUserId = accountService.getCurrentUserId() as number;
-    globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
+    if (currentUserId) {
+      globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
+    }
     const currentCompanyId = accountService.getCurrentCompanyId() as number;
-    globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+    if (currentCompanyId) {
+      globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+    }
   };
 
   notificationCenter.on(SERVICE.LOGIN, () => {

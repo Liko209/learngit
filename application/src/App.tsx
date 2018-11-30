@@ -16,20 +16,34 @@ import UnifiedLogin from '@/containers/UnifiedLogin';
 import VersionInfo from '@/containers/VersionInfo';
 import { autorun, computed } from 'mobx';
 import { observer } from 'mobx-react';
-import history from '@/utils/history';
+import history from '@/history';
 import _ from 'lodash';
 import storeManager from '@/store';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import { GLOBAL_KEYS } from './store/constants';
 import { analytics } from '@/Analytics';
 import { AboutView } from './containers/About';
+import { upgradeHandler } from '@/upgrade';
 
 @observer
 class App extends React.Component {
   private appName = process.env.APP_NAME || '';
+  private _unListenHistory: VoidFunction;
+
+  componentWillUnmount() {
+    this._unListenHistory && this._unListenHistory();
+  }
+
   componentDidMount() {
+    this._unListenHistory = history.listen((location: any, action: string) => {
+      if (action === 'PUSH') {
+        upgradeHandler.upgradeIfAvailable();
+      }
+    });
+
     analytics.bootstrap();
   }
+
   get dialogInfo() {
     const globalStore = storeManager.getGlobalStore();
     const isShowDialog = globalStore.get(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG);
@@ -42,11 +56,7 @@ class App extends React.Component {
     };
   }
   public render() {
-    const {
-      isShowDialog,
-      appVersion,
-      electronVersion,
-    } = this.dialogInfo;
+    const { isShowDialog, appVersion, electronVersion } = this.dialogInfo;
     return (
       <ThemeProvider>
         {this.isLoading ? (

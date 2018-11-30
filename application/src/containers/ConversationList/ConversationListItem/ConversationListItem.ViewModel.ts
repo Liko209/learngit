@@ -1,9 +1,9 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2018-09-19 14:19:09
-* Copyright © RingCentral. All rights reserved.
-*/
-import { computed } from 'mobx';
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-09-19 14:19:09
+ * Copyright © RingCentral. All rights reserved.
+ */
+import { computed, untracked } from 'mobx';
 import { ConversationListItemViewProps } from './types';
 import { service } from 'sdk';
 const { GroupService } = service;
@@ -12,19 +12,19 @@ import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
-import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
-import history from '@/utils/history';
+import history from '@/history';
 import { CONVERSATION_TYPES } from '@/constants';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
 > {
-  unreadCount: number;
+  firstUnreadCount: number;
   important?: boolean | undefined;
   groupService: service.GroupService = GroupService.getInstance();
   draft?: string | undefined;
   sendFailurePostIds: number[];
+  hasShowedUmi: boolean = false;
 
   @computed
   get groupId() {
@@ -83,7 +83,16 @@ class ConversationListItemViewModel extends StoreViewModel<
   @computed
   get umiHint() {
     const groupState = getEntity(ENTITY_NAME.GROUP_STATE, this.groupId);
-    return !!groupState.unreadCount;
+    let hint = !!groupState.unreadCount;
+    untracked(() => {
+      const currentGroupId = getGlobalValue(
+        GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+      );
+      if (this.groupId === currentGroupId) {
+        hint = getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI);
+      }
+    });
+    return hint;
   }
 
   @computed

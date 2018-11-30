@@ -17,15 +17,14 @@ import handleData, {
 } from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
-import { DEFAULT_CONVERSATION_LIST_LIMITS } from '../../account/constants';
 import { transform } from '../../utils';
+import { EVENT_TYPES } from '../..';
 
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
 jest.mock('../../state');
-jest.mock('../../notificationCenter');
 jest.mock('../../../dao', () => {
   const dao = {
     get: jest.fn().mockReturnValue(1),
@@ -107,9 +106,6 @@ beforeEach(() => {
   AccountService.getInstance = jest.fn().mockReturnValue(accountService);
   PersonService.getInstance = jest.fn().mockReturnValue(personService);
   ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-  accountService.getConversationListLimits.mockReturnValue(
-    DEFAULT_CONVERSATION_LIST_LIMITS,
-  );
 });
 
 describe('handleData()', () => {
@@ -144,11 +140,11 @@ describe('handleData()', () => {
     expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
     // expect operateGroupDao function
     expect(daoManager.getDao(GroupDao).bulkDelete).toHaveBeenCalledTimes(1);
-    expect(daoManager.getDao(GroupDao).bulkPut).toHaveBeenCalledTimes(2);
+    expect(daoManager.getDao(GroupDao).bulkPut).toHaveBeenCalledTimes(1);
     // expect doNotification function
     expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     // expect checkIncompleteGroupsMembers function
     // const personService: PersonService = PersonService.getInstance();
     // expect(personService.getPersonsByIds).toHaveBeenCalled();
@@ -174,7 +170,7 @@ describe('handlePartialData', () => {
     expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
 
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     expect(GroupAPI.requestGroupById).not.toHaveBeenCalled();
   });
 
@@ -215,9 +211,9 @@ describe('handleFavoriteGroupsChanged()', () => {
       oldProfile as Profile,
       newProfile as Profile,
     );
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(2);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(2);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(2);
-    expect(notificationCenter.emitEntityReplaceAll).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityReplace).toHaveBeenCalledTimes(1);
     jest.clearAllMocks();
   });
   it('params are arry empty', async () => {
@@ -235,7 +231,7 @@ describe('handleFavoriteGroupsChanged()', () => {
       favorite_post_ids: 0,
     };
     await handleFavoriteGroupsChanged(oldProfile, newProfile);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(0);
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(0);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(0);
   });
 });
@@ -244,13 +240,78 @@ describe('handleGroupMostRecentPostChanged()', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  it('should update group recent modified time', async () => {
-    daoManager.getDao(GroupDao).get.mockReturnValue([{ is_team: true }]);
-    const posts: Post[] = toArrayOf<Post>([
-      { id: 1, modified_at: 1, created_at: 1 },
-    ]);
-    await handleGroupMostRecentPostChanged(posts);
-    expect(notificationCenter.emitEntityPut).toHaveBeenCalledTimes(0);
+
+  const post = {
+    id: 1,
+    modified_at: 100,
+    created_at: 100,
+    is_team: true,
+    group_id: 2,
+  };
+  const map = new Map();
+  map.set(1, post);
+  it('EVENT_TYPES is not PUT, do not update', async () => {
+    await handleGroupMostRecentPostChanged({
+      type: EVENT_TYPES.UPDATE,
+      body: {
+        entities: map,
+      },
+    });
+    expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
+  });
+  it('EVENT_TYPES is PUT, do update', async () => {
+    daoManager
+      .getDao(GroupDao)
+      .doInTransaction.mockImplementation(async (fn: Function) => {
+        await fn();
+      });
+    daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
+      id: 2,
+      most_recent_post_created_at: 99,
+    });
+    await handleGroupMostRecentPostChanged({
+      type: EVENT_TYPES.UPDATE,
+      body: {
+        entities: map,
+      },
+    });
+    expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+  });
+  it('group has not most_recent_post_created_at should update group recent modified time', async () => {
+    daoManager
+      .getDao(GroupDao)
+      .doInTransaction.mockImplementation(async (fn: Function) => {
+        await fn();
+      });
+    daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
+      id: 2,
+    });
+    await handleGroupMostRecentPostChanged({
+      type: EVENT_TYPES.UPDATE,
+      body: {
+        entities: map,
+      },
+    });
+    expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+  });
+
+  it('group has most_recent_post_created_at and greater then post created_at should not update group recent modified time', async () => {
+    daoManager
+      .getDao(GroupDao)
+      .doInTransaction.mockImplementation(async (fn: Function) => {
+        await fn();
+      });
+    daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
+      id: 2,
+      most_recent_post_created_at: 101,
+    });
+    await handleGroupMostRecentPostChanged({
+      type: EVENT_TYPES.UPDATE,
+      body: {
+        entities: map,
+      },
+    });
+    expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -261,7 +322,7 @@ describe('filterGroups()', () => {
 
     const groups = generateFakeGroups(TOTAL_GROUPS);
 
-    const filteredGroups = await filterGroups(groups, LIMIT);
+    const filteredGroups = await filterGroups(groups, LIMIT, false);
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
@@ -271,7 +332,7 @@ describe('filterGroups()', () => {
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(TOTAL_GROUPS);
   });
 
@@ -281,21 +342,22 @@ describe('filterGroups()', () => {
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(TOTAL_GROUPS);
   });
 
-  it("should return groups until unread group when unread group's position > limit", async () => {
+  it("should return groups with unread group which unread group's position > limit", async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
+
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_count: 1 },
     ]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(4);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
+    expect(filteredGroups.length).toBe(3);
   });
 
   it("should return all groups when unread group's position = limit", async () => {
@@ -307,7 +369,7 @@ describe('filterGroups()', () => {
       { id: 2, unread_count: 1 },
     ]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
@@ -320,20 +382,21 @@ describe('filterGroups()', () => {
       { id: 2, unread_count: 1 },
     ]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
-  it('should return groups until unread @mention', async () => {
+  it('should return groups with unread @mention', async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
 
     const teams = generateFakeGroups(TOTAL_GROUPS);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_mentions_count: 1 },
+      { id: 3, unread_mentions_count: 1 },
     ]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(4);
   });
 
@@ -347,7 +410,7 @@ describe('filterGroups()', () => {
       { id: 3, unread_count: 1 },
     ]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(3);
   });
 
@@ -358,8 +421,47 @@ describe('filterGroups()', () => {
     const teams = generateFakeGroups(TOTAL_GROUPS, { hasPost: false });
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(LIMIT);
+  });
+  it('should not return group without post', async () => {
+    const LIMIT = 2;
+    const TOTAL_GROUPS = 5;
+
+    const teams = generateFakeGroups(TOTAL_GROUPS, { hasPost: false });
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
+
+    const filteredGroups = await filterGroups(teams, LIMIT, true);
+    expect(filteredGroups.length).toBe(0);
+  });
+
+  it('should return group without post but is created by current user', async () => {
+    const LIMIT = 2;
+    const TOTAL_GROUPS = 5;
+
+    const group = [
+      {
+        id: 1,
+        creator_id: 2,
+        created_at: 9999,
+      },
+      {
+        id: 2,
+        creator_id: 3,
+        created_at: 10000,
+      },
+      {
+        id: 3,
+        creator_id: 3,
+        most_recent_post_created_at: 22,
+      },
+    ];
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
+    accountService.getCurrentUserId.mockReturnValue(2);
+    const filteredGroups = await filterGroups(group, 2, true);
+    const ids = filteredGroups.map(item => item.id);
+    expect(ids.indexOf(3) !== -1).toBe(true);
+    expect(ids.length).toBe(2);
   });
 });
 

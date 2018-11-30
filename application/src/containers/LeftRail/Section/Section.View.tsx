@@ -11,7 +11,7 @@ import {
   JuiConversationListSection,
 } from 'jui/pattern/ConversationList';
 import { ConversationListItem } from '@/containers/ConversationList/ConversationListItem';
-import { toTitleCase } from '@/utils';
+import { toTitleCase } from '@/utils/string';
 import { SectionViewProps } from './types';
 import { Umi } from '../../Umi';
 import { JuiDivider } from 'jui/components/Divider';
@@ -32,6 +32,7 @@ class SectionViewComponent extends React.Component<Props> {
           className="conversation-list-section-collapse"
           distance={5}
           lockAxis="y"
+          helperClass="dragging"
           onSortEnd={onSortEnd}
         >
           {this.props.groupIds.map((id: number, index: number) => (

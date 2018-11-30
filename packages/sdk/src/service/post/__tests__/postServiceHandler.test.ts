@@ -65,14 +65,16 @@ describe('PostServiceHandler', () => {
       text: 'text',
       group_id: 123,
       from_group_id: 123,
+      item_id: undefined,
       item_ids: hasItemIds ? [1, 2] : [],
       post_ids: [],
       at_mention_item_ids: [],
-      at_mention_non_item_ids: [1],
+      at_mention_non_item_ids: [],
       links: [],
       company_id: 123,
       deactivated: false,
       status: 2,
+      activity_data: {},
     });
     beforeEach(() => {
       Date.now = jest.fn().mockReturnValue(123123);
@@ -132,7 +134,6 @@ describe('PostServiceHandler', () => {
         text: 'new text',
         new_version: 'versionHash',
         is_new: false,
-        at_mention_non_item_ids: [1],
       });
     });
 

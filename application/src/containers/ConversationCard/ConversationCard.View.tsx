@@ -4,59 +4,117 @@ import {
   JuiConversationCard,
   JuiConversationCardHeader,
   JuiConversationCardBody,
-  // JuiConversationCardFooter,
 } from 'jui/pattern/ConversationCard';
 import { Avatar } from '@/containers/Avatar';
 import { ConversationCardViewProps } from '@/containers/ConversationCard/types';
+import { ProgressActions } from '@/containers/ConversationCard/ProgressActions';
 import { Actions } from '@/containers/ConversationCard/Actions';
+import { Footer } from '@/containers/ConversationCard/Footer';
 import { idsToConversationSheet } from '@/containers/ConversationSheet';
 import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
-// import { idToPostItemComponent } from '@/containers/PostItems';
+import { From } from './From';
+import { MiniCard } from '@/containers/MiniCard';
+import history from '@/history';
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { Activity } from './Activity';
+
 @observer
 export class ConversationCard extends React.Component<
-ConversationCardViewProps
+  ConversationCardViewProps
 > {
-  constructor(props: ConversationCardViewProps) {
-    super(props);
+  state = {
+    isHover: false,
+  };
+  handleMouseEnter = () => {
+    this.setState({
+      isHover: true,
+    });
   }
+
+  handleMouseLeave = () => {
+    this.setState({
+      isHover: false,
+    });
+  }
+
+  onClickAvatar = (event: React.MouseEvent) => {
+    const { creator } = this.props;
+    event.stopPropagation();
+    MiniCard.showProfile({
+      anchor: event.target as HTMLElement,
+      id: creator.id,
+    });
+  }
+
+  jumpToPost = () => {
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, this.props.id);
+    history.push(`/messages/${this.props.groupId}`);
+  }
+
   render() {
     const {
       id,
-      post,
       creator,
       name,
       createTime,
       customStatus,
-      itemIds,
+      showProgressActions,
+      itemTypeIds,
+      mode,
+      post,
+      hideText,
+      highlight,
+      onAnimationStart,
+      onHighlightAnimationStart,
+      ...rest
     } = this.props;
+    const { isHover } = this.state;
     if (!creator.id) {
       return null;
     }
-
-    const avatar = <Avatar uid={creator.id} size="medium" />;
-
+    const avatar = (
+      <Avatar
+        uid={creator.id}
+        size="medium"
+        data-name="avatar"
+        onClick={this.onClickAvatar}
+      />
+    );
+    const activity = <Activity id={id} />;
+    const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
+    const onClickHandler = mode ? this.jumpToPost : undefined;
     return (
       <React.Fragment>
         <JuiConversationCard
           data-name="conversation-card"
-          data-id={post.id}
+          data-id={id}
           Avatar={avatar}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+          mode={mode}
+          highlight={highlight}
+          onClick={onClickHandler}
+          onAnimationStart={onAnimationStart}
+          {...rest}
         >
           <JuiConversationCardHeader
-            data-name="conversation-card-header"
+            data-name="header"
             name={name}
             time={createTime}
             status={customStatus}
+            from={from}
+            notification={activity}
           >
-            <Actions id={id} />
+            {showProgressActions ? <ProgressActions id={id} /> : null}
+            {!showProgressActions && isHover ? <Actions id={id} /> : null}
           </JuiConversationCardHeader>
-          <JuiConversationCardBody>
-            <TextMessage id={post.id} />
-            {idsToConversationSheet(itemIds)}
+          <JuiConversationCardBody data-name="body">
+            {hideText ? null : <TextMessage id={id} />}
+            {idsToConversationSheet(itemTypeIds, id)}
           </JuiConversationCardBody>
-          {/*<JuiConversationCardFooter>*/}
-          {/*/!* todo: footer *!/*/}
-          {/*</JuiConversationCardFooter>*/}
+          <Footer id={id} />
         </JuiConversationCard>
       </React.Fragment>
     );

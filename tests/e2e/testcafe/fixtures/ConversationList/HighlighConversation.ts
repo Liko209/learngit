@@ -26,7 +26,7 @@ test(
     const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
     const glipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
     const directMessageSection =
-      app.homePage.messagePanel.directMessagesSection;
+      app.homePage.messageTab.directMessagesSection;
 
     let group;
     await h(t).withLog(
@@ -53,7 +53,7 @@ test(
       `Given the group chat ${group.data.id} is last group selected`,
       async () => {
         await glipSdk.partialUpdateState(user.rcId, {
-          last_group_id: group.data.id,
+          last_group_id: +group.data.id,
         });
       },
     );
@@ -87,7 +87,7 @@ test(
       async () => {
         await t
           .expect(
-            app.homePage.messagePanel.conversationPage.self.withAttribute(
+            app.homePage.messageTab.conversationPage.self.withAttribute(
               'data-group-id',
               group.data.id,
             ).exists,

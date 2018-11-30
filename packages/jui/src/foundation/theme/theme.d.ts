@@ -65,16 +65,16 @@ type Palette = {
     dark: string;
   };
   avatar: {
-    'tomato': string,
-    'blueberry': string,
-    'oasis': string,
-    'gold': string,
-    'sage': string,
-    'ash': string,
-    'persimmon': string,
-    'pear': string,
-    'brass': string,
-    'lake': string,
+    tomato: string;
+    blueberry: string;
+    oasis: string;
+    gold: string;
+    sage: string;
+    ash: string;
+    persimmon: string;
+    pear: string;
+    brass: string;
+    lake: string;
   };
 } & MuiPalette;
 
@@ -91,8 +91,12 @@ type Theme = {
     unit: number;
   };
   zIndex: {
+    ripple: number;
+    elementOnRipple: number;
     reponsePanel: number;
     reponseResizer: number;
+    loading: number;
+    dragging: number;
   };
   size: {
     width: number;
@@ -144,7 +148,7 @@ type Theme = {
     heading1: {
       lineHeight: string;
       maxHeight: string;
-    }
+    };
   };
   boxShadow: {
     val1: string;

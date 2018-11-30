@@ -1,15 +1,10 @@
-import { SortableListStore } from './SortableListStore';
-
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-10-08 10:13:46
  * Copyright © RingCentral. All rights reserved.
  */
-
-export enum FetchDataDirection {
-  UP = 0,
-  DOWN,
-}
+import { SortableListStore } from './SortableListStore';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 export interface ISortableModel<T = any> {
   id: number;
@@ -37,12 +32,12 @@ export type TDelta = {
   updated?: TUpdated;
   added: ISortableModel[];
   deleted: number[];
-  direction: FetchDataDirection;
+  direction: QUERY_DIRECTION;
 };
 
 export type TChangeHandler<T> = (
   keys: number[],
-  entities?: Map<number, T | TReplacedData<T>>,
+  entities?: Map<number, T>,
   transformFunc?: Function,
   store?: SortableListStore,
 ) => {

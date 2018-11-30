@@ -11,11 +11,13 @@ type RegisterOptions = {
     ids: number[];
   }>;
   type: any;
+  breakIn: boolean;
 };
 
 type PayLoad = {
   type: any;
   props: {
+    postId: number;
     ids: number[];
   };
 };
@@ -39,22 +41,28 @@ class ConversationSheet {
 
     const chain = this._compose(this._middleware)(this._defaultHandler);
 
-    this.dispatch = (sheets: { [type: string]: number[] }) => {
+    this.dispatch = (sheets: { [type: string]: number[] }, postId: number) => {
       if (!Object.keys(sheets).length) {
         return null;
       }
-      return modules.map((module: RegisterOptions) => {
-        const { type } = module;
+      const renderSheets: any[] = [];
+      modules.every((module: RegisterOptions) => {
+        const { type, breakIn } = module;
         if (!sheets[type]) {
-          return () => null;
+          return true;
         }
-        return chain({
-          type,
-          props: {
-            ids: sheets[type],
-          },
-        });
+        renderSheets.push(
+          chain({
+            type,
+            props: {
+              postId,
+              ids: sheets[type],
+            },
+          }),
+        );
+        return !breakIn;
       });
+      return renderSheets;
     };
   }
 

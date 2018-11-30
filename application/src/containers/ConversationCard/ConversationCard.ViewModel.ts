@@ -1,8 +1,8 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2018-10-08 16:29:08
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-10-08 16:29:08
+ * Copyright © RingCentral. All rights reserved.
+ */
 import moment from 'moment';
 import PostModel from '@/store/models/Post';
 import {
@@ -15,6 +15,8 @@ import { Post, Person } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';
+import { POST_STATUS } from 'sdk/service';
+
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   implements ConversationCardViewProps {
   @computed
@@ -23,8 +25,19 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   }
 
   @computed
+  get highlight() {
+    return !!this.props.highlight;
+  }
+
+  @computed
   get post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
+  }
+
+  @computed
+  get hideText() {
+    const { activityData } = this.post;
+    return activityData && (activityData.object_id || activityData.key);
   }
 
   @computed
@@ -39,13 +52,26 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   }
 
   @computed
-  get itemIds() {
-    return this.post.itemIds || [];
+  get groupId() {
+    return this.post.groupId;
+  }
+
+  @computed
+  get itemTypeIds() {
+    return this.post.itemTypeIds;
+  }
+
+  @computed
+  get showProgressActions() {
+    return (
+      this.post.status === POST_STATUS.INPROGRESS ||
+      this.post.status === POST_STATUS.FAIL
+    );
   }
 
   @computed
   get name() {
-    return this.creator.displayName;
+    return this.creator.userDisplayName;
   }
 
   @computed
@@ -56,6 +82,12 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   @computed
   get createTime() {
     return moment(this.post.createdAt).format('hh:mm A');
+  }
+
+  onAnimationStart = (evt: React.AnimationEvent) => {
+    if (this.highlight && this.props.onHighlightAnimationStart) {
+      this.props.onHighlightAnimationStart(evt);
+    }
   }
 }
 

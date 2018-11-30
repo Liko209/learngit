@@ -32,12 +32,14 @@ const ENV_OPTS = {
     RC_PLATFORM_BASE_URL: 'https://api-xmnup.lab.nordigy.ru',
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
-    JUPITER_APP_KEY: 'FVKGRbLRTxGxPempqg5f9g',
+    JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
   },
 }[SITE_ENV];
 
 ENV_OPTS.RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
 ENV_OPTS.RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
+
+const TMPFILE_PATH = process.env.TMPFILE_PATH || '/tmp';
 
 const configLoader = new ConfigLoader(
   (process.env.BRANCH || '').toLocaleLowerCase(),
@@ -47,7 +49,7 @@ const configLoader = new ConfigLoader(
 
 configLoader.load();
 
-const REPORTER = process.env.REPORTER || 'allure-lazy';
+const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
@@ -86,6 +88,7 @@ const RUN_NAME = process.env.RUN_NAME || uuid();
 
 export {
   APP_ROOT,
+  TMPFILE_PATH,
   CONFIGS_ROOT,
   DEBUG_MODE,
   SITE_ENV,

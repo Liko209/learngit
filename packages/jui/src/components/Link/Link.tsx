@@ -7,13 +7,18 @@ import * as React from 'react';
 import tinycolor from 'tinycolor2';
 import styled from '../../foundation/styled-components';
 import { typography, palette, grey } from '../../foundation/utils/styles';
+import { Theme } from '../../foundation/theme/theme';
+
+type Size = 'small' | 'medium' | 'large';
 
 type JuiLinkProps = {
-  size?: 'small' | 'medium' | 'large';
+  size?: Size;
   disabled?: boolean;
   color?: 'primary' | 'secondary';
   Component?: React.ComponentType | keyof JSX.IntrinsicElements;
-  href?: string;
+  handleOnClick?:
+    | ((event: React.MouseEvent<HTMLSpanElement>) => void)
+    | undefined;
 };
 
 const StyledComponent = styled<JuiLinkProps, 'span'>('span')`
@@ -33,15 +38,19 @@ const StyledComponent = styled<JuiLinkProps, 'span'>('span')`
 `;
 
 type ILink = React.ComponentType<JuiLinkProps>;
-const JuiLink: ILink = ({ Component, ...rest }: JuiLinkProps) => {
+const JuiLink: ILink = ({
+  Component,
+  handleOnClick,
+  ...rest
+}: JuiLinkProps) => {
   return Component ? (
     <Component {...rest}>
-      <StyledComponent {...rest} />
+      <StyledComponent onClick={handleOnClick} {...rest} />
     </Component>
   ) : null;
 };
 
-const typographySizeMap = {
+const typographySizeMap: { [key in Size]: keyof Theme['typography'] } = {
   small: 'caption',
   medium: 'body2',
   large: 'headline',

@@ -6,7 +6,7 @@
 import React from 'react';
 import keycode from 'keycode';
 import Downshift from 'downshift';
-import differenceBy from 'lodash/differenceBy';
+import { differenceBy } from 'lodash';
 import styled from '../../foundation/styled-components';
 import { JuiPaper } from '../../components/Paper';
 import { JuiTextField } from '../../components/Forms/TextField';
@@ -36,6 +36,7 @@ export type Props = {
   ContactSearchItem?: React.ComponentType<any>;
   error?: boolean;
   helperText?: string;
+  automationId?: string;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -114,9 +115,12 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       !inputValue.length &&
       keycode(event) === 'backspace'
     ) {
-      this.setState({
-        selectedItem: selectedItem.slice(0, selectedItem.length - 1),
-      });
+      this.setState(
+        { selectedItem: selectedItem.slice(0, selectedItem.length - 1) },
+        () => {
+          this.props.onChange(this.state.selectedItem);
+        },
+      );
     }
   }
 
@@ -133,8 +137,8 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
         {...itemProps}
         isHighlighted={isHighlighted}
         suggestion={suggestion}
-        key={index}
         uid={suggestion.id}
+        key={suggestion.id}
       />
     ) : null;
   }
@@ -209,10 +213,15 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       ContactSearchItem,
       error,
       helperText,
+      automationId,
     } = this.props;
     const { inputValue, selectedItem, shrink, showPlaceholder } = this.state;
 
-    const filterSuggestions = differenceBy(suggestions, selectedItem, 'id');
+    let filterSuggestions = suggestions;
+
+    if (selectedItem && selectedItem.length) {
+      filterSuggestions = differenceBy(suggestions, selectedItem, 'id');
+    }
 
     return (
       <Downshift
@@ -286,7 +295,10 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                   } as any), // Downshift startAdornment is not include in getInputProps interface
                 })}
                 {isOpen && filterSuggestions.length ? (
-                  <StyledPaper square={true}>
+                  <StyledPaper
+                    square={true}
+                    data-test-automation-id={automationId}
+                  >
                     {filterSuggestions.map((suggestion: TSuggestion, index) =>
                       this.renderSuggestion({
                         ContactSearchItem,

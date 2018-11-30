@@ -23,8 +23,9 @@ describe('GroupDao', () => {
   });
 
   describe('Queries', () => {
+    let groups: Group[];
     beforeAll(async () => {
-      const groups = [
+      groups = [
         groupFactory.build({
           id: 1,
           members: [123, 234],
@@ -35,26 +36,33 @@ describe('GroupDao', () => {
         }),
         groupFactory.build({
           id: 2,
-          members: [123, 234],
-          is_team: false,
-          set_abbreviation: 'Nello Huang',
+          members: [124, 234],
+          is_team: true,
+          set_abbreviation: 'XMN Teaching',
           deactivated: false,
           most_recent_post_created_at: 2,
         }),
         groupFactory.build({
           id: 3,
-          members: [124, 234],
+          members: [123, 234],
           is_team: true,
-          set_abbreviation: 'XMN Teaching',
-          deactivated: false,
+          set_abbreviation: 'Ringcentral2',
           most_recent_post_created_at: 3,
         }),
         groupFactory.build({
           id: 4,
           members: [123, 234],
-          is_team: true,
-          set_abbreviation: 'Ringcentral2',
+          is_team: false,
+          set_abbreviation: '123, 234',
+          deactivated: false,
           most_recent_post_created_at: 4,
+        }),
+        groupFactory.build({
+          id: 5,
+          members: [123, 234, 345],
+          is_team: false,
+          set_abbreviation: '123, 234, 345',
+          most_recent_post_created_at: 5,
         }),
       ];
       await groupDao.clear();
@@ -63,17 +71,17 @@ describe('GroupDao', () => {
 
     it('query groups', async () => {
       const teams = await groupDao.queryGroups(0, Infinity, false);
-      expect(teams.map((t: Group) => t.id)).toEqual([2]);
+      expect(teams.map((t: Group) => t.id)).toEqual([4, 5]);
     });
 
     it('query teams', async () => {
       const teams = await groupDao.queryGroups(0, Infinity, true);
-      expect(teams.map((t: Group) => t.id).sort()).toEqual([4, 3, 1].sort());
+      expect(teams.map((t: Group) => t.id).sort()).toEqual([3, 2, 1].sort());
     });
 
     it('query teams and excludes items by id', async () => {
-      const teams = await groupDao.queryGroups(0, Infinity, true, [1, 4]);
-      expect(teams.map((t: Group) => t.id)).toEqual([3]);
+      const teams = await groupDao.queryGroups(0, Infinity, true, [1]);
+      expect(teams.map((t: Group) => t.id)).toEqual([2, 3]);
     });
 
     it('query favorite groups', async () => {
@@ -83,36 +91,32 @@ describe('GroupDao', () => {
 
     it('query all groups', async () => {
       const teams = await groupDao.queryAllGroups();
-      expect(teams.map((t: Group) => t.id)).toEqual([4, 3, 2, 1]);
+      expect(teams.map((t: Group) => t.id)).toEqual([5, 4, 3, 2, 1]);
     });
 
     it('query all groups with offset and limit', async () => {
       const teams = await groupDao.queryAllGroups(1, 2);
-      expect(teams.map((t: Group) => t.id)).toEqual([3, 2]);
+      expect(teams.map((t: Group) => t.id)).toEqual([4, 3]);
     });
 
     it('search team', async () => {
-      const teams1 = await groupDao.searchTeamByKey('central');
-      expect(teams1).toHaveLength(2);
+      const teams = await groupDao.searchTeamByKey('central');
+      expect(teams).toHaveLength(2);
+    });
 
-      const team2 = await groupDao.queryGroupByMemberList([234, 123]);
-      expect(team2).toHaveLength(1);
+    it('query group by member id set', async () => {
+      await expect(
+        groupDao.queryGroupByMemberList([123, 234]),
+      ).resolves.toMatchObject(groups[3]);
     });
 
     it('get latest group', async () => {
-      await expect(groupDao.getLatestGroup()).resolves.toMatchObject({
-        id: 2,
-        members: [123, 234],
-        is_team: false,
-        set_abbreviation: 'Nello Huang',
-        deactivated: false,
-        most_recent_post_created_at: 2,
-      });
+      await expect(groupDao.getLatestGroup()).resolves.toMatchObject(groups[4]);
     });
 
     it('get last n group', async () => {
       const result = await groupDao.getLastNGroups(3);
-      expect(result.map((t: Group) => t.id)).toEqual([4, 3, 2]);
+      expect(result.map((t: Group) => t.id)).toEqual([5, 4, 3]);
     });
   });
 });

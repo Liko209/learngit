@@ -4,57 +4,85 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import { Post } from 'sdk/src/models';
-import { FetchDataDirection, ISortableModel } from '@/store/base';
+import { ISortableModel } from '@/store/base';
 import { ISeparatorHandler } from './ISeparatorHandler';
 import { NewSeparator, SeparatorType } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 class NewMessageSeparatorHandler implements ISeparatorHandler {
   priority = 2;
   private _readThrough?: number;
   private _disabled?: boolean;
   private _userId?: number;
+
+  @observable
   private _hasNewMessagesSeparator = false;
 
   @observable
   separatorMap = new Map<number, NewSeparator>();
+
+  @observable
+  firstUnreadPostId?: number;
+
+  @computed
+  get hasUnread() {
+    return this._hasNewMessagesSeparator;
+  }
 
   constructor() {
     this._userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 
   onAdded(
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     addedPosts: ISortableModel<Post>[],
     allPosts: ISortableModel<Post>[],
+    hasMore: boolean,
   ): void {
     if (this._disabled) return;
 
-    // If no readThrough, it means no unread posts.
-    if (!this._readThrough) return;
-    const readThrough = this._readThrough;
-
-    // If the `New Messages` separator already existed,
-    // it will never be modified when receive new posts
+    /*
+     * (1)
+     * If the `New Messages` separator already existed,
+     * it will never be modified when receive new posts
+     */
     if (this.separatorMap.size > 0) return;
 
-    // Check if there is a new messages separator
+    /*
+     * (2)
+     * Check if there is a `New Messages` separator
+     */
     const lastPost = _.last(allPosts);
+    const readThrough = this._readThrough || 0;
+    const hasSeparator = !!lastPost && lastPost.id > readThrough;
+    this._hasNewMessagesSeparator = hasSeparator;
+
+    // No separator
+    if (!this._hasNewMessagesSeparator) return;
+
+    /*
+     * (3)
+     * Check if separator in other page
+     */
     const firstPost = _.first(allPosts);
-    if (lastPost && lastPost.id > this._readThrough) {
-      this._hasNewMessagesSeparator = true;
+    const allPostsAreUnread = readThrough === 0;
+    const hasSeparatorInOtherPage =
+      (allPostsAreUnread && hasMore) ||
+      (!allPostsAreUnread && firstPost && firstPost.id > readThrough);
 
-      if (firstPost && firstPost.id > this._readThrough) {
-        // Separator in other page, we'll handle it later
-        return;
-      }
-    }
+    // Separator in other page, we'll handle it next
+    // time when onAdded() was called
+    if (hasSeparatorInOtherPage) return;
 
+    /*
+     * (4)
+     * Separator in current page, let's find it now.
+     */
     const firstUnreadPost = this._findNextOthersPost(allPosts, readThrough);
-
     if (firstUnreadPost) {
       this._setSeparator(firstUnreadPost.id);
     }
@@ -69,7 +97,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
 
     this.separatorMap.delete(deletedPostWithSeparator);
 
-    // Find first post next to the deleted post that has separator
+    // Find first post next to the deleted post
     const postNext = _.find(
       allPosts,
       ({ id }) => id > deletedPostWithSeparator,
@@ -123,6 +151,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     const separator: NewSeparator = {
       type: SeparatorType.NEW_MSG,
     };
+    this.firstUnreadPostId = postId;
     this.separatorMap.set(postId, separator);
   }
 }

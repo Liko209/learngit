@@ -4,15 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed, when } from 'mobx';
-import { Quill } from 'quill';
+import { action, observable, computed } from 'mobx';
 import { debounce, Cancelable } from 'lodash';
-import { AbstractViewModel } from '@/base';
 import { MessageInputProps, MessageInputViewProps } from './types';
 import { GroupService, PostService } from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
+import PersonModel from '@/store/models/Person';
+import StoreViewModel from '@/store/ViewModel';
+import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
+import { isAtMentions } from './handler';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -25,14 +27,15 @@ type DebounceFunction = (
   params: { id: number; draft: string },
 ) => Promise<boolean>;
 
-class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
+class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
-  private _isInit: boolean;
-  @observable
-  _id: number;
+  @computed
+  get id() {
+    return this.props.id;
+  }
   @observable
   draft: string = '';
   @observable
@@ -53,29 +56,21 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
       500,
     );
     this._sendPost = this._sendPost.bind(this);
-    this._isInit = false;
-  }
-
-  onReceiveProps({ id }: MessageInputProps) {
-    if (id !== this._id) {
-      this._init(id);
-    }
-  }
-
-  @action
-  private _init(id: number) {
-    this._id = id;
-    if (this._isInit) {
-      this.draft = this._initDraft;
-    } else {
-      this._isInit = true;
-      when(
-        () => !!this._initDraft,
-        () => {
+    this.reaction(
+      () => this._initDraft,
+      (initDraft: string) => {
+        if (this.draft !== initDraft) {
           this.draft = this._initDraft;
-        },
-      );
-    }
+        }
+      },
+    );
+    this.reaction(
+      () => this.id,
+      () => {
+        this.error = '';
+      },
+    );
+    this.draft = this._initDraft;
   }
 
   @action
@@ -86,7 +81,7 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
     // DB sync 500 ms later
     this._debounceUpdateGroupDraft({
       draft,
-      id: this._id,
+      id: this.id,
     });
   }
 
@@ -95,14 +90,34 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
     this.draft &&
       this._groupService.updateGroupDraft({
         draft: this.draft,
-        id: this._id,
+        id: this.id,
       });
   }
 
   @computed
+  get _group() {
+    return getEntity(ENTITY_NAME.GROUP, this.id) as GroupModel;
+  }
+
+  @computed
   get _initDraft() {
-    const groupEntity = getEntity(ENTITY_NAME.GROUP, this._id) as GroupModel;
-    return groupEntity.draft || '';
+    return this._group.draft || '';
+  }
+
+  @computed
+  get _membersExcludeMe() {
+    return this._group.membersExcludeMe;
+  }
+
+  @computed
+  get _users() {
+    return this._membersExcludeMe.map((id: number) => {
+      const { userDisplayName } = getEntity(ENTITY_NAME.PERSON, id) as PersonModel;
+      return {
+        id,
+        display: userDisplayName,
+      };
+    });
   }
 
   @action
@@ -110,7 +125,7 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
     return function () {
       // @ts-ignore
       const quill = (this as any).quill;
-      const content = quill.getText() as string;
+      const content = markdownFromDelta(quill.getContents());
       if (content.length > CONTENT_LENGTH) {
         vm.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -121,20 +136,22 @@ class MessageInputViewModel extends AbstractViewModel<MessageInputProps>
       }
       vm.error = '';
       if (content.trim()) {
-        vm._sendPost(quill);
+        vm._sendPost(content);
         const onPostHandler = vm.props.onPost;
         onPostHandler && onPostHandler();
       }
     };
   }
 
-  private async _sendPost(quill: Quill) {
-    const text = quill.getText();
+  private async _sendPost(content: string) {
     this.changeDraft('');
+    const atMentions = isAtMentions(content);
     try {
       await this._postService.sendPost({
-        text,
-        groupId: this._id,
+        atMentions,
+        text: content,
+        groupId: this.id,
+        users: atMentions ? this._users : undefined,
       });
     } catch (e) {
       // You do not need to handle the error because the message will display a resend

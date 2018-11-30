@@ -30,6 +30,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   description: string = '';
   @observable
   serverError: boolean = false;
+  @observable
+  members: (number | string)[] = [];
 
   @computed
   get isOpen() {
@@ -73,6 +75,18 @@ class CreateTeamViewModel extends AbstractViewModel {
     this.description = e.target.value;
   }
 
+  handleSearchContactChange = (items: any) => {
+    const members = items.map((item: any) => {
+      if (item.id) {
+        return item.id;
+      }
+      return item.email;
+    });
+    this.emailErrorMsg = '';
+    this.emailError = false;
+    this.members = members;
+  }
+
   @action
   create = async (
     name: string,
@@ -96,21 +110,21 @@ class CreateTeamViewModel extends AbstractViewModel {
           canPost,
         },
       );
-      console.log(result);
     } catch (err) {
-      this.serverError = true;
+      const { data } = err;
+      if (data) {
+        throw this.createErrorHandler(data as IResponseError);
+      } else {
+        this.serverError = true;
+      }
       return;
-    }
-
-    if (result && (result as IResponseError).error) {
-      throw this.createErrorHandler(result as IResponseError);
     }
 
     return result;
   }
 
-  createErrorHandler(result: IResponseError) {
-    const code = result.error.code;
+  createErrorHandler(error: IResponseError) {
+    const code = error.error.code;
     if (code === 'already_taken') {
       this.errorMsg = 'already taken';
       this.nameError = true;

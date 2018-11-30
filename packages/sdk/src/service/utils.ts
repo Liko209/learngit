@@ -6,18 +6,22 @@
 import notificationCenter from './notificationCenter';
 import { daoManager, DeactivatedDao } from '../dao';
 import { mainLogger } from 'foundation';
+import _ from 'lodash';
 
-const isObject = (value: any) => Object.prototype.toString.call(value) === '[object Object]';
+const isObject = (value: any) =>
+  Object.prototype.toString.call(value) === '[object Object]';
 // const isArray = value => Object.prototype.toString.call(value) === '[object Array]';
 // const isBoolean = value => Object.prototype.toString.call(value) === '[object Boolean]';
 // const isNumber = value => Object.prototype.toString.call(value) === '[object Number]';
 // const isString = value => Object.prototype.toString.call(value) === '[object String]';
 // const isNull = value => Object.prototype.toString.call(value) === '[object Null]';
 // const isUndefined = value => Object.prototype.toString.call(value) === '[object Undefined]';
-const isFunction = (value: any) => Object.prototype.toString.call(value) === '[object Function]';
+const isFunction = (value: any) =>
+  Object.prototype.toString.call(value) === '[object Function]';
 // const isRegExp = value => Object.prototype.toString.call(value) === '[object RegExp]';
-const isIEOrEdge = typeof navigator !== 'undefined'
-  && /(MSIE|Trident|Edge)/.test(navigator.userAgent);
+const isIEOrEdge =
+  typeof navigator !== 'undefined' &&
+  /(MSIE|Trident|Edge)/.test(navigator.userAgent);
 
 const transform = <T extends { id: number }>(item: any): T => {
   if (isObject(item)) {
@@ -34,28 +38,36 @@ const transformAll = <T extends { id: number }>(target: any): T[] => {
   return arr.map(obj => transform(obj));
 };
 
-const baseHandleData = async ({ data, dao, eventKey }: any) => {
+const baseHandleData = async ({ data, dao, eventKey, noSavingToDB }: any) => {
   // ** NOTICE **
   // this function only fliter normal data and deactivated data and emit event for them
   // if you have more complex logic, should not use it
   // TODO if is a team, should consider archived case, do delete emit, but no delete it in dao
   try {
     // delete deactivatedData
-    const deactivatedData = data.filter((item: any) => item.deactivated === true);
+    const deactivatedData = data.filter(
+      (item: any) => item.deactivated === true,
+    );
     if (deactivatedData.length > 0) {
       await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
       await dao.bulkDelete(deactivatedData.map((item: any) => item.id));
-      notificationCenter.emitEntityDelete(eventKey, deactivatedData);
+
+      const deactivatedDataIds = _.map(deactivatedData, (data: any) => {
+        return data.id;
+      });
+      notificationCenter.emitEntityDelete(eventKey, deactivatedDataIds);
     }
     // put normalData
     const normalData = data.filter((item: any) => item.deactivated !== true);
     if (normalData.length > 0) {
-      await dao.bulkPut(normalData);
-      notificationCenter.emitEntityPut(eventKey, normalData);
+      if (!noSavingToDB) {
+        await dao.bulkPut(normalData);
+      }
+      notificationCenter.emitEntityUpdate(eventKey, normalData);
     }
     return normalData;
   } catch (e) {
-    mainLogger.error(e);
+    mainLogger.error(`baseHandleData: ${JSON.stringify(e)}`);
     return [];
   }
 };

@@ -4,10 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { POST_STATUS, PRESENCE } from './service';
+import { TeamPermission } from './service/group';
 
 export type BaseModel = {
   id: number;
   _id?: number;
+};
+
+export type SortableModel<T> = {
+  id: number;
+  displayName: string;
+  sortKey: string;
+  entity: T;
 };
 
 export type ExtendedBaseModel = BaseModel & {
@@ -52,16 +60,7 @@ export type GroupCommon = {
   converted_to_team?: object;
   converted_from_group?: object;
   pinned_post_ids?: number[];
-  permissions?: {
-    admin?: {
-      uids: number[];
-      level?: number;
-    };
-    user?: {
-      uids: number[];
-      level?: number;
-    };
-  };
+  permissions?: TeamPermission;
   post_cursor?: number;
   drp_post_cursor?: number;
   trigger_ids?: number[];
@@ -88,6 +87,7 @@ export type Profile = ExtendedBaseModel & {
   favorite_post_ids: number[];
   skip_close_conversation_confirmation?: boolean;
   me_tab: boolean;
+  max_leftrail_group_tabs2?: number;
 };
 
 export type Company = ExtendedBaseModel & {
@@ -97,6 +97,13 @@ export type Company = ExtendedBaseModel & {
   custom_emoji: { [index: string]: { data: string } };
   _delta?: { add_keys?: object; remove_keys: object };
   rc_account_id?: number;
+  webmail_person_id?: number;
+};
+
+export type PhoneNumberModel = {
+  id: number;
+  phoneNumber: string;
+  usageType: string;
 };
 
 export type Person = ExtendedBaseModel & {
@@ -117,11 +124,12 @@ export type Person = ExtendedBaseModel & {
   headshot_version?: string;
   locked?: boolean;
   inviter_id?: number;
-  rc_phone_numbers?: object[];
+  rc_phone_numbers?: PhoneNumberModel[];
   sanitized_rc_extension?: object;
   is_pseudo_user?: boolean;
   glip_user_id?: number;
   away_status?: string;
+  job_title?: string;
   pseudo_user_phone_number?: string;
   rc_account_id?: number;
 };
@@ -139,6 +147,7 @@ export type State = ExtendedBaseModel & {
   current_plugin: string;
   trigger_ids?: number[];
   last_group_id: number;
+  at_mentioning_post_ids?: number[];
 };
 
 export type MyState = State;
@@ -157,21 +166,33 @@ export type GroupState = {
   trigger_ids?: number[];
 };
 
+export type GroupConfig = {
+  id: number; // group id
+  has_more_older?: boolean;
+  has_more_newer?: boolean;
+  is_newest_saved?: boolean;
+};
+
 export type Post = ExtendedBaseModel & {
   group_id: number;
   company_id: number;
   text: string;
+  item_id?: number;
   item_ids: number[];
   post_ids: number[]; // quoted posts
   likes?: number[];
   activity?: string;
+  activity_data?: object;
   at_mention_item_ids?: number[];
   at_mention_non_item_ids?: number[];
   new_version?: number;
   from_group_id?: number;
+  item_data?: object;
   links?: object[];
   items?: object[];
   status?: POST_STATUS;
+  source?: string;
+  parent_id?: number;
 };
 
 export type ItemVersionPage = {
@@ -200,11 +221,12 @@ export type Item = ExtendedBaseModel & {
   type_id: number; // file type
   type: string; // file type .jpg .exe
   versions: ItemVersions[];
-  summary: string;
-  title: string;
+  summary?: string;
+  title?: string;
   url: string;
-  image: string;
+  image?: string;
   deactivated: boolean;
+  do_not_render?: boolean;
 };
 
 export type FileItem = Item & {
