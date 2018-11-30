@@ -11,8 +11,7 @@ const StyledTitle = styled.div`
   color: ${grey('900')};
   height: ${height(12.5)};
   padding: 0 0 0 ${spacing(6)};
-  display: flex;
-  align-items: center;
+  line-height: ${height(12.5)};
   &.shadow {
     box-shadow: ${({ theme }) => theme.boxShadow.val3};
     z-index: ${({ theme }) => theme.zIndex.memberListHeader};
