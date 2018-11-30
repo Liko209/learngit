@@ -16,7 +16,7 @@ import ProfileService from '../../profile';
 import GroupService from '../../group';
 import _ from 'lodash';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
-
+import notificationCenter from '../../notificationCenter';
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
 jest.mock('../../serviceManager');
@@ -28,6 +28,8 @@ jest.mock('../handleData');
 jest.mock('../../profile');
 jest.mock('../../group');
 // PostAPI.getDataById = jest.fn();
+jest.mock('../../notificationCenter');
+
 PostAPI.putDataById = jest.fn();
 PostAPI.requestByIds = jest.fn();
 
@@ -913,6 +915,24 @@ describe('PostService', () => {
       expect(result).toEqual({ id: 44 });
 
       expect(postService.sendPost).not.toBeCalled();
+    });
+  });
+
+  describe('deletePostsByGroupIds', async () => {
+    it('should delete posts from group', async () => {
+      postDao.queryPostsByGroupId.mockResolvedValue([
+        { id: 1, group_id: 3 },
+        { id: 2, group_id: 3 },
+      ]);
+      await postService.deletePostsByGroupIds([3], false);
+      expect(postDao.bulkDelete).toHaveBeenCalledWith([1, 2]);
+      expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(0);
+    });
+    it('should do notify', async () => {
+      postDao.queryPostsByGroupId.mockResolvedValue([{ id: 1, group_id: 3 }]);
+      await postService.deletePostsByGroupIds([3], true);
+      expect(postDao.bulkDelete).toHaveBeenCalledWith([1]);
+      expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
     });
   });
 });

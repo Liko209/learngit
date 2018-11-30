@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao } from '../../dao';
+import { daoManager, ConfigDao, GroupConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
 import {
@@ -53,6 +53,8 @@ import { compareName } from '../../utils/helper';
 import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
 import { isValidEmailAddress } from '../../utils/regexUtils';
 import { Api } from '../../api';
+import notificationCenter from '../notificationCenter';
+import PostService from '../post';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -62,9 +64,9 @@ type CreateTeamOptions = {
   canPin?: boolean;
 };
 
-const handleTeamsRemovedFrom = (ids: number[]) => {
+const handleTeamsRemovedFrom = async (ids: number[]) => {
   const service: GroupService = GroupService.getInstance();
-  console.log(service);
+  service.removeTeamsByIds(ids, true);
 };
 
 class GroupService extends BaseService<Group> {
@@ -733,6 +735,18 @@ class GroupService extends BaseService<Group> {
 
   private _getTeamAdmins(permission?: TeamPermission) {
     return permission && permission.admin ? permission.admin.uids : [];
+  }
+
+  async removeTeamsByIds(ids: number[], shouldNotify: boolean) {
+    const dao = daoManager.getDao(GroupDao);
+    await dao.bulkDelete(ids);
+    if (shouldNotify) {
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
+    }
+    const postService: PostService = PostService.getInstance();
+    await postService.deletePostsByGroupIds(ids, true);
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkDelete(ids);
   }
 }
 
