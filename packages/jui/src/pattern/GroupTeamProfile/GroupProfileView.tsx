@@ -5,7 +5,10 @@
  */
 import { width, palette } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
-
+const StyledIEWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
 const StyledProfileView = styled.div`
   position: relative;
   overflow: hidden;
@@ -20,4 +23,4 @@ const StyledBottomBar = styled.div`
   border: ${width(3)} solid ${palette('common', 'white')};
   box-shadow: ${({ theme }) => theme.boxShadow.val2};
 `;
-export { StyledProfileView, StyledBottomBar };
+export { StyledProfileView, StyledBottomBar, StyledIEWrapper };

@@ -11,7 +11,7 @@ import { MembersList } from './MembersList';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileBody } from './ProfileBody';
 import { MemberListHeader } from './MembersList/MemberListHeader';
-import { StyledBottomBar, StyledProfileView } from 'jui/pattern/GroupTeamProfile';
+import { StyledIEWrapper, StyledBottomBar, StyledProfileView } from 'jui/pattern/GroupTeamProfile';
 import { TypeDictionary } from 'sdk/utils';
 
 @observer
@@ -23,19 +23,21 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
       type,
     } = this.props;
     return (
-      <StyledProfileView>
-        <ProfileHeader dismiss={dismiss} id={id} type={type} />
-        <ProfileBody id={id} dismiss={dismiss} type={type} />
-        {
-          type === TypeDictionary.TYPE_ID_TEAM || type === TypeDictionary.TYPE_ID_GROUP ? (
-           <>
-             <MemberListHeader id={id} type={type}/>
-             <MembersList id={id} type={type}/>
-             <StyledBottomBar />
-           </>
-          ) : null
-        }
-      </StyledProfileView>
+      <StyledIEWrapper>
+        <StyledProfileView>
+          <ProfileHeader dismiss={dismiss} id={id} type={type} />
+          <ProfileBody id={id} dismiss={dismiss} type={type} />
+          {
+            type === TypeDictionary.TYPE_ID_TEAM || type === TypeDictionary.TYPE_ID_GROUP ? (
+              <>
+                <MemberListHeader id={id} type={type}/>
+                <MembersList id={id} type={type}/>
+                <StyledBottomBar />
+              </>
+            ) : null
+          }
+        </StyledProfileView>
+      </StyledIEWrapper>
     );
   }
 }
