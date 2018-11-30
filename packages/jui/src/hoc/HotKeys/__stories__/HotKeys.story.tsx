@@ -26,8 +26,7 @@ class Test extends React.Component<{}, {}> {
           esc: this.onEnter,
           'mod+s': this.save,
         }}
-      >
-        {({ unbind, reset }) => {
+        render={({ unbind, reset }) => {
           return (
             <ul>
               <li onClick={reset} className="li">
@@ -39,7 +38,7 @@ class Test extends React.Component<{}, {}> {
             </ul>
           );
         }}
-      </HotKeys>
+      />
     );
   }
 }
@@ -65,14 +64,8 @@ class Test1 extends React.Component<{}, {}> {
           'mod+s': this.save,
         }}
       >
-        {({ unbind }) => {
-          return (
-            <ul>
-              <li className="li">1</li>
-              <li className="li">2</li>
-            </ul>
-          );
-        }}
+        <li className="li">111111</li>
+        <li className="li">2222222</li>
       </HotKeys>
     );
   }

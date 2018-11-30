@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 15:49:51
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Mousetrap from 'mousetrap';
 
 type ChildrenProps = {
@@ -25,9 +25,11 @@ type keyMapValue =
     action: string;
   };
 
+type RenderCallback = ((props: ChildrenProps) => JSX.Element);
+
 type HotKeysProps = {
   el?: Element;
-  children(props: ChildrenProps): JSX.Element;
+  render?: RenderCallback;
   keyMap: {
     [key: string]: keyMapValue;
   };
@@ -77,12 +79,15 @@ class HotKeys extends Component<HotKeysProps, {}> {
   }
 
   render() {
-    const renderedChildren = this.props.children({
-      unbind: this.unbind,
-      reset: this.reset,
-      trigger: this.trigger,
-    });
-    return renderedChildren && React.Children.only(renderedChildren);
+    const { children, render } = this.props;
+    if (render) {
+      return render({
+        unbind: this.unbind,
+        reset: this.reset,
+        trigger: this.trigger,
+      });
+    }
+    return children;
   }
 }
 
