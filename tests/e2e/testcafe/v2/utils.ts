@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as sharp from 'sharp';
 import { TMPFILE_PATH } from '../config';
 
 import { getLogger } from 'log4js';
@@ -33,4 +34,22 @@ export class MiscUtils {
     fs.writeFileSync(filepath, content);
     return filepath;
   }
+
+  static async convertToWebp(imagePath: string) {
+    if (path.extname(imagePath) == '.webp') return imagePath; 
+    const webpIamgePath = imagePath + ".webp";
+    const image =  sharp(imagePath);
+    await image
+      .metadata()
+      .then(function (metadata) {
+        return image
+          .resize(Math.round(metadata.width / 2))
+          .webp({ quality: 10 })
+          .toBuffer();
+      })
+      .then((data) => {
+        fs.writeFileSync(webpIamgePath, data)
+      });
+    return webpIamgePath;
+  }ic 
 }
