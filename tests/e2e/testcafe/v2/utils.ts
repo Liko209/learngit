@@ -51,5 +51,5 @@ export class MiscUtils {
         fs.writeFileSync(webpIamgePath, data)
       });
     return webpIamgePath;
-  }ic 
+  } 
 }

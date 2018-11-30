@@ -25,8 +25,8 @@ export class LogHelper {
     }
     const imageFileName = `${uuid()}.png`;
     await this.t.takeScreenshot(imageFileName);
-    const imageFilePath = path.join(this.t['testRun'].opts.screenshotPath, imageFileName)
-    return await MiscUtils.convertToWebp(imageFilePath);;
+    const imageFilePath = path.join(this.t['testRun'].opts.screenshotPath, imageFileName);
+    return await MiscUtils.convertToWebp(imageFilePath);
   }
 
   writeStep(step: IStep) {
