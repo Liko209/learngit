@@ -9,32 +9,6 @@ import { TimeNodeDivider } from '../../TimeNodeDivider';
 import { i18n } from 'i18next';
 
 jest.mock('../../../ConversationSheet', () => ({}));
-function renderJumpToFirstUnreadButton({
-  hasHistoryUnread,
-  firstHistoryUnreadInPage,
-  firstHistoryUnreadPostViewed,
-}: {
-  hasHistoryUnread: boolean;
-  firstHistoryUnreadInPage: boolean;
-  firstHistoryUnreadPostViewed: boolean;
-}) {
-  const props = {
-    ...baseProps,
-    hasHistoryUnread,
-    firstHistoryUnreadInPage,
-    loadInitialPosts: async () => {},
-  };
-
-  const wrapper = shallow(<StreamView {...props} />);
-  (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
-  wrapper.update();
-  const jumpToFirstUnreadButtonWrapper = wrapper.find(
-    'JumpToFirstUnreadButtonWrapper',
-  );
-  const hasJumpToFirstUnreadButton =
-    jumpToFirstUnreadButtonWrapper.length === 1;
-  return { hasJumpToFirstUnreadButton };
-}
 
 const baseProps = {
   i18n: {} as i18n,
@@ -64,10 +38,37 @@ const baseProps = {
   loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
   jumpToPostId: 0,
   loadInitialPosts: async () => {},
+  updateHistoryHandler: () => {},
   mostRecentPostId: 0,
   resetJumpToPostId: () => null,
   resetAll: (id: number) => {},
 };
+
+function renderJumpToFirstUnreadButton({
+  hasHistoryUnread,
+  firstHistoryUnreadInPage,
+  firstHistoryUnreadPostViewed,
+}: {
+  hasHistoryUnread: boolean;
+  firstHistoryUnreadInPage: boolean;
+  firstHistoryUnreadPostViewed: boolean;
+}) {
+  const props = {
+    ...baseProps,
+    hasHistoryUnread,
+    firstHistoryUnreadInPage,
+  };
+
+  const wrapper = shallow(<StreamView {...props} />);
+  (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
+  wrapper.update();
+  const jumpToFirstUnreadButtonWrapper = wrapper.find(
+    'JumpToFirstUnreadButtonWrapper',
+  );
+  const hasJumpToFirstUnreadButton =
+    jumpToFirstUnreadButtonWrapper.length === 1;
+  return { hasJumpToFirstUnreadButton };
+}
 
 describe('StreamView', () => {
   describe('render()', () => {

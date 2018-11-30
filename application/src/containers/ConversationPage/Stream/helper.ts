@@ -5,19 +5,23 @@
  */
 import ReactDOM from 'react-dom';
 
-function scrollToComponent(
+async function scrollToComponent(
   component?: React.ReactInstance | null,
   options?: boolean | ScrollIntoViewOptions,
 ) {
-  if (!component) return;
-  try {
-    const el = ReactDOM.findDOMNode(component);
-    if (el && el instanceof HTMLElement) {
-      el.scrollIntoView(options);
+  return new Promise((resolve, reject) => {
+    if (!component) return;
+    try {
+      const el = ReactDOM.findDOMNode(component);
+      if (el && el instanceof HTMLElement) {
+        el.scrollIntoView(options);
+        resolve();
+      }
+    } catch (err) {
+      resolve();
+      console.warn(err);
     }
-  } catch (err) {
-    console.warn(err);
-  }
+  });
 }
 
 export { scrollToComponent };
