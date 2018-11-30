@@ -11,6 +11,7 @@ type GroupBodyProps = {
   awayStatus?: string;
   jobTitle?: string;
   className?: string;
+  isGroup?: boolean;
 };
 type GroupHeaderProps = {
   title: string;

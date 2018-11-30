@@ -21,18 +21,22 @@ const StyledContent = styled.div`
 const StyledRightColumn = styled.div`
   position: relative;
   width: 100%;
+  word-wrap: break-word;
+  word-break: break-all;
   margin-left: ${spacing(2.5)};
 `;
 const StyledName = styled.div`
   position: relative;
   top: 0;
   left: 0;
+  ${typography('subheading2')};
+`;
+const StyledGroupName = styled(StyledName)`
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  ${typography('subheading2')};
 `;
 const StyledDescription = styled.div`
   margin-top: ${spacing(1.5)};
@@ -61,13 +65,18 @@ class JuiGroupProfileBody extends PureComponent<GroupBodyProps> {
       children,
       awayStatus,
       jobTitle,
+      isGroup,
     } = this.props;
     return (
       <StyledBodyWrapper className={className}>
         <StyledContent>
           {avatar}
           <StyledRightColumn>
-            <StyledName>{displayName}</StyledName>
+            {!isGroup ? (
+              <StyledName>{displayName}</StyledName>
+            ) : (
+              <StyledGroupName>{displayName}</StyledGroupName>
+            )}
             {description ? (
               <StyledDescription>{description}</StyledDescription>
             ) : null}

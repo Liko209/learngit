@@ -17,6 +17,9 @@ type ProfileHeaderViewProps = WithNamespaces & {
   awayStatus?: string;
   jobTitle?: string;
   isCurrentUser?: string;
+  isGroupOrTeam?: boolean;
+  isPerson?: boolean;
+  isGroup?: boolean;
 };
 
 type ProfileBodyProps = {
