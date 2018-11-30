@@ -594,7 +594,7 @@ class GroupService extends BaseService<Group> {
           ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
             (terms.length > 0 &&
               this.isFuzzyMatched(team.set_abbreviation, terms))) &&
-          (team.is_public ||
+          (team.privacy === 'protected' ||
             team.members.find((id: number) => {
               return id === currentUserId;
             }))

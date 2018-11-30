@@ -28,6 +28,7 @@ const StyledRight = styled('div')`
   }
 
   @media (max-width: 600px) {
+    width: auto;
     ${JuiAvatarMenu} {
       display: none;
       color: red;

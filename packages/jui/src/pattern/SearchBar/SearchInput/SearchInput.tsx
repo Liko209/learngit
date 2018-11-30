@@ -8,11 +8,13 @@ import * as Jui from './style';
 
 type JuiSearchInputProps = {
   value: string;
+  placeholder: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEventHandler<HTMLInputElement>) => void;
   onFocus?: (e: FocusEventHandler<HTMLInputElement>) => void;
   onClear: () => void;
   focus: boolean;
+  showCloseBtn: boolean;
 };
 
 class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
@@ -38,8 +40,13 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
     onChange(e);
   }
 
+  onBlur = (e: FocusEventHandler<HTMLInputElement>) => {
+    const { onBlur } = this.props;
+    onBlur && onBlur(e);
+  }
+
   render() {
-    const { value, focus, onFocus, onBlur } = this.props;
+    const { value, focus, onFocus, placeholder, showCloseBtn } = this.props;
 
     return (
       <Jui.SearchWrapper focus={focus}>
@@ -47,9 +54,11 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
         <Jui.SearchInput
           onChange={this.onChange}
           onFocus={onFocus}
-          onBlur={onBlur}
+          onBlur={this.onBlur}
           inputRef={this._inputDom}
           inputProps={{
+            placeholder,
+            className: 'search-input',
             maxLength: 200,
           }}
           InputProps={{
@@ -57,7 +66,9 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
             disableUnderline: true,
           }}
         />
-        <Jui.CloseBtn onClick={this.onClose}>close</Jui.CloseBtn>
+        {showCloseBtn && (
+          <Jui.CloseBtn onClick={this.onClose}>close</Jui.CloseBtn>
+        )}
       </Jui.SearchWrapper>
     );
   }

@@ -9,7 +9,7 @@ type ConversationCardProps = {
   id: number; // post id
   mode?: 'navigation';
   highlight?: boolean;
-  onHighlightAnimationEnd?: React.AnimationEventHandler;
+  onHighlightAnimationStart?: React.AnimationEventHandler;
 };
 
 type ConversationCardViewProps = {
@@ -22,11 +22,14 @@ type ConversationCardViewProps = {
   name: string;
   customStatus?: string;
   createTime: string;
-  itemIds: number[];
+  itemTypeIds: {
+    [key: number]: number[];
+  };
   showProgressActions: boolean;
   likes?: number[];
   mode?: string;
-  onAnimationEnd?: React.AnimationEventHandler;
+  onAnimationStart?: React.AnimationEventHandler;
+  onHighlightAnimationStart?: React.AnimationEventHandler;
 };
 
 export { ConversationCardProps, ConversationCardViewProps };

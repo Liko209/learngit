@@ -12,7 +12,7 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 import Keys from 'jui/pattern/MessageInput/keys';
-import Quill from 'quill';
+import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
 
 const DELAY = 300;
@@ -32,7 +32,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     id: number;
   }[] = [];
   @observable
-  searchTerm?: string = '';
+  searchTerm?: string;
 
   private _canDoFuzzySearch: boolean = false;
 
@@ -78,7 +78,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
         this._canDoFuzzySearch = false;
         this.open = false;
         this.currentIndex = 0;
-        this.searchTerm = '';
+        this.searchTerm = undefined;
         this.members = [];
       },
     );
@@ -105,12 +105,12 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     searchTerm: string,
     denotationChar: string,
   ) => {
+    this.searchTerm = searchTerm;
     if (!match) {
       this.open = false;
       return;
     }
     this.open = true;
-    this.searchTerm = searchTerm || undefined;
     this._denotationChar = denotationChar;
   }
 

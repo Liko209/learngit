@@ -6,6 +6,7 @@ type HomeViewProps = {
   canPost: boolean;
   indexLoaded: boolean;
   t: TranslationFunction;
+  isShowNewMessageDialog: boolean;
 } & RouteComponentProps;
 
 type HomeProps = {};

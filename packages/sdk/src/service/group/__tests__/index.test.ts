@@ -667,7 +667,7 @@ describe('GroupService', () => {
           is_team: true,
           is_new: false,
           is_archived: false,
-          is_public: i % 2 === 0,
+          privacy: i % 2 === 0 ? 'protected' : 'private',
           deactivated: i % 2 !== 0,
           version: i,
           members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
