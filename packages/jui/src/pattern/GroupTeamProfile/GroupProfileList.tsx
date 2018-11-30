@@ -19,7 +19,7 @@ const StyledItem = styled.li`
     background-color: ${grey('100')};
   }
   &:nth-last-child(1) {
-    margin-bottom: ${spacing(11)};
+    margin-bottom: ${spacing(10)};
   }
   padding-left: ${spacing(6)};
 `;

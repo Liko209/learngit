@@ -11,9 +11,15 @@ import {
 } from 'jui/pattern/GroupTeamProfile';
 import { MemberListViewProps } from './types';
 import { MembersItem } from './MembersItem';
+import { GLOBAL_KEYS } from '@/store/constants';
+import storeManager from '@/store';
+const globalStore = storeManager.getGlobalStore();
 
 @observer
 class MembersList extends React.Component<MemberListViewProps> {
+  componentWillUnmount() {
+    globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
+  }
   render() {
     const { memberIds, gid } = this.props;
     return (
