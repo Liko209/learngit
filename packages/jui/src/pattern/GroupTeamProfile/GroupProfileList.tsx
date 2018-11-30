@@ -21,7 +21,7 @@ const StyledItem = styled.li`
   &:nth-last-child(1) {
     margin-bottom: ${spacing(10)};
   }
-  padding-left: ${spacing(6)};
+  padding-left: ${spacing(8)};
 `;
 
 class JuiGroupProfileList extends PureComponent {
