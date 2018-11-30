@@ -108,7 +108,7 @@
   "verb-noun": "$t({{verb}}) $t({{noun}})",
   "verb-article-noun": "$t({{verb}}) {{noun, en-handle-an}} $t({{noun}})",
   "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
-  "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
+  "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})",
   "TeamMembers": "Team Members",
   "GroupMembers": "Group Members",
   "checkMoreGroupOption": "Check more options you have with this group",
