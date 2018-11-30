@@ -52,8 +52,7 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.onClickShowPanel = this.onClickShowPanel.bind(this);
-    this.onClickHideAllPanel = this.onClickHideAllPanel.bind(this);
-    this.onClickPreventBubble = this.onClickPreventBubble.bind(this);
+    this.onClickHidePanel = this.onClickHidePanel.bind(this);
   }
 
   getPanelsData = () => {
@@ -265,15 +264,13 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
   }
 
   onClickShowPanel(index: number, e: ReactMouseEvent) {
-    e.stopPropagation();
-    e.preventDefault();
     const { panels } = this.state;
     const clonePanels = cloneDeep(panels);
     clonePanels[index].forceShow = !clonePanels[index].forceShow;
     this.setState({ panels: clonePanels });
   }
 
-  onClickHideAllPanel() {
+  onClickHidePanel() {
     const { panels } = this.state;
     const clonePanels = panels.map((panel: Panel) => {
       panel.forceShow = false;
@@ -284,15 +281,12 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
     });
   }
 
-  onClickPreventBubble(e: ReactMouseEvent) {
-    e.stopPropagation();
-  }
-
   renderMainPanel = (index: number, child: JSX.Element) => {
-    // const { panels } = this.state;
-    // const panel = panels[index];
-    // const { width } = panel;
-    return <StyledMainPanel ref={this.mainRef}>{child}</StyledMainPanel>;
+    return (
+      <StyledMainPanel ref={this.mainRef} onClick={this.onClickHidePanel}>
+        {child}
+      </StyledMainPanel>
+    );
   }
 
   renderSidebarPanel = (index: number, child: JSX.Element) => {
@@ -305,7 +299,6 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
         forceShow={!!forceShow}
         forcePosition={index === 0 ? 'left' : 'right'}
         forceWidth={minWidth}
-        onClick={this.onClickPreventBubble}
       >
         {child}
       </StyledSidebarPanel>
@@ -355,7 +348,7 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
   render() {
     const { children, mainPanelIndex } = this.props;
     return (
-      <StyledWrapper ref={this.wrapperRef} onClick={this.onClickHideAllPanel}>
+      <StyledWrapper ref={this.wrapperRef}>
         {React.Children.map(children, (child: JSX.Element, index: number) => {
           if (!child) {
             return null;
