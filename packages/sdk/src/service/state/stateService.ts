@@ -68,8 +68,13 @@ class StateService extends BaseService<GroupState> {
   }
 
   async markAsRead(groupId: number): Promise<void> {
-    const lastPost = await this.getLastPostOfGroup(groupId);
-    const lastPostId = lastPost ? lastPost.id : undefined;
+    const lastPost = (await this.getLastPostOfGroup(groupId)) || undefined;
+    let lastPostId = lastPost && lastPost.id;
+    if (!lastPostId) {
+      const postService = PostService.getInstance<PostService>();
+      lastPostId =
+        (await postService.getNewestPostIdOfGroup(groupId)) || undefined;
+    }
 
     const partialState = {
       id: groupId,

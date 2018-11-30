@@ -6,6 +6,9 @@
     "node": ">=10.0.0",
     "npm": ">=6.2.0"
   },
+  "config": {
+    "jira": "./jira.config.json"
+  },
   "scripts": {
     "preinstall": "node scripts/check-pm.js",
     "postinstall": "npm run bt",
@@ -39,7 +42,7 @@
     "async": "2.6.1",
     "chalk": "2.4.1",
     "commitizen": "3.0.4",
-    "cz-customizable": "git+ssh://git@git.ringcentral.com:Fiji/cz-customizable.git#v0.0.5",
+    "cz-customizable": "git+ssh://git@git.ringcentral.com:Fiji/cz-customizable.git#0.0.7",
     "dts-generator": "2.1.0",
     "enzyme": "3.7.0",
     "enzyme-adapter-react-16": "1.6.0",
