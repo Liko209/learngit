@@ -66,16 +66,14 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
         description={description}
       >
         {isShowMessageButton ? (
-          <>
-            <StyledMessageBtn
-              onClick={this.OnMessageClick}
-              tabIndex={0}
-              aria-label={t(goToMessageInfo)}
-            >
-              <JuiIconography>chat_bubble</JuiIconography>
-              Message
-            </StyledMessageBtn>
-          </>
+          <StyledMessageBtn
+            onClick={this.OnMessageClick}
+            tabIndex={0}
+            aria-label={t(goToMessageInfo)}
+          >
+            <JuiIconography>chat_bubble</JuiIconography>
+            {t('Message')}
+          </StyledMessageBtn>
         ) : null}
       </JuiGroupProfileBody>
     );
