@@ -29,7 +29,7 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
     await goToConversation(id);
   }
   private _presence = (id: number) => {
-    return <Presence uid={id} borderSize="medium" />;
+    return <Presence uid={id} borderSize="xlarge" size="xlarge" />;
   }
   render() {
     const {
