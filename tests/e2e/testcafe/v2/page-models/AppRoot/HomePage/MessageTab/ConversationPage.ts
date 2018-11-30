@@ -1,6 +1,7 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { ClientFunction } from 'testcafe';
 
+
 class BaseConversationPage extends BaseWebComponent {
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
@@ -33,7 +34,7 @@ class BaseConversationPage extends BaseWebComponent {
   get stream() {
     return this.getSelectorByAutomationId('jui-stream');
   }
-
+  
   // FIXME: find a more reliable method
   async expectStreamScrollToBottom() {
     const scrollTop = await this.streamWrapper.scrollTop;
@@ -62,7 +63,6 @@ class BaseConversationPage extends BaseWebComponent {
     });
   }
 }
-
 
 export class ConversationPage extends BaseConversationPage {
   get self() {
@@ -133,17 +133,5 @@ export class PostItem extends BaseWebComponent {
 
   async goToConversation() {
     await this.t.click(this.conversationName, { offsetX: 3 });
-  }
-
-  get JumpToConversationButton() {
-    return this.self.find(`span`).withText('Jump To Conversation');
-  }
-
-  async jumpToAtMentionConversation() {
-    await this.t.click(this.self);
-  }
-
-  async clickConversationByButton() {
-    await this.t.hover(this.self).click(this.JumpToConversationButton);
   }
 }

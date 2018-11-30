@@ -41,7 +41,7 @@ describe('mentionViewModel', () => {
     expect(mentionViewModel.currentIndex).toBe(0);
     expect(mentionViewModel.open).toBe(false);
     expect(mentionViewModel.members).toEqual([]);
-    expect(mentionViewModel.searchTerm).toBe('');
+    expect(mentionViewModel.searchTerm).toBe(undefined);
   });
 
   it('_group', () => {
@@ -59,7 +59,7 @@ describe('mentionViewModel', () => {
   it('_onMention()', () => {
     mentionViewModel._onMention(true, '', '@');
     expect(mentionViewModel.open).toBe(true);
-    expect(mentionViewModel.searchTerm).toBe(undefined);
+    expect(mentionViewModel.searchTerm).toBe('');
     expect(mentionViewModel._denotationChar).toBe('@');
     mentionViewModel._onMention(false, '', '@');
     expect(mentionViewModel.open).toBe(false);
