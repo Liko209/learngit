@@ -16,7 +16,6 @@ import { ProfileHeaderViewProps } from './types';
 import { goToConversation } from '../../../common/goToConversation';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { accessHandler } from '../AccessHandler';
-import { TypeDictionary } from 'sdk/utils';
 import { Presence } from '@/containers/Presence';
 
 @observer
@@ -33,34 +32,51 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
     return <Presence uid={id} borderSize="medium" />;
   }
   render() {
-    const { name, description, isShowMessageButton, id, type, t } = this.props;
-    const { goToMessageInfo } = accessHandler(type);
+    const {
+      name,
+      description,
+      isShowMessageButton,
+      id,
+      type,
+      awayStatus,
+      jobTitle,
+      isCurrentUser,
+      isGroupOrTeam,
+      isPerson,
+      isGroup,
+      t,
+    } = this.props;
+    const { goToMessageInfo } = accessHandler(type, name);
     let avatar;
     if (
-      type === TypeDictionary.TYPE_ID_GROUP ||
-      type === TypeDictionary.TYPE_ID_TEAM
+      isGroupOrTeam
     ) {
-      avatar = <GroupAvatar cid={id} size="xlarge"/>;
-    } else if (
-      type === TypeDictionary.TYPE_ID_PERSON
-    ) {
-      avatar = <Avatar uid={id} presence={this._presence(id)} />;
+      avatar = <GroupAvatar cid={id} size="xlarge" />;
+    } else if (isPerson) {
+      avatar = <Avatar uid={id} presence={this._presence(id)} size="xlarge" />;
     }
     return (
       <JuiGroupProfileBody
         avatar={avatar}
+        awayStatus={awayStatus}
+        jobTitle={jobTitle}
+        className={isCurrentUser ? 'current' : ''}
         displayName={name}
+        isGroup={isGroup}
         description={description}
       >
-        {
-          isShowMessageButton ?
+        {isShowMessageButton ? (
           <>
-            <StyledMessageBtn onClick={this.OnMessageClick} tabIndex={0} aria-label={t(goToMessageInfo)}>
+            <StyledMessageBtn
+              onClick={this.OnMessageClick}
+              tabIndex={0}
+              aria-label={t(goToMessageInfo)}
+            >
               <JuiIconography>chat_bubble</JuiIconography>
               Message
             </StyledMessageBtn>
-          </> : null
-        }
+          </>
+        ) : null}
       </JuiGroupProfileBody>
     );
   }

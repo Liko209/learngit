@@ -4,16 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
-import { grey, height, palette, spacing, typography, width } from '../../foundation/utils';
+import { palette, spacing, typography, grey } from '../../foundation/utils';
 
 const StyledGuestIdentifier = styled.span`
-  width: ${width(12)};
-  height: ${height(4)};
   color: ${palette('common', 'white')};
-  background-color: ${grey('400')};
   border-radius: ${({ theme }) => theme.shape.borderRadius * 2}px;
-  line-height: ${height(4)};
   text-align: center;
+  background-color: ${grey('400')};
+  padding: ${spacing(0)} ${spacing(1.5)};
   ${typography('caption1')};
   margin-left: ${spacing(3)};
   margin-right: ${spacing(4)};

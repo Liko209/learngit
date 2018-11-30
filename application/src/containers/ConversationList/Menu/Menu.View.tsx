@@ -153,7 +153,7 @@ class MenuViewComponent extends Component<Props, State> {
         </JuiMenuItem>
         {isShowGroupTeamProfile ? (
           <JuiMenuItem onClick={this._handleGroupDialog}>
-            {t('view profile')}
+            {t('viewProfile')}
           </JuiMenuItem>
         ) : null}
         {this.renderCloseMenuItem()}

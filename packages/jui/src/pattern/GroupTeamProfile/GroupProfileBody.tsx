@@ -6,14 +6,13 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { GroupBodyProps } from './types';
-import {
-  spacing,
-  grey,
-  typography,
-} from '../../foundation/utils/styles';
+import { height, spacing, grey, typography } from '../../foundation/utils/styles';
 
 const StyledBodyWrapper = styled.div`
   border-bottom: 1px solid ${grey('300')};
+  &.current {
+    background-color: #e1f4fb;
+  }
 `;
 const StyledContent = styled.div`
   display: flex;
@@ -22,18 +21,23 @@ const StyledContent = styled.div`
 const StyledRightColumn = styled.div`
   position: relative;
   width: 100%;
+  word-wrap: break-word;
+  word-break: break-all;
   margin-left: ${spacing(2.5)};
 `;
 const StyledName = styled.div`
   position: relative;
   top: 0;
   left: 0;
+  ${typography('subheading2')};
+`;
+const StyledGroupName = styled(StyledName)`
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  ${typography('subheading2')};
+  max-height: ${height(18)};
 `;
 const StyledDescription = styled.div`
   margin-top: ${spacing(1.5)};
@@ -44,27 +48,43 @@ const StyledDescription = styled.div`
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  max-height: ${height(11)};
 `;
 const StyledBottomButton = styled.div`
   margin-top: ${spacing(3)};
   display: flex;
 `;
-
+const StyledParam = styled.p`
+  ${typography('body2')}
+`;
 class JuiGroupProfileBody extends PureComponent<GroupBodyProps> {
   render() {
-    const { displayName, description, avatar, children } = this.props;
+    const {
+      displayName,
+      className,
+      description,
+      avatar,
+      children,
+      awayStatus,
+      jobTitle,
+      isGroup,
+    } = this.props;
     return (
-      <StyledBodyWrapper>
+      <StyledBodyWrapper className={className}>
         <StyledContent>
           {avatar}
           <StyledRightColumn>
-            <StyledName>{displayName}</StyledName>
+            {!isGroup ? (
+              <StyledName>{displayName}</StyledName>
+            ) : (
+              <StyledGroupName>{displayName}</StyledGroupName>
+            )}
             {description ? (
               <StyledDescription>{description}</StyledDescription>
             ) : null}
-            <StyledBottomButton>
-              {children}
-            </StyledBottomButton>
+            {awayStatus ? <StyledParam>{awayStatus}</StyledParam> : null}
+            {jobTitle ? <StyledParam>{jobTitle}</StyledParam> : null}
+            <StyledBottomButton>{children}</StyledBottomButton>
           </StyledRightColumn>
         </StyledContent>
       </StyledBodyWrapper>

@@ -7,7 +7,7 @@ import history from '@/history';
 import { service } from 'sdk';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
-const _getConversationId = async (id: number) => {
+const getConversationId = async (id: number) => {
   const { GroupService } = service;
   const groupService: service.GroupService = GroupService.getInstance();
   const type = GlipTypeUtil.extractTypeId(id);
@@ -32,11 +32,11 @@ const _getConversationId = async (id: number) => {
 };
 
 async function goToConversation(id: number) {
-  const conversationId = await _getConversationId(id);
+  const conversationId = await getConversationId(id);
   if (!conversationId) return false;
 
   history.push(`/messages/${conversationId}`);
   return true;
 }
 
-export { goToConversation };
+export { goToConversation, getConversationId };

@@ -57,9 +57,8 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   }
 
   @computed
-  get itemIds() {
-    // If update some item need get item_id from post data. ItemId just for update item(Example event)
-    return (this.post.itemId && [this.post.itemId]) || this.post.itemIds || [];
+  get itemTypeIds() {
+    return this.post.itemTypeIds;
   }
 
   @computed

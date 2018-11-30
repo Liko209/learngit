@@ -8,6 +8,10 @@ type GroupBodyProps = {
   displayName: string;
   description?: string;
   avatar: any;
+  awayStatus?: string;
+  jobTitle?: string;
+  className?: string;
+  isGroup?: boolean;
 };
 type GroupHeaderProps = {
   title: string;
