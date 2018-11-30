@@ -9,7 +9,7 @@ import { JuiIconButton } from '../../components/Buttons/IconButton';
 import {
   spacing,
   grey,
-  height,
+  height, width,
 } from '../../foundation/utils/styles';
 import { GroupHeaderProps } from './types';
 
@@ -44,7 +44,10 @@ const StyledIcon = styled.div`
     z-index: ${({ theme }) => theme.zIndex.moreMenu};
   }
   .privacy, .favorite {
-    margin-left: ${spacing(3)};
+    margin-right: ${spacing(3)};
+  }
+  .horiz-menu {
+    width: ${width(7)};
   }
 `;
 const StyledText = styled.p`

@@ -11,6 +11,7 @@ type ProfileHeaderViewProps = WithNamespaces & {
   title?: string;
   groupId: number;
   type: ProfileType;
+  isTeam: boolean;
 } & DismissProps;
 type ProfileHeaderProps = DismissProps & {
   title?: string;
