@@ -7,15 +7,15 @@ import { observable, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import PersonService from 'sdk/service/person';
 import GroupService from 'sdk/service/group';
-import { Person, Group } from 'sdk/src/models';
-import { SectionTypes, SectionType } from './types';
+import { SectionType, ViewProps, Person, Group, Props } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
 
-class SearchBarViewModel extends StoreViewModel {
+class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   personService: PersonService;
   groupService: GroupService;
   @observable value: string = '';
@@ -36,6 +36,15 @@ class SearchBarViewModel extends StoreViewModel {
     return this.value;
   }
 
+  isTeamOrGroup = (id: number) => {
+    const type = GlipTypeUtil.extractTypeId(id);
+
+    return (
+      type === TypeDictionary.TYPE_ID_GROUP ||
+      type === TypeDictionary.TYPE_ID_TEAM
+    );
+  }
+
   setValue = (value: string) => {
     this.value = value;
   }
@@ -54,7 +63,7 @@ class SearchBarViewModel extends StoreViewModel {
     return sectionCount <= 1 ? ONLY_ONE_SECTION_LENGTH : MORE_SECTION_LENGTH;
   }
 
-  hasMore(section: SectionTypes, sectionCount: number) {
+  hasMore<T>(section: SectionType<T>, sectionCount: number) {
     return (
       (section &&
         section.sortableModels.length >
@@ -63,7 +72,7 @@ class SearchBarViewModel extends StoreViewModel {
     );
   }
 
-  getSection(section: SectionTypes, sectionCount: number) {
+  getSection<T>(section: SectionType<T>, sectionCount: number) {
     return {
       sortableModel:
         (section &&
@@ -72,7 +81,7 @@ class SearchBarViewModel extends StoreViewModel {
             this.getSectionItemSize(sectionCount),
           )) ||
         [],
-      hasMore: this.hasMore(section, sectionCount),
+      hasMore: this.hasMore<T>(section, sectionCount),
     };
   }
 
@@ -90,9 +99,9 @@ class SearchBarViewModel extends StoreViewModel {
         (groups && groups.terms) ||
         (teams && teams.terms) ||
         [],
-      persons: this.getSection(persons, sectionCount),
-      groups: this.getSection(groups, sectionCount),
-      teams: this.getSection(teams, sectionCount),
+      persons: this.getSection<Person>(persons, sectionCount),
+      groups: this.getSection<Group>(groups, sectionCount),
+      teams: this.getSection<Group>(teams, sectionCount),
     };
   }
 }
