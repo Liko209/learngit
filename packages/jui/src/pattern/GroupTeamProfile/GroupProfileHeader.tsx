@@ -14,7 +14,6 @@ import {
 import { GroupHeaderProps } from './types';
 
 const StyledHeader = styled.div`
-  height: ${height(16)};
   width: 100%;
   background-color: #fff;
   line-height: ${height(16)};
