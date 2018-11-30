@@ -9,6 +9,7 @@ import {
   ellipsis,
 } from '../../foundation/utils/styles';
 const StyledList = styled.ul`
+  -ms-overflow-style: -ms-autohiding-scrollbar;
   list-style: none;
   padding: 0;
   margin: 0;

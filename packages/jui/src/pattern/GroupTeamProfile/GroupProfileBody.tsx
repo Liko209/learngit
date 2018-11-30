@@ -16,7 +16,7 @@ const StyledBodyWrapper = styled.div`
 `;
 const StyledContent = styled.div`
   display: flex;
-  margin: ${spacing(5)} ${spacing(6)} ${spacing(5)} ${spacing(6)};
+  margin: ${spacing(5)} ${spacing(6)} ${spacing(7)} ${spacing(6)};
 `;
 const StyledRightColumn = styled.div`
   position: relative;
