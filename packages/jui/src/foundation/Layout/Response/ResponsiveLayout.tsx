@@ -265,8 +265,14 @@ class JuiResponsiveLayout extends PureComponent<Props, States> {
 
   onClickShowPanel(index: number, e: ReactMouseEvent) {
     const { panels } = this.state;
-    const clonePanels = cloneDeep(panels);
-    clonePanels[index].forceShow = !clonePanels[index].forceShow;
+    const clonePanels = panels.map((panel: Panel, i: number) => {
+      if (index === i) {
+        panel.forceShow = !panel.forceShow;
+      } else {
+        panel.forceShow = false;
+      }
+      return panel;
+    });
     this.setState({ panels: clonePanels });
   }
 

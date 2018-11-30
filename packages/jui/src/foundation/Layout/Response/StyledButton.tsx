@@ -5,6 +5,7 @@
  */
 
 import styled from '../../styled-components';
+import { width, height } from '../../utils/styles';
 
 type Props = {
   left: string;
@@ -13,13 +14,13 @@ type Props = {
 };
 
 // todo: have not UX design
-const StyledButton = styled.div`
+const StyledButton = styled<Props, 'div'>('div')`
   position: absolute;
   top: 0;
   bottom: 0;
   right: auto;
-  width: 10px;
-  height: 20px;
+  width: ${width(2.5)};
+  height: ${height(5)};
   cursor: pointer;
   background-color: red;
   z-index: ${({ theme }) => theme.zIndex.modal};
