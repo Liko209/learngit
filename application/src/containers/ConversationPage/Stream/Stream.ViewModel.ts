@@ -171,11 +171,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   updateHistoryHandler() {
-    console.log(
-      'updateHistoryHandler',
-      _.cloneDeep(this._groupState),
-      this.postIds,
-    );
     this._historyHandler.update(this._groupState, this.postIds);
   }
 
@@ -283,6 +278,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
             postId: anchor && anchor.id,
             limit: pageSize,
           });
+          console.log('posts: ', posts);
           return { hasMore, data: posts };
         } catch (err) {
           if (err.code === ErrorTypes.NETWORK) {

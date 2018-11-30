@@ -3,9 +3,12 @@
  * @Date: 2018-11-15 11:09:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { StreamViewModel } from '../Stream.ViewModel';
+import { PostService } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { StreamViewModel } from '../Stream.ViewModel';
+import { StreamItemType } from '../types';
 
+jest.mock('sdk/service/post');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
@@ -15,31 +18,40 @@ function setup(obj?: any) {
 }
 
 describe('StreamViewModel', () => {
+  let postService: PostService;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    postService = new PostService();
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
   });
 
   describe('loadInitialPosts()', () => {
     function setup(obj: any) {
       const vm = new StreamViewModel();
       jest.spyOn(vm, 'markAsRead').mockImplementation(() => {});
-      jest
-        .spyOn<StreamViewModel, any>(vm, '_loadPosts')
-        .mockResolvedValue(obj.spy._loadPosts);
       obj.props && vm.onReceiveProps(obj.props);
       return vm;
     }
 
-    it('should mark as read when loaded', async () => {
+    it('should load posts', async () => {
       const vm = setup({
         props: { groupId: 1 },
-        spy: {
-          _loadPosts: [{ id: 1, item_ids: [] }],
-        },
+      });
+      (postService.getPostsByGroupId as jest.Mock).mockResolvedValue({
+        posts: [
+          { id: 1, item_ids: [] },
+          { id: 2, item_ids: [] },
+          { id: 3, item_ids: [] },
+        ],
       });
 
       await vm.loadInitialPosts();
-      expect(vm.markAsRead).toHaveBeenCalled();
+      expect(vm.items).toEqual([
+        { type: StreamItemType.POST, value: 1 },
+        { type: StreamItemType.POST, value: 2 },
+        { type: StreamItemType.POST, value: 3 },
+      ]);
     });
   });
 
