@@ -60,6 +60,7 @@ class JuiTextField extends React.Component<Props, {}> {
     return (
       <TextField
         {...rest}
+        onKeyDown={this.onKeyDown}
         InputLabelProps={{
           FormLabelClasses: {
             error: 'form-label-error',
@@ -73,7 +74,6 @@ class JuiTextField extends React.Component<Props, {}> {
             underline: 'underline',
             ...inputPropsClasses,
           },
-          onKeyDown: this.onKeyDown,
           ...inputPropsRest,
         }}
       />
