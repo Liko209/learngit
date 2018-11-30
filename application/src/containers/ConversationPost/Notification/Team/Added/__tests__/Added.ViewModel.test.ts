@@ -23,12 +23,12 @@ const mockPostData = {
 
 const mockPersonData1 = {
   id: 1,
-  displayName: 'Name1',
+  userDisplayName: 'Name1',
 };
 
 const mockPersonData2 = {
   id: 2,
-  displayName: 'Name2',
+  userDisplayName: 'Name2',
 };
 
 const mapMockPersonData = {
@@ -73,9 +73,9 @@ describe('Team added', () => {
   });
 
   it('computed inviterName', () => {
-    expect(addedViewModel.inviterName).toBe(mockPersonData1.displayName);
-    mockPersonData1.displayName = 'Name3';
-    expect(addedViewModel.inviterName).toBe(mockPersonData1.displayName);
+    expect(addedViewModel.inviterName).toBe(mockPersonData1.userDisplayName);
+    mockPersonData1.userDisplayName = 'Name3';
+    expect(addedViewModel.inviterName).toBe(mockPersonData1.userDisplayName);
   });
 
   it('computed newUserId', () => {
@@ -85,8 +85,8 @@ describe('Team added', () => {
   });
 
   it('computed newUserName', () => {
-    expect(addedViewModel.newUserName).toBe(mockPersonData2.displayName);
-    mockPersonData2.displayName = 'Name4';
-    expect(addedViewModel.newUserName).toBe(mockPersonData2.displayName);
+    expect(addedViewModel.newUserName).toBe(mockPersonData2.userDisplayName);
+    mockPersonData2.userDisplayName = 'Name4';
+    expect(addedViewModel.newUserName).toBe(mockPersonData2.userDisplayName);
   });
 });

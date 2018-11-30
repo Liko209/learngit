@@ -5,11 +5,23 @@
  */
 /// <reference path="../../../__tests__/types.d.ts" />
 import PersonService from '../../../service/person';
+import GroupService, {
+  FEATURE_TYPE,
+  FEATURE_STATUS,
+} from '../../../service/group';
 import { daoManager, PersonDao } from '../../../dao';
+import { Person } from '../../../models';
+import { AccountService } from '../../account/accountService';
 
 jest.mock('../../../dao');
+jest.mock('../../../service/group');
 
 describe('PersonService', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+  });
+
   const personService = new PersonService();
   const personDao = new PersonDao(null);
 
@@ -80,6 +92,310 @@ describe('PersonService', () => {
       personDao.getAllCount.mockReturnValue(mock);
       const result = await personService.getAllCount();
       expect(result).toBe(mock);
+    });
+  });
+
+  describe('doFuzzySearchPersons', () => {
+    function prepareDataForSearchUTs() {
+      personService.enableCache();
+      const cacheManager = personService.getCacheManager();
+      for (let i = 1; i <= 10000; i += 1) {
+        const person: Person = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          deactivated: false,
+          version: i,
+          company_id: 1,
+          email: `cat${i.toString()}@ringcentral.com`,
+          me_group_id: 1,
+          first_name: `dora${i.toString()}`,
+          last_name: `bruce${i.toString()}`,
+          display_name: `dora${i.toString()} bruce${i.toString()}`,
+        };
+        cacheManager.set(person);
+      }
+
+      for (let i = 10001; i <= 20000; i += 1) {
+        const person: Person = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          deactivated: false,
+          version: i,
+          company_id: 1,
+          email: `dog${i.toString()}@ringcentral.com`,
+          me_group_id: 1,
+          first_name: `ben${i.toString()}`,
+          last_name: `niu${i.toString()}`,
+          display_name: `ben${i.toString()} niu${i.toString()}`,
+        };
+        cacheManager.set(person);
+      }
+    }
+
+    prepareDataForSearchUTs();
+
+    it('search parts of data, with multi terms', async () => {
+      const result = await personService.doFuzzySearchPersons(
+        'dora bruce',
+        false,
+      );
+      expect(result.sortableModels.length).toBe(10000);
+      expect(result.terms.length).toBe(2);
+      expect(result.terms[0]).toBe('dora');
+      expect(result.terms[1]).toBe('bruce');
+    });
+
+    it('search parts of data, with single term', async () => {
+      const result = await personService.doFuzzySearchPersons('dora', false);
+      expect(result.sortableModels.length).toBe(10000);
+      expect(result.terms.length).toBe(1);
+      expect(result.terms[0]).toBe('dora');
+    });
+
+    it('search parts of data, ignore case', async () => {
+      let result = await personService.doFuzzySearchPersons(
+        'doRa,Bruce',
+        false,
+      );
+      expect(result.sortableModels.length).toBe(10000);
+      expect(result.terms.length).toBe(2);
+      expect(result.terms[0]).toBe('doRa');
+      expect(result.terms[1]).toBe('Bruce');
+
+      result = await personService.doFuzzySearchPersons('doXa', false);
+      expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(1);
+      expect(result.terms[0]).toBe('doXa');
+
+      result = await personService.doFuzzySearchPersons('doXa Bruce', false);
+      expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(2);
+    });
+
+    it('search parts of data, email', async () => {
+      const result = await personService.doFuzzySearchPersons('cat', false);
+      expect(result.sortableModels.length).toBe(10000);
+      expect(result.terms.length).toBe(1);
+      expect(result.terms[0]).toBe('cat');
+    });
+
+    it('search parts of data, email and name, not match', async () => {
+      const result = await personService.doFuzzySearchPersons('cat dog', false);
+      expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(2);
+      expect(result.terms[0]).toBe('cat');
+      expect(result.terms[1]).toBe('dog');
+    });
+    it('search parts of data, with arrangeIds', async () => {
+      const result = await personService.doFuzzySearchPersons('dora', false, [
+        3,
+        1,
+        2,
+        10001,
+        10002,
+      ]);
+      expect(result.sortableModels.length).toBe(3);
+      expect(result.sortableModels[0].displayName).toBe('dora1 bruce1');
+      expect(result.sortableModels[1].displayName).toBe('dora2 bruce2');
+      expect(result.sortableModels[2].displayName).toBe('dora3 bruce3');
+    });
+
+    it('search parts of data, exclude self', async () => {
+      const accountService = new AccountService();
+      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      const result = await personService.doFuzzySearchPersons('dora', true);
+      expect(result.sortableModels.length).toBe(9999);
+    });
+
+    it('search parts of data, searchKey is empty, return all if search key is empty', async () => {
+      const accountService = new AccountService();
+      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      const result = await personService.doFuzzySearchPersons(
+        '',
+        undefined,
+        undefined,
+        true,
+      );
+      expect(result.sortableModels.length).toBe(20000);
+    });
+
+    it('search parts of data, searchKey is empty, can not return all if search key is empty', async () => {
+      const accountService = new AccountService();
+      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      const result = await personService.doFuzzySearchPersons(
+        '',
+        undefined,
+        undefined,
+        false,
+      );
+      expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(0);
+    });
+
+    it('search parts of data, searchKey not empty, can not return all if search key is empty', async () => {
+      const accountService = new AccountService();
+      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      const result = await personService.doFuzzySearchPersons(
+        'dora',
+        undefined,
+        undefined,
+        false,
+      );
+      expect(result.sortableModels.length).toBe(10000);
+      expect(result.terms.length).toBe(1);
+    });
+
+    it('search parts of data, searchKey is empty, excludeSelf, return all if search key is empty', async () => {
+      const accountService = new AccountService();
+      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      const result = await personService.doFuzzySearchPersons(
+        '',
+        true,
+        undefined,
+        true,
+      );
+      expect(result.sortableModels.length).toBe(19999);
+    });
+
+    it('search parts of data, searchKey is empty, excludeSelf, arrangeIds, return all if search key is empty', async () => {
+      const accountService = new AccountService();
+      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      const result = await personService.doFuzzySearchPersons(
+        undefined,
+        true,
+        [3, 1, 2, 10001, 10002],
+        true,
+      );
+      expect(result.sortableModels.length).toBe(4);
+      expect(result.terms.length).toBe(0);
+      expect(result.sortableModels[0].id).toBe(10001);
+      expect(result.sortableModels[1].id).toBe(10002);
+      expect(result.sortableModels[2].id).toBe(2);
+      expect(result.sortableModels[3].id).toBe(3);
+    });
+
+    it('search parts of data, searchKey not empty, excludeSelf, arrangeIds, return all if search key is empty', async () => {
+      const accountService = new AccountService();
+      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      const result = await personService.doFuzzySearchPersons(
+        'dora',
+        true,
+        [3, 1, 2, 10001, 10002],
+        true,
+      );
+      expect(result.sortableModels.length).toBe(2);
+      expect(result.terms.length).toBe(1);
+      expect(result.sortableModels[0].id).toBe(2);
+      expect(result.sortableModels[1].id).toBe(3);
+    });
+
+    it('search parts of data, searchKey is empty, excludeSelf, arrangeIds, can not return all if search key is empty', async () => {
+      const accountService = new AccountService();
+      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      const result = await personService.doFuzzySearchPersons(
+        '',
+        true,
+        [3, 1, 2, 10001, 10002],
+        false,
+      );
+      expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(0);
+    });
+  });
+
+  describe('getPersonsByGroupId()', () => {
+    const groupService = new GroupService();
+    const group = { id: 10, members: [1, 2, 3] };
+
+    beforeEach(() => {
+      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+    });
+
+    it('should return group members from cache if has cache', async () => {
+      const persons = [{ id: 3 }, { id: 4 }, { id: 5 }];
+
+      daoManager.getDao.mockReturnValue(personDao);
+      jest
+        .spyOn(personService, 'getMultiEntitiesFromCache')
+        .mockResolvedValueOnce(persons);
+
+      personDao.getPersonsByIds.mockResolvedValueOnce(persons);
+      groupService.getGroupById.mockResolvedValueOnce(group);
+
+      const res = await personService.getPersonsByGroupId(group.id);
+      expect(res).toMatchObject(persons);
+      expect(personDao.getPersonsByIds).not.toBeCalled();
+      expect(groupService.getGroupById).toBeCalledWith(group.id);
+    });
+
+    it('should return group members from DB if has the group and no cache', async () => {
+      const persons = [{ id: 1 }, { id: 2 }, { id: 3 }];
+      daoManager.getDao.mockReturnValue(personDao);
+
+      const spy = jest.spyOn(personService, 'getMultiEntitiesFromCache');
+
+      spy.mockResolvedValueOnce([]);
+      personDao.getPersonsByIds.mockResolvedValueOnce(persons);
+      groupService.getGroupById.mockResolvedValueOnce(group);
+
+      const res = await personService.getPersonsByGroupId(group.id);
+      expect(res).toMatchObject(persons);
+      expect(personDao.getPersonsByIds).toBeCalledWith(group.members);
+      expect(groupService.getGroupById).toBeCalledWith(group.id);
+      expect(spy).toBeCalledTimes(1);
+    });
+
+    it('should return null when no group exist', async () => {
+      daoManager.getDao.mockReturnValue(personDao);
+      groupService.getGroupById.mockResolvedValueOnce(null);
+
+      const res = await personService.getPersonsByGroupId(group.id);
+      expect(res).toMatchObject([]);
+      expect(personDao.getPersonsByIds).not.toBeCalled();
+      expect(groupService.getGroupById).toBeCalledWith(group.id);
+    });
+  });
+
+  describe('buildPersonFeatureMap()', () => {
+    const personId = 1;
+    const person = { id: personId };
+    it('should not have conference permission for person', async () => {
+      const spy = jest.spyOn(personService, 'getById');
+      spy.mockResolvedValueOnce(person);
+      const res = await personService.buildPersonFeatureMap(personId);
+      expect(res.get(FEATURE_TYPE.CONFERENCE)).toBeFalsy;
+      expect(spy).toBeCalled;
+    });
+
+    it('should have message for person', async () => {
+      const spy = jest.spyOn(personService, 'getById');
+      spy.mockResolvedValueOnce(person);
+      const res = await personService.buildPersonFeatureMap(personId);
+      expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.ENABLE);
+      expect(spy).toBeCalledWith(person.id);
+    });
+
+    it('should not have message for pseudo person', async () => {
+      const pseudoPerson = { id: personId, is_pseudo_user: true };
+      const spy = jest.spyOn(personService, 'getById');
+      spy.mockResolvedValueOnce(pseudoPerson);
+      const res = await personService.buildPersonFeatureMap(personId);
+      expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.INVISIBLE);
+      expect(spy).toBeCalledWith(pseudoPerson.id);
     });
   });
 });

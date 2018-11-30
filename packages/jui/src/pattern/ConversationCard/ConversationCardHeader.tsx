@@ -31,7 +31,8 @@ const StyledStatus = styled('div')`
   color: ${grey('600')};
   flex-shrink: 1;
   white-space: nowrap;
-  ${typography('caption2')} ${ellipsis()};
+  ${typography('caption2')};
+  ${ellipsis()};
 `;
 const StyledTime = styled('div')`
   margin-left: ${spacing(2)};
@@ -41,6 +42,7 @@ const StyledTime = styled('div')`
 `;
 const StyledFrom = styled('div')`
   margin-left: ${spacing(1)};
+  margin-right: ${spacing(1)};
   color: ${primary('700')};
   font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
 `;
@@ -53,6 +55,13 @@ const StyledConversationCardHeader = styled('div')`
   display: flex;
   align-items: center;
 `;
+const StyledNotification = styled.div`
+  margin-left: 8px;
+  div {
+    font-size: ${({ theme }) => theme.typography.caption.fontSize};
+    color: ${grey('500')};
+  }
+`;
 
 type ConversationCardHeaderProps = {
   name: string;
@@ -60,6 +69,7 @@ type ConversationCardHeaderProps = {
   time: string;
   children?: React.ReactNode;
   from?: JSX.Element;
+  notification?: React.ReactNode;
 };
 
 const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
@@ -69,6 +79,9 @@ const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
       {props.status ? <StyledStatus>{props.status}</StyledStatus> : null}
       {props.from ? <StyledFrom>{props.from}</StyledFrom> : null}
       <StyledTime data-name="time">{props.time}</StyledTime>
+      {props.notification ? (
+        <StyledNotification>{props.notification}</StyledNotification>
+      ) : null}
     </StyledLeftSection>
     <RightSection>{props.children}</RightSection>
   </StyledConversationCardHeader>

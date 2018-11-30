@@ -18,7 +18,7 @@ class ChangeViewModel extends TeamViewModel implements ChangeViewProps {
 
   @computed
   get changerName() {
-    return this.getPerson(this.changerId).displayName;
+    return this.getPerson(this.changerId).userDisplayName;
   }
 
   @computed

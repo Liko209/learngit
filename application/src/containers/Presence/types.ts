@@ -3,19 +3,18 @@
  * @Date: 2018-10-16 15:13:14
  * Copyright © RingCentral. All rights reserved.
  */
-// import { JuiPresenceProps } from 'jui/components/Presence';
 import { PRESENCE } from 'sdk/src/service';
 
 type PresenceProps = {
   uid: number;
-  size?: 'small' | 'medium' | 'large' | 'profile';
-  borderSize?: 'small' | 'medium' | 'large' | 'profile';
+  size?: 'small' | 'medium' | 'large' | 'xlarge';
+  borderSize?: 'small' | 'medium' | 'large' | 'xlarge';
 };
 
 type PresenceViewProps = {
   presence: PRESENCE;
-  size?: 'small' | 'medium' | 'large' | 'profile';
-  borderSize?: 'small' | 'medium' | 'large' | 'profile';
+  size?: 'small' | 'medium' | 'large' | 'xlarge';
+  borderSize?: 'small' | 'medium' | 'large' | 'xlarge';
 };
 
 export { PresenceProps, PresenceViewProps };

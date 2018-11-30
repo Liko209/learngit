@@ -50,6 +50,11 @@ function markdownFromDelta(delta: Delta) {
       insert = `![](${insert.image})`;
     }
 
+    if (insert.mention) {
+      const { denotationChar, name, id } = insert.mention;
+      insert = `${denotationChar}[${name}]:${id}:`;
+    }
+
     if (attr) {
       for (const key in attr) {
         if (attr.hasOwnProperty(key) && key !== null) {

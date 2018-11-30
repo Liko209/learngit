@@ -7,7 +7,13 @@
 import { daoManager, ConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Group, GroupApiType, Raw, IResponseError } from '../../models';
+import {
+  Group,
+  GroupApiType,
+  Raw,
+  IResponseError,
+  SortableModel,
+} from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -16,6 +22,7 @@ import {
 import BaseService from '../../service/BaseService';
 import GroupServiceHandler from '../../service/group/groupServiceHandler';
 import ProfileService from '../../service/profile';
+import CompanyService from '../../service/company';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
 import GroupAPI from '../../api/glip/group';
@@ -38,7 +45,14 @@ import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
+import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
+import AccountService from '../account';
+import PersonService from '../person';
+import { compareName } from '../../utils/helper';
+import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
+import { isValidEmailAddress } from '../../utils/regexUtils';
+import { Api } from '../../api';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -60,6 +74,7 @@ class GroupService extends BaseService<Group> {
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
+    this.enableCache();
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
@@ -148,48 +163,61 @@ class GroupService extends BaseService<Group> {
     return super.getById(id) as Promise<Group | null>;
   }
 
-  async getGroupByPersonId(personId: number): Promise<Group[]> {
+  async getLocalGroup(personIds: number[]): Promise<Group | null> {
     try {
-      const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-      let members = [Number(personId), Number(userId)];
-      members = uniqueArray(members);
-      return await this.getGroupByMemberList(members);
-    } catch (e) {
-      mainLogger.error(`getGroupByPersonId error =>${e}`);
-      return [];
-    }
-  }
-
-  async getGroupByMemberList(members: number[]): Promise<Group[]> {
-    try {
-      const mem = uniqueArray(members);
-      const groupDao = daoManager.getDao(GroupDao);
-      const result = (await groupDao.queryGroupByMemberList(mem)) as Group[];
-      if (result.length !== 0) {
+      const result = this._queryGroupByMemberList(personIds);
+      if (result) {
         return result;
       }
-      return await this.requestRemoteGroupByMemberList(mem);
+      return null;
     } catch (e) {
-      mainLogger.error(`getGroupByMemberList error =>${e}`);
-      return [];
+      mainLogger.error(`getLocalGroup error =>${e}`);
+      return null;
     }
   }
 
-  async requestRemoteGroupByMemberList(members: number[]): Promise<Group[]> {
-    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(members);
+  async getGroupByPersonId(personId: number): Promise<Group | null> {
+    try {
+      return await this.getOrCreateGroupByMemberList([personId]);
+    } catch (e) {
+      mainLogger.error(`getGroupByPersonId error =>${e}`);
+      throw ErrorParser.parse(e);
+    }
+  }
+
+  async getOrCreateGroupByMemberList(members: number[]): Promise<Group | null> {
+    try {
+      const result = await this._queryGroupByMemberList(members);
+      if (result) {
+        return result;
+      }
+      return await this.requestRemoteGroupByMemberList(members);
+    } catch (e) {
+      mainLogger.error(`getOrCreateGroupByMemberList error =>${e}`);
+      throw ErrorParser.parse(e);
+    }
+  }
+
+  async requestRemoteGroupByMemberList(
+    members: number[],
+  ): Promise<Group | null> {
+    const memberIds = this._addCurrentUserToMemList(members);
+    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(
+      memberIds,
+    );
     try {
       const result = await GroupAPI.requestNewGroup(info);
       if (result.data) {
         const group = transform<Group>(result.data);
         await handleData([result.data]);
-        return [group];
+        return group;
       }
-      return [];
+      return null;
     } catch (e) {
       mainLogger.error(
         `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
       );
-      return [];
+      throw ErrorParser.parse(e);
     }
   }
 
@@ -334,7 +362,10 @@ class GroupService extends BaseService<Group> {
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
     const profileService: ProfileService = ProfileService.getInstance();
-    const result = profileService.markGroupAsFavorite(groupId, markAsFavorite);
+    const result = await profileService.markGroupAsFavorite(
+      groupId,
+      markAsFavorite,
+    );
     if (result instanceof BaseError && result.code >= 5300) {
       return ServiceCommonErrorType.SERVER_ERROR;
     }
@@ -441,6 +472,261 @@ class GroupService extends BaseService<Group> {
     } catch (error) {
       throw ErrorParser.parse(error);
     }
+  }
+
+  async buildGroupFeatureMap(
+    groupId: number,
+  ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>> {
+    const actionMap = new Map<FEATURE_TYPE, FEATURE_STATUS>();
+    actionMap.set(FEATURE_TYPE.CALL, FEATURE_STATUS.INVISIBLE); // can not make call in group
+
+    const group = await this.getGroupById(groupId);
+    actionMap.set(
+      FEATURE_TYPE.MESSAGE,
+      group ? this._checkGroupMessageStatus(group) : FEATURE_STATUS.INVISIBLE,
+    );
+
+    // To-Do
+    actionMap.set(FEATURE_TYPE.CONFERENCE, FEATURE_STATUS.INVISIBLE); // can not make conference in group for nwo
+    actionMap.set(FEATURE_TYPE.VIDEO, FEATURE_STATUS.INVISIBLE); // can not make video in group for now
+    return actionMap;
+  }
+
+  async isFavorited(id: number, type: number): Promise<boolean> {
+    let groupId: number | undefined = undefined;
+    switch (type) {
+      case TypeDictionary.TYPE_ID_PERSON: {
+        const group = await this.getLocalGroup([id]);
+        if (group) {
+          groupId = group.id;
+        }
+        break;
+      }
+      case TypeDictionary.TYPE_ID_GROUP:
+      case TypeDictionary.TYPE_ID_TEAM: {
+        groupId = id;
+        break;
+      }
+      default: {
+        mainLogger.error('isFavorited : should not run to here');
+      }
+    }
+
+    if (groupId) {
+      return await this._isGroupFavorited(groupId);
+    }
+
+    return false;
+  }
+
+  private async _isGroupFavorited(groupId: number): Promise<boolean> {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const profile = await profileService.getProfile();
+    const favoriteGroupIds =
+      profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
+    return favoriteGroupIds.some((x: number) => groupId === x);
+  }
+
+  private _checkGroupMessageStatus(group: Group) {
+    return this._isCurrentUserInGroup(group)
+      ? FEATURE_STATUS.ENABLE
+      : FEATURE_STATUS.INVISIBLE;
+  }
+
+  private _isCurrentUserInGroup(group: Group) {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    return group
+      ? group.members.some((x: number) => x === currentUserId)
+      : false;
+  }
+
+  async doFuzzySearchGroups(
+    searchKey: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  } | null> {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    if (!currentUserId) {
+      return null;
+    }
+    return this.searchEntitiesFromCache(
+      (group: Group, terms: string[]) => {
+        if (this._isValidGroup(group) && group.members.length > 2) {
+          const groupName = this.getGroupNameByMultiMembers(
+            group.members,
+            currentUserId,
+          );
+
+          if (
+            (terms.length > 0 && this.isFuzzyMatched(groupName, terms)) ||
+            (fetchAllIfSearchKeyEmpty && terms.length === 0)
+          ) {
+            return {
+              id: group.id,
+              displayName: groupName,
+              sortKey: groupName.toLowerCase(),
+              entity: group,
+            };
+          }
+        }
+        return null;
+      },
+      searchKey,
+      undefined,
+      this.sortEntitiesByName.bind(this),
+    );
+  }
+
+  async doFuzzySearchTeams(
+    searchKey?: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  } | null> {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    if (!currentUserId) {
+      return null;
+    }
+
+    return this.searchEntitiesFromCache(
+      (team: Group, terms: string[]) => {
+        return this._idValidTeam(team) &&
+          ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
+            (terms.length > 0 &&
+              this.isFuzzyMatched(team.set_abbreviation, terms))) &&
+          (team.privacy === 'protected' ||
+            team.members.find((id: number) => {
+              return id === currentUserId;
+            }))
+          ? {
+            id: team.id,
+            displayName: team.set_abbreviation,
+            sortKey: team.set_abbreviation.toLowerCase(),
+            entity: team,
+          }
+          : null;
+      },
+      searchKey,
+      undefined,
+      this.sortEntitiesByName.bind(this),
+    );
+  }
+
+  getGroupNameByMultiMembers(members: number[], currentUserId: number) {
+    const names: string[] = [];
+    const emails: string[] = [];
+
+    const personService: PersonService = PersonService.getInstance();
+    const diffMembers = _.difference(members, [currentUserId]);
+
+    diffMembers.forEach((id: number) => {
+      const person = personService.getEntityFromCache(id);
+      if (person) {
+        const name = personService.getName(person);
+        if (name.length > 0) {
+          names.push(name);
+        } else {
+          emails.push(person.email);
+        }
+      }
+    });
+
+    return names
+      .sort(compareName)
+      .concat(emails.sort(compareName))
+      .join(', ');
+  }
+
+  private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
+    const memberIds = this._addCurrentUserToMemList(ids);
+    const groupDao = daoManager.getDao(GroupDao);
+    return await groupDao.queryGroupByMemberList(memberIds);
+  }
+
+  private _addCurrentUserToMemList(ids: number[]) {
+    const accountService: AccountService = AccountService.getInstance();
+    const userId = accountService.getCurrentUserId();
+    if (userId) {
+      ids.push(userId);
+    }
+    return uniqueArray(ids);
+  }
+
+  isTeamAdmin(personId: number, permission?: TeamPermission) {
+    if (permission) {
+      // for some old team, thy don't have permission, so all member are admin
+      const adminUserIds = this._getTeamAdmins(permission);
+      return adminUserIds.some((x: number) => x === personId);
+    }
+    return true;
+  }
+
+  async getGroupEmail(groupId: number) {
+    const group = await this.getGroupById(groupId);
+    let email = '';
+    if (group) {
+      const companyService: CompanyService = CompanyService.getInstance();
+      const companyReplyDomain = await companyService.getCompanyEmailDomain(
+        group.company_id,
+      );
+
+      if (companyReplyDomain) {
+        const envDomain = this._getENVDomain();
+        if (group.email_friendly_abbreviation) {
+          email = `${
+            group.email_friendly_abbreviation
+          }@${companyReplyDomain}.${envDomain}`;
+        }
+
+        if (!isValidEmailAddress(email)) {
+          email = `${group.id}@${companyReplyDomain}.${envDomain}`;
+        }
+      }
+    }
+    return email;
+  }
+
+  private _getENVDomain() {
+    let apiServer = Api.httpConfig['glip'].server;
+    if (apiServer) {
+      let index = apiServer.indexOf('://');
+      if (index > -1) {
+        apiServer = apiServer.substr(index + 3);
+      }
+
+      index = apiServer.lastIndexOf(':');
+      if (index > -1) {
+        apiServer = apiServer.substring(0, index);
+      }
+
+      index = apiServer.indexOf('.');
+      if (index !== -1 && apiServer.substr(0, index) === 'app') {
+        apiServer = apiServer.substr(index + 1);
+      }
+    }
+    return apiServer;
+  }
+
+  private _isValidGroup(group: Group) {
+    return this._isValid(group) && !group.is_team;
+  }
+
+  private _idValidTeam(group: Group) {
+    return this._isValid(group) && group.is_team;
+  }
+
+  private _isValid(group: Group) {
+    return !group.is_archived && !group.deactivated && group.members;
+  }
+
+  private _getTeamAdmins(permission?: TeamPermission) {
+    return permission && permission.admin ? permission.admin.uids : [];
   }
 }
 

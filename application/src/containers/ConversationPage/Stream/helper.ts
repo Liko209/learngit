@@ -10,9 +10,13 @@ function scrollToComponent(
   options?: boolean | ScrollIntoViewOptions,
 ) {
   if (!component) return;
-  const el = ReactDOM.findDOMNode(component);
-  if (el && el instanceof HTMLElement) {
-    el.scrollIntoView(options);
+  try {
+    const el = ReactDOM.findDOMNode(component);
+    if (el && el instanceof HTMLElement) {
+      el.scrollIntoView(options);
+    }
+  } catch (err) {
+    console.warn(err);
   }
 }
 

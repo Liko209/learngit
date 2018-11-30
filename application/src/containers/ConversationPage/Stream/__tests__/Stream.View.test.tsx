@@ -1,19 +1,14 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { ConversationPost } from '../../../ConversationPost';
 import GroupStateModel from '@/store/models/GroupState';
 import { LoadingMorePlugin } from '@/plugins';
-import { StreamView } from '../Stream.View';
+import { StreamViewComponent as StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
-import { ThemeProvider as StyledThemeProvider } from 'styled-components';
-import { createMuiTheme } from '@material-ui/core';
+import { i18n } from 'i18next';
 
 jest.mock('../../../ConversationSheet', () => ({}));
-const context = {
-  scrollToRow: () => {},
-  onListAsyncMounted: (el: React.RefObject<any>) => {},
-};
 function renderJumpToFirstUnreadButton({
   hasHistoryUnread,
   firstHistoryUnreadInPage,
@@ -30,11 +25,9 @@ function renderJumpToFirstUnreadButton({
     loadInitialPosts: async () => {},
   };
 
-  const wrapper = mount(<StreamView {...props} />, {
-    context,
-  });
+  const wrapper = shallow(<StreamView {...props} />);
   (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
-  wrapper.instance().forceUpdate();
+  wrapper.update();
   const jumpToFirstUnreadButtonWrapper = wrapper.find(
     'JumpToFirstUnreadButtonWrapper',
   );
@@ -44,25 +37,35 @@ function renderJumpToFirstUnreadButton({
 }
 
 const baseProps = {
+  i18n: {} as i18n,
+  tReady: true,
   postIds: [],
+  t: () => 'a',
   items: [],
   groupId: 1,
   setRowVisible: jest.fn().mockName('setRowVisible'),
   markAsRead: jest.fn().mockName('markAsRead'),
   atBottom: jest.fn().mockName('atBottom'),
+  atTop: jest.fn().mockName('atTop'),
   enableNewMessageSeparatorHandler: jest
     .fn()
     .mockName('enableNewMessageSeparatorHandler'),
   plugins: {
     loadingMorePlugin: new LoadingMorePlugin(),
   },
-  hasMore: true,
+  hasMoreUp: true,
+  hasMoreDown: true,
   historyGroupState: {} as GroupStateModel,
   historyUnreadCount: 10,
   hasHistoryUnread: false,
   firstHistoryUnreadInPage: false,
   clearHistoryUnread: jest.fn().mockName('setHasUnread'),
   loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
+  jumpToPostId: 0,
+  loadInitialPosts: async () => {},
+  mostRecentPostId: 0,
+  resetJumpToPostId: () => null,
+  resetAll: (id: number) => {},
 };
 
 describe('StreamView', () => {
@@ -75,17 +78,16 @@ describe('StreamView', () => {
           { type: StreamItemType.POST, value: 1 },
           { type: StreamItemType.POST, value: 2 },
         ],
-        loadInitialPosts: async () => {},
       };
 
-      const wrapper = mount(<StreamView {...props} />, { context });
+      const wrapper = shallow(<StreamView {...props} />);
       const card = wrapper.find(ConversationPost);
       const card0 = card.at(0);
       const card1 = card.at(1);
 
       expect(card).toHaveLength(2);
-      expect(card0.props()).toEqual({ id: 1 });
-      expect(card1.props()).toEqual({ id: 2 });
+      expect(card0.props()).toMatchObject({ id: 1, highlight: false });
+      expect(card1.props()).toMatchObject({ id: 2, highlight: false });
       expect(card0.key()).toBe('1');
       expect(card1.key()).toBe('2');
     });
@@ -99,14 +101,8 @@ describe('StreamView', () => {
           { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
           { type: StreamItemType.POST, value: 2 },
         ],
-        loadInitialPosts: async () => {},
       };
-      const theme = { ...createMuiTheme(), size: { height: 20 } };
-      const wrapper = mount(
-        <StyledThemeProvider theme={theme}>
-          <StreamView {...props} />
-        </StyledThemeProvider>,
-      );
+      const wrapper = shallow(<StreamView {...props} />);
       expect(wrapper.find(ConversationPost)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
     });

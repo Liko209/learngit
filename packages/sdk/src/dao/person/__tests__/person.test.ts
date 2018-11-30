@@ -118,7 +118,10 @@ describe('PersonDao', () => {
   });
 
   it('Save items', async () => {
-    const person: Person = personFactory.build({ id: 100, email: 'steve.chen@ringcentral.com' });
+    const person: Person = personFactory.build({
+      id: 100,
+      email: 'steve.chen@ringcentral.com',
+    });
     await personDao.put(person);
     const matchedPerson = await personDao.get(100);
     expect(matchedPerson).toMatchObject(person);
@@ -172,7 +175,9 @@ describe('PersonDao', () => {
       });
 
       it('should not match when display_name matched but person has not last_name', async () => {
-        const persons = await personDao.searchPeopleByKey('I have no last_name');
+        const persons = await personDao.searchPeopleByKey(
+          'I have no last_name',
+        );
         expect(persons).toEqual([]);
       });
     });
@@ -199,7 +204,10 @@ describe('PersonDao', () => {
     });
 
     it('should support offset/limit', async () => {
-      const persons = await personDao.getPersonsByPrefix('A', { offset: 1, limit: 1 });
+      const persons = await personDao.getPersonsByPrefix('A', {
+        offset: 1,
+        limit: 1,
+      });
       const personNames = extractDisplayNames(persons);
 
       expect(personNames).toEqual(['Alvin Mao']);
@@ -217,18 +225,25 @@ describe('PersonDao', () => {
 
       expect(personsOfEachPrefix.get('#').length).toBe(1);
 
-      expect(_.map(personsOfEachPrefix.get('A'), 'display_name'))
-        .toEqual(['Albert Chen', 'Alvin Mao']);
+      expect(_.map(personsOfEachPrefix.get('A'), 'display_name')).toEqual([
+        'Albert Chen',
+        'Alvin Mao',
+      ]);
 
-      expect(_.map(personsOfEachPrefix.get('B'), 'display_name'))
-        .toEqual(['Bill Wang', 'boy lin']);
+      expect(_.map(personsOfEachPrefix.get('B'), 'display_name')).toEqual([
+        'Bill Wang',
+        'boy lin',
+      ]);
 
-      expect(_.map(personsOfEachPrefix.get('D'), 'display_name'))
-        .toEqual(['Devin Lin']);
+      expect(_.map(personsOfEachPrefix.get('D'), 'display_name')).toEqual([
+        'Devin Lin',
+      ]);
     });
 
     it('should should work with limit', async () => {
-      const personsOfEachPrefix = await personDao.getPersonsOfEachPrefix({ limit: 1 });
+      const personsOfEachPrefix = await personDao.getPersonsOfEachPrefix({
+        limit: 1,
+      });
       expect(personsOfEachPrefix.get('A')).toHaveLength(1);
     });
   });
@@ -350,6 +365,30 @@ describe('PersonDao', () => {
   describe('getAllCount()', () => {
     it('return total', async () => {
       await expect(personDao.getAllCount()).resolves.toEqual(10);
+    });
+  });
+
+  describe('getPersonsByIds', () => {
+    it('should get all not deactivated person in the id list', async () => {
+      await personDao.bulkPut([
+        personFactory.build({
+          id: 21,
+          first_name: 'thomas',
+          last_name: 'yang',
+          email: 'thomas.yang@ringcentral.com',
+          deactivated: true,
+        }),
+      ]);
+      const ids = [1, 3, 5, 7, 21];
+      const expectIds = [1, 3, 5, 7];
+      const res = await personDao.getPersonsByIds(ids);
+      expect(res).toHaveLength(expectIds.length);
+      const resIds: number[] = [];
+      res.forEach((element: Person) => {
+        resIds.push(element.id);
+      });
+
+      expect(resIds.sort()).toEqual(expectIds.sort());
     });
   });
 });

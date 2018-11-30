@@ -14,6 +14,7 @@ class TextMessageView extends React.Component<TextMessageViewProps> {
   constructor(props: TextMessageViewProps) {
     super(props);
   }
+
   render() {
     const { html } = this.props;
     return (

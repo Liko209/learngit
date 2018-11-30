@@ -4,14 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
+import { DialogActionsProps } from '@material-ui/core/DialogActions';
 import { JuiDialog, JuiDialogProps } from './Dialog';
 import { JuiDialogTitle } from './DialogTitle';
 import { JuiDialogContent } from './DialogContent';
 import { JuiDialogContentText } from './DialogContentText';
 import { JuiDialogActions } from './DialogActions';
-import { DialogActionsProps } from '@material-ui/core/DialogActions';
 
 import { spacing } from '../../foundation/utils';
+import { Omit } from '../../foundation/utils/typeHelper';
 import styled from '../../foundation/styled-components';
 import { JuiButton, JuiButtonProps } from '../Buttons/Button';
 
@@ -43,12 +44,25 @@ type JuiModalProps = {
 type ModalFunc = (
   props: JuiModalProps,
 ) => {
-  destroy: () => void;
+  dismiss: () => void;
+};
+
+type JuiDialogFuncProps = { componentProps?: any } & Omit<
+  JuiDialogProps,
+  'open'
+>;
+
+type DialogFunc = (
+  component: React.ComponentType<any>,
+  props?: JuiDialogFuncProps,
+) => {
+  dismiss: () => void;
 };
 
 class JuiModal extends Component<JuiModalProps, {}> {
   static alert: ModalFunc;
   static confirm: ModalFunc;
+  static open: DialogFunc;
 
   defaultFooter() {
     const {
@@ -128,4 +142,4 @@ class JuiModal extends Component<JuiModalProps, {}> {
   }
 }
 
-export { JuiModal, JuiModalProps };
+export { JuiModal, JuiModalProps, JuiDialogFuncProps };

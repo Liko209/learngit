@@ -23,3 +23,4 @@ registerConfigs.constants.forEach(config => container.registerConstantValue(conf
 const sdk: Sdk  = container.get(Sdk.name);
 export { sdk as Sdk };
 export { sdk, service, utils, dao, api };
+export { mainLogger } from 'foundation';

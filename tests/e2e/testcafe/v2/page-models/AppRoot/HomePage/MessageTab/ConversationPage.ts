@@ -1,4 +1,5 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
+import { ClientFunction } from 'testcafe';
 
 
 class BaseConversationPage extends BaseWebComponent {
@@ -16,7 +17,7 @@ class BaseConversationPage extends BaseWebComponent {
 
   get leftWrapper() {
     return this.header.find('.left-wrapper');
-  } 
+  }
 
   nthPostItem(nth: number) {
     return this.getComponent(PostItem, this.posts.nth(nth));
@@ -33,12 +34,33 @@ class BaseConversationPage extends BaseWebComponent {
   get stream() {
     return this.getSelectorByAutomationId('jui-stream');
   }
-
+  
+  // FIXME: find a more reliable method
   async expectStreamScrollToBottom() {
-    const scrollTop = await this.streamWrapper.child(0).scrollTop;
+    const scrollTop = await this.streamWrapper.scrollTop;
     const streamHeight = await this.stream.clientHeight;
     const streamWrapperHeight = await this.streamWrapper.clientHeight;
-    await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight,`${scrollTop}, ${streamHeight} - ${streamWrapperHeight}` );
+    await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+  }
+
+  async scrollToY(y: number) {
+    await this.t.eval(() => {
+      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
+    }, {
+      dependencies: { y }
+    });
+  }
+
+  async scrollToMiddle() {
+    const scrollHeight = await this.streamWrapper.clientHeight;
+    this.scrollToY(scrollHeight/2);
+  }
+
+  async scrollToBottom() {
+    await this.t.eval(() => {
+      const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
+      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
+    });
   }
 }
 
@@ -58,25 +80,25 @@ export class ConversationPage extends BaseConversationPage {
       .click(this.messageInputArea)
       .pressKey('enter');
   }
-  
-  async favorite(){
+
+  async favorite() {
     await this.t.click(this.leftWrapper.find('span').withText('star').nextSibling('input'));
   }
 
-  async unFavorite(){
+  async unFavorite() {
     await this.t.click(this.leftWrapper.find('span').withText('star_border').nextSibling('input'));
   }
-  
+
   get currentGroupId() {
     return this.self.getAttribute('data-group-id');
   }
-} 
+}
 
 export class MentionPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page');
   }
-} 
+}
 
 export class PostItem extends BaseWebComponent {
   get avatar() {
@@ -110,6 +132,6 @@ export class PostItem extends BaseWebComponent {
   }
 
   async goToConversation() {
-    await this.t.click(this.conversationName, { offsetX: 3 }); 
+    await this.t.click(this.conversationName, { offsetX: 3 });
   }
 }

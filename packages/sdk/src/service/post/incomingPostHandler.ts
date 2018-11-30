@@ -25,16 +25,21 @@ class IncomingPostHandler {
     transformedData: Post[],
     maxPostsExceed: boolean,
   ) {
-
     // tslint:disable-next-line:max-line-length
-    mainLogger.info(`maxPostsExceed: ${maxPostsExceed} transformedData.length: ${transformedData.length}`);
+    mainLogger.info(
+      `maxPostsExceed: ${maxPostsExceed} transformedData.length: ${
+        transformedData.length
+      }`,
+    );
     if (!(maxPostsExceed && transformedData.length >= ServerIndexPostMaxSize)) {
       return transformedData;
     }
     const groupPostsNumber = {};
     for (let i = 0; i < transformedData.length; i += 1) {
       if (groupPostsNumber[transformedData[i].group_id]) {
-        groupPostsNumber[transformedData[i].group_id].push(transformedData[i].id);
+        groupPostsNumber[transformedData[i].group_id].push(
+          transformedData[i].id,
+        );
       } else {
         groupPostsNumber[transformedData[i].group_id] = [transformedData[i].id];
       }
@@ -51,8 +56,8 @@ class IncomingPostHandler {
         const dao = daoManager.getDao(PostDao);
         let postsInDB: Post[] = [];
         await Promise.all(
-          postsShouldBeRemovedGroupIds.map(async (id) => {
-            const posts = await dao.queryPostsByGroupId(id, 0, 9999);
+          postsShouldBeRemovedGroupIds.map(async (id: number) => {
+            const posts = await dao.queryPostsByGroupId(id);
             postsInDB = postsInDB.concat(posts);
           }),
         );
@@ -65,46 +70,56 @@ class IncomingPostHandler {
       }
       return transformedData;
     } catch (e) {
-      mainLogger.warn(`handelGroupPostsDiscontinuousCasuedByOverThreshold, ${e}`);
+      mainLogger.warn(
+        `handelGroupPostsDiscontinuousCasuedByOverThreshold, ${e}`,
+      );
       return [];
     }
   }
 
   static isGroupPostsDiscontinuous(posts: Post[]) {
     for (let i = 0; i < posts.length; i += 1) {
-      if (posts[i].modified_at && posts[i].created_at !== posts[i].modified_at) {
+      if (
+        posts[i].modified_at &&
+        posts[i].created_at !== posts[i].modified_at
+      ) {
         return true;
       }
     }
     return false;
   }
 
-  static async removeDiscontinuousPosts(groupPosts: GroupPosts): Promise<number[]> {
+  static async removeDiscontinuousPosts(
+    groupPosts: GroupPosts,
+  ): Promise<number[]> {
     const keys = Object.keys(groupPosts);
     const groupIds = [];
-    const postQuerys = [];
+    const postQueries = [];
     const dao = daoManager.getDao(PostDao);
 
     for (let i = 0; i < keys.length; i += 1) {
       if (IncomingPostHandler.isGroupPostsDiscontinuous(groupPosts[keys[i]])) {
         const key = Number(keys[i]);
         groupIds.push(key);
-        postQuerys.push(dao.queryOldestPostByGroupId(key));
+        postQueries.push(dao.queryOldestPostByGroupId(key));
       }
     }
     try {
-      const result = await Promise.all(postQuerys);
+      const result = await Promise.all(postQueries);
 
-      // 1 filter out the post which could cause discontinous
+      // 1 filter out the post which could cause discontinuous
       let shouldBeMovedPosts: Post[] = [];
       for (let i = 0; i < groupIds.length; i += 1) {
         // if (result[i] === undefined) {
         if (!result || !result[i]) {
-          shouldBeMovedPosts = shouldBeMovedPosts.concat(groupPosts[groupIds[i]]);
+          shouldBeMovedPosts = shouldBeMovedPosts.concat(
+            groupPosts[groupIds[i]],
+          );
         } else {
           let tmpPosts = groupPosts[groupIds[i]];
-          tmpPosts = tmpPosts
-            .sort((post1: Post, post2: Post) => post1.created_at - post2.created_at);
+          tmpPosts = tmpPosts.sort(
+            (post1: Post, post2: Post) => post1.created_at - post2.created_at,
+          );
           // case b, post 6 in local db
           // incoming posts: 1,2,3,4,5,6; 5 is modified, should discard 1,2,3,4,5
           // that's why we need order
@@ -112,14 +127,16 @@ class IncomingPostHandler {
           for (let j = 0; j < tmpPosts.length; j += 1) {
             if (
               tmpPosts[j].created_at !== tmpPosts[j].modified_at &&
-              tmpPosts[j].created_at < (result[i] as NonNullable<Post>).created_at
+              tmpPosts[j].created_at <
+                (result[i] as NonNullable<Post>).created_at
             ) {
               lastModifiedIndex = j;
             }
           }
           if (lastModifiedIndex >= 0) {
-            shouldBeMovedPosts = shouldBeMovedPosts
-              .concat(tmpPosts.slice(0, lastModifiedIndex + 1));
+            shouldBeMovedPosts = shouldBeMovedPosts.concat(
+              tmpPosts.slice(0, lastModifiedIndex + 1),
+            );
           }
         }
       }
@@ -139,7 +156,9 @@ class IncomingPostHandler {
     }
   }
 
-  static async handleGroupPostsDiscontinuousCausedByModificationTimeChange(posts: Post[]) {
+  static async handleGroupPostsDiscontinuousCausedByModificationTimeChange(
+    posts: Post[],
+  ) {
     const groupPosts: GroupPosts = {};
     for (let i = 0; i < posts.length; i += 1) {
       if (groupPosts[posts[i].group_id]) {
@@ -148,8 +167,12 @@ class IncomingPostHandler {
         groupPosts[posts[i].group_id] = [posts[i]];
       }
     }
-    const removedIds = await IncomingPostHandler.removeDiscontinuousPosts(groupPosts);
-    const resultPosts = posts.filter((item: Post) => removedIds.indexOf(item.id) === -1);
+    const removedIds = await IncomingPostHandler.removeDiscontinuousPosts(
+      groupPosts,
+    );
+    const resultPosts = posts.filter(
+      (item: Post) => removedIds.indexOf(item.id) === -1,
+    );
     return resultPosts;
   }
 
@@ -172,7 +195,9 @@ class IncomingPostHandler {
           id => postsInDB.filter((item: Post) => item.id === id).length === 0,
         );
         if (editedPostsNotInDBIds.length !== 0) {
-          return transformedData.filter(item => editedPostsNotInDBIds.indexOf(item.id) === -1);
+          return transformedData.filter(
+            item => editedPostsNotInDBIds.indexOf(item.id) === -1,
+          );
         }
       }
       return transformedData;
@@ -182,19 +207,22 @@ class IncomingPostHandler {
   }
 
   static getDeactivatedPosts(validPosts: Post[]) {
-    const deactivedPosts = [];
+    const deactivatedPosts = [];
     for (let i = 0; i < validPosts.length; i += 1) {
       if (validPosts[i].deactivated) {
-        deactivedPosts.push(validPosts[i]);
+        deactivatedPosts.push(validPosts[i]);
       }
     }
-    return deactivedPosts;
+    return deactivatedPosts;
   }
 
-  static removeDeactivedPostFromValidPost(validPost: Post[], deactivedPosts: Post[]) {
-    return validPost.filter((item) => {
-      for (let i = 0; i < deactivedPosts.length; i += 1) {
-        if (item.id === deactivedPosts[i].id) {
+  static removeDeactivatedPostFromValidPost(
+    validPost: Post[],
+    deactivatedPosts: Post[],
+  ) {
+    return validPost.filter((item: Post) => {
+      for (let i = 0; i < deactivatedPosts.length; i += 1) {
+        if (item.id === deactivatedPosts[i].id) {
           return false;
         }
       }

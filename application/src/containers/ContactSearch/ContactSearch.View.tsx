@@ -41,6 +41,7 @@ class ContactSearch extends React.Component<Props> {
         ContactSearchItem={ContactSearchItem}
         error={error}
         helperText={helperText}
+        automationId="contactSearchSuggestionsList"
       />
     );
   }

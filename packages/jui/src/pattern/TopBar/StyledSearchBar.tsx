@@ -1,13 +1,11 @@
 /*
- * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-09-29 16:43:09
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2018-11-26 19:35:53
  * Copyright © RingCentral. All rights reserved.
  */
-import { JuiSearchBar } from '../SearchBar';
 import styled from '../../foundation/styled-components';
+import { JuiSearchBar } from '../SearchBar';
 
-const StyledSearchBar = styled(JuiSearchBar)``;
+const StyledJuiSearchBar = styled(JuiSearchBar)``;
 
-StyledSearchBar.displayName = 'StyledSearchBar';
-
-export { StyledSearchBar };
+export { StyledJuiSearchBar };

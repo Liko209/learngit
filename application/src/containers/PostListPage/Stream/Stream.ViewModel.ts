@@ -10,19 +10,20 @@ import StoreViewModel from '@/store/ViewModel';
 import { StreamProps } from './types';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { ENTITY_NAME } from '@/store/constants';
-import { FetchDataDirection, ISortableModel } from '@/store/base/fetch/types';
+import { ISortableModel } from '@/store/base/fetch/types';
 import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
 import { Post } from 'sdk/src/models';
 import { service } from 'sdk';
 import { EVENT_TYPES, ENTITY } from 'sdk/service';
 import { transform2Map } from '@/store/utils';
 import { PostService as IPostService } from 'sdk/src/service';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 const { PostService } = service;
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
   private _isMatchFunc(post: Post) {
-    return this._postIds.includes(post.id) && !post.deactivated;
+    return !post.deactivated;
   }
 
   private _options = {
@@ -51,8 +52,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   fetchData = async (
-    offset: number,
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: ISortableModel<Post>,
   ) => {
@@ -69,7 +69,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       hasMore = end < this._postIds.length - 1;
     } else {
       ids = _(this._postIds)
-        .slice(undefined, pageSize + 1)
+        .slice(0, pageSize)
         .value();
       hasMore = this._postIds.length > pageSize;
     }
@@ -83,7 +83,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   constructor() {
     super();
-    this.fetchInitialPosts = this.fetchInitialPosts.bind(this);
     this._sortableListHandler = new FetchSortableDataListHandler<Post>(
       this._postProvider,
       this._options,
@@ -92,17 +91,23 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   async onReceiveProps(props: StreamProps) {
-    const store = this._sortableListHandler.sortableListStore;
-    if (this.props.type !== props.type) {
-      return store.clear();
+    const postIds = props.postIds.sort().reverse();
+    // when comp did mount
+    if (!this._postIds.length && postIds.length) {
+      this._postIds = postIds;
+      this.fetchInitialPosts();
+      return;
     }
-    if (this._postIds.length !== props.postIds.length) {
-      const added = _(props.postIds)
+    // when comp did update
+    if (this._postIds.length !== postIds.length) {
+      const added = _(postIds)
         .difference(this._postIds)
         .value();
-      this._postIds = props.postIds.reverse();
+      const deleted = _(this._postIds)
+        .difference(postIds)
+        .value();
+      const postService = PostService.getInstance() as IPostService;
       if (added.length) {
-        const postService = PostService.getInstance() as IPostService;
         const { posts } = await postService.getPostsByIds(added);
         this._sortableListHandler.onDataChanged({
           type: EVENT_TYPES.UPDATE,
@@ -112,6 +117,15 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           },
         });
       }
+      if (deleted.length) {
+        this._sortableListHandler.onDataChanged({
+          type: EVENT_TYPES.DELETE,
+          body: {
+            ids: deleted,
+          },
+        });
+      }
+      this._postIds = postIds;
     }
   }
 
@@ -127,7 +141,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   private async _batchFetchPosts() {
-    const direction = FetchDataDirection.DOWN;
+    const direction = QUERY_DIRECTION.NEWER;
     if (this._sortableListHandler.hasMore(direction)) {
       return this._sortableListHandler.fetchData(direction);
     }
