@@ -48,7 +48,8 @@ const StyledDescription = styled.div`
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-  max-height: ${height(11)};
+  max-height: ${height(12)};
+  line-height: ${height(4)};
 `;
 const StyledBottomButton = styled.div`
   margin-top: ${spacing(3)};
