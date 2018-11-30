@@ -114,6 +114,20 @@ function grey(sub: string, opacity?: number) {
   return palette('grey', sub, opacity);
 }
 
+function activeOpacity() {
+  return css`
+    opacity: ${({ theme }: { theme: Theme }) =>
+      1 - theme.palette.action.hoverOpacity * 2};
+  `;
+}
+
+function disabledOpacity() {
+  return css`
+    opacity: ${({ theme }: { theme: Theme }) =>
+      theme.palette.action.hoverOpacity * 2};
+  `;
+}
+
 /********************************************
  *              Typography                  *
  ********************************************/
@@ -174,6 +188,8 @@ export {
   primary,
   secondary,
   grey,
+  activeOpacity,
+  disabledOpacity,
   typography,
   ellipsis,
   rippleEnter,

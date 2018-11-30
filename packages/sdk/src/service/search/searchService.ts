@@ -23,7 +23,6 @@ import {
   InitialSearchResp,
   SearchResult,
 } from './types.d';
-import { IResponse } from '../../api/NetworkClient';
 import { SOCKET } from '../eventKey';
 
 class SearchService extends BaseService {
@@ -88,9 +87,7 @@ class SearchService extends BaseService {
       .join(' ');
   }
 
-  async cancelSearchRequest(
-    requestId: RequestId,
-  ): Promise<IResponse<SearchResult>> {
+  async cancelSearchRequest(requestId: RequestId) {
     const params: CancelRequestParam = {
       previous_server_request_id: requestId,
     };
@@ -118,15 +115,18 @@ class SearchService extends BaseService {
     const q = query.queryString;
     const params = Object.assign({ q }, _params);
     const resp = await SearchAPI.search(params);
-    return resp.data;
+    const data = resp.expect('search data error');
+    return data;
   }
 
-  fetchResultsByPage(query: QueryByPageNum): Promise<IResponse<SearchResult>> {
+  async fetchResultsByPage(query: QueryByPageNum): Promise<SearchResult> {
     const params = {
       scroll_request_id: query.pageNum,
       search_request_id: this.activeServerRequestId,
     };
-    return SearchAPI.scrollSearch(params);
+    const result = await SearchAPI.scrollSearch(params);
+    const data = result.expect('scrollSearch failed');
+    return data;
   }
 
   cancel() {

@@ -7,6 +7,7 @@ export * from './ioc';
 export * from './db';
 export * from './network';
 export * from './log';
+export * from './result';
 
 export { default as Foundation } from './Foundation';
 export { default as config } from './config';
