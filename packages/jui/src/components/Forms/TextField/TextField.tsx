@@ -33,9 +33,11 @@ class JuiTextField extends React.Component<Props, {}> {
   }
 
   onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const { onKeyDown } = this.props;
     if (e.key === 'ArrowUp') {
       e.preventDefault();
     }
+    onKeyDown && onKeyDown(e);
   }
 
   render() {
