@@ -135,7 +135,7 @@ export class PostItem extends BaseWebComponent {
     await this.t.click(this.conversationName, { offsetX: 3 });
   }
 
-  get JumpToConversationButton() {
+  get jumpToConversationButton() {
     return this.self.find(`span`).withText('Jump To Conversation');
     }
 
@@ -145,6 +145,6 @@ export class PostItem extends BaseWebComponent {
 
 
     async clickConversationByButton() {
-    await this.t.hover(this.self).click(this.JumpToConversationButton);
+    await this.t.hover(this.self).click(this.jumpToConversationButton);
     }
 }
