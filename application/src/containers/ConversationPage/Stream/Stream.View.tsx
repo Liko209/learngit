@@ -92,6 +92,7 @@ class StreamViewComponent extends Component<Props> {
     const { groupId, postIds, loadInitialPosts } = this.props;
     const { groupId: prevGroupId, postIds: prevPostIds } = prevProps;
     const { atTop, atBottom } = snapshot;
+
     if (groupId !== prevGroupId) {
       this._tidiesBeforeDestroy();
       await loadInitialPosts();
@@ -159,7 +160,9 @@ class StreamViewComponent extends Component<Props> {
 
   private get _initialPost() {
     const { groupId, hasMoreUp } = this.props;
-    return hasMoreUp ? null : (
+    const hasHistoryMessage = this.props.items.length > 0;
+
+    return hasMoreUp || hasHistoryMessage ? null : (
       <VisibilitySensor
         offset={VISIBILITY_SENSOR_OFFSET}
         onChange={this._handleFirstUnreadPostVisibilityChange}
