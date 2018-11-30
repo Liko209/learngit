@@ -134,7 +134,6 @@ describe('PostServiceHandler', () => {
         text: 'new text',
         new_version: 'versionHash',
         is_new: false,
-        at_mention_non_item_ids: [1],
       });
     });
 
