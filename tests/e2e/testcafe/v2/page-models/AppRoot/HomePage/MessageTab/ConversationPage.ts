@@ -34,7 +34,7 @@ class BaseConversationPage extends BaseWebComponent {
   get stream() {
     return this.getSelectorByAutomationId('jui-stream');
   }
-  
+
   // FIXME: find a more reliable method
   async expectStreamScrollToBottom() {
     const scrollTop = await this.streamWrapper.scrollTop;
@@ -134,4 +134,17 @@ export class PostItem extends BaseWebComponent {
   async goToConversation() {
     await this.t.click(this.conversationName, { offsetX: 3 });
   }
+
+  get JumpToConversationButton() {
+    return this.self.find(`span`).withText('Jump To Conversation');
+    }
+
+    async jumpToAtMentionConversation() {
+    await this.t.click(this.self);
+    }
+
+
+    async clickConversationByButton() {
+    await this.t.hover(this.self).click(this.JumpToConversationButton);
+    }
 }
