@@ -82,7 +82,7 @@ class CreateTeamViewModel extends AbstractViewModel {
       }
       return item.email;
     });
-    this.errorMsg = '';
+    this.emailErrorMsg = '';
     this.emailError = false;
     this.members = members;
   }

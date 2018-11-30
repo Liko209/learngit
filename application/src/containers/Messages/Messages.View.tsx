@@ -55,6 +55,12 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
             )}
           />
           <Route
+            path={`/messages/${POST_LIST_TYPE.bookmarks}`}
+            render={props => (
+              <PostListPage {...props} type={POST_LIST_TYPE.bookmarks} />
+            )}
+          />
+          <Route
             path="/messages/:id"
             render={props => (
               <ConversationPage {...props} groupId={currentConversationId} />

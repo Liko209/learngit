@@ -55,6 +55,22 @@ class ConversationEntry extends BaseWebComponent {
     return Number(text);
   }
 
+  async expectUmi(n: number, waitTime: number = 10) {
+    let i = 0;
+    while (true) {
+      await this.t.wait(1e3);
+      try {
+        await this.t.expect(await this.getUmi()).eql(n);
+        return;
+      } catch (err) {
+        if (i >= waitTime) {
+          throw err;
+        }
+        i = i + 1;
+      }
+    }
+  }
+
   async openMoreMenu() {
     const moreButton = this.moreMenuEntry;
     await this.t.expect(moreButton.exists).ok();
@@ -68,25 +84,6 @@ class ConversationEntry extends BaseWebComponent {
 
   get hasDraftMessage() {
     return this.self.find('.material-icons').withText('border_color').exists;
-  }
-
-  async waitUntilUmiExist(exist: boolean, timeout = 20) {
-    let tryTime = 0;
-    let count = await this.getUmi();
-    if (exist == !!count) {
-      return
-    }
-    while (true) {
-      if (tryTime >= timeout) {
-        throw (`Wait until conversation without UMI: timeout: ${timeout}s`)
-      }
-      tryTime = tryTime + 1;
-      await this.t.wait(1e3);
-      count = await this.getUmi();
-      if (exist == !!(count)) {
-        break
-      }
-    }
   }
 
   async enter() {
@@ -122,6 +119,22 @@ class ConversationListSection extends BaseWebComponent {
     return Number(text);
   }
 
+  async expectHeaderUmi(n: number, waitTime: number = 10) {
+    let i = 0;
+    while (true) {
+      await this.t.wait(1e3);
+      try {
+        await this.t.expect(await this.getHeaderUmi()).eql(n);
+        return;
+      } catch (err) {
+        if (i >= waitTime) {
+          throw err;
+        }
+        i = i + 1;
+      }
+    }
+  }
+
   get collapse() {
     return this.self.find('.conversation-list-section-collapse').parent(2);
   }
@@ -134,11 +147,11 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.nth(n));
   }
 
-  conversationByIdEntry(groupId: string) {
+  conversationEntryById(groupId: string) {
     return this.getComponent(ConversationEntry, this.conversations.filter(`[data-group-id="${groupId}"]`));
   }
 
-  conversationByNameEntry(name: string) {
+  conversationEntryByName(name: string) {
     return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name));
   }
 
@@ -189,12 +202,10 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
-export class MessagePanel extends BaseWebComponent {
+export class MessageTab extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
-    return this.getSelector(
-      '[data-test-automation-id="messagePanel"]',
-    ).nextSibling();
+    return this.getSelectorByAutomationId('leftRail').parent(1);
   }
 
   private getSection(name: string) {
@@ -216,7 +227,7 @@ export class MessagePanel extends BaseWebComponent {
     return this.getSection('Teams');
   }
   get mentionsEntry() {
-    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions')); 
+    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'));
   }
   get conversationPage() {
     return this.getComponent(ConversationPage);

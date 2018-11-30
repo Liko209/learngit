@@ -75,6 +75,7 @@ function getPalette(name: keyof Palette, sub: string = 'main') {
  * Palette
  * @param name
  * @param sub
+ * @param opacity
  */
 function palette(name: keyof Palette, sub: string, opacity?: number) {
   if (opacity) {
@@ -89,25 +90,28 @@ function palette(name: keyof Palette, sub: string, opacity?: number) {
 /**
  * primary color
  * @param sub
+ * @param opacity
  */
-function primary(sub: string = 'main') {
-  return palette('primary', sub);
+function primary(sub: string = 'main', opacity?: number) {
+  return palette('primary', sub, opacity);
 }
 
 /**
  * secondary color
  * @param sub
+ * @param opacity
  */
-function secondary(sub: string = 'main') {
-  return palette('secondary', sub);
+function secondary(sub: string = 'main', opacity?: number) {
+  return palette('secondary', sub, opacity);
 }
 
 /**
  * grey
  * @param sub
+ * @param opacity
  */
-function grey(sub: string) {
-  return palette('grey', sub);
+function grey(sub: string, opacity?: number) {
+  return palette('grey', sub, opacity);
 }
 
 /********************************************

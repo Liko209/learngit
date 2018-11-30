@@ -40,7 +40,7 @@ test.skip(formalName(
     });
 
     await h(t).withLog('Then I can find 1 private chat and 1 group chat in direct messages section', async () => {
-      const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
+      const directMessagesSection = app.homePage.messageTab.directMessagesSection;
       await directMessagesSection.expand();
       await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${chat.data.id}"]`).exists).ok();
       await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group.data.id}"]`).exists).ok();

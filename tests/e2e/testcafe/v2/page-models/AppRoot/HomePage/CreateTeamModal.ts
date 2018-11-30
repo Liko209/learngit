@@ -10,10 +10,16 @@ export class CreateTeamModal extends BaseWebComponent {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
   }
+  
 
   get cancelButton() {
     this.warnFlakySelector();
     return this.self.find('button').nth(0);
+  }
+
+  get CTself () {
+    this.warnFlakySelector();
+    return this.self.find('button').nth(1);
   }
 
   get createButton() {
@@ -42,8 +48,8 @@ export class CreateTeamModal extends BaseWebComponent {
     await this.t.click(this.getToggleButton(1));
   }
 
-  async inputTeamNameRandom(uid) {
-    await this.t.typeText(this.teamNameInput, `${uid}`, {
+  async setTeamName(teamName) {
+    await this.t.typeText(this.teamNameInput, `${teamName}`, {
       replace: true,
     });
   }
@@ -63,4 +69,22 @@ export class CreateTeamModal extends BaseWebComponent {
   async clickCreateButton() {
     await this.t.click(this.createButton);
   }
+ 
+
+  async click() {
+    await this.t.click(this.self);
+  }
+
+  get isDisable(): Promise<boolean> {
+    return this.CTself.hasAttribute('disabled');
+  }
+
+  async createTeamButtonShouldBeDisabled() {
+    await this.t.expect(this.isDisable).ok();
+  }
+
+  async createdTeamButtonShouldBeEnabled() {
+    await this.t.expect(this.isDisable).notOk();
+  }
+
 }

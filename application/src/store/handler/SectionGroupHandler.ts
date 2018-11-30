@@ -7,7 +7,6 @@
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-  FetchDataDirection,
   ISortableModel,
   IFetchSortableDataListHandlerOptions,
 } from '@/store/base/fetch';
@@ -25,6 +24,7 @@ import _ from 'lodash';
 import storeManager from '@/store';
 import history from '@/history';
 import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 const { GroupService, StateService, ProfileService } = service;
 
@@ -43,8 +43,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   }
 
   async fetchData(
-    offset: number,
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     pageSize: number,
     anchor: ISortableModel<Group>,
   ): Promise<{ data: Group[]; hasMore: boolean }> {
@@ -123,14 +122,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     groupIds: number[],
     shouldAdd: boolean,
   ) {
-    const groupService = GroupService.getInstance<service.GroupService>();
-    const groups = await groupService.getGroupsByIds(groupIds);
     if (shouldAdd) {
+      const groupService = GroupService.getInstance<service.GroupService>();
+      const groups = await groupService.getGroupsByIds(groupIds);
       this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(groups);
       this._handlersMap[SECTION_TYPE.TEAM].upsert(groups);
     } else {
-      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].removeByIds(groups);
-      this._handlersMap[SECTION_TYPE.TEAM].removeByIds(groups);
+      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].removeByIds(groupIds);
+      this._handlersMap[SECTION_TYPE.TEAM].removeByIds(groupIds);
     }
   }
 
@@ -302,7 +301,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       dataProvider,
       config,
     );
-    this.fetchGroups(sectionType, FetchDataDirection.DOWN);
+    this.fetchGroups(sectionType, QUERY_DIRECTION.NEWER);
   }
 
   private _addFavoriteSection() {
@@ -360,7 +359,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     });
   }
 
-  async fetchGroups(sectionType: SECTION_TYPE, direction: FetchDataDirection) {
+  async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
     if (this._handlersMap[sectionType]) {
       await this._handlersMap[sectionType].fetchData(direction);
       const ids = this._handlersMap[sectionType].sortableListStore.getIds();

@@ -17,19 +17,16 @@ type BuildContainerOptions<T> = {
   View: ComponentType<any>;
   plugins?: () => Plugins;
 };
-type TIntrinsticProps = {
-  scrollerRef?: any;
-};
+
 function buildContainer<P = {}, S = {}, SS = any>({
   View,
   ViewModel,
   plugins,
 }: BuildContainerOptions<P>) {
-  type Props = P & TIntrinsticProps;
   const ObserverView = observer(View);
 
   @observer
-  class Container extends Component<Props, S, SS> {
+  class Container extends Component<P, S, SS> {
     static displayName = View.displayName
       ? `Container(${View.displayName})`
       : 'Container';
@@ -38,7 +35,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
     View: ComponentType<any>;
     plugins: Plugins;
 
-    constructor(props: Props) {
+    constructor(props: P) {
       super(props);
       this.plugins = this._createPlugins();
       this.View = this._createView(ObserverView);

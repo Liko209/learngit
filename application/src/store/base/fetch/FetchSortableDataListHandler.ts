@@ -9,7 +9,6 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { EVENT_TYPES } from 'sdk/service';
 import {
   ISortableModel,
-  FetchDataDirection,
   IMatchFunc,
   ITransformFunc,
   ISortFunc,
@@ -23,6 +22,7 @@ import {
 import { SortableListStore } from './SortableListStore';
 import _ from 'lodash';
 import { transform2Map } from '@/store/utils';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
@@ -33,8 +33,7 @@ export interface IFetchSortableDataListHandlerOptions<T>
 }
 export interface IFetchSortableDataProvider<T> {
   fetchData(
-    offset: number,
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: ISortableModel<T>,
   ): Promise<{ data: T[]; hasMore: boolean }>;
@@ -69,18 +68,15 @@ export class FetchSortableDataListHandler<
   }
 
   protected async fetchDataInternal(
-    offset: number,
-    direction: FetchDataDirection,
+    direction: QUERY_DIRECTION,
     pageSize: number,
     anchor: ISortableModel<T>,
   ) {
     const { data, hasMore } = await this._sortableDataProvider.fetchData(
-      offset,
       direction,
       pageSize,
       anchor,
     );
-
     const sortableResult: ISortableModel<T>[] = [];
     data.forEach((element: T) => {
       sortableResult.push(this._transformFunc(element));
@@ -170,7 +166,7 @@ export class FetchSortableDataListHandler<
           deleted: notMatchedKeys,
           added: [],
           updated: [],
-          direction: FetchDataDirection.DOWN,
+          direction: QUERY_DIRECTION.NEWER,
         });
     }
   }
@@ -186,22 +182,22 @@ export class FetchSortableDataListHandler<
       if (!inRange) {
         inRange =
           (sortValue < smallest.sortValue &&
-            !this.hasMore(FetchDataDirection.UP)) ||
+            !this.hasMore(QUERY_DIRECTION.OLDER)) ||
           (sortValue > biggest.sortValue &&
-            !this.hasMore(FetchDataDirection.DOWN));
+            !this.hasMore(QUERY_DIRECTION.NEWER));
       }
     } else {
       inRange = !(
-        this.hasMore(FetchDataDirection.DOWN) &&
-        this.hasMore(FetchDataDirection.UP)
+        this.hasMore(QUERY_DIRECTION.NEWER) &&
+        this.hasMore(QUERY_DIRECTION.OLDER)
       );
     }
     return inRange;
   }
 
-  protected handleHasMore(hasMore: boolean, direction: FetchDataDirection) {
+  protected handleHasMore(hasMore: boolean, direction: QUERY_DIRECTION) {
     let inFront = false;
-    if (direction === FetchDataDirection.UP) {
+    if (direction === QUERY_DIRECTION.OLDER) {
       inFront = true;
     }
     this.sortableListStore.setHasMore(hasMore, inFront);

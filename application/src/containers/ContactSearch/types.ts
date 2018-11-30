@@ -15,6 +15,7 @@ type ContactSearchProps = {
   placeholder: string;
   error: boolean;
   helperText: string;
+  isExcludeMe?: boolean;
 };
 
 type ViewProps = {
