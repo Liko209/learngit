@@ -4,6 +4,8 @@ import * as path from 'path';
 import { IStep, Status } from '../models';
 import { getLogger } from 'log4js';
 import { H } from './utils';
+import * as fs from 'fs'
+import * as sharp from 'sharp'
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -16,13 +18,31 @@ export class LogHelper {
     this.t.ctx.logs = [];
   }
 
-  async takeScreenShot() {
+  async takeScreenShot(): Promise<string> {
     if (await H.isElectron()) {
       return null;
     }
     const imageFileName = `${uuid()}.png`;
     await this.t.takeScreenshot(imageFileName);
-    return path.join(this.t['testRun'].opts.screenshotPath, imageFileName);
+    const imageFilePath = path.join(this.t['testRun'].opts.screenshotPath, imageFileName)
+    return await this.convertToWebp(imageFilePath);;
+  }
+
+  async convertToWebp(attachmentPath: string) {
+    const webpScreenShotPath = attachmentPath + ".webp";
+    const image =  sharp(attachmentPath);
+    await image
+      .metadata()
+      .then(function (metadata) {
+        return image
+          .resize(Math.round(metadata.width / 2))
+          .webp({ quality: 10 })
+          .toBuffer();
+      })
+      .then((data) => {
+        fs.writeFileSync(webpScreenShotPath, data)
+      });
+    return webpScreenShotPath;
   }
 
   writeStep(step: IStep) {
