@@ -72,7 +72,7 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
             aria-label={t(goToMessageInfo)}
           >
             <JuiIconography>chat_bubble</JuiIconography>
-            Message
+            {t('Message')}
           </StyledMessageBtn>
         ) : null}
       </JuiGroupProfileBody>

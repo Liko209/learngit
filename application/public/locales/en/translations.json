@@ -121,5 +121,6 @@
   "Guest": "Guest",
   "Admin": "Admin",
   "goToGroupConversation": "Go to the conversation with the group",
-  "goToTeamConversation": "Go to the conversation with team"
+  "goToTeamConversation": "Go to the conversation with team",
+  "Message": "Message"
 }
