@@ -13,8 +13,9 @@ import { Avatar } from '@/containers/Avatar';
 // import { Person } from 'sdk/src/models';
 
 const Chip = (props: any) => {
+  console.log(props.isError, '---------iserror');
   return props.uid ? (
-    <JuiChip ChipAvatar={Avatar} {...props} />
+    <JuiChip ChipAvatar={Avatar} isError={props.isError} {...props} />
   ) : (
     <JuiChip {...props} />
   );

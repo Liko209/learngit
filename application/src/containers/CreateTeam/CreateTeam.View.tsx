@@ -160,12 +160,12 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           onChange={handleNameChange}
         />
         <ContactSearch
-          errorEmail={errorEmail}
           onChange={handleSearchContactChange}
           label={t('Members')}
           placeholder={t('Search Contact Placeholder')}
           error={emailError}
           helperText={emailError && t(emailErrorMsg)}
+          errorEmail={errorEmail}
           isExcludeMe={true}
         />
         <JuiTextarea

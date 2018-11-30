@@ -22,6 +22,8 @@ class NewMessageViewModel extends StoreViewModel {
   serverError: boolean = false;
   @observable
   members: (number | string)[] = [];
+  @observable
+  errorEmail: string;
 
   @computed
   get disabledOkBtn() {
@@ -97,9 +99,13 @@ class NewMessageViewModel extends StoreViewModel {
     return result;
   }
 
-  newMessageErrorHandler(error: IResponseError) {
-    const code = error.error.code;
+  newMessageErrorHandler(errorData: IResponseError) {
+    const code = errorData.error.code;
     if (code === 'invalid_field') {
+      const message = errorData.error.message;
+      // 'This is not a valid email address: q@qq.com .'
+      const email = message.substr(0, message.length - 1).split(':')[1];
+      this.errorEmail = email.trim();
       this.emailErrorMsg = 'Invalid Email';
       this.emailError = true;
     }

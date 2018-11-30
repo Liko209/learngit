@@ -72,6 +72,7 @@ class NewMessage extends React.Component<NewMessageProps, State> {
       updateCreateTeamDialogState,
       isOffline,
       serverError,
+      errorEmail,
     } = this.props;
     return (
       <JuiModal
@@ -98,6 +99,7 @@ class NewMessage extends React.Component<NewMessageProps, State> {
           placeholder={t('Search Contact Placeholder')}
           error={emailError}
           helperText={emailError && t(emailErrorMsg)}
+          errorEmail={errorEmail}
         />
         <JuiTextarea
           placeholder={t('Type new message')}

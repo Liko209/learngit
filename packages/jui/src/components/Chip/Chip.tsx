@@ -7,21 +7,25 @@ import * as React from 'react';
 import MuiChip, { ChipProps as MuiChipProps } from '@material-ui/core/Chip';
 import { JuiIconButton } from '../Buttons/IconButton';
 import styled from '../../foundation/styled-components';
-import { width, spacing, height } from '../../foundation/utils/styles';
+import { width, spacing, height, palette } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 
 type TJuiChipProps = {
   uid?: number;
   ChipAvatar?: React.ComponentType<any>;
   onDelete?: (event: any) => void;
+  isError?: boolean;
 } & Omit<MuiChipProps, 'innerRef'>;
 
-const StyledChip = styled(MuiChip)`
+const StyledChip = styled<TJuiChipProps>(MuiChip)`
   && {
     margin: ${spacing(1)};
     padding: ${spacing(1)};
     box-sizing: border-box;
     overflow: hidden;
+    border-color: ${({ isError }) =>
+      isError && palette('semantic', 'negative')};
+    color: ${({ isError }) => isError && palette('semantic', 'negative')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity * 1};
     }
@@ -45,7 +49,7 @@ const StyledChip = styled(MuiChip)`
 `;
 
 export const JuiChip: React.SFC<TJuiChipProps> = (props: TJuiChipProps) => {
-  const { onDelete, ChipAvatar, ...rest } = props;
+  const { onDelete, ChipAvatar, isError, ...rest } = props;
   const avatar: any = ChipAvatar ? (
     <ChipAvatar size="small" uid={rest.uid} />
   ) : null;
@@ -55,9 +59,19 @@ export const JuiChip: React.SFC<TJuiChipProps> = (props: TJuiChipProps) => {
       {...rest}
       onDelete={onDelete}
       avatar={avatar}
-      classes={{ deleteIcon: 'deleteIcon', label: 'label', avatar: 'avatar' }}
+      variant={isError ? 'outlined' : 'default'}
+      isError={isError}
+      classes={{
+        deleteIcon: 'deleteIcon',
+        label: 'label',
+        avatar: 'avatar',
+      }}
       deleteIcon={
-        <JuiIconButton variant="plain" tooltipTitle="remove">
+        <JuiIconButton
+          variant="plain"
+          tooltipTitle="remove"
+          color={isError ? 'semantic.negative' : 'grey.500'}
+        >
           cancel
         </JuiIconButton>
       }
