@@ -62,6 +62,11 @@ type CreateTeamOptions = {
   canPin?: boolean;
 };
 
+const handleTeamsRemovedFrom = (ids: number[]) => {
+  const service: GroupService = GroupService.getInstance();
+  console.log(service);
+};
+
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
 
@@ -72,6 +77,7 @@ class GroupService extends BaseService<Group> {
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
+      [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
     this.enableCache();

@@ -21,7 +21,6 @@ class PersonService extends BaseService<Person> {
   constructor() {
     const subscription = {
       [SOCKET.PERSON]: handleData,
-      [SOCKET.ITEM]: handleData,
     };
     super(PersonDao, PersonAPI, handleData, subscription);
     this.enableCache();
