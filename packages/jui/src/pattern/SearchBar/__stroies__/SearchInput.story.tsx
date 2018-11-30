@@ -8,7 +8,7 @@
  * @Date: 2018-9-30 14:45:02
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiSearchInput } from '../';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
@@ -18,14 +18,30 @@ storiesOf('Pattern/SearchBar', module)
   .addDecorator(withInfoDecorator(JuiSearchInput, { inline: true }))
   .add('SearchInput', () => {
     const focus = boolean('focus', false);
-    return (
-      <div>
-        <JuiSearchInput
-          focus={focus}
-          value=""
-          onChange={() => {}}
-          onClear={() => {}}
-        />
-      </div>
-    );
+
+    class Test extends React.Component {
+      state = {
+        value: '',
+      };
+      onChange = (e: ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+          value: e.target.value,
+        });
+      }
+      render() {
+        return (
+          <div>
+            <JuiSearchInput
+              focus={focus}
+              value={this.state.value}
+              placeholder="search"
+              onChange={this.onChange}
+              onClear={() => {}}
+              showCloseBtn={true}
+            />
+          </div>
+        );
+      }
+    }
+    return <Test />;
   });
