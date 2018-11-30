@@ -28,7 +28,7 @@ const handleTeamRemovedIds = async (people: any[]) => {
       return false;
     });
     ids.length &&
-      notificationCenter.emit(SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM);
+      notificationCenter.emit(SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM, ids);
   }
 };
 const personHandleData = async (persons: Raw<Person>[]) => {
