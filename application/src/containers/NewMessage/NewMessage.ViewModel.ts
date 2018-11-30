@@ -105,7 +105,7 @@ class NewMessageViewModel extends StoreViewModel {
       const message = errorData.error.message;
       // 'This is not a valid email address: q@qq.com .'
       const email = message.substr(0, message.length - 1).split(':')[1];
-      this.errorEmail = email.trim();
+      this.errorEmail = email && email.trim();
       this.emailErrorMsg = 'Invalid Email';
       this.emailError = true;
     }
