@@ -4,11 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import merge from 'lodash/merge';
-import NetworkClient, {
-  INetworkRequests,
-  IResponse,
-  IResponseError,
-} from './NetworkClient';
+import NetworkClient, { INetworkRequests } from './NetworkClient';
 import { ApiConfig, HttpConfigType, PartialApiConfig } from '../types';
 import { Throw, ErrorTypes, Aware } from '../utils';
 import { defaultConfig } from './defaultConfig';
@@ -112,19 +108,16 @@ class Api {
     return this.getNetworkClient('upload', HandleByUpload);
   }
 
-  static getDataById<T>(id: number): Promise<IResponse<Raw<T>>> {
-    return this.glipNetworkClient.get(`${this.basePath}/${id}`);
+  static getDataById<T>(id: number) {
+    return this.glipNetworkClient.get<Raw<T>>(`${this.basePath}/${id}`);
   }
-  static postData<T>(
-    data: Partial<T>,
-  ): Promise<IResponse<Raw<T> & IResponseError>> {
-    return this.glipNetworkClient.post(`${this.basePath}`, data);
+
+  static postData<T>(data: Partial<T>) {
+    return this.glipNetworkClient.post<Raw<T>>(`${this.basePath}`, data);
   }
-  static putDataById<T>(
-    id: number,
-    data: Partial<T>,
-  ): Promise<IResponse<Raw<T> & IResponseError>> {
-    return this.glipNetworkClient.put(`${this.basePath}/${id}`, data);
+
+  static putDataById<T>(id: number, data: Partial<T>) {
+    return this.glipNetworkClient.put<Raw<T>>(`${this.basePath}/${id}`, data);
   }
 }
 

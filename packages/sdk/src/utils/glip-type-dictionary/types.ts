@@ -52,6 +52,7 @@ const TypeDictionary = {
   TYPE_ID_RC_PRESENCE: 104,
   TYPE_ID_RC_BLOCK: 105,
   TYPE_ID_RC_SMSES: 106,
+  TYPE_ID_RC_VIDEO: 107,
 
   // NOTE: this is our minimum value for integration types, see Is_Integration_Type() function
   TYPE_ID_CUSTOM_ITEM: 7000,

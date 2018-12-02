@@ -61,6 +61,14 @@ class JuiTextarea extends React.Component<Props, State> {
     this.props.onChange && this.props.onChange(e);
   }
 
+  onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const { onKeyDown } = this.props;
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+    }
+    onKeyDown && onKeyDown(e);
+  }
+
   render() {
     const { innerRef, rows, ...textFieldRest } = this.props;
     const { hasValue } = this.state;
@@ -69,6 +77,7 @@ class JuiTextarea extends React.Component<Props, State> {
       <Textarea
         multiline={true}
         hasValue={hasValue}
+        onKeyDown={this.onKeyDown}
         InputProps={{
           disableUnderline: true,
           classes: {

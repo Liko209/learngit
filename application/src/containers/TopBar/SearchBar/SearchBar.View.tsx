@@ -14,10 +14,10 @@ import {
   JuiSearchItem,
 } from 'jui/pattern/SearchBar';
 import { HotKeys } from 'jui/hoc/HotKeys';
-import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
-import { Avatar } from '@/containers/Avatar';
+// import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
+import { Avatar, GroupAvatar } from '@/containers/Avatar';
 import { goToConversation } from '@/common/goToConversation';
-
+import { MiniCard } from '@/containers/MiniCard';
 import {
   ViewProps,
   SearchResult,
@@ -43,7 +43,9 @@ const defaultSection = {
   hasMore: false,
 };
 
-class SearchBarView extends React.Component<ViewProps, State> {
+type Props = { closeSearchBar: () => void; isShowSearchBar: boolean };
+
+class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _debounceSearch: Function;
   private _searchItems: HTMLElement[];
 
@@ -56,7 +58,7 @@ class SearchBarView extends React.Component<ViewProps, State> {
     selectIndex: -1,
   };
 
-  constructor(props: ViewProps) {
+  constructor(props: ViewProps & Props) {
     super(props);
     const { search } = this.props;
     this._debounceSearch = debounce(async (value: string) => {
@@ -106,14 +108,31 @@ class SearchBarView extends React.Component<ViewProps, State> {
   }
 
   onClose = () => {
+    const { closeSearchBar, isShowSearchBar } = this.props;
+    if (isShowSearchBar) {
+      closeSearchBar();
+    }
     this.setState({
       focus: false,
       selectIndex: -1,
     });
   }
 
+  private _openMiniCard = (uid: number) => (
+    e: React.MouseEvent<HTMLElement>,
+  ) => {
+    e.stopPropagation();
+    MiniCard.showProfile({ anchor: e.target as HTMLElement, id: uid });
+  }
+
   private _Avatar(uid: number) {
-    return <Avatar uid={uid} size="small" />;
+    const { isTeamOrGroup } = this.props;
+
+    return isTeamOrGroup(uid) ? (
+      <GroupAvatar cid={uid} size="small" onClick={this._openMiniCard(uid)} />
+    ) : (
+      <Avatar uid={uid} size="small" onClick={this._openMiniCard(uid)} />
+    );
   }
 
   private _goToConversation = async (id: number) => {
@@ -126,19 +145,19 @@ class SearchBarView extends React.Component<ViewProps, State> {
     await this._goToConversation(id);
   }
 
-  private _Actions = () => {
-    return (
-      <JuiButtonBar size="small">
-        <JuiIconButton
-          onClick={this.goToContacts()}
-          variant="plain"
-          tooltipTitle={t('contacts')}
-        >
-          contacts
-        </JuiIconButton>
-      </JuiButtonBar>
-    );
-  }
+  // private _Actions = () => {
+  //   return (
+  //     <JuiButtonBar size="small">
+  //       <JuiIconButton
+  //         onClick={this.goToContacts()}
+  //         variant="plain"
+  //         tooltipTitle={t('contacts')}
+  //       >
+  //         contacts
+  //       </JuiIconButton>
+  //     </JuiButtonBar>
+  //   );
+  // }
 
   goToContacts = () => (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -165,7 +184,7 @@ class SearchBarView extends React.Component<ViewProps, State> {
               Avatar={this._Avatar(id)}
               value={displayName}
               terms={terms}
-              Actions={this._Actions()}
+              // Actions={this._Actions()}
               isPrivate={entity.is_team && entity.privacy === 'private'}
               isJoined={
                 entity.is_team &&
@@ -241,7 +260,6 @@ class SearchBarView extends React.Component<ViewProps, State> {
   render() {
     const { terms, persons, groups, teams, focus } = this.state;
     const { searchValue } = this.props;
-
     return (
       <JuiSearchBar onClose={this.onClose} focus={focus}>
         <HotKeys
@@ -251,26 +269,22 @@ class SearchBarView extends React.Component<ViewProps, State> {
             down: this.onKeyDown,
           }}
         >
-          {() => {
-            return (
-              <>
-                <JuiSearchInput
-                  focus={focus}
-                  onFocus={this.onFocus}
-                  onClear={this.onClear}
-                  value={searchValue}
-                  onChange={this.onChange}
-                />
-                {focus && searchValue && (
-                  <JuiSearchList>
-                    {this._renderSuggestion(persons, 'People', terms)}
-                    {this._renderSuggestion(groups, 'Groups', terms)}
-                    {this._renderSuggestion(teams, 'Teams', terms)}
-                  </JuiSearchList>
-                )}
-              </>
-            );
-          }}
+          <JuiSearchInput
+            focus={focus}
+            onFocus={this.onFocus}
+            onClear={this.onClear}
+            value={searchValue}
+            onChange={this.onChange}
+            placeholder={t('search')}
+            showCloseBtn={!!searchValue}
+          />
+          {focus && searchValue && (
+            <JuiSearchList>
+              {this._renderSuggestion(persons, 'People', terms)}
+              {this._renderSuggestion(groups, 'Groups', terms)}
+              {this._renderSuggestion(teams, 'Teams', terms)}
+            </JuiSearchList>
+          )}
         </HotKeys>
       </JuiSearchBar>
     );
