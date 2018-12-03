@@ -44,7 +44,7 @@ const StyledIcon = styled.div`
     margin-right: ${spacing(3)};
   }
   .horiz-menu {
-    width: ${width(7)};
+    margin-left: ${spacing(-3)};
   }
 `;
 const StyledText = styled.p`

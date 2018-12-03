@@ -9,7 +9,6 @@ import { grey, height, spacing, typography } from '../../foundation/utils';
 const JuiGroupProfileListHeader = styled.div`
   ${typography('subheading')};
   color: ${grey('900')};
-  height: ${height(12.5)};
   padding: 0 0 0 ${spacing(6)};
   line-height: ${height(12.5)};
   &.shadow {

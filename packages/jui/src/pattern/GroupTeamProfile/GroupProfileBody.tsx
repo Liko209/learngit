@@ -10,13 +10,14 @@ import { height, spacing, grey, typography, palette } from '../../foundation/uti
 
 const StyledBodyWrapper = styled.div`
   border-bottom: 1px solid ${grey('300')};
+  height: 100%;
   &.current {
     background-color: ${palette('primary', '50')};
   }
 `;
 const StyledContent = styled.div`
   display: flex;
-  margin: ${spacing(5)} ${spacing(6)} ${spacing(5)} ${spacing(6)};
+  margin: ${spacing(5)} ${spacing(6)} ${spacing(7)} ${spacing(6)};
 `;
 const StyledRightColumn = styled.div`
   position: relative;
