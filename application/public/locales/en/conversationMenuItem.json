@@ -9,5 +9,6 @@
   "favorite": "Favorite",
   "close": "Close",
   "markFavoriteServerErrorContent": "Unexpected error occurred. Try again later.",
-  "OK": "OK"
+  "OK": "OK",
+  "viewProfile": "View Profile"
 }
