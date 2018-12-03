@@ -7,7 +7,7 @@
 type GroupBodyProps = {
   displayName: string;
   description?: string;
-  avatar: any;
+  avatar: React.ReactNode;
   awayStatus?: string;
   jobTitle?: string;
   className?: string;
@@ -16,5 +16,6 @@ type GroupBodyProps = {
 type GroupHeaderProps = {
   title: string;
   dismiss: () => void;
+  toolTipCloseTitle: string;
 };
 export { GroupBodyProps, GroupHeaderProps };

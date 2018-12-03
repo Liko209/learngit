@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
-const JuiGroupProfileMemberList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
+import { ellipsis, spacing } from '../../foundation/utils';
+
+const JuiGroupProfileListName = styled.p`
+  margin-left: ${spacing(3)};
+  ${ellipsis()}
 `;
-JuiGroupProfileMemberList.displayName = 'JuiGroupProfileMemberList';
-export { JuiGroupProfileMemberList };
+export { JuiGroupProfileListName };

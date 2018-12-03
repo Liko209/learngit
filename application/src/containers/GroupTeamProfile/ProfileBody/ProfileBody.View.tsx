@@ -8,7 +8,7 @@ import React from 'react';
 import { translate } from 'react-i18next';
 import {
   JuiGroupProfileBody,
-  StyledMessageBtn,
+  JuiGroupProfileMessageBtn,
 } from 'jui/pattern/GroupTeamProfile';
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Avatar } from '@/containers/Avatar';
@@ -66,14 +66,14 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
         description={description}
       >
         {isShowMessageButton ? (
-          <StyledMessageBtn
+          <JuiGroupProfileMessageBtn
             onClick={this.OnMessageClick}
             tabIndex={0}
             aria-label={t(goToMessageInfo)}
           >
             <JuiIconography>chat_bubble</JuiIconography>
             {t('Message')}
-          </StyledMessageBtn>
+          </JuiGroupProfileMessageBtn>
         ) : null}
       </JuiGroupProfileBody>
     );

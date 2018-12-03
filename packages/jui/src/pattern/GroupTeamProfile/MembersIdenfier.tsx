@@ -6,7 +6,7 @@
 import styled from '../../foundation/styled-components';
 import { palette, spacing, typography, grey } from '../../foundation/utils';
 
-const StyledGuestIdentifier = styled.span`
+const JuiGroupProfileGuestIdentifier = styled.span`
   color: ${palette('common', 'white')};
   border-radius: ${({ theme }) => theme.shape.borderRadius * 2}px;
   text-align: center;
@@ -16,7 +16,7 @@ const StyledGuestIdentifier = styled.span`
   margin-left: ${spacing(3)};
   margin-right: ${spacing(4)};
 `;
-const StyledAdminIdentifier = styled(StyledGuestIdentifier)`
+const JuiGroupProfileAdminIdentifier = styled(JuiGroupProfileGuestIdentifier)`
   background-color: ${palette('secondary', 'main')};
 `;
-export { StyledGuestIdentifier, StyledAdminIdentifier };
+export { JuiGroupProfileGuestIdentifier, JuiGroupProfileAdminIdentifier };

@@ -6,7 +6,7 @@
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils';
 
-const StyledMessageBtn = styled.div`
+const JuiGroupProfileMessageBtn = styled.div`
   display: flex;
   color: ${({ theme }) => theme.palette.primary.main};
   font-size: ${({ theme }) => theme.typography.body1.fontSize};
@@ -17,4 +17,5 @@ const StyledMessageBtn = styled.div`
     margin-right: ${spacing(2)};
   }
 `;
-export { StyledMessageBtn };
+JuiGroupProfileMessageBtn.displayName = 'JuiGroupProfileMessageBtn';
+export { JuiGroupProfileMessageBtn };

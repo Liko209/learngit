@@ -7,7 +7,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
 import {
-  StyledList,
+  JuiGroupProfileMemberList,
 } from 'jui/pattern/GroupTeamProfile';
 import { MemberListViewProps } from './types';
 import { MembersItem } from './MembersItem';
@@ -23,13 +23,13 @@ class MembersList extends React.Component<MemberListViewProps> {
   render() {
     const { memberIds, gid } = this.props;
     return (
-      <StyledList>
+      <JuiGroupProfileMemberList>
         {memberIds.map((id: number) => {
           return (
             <MembersItem key={id} gid={gid} uid={id}/>
           );
         })}
-      </StyledList>
+      </JuiGroupProfileMemberList>
     );
   }
 }

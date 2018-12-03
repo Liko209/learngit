@@ -7,7 +7,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { translate } from 'react-i18next';
 import { MemberListHeaderViewProps } from './types';
-import { StyledTitle } from 'jui/pattern/GroupTeamProfile';
+import { JuiGroupProfileListHeader } from 'jui/pattern/GroupTeamProfile';
 import { TypeDictionary } from 'sdk/utils';
 
 @observer
@@ -15,11 +15,11 @@ class MemberListHeader extends React.Component<MemberListHeaderViewProps> {
   render() {
     const { counts, type, t , isShowHeaderShadow } = this.props;
     return (
-      <StyledTitle className={isShowHeaderShadow ? 'shadow' : ''}>
+      <JuiGroupProfileListHeader className={isShowHeaderShadow ? 'shadow' : ''}>
         {type === TypeDictionary.TYPE_ID_TEAM
           ? `${t('TeamMembers')} (${counts})`
           : `${t('GroupMembers')} (${counts})`}
-      </StyledTitle>
+      </JuiGroupProfileListHeader>
     );
   }
 }

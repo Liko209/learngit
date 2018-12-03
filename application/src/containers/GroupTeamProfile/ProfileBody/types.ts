@@ -26,6 +26,7 @@ type ProfileBodyProps = {
   id: number;
   dismiss: () => void;
   type?: ProfileType;
+  isGroupOrTeam?: boolean;
 };
 
 export { ProfileHeaderViewProps, ProfileBodyProps };
