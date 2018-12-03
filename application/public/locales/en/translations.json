@@ -122,5 +122,7 @@
   "Admin": "Admin",
   "goToGroupConversation": "Go to the conversation with the group",
   "goToTeamConversation": "Go to the conversation with team",
-  "Message": "Message"
+  "Message": "Message",
+  "more": "more",
+  "close": "close"
 }

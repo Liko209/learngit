@@ -16,5 +16,6 @@ type GroupBodyProps = {
 type GroupHeaderProps = {
   title: string;
   dismiss: () => void;
+  toolTipCloseTitle: string;
 };
 export { GroupBodyProps, GroupHeaderProps };

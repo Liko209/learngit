@@ -18,9 +18,9 @@ class ProfileHeader extends React.Component<ProfileHeaderViewProps> {
     const privacy = <Privacy id={groupId} disableToolTip={false} />;
     const moreIcon = <MoreHorizIcon id={groupId} type={type} />;
     return (
-      <JuiGroupProfileHeader title={t(title)} dismiss={dismiss}>
+      <JuiGroupProfileHeader title={t(title)} dismiss={dismiss} toolTipCloseTitle={t('close')}>
         {isTeam ? privacy : null}
-        <Favorite id={groupId} disableToolTip={false} isAction={false} />
+        <Favorite id={groupId} isAction={false} />
         {isTeam ? moreIcon : null}
       </JuiGroupProfileHeader>
     );

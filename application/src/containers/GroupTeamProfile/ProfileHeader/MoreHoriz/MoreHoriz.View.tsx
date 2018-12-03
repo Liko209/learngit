@@ -25,7 +25,8 @@ class MoreHoriz extends React.Component<Props> {
     return (
       <JuiIconButton
         {...moreMenuTriggerProps}
-        disableToolTip={true}
+        disableToolTip={false}
+        tooltipTitle={t('more')}
         size="medium"
         ariaLabel={t(checkMoreOption)}
       >

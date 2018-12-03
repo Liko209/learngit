@@ -6,11 +6,7 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiIconButton } from '../../components/Buttons/IconButton';
-import {
-  spacing,
-  grey,
-  height, width,
-} from '../../foundation/utils/styles';
+import { spacing, grey, height, width } from '../../foundation/utils/styles';
 import { GroupHeaderProps } from './types';
 
 const StyledHeader = styled.div`
@@ -43,7 +39,8 @@ const StyledIcon = styled.div`
   div {
     z-index: ${({ theme }) => theme.zIndex.moreMenu};
   }
-  .privacy, .favorite {
+  .privacy,
+  .favorite {
     margin-right: ${spacing(3)};
   }
   .horiz-menu {
@@ -56,19 +53,22 @@ const StyledText = styled.p`
 `;
 class JuiGroupProfileHeader extends PureComponent<GroupHeaderProps> {
   render() {
-    const { title, dismiss, children } = this.props;
+    const { title, dismiss, children, toolTipCloseTitle } = this.props;
 
     return (
       <StyledHeader>
         <StyledContent>
-          <StyledText>
-            {title}
-          </StyledText>
+          <StyledText>{title}</StyledText>
           <StyledIcon>
             {children}
-            <div>
-              <JuiIconButton onClick={dismiss} className="close" disableToolTip={true}>close</JuiIconButton>
-            </div>
+            <JuiIconButton
+              onClick={dismiss}
+              className="close"
+              disableToolTip={false}
+              tooltipTitle={toolTipCloseTitle}
+            >
+              close
+            </JuiIconButton>
           </StyledIcon>
         </StyledContent>
       </StyledHeader>
