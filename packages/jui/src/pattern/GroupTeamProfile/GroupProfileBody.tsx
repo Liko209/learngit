@@ -10,6 +10,7 @@ import { height, spacing, grey, typography } from '../../foundation/utils/styles
 
 const StyledBodyWrapper = styled.div`
   border-bottom: 1px solid ${grey('300')};
+  height: 100%;
   &.current {
     background-color: #e1f4fb;
   }
