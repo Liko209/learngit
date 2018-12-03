@@ -2,8 +2,7 @@ import { v4 as uuid } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as sharp from 'sharp';
-import { TMPFILE_PATH } from '../config';
-
+import { TMPFILE_PATH, RUNNER_OPTS } from '../config';
 import { getLogger } from 'log4js';
 const logger = getLogger(__filename);
 
@@ -44,7 +43,7 @@ export class MiscUtils {
       .then(function (metadata) {
         return image
           .resize(Math.round(metadata.width / 2))
-          .webp({ quality: 10 })
+          .webp({ quality: RUNNER_OPTS.SCREENSHOT_WEBP_QUALITY })
           .toBuffer();
       })
       .then((data) => {
