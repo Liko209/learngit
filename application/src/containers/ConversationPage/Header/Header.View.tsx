@@ -71,11 +71,8 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
       })(name),
     );
     actionButtons.push(
-      <JuiIconButton
-        key="setting"
-        tooltipTitle={toTitleCase(t('conversationSettings'))}
-      >
-        settings
+      <JuiIconButton key="fold" tooltipTitle={toTitleCase(t('foldShelf'))}>
+        info
       </JuiIconButton>,
     );
     return (
@@ -111,7 +108,18 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
     return (
       <JuiConversationPageHeaderSubtitle>
-        <JuiButtonBar size="small" overlapping={true}>
+        <JuiButtonBar size="medium" overlapping={true}>
+          {type === CONVERSATION_TYPES.TEAM ? (
+            <JuiCheckboxButton
+              tooltipTitle={
+                isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')
+              }
+              color="grey.500"
+              checkedIconName="lock"
+              iconName="lock_open"
+              checked={isPrivate}
+            />
+          ) : null}
           <JuiCheckboxButton
             tooltipTitle={
               isFavorite
@@ -122,21 +130,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
             iconName="star_border"
             checked={isFavorite}
             onChange={onchange}
-          >
-            star_border
-          </JuiCheckboxButton>
-          {type === CONVERSATION_TYPES.TEAM ? (
-            <JuiCheckboxButton
-              tooltipTitle={
-                isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')
-              }
-              checkedIconName="lock"
-              iconName="lock_open"
-              checked={isPrivate}
-            >
-              favorite_border
-            </JuiCheckboxButton>
-          ) : null}
+          />
         </JuiButtonBar>
       </JuiConversationPageHeaderSubtitle>
     );

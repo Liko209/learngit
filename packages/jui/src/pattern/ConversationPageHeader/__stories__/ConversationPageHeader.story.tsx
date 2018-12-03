@@ -26,21 +26,17 @@ storiesOf('Pattern', module)
         title={getTitleKnob()}
         status={getStatusKnob()}
         SubTitle={
-          <JuiButtonBar size="small" overlapping={true}>
+          <JuiButtonBar size="medium" overlapping={true}>
             <JuiCheckboxButton
               tooltipTitle="Add to Favorite"
               checkedIconName="star"
               iconName="star_border"
-            >
-              star_border
-            </JuiCheckboxButton>
+            />
             <JuiCheckboxButton
               tooltipTitle="This is a public team"
               checkedIconName="lock"
               iconName="lock_open"
-            >
-              favorite_border
-            </JuiCheckboxButton>
+            />
           </JuiButtonBar>}
         Right={
           <JuiButtonBar size="medium" overlapping={true}>
