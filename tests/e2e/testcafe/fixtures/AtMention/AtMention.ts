@@ -7,7 +7,7 @@
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
@@ -226,8 +226,12 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
 }
 );
 
-test(formalName('Show UMI when receive new messages after jump to conversation.',['P2','JPT-384','zack']),
-  async (t: TestController)=>{
+test(formalName('Show UMI when receive new messages after jump to conversation.',['P2','JPT-384','zack']), async (t: TestController)=>{
+  if (await H.isEdge()) {
+    await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
+    return;
+  } 
+  
   const app =new AppRoot(t);
   const users =h(t).rcData.mainCompany.users;
   const user = users[4];
