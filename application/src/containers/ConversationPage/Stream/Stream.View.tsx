@@ -14,7 +14,7 @@ import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiLozengeButton } from 'jui/components/Buttons';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { toTitleCase } from '@/utils/string';
-import { scrollToComponent } from './helper';
+import { scrollToComponent, nextTick } from './helper';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import {
@@ -31,6 +31,7 @@ import PostModel from '@/store/models/Post';
 import { mainLogger } from 'sdk';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
+const LOADING_DELAY = 500;
 
 type Props = WithNamespaces & StreamViewProps;
 @observer
@@ -46,7 +47,7 @@ class StreamViewComponent extends Component<Props> {
   private _jumpToFirstUnreadLoading = false;
 
   @observable
-  private _firstHistoryUnreadPostViewed = false;
+  private _firstHistoryUnreadPostViewed: boolean | null = null;
 
   private _stickToBottom() {
     if (this._stickToDisposer) {
@@ -76,9 +77,10 @@ class StreamViewComponent extends Component<Props> {
       this.props.jumpToPostId || this.props.mostRecentPostId,
     );
     this._stickToBottom();
+    this._visibilitySensorEnabled = true;
+    this._firstHistoryUnreadPostViewed = false;
     this.props.updateHistoryHandler();
     this.props.markAsRead();
-    this._visibilitySensorEnabled = true;
   }
 
   componentWillUnmount() {
@@ -116,9 +118,10 @@ class StreamViewComponent extends Component<Props> {
         this.props.jumpToPostId || this.props.mostRecentPostId,
       );
       this._stickToBottom();
+      this._visibilitySensorEnabled = true;
+      this._firstHistoryUnreadPostViewed = false;
       updateHistoryHandler();
       markAsRead();
-      this._visibilitySensorEnabled = true;
       return;
     }
 
@@ -264,7 +267,8 @@ class StreamViewComponent extends Component<Props> {
 
     const shouldHaveJumpButton =
       hasHistoryUnread &&
-      (!firstHistoryUnreadInPage || !this._firstHistoryUnreadPostViewed);
+      (!firstHistoryUnreadInPage ||
+        this._firstHistoryUnreadPostViewed === false);
 
     const countText =
       historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
@@ -312,7 +316,7 @@ class StreamViewComponent extends Component<Props> {
     // Delay 500ms then show loading
     this._timeout = setTimeout(() => {
       this._jumpToFirstUnreadLoading = true;
-    },                         500);
+    },                         LOADING_DELAY);
 
     const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
     clearTimeout(this._timeout);
@@ -332,35 +336,25 @@ class StreamViewComponent extends Component<Props> {
     this.scrollToPost(scrollToPostId);
   }
 
-  scrollToBottom = () => {
+  scrollToBottom = async () => {
     const lastItem = _(this.props.items).nth(-1);
     if (lastItem) {
-      window.requestAnimationFrame(() => {
-        this.scrollToPost(lastItem.value, false);
-      });
+      await nextTick();
+      this.scrollToPost(lastItem.value);
     }
   }
 
-  scrollToPost = (
+  scrollToPost = async (
     scrollToPostId: number,
     options?: boolean | ScrollIntoViewOptions,
   ) => {
-    return new Promise((resolve: Function) => {
-      const scrollToViewOpt = options || {
-        behavior: 'auto',
-        block: 'start',
-      };
-      window.requestAnimationFrame(() => {
-        const scrollToPostEl = this._postRefs.get(scrollToPostId);
-        if (!scrollToPostEl) {
-          mainLogger.warn('scrollToPostEl no found');
-          return;
-        }
-        scrollToComponent(scrollToPostEl, scrollToViewOpt).then(() =>
-          resolve(),
-        );
-      });
-    });
+    await nextTick();
+    const scrollToPostEl = this._postRefs.get(scrollToPostId);
+    if (!scrollToPostEl) {
+      mainLogger.warn('scrollToPostEl no found');
+      return;
+    }
+    await scrollToComponent(scrollToPostEl, options);
   }
 
   private _focusHandler = () => {
@@ -381,8 +375,9 @@ class StreamViewComponent extends Component<Props> {
   private _tidiesBeforeDestroy = () => {
     this._visibilitySensorEnabled = false;
     this._jumpToFirstUnreadLoading = false;
-    this._firstHistoryUnreadPostViewed = false;
+    this._firstHistoryUnreadPostViewed = null;
     this._postRefs.clear();
+    this.props.clearHistoryUnread();
   }
 }
 const view = extractView<WithNamespaces & StreamViewProps>(StreamViewComponent);
