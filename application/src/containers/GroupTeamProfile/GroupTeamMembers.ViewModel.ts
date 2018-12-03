@@ -11,7 +11,7 @@ import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandl
 class GroupTeamMembersViewModel extends StoreViewModel<MemberListProps> {
   @observable
   private _memberListHandler: SortableGroupMemberHandler | null = null;
-  _allMemberIds: number[] = [];
+  private _allMemberIds: number[] = [];
   @computed
   private get _id() {
     return this.props.id;
