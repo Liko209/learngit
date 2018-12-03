@@ -10,14 +10,14 @@ import styled from '../../foundation/styled-components';
 import { width, spacing, height, palette } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 
-type TJuiChipProps = {
+type JuiChipProps = {
   uid?: number;
   ChipAvatar?: React.ComponentType<any>;
   onDelete?: (event: any) => void;
   isError?: boolean;
 } & Omit<MuiChipProps, 'innerRef'>;
 
-const StyledChip = styled<TJuiChipProps>(MuiChip)`
+const StyledChip = styled<JuiChipProps>(MuiChip)`
   && {
     margin: ${spacing(1)};
     padding: ${spacing(1)};
@@ -48,7 +48,7 @@ const StyledChip = styled<TJuiChipProps>(MuiChip)`
   }
 `;
 
-export const JuiChip: React.SFC<TJuiChipProps> = (props: TJuiChipProps) => {
+export const JuiChip: React.SFC<JuiChipProps> = (props: JuiChipProps) => {
   const { onDelete, ChipAvatar, isError, ...rest } = props;
   const avatar: any = ChipAvatar ? (
     <ChipAvatar size="small" uid={rest.uid} />
