@@ -6,12 +6,12 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { GroupBodyProps } from './types';
-import { height, spacing, grey, typography } from '../../foundation/utils/styles';
+import { height, spacing, grey, typography, palette } from '../../foundation/utils/styles';
 
 const StyledBodyWrapper = styled.div`
   border-bottom: 1px solid ${grey('300')};
   &.current {
-    background-color: #e1f4fb;
+    background-color: ${palette('primary', '50')};
   }
 `;
 const StyledContent = styled.div`
