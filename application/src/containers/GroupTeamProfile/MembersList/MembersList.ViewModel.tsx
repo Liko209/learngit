@@ -3,59 +3,38 @@
  * @Date: 2018-11-22 11:27:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { StoreViewModel } from '@/store/ViewModel';
 import { computed, observable, action } from 'mobx';
-import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
 import { MemberListProps } from './types';
 import storeManager from '@/store';
 const globalStore = storeManager.getGlobalStore();
 import { GLOBAL_KEYS } from '@/store/constants';
+import { GroupTeamMembersViewModel } from '../GroupTeamMembers.ViewModel';
 
 import {
   onScroll,
   onScrollToBottom,
 } from '@/plugins/InfiniteListPlugin';
-class MembersListViewModel extends StoreViewModel<MemberListProps> {
-  @observable
-  private _memberListHandler: SortableGroupMemberHandler | null = null;
-  private _allMemberIds: number[] = [];
+
+class MembersListViewModel extends GroupTeamMembersViewModel {
   @observable
   private _pagination: number = 1;
   private _PAGE_COUNT = 20;
-  constructor() {
-    super();
+  constructor(props: MemberListProps) {
+    super(props);
     this.toBottom = this.toBottom.bind(this);
-    this.reaction(() => this._allMemberIds, (allMemberId: number[]) => {
-      const currentUserId = globalStore.get(GLOBAL_KEYS.CURRENT_USER_ID);
-      const isShowMessage = allMemberId.indexOf(currentUserId) > -1;
-      globalStore.set(GLOBAL_KEYS.IS_SHOW_PROFILE_MSG_BUTTON, isShowMessage);
-    });
   }
   @computed
   get gid() {
     return this.props.id;
   }
-  @action
-  private _createSortableMemberIds = async () => {
-    if (!this._memberListHandler) {
-      this._memberListHandler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
-        this.gid,
-      );
-    }
-  }
   @computed
   get memberIds() {
-    this._createSortableMemberIds();
-    this._allMemberIds =
-      (this._memberListHandler &&
-        this._memberListHandler.getSortedGroupMembersIds()) ||
-      [];
-    return this._allMemberIds.slice(0, this._pagination * this._PAGE_COUNT);
+    return this.allMemberIds.slice(0, this._pagination * this._PAGE_COUNT);
   }
   @action
   @onScrollToBottom
   toBottom() {
-    if (this._allMemberIds.length === this.memberIds.length) return;
+    if (this.allMemberIds.length === this.memberIds.length) return;
     this._pagination++;
   }
   @onScroll
