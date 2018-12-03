@@ -135,7 +135,7 @@ const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
   }
 `;
 
-export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
+export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   props: JuiIconButtonProps,
 ) => {
   const {
@@ -188,7 +188,7 @@ export const JuiIconButton: React.SFC<JuiIconButtonProps> = (
   return renderToolTip();
 };
 
-JuiIconButton.defaultProps = {
+JuiIconButtonComponent.defaultProps = {
   variant: 'round',
   color: 'grey.500',
   size: 'medium',
@@ -196,4 +196,5 @@ JuiIconButton.defaultProps = {
   tooltipTitle: '',
 };
 
-export { JuiIconButtonProps, IconButtonVariant, IconButtonSize };
+const JuiIconButton = styled(JuiIconButtonComponent)``;
+export { JuiIconButton, JuiIconButtonProps, IconButtonVariant, IconButtonSize };

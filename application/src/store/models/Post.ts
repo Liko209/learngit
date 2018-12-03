@@ -20,6 +20,8 @@ export default class PostModel extends Base<Post> {
   @observable
   activityData?: { [index: string]: any };
   @observable
+  activity?: string;
+  @observable
   likes?: number[];
   @observable
   groupId: number;
@@ -41,6 +43,7 @@ export default class PostModel extends Base<Post> {
       item_ids,
       likes,
       activity_data,
+      activity,
       item_id,
       group_id,
       item_data,
@@ -50,6 +53,7 @@ export default class PostModel extends Base<Post> {
     this.createdAt = created_at;
     this.creatorId = creator_id;
     this.activityData = activity_data;
+    this.activity = activity;
     this.text = text;
     this.status = status;
     this.atMentionNonItemIds = at_mention_non_item_ids;

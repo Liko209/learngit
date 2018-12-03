@@ -29,10 +29,8 @@ class ActivityViewModel extends StoreViewModel<ActivityProps>
     const { itemTypeIds } = this._post;
     Object.keys(itemTypeIds).forEach((type: string) => {
       if (config[type]) {
-        const { activityData, itemData } = this._post;
         const props = {
-          activityData,
-          itemData,
+          ...this._post,
           ids: itemTypeIds[type],
         };
         activity[type] = config[type](props);
