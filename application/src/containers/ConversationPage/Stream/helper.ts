@@ -6,6 +6,8 @@
 import { debounce } from 'lodash';
 import ReactDOM from 'react-dom';
 
+const SCROLL_END_DETECT_DEBOUNCE = 100;
+
 function getScrollParent(element: HTMLElement, includeHidden: boolean = false) {
   let style = getComputedStyle(element);
   const excludeStaticParent = style.position === 'absolute';
@@ -43,7 +45,10 @@ async function scrollToComponent(
       const el = ReactDOM.findDOMNode(component);
       if (el && el instanceof HTMLElement) {
         el.scrollIntoView(options);
-        getScrollParent(el).addEventListener('scroll', debounce(resolve, 100));
+        getScrollParent(el).addEventListener(
+          'scroll',
+          debounce(resolve, SCROLL_END_DETECT_DEBOUNCE),
+        );
       }
     } catch (err) {
       resolve();
