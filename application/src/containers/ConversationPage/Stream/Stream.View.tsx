@@ -97,7 +97,7 @@ class StreamViewComponent extends Component<Props> {
     prevProps: Props,
     state: Props,
     snapshot: StreamSnapshot,
-  ) {
+  ): Promise<void> {
     const {
       groupId,
       postIds,
@@ -121,6 +121,7 @@ class StreamViewComponent extends Component<Props> {
       this._visibilitySensorEnabled = true;
       return;
     }
+
     // One new message came in
     if (this.props.postIds.length === prevProps.postIds.length + 1) {
       if (atBottom && !prevProps.hasMoreDown) {
@@ -128,10 +129,12 @@ class StreamViewComponent extends Component<Props> {
         return;
       }
     }
+
     // User scroll up and load more posts
     const MorePostsInserted = postIds.length > prevPostIds.length;
     if (atTop && MorePostsInserted) {
-      return this.scrollToPost(prevProps.postIds[0]);
+      this.scrollToPost(prevProps.postIds[0]);
+      return;
     }
   }
 
