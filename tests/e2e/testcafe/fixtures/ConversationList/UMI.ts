@@ -656,6 +656,11 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
 
 test(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
+    if (await H.isEdge()) {
+      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
+      return;
+    }
+    
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
