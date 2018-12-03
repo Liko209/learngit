@@ -5,11 +5,11 @@
  */
 import styled from '../../foundation/styled-components';
 
-const StyledProfileView = styled.div`
+const JuiGroupProfileView = styled.div`
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 `;
-StyledProfileView.displayName = 'StyledProfileView';
-export { StyledProfileView };
+JuiGroupProfileView.displayName = 'JuiGroupProfileView';
+export { JuiGroupProfileView };

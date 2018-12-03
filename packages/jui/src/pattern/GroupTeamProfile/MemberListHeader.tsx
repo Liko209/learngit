@@ -6,7 +6,7 @@
 import styled from '../../foundation/styled-components';
 import { grey, height, spacing, typography } from '../../foundation/utils';
 
-const StyledTitle = styled.div`
+const JuiGroupProfileListHeader = styled.div`
   ${typography('subheading')};
   color: ${grey('900')};
   height: ${height(12.5)};
@@ -17,5 +17,5 @@ const StyledTitle = styled.div`
     z-index: ${({ theme }) => theme.zIndex.memberListHeader};
   }
 `;
-StyledTitle.displayName = 'StyledTitle';
-export { StyledTitle };
+JuiGroupProfileListHeader.displayName = 'JuiGroupProfileListHeader';
+export { JuiGroupProfileListHeader };

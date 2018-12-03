@@ -6,8 +6,8 @@
 import styled from '../../foundation/styled-components';
 import { ellipsis, spacing } from '../../foundation/utils';
 
-const StyledName = styled.p`
+const JuiGroupProfileListName = styled.p`
   margin-left: ${spacing(3)};
   ${ellipsis()}
 `;
-export { StyledName };
+export { JuiGroupProfileListName };

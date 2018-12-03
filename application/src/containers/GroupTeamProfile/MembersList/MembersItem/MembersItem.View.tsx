@@ -9,9 +9,9 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { Avatar } from '@/containers/Avatar';
 import {
   JuiGroupProfileList,
-  StyledAdminIdentifier,
-  StyledGuestIdentifier,
-  StyledName,
+  JuiGroupProfileGuestIdentifier,
+  JuiGroupProfileAdminIdentifier,
+  JuiGroupProfileListName,
 } from 'jui/pattern/GroupTeamProfile';
 import { Presence } from '@/containers/Presence';
 import { MembersViewProps } from './types';
@@ -27,12 +27,12 @@ class MembersItem extends React.Component<Props> {
     return (
       <JuiGroupProfileList>
         <Avatar uid={uid} presence={this._presence(uid)} />
-        <StyledName>{member.userDisplayName}</StyledName>
+        <JuiGroupProfileListName>{member.userDisplayName}</JuiGroupProfileListName>
         {isThePersonGuest ? (
-          <StyledGuestIdentifier>{t('Guest')}</StyledGuestIdentifier>
+          <JuiGroupProfileGuestIdentifier>{t('Guest')}</JuiGroupProfileGuestIdentifier>
         ) : null}
         {isThePersonAdmin ? (
-          <StyledAdminIdentifier>{t('Admin')}</StyledAdminIdentifier>
+          <JuiGroupProfileAdminIdentifier>{t('Admin')}</JuiGroupProfileAdminIdentifier>
         ) : null}
       </JuiGroupProfileList>
     );

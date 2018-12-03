@@ -11,7 +11,7 @@ import { MembersList } from './MembersList';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileBody } from './ProfileBody';
 import { MemberListHeader } from './MembersList/MemberListHeader';
-import { StyledBottomBar, StyledProfileView } from 'jui/pattern/GroupTeamProfile';
+import { JuiGroupProfileBottomBar, JuiGroupProfileView } from 'jui/pattern/GroupTeamProfile';
 
 @observer
 class GroupTeamProfile extends React.Component<GroupTeamProps> {
@@ -23,7 +23,7 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
       isGroupOrTeam,
     } = this.props;
     return (
-      <StyledProfileView>
+      <JuiGroupProfileView>
         <ProfileHeader dismiss={dismiss} id={id} type={type} />
         <ProfileBody id={id} dismiss={dismiss} type={type} />
         {
@@ -31,11 +31,11 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
            <>
              <MemberListHeader id={id} type={type}/>
              <MembersList id={id} type={type}/>
-             <StyledBottomBar />
+             <JuiGroupProfileBottomBar />
            </>
           ) : null
         }
-      </StyledProfileView>
+      </JuiGroupProfileView>
     );
   }
 }
