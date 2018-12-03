@@ -12,9 +12,13 @@ const CURRENT_UID2 = 198765456;
 let ProfilePersonBodyVM: ProfilePersonBodyViewModel;
 
 const mockProfileVM = (type: number = 2, id: number = 123) => {
-  ProfilePersonBodyVM = new ProfilePersonBodyViewModel({ id,  dismiss() {}, type });
+  ProfilePersonBodyVM = new ProfilePersonBodyViewModel({
+    id,
+    dismiss() {},
+    type,
+  });
   return ProfilePersonBodyVM;
-}
+};
 const mockPersonProperty = (key: string, value1: string, value2: string) => {
   (getEntity as jest.Mock).mockReturnValue({
     [key]: value1,

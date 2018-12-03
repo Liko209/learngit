@@ -39,7 +39,7 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
       id,
       type,
       awayStatus,
-      // jobTitle,
+      jobTitle,
       isCurrentUser,
       isGroupOrTeam,
       isPerson,
@@ -59,7 +59,7 @@ class ProfileBody extends React.Component<ProfileHeaderViewProps> {
       <JuiGroupProfileBody
         avatar={avatar}
         awayStatus={awayStatus}
-        jobTitle={'d'}
+        jobTitle={jobTitle}
         className={isCurrentUser ? 'current' : ''}
         displayName={name}
         isGroup={isGroup}
