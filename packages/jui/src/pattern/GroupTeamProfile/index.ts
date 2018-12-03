@@ -12,3 +12,5 @@ export * from './MemberListHeader';
 export * from './MessageBtn';
 export * from './MembersIdenfier';
 export * from './MemberList';
+export * from './GroupProfileBottomBar';
+export * from './GroupProfileListName';

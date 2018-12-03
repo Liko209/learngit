@@ -13,5 +13,6 @@ type DismissProps = {
 type GroupTeamProps = WithNamespaces & {
   id: number;
   type: ProfileType;
+  isGroupOrTeam: boolean;
 } & DismissProps;
 export { GroupTeamProps, ProfileType, DismissProps };

@@ -7,7 +7,7 @@
 type GroupBodyProps = {
   displayName: string;
   description?: string;
-  avatar: any;
+  avatar: React.ReactNode;
   awayStatus?: string;
   jobTitle?: string;
   className?: string;

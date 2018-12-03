@@ -12,7 +12,6 @@ import { ProfileHeader } from './ProfileHeader';
 import { ProfileBody } from './ProfileBody';
 import { MemberListHeader } from './MembersList/MemberListHeader';
 import { StyledBottomBar, StyledProfileView } from 'jui/pattern/GroupTeamProfile';
-import { TypeDictionary } from 'sdk/utils';
 
 @observer
 class GroupTeamProfile extends React.Component<GroupTeamProps> {
@@ -21,13 +20,14 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
       dismiss,
       id,
       type,
+      isGroupOrTeam,
     } = this.props;
     return (
       <StyledProfileView>
         <ProfileHeader dismiss={dismiss} id={id} type={type} />
         <ProfileBody id={id} dismiss={dismiss} type={type} />
         {
-          type === TypeDictionary.TYPE_ID_TEAM || type === TypeDictionary.TYPE_ID_GROUP ? (
+          isGroupOrTeam ? (
            <>
              <MemberListHeader id={id} type={type}/>
              <MembersList id={id} type={type}/>

@@ -17,4 +17,5 @@ const StyledTitle = styled.div`
     z-index: ${({ theme }) => theme.zIndex.memberListHeader};
   }
 `;
+StyledTitle.displayName = 'StyledTitle';
 export { StyledTitle };

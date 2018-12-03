@@ -7,6 +7,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { computed } from 'mobx';
 import { GroupTeamProps } from './types';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
+import { TypeDictionary } from 'sdk/utils';
 
 class GroupTeamProfileViewModel extends StoreViewModel<GroupTeamProps> {
   @computed
@@ -16,6 +17,10 @@ class GroupTeamProfileViewModel extends StoreViewModel<GroupTeamProps> {
   @computed
   get type() {
     return GlipTypeUtil.extractTypeId(this.id);
+  }
+  @computed
+  get isGroupOrTeam() {
+    return (this.type === TypeDictionary.TYPE_ID_TEAM) || (this.type === TypeDictionary.TYPE_ID_GROUP);
   }
 }
 export { GroupTeamProfileViewModel };

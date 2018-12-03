@@ -17,4 +17,5 @@ const StyledMessageBtn = styled.div`
     margin-right: ${spacing(2)};
   }
 `;
+StyledMessageBtn.displayName = 'StyledMessageBtn';
 export { StyledMessageBtn };
