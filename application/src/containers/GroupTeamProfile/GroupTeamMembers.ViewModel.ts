@@ -27,10 +27,9 @@ class GroupTeamMembersViewModel extends StoreViewModel<MemberListProps> {
   @computed
   get allMemberIds() {
     this._createSortableMemberIds();
-    this._allMemberIds =
-      (this._memberListHandler &&
-        this._memberListHandler.getSortedGroupMembersIds()) ||
-      [];
+    this._allMemberIds = this._memberListHandler
+      ? this._memberListHandler.getSortedGroupMembersIds()
+      : [];
     return this._allMemberIds;
   }
 }
