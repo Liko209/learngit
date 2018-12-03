@@ -68,7 +68,7 @@ describe('NewMessageVM', () => {
   it('newMessageErrorHandler()', () => {
     newMessageVM.newMessageErrorHandler({
       error: {
-        message: '',
+        message: 'This is not a valid email address: q@qq.com.',
         validation: true,
         code: 'invalid_field',
       },
