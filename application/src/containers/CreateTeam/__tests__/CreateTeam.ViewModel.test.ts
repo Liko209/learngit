@@ -28,8 +28,8 @@ const accountService = {
 // AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 
 const createTeamVM = new CreateTeamViewModel();
-function getNewBaseError(type: GroupErrorTypes) {
-  return new BaseError(type, '');
+function getNewBaseError(type: GroupErrorTypes, message: string) {
+  return new BaseError(type, message);
 }
 describe('CreateTeamVM', () => {
   beforeAll(() => {
@@ -182,9 +182,12 @@ describe('CreateTeamVM', () => {
     expect(createTeamVM.errorMsg).toBe('alreadyTaken');
     expect(createTeamVM.nameError).toBe(true);
 
-    error = getNewBaseError(GroupErrorTypes.INVALID_FIELD);
+    error = getNewBaseError(
+      GroupErrorTypes.INVALID_FIELD,
+      'This is not a valid email address: q@qq.com.',
+    );
     createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.emailErrorMsg).toBe('InvalidEmail');
+    expect(createTeamVM.emailErrorMsg).toBe('Invalid Email');
     expect(createTeamVM.emailError).toBe(true);
   });
 });

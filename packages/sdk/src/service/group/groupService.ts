@@ -205,7 +205,7 @@ class GroupService extends BaseService<Group> {
       memberIds,
     );
     const result = await GroupAPI.requestNewGroup(info);
-    const data = result.expect('request remote group by member list error');
+    const data = result.unwrap();
     const group = transform<Group>(data);
     await handleData([data]);
     return group;

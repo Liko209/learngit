@@ -37,6 +37,7 @@ export type Props = {
   error?: boolean;
   helperText?: string;
   automationId?: string;
+  errorEmail?: string;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -214,6 +215,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       error,
       helperText,
       automationId,
+      errorEmail,
     } = this.props;
     const { inputValue, selectedItem, shrink, showPlaceholder } = this.state;
 
@@ -253,16 +255,18 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                   fullWidth: true,
                   InputProps: getInputProps({
                     startAdornment: selectedItem.map(
-                      (item: TSuggestion, index: number) =>
-                        Chip ? (
+                      (item: TSuggestion, index: number) => {
+                        return Chip ? (
                           <Chip
                             key={index}
                             tabIndex={0}
                             label={item.label}
+                            isError={errorEmail === item.label.trim()}
                             uid={item.id}
                             onDelete={this.handleDelete(item)}
                           />
-                        ) : null,
+                        ) : null;
+                      },
                     ),
                     onFocus: () => {
                       this.setState({

@@ -127,6 +127,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       handleSearchContactChange,
       isOffline,
       serverError,
+      errorEmail,
     } = this.props;
     return (
       <JuiModal
@@ -164,6 +165,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           placeholder={t('Search Contact Placeholder')}
           error={emailError}
           helperText={emailError && t(emailErrorMsg)}
+          errorEmail={errorEmail}
           isExcludeMe={true}
         />
         <JuiTextarea
