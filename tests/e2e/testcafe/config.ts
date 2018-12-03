@@ -82,7 +82,7 @@ logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectro
 
 // beat dashboard configuration
 const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
-const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-xta05.lab.rcch.ringcentral.com:8000/api/v1";
+const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-dsb02.lab.rcch.ringcentral.com:8000/api/v1";
 const ENABLE_REMOTE_DASHBOARD = (process.env.ENABLE_REMOTE_DASHBOARD === 'true');
 const RUN_NAME = process.env.RUN_NAME || uuid();
 
