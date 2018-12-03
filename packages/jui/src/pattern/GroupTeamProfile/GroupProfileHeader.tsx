@@ -6,12 +6,12 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiIconButton } from '../../components/Buttons/IconButton';
-import { spacing, grey, height } from '../../foundation/utils/styles';
+import { spacing, grey, height, width, palette } from '../../foundation/utils/styles';
 import { GroupHeaderProps } from './types';
 
 const StyledHeader = styled.div`
   width: 100%;
-  background-color: #fff;
+  background-color: ${palette('common', 'white')};
   line-height: ${height(16)};
   color: ${grey('900')};
   font-size: ${({ theme }) => theme.typography.h6.fontSize};
@@ -33,7 +33,7 @@ const StyledIcon = styled.div`
     font-size: ${({ theme }) => theme.typography.h6.fontSize};
     height: ${height(10)};
     margin-left: ${spacing(-3)};
-    width: 40px;
+    width: ${width(10)};
     border-radius: 50%;
   }
   div {

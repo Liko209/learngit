@@ -5,9 +5,8 @@
  */
 import { MembersListViewModel } from '../MembersList.ViewModel';
 jest.mock('../../../../store/utils');
-jest.mock('../../../../store/handler/SortableGroupMemberHandler');
 
-const membersListVM = new MembersListViewModel();
+const membersListVM = new MembersListViewModel({ id: 123 });
 const ID_1 = 23121;
 const ID_2 = 56789;
 
