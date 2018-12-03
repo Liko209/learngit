@@ -25,7 +25,7 @@ class GroupTeamProfile extends React.Component<GroupTeamProps> {
     return (
       <JuiGroupProfileView>
         <ProfileHeader dismiss={dismiss} id={id} type={type} />
-        <ProfileBody id={id} dismiss={dismiss} type={type} />
+        <ProfileBody id={id} dismiss={dismiss} type={type} isGroupOrTeam={isGroupOrTeam} />
         {
           isGroupOrTeam ? (
            <>

@@ -5,12 +5,12 @@
  */
 import { buildContainer } from '@/base';
 import { ProfileBodyView } from './ProfileBody.View';
-import { ProfileBodyViewModel } from './ProfileBody.ViewModel';
+import { ProfilePersonBodyViewModel } from './ProfilePersonBody.ViewModel';
 import { ProfileBodyProps } from './types';
 
 const ProfileBody = buildContainer<ProfileBodyProps>({
   View: ProfileBodyView,
-  ViewModel: ProfileBodyViewModel,
+  ViewModel: ProfilePersonBodyViewModel,
 });
 
 export { ProfileBody };

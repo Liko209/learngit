@@ -22,7 +22,7 @@ import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';
 import { MiniCard } from '@/containers/MiniCard';
-import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
+// import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 
 type Props = WithNamespaces & {
   id: number;
@@ -51,7 +51,7 @@ class ProfileMiniCardPersonComponent extends Component<Props> {
         </JuiMiniCardHeader>
         <JuiMiniCardFooter>
           <JuiProfileMiniCardFooterLeft>
-            {TypeDictionary.TYPE_ID_PERSON ? null : <ProfileButton id={id} />}
+            <ProfileButton id={id} />
           </JuiProfileMiniCardFooterLeft>
           <JuiProfileMiniCardFooterRight>
             <JuiIconButton
