@@ -106,8 +106,10 @@
   "assigned": "assigned",
   "incomplete": "incomplete",
   "verb-noun-adjectives": "$t({{verb}}) $t({{noun}}) $t({{adjectives}})",
+  "verb-noun-adjectives-user": "$t({{verb}}) $t({{noun}}) $t({{adjectives}}) for {{user}}",
   "verb-noun-numerals": "$t({{verb}}) $t({{noun}}) {{count}}",
   "verb-noun": "$t({{verb}}) $t({{noun}})",
+  "verb-noun-user": "$t({{verb}}) $t({{noun}}) for {{user}}",
   "verb-article-noun": "$t({{verb}}) {{noun, en-handle-an}} $t({{noun}})",
   "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
   "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
