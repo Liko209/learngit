@@ -11,6 +11,7 @@ import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { matchInvalidEmail } from '@/utils/string';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -132,11 +133,11 @@ class CreateTeamViewModel extends AbstractViewModel {
       this.nameError = true;
     } else if (code === 'invalid_field') {
       const message = errorData.error.message;
-      // 'This is not a valid email address: q@qq.com .'
-      const email = message.substr(0, message.length - 1).split(':')[1];
-      this.errorEmail = email.trim();
-      this.emailErrorMsg = 'Invalid Email';
-      this.emailError = true;
+      if (matchInvalidEmail(message).length > 0) {
+        this.errorEmail = matchInvalidEmail(message);
+        this.emailErrorMsg = 'Invalid Email';
+        this.emailError = true;
+      }
     }
   }
 }

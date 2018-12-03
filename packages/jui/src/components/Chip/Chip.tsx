@@ -17,7 +17,11 @@ type JuiChipProps = {
   isError?: boolean;
 } & Omit<MuiChipProps, 'innerRef'>;
 
-const StyledChip = styled<JuiChipProps>(MuiChip)`
+const WrappedChip = ({ isError, ...rest }: JuiChipProps) => (
+  <MuiChip {...rest} />
+);
+
+const StyledChip = styled<JuiChipProps>(WrappedChip)`
   && {
     margin: ${spacing(1)};
     padding: ${spacing(1)};

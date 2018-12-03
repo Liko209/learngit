@@ -298,21 +298,23 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                     }`,
                   } as any), // Downshift startAdornment is not include in getInputProps interface
                 })}
-                <StyledPaper
-                  square={true}
-                  data-test-automation-id={automationId}
-                >
-                  {filterSuggestions.map((suggestion: TSuggestion, index) =>
-                    this.renderSuggestion({
-                      ContactSearchItem,
-                      suggestion,
-                      index,
-                      selectedItem,
-                      highlightedIndex,
-                      itemProps: getItemProps({ item: suggestion }),
-                    }),
-                  )}
-                </StyledPaper>
+                {isOpen && filterSuggestions.length ? (
+                  <StyledPaper
+                    square={true}
+                    data-test-automation-id={automationId}
+                  >
+                    {filterSuggestions.map((suggestion: TSuggestion, index) =>
+                      this.renderSuggestion({
+                        ContactSearchItem,
+                        suggestion,
+                        index,
+                        selectedItem,
+                        highlightedIndex,
+                        itemProps: getItemProps({ item: suggestion }),
+                      }),
+                    )}
+                  </StyledPaper>
+                ) : null}
               </StyledDownshiftMultipleWrapper>
             </div>
           );
