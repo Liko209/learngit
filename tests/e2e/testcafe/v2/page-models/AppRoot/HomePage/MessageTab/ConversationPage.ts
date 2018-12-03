@@ -1,6 +1,5 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
-import { ClientFunction } from 'testcafe';
-
+import * as _ from 'lodash';
 
 class BaseConversationPage extends BaseWebComponent {
   get posts() {
@@ -126,6 +125,58 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get likeToggleOnActionBar() {
+    return this.self.find('.material-icons').withText('thumb_up').parent('button');
+  }
+
+  get likeToggleWithCount() {
+    return this.body.nextSibling().find('.material-icons').withText('thumb_up').parent('button');
+  }
+  
+  get likeCount() {
+    return this.likeToggleWithCount.parent(0).nextSibling('span');
+  }
+
+  get bookmarkButton() {
+    return this.self.find('.material-icons').withText('bookmark_border').parent('button');
+  }
+
+  get unBookmarkButton() {
+    return this.self.find('.material-icons').withText('bookmark').parent('button');
+  }
+
+  get moreMenu() {
+    return this.self.find('.material-icons').withText('more_horiz').parent('button');
+  }
+ 
+  async clickLikeOnActionBar() {
+    await this.t.hover(this.self).click(this.likeToggleOnActionBar);
+  }
+ 
+  async clickLikeWithCount() {
+    await this.t.hover(this.self).click(this.likeToggleWithCount);
+  }
+
+  async getLikeCount() {
+    if (!await this.likeCount.exists) {
+      return 0;
+    }
+    const text = await this.likeCount.innerText;
+    if (_.isEmpty(text)) {
+      return 0;
+    }
+    return Number(text);
+  }
+
+  async addBookmark() {
+    await this.t.hover(this.self).click(this.bookmarkButton);
+  }
+
+  async removeBookmark() {
+    await this.t.hover(this.self).click(this.unBookmarkButton);
+  }
+
+  
   // --- mention page only ---
   get conversationName() {
     return this.self.find('.conversation-name')
@@ -137,14 +188,14 @@ export class PostItem extends BaseWebComponent {
 
   get jumpToConversationButton() {
     return this.self.find(`span`).withText('Jump To Conversation');
-    }
+  }
 
-    async jumpToAtMentionConversation() {
+  async jumpToAtMentionConversation() {
     await this.t.click(this.self);
-    }
+  }
 
 
-    async clickConversationByButton() {
+  async clickConversationByButton() {
     await this.t.hover(this.self).click(this.jumpToConversationButton);
-    }
+  }
 }
