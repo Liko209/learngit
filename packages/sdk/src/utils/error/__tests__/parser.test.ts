@@ -21,6 +21,7 @@ describe('ErrorParser', () => {
       status: 200,
       data: { error: { message: '' } },
     });
+
     expect(ErrorParser.parse(httpError)).toEqual({
       data: { error: { message: '' } },
       headers: {},

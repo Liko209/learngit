@@ -269,28 +269,22 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
             down: this.onKeyDown,
           }}
         >
-          {() => {
-            return (
-              <>
-                <JuiSearchInput
-                  focus={focus}
-                  onFocus={this.onFocus}
-                  onClear={this.onClear}
-                  value={searchValue}
-                  onChange={this.onChange}
-                  placeholder={t('search')}
-                  showCloseBtn={!!searchValue}
-                />
-                {focus && searchValue && (
-                  <JuiSearchList>
-                    {this._renderSuggestion(persons, 'People', terms)}
-                    {this._renderSuggestion(groups, 'Groups', terms)}
-                    {this._renderSuggestion(teams, 'Teams', terms)}
-                  </JuiSearchList>
-                )}
-              </>
-            );
-          }}
+          <JuiSearchInput
+            focus={focus}
+            onFocus={this.onFocus}
+            onClear={this.onClear}
+            value={searchValue}
+            onChange={this.onChange}
+            placeholder={t('search')}
+            showCloseBtn={!!searchValue}
+          />
+          {focus && searchValue && (
+            <JuiSearchList>
+              {this._renderSuggestion(persons, 'People', terms)}
+              {this._renderSuggestion(groups, 'Groups', terms)}
+              {this._renderSuggestion(teams, 'Teams', terms)}
+            </JuiSearchList>
+          )}
         </HotKeys>
       </JuiSearchBar>
     );

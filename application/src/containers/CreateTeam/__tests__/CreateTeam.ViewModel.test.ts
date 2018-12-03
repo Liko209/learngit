@@ -3,11 +3,16 @@
  * @Date: 2018-09-20 14:56:18
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { err, ok } from 'foundation';
 import { service } from 'sdk';
+import { GroupErrorTypes } from 'sdk/service/group';
+import { BaseError } from 'sdk/utils';
+
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
+
+jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
 
@@ -23,7 +28,9 @@ const accountService = {
 // AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 
 const createTeamVM = new CreateTeamViewModel();
-
+function getNewBaseError(type: GroupErrorTypes) {
+  return new BaseError(type, '');
+}
 describe('CreateTeamVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
@@ -41,7 +48,7 @@ describe('CreateTeamVM', () => {
     accountService.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => creatorId);
-    groupService.createTeam = jest.fn().mockImplementation(() => ({}));
+    groupService.createTeam = jest.fn().mockImplementation(() => ok(''));
 
     const name = 'name';
     const memberIds = [1, 2];
@@ -65,11 +72,9 @@ describe('CreateTeamVM', () => {
     accountService.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => creatorId);
-    groupService.createTeam = jest.fn().mockResolvedValue({
-      error: {
-        code: 'already_taken',
-      },
-    });
+    groupService.createTeam = jest
+      .fn()
+      .mockResolvedValue(err(getNewBaseError(GroupErrorTypes.ALREADY_TAKEN)));
 
     jest.spyOn(createTeamVM, 'createErrorHandler');
     const name = 'name';
@@ -79,14 +84,16 @@ describe('CreateTeamVM', () => {
       isPublic: true,
       canPost: true,
     };
-    try {
-      await createTeamVM.create(name, memberIds, description, options);
-    } catch (err) {
-      expect(createTeamVM.createErrorHandler).toHaveBeenCalledWith({
-        error: {
-          code: 'already_taken',
-        },
-      });
+    const result = await createTeamVM.create(
+      name,
+      memberIds,
+      description,
+      options,
+    );
+    if (result.isErr()) {
+      expect(result.error.code).toBe(GroupErrorTypes.ALREADY_TAKEN);
+    } else {
+      expect(result).toBe(false);
     }
   });
 
@@ -95,7 +102,9 @@ describe('CreateTeamVM', () => {
     accountService.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => creatorId);
-    groupService.createTeam = jest.fn().mockRejectedValue('error');
+    groupService.createTeam = jest
+      .fn()
+      .mockResolvedValueOnce(err(new BaseError(500, '')));
 
     const name = 'name';
     const memberIds = [1, 2];
@@ -104,11 +113,13 @@ describe('CreateTeamVM', () => {
       isPublic: true,
       canPost: true,
     };
-    try {
-      await createTeamVM.create(name, memberIds, description, options);
-    } catch (err) {
-      expect(createTeamVM.serverError).toBe(true);
-    }
+    const result = await createTeamVM.create(
+      name,
+      memberIds,
+      description,
+      options,
+    );
+    expect(result.isErr()).toBe(true);
   });
 
   it('getGlobalValue', () => {
@@ -166,24 +177,14 @@ describe('CreateTeamVM', () => {
   });
 
   it('createErrorHandle()', () => {
-    createTeamVM.createErrorHandler({
-      error: {
-        code: 'already_taken',
-        message: '',
-        validation: false,
-      },
-    });
-    expect(createTeamVM.errorMsg).toBe('already taken');
+    let error = getNewBaseError(GroupErrorTypes.ALREADY_TAKEN);
+    createTeamVM.createErrorHandler(error);
+    expect(createTeamVM.errorMsg).toBe('alreadyTaken');
     expect(createTeamVM.nameError).toBe(true);
-    createTeamVM.createErrorHandler({
-      error: {
-        message: 'This is not a valid email address: q@qq.com .',
-        validation: true,
-        code: 'invalid_field',
-      },
-    });
-    expect(createTeamVM.errorEmail).toBe('q@qq.com');
-    expect(createTeamVM.emailErrorMsg).toBe('Invalid Email');
+
+    error = getNewBaseError(GroupErrorTypes.INVALID_FIELD);
+    createTeamVM.createErrorHandler(error);
+    expect(createTeamVM.emailErrorMsg).toBe('InvalidEmail');
     expect(createTeamVM.emailError).toBe(true);
   });
 });

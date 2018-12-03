@@ -22,7 +22,7 @@ type State = {
 
 type NewMessageProps = WithNamespaces & ViewProps;
 
-const StyledSnackbarsContent = styled(JuiSnackbarContent)`
+const StyledSnackbarsContent = styled<any>(JuiSnackbarContent)`
   && {
     margin: 0 0 ${spacing(4)} 0;
   }

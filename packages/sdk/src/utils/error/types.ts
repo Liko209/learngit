@@ -20,6 +20,13 @@ const ErrorTypes = {
   OAUTH: 4000,
   NETWORK: 5000,
   INVALID_GRANT: 4147,
+  API: 6000,
+};
+
+const ApiErrorTypes = {
+  ALREADY_TAKEN: 1,
+  INVALID_FIELD: 2,
+  UNKNOWN: 99,
 };
 
 Object.keys(HttpStatus).forEach((key: string) => {
@@ -31,4 +38,4 @@ const HttpError = {
 };
 
 export default ErrorTypes;
-export { HttpError };
+export { HttpError, ErrorTypes, ApiErrorTypes };

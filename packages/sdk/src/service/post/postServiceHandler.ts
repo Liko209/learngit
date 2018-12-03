@@ -40,8 +40,11 @@ class PostServiceHandler {
         const replacedText = `<a class='at_mention_compose' rel='{"id":${
           users[i].id
         }}'>@${users[i].display}</a>`;
-        renderedText = renderedText.replace(key, replacedText);
-        ids.push(users[i].id);
+        const text = renderedText.replace(key, replacedText);
+        if (text !== renderedText) {
+          renderedText = text;
+          ids.push(users[i].id);
+        }
       }
 
       return {

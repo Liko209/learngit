@@ -10,7 +10,7 @@ import { boolean, text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiSnackbarContent } from '../';
 
-storiesOf('Components/Snackbars', module)
+storiesOf('Components/Banners', module)
   .addDecorator(withInfoDecorator(JuiSnackbarContent))
   .add('JuiSnackbars', () => {
     return (

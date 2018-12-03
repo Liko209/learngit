@@ -5,7 +5,6 @@
  */
 
 import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
-import { IResponse, IResponseError } from '../NetworkClient';
 import Api from '../api';
 import { GLIP_API } from './constants';
 import {
@@ -39,9 +38,6 @@ export type IndexDataModel = {
   client_config: IFlag;
   static_http_server: string;
 };
-
-type IndexResponse = IResponse<IndexDataModel & IResponseError>;
-
 /**
  * @param {string} rcAccessTokenData
  * @param {string} username
@@ -49,7 +45,7 @@ type IndexResponse = IResponse<IndexDataModel & IResponseError>;
  * @param {boolean} mobile(option)
  * get glip 1.0 api's request header (x-authorization) by authData
  */
-function loginGlip(authData: object): Promise<IResponse<Object>> {
+function loginGlip(authData: object) {
   const model = {
     rc_access_token_data: btoa(JSON.stringify(authData)),
   };
@@ -59,7 +55,10 @@ function loginGlip(authData: object): Promise<IResponse<Object>> {
     data: model,
     authFree: true,
   };
-  return Api.glipNetworkClient.http({ ...query, via: NETWORK_VIA.HTTP });
+  return Api.glipNetworkClient.http<Object>({
+    ...query,
+    via: NETWORK_VIA.HTTP,
+  });
 }
 
 /**
@@ -68,12 +67,8 @@ function loginGlip(authData: object): Promise<IResponse<Object>> {
  * @param {string} password
  * index data api
  */
-function indexData(
-  params: object,
-  requestConfig = {},
-  headers = {},
-): Promise<IResponse<IndexDataModel & IResponseError>> {
-  return Api.glipNetworkClient.get(
+function indexData(params: object, requestConfig = {}, headers = {}) {
+  return Api.glipNetworkClient.get<IndexDataModel>(
     '/index',
     params,
     NETWORK_VIA.HTTP,
@@ -82,12 +77,8 @@ function indexData(
   );
 }
 
-function initialData(
-  params: object,
-  requestConfig = {},
-  headers = {},
-): Promise<IndexResponse> {
-  return Api.glipDesktopNetworkClient.get(
+function initialData(params: object, requestConfig = {}, headers = {}) {
+  return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/initial',
     params,
     NETWORK_VIA.HTTP,
@@ -96,12 +87,8 @@ function initialData(
   );
 }
 
-function remainingData(
-  params: object,
-  requestConfig = {},
-  headers = {},
-): Promise<IndexResponse> {
-  return Api.glipDesktopNetworkClient.get(
+function remainingData(params: object, requestConfig = {}, headers = {}) {
+  return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/remaining',
     params,
     NETWORK_VIA.HTTP,

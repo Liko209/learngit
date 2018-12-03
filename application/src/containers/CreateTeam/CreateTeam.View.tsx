@@ -15,7 +15,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 // import { JuiTextWithLink } from 'jui/components/TextWithLink';
-import { JuiSnackbarContent } from 'jui/components/Snackbars';
+import { JuiSnackbarContent } from 'jui/components/Banners';
 import {
   JuiListToggleButton,
   JuiListToggleItemProps,
@@ -93,14 +93,14 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { history, create } = this.props;
     const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
     const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    try {
-      const result = await create(teamName, members, description, {
-        isPublic,
-        canPost,
-      });
+    const result = await create(teamName, members, description, {
+      isPublic,
+      canPost,
+    });
+    if (result.isOk()) {
       history.push(`/messages/${result.id}`);
       this.onClose();
-    } catch (err) {}
+    }
   }
 
   onClose = () => {
