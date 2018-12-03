@@ -1,4 +1,5 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
+import { ClientFunction } from 'testcafe';
 
 
 class BaseConversationPage extends BaseWebComponent {
@@ -33,13 +34,33 @@ class BaseConversationPage extends BaseWebComponent {
   get stream() {
     return this.getSelectorByAutomationId('jui-stream');
   }
-  
+
   // FIXME: find a more reliable method
   async expectStreamScrollToBottom() {
     const scrollTop = await this.streamWrapper.scrollTop;
     const streamHeight = await this.stream.clientHeight;
     const streamWrapperHeight = await this.streamWrapper.clientHeight;
     await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+  }
+
+  async scrollToY(y: number) {
+    await this.t.eval(() => {
+      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
+    }, {
+      dependencies: { y }
+    });
+  }
+
+  async scrollToMiddle() {
+    const scrollHeight = await this.streamWrapper.clientHeight;
+    this.scrollToY(scrollHeight/2);
+  }
+
+  async scrollToBottom() {
+    await this.t.eval(() => {
+      const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
+      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
+    });
   }
 }
 
@@ -113,4 +134,17 @@ export class PostItem extends BaseWebComponent {
   async goToConversation() {
     await this.t.click(this.conversationName, { offsetX: 3 });
   }
+
+  get jumpToConversationButton() {
+    return this.self.find(`span`).withText('Jump To Conversation');
+    }
+
+    async jumpToAtMentionConversation() {
+    await this.t.click(this.self);
+    }
+
+
+    async clickConversationByButton() {
+    await this.t.hover(this.self).click(this.jumpToConversationButton);
+    }
 }

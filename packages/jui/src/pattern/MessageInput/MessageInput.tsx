@@ -30,7 +30,7 @@ const GlobalStyle = createGlobalStyle<{}>`
   .ql-snow {
     .mention {
       padding: ${spacing(0.5)};
-      background-color: ${primary('100')};
+      background-color: ${primary('50')};
       border-radius: ${spacing(0.5)};
       color: ${primary('700')};
     }

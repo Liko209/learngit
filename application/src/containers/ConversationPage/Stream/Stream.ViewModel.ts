@@ -154,14 +154,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       const post = await PostService.getInstance<PostService>().getById(
         this.jumpToPostId,
       );
-      this._transformHandler.orderListStore.append([transformFunc(post)]);
-      const result = await Promise.all([
-        this._loadPosts(QUERY_DIRECTION.OLDER),
-        this._loadPosts(QUERY_DIRECTION.NEWER),
-      ]);
-      posts = _(result)
-        .flatten()
-        .value();
+      if (post) {
+        this._transformHandler.orderListStore.append([transformFunc(post)]);
+        const result = await Promise.all([
+          this._loadPosts(QUERY_DIRECTION.OLDER),
+          this._loadPosts(QUERY_DIRECTION.NEWER),
+        ]);
+        posts = _(result)
+          .flatten()
+          .value();
+      }
     } else {
       posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
     }

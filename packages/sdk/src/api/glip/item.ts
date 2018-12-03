@@ -3,7 +3,7 @@
  * @Date: 2018-03-14 20:26:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { IResponse, IResponseError } from '../NetworkClient';
+import { NETWORK_METHOD, NETWORK_VIA, Result } from 'foundation';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
 import {
@@ -14,17 +14,14 @@ import {
   Raw,
   NoteItem,
 } from '../../models';
-import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
 
 interface IRightRailItemModel extends BaseModel {
   items: Raw<Item>[];
 }
 
 type ProgressCallback = (e: ProgressEventInit) => any;
-type UploadFileResponse = IResponse<StoredFile>;
-type FileResponse = IResponse<Raw<FileItem>>;
-type RightRailResponse = IResponse<IRightRailItemModel>;
-type NoteResponse = IResponse<Raw<NoteItem>>;
+type UploadFileResult = Result<StoredFile>;
+type FileResult = Result<Raw<FileItem>>;
 
 const ITEMPATH = {
   [TypeDictionary.TYPE_ID_TASK]: 'task',
@@ -52,15 +49,12 @@ function getItemServerUrl(id: number): string {
 
 class ItemAPI extends Api {
   static basePath = '/item';
-  static sendFileItem(data: object): Promise<IResponse<Raw<FileItem>>> {
-    return this.glipNetworkClient.post('/file', data);
+  static sendFileItem(data: object) {
+    return this.glipNetworkClient.post<Raw<FileItem>>('/file', data);
   }
 
-  static uploadFileItem(
-    files: FormData,
-    callback?: ProgressCallback,
-  ): Promise<UploadFileResponse> {
-    return this.uploadNetworkClient.http({
+  static uploadFileItem(files: FormData, callback?: ProgressCallback) {
+    return this.uploadNetworkClient.http<StoredFile>({
       path: '/upload',
       method: NETWORK_METHOD.POST,
       via: NETWORK_VIA.HTTP,
@@ -75,33 +69,27 @@ class ItemAPI extends Api {
     });
   }
 
-  static requestById(id: number): Promise<FileResponse> {
-    return this.glipNetworkClient.get(getItemServerUrl(id));
+  static requestById(id: number) {
+    return this.glipNetworkClient.get<Raw<FileItem>>(getItemServerUrl(id));
   }
 
-  static requestRightRailItems(groupId: number): Promise<RightRailResponse> {
-    return this.glipNetworkClient.get('/web_client_right_rail_items', {
-      group_id: groupId,
-    });
+  static requestRightRailItems(groupId: number) {
+    return this.glipNetworkClient.get<IRightRailItemModel>(
+      '/web_client_right_rail_items',
+      {
+        group_id: groupId,
+      },
+    );
   }
 
-  static getNote(id: number): Promise<NoteResponse> {
-    return this.glipNetworkClient.get(`/pages_body/${id}`);
+  static getNote(id: number) {
+    return this.glipNetworkClient.get<Raw<NoteItem>>(`/pages_body/${id}`);
   }
 
-  static putItem<T>(
-    id: number,
-    type: string,
-    data: Partial<T>,
-  ): Promise<IResponse<Raw<T> & IResponseError>> {
-    return this.glipNetworkClient.put(`/${type}/${id}`, data);
+  static putItem<T>(id: number, type: string, data: Partial<T>) {
+    return this.glipNetworkClient.put<Raw<T>>(`/${type}/${id}`, data);
   }
 }
 
 export default ItemAPI;
-export {
-  IRightRailItemModel,
-  FileResponse,
-  ProgressCallback,
-  UploadFileResponse,
-};
+export { IRightRailItemModel, FileResult, ProgressCallback, UploadFileResult };
