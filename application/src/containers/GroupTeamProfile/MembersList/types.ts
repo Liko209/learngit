@@ -3,10 +3,9 @@
  * @Date: 2018-11-24 17:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { WithNamespaces } from 'react-i18next';
 import { ProfileType } from '../types';
 
-type MemberListViewProps = WithNamespaces & {
+type MemberListViewProps = {
   memberIds: number[];
   gid: number;
 };

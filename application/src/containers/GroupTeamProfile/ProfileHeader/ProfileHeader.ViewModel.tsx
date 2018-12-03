@@ -11,7 +11,7 @@ import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 
 class ProfileHeaderViewModel extends StoreViewModel<ProfileHeaderProps> {
   @computed
-  get groupId() {
+  get id() {
     return this.props.id;
   }
   @computed

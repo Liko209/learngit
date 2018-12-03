@@ -13,9 +13,9 @@ const TITLE_2 = 'name 2';
 describe('ProfileHeaderViewModel', () => {
   it('should computed groupId while id changed', () => {
     profileHeaderVM.props.id = ID_1;
-    expect(profileHeaderVM.groupId).toEqual(ID_1);
+    expect(profileHeaderVM.id).toEqual(ID_1);
     profileHeaderVM.props.id = ID_2;
-    expect(profileHeaderVM.groupId).toEqual(ID_2);
+    expect(profileHeaderVM.id).toEqual(ID_2);
   });
   it('should computed title while title changed', () => {
     profileHeaderVM.props.title = TITLE_1;

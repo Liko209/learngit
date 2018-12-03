@@ -5,7 +5,7 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import {
   JuiGroupProfileBody,
   JuiGroupProfileMessageBtn,
@@ -13,14 +13,15 @@ import {
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Avatar } from '@/containers/Avatar';
 import { ProfileHeaderViewProps } from './types';
-import { goToConversation } from '../../../common/goToConversation';
+import { goToConversation } from '@/common/goToConversation';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { accessHandler } from '../AccessHandler';
 import { Presence } from '@/containers/Presence';
 
+type Props = WithNamespaces & ProfileHeaderViewProps;
 @observer
-class ProfileBody extends React.Component<ProfileHeaderViewProps> {
-  constructor(props: ProfileHeaderViewProps) {
+class ProfileBody extends React.Component<Props> {
+  constructor(props: Props) {
     super(props);
   }
   OnMessageClick = async () => {

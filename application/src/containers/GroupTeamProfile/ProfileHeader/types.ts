@@ -4,12 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { WithNamespaces } from 'react-i18next';
 import { DismissProps, ProfileType } from '../types';
 
-type ProfileHeaderViewProps = WithNamespaces & {
+type ProfileHeaderViewProps = {
   title?: string;
-  groupId: number;
+  id: number;
   type: ProfileType;
   isTeam: boolean;
 } & DismissProps;

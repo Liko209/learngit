@@ -5,7 +5,7 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import {
   JuiGroupProfileMemberList,
 } from 'jui/pattern/GroupTeamProfile';
@@ -15,8 +15,9 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 const globalStore = storeManager.getGlobalStore();
 
+type Props = WithNamespaces & MemberListViewProps;
 @observer
-class MembersList extends React.Component<MemberListViewProps> {
+class MembersList extends React.Component<Props> {
   componentWillUnmount() {
     globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
   }

@@ -5,13 +5,14 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { MemberListHeaderViewProps } from './types';
 import { JuiGroupProfileListHeader } from 'jui/pattern/GroupTeamProfile';
 import { TypeDictionary } from 'sdk/utils';
 
+type Props = WithNamespaces & MemberListHeaderViewProps;
 @observer
-class MemberListHeader extends React.Component<MemberListHeaderViewProps> {
+class MemberListHeader extends React.Component<Props> {
   render() {
     const { counts, type, t , isShowHeaderShadow } = this.props;
     return (

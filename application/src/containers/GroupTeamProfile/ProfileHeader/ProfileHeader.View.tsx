@@ -5,22 +5,24 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate } from 'react-i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { JuiGroupProfileHeader } from 'jui/pattern/GroupTeamProfile';
 import { Favorite, Privacy } from '@/containers/common';
 import { ProfileHeaderViewProps } from './types';
 import { MoreHorizIcon } from './MoreHoriz';
 
+type Props = WithNamespaces & ProfileHeaderViewProps;
+
 @observer
-class ProfileHeader extends React.Component<ProfileHeaderViewProps> {
+class ProfileHeader extends React.Component<Props> {
   render() {
-    const { title = 'Profile', dismiss, groupId, isTeam, type, t } = this.props;
-    const privacy = <Privacy id={groupId} disableToolTip={false} />;
-    const moreIcon = <MoreHorizIcon id={groupId} type={type} />;
+    const { title = 'Profile', dismiss, id, isTeam, type, t } = this.props;
+    const privacy = <Privacy id={id} disableToolTip={false} />;
+    const moreIcon = <MoreHorizIcon id={id} type={type} />;
     return (
       <JuiGroupProfileHeader title={t(title)} dismiss={dismiss} toolTipCloseTitle={t('close')}>
         {isTeam ? privacy : null}
-        <Favorite id={groupId} isAction={false} />
+        <Favorite id={id} isAction={false} />
         {isTeam ? moreIcon : null}
       </JuiGroupProfileHeader>
     );

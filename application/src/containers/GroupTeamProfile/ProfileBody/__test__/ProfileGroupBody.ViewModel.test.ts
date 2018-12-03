@@ -6,7 +6,7 @@
 import { getEntity } from '../../../../store/utils';
 jest.mock('../../../../store/utils');
 import { ProfileGroupBodyViewModel } from '../ProfileGroupBody.ViewModel';
-const profileBodyVM = new ProfileGroupBodyViewModel({ id: 123, dismiss( ) {}, isGroupOrTeam: true });
+const profileBodyVM = new ProfileGroupBodyViewModel({ id: 123, dismiss( ) {}, isGroupOrTeam: true, type: 2 });
 
 describe('ProfileBodyViewModel', () => {
   it('should return displayName if team/group id provided', () => {
