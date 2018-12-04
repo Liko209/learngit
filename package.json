@@ -20,6 +20,7 @@
     "build:app": "cd application && npm run build",
     "build:ui": "cd packages/jui && npm run build-storybook",
     "test": "node ./scripts/test.js --env=jsdom",
+    "test:changed": "npm run test:cover -- --changedSince=develop",
     "test:staged": "npm run test:cover -- --findRelatedTests",
     "test:cover": "npm run test -- --coverage",
     "test:dev": "npm run test -- --watchAll",
@@ -81,7 +82,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "node ./scripts/check-coverage && npm run lint-all && npm run test:cover",
+      "pre-push": "node ./scripts/check-coverage && npm run lint-all && npm run test:changed",
       "commit-msg": "node scripts/validate-commit-msg.js"
     }
   }
