@@ -3,7 +3,7 @@
  * @Date: 2018-10-29 11:19:02
  * Copyright © RingCentral. All rights reserved.
  */
-import React  from 'react';
+import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
 import {
@@ -85,7 +85,7 @@ type Props = {
   onLinkItemClose?: (e: React.MouseEvent<HTMLSpanElement>) => void;
   url: string;
 };
-class JuiConversationCardLinkItems extends React.PureComponent<
+class JuiConversationCardLinkItems extends PureComponent<
   Props
 > {
   constructor(props: Props) {
