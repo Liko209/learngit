@@ -48,7 +48,7 @@ class JuiConversationCardFooter extends React.PureComponent<Props> {
     return (
       <Collapse in={!!likeCount}>
         <StyledConversationCardFooter>
-          <StyledIconWrapper>
+          <StyledIconWrapper data-name="footerLikeButton">
             {Like}
             <span>{likeCount}</span>
           </StyledIconWrapper>

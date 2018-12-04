@@ -49,6 +49,7 @@ class JuiConversationActionBar extends PureComponent<Props> {
           size="small"
           tooltipTitle={moreTooltipTitle}
           variant="plain"
+          data-name="actionBarMore"
         >
           more_horiz
         </JuiIconButton>

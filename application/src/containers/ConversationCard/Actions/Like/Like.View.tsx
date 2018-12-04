@@ -29,6 +29,7 @@ class LikeViewComponent extends Component<Props> {
         color={isLike ? 'primary' : undefined}
         onClick={this._handleLikeButton}
         variant="plain"
+        data-name="actionBarLike"
       >
         {isLike ? 'thumb_up' : <ThumbUpOutlined />}
       </JuiIconButton>
