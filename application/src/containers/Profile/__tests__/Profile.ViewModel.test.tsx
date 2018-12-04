@@ -14,6 +14,7 @@ describe('Profile view model', () => {
       id: 11370502,
       type: PROFILE_TYPE.MINI_CARD,
     });
+    expect(vm.type).toBe(PROFILE_TYPE.MINI_CARD);
     expect(vm.typeId).toBe(TypeDictionary.TYPE_ID_TEAM);
   });
 
@@ -22,6 +23,7 @@ describe('Profile view model', () => {
       id: 14974978,
       type: PROFILE_TYPE.MINI_CARD,
     });
+    expect(vm.type).toBe(PROFILE_TYPE.MINI_CARD);
     expect(vm.typeId).toBe(TypeDictionary.TYPE_ID_GROUP);
   });
 
@@ -30,6 +32,7 @@ describe('Profile view model', () => {
       id: 2514947,
       type: PROFILE_TYPE.MINI_CARD,
     });
+    expect(vm.type).toBe(PROFILE_TYPE.MINI_CARD);
     expect(vm.typeId).toBe(TypeDictionary.TYPE_ID_PERSON);
   });
 });
