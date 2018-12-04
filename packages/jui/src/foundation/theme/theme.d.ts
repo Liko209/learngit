@@ -95,6 +95,8 @@ type Theme = {
     elementOnRipple: number;
     loading: number;
     dragging: number;
+    moreMenu: number;
+    memberListHeader: number
   };
   size: {
     width: number;
@@ -147,10 +149,21 @@ type Theme = {
       lineHeight: string;
       maxHeight: string;
     };
+    h6: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    }
   };
   boxShadow: {
     val1: string;
+    val2: string;
+    val3: string;
   };
+  maxHeight: {
+    dialog: string;
+  }
 } & MuiTheme;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;

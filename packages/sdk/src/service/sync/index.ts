@@ -63,18 +63,21 @@ export default class SyncService extends BaseService {
   private async _firstLogin() {
     try {
       const currentTime = Date.now();
-      let result = await fetchInitialData(currentTime);
+      const initialResult = await fetchInitialData(currentTime);
       this.onDataLoaded && (await this.onDataLoaded());
-      if (result && result.data) {
-        await handleData(result.data);
-        result = await fetchRemainingData(currentTime);
+
+      if (initialResult.isOk()) {
+        await handleData(initialResult.data);
+        const remainingResult = await fetchRemainingData(currentTime);
         this.onDataLoaded && (await this.onDataLoaded());
-        if (result && result.data) {
-          await handleData(result.data);
+
+        if (remainingResult.isOk()) {
+          await handleData(remainingResult.data);
           mainLogger.info('fetch initial data or remaining data success');
           return;
         }
       }
+
       mainLogger.error('fetch initial data or remaining data error');
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     } catch (e) {
@@ -87,7 +90,7 @@ export default class SyncService extends BaseService {
     // 5 minutes ago to ensure data is correct
     const result = await fetchIndexData(String(timeStamp - 300000));
     this.onDataLoaded && (await this.onDataLoaded());
-    if (result && result.data) {
+    if (result.isOk()) {
       await handleData(result.data);
     } else {
       this._handleSyncIndexError(result);

@@ -7,11 +7,13 @@ import { action, computed, observable } from 'mobx';
 
 import PostService from 'sdk/service/post';
 // import GroupService from 'sdk/service/group';
-import { IResponseError } from 'sdk/models';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { matchInvalidEmail } from '@/utils/string';
+import { BaseError } from 'sdk/src/utils';
+import { GroupErrorTypes } from 'sdk/service/group';
 
 class NewMessageViewModel extends StoreViewModel {
   @observable
@@ -22,6 +24,8 @@ class NewMessageViewModel extends StoreViewModel {
   serverError: boolean = false;
   @observable
   members: (number | string)[] = [];
+  @observable
+  errorEmail: string;
 
   @computed
   get disabledOkBtn() {
@@ -84,10 +88,9 @@ class NewMessageViewModel extends StoreViewModel {
     try {
       result = await postService.newMessageWithPeopleIds(memberIds, message);
       // result = await groupService.getGroupByMemberList(memberIds);
-    } catch (err) {
-      const { data } = err;
-      if (data) {
-        throw this.newMessageErrorHandler(data as IResponseError);
+    } catch (error) {
+      if (error) {
+        throw this.newMessageErrorHandler(error);
       } else {
         this.serverError = true;
       }
@@ -97,11 +100,15 @@ class NewMessageViewModel extends StoreViewModel {
     return result;
   }
 
-  newMessageErrorHandler(error: IResponseError) {
-    const code = error.error.code;
-    if (code === 'invalid_field') {
-      this.emailErrorMsg = 'Invalid Email';
-      this.emailError = true;
+  newMessageErrorHandler(error: BaseError) {
+    const code = error.code;
+    if (code === GroupErrorTypes.INVALID_FIELD) {
+      const message = error.message;
+      if (matchInvalidEmail(message).length > 0) {
+        this.errorEmail = matchInvalidEmail(message);
+        this.emailErrorMsg = 'Invalid Email';
+        this.emailError = true;
+      }
     }
   }
 }

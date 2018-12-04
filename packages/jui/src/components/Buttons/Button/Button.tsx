@@ -23,7 +23,7 @@ import { Omit } from '../../../foundation/utils/typeHelper';
 
 type Variant = 'round' | 'text' | 'contained' | 'outlined' | 'fab';
 
-export type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant'> & {
+type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant'> & {
   size?: 'small' | 'large';
   variant?: Variant;
   disabled?: boolean;
@@ -112,13 +112,17 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   }
 `;
 
-export const JuiButton: React.StatelessComponent<JuiButtonProps> = (
+const JuiButtonComponent: React.StatelessComponent<JuiButtonProps> = (
   props: JuiButtonProps,
 ) => <StyledButton {...props} />;
 
-JuiButton.defaultProps = {
+JuiButtonComponent.defaultProps = {
   size: 'large',
   color: 'primary',
   variant: 'contained',
   disabled: false,
 };
+
+const JuiButton = styled(JuiButtonComponent)``;
+
+export { JuiButton, JuiButtonProps };

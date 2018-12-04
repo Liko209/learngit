@@ -4,18 +4,23 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import buildVerbNounText from './text/buildVerbNounText';
+import buildVerbNounUserText from './text/buildVerbNounUserText';
 import buildVerbNounAdjectivesText from './text/buildVerbNounAdjectivesText';
+import buildVerbNounAdjectivesUserText from './text/buildVerbNounAdjectivesUserText';
 import buildVerbArticleNounText from './text/buildVerbArticleNounText';
 import buildVerbNumeralsPrepositionsNounText from './text/buildVerbNumeralsPrepositionsNounText';
 
 export default function ({
+  activity,
   activityData,
 }: {
+  activity: string;
   activityData?: { [key: string]: any };
 }) {
   let buildText: any = buildVerbArticleNounText;
   let verb = 'created';
   let numerals = 0;
+  let user = '';
   if (activityData) {
     const { key, value, old_value } = activityData;
     switch (key) {
@@ -36,18 +41,20 @@ export default function ({
         verb = 'completed';
         break;
       case 'complete_people_ids':
-        if (value === 0 || (old_value && old_value.length > value.length)) {
-          buildText = buildVerbNounAdjectivesText;
+        user = activity.slice(activity.indexOf('for ') + 4);
+        if (old_value && old_value.length > value.length) {
+          buildText = buildVerbNounAdjectivesUserText;
           verb = 'marked';
           break;
         }
-        buildText = buildVerbNounText;
+        buildText = buildVerbNounUserText;
         verb = 'completed';
         break;
     }
   }
 
   return buildText({
+    user,
     verb,
     numerals,
     noun: 'task',

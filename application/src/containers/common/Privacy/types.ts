@@ -10,6 +10,7 @@ import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 type PrivacyProps = {
   id: number; // teamId
   size?: IconButtonSize;
+  disableToolTip?: boolean;
   isAction?: boolean;
 };
 
@@ -20,6 +21,7 @@ type PrivacyViewProps = {
   isAction: boolean;
   isPublic: boolean;
   handlePrivacy: () => Promise<ServiceCommonErrorType>;
+  disableToolTip?: boolean;
 };
 
 export { PrivacyProps, PrivacyViewProps };

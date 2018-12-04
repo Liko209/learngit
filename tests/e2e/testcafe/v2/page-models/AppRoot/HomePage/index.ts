@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { CreateTeamModal } from './CreateTeamModal';
+import { SendNewMessageModal } from './SendNewMessage';
 import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
@@ -35,7 +36,7 @@ export class HomePage extends BaseWebComponent {
         return this.getComponent(MessageTab);
     }
 
-    get header(){
+    get header() {
         return this.getComponent(Header);
     }
 
@@ -50,6 +51,10 @@ export class HomePage extends BaseWebComponent {
 
     get createTeamModal() {
         return this.getComponent(CreateTeamModal);
+    }
+
+    get sendNewMessageModal() {
+        return this.getComponent(SendNewMessageModal);
     }
 
     get topBarAvatar() {

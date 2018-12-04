@@ -20,7 +20,7 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
   async (t) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
 
@@ -57,8 +57,8 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
       await teamSection.expand();
       conversation1 = teamSection.conversationEntryById(teamId1);
       conversation2 = teamSection.conversationEntryById(teamId2);
-      await t.expect(conversation1.exists).ok();
-      await t.expect(conversation2.exists).ok();
+      await t.expect(conversation1.exists).ok({ timeout: 10e3 });
+      await t.expect(conversation2.exists).ok({ timeout: 10e3 });
     });
 
     const msg = uuid();
