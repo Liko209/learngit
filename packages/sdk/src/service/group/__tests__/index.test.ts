@@ -990,4 +990,31 @@ describe('GroupService', () => {
       expect(res).toBe(`${group.id}@${companyReplyDomain}.${envDomain}`);
     });
   });
+
+  describe('updateGroupLastAccessedTime', () => {
+    it('test', async () => {
+      jest.restoreAllMocks();
+      jest.spyOn(groupDao, 'bulkUpdate');
+      daoManager.getDao.mockReturnValue(groupDao);
+      jest.spyOn(groupService, 'getById').mockResolvedValue({
+        id: 1,
+        created_at: 321,
+      });
+      const spyDoDefaultPartialNotify = jest
+        .spyOn<GroupService, any>(groupService, '_doDefaultPartialNotify')
+        .mockImplementation(() => {});
+      await groupService.updateGroupLastAccessedTime({
+        id: 1,
+        timestamp: 12345,
+      });
+
+      expect(groupDao.bulkUpdate).toHaveBeenCalledWith([
+        { id: 1, last_accessed_at: 12345 },
+      ]);
+      expect(spyDoDefaultPartialNotify).toHaveBeenCalledWith(
+        [{ created_at: 321, id: 1, last_accessed_at: 12345 }],
+        [{ id: 1, last_accessed_at: 12345 }],
+      );
+    });
+  });
 });

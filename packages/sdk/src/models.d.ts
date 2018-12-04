@@ -71,6 +71,7 @@ export type GroupCommon = {
   has_no_more_post?: boolean;
   draft?: string;
   send_failure_post_ids?: number[];
+  last_accessed_at?: number;
 };
 
 export type Group = ExtendedBaseModel & {

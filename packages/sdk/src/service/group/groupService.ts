@@ -686,6 +686,19 @@ class GroupService extends BaseService<Group> {
     return email;
   }
 
+  // update partial group data, for last accessed time
+  async updateGroupLastAccessedTime(params: {
+    id: number;
+    timestamp: number;
+  }): Promise<boolean> {
+    const { id, timestamp } = params;
+    const result = await this.updateGroupPartialData({
+      id,
+      last_accessed_at: timestamp,
+    });
+    return result;
+  }
+
   private _getENVDomain() {
     let apiServer = Api.httpConfig['glip'].server;
     if (apiServer) {
