@@ -17,7 +17,6 @@ const JuiConversationPostText = styled('div')`
     color: ${({ theme }) => theme.palette.primary.main};
     cursor: pointer;
     font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
-    background-color: ${({ theme }) => theme.palette.background.paper};
   }
   .current {
     color: ${grey('900')};
