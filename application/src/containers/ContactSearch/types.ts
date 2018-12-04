@@ -15,6 +15,7 @@ type ContactSearchProps = {
   placeholder: string;
   error: boolean;
   helperText: string;
+  errorEmail?: string;
   isExcludeMe?: boolean;
 };
 
@@ -26,6 +27,7 @@ type ViewProps = {
   placeholder: string;
   error: boolean;
   helperText: string;
+  errorEmail?: string;
 };
 
 export { ViewProps, ContactSearchProps, SelectedMember };

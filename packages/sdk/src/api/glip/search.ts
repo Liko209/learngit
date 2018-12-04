@@ -8,26 +8,26 @@
  * @Copyright: © RingCentral. All rights reserve
  */
 
-import { IResponse } from '../NetworkClient';
+import { Result } from 'foundation';
 import Api from '../api';
-import { InitialSearchParams, SearchResult } from '../../service/search/types.d';
+import {
+  InitialSearchParams,
+  SearchResult,
+} from '../../service/search/types.d';
 import { CancelRequestParam } from '../../service/search/types';
 
 type SearchParams = InitialSearchParams | CancelRequestParam;
-type SearchResponse = IResponse<SearchResult>;
+type SearchResponse = Result<SearchResult>;
 
 class SearchAPI extends Api {
   static basePath = '/search';
-  static async search(params: SearchParams): Promise<SearchResponse> {
+  static async search(params: SearchParams) {
     return this.glipNetworkClient.get<SearchResult>('/search', params);
   }
-  static async scrollSearch(params: object): Promise<IResponse<SearchResult>> {
+  static async scrollSearch(params: object) {
     return this.glipNetworkClient.get<SearchResult>('/search_scroll', params);
   }
 }
 
 export default SearchAPI;
-export {
-  SearchParams,
-  SearchResponse,
-};
+export { SearchParams, SearchResponse };

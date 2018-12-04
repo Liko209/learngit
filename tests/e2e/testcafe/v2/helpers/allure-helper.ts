@@ -124,10 +124,14 @@ export class AllureHelper {
   addAttachment(attachmentPath: string, attachmentName?: string) {
     if (attachmentName === undefined)
       attachmentName = path.basename(attachmentPath)
-
+    
     if (attachmentPath && fs.existsSync(attachmentPath)) {
       const img = fs.readFileSync(attachmentPath);
-      this.allureReporter.addAttachment(attachmentName, img);
+      if (path.extname(attachmentPath) == '.webp'){
+        this.allureReporter.addAttachment(attachmentName, img, 'image/png');
+      }else {
+        this.allureReporter.addAttachment(attachmentName, img);
+      }
     }
   }
 

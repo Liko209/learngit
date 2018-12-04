@@ -5,6 +5,8 @@
  */
 
 import { service } from 'sdk';
+import { GroupErrorTypes } from 'sdk/service/group';
+import { BaseError } from 'sdk/utils';
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { NewMessageViewModel } from '../NewMessage.ViewModel';
@@ -18,6 +20,9 @@ const postService = {
 };
 
 const newMessageVM = new NewMessageViewModel();
+function getNewBaseError(type: GroupErrorTypes, message: string) {
+  return new BaseError(type, message);
+}
 
 describe('NewMessageVM', () => {
   beforeAll(() => {
@@ -66,19 +71,17 @@ describe('NewMessageVM', () => {
   });
 
   it('newMessageErrorHandler()', () => {
-    newMessageVM.newMessageErrorHandler({
-      error: {
-        message: '',
-        validation: true,
-        code: 'invalid_field',
-      },
-    });
+    const error = getNewBaseError(
+      GroupErrorTypes.INVALID_FIELD,
+      'This is not a valid email address: q@qq.com.',
+    );
+    newMessageVM.newMessageErrorHandler(error);
     expect(newMessageVM.emailErrorMsg).toBe('Invalid Email');
     expect(newMessageVM.emailError).toBe(true);
   });
 
   it('new message server error', async () => {
-    postService.newMessageWithPeopleIds = jest.fn().mockRejectedValue('error');
+    postService.newMessageWithPeopleIds = jest.fn().mockRejectedValue(null);
 
     const message = 'test';
     const memberIds = [1, 2];

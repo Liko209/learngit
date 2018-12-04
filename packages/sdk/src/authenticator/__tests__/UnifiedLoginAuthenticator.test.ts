@@ -2,7 +2,7 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-07-10 13:36:19
  * Copyright © RingCentral. All rights reserved
-*/
+ */
 
 import { loginGlip } from '../../api/glip/user';
 import { Api } from '../../api';
@@ -13,6 +13,7 @@ import {
   oauthTokenViaAuthCode,
 } from '../../api/ringcentral/auth';
 import { NetworkManager, OAuthTokenManager } from 'foundation';
+import { NetworkResultOk } from '../../api/NetworkResult';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -32,17 +33,21 @@ describe('UnifiedLoginAuthenticator', () => {
     expect(resp.success).toBe(false);
   });
   it('UnifiedLoginAuthenticator rc account', async () => {
-    oauthTokenViaAuthCode.mockResolvedValue({ data: 'token' });
-    generateCode.mockResolvedValueOnce({
-      data: {
+    const oauthTokenResult = new NetworkResultOk('token', 200, {});
+    const loginGlipResult = new NetworkResultOk('', 200, {
+      'x-authorization': 'glip_token',
+    });
+    const generateCodeResult = new NetworkResultOk(
+      {
         code: 'code',
       },
-    });
-    loginGlip.mockResolvedValueOnce({
-      headers: {
-        'x-authorization': 'glip_token',
-      },
-    });
+      200,
+      {},
+    );
+
+    oauthTokenViaAuthCode.mockResolvedValue(oauthTokenResult);
+    generateCode.mockResolvedValueOnce(generateCodeResult);
+    loginGlip.mockResolvedValueOnce(loginGlipResult);
     Api.init({}, networkManager);
 
     const resp = await unified.authenticate({ code: '123' });

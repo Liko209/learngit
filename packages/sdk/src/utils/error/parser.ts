@@ -6,7 +6,7 @@
 
 // import _ from 'lodash';
 import BaseError from './base';
-import ErrorTypes from './types';
+import ErrorTypes, { ApiErrorTypes } from './types';
 import { BaseResponse } from 'foundation';
 import {
   DBCriticalError,
@@ -16,9 +16,12 @@ import {
 // import BaseResponse from 'foundation/network/BaseResponse';
 
 class ErrorParser {
-  static parse(err: any) {
+  static parse(err: any): BaseError {
     // need refactor ** +1
     // if (!err) return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Server Crash');
+    if (err instanceof BaseError) {
+      return err;
+    }
     if (err instanceof DBCriticalError) {
       return new BaseError(ErrorTypes.DB_CRITICAL_ERROR, err.message);
     }
@@ -32,6 +35,7 @@ class ErrorParser {
     if (err instanceof BaseResponse) {
       return ErrorParser.http(err);
     }
+
     if (err.status) {
       return ErrorParser.iResponse(err);
     }
@@ -40,7 +44,7 @@ class ErrorParser {
   }
 
   static iResponse(err: any) {
-    return new BaseError(err.status + ErrorTypes.HTTP, '');
+    return new BaseError(err.status + ErrorTypes.HTTP, err.message || '');
   }
 
   static http(err: any) {
@@ -64,6 +68,13 @@ class ErrorParser {
       return new BaseError(
         ErrorTypes[data.error.toUpperCase()],
         data.error_description,
+      );
+    }
+
+    if (typeof data.error === 'object' && typeof data.error.code === 'string') {
+      return new BaseError(
+        ApiErrorTypes[data.error.code.toUpperCase()],
+        data.error.message,
       );
     }
 

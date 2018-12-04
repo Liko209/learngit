@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { buildContainer } from '@/base';
-import { ProfileButtonView } from './Profile.View';
-import { ProfileViewModel } from './Profile.ViewModel';
+import { ProfileButtonView } from './ProfileButton.View';
+import { ProfileButtonViewModel } from './ProfileButton.ViewModel';
 import { ProfileButtonProps } from './types';
 
-const Profile = buildContainer<ProfileButtonProps>({
+const ProfileButton = buildContainer<ProfileButtonProps>({
   View: ProfileButtonView,
-  ViewModel: ProfileViewModel,
+  ViewModel: ProfileButtonViewModel,
 });
 
-export { Profile };
+export { ProfileButton };
