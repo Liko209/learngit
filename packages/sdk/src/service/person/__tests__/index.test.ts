@@ -418,6 +418,25 @@ describe('PersonService', () => {
       type: PHONE_NUMBER_TYPE.DIRECT_NUMBER,
       phoneNumber: '234567',
     };
+
+    beforeEach(() => {
+      const accountService = new AccountService();
+      AccountService.getInstance = jest
+        .fn()
+        .mockReturnValueOnce(accountService);
+      accountService.getCurrentCompanyId = jest.fn().mockReturnValueOnce(1);
+    });
+
+    it('should not return extension id for guest user', () => {
+      expect(
+        personService.getAvailablePhoneNumbers(
+          123,
+          rcPhoneNumbers,
+          sanitizedRcExtension,
+        ),
+      ).toEqual([did]);
+    });
+
     it.each([
       [rcPhoneNumbers, sanitizedRcExtension, [ext, did]],
       [rcPhoneNumbers, undefined, [did]],
@@ -425,9 +444,9 @@ describe('PersonService', () => {
     ])(
       'should return all available phone numbers, case index: %#',
       (rcPhones, rcExt, expectRes) => {
-        expect(personService.getAvailablePhoneNumbers(rcPhones, rcExt)).toEqual(
-          expectRes,
-        );
+        expect(
+          personService.getAvailablePhoneNumbers(1, rcPhones, rcExt),
+        ).toEqual(expectRes);
       },
     );
   });

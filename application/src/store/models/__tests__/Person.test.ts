@@ -5,7 +5,10 @@
  */
 import PersonModel from '../../../store/models/Person';
 import { Person } from 'sdk/src/models';
-import { PhoneNumberInfo, PHONE_NUMBER_TYPE } from 'sdk/service/person';
+import PersonService, {
+  PhoneNumberInfo,
+  PHONE_NUMBER_TYPE,
+} from 'sdk/service/person';
 
 type UserInfo = {
   firstName?: string;
@@ -95,6 +98,9 @@ describe('PersonModel', () => {
   });
 
   describe('phoneNumbers', () => {
+    const personService = new PersonService();
+    PersonService.getInstance = jest.fn().mockReturnValue(personService);
+
     it('should filter return only direct number and extension number', () => {
       const person: Person = {
         id: 1,
@@ -130,8 +136,18 @@ describe('PersonModel', () => {
           phoneNumber: '234567',
         },
       ];
+
+      personService.getAvailablePhoneNumbers = jest
+        .fn()
+        .mockReturnValue(expectRes);
+
       const res = pm.phoneNumbers;
       expect(res).toEqual(expectRes);
+      expect(personService.getAvailablePhoneNumbers).toBeCalledWith(
+        pm.companyId,
+        pm.rcPhoneNumbers,
+        pm.sanitizedRcExtension,
+      );
     });
   });
 });

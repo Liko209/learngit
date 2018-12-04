@@ -230,11 +230,14 @@ class PersonService extends BaseService<Person> {
   }
 
   getAvailablePhoneNumbers(
+    companyId: number,
     phoneNumbersData?: PhoneNumberModel[],
     extensionData?: SanitizedExtensionModel,
   ) {
     const availNumbers: PhoneNumberInfo[] = [];
-    if (extensionData) {
+    const accountService: AccountService = AccountService.getInstance();
+    const isCoWorker = accountService.getCurrentCompanyId() === companyId;
+    if (isCoWorker && extensionData) {
       availNumbers.push({
         type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
         phoneNumber: extensionData.extensionNumber,

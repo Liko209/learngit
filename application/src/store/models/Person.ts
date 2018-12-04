@@ -151,6 +151,7 @@ export default class PersonModel extends Base<Person> {
   get phoneNumbers(): PhoneNumberInfo[] {
     const personService: PersonService = PersonService.getInstance();
     return personService.getAvailablePhoneNumbers(
+      this.companyId,
       this.rcPhoneNumbers,
       this.sanitizedRcExtension,
     );
