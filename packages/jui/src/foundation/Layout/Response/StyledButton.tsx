@@ -23,7 +23,7 @@ const StyledButton = styled<Props, 'div'>('div')`
   height: ${height(5)};
   cursor: pointer;
   background-color: red;
-  z-index: ${({ theme }) => theme.zIndex.modal};
+  z-index: ${({ theme }) => theme.zIndex.drawer};
   left: ${(props: Props) => `${props.left}`};
   right: ${(props: Props) => `${props.right}`};
   display: ${(props: Props) => (props.show ? 'block' : 'none')};
