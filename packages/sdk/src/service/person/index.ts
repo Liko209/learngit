@@ -5,3 +5,4 @@
  */
 
 export { PersonService as default } from './personService';
+export { PhoneNumberInfo, PHONE_NUMBER_TYPE } from './types';

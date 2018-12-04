@@ -106,6 +106,11 @@ export type PhoneNumberModel = {
   usageType: string;
 };
 
+export type SanitizedExtensionModel = {
+  extensionNumber: string;
+  type: string;
+};
+
 export type Person = ExtendedBaseModel & {
   company_id: number;
   email: string;
@@ -125,7 +130,7 @@ export type Person = ExtendedBaseModel & {
   locked?: boolean;
   inviter_id?: number;
   rc_phone_numbers?: PhoneNumberModel[];
-  sanitized_rc_extension?: object;
+  sanitized_rc_extension?: SanitizedExtensionModel;
   is_pseudo_user?: boolean;
   glip_user_id?: number;
   away_status?: string;
