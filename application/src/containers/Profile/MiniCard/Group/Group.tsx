@@ -12,8 +12,6 @@ import {
 } from 'jui/pattern/MiniCard';
 import { ProfileMiniCardGroupHeader } from './Header';
 import { ProfileMiniCardGroupFooter } from './Footer';
-import { goToConversation } from '@/common/goToConversation';
-import { MiniCard } from '@/containers/MiniCard';
 
 type Props = {
   id: number;
@@ -22,14 +20,6 @@ type Props = {
 class ProfileMiniCardGroup extends Component<Props> {
   constructor(props: Props) {
     super(props);
-  }
-
-  onClickMessage = () => {
-    const { id } = this.props;
-    const result = goToConversation(id);
-    if (result) {
-      MiniCard.dismissProfile();
-    }
   }
 
   render() {

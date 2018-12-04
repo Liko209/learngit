@@ -13,8 +13,6 @@ import {
 import { ProfileMiniCardPersonHeader } from './Header';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { goToConversation } from '@/common/goToConversation';
-import { MiniCard } from '@/containers/MiniCard';
 import { ProfileMiniCardPersonFooter } from './Footer';
 
 type Props = {
@@ -24,14 +22,6 @@ type Props = {
 class ProfileMiniCardPerson extends Component<Props> {
   constructor(props: Props) {
     super(props);
-  }
-
-  onClickMessage = () => {
-    const { id } = this.props;
-    const result = goToConversation(id);
-    if (result) {
-      MiniCard.dismissProfile();
-    }
   }
 
   render() {
