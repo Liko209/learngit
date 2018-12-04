@@ -25,6 +25,8 @@ type JuiIconButtonProps = {
   variant?: IconButtonVariant;
   size?: IconButtonSize;
   color?: string;
+  disableToolTip?: boolean;
+  ariaLabel?: string;
   innerRef?: RefObject<HTMLElement>;
 } & Omit<MuiIconButtonProps, 'color'> &
   Omit<MuiIconProps, 'color'>;
@@ -133,24 +135,18 @@ const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
   }
 `;
 
-// Tooltip does not work on disabled IconButton without this: https://github.com/mui-org/material-ui/issues/8416
-const WrapperForTooltip = styled<JuiIconButtonProps, 'div'>('div')`
-  display: inline-flex;
-  width: ${({ variant, size = 'medium', theme }) =>
-    width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
-      theme,
-    })};
-  height: ${({ variant, size = 'medium', theme }) =>
-    width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
-      theme,
-    })};
-  font-size: 0;
-`;
-
-const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
+export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   props: JuiIconButtonProps,
 ) => {
-  const { className, children, tooltipTitle, innerRef, color, ...rest } = props;
+  const {
+    className,
+    children,
+    tooltipTitle,
+    color,
+    disableToolTip = false,
+    ariaLabel,
+    ...rest
+  } = props;
   const { size, variant, awake, disabled, invisible } = rest;
   let colorScope: keyof Palette = 'primary';
   let colorName: string = 'main';
@@ -164,34 +160,32 @@ const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
       colorName = 'main';
     }
   }
-
-  return (
-    <JuiArrowTip title={tooltipTitle}>
-      <WrapperForTooltip
+  const renderToolTip = () => {
+    return (
+      <StyledIconButton
+        disableRipple={rest.variant === 'plain'}
+        colorScope={colorScope}
+        colorName={colorName}
+        aria-label={ariaLabel}
         className={className}
-        innerRef={innerRef}
-        variant={variant}
-        size={size}
+        {...rest}
       >
-        <StyledIconButton
-          disableRipple={rest.variant === 'plain'}
-          colorScope={colorScope}
-          colorName={colorName}
-          {...rest}
+        <StyledIcon
+          size={size}
+          variant={variant}
+          awake={awake}
+          disabled={disabled}
+          invisible={invisible}
         >
-          <StyledIcon
-            size={size}
-            variant={variant}
-            awake={awake}
-            disabled={disabled}
-            invisible={invisible}
-          >
-            {children}
-          </StyledIcon>
-        </StyledIconButton>
-      </WrapperForTooltip>
-    </JuiArrowTip>
-  );
+          {children}
+        </StyledIcon>
+      </StyledIconButton>
+    );
+  };
+  if (!disableToolTip) {
+    return <JuiArrowTip title={tooltipTitle}>{renderToolTip()}</JuiArrowTip>;
+  }
+  return renderToolTip();
 };
 
 JuiIconButtonComponent.defaultProps = {
