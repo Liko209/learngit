@@ -16,7 +16,7 @@ import { styledComponentWrapper } from '../../../foundation/utils/styledComponen
 import { spacing } from '../../../foundation/utils/styles';
 
 type JuiButtonBarProps = {
-  overlapping?: boolean;
+  overlapSize?: number;
   direction?: 'horizontal' | 'vertical';
   invisible?: boolean;
   awake?: boolean;
@@ -46,28 +46,22 @@ type StyledCheckboxButtonChild = JuiCheckboxButtonProps &
   };
 type StyledChild = StyledIconButtonChild | StyledCheckboxButtonChild;
 
-const overlappingSize = {
-  small: 1,
-  medium: 2,
-  large: 3,
-};
 const padding = (
   theme: Theme,
   componentName: string,
-  size: string = 'medium',
-  overlapping?: boolean,
+  overlapSize?: number,
   variant?: string,
 ) =>
   variant === 'plain'
     ? `${spacing(3)({ theme })}`
     : variant === 'round' || componentName === 'JuiCheckboxButton'
-      ? overlapping
-        ? `-${spacing(overlappingSize[size])({ theme })}`
-        : 0
-      : `${spacing(2)({ theme })}`;
+    ? overlapSize && overlapSize > 0
+      ? `-${spacing(overlapSize)({ theme })}`
+      : 0
+    : `${spacing(2)({ theme })}`;
 
 const StyledChild = styledComponentWrapper<StyledChild>(
-  ({ overlapping, componentName, ...rest }: StyledChild) => {
+  ({ overlapSize, componentName, ...rest }: StyledChild) => {
     if (componentName === 'JuiCheckboxButton') {
       return <JuiCheckboxButton {...rest as JuiCheckboxButtonProps} />;
     }
@@ -80,11 +74,11 @@ const StyledChild = styledComponentWrapper<StyledChild>(
       index,
       componentName,
       size,
-      overlapping,
+      overlapSize,
       variant,
     }) =>
       direction === 'horizontal' && index
-        ? padding(theme, componentName, size, overlapping, variant)
+        ? padding(theme, componentName, overlapSize, variant)
         : ''};
     margin-top: ${({
       theme,
@@ -92,11 +86,11 @@ const StyledChild = styledComponentWrapper<StyledChild>(
       index,
       componentName,
       size,
-      overlapping,
+      overlapSize,
       variant,
     }) =>
       direction === 'vertical' && index
-        ? padding(theme, componentName, size, overlapping, variant)
+        ? padding(theme, componentName, overlapSize, variant)
         : ''};
   `,
 );
@@ -121,7 +115,7 @@ const JuiButtonBar: IButtonBar = ({ children, ...rest }) => {
 };
 
 JuiButtonBar.defaultProps = {
-  overlapping: false,
+  overlapSize: 0,
   direction: 'horizontal',
   size: 'medium',
   awake: false,

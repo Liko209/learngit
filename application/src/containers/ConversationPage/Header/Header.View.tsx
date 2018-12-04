@@ -76,7 +76,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
       </JuiIconButton>,
     );
     return (
-      <JuiButtonBar size="medium" overlapping={true} awake={this.state.awake}>
+      <JuiButtonBar size="medium" overlapSize={1} awake={this.state.awake}>
         {actionButtons}
       </JuiButtonBar>
     );
@@ -108,7 +108,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
     return (
       <JuiConversationPageHeaderSubtitle>
-        <JuiButtonBar size="medium" overlapping={true}>
+        <JuiButtonBar size="medium" overlapSize={2}>
           {type === CONVERSATION_TYPES.TEAM ? (
             <JuiCheckboxButton
               tooltipTitle={
