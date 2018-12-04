@@ -26,7 +26,7 @@ const StyledIconWrapper = styled('div')`
   transition: all 0.1s ease-in;
   display: inline-flex;
   align-items: center;
-  & > div {
+  & > button {
     color: ${palette('primary', '700')};
     margin-right: ${spacing(1)};
   }
