@@ -52,9 +52,15 @@ export class MiscUtils {
         .then((data) => {
           fs.writeFileSync(webpIamgePath, data)
         });
-      return webpIamgePath; 
+      return webpIamgePath;
     } catch {
       return imagePath;
     }
+  }
+
+  static createTmpFilePath(filename?: string) {
+    filename = filename || `${uuid()}.tmp`;
+    const filepath = path.join(TMPFILE_PATH, filename);
+    return filepath;
   }
 }
