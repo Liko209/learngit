@@ -35,7 +35,7 @@ export class MiscUtils {
   }
 
   static async convertToWebp(imagePath: string) {
-    if (path.extname(imagePath) == '.webp') return imagePath; 
+    if (path.extname(imagePath) == '.webp' || !fs.existsSync(imagePath)) return imagePath; 
     const webpIamgePath = imagePath + ".webp";
     const image =  sharp(imagePath);
     await image

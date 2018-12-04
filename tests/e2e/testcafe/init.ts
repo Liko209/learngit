@@ -99,7 +99,6 @@ export function teardownCase() {
     const failScreenShotPath = t['testRun'].errs.length > 0 ? t['testRun'].errs[0].screenshotPath : null;
     if (failScreenShotPath) {
       t['testRun'].errs[0].screenshotPath = await MiscUtils.convertToWebp(failScreenShotPath);
-      fs.unlinkSync(failScreenShotPath);
     };
     h(t).allureHelper.writeReport(consoleLogPath);
     await h(t).dataHelper.teardown();
