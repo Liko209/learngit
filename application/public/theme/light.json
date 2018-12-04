@@ -109,8 +109,6 @@
   "zIndex": {
     "ripple": 1,
     "elementOnRipple": 2,
-    "reponsePanel": 1,
-    "reponseResizer": 2,
     "loading": 1000,
     "dragging": 2000,
     "moreMenu": 999,

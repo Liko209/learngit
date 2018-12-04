@@ -93,8 +93,6 @@ type Theme = {
   zIndex: {
     ripple: number;
     elementOnRipple: number;
-    reponsePanel: number;
-    reponseResizer: number;
     loading: number;
     dragging: number;
     moreMenu: number;
