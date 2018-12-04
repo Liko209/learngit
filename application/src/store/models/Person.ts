@@ -1,7 +1,7 @@
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
-import { Person } from 'sdk/models';
+import { Person, PhoneNumberModel, SanitizedExtensionModel } from 'sdk/models';
 import Base from './Base';
 import {
   isOnlyLetterOrNumbers,
@@ -9,6 +9,7 @@ import {
   handleOneOfName,
   phoneNumberDefaultFormat,
 } from '../helper';
+import PersonService, { PhoneNumberInfo } from 'sdk/service/person';
 
 export default class PersonModel extends Base<Person> {
   @observable
@@ -26,7 +27,7 @@ export default class PersonModel extends Base<Person> {
   @observable
   email: string;
   @observable
-  rcPhoneNumbers?: object[];
+  rcPhoneNumbers?: PhoneNumberModel[];
   @observable
   isPseudoUser?: boolean;
   @observable
@@ -34,9 +35,16 @@ export default class PersonModel extends Base<Person> {
   @observable
   awayStatus?: string;
   @observable
+  jobTitle?: string;
+  @observable
   pseudoUserPhoneNumber?: string;
   rcAccountId?: number;
   inviterId?: number;
+  @observable
+  displayName?: string;
+  @observable
+  sanitizedRcExtension?: SanitizedExtensionModel;
+
   constructor(data: Person) {
     super(data);
     const {
@@ -49,10 +57,13 @@ export default class PersonModel extends Base<Person> {
       is_pseudo_user,
       glip_user_id,
       away_status,
+      job_title,
       headshot_version,
       pseudo_user_phone_number,
       rc_account_id,
       inviter_id,
+      display_name,
+      sanitized_rc_extension,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -60,13 +71,16 @@ export default class PersonModel extends Base<Person> {
     this.headshot = headshot;
     this.headShotVersion = headshot_version;
     this.email = email;
-    this.rcPhoneNumbers = rc_phone_numbers;
+    this.rcPhoneNumbers = rc_phone_numbers || [];
     this.isPseudoUser = is_pseudo_user;
     this.glipUserId = glip_user_id;
     this.awayStatus = away_status;
+    this.jobTitle = job_title;
     this.pseudoUserPhoneNumber = pseudo_user_phone_number;
     this.rcAccountId = rc_account_id;
     this.inviterId = inviter_id;
+    this.displayName = display_name;
+    this.sanitizedRcExtension = sanitized_rc_extension;
   }
 
   static fromJS(data: Person) {
@@ -74,7 +88,7 @@ export default class PersonModel extends Base<Person> {
   }
 
   @computed
-  get displayName(): string {
+  get userDisplayName(): string {
     if (this.isPseudoUser) {
       let pseudoUserDisplayName = '';
       if (this.glipUserId) {
@@ -90,6 +104,7 @@ export default class PersonModel extends Base<Person> {
       }
       return pseudoUserDisplayName;
     }
+
     let dName = '';
     if (this.firstName) {
       dName += this.firstName;
@@ -130,5 +145,15 @@ export default class PersonModel extends Base<Person> {
   @computed
   get hasHeadShot() {
     return this.headShotVersion || this.headshot;
+  }
+
+  @computed
+  get phoneNumbers(): PhoneNumberInfo[] {
+    const personService: PersonService = PersonService.getInstance();
+    return personService.getAvailablePhoneNumbers(
+      this.companyId,
+      this.rcPhoneNumbers,
+      this.sanitizedRcExtension,
+    );
   }
 }

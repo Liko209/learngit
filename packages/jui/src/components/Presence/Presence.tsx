@@ -19,29 +19,29 @@ export enum PRESENCE {
 
 export type JuiPresenceProps = {
   presence: PRESENCE;
-  size?: 'small' | 'medium' | 'large' | 'profile';
-  borderSize?: 'small' | 'medium' | 'large' | 'profile';
+  size?: 'small' | 'medium' | 'large' | 'xlarge';
+  borderSize?: 'small' | 'medium' | 'large' | 'xlarge';
 } & React.HTMLAttributes<HTMLDivElement>;
 
 const sizes = {
   small: 2,
   medium: 2,
   large: 2.5,
-  profile: 4,
+  xlarge: 3.5,
 };
 
 const borderSizes = {
   small: 1,
   medium: 2,
   large: 2,
-  profile: 3,
+  xlarge: 3,
 };
 
-const divSizes = {
+const presenceSizes = {
   small: [1, 0.5],
   medium: [1.5, 0.5],
   large: [1.5, 0.5],
-  profile: [2.5, 1],
+  xlarge: [2.5, 1],
 };
 
 const PRESENCE_COLOR_MAP = {
@@ -87,8 +87,8 @@ const StyledPresence = styled<JuiPresenceProps, 'div'>('div')`
 `;
 
 const StyledDiv = styled<JuiPresenceProps, 'div'>('div')`
-  width: ${props => width(divSizes[props.size || 'medium'][0])};
-  height: ${props => height(divSizes[props.size || 'medium'][1])};
+  width: ${props => width(presenceSizes[props.size || 'medium'][0])};
+  height: ${props => height(presenceSizes[props.size || 'medium'][1])};
   background: ${palette('common', 'white')};
 `;
 

@@ -14,6 +14,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
 import { t } from 'i18next';
+import GroupService, { TeamPermission } from 'sdk/service/group';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -34,7 +35,11 @@ export default class GroupModel extends Base<Group> {
   sendFailurePostIds?: number[];
   @observable
   creatorId: number;
-
+  @observable
+  guestUserCompanyIds?: number[];
+  @observable
+  permissions?: TeamPermission;
+  mostRecentPostId?: number;
   latestTime: number;
 
   constructor(data: Group) {
@@ -50,7 +55,10 @@ export default class GroupModel extends Base<Group> {
       send_failure_post_ids,
       most_recent_post_created_at,
       created_at,
+      most_recent_post_id,
       creator_id,
+      guest_user_company_ids,
+      permissions,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -65,6 +73,9 @@ export default class GroupModel extends Base<Group> {
       ? most_recent_post_created_at
       : created_at;
     this.creatorId = creator_id;
+    this.guestUserCompanyIds = guest_user_company_ids;
+    this.permissions = permissions;
+    this.mostRecentPostId = most_recent_post_id;
   }
 
   @computed
@@ -74,6 +85,7 @@ export default class GroupModel extends Base<Group> {
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
+
     return favoriteGroupIds.some(groupId => groupId === this.id);
   }
 
@@ -100,7 +112,7 @@ export default class GroupModel extends Base<Group> {
       this.type === CONVERSATION_TYPES.SMS
     ) {
       const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
-      return person.displayName || '';
+      return person.userDisplayName || '';
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
@@ -164,6 +176,25 @@ export default class GroupModel extends Base<Group> {
   @computed
   get creator() {
     return getEntity(ENTITY_NAME.PERSON, this.creatorId);
+  }
+
+  isThePersonAdmin(personId: number) {
+    const groupService: GroupService = GroupService.getInstance();
+    return this.type === CONVERSATION_TYPES.TEAM
+      ? groupService.isTeamAdmin(personId, this.permissions)
+      : false;
+  }
+
+  isThePersonGuest(personId: number) {
+    if (this.guestUserCompanyIds && this.guestUserCompanyIds.length > 0) {
+      const person = getEntity(ENTITY_NAME.PERSON, personId);
+      if (person) {
+        return this.guestUserCompanyIds.some(
+          (x: number) => x === person.companyId,
+        );
+      }
+    }
+    return false;
   }
 
   static fromJS(data: Group) {

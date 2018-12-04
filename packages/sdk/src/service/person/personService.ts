@@ -8,9 +8,20 @@ import BaseService from '../../service/BaseService';
 import PersonDao from '../../dao/person';
 import PersonAPI from '../../api/glip/person';
 import handleData from './handleData';
+import GroupService, { FEATURE_STATUS, FEATURE_TYPE } from '../group';
 import { daoManager, AuthDao } from '../../dao';
 import { IPagination } from '../../types';
-import { Person, SortableModel } from '../../models'; // eslint-disable-line
+import {
+  Person,
+  SortableModel,
+  PhoneNumberModel,
+  SanitizedExtensionModel,
+} from '../../models';
+import {
+  CALL_ID_USAGE_TYPE,
+  PHONE_NUMBER_TYPE,
+  PhoneNumberInfo,
+} from './types';
 import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
 import { AccountService } from '../account/accountService';
@@ -20,10 +31,9 @@ class PersonService extends BaseService<Person> {
   constructor() {
     const subscription = {
       [SOCKET.PERSON]: handleData,
-      [SOCKET.ITEM]: handleData,
     };
     super(PersonDao, PersonAPI, handleData, subscription);
-    this.setSupportCache(true);
+    this.enableCache();
   }
 
   async getPersonsByIds(ids: number[]): Promise<(Person | null)[]> {
@@ -83,9 +93,57 @@ class PersonService extends BaseService<Person> {
     return '';
   }
 
+  async getPersonsByGroupId(groupId: number): Promise<Person[]> {
+    const groupService: GroupService = GroupService.getInstance();
+    const group = await groupService.getGroupById(groupId);
+    if (group) {
+      const memberIds = group.members;
+      if (memberIds.length > 0) {
+        const catchData = await this.getMultiEntitiesFromCache(
+          memberIds,
+          (entity: Person) => {
+            return this._isValid(entity);
+          },
+        );
+        if (catchData.length > 0) {
+          return catchData;
+        }
+
+        const personDao = daoManager.getDao(PersonDao);
+        return await personDao.getPersonsByIds(memberIds);
+      }
+    }
+    return [];
+  }
+
+  async buildPersonFeatureMap(
+    personId: number,
+  ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>> {
+    const actionMap = new Map<FEATURE_TYPE, FEATURE_STATUS>();
+
+    const person = (await this.getById(personId)) as Person;
+    if (person) {
+      actionMap.set(FEATURE_TYPE.CONFERENCE, FEATURE_STATUS.INVISIBLE);
+
+      actionMap.set(
+        FEATURE_TYPE.MESSAGE,
+        this._canMessageWithPerson(person)
+          ? FEATURE_STATUS.ENABLE
+          : FEATURE_STATUS.INVISIBLE,
+      );
+
+      // To-Do
+      actionMap.set(FEATURE_TYPE.VIDEO, FEATURE_STATUS.INVISIBLE);
+      actionMap.set(FEATURE_TYPE.CALL, FEATURE_STATUS.INVISIBLE);
+    }
+    return actionMap;
+  }
+
   async doFuzzySearchPersons(
-    searchKey: string,
-    excludeSelf: boolean,
+    searchKey?: string,
+    excludeSelf?: boolean,
+    arrangeIds?: number[],
+    fetchAllIfSearchKeyEmpty?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Person>[];
@@ -97,13 +155,18 @@ class PersonService extends BaseService<Person> {
     }
     return this.searchEntitiesFromCache(
       (person: Person, terms: string[]) => {
-        if (currentUserId && person.id === currentUserId) {
+        if (
+          !this._isValid(person) ||
+          (currentUserId && person.id === currentUserId)
+        ) {
           return null;
         }
         let name: string = this.getName(person);
         if (
-          this.isFuzzyMatched(name, terms) ||
-          this.isFuzzyMatched(person.email, terms)
+          (fetchAllIfSearchKeyEmpty && terms.length === 0) ||
+          (terms.length > 0 &&
+            (this.isFuzzyMatched(name, terms) ||
+              (person.email && this.isFuzzyMatched(person.email, terms))))
         ) {
           if (name.length <= 0) {
             name = this.getEmailAsName(person);
@@ -119,7 +182,7 @@ class PersonService extends BaseService<Person> {
         return null;
       },
       searchKey,
-      undefined,
+      arrangeIds,
       this.sortEntitiesByName.bind(this),
     );
   }
@@ -135,23 +198,62 @@ class PersonService extends BaseService<Person> {
   }
 
   getEmailAsName(person: Person) {
-    const name = person.email.split('@')[0];
-    const firstUpperCase = (parseString: string) => {
-      if (!parseString[0]) {
-        return '';
-      }
-      return parseString[0].toUpperCase().concat(parseString.slice(1));
-    };
+    if (person.email) {
+      const name = person.email.split('@')[0];
+      const firstUpperCase = (parseString: string) => {
+        if (!parseString[0]) {
+          return '';
+        }
+        return parseString[0].toUpperCase().concat(parseString.slice(1));
+      };
 
-    return name
-      .split('.')
-      .map((v: string) => firstUpperCase(v))
-      .join(' ');
+      return name
+        .split('.')
+        .map((v: string) => firstUpperCase(v))
+        .join(' ');
+    }
+    return '';
   }
 
   getFullName(person: Person) {
     const name = this.getName(person);
     return name.length > 0 ? name : this.getEmailAsName(person);
+  }
+
+  private _canMessageWithPerson(person: Person) {
+    return !person.is_pseudo_user;
+  }
+
+  private _isValid(person: Person) {
+    return !person.deactivated && !person.is_pseudo_user;
+  }
+
+  getAvailablePhoneNumbers(
+    companyId: number,
+    phoneNumbersData?: PhoneNumberModel[],
+    extensionData?: SanitizedExtensionModel,
+  ) {
+    const availNumbers: PhoneNumberInfo[] = [];
+    const accountService: AccountService = AccountService.getInstance();
+    const isCoWorker = accountService.getCurrentCompanyId() === companyId;
+    if (isCoWorker && extensionData) {
+      availNumbers.push({
+        type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+        phoneNumber: extensionData.extensionNumber,
+      });
+    }
+    // filter out company main number
+    if (phoneNumbersData) {
+      phoneNumbersData.forEach((element: PhoneNumberModel) => {
+        if (element.usageType === CALL_ID_USAGE_TYPE.DIRECT_NUMBER) {
+          availNumbers.push({
+            type: PHONE_NUMBER_TYPE.DIRECT_NUMBER,
+            phoneNumber: element.phoneNumber,
+          });
+        }
+      });
+    }
+    return availNumbers;
   }
 }
 

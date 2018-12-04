@@ -14,16 +14,35 @@ import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 
 import { Header } from './Header';
 import { MessageInput } from './MessageInput';
-import { Stream } from './Stream';
 import { ConversationPageViewProps } from './types';
+import { action, observable } from 'mobx';
+
+import { StreamViewComponent } from './Stream/Stream.View';
+import { Stream } from './Stream';
 
 @observer
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
-  private _scroller: React.RefObject<any> = React.createRef();
+  private _streamRef: React.RefObject<StreamViewComponent> = React.createRef();
+
+  @observable
+  streamKey = 0;
+
   sendHandler = () => {
-    this._scroller && this._scroller.current.scrollToRow(-1);
+    const stream = this._streamRef.current;
+    if (!stream) {
+      return;
+    }
+    if (stream.props.hasMoreDown) {
+      return this.remountStream();
+    }
+    return stream.scrollToBottom();
+  }
+
+  @action.bound
+  remountStream() {
+    return this.streamKey++;
   }
 
   render() {
@@ -37,7 +56,11 @@ class ConversationPageViewComponent extends Component<
       >
         <Header id={groupId} />
         <JuiStreamWrapper>
-          <Stream groupId={groupId} scrollerRef={this._scroller} />
+          <Stream
+            groupId={groupId}
+            viewRef={this._streamRef}
+            key={`Stream_${groupId}_${this.streamKey}`}
+          />
           <div id="jumpToFirstUnreadButtonRoot" />
         </JuiStreamWrapper>
         {canPost ? (

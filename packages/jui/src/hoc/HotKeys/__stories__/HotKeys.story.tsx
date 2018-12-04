@@ -49,7 +49,7 @@ class Test1 extends React.Component<{}, {}> {
     console.log('---Test1 onEsc', e, combo);
   }
 
-  save(e, combo) {
+  save = async (e, combo) => {
     console.log('-----Test1 command + s', e, combo);
     return false; // same as jquery event return false
   }
@@ -65,14 +65,8 @@ class Test1 extends React.Component<{}, {}> {
           'mod+s': this.save,
         }}
       >
-        {({ unbind }) => {
-          return (
-            <ul>
-              <li className="li">1</li>
-              <li className="li">2</li>
-            </ul>
-          );
-        }}
+        <li className="li">111111</li>
+        <li className="li">2222222</li>
       </HotKeys>
     );
   }

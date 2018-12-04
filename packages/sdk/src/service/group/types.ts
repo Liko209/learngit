@@ -6,4 +6,28 @@
 
 type GroupQueryType = 'all' | 'group' | 'team' | 'favorite';
 
-export { GroupQueryType };
+enum FEATURE_STATUS {
+  INVISIBLE,
+  ENABLE,
+  DISABLE,
+}
+
+enum FEATURE_TYPE {
+  MESSAGE,
+  CALL,
+  VIDEO,
+  CONFERENCE,
+}
+
+type TeamPermission = {
+  admin?: {
+    uids: number[];
+    level?: number;
+  };
+  user?: {
+    uids: number[];
+    level?: number;
+  };
+};
+
+export { GroupQueryType, FEATURE_STATUS, FEATURE_TYPE, TeamPermission };

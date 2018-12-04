@@ -27,7 +27,9 @@ class ContactSearch extends React.Component<Props> {
       helperText,
       searchMembers,
       suggestions,
+      errorEmail,
     } = this.props;
+
     return (
       <JuiContactSearch
         inputChange={searchMembers}
@@ -38,7 +40,9 @@ class ContactSearch extends React.Component<Props> {
         Chip={Chip}
         ContactSearchItem={ContactSearchItem}
         error={error}
+        errorEmail={errorEmail}
         helperText={helperText}
+        automationId="contactSearchSuggestionsList"
       />
     );
   }

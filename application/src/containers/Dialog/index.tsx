@@ -12,7 +12,7 @@ import { modal } from './Modal';
 import { dialog } from './Dialog';
 
 type ReturnFunc = {
-  destroy: () => void;
+  dismiss: () => void;
 };
 
 JuiModal.alert = function (props: JuiModalProps): ReturnFunc {

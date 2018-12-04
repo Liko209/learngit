@@ -11,6 +11,7 @@ import dataDispatcher from '../../component/DataDispatcher/index';
 import { BaseModel, Raw } from '../../models'; // eslint-disable-line
 import { BaseError, ErrorParser } from '../../utils';
 import _ from 'lodash';
+import { NetworkResultOk } from '../../api/NetworkResult';
 
 jest.mock('../../dao/base/BaseDao');
 jest.mock('../../dao/base/Query');
@@ -87,11 +88,13 @@ describe('BaseService', () => {
     it('should return data from API when Dao not return value', async () => {
       const service = new AService();
       jest.spyOn(service, 'getByIdFromDao').mockResolvedValue(null);
-      jest.spyOn(service, 'getByIdFromAPI').mockResolvedValue({ id: 2 });
+      jest
+        .spyOn(service, 'getByIdFromAPI')
+        .mockResolvedValue(new NetworkResultOk({ id: 2 }, 200, {}));
 
       const result = await service.getById(2);
 
-      expect(result).toEqual({ id: 2 });
+      expect(result).toHaveProperty('data', { id: 2 });
     });
   });
 
@@ -110,7 +113,9 @@ describe('BaseService', () => {
   describe('getByIdFromAPI()', () => {
     it('should return data from API', async () => {
       const service = new AService();
-      fakeApi.getDataById.mockResolvedValue({ data: { _id: 4 } });
+      fakeApi.getDataById.mockResolvedValue(
+        new NetworkResultOk({ _id: 4 }, 200, {}),
+      );
 
       const result = await service.getByIdFromAPI(4);
 
@@ -361,11 +366,11 @@ describe('BaseService', () => {
   describe('Check Support Cache', () => {
     it('isSupportCache', async () => {
       const service = new AService();
-      let result = service.isSupportCache();
+      let result = service.isCacheEnable();
       expect(result).toEqual(false);
 
-      service.setSupportCache(true);
-      result = service.isSupportCache();
+      service.enableCache();
+      result = service.isCacheEnable();
       expect(result).toEqual(true);
       const cacheManager = service.getCacheManager();
       expect(cacheManager).toBeTruthy();
@@ -375,7 +380,7 @@ describe('BaseService', () => {
   describe('Check Cache Search', () => {
     it('get from cache', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -403,7 +408,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, no arrangeIds, has searchKey, has sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -437,7 +442,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, has arrangeIds, has search key, has sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -470,7 +475,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, has arrangeIds, no search key, has sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -504,7 +509,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, has arrangeIds, no search key, no sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -538,7 +543,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, no arrangeIds, no search key, no sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -573,7 +578,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, no arrangeIds, has search key, no sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -607,7 +612,7 @@ describe('BaseService', () => {
 
     it('searchEntitiesFromCache, no arrangeIds, no search key, has sort', async () => {
       const service = new AService();
-      service.setSupportCache(true);
+      service.enableCache();
 
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -638,6 +643,39 @@ describe('BaseService', () => {
       expect(result.sortableModels[0].entity).toBe(entityC);
       expect(result.sortableModels[1].entity).toBe(entityB);
       expect(result.sortableModels[2].entity).toBe(entityA);
+    });
+  });
+
+  describe('getMultiEntitiesFromCache()', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+    });
+
+    it('should filter invalid model and return expected models', async () => {
+      const service = new AService();
+      service.enableCache();
+
+      const models = [
+        { id: 1, name: 'name', note: 'note' },
+        { id: 2, name: 'name', note: 'note' },
+        { id: 3, name: 'name', note: 'note' },
+        { id: 4, name: 'name', note: 'note' },
+        { id: 5, name: 'name', note: 'note' },
+        { id: 6, name: 'name', note: 'note' },
+      ];
+
+      const cacheManager = service.getCacheManager();
+      models.forEach(element => {
+        cacheManager.set(element);
+      });
+      const res = await service.getMultiEntitiesFromCache(
+        [1, 2, 3, 4, 5],
+        (entity: BaseServiceTestModel) => {
+          return entity.id > 3;
+        },
+      );
+      expect(res).toEqual(models.splice(3, 2));
     });
   });
 });

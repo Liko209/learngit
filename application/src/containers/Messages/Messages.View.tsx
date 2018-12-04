@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
-import { JuiTreeColumnResponse } from 'jui/foundation/Layout/Response/ThreeColumnResponse';
+import { JuiResponsiveLayout } from 'jui/foundation/Layout/Response';
 import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
 import { RightRail } from '@/containers/RightRail';
@@ -45,13 +45,23 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
       leftNavWidth = 200;
     }
     return (
-      <JuiTreeColumnResponse tag="conversation" leftNavWidth={leftNavWidth}>
+      <JuiResponsiveLayout
+        tag="conversation"
+        leftNavWidth={leftNavWidth}
+        mainPanelIndex={1}
+      >
         <LeftRail />
         <Switch>
           <Route
             path={`/messages/${POST_LIST_TYPE.mentions}`}
             render={props => (
               <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
+            )}
+          />
+          <Route
+            path={`/messages/${POST_LIST_TYPE.bookmarks}`}
+            render={props => (
+              <PostListPage {...props} type={POST_LIST_TYPE.bookmarks} />
             )}
           />
           <Route
@@ -62,7 +72,7 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
           />
         </Switch>
         {currentConversationId ? <RightRail /> : null}
-      </JuiTreeColumnResponse>
+      </JuiResponsiveLayout>
     );
   }
 }

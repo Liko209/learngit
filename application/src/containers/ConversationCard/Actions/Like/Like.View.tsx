@@ -9,12 +9,14 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { LikeViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
+import ThumbUpOutlined from '@material-ui/icons/ThumbUpOutlined';
 
 type Props = LikeViewProps & WithNamespaces;
 
 @observer
 class LikeViewComponent extends Component<Props> {
-  private _handleLikeButton = () => {
+  private _handleLikeButton = (evt: React.MouseEvent) => {
+    evt.stopPropagation();
     const { isLike, like } = this.props;
     like(!isLike);
   }
@@ -27,8 +29,9 @@ class LikeViewComponent extends Component<Props> {
         color={isLike ? 'primary' : undefined}
         onClick={this._handleLikeButton}
         variant="plain"
+        data-name="actionBarLike"
       >
-        thumb_up
+        {isLike ? 'thumb_up' : <ThumbUpOutlined />}
       </JuiIconButton>
     );
   }

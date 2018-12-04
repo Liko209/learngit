@@ -100,15 +100,12 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   async refreshRCToken(): Promise<ITokenModel | null> {
     const authDao = daoManager.getKVDao(AuthDao);
     try {
-      const rcToken = authDao.get(AUTH_RC_TOKEN);
-      const { refresh_token, endpoint_id } = rcToken;
-      const refreshedRCAuthData = await refreshToken({
-        refresh_token,
-        endpoint_id,
-      });
-      authDao.put(AUTH_RC_TOKEN, refreshedRCAuthData.data);
-      notificationCenter.emitKVChange(AUTH_RC_TOKEN, refreshedRCAuthData.data);
-      return refreshedRCAuthData.data;
+      const oldRcToken = authDao.get(AUTH_RC_TOKEN);
+      const refreshResult = await refreshToken(oldRcToken);
+      const newRcToken = refreshResult.expect('Failed to refresh rcTOken');
+      authDao.put(AUTH_RC_TOKEN, newRcToken);
+      notificationCenter.emitKVChange(AUTH_RC_TOKEN, newRcToken);
+      return newRcToken;
     } catch (err) {
       Aware(ErrorTypes.OAUTH, err.message);
       return null;

@@ -34,7 +34,7 @@
       "negative": "#f44336",
       "positive": "#26a304",
       "critical": "#f6ad16",
-      "neutral": "#8c8c8c"
+      "neutral": "#616161"
     },
     "accent": {
       "ash": "#bfbfbf",
@@ -60,8 +60,6 @@
   "zIndex": {
     "ripple": 1,
     "elementOnRipple": 2,
-    "reponsePanel": 1,
-    "reponseResizer": 2,
     "loading": 1000,
     "dragging": 2000
   },

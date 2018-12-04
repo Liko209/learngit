@@ -7,7 +7,7 @@ import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiIconButton } from '../../components/Buttons';
 
-import { spacing, palette, height } from '../../foundation/utils/styles';
+import { spacing, palette, height, width } from '../../foundation/utils/styles';
 
 type Props = {
   moreTooltipTitle: string;
@@ -29,10 +29,12 @@ const StyledWrapper = styled('div')`
     &:hover {
       box-shadow: ${props => props.theme.shadows[5]};
     }
-    & > div {
-      width: ${height(7)};
-      text-align: center;
+    & > button {
+      width: ${width(7)};
+      justify-content: center;
     }
+    display: flex;
+    align-items: center;
   }
 `;
 
@@ -47,6 +49,7 @@ class JuiConversationActionBar extends PureComponent<Props> {
           size="small"
           tooltipTitle={moreTooltipTitle}
           variant="plain"
+          data-name="actionBarMore"
         >
           more_horiz
         </JuiIconButton>

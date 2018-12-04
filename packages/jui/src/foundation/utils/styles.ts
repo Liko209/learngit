@@ -75,6 +75,7 @@ function getPalette(name: keyof Palette, sub: string = 'main') {
  * Palette
  * @param name
  * @param sub
+ * @param opacity
  */
 function palette(name: keyof Palette, sub: string, opacity?: number) {
   if (opacity) {
@@ -89,25 +90,42 @@ function palette(name: keyof Palette, sub: string, opacity?: number) {
 /**
  * primary color
  * @param sub
+ * @param opacity
  */
-function primary(sub: string = 'main') {
-  return palette('primary', sub);
+function primary(sub: string = 'main', opacity?: number) {
+  return palette('primary', sub, opacity);
 }
 
 /**
  * secondary color
  * @param sub
+ * @param opacity
  */
-function secondary(sub: string = 'main') {
-  return palette('secondary', sub);
+function secondary(sub: string = 'main', opacity?: number) {
+  return palette('secondary', sub, opacity);
 }
 
 /**
  * grey
  * @param sub
+ * @param opacity
  */
-function grey(sub: string) {
-  return palette('grey', sub);
+function grey(sub: string, opacity?: number) {
+  return palette('grey', sub, opacity);
+}
+
+function activeOpacity() {
+  return css`
+    opacity: ${({ theme }: { theme: Theme }) =>
+      1 - theme.palette.action.hoverOpacity * 2};
+  `;
+}
+
+function disabledOpacity() {
+  return css`
+    opacity: ${({ theme }: { theme: Theme }) =>
+      theme.palette.action.hoverOpacity * 2};
+  `;
 }
 
 /********************************************
@@ -170,6 +188,8 @@ export {
   primary,
   secondary,
   grey,
+  activeOpacity,
+  disabledOpacity,
   typography,
   ellipsis,
   rippleEnter,

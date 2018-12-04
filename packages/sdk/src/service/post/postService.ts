@@ -6,7 +6,6 @@
 
 import _ from 'lodash';
 import { daoManager, PostDao, GroupConfigDao } from '../../dao';
-// import GroupDao from 'dao/group';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
@@ -24,12 +23,12 @@ import { transform } from '../utils';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
 import { mainLogger } from 'foundation';
 import { ErrorParser, BaseError } from '../../utils/error';
+import { QUERY_DIRECTION } from '../../dao/constants';
 
 interface IPostResult {
   posts: Post[];
   items: Item[];
   hasMore: boolean;
-  offset?: number;
   limit?: number;
 }
 
@@ -41,10 +40,9 @@ interface IRawPostResult {
 
 interface IPostQuery {
   groupId: number;
-  offset?: number;
   limit?: number;
   postId?: number;
-  direction?: string;
+  direction?: QUERY_DIRECTION;
 }
 
 type PostData = {
@@ -60,6 +58,15 @@ type PostSendData = {
 class PostService extends BaseService<Post> {
   static serviceName = 'PostService';
 
+  protected async shouldSaveItemFetchedById(
+    item: Raw<Post>,
+  ): Promise<boolean | undefined> {
+    if (item.group_id) {
+      return this.isNewestSaved(item.group_id) && undefined;
+    }
+    return false;
+  }
+
   private _postStatusHandler: PostStatusHandler;
   constructor() {
     const subscriptions = {
@@ -71,17 +78,18 @@ class PostService extends BaseService<Post> {
 
   async getPostsFromLocal({
     groupId,
-    offset,
+    postId,
+    direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
-      offset,
+      postId,
+      direction,
       limit,
     );
     const result: IPostResult = {
-      offset,
       limit,
       posts: [],
       items: [],
@@ -103,7 +111,7 @@ class PostService extends BaseService<Post> {
   }: IPostQuery): Promise<IRawPostResult> {
     const groupService: GroupService = GroupService.getInstance();
     const group = await groupService.getById(groupId);
-    if (!group.most_recent_post_id) {
+    if (group && !group.most_recent_post_created_at) {
       // The group has no post
       return {
         posts: [],
@@ -127,9 +135,10 @@ class PostService extends BaseService<Post> {
         items: [],
         hasMore: false,
       };
-      if (requestResult && requestResult.data) {
-        result.posts = requestResult.data.posts;
-        result.items = requestResult.data.items;
+      const data = requestResult.expect('Get Remote post failed');
+      if (data) {
+        result.posts = data.posts;
+        result.items = data.items;
         if (result.posts.length === limit) {
           result.hasMore = true;
         }
@@ -142,31 +151,31 @@ class PostService extends BaseService<Post> {
         hasMore: true,
       };
     }
-    // if (!result.hasMore) {
-    //   await groupService.markAsNoPost(groupId);
-    // }
   }
 
   async getPostsByGroupId({
     groupId,
-    offset = 0,
     postId = 0,
     limit = 20,
-    direction = 'older',
+    direction = QUERY_DIRECTION.OLDER,
   }: IPostQuery): Promise<IPostResult> {
     try {
       const result = await this.getPostsFromLocal({
         groupId,
-        offset,
+        postId,
+        direction,
         limit,
       });
       if (result.posts.length < limit) {
         const groupConfigDao = daoManager.getDao(GroupConfigDao);
-        const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(groupId);
+        const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(
+          groupId,
+          direction,
+        );
         if (hasMoreRemote) {
           // should try to get more posts from server
           mainLogger.debug(
-            `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} offset:${offset}} no data in local DB, should do request`,
+            `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} direction:${direction} no data in local DB, should do request`,
           );
 
           const lastPost = _.last(result.posts);
@@ -178,8 +187,18 @@ class PostService extends BaseService<Post> {
             limit: limit - result.posts.length,
           });
 
+          let shouldSave;
+          const includeNewest = await this.includeNewest(
+            remoteResult.posts.map(({ _id }) => _id),
+            groupId,
+          );
+          if (includeNewest) {
+            shouldSave = true;
+          } else {
+            shouldSave = await this.isNewestSaved(groupId);
+          }
           const posts: Post[] =
-            (await baseHandleData(remoteResult.posts, true, true)) || [];
+            (await baseHandleData(remoteResult.posts, shouldSave)) || [];
           const items = (await itemHandleData(remoteResult.items)) || [];
 
           result.posts.push(...posts);
@@ -187,7 +206,7 @@ class PostService extends BaseService<Post> {
           result.hasMore = remoteResult.hasMore;
           await groupConfigDao.update({
             id: groupId,
-            has_more: remoteResult.hasMore,
+            [`has_more_${direction}`]: remoteResult.hasMore,
           });
         } else {
           result.hasMore = false;
@@ -195,13 +214,11 @@ class PostService extends BaseService<Post> {
       }
 
       result.limit = limit;
-      result.offset = offset;
 
       return result;
     } catch (e) {
       mainLogger.error(`getPostsByGroupId: ${JSON.stringify(e)}`);
       return {
-        offset,
         limit,
         posts: [],
         items: [],
@@ -222,10 +239,11 @@ class PostService extends BaseService<Post> {
     };
     const restIds = _.difference(ids, localPosts.map(({ id }) => id));
     if (restIds.length) {
-      const remoteResult = (await PostAPI.requestByIds(restIds)).data;
-      const posts: Post[] = (await baseHandleData(remoteResult.posts)) || [];
-      const items = (await itemHandleData(remoteResult.items)) || [];
-
+      const remoteResult = await PostAPI.requestByIds(restIds);
+      const remoteData = remoteResult.expect('getPostsByIds failed');
+      const posts: Post[] =
+        (await baseHandleData(remoteData.posts, false)) || [];
+      const items = (await itemHandleData(remoteData.items)) || [];
       result.posts.push(...posts);
       result.items.push(...items);
     }
@@ -263,12 +281,8 @@ class PostService extends BaseService<Post> {
 
     try {
       const resp = await PostAPI.sendPost(buildPost);
-      if (resp && !resp.data.error) {
-        return this.handleSendPostSuccess(resp.data, preInsertId);
-      }
-
-      // error, notifiy, should add error handle after IResponse give back error info
-      throw resp;
+      const data = resp.expect('send post failed');
+      return this.handleSendPostSuccess(data, preInsertId);
     } catch (e) {
       this.handleSendPostFail(preInsertId);
       throw ErrorParser.parse(e);
@@ -362,8 +376,9 @@ class PostService extends BaseService<Post> {
         };
         const info = PostServiceHandler.buildPostInfo(options);
         delete info.id; // should merge sendItemFile function into sendPost
-        const resp = await PostAPI.sendPost(info);
-        const posts = await baseHandleData(resp.data);
+        const sendPostResult = await PostAPI.sendPost(info);
+        const rawPost = sendPostResult.expect('Send post failed.');
+        const posts = await baseHandleData(rawPost);
         return posts[0];
       }
       return null;
@@ -382,7 +397,8 @@ class PostService extends BaseService<Post> {
       const post = await PostServiceHandler.buildModifiedPostInfo(params);
       if (params.postId && post) {
         const resp = await PostAPI.editPost(params.postId, post);
-        const result = await baseHandleData(resp.data);
+        const data = resp.expect('modified post fail');
+        const result = await baseHandleData(data);
         return result[0];
       }
       return null;
@@ -422,10 +438,8 @@ class PostService extends BaseService<Post> {
       delete post.id;
       try {
         const resp = await PostAPI.putDataById<Post>(id, post);
-        if (resp && !resp.data.error) {
-          return true;
-        }
-        throw resp;
+        resp.expect('delete post failed');
+        return true;
       } catch (e) {
         throw ErrorParser.parse(e);
       }
@@ -441,17 +455,15 @@ class PostService extends BaseService<Post> {
       newPost._id = newPost.id;
       delete newPost.id;
       const response = await PostAPI.putDataById<Post>(newPost._id, newPost);
-
-      if (response.data) {
-        if (handleDataFunc) {
-          const result = await handleDataFunc(response.data);
-          if (result) {
-            return result;
-          }
-        } else {
-          const latestPostModel: Post = transform(response.data);
-          return latestPostModel;
+      const data = response.expect('update post failed');
+      if (handleDataFunc) {
+        const result = await handleDataFunc(data);
+        if (result) {
+          return result;
         }
+      } else {
+        const latestPostModel: Post = transform(data);
+        return latestPostModel;
       }
       return ErrorParser.parse(response);
     } catch (e) {
@@ -513,8 +525,95 @@ class PostService extends BaseService<Post> {
 
   async groupHasPostInLocal(groupId: number) {
     const postDao: PostDao = daoManager.getDao(PostDao);
-    const posts: Post[] = await postDao.queryPostsByGroupId(groupId, 0, 1);
+    const posts: Post[] = await postDao.queryPostsByGroupId(
+      groupId,
+      0,
+      undefined,
+      1,
+    );
     return posts.length !== 0;
+  }
+
+  async getNewestPostIdOfGroup(groupId: number): Promise<number | null> {
+    const params: any = {
+      limit: 1,
+      group_id: groupId,
+    };
+    try {
+      const requestResult = await PostAPI.requestPosts(params);
+      const data = requestResult.expect('get newest post id of group failed');
+      const post = data.posts[0];
+      if (post) {
+        return post._id;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async includeNewest(postIds: number[], groupId: number): Promise<boolean> {
+    const newestPostId = await this.getNewestPostIdOfGroup(groupId);
+    if (!newestPostId) {
+      return false;
+    }
+    return postIds.indexOf(newestPostId) >= 0;
+  }
+
+  async isNewestSaved(groupId: number): Promise<boolean> {
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    let isNewestSaved = await groupConfigDao.isNewestSaved(groupId);
+    if (isNewestSaved) {
+      return true;
+    }
+    const newestPostId = await this.getNewestPostIdOfGroup(groupId);
+    if (!newestPostId) {
+      return false;
+    }
+    const dao = daoManager.getDao(this.DaoClass);
+    isNewestSaved = !!(await dao.get(newestPostId));
+    await groupConfigDao.update({
+      id: groupId,
+      is_newest_saved: isNewestSaved,
+    });
+    return isNewestSaved;
+  }
+
+  async newMessageWithPeopleIds(
+    ids: number[],
+    message: string,
+  ): Promise<{ id?: number }> {
+    try {
+      const groupService: GroupService = GroupService.getInstance();
+      const group = await groupService.getOrCreateGroupByMemberList(ids);
+      const id = group ? group.id : undefined;
+      if (id && this._isValidTextMessage(message)) {
+        setTimeout(() => {
+          this.sendPost({ groupId: id, text: message });
+        },         2000);
+      }
+
+      return { id };
+    } catch (e) {
+      mainLogger.error(`newMessageWithPeopleIds: ${JSON.stringify(e)}`);
+      throw ErrorParser.parse(e);
+    }
+  }
+
+  private _isValidTextMessage(message: string) {
+    return message.trim() !== '';
+  }
+
+  async deletePostsByGroupIds(groupIds: number[], shouldNotify: boolean) {
+    const dao = daoManager.getDao(PostDao);
+    const promises = groupIds.map(id => dao.queryPostsByGroupId(id));
+    const postsMap = await Promise.all(promises);
+    const posts = _.union(...postsMap);
+    const ids = posts.map(post => post.id);
+    await dao.bulkDelete(ids);
+    if (shouldNotify) {
+      notificationCenter.emitEntityDelete(ENTITY.POST, ids);
+    }
   }
 }
 

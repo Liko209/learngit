@@ -4,16 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao } from '../../dao';
+import { daoManager, ConfigDao, GroupConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import {
-  Group,
-  GroupApiType,
-  Raw,
-  IResponseError,
-  SortableModel,
-} from '../../models';
+import { Group, GroupApiType, Raw, SortableModel } from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -22,6 +16,7 @@ import {
 import BaseService from '../../service/BaseService';
 import GroupServiceHandler from '../../service/group/groupServiceHandler';
 import ProfileService from '../../service/profile';
+import CompanyService from '../../service/company';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
 import GroupAPI from '../../api/glip/group';
@@ -38,16 +33,21 @@ import handleData, {
   sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
-import { IResponse } from '../../api/NetworkClient';
-import { mainLogger } from 'foundation';
+import { mainLogger, err, ok, Result } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
+import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
 import AccountService from '../account';
 import PersonService from '../person';
 import { compareName } from '../../utils/helper';
+import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
+import { isValidEmailAddress } from '../../utils/regexUtils';
+import { Api } from '../../api';
+import notificationCenter from '../notificationCenter';
+import PostService from '../post';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -55,6 +55,17 @@ type CreateTeamOptions = {
   canPost?: boolean;
   canAddIntegrations?: boolean;
   canPin?: boolean;
+};
+
+const GroupErrorTypes = {
+  ALREADY_TAKEN: 1,
+  INVALID_FIELD: 2,
+  UNKNOWN: 99,
+};
+
+const handleTeamsRemovedFrom = async (ids: number[]) => {
+  const service: GroupService = GroupService.getInstance();
+  service.removeTeamsByIds(ids, true);
 };
 
 class GroupService extends BaseService<Group> {
@@ -67,9 +78,10 @@ class GroupService extends BaseService<Group> {
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
+      [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
-    this.setSupportCache(true);
+    this.enableCache();
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
@@ -142,48 +154,53 @@ class GroupService extends BaseService<Group> {
 
   async getGroupsByIds(ids: number[]): Promise<Group[]> {
     if (ids.length) {
-      const groups = (await Promise.all(
+      const groups = await Promise.all(
         ids.map(async (id: number) => {
           const group = await this.getById(id);
           return group;
         }),
-      )) as (Group | null)[];
+      );
       return groups.filter(group => group !== null) as Group[];
     }
     return [];
   }
 
-  async getGroupById(id: number): Promise<Group | null> {
+  async getGroupById(id: number) {
     console.warn('getGroupById() is deprecated use getById() instead.');
-    return super.getById(id) as Promise<Group | null>;
+    return super.getById(id);
+  }
+
+  async getLocalGroup(personIds: number[]): Promise<Group | null> {
+    try {
+      const result = this._queryGroupByMemberList(personIds);
+      if (result) {
+        return result;
+      }
+      return null;
+    } catch (e) {
+      mainLogger.error(`getLocalGroup error =>${e}`);
+      return null;
+    }
   }
 
   async getGroupByPersonId(personId: number): Promise<Group | null> {
     try {
-      return await this.getGroupByMemberList([personId]);
+      return await this.getOrCreateGroupByMemberList([personId]);
     } catch (e) {
       mainLogger.error(`getGroupByPersonId error =>${e}`);
       throw ErrorParser.parse(e);
     }
   }
 
-  async getGroupByMemberList(members: number[]): Promise<Group | null> {
+  async getOrCreateGroupByMemberList(members: number[]): Promise<Group | null> {
     try {
-      const accountService: AccountService = AccountService.getInstance();
-      const userId = accountService.getCurrentUserId();
-      if (userId) {
-        members.push(userId);
-        const mem = uniqueArray(members);
-        const groupDao = daoManager.getDao(GroupDao);
-        const result = await groupDao.queryGroupByMemberList(mem);
-        if (result) {
-          return result;
-        }
-        return await this.requestRemoteGroupByMemberList(mem);
+      const result = await this._queryGroupByMemberList(members);
+      if (result) {
+        return result;
       }
-      return null;
+      return await this.requestRemoteGroupByMemberList(members);
     } catch (e) {
-      mainLogger.error(`getGroupByMemberList error =>${e}`);
+      mainLogger.error(`getOrCreateGroupByMemberList error =>${e}`);
       throw ErrorParser.parse(e);
     }
   }
@@ -191,21 +208,15 @@ class GroupService extends BaseService<Group> {
   async requestRemoteGroupByMemberList(
     members: number[],
   ): Promise<Group | null> {
-    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(members);
-    try {
-      const result = await GroupAPI.requestNewGroup(info);
-      if (result.data) {
-        const group = transform<Group>(result.data);
-        await handleData([result.data]);
-        return group;
-      }
-      return null;
-    } catch (e) {
-      mainLogger.error(
-        `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
-      );
-      throw ErrorParser.parse(e);
-    }
+    const memberIds = this._addCurrentUserToMemList(members);
+    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(
+      memberIds,
+    );
+    const result = await GroupAPI.requestNewGroup(info);
+    const data = result.unwrap();
+    const group = transform<Group>(data);
+    await handleData([data]);
+    return group;
   }
 
   async getLatestGroup(): Promise<Group | null> {
@@ -227,11 +238,7 @@ class GroupService extends BaseService<Group> {
     return false;
   }
 
-  async pinPost(
-    postId: number,
-    groupId: number,
-    toPin: boolean,
-  ): Promise<Group | IResponseError | null> {
+  async pinPost(postId: number, groupId: number, toPin: boolean) {
     const groupDao = daoManager.getDao(GroupDao);
     const group = await groupDao.get(groupId);
     if (group && this.canPinPost(postId, group)) {
@@ -258,8 +265,13 @@ class GroupService extends BaseService<Group> {
       group._id = group.id;
       delete group.id;
       const path = group.is_team ? `/team/${group._id}` : `/group/${group._id}`;
-      const response = await GroupAPI.pinPost(path, group);
-      return this.handleResponse(response);
+
+      const result = await GroupAPI.pinPost(path, group);
+
+      return result.match({
+        Ok: async rawGroup => await this.handleRawGroup(rawGroup),
+        Err: () => null,
+      });
     }
     return null;
   }
@@ -277,8 +289,11 @@ class GroupService extends BaseService<Group> {
     type: PERMISSION_ENUM,
   ): Promise<boolean> {
     const groupInfo = await this.getById(group_id);
-    const permissionList = this.getPermissions(groupInfo);
-    return permissionList.includes(type);
+    if (groupInfo) {
+      const permissionList = this.getPermissions(groupInfo);
+      return permissionList.includes(type);
+    }
+    return false;
   }
 
   hasPermissionWithGroup(group: Group, type: PERMISSION_ENUM): boolean {
@@ -286,12 +301,11 @@ class GroupService extends BaseService<Group> {
     return permissionList.includes(type);
   }
 
-  async addTeamMembers(
-    groupId: number,
-    memberIds: number[],
-  ): Promise<Group | IResponseError | null> {
-    const resp = await GroupAPI.addTeamMembers(groupId, memberIds);
-    return this.handleResponse(resp);
+  async addTeamMembers(groupId: number, memberIds: number[]) {
+    const result = await GroupAPI.addTeamMembers(groupId, memberIds);
+    const rawGroup = result.expect('Failed to add team members.');
+    const newGroup = await this.handleRawGroup(rawGroup);
+    return newGroup;
   }
 
   async createTeam(
@@ -300,46 +314,50 @@ class GroupService extends BaseService<Group> {
     memberIds: (number | string)[],
     description: string,
     options: CreateTeamOptions = {},
-  ) {
-    try {
-      const {
-        isPublic = false,
-        canAddMember = false,
-        canPost = false,
-        canAddIntegrations = false,
-        canPin = false,
-      } = options;
-      const privacy = isPublic ? 'protected' : 'private';
-      const permissionFlags = {
-        TEAM_ADD_MEMBER: privacy === 'protected' ? true : canAddMember,
-        TEAM_POST: canPost,
-        TEAM_ADD_INTEGRATIONS: canPost ? canAddIntegrations : false,
-        TEAM_PIN_POST: canPost ? canPin : false,
-        TEAM_ADMIN: false,
-      };
-      const userPermissionMask = Permission.createPermissionsMask(
-        permissionFlags,
-      );
-      const team: Partial<GroupApiType> = {
-        privacy,
-        description,
-        set_abbreviation: name,
-        members: memberIds.concat(creator),
-        permissions: {
-          admin: {
-            uids: [creator],
-          },
-          user: {
-            uids: [],
-            level: userPermissionMask,
-          },
+  ): Promise<Result<Group | Raw<Group>>> {
+    const {
+      isPublic = false,
+      canAddMember = false,
+      canPost = false,
+      canAddIntegrations = false,
+      canPin = false,
+    } = options;
+    const privacy = isPublic ? 'protected' : 'private';
+    const permissionFlags = {
+      TEAM_ADD_MEMBER: privacy === 'protected' ? true : canAddMember,
+      TEAM_POST: canPost,
+      TEAM_ADD_INTEGRATIONS: canPost ? canAddIntegrations : false,
+      TEAM_PIN_POST: canPost ? canPin : false,
+      TEAM_ADMIN: false,
+    };
+    const userPermissionMask = Permission.createPermissionsMask(
+      permissionFlags,
+    );
+    const team: Partial<GroupApiType> = {
+      privacy,
+      description,
+      set_abbreviation: name,
+      members: memberIds.concat(creator),
+      permissions: {
+        admin: {
+          uids: [creator],
         },
-      };
-      const resp = await GroupAPI.createTeam(team);
-      return this.handleResponse(resp);
-    } catch (error) {
-      throw ErrorParser.parse(error);
-    }
+        user: {
+          uids: [],
+          level: userPermissionMask,
+        },
+      },
+    };
+    const result = await GroupAPI.createTeam(team);
+
+    const a = result.match({
+      Ok: async (rawGroup: Raw<Group>) => {
+        const newGroup = await this.handleRawGroup(rawGroup);
+        return ok(newGroup);
+      },
+      Err: (error: BaseError) => err(error),
+    });
+    return a;
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
@@ -349,19 +367,19 @@ class GroupService extends BaseService<Group> {
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
     const profileService: ProfileService = ProfileService.getInstance();
-    const result = profileService.markGroupAsFavorite(groupId, markAsFavorite);
+    const result = await profileService.markGroupAsFavorite(
+      groupId,
+      markAsFavorite,
+    );
     if (result instanceof BaseError && result.code >= 5300) {
       return ServiceCommonErrorType.SERVER_ERROR;
     }
     return ServiceCommonErrorType.NONE;
   }
 
-  async handleResponse(resp: IResponse<Raw<Group>>) {
-    if (resp && resp.data && resp.data.error) {
-      return resp.data;
-    }
-    const group = transform<Group>(resp.data);
-    await handleData([resp.data]);
+  async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
+    const group = transform<Group>(rawGroup);
+    await handleData([rawGroup]);
     return group;
   }
 
@@ -458,8 +476,76 @@ class GroupService extends BaseService<Group> {
     }
   }
 
+  async buildGroupFeatureMap(
+    groupId: number,
+  ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>> {
+    const actionMap = new Map<FEATURE_TYPE, FEATURE_STATUS>();
+    actionMap.set(FEATURE_TYPE.CALL, FEATURE_STATUS.INVISIBLE); // can not make call in group
+
+    const group = await this.getGroupById(groupId);
+    actionMap.set(
+      FEATURE_TYPE.MESSAGE,
+      group ? this._checkGroupMessageStatus(group) : FEATURE_STATUS.INVISIBLE,
+    );
+
+    // To-Do
+    actionMap.set(FEATURE_TYPE.CONFERENCE, FEATURE_STATUS.INVISIBLE); // can not make conference in group for nwo
+    actionMap.set(FEATURE_TYPE.VIDEO, FEATURE_STATUS.INVISIBLE); // can not make video in group for now
+    return actionMap;
+  }
+
+  async isFavorited(id: number, type: number): Promise<boolean> {
+    let groupId: number | undefined = undefined;
+    switch (type) {
+      case TypeDictionary.TYPE_ID_PERSON: {
+        const group = await this.getLocalGroup([id]);
+        if (group) {
+          groupId = group.id;
+        }
+        break;
+      }
+      case TypeDictionary.TYPE_ID_GROUP:
+      case TypeDictionary.TYPE_ID_TEAM: {
+        groupId = id;
+        break;
+      }
+      default: {
+        mainLogger.error('isFavorited : should not run to here');
+      }
+    }
+
+    if (groupId) {
+      return await this._isGroupFavorited(groupId);
+    }
+
+    return false;
+  }
+
+  private async _isGroupFavorited(groupId: number): Promise<boolean> {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const profile = await profileService.getProfile();
+    const favoriteGroupIds =
+      profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
+    return favoriteGroupIds.some((x: number) => groupId === x);
+  }
+
+  private _checkGroupMessageStatus(group: Group) {
+    return this._isCurrentUserInGroup(group)
+      ? FEATURE_STATUS.ENABLE
+      : FEATURE_STATUS.INVISIBLE;
+  }
+
+  private _isCurrentUserInGroup(group: Group) {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    return group
+      ? group.members.some((x: number) => x === currentUserId)
+      : false;
+  }
+
   async doFuzzySearchGroups(
     searchKey: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
@@ -471,19 +557,16 @@ class GroupService extends BaseService<Group> {
     }
     return this.searchEntitiesFromCache(
       (group: Group, terms: string[]) => {
-        if (
-          !group.is_team &&
-          !group.is_archived &&
-          !group.deactivated &&
-          group.members &&
-          group.members.length > 2
-        ) {
+        if (this._isValidGroup(group) && group.members.length > 2) {
           const groupName = this.getGroupNameByMultiMembers(
             group.members,
             currentUserId,
           );
 
-          if (this.isFuzzyMatched(groupName, terms)) {
+          if (
+            (terms.length > 0 && this.isFuzzyMatched(groupName, terms)) ||
+            (fetchAllIfSearchKeyEmpty && terms.length === 0)
+          ) {
             return {
               id: group.id,
               displayName: groupName,
@@ -501,24 +584,35 @@ class GroupService extends BaseService<Group> {
   }
 
   async doFuzzySearchTeams(
-    searchKey: string,
+    searchKey?: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
+    const accountService = AccountService.getInstance() as AccountService;
+    const currentUserId = accountService.getCurrentUserId();
+    if (!currentUserId) {
+      return null;
+    }
+
     return this.searchEntitiesFromCache(
-      (group: Group, terms: string[]) => {
-        if (group.is_team && !group.is_archived && !group.deactivated) {
-          if (this.isFuzzyMatched(group.set_abbreviation, terms)) {
-            return {
-              id: group.id,
-              displayName: group.set_abbreviation,
-              sortKey: group.set_abbreviation.toLowerCase(),
-              entity: group,
-            };
+      (team: Group, terms: string[]) => {
+        return this._idValidTeam(team) &&
+          ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
+            (terms.length > 0 &&
+              this.isFuzzyMatched(team.set_abbreviation, terms))) &&
+          (team.privacy === 'protected' ||
+            team.members.find((id: number) => {
+              return id === currentUserId;
+            }))
+          ? {
+            id: team.id,
+            displayName: team.set_abbreviation,
+            sortKey: team.set_abbreviation.toLowerCase(),
+            entity: team,
           }
-        }
-        return null;
+          : null;
       },
       searchKey,
       undefined,
@@ -550,6 +644,104 @@ class GroupService extends BaseService<Group> {
       .concat(emails.sort(compareName))
       .join(', ');
   }
+
+  private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
+    const memberIds = this._addCurrentUserToMemList(ids);
+    const groupDao = daoManager.getDao(GroupDao);
+    return await groupDao.queryGroupByMemberList(memberIds);
+  }
+
+  private _addCurrentUserToMemList(ids: number[]) {
+    const accountService: AccountService = AccountService.getInstance();
+    const userId = accountService.getCurrentUserId();
+    if (userId) {
+      ids.push(userId);
+    }
+    return uniqueArray(ids);
+  }
+
+  isTeamAdmin(personId: number, permission?: TeamPermission) {
+    if (permission) {
+      // for some old team, thy don't have permission, so all member are admin
+      const adminUserIds = this._getTeamAdmins(permission);
+      return adminUserIds.some((x: number) => x === personId);
+    }
+    return true;
+  }
+
+  async getGroupEmail(groupId: number) {
+    const group = await this.getGroupById(groupId);
+    let email = '';
+    if (group) {
+      const companyService: CompanyService = CompanyService.getInstance();
+      const companyReplyDomain = await companyService.getCompanyEmailDomain(
+        group.company_id,
+      );
+
+      if (companyReplyDomain) {
+        const envDomain = this._getENVDomain();
+        if (group.email_friendly_abbreviation) {
+          email = `${
+            group.email_friendly_abbreviation
+          }@${companyReplyDomain}.${envDomain}`;
+        }
+
+        if (!isValidEmailAddress(email)) {
+          email = `${group.id}@${companyReplyDomain}.${envDomain}`;
+        }
+      }
+    }
+    return email;
+  }
+
+  private _getENVDomain() {
+    let apiServer = Api.httpConfig['glip'].server;
+    if (apiServer) {
+      let index = apiServer.indexOf('://');
+      if (index > -1) {
+        apiServer = apiServer.substr(index + 3);
+      }
+
+      index = apiServer.lastIndexOf(':');
+      if (index > -1) {
+        apiServer = apiServer.substring(0, index);
+      }
+
+      index = apiServer.indexOf('.');
+      if (index !== -1 && apiServer.substr(0, index) === 'app') {
+        apiServer = apiServer.substr(index + 1);
+      }
+    }
+    return apiServer;
+  }
+
+  private _isValidGroup(group: Group) {
+    return this._isValid(group) && !group.is_team;
+  }
+
+  private _idValidTeam(group: Group) {
+    return this._isValid(group) && group.is_team;
+  }
+
+  private _isValid(group: Group) {
+    return !group.is_archived && !group.deactivated && group.members;
+  }
+
+  private _getTeamAdmins(permission?: TeamPermission) {
+    return permission && permission.admin ? permission.admin.uids : [];
+  }
+
+  async removeTeamsByIds(ids: number[], shouldNotify: boolean) {
+    const dao = daoManager.getDao(GroupDao);
+    await dao.bulkDelete(ids);
+    if (shouldNotify) {
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
+    }
+    const postService: PostService = PostService.getInstance();
+    await postService.deletePostsByGroupIds(ids, true);
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkDelete(ids);
+  }
 }
 
-export { CreateTeamOptions, GroupService };
+export { CreateTeamOptions, GroupService, GroupErrorTypes };

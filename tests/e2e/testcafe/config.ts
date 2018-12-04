@@ -32,7 +32,7 @@ const ENV_OPTS = {
     RC_PLATFORM_BASE_URL: 'https://api-xmnup.lab.nordigy.ru',
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
-    JUPITER_APP_KEY: 'FVKGRbLRTxGxPempqg5f9g',
+    JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
   },
 }[SITE_ENV];
 
@@ -52,6 +52,7 @@ configLoader.load();
 const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
+const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY || '10');
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
 const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures);
 const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : configLoader.browsers;
@@ -62,6 +63,7 @@ const RUNNER_OPTS = {
   REPORTER,
   SCREENSHOT_ON_FAIL,
   SCREENSHOTS_PATH,
+  SCREENSHOT_WEBP_QUALITY,
   CONCURRENCY,
   FIXTURES,
   BROWSERS,
@@ -82,7 +84,7 @@ logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectro
 
 // beat dashboard configuration
 const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
-const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-xta05.lab.rcch.ringcentral.com:8000/api/v1";
+const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-dsb02.lab.rcch.ringcentral.com:8000/api/v1";
 const ENABLE_REMOTE_DASHBOARD = (process.env.ENABLE_REMOTE_DASHBOARD === 'true');
 const RUN_NAME = process.env.RUN_NAME || uuid();
 

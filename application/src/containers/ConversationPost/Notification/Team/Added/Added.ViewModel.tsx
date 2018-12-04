@@ -17,7 +17,7 @@ class AddedViewModel extends TeamViewModel implements AddedViewProps {
 
   @computed
   get inviterName() {
-    return super.getPerson(this.inviterId).displayName;
+    return super.getPerson(this.inviterId).userDisplayName;
   }
 
   @computed
@@ -28,7 +28,7 @@ class AddedViewModel extends TeamViewModel implements AddedViewProps {
 
   @computed
   get newUserName() {
-    return this.getPerson(this.newUserId).displayName;
+    return this.getPerson(this.newUserId).userDisplayName;
   }
 }
 

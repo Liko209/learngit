@@ -21,7 +21,7 @@ const mockPostData = {
 
 const mockPersonData = {
   id: 1,
-  displayName: 'Name1',
+  userDisplayName: 'Name1',
 };
 
 const mockMap = {
@@ -50,8 +50,8 @@ describe('Team join', () => {
   });
 
   it('computed newUserName', () => {
-    expect(joinViewModel.newUserName).toBe(mockPersonData.displayName);
-    mockPersonData.displayName = 'Name2';
-    expect(joinViewModel.newUserName).toBe(mockPersonData.displayName);
+    expect(joinViewModel.newUserName).toBe(mockPersonData.userDisplayName);
+    mockPersonData.userDisplayName = 'Name2';
+    expect(joinViewModel.newUserName).toBe(mockPersonData.userDisplayName);
   });
 });

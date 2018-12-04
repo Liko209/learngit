@@ -3,17 +3,18 @@
  * @Date: 2018-04-16 09:47:05
  * Copyright © RingCentral. All rights reserved.
  */
+import { mainLogger } from 'foundation';
 import { transform, isFunction } from '../service/utils';
 import { BaseError, ErrorParser } from '../utils';
 import { daoManager, DeactivatedDao } from '../dao';
 import { BaseModel, Raw, SortableModel } from '../models'; // eslint-disable-line
-import { mainLogger } from 'foundation';
 import { AbstractService } from '../framework';
 import notificationCenter, {
   NotificationEntityPayload,
 } from './notificationCenter';
 import { container } from '../container';
 import dataDispatcher from '../component/DataDispatcher';
+import { NetworkResult } from '../api/NetworkResult';
 import { SOCKET, SERVICE } from './eventKey';
 import _ from 'lodash';
 import EntityCacheManager from './entityCacheManager';
@@ -31,7 +32,6 @@ class BaseService<
 > extends AbstractService {
   static serviceName = 'BaseService';
   private _cachedManager: EntityCacheManager<SubModel>;
-  private _isSupportCache: boolean = false;
 
   constructor(
     public DaoClass?: any,
@@ -47,10 +47,16 @@ class BaseService<
     return container.get(this.name) as T;
   }
 
-  async getById(id: number): Promise<SubModel> {
-    let result = await this.getByIdFromDao(id);
+  protected async shouldSaveItemFetchedById(
+    item: Raw<SubModel>,
+  ): Promise<boolean | undefined> {
+    return true;
+  }
+
+  async getById(id: number): Promise<SubModel | null> {
+    const result = await this.getByIdFromDao(id);
     if (!result) {
-      result = await this.getByIdFromAPI(id);
+      return this.getByIdFromAPI(id);
     }
     return result;
   }
@@ -62,20 +68,23 @@ class BaseService<
     return result || daoManager.getDao(DeactivatedDao).get(id);
   }
 
-  async getByIdFromAPI(id: number): Promise<SubModel> {
+  async getByIdFromAPI(id: number): Promise<SubModel | null> {
     if (!this.ApiClass || !isFunction(this.handleData)) {
       throwError('ApiClass || HandleData');
     }
     if (id <= 0) {
       throwError('invalid id, should not do network request');
     }
-    let result = await this.ApiClass.getDataById(id);
-    if (result && result.data) {
-      const arr = [].concat(result.data).map(transform); // normal transform
-      await this.handleData(arr);
-      result = arr.length > 0 ? arr[0] : null;
+    const result: NetworkResult<any> = await this.ApiClass.getDataById(id);
+    if (result.isOk()) {
+      const arr: SubModel[] = []
+        .concat(result.data)
+        .map((item: Raw<SubModel>) => transform(item)); // normal transform
+      const shouldSaveToDB = await this.shouldSaveItemFetchedById(result.data);
+      await this.handleData(arr, shouldSaveToDB);
+      return arr.length > 0 ? arr[0] : null;
     }
-    return result;
+    return null;
   }
 
   async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<
@@ -95,17 +104,20 @@ class BaseService<
     return this.getAllFromDao({ offset, limit });
   }
 
-  isSupportCache(): boolean {
-    return this._isSupportCache;
+  isCacheEnable(): boolean {
+    return this._cachedManager ? true : false;
   }
 
-  setSupportCache(isSupportCache: boolean) {
-    this._isSupportCache = isSupportCache;
-    if (this._isSupportCache) {
+  enableCache() {
+    if (!this._cachedManager) {
       this._cachedManager = new EntityCacheManager<SubModel>();
 
       notificationCenter.on(SERVICE.LOGIN, () => {
-        this.initialCacheManager();
+        this.initialEntitiesCache();
+      });
+
+      notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+        this.initialEntitiesCache();
       });
     }
   }
@@ -123,6 +135,24 @@ class BaseService<
 
   getEntityFromCache(id: number): SubModel | null {
     return this.getCacheManager().getEntity(id);
+  }
+
+  async getMultiEntitiesFromCache(
+    ids: number[],
+    filterFunc?: (entity: SubModel) => boolean,
+  ): Promise<SubModel[]> {
+    const entities = await this.getCacheManager().getMultiEntities(ids);
+
+    if (filterFunc) {
+      const filteredResult: SubModel[] = [];
+      entities.forEach((entity: SubModel) => {
+        if (filterFunc(entity)) {
+          filteredResult.push(entity);
+        }
+      });
+      return filteredResult;
+    }
+    return entities;
   }
 
   async getEntitiesFromCache(
@@ -151,7 +181,7 @@ class BaseService<
     const sortableEntities: SortableModel<SubModel>[] = [];
 
     if (searchKey) {
-      terms = this.getTermsFromSearchKey(searchKey);
+      terms = this.getTermsFromSearchKey(searchKey.trim());
     }
 
     if (arrangeIds) {
@@ -201,29 +231,27 @@ class BaseService<
     return searchKey.split(/[\s,]+/);
   }
 
-  protected async initialCacheManager() {
-    const eventKey: string = this._getModelEventKey();
-    if (eventKey.length > 0) {
-      notificationCenter.on(
-        eventKey,
-        (payload: NotificationEntityPayload<SubModel>) => {
-          this.onCacheEntitiesChange(payload);
-        },
-      );
-    }
-    await this.clearCache();
-    await this.initialEntitiesCache();
-  }
-
   protected async initialEntitiesCache() {
-    if (this._cachedManager) {
+    mainLogger.debug('initialEntitiesCache begin');
+    if (this._cachedManager && !this._cachedManager.isInitialized()) {
+      const eventKey: string = this._getModelEventKey();
+      if (eventKey.length > 0) {
+        notificationCenter.on(
+          eventKey,
+          (payload: NotificationEntityPayload<SubModel>) => {
+            this.onCacheEntitiesChange(payload);
+          },
+        );
+      }
+
       const dao = daoManager.getDao(this.DaoClass);
       const models = await dao.getAll();
-      _.forEach(models, (model: SubModel) => {
-        this._cachedManager.set(model);
-      });
+      this._cachedManager.initialize(models);
+      mainLogger.debug('initialEntitiesCache done');
     } else {
-      mainLogger.debug('initial cache without permission');
+      mainLogger.debug(
+        'initial cache without permission or already initialized',
+      );
     }
   }
 

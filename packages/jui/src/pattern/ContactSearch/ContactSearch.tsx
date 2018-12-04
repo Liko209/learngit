@@ -36,6 +36,8 @@ export type Props = {
   ContactSearchItem?: React.ComponentType<any>;
   error?: boolean;
   helperText?: string;
+  automationId?: string;
+  errorEmail?: string;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -114,9 +116,12 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       !inputValue.length &&
       keycode(event) === 'backspace'
     ) {
-      this.setState({
-        selectedItem: selectedItem.slice(0, selectedItem.length - 1),
-      });
+      this.setState(
+        { selectedItem: selectedItem.slice(0, selectedItem.length - 1) },
+        () => {
+          this.props.onChange(this.state.selectedItem);
+        },
+      );
     }
   }
 
@@ -209,6 +214,8 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       ContactSearchItem,
       error,
       helperText,
+      automationId,
+      errorEmail,
     } = this.props;
     const { inputValue, selectedItem, shrink, showPlaceholder } = this.state;
 
@@ -248,16 +255,18 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                   fullWidth: true,
                   InputProps: getInputProps({
                     startAdornment: selectedItem.map(
-                      (item: TSuggestion, index: number) =>
-                        Chip ? (
+                      (item: TSuggestion, index: number) => {
+                        return Chip ? (
                           <Chip
                             key={index}
                             tabIndex={0}
                             label={item.label}
+                            isError={errorEmail === item.label.trim()}
                             uid={item.id}
                             onDelete={this.handleDelete(item)}
                           />
-                        ) : null,
+                        ) : null;
+                      },
                     ),
                     onFocus: () => {
                       this.setState({
@@ -290,7 +299,10 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                   } as any), // Downshift startAdornment is not include in getInputProps interface
                 })}
                 {isOpen && filterSuggestions.length ? (
-                  <StyledPaper square={true}>
+                  <StyledPaper
+                    square={true}
+                    data-test-automation-id={automationId}
+                  >
                     {filterSuggestions.map((suggestion: TSuggestion, index) =>
                       this.renderSuggestion({
                         ContactSearchItem,

@@ -5,13 +5,18 @@
  */
 import { action, computed, observable } from 'mobx';
 
-import GroupService, { CreateTeamOptions } from 'sdk/service/group';
+import GroupService, {
+  CreateTeamOptions,
+  GroupErrorTypes,
+} from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
-import { IResponseError } from 'sdk/models';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { matchInvalidEmail } from '@/utils/string';
+import { BaseError } from 'sdk/utils';
+import { Notification } from '../Notification';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -32,6 +37,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   serverError: boolean = false;
   @observable
   members: (number | string)[] = [];
+  @observable
+  errorEmail: string;
 
   @computed
   get isOpen() {
@@ -58,6 +65,7 @@ class CreateTeamViewModel extends AbstractViewModel {
   @action
   inputReset = () => {
     this.errorMsg = '';
+    this.errorEmail = '';
     this.nameError = false;
     this.disabledOkBtn = true;
     this.emailError = false;
@@ -82,7 +90,7 @@ class CreateTeamViewModel extends AbstractViewModel {
       }
       return item.email;
     });
-    this.errorMsg = '';
+    this.emailErrorMsg = '';
     this.emailError = false;
     this.members = members;
   }
@@ -98,39 +106,43 @@ class CreateTeamViewModel extends AbstractViewModel {
     const groupService: GroupService = GroupService.getInstance();
     const accountService: AccountService = AccountService.getInstance();
     const creatorId = Number(accountService.getCurrentUserId());
-    let result;
-    try {
-      result = await groupService.createTeam(
-        name,
-        creatorId,
-        memberIds,
-        description,
-        {
-          isPublic,
-          canPost,
-        },
-      );
-    } catch (err) {
-      const { data } = err;
-      if (data) {
-        throw this.createErrorHandler(data as IResponseError);
-      } else {
-        this.serverError = true;
-      }
-      return;
+    const result = await groupService.createTeam(
+      name,
+      creatorId,
+      memberIds,
+      description,
+      {
+        isPublic,
+        canPost,
+      },
+    );
+    if (result.isErr()) {
+      this.createErrorHandler(result.error);
     }
-
     return result;
   }
 
-  createErrorHandler(error: IResponseError) {
-    const code = error.error.code;
-    if (code === 'already_taken') {
-      this.errorMsg = 'already taken';
+  createErrorHandler(error: BaseError) {
+    const code = error.code;
+    if (code === GroupErrorTypes.ALREADY_TAKEN) {
+      this.errorMsg = 'alreadyTaken';
       this.nameError = true;
-    } else if (code === 'invalid_field') {
-      this.emailErrorMsg = 'Invalid Email';
-      this.emailError = true;
+    } else if (code === GroupErrorTypes.INVALID_FIELD) {
+      const message = error.message;
+      if (matchInvalidEmail(message).length > 0) {
+        this.errorEmail = matchInvalidEmail(message);
+        this.emailErrorMsg = 'Invalid Email';
+        this.emailError = true;
+      }
+    } else {
+      const message = 'WeWerentAbleToCreateTheTeamTryAgain';
+      Notification.flagToast({
+        message,
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: true,
+      });
     }
   }
 }

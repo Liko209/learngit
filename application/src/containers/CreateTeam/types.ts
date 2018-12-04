@@ -19,6 +19,7 @@ type ViewProps = WithNamespaces & {
   description: string;
   serverError: boolean;
   members: (number | string)[];
+  errorEmail: string;
   updateCreateTeamDialogState: () => void;
   inputReset: () => void;
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

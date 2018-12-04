@@ -5,10 +5,11 @@
  */
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
+import { ClientFunction } from 'testcafe';
 
 fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
@@ -19,7 +20,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user)
     const user5Platform = await h(t).getPlatform(users[5]);
 
@@ -64,12 +65,12 @@ test(formalName('UMI should be added received messages count in conversations', 
     );
 
     await h(t).withLog('And I click a private chat', async () => {
-      await app.homePage.messagePanel.directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
+      await app.homePage.messageTab.directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
 
     });
 
-    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog(`And make preconditions: group ${group.data.id} and team ${team.data.id} both with UMI=1`, async () => {
       await user5Platform.createPost(
         { text: `![:Person](${user.rcId}), ${uuid()}` },
@@ -138,11 +139,16 @@ test(formalName('UMI should be added received messages count in conversations', 
   },
 );
 
-test.skip(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'ConversationList']),
+test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'ConversationList']),
   async (t: TestController) => {
+    if (await H.isEdge()) {
+      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
+      return;
+    }
+
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
     let pvtChat, team;
@@ -187,8 +193,8 @@ test.skip(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Con
       },
     );
 
-    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then I click private chat to make sure the group is not selected', async () => {
       await directMessagesSection.conversationEntryById(pvtChat.data.id).enter()
     });
@@ -197,8 +203,7 @@ test.skip(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Con
       const item = teamsSection.conversationEntryById(team.data.id);
       const umi = item.self.find('.umi');
       const text = item.self.find('p');
-      const count = await item.getUmi();
-      await t.expect(count).eql(1);
+      await item.expectUmi(1);
       const umiBgColor = (await umi.style)['background-color'];
       await t.expect(umiBgColor).eql('rgb(255, 136, 0)');
       const textFontWeight = (await text.style)['font-weight'];
@@ -207,29 +212,34 @@ test.skip(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Con
 
     await h(t).withLog('Then I click the team to open the team conversation', async () => {
       await teamsSection.conversationEntryById(team.data.id).enter();
-      await t.wait(1e3);
+      await t.wait(3e3);
     });
 
     await h(t).withLog('And I can no longer find the UMI on the team', async () => {
       const item = teamsSection.conversationEntryById(team.data.id);
       const text = item.self.find('p');
-      const count = await item.getUmi();
-      await t.expect(count).eql(0);
+
+      await item.expectUmi(0,20);
       const textFontWeight = (await text.style)['font-weight'];
       await t.expect(textFontWeight).match(/400|normal/);
     });
   },
 );
 
-test.skip(formalName('Current opened conversation should not display UMI', ['JPT-105', 'P1', 'ConversationList']),
+test(formalName('Current opened conversation should not display UMI', ['JPT-105', 'P1', 'ConversationList']),
   async (t: TestController) => {
+    if (await H.isEdge()) {
+      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
+      return;
+    }
+
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
-    const directMessagesSection = app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
     const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
 
     let pvtChatId, teamId, pvtChat, team;
@@ -277,8 +287,7 @@ test.skip(formalName('Current opened conversation should not display UMI', ['JPT
 
     // FIXME: When run cases concurrently, current browser will be lost focus, and fail.
     await h(t).withLog('Then I should not have UMI in the private chat', async () => {
-      const umi = await pvtChat.getUmi();
-      await t.expect(umi).eql(0);
+      await pvtChat.expectUmi(0);
     });
 
     await h(t).withLog('When I open other conversation and reload web page', async () => {
@@ -288,8 +297,7 @@ test.skip(formalName('Current opened conversation should not display UMI', ['JPT
     });
 
     await h(t).withLog('Then I should not have UMI in the private chat too', async () => {
-      const umi = await pvtChat.getUmi();
-      await t.expect(umi).eql(0);
+      await pvtChat.expectUmi(0);
     });
   },
 );
@@ -299,13 +307,13 @@ test(formalName('Should not display UMI when section is expended & Should displa
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
     const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+      app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
 
     let favPrivateChat, favTeam, group1, group2, group3, team1, team2;
     await h(t).withLog('Given I have an extension with a team and a private chat',
@@ -505,7 +513,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const user = users[4];
     user.sdk = await h(t).getSdk(user);
 
     let group1, group2, group3, team1, team2;
@@ -560,9 +568,9 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     );
 
     const directMessagesSection =
-      app.homePage.messagePanel.directMessagesSection;
-    const teamsSection = app.homePage.messagePanel.teamsSection;
-    const favoritesSection = app.homePage.messagePanel.favoritesSection;
+      app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const favoritesSection = app.homePage.messageTab.favoritesSection;
     await h(t).withLog('Then I click group3 to make sure other conversations are not selected',
       async () => {
         await directMessagesSection.conversationEntryById(group3.data.id).enter();
@@ -587,7 +595,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
       await t.wait(1e3);
     });
 
-    const favoriteButton = app.homePage.messagePanel.moreMenu.favoriteToggler;
+    const favoriteButton = app.homePage.messageTab.moreMenu.favoriteToggler;
     await h(t).withLog('Favorite the two groups with UMI', async () => {
       await directMessagesSection.conversationEntryById(group1.data.id).openMoreMenu();
       await favoriteButton.enter();
@@ -642,6 +650,189 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
 
     await h(t).withLog('Should have 1 umi in header of team sections', async () => {
       await teamsSection.expectHeaderUmi(1);
+    });
+  },
+);
+
+test(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
+  async (t: TestController) => {
+    if (await H.isEdge()) {
+      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
+      return;
+    }
+    
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[4];
+    user.sdk = await h(t).getSdk(user)
+    const user5Platform = await h(t).getPlatform(users[5]);
+
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+
+    let pvtChat;
+    await h(t).withLog('Given Open a conversation with post more than one screen', async () => {
+      pvtChat = await user.sdk.platform.createGroup({
+        type: 'PrivateChat',
+        members: [user.rcId, users[5].rcId]
+      }); 
+      for(var i = 0; i < 10; i++){
+        await user5Platform.createPost(
+          { text: 'test' },
+          pvtChat.data.id,
+        );
+      };
+      await user.sdk.glip.updateProfile(user.rcId, {
+        [`hide_group_${pvtChat.data.id}`]: false,
+      });
+    });
+
+    await h(t).withLog('Clear all UMIs before login', async () => {
+      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
+        user.rcId,
+      );
+      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => { 
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+      await directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
+    });
+
+    await h(t).withLog('When I scroll up content page and receive new messages', async () => {
+      await t.wait(3e3);
+      await app.homePage.messageTab.conversationPage.scrollToMiddle();
+      await user5Platform.createPost(
+        { text: 'test again' },
+        pvtChat.data.id,
+      );
+    });
+
+    await h(t).withLog('Then show UMI', async () => {
+      await directMessagesSection.conversationEntryById(pvtChat.data.id).expectUmi(1);
+    });
+
+    await h(t).withLog('When I scroll down content page', async () => {
+      await app.homePage.messageTab.conversationPage.scrollToBottom();
+    });
+
+    await h(t).withLog('Then UMI dismiss', async () => {
+      await directMessagesSection.conversationEntryById(pvtChat.data.id).expectUmi(0);
+    });
+  },
+);
+
+test(formalName('Should not show UMI and scroll up automatically when receive post', ['JPT-191', 'P2', 'ConversationList', 'Yilia.Hong']),
+  async (t: TestController) => {
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[4];
+    user.sdk = await h(t).getSdk(user)
+    const user5Platform = await h(t).getPlatform(users[5]);
+
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const postContent = `JPT-191, ${uuid()}`;
+
+    let pvtChat;
+    await h(t).withLog('Given have a conversation', async () => {
+      pvtChat = await user.sdk.platform.createGroup({
+        type: 'PrivateChat',
+        members: [user.rcId, users[5].rcId]
+      });
+      await user5Platform.createPost(
+        { text: 'test' }, 
+        pvtChat.data.id
+      );
+      await user.sdk.glip.updateProfile(user.rcId, {
+        [`hide_group_${pvtChat.data.id}`]: false,
+      });
+    });
+
+    await h(t).withLog('Clear all UMIs before login', async () => {
+      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
+        user.rcId,
+      );
+      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+    });
+
+    await h(t).withLog(`Given I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog('When Open a conversation and receive new messages', async () => {
+      await directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
+      await user5Platform.createPost(
+        { text: postContent },
+        pvtChat.data.id,
+      );
+    });
+
+    await h(t).withLog(`Then should not show UMI and scroll up automatically`, async () => {
+      await directMessagesSection.conversationEntryById(pvtChat.data.id).expectUmi(0);
+      const posts = await app.homePage.messageTab.conversationPage.posts;
+      await t.expect(posts.nth(-1).withText(postContent).exists).ok();
+      await t.expect(posts.nth(-1).withText(postContent).visible).ok();
+    });
+  },
+);
+
+//Need investigate how to unfocus page.
+test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P2', 'ConversationList', 'Yilia.Hong']),
+  async (t: TestController) => {
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[4];
+    user.sdk = await h(t).getSdk(user)
+    const user5Platform = await h(t).getPlatform(users[5]);
+
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+
+    let pvtChat;
+    await h(t).withLog('Given have a conversation', async () => {
+      pvtChat = await user.sdk.platform.createGroup({
+        type: 'PrivateChat',
+        members: [user.rcId, users[5].rcId]
+      });
+      await user5Platform.createPost(
+        { text: 'test' }, 
+        pvtChat.data.id
+      );
+      await user.sdk.glip.updateProfile(user.rcId, {
+        [`hide_group_${pvtChat.data.id}`]: false,
+      });
+    });
+
+    await h(t).withLog(`Given I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+      async () => {
+       await h(t).directLoginWithUser(SITE_URL, user);
+       await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog('Given Open a conversation then does not focus on the page', async () => {
+      pvtChat = await user.sdk.platform.createGroup({
+        type: 'PrivateChat',
+        members: [user.rcId, users[5].rcId]
+      });
+      
+      await directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
+      await t.wait(3000);
+      const noFocus = ClientFunction(() => window.blur());
+      await noFocus();
+    });
+
+    await h(t).withLog('When receive messages',
+      async () => {
+        await user5Platform.createPost(
+          { text: 'test' },
+          pvtChat.data.id,
+        );
+      },
+    );
+
+    await h(t).withLog(`Then show UMI`, async () => {
+      await directMessagesSection.conversationEntryById(pvtChat.data.id).expectUmi(1);
     });
   },
 );

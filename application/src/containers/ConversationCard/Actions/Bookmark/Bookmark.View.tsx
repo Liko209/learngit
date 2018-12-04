@@ -14,7 +14,8 @@ type Props = BookmarkViewProps & WithNamespaces;
 
 @observer
 class BookmarkViewComponent extends Component<Props> {
-  private _handleClick = () => {
+  private _handleClick = (evt: React.MouseEvent) => {
+    evt.stopPropagation();
     const { isBookmark, bookmark } = this.props;
     bookmark(!isBookmark);
   }
@@ -28,6 +29,7 @@ class BookmarkViewComponent extends Component<Props> {
         color={isBookmark ? 'primary' : undefined}
         onClick={this._handleClick}
         variant="plain"
+        data-name="actionBarBookmark"
       >
         {isBookmark ? 'bookmark' : 'bookmark_border'}
       </JuiIconButton>

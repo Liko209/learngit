@@ -38,7 +38,12 @@ class NotificationView extends Component<NotificationViewProps> {
   }
 
   render() {
-    return <JuiNotification>{this._renderNotification()}</JuiNotification>;
+    const { onClick } = this.props;
+    return (
+      <JuiNotification onClick={onClick}>
+        {this._renderNotification()}
+      </JuiNotification>
+    );
   }
 }
 
