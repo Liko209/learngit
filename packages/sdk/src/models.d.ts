@@ -5,7 +5,6 @@
  */
 import { POST_STATUS, PRESENCE } from './service';
 import { TeamPermission } from './service/group';
-import { type } from 'os';
 
 export type BaseModel = {
   id: number;
