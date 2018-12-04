@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { LikeViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
+import ThumbUpOutlined from '@material-ui/icons/ThumbUpOutlined';
 
 type Props = LikeViewProps & WithNamespaces;
 
@@ -29,7 +30,7 @@ class LikeViewComponent extends Component<Props> {
         onClick={this._handleLikeButton}
         variant="plain"
       >
-        thumb_up
+        {isLike ? 'thumb_up' : <ThumbUpOutlined />}
       </JuiIconButton>
     );
   }
