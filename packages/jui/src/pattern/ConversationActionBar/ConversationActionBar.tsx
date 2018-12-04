@@ -39,10 +39,19 @@ const StyledWrapper = styled('div')`
 `;
 
 class JuiConversationActionBar extends PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    this.clickHandler = this.clickHandler.bind(this);
+  }
+
+  clickHandler(evt: React.MouseEvent) {
+    evt.stopPropagation();
+  }
+
   render() {
     const { moreTooltipTitle, Like, Bookmark } = this.props;
     return (
-      <StyledWrapper>
+      <StyledWrapper onClick={this.clickHandler}>
         {Like}
         {Bookmark}
         <JuiIconButton
