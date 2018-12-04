@@ -85,7 +85,7 @@ type Props = {
   onLinkItemClose?: (e: React.MouseEvent<HTMLSpanElement>) => void;
   url: string;
 };
-class JuiConversationCardLinkItems extends React.Component<
+class JuiConversationCardLinkItems extends React.PureComponent<
   Props
 > {
   constructor(props: Props) {
