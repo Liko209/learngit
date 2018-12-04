@@ -83,6 +83,11 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
   }
 `;
 
+const TitleAndStatusWrapper = styled('div')`
+  display: flex;
+  align-items: baseline;
+`;
+
 type IJuiConversationPageHeader = React.Component<
   JuiConversationPageHeaderProps
 > &
@@ -158,16 +163,18 @@ class JuiConversationPageHeader
       >
         <MuiToolbar variant="dense">
           <div className="left-wrapper">
-            {this.state.showTooltip ? (
-              <MuiTooltip title={title}>{titleElement}</MuiTooltip>
-            ) : (
-              titleElement
-            )}
-            {status ? (
-              <StatusWrapper data-test-automation-id="conversation-page-header-status">
-                {status}
-              </StatusWrapper>
-            ) : null}
+            <TitleAndStatusWrapper>
+              {this.state.showTooltip ? (
+                <MuiTooltip title={title}>{titleElement}</MuiTooltip>
+              ) : (
+                titleElement
+              )}
+              {status ? (
+                <StatusWrapper data-test-automation-id="conversation-page-header-status">
+                  {status}
+                </StatusWrapper>
+              ) : null}
+            </TitleAndStatusWrapper>
             {SubTitle ? SubTitle : null}
           </div>
           {Right ? right : null}
