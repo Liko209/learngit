@@ -16,6 +16,7 @@ import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
 import GroupService from '../../group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
+import notificationCenter from '../../notificationCenter';
 import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
 import { BaseError } from '../../../utils';
 jest.mock('../../../dao');
@@ -28,6 +29,8 @@ jest.mock('../postStatusHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
 jest.mock('../../group');
+// PostAPI.getDataById = jest.fn();
+jest.mock('../../notificationCenter');
 
 PostAPI.putDataById = jest.fn();
 PostAPI.requestByIds = jest.fn();
@@ -638,20 +641,23 @@ describe('PostService', () => {
   });
 
   describe('like post', () => {
+    beforeAll(() => {
+      postService = new PostService();
+      postService.getById = jest.fn();
+    });
     it('should return null when post id is negative', async () => {
+      postService.getById.mockResolvedValueOnce(null);
       const result = await postService.likePost(-1, 101, true);
       expect(result).toBe(undefined);
     });
-    it('should return null when post is not exist in local', async () => {
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce(null);
+    it('should return null when post is not exist', async () => {
+      postService.getById.mockResolvedValueOnce(null);
       const result = await postService.likePost(100, 101, true);
       expect(result).toBe(undefined);
     });
     it('should return post with likes', async () => {
       const post = { id: 100, likes: [] };
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce(post);
+      postService.getById.mockResolvedValueOnce(post);
       const data = { _id: 100, likes: [101] };
       PostAPI.putDataById.mockResolvedValueOnce(
         new NetworkResultOk(data, 200, {}),
@@ -662,15 +668,13 @@ describe('PostService', () => {
     });
     it('should return old post if person id is not in post likes when to unlike', async () => {
       const post = { id: 100, likes: [] };
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce(post);
+      postService.getById.mockResolvedValueOnce(post);
       await postService.likePost(100, 102, false);
       expect(post.likes).toEqual([]);
     });
     it('should return old post if person id is in post likes when to like', async () => {
       const post = { id: 100, likes: [] };
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce(post);
+      postService.getById.mockResolvedValueOnce(post);
       const result = await postService.likePost(100, 101, true);
       expect(post.likes).toEqual([101]);
     });
@@ -678,8 +682,7 @@ describe('PostService', () => {
     it('should return new post if person id is in post likes when to unlike', async () => {
       const postInDao = { id: 100, likes: [101, 102] };
       const postInApi = { _id: 100, likes: [102] };
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce(postInDao);
+      postService.getById.mockResolvedValueOnce(postInDao);
       PostAPI.putDataById.mockResolvedValueOnce({
         data: postInApi,
       });
@@ -690,8 +693,7 @@ describe('PostService', () => {
     });
 
     it('should return new post if person id is in post likes when to unlike', async () => {
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce({ id: 100, likes: [101, 102] });
+      postService.getById.mockResolvedValueOnce({ id: 100, likes: [101, 102] });
       PostAPI.putDataById.mockResolvedValueOnce({
         error: { _id: 100, likes: [102] },
       });
@@ -916,6 +918,24 @@ describe('PostService', () => {
       expect(result).toEqual({ id: 44 });
 
       expect(postService.sendPost).not.toBeCalled();
+    });
+  });
+
+  describe('deletePostsByGroupIds', async () => {
+    it('should delete posts from group', async () => {
+      postDao.queryPostsByGroupId.mockResolvedValue([
+        { id: 1, group_id: 3 },
+        { id: 2, group_id: 3 },
+      ]);
+      await postService.deletePostsByGroupIds([3], false);
+      expect(postDao.bulkDelete).toHaveBeenCalledWith([1, 2]);
+      expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(0);
+    });
+    it('should do notify', async () => {
+      postDao.queryPostsByGroupId.mockResolvedValue([{ id: 1, group_id: 3 }]);
+      await postService.deletePostsByGroupIds([3], true);
+      expect(postDao.bulkDelete).toHaveBeenCalledWith([1]);
+      expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
     });
   });
 });

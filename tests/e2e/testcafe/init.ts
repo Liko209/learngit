@@ -96,6 +96,10 @@ export function teardownCase() {
   return async (t: TestController) => {
     const consoleLog = await t.getBrowserConsoleMessages()
     const consoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog, null, 2));
+    const failScreenShotPath = t['testRun'].errs.length > 0 ? t['testRun'].errs[0].screenshotPath : null;
+    if (failScreenShotPath) {
+      t['testRun'].errs[0].screenshotPath = await MiscUtils.convertToWebp(failScreenShotPath);
+    };
     h(t).allureHelper.writeReport(consoleLogPath);
     await h(t).dataHelper.teardown();
     if (ENABLE_REMOTE_DASHBOARD) {

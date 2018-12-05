@@ -6,7 +6,14 @@ import AccountService from '../../account';
 import GroupAPI from '../../../api/glip/group';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../../constants';
 import GroupService from '../index';
-import { daoManager, AccountDao, GroupDao, ConfigDao } from '../../../dao';
+import {
+  daoManager,
+  AccountDao,
+  GroupDao,
+  ConfigDao,
+  GroupConfigDao,
+} from '../../../dao';
+
 import { Group, Raw, Person } from '../../../models';
 import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
@@ -17,7 +24,9 @@ import { GroupErrorTypes } from '../groupService';
 import { ErrorParser, BaseError, TypeDictionary } from '../../../utils';
 import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
 import CompanyService from '../../company';
+import PostService from '../../post';
 import { Api } from '../../../api';
+import notificationCenter from '../../notificationCenter';
 
 jest.mock('../../../dao');
 jest.mock('../handleData');
@@ -26,6 +35,7 @@ jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
 jest.mock('../../../service/company');
+jest.mock('../../../service/post');
 jest.mock('../../../api/glip/group');
 
 const profileService = new ProfileService();
@@ -53,8 +63,12 @@ describe('GroupService', () => {
   const accountDao = new AccountDao(null);
   const groupDao = new GroupDao(null);
   const configDao = new ConfigDao(null);
+  const groupConfigDao = new GroupConfigDao(null);
+  const postService = new PostService();
 
-  beforeEach(() => {});
+  beforeEach(() => {
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
+  });
 
   it('getGroupsByType()', async () => {
     const mock = [{ id: 1 }, { id: 2 }];
@@ -1015,6 +1029,24 @@ describe('GroupService', () => {
         [{ created_at: 321, id: 1, __last_accessed_at: 12345 }],
         [{ id: 1, __last_accessed_at: 12345 }],
       );
+    });
+  });
+  describe('removeTeamsByIds()', async () => {
+    it('should not do notify', async () => {
+      daoManager.getDao.mockReturnValueOnce(groupDao);
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      await groupService.removeTeamsByIds([1], false);
+      expect(groupDao.bulkDelete).toHaveBeenCalledWith([1]);
+      expect(groupConfigDao.bulkDelete).toHaveBeenCalledWith([1]);
+      expect(notificationCenter.emitEntityDelete).toBeCalledTimes(0);
+    });
+    it('should to notify', async () => {
+      daoManager.getDao.mockReturnValueOnce(groupDao);
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      await groupService.removeTeamsByIds([1], true);
+      expect(groupDao.bulkDelete).toHaveBeenCalledWith([1]);
+      expect(groupConfigDao.bulkDelete).toHaveBeenCalledWith([1]);
+      expect(notificationCenter.emitEntityDelete).toBeCalledTimes(1);
     });
   });
 });

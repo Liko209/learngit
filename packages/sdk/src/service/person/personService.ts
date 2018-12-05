@@ -11,7 +11,17 @@ import handleData from './handleData';
 import GroupService, { FEATURE_STATUS, FEATURE_TYPE } from '../group';
 import { daoManager, AuthDao } from '../../dao';
 import { IPagination } from '../../types';
-import { Person, SortableModel } from '../../models'; // eslint-disable-line
+import {
+  Person,
+  SortableModel,
+  PhoneNumberModel,
+  SanitizedExtensionModel,
+} from '../../models';
+import {
+  CALL_ID_USAGE_TYPE,
+  PHONE_NUMBER_TYPE,
+  PhoneNumberInfo,
+} from './types';
 import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
 import { AccountService } from '../account/accountService';
@@ -21,7 +31,6 @@ class PersonService extends BaseService<Person> {
   constructor() {
     const subscription = {
       [SOCKET.PERSON]: handleData,
-      [SOCKET.ITEM]: handleData,
     };
     super(PersonDao, PersonAPI, handleData, subscription);
     this.enableCache();
@@ -217,6 +226,34 @@ class PersonService extends BaseService<Person> {
 
   private _isValid(person: Person) {
     return !person.deactivated && !person.is_pseudo_user;
+  }
+
+  getAvailablePhoneNumbers(
+    companyId: number,
+    phoneNumbersData?: PhoneNumberModel[],
+    extensionData?: SanitizedExtensionModel,
+  ) {
+    const availNumbers: PhoneNumberInfo[] = [];
+    const accountService: AccountService = AccountService.getInstance();
+    const isCoWorker = accountService.getCurrentCompanyId() === companyId;
+    if (isCoWorker && extensionData) {
+      availNumbers.push({
+        type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+        phoneNumber: extensionData.extensionNumber,
+      });
+    }
+    // filter out company main number
+    if (phoneNumbersData) {
+      phoneNumbersData.forEach((element: PhoneNumberModel) => {
+        if (element.usageType === CALL_ID_USAGE_TYPE.DIRECT_NUMBER) {
+          availNumbers.push({
+            type: PHONE_NUMBER_TYPE.DIRECT_NUMBER,
+            phoneNumber: element.phoneNumber,
+          });
+        }
+      });
+    }
+    return availNumbers;
   }
 }
 

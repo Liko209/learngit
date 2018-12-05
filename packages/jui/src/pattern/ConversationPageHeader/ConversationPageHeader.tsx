@@ -59,7 +59,7 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
     padding-left: 0;
     padding-right: 0;
     background-color: white;
-    z-index: ${({ theme }) => `${theme.zIndex.drawer + 10}`};
+    /* z-index: ${({ theme }) => `${theme.zIndex.drawer + 10}`}; */
     > div {
       min-height: ${height(12)};
       padding-left: ${spacing(6)};

@@ -101,17 +101,19 @@ function withScroller(Comp: ComponentType<any>) {
     }
 
     private _isAtTop = (threshold = this.props.thresholdUp) => {
-      return this._scrollEl.scrollTop <= threshold;
+      const scrollEl = this._scrollEl;
+      return scrollEl && scrollEl.scrollTop <= threshold;
     }
 
     private _isAtBottom = (threshold = this.props.thresholdDown) => {
       const scrollEl = this._scrollEl;
       return (
+        scrollEl &&
         0 >=
-        scrollEl.scrollHeight -
-          scrollEl.clientHeight -
-          scrollEl.scrollTop -
-          threshold
+          scrollEl.scrollHeight -
+            scrollEl.clientHeight -
+            scrollEl.scrollTop -
+            threshold
       );
     }
 

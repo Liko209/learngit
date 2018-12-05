@@ -49,6 +49,11 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
     return this.props.isExcludeMe;
   }
 
+  @computed
+  get errorEmail() {
+    return this.props.errorEmail;
+  }
+
   constructor(props: ContactSearchProps) {
     super(props);
     this.searchMembers = debounce(this.searchMembers.bind(this), 300);
