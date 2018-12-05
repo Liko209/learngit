@@ -7,7 +7,7 @@
 import _ from 'lodash';
 import { computed } from 'mobx';
 import StoreViewModel from '@/store/ViewModel';
-import { StreamProps } from './types';
+import { StreamProps, SuccinctPost } from './types';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { ENTITY_NAME } from '@/store/constants';
 import { ISortableModel } from '@/store/base/fetch/types';
@@ -15,11 +15,15 @@ import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
 import { Post } from 'sdk/src/models';
 import { service } from 'sdk';
 import { EVENT_TYPES, ENTITY } from 'sdk/service';
-import { transform2Map } from '@/store/utils';
+import { transform2Map, getEntity } from '@/store/utils';
 import { PostService as IPostService } from 'sdk/src/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import storeManager from '@/store/base/StoreManager';
+import MultiEntityMapStore from '../../../store/base/MultiEntityMapStore';
+import PostModel from '@/store/models/Post';
 
 const { PostService } = service;
+
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
   private _isMatchFunc(post: Post) {
@@ -28,7 +32,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _options = {
     isMatchFunc: this._isMatchFunc.bind(this),
-    transformFunc: (post: Post) => ({
+    transformFunc: (post: SuccinctPost) => ({
       id: post.id,
       sortValue: -post.id,
     }),
@@ -43,7 +47,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this._sortableListHandler.sortableListStore.getIds();
   }
 
-  private _sortableListHandler: FetchSortableDataListHandler<Post>;
+  private _sortableListHandler: FetchSortableDataListHandler<SuccinctPost>;
 
   get _postProvider() {
     return {
@@ -73,17 +77,27 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         .value();
       hasMore = this._postIds.length > pageSize;
     }
-    const results = await postService.getPostsByIds(ids);
-    const posts = results.posts.filter((post: Post) => !post.deactivated);
-    if (posts.length) {
-      return { hasMore, data: posts };
+    const postsStore = storeManager.getEntityMapStore(
+      ENTITY_NAME.POST,
+    ) as MultiEntityMapStore<Post, PostModel>;
+    const [idsOutOfStore, idsInStore] = postsStore.subtractedBy(ids);
+    const results = await postService.getPostsByIds(idsOutOfStore);
+    const postsFromService = results.posts.filter(
+      (post: Post) => !post.deactivated,
+    );
+    const postsFromStore = idsInStore.map(id =>
+      getEntity(ENTITY_NAME.POST, id),
+    );
+    const data = [...postsFromService, ...postsFromStore];
+    if (data.length) {
+      return { hasMore, data };
     }
     return { hasMore: true, data: [] };
   }
 
   constructor() {
     super();
-    this._sortableListHandler = new FetchSortableDataListHandler<Post>(
+    this._sortableListHandler = new FetchSortableDataListHandler<SuccinctPost>(
       this._postProvider,
       this._options,
     );
