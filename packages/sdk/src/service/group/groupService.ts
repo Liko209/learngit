@@ -465,7 +465,10 @@ class GroupService extends BaseService<Group> {
     id: number;
     send_failure_post_ids: number[];
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData(params);
+    const result = await this.updateGroupPartialData({
+      id: params.id,
+      __send_failure_post_ids: params.send_failure_post_ids,
+    });
     return result;
   }
 
@@ -473,7 +476,7 @@ class GroupService extends BaseService<Group> {
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
       const group = (await this.getGroupById(id)) as Group;
-      return group.send_failure_post_ids || [];
+      return group.__send_failure_post_ids || [];
     } catch (error) {
       throw ErrorParser.parse(error);
     }
