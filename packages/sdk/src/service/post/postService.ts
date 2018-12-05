@@ -20,7 +20,7 @@ import { PostStatusHandler } from './postStatusHandler';
 import { POST_STATUS } from '../constants';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
-import { RawPostInfo, RawPostInfoWithFile } from './types';
+import { RawPostInfo, RawFilePostInfo } from './types';
 import { mainLogger } from 'foundation';
 import { ErrorParser, BaseError } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
@@ -359,7 +359,7 @@ class PostService extends BaseService<Post> {
     return [];
   }
 
-  async sendItemFile(params: RawPostInfoWithFile): Promise<Post | null> {
+  async sendItemFile(params: RawFilePostInfo): Promise<Post | null> {
     try {
       // {groupId, file}
       if (!params.groupId) {
@@ -387,6 +387,8 @@ class PostService extends BaseService<Post> {
       return null;
     }
   }
+
+  async cancelUpload(postId: number, itemId: number) {}
 
   /**
    * POST related operations
