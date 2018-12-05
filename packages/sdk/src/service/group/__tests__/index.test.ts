@@ -1009,11 +1009,11 @@ describe('GroupService', () => {
       });
 
       expect(groupDao.bulkUpdate).toHaveBeenCalledWith([
-        { id: 1, last_accessed_at: 12345 },
+        { id: 1, __last_accessed_at: 12345 },
       ]);
       expect(spyDoDefaultPartialNotify).toHaveBeenCalledWith(
-        [{ created_at: 321, id: 1, last_accessed_at: 12345 }],
-        [{ id: 1, last_accessed_at: 12345 }],
+        [{ created_at: 321, id: 1, __last_accessed_at: 12345 }],
+        [{ id: 1, __last_accessed_at: 12345 }],
       );
     });
   });

@@ -51,7 +51,7 @@ export default class GroupModel extends Base<Group> {
       description,
       pinned_post_ids,
       privacy,
-      draft,
+      __draft,
       send_failure_post_ids,
       most_recent_post_created_at,
       created_at,
@@ -67,7 +67,7 @@ export default class GroupModel extends Base<Group> {
     this.isTeam = is_team;
     this.pinnedPostIds = pinned_post_ids;
     this.privacy = privacy;
-    this.draft = draft;
+    this.draft = __draft;
     this.sendFailurePostIds = send_failure_post_ids;
     this.latestTime = most_recent_post_created_at
       ? most_recent_post_created_at

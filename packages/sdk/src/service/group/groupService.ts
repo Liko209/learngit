@@ -445,7 +445,10 @@ class GroupService extends BaseService<Group> {
     id: number;
     draft: string;
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData(params);
+    const result = await this.updateGroupPartialData({
+      id: params.id,
+      __draft: params.draft,
+    });
     return result;
   }
 
@@ -694,7 +697,7 @@ class GroupService extends BaseService<Group> {
     const { id, timestamp } = params;
     const result = await this.updateGroupPartialData({
       id,
-      last_accessed_at: timestamp,
+      __last_accessed_at: timestamp,
     });
     return result;
   }
