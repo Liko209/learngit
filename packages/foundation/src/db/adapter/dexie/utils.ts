@@ -34,7 +34,11 @@ class CollectionWhereClause {
     return this.coll.filter(item => includesIgnoreCase(arr, item[this.key]));
   }
   equals(val: any): Dexie.Collection {
-    return this.coll.filter((item: any) => val === item[this.key]);
+    return this.coll.filter(
+      item =>
+        val === item[this.key] ||
+        (Array.isArray(item[this.key]) && item[this.key].indexOf(val) >= 0),
+    );
   }
   equalsIgnoreCase(val: string): Dexie.Collection {
     return this.coll.filter((item: any) =>

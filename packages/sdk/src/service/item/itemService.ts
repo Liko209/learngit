@@ -13,6 +13,7 @@ import { StoredFile, Item, FileItem, NoteItem, Post, Raw } from '../../models';
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
 import { NetworkResult } from '../../api/NetworkResult';
+import { ItemFileUploadHandler } from './itemFileUploadHandler';
 
 interface ISendFile {
   file: FormData;
@@ -21,6 +22,7 @@ interface ISendFile {
 
 class ItemService extends BaseService<Item> {
   static serviceName = 'ItemService';
+  _itemFileUploadHandler: ItemFileUploadHandler;
 
   constructor() {
     const subscription = {
@@ -54,15 +56,20 @@ class ItemService extends BaseService<Item> {
   }
 
   async cancelUpload(itemId: number): Promise<boolean> {
-    return false;
+    const handler = this._getItemFileHandler();
+    return await handler.cancelUpload(itemId);
   }
 
   getUploadItems(): File[] {
     return [];
   }
 
-  async isFileExists(groupId: string, fileName: string): Promise<boolean> {
-    return false;
+  async isFileExists(groupId: number, fileName: string): Promise<boolean> {
+    if (groupId <= 0 || !fileName || fileName.trim().length === 0) {
+      return false;
+    }
+    const dao = daoManager.getDao(this.DaoClass) as ItemDao;
+    return await dao.isFileItemExist(groupId, fileName);
   }
 
   getUploadProgress(itemId: number): number {
@@ -153,6 +160,13 @@ class ItemService extends BaseService<Item> {
       Ok: (item: Raw<Item>) => item,
       Err: (e: BaseError) => e,
     });
+  }
+
+  private _getItemFileHandler(): ItemFileUploadHandler {
+    if (!this._itemFileUploadHandler) {
+      this._itemFileUploadHandler = new ItemFileUploadHandler();
+    }
+    return this._itemFileUploadHandler;
   }
 }
 

@@ -2,6 +2,7 @@ import ItemDao from '../';
 import { setup } from '../../__tests__/utils';
 import { Item } from '../../../models';
 import { itemFactory } from '../../../__tests__/factories';
+import { match } from 'minimatch';
 
 describe('Item Dao', () => {
   let itemDao: ItemDao;
@@ -83,6 +84,51 @@ describe('Item Dao', () => {
           group_ids: [123],
         },
       ]);
+    });
+  });
+
+  describe('isFileItemExist()', () => {
+    const items: Item[] = [
+      itemFactory.build({
+        id: 1,
+        group_ids: [123],
+        name: 'file1',
+      }),
+      itemFactory.build({
+        id: 2,
+        group_ids: [123, 444],
+        name: 'file2',
+      }),
+      itemFactory.build({
+        id: 3,
+        group_ids: [321],
+        name: 'file3',
+      }),
+    ];
+    beforeEach(async () => {
+      const { database } = setup();
+      itemDao = new ItemDao(database);
+      await itemDao.bulkPut(items);
+    });
+
+    it('groupId match, name match', async () => {
+      const result = await itemDao.isFileItemExist(123, 'file1');
+      expect(result).toBe(true);
+    });
+
+    it('groupId match, name not match', async () => {
+      const result = await itemDao.isFileItemExist(123, 'file4');
+      expect(result).toBe(false);
+    });
+
+    it('groupId not match, name match', async () => {
+      const result = await itemDao.isFileItemExist(123, 'file3');
+      expect(result).toBe(false);
+    });
+
+    it('groupId not match, name not match', async () => {
+      const result = await itemDao.isFileItemExist(123, 'file3');
+      expect(result).toBe(false);
     });
   });
 });

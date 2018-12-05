@@ -59,6 +59,7 @@ const schema: ISchema = {
       item: gen('id', ['*group_ids']),
     },
     8: { groupConfig: gen() },
+    9: { item: gen('id', ['*group_ids', 'name']) },
   },
 };
 

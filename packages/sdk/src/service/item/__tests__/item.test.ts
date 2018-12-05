@@ -275,9 +275,33 @@ describe('ItemService', () => {
   });
 
   describe('isFileExists()', () => {
-    it('check file exists with invalid paramter', async () => {
-      const result = await itemService.isFileExists('', '');
+    const itemDao = {
+      isFileItemExist: jest.fn(),
+    };
+    beforeAll(() => {
+      handleData.mockClear();
+      daoManager.getDao = jest.fn().mockReturnValue(itemDao);
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('check file exists with invalid groupId', async () => {
+      const result = await itemService.isFileExists(0, 'test.jpg');
       expect(result).toBe(false);
+      expect(itemDao.isFileItemExist).not.toHaveBeenCalled();
+    });
+
+    it('check file exists with invalid name', async () => {
+      const result = await itemService.isFileExists(1, '');
+      expect(result).toBe(false);
+      expect(itemDao.isFileItemExist).not.toHaveBeenCalled();
+    });
+
+    it('check file exists', async () => {
+      itemDao.isFileItemExist.mockReturnValue(true);
+      const result = await itemService.isFileExists(1, 'test.jpg');
     });
   });
 

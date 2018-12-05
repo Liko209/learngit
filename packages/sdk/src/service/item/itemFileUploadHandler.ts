@@ -19,7 +19,7 @@ class ItemFileUploadHandler {
     return false;
   }
 
-  private _toItemFile(groupId: number, file: FormData): File {
+  private _toItemFile(groupId: number, file: FormData): File | null {
     return null;
   }
 
