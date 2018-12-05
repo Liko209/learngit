@@ -641,20 +641,23 @@ describe('PostService', () => {
   });
 
   describe('like post', () => {
+    beforeAll(() => {
+      postService = new PostService();
+      postService.getById = jest.fn();
+    });
     it('should return null when post id is negative', async () => {
+      postService.getById.mockResolvedValueOnce(null);
       const result = await postService.likePost(-1, 101, true);
       expect(result).toBe(undefined);
     });
-    it('should return null when post is not exist in local', async () => {
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce(null);
+    it('should return null when post is not exist', async () => {
+      postService.getById.mockResolvedValueOnce(null);
       const result = await postService.likePost(100, 101, true);
       expect(result).toBe(undefined);
     });
     it('should return post with likes', async () => {
       const post = { id: 100, likes: [] };
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce(post);
+      postService.getById.mockResolvedValueOnce(post);
       const data = { _id: 100, likes: [101] };
       PostAPI.putDataById.mockResolvedValueOnce(
         new NetworkResultOk(data, 200, {}),
@@ -665,15 +668,13 @@ describe('PostService', () => {
     });
     it('should return old post if person id is not in post likes when to unlike', async () => {
       const post = { id: 100, likes: [] };
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce(post);
+      postService.getById.mockResolvedValueOnce(post);
       await postService.likePost(100, 102, false);
       expect(post.likes).toEqual([]);
     });
     it('should return old post if person id is in post likes when to like', async () => {
       const post = { id: 100, likes: [] };
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce(post);
+      postService.getById.mockResolvedValueOnce(post);
       const result = await postService.likePost(100, 101, true);
       expect(post.likes).toEqual([101]);
     });
@@ -681,8 +682,7 @@ describe('PostService', () => {
     it('should return new post if person id is in post likes when to unlike', async () => {
       const postInDao = { id: 100, likes: [101, 102] };
       const postInApi = { _id: 100, likes: [102] };
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce(postInDao);
+      postService.getById.mockResolvedValueOnce(postInDao);
       PostAPI.putDataById.mockResolvedValueOnce({
         data: postInApi,
       });
@@ -693,8 +693,7 @@ describe('PostService', () => {
     });
 
     it('should return new post if person id is in post likes when to unlike', async () => {
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      postDao.get.mockResolvedValueOnce({ id: 100, likes: [101, 102] });
+      postService.getById.mockResolvedValueOnce({ id: 100, likes: [101, 102] });
       PostAPI.putDataById.mockResolvedValueOnce({
         error: { _id: 100, likes: [102] },
       });

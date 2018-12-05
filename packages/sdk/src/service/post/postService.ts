@@ -477,8 +477,7 @@ class PostService extends BaseService<Post> {
 
   async likePost(postId: number, personId: number, toLike: boolean) {
     try {
-      const postDao = daoManager.getDao(PostDao);
-      const post = await postDao.get(postId);
+      const post = await this.getById(postId);
       if (post) {
         const likes = post.likes || [];
         const index = likes.indexOf(personId);
