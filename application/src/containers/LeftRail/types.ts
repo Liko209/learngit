@@ -11,6 +11,7 @@ type LeftRailEntry = {
   title: string;
   icon: string;
   type: POST_LIST_TYPE;
+  testId: string;
 };
 
 type LeftRailFilter = {
