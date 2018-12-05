@@ -206,9 +206,51 @@ describe('NetworkClient', () => {
         path: '/',
       });
     });
+
+    it('should omit properties starts with __', () => {
+      const { rcNetworkClient } = setup();
+
+      jest.spyOn(rcNetworkClient, 'request');
+      rcNetworkClient.post('/', {
+        id: 123,
+        __draft: '123',
+        a: true,
+      });
+
+      expect(rcNetworkClient.request).toHaveBeenCalledWith({
+        data: {
+          id: 123,
+          a: true,
+        },
+        headers: {},
+        method: 'post',
+        path: '/',
+      });
+    });
   });
   describe('put()', () => {
     it('should call http()', () => {
+      const { rcNetworkClient } = setup();
+
+      jest.spyOn(rcNetworkClient, 'http');
+      rcNetworkClient.put('/', {
+        id: 123,
+        __draft: '123',
+        a: true,
+      });
+
+      expect(rcNetworkClient.http).toHaveBeenCalledWith({
+        data: {
+          id: 123,
+          a: true,
+        },
+        headers: {},
+        method: 'put',
+        path: '/',
+      });
+    });
+
+    it('should omit properties starts with __', () => {
       const { rcNetworkClient } = setup();
 
       jest.spyOn(rcNetworkClient, 'http');
