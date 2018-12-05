@@ -918,4 +918,11 @@ describe('PostService', () => {
       expect(postService.sendPost).not.toBeCalled();
     });
   });
+
+  describe('cancelUpload', async () => {
+    it('cancel Upload invalid paramter ', async () => {
+      const result = await postService.cancelUpload(0, 0);
+      expect(result).toBe(false);
+    });
+  });
 });

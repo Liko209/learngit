@@ -388,7 +388,9 @@ class PostService extends BaseService<Post> {
     }
   }
 
-  async cancelUpload(postId: number, itemId: number) {}
+  async cancelUpload(postId: number, itemId: number): Promise<boolean> {
+    return false;
+  }
 
   /**
    * POST related operations

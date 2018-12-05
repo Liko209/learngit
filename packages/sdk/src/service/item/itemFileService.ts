@@ -14,7 +14,9 @@ class ItemFileService {
     return null;
   }
 
-  async cancelUpload(itemId: number) {}
+  async cancelUpload(itemId: number): Promise<boolean> {
+    return false;
+  }
 
   getUploadItems(): File[] {
     return null;
@@ -28,3 +30,5 @@ class ItemFileService {
     return 0;
   }
 }
+
+export { ItemFileService };

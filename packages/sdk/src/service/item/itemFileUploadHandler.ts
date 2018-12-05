@@ -15,7 +15,9 @@ class ItemFileUploadHandler {
     return null;
   }
 
-  async cancelUpload(itemId: number) {}
+  async cancelUpload(itemId: number): Promise<boolean> {
+    return false;
+  }
 
   private _toItemFile(groupId: number, file: FormData): File {
     return null;
@@ -46,3 +48,5 @@ class ItemFileUploadHandler {
     return null;
   }
 }
+
+export { ItemFileUploadHandler };
