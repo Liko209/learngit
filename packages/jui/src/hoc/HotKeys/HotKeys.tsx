@@ -27,7 +27,7 @@ type keyMapValue =
 
 type HotKeysProps = {
   el?: Element;
-  children(props: ChildrenProps): JSX.Element;
+  children?: React.ReactNode | ((props: ChildrenProps) => React.ReactNode);
   keyMap: {
     [key: string]: keyMapValue;
   };
@@ -77,12 +77,15 @@ class HotKeys extends Component<HotKeysProps, {}> {
   }
 
   render() {
-    const renderedChildren = this.props.children({
-      unbind: this.unbind,
-      reset: this.reset,
-      trigger: this.trigger,
-    });
-    return renderedChildren && React.Children.only(renderedChildren);
+    const { children } = this.props;
+    if (children instanceof Function) {
+      return children({
+        unbind: this.unbind,
+        reset: this.reset,
+        trigger: this.trigger,
+      });
+    }
+    return children;
   }
 }
 

@@ -2,7 +2,6 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-03-05 13:29:50
  */
-import { IResponse, IResponseError } from '../NetworkClient';
 import Api from '../api';
 import { Post, Item, Raw } from '../../models';
 
@@ -23,29 +22,27 @@ class PostAPI extends Api {
    * }
    */
   static basePath = '/post';
-  static requestPosts(params: object): Promise<IResponse<IPostsModel>> {
-    return this.glipNetworkClient.get('/posts', params);
+  static requestPosts(params: object) {
+    return this.glipNetworkClient.get<IPostsModel>('/posts', params);
   }
 
   /**
    *  /api/post
    */
-  static sendPost(
-    data: object,
-  ): Promise<IResponse<Raw<Post> & IResponseError>> {
+  static sendPost(data: object) {
     return this.postData<Post>(data);
   }
 
-  static requestById(id: number): Promise<IResponse<Raw<Post>>> {
-    return this.getDataById(id);
+  static requestById(id: number) {
+    return this.getDataById<Post>(id);
   }
 
-  static editPost(id: number, data: object): Promise<IResponse<Raw<Post>>> {
-    return this.putDataById(id, data);
+  static editPost(id: number, data: object) {
+    return this.putDataById<Post>(id, data);
   }
 
-  static requestByIds(ids: number[]): Promise<IResponse<IPostsModel>> {
-    return this.glipNetworkClient.get('/posts_items_by_ids', {
+  static requestByIds(ids: number[]) {
+    return this.glipNetworkClient.get<IPostsModel>('/posts_items_by_ids', {
       post_ids: ids.join(','),
     });
   }

@@ -4,16 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao } from '../../dao';
+import { daoManager, ConfigDao, GroupConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import {
-  Group,
-  GroupApiType,
-  Raw,
-  IResponseError,
-  SortableModel,
-} from '../../models';
+import { Group, GroupApiType, Raw, SortableModel } from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -39,8 +33,7 @@ import handleData, {
   sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
-import { IResponse } from '../../api/NetworkClient';
-import { mainLogger } from 'foundation';
+import { mainLogger, err, ok, Result } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
@@ -53,6 +46,8 @@ import { compareName } from '../../utils/helper';
 import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
 import { isValidEmailAddress } from '../../utils/regexUtils';
 import { Api } from '../../api';
+import notificationCenter from '../notificationCenter';
+import PostService from '../post';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -60,6 +55,17 @@ type CreateTeamOptions = {
   canPost?: boolean;
   canAddIntegrations?: boolean;
   canPin?: boolean;
+};
+
+const GroupErrorTypes = {
+  ALREADY_TAKEN: 1,
+  INVALID_FIELD: 2,
+  UNKNOWN: 99,
+};
+
+const handleTeamsRemovedFrom = async (ids: number[]) => {
+  const service: GroupService = GroupService.getInstance();
+  service.removeTeamsByIds(ids, true);
 };
 
 class GroupService extends BaseService<Group> {
@@ -72,6 +78,7 @@ class GroupService extends BaseService<Group> {
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
+      [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
     this.enableCache();
@@ -147,20 +154,20 @@ class GroupService extends BaseService<Group> {
 
   async getGroupsByIds(ids: number[]): Promise<Group[]> {
     if (ids.length) {
-      const groups = (await Promise.all(
+      const groups = await Promise.all(
         ids.map(async (id: number) => {
           const group = await this.getById(id);
           return group;
         }),
-      )) as (Group | null)[];
+      );
       return groups.filter(group => group !== null) as Group[];
     }
     return [];
   }
 
-  async getGroupById(id: number): Promise<Group | null> {
+  async getGroupById(id: number) {
     console.warn('getGroupById() is deprecated use getById() instead.');
-    return super.getById(id) as Promise<Group | null>;
+    return super.getById(id);
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
@@ -205,20 +212,11 @@ class GroupService extends BaseService<Group> {
     const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(
       memberIds,
     );
-    try {
-      const result = await GroupAPI.requestNewGroup(info);
-      if (result.data) {
-        const group = transform<Group>(result.data);
-        await handleData([result.data]);
-        return group;
-      }
-      return null;
-    } catch (e) {
-      mainLogger.error(
-        `requestRemoteGroupByMemberList error ${JSON.stringify(e)}`,
-      );
-      throw ErrorParser.parse(e);
-    }
+    const result = await GroupAPI.requestNewGroup(info);
+    const data = result.unwrap();
+    const group = transform<Group>(data);
+    await handleData([data]);
+    return group;
   }
 
   async getLatestGroup(): Promise<Group | null> {
@@ -240,11 +238,7 @@ class GroupService extends BaseService<Group> {
     return false;
   }
 
-  async pinPost(
-    postId: number,
-    groupId: number,
-    toPin: boolean,
-  ): Promise<Group | IResponseError | null> {
+  async pinPost(postId: number, groupId: number, toPin: boolean) {
     const groupDao = daoManager.getDao(GroupDao);
     const group = await groupDao.get(groupId);
     if (group && this.canPinPost(postId, group)) {
@@ -271,8 +265,13 @@ class GroupService extends BaseService<Group> {
       group._id = group.id;
       delete group.id;
       const path = group.is_team ? `/team/${group._id}` : `/group/${group._id}`;
-      const response = await GroupAPI.pinPost(path, group);
-      return this.handleResponse(response);
+
+      const result = await GroupAPI.pinPost(path, group);
+
+      return result.match({
+        Ok: async rawGroup => await this.handleRawGroup(rawGroup),
+        Err: () => null,
+      });
     }
     return null;
   }
@@ -290,8 +289,11 @@ class GroupService extends BaseService<Group> {
     type: PERMISSION_ENUM,
   ): Promise<boolean> {
     const groupInfo = await this.getById(group_id);
-    const permissionList = this.getPermissions(groupInfo);
-    return permissionList.includes(type);
+    if (groupInfo) {
+      const permissionList = this.getPermissions(groupInfo);
+      return permissionList.includes(type);
+    }
+    return false;
   }
 
   hasPermissionWithGroup(group: Group, type: PERMISSION_ENUM): boolean {
@@ -299,12 +301,11 @@ class GroupService extends BaseService<Group> {
     return permissionList.includes(type);
   }
 
-  async addTeamMembers(
-    groupId: number,
-    memberIds: number[],
-  ): Promise<Group | IResponseError | null> {
-    const resp = await GroupAPI.addTeamMembers(groupId, memberIds);
-    return this.handleResponse(resp);
+  async addTeamMembers(groupId: number, memberIds: number[]) {
+    const result = await GroupAPI.addTeamMembers(groupId, memberIds);
+    const rawGroup = result.expect('Failed to add team members.');
+    const newGroup = await this.handleRawGroup(rawGroup);
+    return newGroup;
   }
 
   async createTeam(
@@ -313,46 +314,50 @@ class GroupService extends BaseService<Group> {
     memberIds: (number | string)[],
     description: string,
     options: CreateTeamOptions = {},
-  ) {
-    try {
-      const {
-        isPublic = false,
-        canAddMember = false,
-        canPost = false,
-        canAddIntegrations = false,
-        canPin = false,
-      } = options;
-      const privacy = isPublic ? 'protected' : 'private';
-      const permissionFlags = {
-        TEAM_ADD_MEMBER: privacy === 'protected' ? true : canAddMember,
-        TEAM_POST: canPost,
-        TEAM_ADD_INTEGRATIONS: canPost ? canAddIntegrations : false,
-        TEAM_PIN_POST: canPost ? canPin : false,
-        TEAM_ADMIN: false,
-      };
-      const userPermissionMask = Permission.createPermissionsMask(
-        permissionFlags,
-      );
-      const team: Partial<GroupApiType> = {
-        privacy,
-        description,
-        set_abbreviation: name,
-        members: memberIds.concat(creator),
-        permissions: {
-          admin: {
-            uids: [creator],
-          },
-          user: {
-            uids: [],
-            level: userPermissionMask,
-          },
+  ): Promise<Result<Group | Raw<Group>>> {
+    const {
+      isPublic = false,
+      canAddMember = false,
+      canPost = false,
+      canAddIntegrations = false,
+      canPin = false,
+    } = options;
+    const privacy = isPublic ? 'protected' : 'private';
+    const permissionFlags = {
+      TEAM_ADD_MEMBER: privacy === 'protected' ? true : canAddMember,
+      TEAM_POST: canPost,
+      TEAM_ADD_INTEGRATIONS: canPost ? canAddIntegrations : false,
+      TEAM_PIN_POST: canPost ? canPin : false,
+      TEAM_ADMIN: false,
+    };
+    const userPermissionMask = Permission.createPermissionsMask(
+      permissionFlags,
+    );
+    const team: Partial<GroupApiType> = {
+      privacy,
+      description,
+      set_abbreviation: name,
+      members: memberIds.concat(creator),
+      permissions: {
+        admin: {
+          uids: [creator],
         },
-      };
-      const resp = await GroupAPI.createTeam(team);
-      return this.handleResponse(resp);
-    } catch (error) {
-      throw ErrorParser.parse(error);
-    }
+        user: {
+          uids: [],
+          level: userPermissionMask,
+        },
+      },
+    };
+    const result = await GroupAPI.createTeam(team);
+
+    const a = result.match({
+      Ok: async (rawGroup: Raw<Group>) => {
+        const newGroup = await this.handleRawGroup(rawGroup);
+        return ok(newGroup);
+      },
+      Err: (error: BaseError) => err(error),
+    });
+    return a;
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
@@ -372,12 +377,9 @@ class GroupService extends BaseService<Group> {
     return ServiceCommonErrorType.NONE;
   }
 
-  async handleResponse(resp: IResponse<Raw<Group>>) {
-    if (resp && resp.data && resp.data.error) {
-      return resp.data;
-    }
-    const group = transform<Group>(resp.data);
-    await handleData([resp.data]);
+  async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
+    const group = transform<Group>(rawGroup);
+    await handleData([rawGroup]);
     return group;
   }
 
@@ -728,6 +730,18 @@ class GroupService extends BaseService<Group> {
   private _getTeamAdmins(permission?: TeamPermission) {
     return permission && permission.admin ? permission.admin.uids : [];
   }
+
+  async removeTeamsByIds(ids: number[], shouldNotify: boolean) {
+    const dao = daoManager.getDao(GroupDao);
+    await dao.bulkDelete(ids);
+    if (shouldNotify) {
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
+    }
+    const postService: PostService = PostService.getInstance();
+    await postService.deletePostsByGroupIds(ids, true);
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkDelete(ids);
+  }
 }
 
-export { CreateTeamOptions, GroupService };
+export { CreateTeamOptions, GroupService, GroupErrorTypes };

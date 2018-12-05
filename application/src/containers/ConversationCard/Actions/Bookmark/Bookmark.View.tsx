@@ -29,6 +29,7 @@ class BookmarkViewComponent extends Component<Props> {
         color={isBookmark ? 'primary' : undefined}
         onClick={this._handleClick}
         variant="plain"
+        data-name="actionBarBookmark"
       >
         {isBookmark ? 'bookmark' : 'bookmark_border'}
       </JuiIconButton>

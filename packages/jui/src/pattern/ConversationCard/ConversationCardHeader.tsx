@@ -76,7 +76,11 @@ const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
   <StyledConversationCardHeader>
     <StyledLeftSection>
       <StyledName data-name="name">{props.name}</StyledName>
-      {props.status ? <StyledStatus>{props.status}</StyledStatus> : null}
+      {props.status ? (
+        <StyledStatus data-name="cardHeaderUserStatus">
+          {props.status}
+        </StyledStatus>
+      ) : null}
       {props.from ? <StyledFrom>{props.from}</StyledFrom> : null}
       <StyledTime data-name="time">{props.time}</StyledTime>
       {props.notification ? (
