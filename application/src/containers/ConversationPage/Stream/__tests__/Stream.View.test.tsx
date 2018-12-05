@@ -7,6 +7,7 @@ import { StreamViewComponent as StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
 import { i18n } from 'i18next';
+import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 
 jest.mock('../../../ConversationSheet', () => ({}));
 function renderJumpToFirstUnreadButton({
@@ -150,6 +151,26 @@ describe('StreamView', () => {
           firstHistoryUnreadPostViewed: false,
         });
         expect(hasJumpToFirstUnreadButton).toBeTruthy();
+      });
+    });
+
+    describe('conversationInitialPost', () => {
+      it('should load conversationInitialPost when user has no history messages', () => {
+        const props = {
+          ...baseProps,
+          hasHistoryMessages: false,
+        };
+        const wrapper = shallow(<StreamView {...props} />);
+        expect(wrapper.find(ConversationInitialPost)).toHaveLength(1);
+      });
+
+      it('should not load conversationInitialPost when user has history messages', () => {
+        const props = {
+          ...baseProps,
+          hasHistoryMessages: true,
+        };
+        const wrapper = shallow(<StreamView {...props} />);
+        expect(wrapper.find(ConversationInitialPost)).toHaveLength(0);
       });
     });
   });
