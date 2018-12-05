@@ -109,8 +109,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get userStatus() {
-    this.warnFlakySelector();
-    return this.name.nextSibling('div')
+    return this.self.find(`[data-name="cardHeaderUserStatus"]`);
   }
 
   get time() {
@@ -126,35 +125,31 @@ export class PostItem extends BaseWebComponent {
   }
 
   get likeToggleOnActionBar() {
-    return this.self.find('.material-icons').withText('thumb_up').parent('button');
+    return this.self.find(`[data-name="actionBarLike"]`);
   }
 
-  get likeToggleWithCount() {
-    return this.body.nextSibling().find('.material-icons').withText('thumb_up').parent('button');
+  get likeButtonOnFooter() {
+    return this.self.find(`[data-name="footerLikeButton"]`).find(`[data-name="actionBarLike"]`);
   }
   
   get likeCount() {
-    return this.likeToggleWithCount.parent(0).nextSibling('span');
+    return this.likeButtonOnFooter.nextSibling('span');
   }
 
-  get bookmarkButton() {
-    return this.self.find('.material-icons').withText('bookmark_border').parent('button');
-  }
-
-  get unBookmarkButton() {
-    return this.self.find('.material-icons').withText('bookmark').parent('button');
+  get bookmarkToggle() {
+    return this.self.find(`[data-name="actionBarBookmark"]`);
   }
 
   get moreMenu() {
-    return this.self.find('.material-icons').withText('more_horiz').parent('button');
+    return this.self.find(`[data-name="actionBarMore"]`);
   }
  
   async clickLikeOnActionBar() {
     await this.t.hover(this.self).click(this.likeToggleOnActionBar);
   }
  
-  async clickLikeWithCount() {
-    await this.t.hover(this.self).click(this.likeToggleWithCount);
+  async clickLikeButtonOnFooter() {
+    await this.t.hover(this.self).click(this.likeButtonOnFooter);
   }
 
   async getLikeCount() {
@@ -168,12 +163,8 @@ export class PostItem extends BaseWebComponent {
     return Number(text);
   }
 
-  async addBookmark() {
-    await this.t.hover(this.self).click(this.bookmarkButton);
-  }
-
-  async removeBookmark() {
-    await this.t.hover(this.self).click(this.unBookmarkButton);
+  async clickBookmarkToggle() {
+    await this.t.hover(this.self).click(this.bookmarkToggle);
   }
 
   
