@@ -46,19 +46,13 @@ type StyledCheckboxButtonChild = JuiCheckboxButtonProps &
   };
 type StyledChild = StyledIconButtonChild | StyledCheckboxButtonChild;
 
-const padding = (
-  theme: Theme,
-  componentName: string,
-  overlapSize?: number,
-  variant?: string,
-) =>
-  variant === 'plain'
-    ? `${spacing(3)({ theme })}`
-    : variant === 'round' || componentName === 'JuiCheckboxButton'
-    ? overlapSize && overlapSize > 0
-      ? `-${spacing(overlapSize)({ theme })}`
-      : 0
+const padding = (theme: Theme, overlapSize?: number) => {
+  console.log(overlapSize);
+
+  return overlapSize && overlapSize > 0
+    ? `-${spacing(overlapSize)({ theme })}`
     : `${spacing(2)({ theme })}`;
+};
 
 const StyledChild = styledComponentWrapper<StyledChild>(
   ({ overlapSize, componentName, ...rest }: StyledChild) => {
@@ -68,30 +62,18 @@ const StyledChild = styledComponentWrapper<StyledChild>(
     return <JuiIconButton {...rest as JuiIconButtonProps} />;
   },
   css`
-    margin-left: ${({
-      theme,
-      direction = 'horizontal',
-      index,
-      componentName,
-      size,
-      overlapSize,
-      variant,
-    }) =>
-      direction === 'horizontal' && index
-        ? padding(theme, componentName, overlapSize, variant)
-        : ''};
-    margin-top: ${({
-      theme,
-      direction = 'horizontal',
-      index,
-      componentName,
-      size,
-      overlapSize,
-      variant,
-    }) =>
-      direction === 'vertical' && index
-        ? padding(theme, componentName, overlapSize, variant)
-        : ''};
+    && {
+      margin-left: ${({
+        theme,
+        direction = 'horizontal',
+        index,
+        overlapSize,
+      }) =>
+        direction === 'horizontal' && index ? padding(theme, overlapSize) : ''};
+
+      margin-top: ${({ theme, direction = 'horizontal', index, overlapSize }) =>
+        direction === 'vertical' && index ? padding(theme, overlapSize) : ''};
+    }
   `,
 );
 

@@ -126,6 +126,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
                 ? toTitleCase(t('removeFromFavorites'))
                 : toTitleCase(t('addToFavorites'))
             }
+            color="accent.gold"
             checkedIconName="star"
             iconName="star_border"
             checked={isFavorite}

@@ -71,7 +71,6 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
       display: flex;
       align-items: center;
       flex-grow: 1;
-      flex-shrink: 1;
       overflow: hidden;
       padding-right: ${spacing(9.5)};
     }
@@ -86,6 +85,7 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
 const TitleAndStatusWrapper = styled('div')`
   display: flex;
   align-items: baseline;
+  overflow: hidden;
 `;
 
 type IJuiConversationPageHeader = React.Component<

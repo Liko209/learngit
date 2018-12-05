@@ -76,7 +76,8 @@ const StyledCheckboxButton = styled<
     height: ${({ size = 'medium', theme }) =>
       width(iconSizes[size] * 2)({ theme })};
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
-    color: grey;
+    color: ${({ colorScope, colorName, theme, checked }) =>
+      checked ? palette(colorScope, colorName)({ theme }) : 'grey'};
     font-size: ${({ size = 'medium', theme }) =>
       width(iconSizes[size])({ theme })};
     &:hover {
