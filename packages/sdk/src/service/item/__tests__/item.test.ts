@@ -15,13 +15,17 @@ import { daoManager } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
 import { postFactory } from '../../../__tests__/factories';
 import { NetworkResultOk } from '../../../api/NetworkResult';
-// import BaseDao from '../../../dao/base/BaseDao';
+import { ItemFileUploadHandler } from '../itemFileUploadHandler';
+
+jest.mock('../itemFileUploadHandler');
 
 const itemService = new ItemService();
-
 jest.mock('../handleData');
-
 describe('ItemService', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+  });
   describe('sendFile()', () => {
     it('send file should be null', async () => {
       uploadStorageFile.mockImplementation(() => [{ name: 'mock_file' }]);
@@ -255,15 +259,31 @@ describe('ItemService', () => {
 
   describe('sendItemFile()', () => {
     it('send item file, invalid parameter', async () => {
+      const itemFileUploadHandler = new ItemFileUploadHandler();
+      jest
+        .spyOn(itemService, '_getItemFileHandler')
+        .mockReturnValue(itemFileUploadHandler);
+
+      itemFileUploadHandler.sendItemFile.mockResolvedValue(null);
       const result = await itemService.sendItemFile(0, undefined, false);
       expect(result).toBe(null);
+      expect(itemFileUploadHandler.sendItemFile).toBeCalledWith(
+        0,
+        undefined,
+        false,
+      );
     });
   });
 
   describe('cancelUpload()', () => {
     it('cancel upload with invalid paramter', async () => {
+      const itemFileUploadHandler = new ItemFileUploadHandler();
+      jest
+        .spyOn(itemService, '_getItemFileHandler')
+        .mockReturnValue(itemFileUploadHandler);
+      itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
       const result = await itemService.cancelUpload(0);
-      expect(result).toBe(false);
+      expect(result).toBe(true);
     });
   });
 

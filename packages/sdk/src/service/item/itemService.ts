@@ -9,7 +9,7 @@ import { daoManager, ItemDao } from '../../dao';
 import ItemAPI, { IRightRailItemModel } from '../../api/glip/item';
 import handleData, { sendFileItem, uploadStorageFile } from './handleData';
 import { transform } from '../utils';
-import { StoredFile, Item, FileItem, NoteItem, Post, Raw } from '../../models';
+import { StoredFile, Item, ItemFile, NoteItem, Post, Raw } from '../../models';
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
 import { NetworkResult } from '../../api/NetworkResult';
@@ -31,7 +31,7 @@ class ItemService extends BaseService<Item> {
     super(ItemDao, ItemAPI, handleData, subscription);
   }
 
-  async sendFile(params: ISendFile): Promise<FileItem | null> {
+  async sendFile(params: ISendFile): Promise<ItemFile | null> {
     const options: StoredFile = await uploadStorageFile(params);
     const itemOptions = {
       storedFile: options[0],
@@ -40,7 +40,7 @@ class ItemService extends BaseService<Item> {
     const result = await sendFileItem(itemOptions);
 
     if (result) {
-      const fileItem = transform<FileItem>(result);
+      const fileItem = transform<ItemFile>(result);
       await handleData([result]);
       return fileItem;
     }
@@ -51,13 +51,16 @@ class ItemService extends BaseService<Item> {
     groupId: number,
     file: FormData,
     isUpdate: boolean,
-  ): Promise<FileItem | null> {
-    return null;
+  ): Promise<ItemFile | null> {
+    return await this._getItemFileHandler().sendItemFile(
+      groupId,
+      file,
+      isUpdate,
+    );
   }
 
   async cancelUpload(itemId: number): Promise<boolean> {
-    const handler = this._getItemFileHandler();
-    return await handler.cancelUpload(itemId);
+    return await this._getItemFileHandler().cancelUpload(itemId);
   }
 
   getUploadItems(): File[] {

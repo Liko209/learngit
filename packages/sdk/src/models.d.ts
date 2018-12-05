@@ -215,7 +215,6 @@ export type Item = ExtendedBaseModel & {
   group_ids: number[];
   post_ids: number[];
   company_id: number;
-  is_new: boolean;
   is_document?: boolean;
   name: string; // file name
   type_id: number; // file type
@@ -225,11 +224,10 @@ export type Item = ExtendedBaseModel & {
   title?: string;
   url: string;
   image?: string;
-  deactivated: boolean;
   do_not_render?: boolean;
 };
 
-export type FileItem = Item & {
+export type ItemFile = Item & {
   name: string;
 };
 

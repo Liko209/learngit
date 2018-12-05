@@ -7,7 +7,7 @@ import { NETWORK_METHOD, NETWORK_VIA, Result } from 'foundation';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
 import {
-  FileItem,
+  ItemFile,
   Item,
   BaseModel,
   StoredFile,
@@ -21,7 +21,7 @@ interface IRightRailItemModel extends BaseModel {
 
 type ProgressCallback = (e: ProgressEventInit) => any;
 type UploadFileResult = Result<StoredFile>;
-type FileResult = Result<Raw<FileItem>>;
+type FileResult = Result<Raw<ItemFile>>;
 
 const ITEMPATH = {
   [TypeDictionary.TYPE_ID_TASK]: 'task',
@@ -50,7 +50,7 @@ function getItemServerUrl(id: number): string {
 class ItemAPI extends Api {
   static basePath = '/item';
   static sendFileItem(data: object) {
-    return this.glipNetworkClient.post<Raw<FileItem>>('/file', data);
+    return this.glipNetworkClient.post<Raw<ItemFile>>('/file', data);
   }
 
   static uploadFileItem(files: FormData, callback?: ProgressCallback) {
@@ -70,7 +70,7 @@ class ItemAPI extends Api {
   }
 
   static requestById(id: number) {
-    return this.glipNetworkClient.get<Raw<FileItem>>(getItemServerUrl(id));
+    return this.glipNetworkClient.get<Raw<ItemFile>>(getItemServerUrl(id));
   }
 
   static requestRightRailItems(groupId: number) {

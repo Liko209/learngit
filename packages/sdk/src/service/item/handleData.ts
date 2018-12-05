@@ -11,7 +11,7 @@ import UploadManager from '../../service/UploadManager';
 import { versionHash } from '../../utils/mathUtils';
 import { transform, baseHandleData } from '../utils';
 import { ISendFile } from '../../service/item';
-import { StoredFile, Item, Raw, FileItem } from '../../models';
+import { StoredFile, Item, Raw, ItemFile } from '../../models';
 
 const itemHandleData = async (items: Raw<Item>[]) => {
   if (items.length === 0) {
@@ -63,7 +63,7 @@ export type Options = {
   groupId?: string;
 };
 
-const sendFileItem = async (options: Options): Promise<Raw<FileItem>> => {
+const sendFileItem = async (options: Options): Promise<Raw<ItemFile>> => {
   const nameType = extractFileNameAndType(options.storedFile.storage_path);
   const version = versionHash();
   const fileVersion = {
