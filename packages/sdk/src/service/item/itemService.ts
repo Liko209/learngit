@@ -45,6 +45,30 @@ class ItemService extends BaseService<Item> {
     return null;
   }
 
+  async sendItemFile(
+    groupId: number,
+    file: FormData,
+    isUpdate: boolean,
+  ): Promise<FileItem | null> {
+    return null;
+  }
+
+  async cancelUpload(itemId: number): Promise<boolean> {
+    return false;
+  }
+
+  getUploadItems(): File[] {
+    return [];
+  }
+
+  async isFileExists(groupId: string, fileName: string): Promise<boolean> {
+    return false;
+  }
+
+  getUploadProgress(itemId: number): number {
+    return 0;
+  }
+
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {
     ItemAPI.requestRightRailItems(groupId).then(
       (result: NetworkResult<IRightRailItemModel>) => {

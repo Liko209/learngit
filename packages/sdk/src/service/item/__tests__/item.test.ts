@@ -252,4 +252,39 @@ describe('ItemService', () => {
       expect(itemDao.getItemsByIds).toHaveBeenCalledWith([1, 2, 3, 5]);
     });
   });
+
+  describe('sendItemFile()', () => {
+    it('send item file, invalid parameter', async () => {
+      const result = await itemService.sendItemFile(0, undefined, false);
+      expect(result).toBe(null);
+    });
+  });
+
+  describe('cancelUpload()', () => {
+    it('cancel upload with invalid paramter', async () => {
+      const result = await itemService.cancelUpload(0);
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('getUploadItems()', () => {
+    it('items are empty', async () => {
+      const result = await itemService.getUploadItems();
+      expect(result.length).toBe(0);
+    });
+  });
+
+  describe('isFileExists()', () => {
+    it('check file exists with invalid paramter', async () => {
+      const result = await itemService.isFileExists('', '');
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('getUploadProgress()', () => {
+    it('get progress invalid id', async () => {
+      const result = await itemService.getUploadProgress(0);
+      expect(result).toBe(0);
+    });
+  });
 });
