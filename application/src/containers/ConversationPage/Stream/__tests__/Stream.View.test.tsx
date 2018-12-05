@@ -55,6 +55,7 @@ const baseProps = {
   },
   hasMoreUp: true,
   hasMoreDown: true,
+  hasHistoryMessages: true,
   historyGroupState: {} as GroupStateModel,
   historyUnreadCount: 10,
   hasHistoryUnread: false,
