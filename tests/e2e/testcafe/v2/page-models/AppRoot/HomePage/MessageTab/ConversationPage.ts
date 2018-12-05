@@ -1,5 +1,6 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import * as _ from 'lodash';
+import { ClientFunction } from 'testcafe';
 
 class BaseConversationPage extends BaseWebComponent {
   get posts() {
@@ -173,20 +174,28 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.conversation-name')
   }
 
-  async goToConversation() {
+  async jumpToConversationByClickName() {
     await this.t.click(this.conversationName, { offsetX: 3 });
   }
 
   get jumpToConversationButton() {
-    return this.self.find(`span`).withText('Jump To Conversation');
+    return this.self.find(`span`).withText(/Jump To Conversation/i).parent('button');
   }
 
-  async jumpToAtMentionConversation() {
+  async jumpToConversationByClickPost() {
     await this.t.click(this.self);
   }
 
 
   async clickConversationByButton() {
-    await this.t.hover(this.self).click(this.jumpToConversationButton);
+    const buttonElement  = this.jumpToConversationButton;
+    const displayJumpButton = ClientFunction(() => {
+        buttonElement().style["opacity"] = "1"; 
+    }, {
+      dependencies: { buttonElement } }
+    );
+    await this.t.hover(this.self)
+    await displayJumpButton();
+    await this.t.click(this.jumpToConversationButton);
   }
 }
