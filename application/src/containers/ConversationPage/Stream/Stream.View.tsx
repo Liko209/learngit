@@ -61,8 +61,8 @@ class StreamViewComponent extends Component<Props> {
       if (!item || !item.value) {
         return;
       }
-      post = getEntity(ENTITY_NAME.POST, item!.value);
-      const likes = post!.likes || [];
+      post = getEntity(ENTITY_NAME.POST, item.value);
+      const likes = post.likes || [];
       if (likes.length === 1) {
         this.scrollToPost(this.props.mostRecentPostId);
       }
@@ -78,7 +78,6 @@ class StreamViewComponent extends Component<Props> {
     );
     this._stickToBottom();
     this._visibilitySensorEnabled = true;
-    this._firstHistoryUnreadPostViewed = false;
     this.props.updateHistoryHandler();
     this.props.markAsRead();
   }
@@ -100,30 +99,9 @@ class StreamViewComponent extends Component<Props> {
     state: Props,
     snapshot: StreamSnapshot,
   ): Promise<void> {
-    const {
-      groupId,
-      postIds,
-      loadInitialPosts,
-      updateHistoryHandler,
-      markAsRead,
-    } = this.props;
-    const { groupId: prevGroupId, postIds: prevPostIds } = prevProps;
+    const { postIds } = this.props;
+    const { postIds: prevPostIds } = prevProps;
     const { atTop, atBottom } = snapshot;
-
-    // Switch to new conversation
-    if (groupId !== prevGroupId) {
-      this._tidiesBeforeDestroy();
-      await loadInitialPosts();
-      await this.scrollToPost(
-        this.props.jumpToPostId || this.props.mostRecentPostId,
-      );
-      this._stickToBottom();
-      this._visibilitySensorEnabled = true;
-      this._firstHistoryUnreadPostViewed = false;
-      updateHistoryHandler();
-      markAsRead();
-      return;
-    }
 
     // One new message came in
     if (this.props.postIds.length === prevProps.postIds.length + 1) {
@@ -298,9 +276,13 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _handleFirstUnreadPostVisibilityChange = (isVisible: boolean) => {
-    if (this._visibilitySensorEnabled && isVisible) {
-      this._firstHistoryUnreadPostViewed = true;
-      this.props.clearHistoryUnread();
+    if (this._visibilitySensorEnabled) {
+      if (isVisible) {
+        this._firstHistoryUnreadPostViewed = true;
+        this.props.clearHistoryUnread();
+      } else if (this._firstHistoryUnreadPostViewed === null) {
+        this._firstHistoryUnreadPostViewed = false;
+      }
     }
   }
   private _handleMostRecentPostRead = (isVisible: boolean) => {
@@ -354,7 +336,7 @@ class StreamViewComponent extends Component<Props> {
       mainLogger.warn('scrollToPostEl no found');
       return;
     }
-    await scrollToComponent(scrollToPostEl, options);
+    return scrollToComponent(scrollToPostEl, options);
   }
 
   private _focusHandler = () => {
@@ -370,14 +352,6 @@ class StreamViewComponent extends Component<Props> {
   private _setPostRef = (postRef: any) => {
     if (!postRef) return;
     this._postRefs.set(postRef.props.id, postRef);
-  }
-
-  private _tidiesBeforeDestroy = () => {
-    this._visibilitySensorEnabled = false;
-    this._jumpToFirstUnreadLoading = false;
-    this._firstHistoryUnreadPostViewed = null;
-    this._postRefs.clear();
-    this.props.clearHistoryUnread();
   }
 }
 const view = extractView<WithNamespaces & StreamViewProps>(StreamViewComponent);
