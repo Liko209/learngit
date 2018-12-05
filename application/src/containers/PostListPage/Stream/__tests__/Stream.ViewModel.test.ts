@@ -1,8 +1,8 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-12 20:31:07
- * @Last Modified by: Andy Hu
- * @Last Modified time: 2018-12-05 18:57:44
+ * @Last Modified by: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Last Modified time: 2018-11-26 22:59:09
  */
 import { StreamViewModel } from '../Stream.ViewModel';
 import { POST_LIST_TYPE } from '../../types';

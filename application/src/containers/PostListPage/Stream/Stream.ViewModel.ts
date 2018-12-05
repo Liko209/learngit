@@ -82,21 +82,22 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     ) as MultiEntityMapStore<Post, PostModel>;
     const [idsOutOfStore, idsInStore] = postsStore.subtractedBy(ids);
     let postsFromService: Post[] = [];
-    if (idsOutOfStore.length) {
-      const results = await postService.getPostsByIds(idsOutOfStore);
-      postsFromService = results.posts.filter(
-        (post: Post) => !post.deactivated,
-      );
-    }
 
     const postsFromStore = idsInStore.map(id =>
       getEntity(ENTITY_NAME.POST, id),
     );
-    const data = [...postsFromService, ...postsFromStore];
-    if (data.length) {
+    try {
+      if (idsOutOfStore.length) {
+        const results = await postService.getPostsByIds(idsOutOfStore);
+        postsFromService = results.posts.filter(
+          (post: Post) => !post.deactivated,
+        );
+      }
+      const data = [...postsFromService, ...postsFromStore];
       return { hasMore, data };
+    } catch (err) {
+      return { hasMore: true, data: [] };
     }
-    return { hasMore: true, data: [] };
   }
 
   constructor() {
