@@ -50,7 +50,7 @@ class LeftRailViewComponent extends Component<
         <JuiLeftRailMainSection>
           {entries.map((entry, index) => (
             <JuiConversationListSectionHeader
-              data-test-automation-id="entry-mentions"
+              data-test-automation-id={entry.testId}
               key={entry.title}
               title={toTitleCase(t(entry.title))}
               icon={entry.icon}
