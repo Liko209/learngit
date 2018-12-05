@@ -570,7 +570,7 @@ class GroupService extends BaseService<Group> {
             return {
               id: group.id,
               displayName: groupName,
-              sortKey: groupName.toLowerCase(),
+              firstSortKey: groupName.toLowerCase(),
               entity: group,
             };
           }
@@ -579,8 +579,21 @@ class GroupService extends BaseService<Group> {
       },
       searchKey,
       undefined,
-      this.sortEntitiesByName.bind(this),
+      this._orderByName.bind(this),
     );
+  }
+
+  private _orderByName(
+    groupA: SortableModel<Group>,
+    groupB: SortableModel<Group>,
+  ) {
+    if (groupA.firstSortKey < groupB.firstSortKey) {
+      return -1;
+    }
+    if (groupA.firstSortKey > groupB.firstSortKey) {
+      return 1;
+    }
+    return 0;
   }
 
   async doFuzzySearchTeams(
@@ -609,14 +622,14 @@ class GroupService extends BaseService<Group> {
           ? {
             id: team.id,
             displayName: team.set_abbreviation,
-            sortKey: team.set_abbreviation.toLowerCase(),
+            firstSortKey: team.set_abbreviation.toLowerCase(),
             entity: team,
           }
           : null;
       },
       searchKey,
       undefined,
-      this.sortEntitiesByName.bind(this),
+      this._orderByName.bind(this),
     );
   }
 
