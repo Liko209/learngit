@@ -8,6 +8,7 @@ import MuiMenuItem, {
 } from '@material-ui/core/MenuItem';
 import styled from '../../foundation/styled-components';
 import {
+  width,
   height,
   spacing,
   typography,
@@ -22,15 +23,19 @@ const JuiMenuItem = styled(MuiMenuItem)`
     ${typography('caption1')};
     color: ${grey('900')};
     height: ${height(8)};
+    min-width: ${width(28)};
+    max-width: ${width(80)};
     line-height: ${height(8)};
     padding: ${spacing(0, 4)};
+    box-sizing: border-box;
 
     &:hover {
       background-color: ${palette('grey', '500', 1)};
     }
 
     &:active {
-      background-color: ${palette('grey', '500', 2)};
+      background-color: ${palette('primary', 'main')};
+      color: ${palette('common', 'white')};
     }
   }
 `;
