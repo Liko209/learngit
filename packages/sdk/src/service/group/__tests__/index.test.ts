@@ -254,7 +254,7 @@ describe('GroupService', () => {
     expect(result).toEqual(true);
   });
 
-  it('updateGroupSendFailurePostIds({id, send_failure_post_ids}) is update success', async () => {
+  it('updateGroupSendFailurePostIds({id, __send_failure_post_ids}) is update success', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
 
     const result = await groupService.updateGroupSendFailurePostIds({
@@ -265,11 +265,11 @@ describe('GroupService', () => {
   });
 
   it('getGroupSendFailurePostIds(id) will be return number array', async () => {
-    const mock = { id: 1, send_failure_post_ids: [12, 13] };
+    const mock = { id: 1, __send_failure_post_ids: [12, 13] };
     daoManager.getDao.mockReturnValueOnce(groupDao);
     groupDao.get.mockResolvedValueOnce(mock);
     const result = await groupService.getGroupSendFailurePostIds(1);
-    expect(result).toEqual(mock.send_failure_post_ids);
+    expect(result).toEqual(mock.__send_failure_post_ids);
   });
 
   it('getGroupSendFailurePostIds(id) will be return error', async () => {
@@ -1005,6 +1005,32 @@ describe('GroupService', () => {
     });
   });
 
+  describe('updateGroupLastAccessedTime', () => {
+    it('test', async () => {
+      jest.restoreAllMocks();
+      jest.spyOn(groupDao, 'bulkUpdate');
+      daoManager.getDao.mockReturnValue(groupDao);
+      jest.spyOn(groupService, 'getById').mockResolvedValue({
+        id: 1,
+        created_at: 321,
+      });
+      const spyDoDefaultPartialNotify = jest
+        .spyOn<GroupService, any>(groupService, '_doDefaultPartialNotify')
+        .mockImplementation(() => {});
+      await groupService.updateGroupLastAccessedTime({
+        id: 1,
+        timestamp: 12345,
+      });
+
+      expect(groupDao.bulkUpdate).toHaveBeenCalledWith([
+        { id: 1, __last_accessed_at: 12345 },
+      ]);
+      expect(spyDoDefaultPartialNotify).toHaveBeenCalledWith(
+        [{ created_at: 321, id: 1, __last_accessed_at: 12345 }],
+        [{ id: 1, __last_accessed_at: 12345 }],
+      );
+    });
+  });
   describe('removeTeamsByIds()', async () => {
     it('should not do notify', async () => {
       daoManager.getDao.mockReturnValueOnce(groupDao);

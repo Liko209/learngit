@@ -724,6 +724,11 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
 
 test(formalName('Should not show UMI and scroll up automatically when receive post', ['JPT-191', 'P2', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
+    if (await H.isEdge()) {
+      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
+      return;
+    }
+    
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
