@@ -98,6 +98,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._removeGroupsIfExistedInHiddenGroups();
   }
 
+  isInSection(id: number) {
+    return this._idSet.has(id);
+  }
   // FIJI-1662
   async checkIfGroupOpenedFromHidden(oldIds: number[], newIds: number[]) {
     const ids = _.difference(oldIds, newIds);
