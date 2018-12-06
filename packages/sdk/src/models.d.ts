@@ -69,8 +69,9 @@ export type GroupCommon = {
   is_public?: boolean;
   description?: string;
   has_no_more_post?: boolean;
-  draft?: string;
-  send_failure_post_ids?: number[];
+  __send_failure_post_ids?: number[];
+  __draft?: string;
+  __last_accessed_at?: number;
 };
 
 export type Group = ExtendedBaseModel & {
@@ -106,6 +107,11 @@ export type PhoneNumberModel = {
   usageType: string;
 };
 
+export type SanitizedExtensionModel = {
+  extensionNumber: string;
+  type: string;
+};
+
 export type Person = ExtendedBaseModel & {
   company_id: number;
   email: string;
@@ -125,7 +131,7 @@ export type Person = ExtendedBaseModel & {
   locked?: boolean;
   inviter_id?: number;
   rc_phone_numbers?: PhoneNumberModel[];
-  sanitized_rc_extension?: object;
+  sanitized_rc_extension?: SanitizedExtensionModel;
   is_pseudo_user?: boolean;
   glip_user_id?: number;
   away_status?: string;

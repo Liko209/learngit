@@ -71,15 +71,12 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
       })(name),
     );
     actionButtons.push(
-      <JuiIconButton
-        key="setting"
-        tooltipTitle={toTitleCase(t('conversationSettings'))}
-      >
-        settings
+      <JuiIconButton key="fold" tooltipTitle={toTitleCase(t('foldShelf'))}>
+        info
       </JuiIconButton>,
     );
     return (
-      <JuiButtonBar size="medium" overlapping={true} awake={this.state.awake}>
+      <JuiButtonBar size="medium" overlapSize={1} awake={this.state.awake}>
         {actionButtons}
       </JuiButtonBar>
     );
@@ -111,32 +108,30 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
     return (
       <JuiConversationPageHeaderSubtitle>
-        <JuiButtonBar size="small" overlapping={true}>
+        <JuiButtonBar size="medium" overlapSize={2}>
+          {type === CONVERSATION_TYPES.TEAM ? (
+            <JuiCheckboxButton
+              tooltipTitle={
+                isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')
+              }
+              color="grey.500"
+              checkedIconName="lock"
+              iconName="lock_open"
+              checked={isPrivate}
+            />
+          ) : null}
           <JuiCheckboxButton
             tooltipTitle={
               isFavorite
                 ? toTitleCase(t('removeFromFavorites'))
                 : toTitleCase(t('addToFavorites'))
             }
+            color="accent.gold"
             checkedIconName="star"
             iconName="star_border"
             checked={isFavorite}
             onChange={onchange}
-          >
-            star_border
-          </JuiCheckboxButton>
-          {type === CONVERSATION_TYPES.TEAM ? (
-            <JuiCheckboxButton
-              tooltipTitle={
-                isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')
-              }
-              checkedIconName="lock"
-              iconName="lock_open"
-              checked={isPrivate}
-            >
-              favorite_border
-            </JuiCheckboxButton>
-          ) : null}
+          />
         </JuiButtonBar>
       </JuiConversationPageHeaderSubtitle>
     );

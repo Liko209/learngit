@@ -43,12 +43,24 @@ const StyledIconWrapper = styled('div')`
 `;
 
 class JuiConversationCardFooter extends React.PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    this.likeButtonClickHandler = this.likeButtonClickHandler.bind(this);
+  }
+
+  likeButtonClickHandler(evt: React.MouseEvent) {
+    evt.stopPropagation();
+  }
+
   render() {
     const { Like, likeCount } = this.props;
     return (
       <Collapse in={!!likeCount}>
         <StyledConversationCardFooter>
-          <StyledIconWrapper data-name="footerLikeButton">
+          <StyledIconWrapper
+            data-name="footerLikeButton"
+            onClick={this.likeButtonClickHandler}
+          >
             {Like}
             <span>{likeCount}</span>
           </StyledIconWrapper>

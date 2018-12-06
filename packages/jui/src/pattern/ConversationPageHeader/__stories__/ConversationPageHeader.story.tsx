@@ -14,6 +14,7 @@ import { JuiButtonBar } from '../../../components/Buttons/ButtonBar';
 import { JuiCheckboxButton } from '../../../components/Buttons/CheckboxButton';
 
 const getTitleKnob = () => text('title', 'Global UXD');
+const getStatusKnob = () => text('status', '🏝on vacation 10/16-10/24');
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiConversationPageHeader, { inline: true }))
   .addDecorator(
@@ -23,25 +24,22 @@ storiesOf('Pattern', module)
     return (
       <JuiConversationPageHeader
         title={getTitleKnob()}
+        status={getStatusKnob()}
         SubTitle={
-          <JuiButtonBar size="small" overlapping={true}>
+          <JuiButtonBar size="medium" overlapSize={2}>
             <JuiCheckboxButton
               tooltipTitle="Add to Favorite"
               checkedIconName="star"
               iconName="star_border"
-            >
-              star_border
-            </JuiCheckboxButton>
+            />
             <JuiCheckboxButton
               tooltipTitle="This is a public team"
               checkedIconName="lock"
               iconName="lock_open"
-            >
-              favorite_border
-            </JuiCheckboxButton>
+            />
           </JuiButtonBar>}
         Right={
-          <JuiButtonBar size="medium" overlapping={true}>
+          <JuiButtonBar size="medium" overlapSize={1}>
             <JuiIconButton tooltipTitle="Start Conference Call">
               local_phone
             </JuiIconButton>

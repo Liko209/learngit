@@ -19,7 +19,7 @@ class LinkItemView extends React.Component<Props> {
     const { postItems, onLinkItemClick } = this.props;
     return (
       <>
-        {postItems.map((item, idx) => {
+        {postItems.map((item) => {
           const image = item.image
             ? `${item.image}&key=4527f263d6e64d7a8251b007b1ba9972`
             : '';
@@ -27,7 +27,7 @@ class LinkItemView extends React.Component<Props> {
             !item.doNotRender &&
             !item.deactivated ? (
               <JuiConversationCardLinkItems
-                key={idx}
+                key={item.id}
                 title={item.title}
                 summary={item.summary}
                 thumbnail={image}

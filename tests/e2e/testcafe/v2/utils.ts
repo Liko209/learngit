@@ -35,20 +35,32 @@ export class MiscUtils {
   }
 
   static async convertToWebp(imagePath: string) {
-    if (path.extname(imagePath) == '.webp' || !fs.existsSync(imagePath)) return imagePath; 
-    const webpIamgePath = imagePath + ".webp";
-    const image =  sharp(imagePath);
-    await image
-      .metadata()
-      .then(function (metadata) {
-        return image
-          .resize(Math.round(metadata.width / 2))
-          .webp({ quality: RUNNER_OPTS.SCREENSHOT_WEBP_QUALITY })
-          .toBuffer();
-      })
-      .then((data) => {
-        fs.writeFileSync(webpIamgePath, data)
-      });
-    return webpIamgePath;
-  } 
+    if (path.extname(imagePath) == '.webp' || !fs.existsSync(imagePath)) {
+      return imagePath;
+    }
+    try {
+      const webpIamgePath = imagePath + ".webp";
+      const image = sharp(imagePath);
+      await image
+        .metadata()
+        .then(function (metadata) {
+          return image
+            .resize(Math.round(metadata.width / 2))
+            .webp({ quality: RUNNER_OPTS.SCREENSHOT_WEBP_QUALITY })
+            .toBuffer();
+        })
+        .then((data) => {
+          fs.writeFileSync(webpIamgePath, data)
+        });
+      return webpIamgePath;
+    } catch {
+      return imagePath;
+    }
+  }
+
+  static createTmpFilePath(filename?: string) {
+    filename = filename || `${uuid()}.tmp`;
+    const filepath = path.join(TMPFILE_PATH, filename);
+    return filepath;
+  }
 }
