@@ -254,10 +254,17 @@ class PostService extends BaseService<Post> {
     return this._postStatusHandler.isInPreInsert(id);
   }
 
-  async sendPost(params: RawPostInfo) {
+  async sendPost(params: RawPostInfo): Promise<PostData[] | null> {
+    // handle params, if has file item, should send file first then send post
+    mainLogger.info('start to send post log');
+    const buildPost: Post = PostServiceHandler.buildPostInfo(params);
+    return this.innerSendPost(buildPost);
+  }
+
+  async sendPostFiles(params: RawPostInfo) {
     mainLogger.info('start to send post log');
     if (!params.groupId || params.groupId <= 0) {
-      return [];
+      return;
     }
 
     const groupId: number = params.groupId;
@@ -286,7 +293,7 @@ class PostService extends BaseService<Post> {
           dao.update(buildPost);
 
           // send update event
-          notificationCenter.emitEntityUpdate(ENTITY.ITEM, [buildPost]);
+          notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
 
           if (!this._checkHasPseudoItem(groupId)) {
             notificationCenter.removeListener(
@@ -440,45 +447,6 @@ class PostService extends BaseService<Post> {
       send_failure_post_ids: [...new Set([...failIds, preInsertId])],
     });
     return [];
-  }
-
-  async sendItemFile(params: RawFilePostInfo): Promise<Post | null> {
-    try {
-      // {groupId, file}
-      if (!params.groupId) {
-        return null;
-      }
-      const itemService: ItemService = ItemService.getInstance();
-      /*
-       groupId: number,
-    file: FormData,
-    isUpdate: boolean
-      */
-      const result = await itemService.sendItemFile(
-        params.groupId,
-        params.file,
-        false,
-      );
-
-      if (result) {
-        // result is file item
-        const options = {
-          text: '',
-          itemIds: [Number(result.id)],
-          groupId: Number(params.groupId),
-        };
-        const info = PostServiceHandler.buildPostInfo(options);
-        delete info.id; // should merge sendItemFile function into sendPost
-        const sendPostResult = await PostAPI.sendPost(info);
-        const rawPost = sendPostResult.expect('Send post failed.');
-        const posts = await baseHandleData(rawPost);
-        return posts[0];
-      }
-      return null;
-    } catch (e) {
-      mainLogger.error(`post service sendItemFile error${e}`);
-      return null;
-    }
   }
 
   async cancelUpload(postId: number, itemId: number): Promise<boolean> {

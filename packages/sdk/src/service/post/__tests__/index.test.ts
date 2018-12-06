@@ -579,45 +579,6 @@ describe('PostService', () => {
       await expect(postService.sendPost({ text: 'abc' })).rejects.toThrow();
     });
   });
-  describe('sendItemFile()', () => {
-    it('should send file', async () => {
-      itemService.sendFile.mockResolvedValueOnce({ id: 1 });
-      PostAPI.sendPost.mockResolvedValueOnce(
-        new NetworkResultOk({ _id: 1 }, 200, {}),
-      );
-      baseHandleData.mockResolvedValueOnce([{ id: 1 }]);
-      PostServiceHandler.buildPostInfo.mockResolvedValue({ id: -123 });
-
-      const result = await postService.sendItemFile({
-        groupId: 1,
-        file: new FormData(),
-        text: '',
-      });
-
-      expect(PostServiceHandler.buildPostInfo).toHaveBeenCalledWith({
-        groupId: 1,
-        itemIds: [1],
-        text: '',
-      });
-
-      expect(result).toEqual({ id: 1 });
-    });
-
-    it('should return null when no groupId', async () => {
-      const result = await postService.sendItemFile({
-        file: new FormData(),
-        text: 'abc',
-      });
-      expect(result).toBeNull();
-    });
-
-    it('should return null when itemService.sendFile() return nothing', async () => {
-      const params = { groupId: 1, text: 'abc', file: new FormData() };
-      const result = await postService.sendItemFile(params);
-      expect(itemService.sendFile).toHaveBeenCalledWith(params);
-      expect(result).toBeNull();
-    });
-  });
 
   describe('modifyPost()', () => {
     it('should return null when postId no given', async () => {
