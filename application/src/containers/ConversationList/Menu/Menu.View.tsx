@@ -13,7 +13,8 @@ import { JuiModal } from '@/containers/Dialog';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { MenuViewProps } from './types';
-import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
+// import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
+import { ProfileDialogGroup } from '@/containers/Profile/Dialog';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -123,7 +124,7 @@ class MenuViewComponent extends Component<Props, State> {
   private _handleGroupDialog = (event: MouseEvent<HTMLElement>) => {
     this.props.onClose(event);
     const { groupId } = this.props;
-    JuiModal.open(GroupTeamProfile, {
+    JuiModal.open(ProfileDialogGroup, {
       componentProps: {
         id: groupId,
       },

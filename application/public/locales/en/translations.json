@@ -121,11 +121,13 @@
   "copyProfileEmail": "Copy Email",
   "copyProfileUrl": "Copy Url",
   "Profile": "Profile",
+  "profile": "Profile",
   "Guest": "Guest",
   "Admin": "Admin",
   "goToGroupConversation": "Go to the conversation with the group",
   "goToTeamConversation": "Go to the conversation with team",
   "Message": "Message",
-  "more": "more",
-  "close": "close"
+  "message": "Message",
+  "more": "More",
+  "close": "Close"
 }
