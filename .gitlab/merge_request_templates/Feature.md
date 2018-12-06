@@ -6,6 +6,7 @@
 - Every checkpoint in `DoR` are finished
 
 **Unit Testing**
+
 Followed the [Unit Testing Guideline](https://git.ringcentral.com/Fiji/Fiji-docs/blob/develop/Docs/Process/UnitTestingGuideline.md)
 
 - Unit testing cover all the `User Story cases` and `DoR checkpoints`
