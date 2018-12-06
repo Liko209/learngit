@@ -7,7 +7,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { TopBannerView } from '../TopBanner.View';
 
-describe('TopBanner.View', () => {
+describe('TopBannerView', () => {
   describe('render', () => {
     it('should not render networkBannerView', () => {
       const wrapper = shallow(<TopBannerView />);
