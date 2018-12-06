@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { config, ConfigType } from './register';
-import styled from 'jui/src/foundation/styled-components';
+import styled from 'jui/foundation/styled-components';
 import _ from 'lodash';
 
 const JuiTopBanner = styled.div`

@@ -5,16 +5,12 @@
  */
 import { AbstractViewModel } from '@/base';
 import { computed } from 'mobx';
-import { JuiSnackbarsType } from 'jui/components/Snackbars';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
+import { MessageMapType, ShowMapType, TypeMapType } from './types';
 const MESSAGE_MAP = {
   online: '',
   offline: 'NoInternetConnection',
-};
-
-type MessageMapType = {
-  [key: string]: string;
 };
 
 const TYPE_MAP: TypeMapType = {
@@ -22,13 +18,6 @@ const TYPE_MAP: TypeMapType = {
   offline: 'error',
 };
 
-type TypeMapType = {
-  [key: string]: JuiSnackbarsType;
-};
-
-type ShowMapType = {
-  [key: string]: boolean;
-};
 const SHOW_MAP: ShowMapType = {
   online: false,
   offline: true,

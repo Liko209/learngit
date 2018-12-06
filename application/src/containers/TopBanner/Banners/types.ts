@@ -1,5 +1,4 @@
 import { JuiSnackbarsType } from 'jui/components/Snackbars';
-import { WithNamespaces } from 'react-i18next';
 
 type NetworkBannerProps = {};
 
@@ -9,9 +8,27 @@ type ConfigType = {
   type: JuiSnackbarsType;
 };
 
-type NetworkBannerViewProps = WithNamespaces &
-  NetworkBannerProps & {
-    config: ConfigType;
-  };
+type NetworkBannerViewProps = {
+  config: ConfigType;
+};
 
-export { NetworkBannerProps, NetworkBannerViewProps };
+type MessageMapType = {
+  [key: string]: string;
+};
+
+type ShowMapType = {
+  [key: string]: boolean;
+};
+
+type TypeMapType = {
+  [key: string]: JuiSnackbarsType;
+};
+
+export {
+  NetworkBannerProps,
+  NetworkBannerViewProps,
+  MessageMapType,
+  ShowMapType,
+  TypeMapType,
+  ConfigType,
+};

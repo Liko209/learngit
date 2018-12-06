@@ -4,11 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { JuiSnackbarContent } from 'jui/components/Snackbars';
-import { NetworkBannerViewProps } from './types';
 import { t } from 'i18next';
+import { WithNamespaces } from 'react-i18next';
+import { JuiSnackbarContent } from 'jui/components/Snackbars';
+import { NetworkBannerViewProps, NetworkBannerProps } from './types';
 
-class NetworkBannerView extends React.Component<NetworkBannerViewProps> {
+type Props = WithNamespaces & NetworkBannerProps & NetworkBannerViewProps;
+
+class NetworkBannerView extends React.Component<Props> {
   render() {
     const config = this.props.config;
     return config.shouldShow ? (
