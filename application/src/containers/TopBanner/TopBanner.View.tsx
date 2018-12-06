@@ -5,15 +5,9 @@
  */
 
 import React from 'react';
+import { StyledTopBannerContainer } from 'jui/pattern/TopBanner';
 import { config, ConfigType } from './register';
-import styled from 'jui/foundation/styled-components';
 import _ from 'lodash';
-
-const JuiTopBanner = styled.div`
-  position: relative;
-  max-height: 48px;
-  overflow: hidden;
-`;
 
 class TopBannerView extends React.Component {
   render() {
@@ -23,7 +17,7 @@ class TopBannerView extends React.Component {
         return <Component key={priority} />;
       })
       .value();
-    return <JuiTopBanner>{children}</JuiTopBanner>;
+    return <StyledTopBannerContainer>{children}</StyledTopBannerContainer>;
   }
 }
 

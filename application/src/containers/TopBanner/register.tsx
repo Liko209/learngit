@@ -1,3 +1,9 @@
+/*
+ * @Author: Lip Wang (lip.wang@ringcentral.com)
+ * @Date: 2018-12-06 13:21:58
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { NetworkBanner } from './Banners';
 /**
  * NetworkBanner priority is [1-100]

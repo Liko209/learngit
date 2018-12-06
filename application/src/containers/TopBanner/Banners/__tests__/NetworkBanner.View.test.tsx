@@ -17,7 +17,7 @@ const baseProps = {
 
 describe('NetworkBannerView', () => {
   describe('render()', () => {
-    it('should not render view if offline [JPT-470] 1', () => {
+    it('should not render view if online [JPT-470] 2', () => {
       const props = {
         ...baseProps,
         banner: null,
@@ -26,7 +26,7 @@ describe('NetworkBannerView', () => {
       expect(wrapper.find('JuiSnackbarContent').length).toBe(0);
     });
 
-    it('should not render view if online [JPT-470] 2', () => {
+    it('should render view if offline [JPT-470] 1', () => {
       const props = {
         ...baseProps,
         banner: { message: 'You are offline', type: 'error' } as BannerType,
