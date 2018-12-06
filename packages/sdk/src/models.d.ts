@@ -14,7 +14,8 @@ export type BaseModel = {
 export type SortableModel<T> = {
   id: number;
   displayName: string;
-  sortKey: string;
+  firstSortKey?: any;
+  secondSortKey?: any;
   entity: T;
 };
 
@@ -55,7 +56,7 @@ export type GroupCommon = {
   is_archived?: boolean;
   guest_user_company_ids?: number[];
   removed_guest_user_ids?: number[];
-  privacy?: string; // 'public'|'protected'|'private'
+  privacy?: string; // 'protected'|'private'
   team_folder?: string;
   converted_to_team?: object;
   converted_from_group?: object;
@@ -69,8 +70,9 @@ export type GroupCommon = {
   is_public?: boolean;
   description?: string;
   has_no_more_post?: boolean;
-  draft?: string;
-  send_failure_post_ids?: number[];
+  __send_failure_post_ids?: number[];
+  __draft?: string;
+  __last_accessed_at?: number;
 };
 
 export type Group = ExtendedBaseModel & {

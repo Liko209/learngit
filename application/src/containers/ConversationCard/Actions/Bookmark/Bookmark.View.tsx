@@ -14,8 +14,7 @@ type Props = BookmarkViewProps & WithNamespaces;
 
 @observer
 class BookmarkViewComponent extends Component<Props> {
-  private _handleClick = (evt: React.MouseEvent) => {
-    evt.stopPropagation();
+  private _handleClick = () => {
     const { isBookmark, bookmark } = this.props;
     bookmark(!isBookmark);
   }
