@@ -35,8 +35,7 @@ const StyledStatus = styled('div')`
   ${ellipsis()};
 `;
 const StyledTime = styled('div')`
-  margin-left: ${spacing(2)};
-  color: ${grey('700')};
+  color: ${grey('500')};
   white-space: nowrap;
   ${typography('caption2')};
 `;
@@ -56,8 +55,8 @@ const StyledConversationCardHeader = styled('div')`
   align-items: center;
 `;
 const StyledNotification = styled.div`
-  margin-left: 8px;
   div {
+    margin-left: ${spacing(2)};
     font-size: ${({ theme }) => theme.typography.caption.fontSize};
     color: ${grey('500')};
   }
@@ -81,13 +80,15 @@ const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
           {props.status}
         </StyledStatus>
       ) : null}
-      {props.from ? <StyledFrom>{props.from}</StyledFrom> : null}
-      <StyledTime data-name="time">{props.time}</StyledTime>
       {props.notification ? (
         <StyledNotification>{props.notification}</StyledNotification>
       ) : null}
+      {props.from ? <StyledFrom>{props.from}</StyledFrom> : null}
     </StyledLeftSection>
-    <RightSection>{props.children}</RightSection>
+    <RightSection>
+      <StyledTime data-name="time">{props.time}</StyledTime>
+      {props.children}
+    </RightSection>
   </StyledConversationCardHeader>
 );
 
