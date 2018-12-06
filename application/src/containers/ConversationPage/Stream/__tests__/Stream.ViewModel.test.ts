@@ -119,4 +119,29 @@ describe('StreamViewModel', () => {
       expect(_transformHandler.dispose).toHaveBeenCalled();
     });
   });
+
+  describe('hasHistoryMessages', () => {
+    function setup(props: { hasMoreUp: boolean; items: any[] }) {
+      const vm = new StreamViewModel();
+      Object.assign(vm, {
+        _transformHandler: { hasMore: () => props.hasMoreUp },
+        items: props.items,
+      });
+      return vm;
+    }
+    it('should be true when user has loaded messages', () => {
+      const vm = setup({ hasMoreUp: false, items: [1] });
+      expect(vm.hasHistoryMessages).toBe(true);
+    });
+
+    it('should be true when user has more unloaded messages', () => {
+      const vm = setup({ hasMoreUp: true, items: [] });
+      expect(vm.hasHistoryMessages).toBe(true);
+    });
+
+    it('should be false when user has no more messages and no loaded messages', () => {
+      const vm = setup({ hasMoreUp: false, items: [] });
+      expect(vm.hasHistoryMessages).toBe(false);
+    });
+  });
 });
