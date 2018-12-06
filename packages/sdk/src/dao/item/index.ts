@@ -34,6 +34,18 @@ class ItemDao extends BaseDao<Item> {
       .contain('group_ids', groupId);
     return (await query.count()) > 0;
   }
+
+  async getExistGroupFilesByName(
+    groupId: number,
+    fileName: string,
+  ): Promise<Item[]> {
+    const query = this.createQuery()
+      .greaterThan('id', 0)
+      .equal('name', fileName)
+      .contain('group_ids', groupId)
+      .toArray();
+    return query;
+  }
 }
 
 export default ItemDao;

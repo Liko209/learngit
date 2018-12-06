@@ -104,11 +104,27 @@ class ItemFileUploadHandler {
     storedFile: StoredFile,
   ) {
     let result: NetworkResult<Raw<ItemFile>, BaseError> | undefined = undefined;
-    if (!isUpdate) {
-      result = await this._newItem(groupId, storedFile);
+
+    let shouldUpdate = isUpdate;
+    let existFile: ItemFile | null = null;
+    if (isUpdate) {
+      const nameType = this._extractFileNameAndType(storedFile.storage_path);
+      existFile = await this._getOldestExistFile(groupId, nameType.name);
+      if (!existFile) {
+        // if item not exist in local, should go to create new
+        shouldUpdate = false;
+      }
+    }
+
+    if (shouldUpdate && existFile) {
+      result = await this._updateItem(
+        groupId,
+        preInsertItem.id,
+        existFile,
+        storedFile,
+      );
     } else {
-      // To-Do, handle update
-      // result = await this._updateItem(groupId, itemId, storedFile);
+      result = await this._newItem(groupId, storedFile);
     }
 
     if (result && result.isOk) {
@@ -264,9 +280,36 @@ class ItemFileUploadHandler {
     return this._progressCaches;
   }
 
-  // private async _updateItem(groupId: number, itemId: number, file: StoredFile) {
-  //   // To-Do add update item
-  // }
+  private async _updateItem(
+    groupId: number,
+    itemId: number,
+    existItem: ItemFile,
+    storedFile: StoredFile,
+  ) {
+    const fileVersion = this._toFileVersion(storedFile);
+    existItem.versions.push(fileVersion);
+    existItem.modified_at = Date.now();
+    ItemAPI.putItem(itemId, 'file', existItem);
+  }
+
+  private async _getOldestExistFile(
+    groupId: number,
+    fileName: string,
+  ): Promise<ItemFile | null> {
+    const itemDao = daoManager.getDao(ItemDao);
+
+    const existFiles = await itemDao.getExistGroupFilesByName(
+      groupId,
+      fileName,
+    );
+    if (existFiles) {
+      const sorted = existFiles.sort((lhs, rhs) => {
+        return lhs.created_at - rhs.created_at;
+      });
+      return sorted[0];
+    }
+    return null;
+  }
 
   // private _emitItemFileStatus(
   //   itemFileId: number,
