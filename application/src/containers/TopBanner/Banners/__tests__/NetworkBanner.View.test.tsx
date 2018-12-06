@@ -20,7 +20,7 @@ describe('NetworkBannerView', () => {
     it('should not render view if offline [JPT-470] 1', () => {
       const props = {
         ...baseProps,
-        banner: { message: '', type: 'error' } as BannerType,
+        banner: null,
       };
       const wrapper = shallow(<NetworkBannerView {...props} />);
       expect(wrapper.find('JuiSnackbarContent').length).toBe(0);
@@ -29,7 +29,7 @@ describe('NetworkBannerView', () => {
     it('should not render view if online [JPT-470] 2', () => {
       const props = {
         ...baseProps,
-        banner: null,
+        banner: { message: 'You are offline', type: 'error' } as BannerType,
       };
       const wrapper = shallow(<NetworkBannerView {...props} />);
       expect(wrapper.find('JuiSnackbarContent').length).toBe(1);
