@@ -33,6 +33,8 @@ const StyledContentSummaryName = styled<Props, 'div'>('div')`
 const JuiProfileDialogContentSummary = styled('div')`
   display: flex;
   padding: ${spacing(5, 6)};
+  flex-direction: row;
+  flex-shrink: 0;
 `;
 const JuiProfileDialogContentSummaryLeft = styled('div')`
   width: ${width(20)};

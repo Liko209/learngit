@@ -17,12 +17,19 @@ import {
 
 const JuiProfileDialogContentMembers = styled('div')`
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  /* box-shadow: ${props => props.theme.shadows[2]}; */
+  /* box-shadow: ${({ theme }) => theme.boxShadow.val2}; */
 `;
 
 const JuiProfileDialogContentMemberHeader = styled('div')`
   ${typography('subheading')};
   color: ${grey('900')};
   padding: ${spacing(4, 6, 3)};
+  flex-basis: ${height(12.5)};
+  flex-shrink: 0;
+  box-sizing: border-box;
   &.shadow {
     box-shadow: ${({ theme }) => theme.boxShadow.val3};
     z-index: ${({ theme }) => theme.zIndex.memberListHeader};
@@ -33,6 +40,7 @@ const JuiProfileDialogContentMemberList = styled('ul')`
   list-style: none;
   padding: 0;
   margin: 0;
+  flex: 1;
 `;
 
 const JuiProfileDialogContentMemberListItem = styled('li')`

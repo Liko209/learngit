@@ -16,6 +16,8 @@ type JuiDialogContentWithFillProps = MuiDialogContentProps;
 const StyledDialogContent = styled(MuiDialogContent)`
   && {
     padding: ${spacing(0, 0, 6, 0)};
+    display: flex;
+    flex-direction: column;
   }
 `;
 
