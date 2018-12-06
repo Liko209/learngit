@@ -214,19 +214,6 @@ class BaseService<
       : false;
   }
 
-  sortEntitiesByName(
-    entityA: SortableModel<SubModel>,
-    entityB: SortableModel<SubModel>,
-  ) {
-    if (entityA.sortKey < entityB.sortKey) {
-      return -1;
-    }
-    if (entityA.sortKey > entityB.sortKey) {
-      return 1;
-    }
-    return 0;
-  }
-
   protected getTermsFromSearchKey(searchKey: string) {
     return searchKey.split(/[\s,]+/);
   }

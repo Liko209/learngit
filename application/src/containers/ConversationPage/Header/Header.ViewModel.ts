@@ -88,24 +88,26 @@ class HeaderViewModel extends AbstractViewModel {
       iconName,
       tooltip,
     });
-    if (
-      this.type === CONVERSATION_TYPES.TEAM ||
-      this.type === CONVERSATION_TYPES.NORMAL_GROUP
-    ) {
-      actions.push(
-        factory('audio conference', 'device_hub', 'startConferenceCall'),
-      );
-    }
-    if (
-      this.type === CONVERSATION_TYPES.SMS ||
-      this.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE
-    ) {
-      actions.push(factory('call', 'local_phone', 'startVoiceCall'));
-    }
+
+    // hide not implemented button
+    // if (
+    //   this.type === CONVERSATION_TYPES.TEAM ||
+    //   this.type === CONVERSATION_TYPES.NORMAL_GROUP
+    // ) {
+    //   actions.push(
+    //     factory('audio conference', 'device_hub', 'startConferenceCall'),
+    //   );
+    // }
+    // if (
+    //   this.type === CONVERSATION_TYPES.SMS ||
+    //   this.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE
+    // ) {
+    //   actions.push(factory('call', 'local_phone', 'startVoiceCall'));
+    // }
 
     if (this.type !== CONVERSATION_TYPES.ME) {
       actions.push(factory('meeting', 'videocam', 'startVideoCall'));
-      actions.push(factory('add member', 'person_add', 'addMembers'));
+      // actions.push(factory('add member', 'person_add', 'addMembers'));
     }
     return actions;
   }

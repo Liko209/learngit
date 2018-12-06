@@ -30,9 +30,6 @@ class HomeViewModel extends StoreViewModel {
         if (state && state.navByBackNForward) {
           return;
         }
-        if (historyStack.getCurrentPathname() === pathname) {
-          return;
-        }
         if (action === 'PUSH') {
           historyStack.push(pathname);
         }
