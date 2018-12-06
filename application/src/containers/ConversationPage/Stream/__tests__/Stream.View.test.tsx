@@ -155,7 +155,7 @@ describe('StreamView', () => {
     });
 
     describe('conversationInitialPost', () => {
-      it('should load conversationInitialPost when user has no history messages', () => {
+      it('should load conversationInitialPost when user has no history messages [JPT-478]', () => {
         const props = {
           ...baseProps,
           hasHistoryMessages: false,
@@ -164,7 +164,7 @@ describe('StreamView', () => {
         expect(wrapper.find(ConversationInitialPost)).toHaveLength(1);
       });
 
-      it('should not load conversationInitialPost when user has history messages', () => {
+      it('should not load conversationInitialPost when user has history messages  [JPT-478]', () => {
         const props = {
           ...baseProps,
           hasHistoryMessages: true,

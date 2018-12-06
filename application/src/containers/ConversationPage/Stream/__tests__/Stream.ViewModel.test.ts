@@ -129,17 +129,17 @@ describe('StreamViewModel', () => {
       });
       return vm;
     }
-    it('should be true when user has loaded messages', () => {
+    it('should be true when user has loaded messages  [JPT-478]', () => {
       const vm = setup({ hasMoreUp: false, items: [1] });
       expect(vm.hasHistoryMessages).toBe(true);
     });
 
-    it('should be true when user has more unloaded messages', () => {
+    it('should be true when user has more unloaded messages  [JPT-478]', () => {
       const vm = setup({ hasMoreUp: true, items: [] });
       expect(vm.hasHistoryMessages).toBe(true);
     });
 
-    it('should be false when user has no more messages and no loaded messages', () => {
+    it('should be false when user has no more messages and no loaded messages  [JPT-478]', () => {
       const vm = setup({ hasMoreUp: false, items: [] });
       expect(vm.hasHistoryMessages).toBe(false);
     });
