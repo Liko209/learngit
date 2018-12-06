@@ -20,20 +20,6 @@ type Props = {
   needEllipsis?: boolean;
 };
 
-const StyledContentSummary = styled('div')`
-  display: flex;
-`;
-
-const StyledContentSummaryLeft = styled('div')`
-  width: ${width(20)};
-  margin-right: ${spacing(4)};
-  flex-shrink: 0;
-`;
-
-const StyledContentSummaryRight = styled('div')`
-  flex: 1;
-`;
-
 const StyledContentSummaryName = styled<Props, 'div'>('div')`
   ${typography('subheading2')}
   color: ${grey('900')};
@@ -44,40 +30,19 @@ const StyledContentSummaryName = styled<Props, 'div'>('div')`
     `}
 `;
 
-const StyledContentSummaryDescription = styled('div')`
-  ${typography('caption1')}
-  color: ${grey('500')};
-  ${lineClamp(3, 12)};
-  margin-top: ${spacing(1)};
-`;
-
-const StyledContentSummaryButtons = styled('div')`
-  ${typography('body1')}
+const JuiProfileDialogContentSummary = styled('div')`
   display: flex;
-  color: ${primary('700')};
-  margin-top: ${spacing(2.5)};
+  padding: ${spacing(5, 6)};
+`;
+const JuiProfileDialogContentSummaryLeft = styled('div')`
+  width: ${width(20)};
+  margin-right: ${spacing(4)};
+  flex-shrink: 0;
 `;
 
-const StyledContentSummaryButton = styled('div')`
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  span {
-    margin-right: ${spacing(2)};
-  }
+const JuiProfileDialogContentSummaryRight = styled('div')`
+  flex: 1;
 `;
-
-const JuiProfileDialogContentSummary = ({ children }: Props) => {
-  return <StyledContentSummary>{children}</StyledContentSummary>;
-};
-
-const JuiProfileDialogContentSummaryLeft = ({ children }: Props) => {
-  return <StyledContentSummaryLeft>{children}</StyledContentSummaryLeft>;
-};
-
-const JuiProfileDialogContentSummaryRight = ({ children }: Props) => {
-  return <StyledContentSummaryRight>{children}</StyledContentSummaryRight>;
-};
 
 const JuiProfileDialogContentSummaryName = ({
   children,
@@ -90,21 +55,28 @@ const JuiProfileDialogContentSummaryName = ({
   );
 };
 
-const JuiProfileDialogContentSummaryDescription = ({ children }: Props) => {
-  return (
-    <StyledContentSummaryDescription>
-      {children}
-    </StyledContentSummaryDescription>
-  );
-};
+const JuiProfileDialogContentSummaryDescription = styled('div')`
+  ${typography('caption1')}
+  color: ${grey('500')};
+  ${lineClamp(3, 12)};
+  margin-top: ${spacing(1)};
+`;
 
-const JuiProfileDialogContentSummaryButtons = ({ children }: Props) => {
-  return <StyledContentSummaryButtons>{children}</StyledContentSummaryButtons>;
-};
+const JuiProfileDialogContentSummaryButtons = styled('div')`
+  ${typography('body1')}
+  display: flex;
+  color: ${primary('700')};
+  margin-top: ${spacing(2.5)};
+`;
 
-const JuiProfileDialogContentSummaryButton = ({ children }: Props) => {
-  return <StyledContentSummaryButton>{children}</StyledContentSummaryButton>;
-};
+const JuiProfileDialogContentSummaryButton = styled('div')`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  span {
+    margin-right: ${spacing(2)};
+  }
+`;
 
 export {
   JuiProfileDialogContentSummary,

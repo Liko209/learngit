@@ -11,10 +11,8 @@ type ProfileDialogGroupProps = {
   dismiss: () => void;
 };
 
-type ProfileDialogGroupViewProps = {
-  id: number;
+type ProfileDialogGroupViewProps = ProfileDialogGroupProps & {
   group: GroupModel;
-  dismiss: () => void;
 };
 
 export { ProfileDialogGroupProps, ProfileDialogGroupViewProps };

@@ -9,12 +9,13 @@ import MuiDialogContent, {
   DialogContentProps as MuiDialogContentProps,
 } from '@material-ui/core/DialogContent';
 import styled from '../../foundation/styled-components';
+import { spacing } from '../../foundation/utils/styles';
 
 type JuiDialogContentWithFillProps = MuiDialogContentProps;
 
 const StyledDialogContent = styled(MuiDialogContent)`
   && {
-    padding: 0;
+    padding: ${spacing(0, 0, 6, 0)};
   }
 `;
 

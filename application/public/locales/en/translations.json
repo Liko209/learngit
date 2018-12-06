@@ -114,6 +114,8 @@
   "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})",
   "TeamMembers": "Team Members",
   "GroupMembers": "Group Members",
+  "teamMembers": "Team members",
+  "groupMembers": "Group members",
   "checkMoreGroupOption": "Check more options you have with this group",
   "checkMoreTeamOption": "Check more options you have with this team",
   "copyGroupUrl": "Copy group's url",

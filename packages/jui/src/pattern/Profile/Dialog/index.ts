@@ -4,5 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './ContentBlock';
 export * from './ContentSummary';
+export * from './ContentMembers';
