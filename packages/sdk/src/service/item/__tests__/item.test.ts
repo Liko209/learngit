@@ -289,7 +289,12 @@ describe('ItemService', () => {
 
   describe('getUploadItems()', () => {
     it('items are empty', async () => {
-      const result = await itemService.getUploadItems();
+      const itemFileUploadHandler = new ItemFileUploadHandler();
+      jest.spyOn(itemFileUploadHandler, 'getUploadItems').mockResolvedValue([]);
+      jest
+        .spyOn(itemService, '_getItemFileHandler')
+        .mockReturnValue(itemFileUploadHandler);
+      const result = await itemService.getUploadItems(1);
       expect(result.length).toBe(0);
     });
   });
