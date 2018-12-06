@@ -55,8 +55,8 @@ const StyledConversationCardHeader = styled('div')`
   align-items: center;
 `;
 const StyledNotification = styled.div`
-  margin-left: ${spacing(2)};
   div {
+    margin-left: ${spacing(2)};
     font-size: ${({ theme }) => theme.typography.caption.fontSize};
     color: ${grey('500')};
   }
