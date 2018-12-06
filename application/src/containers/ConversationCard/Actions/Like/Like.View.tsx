@@ -15,8 +15,7 @@ type Props = LikeViewProps & WithNamespaces;
 
 @observer
 class LikeViewComponent extends Component<Props> {
-  private _handleLikeButton = (evt: React.MouseEvent) => {
-    evt.stopPropagation();
+  private _handleLikeButton = () => {
     const { isLike, like } = this.props;
     like(!isLike);
   }
