@@ -47,6 +47,28 @@ describe('ItemFileService', () => {
       expect(result).toBe(null);
     });
 
+    it('should only have name when a file has no extension', async () => {
+      const file = new FormData();
+      const fileName = '123';
+      file.append('filename', fileName);
+      jest
+        .spyOn(itemFileUploadHandler, '_sendItemFile')
+        .mockImplementationOnce(() => {});
+      jest
+        .spyOn(itemFileUploadHandler, '_preInsertItemFile')
+        .mockImplementationOnce(() => {});
+
+      const res = await itemFileUploadHandler.sendItemFile(
+        groupId,
+        file,
+        false,
+      );
+
+      expect(res.id).toBeLessThan(0);
+      expect(res.name).toBe(fileName);
+      expect(res.type).toBe('');
+    });
+
     it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
       const storedFile = {
         _id: 123,
@@ -84,7 +106,7 @@ describe('ItemFileService', () => {
       );
 
       setTimeout(() => {
-        expect(itemDao.put).toBeCalledTimes(1);
+        expect(itemDao.put).toBeCalledTimes(2);
         expect(itemDao.update).toBeCalledTimes(1);
         expect(itemDao.get).toBeCalledTimes(1);
         expect(itemDao.delete).toBeCalledTimes(1);

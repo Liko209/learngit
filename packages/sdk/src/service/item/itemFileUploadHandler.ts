@@ -3,10 +3,9 @@
  * @Date: 2018-12-05 09:30:00
  */
 
-import { StoredFile, Item, ItemFile, Raw } from '../../models';
+import { StoredFile, ItemFile, Raw } from '../../models';
 import AccountService from '../account';
 import ItemAPI from '../../api/glip/item';
-import handleData from './handleData';
 import { transform } from '../utils';
 import { versionHash } from '../../utils/mathUtils';
 import { daoManager } from '../../dao';
@@ -16,20 +15,22 @@ import { NetworkResult } from '../../api/NetworkResult';
 import notificationCenter from '../notificationCenter';
 import { mainLogger } from 'foundation';
 import { ENTITY } from '../eventKey';
+import { FILE_FORM_DATA_KEYS } from './constants';
 
-const fileNameKey = 'filename';
 class ItemFileUploadHandler {
-  uploadingFiles: Map<number, ItemFile[]>;
+  private _uploadingFiles: Map<number, ItemFile[]>;
   async sendItemFile(
     groupId: number,
     file: FormData,
     isUpdate: boolean,
   ): Promise<ItemFile | null> {
-    const fileFullName = file.get(fileNameKey) as string | null;
+    const fileFullName = file.get(FILE_FORM_DATA_KEYS.FILE_NAME) as
+      | string
+      | null;
     if (fileFullName) {
       const itemFile = this._toItemFile(groupId, fileFullName);
-      await this._preInsertItemFIle(itemFile);
-      this._uploadAndGenerateItem(groupId, itemFile, file, isUpdate);
+      await this._preInsertItemFile(itemFile);
+      this._sendItemFile(groupId, itemFile, file, isUpdate);
       return itemFile;
     }
     return null;
@@ -40,8 +41,8 @@ class ItemFileUploadHandler {
   }
 
   getUploadItems(groupId: number): ItemFile[] {
-    return this.uploadingFiles
-      ? (this.uploadingFiles.get(groupId) as ItemFile[])
+    return this._uploadingItemFiles.has(groupId)
+      ? this._uploadingItemFiles[groupId]
       : [];
   }
 
@@ -49,7 +50,7 @@ class ItemFileUploadHandler {
     return 0;
   }
 
-  private async _uploadAndGenerateItem(
+  private async _sendItemFile(
     groupId: number,
     preInsertItem: ItemFile,
     file: FormData,
@@ -100,7 +101,6 @@ class ItemFileUploadHandler {
     if (result && result.isOk) {
       const data = result.unwrap();
       const fileItem = transform<ItemFile>(data);
-      handleData([data]);
       this._handleUploadItemSuccess(preInsertItem, fileItem);
     } else {
       // To-Do, handle failed to create/update item.
@@ -114,10 +114,12 @@ class ItemFileUploadHandler {
     storedFile: StoredFile,
   ) {
     const itemDao = daoManager.getDao(ItemDao);
-    const itemInDB: Item = (await itemDao.get(itemId)) as Item;
-    const fileVersion = this._toFileVersion(storedFile);
-    itemInDB.versions = [fileVersion];
-    itemDao.update(itemInDB);
+    const itemInDB = await itemDao.get(itemId);
+    if (itemInDB) {
+      const fileVersion = this._toFileVersion(storedFile);
+      itemInDB.versions = [fileVersion];
+      itemDao.update(itemInDB);
+    }
   }
 
   private async _handleUploadItemSuccess(
@@ -125,28 +127,28 @@ class ItemFileUploadHandler {
     itemFile: ItemFile,
   ) {
     const preInsertId = preInsertItem.id;
+    const itemDao = daoManager.getDao(ItemDao);
+    await itemDao.delete(preInsertId);
+    await itemDao.put(itemFile);
+
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
     notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
-    const itemDao = daoManager.getDao(ItemDao);
-    itemDao.delete(preInsertId);
 
     const groupId = preInsertItem.group_ids[0];
-    const uploadingFiles = this.uploadingFiles.get(groupId);
+    const uploadingFiles = this._uploadingItemFiles.get(groupId);
     if (uploadingFiles) {
       const filteredRes = uploadingFiles.filter((e: ItemFile) => {
         return e.id === preInsertId;
       });
-      if (filteredRes.length > 0) {
-        this.uploadingFiles.set(groupId, filteredRes);
-      } else {
-        this.uploadingFiles.delete(groupId);
-      }
+      filteredRes.push(itemFile);
+      this._uploadingItemFiles.set(groupId, filteredRes);
     }
   }
+
   private _toFileVersion(storedFile: StoredFile) {
     return {
-      stored_file_id: storedFile._id, // eslint-disable-line
+      stored_file_id: storedFile._id,
       url: storedFile.storage_url,
       download_url: storedFile.download_url,
       date: storedFile.last_modified,
@@ -155,16 +157,13 @@ class ItemFileUploadHandler {
     };
   }
 
-  private async _preInsertItemFIle(itemFile: ItemFile) {
-    if (!this.uploadingFiles) {
-      this.uploadingFiles = new Map();
-    }
-
+  private async _preInsertItemFile(itemFile: ItemFile) {
     const groupId = itemFile.group_ids[0];
-    if (this.uploadingFiles.has(groupId)) {
-      this.uploadingFiles[groupId].push(itemFile);
+    const itemFiles = this._uploadingItemFiles[groupId];
+    if (itemFiles) {
+      this._uploadingItemFiles[groupId].push(itemFile);
     } else {
-      this.uploadingFiles.set(groupId, [itemFile]);
+      this._uploadingItemFiles.set(groupId, [itemFile]);
     }
 
     const itemDao = daoManager.getDao(ItemDao);
@@ -230,23 +229,32 @@ class ItemFileUploadHandler {
         const name = arr[arr.length - 1];
         options.name = name;
         const seArr = name.split('.');
-        options.type = seArr[seArr.length - 1];
+        if (seArr.length > 1) {
+          options.type = seArr[seArr.length - 1];
+        }
       }
     }
     return options;
   }
 
-  private async _updateItem(groupId: number, itemId: number, file: StoredFile) {
-    // To-Do add update item
+  private get _uploadingItemFiles() {
+    if (!this._uploadingFiles) {
+      this._uploadingFiles = new Map();
+    }
+    return this._uploadingFiles;
   }
 
-  private _emitItemFileStatus(
-    itemFileId: number,
-    totalSize: number,
-    uploadedSize: number,
-  ) {
-    // To-Do emit progress entity change
-  }
+  // private async _updateItem(groupId: number, itemId: number, file: StoredFile) {
+  //   // To-Do add update item
+  // }
+
+  // private _emitItemFileStatus(
+  //   itemFileId: number,
+  //   totalSize: number,
+  //   uploadedSize: number,
+  // ) {
+  //   // To-Do emit progress entity change
+  // }
 }
 
 export { ItemFileUploadHandler };
