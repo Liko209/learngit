@@ -13,15 +13,18 @@ type Props = WithNamespaces & NetworkBannerProps & NetworkBannerViewProps;
 
 class NetworkBannerView extends React.Component<Props> {
   render() {
-    const config = this.props.config;
-    return config.shouldShow ? (
+    const { banner } = this.props;
+
+    if (!banner) return null;
+
+    return (
       <JuiSnackbarContent
-        type={config.type}
-        messageAlign={'center'}
+        type={banner.type}
+        message={t(banner.message)}
+        messageAlign="center"
         fullWidth={true}
-        message={t(config.message)}
       />
-    ) : null;
+    );
   }
 }
 

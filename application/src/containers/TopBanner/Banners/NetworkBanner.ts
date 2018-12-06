@@ -13,4 +13,4 @@ const NetworkBanner = buildContainer<NetworkBannerProps>({
   View: NetworkBannerView,
 });
 
-export { NetworkBanner };
+export { NetworkBanner, NetworkBannerProps };
