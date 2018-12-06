@@ -24,16 +24,13 @@ enum ItemFileSendingStatus {
 }
 
 type ItemFileWithStatus = ItemFile & {
-  status: ItemFileSendingStatus,
+  status: ItemFileSendingStatus;
 };
 
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, Progress>;
   private _uploadingFiles: Map<number, ItemFile[]>;
-  private _uploadingPostFilesStatus: Map<
-    number,
-    ItemFileWithStatus[]
-  >;
+  private _uploadingPostFilesStatus: Map<number, ItemFileWithStatus[]>;
 
   async sendItemFile(
     groupId: number,

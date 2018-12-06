@@ -268,10 +268,9 @@ class PostService extends BaseService<Post> {
     }
 
     const groupId: number = params.groupId;
-
-    this._decorateFileItems(params);
     const buildPost: Post = PostServiceHandler.buildPostInfo(params);
-    this.handlePreInsertProcess(buildPost);
+    await this._decorateFileItems(buildPost);
+    await this.handlePreInsertProcess(buildPost);
 
     // handle params, if has file item, should send file first then send post
     if (this._checkHasPseudoItem(groupId)) {
@@ -331,20 +330,20 @@ class PostService extends BaseService<Post> {
     });
   }
 
-  private _decorateFileItems(params: RawPostInfo) {
-    if (!params.groupId) {
-      return;
-    }
+  private async _decorateFileItems(post: Post) {
     const itemService: ItemService = ItemService.getInstance();
-    const itemFiles = itemService.getUploadItems(params.groupId);
+    const itemFiles = itemService.getUploadItems(post.group_id);
     const itemIds: number[] = [];
     itemFiles.forEach((itemFile: ItemFile) => {
       itemIds.push(itemFile.id);
+      itemFile.post_ids = [post.id];
     });
 
     if (itemIds.length > 0) {
-      params.itemIds = itemIds;
+      post.item_ids = itemIds;
     }
+
+    await itemService.updatePseudoItemFiles(itemFiles);
   }
 
   async reSendPost(postId: number): Promise<PostData[] | null> {
