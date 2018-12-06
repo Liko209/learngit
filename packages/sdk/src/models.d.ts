@@ -252,3 +252,9 @@ export type RawPresence = {
 export type Presence = BaseModel & {
   presence: RawPresence['calculatedStatus'];
 };
+
+export type Progress = BaseModel & {
+  total: number;
+  loaded: number;
+  groupId?: number;
+};

@@ -328,7 +328,7 @@ describe('ItemService', () => {
   describe('getUploadProgress()', () => {
     it('get progress invalid id', async () => {
       const result = await itemService.getUploadProgress(0);
-      expect(result).toBe(0);
+      expect(result).toBeUndefined;
     });
   });
 });

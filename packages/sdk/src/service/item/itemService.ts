@@ -9,7 +9,15 @@ import { daoManager, ItemDao } from '../../dao';
 import ItemAPI, { IRightRailItemModel } from '../../api/glip/item';
 import handleData, { sendFileItem, uploadStorageFile } from './handleData';
 import { transform } from '../utils';
-import { StoredFile, Item, ItemFile, NoteItem, Post, Raw } from '../../models';
+import {
+  StoredFile,
+  Item,
+  ItemFile,
+  NoteItem,
+  Post,
+  Raw,
+  Progress,
+} from '../../models';
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
 import { NetworkResult } from '../../api/NetworkResult';
@@ -75,8 +83,8 @@ class ItemService extends BaseService<Item> {
     return await dao.isFileItemExist(groupId, fileName);
   }
 
-  getUploadProgress(itemId: number): number {
-    return 0;
+  getUploadProgress(itemId: number): Progress | undefined {
+    return this._getItemFileHandler().getUploadProgress(itemId);
   }
 
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {

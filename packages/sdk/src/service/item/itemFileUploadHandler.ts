@@ -3,7 +3,7 @@
  * @Date: 2018-12-05 09:30:00
  */
 
-import { StoredFile, ItemFile, Raw } from '../../models';
+import { StoredFile, ItemFile, Raw, Progress } from '../../models';
 import AccountService from '../account';
 import ItemAPI from '../../api/glip/item';
 import { transform } from '../utils';
@@ -18,6 +18,7 @@ import { ENTITY } from '../eventKey';
 import { FILE_FORM_DATA_KEYS } from './constants';
 
 class ItemFileUploadHandler {
+  private _progressCaches: Map<number, Progress>;
   private _uploadingFiles: Map<number, ItemFile[]>;
   async sendItemFile(
     groupId: number,
@@ -46,8 +47,15 @@ class ItemFileUploadHandler {
       : [];
   }
 
-  getUploadProgress(itemId: number): number {
-    return 0;
+  getUploadProgress(itemId: number): Progress | undefined {
+    return this._uploadProgressCaches.has(itemId)
+      ? this._uploadProgressCaches.get(itemId)
+      : undefined;
+  }
+
+  updateProgress(progress: Progress) {
+    this._uploadProgressCaches.set(progress.id, progress);
+    notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
   }
 
   private async _sendItemFile(
@@ -61,7 +69,12 @@ class ItemFileUploadHandler {
       (e: ProgressEventInit) => {
         const { loaded, total } = e;
         if (loaded && total) {
-          // To-Do, emit entity change
+          this.updateProgress({
+            total,
+            loaded,
+            groupId,
+            id: preInsertItem.id,
+          });
           console.log(
             '​ItemFileHandler -> _uploadAndGenerateItem -> loaded && total',
             loaded,
@@ -131,10 +144,6 @@ class ItemFileUploadHandler {
     await itemDao.delete(preInsertId);
     await itemDao.put(itemFile);
 
-    const replaceItemFiles = new Map<number, ItemFile>();
-    replaceItemFiles.set(preInsertId, itemFile);
-    notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
-
     const groupId = preInsertItem.group_ids[0];
     const uploadingFiles = this._uploadingItemFiles.get(groupId);
     if (uploadingFiles) {
@@ -144,6 +153,10 @@ class ItemFileUploadHandler {
       filteredRes.push(itemFile);
       this._uploadingItemFiles.set(groupId, filteredRes);
     }
+
+    const replaceItemFiles = new Map<number, ItemFile>();
+    replaceItemFiles.set(preInsertId, itemFile);
+    notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
   }
 
   private _toFileVersion(storedFile: StoredFile) {
@@ -242,6 +255,13 @@ class ItemFileUploadHandler {
       this._uploadingFiles = new Map();
     }
     return this._uploadingFiles;
+  }
+
+  private get _uploadProgressCaches() {
+    if (!this._progressCaches) {
+      this._progressCaches = new Map();
+    }
+    return this._progressCaches;
   }
 
   // private async _updateItem(groupId: number, itemId: number, file: StoredFile) {
