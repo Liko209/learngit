@@ -16,8 +16,6 @@ import notificationCenter from '../notificationCenter';
 import { mainLogger } from 'foundation';
 import { ENTITY } from '../eventKey';
 import { FILE_FORM_DATA_KEYS } from './constants';
-import { filter } from 'minimatch';
-import { func } from 'prop-types';
 
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, Progress>;

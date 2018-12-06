@@ -5,7 +5,6 @@ import ItemAPI from '../../../api/glip/item';
 import handleData from '../handleData';
 import { NetworkResultOk } from '../../../api/NetworkResult';
 import notificationCenter from '../../notificationCenter';
-import { number } from '@storybook/addon-knobs';
 
 jest.mock('../../../service/account');
 jest.mock('../../../api/glip/item');
