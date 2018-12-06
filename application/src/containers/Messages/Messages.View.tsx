@@ -15,6 +15,7 @@ import { MessagesViewProps } from './types';
 import { observer } from 'mobx-react';
 import { PostListPage } from '../PostListPage';
 import { POST_LIST_TYPE } from '../PostListPage/types';
+import { MessageRouterChangeHelper } from './helper';
 
 @observer
 class MessagesViewComponent extends Component<MessagesViewProps> {
@@ -22,24 +23,27 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
     super(props);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     const conversationIdOfUrl = this.props.match.params.id;
-    let groupId;
-    if (!conversationIdOfUrl) {
-      groupId = await this.props.getLastGroupId();
-      this.props.history.replace(`/messages/${groupId || ''}`);
-    } else {
-      groupId = conversationIdOfUrl;
-    }
-    this.props.updateCurrentConversationId(groupId);
+    conversationIdOfUrl
+      ? MessageRouterChangeHelper.goToConversation(conversationIdOfUrl)
+      : MessageRouterChangeHelper.goToLastOpenedGroup();
   }
 
-  componentWillReceiveProps(props: MessagesViewProps) {
-    this.props.updateCurrentConversationId(props.match.params.id);
+  componentDidUpdate(prevProps: MessagesViewProps) {
+    const currentConversationId = this.props.match.params.id;
+    const prevConversationId = prevProps.match.params.id;
+    if (currentConversationId !== prevConversationId) {
+      MessageRouterChangeHelper.updateCurrentConversationId(
+        currentConversationId,
+      );
+    }
   }
 
   render() {
-    const { isLeftNavOpen, currentConversationId } = this.props;
+    const id = this.props.match.params.id;
+    const currentConversationId = id ? Number(id) : 0;
+    const { isLeftNavOpen } = this.props;
     let leftNavWidth = 72;
     if (isLeftNavOpen) {
       leftNavWidth = 200;
@@ -66,9 +70,11 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
           />
           <Route
             path="/messages/:id"
-            render={props => (
-              <ConversationPage {...props} groupId={currentConversationId} />
-            )}
+            render={props =>
+              currentConversationId ? (
+                <ConversationPage {...props} groupId={currentConversationId} />
+              ) : null
+            }
           />
         </Switch>
         {currentConversationId ? <RightRail /> : null}

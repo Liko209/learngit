@@ -1,65 +1,81 @@
-import { GroupService } from 'sdk/src/service';
+import { GroupService, ProfileService } from 'sdk/src/service';
 import SectionGroupHandler from '../../store/handler/SectionGroupHandler';
 
-const groupService: GroupService = GroupService.getInstance();
-const sectionHandler = SectionGroupHandler;
-function injectParams(...params: any[]) {
-  return function decorator(t: any, n: string, descriptor: PropertyDescriptor) {
-    const original = descriptor.value;
-    if (typeof original === 'function') {
-      descriptor.value = (...args: any) =>
-        Reflect.apply(original, t, [...args, ...params]);
-    }
-    return descriptor;
-  };
-}
+import { GLOBAL_KEYS } from '@/store/constants';
+import storeManager from '@/store/base/StoreManager';
+import history from '@/history';
+import { StateService } from 'sdk/service';
 
-export class RouterChangeUtils {
-  @injectParams(groupService)
-  static accessGroup(id: number, service: GroupService) {
+class GroupHandler {
+  static _groupService: GroupService = GroupService.getInstance();
+  static _sectionHandler: SectionGroupHandler;
+  static _profileService: ProfileService = ProfileService.getInstance();
+  static accessGroup(id: number) {
     const accessTime: number = +new Date();
-    return service.updateGroupLastAccessedTime({ id, timestamp: accessTime });
+    return this._groupService.updateGroupLastAccessedTime({
+      id,
+      timestamp: accessTime,
+    });
   }
 
-  @injectParams(groupService)
-  static async groupIdValidator(id: number, service: GroupService) {
-    const group = await service.getById(id);
+  static async groupIdValidator(id: number) {
+    const group = await this._groupService.getById(id);
     if (!group) {
       return;
     }
-    return service.isValid(group);
-  }
-  @injectParams(sectionHandler)
-  static shouldAccessGroup(id: number, handler: SectionGroupHandler) {
-    handler.isInSection(id);
+    return this._groupService.isValid(group);
   }
 
-  getLastGroupId = async (): Promise<number | undefined> => {
-    let groupId;
-    const stateService: StateService = StateService.getInstance();
-    const myState = await stateService.getMyState();
-    if (!myState) {
-      return;
+  static async isGroupHidden(id: number) {
+    return this._profileService.isConversationHidden(id);
+  }
+}
+
+export class MessageRouterChangeHelper {
+  static sourceHandlers = {
+    leftRail: GroupHandler.accessGroup.bind(GroupHandler),
+  };
+  private static _stateService: StateService = StateService.getInstance();
+  static async getLastGroupId() {
+    const state = await this._stateService.getMyState();
+    if (state && state.last_group_id) {
+      const lastGroupId = state.last_group_id;
+      const [isHidden, isValidate] = await Promise.all([
+        await GroupHandler.isGroupHidden(lastGroupId),
+        await GroupHandler.groupIdValidator(lastGroupId),
+      ]);
+      return !isHidden && isValidate ? String(lastGroupId) : '';
     }
-    groupId = myState.last_group_id;
-    if (!groupId) {
-      return;
+    return '';
+  }
+
+  static async goToLastOpenedGroup() {
+    const lastGroupId = await this.getLastGroupId();
+    this.goToConversation(lastGroupId);
+  }
+
+  static async goToConversation(id?: string) {
+    const lastGroupId = await this.getLastGroupId();
+    history.push(`/messages/${id}`);
+    this.updateCurrentConversationId(lastGroupId);
+  }
+
+  static updateCurrentConversationId(id: number | string = 0) {
+    let groupId = id;
+    if (typeof id === 'string' && !/\d+/.test(id)) {
+      groupId = 0;
     }
-    try {
-      const groupService: GroupService = GroupService.getInstance();
-      const lastGroup = await groupService.getGroupById(groupId);
-      if (lastGroup && lastGroup.is_archived) {
-        return;
+    storeManager
+      .getGlobalStore()
+      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, Number(groupId));
+    if (groupId) {
+      const id = Number(groupId);
+      const { state } = window.history.state || { state: {} };
+      if (!state || !state.source) {
+        SectionGroupHandler.getInstance(() => {
+          GroupHandler.accessGroup(id);
+        });
       }
-      const profileService: ProfileService = ProfileService.getInstance();
-      const isHidden = await profileService.isConversationHidden(groupId);
-      if (isHidden) {
-        return;
-      }
-      return groupId;
-    } catch (e) {
-      console.warn(`Find Group info failed ${groupId}`);
-      return;
     }
   }
 }

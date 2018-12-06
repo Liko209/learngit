@@ -67,10 +67,9 @@ class ConversationListItemViewModel extends StoreViewModel<
   }
 
   onClick = () => {
-    storeManager
-      .getGlobalStore()
-      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, this.groupId);
-    history.push(`/messages/${this.groupId}`);
+    history.push(`/messages/${this.groupId}`, {
+      source: 'leftRail',
+    });
   }
 
   @computed

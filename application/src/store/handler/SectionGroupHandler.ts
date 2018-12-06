@@ -29,9 +29,19 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 const { GroupService, StateService, ProfileService } = service;
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
+  const {
+    most_recent_post_created_at = 0,
+    created_at,
+    __last_accessed_at = 0,
+    id,
+  } = data;
   return {
-    id: data.id,
-    sortValue: -(data.most_recent_post_created_at || data.created_at),
+    id,
+    sortValue: -Math.max(
+      most_recent_post_created_at,
+      created_at,
+      __last_accessed_at,
+    ),
   };
 }
 
@@ -47,8 +57,10 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     pageSize: number,
     anchor: ISortableModel<Group>,
   ): Promise<{ data: Group[]; hasMore: boolean }> {
+    console.log('andy hu start query');
     const groupService = GroupService.getInstance<service.GroupService>();
     const result = await groupService.getGroupsByType(this._queryType);
+    console.log('andy hu', result);
     return { data: result, hasMore: false };
   }
 }
@@ -62,13 +74,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private _oldFavGroupIds: number[] = [];
   private static _instance: SectionGroupHandler | undefined = undefined;
   private _hiddenGroupIds: number[] = [];
-
+  private static _afterInitChain: Promise<any>;
   @observable
   private _lastGroupId: number = 0;
   constructor() {
     super();
     this._idSetAtom = createAtom(`SectionGroupHandler: ${Math.random()}`);
-    this._initHandlerMap();
     this._idSet = new Set<number>();
     this._lastGroupId = storeManager
       .getGlobalStore()
@@ -80,9 +91,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     autorun(() => this.removeOverLimitGroupByChangingCurrentGroupId());
   }
 
-  static getInstance() {
+  static getInstance(afterInit?: () => any) {
     if (!this._instance) {
       this._instance = new SectionGroupHandler();
+      this._afterInitChain = this._instance._initHandlerMap().then(afterInit);
+    } else {
+      this._afterInitChain.then(afterInit);
     }
     return this._instance;
   }
@@ -142,7 +156,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
-
     if (this._oldFavGroupIds.toString() !== newFavIds.toString()) {
       const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
       const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
@@ -210,6 +223,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         // handle id sets
         this._updateIdSet(payload.type, ids);
         keys.forEach((key: string) => {
+          console.log('andy hu data changed', payload);
           this._handlersMap[key].onDataChanged(payload);
         });
       },
@@ -289,9 +303,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _initHandlerMap() {
-    this._addFavoriteSection();
-    this._addDirectMessageSection();
-    this._addTeamSection();
+    return Promise.all([
+      this._addFavoriteSection(),
+      this._addDirectMessageSection(),
+      this._addTeamSection(),
+    ]);
   }
 
   private async _addSection(
@@ -304,10 +320,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       dataProvider,
       config,
     );
-    this.fetchGroups(sectionType, QUERY_DIRECTION.NEWER);
+    return this.fetchGroups(sectionType, QUERY_DIRECTION.NEWER);
   }
 
-  private _addFavoriteSection() {
+  private async _addFavoriteSection() {
     const isMatchFun = (model: Group) => {
       return (
         this._oldFavGroupIds.indexOf(model.id) !== -1 &&
@@ -320,14 +336,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         sortValue: this._oldFavGroupIds.indexOf(model.id),
       } as ISortableModel<Group>;
     };
-    this._addSection(SECTION_TYPE.FAVORITE, GROUP_QUERY_TYPE.FAVORITE, {
+    return this._addSection(SECTION_TYPE.FAVORITE, GROUP_QUERY_TYPE.FAVORITE, {
       isMatchFunc: isMatchFun,
       transformFunc: transformFun,
       entityName: ENTITY_NAME.GROUP,
       eventName: undefined, // it should not subscribe notification by itself
     });
   }
-  private _addDirectMessageSection() {
+  private async _addDirectMessageSection() {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isMatchFun = (model: Group) => {
       const notInFav =
@@ -339,14 +355,18 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         model.creator_id === currentUserId;
       return notInFav && isDirectInDirectSection && createdByMeOrHasPostTime;
     };
-    this._addSection(SECTION_TYPE.DIRECT_MESSAGE, GROUP_QUERY_TYPE.GROUP, {
-      isMatchFunc: isMatchFun,
-      transformFunc: groupTransformFunc,
-      entityName: ENTITY_NAME.GROUP,
-      eventName: undefined, // it should not subscribe notification by itself
-    });
+    return this._addSection(
+      SECTION_TYPE.DIRECT_MESSAGE,
+      GROUP_QUERY_TYPE.GROUP,
+      {
+        isMatchFunc: isMatchFun,
+        transformFunc: groupTransformFunc,
+        entityName: ENTITY_NAME.GROUP,
+        eventName: undefined, // it should not subscribe notification by itself
+      },
+    );
   }
-  private _addTeamSection() {
+  private async _addTeamSection() {
     const isMatchFun = (model: Group) => {
       const notInFav =
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
@@ -354,7 +374,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const isTeamInTeamSection = model.is_team as boolean;
       return notInFav && isTeamInTeamSection;
     };
-    this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
+    return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
       isMatchFunc: isMatchFun,
       transformFunc: groupTransformFunc,
       entityName: ENTITY_NAME.GROUP,
