@@ -47,8 +47,6 @@ type StyledCheckboxButtonChild = JuiCheckboxButtonProps &
 type StyledChild = StyledIconButtonChild | StyledCheckboxButtonChild;
 
 const padding = (theme: Theme, overlapSize?: number) => {
-  console.log(overlapSize);
-
   return overlapSize && overlapSize > 0
     ? `-${spacing(overlapSize)({ theme })}`
     : `${spacing(2)({ theme })}`;
