@@ -5,14 +5,19 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { Route, Switch, withRouter } from 'react-router-dom';
+import { goToConversation } from '@/common/goToConversation';
 import { JuiResponsiveLayout } from 'jui/foundation/Layout/Response';
+import {
+  JuiConversationLoading,
+  JuiRightRailLoading,
+} from 'jui/pattern/ConversationLoading';
 import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
 import { RightRail } from '@/containers/RightRail';
 
 import { MessagesViewProps } from './types';
-import { observer } from 'mobx-react';
 import { PostListPage } from '../PostListPage';
 import { POST_LIST_TYPE } from '../PostListPage/types';
 
@@ -38,8 +43,13 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
     this.props.updateCurrentConversationId(props.match.params.id);
   }
 
+  tryAgain = () => {
+    const { tryConversationId } = this.props;
+    goToConversation(tryConversationId);
+  }
+
   render() {
-    const { isLeftNavOpen, currentConversationId } = this.props;
+    const { isLeftNavOpen, currentConversationId, loadingMessage } = this.props;
     let leftNavWidth = 72;
     if (isLeftNavOpen) {
       leftNavWidth = 200;
@@ -51,27 +61,35 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
         mainPanelIndex={1}
       >
         <LeftRail />
-        <Switch>
-          <Route
-            path={`/messages/${POST_LIST_TYPE.mentions}`}
-            render={props => (
-              <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
-            )}
-          />
-          <Route
-            path={`/messages/${POST_LIST_TYPE.bookmarks}`}
-            render={props => (
-              <PostListPage {...props} type={POST_LIST_TYPE.bookmarks} />
-            )}
-          />
-          <Route
-            path="/messages/:id"
-            render={props => (
-              <ConversationPage {...props} groupId={currentConversationId} />
-            )}
-          />
-        </Switch>
-        {currentConversationId ? <RightRail /> : null}
+        {loadingMessage ? (
+          <JuiConversationLoading onClick={this.tryAgain} />
+        ) : (
+          <Switch>
+            <Route
+              path={`/messages/${POST_LIST_TYPE.mentions}`}
+              render={props => (
+                <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
+              )}
+            />
+            <Route
+              path={`/messages/${POST_LIST_TYPE.bookmarks}`}
+              render={props => (
+                <PostListPage {...props} type={POST_LIST_TYPE.bookmarks} />
+              )}
+            />
+            <Route
+              path="/messages/:id"
+              render={props => (
+                <ConversationPage {...props} groupId={currentConversationId} />
+              )}
+            />
+          </Switch>
+        )}
+        {currentConversationId && !loadingMessage ? (
+          <RightRail />
+        ) : (
+          <JuiRightRailLoading />
+        )}
       </JuiResponsiveLayout>
     );
   }

@@ -1,0 +1,89 @@
+/*
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2018-12-05 15:46:47
+ * Copyright © RingCentral. All rights reserved.
+ */
+import * as React from 'react';
+import Portal from '@material-ui/core/Portal';
+import styled from '../../foundation/styled-components';
+import {
+  palette,
+  width,
+  height,
+  spacing,
+  typography,
+  grey,
+} from '../../foundation/utils';
+import { JuiTypography } from '../../foundation/Typography';
+import { JuiCircularProgress } from '../../components/Progress';
+import { JuiLink } from '../../components/Link';
+import { JuiBackdrop } from '../../components/Backdrop';
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  height: 100%;
+  width: 100%;
+`;
+
+const Progress = styled(JuiCircularProgress)`
+  && {
+    width: ${width(11)} !important;
+    height: ${height(11)} !important;
+    svg {
+      width: ${width(11)};
+      height: ${height(11)};
+    }
+  }
+  margin: ${spacing(4)};
+`;
+
+const Backdrop = styled(JuiBackdrop)`
+  && {
+    z-index: ${({ theme }) => theme.zIndex.dragging};
+  }
+`;
+
+const Loading = styled.div`
+  position: relative;
+  z-index: ${({ theme }) => theme.zIndex.dragging + 1};
+  background: ${palette('common', 'white')};
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+
+const Tip = styled(JuiTypography)`
+  ${typography('body1')};
+  color: ${grey('900dark')};
+`;
+const TipLink = styled(JuiLink)`
+  ${typography('body2')};
+`;
+
+type JuiConversationLoadingProps = {
+  onClick: (event: React.MouseEvent<HTMLSpanElement>) => void;
+};
+
+const JuiConversationLoading = (props: JuiConversationLoadingProps) => {
+  const { onClick } = props;
+
+  return (
+    <LoadingWrapper>
+      <Portal container={document.body}>
+        <Backdrop open={true} invisible={true} />
+      </Portal>
+      <Loading>
+        <Progress />
+        <Tip>
+          We weren't able to open this conversation.
+          <TipLink handleOnClick={onClick}>Try again.</TipLink>
+        </Tip>
+      </Loading>
+    </LoadingWrapper>
+  );
+};
+
+export { JuiConversationLoading };
