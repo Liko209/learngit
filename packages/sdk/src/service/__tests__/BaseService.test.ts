@@ -8,7 +8,7 @@ import notificationCenter from '../notificationCenter';
 import { SOCKET } from '../eventKey';
 import dataDispatcher from '../../component/DataDispatcher/index';
 
-import { BaseModel, Raw } from '../../models'; // eslint-disable-line
+import { BaseModel, Raw, SortableModel } from '../../models'; // eslint-disable-line
 import { BaseError, ErrorParser } from '../../utils';
 import _ from 'lodash';
 import { NetworkResultOk } from '../../api/NetworkResult';
@@ -51,6 +51,19 @@ class AService extends BaseService<BaseServiceTestModel> {
     updatedModel: BaseServiceTestModel,
   ): Promise<BaseServiceTestModel | BaseError> {
     return updatedModel;
+  }
+
+  sortEntitiesByName(
+    groupA: SortableModel<BaseServiceTestModel>,
+    groupB: SortableModel<BaseServiceTestModel>,
+  ) {
+    if (groupA.firstSortKey < groupB.firstSortKey) {
+      return -1;
+    }
+    if (groupA.firstSortKey > groupB.firstSortKey) {
+      return 1;
+    }
+    return 0;
   }
 }
 
@@ -425,7 +438,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -459,7 +472,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -492,7 +505,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -526,7 +539,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -560,7 +573,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -595,7 +608,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -629,7 +642,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
