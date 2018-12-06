@@ -71,8 +71,8 @@ class ItemService extends BaseService<Item> {
     return await this._getItemFileHandler().cancelUpload(itemId);
   }
 
-  getUploadItems(): File[] {
-    return [];
+  getUploadItems(groupId: number): ItemFile[] {
+    return this._getItemFileHandler().getUploadItems(groupId);
   }
 
   async isFileExists(groupId: number, fileName: string): Promise<boolean> {
@@ -85,6 +85,10 @@ class ItemService extends BaseService<Item> {
 
   getUploadProgress(itemId: number): Progress | undefined {
     return this._getItemFileHandler().getUploadProgress(itemId);
+  }
+
+  isAnyItemFileInProgress(postId: number) {
+    return this._getItemFileHandler().isAnyItemFileInProgress(postId);
   }
 
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {

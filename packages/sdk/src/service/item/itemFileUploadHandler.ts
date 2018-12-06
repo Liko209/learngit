@@ -17,9 +17,24 @@ import { mainLogger } from 'foundation';
 import { ENTITY } from '../eventKey';
 import { FILE_FORM_DATA_KEYS } from './constants';
 
+enum ItemFileSendingStatus {
+  SUCCESS,
+  FAIL,
+  INPROGRESS,
+}
+
+type ItemFileWithStatus = ItemFile & {
+  status: ItemFileSendingStatus,
+};
+
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, Progress>;
   private _uploadingFiles: Map<number, ItemFile[]>;
+  private _uploadingPostFilesStatus: Map<
+    number,
+    ItemFileWithStatus[]
+  >;
+
   async sendItemFile(
     groupId: number,
     file: FormData,
@@ -45,6 +60,18 @@ class ItemFileUploadHandler {
     return this._uploadingItemFiles.has(groupId)
       ? this._uploadingItemFiles[groupId]
       : [];
+  }
+
+  isAnyItemFileInProgress(postId: number): boolean {
+    const allItemFiles = this._uploadingPostFilesStatus.get(postId);
+    if (allItemFiles) {
+      const result = allItemFiles.some((itemFile: ItemFileWithStatus) => {
+        return itemFile.status === ItemFileSendingStatus.INPROGRESS;
+      });
+      return result;
+    }
+
+    return false;
   }
 
   getUploadProgress(itemId: number): Progress | undefined {
