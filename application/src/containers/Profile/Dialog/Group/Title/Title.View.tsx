@@ -29,11 +29,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
           {group.isTeam && <Privacy id={id} />}
           <Favorite id={id} />
           {group.isTeam && <More id={id} />}
-          <JuiIconButton
-            variant="plain"
-            onClick={dismiss}
-            tooltipTitle={t('close')}
-          >
+          <JuiIconButton onClick={dismiss} tooltipTitle={t('close')}>
             close
           </JuiIconButton>
         </JuiDialogTitleWithActionRight>

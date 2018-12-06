@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ProfileDialogGroupViewProps } from '../../types';
+import { ProfileDialogGroupViewProps } from '../../../types';
 
 type MemberHeaderProps = {
   id: number;

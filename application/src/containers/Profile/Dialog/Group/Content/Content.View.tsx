@@ -21,7 +21,7 @@ import {
 } from 'jui/pattern/Profile/Dialog';
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
-import { MemberHeader } from './MemberHeader';
+import { MemberHeader, MemberList } from './Members';
 
 class ProfileDialogGroupContentViewComponent extends Component<
   WithNamespaces & ProfileDialogGroupContentViewProps
@@ -58,7 +58,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
         <JuiDivider />
         <JuiProfileDialogContentMembers>
           <MemberHeader id={id} />
-          <div>LIST</div>
+          <MemberList id={id} />
         </JuiProfileDialogContentMembers>
       </>
     );

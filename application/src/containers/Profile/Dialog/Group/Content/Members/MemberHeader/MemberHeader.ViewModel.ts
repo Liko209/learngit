@@ -7,7 +7,7 @@ import { computed } from 'mobx';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { MemberHeaderViewProps } from './types';
-import { ProfileDialogGroupViewModel } from '../../ProfileDialogGroup.ViewModel';
+import { ProfileDialogGroupViewModel } from '../../../ProfileDialogGroup.ViewModel';
 
 class MemberHeaderViewModel extends ProfileDialogGroupViewModel
   implements MemberHeaderViewProps {

@@ -126,6 +126,8 @@
   "profile": "Profile",
   "Guest": "Guest",
   "Admin": "Admin",
+  "guest": "Guest",
+  "admin": "Admin",
   "goToGroupConversation": "Go to the conversation with the group",
   "goToTeamConversation": "Go to the conversation with team",
   "Message": "Message",

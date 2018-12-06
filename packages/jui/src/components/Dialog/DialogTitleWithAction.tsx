@@ -15,6 +15,7 @@ const StyledDialogTitle = styled('div')`
   padding: 0;
   border-bottom: 1px solid ${grey('300')};
   display: flex;
+  flex-shrink: 0;
   height: 64px;
   box-sizing: border-box;
   align-items: center;
@@ -32,6 +33,9 @@ const JuiDialogTitleWithActionLeft = styled('div')`
 const JuiDialogTitleWithActionRight = styled('div')`
   flex: 1;
   text-align: right;
+  && > button[variant="round"] {
+    margin-right: -${spacing(2.5)};
+  }
   && > button[variant="plain"] {
     margin-left: ${spacing(3)};
   }

@@ -21,7 +21,6 @@ class More extends React.Component<WithNamespaces & MoreViewProps> {
     // }
     return (
       <JuiIconButton
-        variant="plain"
         size="medium"
         tooltipTitle={t('more')}
         ariaLabel={t('checkMoreTeamOption')}
