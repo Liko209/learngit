@@ -64,11 +64,14 @@ const TipLink = styled(JuiLink)`
 `;
 
 type JuiConversationLoadingProps = {
+  tip: string;
+  linkText: string;
+  showTip?: boolean;
   onClick: (event: React.MouseEvent<HTMLSpanElement>) => void;
 };
 
 const JuiConversationLoading = (props: JuiConversationLoadingProps) => {
-  const { onClick } = props;
+  const { onClick, tip, linkText, showTip = false } = props;
 
   return (
     <LoadingWrapper>
@@ -77,10 +80,12 @@ const JuiConversationLoading = (props: JuiConversationLoadingProps) => {
       </Portal>
       <Loading>
         <Progress />
-        <Tip>
-          We weren't able to open this conversation.
-          <TipLink handleOnClick={onClick}>Try again.</TipLink>
-        </Tip>
+        {showTip && (
+          <Tip>
+            {tip}
+            <TipLink handleOnClick={onClick}>{linkText}</TipLink>
+          </Tip>
+        )}
       </Loading>
     </LoadingWrapper>
   );

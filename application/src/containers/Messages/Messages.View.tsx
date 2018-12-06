@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { t } from 'i18next';
 import { observer } from 'mobx-react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { goToConversation } from '@/common/goToConversation';
@@ -62,7 +63,11 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
       >
         <LeftRail />
         {loadingMessage ? (
-          <JuiConversationLoading onClick={this.tryAgain} />
+          <JuiConversationLoading
+            tip={t('messageLoadingErrorTip')}
+            linkText={t('tryAgain')}
+            onClick={this.tryAgain}
+          />
         ) : (
           <Switch>
             <Route

@@ -30,7 +30,7 @@ const getConversationId = async (id: number) => {
         return group.id;
       }
       return null;
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -38,13 +38,14 @@ const getConversationId = async (id: number) => {
 };
 
 async function goToConversation(id: number) {
+  let conversationId;
   const timer = setTimeout(() => {
     globalStore.set(GLOBAL_KEYS.MESSAGE_LOADING, {
       isLoading: true,
       conversationId: id, // need set prev id in order to try again
     });
   },                       DELAY_LOADING);
-  const conversationId = await getConversationId(id);
+  conversationId = await getConversationId(id);
   clearTimeout(timer);
   if (!conversationId) return false;
 
