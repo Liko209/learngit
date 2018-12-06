@@ -87,7 +87,7 @@ describe('Item Dao', () => {
     });
   });
 
-  describe('isFileItemExist()', () => {
+  describe('getExistGroupFilesByName()', () => {
     const items: Item[] = [
       itemFactory.build({
         id: 1,
@@ -104,6 +104,16 @@ describe('Item Dao', () => {
         group_ids: [321],
         name: 'file3',
       }),
+      itemFactory.build({
+        id: 4,
+        group_ids: [123, 321],
+        name: 'file4',
+      }),
+      itemFactory.build({
+        id: -5,
+        group_ids: [321],
+        name: 'file5',
+      }),
     ];
     beforeEach(async () => {
       const { database } = setup();
@@ -111,24 +121,22 @@ describe('Item Dao', () => {
       await itemDao.bulkPut(items);
     });
 
-    it('groupId match, name match', async () => {
-      const result = await itemDao.isFileItemExist(123, 'file1');
-      expect(result).toBe(true);
-    });
-
-    it('groupId match, name not match', async () => {
-      const result = await itemDao.isFileItemExist(123, 'file4');
-      expect(result).toBe(false);
-    });
-
-    it('groupId not match, name match', async () => {
-      const result = await itemDao.isFileItemExist(123, 'file3');
-      expect(result).toBe(false);
-    });
-
-    it('groupId not match, name not match', async () => {
-      const result = await itemDao.isFileItemExist(123, 'file3');
-      expect(result).toBe(false);
-    });
+    it.each`
+      groupId | fileName   | res           | comment
+      ${123}  | ${'file1'} | ${[items[0]]} | ${'group id and name all match'}
+      ${321}  | ${'file4'} | ${[items[3]]} | ${'group id and name all match but group id is in a array'}
+      ${123}  | ${'file3'} | ${[]}         | ${'group match, file not match'}
+      ${999}  | ${'file3'} | ${[]}         | ${'group not match , file not match'}
+      ${321}  | ${'file5'} | ${[]}         | ${'should not match pseudo item'}
+    `(
+      'should return matched items: $comment',
+      async ({ groupId, fileName, res }) => {
+        const result = await itemDao.getExistGroupFilesByName(
+          groupId,
+          fileName,
+        );
+        expect(result).toEqual(res);
+      },
+    );
   });
 });

@@ -296,7 +296,7 @@ describe('ItemService', () => {
 
   describe('isFileExists()', () => {
     const itemDao = {
-      isFileItemExist: jest.fn(),
+      getExistGroupFilesByName: jest.fn(),
     };
     beforeAll(() => {
       handleData.mockClear();
@@ -310,18 +310,21 @@ describe('ItemService', () => {
     it('check file exists with invalid groupId', async () => {
       const result = await itemService.isFileExists(0, 'test.jpg');
       expect(result).toBe(false);
-      expect(itemDao.isFileItemExist).not.toHaveBeenCalled();
+      expect(itemDao.getExistGroupFilesByName).not.toHaveBeenCalled();
     });
 
     it('check file exists with invalid name', async () => {
       const result = await itemService.isFileExists(1, '');
       expect(result).toBe(false);
-      expect(itemDao.isFileItemExist).not.toHaveBeenCalled();
+      expect(itemDao.getExistGroupFilesByName).not.toHaveBeenCalled();
     });
 
-    it('check file exists', async () => {
-      itemDao.isFileItemExist.mockReturnValue(true);
+    it('should call ItemDao to check whether file exist', async () => {
+      const itemFiles = [{ id: 1, name: 'test.jpg' }];
+      itemDao.getExistGroupFilesByName.mockResolvedValue(itemFiles);
       const result = await itemService.isFileExists(1, 'test.jpg');
+      expect(itemDao.getExistGroupFilesByName).toBeCalledWith(1, 'test.jpg');
+      expect(result).toBeTruthy;
     });
   });
 

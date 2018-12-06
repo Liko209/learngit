@@ -16,6 +16,8 @@ import notificationCenter from '../notificationCenter';
 import { mainLogger } from 'foundation';
 import { ENTITY } from '../eventKey';
 import { FILE_FORM_DATA_KEYS } from './constants';
+import { filter } from 'minimatch';
+import { func } from 'prop-types';
 
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, Progress>;
@@ -106,23 +108,18 @@ class ItemFileUploadHandler {
     let result: NetworkResult<Raw<ItemFile>, BaseError> | undefined = undefined;
 
     let shouldUpdate = isUpdate;
-    let existFile: ItemFile | null = null;
+    let existItemFile: ItemFile | null = null;
     if (isUpdate) {
       const nameType = this._extractFileNameAndType(storedFile.storage_path);
-      existFile = await this._getOldestExistFile(groupId, nameType.name);
-      if (!existFile) {
-        // if item not exist in local, should go to create new
+      existItemFile = await this._getOldestExistFile(groupId, nameType.name);
+      if (!existItemFile) {
+        // if item not exist in local, should create new one
         shouldUpdate = false;
       }
     }
 
-    if (shouldUpdate && existFile) {
-      result = await this._updateItem(
-        groupId,
-        preInsertItem.id,
-        existFile,
-        storedFile,
-      );
+    if (shouldUpdate && existItemFile) {
+      result = await this._updateItem(existItemFile, storedFile);
     } else {
       result = await this._newItem(groupId, storedFile);
     }
@@ -147,7 +144,25 @@ class ItemFileUploadHandler {
     if (itemInDB) {
       const fileVersion = this._toFileVersion(storedFile);
       itemInDB.versions = [fileVersion];
+      this._updateUploadingFiles(groupId, itemInDB);
       itemDao.update(itemInDB);
+    }
+  }
+
+  private _updateUploadingFiles(groupId: number, newItemFile: ItemFile) {
+    const files = this._uploadingItemFiles.get(groupId);
+    if (files && files.length) {
+      const pos = files
+        .map((x: ItemFile) => {
+          return x.id;
+        })
+        .indexOf(newItemFile.id);
+      if (pos >= 0) {
+        files[pos] = newItemFile;
+      } else {
+        files.push(newItemFile);
+      }
+      this._uploadingItemFiles.set(groupId, files);
     }
   }
 
@@ -280,16 +295,14 @@ class ItemFileUploadHandler {
     return this._progressCaches;
   }
 
-  private async _updateItem(
-    groupId: number,
-    itemId: number,
-    existItem: ItemFile,
-    storedFile: StoredFile,
-  ) {
+  private async _updateItem(existItem: ItemFile, storedFile: StoredFile) {
     const fileVersion = this._toFileVersion(storedFile);
+    existItem.is_new = false;
     existItem.versions.push(fileVersion);
     existItem.modified_at = Date.now();
-    ItemAPI.putItem(itemId, 'file', existItem);
+    existItem._id = existItem.id;
+    delete existItem.id;
+    return await ItemAPI.putItem(existItem._id, 'file', existItem);
   }
 
   private async _getOldestExistFile(
@@ -302,7 +315,7 @@ class ItemFileUploadHandler {
       groupId,
       fileName,
     );
-    if (existFiles) {
+    if (existFiles && existFiles.length > 0) {
       const sorted = existFiles.sort((lhs, rhs) => {
         return lhs.created_at - rhs.created_at;
       });
