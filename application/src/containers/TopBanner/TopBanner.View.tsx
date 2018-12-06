@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { StyledTopBannerContainer } from 'jui/pattern/TopBanner';
+import { JuiTopBannerContainer } from 'jui/pattern/TopBanner';
 import { config, ConfigType } from './register';
 import _ from 'lodash';
 
@@ -17,7 +17,7 @@ class TopBannerView extends React.Component {
         return <Component key={priority} />;
       })
       .value();
-    return <StyledTopBannerContainer>{children}</StyledTopBannerContainer>;
+    return <JuiTopBannerContainer>{children}</JuiTopBannerContainer>;
   }
 }
 

@@ -5,10 +5,10 @@
  */
 import styled from '../../foundation/styled-components';
 import { height } from '../../foundation/utils';
-const StyledTopBannerContainer = styled.div`
+const JuiTopBannerContainer = styled.div`
   position: relative;
   max-height: ${height(12)};
   overflow: hidden;
 `;
 
-export { StyledTopBannerContainer };
+export { JuiTopBannerContainer };
