@@ -36,3 +36,5 @@ Followed the [Unit Testing Guideline](https://git.ringcentral.com/Fiji/Fiji-docs
 - No redundant code (commented code/console.log/debugger)
 - Appropriate access modifier (private/protected)
 - Refactor existed code
+
+/label ~task
