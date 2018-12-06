@@ -56,7 +56,7 @@ const baseProps = {
   },
   hasMoreUp: true,
   hasMoreDown: true,
-  hasHistoryMessages: true,
+  notEmpty: true,
   historyGroupState: {} as GroupStateModel,
   historyUnreadCount: 10,
   hasHistoryUnread: false,
@@ -155,19 +155,19 @@ describe('StreamView', () => {
     });
 
     describe('conversationInitialPost', () => {
-      it('should load conversationInitialPost when user has no history messages [JPT-478]', () => {
+      it('should render conversationInitialPost when user has no history messages [JPT-478]', () => {
         const props = {
           ...baseProps,
-          hasHistoryMessages: false,
+          notEmpty: false,
         };
         const wrapper = shallow(<StreamView {...props} />);
         expect(wrapper.find(ConversationInitialPost)).toHaveLength(1);
       });
 
-      it('should not load conversationInitialPost when user has history messages  [JPT-478]', () => {
+      it('should not render conversationInitialPost when user has history messages  [JPT-478]', () => {
         const props = {
           ...baseProps,
-          hasHistoryMessages: true,
+          notEmpty: true,
         };
         const wrapper = shallow(<StreamView {...props} />);
         expect(wrapper.find(ConversationInitialPost)).toHaveLength(0);

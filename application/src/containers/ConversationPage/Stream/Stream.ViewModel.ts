@@ -124,7 +124,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
-  get hasHistoryMessages() {
+  get notEmpty() {
     return this.items.length > 0 || this.hasMoreUp;
   }
 

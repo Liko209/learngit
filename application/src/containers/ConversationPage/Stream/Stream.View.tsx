@@ -159,9 +159,9 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private get _initialPost() {
-    const { groupId, hasHistoryMessages } = this.props;
+    const { groupId, notEmpty } = this.props;
 
-    return hasHistoryMessages ? null : (
+    return notEmpty ? null : (
       <VisibilitySensor
         offset={VISIBILITY_SENSOR_OFFSET}
         onChange={this._handleFirstUnreadPostVisibilityChange}

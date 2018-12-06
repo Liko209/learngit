@@ -55,7 +55,7 @@ type StreamViewProps = {
   items: StreamItem[];
   hasMoreUp: boolean;
   hasMoreDown: boolean;
-  hasHistoryMessages: boolean;
+  notEmpty: boolean;
   setRowVisible: (n: number) => void;
   markAsRead: () => void;
   loadInitialPosts: () => Promise<void>;
