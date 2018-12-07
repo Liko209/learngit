@@ -87,8 +87,8 @@ const FaviconWrapper = styled.div`
 `;
 
 const Favicon = styled.span<{ favicon: string }>`
-  width: 20px;
-  height: 20px;
+  width: ${width(5)};
+  height: ${height(5)};
   margin: ${spacing(0, 2, 0, 0)};
   display: inline-block;
   background-size: cover;
