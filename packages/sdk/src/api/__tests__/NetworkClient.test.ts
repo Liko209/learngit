@@ -136,7 +136,7 @@ describe('NetworkClient', () => {
   });
 
   describe('buildCallback()', () => {
-    it('promise should resolve with response', (done: jest.DoneCallback) => {
+    it('should resolve with ApiResultOk', (done: jest.DoneCallback) => {
       expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
 
@@ -145,10 +145,14 @@ describe('NetworkClient', () => {
         expect(result).toHaveProperty('data', { a: 1 });
         done();
       });
-      mockRequest.callback({ status: 200, data: { a: 1 } });
+      mockRequest.callback({
+        status: 200,
+        data: { a: 1 },
+        headers: {},
+      });
     });
 
-    it('promise should reject with response', (done: jest.DoneCallback) => {
+    it('should resolve with ApiResultErr', (done: jest.DoneCallback) => {
       expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
 
@@ -157,7 +161,12 @@ describe('NetworkClient', () => {
         expect(result.error.code).toBe(1500);
         done();
       });
-      mockRequest.callback({ status: 500, data: { a: 'fail' }, headers: {} });
+
+      mockRequest.callback({
+        status: 500,
+        data: { a: {} },
+        headers: {},
+      });
     });
   });
 

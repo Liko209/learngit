@@ -107,7 +107,7 @@ export default class NetworkClient {
       if (!promiseResolvers) return;
       promiseResolvers.forEach(({ resolve }) => {
         if (resp.status >= 200 && resp.status < 300) {
-          resolve(apiOk(resp.data, resp.status, resp.headers));
+          resolve(apiOk(resp));
         } else {
           resolve(apiErr(resp));
         }

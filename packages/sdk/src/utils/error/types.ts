@@ -5,32 +5,32 @@
  */
 
 import * as HttpStatus from 'http-status-codes';
-// import _ from 'lodash';
 
 const ErrorTypes = {
-  UNDEFINED_ERROR: 0,
-  HTTP: 1000,
+  // TODO move API error codes to api/
+  API: 1000,
+  API_NETWORK: 5000,
+  API_INVALID_GRANT: 4147,
+  API_ALREADY_TAKEN: 6001,
+  API_INVALID_FIELD: 6002,
+
+  // TODO move DB error codes to dao/
   DB: 2000,
   DB_CRITICAL_ERROR: 2001,
   DB_NEED_RETRY_ERROR: 2002,
   DB_UNSUPPORTED_ERROR: 2003,
   DB_INVALID_USAGE_ERROR: 2004,
-  SERVICE: 3000,
-  INVALIDTE_PARAMETERS: 3001,
-  OAUTH: 4000,
-  NETWORK: 5000,
-  INVALID_GRANT: 4147,
-  API: 6000,
-};
 
-const ApiErrorTypes = {
-  ALREADY_TAKEN: 1,
-  INVALID_FIELD: 2,
-  UNKNOWN: 99,
+  // TODO move service error codes to service/
+  SERVICE: 3000,
+  SERVICE_INVALID_FIELD: 3001,
+
+  OAUTH: 4000,
+  UNDEFINED_ERROR: 0,
 };
 
 Object.keys(HttpStatus).forEach((key: string) => {
-  ErrorTypes[key] = ErrorTypes.HTTP + HttpStatus[key];
+  ErrorTypes[key] = ErrorTypes.API + HttpStatus[key];
 });
 
 const HttpError = {
@@ -38,4 +38,4 @@ const HttpError = {
 };
 
 export default ErrorTypes;
-export { HttpError, ErrorTypes, ApiErrorTypes };
+export { HttpError, ErrorTypes };
