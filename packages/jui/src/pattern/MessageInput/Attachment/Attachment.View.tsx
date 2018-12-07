@@ -14,6 +14,7 @@ import React, {
 } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { AttachmentViewProps } from './types';
 import { JuiIconButton } from '../../../components/Buttons';
 import { JuiMenu, JuiMenuItem } from '../../../components';
@@ -43,6 +44,10 @@ class AttachmentViewComponent extends Component<Props> {
 
   private _hideMenu = () => {
     this.setState({ anchorEl: null });
+  }
+
+  private _hideMenuAndShowDialog = () => {
+    this._hideMenu();
     const ref = this._uploadRef.current;
     if (ref) {
       ref.showFileDialog();
@@ -52,28 +57,34 @@ class AttachmentViewComponent extends Component<Props> {
   render() {
     const { t, onFileChanged } = this.props;
     const { anchorEl } = this.state;
+    const open = !!anchorEl;
     return (
       <Fragment>
         <JuiIconButton
-          tooltipTitle={t('ShareFiles')}
+          id="conversation-chatbar-attachment-button"
+          tooltipTitle={t('attachment')}
           onClick={this._handleClickEvent}
           size="medium"
         >
           attachment
         </JuiIconButton>
         <UploadArea onFileChanged={onFileChanged} ref={this._uploadRef} />
-        <JuiMenu
-          id="conversation-chatbar-attachment-menu"
-          anchorEl={anchorEl}
-          open={!!anchorEl}
-        >
-          <JuiMenuItem
-            data-test-automation-id="chatbar-attchment-selectfile"
-            onClick={this._hideMenu}
+        {open && (
+          <JuiMenu
+            id="conversation-chatbar-attachment-menu"
+            anchorEl={anchorEl}
+            open={open}
           >
-            Share File
-          </JuiMenuItem>
-        </JuiMenu>
+            <ClickAwayListener onClickAway={this._hideMenu}>
+              <JuiMenuItem
+                data-test-automation-id="chatbar-attchment-selectfile"
+                onClick={this._hideMenuAndShowDialog}
+              >
+                Share File
+              </JuiMenuItem>
+            </ClickAwayListener>
+          </JuiMenu>
+        )}
       </Fragment>
     );
   }

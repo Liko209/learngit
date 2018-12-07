@@ -30,13 +30,21 @@ class MessageInputViewComponent extends Component<
     files: [],
   };
 
-  private _autoUploadFile = (files: FileList) => {
-    const array: File[] = this.state.files.slice(0);
-    for (let i = 0; i < files.length; ++i) {
-      array.push(files[i]);
+  private _autoUploadFile = async (files: FileList) => {
+    if (files.length > 0) {
+      const array: File[] = this.state.files.slice(0);
+      for (let i = 0; i < files.length; ++i) {
+        const file = files[i];
+        const exists = await this.props.isFileExists(file);
+        if (exists) {
+          // TODO
+        } else {
+          array.push(file);
+          await this.props.uploadFile(file);
+        }
+      }
+      this.setState({ files: array });
     }
-    console.log(38, array);
-    this.setState({ files: array });
   }
 
   componentDidMount() {

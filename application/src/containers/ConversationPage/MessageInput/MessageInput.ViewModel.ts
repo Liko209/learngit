@@ -7,7 +7,7 @@
 import { action, observable, computed } from 'mobx';
 import { debounce, Cancelable } from 'lodash';
 import { MessageInputProps, MessageInputViewProps } from './types';
-import { GroupService, PostService } from 'sdk/service';
+import { GroupService, PostService, ItemService } from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -15,6 +15,7 @@ import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from './handler';
+import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -31,6 +32,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
+  private _itemService: ItemService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
   @computed
   get id() {
@@ -51,6 +53,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     super(props);
     this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
+    this._itemService = ItemService.getInstance();
     this._debounceUpdateGroupDraft = debounce<DebounceFunction>(
       this._groupService.updateGroupDraft.bind(this._groupService),
       500,
@@ -112,7 +115,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   @computed
   get _users() {
     return this._membersExcludeMe.map((id: number) => {
-      const { userDisplayName } = getEntity(ENTITY_NAME.PERSON, id) as PersonModel;
+      const { userDisplayName } = getEntity(
+        ENTITY_NAME.PERSON,
+        id,
+      ) as PersonModel;
       return {
         id,
         display: userDisplayName,
@@ -156,6 +162,19 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     } catch (e) {
       // You do not need to handle the error because the message will display a resend
     }
+  }
+
+  uploadFile = async (file: File) => {
+    const form = new FormData();
+    form.append(FILE_FORM_DATA_KEYS.FILE_NAME, file.name);
+    form.append(FILE_FORM_DATA_KEYS.FILE, file);
+    const item = await this._itemService.sendItemFile(this.id, form, false);
+    console.log(item);
+    return item;
+  }
+
+  isFileExists = async (file: File) => {
+    return await this._itemService.isFileExists(this.id, file.name);
   }
 }
 

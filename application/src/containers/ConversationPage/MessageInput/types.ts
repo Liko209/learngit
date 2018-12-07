@@ -14,6 +14,8 @@ type MessageInputViewProps = {
   draft: string;
   error: string;
   forceSaveDraft(): void;
+  uploadFile(file: File): void;
+  isFileExists(file: File): Promise<boolean>;
   changeDraft(value: any): void;
   keyboardEventHandler: {
     enter: {
