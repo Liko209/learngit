@@ -276,14 +276,24 @@ describe('ItemService', () => {
   });
 
   describe('cancelUpload()', () => {
-    it('cancel upload with invalid paramter', async () => {
+    it('should not call cancel upload, when invalid itemId', async () => {
       const itemFileUploadHandler = new ItemFileUploadHandler();
       jest
         .spyOn(itemService, '_getItemFileHandler')
         .mockReturnValue(itemFileUploadHandler);
       itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
-      const result = await itemService.cancelUpload(0);
-      expect(result).toBe(true);
+      await itemService.cancelUpload(0);
+      expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(0);
+    });
+
+    it('should call cancel upload, when valid itemId', async () => {
+      const itemFileUploadHandler = new ItemFileUploadHandler();
+      jest
+        .spyOn(itemService, '_getItemFileHandler')
+        .mockReturnValue(itemFileUploadHandler);
+      itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
+      await itemService.cancelUpload(-1);
+      expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(1);
     });
   });
 

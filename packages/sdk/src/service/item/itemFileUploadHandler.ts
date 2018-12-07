@@ -5,7 +5,7 @@
 
 import { StoredFile, ItemFile, Raw, Progress } from '../../models';
 import AccountService from '../account';
-import ItemAPI from '../../api/glip/item';
+import ItemAPI, { RequestHolder } from '../../api/glip/item';
 import { transform } from '../utils';
 import { versionHash } from '../../utils/mathUtils';
 import { daoManager } from '../../dao';
@@ -16,17 +16,12 @@ import notificationCenter from '../notificationCenter';
 import { mainLogger } from 'foundation';
 import { ENTITY, SERVICE } from '../eventKey';
 import { FILE_FORM_DATA_KEYS } from './constants';
+import { ItemFileUploadStatus } from './itemFileUploadStatus';
 import { ItemService } from './itemService';
 import { SENDING_STATUS } from '../constants';
-
 class ItemFileUploadHandler {
-  private _progressCaches: Map<number, Progress>;
-  private _uploadingFiles: Map<number, ItemFile[]>;
-
-  constructor() {
-    this._progressCaches = new Map();
-    this._uploadingFiles = new Map();
-  }
+  private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
+  private _uploadingFiles: Map<number, ItemFile[]> = new Map();
 
   async sendItemFile(
     groupId: number,
@@ -45,8 +40,15 @@ class ItemFileUploadHandler {
     return null;
   }
 
-  async cancelUpload(itemId: number): Promise<boolean> {
-    return true;
+  async cancelUpload(itemId: number) {
+    const status = this._progressCaches.get(itemId);
+    if (status) {
+      ItemAPI.cancelUploadRequest(status.requestHolder);
+      this._progressCaches.delete(itemId);
+    }
+
+    const itemDao = daoManager.getDao(ItemDao);
+    await itemDao.delete(itemId);
   }
 
   getUploadItems(groupId: number): ItemFile[] {
@@ -55,18 +57,16 @@ class ItemFileUploadHandler {
       : [];
   }
 
-  getIsInSending(itemId: number) {
-    return true;
-  }
-
   getUploadProgress(itemId: number): Progress | undefined {
-    return this._progressCaches.has(itemId)
-      ? this._progressCaches.get(itemId)
-      : undefined;
+    const status = this._progressCaches.get(itemId);
+    return status ? status.progress : undefined;
   }
 
-  updateProgress(progress: Progress) {
-    this._progressCaches.set(progress.id, progress);
+  private _updateProgress(progress: Progress) {
+    const uploadStatus = this._progressCaches.get(progress.id);
+    if (uploadStatus) {
+      uploadStatus.progress = progress;
+    }
     notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
   }
 
@@ -76,12 +76,30 @@ class ItemFileUploadHandler {
     file: FormData,
     isUpdate: boolean,
   ) {
+    const requestHolder: RequestHolder = { request: undefined };
+    const progress = {
+      id: preInsertItem.id,
+      total: 0,
+      loaded: 0,
+    };
+
+    const status = this._progressCaches.get(preInsertItem.id);
+    if (status) {
+      status.requestHolder = requestHolder;
+      status.progress = progress;
+    } else {
+      this._progressCaches.set(preInsertItem.id, {
+        requestHolder,
+        progress,
+      });
+    }
+
     const uploadRes = await ItemAPI.uploadFileItem(
       file,
       (e: ProgressEventInit) => {
         const { loaded, total } = e;
         if (loaded && total) {
-          this.updateProgress({
+          this._updateProgress({
             total,
             loaded,
             groupId,
@@ -89,6 +107,7 @@ class ItemFileUploadHandler {
           });
         }
       },
+      requestHolder,
     );
 
     const isSuccess = uploadRes.isOk();
