@@ -28,14 +28,16 @@ storiesOf('Pattern', module)
         SubTitle={
           <JuiButtonBar size="medium" overlapSize={2}>
             <JuiCheckboxButton
-              tooltipTitle="Add to Favorite"
-              checkedIconName="star"
-              iconName="star_border"
-            />
-            <JuiCheckboxButton
               tooltipTitle="This is a public team"
               checkedIconName="lock"
+              color="grey.500"
               iconName="lock_open"
+            />
+            <JuiCheckboxButton
+              tooltipTitle="Add to Favorite"
+              color="accent.gold"
+              checkedIconName="star"
+              iconName="star_border"
             />
           </JuiButtonBar>}
         Right={
