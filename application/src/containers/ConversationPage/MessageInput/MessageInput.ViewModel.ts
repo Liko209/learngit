@@ -182,6 +182,11 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   isFileExists = async (file: File) => {
     return await this._itemService.isFileExists(this.id, file.name);
   }
+
+  cancelUploadFile = (index: number) => {
+    const item = this.items[index];
+    this._itemService.cancelUpload(item.id);
+  }
 }
 
 export { MessageInputViewModel, ERROR_TYPES, CONTENT_ILLEGAL, CONTENT_LENGTH };

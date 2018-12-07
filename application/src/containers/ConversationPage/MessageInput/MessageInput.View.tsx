@@ -69,6 +69,17 @@ class MessageInputViewComponent extends Component<
     });
   }
 
+  private _cancelUploadFile = (file: File) => {
+    const { files } = this.state;
+    const index = files.findIndex(looper => looper === file);
+    if (index >= 0) {
+      const newFiles = files.slice(0);
+      newFiles.splice(index, 1);
+      this.setState({ files: newFiles });
+      this.props.cancelUploadFile(index);
+    }
+  }
+
   render() {
     const { draft, changeDraft, error, id, t } = this.props;
     const { modules, files } = this.state;
@@ -77,7 +88,9 @@ class MessageInputViewComponent extends Component<
         <AttachmentView onFileChanged={this._autoUploadFile} />
       </MessageActionBar>
     );
-    const attachmentsNode = <AttachmentList files={files} />;
+    const attachmentsNode = (
+      <AttachmentList files={files} cancelUploadFile={this._cancelUploadFile} />
+    );
     return (
       <JuiMessageInput
         value={draft}
