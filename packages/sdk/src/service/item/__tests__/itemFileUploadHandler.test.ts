@@ -47,6 +47,23 @@ describe('ItemFileService', () => {
       expect(result).toBe(null);
     });
 
+    const storedFile = {
+      _id: 123,
+      creator_id: 2588675,
+      last_modified: 1542274244897,
+      download_url: 'url/123.pdf',
+      storage_url: 'url/123',
+      stored_file_id: 5701644,
+      size: 1111,
+    };
+
+    const mockStoredFileRes = new NetworkResultOk([storedFile], 200, undefined);
+
+    const itemFile = {
+      id: 1,
+      versions: [storedFile],
+    };
+
     it('should only have name when a file has no extension', async () => {
       const file = new FormData();
       const fileName = '123';
@@ -63,33 +80,60 @@ describe('ItemFileService', () => {
         file,
         false,
       );
+      setTimeout(() => {
+        expect(res.id).toBeLessThan(0);
+        expect(res.name).toBe(fileName);
+        expect(res.type).toBe('');
+      });
+    });
 
-      expect(res.id).toBeLessThan(0);
-      expect(res.name).toBe(fileName);
-      expect(res.type).toBe('');
+    it('should call go updateItem when group has the file before', async (done: jest.DoneCallback) => {
+      const existItems = [
+        { id: 1, created_at: 1, versions: [] },
+        { id: 4, created_at: 4, versions: [] },
+        { id: 5, created_at: 5, versions: [] },
+      ];
+      const mockItemFileRes = new NetworkResultOk(itemFile, 200, undefined);
+      itemDao.get.mockResolvedValue(itemFile);
+      itemDao.getExistGroupFilesByName.mockResolvedValue(existItems);
+      handleData.mockResolvedValue(null);
+      ItemAPI.uploadFileItem.mockResolvedValue(mockStoredFileRes);
+      ItemAPI.putItem.mockResolvedValue(mockItemFileRes);
+
+      const file = new FormData();
+      const fileName = '123.pdf';
+      file.append('filename', fileName);
+      await itemFileUploadHandler.sendItemFile(groupId, file, true);
+
+      setTimeout(() => {
+        expect(ItemAPI.putItem).toBeCalledTimes(1);
+        expect(ItemAPI.sendFileItem).not.toHaveBeenCalled();
+        expect(ItemAPI.putItem).toBeCalled();
+        expect(ItemAPI.putItem).toBeCalledWith(
+          1,
+          'file',
+          expect.objectContaining({
+            _id: 1,
+            created_at: 1,
+            is_new: false,
+            modified_at: expect.any(Number),
+            versions: [
+              {
+                creator_id: 2588675,
+                date: 1542274244897,
+                download_url: 'url/123.pdf',
+                size: 1111,
+                stored_file_id: 123,
+                url: 'url/123',
+              },
+            ],
+          }),
+        );
+        done();
+      });
     });
 
     it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
-      const storedFile = {
-        _id: 123,
-        creator_id: 2588675,
-        last_modified: 1542274244897,
-        download_url: 'url/123.pdf',
-        storage_url: 'url/123',
-        stored_file_id: 5701644,
-        size: 1111,
-      };
-
-      const mockStoredFileRes = new NetworkResultOk(
-        [storedFile],
-        200,
-        undefined,
-      );
-
-      const itemFile = {
-        id: 1,
-        versions: [storedFile],
-      };
       const mockItemFileRes = new NetworkResultOk(itemFile, 200, undefined);
       itemDao.get.mockResolvedValue(itemFile);
       handleData.mockResolvedValue(null);
@@ -106,6 +150,8 @@ describe('ItemFileService', () => {
       );
 
       setTimeout(() => {
+        expect(ItemAPI.putItem).not.toHaveBeenCalled();
+        expect(ItemAPI.sendFileItem).toBeCalledTimes(1);
         expect(itemDao.put).toBeCalledTimes(2);
         expect(itemDao.update).toBeCalledTimes(1);
         expect(itemDao.get).toBeCalledTimes(1);

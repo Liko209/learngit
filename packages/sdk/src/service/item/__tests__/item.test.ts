@@ -319,9 +319,12 @@ describe('ItemService', () => {
       expect(itemDao.isFileItemExist).not.toHaveBeenCalled();
     });
 
-    it('check file exists', async () => {
-      itemDao.isFileItemExist.mockReturnValue(true);
+    it('should call ItemDao to check whether file exist', async () => {
+      const itemFiles = [{ id: 1, name: 'test.jpg' }];
+      itemDao.isFileItemExist.mockResolvedValue(itemFiles);
       const result = await itemService.isFileExists(1, 'test.jpg');
+      expect(itemDao.isFileItemExist).toBeCalledWith(1, 'test.jpg', true);
+      expect(result).toBeTruthy;
     });
   });
 

@@ -104,11 +104,22 @@ class ItemFileUploadHandler {
     storedFile: StoredFile,
   ) {
     let result: NetworkResult<Raw<ItemFile>, BaseError> | undefined = undefined;
-    if (!isUpdate) {
-      result = await this._newItem(groupId, storedFile);
+
+    let shouldUpdate = isUpdate;
+    let existItemFile: ItemFile | null = null;
+    if (isUpdate) {
+      const nameType = this._extractFileNameAndType(storedFile.storage_path);
+      existItemFile = await this._getOldestExistFile(groupId, nameType.name);
+      if (!existItemFile) {
+        // if item not exist in local, should create new one
+        shouldUpdate = false;
+      }
+    }
+
+    if (shouldUpdate && existItemFile) {
+      result = await this._updateItem(existItemFile, storedFile);
     } else {
-      // To-Do, handle update
-      // result = await this._updateItem(groupId, itemId, storedFile);
+      result = await this._newItem(groupId, storedFile);
     }
 
     if (result && result.isOk) {
@@ -131,7 +142,25 @@ class ItemFileUploadHandler {
     if (itemInDB) {
       const fileVersion = this._toFileVersion(storedFile);
       itemInDB.versions = [fileVersion];
+      this._updateUploadingFiles(groupId, itemInDB);
       itemDao.update(itemInDB);
+    }
+  }
+
+  private _updateUploadingFiles(groupId: number, newItemFile: ItemFile) {
+    const files = this._uploadingItemFiles.get(groupId);
+    if (files && files.length > 0) {
+      const pos = files
+        .map((x: ItemFile) => {
+          return x.id;
+        })
+        .indexOf(newItemFile.id);
+      if (pos >= 0) {
+        files[pos] = newItemFile;
+      } else {
+        files.push(newItemFile);
+      }
+      this._uploadingItemFiles.set(groupId, files);
     }
   }
 
@@ -264,9 +293,35 @@ class ItemFileUploadHandler {
     return this._progressCaches;
   }
 
-  // private async _updateItem(groupId: number, itemId: number, file: StoredFile) {
-  //   // To-Do add update item
-  // }
+  private async _updateItem(existItem: ItemFile, newStoredFile: StoredFile) {
+    const fileVersion = this._toFileVersion(newStoredFile);
+    existItem.is_new = false;
+    existItem.versions.push(fileVersion);
+    existItem.modified_at = Date.now();
+    existItem._id = existItem.id;
+    delete existItem.id;
+    return await ItemAPI.putItem(existItem._id, 'file', existItem);
+  }
+
+  private async _getOldestExistFile(
+    groupId: number,
+    fileName: string,
+  ): Promise<ItemFile | null> {
+    const itemDao = daoManager.getDao(ItemDao);
+
+    const existFiles = await itemDao.getExistGroupFilesByName(
+      groupId,
+      fileName,
+      true,
+    );
+    if (existFiles && existFiles.length > 0) {
+      const sorted = existFiles.sort((lhs, rhs) => {
+        return lhs.created_at - rhs.created_at;
+      });
+      return sorted[0];
+    }
+    return null;
+  }
 
   // private _emitItemFileStatus(
   //   itemFileId: number,
