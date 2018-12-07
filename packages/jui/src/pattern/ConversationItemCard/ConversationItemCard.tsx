@@ -41,7 +41,7 @@ const ItemCardHeader = styled.div`
 
 const ItemCardContent = styled(JuiCardContent)`
   && {
-    padding: ${spacing(4, 10, 5, 10)} !important;
+    padding: ${spacing(4, 4, 5, 10)} !important;
     ${typography('subheading3')};
   }
 `;

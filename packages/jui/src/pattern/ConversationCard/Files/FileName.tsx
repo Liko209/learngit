@@ -5,20 +5,25 @@
  */
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import { ellipsis } from '../../../foundation/utils/styles';
+import { ellipsis, palette } from '../../../foundation/utils/styles';
 import { getFileName } from '../../../foundation/utils/getFileName';
 
 type FileNameProps = {
   filename: string;
 };
 
-const FileNameWrapper = styled.div``;
+const FileNameWrapper = styled.div`
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  font-weight: 400;
+  color: ${palette('grey', '700')};
+`;
 
 const LeftName = styled.span`
   ${ellipsis};
-  max-width: 70%;
-  display: inline-block;
-  vertical-align: top;
 `;
 
 const FileName = (Props: FileNameProps) => {

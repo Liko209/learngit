@@ -17,24 +17,31 @@ type Props = {
 class LinkItemView extends React.Component<Props> {
   render() {
     const { postItems, onLinkItemClick } = this.props;
+    console.log(postItems, '------linkkk');
     return (
       <>
-        {postItems.map((item) => {
+        {postItems.map((item: LinkItem) => {
           const image = item.image
             ? `${item.image}&key=4527f263d6e64d7a8251b007b1ba9972`
             : '';
           return (item.title || item.image || item.summary) &&
             !item.doNotRender &&
             !item.deactivated ? (
-              <JuiConversationCardLinkItems
-                key={item.id}
-                title={item.title}
-                summary={item.summary}
-                thumbnail={image}
-                url={item.url}
-                onLinkItemClose={onLinkItemClick.bind(this, item.id)}
-              />
-            ) : null;
+            <JuiConversationCardLinkItems
+              key={item.id}
+              title={item.title}
+              summary={item.summary}
+              thumbnail={image}
+              url={item.url}
+              onLinkItemClose={onLinkItemClick.bind(this, item.id)}
+              favicon={
+                item.favicon
+                  ? `${item.favicon}&key=4527f263d6e64d7a8251b007b1ba9972`
+                  : ''
+              }
+              faviconName={item.providerName}
+            />
+          ) : null;
         })}
       </>
     );
