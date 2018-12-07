@@ -7,7 +7,7 @@ import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
 import _ from 'lodash';
 import { AbstractViewModel } from '@/base';
 import { observable, action } from 'mobx';
-import { ToastProps } from '../ToastWrapper/Toast';
+import { ToastProps } from '../ToastWrapper/Toast/types';
 import { Omit } from 'jui/foundation/utils/typeHelper';
 
 type NotificationProps = Omit<JuiSnackbarContentProps, 'id'> & {
@@ -26,7 +26,7 @@ class Notification extends AbstractViewModel {
   private static _showNotification(props: ShowNotificationOptions) {
     const id = Date.now();
     const dismiss = () => {
-      _.remove(Notification.data, (item: any) => item.id === id);
+      _.remove(Notification.data, item => item.id === id);
     };
     Notification.data.push({
       id,
