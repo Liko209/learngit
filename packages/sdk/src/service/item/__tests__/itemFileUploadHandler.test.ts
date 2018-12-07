@@ -5,7 +5,9 @@ import ItemAPI from '../../../api/glip/item';
 import handleData from '../handleData';
 import { NetworkResultOk } from '../../../api/NetworkResult';
 import notificationCenter from '../../notificationCenter';
+import { ItemService } from '../itemService';
 
+jest.mock('../../../service/item');
 jest.mock('../../../service/account');
 jest.mock('../../../api/glip/item');
 jest.mock('../../../dao');
@@ -24,11 +26,12 @@ describe('ItemFileService', () => {
     const groupId = 1;
     const userId = 2;
     const companyId = 3;
-
+    const itemService = new ItemService();
     const accountService = new AccountService();
     const itemDao = new ItemDao(null);
     beforeEach(() => {
       daoManager.getDao.mockReturnValue(itemDao);
+      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
       AccountService.getInstance = jest.fn().mockReturnValue(accountService);
       accountService.getCurrentCompanyId.mockReturnValue(companyId);
       accountService.getCurrentUserId.mockReturnValue(userId);
@@ -99,6 +102,8 @@ describe('ItemFileService', () => {
       handleData.mockResolvedValue(null);
       ItemAPI.uploadFileItem.mockResolvedValue(mockStoredFileRes);
       ItemAPI.putItem.mockResolvedValue(mockItemFileRes);
+      itemService.handlePartialUpdate = jest.fn();
+      itemService.updatePreInsertItemStatus = jest.fn();
 
       const file = new FormData();
       const fileName = '123.pdf';
@@ -106,6 +111,8 @@ describe('ItemFileService', () => {
       await itemFileUploadHandler.sendItemFile(groupId, file, true);
 
       setTimeout(() => {
+        expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
+        expect(itemService.updatePreInsertItemStatus).toBeCalledTimes(1);
         expect(ItemAPI.putItem).toBeCalledTimes(1);
         expect(ItemAPI.sendFileItem).not.toHaveBeenCalled();
         expect(ItemAPI.putItem).toBeCalled();
@@ -139,6 +146,8 @@ describe('ItemFileService', () => {
       handleData.mockResolvedValue(null);
       ItemAPI.uploadFileItem.mockResolvedValue(mockStoredFileRes);
       ItemAPI.sendFileItem.mockResolvedValue(mockItemFileRes);
+      itemService.handlePartialUpdate = jest.fn();
+      itemService.updatePreInsertItemStatus = jest.fn();
 
       const file = new FormData();
       const fileName = '123.pdf';
@@ -157,6 +166,8 @@ describe('ItemFileService', () => {
         expect(itemDao.get).toBeCalledTimes(1);
         expect(itemDao.delete).toBeCalledTimes(1);
         expect(notificationCenter.emitEntityReplace).toBeCalled();
+        expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
+        expect(itemService.updatePreInsertItemStatus).toBeCalledTimes(1);
 
         expect(res.id).toBeLessThan(0);
         expect(res.creator_id).toBe(userId);
