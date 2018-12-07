@@ -172,7 +172,10 @@ describe('NetworkClient', () => {
       rcNetworkClient.request = jest.fn();
       rcNetworkClient.http(mockQuery);
 
-      expect(rcNetworkClient.request).toHaveBeenCalledWith(mockQuery);
+      expect(rcNetworkClient.request).toHaveBeenCalledWith(
+        mockQuery,
+        undefined,
+      );
     });
   });
   describe('get()', () => {

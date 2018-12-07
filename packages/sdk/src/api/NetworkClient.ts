@@ -14,6 +14,8 @@ import {
   BaseResponse,
 } from 'foundation';
 
+import { RequestHolder } from './requestHolder';
+
 // import logger from './logger';
 import { serializeUrlParams } from '../utils';
 import { NetworkResult, networkOk, networkErr } from './NetworkResult';
@@ -68,6 +70,7 @@ export default class NetworkClient {
   >;
   defaultVia: NETWORK_VIA;
   networkManager: NetworkManager;
+
   // todo refactor config
   constructor(
     networkRequests: INetworkRequests,
@@ -84,7 +87,10 @@ export default class NetworkClient {
     this.networkManager = networkManager;
   }
 
-  request<T>(query: IQuery): Promise<NetworkResult<T>> {
+  request<T>(
+    query: IQuery,
+    requestHolder?: RequestHolder,
+  ): Promise<NetworkResult<T>> {
     const { via, path, method, params } = query;
     return new Promise((resolve, reject) => {
       const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
@@ -97,6 +103,9 @@ export default class NetworkClient {
       if (!duplicate) {
         const request = this.getRequestByVia<T>(query, via);
         request.callback = this.buildCallback<T>(apiMapKey);
+        if (requestHolder) {
+          requestHolder.request = request;
+        }
         this.networkManager.addApiRequest(request);
       }
     });
@@ -115,6 +124,10 @@ export default class NetworkClient {
       });
       this.apiMap.delete(apiMapKey);
     };
+  }
+
+  cancelRequest(request: IRequest) {
+    this.networkManager.cancelRequest(request);
   }
 
   getRequestByVia<T>(
@@ -151,8 +164,8 @@ export default class NetworkClient {
       .build();
   }
 
-  http<T>(query: IQuery) {
-    return this.request<T>(query);
+  http<T>(query: IQuery, requestHolder?: RequestHolder) {
+    return this.request<T>(query, requestHolder);
   }
 
   /**

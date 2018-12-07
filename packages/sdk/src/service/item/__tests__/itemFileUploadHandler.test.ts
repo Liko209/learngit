@@ -172,9 +172,17 @@ describe('ItemFileService', () => {
   });
 
   describe('cancelUpload()', () => {
-    it('cancel upload, invalid parameter', async () => {
-      const result = await itemFileUploadHandler.cancelUpload(0);
-      expect(result).toBe(true);
+    const itemDao = new ItemDao(null);
+    beforeEach(() => {
+      daoManager.getDao.mockReturnValue(itemDao);
+      itemDao.put.mockImplementation(() => {});
+      itemDao.update.mockImplementation(() => {});
+      itemDao.delete.mockImplementation(() => {});
+    });
+
+    it('cancel upload', async () => {
+      await itemFileUploadHandler.cancelUpload(1);
+      expect(itemDao.delete).toBeCalledTimes(1);
     });
   });
 });
