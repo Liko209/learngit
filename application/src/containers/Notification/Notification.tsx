@@ -7,8 +7,10 @@ import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
 import _ from 'lodash';
 import { AbstractViewModel } from '@/base';
 import { observable, action } from 'mobx';
+import { ToastProps } from '../ToastWrapper/Toast';
+import { Omit } from 'jui/foundation/utils/typeHelper';
 
-type NotificationProps = JuiSnackbarContentProps & {
+type NotificationProps = Omit<JuiSnackbarContentProps, 'id'> & {
   dismissible?: boolean;
 };
 
@@ -18,7 +20,7 @@ type ShowNotificationOptions = NotificationProps & {
 
 class Notification extends AbstractViewModel {
   @observable
-  static data: object[] = [];
+  static data: ToastProps[] = [];
 
   @action
   private static _showNotification(props: ShowNotificationOptions) {
