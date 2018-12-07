@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import {
   JuiDialogTitleWithAction,
   JuiDialogContentWithFill,
@@ -17,6 +18,7 @@ type Props = {
   dismiss: () => void;
 };
 
+@observer
 class ProfileDialogGroup extends Component<Props> {
   constructor(props: Props) {
     super(props);

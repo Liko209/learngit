@@ -8,8 +8,8 @@ import React, { Component } from 'react';
 import { PROFILE_TYPE, ProfileViewProps } from './types';
 import { ProfileMiniCardPerson } from './MiniCard/Person';
 import { ProfileMiniCardGroup } from './MiniCard/Group';
-// import { ProfileDialogPerson } from './Dialog/Person';
-// import { ProfileDialogGroup } from './Dialog/Group';
+import { ProfileDialogPerson } from './Dialog/Person';
+import { ProfileDialogGroup } from './Dialog/Group';
 import { TypeDictionary } from 'sdk/utils';
 
 const MappingComponent = {
@@ -19,9 +19,9 @@ const MappingComponent = {
     [TypeDictionary.TYPE_ID_TEAM]: ProfileMiniCardGroup,
   },
   [PROFILE_TYPE.DIALOG]: {
-    // [TypeDictionary.TYPE_ID_PERSON]: ProfileDialogPerson,
-    // [TypeDictionary.TYPE_ID_GROUP]: ProfileDialogGroup,
-    // [TypeDictionary.TYPE_ID_TEAM]: ProfileDialogGroup,
+    [TypeDictionary.TYPE_ID_PERSON]: ProfileDialogPerson,
+    [TypeDictionary.TYPE_ID_GROUP]: ProfileDialogGroup,
+    [TypeDictionary.TYPE_ID_TEAM]: ProfileDialogGroup,
   },
 };
 

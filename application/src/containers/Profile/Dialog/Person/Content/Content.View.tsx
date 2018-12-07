@@ -7,26 +7,28 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { ProfileDialogGroupContentViewProps } from './types';
+import { ProfileDialogPersonContentViewProps } from './types';
 import { JuiDivider } from 'jui/components/Divider';
-import { GroupAvatar } from '@/containers/Avatar';
+import { Avatar } from '@/containers/Avatar';
+import { Presence } from '@/containers/Presence';
 import {
   JuiProfileDialogContentSummary,
   JuiProfileDialogContentSummaryLeft,
   JuiProfileDialogContentSummaryRight,
   JuiProfileDialogContentSummaryName,
-  JuiProfileDialogContentSummaryDescription,
   JuiProfileDialogContentSummaryButtons,
   JuiProfileDialogContentSummaryButton,
-  JuiProfileDialogContentMembers,
+  JuiProfileDialogContentSummaryStatus,
+  JuiProfileDialogContentSummaryTitle,
 } from 'jui/pattern/Profile/Dialog';
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
-import { MemberHeader, MemberList } from './Members';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 @observer
-class ProfileDialogGroupContentViewComponent extends Component<
-  WithNamespaces & ProfileDialogGroupContentViewProps
+class ProfileDialogPersonContentViewComponent extends Component<
+  WithNamespaces & ProfileDialogPersonContentViewProps
 > {
   renderMessage = () => {
     const { t } = this.props;
@@ -38,40 +40,39 @@ class ProfileDialogGroupContentViewComponent extends Component<
     );
   }
   render() {
-    const { id, group, dismiss } = this.props;
+    const { id, person, dismiss } = this.props;
     const Summary = JuiProfileDialogContentSummary;
     const Left = JuiProfileDialogContentSummaryLeft;
     const Right = JuiProfileDialogContentSummaryRight;
     const Name = JuiProfileDialogContentSummaryName;
-    const Description = JuiProfileDialogContentSummaryDescription;
+    const Status = JuiProfileDialogContentSummaryStatus;
+    const Title = JuiProfileDialogContentSummaryTitle;
     const Buttons = JuiProfileDialogContentSummaryButtons;
-    const Members = JuiProfileDialogContentMembers;
+    const presence = <Presence uid={id} size="xlarge" borderSize="xlarge" />;
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     return (
       <>
-        <Summary>
+        <Summary emphasize={id === currentUserId}>
           <Left>
-            <GroupAvatar cid={id} size="xlarge" />
+            <Avatar uid={id} size="xlarge" presence={presence} />
           </Left>
           <Right>
-            <Name needEllipsis={!group.isTeam}>{group.displayName}</Name>
-            <Description>{group.description}</Description>
+            <Name>{person.userDisplayName}</Name>
+            <Status>{person.awayStatus}</Status>
+            <Title>{person.jobTitle}</Title>
             <Buttons>
               <Message id={id} dismiss={dismiss} render={this.renderMessage} />
             </Buttons>
           </Right>
         </Summary>
         <JuiDivider />
-        <Members>
-          <MemberHeader id={id} />
-          <MemberList id={id} />
-        </Members>
       </>
     );
   }
 }
 
-const ProfileDialogGroupContentView = translate('translations')(
-  ProfileDialogGroupContentViewComponent,
+const ProfileDialogPersonContentView = translate('translations')(
+  ProfileDialogPersonContentViewComponent,
 );
 
-export { ProfileDialogGroupContentView };
+export { ProfileDialogPersonContentView };

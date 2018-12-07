@@ -78,7 +78,7 @@ describe('MemberListItemViewModel', () => {
     });
   });
 
-  describe('MemberListItemViewModel', () => {
+  describe('isThePersonGuest', () => {
     it('should be get true when mock group entity isThePersonGuest method [JPT-405]', () => {
       mockGroupData.isThePersonGuest = jest.fn().mockReturnValueOnce(true);
       expect(vm.isThePersonGuest).toEqual(true);

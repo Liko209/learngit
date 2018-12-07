@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+// import React from 'react';
+import tinycolor from 'tinycolor2';
 import styled, { css } from '../../../foundation/styled-components';
 import {
   width,
@@ -13,29 +14,32 @@ import {
   grey,
   lineClamp,
   primary,
+  ellipsis,
 } from '../../../foundation/utils/styles';
 
-type Props = {
-  children: any;
+type PropsName = {
   needEllipsis?: boolean;
 };
 
-const StyledContentSummaryName = styled<Props, 'div'>('div')`
-  ${typography('subheading2')}
-  color: ${grey('900')};
-  ${({ needEllipsis }: Props) =>
-    needEllipsis &&
-    css`
-      ${lineClamp(3, 18)};
-    `}
-`;
+type PropsSummary = {
+  emphasize?: boolean;
+};
 
-const JuiProfileDialogContentSummary = styled('div')`
+const JuiProfileDialogContentSummary = styled<PropsSummary, 'div'>('div')`
   display: flex;
   padding: ${spacing(5, 6)};
   flex-direction: row;
   flex-shrink: 0;
+  ${({ emphasize }: PropsSummary) =>
+    emphasize &&
+    css`
+      background-color: ${({ theme }) =>
+        tinycolor(primary('700')({ theme }))
+          .setAlpha(theme.palette.action.hoverOpacity / 1.5)
+          .toRgbString()};
+    `}
 `;
+
 const JuiProfileDialogContentSummaryLeft = styled('div')`
   width: ${width(20)};
   margin-right: ${spacing(4)};
@@ -46,16 +50,15 @@ const JuiProfileDialogContentSummaryRight = styled('div')`
   flex: 1;
 `;
 
-const JuiProfileDialogContentSummaryName = ({
-  children,
-  needEllipsis,
-}: Props) => {
-  return (
-    <StyledContentSummaryName needEllipsis={needEllipsis}>
-      {children}
-    </StyledContentSummaryName>
-  );
-};
+const JuiProfileDialogContentSummaryName = styled<PropsName, 'div'>('div')`
+${typography('subheading2')}
+color: ${grey('900')};
+${({ needEllipsis }: PropsName) =>
+  needEllipsis &&
+  css`
+    ${lineClamp(3, 18)};
+  `}
+`;
 
 const JuiProfileDialogContentSummaryDescription = styled('div')`
   ${typography('caption1')}
@@ -80,6 +83,16 @@ const JuiProfileDialogContentSummaryButton = styled('div')`
   }
 `;
 
+const JuiProfileDialogContentSummaryStatus = styled('div')`
+  ${typography('body1')};
+  ${ellipsis()};
+  color: ${grey('500')};
+`;
+
+const JuiProfileDialogContentSummaryTitle = styled(
+  JuiProfileDialogContentSummaryStatus,
+)``;
+
 export {
   JuiProfileDialogContentSummary,
   JuiProfileDialogContentSummaryLeft,
@@ -88,4 +101,6 @@ export {
   JuiProfileDialogContentSummaryDescription,
   JuiProfileDialogContentSummaryButtons,
   JuiProfileDialogContentSummaryButton,
+  JuiProfileDialogContentSummaryStatus,
+  JuiProfileDialogContentSummaryTitle,
 };

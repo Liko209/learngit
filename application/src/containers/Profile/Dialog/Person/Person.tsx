@@ -5,18 +5,20 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import {
   JuiDialogTitleWithAction,
   JuiDialogContentWithFill,
 } from 'jui/components/Dialog';
 import { ProfileDialogPersonTitle } from './Title';
-// import { ProfileDialogPersonContent } from './Content';
+import { ProfileDialogPersonContent } from './Content';
 
 type Props = {
   id: number;
   dismiss: () => void;
 };
 
+@observer
 class ProfileDialogPerson extends Component<Props> {
   constructor(props: Props) {
     super(props);
@@ -30,8 +32,7 @@ class ProfileDialogPerson extends Component<Props> {
           <ProfileDialogPersonTitle id={id} dismiss={dismiss} />
         </JuiDialogTitleWithAction>
         <JuiDialogContentWithFill>
-          body
-          {/* <ProfileDialogPersonContent id={id} dismiss={dismiss} /> */}
+          <ProfileDialogPersonContent id={id} dismiss={dismiss} />
         </JuiDialogContentWithFill>
       </>
     );

@@ -10,7 +10,9 @@ import { ProfileDialogPersonViewModel } from '../ProfileDialogPerson.ViewModel';
 jest.mock('../../../../../store/utils');
 
 const mockData = {
-  userDisplayName: 'Person name',
+  userDisplayName: 'Name 1',
+  awayStatus: 'Status 1',
+  jobTitle: 'Title 1',
 };
 
 const props = {
@@ -41,7 +43,9 @@ describe('ProfileDialogPersonViewModel', () => {
     });
 
     it('should be get changed person entity when change person entity data [JPT-405]', () => {
-      mockData.userDisplayName = 'Person name 2';
+      mockData.userDisplayName = 'Name 2';
+      mockData.awayStatus = 'Status 2';
+      mockData.jobTitle = 'Title 2';
       expect(vm.person).toEqual(mockData);
     });
   });

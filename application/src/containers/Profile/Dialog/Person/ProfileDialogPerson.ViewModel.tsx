@@ -25,7 +25,7 @@ class ProfileDialogPersonViewModel
 
   @computed
   get person() {
-    return getEntity<Person, PersonModel>(ENTITY_NAME.GROUP, this.id);
+    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.id);
   }
 
   dismiss() {

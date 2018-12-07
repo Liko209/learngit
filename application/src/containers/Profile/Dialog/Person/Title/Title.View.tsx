@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileDialogPersonTitleViewProps } from './types';
 import {
@@ -14,6 +15,7 @@ import {
 import { Favorite } from '@/containers/common';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 
+@observer
 class ProfileDialogPersonTitleViewComponent extends Component<
   WithNamespaces & ProfileDialogPersonTitleViewProps
 > {

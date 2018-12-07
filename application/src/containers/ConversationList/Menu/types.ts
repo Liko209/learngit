@@ -7,12 +7,14 @@ import { MouseEvent } from 'react';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 
 type MenuProps = {
+  personId: number;
   groupId: number;
   anchorEl: HTMLElement | null;
   onClose: (event: MouseEvent<HTMLElement>) => void;
 };
 
 type MenuViewProps = {
+  personId: number;
   groupId: number;
   open: boolean;
   anchorEl: HTMLElement | null;
@@ -22,7 +24,6 @@ type MenuViewProps = {
   showClose?: boolean;
   onClose: (event: MouseEvent<HTMLElement>) => void;
   toggleFavorite: () => Promise<ServiceCommonErrorType>;
-  isShowGroupTeamProfile: boolean;
   closeConversation: (
     shouldSkipNextTime: boolean,
   ) => Promise<ServiceCommonErrorType>;
