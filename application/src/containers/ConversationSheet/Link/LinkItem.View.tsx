@@ -17,7 +17,6 @@ type Props = {
 class LinkItemView extends React.Component<Props> {
   render() {
     const { postItems, onLinkItemClick } = this.props;
-    console.log(postItems, '------linkkk');
     return (
       <>
         {postItems.map((item: LinkItem) => {
