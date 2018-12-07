@@ -80,8 +80,7 @@ class ItemService extends BaseService<Item> {
       return false;
     }
     const dao = daoManager.getDao(this.DaoClass) as ItemDao;
-    const fileItems = await dao.getExistGroupFilesByName(groupId, fileName);
-    return fileItems.length > 0;
+    return await dao.isFileItemExist(groupId, fileName, true);
   }
 
   getUploadProgress(itemId: number): Progress | undefined {

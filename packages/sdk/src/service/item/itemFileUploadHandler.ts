@@ -293,8 +293,8 @@ class ItemFileUploadHandler {
     return this._progressCaches;
   }
 
-  private async _updateItem(existItem: ItemFile, storedFile: StoredFile) {
-    const fileVersion = this._toFileVersion(storedFile);
+  private async _updateItem(existItem: ItemFile, newStoredFile: StoredFile) {
+    const fileVersion = this._toFileVersion(newStoredFile);
     existItem.is_new = false;
     existItem.versions.push(fileVersion);
     existItem.modified_at = Date.now();
@@ -312,6 +312,7 @@ class ItemFileUploadHandler {
     const existFiles = await itemDao.getExistGroupFilesByName(
       groupId,
       fileName,
+      true,
     );
     if (existFiles && existFiles.length > 0) {
       const sorted = existFiles.sort((lhs, rhs) => {

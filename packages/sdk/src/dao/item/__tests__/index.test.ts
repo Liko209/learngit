@@ -2,7 +2,6 @@ import ItemDao from '../';
 import { setup } from '../../__tests__/utils';
 import { Item } from '../../../models';
 import { itemFactory } from '../../../__tests__/factories';
-import { match } from 'minimatch';
 
 describe('Item Dao', () => {
   let itemDao: ItemDao;
@@ -87,7 +86,7 @@ describe('Item Dao', () => {
     });
   });
 
-  describe('getExistGroupFilesByName()', () => {
+  function buildTestItems(): Item[] {
     const items: Item[] = [
       itemFactory.build({
         id: 1,
@@ -115,6 +114,11 @@ describe('Item Dao', () => {
         name: 'file5',
       }),
     ];
+    return items;
+  }
+
+  describe('isFileItemExist()', () => {
+    const items: Item[] = buildTestItems();
     beforeEach(async () => {
       const { database } = setup();
       itemDao = new ItemDao(database);
@@ -122,18 +126,49 @@ describe('Item Dao', () => {
     });
 
     it.each`
-      groupId | fileName   | res           | comment
-      ${123}  | ${'file1'} | ${[items[0]]} | ${'group id and name all match'}
-      ${321}  | ${'file4'} | ${[items[3]]} | ${'group id and name all match but group id is in a array'}
-      ${123}  | ${'file3'} | ${[]}         | ${'group match, file not match'}
-      ${999}  | ${'file3'} | ${[]}         | ${'group not match , file not match'}
-      ${321}  | ${'file5'} | ${[]}         | ${'should not match pseudo item'}
+      groupId | fileName   | res      | excludePseudo | comment
+      ${123}  | ${'file1'} | ${true}  | ${true}       | ${'group id and name all match'}
+      ${321}  | ${'file4'} | ${true}  | ${true}       | ${'group id and name all match but group id is in a array'}
+      ${321}  | ${'file5'} | ${true}  | ${false}      | ${'should match pseudo item'}
+      ${123}  | ${'file3'} | ${false} | ${true}       | ${'group match, file not match'}
+      ${999}  | ${'file3'} | ${false} | ${true}       | ${'group not match , file not match'}
+      ${321}  | ${'file5'} | ${false} | ${true}       | ${'should not match pseudo item'}
+    `(
+      'should return true when item matched: $comment',
+      async ({ groupId, fileName, excludePseudo, res }) => {
+        const result = await itemDao.isFileItemExist(
+          groupId,
+          fileName,
+          excludePseudo,
+        );
+        expect(result).toEqual(res);
+      },
+    );
+  });
+
+  describe('getExistGroupFilesByName()', () => {
+    const items: Item[] = buildTestItems();
+    beforeEach(async () => {
+      const { database } = setup();
+      itemDao = new ItemDao(database);
+      await itemDao.bulkPut(items);
+    });
+
+    it.each`
+      groupId | fileName   | res           | excludePseudo | comment
+      ${123}  | ${'file1'} | ${[items[0]]} | ${true}       | ${'group id and name all match'}
+      ${321}  | ${'file4'} | ${[items[3]]} | ${true}       | ${'group id and name all match but group id is in a array'}
+      ${321}  | ${'file5'} | ${[items[4]]} | ${false}      | ${'should match pseudo item'}
+      ${123}  | ${'file3'} | ${[]}         | ${true}       | ${'group match, file not match'}
+      ${999}  | ${'file3'} | ${[]}         | ${true}       | ${'group not match , file not match'}
+      ${321}  | ${'file5'} | ${[]}         | ${true}       | ${'should not match pseudo item'}
     `(
       'should return matched items: $comment',
-      async ({ groupId, fileName, res }) => {
+      async ({ groupId, fileName, excludePseudo, res }) => {
         const result = await itemDao.getExistGroupFilesByName(
           groupId,
           fileName,
+          excludePseudo,
         );
         expect(result).toEqual(res);
       },
