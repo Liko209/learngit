@@ -8,17 +8,16 @@ import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileButtonViewProps } from './types';
 import { JuiModal } from '@/containers/Dialog';
-import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
+// import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
 import { MiniCard } from '@/containers/MiniCard';
-
-type Props = ProfileButtonViewProps & WithNamespaces;
+import { ProfileDialogGroup } from '@/containers/Profile/Dialog';
 import { JuiButton } from 'jui/components/Buttons';
 
-class ProfileButton extends Component<Props> {
+class ProfileButton extends Component<WithNamespaces & ProfileButtonViewProps> {
   private onClick = () => {
     const { id } = this.props;
     MiniCard.dismissProfile();
-    JuiModal.open(GroupTeamProfile, {
+    JuiModal.open(ProfileDialogGroup, {
       componentProps: { id },
       size: 'medium',
     });
