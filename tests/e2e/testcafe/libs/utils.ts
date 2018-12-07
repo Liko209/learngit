@@ -11,8 +11,12 @@ export function parseArgs(argsString: string) {
   return argsString.split(',').filter(Boolean).map(s => s.trim());
 }
 
-export function flattenGlobs(globs: string[]): string[] {
-  return _(globs).flatMap(g => G.sync(g)).uniq().value();
+export function flattenGlobs(globs: string[], needShuffle: Boolean = false): string[] {
+  let newArray = _(globs).flatMap(g => G.sync(g)).uniq().value();
+  if (needShuffle) {
+    return _.shuffle(newArray);
+  }
+  return newArray;
 }
 
 export class ConfigLoader {
