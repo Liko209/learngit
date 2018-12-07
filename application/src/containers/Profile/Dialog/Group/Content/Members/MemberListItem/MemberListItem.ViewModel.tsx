@@ -11,12 +11,12 @@ import { MemberListItemProps } from './types';
 
 class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
   @computed
-  private get pid() {
+  get pid() {
     return this.props.pid; // person id
   }
 
   @computed
-  private get cid() {
+  get cid() {
     return this.props.cid; // conversation id
   }
 
@@ -31,13 +31,13 @@ class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
   }
 
   @computed
-  get isThePersonGuest() {
-    return this._group.isThePersonGuest(this.pid);
+  get isThePersonAdmin() {
+    return this._group.isThePersonAdmin(this.pid);
   }
 
   @computed
-  get isThePersonAdmin() {
-    return this._group.isThePersonAdmin(this.pid);
+  get isThePersonGuest() {
+    return this._group.isThePersonGuest(this.pid);
   }
 }
 export { MemberListItemViewModel };
