@@ -9,15 +9,15 @@ import {
   JuiDialogTitleWithAction,
   JuiDialogContentWithFill,
 } from 'jui/components/Dialog';
-import { ProfileDialogGroupTitle } from './Title';
-import { ProfileDialogGroupContent } from './Content';
+import { ProfileDialogPersonTitle } from './Title';
+// import { ProfileDialogPersonContent } from './Content';
 
 type Props = {
   id: number;
   dismiss: () => void;
 };
 
-class ProfileDialogGroup extends Component<Props> {
+class ProfileDialogPerson extends Component<Props> {
   constructor(props: Props) {
     super(props);
   }
@@ -27,14 +27,15 @@ class ProfileDialogGroup extends Component<Props> {
     return (
       <>
         <JuiDialogTitleWithAction>
-          <ProfileDialogGroupTitle id={id} dismiss={dismiss} />
+          <ProfileDialogPersonTitle id={id} dismiss={dismiss} />
         </JuiDialogTitleWithAction>
         <JuiDialogContentWithFill>
-          <ProfileDialogGroupContent id={id} dismiss={dismiss} />
+          body
+          {/* <ProfileDialogPersonContent id={id} dismiss={dismiss} /> */}
         </JuiDialogContentWithFill>
       </>
     );
   }
 }
 
-export { ProfileDialogGroup };
+export { ProfileDialogPerson };

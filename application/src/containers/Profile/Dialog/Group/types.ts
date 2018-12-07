@@ -7,7 +7,7 @@
 import GroupModel from '@/store/models/Group';
 
 type ProfileDialogGroupProps = {
-  id: number;
+  id: number; // conversation id
   dismiss: () => void;
 };
 
