@@ -112,7 +112,8 @@
     "loading": 1000,
     "dragging": 2000,
     "moreMenu": 999,
-    "memberListHeader": 100
+    "memberListHeader": 100,
+    "floatButton": 10
   },
   "size": {
     "width": 4,

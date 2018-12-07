@@ -96,7 +96,8 @@ type Theme = {
     loading: number;
     dragging: number;
     moreMenu: number;
-    memberListHeader: number
+    memberListHeader: number;
+    floatButton: number;
   };
   size: {
     width: number;
@@ -154,7 +155,7 @@ type Theme = {
       fontWeight: number;
       fontFamily: string;
       lineHeight: string;
-    }
+    };
   };
   boxShadow: {
     val1: string;
@@ -163,7 +164,7 @@ type Theme = {
   };
   maxHeight: {
     dialog: string;
-  }
+  };
 } & MuiTheme;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;
