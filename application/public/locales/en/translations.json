@@ -127,5 +127,6 @@
   "goToTeamConversation": "Go to the conversation with team",
   "Message": "Message",
   "more": "more",
-  "close": "close"
+  "close": "close",
+  "NoInternetConnection": "No Internet Connection"
 }
