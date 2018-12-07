@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import Portal from '@material-ui/core/Portal';
 import styled from '../../foundation/styled-components';
 import {
   palette,
@@ -17,7 +16,7 @@ import {
 import { JuiTypography } from '../../foundation/Typography';
 import { JuiCircularProgress } from '../../components/Progress';
 import { JuiLink } from '../../components/Link';
-import { JuiBackdrop } from '../../components/Backdrop';
+import { JuiRightRailLoading } from './RightRailLoding';
 
 const LoadingWrapper = styled.div`
   display: flex;
@@ -35,12 +34,6 @@ const Progress = styled(JuiCircularProgress)`
     }
   }
   margin: ${spacing(4)};
-`;
-
-const Backdrop = styled(JuiBackdrop)`
-  && {
-    z-index: ${({ theme }) => theme.zIndex.dragging};
-  }
 `;
 
 const Loading = styled.div`
@@ -70,25 +63,55 @@ type JuiConversationLoadingProps = {
   onClick: (event: React.MouseEvent<HTMLSpanElement>) => void;
 };
 
-const JuiConversationLoading = (props: JuiConversationLoadingProps) => {
-  const { onClick, tip, linkText, showTip = false } = props;
+const DELAY_LOADING = 300;
 
-  return (
-    <LoadingWrapper>
-      <Portal container={document.body}>
-        <Backdrop open={true} invisible={true} />
-      </Portal>
-      <Loading>
-        <Progress />
-        {showTip && (
-          <Tip>
-            {tip}
-            <TipLink handleOnClick={onClick}>{linkText}</TipLink>
-          </Tip>
-        )}
-      </Loading>
-    </LoadingWrapper>
-  );
-};
+class JuiConversationLoading extends React.Component<
+  JuiConversationLoadingProps,
+  {}
+> {
+  timer: NodeJS.Timeout;
+
+  state = {
+    showLoading: false,
+  };
+
+  constructor(props: JuiConversationLoadingProps) {
+    super(props);
+  }
+
+  componentDidMount() {
+    this.timer = setTimeout(() => {
+      this.setState({
+        showLoading: true,
+      });
+    },                      DELAY_LOADING);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
+
+  render() {
+    const { showLoading } = this.state;
+    const { onClick, tip, linkText, showTip = false } = this.props;
+
+    return (
+      showLoading && (
+        <LoadingWrapper>
+          <Loading>
+            <Progress />
+            {showTip && (
+              <Tip>
+                {tip}
+                <TipLink handleOnClick={onClick}>{linkText}</TipLink>
+              </Tip>
+            )}
+          </Loading>
+          <JuiRightRailLoading />
+        </LoadingWrapper>
+      )
+    );
+  }
+}
 
 export { JuiConversationLoading };

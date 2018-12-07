@@ -6,12 +6,6 @@
 import history from '@/history';
 import { service } from 'sdk';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-import storeManager from '@/store';
-import { GLOBAL_KEYS } from '@/store/constants';
-
-const DELAY_LOADING = 300;
-
-const globalStore = storeManager.getGlobalStore();
 
 const getConversationId = async (id: number) => {
   const { GroupService } = service;
@@ -39,21 +33,11 @@ const getConversationId = async (id: number) => {
 
 async function goToConversation(id: number) {
   let conversationId;
-  const timer = setTimeout(() => {
-    globalStore.set(GLOBAL_KEYS.MESSAGE_LOADING, {
-      isLoading: true,
-      conversationId: id, // need set prev id in order to try again
-    });
-  },                       DELAY_LOADING);
-  conversationId = await getConversationId(id);
-  clearTimeout(timer);
-  if (!conversationId) return false;
 
-  globalStore.set(GLOBAL_KEYS.MESSAGE_LOADING, {
-    conversationId,
-    isLoading: false,
-  });
-  history.push(`/messages/${conversationId}`);
+  history.push('/messages', { waiting: true });
+  conversationId = await getConversationId(id);
+  if (!conversationId) return false;
+  history.replace(`/messages/${conversationId}`);
   return true;
 }
 

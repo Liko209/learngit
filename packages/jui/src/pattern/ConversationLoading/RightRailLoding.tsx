@@ -11,7 +11,6 @@ import { ThemeProps } from '../../foundation/theme/theme';
 import { palette, grey } from '../../foundation/utils';
 
 const Wrapper = styled.div`
-  width: 100%;
   height: 100%;
   background: ${grey('50')};
   border-left: 1px solid ${palette('common', 'black', 1)};
