@@ -7,8 +7,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { computed, action } from 'mobx';
 import { MoreProps } from './types';
 import { GroupService } from 'sdk/service';
-// import { getIdType } from '@/common/getIdType';
-// import { TypeDictionary } from 'sdk/utils';
+// import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 class MoreViewModel extends StoreViewModel<MoreProps> {
   private _groupService: GroupService = GroupService.getInstance();
@@ -31,7 +30,7 @@ class MoreViewModel extends StoreViewModel<MoreProps> {
 
   // @computed
   // get isTeam() {
-  //   return getIdType(this._id) === TypeDictionary.TYPE_ID_TEAM;
+  //   return GlipTypeUtil.extractTypeId(this._id) === TypeDictionary.TYPE_ID_TEAM;
   // }
 }
 export { MoreViewModel };

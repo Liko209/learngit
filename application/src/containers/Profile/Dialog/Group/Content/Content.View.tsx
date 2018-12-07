@@ -37,29 +37,32 @@ class ProfileDialogGroupContentViewComponent extends Component<
   }
   render() {
     const { id, group, dismiss } = this.props;
+    const Summary = JuiProfileDialogContentSummary;
+    const Left = JuiProfileDialogContentSummaryLeft;
+    const Right = JuiProfileDialogContentSummaryRight;
+    const Name = JuiProfileDialogContentSummaryName;
+    const Description = JuiProfileDialogContentSummaryDescription;
+    const Buttons = JuiProfileDialogContentSummaryButtons;
+    const Members = JuiProfileDialogContentMembers;
     return (
       <>
-        <JuiProfileDialogContentSummary>
-          <JuiProfileDialogContentSummaryLeft>
+        <Summary>
+          <Left>
             <GroupAvatar cid={id} size="xlarge" />
-          </JuiProfileDialogContentSummaryLeft>
-          <JuiProfileDialogContentSummaryRight>
-            <JuiProfileDialogContentSummaryName needEllipsis={!group.isTeam}>
-              {group.displayName}
-            </JuiProfileDialogContentSummaryName>
-            <JuiProfileDialogContentSummaryDescription>
-              {group.description}
-            </JuiProfileDialogContentSummaryDescription>
-            <JuiProfileDialogContentSummaryButtons>
+          </Left>
+          <Right>
+            <Name needEllipsis={!group.isTeam}>{group.displayName}</Name>
+            <Description>{group.description}</Description>
+            <Buttons>
               <Message id={id} dismiss={dismiss} render={this.renderMessage} />
-            </JuiProfileDialogContentSummaryButtons>
-          </JuiProfileDialogContentSummaryRight>
-        </JuiProfileDialogContentSummary>
+            </Buttons>
+          </Right>
+        </Summary>
         <JuiDivider />
-        <JuiProfileDialogContentMembers>
+        <Members>
           <MemberHeader id={id} />
           <MemberList id={id} />
-        </JuiProfileDialogContentMembers>
+        </Members>
       </>
     );
   }

@@ -14,17 +14,23 @@ const props = {
   id: 1,
   dismiss: jest.fn(),
 };
-const vm = new MemberHeaderViewModel(props);
+let vm: MemberHeaderViewModel;
 
-describe('MemberHeader.ViewModel', () => {
+describe('MemberHeaderViewModel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    vm = new MemberHeaderViewModel(props);
   });
 
-  it('should be get correct boolean value when invoke class instance property hasShadow', () => {
-    globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, true);
-    expect(vm.hasShadow).toEqual(true);
-    globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
-    expect(vm.hasShadow).toEqual(false);
+  describe('hasShadow', () => {
+    it('should be get true when invoke class instance property hasShadow', () => {
+      globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, true);
+      expect(vm.hasShadow).toEqual(true);
+    });
+
+    it('should be get false when invoke class instance property hasShadow', () => {
+      globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
+      expect(vm.hasShadow).toEqual(false);
+    });
   });
 });

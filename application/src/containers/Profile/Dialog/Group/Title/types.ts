@@ -6,8 +6,8 @@
 
 import { ProfileDialogGroupProps, ProfileDialogGroupViewProps } from '../types';
 
-type ProfileDialogGroupTitleProps = ProfileDialogGroupProps & {};
+type ProfileDialogGroupTitleProps = ProfileDialogGroupProps;
 
-type ProfileDialogGroupTitleViewProps = ProfileDialogGroupViewProps & {};
+type ProfileDialogGroupTitleViewProps = ProfileDialogGroupViewProps;
 
 export { ProfileDialogGroupTitleProps, ProfileDialogGroupTitleViewProps };

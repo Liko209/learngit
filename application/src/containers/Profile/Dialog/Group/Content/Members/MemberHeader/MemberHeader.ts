@@ -13,4 +13,4 @@ const MemberHeader = buildContainer<MemberHeaderProps>({
   ViewModel: MemberHeaderViewModel,
 });
 
-export { MemberHeader };
+export { MemberHeader, MemberHeaderProps };

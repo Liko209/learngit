@@ -16,4 +16,4 @@ const ProfileDialogGroupContent = buildContainer<
   ViewModel: ProfileDialogGroupContentViewModel,
 });
 
-export { ProfileDialogGroupContent };
+export { ProfileDialogGroupContent, ProfileDialogGroupContentProps };

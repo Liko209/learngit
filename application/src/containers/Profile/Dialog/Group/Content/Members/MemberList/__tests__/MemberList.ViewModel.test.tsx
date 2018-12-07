@@ -25,29 +25,33 @@ const props = {
 };
 const vm = new MemberListViewModel(props);
 
-describe('MemberList.ViewModel', () => {
+describe('MemberListViewModel', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
   });
 
-  it('should be get conversation id when the component is instantiated', () => {
-    expect(vm.id).toEqual(props.id);
+  describe('id', () => {
+    it('should be get conversation id when the component is instantiated', () => {
+      expect(vm.id).toEqual(props.id);
+    });
   });
 
-  it('should be get correct memberIds when scrolling [JPT-405]', () => {
-    // first page
-    const firstPageMemberIds = mockData.slice(0, 20);
-    jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(firstPageMemberIds);
-    expect(vm.memberIds).toMatchObject(firstPageMemberIds);
-    // second page
-    vm.toBottom();
-    const secondPageMemberIds = mockData.slice(20, 40);
-    jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(secondPageMemberIds);
-    expect(vm.memberIds).toMatchObject(secondPageMemberIds);
-    // third page
-    vm.toBottom();
-    const thirdPageMemberIds = mockData.slice(40, 50);
-    jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(thirdPageMemberIds);
-    expect(vm.memberIds).toMatchObject(thirdPageMemberIds);
+  describe('memberIds', () => {
+    it('should be get correct memberIds when scrolling [JPT-405]', () => {
+      // first page
+      const firstPageMemberIds = mockData.slice(0, 20);
+      jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(firstPageMemberIds);
+      expect(vm.memberIds).toMatchObject(firstPageMemberIds);
+      // second page
+      vm.toBottom(); // next page
+      const secondPageMemberIds = mockData.slice(20, 40);
+      jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(secondPageMemberIds);
+      expect(vm.memberIds).toMatchObject(secondPageMemberIds);
+      // third page
+      vm.toBottom(); // next page
+      const thirdPageMemberIds = mockData.slice(40, 50);
+      jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(thirdPageMemberIds);
+      expect(vm.memberIds).toMatchObject(thirdPageMemberIds);
+    });
   });
 });

@@ -21,15 +21,19 @@ const props = {
 
 const vm = new MoreViewModel(props);
 
-describe('More.ViewModel', () => {
-  it('should be get route url when invoke class instance property url [JPT-405]', () => {
-    const url = `${window.location.origin}/messages/${props.id}`;
-    expect(vm.url).toBe(url);
+describe('MoreViewModel', () => {
+  describe('url', () => {
+    it('should be get route url when invoke class instance property url [JPT-405]', () => {
+      const url = `${window.location.origin}/messages/${props.id}`;
+      expect(vm.url).toBe(url);
+    });
   });
 
-  it('should be get conversation email when invoke class instance property email [JPT-405]', () => {
-    const EMAIL = 'EMAIL';
-    groupService.getGroupEmail = jest.fn().mockResolvedValueOnce(EMAIL);
-    expect(vm.getEmail()).resolves.toBe(EMAIL);
+  describe('email', () => {
+    it('should be get conversation email when invoke class instance property email [JPT-405]', () => {
+      const EMAIL = 'EMAIL';
+      groupService.getGroupEmail = jest.fn().mockResolvedValueOnce(EMAIL);
+      expect(vm.getEmail()).resolves.toBe(EMAIL);
+    });
   });
 });

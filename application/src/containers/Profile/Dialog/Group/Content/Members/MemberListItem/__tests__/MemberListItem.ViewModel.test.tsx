@@ -32,7 +32,7 @@ const props = {
 };
 const vm = new MemberListItemViewModel(props);
 
-describe('MemberListItem.ViewModel', () => {
+describe('MemberListItemViewModel', () => {
   beforeAll(() => {
     (getEntity as jest.Mock).mockImplementation((name, id) => {
       return mockMap[name];
@@ -43,31 +43,50 @@ describe('MemberListItem.ViewModel', () => {
     jest.clearAllMocks();
   });
 
-  it('should be get conversation id when the component is instantiated', () => {
-    expect(vm.cid).toEqual(props.cid);
+  describe('cid', () => {
+    it('should be get conversation id when the component is instantiated', () => {
+      expect(vm.cid).toEqual(props.cid);
+    });
   });
 
-  it('should be get person id when the component is instantiated', () => {
-    expect(vm.pid).toEqual(props.pid);
+  describe('pid', () => {
+    it('should be get person id when the component is instantiated', () => {
+      expect(vm.pid).toEqual(props.pid);
+    });
   });
 
-  it('should be get group entity when invoke class instance property person [JPT-405]', () => {
-    expect(vm.person).toEqual(mockPersonData);
-    mockPersonData.userDisplayName = 'Name 2';
-    expect(vm.person).toEqual(mockPersonData);
+  describe('person', () => {
+    it('should be get person entity when invoke class instance property person [JPT-405]', () => {
+      expect(vm.person).toEqual(mockPersonData);
+    });
+
+    it('should be get the changed person entity when change person entity data [JPT-405]', () => {
+      mockPersonData.userDisplayName = 'Name 2';
+      expect(vm.person).toEqual(mockPersonData);
+    });
   });
 
-  it('should be get correct boolean value when mock group entity isThePersonAdmin method [JPT-405]', () => {
-    mockGroupData.isThePersonAdmin = jest.fn().mockReturnValueOnce(true);
-    expect(vm.isThePersonAdmin).toEqual(true);
-    mockGroupData.isThePersonAdmin = jest.fn().mockReturnValueOnce(false);
-    expect(vm.isThePersonAdmin).toEqual(false);
+  describe('isThePersonAdmin', () => {
+    it('should be get true when mock group entity isThePersonAdmin method [JPT-405]', () => {
+      mockGroupData.isThePersonAdmin = jest.fn().mockReturnValueOnce(true);
+      expect(vm.isThePersonAdmin).toEqual(true);
+    });
+
+    it('should be get false when mock group entity isThePersonAdmin method [JPT-405]', () => {
+      mockGroupData.isThePersonAdmin = jest.fn().mockReturnValueOnce(false);
+      expect(vm.isThePersonAdmin).toEqual(false);
+    });
   });
 
-  it('should be get correct boolean value when mock group entity isThePersonGuest method [JPT-405]', () => {
-    mockGroupData.isThePersonGuest = jest.fn().mockReturnValueOnce(true);
-    expect(vm.isThePersonGuest).toEqual(true);
-    mockGroupData.isThePersonGuest = jest.fn().mockReturnValueOnce(false);
-    expect(vm.isThePersonGuest).toEqual(false);
+  describe('MemberListItemViewModel', () => {
+    it('should be get true when mock group entity isThePersonGuest method [JPT-405]', () => {
+      mockGroupData.isThePersonGuest = jest.fn().mockReturnValueOnce(true);
+      expect(vm.isThePersonGuest).toEqual(true);
+    });
+
+    it('should be get false when mock group entity isThePersonGuest method [JPT-405]', () => {
+      mockGroupData.isThePersonGuest = jest.fn().mockReturnValueOnce(false);
+      expect(vm.isThePersonGuest).toEqual(false);
+    });
   });
 });

@@ -23,23 +23,17 @@ class MemberListItem extends React.Component<
   render() {
     const { pid, person, t, isThePersonGuest, isThePersonAdmin } = this.props;
     const presence = <Presence uid={pid} borderSize="medium" />;
+    const ListItem = JuiProfileDialogContentMemberListItem;
+    const ListItemName = JuiProfileDialogContentMemberListItemName;
+    const ListItemAdmin = JuiProfileDialogContentMemberListItemAdmin;
+    const ListItemGuest = JuiProfileDialogContentMemberListItemGuest;
     return (
-      <JuiProfileDialogContentMemberListItem>
+      <ListItem>
         <Avatar uid={pid} presence={presence} />
-        <JuiProfileDialogContentMemberListItemName>
-          {person.userDisplayName}
-        </JuiProfileDialogContentMemberListItemName>
-        {isThePersonAdmin && (
-          <JuiProfileDialogContentMemberListItemAdmin>
-            {t('admin')}
-          </JuiProfileDialogContentMemberListItemAdmin>
-        )}
-        {isThePersonGuest && (
-          <JuiProfileDialogContentMemberListItemGuest>
-            {t('guest')}
-          </JuiProfileDialogContentMemberListItemGuest>
-        )}
-      </JuiProfileDialogContentMemberListItem>
+        <ListItemName>{person.userDisplayName}</ListItemName>
+        {isThePersonAdmin && <ListItemAdmin>{t('admin')}</ListItemAdmin>}
+        {isThePersonGuest && <ListItemGuest>{t('guest')}</ListItemGuest>}
+      </ListItem>
     );
   }
 }

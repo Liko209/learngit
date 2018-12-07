@@ -14,4 +14,4 @@ const ProfileDialogGroupTitle = buildContainer<ProfileDialogGroupTitleProps>({
   ViewModel: ProfileDialogGroupTitleViewModel,
 });
 
-export { ProfileDialogGroupTitle };
+export { ProfileDialogGroupTitle, ProfileDialogGroupTitleProps };

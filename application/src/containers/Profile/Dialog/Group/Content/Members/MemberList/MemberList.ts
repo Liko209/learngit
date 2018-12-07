@@ -22,4 +22,4 @@ const MemberList = buildContainer<MemberListProps>({
   },
 });
 
-export { MemberList };
+export { MemberList, MemberListProps };

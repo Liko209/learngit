@@ -13,4 +13,4 @@ const MemberListItem = buildContainer<MemberListItemProps>({
   ViewModel: MemberListItemViewModel,
 });
 
-export { MemberListItem };
+export { MemberListItem, MemberListItemProps };

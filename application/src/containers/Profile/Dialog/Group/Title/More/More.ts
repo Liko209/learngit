@@ -13,4 +13,4 @@ const More = buildContainer<MoreProps>({
   ViewModel: MoreViewModel,
 });
 
-export { More };
+export { More, MoreProps };
