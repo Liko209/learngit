@@ -44,11 +44,6 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
     this.props.updateCurrentConversationId(props.match.params.id);
   }
 
-  tryAgain = () => {
-    const { tryConversationId } = this.props;
-    goToConversation(tryConversationId);
-  }
-
   render() {
     const { isLeftNavOpen, currentConversationId } = this.props;
     let leftNavWidth = 72;

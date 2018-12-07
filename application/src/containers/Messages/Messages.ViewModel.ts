@@ -68,16 +68,6 @@ class MessagesViewModel extends AbstractViewModel<MessagesProps> {
   get isLeftNavOpen() {
     return getGlobalValue(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
   }
-
-  @computed
-  get loadingMessage() {
-    return getGlobalValue(GLOBAL_KEYS.MESSAGE_LOADING).isLoading;
-  }
-
-  @computed
-  get tryConversationId() {
-    return getGlobalValue(GLOBAL_KEYS.MESSAGE_LOADING).conversationId;
-  }
 }
 
 export { MessagesViewModel };
