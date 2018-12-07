@@ -4,41 +4,38 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
-import { Component } from 'react';
-import storeManager from '@/store';
-import { GLOBAL_KEYS } from '@/store/constants';
 import _ from 'lodash';
+import { AbstractViewModel } from '@/base';
+import { observable, action } from 'mobx';
 
 type NotificationProps = JuiSnackbarContentProps & {
   dismissible?: boolean;
 };
 
-type ShowNotificationOptions = JuiSnackbarContentProps & {
-  dismissible?: boolean;
+type ShowNotificationOptions = NotificationProps & {
   autoHideDuration?: number;
 };
 
-function showNotification(props: ShowNotificationOptions) {
-  const id = Date.now();
-  const globalStore = storeManager.getGlobalStore();
-  const dismiss = () => {
-    const arr = globalStore.get(GLOBAL_KEYS.TOASTS);
-    _.remove(arr, (item: any) => item.id === id);
-    globalStore.set(GLOBAL_KEYS.TOASTS, [...arr]);
-  };
-  const arr = globalStore.get(GLOBAL_KEYS.TOASTS);
-  arr.push({
-    id,
-    dismiss,
-    ...props,
-  });
-  globalStore.set(GLOBAL_KEYS.TOASTS, [...arr]);
-  return {
-    dismiss,
-  };
-}
+class Notification extends AbstractViewModel {
+  @observable
+  static data: object[] = [];
 
-class Notification extends Component<NotificationProps, {}> {
+  @action
+  private static _showNotification(props: ShowNotificationOptions) {
+    const id = Date.now();
+    const dismiss = () => {
+      _.remove(Notification.data, (item: any) => item.id === id);
+    };
+    Notification.data.push({
+      id,
+      dismiss,
+      ...props,
+    });
+    return {
+      dismiss,
+    };
+  }
+
   static flashToast(props: NotificationProps) {
     const config = {
       messageAlign: 'left',
@@ -46,7 +43,7 @@ class Notification extends Component<NotificationProps, {}> {
       autoHideDuration: 2000,
       ...props,
     };
-    return showNotification(config);
+    return Notification._showNotification(config);
   }
 
   static flagToast(props: NotificationProps) {
@@ -55,8 +52,8 @@ class Notification extends Component<NotificationProps, {}> {
       fullWidth: false,
       ...props,
     };
-    return showNotification(config);
+    return Notification._showNotification(config);
   }
 }
 
-export { Notification, NotificationProps };
+export { Notification, NotificationProps, ShowNotificationOptions };
