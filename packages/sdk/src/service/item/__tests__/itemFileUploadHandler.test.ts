@@ -180,7 +180,7 @@ describe('ItemFileService', () => {
       itemDao.delete.mockImplementation(() => {});
     });
 
-    it('cancel upload', async () => {
+    it('should call item dao delete function', async () => {
       await itemFileUploadHandler.cancelUpload(1);
       expect(itemDao.delete).toBeCalledTimes(1);
     });

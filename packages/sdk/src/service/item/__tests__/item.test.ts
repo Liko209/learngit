@@ -276,7 +276,7 @@ describe('ItemService', () => {
   });
 
   describe('cancelUpload()', () => {
-    it('cancel upload, invalid itemId', async () => {
+    it('should not call cancel upload, when invalid itemId', async () => {
       const itemFileUploadHandler = new ItemFileUploadHandler();
       jest
         .spyOn(itemService, '_getItemFileHandler')
@@ -286,7 +286,7 @@ describe('ItemService', () => {
       expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(0);
     });
 
-    it('cancel upload, valid itemId', async () => {
+    it('should call cancel upload, when valid itemId', async () => {
       const itemFileUploadHandler = new ItemFileUploadHandler();
       jest
         .spyOn(itemService, '_getItemFileHandler')
