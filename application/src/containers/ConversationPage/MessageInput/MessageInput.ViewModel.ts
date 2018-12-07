@@ -16,6 +16,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from './handler';
 import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
+import { ItemFile } from 'sdk/models';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -42,6 +43,8 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   draft: string = '';
   @observable
   error: string = '';
+  @observable
+  items: ItemFile[] = [];
   keyboardEventHandler = {
     enter: {
       key: 13,
@@ -141,7 +144,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         return;
       }
       vm.error = '';
-      if (content.trim()) {
+      if (content.trim() || vm.items.length > 0) {
         vm._sendPost(content);
         const onPostHandler = vm.props.onPost;
         onPostHandler && onPostHandler();
@@ -158,6 +161,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         text: content,
         groupId: this.id,
         users: atMentions ? this._users : undefined,
+        itemIds: this.items.map(item => item.id),
       });
     } catch (e) {
       // You do not need to handle the error because the message will display a resend
@@ -169,7 +173,9 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     form.append(FILE_FORM_DATA_KEYS.FILE_NAME, file.name);
     form.append(FILE_FORM_DATA_KEYS.FILE, file);
     const item = await this._itemService.sendItemFile(this.id, form, false);
-    console.log(item);
+    if (item) {
+      this.items.push(item);
+    }
     return item;
   }
 
