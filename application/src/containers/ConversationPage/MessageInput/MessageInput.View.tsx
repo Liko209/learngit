@@ -11,19 +11,33 @@ import { JuiMessageInput } from 'jui/pattern/MessageInput';
 import { Mention } from './Mention';
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
 import { observer } from 'mobx-react';
+import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
+import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
+import { AttachmentList } from 'jui/pattern/MessageInput/AttachmentList';
 
 @observer
 class MessageInputViewComponent extends Component<
   MessageInputViewProps & WithNamespaces,
   {
     modules: object;
+    files: File[];
   }
 > {
   private _mentionRef: React.RefObject<any> = React.createRef();
 
   state = {
     modules: {},
+    files: [],
   };
+
+  private _autoUploadFile = (files: FileList) => {
+    const array: File[] = this.state.files.slice(0);
+    for (let i = 0; i < files.length; ++i) {
+      array.push(files[i]);
+    }
+    console.log(38, array);
+    this.setState({ files: array });
+  }
 
   componentDidMount() {
     this.updateModules();
@@ -49,13 +63,21 @@ class MessageInputViewComponent extends Component<
 
   render() {
     const { draft, changeDraft, error, id, t } = this.props;
-    const { modules } = this.state;
+    const { modules, files } = this.state;
+    const toolbarNode = (
+      <MessageActionBar>
+        <AttachmentView onFileChanged={this._autoUploadFile} />
+      </MessageActionBar>
+    );
+    const attachmentsNode = <AttachmentList files={files} />;
     return (
       <JuiMessageInput
         value={draft}
         onChange={changeDraft}
         error={error ? t(error) : error}
         modules={modules}
+        toolbarNode={toolbarNode}
+        attachmentsNode={attachmentsNode}
       >
         <Mention id={id} ref={this._mentionRef} />
       </JuiMessageInput>

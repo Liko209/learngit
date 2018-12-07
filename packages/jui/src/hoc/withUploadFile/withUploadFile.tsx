@@ -36,10 +36,7 @@ function withUploadFile(Component: ComponentType<any>) {
 
     private _showFileDialog = (evt: MouseEvent) => {
       evt.stopPropagation();
-      const inputRef = this._fileInputRef.current;
-      if (inputRef) {
-        inputRef.click();
-      }
+      this.showFileDialog();
     }
 
     private _fileChanged = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -59,8 +56,15 @@ function withUploadFile(Component: ComponentType<any>) {
       }
     }
 
+    public showFileDialog = () => {
+      const inputRef = this._fileInputRef.current;
+      if (inputRef) {
+        inputRef.click();
+      }
+    }
+
     render() {
-      const { onClick, accept, multiple, ...rest } = this.props;
+      const { onClick, accept, multiple, onFileChanged, ...rest } = this.props;
       return (
         <Fragment>
           <Component {...rest} onClick={this._handleOnClickEvent} />

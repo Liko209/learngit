@@ -15,10 +15,12 @@ import { markdownFromDelta } from './markdown';
 
 import 'react-quill/dist/quill.snow.css';
 
+const spacing4 = spacing(4);
+
 const Wrapper = styled.div`
   position: relative;
   box-shadow: ${props => props.theme.shadows[2]};
-  padding: ${spacing(4)};
+  padding: 0 ${spacing4} ${spacing4} ${spacing4};
   z-index: ${({ theme }) => `${theme.zIndex.mobileStepper}`};
 `;
 
@@ -80,7 +82,10 @@ type Props = {
   error: string;
   children: React.ReactNode;
   modules: object;
+  toolbarNode?: React.ReactNode;
+  attachmentsNode?: React.ReactNode;
 };
+
 type State = {
   modules: {};
 };
@@ -122,9 +127,17 @@ class JuiMessageInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { value, error, children, modules } = this.props;
+    const {
+      value,
+      error,
+      children,
+      modules,
+      toolbarNode,
+      attachmentsNode,
+    } = this.props;
     return (
       <Wrapper>
+        {toolbarNode}
         <ReactQuill
           value={value}
           onChange={this.onChange}
@@ -135,6 +148,7 @@ class JuiMessageInput extends React.Component<Props, State> {
         {error ? <StyledError>{error}</StyledError> : null}
         {children}
         <GlobalStyle />
+        {attachmentsNode}
       </Wrapper>
     );
   }
