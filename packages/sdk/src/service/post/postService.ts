@@ -15,15 +15,16 @@ import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
-import { Post, Item, Raw, ItemFile } from '../../models';
+import { Post, Item, Raw } from '../../models';
 import { PostStatusHandler } from './postStatusHandler';
-import { POST_STATUS } from '../constants';
+import { POST_STATUS, SENDING_STATUS } from '../constants';
 import { ENTITY, SOCKET, SERVICE } from '../eventKey';
 import { transform } from '../utils';
-import { RawPostInfo, RawFilePostInfo } from './types';
+import { RawPostInfo } from './types';
 import { mainLogger } from 'foundation';
 import { ErrorParser, BaseError } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
+import { uniqueArray } from '../../utils';
 
 interface IPostResult {
   posts: Post[];
@@ -261,91 +262,6 @@ class PostService extends BaseService<Post> {
     return this.innerSendPost(buildPost);
   }
 
-  async sendPostFiles(params: RawPostInfo) {
-    mainLogger.info('start to send post log');
-    if (!params.groupId || params.groupId <= 0) {
-      return;
-    }
-
-    const groupId: number = params.groupId;
-    const buildPost: Post = PostServiceHandler.buildPostInfo(params);
-    await this._decorateFileItems(buildPost);
-    await this.handlePreInsertProcess(buildPost);
-
-    // handle params, if has file item, should send file first then send post
-    if (this._checkHasPseudoItem(groupId)) {
-      const postId = buildPost.id;
-      const listener = (
-        success: boolean,
-        preInsertId: number,
-        updatedId: number,
-      ) => {
-        if (success) {
-          // update post to db
-          const dao = daoManager.getDao(PostDao);
-          buildPost.item_ids = buildPost.item_ids.map((id: number) => {
-            if (id === preInsertId) {
-              return updatedId;
-            }
-            return id;
-          });
-          dao.update(buildPost);
-
-          // send update event
-          notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
-
-          if (!this._checkHasPseudoItem(groupId)) {
-            notificationCenter.removeListener(
-              SERVICE.ITEM_SERVICE.ITEM_FILE_UPLOAD_STATUS,
-              listener,
-            );
-            this._sendPost(buildPost);
-          }
-        } else {
-          // remove listener if item files are finished
-          const itemService: ItemService = ItemService.getInstance();
-          if (!itemService.isAnyItemFileInProgress(postId)) {
-            notificationCenter.removeListener(
-              SERVICE.ITEM_SERVICE.ITEM_FILE_UPLOAD_STATUS,
-              listener,
-            );
-          }
-        }
-      };
-
-      notificationCenter.on(
-        SERVICE.ITEM_SERVICE.ITEM_FILE_UPLOAD_STATUS,
-        listener,
-      );
-    } else {
-      this._sendPost(buildPost);
-    }
-  }
-
-  private _checkHasPseudoItem(groupId: number) {
-    const itemService: ItemService = ItemService.getInstance();
-    const itemFiles = itemService.getUploadItems(groupId);
-    return itemFiles.some((itemFile: ItemFile) => {
-      return itemFile.id < 0;
-    });
-  }
-
-  private async _decorateFileItems(post: Post) {
-    const itemService: ItemService = ItemService.getInstance();
-    const itemFiles = itemService.getUploadItems(post.group_id);
-    const itemIds: number[] = [];
-    itemFiles.forEach((itemFile: ItemFile) => {
-      itemIds.push(itemFile.id);
-      itemFile.post_ids = [post.id];
-    });
-
-    if (itemIds.length > 0) {
-      post.item_ids = itemIds;
-    }
-
-    await itemService.updatePseudoItemFiles(itemFiles);
-  }
-
   async reSendPost(postId: number): Promise<PostData[] | null> {
     if (this.isInPreInsert(postId)) {
       const dao = daoManager.getDao(PostDao);
@@ -360,7 +276,84 @@ class PostService extends BaseService<Post> {
 
   async innerSendPost(buildPost: Post): Promise<PostData[]> {
     await this.handlePreInsertProcess(buildPost);
+
+    if (this._getPseudoItemIdsFromPost(buildPost).length > 0) {
+      return await this._sendPostWithPreInsertItems(buildPost);
+    }
+
     return await this._sendPost(buildPost);
+  }
+
+  private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
+    const listener = (
+      success: boolean,
+      preInsertId: number,
+      updatedId: number,
+    ) => {
+      if (success) {
+        // update post to db
+        const postDao = daoManager.getDao(PostDao);
+        post.item_ids = post.item_ids.map((id: number) => {
+          if (id === preInsertId) {
+            return updatedId;
+          }
+          return id;
+        });
+        postDao.update(post);
+        notificationCenter.emitEntityUpdate(ENTITY.POST, [post]);
+
+        if (this._getPseudoItemIdsFromPost(post).length === 0) {
+          notificationCenter.removeListener(
+            SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+            listener,
+          );
+          this._sendPost(post);
+        }
+      }
+
+      const itemService: ItemService = ItemService.getInstance();
+      const itemStatuses = uniqueArray(
+        itemService.getItemsSendingStatus(post.item_ids),
+      );
+
+      const hasSucceed = this._hasSpecificStatus(
+        SENDING_STATUS.SUCCESS,
+        itemStatuses,
+      );
+      const hasInProgress = this._hasSpecificStatus(
+        SENDING_STATUS.INPROGRESS,
+        itemStatuses,
+      );
+
+      // all failed
+      if (!hasSucceed && !hasInProgress) {
+        this.handleSendPostFail(preInsertId);
+      }
+
+      // remove listener if item files are not in progress
+      if (!hasInProgress) {
+        notificationCenter.removeListener(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          listener,
+        );
+      }
+    };
+
+    notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
+    return [];
+  }
+
+  private _hasSpecificStatus(
+    targetStatus: SENDING_STATUS,
+    statusArr: SENDING_STATUS[],
+  ) {
+    return statusArr.indexOf(targetStatus) > -1;
+  }
+
+  private _getPseudoItemIdsFromPost(post: Post) {
+    return post.item_ids.filter((x: number) => {
+      x < 0;
+    });
   }
 
   async handlePreInsertProcess(buildPost: Post): Promise<void> {

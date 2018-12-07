@@ -5,7 +5,7 @@
  */
 
 import BaseService from '../../service/BaseService';
-import { daoManager, ItemDao } from '../../dao';
+import { daoManager, ItemDao, PRE_INSERT_ITEM_IDS } from '../../dao';
 import ItemAPI, { IRightRailItemModel } from '../../api/glip/item';
 import handleData, { sendFileItem, uploadStorageFile } from './handleData';
 import { transform } from '../utils';
@@ -23,6 +23,8 @@ import { SOCKET, ENTITY } from '../eventKey';
 import { NetworkResult } from '../../api/NetworkResult';
 import { ItemFileUploadHandler } from './itemFileUploadHandler';
 import notificationCenter from '../notificationCenter';
+import { ItemStatusHandler } from './itemStatusHandler';
+import { SENDING_STATUS } from '../constants';
 
 interface ISendFile {
   file: FormData;
@@ -32,6 +34,7 @@ interface ISendFile {
 class ItemService extends BaseService<Item> {
   static serviceName = 'ItemService';
   _itemFileUploadHandler: ItemFileUploadHandler;
+  _itemStatusHandler: ItemStatusHandler;
 
   constructor() {
     const subscription = {
@@ -94,8 +97,27 @@ class ItemService extends BaseService<Item> {
     return this._getItemFileHandler().getUploadProgress(itemId);
   }
 
-  isAnyItemFileInProgress(postId: number) {
-    return this._getItemFileHandler().isAnyItemFileInProgress(postId);
+  isItemInSending(itemId: number) {
+    return (
+      this._getItemStatusHandler().getSendingStatus(itemId) ===
+      SENDING_STATUS.INPROGRESS
+    );
+  }
+
+  isItemInSendFailed(itemId: number) {
+    return (
+      this._getItemStatusHandler().getSendingStatus(itemId) ===
+      SENDING_STATUS.FAIL
+    );
+  }
+
+  getItemsSendingStatus(itemIds: number[]) {
+    const result: SENDING_STATUS[] = [];
+    itemIds.forEach((id: number) => {
+      result.push(this._getItemStatusHandler().getSendingStatus(id));
+    });
+
+    return result;
   }
 
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {
@@ -110,6 +132,14 @@ class ItemService extends BaseService<Item> {
       groupId,
       limit,
     );
+  }
+
+  updatePreInsertItemStatus(itemId: number, status: SENDING_STATUS) {
+    this._getItemStatusHandler().setPreInsertId(itemId, status);
+  }
+
+  removeItemFromPreInsertIds(itemId: number) {
+    this._getItemStatusHandler().removePreInsertId(itemId);
   }
 
   async getNoteById(id: number): Promise<NoteItem | null> {
@@ -189,6 +219,13 @@ class ItemService extends BaseService<Item> {
       this._itemFileUploadHandler = new ItemFileUploadHandler();
     }
     return this._itemFileUploadHandler;
+  }
+
+  private _getItemStatusHandler(): ItemStatusHandler {
+    if (!this._itemStatusHandler) {
+      this._itemStatusHandler = new ItemStatusHandler(PRE_INSERT_ITEM_IDS);
+    }
+    return this._itemStatusHandler;
   }
 }
 

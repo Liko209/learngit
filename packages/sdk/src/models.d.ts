@@ -3,7 +3,7 @@
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { POST_STATUS, PRESENCE } from './service';
+import { POST_STATUS, PRESENCE, SENDING_STATUS } from './service';
 import { TeamPermission } from './service/group';
 
 export type BaseModel = {
@@ -225,6 +225,7 @@ export type Item = ExtendedBaseModel & {
   url: string;
   image?: string;
   do_not_render?: boolean;
+  sendStatus?: SENDING_STATUS;
 };
 
 export type ItemFile = Item & {
