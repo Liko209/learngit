@@ -9,6 +9,8 @@ import React, {
   PureComponent,
   Fragment,
   createRef,
+  ChangeEvent,
+  MouseEvent,
 } from 'react';
 import styled from '../../foundation/styled-components';
 
@@ -20,6 +22,7 @@ type UploadFileProps = {
   accept?: string;
   multiple?: boolean;
   onClick?: (evt: MouseEvent) => void;
+  onFileChanged?: (files: FileList) => void;
 };
 
 function withUploadFile(Component: ComponentType<any>) {
@@ -36,6 +39,15 @@ function withUploadFile(Component: ComponentType<any>) {
       const inputRef = this._fileInputRef.current;
       if (inputRef) {
         inputRef.click();
+      }
+    }
+
+    private _fileChanged = (evt: ChangeEvent<HTMLInputElement>) => {
+      evt.stopPropagation();
+      const inputRef = this._fileInputRef.current;
+      const { onFileChanged } = this.props;
+      if (inputRef && onFileChanged) {
+        onFileChanged(inputRef.files);
       }
     }
 
@@ -56,6 +68,7 @@ function withUploadFile(Component: ComponentType<any>) {
             accept={accept}
             multiple={multiple}
             ref={this._fileInputRef}
+            onChange={this._fileChanged}
             type="file"
           />
         </Fragment>

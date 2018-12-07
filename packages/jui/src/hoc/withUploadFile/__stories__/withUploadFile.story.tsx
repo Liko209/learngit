@@ -19,6 +19,13 @@ const AreaDiv = styled.div`
   border: 1px dashed black;
 `;
 
+const PreviewArea = styled.img`
+  width: 200px;
+  height: 200px;
+  display: flex;
+  border: 1px dashed black;
+`;
+
 storiesOf('HoC/withUploadFile', module).add('demo', () => {
   const accept = select(
     'accept',
@@ -40,12 +47,48 @@ storiesOf('HoC/withUploadFile', module).add('demo', () => {
   const AreaWithUploadFile = withUploadFile(Area);
 
   class Demo extends PureComponent<any, any> {
+    state = {
+      files: null,
+      fileData: null,
+      file: {},
+    };
+
+    private _fileChanged = (files: FileList) => {
+      if (files.length > 0) {
+        const file = files[0];
+        const reader = new FileReader();
+
+        // Closure to capture the file information.
+        reader.onload = () => {
+          this.setState({ file, fileData: reader.result });
+        };
+
+        // Read in the image file as a data URL.
+        reader.readAsDataURL(file);
+      }
+      this.setState({ files });
+    }
+
     render() {
+      const { fileData, file } = this.state;
+      const f = file as File;
       return (
         <div>
-          <AreaWithUploadFile multiple={multiple} accept={accept}>
+          <AreaWithUploadFile
+            multiple={multiple}
+            accept={accept}
+            onFileChanged={this._fileChanged}
+          >
             Click me to upload file
           </AreaWithUploadFile>
+          <div>
+            Selected file: <br />
+            name: {f.name} <br />
+            size: {f.size} <br />
+            lastModified: {f.lastModified} <br />
+            type: {f.type} <br />
+            <PreviewArea src={fileData} />
+          </div>
         </div>
       );
     }
