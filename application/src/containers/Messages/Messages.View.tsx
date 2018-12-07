@@ -7,7 +7,6 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Route, Switch, withRouter } from 'react-router-dom';
-import { goToConversation } from '@/common/goToConversation';
 import { JuiResponsiveLayout } from 'jui/foundation/Layout/Response';
 import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';

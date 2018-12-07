@@ -32,10 +32,8 @@ const getConversationId = async (id: number) => {
 };
 
 async function goToConversation(id: number) {
-  let conversationId;
-
   history.push('/messages', { waiting: true });
-  conversationId = await getConversationId(id);
+  const conversationId = await getConversationId(id);
   if (!conversationId) return false;
   history.replace(`/messages/${conversationId}`);
   return true;
