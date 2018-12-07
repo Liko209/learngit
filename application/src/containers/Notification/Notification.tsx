@@ -3,92 +3,43 @@
  * @Date: 2018-11-24 14:47:35
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  JuiSnackbarContent,
-  JuiSnackbarAction,
-  JuiSnackbarProps,
-} from 'jui/components/Snackbars';
-import Slide from '@material-ui/core/Slide';
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { genDivAndDismiss } from '@/common/genDivAndDismiss';
-import ThemeProvider from '@/containers/ThemeProvider';
-import Snackbar from '@material-ui/core/Snackbar';
-import { t } from 'i18next';
+import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
+import { Component } from 'react';
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+import _ from 'lodash';
 
-type NotificationPros = JuiSnackbarProps & {
+type NotificationProps = JuiSnackbarContentProps & {
   dismissible?: boolean;
 };
 
-type ReturnFunc = {
-  dismiss: () => void;
-};
-
-type ShowNotificationOptions = JuiSnackbarProps & {
+type ShowNotificationOptions = JuiSnackbarContentProps & {
   dismissible?: boolean;
   autoHideDuration?: number;
 };
 
-function transitionDown(props: any) {
-  return <Slide {...props} direction="down" />;
-}
-
 function showNotification(props: ShowNotificationOptions) {
-  const { container, dismiss } = genDivAndDismiss();
-  const { autoHideDuration, dismissible, message, ...rest } = props;
-  const action = [];
-
-  if (dismissible) {
-    action.push(
-      <JuiSnackbarAction
-        key="dismiss"
-        variant="icon"
-        aria-label="Dismiss"
-        onClick={dismiss}
-      >
-        close
-      </JuiSnackbarAction>,
-    );
-  }
-  let ms = message;
-  if (typeof message === 'string') {
-    ms = t(message);
-  }
-  const config = { ...rest, action, message: ms };
-
-  function render(params: JuiSnackbarProps) {
-    ReactDOM.render(
-      <ThemeProvider>
-        <Snackbar
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          open={true}
-          TransitionComponent={transitionDown}
-          onClose={dismiss}
-          autoHideDuration={autoHideDuration}
-        >
-          <JuiSnackbarContent {...params} />
-        </Snackbar>
-      </ThemeProvider>,
-      container,
-    );
-  }
-  render(config);
+  const id = Date.now();
+  const globalStore = storeManager.getGlobalStore();
+  const dismiss = () => {
+    const arr = globalStore.get(GLOBAL_KEYS.TOASTS);
+    _.remove(arr, (item: any) => item.id === id);
+    globalStore.set(GLOBAL_KEYS.TOASTS, [...arr]);
+  };
+  const arr = globalStore.get(GLOBAL_KEYS.TOASTS);
+  arr.push({
+    id,
+    dismiss,
+    ...props,
+  });
+  globalStore.set(GLOBAL_KEYS.TOASTS, [...arr]);
   return {
     dismiss,
   };
 }
 
-class Notification extends Component<NotificationPros, {}> {
-  static topHat(props: NotificationPros): ReturnFunc {
-    const config = {
-      messageAlign: 'center',
-      fullWidth: true,
-      ...props,
-    };
-    return showNotification(config);
-  }
-
-  static flashToast(props: NotificationPros) {
+class Notification extends Component<NotificationProps, {}> {
+  static flashToast(props: NotificationProps) {
     const config = {
       messageAlign: 'left',
       fullWidth: false,
@@ -98,7 +49,7 @@ class Notification extends Component<NotificationPros, {}> {
     return showNotification(config);
   }
 
-  static flagToast(props: NotificationPros) {
+  static flagToast(props: NotificationProps) {
     const config = {
       messageAlign: 'left',
       fullWidth: false,
@@ -108,4 +59,4 @@ class Notification extends Component<NotificationPros, {}> {
   }
 }
 
-export { Notification, NotificationPros };
+export { Notification, NotificationProps };
