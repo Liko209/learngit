@@ -129,5 +129,6 @@
   "more": "more",
   "close": "close",
   "messageLoadingErrorTip": "We weren't able to open this conversation.",
-  "tryAgain": "Try again."
+  "tryAgain": "Try again.",
+  "NoInternetConnection": "No Internet Connection"
 }

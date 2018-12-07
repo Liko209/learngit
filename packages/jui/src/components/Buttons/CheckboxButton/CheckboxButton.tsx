@@ -48,9 +48,11 @@ const WrappedMuiCheckboxButton = ({
   invisible,
   awake,
   colorScope,
+  colorName,
   ...rest
 }: JuiCheckboxButtonProps & {
   colorScope: keyof Palette;
+  colorName: string;
 }) => (
   <MuiCheckbox
     {...rest}
