@@ -24,7 +24,9 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
   }
 
   async componentDidMount() {
-    const { id: conversationIdOfUrl, waiting } = this.props.match.params;
+    const { id: conversationIdOfUrl } = this.props.match.params;
+    const { waiting } = this.props.location.state;
+
     if (waiting) {
       return;
     }
