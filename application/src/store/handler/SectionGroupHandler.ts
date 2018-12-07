@@ -72,11 +72,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private _oldFavGroupIds: number[] = [];
   private static _instance: SectionGroupHandler | undefined = undefined;
   private _hiddenGroupIds: number[] = [];
-  private static _afterInitChain: Promise<any>;
   @observable
   private _lastGroupId: number = 0;
+  private _dataLoader: Promise<any>;
   constructor() {
     super();
+    this._dataLoader = this._initHandlerMap();
     this._idSetAtom = createAtom(`SectionGroupHandler: ${Math.random()}`);
     this._idSet = new Set<number>();
     this._lastGroupId = storeManager
@@ -89,14 +90,15 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     autorun(() => this.removeOverLimitGroupByChangingCurrentGroupId());
   }
 
-  static getInstance(afterInit?: () => any) {
+  static getInstance() {
     if (!this._instance) {
       this._instance = new SectionGroupHandler();
-      this._afterInitChain = this._instance._initHandlerMap().then(afterInit);
-    } else {
-      this._afterInitChain.then(afterInit);
     }
     return this._instance;
+  }
+
+  onReady(handler: () => any) {
+    this._dataLoader = this._dataLoader.then(handler);
   }
 
   private _updateHiddenGroupIds() {

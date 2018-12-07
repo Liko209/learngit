@@ -81,10 +81,9 @@ export class MessageRouterChangeHelper {
 
   static handleSourceOfRouter(id: number) {
     const { state } = window.history.state || { state: {} };
-    if (!state || !state.source) {
-      SectionGroupHandler.getInstance(() => {
-        GroupHandler.accessGroup(id);
-      });
+    if (!state || !state.source || state.source !== 'leftRail') {
+      const handler = SectionGroupHandler.getInstance();
+      handler.onReady(() => GroupHandler.accessGroup(id));
     }
   }
 }

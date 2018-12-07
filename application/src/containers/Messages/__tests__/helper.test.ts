@@ -22,7 +22,7 @@ let mockedStateService: any;
 let mockedProfileService: any;
 let mockedGroupService: any;
 let mockedGlobalStore: any;
-
+let mockedSectionHanlder: any;
 function resetMockedServices() {
   mockedStateService = {
     lastGroupId: 110,
@@ -50,14 +50,15 @@ function resetMockedServices() {
   mockedGlobalStore = {
     set: jest.fn(),
   };
+  mockedSectionHanlder = {
+    onReady: (callback: Function) => callback(),
+  };
 }
 
 function mockDependencies() {
   SectionGroupHandler.getInstance = jest
     .fn()
-    .mockImplementation((callback: Function) => {
-      callback();
-    });
+    .mockImplementation(() => mockedSectionHanlder);
   StateService.getInstance = jest
     .fn()
     .mockImplementation(() => mockedStateService);
@@ -121,6 +122,11 @@ describe('MessageRouterChangeHelper', () => {
   describe('handleSourceOfRouter', () => {
     it('should access Group when the source is undefined', () => {
       window.history.state.state.source = undefined;
+      MessageRouterChangeHelper.handleSourceOfRouter(110);
+      expect(mockedGroupService.updateGroupLastAccessedTime).toBeCalledTimes(1);
+    });
+    it('should access Group when the source is other value except leftRail', () => {
+      window.history.state.state.source = 'rightRail';
       MessageRouterChangeHelper.handleSourceOfRouter(110);
       expect(mockedGroupService.updateGroupLastAccessedTime).toBeCalledTimes(1);
     });
