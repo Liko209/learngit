@@ -47,6 +47,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   items: ItemFile[] = [];
   @observable
   files: File[] = [];
+  @observable
+  duplicateFiles: File[] = [];
+  @observable
+  uniqueFiles: File[] = [];
 
   keyboardEventHandler = {
     enter: {
@@ -176,45 +180,99 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   autoUploadFile = async (files: FileList) => {
     if (files.length > 0) {
-      const array: File[] = this.files.slice(0);
+      const uniques: File[] = [];
+      const duplicateFiles: File[] = [];
       for (let i = 0; i < files.length; ++i) {
         const file = files[i];
         const exists = await this.isFileExists(file);
         if (exists) {
-          // TODO
+          duplicateFiles.push(file);
         } else {
-          array.push(file);
-          await this.uploadFile(file);
+          uniques.push(file);
         }
       }
-      this.files = array;
+
+      this.uniqueFiles = uniques;
+      // has duplicate files? will prompt user
+      if (duplicateFiles.length > 0) {
+        this.duplicateFiles = duplicateFiles;
+      } else {
+        // all files are unique, just upload them
+        await this._uploadFiles(uniques, false);
+        this.files = this.files.concat(uniques);
+        this._clearUpSelectedFiles();
+      }
     }
   }
 
-  uploadFile = async (file: File) => {
-    const form = new FormData();
-    form.append(FILE_FORM_DATA_KEYS.FILE_NAME, file.name);
-    form.append(FILE_FORM_DATA_KEYS.FILE, file);
-    const item = await this._itemService.sendItemFile(this.id, form, false);
-    if (item) {
-      this.items.push(item);
+  private _uploadFiles = async (files: File[], isUpdate: boolean) => {
+    for (let i = 0; i < files.length; ++i) {
+      await this.uploadFile(files[i], false);
     }
-    return item;
+  }
+
+  uploadFile = async (file: File, isUpdate: boolean) => {
+    try {
+      const form = new FormData();
+      form.append(FILE_FORM_DATA_KEYS.FILE_NAME, file.name);
+      form.append(FILE_FORM_DATA_KEYS.FILE, file);
+      const item = await this._itemService.sendItemFile(
+        this.id,
+        form,
+        isUpdate,
+      );
+      if (item) {
+        this.items.push(item);
+      }
+      return item;
+    } catch (e) {
+      // TODO
+      return null;
+    }
   }
 
   isFileExists = async (file: File) => {
     return await this._itemService.isFileExists(this.id, file.name);
   }
 
-  cancelUploadFile = (file: File) => {
+  cancelUploadFile = async (file: File) => {
     const index = this.files.findIndex(looper => looper === file);
     if (index >= 0) {
       const newFiles = this.files.slice(0);
       newFiles.splice(index, 1);
       this.files = newFiles;
       const item = this.items[index];
-      this._itemService.cancelUpload(item.id);
+      await this._itemService.cancelUpload(item.id);
     }
+  }
+
+  private _clearUpSelectedFiles = () => {
+    this.duplicateFiles = [];
+    this.uniqueFiles = [];
+  }
+
+  cancelDuplicateFiles = () => {
+    this._clearUpSelectedFiles();
+  }
+
+  // as new files
+  uploadDuplicateFiles = async () => {
+    await this._uploadFiles(this.duplicateFiles, false);
+    await this._uploadFiles(this.uniqueFiles, false);
+    // finally, update files
+    this.files = this.files
+      .concat(this.duplicateFiles)
+      .concat(this.uniqueFiles);
+    this._clearUpSelectedFiles();
+  }
+
+  updateDuplicateFiles = async () => {
+    // TODO
+    await this._uploadFiles(this.duplicateFiles, true);
+    await this._uploadFiles(this.uniqueFiles, false);
+    // finally, update files
+    this.files = this.files.concat(this.uniqueFiles);
+    this._clearUpSelectedFiles();
   }
 }
 

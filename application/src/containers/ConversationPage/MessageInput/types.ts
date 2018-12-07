@@ -15,11 +15,14 @@ type MessageInputViewProps = {
   error: string;
   forceSaveDraft(): void;
   autoUploadFile(files: FileList): void;
-  uploadFile(file: File): void;
   isFileExists(file: File): Promise<boolean>;
   cancelUploadFile(file: File): void;
   changeDraft(value: any): void;
+  uploadDuplicateFiles(): void;
+  cancelDuplicateFiles(): void;
+  updateDuplicateFiles(): void;
   files: File[];
+  duplicateFiles: File[];
   keyboardEventHandler: {
     enter: {
       key: number;

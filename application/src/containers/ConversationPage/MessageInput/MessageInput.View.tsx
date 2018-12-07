@@ -14,6 +14,7 @@ import { observer } from 'mobx-react';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
 import { AttachmentList } from 'jui/pattern/MessageInput/AttachmentList';
+import { DuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 
 @observer
 class MessageInputViewComponent extends Component<
@@ -50,6 +51,22 @@ class MessageInputViewComponent extends Component<
     });
   }
 
+  private _showDuplicateFilesDialogIfNeeded = () => {
+    const { duplicateFiles } = this.props;
+    const showDuplicateFiles = duplicateFiles.length > 0;
+    if (showDuplicateFiles) {
+      return (
+        <DuplicateAlert
+          duplicateFiles={duplicateFiles}
+          onCancel={this.props.cancelDuplicateFiles}
+          onCreate={this.props.uploadDuplicateFiles}
+          onUpdate={this.props.updateDuplicateFiles}
+        />
+      );
+    }
+    return null;
+  }
+
   render() {
     const { draft, changeDraft, error, id, t, files } = this.props;
     const { modules } = this.state;
@@ -64,17 +81,21 @@ class MessageInputViewComponent extends Component<
         cancelUploadFile={this.props.cancelUploadFile}
       />
     );
+
     return (
-      <JuiMessageInput
-        value={draft}
-        onChange={changeDraft}
-        error={error ? t(error) : error}
-        modules={modules}
-        toolbarNode={toolbarNode}
-        attachmentsNode={attachmentsNode}
-      >
-        <Mention id={id} ref={this._mentionRef} />
-      </JuiMessageInput>
+      <>
+        <JuiMessageInput
+          value={draft}
+          onChange={changeDraft}
+          error={error ? t(error) : error}
+          modules={modules}
+          toolbarNode={toolbarNode}
+          attachmentsNode={attachmentsNode}
+        >
+          <Mention id={id} ref={this._mentionRef} />
+        </JuiMessageInput>
+        {this._showDuplicateFilesDialogIfNeeded()}
+      </>
     );
   }
 }

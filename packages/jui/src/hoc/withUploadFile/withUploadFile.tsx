@@ -45,6 +45,7 @@ function withUploadFile(Component: ComponentType<any>) {
       const { onFileChanged } = this.props;
       if (inputRef && onFileChanged) {
         onFileChanged(inputRef.files);
+        inputRef.value = null;
       }
     }
 
