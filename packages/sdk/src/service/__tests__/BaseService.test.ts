@@ -11,7 +11,7 @@ import dataDispatcher from '../../component/DataDispatcher/index';
 import { BaseModel, Raw, SortableModel } from '../../models'; // eslint-disable-line
 import { BaseError, ErrorParser } from '../../utils';
 import _ from 'lodash';
-import { NetworkResultOk } from '../../api/NetworkResult';
+import { ApiResultOk } from '../../api/ApiResult';
 
 jest.mock('../../dao/base/BaseDao');
 jest.mock('../../dao/base/Query');
@@ -103,7 +103,7 @@ describe('BaseService', () => {
       jest.spyOn(service, 'getByIdFromDao').mockResolvedValue(null);
       jest
         .spyOn(service, 'getByIdFromAPI')
-        .mockResolvedValue(new NetworkResultOk({ id: 2 }, 200, {}));
+        .mockResolvedValue(new ApiResultOk({ id: 2 }, 200, {}));
 
       const result = await service.getById(2);
 
@@ -127,7 +127,7 @@ describe('BaseService', () => {
     it('should return data from API', async () => {
       const service = new AService();
       fakeApi.getDataById.mockResolvedValue(
-        new NetworkResultOk({ _id: 4 }, 200, {}),
+        new ApiResultOk({ _id: 4 }, 200, {}),
       );
 
       const result = await service.getByIdFromAPI(4);

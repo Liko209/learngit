@@ -9,7 +9,7 @@ import handleData, {
   handlePartialProfileUpdate,
 } from '../../profile/handleData';
 import { BaseError } from '../../../utils';
-import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
+import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import BaseService from '../../BaseService';
 
 const mockAccountService = {
@@ -111,7 +111,7 @@ describe('ProfileService', () => {
       };
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       ProfileAPI.putDataById.mockResolvedValueOnce(
-        new NetworkResultOk(
+        new ApiResultOk(
           {
             _id: 2,
             favorite_post_ids: [100, 101, 102, 103],
@@ -136,7 +136,7 @@ describe('ProfileService', () => {
       };
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       ProfileAPI.putDataById.mockResolvedValueOnce(
-        new NetworkResultOk(
+        new ApiResultOk(
           {
             _id: 2,
             favorite_post_ids: [100, 101],
@@ -168,7 +168,7 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
       jest.spyOn(profileService, 'getById').mockReturnValue(profile);
       ProfileAPI.putDataById.mockResolvedValueOnce(
-        new NetworkResultOk(returnValue, 200, {}),
+        new ApiResultOk(returnValue, 200, {}),
       );
       handleData.mockResolvedValueOnce(returnValue);
     }
@@ -223,7 +223,7 @@ describe('ProfileService', () => {
       jest.spyOn(mockAccountService, 'getCurrentUserId').mockReturnValueOnce(1);
       jest.spyOn(mockPersonService, 'getById').mockResolvedValueOnce(profile);
       ProfileAPI.putDataById.mockResolvedValueOnce(
-        new NetworkResultOk(returnValue, 200, {}),
+        new ApiResultOk(returnValue, 200, {}),
       );
       handleData.mockResolvedValueOnce(returnValue);
     }
@@ -273,11 +273,11 @@ describe('ProfileService', () => {
 
       if (ok) {
         ProfileAPI.putDataById.mockResolvedValueOnce(
-          new NetworkResultOk(returnValue, 200, {}),
+          new ApiResultOk(returnValue, 200, {}),
         );
       } else {
         ProfileAPI.putDataById.mockResolvedValueOnce(
-          new NetworkResultErr(returnValue, 403, {}),
+          new ApiResultErr(returnValue, 403, {}),
         );
       }
 
@@ -345,7 +345,7 @@ describe('ProfileService', () => {
       };
 
       ProfileAPI.putDataById.mockResolvedValueOnce(
-        new NetworkResultOk(returnValue, 200, {}),
+        new ApiResultOk(returnValue, 200, {}),
       );
 
       const result = await profileService.handleGroupIncomesNewPost([

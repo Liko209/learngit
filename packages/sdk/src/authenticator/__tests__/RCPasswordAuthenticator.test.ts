@@ -7,7 +7,7 @@
 import { loginRCByPassword, ITokenModel } from '../../api/ringcentral/login';
 import { loginGlip } from '../../api/glip/user';
 import { RCPasswordAuthenticator } from '..';
-import { NetworkResultOk } from '../../api/NetworkResult';
+import { ApiResultOk } from '../../api/ApiResult';
 
 jest.mock('../../api/glip/user', () => ({
   loginGlip: jest.fn(),
@@ -19,7 +19,7 @@ jest.mock('../../api/ringcentral/login', () => ({
 
 describe('RCPasswordAuthenticator', () => {
   it('should login success', async () => {
-    const loginRCResult = new NetworkResultOk<ITokenModel>(
+    const loginRCResult = new ApiResultOk<ITokenModel>(
       {
         access_token: 'rc_token',
         endpoint_id: 'endpoint_id',
@@ -36,7 +36,7 @@ describe('RCPasswordAuthenticator', () => {
       200,
       {},
     );
-    const loginGlipResult = new NetworkResultOk({}, 200, {
+    const loginGlipResult = new ApiResultOk({}, 200, {
       'x-authorization': 'glip_token',
     });
 

@@ -17,7 +17,7 @@ import ProfileService from '../../profile';
 import GroupService from '../../group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 import notificationCenter from '../../notificationCenter';
-import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
+import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { BaseError } from '../../../utils';
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
@@ -113,7 +113,7 @@ describe('PostService', () => {
         posts: [{ _id: 1 }, { _id: 2 }],
         items: [{ _id: 11 }, { _id: 22 }],
       };
-      const mockNormal = new NetworkResultOk(data, 200, {});
+      const mockNormal = new ApiResultOk(data, 200, {});
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
       groupService.getById.mockResolvedValue({
         most_recent_post_created_at: 2,
@@ -135,7 +135,7 @@ describe('PostService', () => {
         posts: [{ _id: 1 }, { _id: 2 }],
         items: [{ _id: 11 }, { _id: 22 }],
       };
-      const mockHasMore = new NetworkResultOk(data, 200, {});
+      const mockHasMore = new ApiResultOk(data, 200, {});
       PostAPI.requestPosts.mockResolvedValue(mockHasMore);
       groupService.getById.mockResolvedValue({
         most_recent_post_created_at: 2,
@@ -158,7 +158,7 @@ describe('PostService', () => {
         posts: [{ _id: 1 }, { _id: 2 }],
         items: [{ _id: 11 }, { _id: 22 }],
       };
-      const mockNotPostId = new NetworkResultOk(data, 200, {});
+      const mockNotPostId = new ApiResultOk(data, 200, {});
       PostAPI.requestPosts.mockResolvedValue(mockNotPostId);
       groupService.getById.mockResolvedValue({
         most_recent_post_created_at: 2,
@@ -176,7 +176,7 @@ describe('PostService', () => {
 
     it('should return [] when no matched', async () => {
       PostAPI.requestPosts.mockResolvedValue(
-        new NetworkResultOk({ posts: [], items: [] }, 200, {}),
+        new ApiResultOk({ posts: [], items: [] }, 200, {}),
       );
       groupService.getById.mockResolvedValue({ most_recent_post_id: 2 });
       const resultNull = await postService.getPostsFromRemote({
@@ -458,7 +458,7 @@ describe('PostService', () => {
       postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
       const data = { posts: [...remotePosts], items: [] };
       PostAPI.requestByIds.mockResolvedValue(
-        new NetworkResultOk(data, 200, {}),
+        new ApiResultOk(data, 200, {}),
       );
       baseHandleData.mockImplementationOnce((data: any) => data);
       itemService.getByPosts.mockResolvedValue([]);
@@ -480,7 +480,7 @@ describe('PostService', () => {
       const data = { posts: [...remotePosts], items: [] };
       postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
       PostAPI.requestByIds.mockResolvedValue(
-        new NetworkResultOk(data, 200, {}),
+        new ApiResultOk(data, 200, {}),
       );
       baseHandleData.mockImplementationOnce((data: any) => data);
       itemService.getByPosts.mockResolvedValue([]);
@@ -516,7 +516,7 @@ describe('PostService', () => {
         items: [{ id: 103 }, { id: 104 }],
       };
       PostAPI.requestByIds.mockResolvedValue(
-        new NetworkResultOk(data, 200, {}),
+        new ApiResultOk(data, 200, {}),
       );
       baseHandleData.mockImplementationOnce((data: any) => data);
       itemHandleData.mockImplementationOnce((data: any) => data);
@@ -565,7 +565,7 @@ describe('PostService', () => {
 
       PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
       PostAPI.sendPost.mockResolvedValueOnce(
-        new NetworkResultOk(responseData, 200, {}),
+        new ApiResultOk(responseData, 200, {}),
       );
       groupService.getGroupSendFailurePostIds.mockResolvedValue([]);
 
@@ -586,7 +586,7 @@ describe('PostService', () => {
     it('should send file', async () => {
       itemService.sendFile.mockResolvedValueOnce({ id: 1 });
       PostAPI.sendPost.mockResolvedValueOnce(
-        new NetworkResultOk({ _id: 1 }, 200, {}),
+        new ApiResultOk({ _id: 1 }, 200, {}),
       );
       baseHandleData.mockResolvedValueOnce([{ id: 1 }]);
       PostServiceHandler.buildPostInfo.mockResolvedValue({ id: -123 });
@@ -630,7 +630,7 @@ describe('PostService', () => {
 
     it('should call PostAPI.editPost()', async () => {
       PostServiceHandler.buildModifiedPostInfo.mockResolvedValue({});
-      PostAPI.editPost.mockResolvedValueOnce(new NetworkResultOk({}, 200, {}));
+      PostAPI.editPost.mockResolvedValueOnce(new ApiResultOk({}, 200, {}));
       baseHandleData.mockResolvedValueOnce([{ id: 1 }, { id: 2 }]);
 
       const result = await postService.modifyPost({ postId: 1, text: 'abc' });
@@ -660,7 +660,7 @@ describe('PostService', () => {
       postService.getById.mockResolvedValueOnce(post);
       const data = { _id: 100, likes: [101] };
       PostAPI.putDataById.mockResolvedValueOnce(
-        new NetworkResultOk(data, 200, {}),
+        new ApiResultOk(data, 200, {}),
       );
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
@@ -714,7 +714,7 @@ describe('PostService', () => {
         id: 100,
       });
       PostAPI.putDataById.mockResolvedValueOnce(
-        new NetworkResultOk({ id: 100, deactivated: true }, 200, {}),
+        new ApiResultOk({ id: 100, deactivated: true }, 200, {}),
       );
       baseHandleData.mockResolvedValueOnce([{ id: 100, deactivated: true }]);
       const result = await postService.deletePost(100);
@@ -790,21 +790,21 @@ describe('PostService', () => {
     it('should return api result if success', async () => {
       const data = { posts: [{ _id: 123 }] };
       PostAPI.requestPosts.mockResolvedValue(
-        new NetworkResultOk(data, 200, {}),
+        new ApiResultOk(data, 200, {}),
       );
 
       await expect(postService.getNewestPostIdOfGroup(1)).resolves.toBe(123);
     });
 
     it('should return null if api result is empty', async () => {
-      PostAPI.requestPosts.mockResolvedValue(new NetworkResultOk({}, 200, {}));
+      PostAPI.requestPosts.mockResolvedValue(new ApiResultOk({}, 200, {}));
 
       await expect(postService.getNewestPostIdOfGroup(1)).resolves.toBe(null);
     });
 
     it('should return null if error', async () => {
       PostAPI.requestPosts.mockRejectedValue(
-        new NetworkResultErr(new BaseError(500, ''), 500, {}),
+        new ApiResultErr(new BaseError(500, ''), 500, {}),
       );
 
       await expect(postService.getNewestPostIdOfGroup(1)).resolves.toBe(null);

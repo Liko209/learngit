@@ -13,7 +13,7 @@ import {
   oauthTokenViaAuthCode,
 } from '../../api/ringcentral/auth';
 import { NetworkManager, OAuthTokenManager } from 'foundation';
-import { NetworkResultOk } from '../../api/NetworkResult';
+import { ApiResultOk } from '../../api/ApiResult';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -33,11 +33,11 @@ describe('UnifiedLoginAuthenticator', () => {
     expect(resp.success).toBe(false);
   });
   it('UnifiedLoginAuthenticator rc account', async () => {
-    const oauthTokenResult = new NetworkResultOk('token', 200, {});
-    const loginGlipResult = new NetworkResultOk('', 200, {
+    const oauthTokenResult = new ApiResultOk('token', 200, {});
+    const loginGlipResult = new ApiResultOk('', 200, {
       'x-authorization': 'glip_token',
     });
-    const generateCodeResult = new NetworkResultOk(
+    const generateCodeResult = new ApiResultOk(
       {
         code: 'code',
       },

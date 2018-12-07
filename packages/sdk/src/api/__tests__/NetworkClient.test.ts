@@ -14,7 +14,7 @@ import {
 } from 'foundation';
 import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
-import { NetworkResultOk, NetworkResultErr } from '../NetworkResult';
+import { ApiResultOk, ApiResultErr } from '../ApiResult';
 // Using manual mock to improve mock priority.
 jest.mock('foundation/src/network', () =>
   jest.genMockFromModule<any>('foundation/src/network'),
@@ -140,13 +140,11 @@ describe('NetworkClient', () => {
       expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
 
-      rcNetworkClient
-        .request(getRequest)
-        .then((result: NetworkResultOk<any>) => {
-          expect(result).toHaveProperty('status', 200);
-          expect(result).toHaveProperty('data', { a: 1 });
-          done();
-        });
+      rcNetworkClient.request(getRequest).then((result: ApiResultOk<any>) => {
+        expect(result).toHaveProperty('status', 200);
+        expect(result).toHaveProperty('data', { a: 1 });
+        done();
+      });
       mockRequest.callback({ status: 200, data: { a: 1 } });
     });
 
@@ -154,13 +152,11 @@ describe('NetworkClient', () => {
       expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
 
-      rcNetworkClient
-        .request(getRequest)
-        .then((result: NetworkResultErr<any>) => {
-          expect(result.status).toBe(500);
-          expect(result.error.code).toBe(1500);
-          done();
-        });
+      rcNetworkClient.request(getRequest).then((result: ApiResultErr<any>) => {
+        expect(result.status).toBe(500);
+        expect(result.error.code).toBe(1500);
+        done();
+      });
       mockRequest.callback({ status: 500, data: { a: 'fail' }, headers: {} });
     });
   });

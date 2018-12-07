@@ -19,7 +19,7 @@ import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
-import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
+import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { GroupErrorTypes } from '../groupService';
 import { ErrorParser, BaseError, TypeDictionary } from '../../../utils';
 import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
@@ -166,17 +166,17 @@ describe('GroupService', () => {
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.get.mockResolvedValue(1); // userId
 
-    const mockNormal = new NetworkResultOk({ _id: 1 }, 200, {});
+    const mockNormal = new ApiResultOk({ _id: 1 }, 200, {});
     GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
     const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
     expect(result1).toEqual({ id: 1 });
 
-    const mockEmpty = new NetworkResultOk(null, 200, {});
+    const mockEmpty = new ApiResultOk(null, 200, {});
     GroupAPI.requestNewGroup.mockResolvedValue(mockEmpty);
     const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
     expect(result2).toBeNull();
 
-    const mockError = new NetworkResultErr(new BaseError(403, ''), 403, {});
+    const mockError = new ApiResultErr(new BaseError(403, ''), 403, {});
     GroupAPI.requestNewGroup.mockResolvedValue(mockError);
     await expect(
       groupService.requestRemoteGroupByMemberList([1, 2]),
@@ -320,14 +320,14 @@ describe('GroupService', () => {
       groupDao.get.mockResolvedValue(mockGroup);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new NetworkResultOk({ _id: 1, pinned_post_ids: [10] }, 200, {}),
+        new ApiResultOk({ _id: 1, pinned_post_ids: [10] }, 200, {}),
       );
       await handleData.mockResolvedValueOnce(null);
       let pinResult = await groupService.pinPost(10, 1, true);
       expect(pinResult.pinned_post_ids).toEqual([10]);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new NetworkResultOk({ _id: 1, pinned_post_ids: [] }, 200, {}),
+        new ApiResultOk({ _id: 1, pinned_post_ids: [] }, 200, {}),
       );
       await handleData.mockResolvedValueOnce(null);
       pinResult = await groupService.pinPost(10, 1, false);
@@ -369,7 +369,7 @@ describe('GroupService', () => {
       groupService.canPinPost.mockReturnValueOnce(true);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new NetworkResultErr(new BaseError(1, 'error'), 403, {}),
+        new ApiResultErr(new BaseError(1, 'error'), 403, {}),
       );
       const pinResult = await groupService.pinPost(11, 1, true);
 
@@ -386,7 +386,7 @@ describe('GroupService', () => {
 
     it('should return api result if request success', async () => {
       GroupAPI.addTeamMembers.mockResolvedValueOnce(
-        new NetworkResultOk(122, 200, {}),
+        new ApiResultOk(122, 200, {}),
       );
       jest
         .spyOn(require('../../utils'), 'transform')
@@ -400,7 +400,7 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => {});
 
       GroupAPI.addTeamMembers.mockResolvedValueOnce(
-        new NetworkResultOk(null, 403, {}),
+        new ApiResultOk(null, 403, {}),
       );
 
       await groupService.addTeamMembers(1, []);
@@ -434,7 +434,7 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => {});
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
-        new NetworkResultOk(group, 200, {}),
+        new ApiResultOk(group, 200, {}),
       );
       await groupService.createTeam('some team', 1323, [], 'abc', {
         isPublic: true,
@@ -461,7 +461,7 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => {});
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
-        new NetworkResultOk(group, 200, {}),
+        new ApiResultOk(group, 200, {}),
       );
       await groupService.createTeam('some team', 1323, [], 'abc', {
         isPublic: true,
@@ -495,7 +495,7 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => group);
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
-        new NetworkResultOk(group, 200, {}),
+        new ApiResultOk(group, 200, {}),
       );
 
       const result = await groupService.createTeam(
@@ -523,7 +523,7 @@ describe('GroupService', () => {
         'Already taken',
       );
       GroupAPI.createTeam.mockResolvedValue(
-        new NetworkResultErr(error, 403, {}),
+        new ApiResultErr(error, 403, {}),
       );
 
       const result = await groupService.createTeam(
@@ -830,7 +830,7 @@ describe('GroupService', () => {
     it('should return a group when request success', async () => {
       const data = { _id: 1 };
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new NetworkResultOk(data, 200, {}),
+        new ApiResultOk(data, 200, {}),
       );
       const result = await groupService.requestRemoteGroupByMemberList([1, 2]);
       expect(result).toMatchObject({ id: 1 });
@@ -846,7 +846,7 @@ describe('GroupService', () => {
 
     it('should throw an error when exception happened ', async () => {
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new NetworkResultErr(new BaseError(500, 'error'), 500, {}),
+        new ApiResultErr(new BaseError(500, 'error'), 500, {}),
       );
       await expect(
         groupService.requestRemoteGroupByMemberList([1, 2]),

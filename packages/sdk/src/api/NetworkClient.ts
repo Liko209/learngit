@@ -3,20 +3,19 @@
  * @Date: 2018-02-05 15:07:23
  * Copyright © RingCentral. All rights reserved.
  */
-
 import {
-  NetworkManager,
-  NetworkRequestBuilder,
-  NETWORK_VIA,
+  BaseResponse,
   IHandleType,
   IRequest,
   NETWORK_METHOD,
-  BaseResponse,
+  NETWORK_VIA,
+  NetworkManager,
+  NetworkRequestBuilder,
 } from 'foundation';
 
-// import logger from './logger';
-import { serializeUrlParams, omitLocalProperties } from '../utils';
-import { NetworkResult, networkOk, networkErr } from './NetworkResult';
+import { omitLocalProperties, serializeUrlParams } from '../utils';
+import { ApiResult } from './ApiResult';
+import { apiErr, apiOk } from './utils';
 
 export interface IQuery {
   via?: NETWORK_VIA;
@@ -42,7 +41,7 @@ export interface INetworkRequests {
 }
 
 export interface IResultResolveFn<T = {}> {
-  (value: NetworkResult<T> | PromiseLike<NetworkResult<T>>): void;
+  (value: ApiResult<T> | PromiseLike<ApiResult<T>>): void;
 }
 
 export interface IResponseRejectFn {
@@ -84,7 +83,7 @@ export default class NetworkClient {
     this.networkManager = networkManager;
   }
 
-  request<T>(query: IQuery): Promise<NetworkResult<T>> {
+  request<T>(query: IQuery): Promise<ApiResult<T>> {
     const { via, path, method, params } = query;
     return new Promise((resolve, reject) => {
       const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
@@ -108,9 +107,9 @@ export default class NetworkClient {
       if (!promiseResolvers) return;
       promiseResolvers.forEach(({ resolve }) => {
         if (resp.status >= 200 && resp.status < 300) {
-          resolve(networkOk(resp.data, resp.status, resp.headers));
+          resolve(apiOk(resp.data, resp.status, resp.headers));
         } else {
-          resolve(networkErr(resp));
+          resolve(apiErr(resp));
         }
       });
       this.apiMap.delete(apiMapKey);

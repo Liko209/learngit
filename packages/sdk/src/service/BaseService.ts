@@ -14,7 +14,7 @@ import notificationCenter, {
 } from './notificationCenter';
 import { container } from '../container';
 import dataDispatcher from '../component/DataDispatcher';
-import { NetworkResult } from '../api/NetworkResult';
+import { ApiResult } from '../api/ApiResult';
 import { SOCKET, SERVICE } from './eventKey';
 import _ from 'lodash';
 import EntityCacheManager from './entityCacheManager';
@@ -75,7 +75,7 @@ class BaseService<
     if (id <= 0) {
       throwError('invalid id, should not do network request');
     }
-    const result: NetworkResult<any> = await this.ApiClass.getDataById(id);
+    const result: ApiResult<any> = await this.ApiClass.getDataById(id);
     if (result.isOk()) {
       const arr: SubModel[] = []
         .concat(result.data)
