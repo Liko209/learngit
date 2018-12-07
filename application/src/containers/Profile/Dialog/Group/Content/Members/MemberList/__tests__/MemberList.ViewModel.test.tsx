@@ -34,7 +34,7 @@ describe('MemberList.ViewModel', () => {
     expect(vm.id).toEqual(props.id);
   });
 
-  it('should be get correct memberIds when scrolling', () => {
+  it('should be get correct memberIds when scrolling [JPT-405]', () => {
     // first page
     const firstPageMemberIds = mockData.slice(0, 20);
     jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(firstPageMemberIds);

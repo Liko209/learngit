@@ -11,6 +11,8 @@ jest.mock('../../../../../store/utils');
 
 const mockData = {
   displayName: 'Group name',
+  isTeam: true,
+  description: 'description',
 };
 
 const props = {
@@ -32,9 +34,11 @@ describe('ProfileDialogGroup.ViewModel', () => {
     expect(vm.id).toEqual(props.id);
   });
 
-  it('should be get group entity when invoke class instance property group', () => {
+  it('should be get group entity when invoke class instance property group [JPT-405]', () => {
     expect(vm.group).toEqual(mockData);
     mockData.displayName = 'Group name 2';
+    mockData.isTeam = false;
+    mockData.description = 'description 2';
     expect(vm.group).toEqual(mockData);
   });
 
