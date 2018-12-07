@@ -57,10 +57,8 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     pageSize: number,
     anchor: ISortableModel<Group>,
   ): Promise<{ data: Group[]; hasMore: boolean }> {
-    console.log('andy hu start query');
     const groupService = GroupService.getInstance<service.GroupService>();
     const result = await groupService.getGroupsByType(this._queryType);
-    console.log('andy hu', result);
     return { data: result, hasMore: false };
   }
 }
@@ -223,7 +221,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         // handle id sets
         this._updateIdSet(payload.type, ids);
         keys.forEach((key: string) => {
-          console.log('andy hu data changed', payload);
           this._handlersMap[key].onDataChanged(payload);
         });
       },

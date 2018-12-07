@@ -4,3 +4,4 @@
  */
 
 export { StateService as default } from './stateService';
+export { StateService } from './stateService';
