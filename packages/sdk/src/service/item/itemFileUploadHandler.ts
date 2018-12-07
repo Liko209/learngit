@@ -149,7 +149,7 @@ class ItemFileUploadHandler {
 
   private _updateUploadingFiles(groupId: number, newItemFile: ItemFile) {
     const files = this._uploadingItemFiles.get(groupId);
-    if (files && files.length) {
+    if (files && files.length > 0) {
       const pos = files
         .map((x: ItemFile) => {
           return x.id;
