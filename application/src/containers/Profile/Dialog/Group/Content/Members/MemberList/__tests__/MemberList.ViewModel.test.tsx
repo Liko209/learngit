@@ -52,6 +52,8 @@ describe('MemberListViewModel', () => {
       const thirdPageMemberIds = mockData.slice(40, 50);
       jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(thirdPageMemberIds);
       expect(vm.memberIds).toMatchObject(thirdPageMemberIds);
+      // fourth page
+      vm.toBottom(); // next page
     });
   });
 });
