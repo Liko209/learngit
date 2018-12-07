@@ -45,6 +45,9 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   error: string = '';
   @observable
   items: ItemFile[] = [];
+  @observable
+  files: File[] = [];
+
   keyboardEventHandler = {
     enter: {
       key: 13,
@@ -163,8 +166,28 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         users: atMentions ? this._users : undefined,
         itemIds: this.items.map(item => item.id),
       });
+      // clear files after post
+      this.files = [];
+      this.items = [];
     } catch (e) {
       // You do not need to handle the error because the message will display a resend
+    }
+  }
+
+  autoUploadFile = async (files: FileList) => {
+    if (files.length > 0) {
+      const array: File[] = this.files.slice(0);
+      for (let i = 0; i < files.length; ++i) {
+        const file = files[i];
+        const exists = await this.isFileExists(file);
+        if (exists) {
+          // TODO
+        } else {
+          array.push(file);
+          await this.uploadFile(file);
+        }
+      }
+      this.files = array;
     }
   }
 
@@ -183,9 +206,15 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return await this._itemService.isFileExists(this.id, file.name);
   }
 
-  cancelUploadFile = (index: number) => {
-    const item = this.items[index];
-    this._itemService.cancelUpload(item.id);
+  cancelUploadFile = (file: File) => {
+    const index = this.files.findIndex(looper => looper === file);
+    if (index >= 0) {
+      const newFiles = this.files.slice(0);
+      newFiles.splice(index, 1);
+      this.files = newFiles;
+      const item = this.items[index];
+      this._itemService.cancelUpload(item.id);
+    }
   }
 }
 

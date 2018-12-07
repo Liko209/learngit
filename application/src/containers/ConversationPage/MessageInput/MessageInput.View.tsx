@@ -20,32 +20,13 @@ class MessageInputViewComponent extends Component<
   MessageInputViewProps & WithNamespaces,
   {
     modules: object;
-    files: File[];
   }
 > {
   private _mentionRef: React.RefObject<any> = React.createRef();
 
   state = {
     modules: {},
-    files: [],
   };
-
-  private _autoUploadFile = async (files: FileList) => {
-    if (files.length > 0) {
-      const array: File[] = this.state.files.slice(0);
-      for (let i = 0; i < files.length; ++i) {
-        const file = files[i];
-        const exists = await this.props.isFileExists(file);
-        if (exists) {
-          // TODO
-        } else {
-          array.push(file);
-          await this.props.uploadFile(file);
-        }
-      }
-      this.setState({ files: array });
-    }
-  }
 
   componentDidMount() {
     this.updateModules();
@@ -69,27 +50,19 @@ class MessageInputViewComponent extends Component<
     });
   }
 
-  private _cancelUploadFile = (file: File) => {
-    const { files } = this.state;
-    const index = files.findIndex(looper => looper === file);
-    if (index >= 0) {
-      const newFiles = files.slice(0);
-      newFiles.splice(index, 1);
-      this.setState({ files: newFiles });
-      this.props.cancelUploadFile(index);
-    }
-  }
-
   render() {
-    const { draft, changeDraft, error, id, t } = this.props;
-    const { modules, files } = this.state;
+    const { draft, changeDraft, error, id, t, files } = this.props;
+    const { modules } = this.state;
     const toolbarNode = (
       <MessageActionBar>
-        <AttachmentView onFileChanged={this._autoUploadFile} />
+        <AttachmentView onFileChanged={this.props.autoUploadFile} />
       </MessageActionBar>
     );
     const attachmentsNode = (
-      <AttachmentList files={files} cancelUploadFile={this._cancelUploadFile} />
+      <AttachmentList
+        files={files}
+        cancelUploadFile={this.props.cancelUploadFile}
+      />
     );
     return (
       <JuiMessageInput
