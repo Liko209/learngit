@@ -7,8 +7,8 @@ import React from 'react';
 import { ConversationInitialPostView } from '../ConversationInitialPost.View';
 import { shallow } from 'enzyme';
 import { CONVERSATION_TYPES } from '@/constants';
-import { personFactory } from 'sdk/__tests__/factories';
 import { JuiConversationInitialPostBody } from 'jui/pattern/ConversationInitialPost';
+import PersonModel from '@/store/models/Person';
 
 describe('ConversationInitialPostView', () => {
   describe('render()', () => {
@@ -17,14 +17,11 @@ describe('ConversationInitialPostView', () => {
       displayName: 'some',
       groupType: CONVERSATION_TYPES.ME,
       groupDescription: 'text',
-      creator: personFactory.build({
-        id: 11,
-        first_name: 'steve',
-        last_name: 'chen',
-        email: 'steve.chen@ringcentral.com',
-      }),
+      userDisPlayName: 'a',
       creatorGroupId: 123,
-      t: p => p,
+      t: (p: any) => p,
+      creator: {} as PersonModel,
+      tReady: {},
       isTeam: false,
     };
     it('should not render initialPostBody when notEmpty is true [JPT-478]', () => {
