@@ -259,7 +259,7 @@ class PostService extends BaseService<Post> {
     // handle params, if has file item, should send file first then send post
     mainLogger.info('start to send post log');
     const buildPost: Post = PostServiceHandler.buildPostInfo(params);
-    return this.innerSendPost(buildPost);
+    return this.innerSendPost(buildPost, false);
   }
 
   async reSendPost(postId: number): Promise<PostData[] | null> {
@@ -268,20 +268,29 @@ class PostService extends BaseService<Post> {
       let post = await dao.get(postId);
       if (post) {
         post = PostServiceHandler.buildResendPostInfo(post);
-        return this.innerSendPost(post);
+        return this.innerSendPost(post, true);
       }
     }
     return null;
   }
 
-  async innerSendPost(buildPost: Post): Promise<PostData[]> {
+  async innerSendPost(buildPost: Post, isResend: boolean): Promise<PostData[]> {
     await this.handlePreInsertProcess(buildPost);
 
-    if (this._getPseudoItemIdsFromPost(buildPost).length > 0) {
+    const pseudoItems = this._getPseudoItemIdsFromPost(buildPost);
+    if (pseudoItems.length > 0) {
+      if (isResend) {
+        this._resendFailedItems(pseudoItems);
+      }
       return await this._sendPostWithPreInsertItems(buildPost);
     }
 
     return await this._sendPost(buildPost);
+  }
+
+  private async _resendFailedItems(pseudoItemIds: number[]) {
+    const itemService: ItemService = ItemService.getInstance();
+    await itemService.resendFailedItems(pseudoItemIds);
   }
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {

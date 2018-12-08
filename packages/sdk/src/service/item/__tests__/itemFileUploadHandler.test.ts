@@ -75,7 +75,7 @@ describe('ItemFileService', () => {
         .spyOn(itemFileUploadHandler, '_sendItemFile')
         .mockImplementationOnce(() => {});
       jest
-        .spyOn(itemFileUploadHandler, '_preInsertItemFile')
+        .spyOn(itemFileUploadHandler, '_preSaveItemFile')
         .mockImplementationOnce(() => {});
 
       const res = await itemFileUploadHandler.sendItemFile(
@@ -163,7 +163,6 @@ describe('ItemFileService', () => {
         expect(ItemAPI.sendFileItem).toBeCalledTimes(1);
         expect(itemDao.put).toBeCalledTimes(2);
         expect(itemDao.update).toBeCalledTimes(1);
-        expect(itemDao.get).toBeCalledTimes(1);
         expect(itemDao.delete).toBeCalledTimes(1);
         expect(notificationCenter.emitEntityReplace).toBeCalled();
         expect(itemService.handlePartialUpdate).toBeCalledTimes(1);

@@ -3,7 +3,14 @@
  * @Date: 2018-12-05 09:30:00
  */
 
-import { StoredFile, ItemFile, Raw, Progress } from '../../models';
+import {
+  StoredFile,
+  ItemFile,
+  Item,
+  Raw,
+  Progress,
+  ItemVersions,
+} from '../../models';
 import AccountService from '../account';
 import ItemAPI, { RequestHolder } from '../../api/glip/item';
 import { transform } from '../utils';
@@ -19,6 +26,7 @@ import { FILE_FORM_DATA_KEYS } from './constants';
 import { ItemFileUploadStatus } from './itemFileUploadStatus';
 import { ItemService } from './itemService';
 import { SENDING_STATUS } from '../constants';
+import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
@@ -33,11 +41,34 @@ class ItemFileUploadHandler {
       | null;
     if (fileFullName) {
       const itemFile = this._toItemFile(groupId, fileFullName);
-      await this._preInsertItemFile(itemFile);
+      await this._preSaveItemFile(itemFile);
       this._sendItemFile(groupId, itemFile, file, isUpdate);
       return itemFile;
     }
     return null;
+  }
+
+  async resendFailedFile(itemId: number) {
+    const itemDao = daoManager.getDao(ItemDao);
+    const itemInDB = (await itemDao.get(itemId)) as ItemFile;
+    let sendFailed = false;
+    if (itemInDB) {
+      const groupId = itemInDB.group_ids[0];
+      const isUpdate = !!itemInDB.isUpdate;
+      if (itemInDB.versions.length > 0) {
+        await this._uploadItem(groupId, itemInDB, isUpdate);
+      } else {
+        const cacheItem = this._progressCaches.get(itemId);
+        if (groupId && cacheItem && cacheItem.file) {
+          await this._sendItemFile(groupId, itemInDB, cacheItem.file, isUpdate);
+        } else {
+          sendFailed = true;
+        }
+      }
+    }
+    if (sendFailed) {
+      this._handleFileItemSendFailed(itemId);
+    }
   }
 
   async cancelUpload(itemId: number) {
@@ -76,6 +107,11 @@ class ItemFileUploadHandler {
     file: FormData,
     isUpdate: boolean,
   ) {
+    this._updatePreInsertItemStatus(
+      preInsertItem.id,
+      SENDING_STATUS.INPROGRESS,
+    );
+
     const requestHolder: RequestHolder = { request: undefined };
     const progress = {
       id: preInsertItem.id,
@@ -114,12 +150,8 @@ class ItemFileUploadHandler {
 
     if (isSuccess) {
       const storedFile = uploadRes.unwrap()[0];
-      await this._handleFileUploadSuccess(
-        groupId,
-        preInsertItem.id,
-        storedFile,
-      );
-      await this._uploadItem(groupId, preInsertItem, isUpdate, storedFile);
+      await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
+      await this._uploadItem(groupId, preInsertItem, isUpdate);
     } else {
       this._handleFileItemSendFailed(preInsertItem.id);
       mainLogger.error(`_uploadAndGenerateItem uploadRes error =>${uploadRes}`);
@@ -130,15 +162,16 @@ class ItemFileUploadHandler {
     groupId: number,
     preInsertItem: ItemFile,
     isUpdate: boolean,
-    storedFile: StoredFile,
   ) {
     let result: NetworkResult<Raw<ItemFile>, BaseError> | undefined = undefined;
 
     let shouldUpdate = isUpdate;
     let existItemFile: ItemFile | null = null;
     if (isUpdate) {
-      const nameType = this._extractFileNameAndType(storedFile.storage_path);
-      existItemFile = await this._getOldestExistFile(groupId, nameType.name);
+      existItemFile = await this._getOldestExistFile(
+        groupId,
+        preInsertItem.name,
+      );
       if (!existItemFile) {
         // if item not exist in local, should create new one
         shouldUpdate = false;
@@ -146,9 +179,9 @@ class ItemFileUploadHandler {
     }
 
     if (shouldUpdate && existItemFile) {
-      result = await this._updateItem(existItemFile, storedFile);
+      result = await this._updateItem(existItemFile, preInsertItem);
     } else {
-      result = await this._newItem(groupId, storedFile);
+      result = await this._newItem(groupId, preInsertItem);
     }
 
     if (result && result.isOk) {
@@ -162,25 +195,23 @@ class ItemFileUploadHandler {
   }
 
   private async _handleFileUploadSuccess(
-    groupId: number,
-    itemId: number,
     storedFile: StoredFile,
+    groupId: number,
+    preInsertItem: ItemFile,
   ) {
     const itemDao = daoManager.getDao(ItemDao);
-    const itemInDB = await itemDao.get(itemId);
-    if (itemInDB) {
-      const fileVersion = this._toFileVersion(storedFile);
-      itemInDB.versions = [fileVersion];
-      this._updateUploadingFiles(groupId, itemInDB);
-      itemDao.update(itemInDB);
+    const fileVersion = this._toFileVersion(storedFile);
+    preInsertItem.versions = [fileVersion];
+    preInsertItem.isUpdate = true;
+    this._updateUploadingFiles(groupId, preInsertItem);
+    itemDao.update(preInsertItem);
 
-      // partial update
-      this._partialUpdateItemFile({
-        id: itemId,
-        _id: itemId,
-        versions: [fileVersion],
-      });
-    }
+    // partial update
+    this._partialUpdateItemFile({
+      id: preInsertItem.id,
+      _id: preInsertItem.id,
+      versions: [fileVersion],
+    });
   }
 
   private _updateUploadingFiles(groupId: number, newItemFile: ItemFile) {
@@ -237,7 +268,23 @@ class ItemFileUploadHandler {
 
   private _partialUpdateItemFile(updateData: object) {
     const itemService: ItemService = ItemService.getInstance();
-    itemService.handlePartialUpdate(updateData);
+    itemService.handlePartialUpdate(
+      updateData,
+      undefined,
+      async (updatedItem: Item) => {
+        return updatedItem;
+      },
+    );
+  }
+
+  private _toSotredFile(fileVersion: ItemVersions) {
+    // storage_url: string;
+    // download_url: string;
+    // storage_path: string;
+    // last_modified: number;
+    // size: number;
+
+    return {};
   }
 
   private _toFileVersion(storedFile: StoredFile) {
@@ -251,7 +298,7 @@ class ItemFileUploadHandler {
     };
   }
 
-  private async _preInsertItemFile(itemFile: ItemFile) {
+  private async _preSaveItemFile(itemFile: ItemFile) {
     const groupId = itemFile.group_ids[0];
     const itemFiles = this._uploadingFiles[groupId];
     if (itemFiles) {
@@ -262,8 +309,6 @@ class ItemFileUploadHandler {
 
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(itemFile);
-
-    this._updatePreInsertItemStatus(itemFile.id, SENDING_STATUS.INPROGRESS);
   }
 
   private _updatePreInsertItemStatus(itemId: number, status: SENDING_STATUS) {
@@ -278,7 +323,10 @@ class ItemFileUploadHandler {
     const companyId = accountService.getCurrentCompanyId() as number;
     const now = Date.now();
     const vers = versionHash();
-    const id = vers < 0 ? vers : -vers;
+    const id = GlipTypeUtil.convertToIdWithType(
+      TypeDictionary.TYPE_ID_FILE,
+      vers < 0 ? vers : -vers,
+    );
     return {
       id,
       created_at: now,
@@ -298,21 +346,19 @@ class ItemFileUploadHandler {
     };
   }
 
-  private async _newItem(groupId: number, storedFile: StoredFile) {
-    const nameType = this._extractFileNameAndType(storedFile.storage_path);
+  private async _newItem(groupId: number, preInsertItem: ItemFile) {
     const version = versionHash();
-    const fileVersion = this._toFileVersion(storedFile);
     const fileItemOptions = {
       version,
-      creator_id: Number(storedFile.creator_id),
+      creator_id: Number(preInsertItem.creator_id),
       new_version: version,
-      name: nameType.name,
-      type: nameType.type,
+      name: preInsertItem.name,
+      type: preInsertItem.type,
       source: 'upload',
       no_post: true,
       group_ids: [Number(groupId)],
       post_ids: [],
-      versions: [fileVersion],
+      versions: preInsertItem.versions,
       created_at: Date.now(),
       is_new: true,
     };
@@ -350,10 +396,9 @@ class ItemFileUploadHandler {
     });
   }
 
-  private async _updateItem(existItem: ItemFile, newStoredFile: StoredFile) {
-    const fileVersion = this._toFileVersion(newStoredFile);
+  private async _updateItem(existItem: ItemFile, preInsertItem: ItemFile) {
     existItem.is_new = false;
-    existItem.versions.push(fileVersion);
+    existItem.versions = existItem.versions.concat(preInsertItem.versions);
     existItem.modified_at = Date.now();
     existItem._id = existItem.id;
     delete existItem.id;

@@ -230,6 +230,7 @@ export type Item = ExtendedBaseModel & {
 
 export type ItemFile = Item & {
   name: string;
+  isUpdate?: boolean;
 };
 
 export type NoteItem = Item & {

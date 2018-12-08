@@ -25,6 +25,7 @@ import { ItemFileUploadHandler } from './itemFileUploadHandler';
 import notificationCenter from '../notificationCenter';
 import { ItemStatusHandler } from './itemStatusHandler';
 import { SENDING_STATUS } from '../constants';
+import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 
 interface ISendFile {
   file: FormData;
@@ -88,6 +89,16 @@ class ItemService extends BaseService<Item> {
     return this._getItemFileHandler().getUploadItems(groupId);
   }
 
+  async resendFailedItems(itemIds: number[]) {
+    await Promise.all(
+      itemIds.map((id: number) => {
+        if (GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE) {
+          this._getItemFileHandler().resendFailedFile(id);
+        }
+      }),
+    );
+  }
+
   async isFileExists(groupId: number, fileName: string): Promise<boolean> {
     if (groupId <= 0 || !fileName || fileName.trim().length === 0) {
       return false;
@@ -98,20 +109,6 @@ class ItemService extends BaseService<Item> {
 
   getUploadProgress(itemId: number): Progress | undefined {
     return this._getItemFileHandler().getUploadProgress(itemId);
-  }
-
-  isItemInSending(itemId: number) {
-    return (
-      this._getItemStatusHandler().getSendingStatus(itemId) ===
-      SENDING_STATUS.INPROGRESS
-    );
-  }
-
-  isItemInSendFailed(itemId: number) {
-    return (
-      this._getItemStatusHandler().getSendingStatus(itemId) ===
-      SENDING_STATUS.FAIL
-    );
   }
 
   getItemsSendingStatus(itemIds: number[]) {
