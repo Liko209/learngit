@@ -13,10 +13,7 @@ import { JuiIconButton } from 'jui/components/Buttons';
 
 type MoreViewProps = ViewProps & WithNamespaces;
 
-const menuItems = {
-  [MENU_LIST_ITEM_TYPE.QUOTE]: () => <JuiMenuItem>Quote</JuiMenuItem>,
-  [MENU_LIST_ITEM_TYPE.EDIT]: () => <JuiMenuItem>Edit</JuiMenuItem>,
-};
+const menuItems = {}; // add more action item in menuItems
 
 @observer
 class More extends React.Component<MoreViewProps> {
