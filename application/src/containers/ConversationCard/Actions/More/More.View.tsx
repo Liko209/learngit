@@ -17,12 +17,7 @@ const menuItems = {}; // add more action item in menuItems
 
 @observer
 class More extends React.Component<MoreViewProps> {
-  constructor(props: MoreViewProps) {
-    super(props);
-    this._Anchor = this._Anchor.bind(this);
-  }
-
-  private _Anchor() {
+  private _Anchor = () => {
     const { t } = this.props;
     return (
       <JuiIconButton
