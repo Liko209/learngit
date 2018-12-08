@@ -14,6 +14,7 @@ import {
   Raw,
   NoteItem,
 } from '../../models';
+import { RequestHolder } from '../requestHolder';
 
 interface IRightRailItemModel extends BaseModel {
   items: Raw<Item>[];
@@ -53,20 +54,33 @@ class ItemAPI extends Api {
     return this.glipNetworkClient.post<Raw<ItemFile>>('/file', data);
   }
 
-  static uploadFileItem(files: FormData, callback?: ProgressCallback) {
-    return this.uploadNetworkClient.http<StoredFile>({
-      path: '/upload',
-      method: NETWORK_METHOD.POST,
-      via: NETWORK_VIA.HTTP,
-      data: files,
-      requestConfig: {
-        onUploadProgress(event: ProgressEventInit): void {
-          if (callback) {
-            callback(event);
-          }
+  static uploadFileItem(
+    files: FormData,
+    callback: ProgressCallback,
+    requestHolder?: RequestHolder,
+  ) {
+    return this.uploadNetworkClient.http<StoredFile>(
+      {
+        path: '/upload',
+        method: NETWORK_METHOD.POST,
+        via: NETWORK_VIA.HTTP,
+        data: files,
+        requestConfig: {
+          onUploadProgress(event: ProgressEventInit): void {
+            if (callback) {
+              callback(event);
+            }
+          },
         },
       },
-    });
+      requestHolder,
+    );
+  }
+
+  static cancelUploadRequest(requestHolder: RequestHolder) {
+    if (requestHolder && requestHolder.request) {
+      this.uploadNetworkClient.cancelRequest(requestHolder.request);
+    }
   }
 
   static requestById(id: number) {
@@ -92,4 +106,10 @@ class ItemAPI extends Api {
 }
 
 export default ItemAPI;
-export { IRightRailItemModel, FileResult, ProgressCallback, UploadFileResult };
+export {
+  IRightRailItemModel,
+  FileResult,
+  ProgressCallback,
+  UploadFileResult,
+  RequestHolder,
+};
