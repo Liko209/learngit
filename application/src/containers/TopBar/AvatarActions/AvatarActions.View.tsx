@@ -63,11 +63,19 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
       >
         <JuiMenuList>
           {isElectron && (
-            <JuiMenuItem onClick={this.handleAboutPage}>
+            <JuiMenuItem
+              onClick={this.handleAboutPage}
+              data-test-automation-id="aboutPage"
+            >
               {t('AboutRingCentral')}
             </JuiMenuItem>
           )}
-          <JuiMenuItem onClick={handleSignOut}>{t('SignOut')}</JuiMenuItem>
+          <JuiMenuItem
+            onClick={handleSignOut}
+            data-test-automation-id="signOut"
+          >
+            {t('SignOut')}
+          </JuiMenuItem>
         </JuiMenuList>
       </JuiPopoverMenu>
     );
