@@ -61,8 +61,8 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
           horizontal: 'center',
         }}
       >
-        <JuiMenuList>
-          {isElectron && (
+        <JuiMenuList data-test-automation-id="avatarMenu">
+          {!isElectron && (
             <JuiMenuItem
               onClick={this.handleAboutPage}
               data-test-automation-id="aboutPage"
