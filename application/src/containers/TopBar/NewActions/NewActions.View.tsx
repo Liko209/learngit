@@ -7,7 +7,8 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ViewProps } from './types';
-import { JuiPopover, JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { NewMessage } from '@/containers/NewMessage';
@@ -16,51 +17,39 @@ type NewActionsProps = WithNamespaces & ViewProps;
 
 @observer
 class NewActions extends React.Component<NewActionsProps> {
-  state = {
-    anchorEl: null,
-  };
-
-  handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    this.setState({
-      anchorEl: event.currentTarget,
-    });
+  constructor(props: NewActionsProps) {
+    super(props);
+    this._Anchor = this._Anchor.bind(this);
   }
 
-  handleClose = () => {
-    this.setState({
-      anchorEl: null,
-    });
+  private _Anchor() {
+    const { t } = this.props;
+    return (
+      <JuiIconButton
+        size="medium"
+        tooltipTitle={t('NewActions')}
+        data-test-automation-id="addMenuBtn"
+      >
+        add_circle
+      </JuiIconButton>
+    );
   }
 
   handleCreateTeam = () => {
     this.props.updateCreateTeamDialogState();
-    this.handleClose();
   }
 
   handleNewMessage = () => {
     this.props.updateNewMessageDialogState();
-    this.handleClose();
   }
 
   render() {
     const { t, isShowCreateTeamDialog, isShowNewMessageDialog } = this.props;
-    const { anchorEl } = this.state;
-    const open = Boolean(anchorEl);
 
     return (
       <>
-        <JuiIconButton
-          size="medium"
-          tooltipTitle={t('NewActions')}
-          data-test-automation-id="addMenuBtn"
-          onClick={this.handleClick}
-        >
-          add_circle
-        </JuiIconButton>
-        <JuiPopover
-          open={open}
-          anchorEl={anchorEl}
-          onClose={this.handleClose}
+        <JuiPopoverMenu
+          Anchor={this._Anchor}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'center',
@@ -81,7 +70,7 @@ class NewActions extends React.Component<NewActionsProps> {
               {t('SendNewMessage')}
             </JuiMenuItem>
           </JuiMenuList>
-        </JuiPopover>
+        </JuiPopoverMenu>
         {isShowCreateTeamDialog && <CreateTeam />}
         {isShowNewMessageDialog && (
           <NewMessage data-test-automation-id="newMessageModal" />

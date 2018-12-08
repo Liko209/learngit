@@ -7,7 +7,8 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ViewProps } from './types';
-import { JuiPopover, JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import isElectron from '@/common/isElectron';
@@ -16,73 +17,59 @@ type AvatarActionsProps = WithNamespaces & ViewProps;
 
 @observer
 class AvatarActions extends React.Component<AvatarActionsProps> {
-  state = {
-    anchorEl: null,
-  };
   constructor(props: AvatarActionsProps) {
     super(props);
     window.jupiterElectron = {
       ...window.jupiterElectron,
       handleAboutPage: props.toggleAboutPage,
     };
+    this._Anchor = this._Anchor.bind(this);
   }
+
   private get _presence() {
     const { currentUserId } = this.props;
 
     return <Presence uid={currentUserId} size="large" borderSize="large" />;
   }
 
-  handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    this.setState({
-      anchorEl: event.currentTarget,
-    });
-  }
-
-  handleClose = () => {
-    this.setState({
-      anchorEl: null,
-    });
+  private _Anchor() {
+    const { currentUserId } = this.props;
+    return (
+      <Avatar
+        uid={currentUserId}
+        presence={this._presence}
+        size="large"
+        autoMationId="topBarAvatar"
+      />
+    );
   }
 
   handleAboutPage = () => this.props.toggleAboutPage();
 
   render() {
-    const { t, currentUserId, handleSignOut } = this.props;
-    const { anchorEl } = this.state;
-    const open = Boolean(anchorEl);
+    const { t, handleSignOut } = this.props;
 
     return (
-      <>
-        <Avatar
-          uid={currentUserId}
-          presence={this._presence}
-          size="large"
-          autoMationId="topBarAvatar"
-          onClick={this.handleClick}
-        />
-        <JuiPopover
-          open={open}
-          anchorEl={anchorEl}
-          onClose={this.handleClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-        >
-          <JuiMenuList>
-            {isElectron && (
-              <JuiMenuItem onClick={this.handleAboutPage}>
-                {t('AboutRingCentral')}
-              </JuiMenuItem>
-            )}
-            <JuiMenuItem onClick={handleSignOut}>{t('SignOut')}</JuiMenuItem>
-          </JuiMenuList>
-        </JuiPopover>
-      </>
+      <JuiPopoverMenu
+        Anchor={this._Anchor}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <JuiMenuList>
+          {isElectron && (
+            <JuiMenuItem onClick={this.handleAboutPage}>
+              {t('AboutRingCentral')}
+            </JuiMenuItem>
+          )}
+          <JuiMenuItem onClick={handleSignOut}>{t('SignOut')}</JuiMenuItem>
+        </JuiMenuList>
+      </JuiPopoverMenu>
     );
   }
 }
