@@ -178,7 +178,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     }
   }
 
-  autoUploadFile = async (files: FileList) => {
+  autoUploadFile = async (files: File[]) => {
     if (files.length > 0) {
       const uniques: File[] = [];
       const duplicateFiles: File[] = [];
@@ -207,7 +207,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private _uploadFiles = async (files: File[], isUpdate: boolean) => {
     for (let i = 0; i < files.length; ++i) {
-      await this.uploadFile(files[i], false);
+      await this.uploadFile(files[i], isUpdate);
     }
   }
 
@@ -238,11 +238,9 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   cancelUploadFile = async (file: File) => {
     const index = this.files.findIndex(looper => looper === file);
     if (index >= 0) {
-      const newFiles = this.files.slice(0);
-      newFiles.splice(index, 1);
-      this.files = newFiles;
       const item = this.items[index];
       await this._itemService.cancelUpload(item.id);
+      this.files.splice(index, 1);
     }
   }
 

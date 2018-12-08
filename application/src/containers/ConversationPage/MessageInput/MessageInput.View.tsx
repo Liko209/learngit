@@ -67,12 +67,20 @@ class MessageInputViewComponent extends Component<
     return null;
   }
 
+  private _autoUploadFile = (files: FileList) => {
+    const array: File[] = [];
+    for (let i = 0; i < files.length; ++i) {
+      array.push(files[i]);
+    }
+    this.props.autoUploadFile(array);
+  }
+
   render() {
     const { draft, changeDraft, error, id, t, files } = this.props;
     const { modules } = this.state;
     const toolbarNode = (
       <MessageActionBar>
-        <AttachmentView onFileChanged={this.props.autoUploadFile} />
+        <AttachmentView onFileChanged={this._autoUploadFile} />
       </MessageActionBar>
     );
     const attachmentsNode = (

@@ -14,7 +14,7 @@ type MessageInputViewProps = {
   draft: string;
   error: string;
   forceSaveDraft(): void;
-  autoUploadFile(files: FileList): void;
+  autoUploadFile(files: File[]): void;
   isFileExists(file: File): Promise<boolean>;
   cancelUploadFile(file: File): void;
   changeDraft(value: any): void;
