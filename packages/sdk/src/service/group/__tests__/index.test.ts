@@ -178,9 +178,8 @@ describe('GroupService', () => {
 
     const mockError = new NetworkResultErr(new BaseError(403, ''), 403, {});
     GroupAPI.requestNewGroup.mockResolvedValue(mockError);
-    await expect(
-      groupService.requestRemoteGroupByMemberList([1, 2]),
-    ).rejects.toThrow();
+    const result3 = await groupService.requestRemoteGroupByMemberList([1, 2]);
+    expect(result3).toBeNull();
   });
 
   it('getGroupByPersonId()', async () => {
@@ -848,9 +847,8 @@ describe('GroupService', () => {
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
         new NetworkResultErr(new BaseError(500, 'error'), 500, {}),
       );
-      await expect(
-        groupService.requestRemoteGroupByMemberList([1, 2]),
-      ).rejects.toThrow();
+      const result = await groupService.requestRemoteGroupByMemberList([1, 2]);
+      expect(result).toBeNull();
     });
   });
 

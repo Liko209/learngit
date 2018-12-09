@@ -13,7 +13,6 @@ type MessagesViewProps = {
   currentConversationId: number;
   updateCurrentConversationId: (id?: number | string) => void;
   getLastGroupId: () => Promise<number | undefined>;
-  retryMessage: (id: number) => void;
 } & RouteComponentProps<{ id: string; waiting: string }>;
 
 export { MessagesProps, MessagesViewProps };

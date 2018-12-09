@@ -53,13 +53,6 @@ describe('getConversationId() with person type conversationId', () => {
     expect(await goToConversation(1)).toEqual(true);
   });
 
-  it('groupService reject value', async () => {
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValue({
-      id: 2,
-    });
-    expect(await goToConversation(1)).toEqual(false);
-  });
-
   it('groupService return null', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
       null,
