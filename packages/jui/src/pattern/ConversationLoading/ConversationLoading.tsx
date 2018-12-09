@@ -60,7 +60,7 @@ type JuiConversationLoadingProps = {
   tip: string;
   linkText: string;
   showTip?: boolean;
-  onClick: (event: React.MouseEvent<HTMLSpanElement>) => void;
+  onClick: () => void;
 };
 
 const DELAY_LOADING = 300;
@@ -73,6 +73,7 @@ class JuiConversationLoading extends React.Component<
 
   state = {
     showLoading: false,
+    showLink: true,
   };
 
   constructor(props: JuiConversationLoadingProps) {
@@ -91,9 +92,17 @@ class JuiConversationLoading extends React.Component<
     clearTimeout(this.timer);
   }
 
+  onClick = () => {
+    const { onClick } = this.props;
+    this.setState({
+      showLink: false,
+    });
+    onClick && onClick();
+  }
+
   render() {
-    const { showLoading } = this.state;
-    const { onClick, tip, linkText, showTip = false } = this.props;
+    const { showLoading, showLink } = this.state;
+    const { tip, linkText, showTip = false } = this.props;
 
     return (
       showLoading && (
@@ -103,7 +112,9 @@ class JuiConversationLoading extends React.Component<
             {showTip && (
               <Tip>
                 {tip}
-                <TipLink handleOnClick={onClick}>{linkText}</TipLink>
+                {showLink && (
+                  <TipLink handleOnClick={this.onClick}>{linkText}</TipLink>
+                )}
               </Tip>
             )}
           </Loading>
