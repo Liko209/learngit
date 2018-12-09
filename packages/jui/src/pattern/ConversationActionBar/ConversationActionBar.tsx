@@ -13,6 +13,7 @@ type Props = {
   moreTooltipTitle: string;
   Like: React.ReactNode;
   Bookmark: React.ReactNode;
+  Edit: React.ReactNode;
 };
 
 const StyledWrapper = styled('div')`
@@ -49,11 +50,12 @@ class JuiConversationActionBar extends PureComponent<Props> {
   }
 
   render() {
-    const { moreTooltipTitle, Like, Bookmark } = this.props;
+    const { moreTooltipTitle, Like, Bookmark, Edit } = this.props;
     return (
       <StyledWrapper onClick={this.clickHandler}>
         {Like}
         {Bookmark}
+        {Edit}
         <JuiIconButton
           size="small"
           tooltipTitle={moreTooltipTitle}
