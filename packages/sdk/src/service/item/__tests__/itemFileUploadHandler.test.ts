@@ -83,11 +83,9 @@ describe('ItemFileService', () => {
         file,
         false,
       );
-      setTimeout(() => {
-        expect(res.id).toBeLessThan(0);
-        expect(res.name).toBe(fileName);
-        expect(res.type).toBe('');
-      });
+
+      expect(res.name).toBe(fileName);
+      expect(res.type).toBe('');
     });
 
     it('should call go updateItem when group has the file before', async (done: jest.DoneCallback) => {
@@ -158,6 +156,14 @@ describe('ItemFileService', () => {
         false,
       );
 
+      expect(res.id).toBeLessThan(0);
+      expect(res.creator_id).toBe(userId);
+      expect(res.group_ids).toEqual([groupId]);
+      expect(res.deactivated).toBeFalsy;
+      expect(res.company_id).toBe(companyId);
+      expect(res.name).toBe(fileName);
+      expect(res.type).toBe('pdf');
+
       setTimeout(() => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
         expect(ItemAPI.sendFileItem).toBeCalledTimes(1);
@@ -167,14 +173,6 @@ describe('ItemFileService', () => {
         expect(notificationCenter.emitEntityReplace).toBeCalled();
         expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
         expect(itemService.updatePreInsertItemStatus).toBeCalledTimes(1);
-
-        expect(res.id).toBeLessThan(0);
-        expect(res.creator_id).toBe(userId);
-        expect(res.group_ids).toEqual([groupId]);
-        expect(res.deactivated).toBeFalsy;
-        expect(res.company_id).toBe(companyId);
-        expect(res.name).toBe(fileName);
-        expect(res.type).toBe('pdf');
 
         done();
       });

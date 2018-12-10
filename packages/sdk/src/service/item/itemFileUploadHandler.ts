@@ -3,14 +3,7 @@
  * @Date: 2018-12-05 09:30:00
  */
 
-import {
-  StoredFile,
-  ItemFile,
-  Item,
-  Raw,
-  Progress,
-  ItemVersions,
-} from '../../models';
+import { StoredFile, ItemFile, Item, Raw, Progress } from '../../models';
 import AccountService from '../account';
 import ItemAPI, { RequestHolder } from '../../api/glip/item';
 import { transform } from '../utils';
@@ -277,16 +270,6 @@ class ItemFileUploadHandler {
     );
   }
 
-  private _toSotredFile(fileVersion: ItemVersions) {
-    // storage_url: string;
-    // download_url: string;
-    // storage_path: string;
-    // last_modified: number;
-    // size: number;
-
-    return {};
-  }
-
   private _toFileVersion(storedFile: StoredFile) {
     return {
       stored_file_id: storedFile._id,
@@ -325,8 +308,9 @@ class ItemFileUploadHandler {
     const vers = versionHash();
     const id = GlipTypeUtil.convertToIdWithType(
       TypeDictionary.TYPE_ID_FILE,
-      vers < 0 ? vers : -vers,
+      now,
     );
+
     return {
       id,
       created_at: now,

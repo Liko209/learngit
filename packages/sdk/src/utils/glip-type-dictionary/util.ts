@@ -17,6 +17,6 @@ export default class GlipTypeUtil {
   }
 
   static convertToIdWithType(typeId: number, originalId: number) {
-    return (Math.abs(originalId) & ~TYPE_ID_MASK) ^ typeId;
+    return (originalId & ~TYPE_ID_MASK) ^ typeId;
   }
 }
