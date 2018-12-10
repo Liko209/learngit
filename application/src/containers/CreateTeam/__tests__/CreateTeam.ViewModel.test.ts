@@ -136,15 +136,6 @@ describe('CreateTeamVM', () => {
     expect(createTeamVM.isOpen).toBe(true);
   });
 
-  it('inputReset', () => {
-    createTeamVM.inputReset();
-    expect(createTeamVM.errorMsg).toBe('');
-    expect(createTeamVM.nameError).toBe(false);
-    expect(createTeamVM.disabledOkBtn).toBe(true);
-    expect(createTeamVM.emailError).toBe(false);
-    expect(createTeamVM.serverError).toBe(false);
-  });
-
   it('handleNameChange()', () => {
     createTeamVM.handleNameChange({
       target: {
