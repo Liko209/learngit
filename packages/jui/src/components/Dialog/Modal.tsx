@@ -14,7 +14,11 @@ import { JuiDialogActions } from './DialogActions';
 import { spacing } from '../../foundation/utils';
 import { Omit } from '../../foundation/utils/typeHelper';
 import styled from '../../foundation/styled-components';
-import { JuiButton, JuiButtonProps } from '../Buttons/Button';
+import {
+  JuiButton,
+  JuiButtonProps,
+  JuiButtonCustomColor,
+} from '../Buttons/Button';
 
 const StyledActions = styled<DialogActionsProps>(JuiDialogActions)`
   & button {
@@ -32,7 +36,7 @@ type JuiModalProps = {
   contentAfter?: string | JSX.Element | boolean | null;
   okText?: string;
   okVariant?: JuiButtonProps['variant'];
-  okType?: 'danger';
+  okType?: JuiButtonCustomColor;
   okBtnProps?: JuiButtonProps;
   cancelVariant?: JuiButtonProps['variant'];
   cancelBtnProps?: JuiButtonProps;

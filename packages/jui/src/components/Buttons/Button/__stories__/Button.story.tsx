@@ -49,7 +49,7 @@ storiesOf('Components/Buttons', module)
         <JuiButton variant="contained" {...rest}>
           {content}
         </JuiButton>
-        <JuiButton variant="contained" customColor="danger" {...rest}>
+        <JuiButton variant="contained" customColor="negative" {...rest}>
           {content}
         </JuiButton>
       </div>

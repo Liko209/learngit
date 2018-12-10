@@ -23,18 +23,20 @@ import { Omit } from '../../../foundation/utils/typeHelper';
 
 type Variant = 'round' | 'text' | 'contained' | 'outlined' | 'fab';
 
+type JuiButtonCustomColor = 'negative';
+
 type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant'> & {
   size?: 'small' | 'large';
   variant?: Variant;
   disabled?: boolean;
   color?: 'primary' | 'secondary';
-  customColor?: 'danger';
+  customColor?: JuiButtonCustomColor;
 };
 
 const CustomColorMap: {
   [x: string]: [keyof Palette, string];
 } = {
-  danger: ['semantic', 'negative'],
+  negative: ['semantic', 'negative'],
 };
 
 const touchRippleClasses = {
@@ -136,4 +138,4 @@ JuiButtonComponent.defaultProps = {
 
 const JuiButton = styled(JuiButtonComponent)``;
 
-export { JuiButton, JuiButtonProps };
+export { JuiButton, JuiButtonProps, JuiButtonCustomColor };
