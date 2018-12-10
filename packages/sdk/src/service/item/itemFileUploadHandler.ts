@@ -99,6 +99,10 @@ class ItemFileUploadHandler {
     return status ? status.progress : undefined;
   }
 
+  cleanUploadingFiles(groupId: number) {
+    this._uploadingFiles.clear();
+  }
+
   private _updateProgress(progress: Progress) {
     const uploadStatus = this._progressCaches.get(progress.id);
     if (uploadStatus) {
@@ -152,9 +156,7 @@ class ItemFileUploadHandler {
       requestHolder,
     );
 
-    const isSuccess = uploadRes.isOk();
-
-    if (isSuccess) {
+    if (uploadRes.isOk()) {
       const storedFile = uploadRes.unwrap()[0];
       await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
       await this._uploadItem(groupId, preInsertItem, isUpdate);
@@ -171,20 +173,15 @@ class ItemFileUploadHandler {
   ) {
     let result: NetworkResult<Raw<ItemFile>, BaseError> | undefined = undefined;
 
-    let shouldUpdate = isUpdate;
     let existItemFile: ItemFile | null = null;
     if (isUpdate) {
       existItemFile = await this._getOldestExistFile(
         groupId,
         preInsertItem.name,
       );
-      if (!existItemFile) {
-        // if item not exist in local, should create new one
-        shouldUpdate = false;
-      }
     }
 
-    if (shouldUpdate && existItemFile) {
+    if (existItemFile) {
       result = await this._updateItem(existItemFile, preInsertItem);
     } else {
       result = await this._newItem(groupId, preInsertItem);
@@ -318,7 +315,6 @@ class ItemFileUploadHandler {
     const userId = accountService.getCurrentUserId() as number;
     const companyId = accountService.getCurrentCompanyId() as number;
     const now = Date.now();
-    const vers = versionHash();
     const id = GlipTypeUtil.convertToIdWithType(
       TypeDictionary.TYPE_ID_FILE,
       now,
@@ -331,7 +327,7 @@ class ItemFileUploadHandler {
       creator_id: userId,
       is_new: true,
       deactivated: false,
-      version: vers,
+      version: versionHash(),
       group_ids: [groupId],
       post_ids: [],
       company_id: companyId,

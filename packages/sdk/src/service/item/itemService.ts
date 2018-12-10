@@ -142,6 +142,10 @@ class ItemService extends BaseService<Item> {
     this._getItemStatusHandler().removePreInsertId(itemId);
   }
 
+  cleanUploadingFiles(groupId: number) {
+    this._getItemFileHandler().cleanUploadingFiles(groupId);
+  }
+
   async getNoteById(id: number): Promise<NoteItem | null> {
     const item = (await this.getByIdFromDao(id)) as NoteItem;
     if (item) {

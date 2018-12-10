@@ -277,6 +277,7 @@ class PostService extends BaseService<Post> {
   async innerSendPost(buildPost: Post, isResend: boolean): Promise<PostData[]> {
     await this.handlePreInsertProcess(buildPost);
 
+    this._cleanUploadingFiles(buildPost.group_id);
     const pseudoItems = this._getPseudoItemIdsFromPost(buildPost);
     if (pseudoItems.length > 0) {
       if (isResend) {
@@ -293,6 +294,11 @@ class PostService extends BaseService<Post> {
     await itemService.resendFailedItems(pseudoItemIds);
   }
 
+  private async _cleanUploadingFiles(groupId: number) {
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.cleanUploadingFiles(groupId);
+  }
+
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
     const listener = (
       success: boolean,
@@ -301,15 +307,18 @@ class PostService extends BaseService<Post> {
     ) => {
       if (success) {
         // update post to db
-        const postDao = daoManager.getDao(PostDao);
-        post.item_ids = post.item_ids.map((id: number) => {
-          if (id === preInsertId) {
-            return updatedId;
-          }
-          return id;
-        });
-        postDao.update(post);
-        notificationCenter.emitEntityUpdate(ENTITY.POST, [post]);
+        if (updatedId !== preInsertId) {
+          post.item_ids = post.item_ids.map((id: number) => {
+            if (id === preInsertId) {
+              return updatedId;
+            }
+            return id;
+          });
+
+          const postDao = daoManager.getDao(PostDao);
+          postDao.update(post);
+          notificationCenter.emitEntityUpdate(ENTITY.POST, [post]);
+        }
 
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
           notificationCenter.removeListener(
@@ -334,17 +343,17 @@ class PostService extends BaseService<Post> {
         itemStatuses,
       );
 
-      // all failed
-      if (!hasSucceed && !hasInProgress) {
-        this.handleSendPostFail(preInsertId);
-      }
-
       // remove listener if item files are not in progress
       if (!hasInProgress) {
         notificationCenter.removeListener(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           listener,
         );
+
+        // all failed
+        if (!hasSucceed) {
+          this.handleSendPostFail(preInsertId);
+        }
       }
     };
 
