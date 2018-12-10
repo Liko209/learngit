@@ -10,13 +10,13 @@ type ViewProps = {
   isOpen: boolean;
   disabledOkBtn: boolean;
   isOffline: boolean;
+  errorUnknown: boolean;
   emailError: boolean;
   emailErrorMsg: string;
   message: string;
   serverError: boolean;
   members: (number | string)[];
   errorEmail: string;
-  errorUnKnown: boolean;
   updateNewMessageDialogState: () => void;
   updateCreateTeamDialogState: () => void;
   inputReset: () => void;

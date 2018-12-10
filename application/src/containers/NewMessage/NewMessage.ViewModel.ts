@@ -26,7 +26,7 @@ class NewMessageViewModel extends StoreViewModel {
   @observable
   errorEmail: string;
   @observable
-  errorUnKnown: boolean = false;
+  errorUnknown: boolean = false;
 
   @computed
   get disabledOkBtn() {
@@ -107,7 +107,7 @@ class NewMessageViewModel extends StoreViewModel {
         this.emailError = true;
       }
     } else {
-      this.errorUnKnown = true;
+      this.errorUnknown = true;
     }
   }
 }
