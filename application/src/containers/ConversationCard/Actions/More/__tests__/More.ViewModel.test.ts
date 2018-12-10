@@ -16,7 +16,7 @@ const mockGlobalValue = {
 };
 
 describe('MoreVM', () => {
-  describe('permissionsMap()', () => {
+  describe('permissionsMap for quote', () => {
     beforeAll(() => {
       jest.resetAllMocks();
     });
@@ -74,8 +74,12 @@ describe('MoreVM', () => {
         ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.QUOTE].permission,
       ).toBe(true);
     });
-
-    it('should display Delete option on more actions with post by me condition [JPT-482]', () => {
+  });
+  describe('permissionsMap for delete', () => {
+    beforeAll(() => {
+      jest.resetAllMocks();
+    });
+    it('should display Delete option on more actions with post by me condition [JPT-466]', () => {
       (getGlobalValue as jest.Mock).mockImplementation((key: GLOBAL_KEYS) => {
         return mockGlobalValue[key];
       });
@@ -95,7 +99,7 @@ describe('MoreVM', () => {
       ).toBe(true);
     });
 
-    it('should do not display Delete option on more actions with post by me condition [JPT-482]', () => {
+    it('should do not display Delete option on more actions with post by me condition [JPT-466]', () => {
       (getGlobalValue as jest.Mock).mockImplementation((key: GLOBAL_KEYS) => {
         return mockGlobalValue[key];
       });
@@ -114,8 +118,12 @@ describe('MoreVM', () => {
         ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.DELETE].permission,
       ).toBe(false);
     });
-
-    it('should display Edit post option on more actions with post by me condition in Group', () => {
+  });
+  describe('permissionsMap for edit', () => {
+    beforeAll(() => {
+      jest.resetAllMocks();
+    });
+    it('should display Edit post option on more actions with post by me condition in Group [JPT-477]', () => {
       (getGlobalValue as jest.Mock).mockImplementation((key: GLOBAL_KEYS) => {
         return mockGlobalValue[key];
       });
@@ -135,7 +143,7 @@ describe('MoreVM', () => {
       ).toBe(true);
     });
 
-    it('should display Edit post option on more actions with post by me condition and admin permission in Team', () => {
+    it('should display Edit post option on more actions with post by me condition and admin permission in Team [JPT-477]', () => {
       (getGlobalValue as jest.Mock).mockImplementation((key: GLOBAL_KEYS) => {
         return mockGlobalValue[key];
       });
@@ -155,7 +163,7 @@ describe('MoreVM', () => {
       ).toBe(true);
     });
 
-    it('should display Edit post option on more actions with post by me condition and user permission in Team', () => {
+    it('should display Edit post option on more actions with post by me condition and user permission in Team [JPT-477]', () => {
       (getGlobalValue as jest.Mock).mockImplementation((key: GLOBAL_KEYS) => {
         return mockGlobalValue[key];
       });
@@ -177,6 +185,22 @@ describe('MoreVM', () => {
       expect(
         ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.EDIT].permission,
       ).toBe(true);
+    });
+  });
+  describe('showMoreAction()', () => {
+    beforeAll(() => {
+      jest.resetAllMocks();
+    });
+    it('should show quote & delete & edit action buttons [JPT-440, JPT-475, JPT-482, JPT-472]', () => {
+      (getEntity as jest.Mock).mockImplementation((type: string) => {
+        if (type === ENTITY_NAME.POST) {
+          return { text: 'test' };
+        }
+        return null;
+      });
+      ViewModel = new MoreViewModel({ id: 1 });
+
+      expect(ViewModel.showMoreAction).toBe(true);
     });
   });
 });
