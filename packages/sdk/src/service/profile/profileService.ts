@@ -15,7 +15,7 @@ import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
 import { BaseError, ErrorTypes } from '../../utils';
 import { transform } from '../utils';
 import PersonService from '../person';
-import handleData, { handlePartialProfileUpdate } from './handleData';
+import handleData from './handleData';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();
@@ -67,34 +67,6 @@ class ProfileService extends BaseService<Profile> {
     }
     newOrder[newIndex] = id;
     return newOrder;
-  }
-
-  private async _putProfileAndHandle(
-    profile: Profile,
-    oldKey: string,
-    oldValue: any,
-  ): Promise<Profile | null> {
-    profile._id = profile.id;
-    delete profile.id;
-    const apiResult = await ProfileAPI.putDataById<Profile>(
-      profile._id,
-      profile,
-    );
-    let result: Profile | null;
-    if (apiResult.isOk()) {
-      result = await handlePartialProfileUpdate(apiResult.data, oldKey);
-    } else {
-      // roll back
-      profile[oldKey] = oldValue;
-      result = await handlePartialProfileUpdate(
-        profile as Raw<Profile>,
-        oldKey,
-      );
-    }
-    if (result) {
-      return result;
-    }
-    return null;
   }
 
   async reorderFavoriteGroups(
@@ -217,33 +189,43 @@ class ProfileService extends BaseService<Profile> {
   async putFavoritePost(
     postId: number,
     toBook: boolean,
-  ): Promise<Profile | null> {
+  ): Promise<ServiceResult<Profile>> {
     const profile = await this.getProfile();
     if (profile) {
-      const oldFavPostIds = profile.favorite_post_ids || [];
-      let newFavPostIds = oldFavPostIds;
-      if (toBook) {
-        if (oldFavPostIds.indexOf(postId) === -1) {
-          newFavPostIds.push(postId);
-        } else {
-          return profile;
-        }
-      } else {
-        if (oldFavPostIds.indexOf(postId) !== -1) {
-          newFavPostIds = oldFavPostIds.filter((id: number) => id !== postId);
-        } else {
-          return profile;
-        }
+      let oldFavPostIds = profile.favorite_post_ids || [];
+      const shouldDoNothing =
+        (toBook && oldFavPostIds.indexOf(postId) !== -1) ||
+        (!toBook && oldFavPostIds.indexOf(postId) === -1);
+      if (shouldDoNothing) {
+        return serviceOk(profile);
       }
-      profile.favorite_post_ids = newFavPostIds;
-      return this._putProfileAndHandle(
-        profile,
-        'favorite_post_ids',
-        oldFavPostIds,
+      const partialProfile: any = {
+        id: profile.id,
+        _id: profile.id,
+      };
+      const preHandlePartialModel = (
+        partialModel: Partial<Raw<Profile>>,
+        originalModel: Profile,
+      ): Partial<Raw<Profile>> => {
+        if (toBook) {
+          oldFavPostIds.push(postId);
+        } else {
+          oldFavPostIds = oldFavPostIds.filter(id => id !== postId);
+        }
+        partialModel.favorite_post_ids = oldFavPostIds;
+        return partialModel;
+      };
+
+      return await this.handlePartialUpdate(
+        partialProfile,
+        preHandlePartialModel,
+        this._doUpdateModel.bind(this),
       );
     }
-    // error
-    return profile;
+    return serviceErr(
+      ErrorTypes.SERVICE,
+      `profileService.putFavoritePost(${postId}) failed`,
+    );
   }
 
   getCurrentProfileId(): number {

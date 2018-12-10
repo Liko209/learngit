@@ -34,9 +34,10 @@ class BookmarkViewModel extends StoreViewModel<BookmarkProps>
   }
 
   @action
-  bookmark = async (toBookmark: boolean) => {
+  bookmark = async (toBookmark: boolean): Promise<boolean> => {
     const postService = PostService.getInstance<PostService>();
-    await postService.bookmarkPost(this._id, toBookmark);
+    const result = await postService.bookmarkPost(this._id, toBookmark);
+    return result.isErr();
   }
 }
 

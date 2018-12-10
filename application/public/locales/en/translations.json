@@ -133,6 +133,8 @@
   "SorryWeWereNotAbleToLikeTheMessage": "Sorry, we weren't able to like this message. Try again.",
   "SorryWeWereNotAbleToUnlikeTheMessage": "Sorry, we weren't able to unlike this message. Try again.",
   "SorryWeWereNotAbleToCloseTheConversation": "Sorry, we weren't able to close the conversation. Try again.",
+  "SorryWeWereNotAbleToRemoveYourBookmark": "Sorry, we weren't able to remove your bookmark. Try again.",
+  "SorryWeWereNotAbleToBookmarkThisMessage": "Sorry, we weren't able to bookmark this message. Try again.",
   "AboutRingCentral": "About RingCentral",
   "NewActions": "New Actions"
 }
