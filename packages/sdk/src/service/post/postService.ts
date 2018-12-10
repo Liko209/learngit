@@ -334,26 +334,26 @@ class PostService extends BaseService<Post> {
         itemService.getItemsSendingStatus(post.item_ids),
       );
 
-      const hasSucceed = this._hasSpecificStatus(
-        SENDING_STATUS.SUCCESS,
-        itemStatuses,
-      );
       const hasInProgress = this._hasSpecificStatus(
         SENDING_STATUS.INPROGRESS,
+        itemStatuses,
+      );
+      const hasFailed = this._hasSpecificStatus(
+        SENDING_STATUS.FAIL,
         itemStatuses,
       );
 
       // remove listener if item files are not in progress
       if (!hasInProgress) {
+        // has failed
+        if (hasFailed) {
+          this.handleSendPostFail(preInsertId);
+        }
+
         notificationCenter.removeListener(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           listener,
         );
-
-        // all failed
-        if (!hasSucceed) {
-          this.handleSendPostFail(preInsertId);
-        }
       }
     };
 

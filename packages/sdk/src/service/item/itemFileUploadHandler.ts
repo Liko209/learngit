@@ -46,6 +46,7 @@ class ItemFileUploadHandler {
     const itemInDB = (await itemDao.get(itemId)) as ItemFile;
     let sendFailed = false;
     if (itemInDB) {
+      this._updatePreInsertItemStatus(itemInDB.id, SENDING_STATUS.INPROGRESS);
       const groupId = itemInDB.group_ids[0];
       const isUpdate = !!itemInDB.isUpdate;
       if (itemInDB.versions.length > 0) {
@@ -117,11 +118,6 @@ class ItemFileUploadHandler {
     file: FormData,
     isUpdate: boolean,
   ) {
-    this._updatePreInsertItemStatus(
-      preInsertItem.id,
-      SENDING_STATUS.INPROGRESS,
-    );
-
     const requestHolder: RequestHolder = { request: undefined };
     const progress = {
       id: preInsertItem.id,
@@ -302,6 +298,8 @@ class ItemFileUploadHandler {
 
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(itemFile);
+
+    this._updatePreInsertItemStatus(itemFile.id, SENDING_STATUS.INPROGRESS);
   }
 
   private _updatePreInsertItemStatus(itemId: number, status: SENDING_STATUS) {

@@ -19,10 +19,9 @@ import {
   Progress,
 } from '../../models';
 import { BaseError } from '../../utils';
-import { SOCKET, ENTITY } from '../eventKey';
+import { SOCKET } from '../eventKey';
 import { NetworkResult } from '../../api/NetworkResult';
 import { ItemFileUploadHandler } from './itemFileUploadHandler';
-import notificationCenter from '../notificationCenter';
 import { ItemStatusHandler } from './itemStatusHandler';
 import { SENDING_STATUS } from '../constants';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
@@ -70,12 +69,6 @@ class ItemService extends BaseService<Item> {
       file,
       isUpdate,
     );
-  }
-
-  async updatePseudoItemFiles(itemFiles: ItemFile[]) {
-    const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.bulkUpdate(itemFiles);
-    notificationCenter.emitEntityUpdate(ENTITY.ITEM, itemFiles);
   }
 
   async cancelUpload(itemId: number) {

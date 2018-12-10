@@ -11,12 +11,14 @@ import handleData, {
   uploadStorageFile,
   sendFileItem,
 } from '../../../service/item/handleData';
-import { daoManager } from '../../../dao';
+import { daoManager, PRE_INSERT_ITEM_IDS } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
 import { postFactory } from '../../../__tests__/factories';
 import { NetworkResultOk } from '../../../api/NetworkResult';
 import { ItemFileUploadHandler } from '../itemFileUploadHandler';
+import { ItemStatusHandler } from '../itemStatusHandler';
 
+jest.mock('../itemStatusHandler');
 jest.mock('../itemFileUploadHandler');
 
 const itemService = new ItemService();
@@ -257,58 +259,6 @@ describe('ItemService', () => {
     });
   });
 
-  describe('sendItemFile()', () => {
-    it('send item file, invalid parameter', async () => {
-      const itemFileUploadHandler = new ItemFileUploadHandler();
-      jest
-        .spyOn(itemService, '_getItemFileHandler')
-        .mockReturnValue(itemFileUploadHandler);
-
-      itemFileUploadHandler.sendItemFile.mockResolvedValue(null);
-      const result = await itemService.sendItemFile(0, undefined, false);
-      expect(result).toBe(null);
-      expect(itemFileUploadHandler.sendItemFile).toBeCalledWith(
-        0,
-        undefined,
-        false,
-      );
-    });
-  });
-
-  describe('cancelUpload()', () => {
-    it('should not call cancel upload, when invalid itemId', async () => {
-      const itemFileUploadHandler = new ItemFileUploadHandler();
-      jest
-        .spyOn(itemService, '_getItemFileHandler')
-        .mockReturnValue(itemFileUploadHandler);
-      itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
-      await itemService.cancelUpload(0);
-      expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(0);
-    });
-
-    it('should call cancel upload, when valid itemId', async () => {
-      const itemFileUploadHandler = new ItemFileUploadHandler();
-      jest
-        .spyOn(itemService, '_getItemFileHandler')
-        .mockReturnValue(itemFileUploadHandler);
-      itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
-      await itemService.cancelUpload(-1);
-      expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(1);
-    });
-  });
-
-  describe('getUploadItems()', () => {
-    it('items are empty', async () => {
-      const itemFileUploadHandler = new ItemFileUploadHandler();
-      jest.spyOn(itemFileUploadHandler, 'getUploadItems').mockResolvedValue([]);
-      jest
-        .spyOn(itemService, '_getItemFileHandler')
-        .mockReturnValue(itemFileUploadHandler);
-      const result = await itemService.getUploadItems(1);
-      expect(result.length).toBe(0);
-    });
-  });
-
   describe('isFileExists()', () => {
     const itemDao = {
       isFileItemExist: jest.fn(),
@@ -347,6 +297,108 @@ describe('ItemService', () => {
     it('get progress invalid id', async () => {
       const result = await itemService.getUploadProgress(0);
       expect(result).toBeUndefined;
+    });
+  });
+
+  describe('ItemService should call functions in ItemFileUploadHandler', () => {
+    const itemFileUploadHandler = new ItemFileUploadHandler();
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+      jest
+        .spyOn(itemService, '_getItemFileHandler')
+        .mockReturnValue(itemFileUploadHandler);
+    });
+
+    describe('resendFailedItems()', () => {
+      it('should call resendFailedFile ', () => {
+        const resendIds = [250052362250, 250052378634, 3];
+        itemService.resendFailedItems(resendIds);
+        expect(itemFileUploadHandler.resendFailedFile).toBeCalledTimes(2);
+      });
+    });
+
+    describe('getUploadItems()', () => {
+      it('items are empty', async () => {
+        await itemService.getUploadItems(1);
+        expect(itemFileUploadHandler.getUploadItems).toBeCalledWith(1);
+      });
+    });
+
+    describe('cleanUploadingFiles()', () => {
+      it('should call cleanUploadingFiles ', () => {
+        const groupId = 1;
+        itemService.cleanUploadingFiles(groupId);
+        expect(itemFileUploadHandler.cleanUploadingFiles).toBeCalledTimes(1);
+        expect(itemFileUploadHandler.cleanUploadingFiles).toBeCalledWith(
+          groupId,
+        );
+      });
+    });
+
+    describe('sendItemFile()', () => {
+      it('send item file, invalid parameter', async () => {
+        itemFileUploadHandler.sendItemFile.mockResolvedValue(null);
+        const result = await itemService.sendItemFile(0, undefined, false);
+        expect(result).toBe(null);
+        expect(itemFileUploadHandler.sendItemFile).toBeCalledWith(
+          0,
+          undefined,
+          false,
+        );
+      });
+    });
+
+    describe('cancelUpload()', () => {
+      it('should not call cancel upload, when invalid itemId', async () => {
+        itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
+        await itemService.cancelUpload(0);
+        expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(0);
+      });
+
+      it('should call cancel upload, when valid itemId', async () => {
+        itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
+        await itemService.cancelUpload(-1);
+        expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(1);
+      });
+    });
+  });
+
+  describe('ItemService should call functions in ItemStatusHandler', () => {
+    const itemStatusHandler = new ItemStatusHandler(PRE_INSERT_ITEM_IDS);
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+      jest
+        .spyOn(itemService, '_getItemStatusHandler')
+        .mockReturnValue(itemStatusHandler);
+    });
+
+    describe('removeItemFromPreInsertIds()', () => {
+      it('should call removePreInsertId', () => {
+        const id = 1;
+        itemService.removeItemFromPreInsertIds(id);
+        expect(itemStatusHandler.removePreInsertId).toBeCalledTimes(1);
+        expect(itemStatusHandler.removePreInsertId).toBeCalledWith(id);
+      });
+    });
+
+    describe('getItemsSendingStatus()', () => {
+      it('should call getSendingStatus', () => {
+        const ids = [1, 2, 3];
+        itemService.getItemsSendingStatus(ids);
+        expect(itemStatusHandler.getSendingStatus).toBeCalledTimes(ids.length);
+      });
+    });
+
+    describe('updatePreInsertItemStatus()', () => {
+      it('should call setPreInsertId', () => {
+        const itemId = 1;
+        const status = 0;
+        itemService.updatePreInsertItemStatus(itemId, status);
+        expect(itemStatusHandler.setPreInsertId).toBeCalledWith(itemId, status);
+        expect(itemStatusHandler.setPreInsertId).toBeCalledTimes(1);
+      });
     });
   });
 });
