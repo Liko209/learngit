@@ -193,7 +193,7 @@ class GroupService extends BaseService<Group> {
     if (result) {
       return ok(result);
     }
-    return await this.requestRemoteGroupByMemberList(members);
+    return this.requestRemoteGroupByMemberList(members);
   }
 
   async requestRemoteGroupByMemberList(

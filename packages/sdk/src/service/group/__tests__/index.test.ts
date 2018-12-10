@@ -19,7 +19,6 @@ import { Group, Raw, Person } from '../../../models';
 import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
-import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { GroupErrorTypes } from '../groupService';
 import { ErrorParser, BaseError, TypeDictionary } from '../../../utils';
@@ -28,7 +27,7 @@ import CompanyService from '../../company';
 import PostService from '../../post';
 import { Api } from '../../../api';
 import notificationCenter from '../../notificationCenter';
-import DaoManager from '../../../dao/DaoManager';
+import { serviceOk, serviceErr } from '../../ServiceResult';
 
 jest.mock('../../../dao');
 jest.mock('../handleData');
@@ -613,35 +612,23 @@ describe('GroupService', () => {
     });
   });
 
-  describe('hideConversation', () => {
+  describe('hideConversation()', () => {
     it('hideConversation, success', async () => {
-      profileService.hideConversation.mockResolvedValueOnce({
-        id: 1,
-        hide_group_123: true,
-      });
+      profileService.hideConversation.mockResolvedValueOnce(
+        serviceOk({
+          id: 1,
+          hide_group_123: true,
+        }),
+      );
       const result = await groupService.hideConversation(1, false, true);
-      expect(result).toBe(ServiceCommonErrorType.NONE);
+      expect(result.isOk()).toBeTruthy();
     });
     it('hideConversation, network not available', async () => {
       profileService.hideConversation.mockResolvedValueOnce(
-        new BaseError(5000, ''),
+        serviceErr(5000, ''),
       );
       const result = await groupService.hideConversation(1, false, true);
-      expect(result).toBe(ServiceCommonErrorType.NETWORK_NOT_AVAILABLE);
-    });
-    it('hideConversation, server error', async () => {
-      profileService.hideConversation.mockResolvedValueOnce(
-        new BaseError(5403, ''),
-      );
-      const result = await groupService.hideConversation(1, false, true);
-      expect(result).toBe(ServiceCommonErrorType.SERVER_ERROR);
-    });
-    it('hideConversation, unknown error', async () => {
-      profileService.hideConversation.mockResolvedValueOnce(
-        ErrorParser.parse({ status: 280 }),
-      );
-      const result = await groupService.hideConversation(1, false, true);
-      expect(result).toBe(ServiceCommonErrorType.UNKNOWN_ERROR);
+      expect(result.isErr()).toBeTruthy();
     });
   });
 
@@ -1162,18 +1149,20 @@ describe('GroupService', () => {
       expect(profileService.reorderFavoriteGroups).toBeCalledWith(1, 2);
     });
   });
+
   describe('markGroupAsFavorite()', () => {
     it('should proxy to call profileService.markGroupAsFavorite', async () => {
       profileService.markGroupAsFavorite.mockResolvedValueOnce({});
       const result = await groupService.markGroupAsFavorite(1, true);
       expect(profileService.markGroupAsFavorite).lastCalledWith(1, true);
-      expect(result).toEqual(ServiceCommonErrorType.NONE);
+      expect(result.isOk()).toBeTruthy();
     });
+
     it('should return error type correctly', async () => {
       const mockError = new BaseError(5300, 'mock error');
       profileService.markGroupAsFavorite.mockResolvedValueOnce(mockError);
       const result = await groupService.markGroupAsFavorite(1, true);
-      expect(result).toEqual(ServiceCommonErrorType.SERVER_ERROR);
+      expect(result.isErr()).toBeTruthy();
     });
   });
 });
