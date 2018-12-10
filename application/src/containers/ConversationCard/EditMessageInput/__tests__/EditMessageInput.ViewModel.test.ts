@@ -46,9 +46,10 @@ const postService = {
 };
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 
-const editMessageInputViewModel = new EditMessageInputViewModel({ id: 1 });
+let editMessageInputViewModel: EditMessageInputViewModel;
 
 beforeEach(() => {
+  editMessageInputViewModel = new EditMessageInputViewModel({ id: 1 });
   jest.clearAllMocks();
 });
 
