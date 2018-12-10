@@ -28,6 +28,7 @@ import CompanyService from '../../company';
 import PostService from '../../post';
 import { Api } from '../../../api';
 import notificationCenter from '../../notificationCenter';
+import DaoManager from '../../../dao/DaoManager';
 
 jest.mock('../../../dao');
 jest.mock('../handleData');
@@ -135,6 +136,12 @@ describe('GroupService', () => {
     expect(result).toEqual(mock);
   });
 
+  describe('getLocalGroup()', () => {
+    it('should call groupDao with personIds append self id', async () => {
+      await groupService.getLocalGroup([11, 12]);
+      expect(groupDao.queryGroupByMemberList).toBeCalledWith([11, 12, 1]);
+    });
+  });
   describe('getGroupByMemberList()', async () => {
     it('should return result with group if it already existed in local', async () => {
       const mockNormal = { id: 1 };
@@ -142,7 +149,6 @@ describe('GroupService', () => {
       // group exist in DB already
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
-
       const result1 = await groupService.getOrCreateGroupByMemberList(
         memberIDs,
       );
@@ -160,7 +166,6 @@ describe('GroupService', () => {
     });
 
     it('should return result with error if it can not get from remote', async () => {
-      const mockNormal = { id: 1 };
       const memberIDs = [1, 2];
       jest
         .spyOn(groupService, 'requestRemoteGroupByMemberList')
@@ -212,14 +217,28 @@ describe('GroupService', () => {
     expect(result1.data).toEqual(mock);
   });
 
-  it('getLatestGroup()', async () => {
-    const mock = { id: 1 };
-    daoManager.getDao.mockReturnValueOnce(groupDao);
-    groupDao.getLatestGroup.mockResolvedValueOnce(mock);
-    daoManager.getKVDao.mockReturnValueOnce(configDao);
-    configDao.get.mockReturnValueOnce(undefined);
-    const result = await groupService.getLatestGroup();
-    expect(result).toEqual(mock);
+  describe('getLatestGroup()', () => {
+    it('should query form groupDao.getLatestGroup when configDao not record LAST_CLICKED_GROUP', async () => {
+      const mock = { id: 1 };
+      daoManager.getDao.mockReturnValueOnce(groupDao);
+      groupDao.getLatestGroup.mockResolvedValueOnce(mock);
+      daoManager.getKVDao.mockReturnValueOnce(configDao);
+      configDao.get.mockReturnValueOnce(undefined);
+      const result = await groupService.getLatestGroup();
+      expect(result).toEqual(mock);
+      expect(groupDao.getLatestGroup).toBeCalled();
+    });
+    it('should call getById when configDao exist LAST_CLICKED_GROUP', async () => {
+      const mockGroupId = 1;
+      daoManager.getDao.mockReturnValueOnce(groupDao);
+      daoManager.getKVDao.mockReturnValueOnce(configDao);
+      configDao.get.mockReturnValueOnce(mockGroupId);
+      const spyGetById = jest
+        .spyOn(groupService, 'getById')
+        .mockReturnValueOnce(groupFactory.build());
+      await groupService.getLatestGroup();
+      expect(spyGetById).toBeCalledWith(mockGroupId);
+    });
   });
 
   it('getPermissions(group_id)', async () => {
@@ -1096,6 +1115,65 @@ describe('GroupService', () => {
       expect(groupDao.bulkDelete).toHaveBeenCalledWith([1]);
       expect(groupConfigDao.bulkDelete).toHaveBeenCalledWith([1]);
       expect(notificationCenter.emitEntityDelete).toBeCalledTimes(1);
+    });
+  });
+  describe('hasPermissionWithGroupId()', () => {
+    it('should return false when groupInfo not found', async () => {
+      const spy = jest
+        .spyOn(groupService, 'getById')
+        .mockResolvedValue(undefined);
+      // groupService.getById.mockReturnValue(null);
+      expect(
+        await groupService.hasPermissionWithGroupId(
+          1,
+          PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
+        ),
+      ).toBeFalsy();
+      expect(
+        await groupService.hasPermissionWithGroupId(
+          1,
+          PERMISSION_ENUM.TEAM_ADD_MEMBER,
+        ),
+      ).toBeFalsy();
+      expect(
+        await groupService.hasPermissionWithGroupId(
+          1,
+          PERMISSION_ENUM.TEAM_ADMIN,
+        ),
+      ).toBeFalsy();
+      expect(
+        await groupService.hasPermissionWithGroupId(
+          1,
+          PERMISSION_ENUM.TEAM_PIN_POST,
+        ),
+      ).toBeFalsy();
+      expect(
+        await groupService.hasPermissionWithGroupId(
+          1,
+          PERMISSION_ENUM.TEAM_POST,
+        ),
+      ).toBeFalsy();
+      spy.mockClear();
+    });
+  });
+  describe('reorderFavoriteGroups()', () => {
+    it('should call profileService with correct params', async () => {
+      await groupService.reorderFavoriteGroups(1, 2);
+      expect(profileService.reorderFavoriteGroups).toBeCalledWith(1, 2);
+    });
+  });
+  describe('markGroupAsFavorite()', () => {
+    it('should proxy to call profileService.markGroupAsFavorite', async () => {
+      profileService.markGroupAsFavorite.mockResolvedValueOnce({});
+      const result = await groupService.markGroupAsFavorite(1, true);
+      expect(profileService.markGroupAsFavorite).lastCalledWith(1, true);
+      expect(result).toEqual(ServiceCommonErrorType.NONE);
+    });
+    it('should return error type correctly', async () => {
+      const mockError = new BaseError(5300, 'mock error');
+      profileService.markGroupAsFavorite.mockResolvedValueOnce(mockError);
+      const result = await groupService.markGroupAsFavorite(1, true);
+      expect(result).toEqual(ServiceCommonErrorType.SERVER_ERROR);
     });
   });
 });

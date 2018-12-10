@@ -129,5 +129,7 @@
   "more": "more",
   "close": "close",
   "NoInternetConnection": "No Internet Connection",
-  "SorryWeEreNotAbleToSendTheMessage": "Sorry, we weren't able to send the message. Try again."
+  "SorryWeEreNotAbleToSendTheMessage": "Sorry, we weren't able to send the message. Try again.",
+  "AboutRingCentral": "About RingCentral",
+  "NewActions": "New Actions"
 }

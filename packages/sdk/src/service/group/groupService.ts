@@ -121,7 +121,6 @@ class GroupService extends BaseService<Group> {
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
       result = await dao.queryAllGroups(offset, limit);
     } else {
-      const profileService: ProfileService = ProfileService.getInstance();
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];

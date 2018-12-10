@@ -175,6 +175,11 @@ export default class MultiEntityMapStore<
     return !!this._data[id];
   }
 
+  subtractedBy(ids: number[]) {
+    const existingKeys = Object.keys(this._data).map(Number);
+    return [_.difference(ids, existingKeys), _.intersection(ids, existingKeys)];
+  }
+
   getSize() {
     return Object.keys(this._data).length;
   }
