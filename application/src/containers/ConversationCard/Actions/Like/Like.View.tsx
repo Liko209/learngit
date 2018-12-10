@@ -10,14 +10,26 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { LikeViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import ThumbUpOutlined from '@material-ui/icons/ThumbUpOutlined';
-
+import { Notification } from '@/containers/Notification';
 type Props = LikeViewProps & WithNamespaces;
 
 @observer
 class LikeViewComponent extends Component<Props> {
-  private _handleLikeButton = () => {
+  private _handleLikeButton = async () => {
     const { isLike, like } = this.props;
-    like(!isLike);
+    const result = await like(!isLike);
+    if (result) {
+      const message = !isLike
+        ? 'SorryWeWereNotAbleToLikeTheMessage'
+        : 'SorryWeWereNotAbleToUnlikeTheMessage';
+      Notification.flashToast({
+        message,
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
+      });
+    }
   }
   render() {
     const { isLike, t } = this.props;

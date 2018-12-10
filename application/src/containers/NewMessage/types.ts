@@ -16,6 +16,7 @@ type ViewProps = {
   serverError: boolean;
   members: (number | string)[];
   errorEmail: string;
+  errorUnKnown: boolean;
   updateNewMessageDialogState: () => void;
   updateCreateTeamDialogState: () => void;
   inputReset: () => void;

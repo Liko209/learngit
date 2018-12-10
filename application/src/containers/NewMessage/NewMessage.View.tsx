@@ -14,6 +14,7 @@ import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactSearch } from '@/containers/ContactSearch';
+import { Notification } from '@/containers/Notification';
 import { ViewProps } from './types';
 
 type State = {
@@ -63,6 +64,17 @@ class NewMessage extends React.Component<NewMessageProps, State> {
     this.setState({ message: e.target.value });
   }
 
+  renderFailError() {
+    const message = 'SorryWeWereNotAbleToSendTheMessage';
+    Notification.flashToast({
+      message,
+      type: 'error',
+      messageAlign: 'left',
+      fullWidth: false,
+      dismissible: false,
+    });
+  }
+
   render() {
     const {
       t,
@@ -75,7 +87,11 @@ class NewMessage extends React.Component<NewMessageProps, State> {
       isOffline,
       serverError,
       errorEmail,
+      errorUnknown,
     } = this.props;
+    if (errorUnknown) {
+      this.renderFailError();
+    }
     return (
       <JuiModal
         open={isOpen}
