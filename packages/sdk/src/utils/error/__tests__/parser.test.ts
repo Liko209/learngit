@@ -42,7 +42,7 @@ describe('ErrorParser', () => {
 
       const error = ErrorParser.parse(response);
 
-      expect(error.code).toBe(ErrorTypes.OAUTH_INVALID_GRANT);
+      expect(error.code).toBe(ErrorTypes.API_INVALID_GRANT);
     });
 
     it('should return UNDEFINED_ERROR when then input can not be parse', () => {
