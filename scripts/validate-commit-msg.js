@@ -8,8 +8,7 @@ const msgPath = process.env.HUSKY_GIT_PARAMS;
 const msg = require("fs")
   .readFileSync(msgPath, "utf-8")
   .trim();
-
-const commitRE = /^(feat|fix|docs|style|refactor|test|chore|revert)(\(.+\))?: /;
+const commitRE = /^(feat|fix|docs|style|refactor|test|chore|revert)\(FIJI-\d+\):\s\[.+\]\s.+/;
 const mergeRE = /^(Merge (.*?) into (.*?)|(Merge branch (.*?))(?:\r?\n)*$)/;
 
 if (!commitRE.test(msg) && !mergeRE.test(msg)) {
@@ -21,12 +20,8 @@ if (!commitRE.test(msg) && !mergeRE.test(msg)) {
       chalk.red(
         `  Proper commit message format is required for automated changelog generation. Examples:\n\n`
       ) +
-      `    ${chalk.green(`feat(your scope): 'add comments'`)}\n` +
-      `    ${chalk.green(
-        `fix(FIJI-476 scripts): 'subject can't be skipped'`
-      )}\n` +
-      `    ${chalk.green(`test: 'scope can be ignored'`)}\n\n` +
-      chalk.red(
+      `    ${chalk.green(`feat(your scope): [summary] 'add comments'`)}\n` +
+      +chalk.red(
         `  You can also use ${chalk.cyan(
           `npm run commits`
         )} to interactively generate a commit message.\n`

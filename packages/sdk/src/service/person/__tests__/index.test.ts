@@ -9,9 +9,14 @@ import GroupService, {
   FEATURE_TYPE,
   FEATURE_STATUS,
 } from '../../../service/group';
-import { daoManager, PersonDao } from '../../../dao';
+import { daoManager, PersonDao, AuthDao } from '../../../dao';
 import { Person } from '../../../models';
 import { AccountService } from '../../account/accountService';
+import { PHONE_NUMBER_TYPE, PhoneNumberInfo } from '../types';
+import { personFactory } from '../../../__tests__/factories';
+import { KVStorage } from 'foundation/src';
+import { KVStorageManager } from 'foundation';
+import PersonAPI from '../../../api/glip/person';
 
 jest.mock('../../../dao');
 jest.mock('../../../service/group');
@@ -136,6 +141,44 @@ describe('PersonService', () => {
         };
         cacheManager.set(person);
       }
+
+      for (let i = 20001; i <= 20010; i += 1) {
+        const person: Person = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          deactivated: false,
+          version: i,
+          company_id: 1,
+          email: `monkey${i.toString()}@ringcentral.com`,
+          me_group_id: 1,
+          first_name: `kong${i.toString()}`,
+          last_name: `wu${i.toString()}`,
+          display_name: `kong${i.toString()} wu${i.toString()}`,
+        };
+        cacheManager.set(person);
+      }
+
+      for (let i = 20011; i <= 20020; i += 1) {
+        const person: Person = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          deactivated: false,
+          version: i,
+          company_id: 1,
+          email: `master${i.toString()}@ringcentral.com`,
+          me_group_id: 1,
+          first_name: `monkey${i.toString()}`,
+          last_name: `wu${i.toString()}`,
+          display_name: `monkey${i.toString()} wu${i.toString()}`,
+        };
+        cacheManager.set(person);
+      }
     }
 
     prepareDataForSearchUTs();
@@ -224,7 +267,7 @@ describe('PersonService', () => {
         undefined,
         true,
       );
-      expect(result.sortableModels.length).toBe(20000);
+      expect(result.sortableModels.length).toBe(20020);
     });
 
     it('search parts of data, searchKey is empty, can not return all if search key is empty', async () => {
@@ -265,7 +308,7 @@ describe('PersonService', () => {
         undefined,
         true,
       );
-      expect(result.sortableModels.length).toBe(19999);
+      expect(result.sortableModels.length).toBe(20019);
     });
 
     it('search parts of data, searchKey is empty, excludeSelf, arrangeIds, return all if search key is empty', async () => {
@@ -314,6 +357,15 @@ describe('PersonService', () => {
       );
       expect(result.sortableModels.length).toBe(0);
       expect(result.terms.length).toBe(0);
+    });
+
+    it('search persons, with email matched, name matched, check the priority', async () => {
+      const result = await personService.doFuzzySearchPersons('monkey');
+      expect(result.sortableModels.length).toBe(20);
+      expect(result.sortableModels[0].id).toBe(20011);
+      expect(result.sortableModels[9].id).toBe(20020);
+      expect(result.sortableModels[10].id).toBe(20001);
+      expect(result.sortableModels[19].id).toBe(20010);
     });
   });
 
@@ -396,6 +448,151 @@ describe('PersonService', () => {
       const res = await personService.buildPersonFeatureMap(personId);
       expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.INVISIBLE);
       expect(spy).toBeCalledWith(pseudoPerson.id);
+    });
+  });
+
+  describe('getAvailablePhoneNumbers()', () => {
+    const rcPhoneNumbers = [
+      { id: 11, phoneNumber: '1', usageType: 'MainCompanyNumber' },
+      { id: 11, phoneNumber: '2', usageType: 'CompanyNumber' },
+      { id: 11, phoneNumber: '3', usageType: 'AdditionalCompanyNumber' },
+      { id: 11, phoneNumber: '4', usageType: 'ForwardedNumber' },
+      { id: 11, phoneNumber: '5', usageType: 'MainCompanyNumber' },
+      { id: 12, phoneNumber: '234567', usageType: 'DirectNumber' },
+    ];
+    const sanitizedRcExtension = { extensionNumber: '4711', type: 'User' };
+    const ext = {
+      type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+      phoneNumber: '4711',
+    };
+    const did = {
+      type: PHONE_NUMBER_TYPE.DIRECT_NUMBER,
+      phoneNumber: '234567',
+    };
+
+    beforeEach(() => {
+      const accountService = new AccountService();
+      AccountService.getInstance = jest
+        .fn()
+        .mockReturnValueOnce(accountService);
+      accountService.getCurrentCompanyId = jest.fn().mockReturnValueOnce(1);
+    });
+
+    it('should not return extension id for guest user', () => {
+      expect(
+        personService.getAvailablePhoneNumbers(
+          123,
+          rcPhoneNumbers,
+          sanitizedRcExtension,
+        ),
+      ).toEqual([did]);
+    });
+
+    it.each([
+      [rcPhoneNumbers, sanitizedRcExtension, [ext, did]],
+      [rcPhoneNumbers, undefined, [did]],
+      [undefined, sanitizedRcExtension, [ext]],
+    ])(
+      'should return all available phone numbers, case index: %#',
+      (rcPhones, rcExt, expectRes) => {
+        expect(
+          personService.getAvailablePhoneNumbers(1, rcPhones, rcExt),
+        ).toEqual(expectRes);
+      },
+    );
+  });
+  describe('getEmailAsName()', () => {
+    it('should return name when email validate', () => {
+      const firstName = 'Bruce';
+      const lastName = 'Chen';
+      const person = personFactory.build({
+        email: `${firstName}.${lastName}@ringcentral.com`,
+      });
+      const result = personService.getEmailAsName(person);
+      expect(result).toEqual(`${firstName} ${lastName}`);
+    });
+    it('should return empty string while no email info', () => {
+      const person = personFactory.build({
+        email: null,
+      });
+      const result = personService.getEmailAsName(person);
+      expect(result).toEqual('');
+    });
+    it("should convert name's first letter to UpperCase", () => {
+      const firstName = 'bruce';
+      const lastName = 'chen';
+      const person = personFactory.build({
+        email: `${firstName}.${lastName}@ringcentral.com`,
+      });
+      const result = personService.getEmailAsName(person);
+      expect(result).toEqual('Bruce Chen');
+    });
+  });
+  describe('getFullName()', () => {
+    it('should return displayName first', () => {
+      const displayName = 'Bruce Chen';
+      const firstName = 'Niki';
+      const lastName = 'Rao';
+      const email = 'Dog.Mao@ringcentral.com';
+      expect(
+        personService.getFullName(
+          personFactory.build({
+            email,
+            display_name: displayName,
+            first_name: firstName,
+            last_name: lastName,
+          }),
+        ),
+      ).toEqual(displayName);
+    });
+    it('should return LastName FirstName after displayName', () => {
+      const firstName = 'Bruce';
+      const lastName = 'Chen';
+      const email = 'Dog.Mao@ringcentral.com';
+      expect(
+        personService.getFullName(
+          personFactory.build({
+            email,
+            display_name: '',
+            first_name: firstName,
+            last_name: lastName,
+          }),
+        ),
+      ).toEqual(`${firstName} ${lastName}`);
+    });
+    it('should return name of email after displayName and FirstName LastName', () => {
+      const email = 'Bruce.Chen@ringcentral.com';
+      expect(
+        personService.getFullName(
+          personFactory.build({ email, first_name: '', last_name: '' }),
+        ),
+      ).toEqual('Bruce Chen');
+    });
+  });
+  describe('getHeadShot()', () => {
+    const kvStorageManager = new KVStorageManager();
+    const kvStorage = kvStorageManager.getStorage();
+    const authDao = new AuthDao(kvStorage);
+    beforeEach(() => {});
+    it('should return headShotUrl', () => {
+      daoManager.getKVDao.mockReturnValueOnce(authDao);
+      authDao.get.mockReturnValueOnce('token');
+      const headUrl = 'mockUrl';
+      const spy = jest
+        .spyOn(PersonAPI, 'getHeadShotUrl')
+        .mockReturnValueOnce(headUrl);
+      const result = personService.getHeadShot(1, 'xxx', 33);
+      expect(result).toEqual(headUrl);
+    });
+    it('should return empty string when headShotVersion is empty', () => {
+      daoManager.getKVDao.mockReturnValueOnce(authDao);
+      authDao.get.mockReturnValueOnce('token');
+      const headUrl = 'mockUrl';
+      const spy = jest
+        .spyOn(PersonAPI, 'getHeadShotUrl')
+        .mockReturnValueOnce(headUrl);
+      const result = personService.getHeadShot(1, '', 33);
+      expect(result).toEqual('');
     });
   });
 });

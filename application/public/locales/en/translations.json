@@ -133,5 +133,8 @@
   "Message": "Message",
   "message": "Message",
   "more": "More",
-  "close": "Close"
+  "close": "Close",
+  "AboutRingCentral": "About RingCentral",
+  "NewActions": "New Actions",
+  "NoInternetConnection": "No Internet Connection"
 }

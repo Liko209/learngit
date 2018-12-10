@@ -12,13 +12,15 @@ import { MemberListProps } from './types';
 const MembersList = buildContainer<MemberListProps>({
   View: MembersListView,
   ViewModel: MembersListViewModel,
-  plugins: {
-    loadingMorePlugin: new LoadingMorePlugin({
-      thresholdDown: 300,
-      initialScrollTop: 0,
-      stickTo: 'top',
-    }),
-    loadingPlugin: new LoadingPlugin(),
+  plugins() {
+    return {
+      loadingMorePlugin: new LoadingMorePlugin({
+        thresholdDown: 300,
+        initialScrollTop: 0,
+        stickTo: 'top',
+      }),
+      loadingPlugin: new LoadingPlugin(),
+    };
   },
 });
 

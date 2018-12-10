@@ -5,8 +5,6 @@ import { IStep, Status } from '../models';
 import { getLogger } from 'log4js';
 import { H } from './utils';
 import { MiscUtils } from '../utils';
-import * as fs from 'fs'
-import * as sharp from 'sharp'
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -27,7 +25,6 @@ export class LogHelper {
     await this.t.takeScreenshot(imageFileName);
     const imageFilePath = path.join(this.t['testRun'].opts.screenshotPath, imageFileName);
     const newImageFilePath = await MiscUtils.convertToWebp(imageFilePath);
-    fs.unlinkSync(imageFilePath);
     return newImageFilePath;
   }
 

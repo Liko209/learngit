@@ -12,7 +12,7 @@ import MuiAppBar, {
   AppBarProps as MuiAppBarProps,
 } from '@material-ui/core/AppBar';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
-import MuiTooltip from '@material-ui/core/Tooltip';
+import { JuiArrowTip } from '../../components/Tooltip/ArrowTip';
 
 import {
   typography,
@@ -38,7 +38,7 @@ const TitleWrapper = styled<TypographyProps>(Typography)`
     color: ${grey('900')};
     ${typography('title2')};
     ${ellipsis()};
-    padding-right: ${spacing(2)};
+    padding-right: ${spacing(0.5)};
   }
 `;
 
@@ -47,8 +47,9 @@ const StatusWrapper = styled.div`
   color: ${grey('600')};
   white-space: nowrap;
   ${ellipsis()};
-  padding-right: ${spacing(4)};
-  flex-shrink: 1;
+  padding-left: ${spacing(1.5)};
+  padding-right: ${spacing(1.5)};
+  flex-shrink: 0;
 `;
 const WrappedAppBar = ({ Right, ...rest }: JuiConversationPageHeaderProps) => (
   <MuiAppBar {...rest} />
@@ -59,20 +60,19 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
     padding-left: 0;
     padding-right: 0;
     background-color: white;
-    z-index: ${({ theme }) => `${theme.zIndex.drawer + 10}`};
+    /* z-index: ${({ theme }) => `${theme.zIndex.drawer + 10}`}; */
     > div {
       min-height: ${height(12)};
-      padding-left: ${spacing(6)};
-      padding-right: ${spacing(6)};
+      padding-left: ${spacing(4)};
+      padding-right: ${spacing(3.5)};
     }
 
     .left-wrapper {
       display: flex;
       align-items: center;
       flex-grow: 1;
-      flex-shrink: 1;
       overflow: hidden;
-      padding-right: ${spacing(12)};
+      padding-right: ${spacing(9.5)};
     }
 
     .right-wrapper {
@@ -80,6 +80,12 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
       align-items: center;
     }
   }
+`;
+
+const TitleAndStatusWrapper = styled('div')`
+  display: flex;
+  align-items: baseline;
+  overflow: hidden;
 `;
 
 type IJuiConversationPageHeader = React.Component<
@@ -94,7 +100,7 @@ class JuiConversationPageHeader
   >
   implements IJuiConversationPageHeader {
   textRef: React.RefObject<any>;
-  static dependencies = [MuiAppBar, MuiToolbar, MuiTooltip, Typography];
+  static dependencies = [MuiAppBar, MuiToolbar, JuiArrowTip, Typography];
   static defaultProps = {
     title: '',
   };
@@ -157,16 +163,18 @@ class JuiConversationPageHeader
       >
         <MuiToolbar variant="dense">
           <div className="left-wrapper">
-            {this.state.showTooltip ? (
-              <MuiTooltip title={title}>{titleElement}</MuiTooltip>
-            ) : (
-              titleElement
-            )}
-            {status ? (
-              <StatusWrapper data-test-automation-id="conversation-page-header-status">
-                {status}
-              </StatusWrapper>
-            ) : null}
+            <TitleAndStatusWrapper>
+              {this.state.showTooltip ? (
+                <JuiArrowTip title={title}>{titleElement}</JuiArrowTip>
+              ) : (
+                titleElement
+              )}
+              {status ? (
+                <StatusWrapper data-test-automation-id="conversation-page-header-status">
+                  {status}
+                </StatusWrapper>
+              ) : null}
+            </TitleAndStatusWrapper>
             {SubTitle ? SubTitle : null}
           </div>
           {Right ? right : null}

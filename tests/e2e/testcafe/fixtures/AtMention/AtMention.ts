@@ -127,7 +127,7 @@ test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']
     }, true);
 
     await h(t).withLog('Then I click the conversation name in the chat\'s conversation card', async() => {
-      await postListPage.postItemById(chatPost.data.id).goToConversation();
+      await postListPage.postItemById(chatPost.data.id).jumpToConversationByClickName();
     });
 
     await h(t).withLog('Should jump to the chat page and scroll to bottom', async () => {
@@ -137,7 +137,7 @@ test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']
 
     await h(t).withLog('Then I click the conversation name in the group\'s conversation card', async() => {
       await mentionsEntry.enter();
-      await postListPage.postItemById(groupPost.data.id).goToConversation();
+      await postListPage.postItemById(groupPost.data.id).jumpToConversationByClickName();
     });
 
     await h(t).withLog('Should jump to the group page and scroll to bottom', async () => {
@@ -147,7 +147,7 @@ test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']
 
     await h(t).withLog('Then I click the conversation name in the team\'s conversation card', async() => {
       await mentionsEntry.enter();
-      await postListPage.postItemById(teamPost.data.id).goToConversation();
+      await postListPage.postItemById(teamPost.data.id).jumpToConversationByClickName();
      });
 
     await h(t).withLog('Should jump to the team page and scroll to bottom', async () => {
@@ -206,7 +206,7 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
     })
 
     await h(t).withLog('When I click the post and jump to the conversation', async () => {
-      await postMentionPage.postItemById(newPost.data.id).jumpToAtMentionConversation();
+      await postMentionPage.postItemById(newPost.data.id).jumpToConversationByClickPost();
     });
 
     await h(t).withLog('And the UMI should dismiss', async () => {
@@ -274,7 +274,7 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   await h(t).withLog('And I jump to conversation from AtMentions page should no UMI', async () => {
     await mentionsEntry.enter();
-    await postMentionPage.postItemById(newPost.data.id).jumpToAtMentionConversation();
+    await postMentionPage.postItemById(newPost.data.id).jumpToConversationByClickPost();
     await directMessagesSection.expectHeaderUmi(0);
   }, true);
 
@@ -304,33 +304,32 @@ test(formalName('Jump to post position when click button or clickable area of po
   const app =new AppRoot(t);
   const users =h(t).rcData.mainCompany.users;
   const user = users[4];
-  const userPlatform = await h(t).getPlatform(user);
   const user5Platform = await h(t).getPlatform(users[5]);
+  user.sdk = await h(t).getSdk(user);
+  
   const mentionsEntry = app.homePage.messageTab.mentionsEntry;
   const postMentionPage = app.homePage.messageTab.mentionPage;
-  user.sdk = await h(t).getSdk(user);
-  const conversationSection = app.homePage.messageTab.conversationPage;
+  const conversationPage = app.homePage.messageTab.conversationPage;
 
-  let teamId;
-  let pvChatId;
-  let atMentionPostTeam;
-  let atMentionPostChat;
   let verifyTextTeam = 'First AtMention in Team';
   let verifyTextChat = 'First AtMention in pvChat';
+
+  let teamId, pvChatId, atMentionPostTeam, atMentionPostChat;
   await h(t).withLog('Given I have 1 AtMention post in team ,one in group', async () => {
-    teamId = (await userPlatform.createGroup({
+    teamId = (await user.sdk.platform.createGroup({
       isPublic: true,
       name: `Team ${uuid()}`,
       type: 'Team',
       members: [user.rcId, users[5].rcId, users[6].rcId],
     })).data.id;
-    pvChatId = (await userPlatform.createGroup({
+    pvChatId = (await user.sdk.platform.createGroup({
       type: 'PrivateChat',
       members: [user.rcId, users[5].rcId],
     })).data.id;
 
     await user.sdk.glip.updateProfile(user.rcId, {
-      [`hide_group_${teamId}`]: false
+      [`hide_group_${teamId}`]: false,
+      [`hide_group_${pvChatId}`]: false,
     });
     atMentionPostTeam = await user5Platform.createPost(
       { text: verifyTextTeam + `, ![:Person](${user.rcId})` },
@@ -353,11 +352,13 @@ test(formalName('Jump to post position when click button or clickable area of po
   });
 
   await h(t).withLog('And I click the post item', async () => {
-    await postMentionPage.postItemById(atMentionPostTeam.data.id).jumpToAtMentionConversation();
+    await postMentionPage.postItemById(atMentionPostTeam.data.id).jumpToConversationByClickPost();
   });
 
   await h(t).withLog('Then I can see the AtMention post in the team', async () => {
-    await t.expect(conversationSection.posts.child().withText(verifyTextTeam).exists).ok();
+    await t
+      .expect(conversationPage.postItemById(atMentionPostTeam.data.id).body.withText(verifyTextTeam).exists)
+      .ok({ timeout: 5e3 });
   }, true);
 
   await h(t).withLog('When I back to AtMention page', async () => {
@@ -369,6 +370,8 @@ test(formalName('Jump to post position when click button or clickable area of po
   });
 
   await h(t).withLog('Then I can see the AtMention post in the pvChat', async () => {
-    await t.expect(conversationSection.posts.child().withText(verifyTextChat).exists).ok();
+    await t
+      .expect(conversationPage.postItemById(atMentionPostChat.data.id).body.withText(verifyTextChat).exists)
+      .ok({ timeout: 5e3 });
   });
 });

@@ -477,8 +477,7 @@ class PostService extends BaseService<Post> {
 
   async likePost(postId: number, personId: number, toLike: boolean) {
     try {
-      const postDao = daoManager.getDao(PostDao);
-      const post = await postDao.get(postId);
+      const post = await this.getById(postId);
       if (post) {
         const likes = post.likes || [];
         const index = likes.indexOf(personId);
@@ -602,6 +601,18 @@ class PostService extends BaseService<Post> {
 
   private _isValidTextMessage(message: string) {
     return message.trim() !== '';
+  }
+
+  async deletePostsByGroupIds(groupIds: number[], shouldNotify: boolean) {
+    const dao = daoManager.getDao(PostDao);
+    const promises = groupIds.map(id => dao.queryPostsByGroupId(id));
+    const postsMap = await Promise.all(promises);
+    const posts = _.union(...postsMap);
+    const ids = posts.map(post => post.id);
+    await dao.bulkDelete(ids);
+    if (shouldNotify) {
+      notificationCenter.emitEntityDelete(ENTITY.POST, ids);
+    }
   }
 }
 
