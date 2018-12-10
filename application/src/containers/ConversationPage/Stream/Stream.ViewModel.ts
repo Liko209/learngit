@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { PostService, StateService, ENTITY, ItemService } from 'sdk/service';
 import { Post, GroupState, Group } from 'sdk/models';
 import { ErrorTypes } from 'sdk/utils';
@@ -63,13 +63,23 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
+  get historyReadThrough() {
+    return this._historyHandler.readThrough;
+  }
+
+  @computed
   get historyUnreadCount() {
     return this._historyHandler.unreadCount;
   }
 
   @computed
   get firstHistoryUnreadPostId() {
+    const firstUnreadPostId = this.hasMoreUp // !We need this to fix issues when UMI give us wrong info
+      ? undefined
+      : _.first(this.postIds);
+
     return (
+      firstUnreadPostId ||
       this._newMessageSeparatorHandler.firstUnreadPostId ||
       this._historyHandler.getFirstUnreadPostId(this.postIds)
     );
@@ -123,10 +133,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this._transformHandler.hasMore(QUERY_DIRECTION.NEWER);
   }
 
+  @computed
+  get notEmpty() {
+    return this.items.length > 0 || this.hasMoreUp;
+  }
+
   constructor() {
     super();
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
+    this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
   }
 
   onReceiveProps(props: StreamProps) {
@@ -159,19 +175,22 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (posts && posts.length) {
       await this._prepareAllData(posts);
     }
+  }
+
+  updateHistoryHandler() {
     this._historyHandler.update(this._groupState, this.postIds);
-    this._initialized = true;
-    this.markAsRead();
   }
 
   @onScrollToTop
   @loadingTop
+  @action
   async loadPrevPosts() {
     return this._loadPosts(QUERY_DIRECTION.OLDER);
   }
 
   @onScrollToBottom
   @loadingBottom
+  @action
   async loadNextPosts() {
     return this._loadPosts(QUERY_DIRECTION.NEWER);
   }
@@ -195,11 +214,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    const isFocused = document.hasFocus();
-    if (isFocused && this._initialized) {
-      storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
-      this._stateService.markAsRead(this.groupId);
-    }
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
+    this._stateService.markAsRead(this.groupId);
   }
 
   enableNewMessageSeparatorHandler = () => {

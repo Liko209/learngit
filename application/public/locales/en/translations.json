@@ -130,5 +130,7 @@
   "close": "close",
   "assignee": "Assignee",
   "due": "Due",
+  "AboutRingCentral": "About RingCentral",
+  "NewActions": "New Actions",
   "NoInternetConnection": "No Internet Connection"
 }
