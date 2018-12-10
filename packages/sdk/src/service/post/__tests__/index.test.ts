@@ -438,7 +438,7 @@ describe('PostService', () => {
   describe('getPostsByIds', () => {
     beforeAll(() => {
       jest.spyOn(itemService, 'getByPosts');
-      jest.spyOn(postDao, 'queryManyPostsByIds');
+      jest.spyOn(postDao, 'batchGet');
       jest.spyOn(PostAPI, 'requestByIds');
     });
 
@@ -448,7 +448,9 @@ describe('PostService', () => {
 
     it('should return local posts if exists', async () => {
       const localPosts = [{ id: 3 }, { id: 4 }, { id: 5 }];
-      postDao.queryManyPostsByIds.mockReturnValue(localPosts);
+      jest
+        .spyOn(postService, 'getModelsLocally')
+        .mockResolvedValue([...localPosts]);
       const result = await postService.getPostsByIds([3, 4, 5]);
       expect(result.posts).toEqual(localPosts);
     });
@@ -456,7 +458,10 @@ describe('PostService', () => {
     it('should return local posts + remote posts if partly exists', async () => {
       const localPosts = [{ id: 3 }, { id: 4 }, { id: 5 }];
       const remotePosts = [{ id: 1 }, { id: 2 }];
-      postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
+      jest
+        .spyOn(postService, 'getModelsLocally')
+        .mockResolvedValue([...localPosts]);
+
       const data = { posts: [...remotePosts], items: [] };
       PostAPI.requestByIds.mockResolvedValue(
         new NetworkResultOk(data, 200, {}),
@@ -479,7 +484,9 @@ describe('PostService', () => {
         { id: 5 },
       ];
       const data = { posts: [...remotePosts], items: [] };
-      postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
+      jest
+        .spyOn(postService, 'getModelsLocally')
+        .mockResolvedValue([...localPosts]);
       PostAPI.requestByIds.mockResolvedValue(
         new NetworkResultOk(data, 200, {}),
       );
@@ -498,7 +505,9 @@ describe('PostService', () => {
         { id: 101 },
         { id: 102 },
       ]);
-      postDao.queryManyPostsByIds.mockReturnValue(localPosts);
+      jest
+        .spyOn(postService, 'getModelsLocally')
+        .mockResolvedValue([...localPosts]);
       const result = await postService.getPostsByIds([3, 4, 5]);
       expect(result.items).toEqual([{ id: 100 }, { id: 101 }, { id: 102 }]);
     });
@@ -511,7 +520,9 @@ describe('PostService', () => {
         { id: 101 },
         { id: 102 },
       ]);
-      postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
+      jest
+        .spyOn(postService, 'getModelsLocally')
+        .mockResolvedValue([...localPosts]);
       const data = {
         posts: [...remotePosts],
         items: [{ id: 103 }, { id: 104 }],

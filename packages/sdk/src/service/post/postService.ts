@@ -231,8 +231,7 @@ class PostService extends BaseService<Post> {
     ids: number[],
   ): Promise<{ posts: Post[]; items: Item[] }> {
     const itemService: ItemService = ItemService.getInstance();
-    const dao = daoManager.getDao(PostDao);
-    const localPosts = await dao.queryManyPostsByIds(ids);
+    const localPosts = await this.getModelsLocally(ids, true);
     const result = {
       posts: localPosts,
       items: await itemService.getByPosts(localPosts),
