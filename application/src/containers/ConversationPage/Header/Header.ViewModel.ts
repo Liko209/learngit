@@ -82,14 +82,14 @@ class HeaderViewModel extends AbstractViewModel {
 
   @computed
   get actions() {
-    const actions = [];
-    const factory = (name: string, iconName: string, tooltip: string) => ({
-      name,
-      iconName,
-      tooltip,
-    });
-
+    const actions: any = [];
     // hide not implemented button
+    // const factory = (name: string, iconName: string, tooltip: string) => ({
+    // name,
+    // iconName,
+    // tooltip,
+    // });
+
     // if (
     //   this.type === CONVERSATION_TYPES.TEAM ||
     //   this.type === CONVERSATION_TYPES.NORMAL_GROUP
@@ -105,10 +105,10 @@ class HeaderViewModel extends AbstractViewModel {
     //   actions.push(factory('call', 'local_phone', 'startVoiceCall'));
     // }
 
-    if (this.type !== CONVERSATION_TYPES.ME) {
-      actions.push(factory('meeting', 'videocam', 'startVideoCall'));
-      // actions.push(factory('add member', 'person_add', 'addMembers'));
-    }
+    // if (this.type !== CONVERSATION_TYPES.ME) {
+    //   actions.push(factory('meeting', 'videocam', 'startVideoCall'));
+    //   // actions.push(factory('add member', 'person_add', 'addMembers'));
+    // }
     return actions;
   }
 

@@ -98,6 +98,7 @@ type Theme = {
     moreMenu: number;
     memberListHeader: number;
     toast: number;
+    floatButton: number;
   };
   size: {
     width: number;

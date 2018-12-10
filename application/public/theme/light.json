@@ -112,7 +112,9 @@
     "loading": 1000,
     "dragging": 2000,
     "moreMenu": 999,
-    "toast": 3000
+    "toast": 3000,
+    "memberListHeader": 100,
+    "floatButton": 10
   },
   "size": {
     "width": 4,
