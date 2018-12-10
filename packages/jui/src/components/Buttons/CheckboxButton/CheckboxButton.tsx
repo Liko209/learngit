@@ -10,7 +10,7 @@ import { Icon as MuiIcon } from '@material-ui/core';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme, Palette } from '../../../foundation/theme/theme';
-import { JuiArrowTip } from 'jui/components/Tooltip/ArrowTip';
+import { JuiArrowTip } from '../../../components/Tooltip/ArrowTip';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type JuiCheckboxButtonProps = {
