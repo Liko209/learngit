@@ -3,11 +3,15 @@
  * @Date: 2018-09-27 13:53:47
  * Copyright © RingCentral. All rights reserved.
  */
+import React from 'react';
 import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
+import { JuiListItemIcon } from '../Lists';
+import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
 import {
+  width,
   height,
   spacing,
   typography,
@@ -15,26 +19,57 @@ import {
   palette,
 } from '../../foundation/utils';
 
-type JuiMenuItemProps = MuiMenuItemProps;
+type JuiMenuItemProps = {
+  icon?: string;
+} & MuiMenuItemProps;
 
-const JuiMenuItem = styled(MuiMenuItem)`
+const StyledJuiListItemIcon = styled(JuiListItemIcon)`
   && {
-    ${typography('caption1')};
-    color: ${grey('900')};
+    margin-right: ${spacing(2)};
+    font-size: ${({ theme }) => theme.typography.subheading1.fontSize};
+    color: ${grey('700')};
+  }
+`;
+
+const StyledMenuItem = styled(MuiMenuItem)`
+  && {
+    ${typography('caption2')};
+    color: ${grey('700')};
     height: ${height(8)};
+    min-width: ${width(28)};
+    max-width: ${width(80)};
     line-height: ${height(8)};
     padding: ${spacing(0, 4)};
+    box-sizing: border-box;
 
     &:hover {
       background-color: ${palette('grey', '500', 1)};
     }
 
     &:active {
-      background-color: ${palette('grey', '500', 2)};
+      background-color: ${palette('primary', 'main')};
+      color: ${palette('common', 'white')};
+      ${StyledJuiListItemIcon} {
+        color: ${palette('common', 'white')};
+      }
     }
   }
 `;
 
-JuiMenuItem.displayName = 'JuiMenuItem';
+class JuiMenuItem extends React.Component<JuiMenuItemProps> {
+  render() {
+    const { icon, children, ...rest } = this.props;
+    return (
+      <StyledMenuItem {...rest}>
+        {icon && (
+          <StyledJuiListItemIcon>
+            <JuiIconography fontSize="inherit">{icon}</JuiIconography>
+          </StyledJuiListItemIcon>
+        )}
+        {children}
+      </StyledMenuItem>
+    );
+  }
+}
 
 export { JuiMenuItem, JuiMenuItemProps };

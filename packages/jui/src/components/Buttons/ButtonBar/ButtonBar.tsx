@@ -16,7 +16,7 @@ import { styledComponentWrapper } from '../../../foundation/utils/styledComponen
 import { spacing } from '../../../foundation/utils/styles';
 
 type JuiButtonBarProps = {
-  overlapping?: boolean;
+  overlapSize?: number;
   direction?: 'horizontal' | 'vertical';
   invisible?: boolean;
   awake?: boolean;
@@ -46,58 +46,32 @@ type StyledCheckboxButtonChild = JuiCheckboxButtonProps &
   };
 type StyledChild = StyledIconButtonChild | StyledCheckboxButtonChild;
 
-const overlappingSize = {
-  small: 1,
-  medium: 2,
-  large: 3,
+const padding = (theme: Theme, overlapSize?: number) => {
+  return overlapSize && overlapSize > 0
+    ? `-${spacing(overlapSize)({ theme })}`
+    : `${spacing(2)({ theme })}`;
 };
-const padding = (
-  theme: Theme,
-  componentName: string,
-  size: string = 'medium',
-  overlapping?: boolean,
-  variant?: string,
-) =>
-  variant === 'plain'
-    ? `${spacing(3)({ theme })}`
-    : variant === 'round' || componentName === 'JuiCheckboxButton'
-      ? overlapping
-        ? `-${spacing(overlappingSize[size])({ theme })}`
-        : 0
-      : `${spacing(2)({ theme })}`;
 
 const StyledChild = styledComponentWrapper<StyledChild>(
-  ({ overlapping, componentName, ...rest }: StyledChild) => {
+  ({ overlapSize, componentName, ...rest }: StyledChild) => {
     if (componentName === 'JuiCheckboxButton') {
       return <JuiCheckboxButton {...rest as JuiCheckboxButtonProps} />;
     }
     return <JuiIconButton {...rest as JuiIconButtonProps} />;
   },
   css`
-    margin-left: ${({
-      theme,
-      direction = 'horizontal',
-      index,
-      componentName,
-      size,
-      overlapping,
-      variant,
-    }) =>
-      direction === 'horizontal' && index
-        ? padding(theme, componentName, size, overlapping, variant)
-        : ''};
-    margin-top: ${({
-      theme,
-      direction = 'horizontal',
-      index,
-      componentName,
-      size,
-      overlapping,
-      variant,
-    }) =>
-      direction === 'vertical' && index
-        ? padding(theme, componentName, size, overlapping, variant)
-        : ''};
+    && {
+      margin-left: ${({
+        theme,
+        direction = 'horizontal',
+        index,
+        overlapSize,
+      }) =>
+        direction === 'horizontal' && index ? padding(theme, overlapSize) : ''};
+
+      margin-top: ${({ theme, direction = 'horizontal', index, overlapSize }) =>
+        direction === 'vertical' && index ? padding(theme, overlapSize) : ''};
+    }
   `,
 );
 
@@ -121,7 +95,7 @@ const JuiButtonBar: IButtonBar = ({ children, ...rest }) => {
 };
 
 JuiButtonBar.defaultProps = {
-  overlapping: false,
+  overlapSize: 0,
   direction: 'horizontal',
   size: 'medium',
   awake: false,

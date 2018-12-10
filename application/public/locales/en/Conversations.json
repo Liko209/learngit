@@ -38,5 +38,8 @@
   "Like Error": "Failed to like the message due to unexpected error. Try again later.",
   "Unlike Error": "Failed to unlike the message due to unexpected error. Try again later.",
   "Removing Bookmark Error": "Removing bookmark failed due to unexpected error. Try again later.",
-  "Bookmark Error": "Bookmark failed due to unexpected error. Try again later."
+  "Bookmark Error": "Bookmark failed due to unexpected error. Try again later.",
+  "Quote": "Quote",
+  "EditPost": "Edit post",
+  "DeletePost": "Delete post"
 }

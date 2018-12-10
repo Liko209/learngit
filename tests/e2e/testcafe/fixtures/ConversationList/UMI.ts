@@ -674,7 +674,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
       pvtChat = await user.sdk.platform.createGroup({
         type: 'PrivateChat',
         members: [user.rcId, users[5].rcId]
-      }); 
+      });
       for(var i = 0; i < 10; i++){
         await user5Platform.createPost(
           { text: 'test' },
@@ -693,7 +693,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
       await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => { 
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
       await directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
@@ -724,6 +724,11 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
 
 test(formalName('Should not show UMI and scroll up automatically when receive post', ['JPT-191', 'P2', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
+    if (await H.isEdge()) {
+      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
+      return;
+    }
+    
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
@@ -740,7 +745,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
         members: [user.rcId, users[5].rcId]
       });
       await user5Platform.createPost(
-        { text: 'test' }, 
+        { text: 'test' },
         pvtChat.data.id
       );
       await user.sdk.glip.updateProfile(user.rcId, {
@@ -795,7 +800,7 @@ test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246
         members: [user.rcId, users[5].rcId]
       });
       await user5Platform.createPost(
-        { text: 'test' }, 
+        { text: 'test' },
         pvtChat.data.id
       );
       await user.sdk.glip.updateProfile(user.rcId, {
@@ -815,7 +820,7 @@ test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246
         type: 'PrivateChat',
         members: [user.rcId, users[5].rcId]
       });
-      
+
       await directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
       await t.wait(3000);
       const noFocus = ClientFunction(() => window.blur());
