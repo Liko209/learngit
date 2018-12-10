@@ -1,11 +1,13 @@
 import 'testcafe';
+import * as JSZip from 'jszip';
 import * as fs from 'fs';
 import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
 import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
 import { BeatsClient, Run } from 'bendapi';
-import { MiscUtils } from './v2/utils'
+import { MiscUtils } from './v2/utils';
+import { IConsoleLog } from './v2/models';
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
@@ -94,12 +96,36 @@ export function setupCase(accountType: string) {
 
 export function teardownCase() {
   return async (t: TestController) => {
+    const failScreenShotPath = t['testRun'].errs.length > 0 ? t['testRun'].errs[0].screenshotPath : null;
+    if (failScreenShotPath) {
+      t['testRun'].errs[0].screenshotPath = await MiscUtils.convertToWebp(failScreenShotPath);
+    };
     const consoleLog = await t.getBrowserConsoleMessages()
-    const consoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog, null, 2));
-    h(t).allureHelper.writeReport(consoleLogPath);
+    const consoleLogPath = MiscUtils.createTmpFilePath("console_log.zip");
+    let zip = new JSZip();
+    zip.file('consoleLog.txt', JSON.stringify(consoleLog, null, 2));
+    await zip.generateAsync({ type: "nodebuffer" }).then(
+      function (content) {
+        fs.writeFileSync(consoleLogPath, content);
+      }
+    )
+    const warnConsoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog['warn'], null, 2));
+    const errorConsoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog['error'], null, 2));
+    const warnConsoleLogNumber = consoleLog['warn'].length;
+    const errorConsoleLogNumber = consoleLog['error'].length;
+
+    let consoleLogObj: IConsoleLog = {
+      consoleLogPath,
+      warnConsoleLogPath,
+      errorConsoleLogPath,
+      warnConsoleLogNumber,
+      errorConsoleLogNumber
+    }
+
+    h(t).allureHelper.writeReport(consoleLogObj);
     await h(t).dataHelper.teardown();
     if (ENABLE_REMOTE_DASHBOARD) {
-      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLogPath);
+      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLogObj);
     }
   }
 }

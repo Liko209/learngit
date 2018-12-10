@@ -10,17 +10,18 @@ import MuiTooltip from '@material-ui/core/Tooltip';
 import { Icon as MuiIcon } from '@material-ui/core';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import tinycolor from 'tinycolor2';
-import { Theme } from '../../../foundation/theme/theme';
+import { Theme, Palette } from '../../../foundation/theme/theme';
 
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type JuiCheckboxButtonProps = {
   tooltipTitle?: string;
   invisible?: boolean;
   awake?: boolean;
   size?: 'small' | 'medium' | 'large';
   iconName?: string;
-  color?: 'primary' | 'secondary';
+  color?: string;
   checkedIconName?: string;
-} & CheckboxProps;
+} & Omit<CheckboxProps, 'color'>;
 
 const iconSizes = {
   large: 6,
@@ -46,17 +47,30 @@ const StyledIcon = styled(MuiIcon)``;
 const WrappedMuiCheckboxButton = ({
   invisible,
   awake,
+  colorScope,
+  colorName,
   ...rest
-}: JuiCheckboxButtonProps) => (
+}: JuiCheckboxButtonProps & {
+  colorScope: keyof Palette;
+  colorName: string;
+}) => (
   <MuiCheckbox
     {...rest}
+    color={
+      colorScope === 'primary' || colorScope === 'secondary'
+        ? colorScope
+        : 'default'
+    }
     classes={{ disabled: 'disabled' }}
     TouchRippleProps={{ classes: touchRippleClasses }}
   />
 );
-const StyledCheckboxButton = styled<JuiCheckboxButtonProps>(
-  WrappedMuiCheckboxButton,
-)`
+const StyledCheckboxButton = styled<
+  JuiCheckboxButtonProps & {
+    colorScope: keyof Palette;
+    colorName: string;
+  }
+>(WrappedMuiCheckboxButton)`
   && {
     padding: 0;
     width: ${({ size = 'medium', theme }) =>
@@ -64,18 +78,14 @@ const StyledCheckboxButton = styled<JuiCheckboxButtonProps>(
     height: ${({ size = 'medium', theme }) =>
       width(iconSizes[size] * 2)({ theme })};
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
-    color: ${({ awake, checked, color = 'primary', theme }) =>
-      checked
-        ? palette(color, 'main')({ theme })
-        : awake
-          ? grey('500')({ theme })
-          : palette('accent', 'ash')({ theme })};
+    color: ${({ colorScope, colorName, theme, checked }) =>
+      checked ? palette(colorScope, colorName)({ theme }) : 'grey'};
     font-size: ${({ size = 'medium', theme }) =>
       width(iconSizes[size])({ theme })};
     &:hover {
-      background-color: ${({ theme, checked, color = 'primary' }) =>
+      background-color: ${({ theme, checked, colorScope, colorName }) =>
         checked
-          ? tinycolor(palette(color, 'main')({ theme }))
+          ? tinycolor(palette(colorScope, colorName)({ theme }))
               .setAlpha(theme.palette.action.hoverOpacity)
               .toRgbString()
           : tinycolor(grey('500')({ theme }))
@@ -83,8 +93,10 @@ const StyledCheckboxButton = styled<JuiCheckboxButtonProps>(
               .toRgbString()};
     }
     &:active {
-      color: ${({ theme, color = 'primary', checked }) =>
-        checked ? palette(color, 'main')({ theme }) : grey('500')({ theme })};
+      color: ${({ theme, colorScope, colorName, checked }) =>
+        checked
+          ? palette(colorScope, colorName)({ theme })
+          : grey('500')({ theme })};
     }
 
     &.disabled {
@@ -151,8 +163,23 @@ class JuiCheckboxButton extends React.Component<
       tooltipTitle,
       innerRef,
       onChange,
+      color,
       ...rest
     } = this.props;
+
+    let colorScope: keyof Palette = 'primary';
+    let colorName: string = 'main';
+    if (color && color.indexOf('.') >= 0) {
+      const array = color.split('.');
+      if (array.length > 1) {
+        colorScope = array[0] as keyof Palette;
+        colorName = array[1];
+      } else {
+        colorScope = array[0] as keyof Palette;
+        colorName = 'main';
+      }
+    }
+
     return (
       <MuiTooltip title={tooltipTitle}>
         <WrapperForTooltip className={className} {...rest}>
@@ -160,6 +187,8 @@ class JuiCheckboxButton extends React.Component<
             onChange={this.changeHandler}
             checked={this.state.checked}
             icon={<StyledIcon>{iconName}</StyledIcon>}
+            colorScope={colorScope}
+            colorName={colorName}
             checkedIcon={<StyledIcon>{checkedIconName}</StyledIcon>}
             {...rest}
           />

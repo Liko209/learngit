@@ -14,6 +14,7 @@ import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { matchInvalidEmail } from '@/utils/string';
 import { BaseError } from 'sdk/utils';
 import { Notification } from '../Notification';
 
@@ -36,6 +37,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   serverError: boolean = false;
   @observable
   members: (number | string)[] = [];
+  @observable
+  errorEmail: string;
 
   @computed
   get isOpen() {
@@ -62,6 +65,7 @@ class CreateTeamViewModel extends AbstractViewModel {
   @action
   inputReset = () => {
     this.errorMsg = '';
+    this.errorEmail = '';
     this.nameError = false;
     this.disabledOkBtn = true;
     this.emailError = false;
@@ -124,8 +128,12 @@ class CreateTeamViewModel extends AbstractViewModel {
       this.errorMsg = 'alreadyTaken';
       this.nameError = true;
     } else if (code === GroupErrorTypes.INVALID_FIELD) {
-      this.emailErrorMsg = 'InvalidEmail';
-      this.emailError = true;
+      const message = error.message;
+      if (matchInvalidEmail(message).length > 0) {
+        this.errorEmail = matchInvalidEmail(message);
+        this.emailErrorMsg = 'Invalid Email';
+        this.emailError = true;
+      }
     } else {
       const message = 'WeWerentAbleToCreateTheTeamTryAgain';
       Notification.flagToast({

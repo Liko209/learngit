@@ -24,6 +24,7 @@ import { GLOBAL_KEYS } from './store/constants';
 import { analytics } from '@/Analytics';
 import { AboutView } from './containers/About';
 import { upgradeHandler } from '@/upgrade';
+import { TopBanner } from './containers/TopBanner';
 
 @observer
 class App extends React.Component {
@@ -63,6 +64,7 @@ class App extends React.Component {
           <JuiContentLoader />
         ) : (
           <>
+            <TopBanner />
             <Router history={history}>
               <Switch>
                 <Route path="/commit-info" component={VersionInfo} />

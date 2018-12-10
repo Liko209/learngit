@@ -7,6 +7,7 @@ import { StreamViewComponent as StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
 import { i18n } from 'i18next';
+import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 
 jest.mock('../../../ConversationSheet', () => ({}));
 
@@ -29,6 +30,7 @@ const baseProps = {
   },
   hasMoreUp: true,
   hasMoreDown: true,
+  notEmpty: true,
   historyGroupState: {} as GroupStateModel,
   historyUnreadCount: 10,
   historyReadThrough: 0,
@@ -151,6 +153,30 @@ describe('StreamView', () => {
           firstHistoryUnreadPostViewed: false,
         });
         expect(hasJumpToFirstUnreadButton).toBeTruthy();
+      });
+    });
+
+    describe('conversationInitialPost', () => {
+      function getWrapper(otherProps: object) {
+        return shallow(<StreamView {...baseProps} {...otherProps} />);
+      }
+
+      it('should render conversationInitialPost when hasMoreUp is false [JPT-478]', () => {
+        const hasMoreUp = false;
+        const hasSomeMessages = getWrapper({ hasMoreUp, notEmpty: false });
+        const noMessages = getWrapper({ hasMoreUp, notEmpty: true });
+
+        expect(hasSomeMessages.find(ConversationInitialPost)).toHaveLength(1);
+        expect(noMessages.find(ConversationInitialPost)).toHaveLength(1);
+      });
+
+      it('should not render conversationInitialPost when hasMoreUp is true  [JPT-478]', () => {
+        const hasMoreUp = true;
+        const hasSomeMessages = getWrapper({ hasMoreUp, notEmpty: false });
+        const noMessages = getWrapper({ hasMoreUp, notEmpty: true });
+
+        expect(hasSomeMessages.find(ConversationInitialPost)).toHaveLength(0);
+        expect(noMessages.find(ConversationInitialPost)).toHaveLength(0);
       });
     });
   });

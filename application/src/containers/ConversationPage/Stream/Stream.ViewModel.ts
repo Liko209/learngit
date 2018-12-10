@@ -133,6 +133,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this._transformHandler.hasMore(QUERY_DIRECTION.NEWER);
   }
 
+  @computed
+  get notEmpty() {
+    return this.items.length > 0 || this.hasMoreUp;
+  }
+
   constructor() {
     super();
     this.markAsRead = this.markAsRead.bind(this);

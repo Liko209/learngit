@@ -1,6 +1,6 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
+import * as _ from 'lodash';
 import { ClientFunction } from 'testcafe';
-
 
 class BaseConversationPage extends BaseWebComponent {
   get posts() {
@@ -110,8 +110,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get userStatus() {
-    this.warnFlakySelector();
-    return this.name.nextSibling('div')
+    return this.self.find(`[data-name="cardHeaderUserStatus"]`);
   }
 
   get time() {
@@ -126,25 +125,77 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get likeToggleOnActionBar() {
+    return this.self.find(`[data-name="actionBarLike"]`);
+  }
+
+  get likeButtonOnFooter() {
+    return this.self.find(`[data-name="footerLikeButton"]`).find(`[data-name="actionBarLike"]`);
+  }
+  
+  get likeCount() {
+    return this.likeButtonOnFooter.nextSibling('span');
+  }
+
+  get bookmarkToggle() {
+    return this.self.find(`[data-name="actionBarBookmark"]`);
+  }
+
+  get moreMenu() {
+    return this.self.find(`[data-name="actionBarMore"]`);
+  }
+ 
+  async clickLikeOnActionBar() {
+    await this.t.hover(this.self).click(this.likeToggleOnActionBar);
+  }
+ 
+  async clickLikeButtonOnFooter() {
+    await this.t.hover(this.self).click(this.likeButtonOnFooter);
+  }
+
+  async getLikeCount() {
+    if (!await this.likeCount.exists) {
+      return 0;
+    }
+    const text = await this.likeCount.innerText;
+    if (_.isEmpty(text)) {
+      return 0;
+    }
+    return Number(text);
+  }
+
+  async clickBookmarkToggle() {
+    await this.t.hover(this.self).click(this.bookmarkToggle);
+  }
+
+  
   // --- mention page only ---
   get conversationName() {
     return this.self.find('.conversation-name')
   }
 
-  async goToConversation() {
+  async jumpToConversationByClickName() {
     await this.t.click(this.conversationName, { offsetX: 3 });
   }
 
   get jumpToConversationButton() {
-    return this.self.find(`span`).withText('Jump To Conversation');
-    }
+    return this.self.find(`span`).withText(/Jump To Conversation/i).parent('button');
+  }
 
-    async jumpToAtMentionConversation() {
+  async jumpToConversationByClickPost() {
     await this.t.click(this.self);
-    }
+  }
 
 
-    async clickConversationByButton() {
-    await this.t.hover(this.self).click(this.jumpToConversationButton);
-    }
+  async clickConversationByButton() {
+    const buttonElement  = this.jumpToConversationButton;
+    const displayJumpButton = ClientFunction(() => {
+        buttonElement().style["opacity"] = "1"; 
+    }, {
+      dependencies: { buttonElement } }
+    );
+    await this.t.hover(this.self)
+    await displayJumpButton();
+    await this.t.click(this.jumpToConversationButton);
+  }
 }

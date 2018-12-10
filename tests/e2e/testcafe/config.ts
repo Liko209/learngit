@@ -52,6 +52,7 @@ configLoader.load();
 const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
+const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY || '10');
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
 const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures);
 const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : configLoader.browsers;
@@ -62,6 +63,7 @@ const RUNNER_OPTS = {
   REPORTER,
   SCREENSHOT_ON_FAIL,
   SCREENSHOTS_PATH,
+  SCREENSHOT_WEBP_QUALITY,
   CONCURRENCY,
   FIXTURES,
   BROWSERS,
