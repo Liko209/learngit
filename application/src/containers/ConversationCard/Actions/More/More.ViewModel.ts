@@ -85,7 +85,6 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   private get _isText() {
     if (this._post.text) {
-      console.log(this._post, 'text');
       return this._post.text.length > 0;
     }
     return false;
