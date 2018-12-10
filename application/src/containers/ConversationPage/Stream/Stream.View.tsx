@@ -159,14 +159,14 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private get _initialPost() {
-    const { groupId, notEmpty } = this.props;
+    const { groupId, notEmpty, hasMoreUp } = this.props;
 
-    return notEmpty ? null : (
+    return hasMoreUp ? null : (
       <VisibilitySensor
         offset={VISIBILITY_SENSOR_OFFSET}
         onChange={this._handleFirstUnreadPostVisibilityChange}
       >
-        <ConversationInitialPost id={groupId} />
+        <ConversationInitialPost notEmpty={notEmpty} id={groupId} />
       </VisibilitySensor>
     );
   }

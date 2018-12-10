@@ -155,22 +155,26 @@ describe('StreamView', () => {
     });
 
     describe('conversationInitialPost', () => {
-      it('should render conversationInitialPost when user has no history messages [JPT-478]', () => {
-        const props = {
-          ...baseProps,
-          notEmpty: false,
-        };
-        const wrapper = shallow(<StreamView {...props} />);
-        expect(wrapper.find(ConversationInitialPost)).toHaveLength(1);
+      function getWrapper(otherProps: object) {
+        return shallow(<StreamView {...baseProps} {...otherProps} />);
+      }
+
+      it('should render conversationInitialPost when hasMoreUp is false [JPT-478]', () => {
+        const hasMoreUp = false;
+        const hasSomeMessages = getWrapper({ hasMoreUp, notEmpty: false });
+        const noMessages = getWrapper({ hasMoreUp, notEmpty: true });
+
+        expect(hasSomeMessages.find(ConversationInitialPost)).toHaveLength(1);
+        expect(noMessages.find(ConversationInitialPost)).toHaveLength(1);
       });
 
-      it('should not render conversationInitialPost when user has history messages  [JPT-478]', () => {
-        const props = {
-          ...baseProps,
-          notEmpty: true,
-        };
-        const wrapper = shallow(<StreamView {...props} />);
-        expect(wrapper.find(ConversationInitialPost)).toHaveLength(0);
+      it('should not render conversationInitialPost when hasMoreUp is true  [JPT-478]', () => {
+        const hasMoreUp = true;
+        const hasSomeMessages = getWrapper({ hasMoreUp, notEmpty: false });
+        const noMessages = getWrapper({ hasMoreUp, notEmpty: true });
+
+        expect(hasSomeMessages.find(ConversationInitialPost)).toHaveLength(0);
+        expect(noMessages.find(ConversationInitialPost)).toHaveLength(0);
       });
     });
   });
