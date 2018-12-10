@@ -53,7 +53,7 @@ class MenuViewComponent extends Component<Props, State> {
         title: '',
         content: t('conversationMenuItem:markFavoriteServerErrorContent'),
         okText: t('conversationMenuItem:OK'),
-        okBtnType: 'text',
+        okVariant: 'text',
         onOK: () => {},
       });
     }
@@ -89,7 +89,7 @@ class MenuViewComponent extends Component<Props, State> {
           </>
         ),
         okText: t('conversationMenuItem:Close Conversation'),
-        okBtnType: 'text',
+        okVariant: 'text',
         onOK: () => {
           this._closeConversationWithConfirm();
         },
