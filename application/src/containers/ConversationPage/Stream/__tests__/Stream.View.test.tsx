@@ -156,13 +156,7 @@ describe('StreamView', () => {
 
     describe('conversationInitialPost', () => {
       function getWrapper(otherProps: object) {
-        const props = {
-          ...baseProps,
-          notEmpty: false,
-          hasMoreUp: false,
-        };
-
-        return shallow(<StreamView {...props} {...otherProps} />);
+        return shallow(<StreamView {...baseProps} {...otherProps} />);
       }
 
       it('should render conversationInitialPost when hasMoreUp is false [JPT-478]', () => {
