@@ -20,17 +20,24 @@ fixture('Send Messages')
 
 test(formalName('Enter text in the conversation input box', ['P0', 'JPT-77']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
-
-  const user = users[1];
+  const user = users[4];
   const app = new AppRoot(t);
+  const userPlatform = await h(t).getPlatform(user);
 
   await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, user);
     await app.homePage.ensureLoaded();
   });
 
+  await h(t).withLog(`And I create one new teams`, async () => {
+    await userPlatform.createGroup({
+      type: 'Team',
+      name: uuid(),
+      members: [user.rcId, users[5].rcId],
+    });
+  });
+
   await h(t).withLog('When I enter a conversation', async () => {
-    // FIXME: there is a risk that no conversation in the list
     await app.homePage.messageTab.teamsSection.expand();
     await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
   });
@@ -38,13 +45,12 @@ test(formalName('Enter text in the conversation input box', ['P0', 'JPT-77']), a
   const identifier = uuid();
   const message = `${faker.lorem.sentence()} ${identifier}`;
 
-  const conversationSection = app.homePage.messageTab.conversationPage;
+  const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('Then I can send message to this conversation', async () => {
-    await conversationSection.sendMessage(message);
+    await conversationPage.sendMessage(message);
   });
 
   await h(t).withLog('And I can read this message from post list', async () => {
-    // FIXME: read text directly when reliable selector is provided
-    await t.expect(conversationSection.posts.child().withText(identifier).exists).ok();
+    await t.expect(conversationPage.nthPostItem(-1).body.withText(identifier).exists).ok();
   }, true);
 });

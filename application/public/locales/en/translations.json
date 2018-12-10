@@ -127,5 +127,8 @@
   "goToTeamConversation": "Go to the conversation with team",
   "Message": "Message",
   "more": "more",
-  "close": "close"
+  "close": "close",
+  "AboutRingCentral": "About RingCentral",
+  "NewActions": "New Actions",
+  "NoInternetConnection": "No Internet Connection"
 }

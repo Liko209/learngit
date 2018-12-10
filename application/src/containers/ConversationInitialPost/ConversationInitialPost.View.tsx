@@ -108,10 +108,11 @@ class ConversationInitialPost extends React.Component<
   }
 
   render() {
+    const streamIsEmpty = !this.props.notEmpty;
     return (
       <JuiConversationInitialPost>
         {this._conversationInitialPostHeader}
-        {this._conversationInitialPostBody}
+        {streamIsEmpty ? this._conversationInitialPostBody : null}
       </JuiConversationInitialPost>
     );
   }

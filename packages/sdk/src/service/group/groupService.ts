@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao } from '../../dao';
+import { daoManager, ConfigDao, GroupConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
 import { Group, GroupApiType, Raw, SortableModel } from '../../models';
@@ -46,6 +46,8 @@ import { compareName } from '../../utils/helper';
 import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
 import { isValidEmailAddress } from '../../utils/regexUtils';
 import { Api } from '../../api';
+import notificationCenter from '../notificationCenter';
+import PostService from '../post';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -61,6 +63,11 @@ const GroupErrorTypes = {
   UNKNOWN: 99,
 };
 
+const handleTeamsRemovedFrom = async (ids: number[]) => {
+  const service: GroupService = GroupService.getInstance();
+  service.removeTeamsByIds(ids, true);
+};
+
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
 
@@ -71,6 +78,7 @@ class GroupService extends BaseService<Group> {
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
+      [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
     this.enableCache();
@@ -113,7 +121,6 @@ class GroupService extends BaseService<Group> {
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
       result = await dao.queryAllGroups(offset, limit);
     } else {
-      const profileService: ProfileService = ProfileService.getInstance();
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
@@ -445,7 +452,10 @@ class GroupService extends BaseService<Group> {
     id: number;
     draft: string;
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData(params);
+    const result = await this.updateGroupPartialData({
+      id: params.id,
+      __draft: params.draft,
+    });
     return result;
   }
 
@@ -454,7 +464,10 @@ class GroupService extends BaseService<Group> {
     id: number;
     send_failure_post_ids: number[];
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData(params);
+    const result = await this.updateGroupPartialData({
+      id: params.id,
+      __send_failure_post_ids: params.send_failure_post_ids,
+    });
     return result;
   }
 
@@ -462,7 +475,7 @@ class GroupService extends BaseService<Group> {
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
       const group = (await this.getGroupById(id)) as Group;
-      return group.send_failure_post_ids || [];
+      return group.__send_failure_post_ids || [];
     } catch (error) {
       throw ErrorParser.parse(error);
     }
@@ -562,7 +575,7 @@ class GroupService extends BaseService<Group> {
             return {
               id: group.id,
               displayName: groupName,
-              sortKey: groupName.toLowerCase(),
+              firstSortKey: groupName.toLowerCase(),
               entity: group,
             };
           }
@@ -571,8 +584,21 @@ class GroupService extends BaseService<Group> {
       },
       searchKey,
       undefined,
-      this.sortEntitiesByName.bind(this),
+      this._orderByName.bind(this),
     );
+  }
+
+  private _orderByName(
+    groupA: SortableModel<Group>,
+    groupB: SortableModel<Group>,
+  ) {
+    if (groupA.firstSortKey < groupB.firstSortKey) {
+      return -1;
+    }
+    if (groupA.firstSortKey > groupB.firstSortKey) {
+      return 1;
+    }
+    return 0;
   }
 
   async doFuzzySearchTeams(
@@ -601,14 +627,14 @@ class GroupService extends BaseService<Group> {
           ? {
             id: team.id,
             displayName: team.set_abbreviation,
-            sortKey: team.set_abbreviation.toLowerCase(),
+            firstSortKey: team.set_abbreviation.toLowerCase(),
             entity: team,
           }
           : null;
       },
       searchKey,
       undefined,
-      this.sortEntitiesByName.bind(this),
+      this._orderByName.bind(this),
     );
   }
 
@@ -686,6 +712,19 @@ class GroupService extends BaseService<Group> {
     return email;
   }
 
+  // update partial group data, for last accessed time
+  async updateGroupLastAccessedTime(params: {
+    id: number;
+    timestamp: number;
+  }): Promise<boolean> {
+    const { id, timestamp } = params;
+    const result = await this.updateGroupPartialData({
+      id,
+      __last_accessed_at: timestamp,
+    });
+    return result;
+  }
+
   private _getENVDomain() {
     let apiServer = Api.httpConfig['glip'].server;
     if (apiServer) {
@@ -721,6 +760,18 @@ class GroupService extends BaseService<Group> {
 
   private _getTeamAdmins(permission?: TeamPermission) {
     return permission && permission.admin ? permission.admin.uids : [];
+  }
+
+  async removeTeamsByIds(ids: number[], shouldNotify: boolean) {
+    const dao = daoManager.getDao(GroupDao);
+    await dao.bulkDelete(ids);
+    if (shouldNotify) {
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
+    }
+    const postService: PostService = PostService.getInstance();
+    await postService.deletePostsByGroupIds(ids, true);
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkDelete(ids);
   }
 }
 
