@@ -7,11 +7,12 @@
 import { computed } from 'mobx';
 import { ProfileDialogPersonContentViewProps } from './types';
 import { ProfileDialogPersonViewModel } from '../ProfileDialogPerson.ViewModel';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import CompanyModel from '@/store/models/Company';
 import { Company } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import { PhoneNumberInfo, PHONE_NUMBER_TYPE } from 'sdk/service/person';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
   implements ProfileDialogPersonContentViewProps {
@@ -40,6 +41,12 @@ class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
     return this._phoneNumbers.filter((info: PhoneNumberInfo) => {
       return info.type === PHONE_NUMBER_TYPE.DIRECT_NUMBER;
     });
+  }
+
+  @computed
+  get isMe() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return this.id === currentUserId;
   }
 }
 

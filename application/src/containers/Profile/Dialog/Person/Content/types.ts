@@ -17,20 +17,11 @@ type ProfileDialogPersonContentViewProps = ProfileDialogPersonViewProps & {
   company: CompanyModel;
   extensionNumbers: PhoneNumberInfo[];
   directNumbers: PhoneNumberInfo[];
+  isMe: boolean;
 };
 
-enum ICON {
-  COMPANY = 'work',
-  LOCATION = 'places',
-  DEPARTMENT = 'assignment',
-  EXT = 'call',
-  EMAIL = 'email',
-  LINKED_IN = 'link',
-  COPY = 'file_copy',
-}
-
 type FormGroupType = {
-  icon?: ICON;
+  icon?: string;
   label: string;
   value: string;
   valueEmphasize?: boolean;
@@ -41,5 +32,4 @@ export {
   ProfileDialogPersonContentProps,
   ProfileDialogPersonContentViewProps,
   FormGroupType,
-  ICON,
 };

@@ -7,11 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import {
-  ProfileDialogPersonContentViewProps,
-  FormGroupType,
-  ICON,
-} from './types';
+import { ProfileDialogPersonContentViewProps, FormGroupType } from './types';
 import { JuiDivider } from 'jui/components/Divider';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
@@ -35,8 +31,6 @@ import {
 } from 'jui/pattern/Profile/Dialog';
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
-import { getGlobalValue } from '@/store/utils';
-import { GLOBAL_KEYS } from '@/store/constants';
 import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/service/person';
 import { JuiIconButton } from 'jui/components/Buttons';
@@ -73,7 +67,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
           onClick={this.onClickCopy.bind(this, value)}
           tooltipTitle={t('copy')}
         >
-          {ICON.COPY}
+          file_copy
         </JuiIconButton>
       </FormCopy>
     );
@@ -102,12 +96,6 @@ class ProfileDialogPersonContentViewComponent extends Component<
     );
   }
 
-  isMe = () => {
-    const { id } = this.props;
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-    return id === currentUserId;
-  }
-
   render() {
     const {
       t,
@@ -117,10 +105,11 @@ class ProfileDialogPersonContentViewComponent extends Component<
       extensionNumbers,
       directNumbers,
       dismiss,
+      isMe,
     } = this.props;
     return (
       <>
-        <Summary emphasize={this.isMe()}>
+        <Summary emphasize={isMe}>
           <Left>
             <Avatar uid={id} size="xlarge" presence={this.renderPresence()} />
           </Left>
@@ -139,13 +128,13 @@ class ProfileDialogPersonContentViewComponent extends Component<
             <Grid item={true} xs={12} sm={6}>
               {company.name &&
                 this.renderFormGroup({
-                  icon: ICON.COMPANY,
+                  icon: 'work',
                   label: t('company'),
                   value: company.name,
                 })}
               {person.location &&
                 this.renderFormGroup({
-                  icon: ICON.LOCATION,
+                  icon: 'places',
                   label: t('location'),
                   value: person.location,
                 })}
@@ -153,7 +142,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
             <Grid item={true} xs={12} sm={6}>
               {extensionNumbers.map((info: PhoneNumberInfo, index: number) => {
                 return this.renderFormGroup({
-                  icon: index === 0 ? ICON.EXT : undefined,
+                  icon: index === 0 ? 'call' : undefined,
                   label: t('ext'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
@@ -164,7 +153,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                 return this.renderFormGroup({
                   icon:
                     index === 0 && extensionNumbers.length === 0
-                      ? ICON.EXT
+                      ? 'call'
                       : undefined,
                   label: t('directNumber'),
                   value: info.phoneNumber,
@@ -174,7 +163,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
               })}
               {person.email &&
                 this.renderFormGroup({
-                  icon: ICON.EMAIL,
+                  icon: 'email',
                   label: t('email'),
                   value: person.email,
                   valueEmphasize: true,
@@ -191,13 +180,13 @@ class ProfileDialogPersonContentViewComponent extends Component<
                 <Grid item={true} xs={12}>
                   {/* {person.linkedIn &&
                 this.renderFormGroup({
-                  icon: ICON.LINKED_IN,
+                  icon: 'link',
                   label: t('location'),
                   value: person.linkedIn,
                 })} */}
                   {person.homepage &&
                     this.renderFormGroup({
-                      icon: ICON.LINKED_IN,
+                      icon: 'link',
                       label: t('webpage'),
                       value: person.homepage,
                       copy: true,
