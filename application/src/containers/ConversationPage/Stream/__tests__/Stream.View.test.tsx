@@ -10,32 +10,6 @@ import { i18n } from 'i18next';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 
 jest.mock('../../../ConversationSheet', () => ({}));
-function renderJumpToFirstUnreadButton({
-  hasHistoryUnread,
-  firstHistoryUnreadInPage,
-  firstHistoryUnreadPostViewed,
-}: {
-  hasHistoryUnread: boolean;
-  firstHistoryUnreadInPage: boolean;
-  firstHistoryUnreadPostViewed: boolean;
-}) {
-  const props = {
-    ...baseProps,
-    hasHistoryUnread,
-    firstHistoryUnreadInPage,
-    loadInitialPosts: async () => {},
-  };
-
-  const wrapper = shallow(<StreamView {...props} />);
-  (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
-  wrapper.update();
-  const jumpToFirstUnreadButtonWrapper = wrapper.find(
-    'JumpToFirstUnreadButtonWrapper',
-  );
-  const hasJumpToFirstUnreadButton =
-    jumpToFirstUnreadButtonWrapper.length === 1;
-  return { hasJumpToFirstUnreadButton };
-}
 
 const baseProps = {
   i18n: {} as i18n,
@@ -59,16 +33,44 @@ const baseProps = {
   notEmpty: true,
   historyGroupState: {} as GroupStateModel,
   historyUnreadCount: 10,
+  historyReadThrough: 0,
   hasHistoryUnread: false,
   firstHistoryUnreadInPage: false,
   clearHistoryUnread: jest.fn().mockName('setHasUnread'),
   loadPostUntilFirstUnread: jest.fn().mockName('loadPostUntilFirstUnread'),
   jumpToPostId: 0,
   loadInitialPosts: async () => {},
+  updateHistoryHandler: () => {},
   mostRecentPostId: 0,
   resetJumpToPostId: () => null,
   resetAll: (id: number) => {},
 };
+
+function renderJumpToFirstUnreadButton({
+  hasHistoryUnread,
+  firstHistoryUnreadInPage,
+  firstHistoryUnreadPostViewed,
+}: {
+  hasHistoryUnread: boolean;
+  firstHistoryUnreadInPage: boolean;
+  firstHistoryUnreadPostViewed: boolean;
+}) {
+  const props = {
+    ...baseProps,
+    hasHistoryUnread,
+    firstHistoryUnreadInPage,
+  };
+
+  const wrapper = shallow(<StreamView {...props} />);
+  (wrapper.instance() as any)._firstHistoryUnreadPostViewed = firstHistoryUnreadPostViewed;
+  wrapper.update();
+  const jumpToFirstUnreadButtonWrapper = wrapper.find(
+    'JumpToFirstUnreadButtonWrapper',
+  );
+  const hasJumpToFirstUnreadButton =
+    jumpToFirstUnreadButtonWrapper.length === 1;
+  return { hasJumpToFirstUnreadButton };
+}
 
 describe('StreamView', () => {
   describe('render()', () => {
@@ -90,8 +92,8 @@ describe('StreamView', () => {
       expect(card).toHaveLength(2);
       expect(card0.props()).toMatchObject({ id: 1, highlight: false });
       expect(card1.props()).toMatchObject({ id: 2, highlight: false });
-      expect(card0.key()).toBe('1');
-      expect(card1.key()).toBe('2');
+      expect(card0.key()).toBe('ConversationPost1');
+      expect(card1.key()).toBe('ConversationPost2');
     });
 
     it('should render <TimeNodeDivider>', () => {
