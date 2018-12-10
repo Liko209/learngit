@@ -140,6 +140,7 @@ class CreateTeamViewModel extends AbstractViewModel {
         message,
         type: 'error',
         messageAlign: 'left',
+        fullWidth: false,
       });
     }
   }
