@@ -18,6 +18,8 @@ type ShowNotificationOptions = NotificationProps & {
   autoHideDuration?: number;
 };
 
+const MAX_SHOW_COUNT = 3;
+
 class Notification extends AbstractViewModel {
   @observable
   static data: ToastProps[] = [];
@@ -25,7 +27,7 @@ class Notification extends AbstractViewModel {
 
   @action
   private static _showNotification(props: ShowNotificationOptions) {
-    if (Notification.data.length === 3) {
+    if (Notification.data.length === MAX_SHOW_COUNT) {
       Notification._buffer.push(props);
       return {};
     }
@@ -71,7 +73,10 @@ class Notification extends AbstractViewModel {
   }
 
   static checkBufferAvailability() {
-    if (Notification.data.length === 2 && Notification._buffer.length > 0) {
+    if (
+      Notification.data.length === MAX_SHOW_COUNT - 1 &&
+      Notification._buffer.length > 0
+    ) {
       const buffered = Notification._buffer.pop();
       if (buffered) {
         Notification._showNotification(buffered);
