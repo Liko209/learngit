@@ -33,9 +33,6 @@ test(formalName('Team section display the conversation which the login user as o
 
     await h(t).withLog('And the team should not be hidden before login', async () => {
       await user.sdk.glip.showGroups(user.rcId, [team.data.id]);
-      // await user.sdk.glip.updateProfile(user.rcId, {
-      //   [`hide_group_${team.data.id}`]: false,
-      // });
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -77,9 +74,6 @@ test(formalName('Each conversation should be represented by the team name.',
 
     await h(t).withLog('And the team should not be hidden before login', async () => {
       await user.sdk.glip.showGroups(user.rcId, [team.data.id]);
-      // await user.sdk.glip.updateProfile(user.rcId, {
-      //   [`hide_group_${team.data.id}`]: false,
-      // });
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -137,10 +131,6 @@ test(formalName('Conversation that received post should be moved to top',
 
     await h(t).withLog('And the team should not be hidden before login', async () => {
       await user.sdk.glip.showGroups(user.rcId, [team1.data.id, team2.data.id]);
-      // await user.sdk.glip.updateProfile(user.rcId, {
-      //   [`hide_group_${team1.data.id}`]: false,
-      //   [`hide_group_${team2.data.id}`]: false,
-      // });
     });
 
     await h(t).withLog('Send a new post to team1', async () => {

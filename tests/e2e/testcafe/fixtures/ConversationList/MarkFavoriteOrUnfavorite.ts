@@ -200,11 +200,6 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
         await user.sdk.glip.showGroups(user.rcId, [meChatId]);
-
-        // await user.sdk.glip.updateProfile(user.rcId, {
-        //   [`hide_group_${meChatId}`]: false,
-        //   // favorite_group_ids: [+meChatId],
-        // });
         await user.sdk.glip.favoriteGroups(user.rcId, [+meChatId]);
  
       },

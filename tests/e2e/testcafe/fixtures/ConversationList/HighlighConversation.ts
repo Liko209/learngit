@@ -43,10 +43,6 @@ test(
       async () => {
         await user.sdk.glip.showGroups(user.rcId, group.data.id);
         await user.sdk.glip.clearFavoriteGroups();
-        // await glipSdk.updateProfile(user.rcId, {
-        //   [`hide_group_${group.data.id}`]: false,
-        //   favorite_group_ids: [],
-        // });
       },
     );
 
@@ -54,9 +50,6 @@ test(
       `Given the group chat ${group.data.id} is last group selected`,
       async () => {
         await user.sdk.glip.setLastGroupId(user.rcId, group.data.id)
-        // await glipSdk.partialUpdateState(user.rcId, {
-        //   last_group_id: +group.data.id,
-        // });
       },
     );
 

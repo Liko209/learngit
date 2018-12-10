@@ -46,27 +46,15 @@ test(formalName('Close current conversation directly, and navigate to blank page
     await h(t).withLog('All conversations should not be hidden before login', async () => {
       await user.sdk.glip.showGroups(user.rcId, [pvtChatId, favChatId, teamId]);
       await user.sdk.glip.favoriteGroups(user.rcId, [+favChatId]);
-      // await user.sdk.glip.updateProfile(user.rcId, {
-      //   [`hide_group_${pvtChatId}`]: false,
-      //   [`hide_group_${favChatId}`]: false,
-      //   [`hide_group_${teamId}`]: false,
-      //   favorite_group_ids: [+favChatId],
-      // });
     })
-
     await h(t).withLog('And I clean all UMI before login', async () => {
       await user.sdk.glip.clearAllUmi();
-      // const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
-      // await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
         await user.sdk.glip.skipCloseConversationConfirmation(user.rcId, true);
-        // await user.sdk.glip.updateProfile(user.rcId, {
-        //   skip_close_conversation_confirmation: true,
-        // });
-      },
+     },
     );
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -165,11 +153,6 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
     await h(t).withLog('All conversations should not be hidden before login', async () => {
       await user.sdk.glip.showGroups(user.rcId, [pvtChatId, teamId]);
       await user.sdk.glip.clearFavoriteGroups();
-      // await user.sdk.glip.updateProfile(user.rcId, {
-      //   [`hide_group_${pvtChatId}`]: false,
-      //   [`hide_group_${teamId}`]: false,
-      //   favorite_group_ids: [],
-      // });
       });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
@@ -263,19 +246,12 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
     await h(t).withLog('All conversations should not be hidden before login', async () => {
       await user.sdk.glip.showGroups(user.rcId, [pvtChatId, teamId]);
       await user.sdk.glip.clearFavoriteGroups();
-      // await user.sdk.glip.updateProfile(user.rcId, {
-      //   [`hide_group_${pvtChatId}`]: false,
-      //   [`hide_group_${teamId}`]: false,
-      //   favorite_group_ids: [],
-      // });
     });
 
     await h(t).withLog('And I clean all UMI before login',
       async () => {
         await user.sdk.glip.clearAllUmi();
-        // const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
-        // await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
-      },
+     },
     );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
@@ -385,18 +361,11 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     await h(t).withLog('All conversations should not be hidden before login', async () => {
       await user.sdk.glip.showGroups(user.rcId, [pvtChatId, teamId]);
       await user.sdk.glip.clearFavoriteGroups();
-      // await user.sdk.glip.updateProfile(user.rcId, {
-      //   [`hide_group_${pvtChatId}`]: false,
-      //   [`hide_group_${teamId}`]: false,
-      //   favorite_group_ids: [],
-      // });
     });
 
     await h(t).withLog('And I clean all UMI before login',
       async () => {
         await user.sdk.glip.clearAllUmi();
-        // const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
-        // await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
       },
     );
 
@@ -515,9 +484,6 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
       await user.sdk.glip.favoriteGroups(user.rcId, [+favGroupId]);
-      // await user.sdk.glip.updateProfile(user.rcId, {
-      //   favorite_group_ids: [+favGroupId],
-      // });
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,

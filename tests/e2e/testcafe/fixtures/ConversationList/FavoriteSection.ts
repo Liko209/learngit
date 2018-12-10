@@ -51,11 +51,6 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
       }
       await user.sdk.glip.showGroups(user.rcId, [pvtChat.data.id, team.data.id]);
       await user.sdk.glip.favoriteGroups(user.rcId, favorites)
-      // await glipSDK.updateProfile(user.rcId, {
-      //   [`hide_group_${pvtChat.data.id}`]: false,
-      //   [`hide_group_${team.data.id}`]: false,
-      //   favorite_group_ids: favorites,
-      // });
     },
   );
 
