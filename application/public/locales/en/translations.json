@@ -128,5 +128,7 @@
   "Message": "Message",
   "more": "more",
   "close": "close",
+  "assignee": "Assignee",
+  "due": "Due",
   "NoInternetConnection": "No Internet Connection"
 }
