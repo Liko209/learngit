@@ -21,7 +21,7 @@ describe('Notification', () => {
       expect(Notification.data).toHaveLength(1);
     });
 
-    it('should add to the tail of array when adding new one', () => {
+    it('should add to the head of array when adding new one [JPT-395]', () => {
       const toastData: NotificationProps = {
         message: 'aaa',
         type: 'error',
@@ -32,7 +32,7 @@ describe('Notification', () => {
       Notification.flashToast({ ...toastData, message: 'bbb' });
       expect(
         Notification.data.findIndex(({ message }) => message === 'bbb'),
-      ).toBe(1);
+      ).toBe(0);
     });
 
     it('should replace original toast when message is duplicated [JPT-508]', () => {
@@ -64,7 +64,7 @@ describe('Notification', () => {
       expect(Notification._buffer).toHaveLength(1);
     });
 
-    it('should show buffered one when exists and array decreased [JPT-395]', () => {
+    it('should show buffered one when exists and array decreased', () => {
       const toastData: NotificationProps = {
         message: 'aaa',
         type: 'error',

@@ -46,7 +46,7 @@ class Notification extends AbstractViewModel {
     if (duplicateIndex >= 0) {
       Notification.data.splice(duplicateIndex, 1, toast);
     } else {
-      Notification.data.push(toast);
+      Notification.data.unshift(toast);
     }
     return {
       dismiss,
