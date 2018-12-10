@@ -1,5 +1,6 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import _ from 'lodash';
+import { BaseResponse } from 'foundation';
 import PersonService from '../../person';
 import ProfileService from '../../profile';
 import AccountService from '../../account';
@@ -166,17 +167,26 @@ describe('GroupService', () => {
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.get.mockResolvedValue(1); // userId
 
-    const mockNormal = new ApiResultOk({ _id: 1 }, 200, {});
+    const mockNormal = new ApiResultOk({ _id: 1 }, {
+      status: 200,
+      headers: {},
+    } as BaseResponse);
     GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
     const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
     expect(result1).toEqual({ id: 1 });
 
-    const mockEmpty = new ApiResultOk(null, 200, {});
+    const mockEmpty = new ApiResultOk(null, {
+      status: 200,
+      headers: {},
+    } as BaseResponse);
     GroupAPI.requestNewGroup.mockResolvedValue(mockEmpty);
     const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
     expect(result2).toBeNull();
 
-    const mockError = new ApiResultErr(new BaseError(403, ''), 403, {});
+    const mockError = new ApiResultErr(new BaseError(403, ''), {
+      status: 403,
+      headers: {},
+    } as BaseResponse);
     GroupAPI.requestNewGroup.mockResolvedValue(mockError);
     await expect(
       groupService.requestRemoteGroupByMemberList([1, 2]),
@@ -320,14 +330,20 @@ describe('GroupService', () => {
       groupDao.get.mockResolvedValue(mockGroup);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new ApiResultOk({ _id: 1, pinned_post_ids: [10] }, 200, {}),
+        new ApiResultOk({ _id: 1, pinned_post_ids: [10] }, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       await handleData.mockResolvedValueOnce(null);
       let pinResult = await groupService.pinPost(10, 1, true);
       expect(pinResult.pinned_post_ids).toEqual([10]);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new ApiResultOk({ _id: 1, pinned_post_ids: [] }, 200, {}),
+        new ApiResultOk({ _id: 1, pinned_post_ids: [] }, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       await handleData.mockResolvedValueOnce(null);
       pinResult = await groupService.pinPost(10, 1, false);
@@ -369,7 +385,10 @@ describe('GroupService', () => {
       groupService.canPinPost.mockReturnValueOnce(true);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new ApiResultErr(new BaseError(1, 'error'), 403, {}),
+        new ApiResultErr(new BaseError(1, 'error'), {
+          status: 403,
+          headers: {},
+        } as BaseResponse),
       );
       const pinResult = await groupService.pinPost(11, 1, true);
 
@@ -386,7 +405,10 @@ describe('GroupService', () => {
 
     it('should return api result if request success', async () => {
       GroupAPI.addTeamMembers.mockResolvedValueOnce(
-        new ApiResultOk(122, 200, {}),
+        new ApiResultOk(122, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       jest
         .spyOn(require('../../utils'), 'transform')
@@ -400,7 +422,10 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => {});
 
       GroupAPI.addTeamMembers.mockResolvedValueOnce(
-        new ApiResultOk(null, 403, {}),
+        new ApiResultOk(null, {
+          status: 403,
+          headers: {},
+        } as BaseResponse),
       );
 
       await groupService.addTeamMembers(1, []);
@@ -434,7 +459,10 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => {});
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
-        new ApiResultOk(group, 200, {}),
+        new ApiResultOk(group, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       await groupService.createTeam('some team', 1323, [], 'abc', {
         isPublic: true,
@@ -461,7 +489,10 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => {});
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
-        new ApiResultOk(group, 200, {}),
+        new ApiResultOk(group, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       await groupService.createTeam('some team', 1323, [], 'abc', {
         isPublic: true,
@@ -495,7 +526,10 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => group);
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
-        new ApiResultOk(group, 200, {}),
+        new ApiResultOk(group, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
 
       const result = await groupService.createTeam(
@@ -523,7 +557,10 @@ describe('GroupService', () => {
         'Already taken',
       );
       GroupAPI.createTeam.mockResolvedValue(
-        new ApiResultErr(error, 403, {}),
+        new ApiResultErr(error, {
+          status: 403,
+          headers: {},
+        } as BaseResponse),
       );
 
       const result = await groupService.createTeam(
@@ -830,7 +867,10 @@ describe('GroupService', () => {
     it('should return a group when request success', async () => {
       const data = { _id: 1 };
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new ApiResultOk(data, 200, {}),
+        new ApiResultOk(data, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       const result = await groupService.requestRemoteGroupByMemberList([1, 2]);
       expect(result).toMatchObject({ id: 1 });
@@ -846,7 +886,10 @@ describe('GroupService', () => {
 
     it('should throw an error when exception happened ', async () => {
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new ApiResultErr(new BaseError(500, 'error'), 500, {}),
+        new ApiResultErr(new BaseError(500, 'error'), {
+          status: 500,
+          headers: {},
+        } as BaseResponse),
       );
       await expect(
         groupService.requestRemoteGroupByMemberList([1, 2]),
@@ -854,7 +897,7 @@ describe('GroupService', () => {
     });
   });
 
-  describe('isFavorited', () => {
+  describe('isFavored', () => {
     const favGroup = { id: 123 };
     const curUserId = 1;
     const personId = 2;
@@ -867,11 +910,11 @@ describe('GroupService', () => {
 
       accountService.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
-    it("should return true when the person's conversion isfavorted", async () => {
+    it("should return true when the person's conversion is favored", async () => {
       const spy = jest.spyOn(groupService, 'getLocalGroup');
       const ids: number[] = [personId, curUserId];
       spy.mockResolvedValueOnce(favGroup);
-      const res = await groupService.isFavorited(
+      const res = await groupService.isFavored(
         personId,
         TypeDictionary.TYPE_ID_PERSON,
       );
@@ -881,21 +924,21 @@ describe('GroupService', () => {
     it('should return false when local has no conversation with the person', async () => {
       jest.spyOn(groupService, 'getLocalGroup').mockResolvedValue(null);
 
-      const res = await groupService.isFavorited(
+      const res = await groupService.isFavored(
         personId,
         TypeDictionary.TYPE_ID_PERSON,
       );
       expect(res).toBeFalsy;
     });
 
-    it('should return true when the group or team is favorited', async () => {
-      const res = await groupService.isFavorited(
+    it('should return true when the group or team is favored', async () => {
+      const res = await groupService.isFavored(
         groupIds.indexOf(1),
         TypeDictionary.TYPE_ID_GROUP,
       );
       expect(res).toBeFalsy;
 
-      const res1 = await groupService.isFavorited(
+      const res1 = await groupService.isFavored(
         groupIds.indexOf(2),
         TypeDictionary.TYPE_ID_GROUP,
       );
@@ -903,7 +946,7 @@ describe('GroupService', () => {
     });
 
     it('should return true when type is not supported', async () => {
-      const res = await groupService.isFavorited(
+      const res = await groupService.isFavored(
         777,
         TypeDictionary.TYPE_ID_ACCOUNT,
       );
