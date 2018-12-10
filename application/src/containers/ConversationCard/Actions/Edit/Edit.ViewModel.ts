@@ -6,19 +6,23 @@
 
 import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { BookmarkProps, BookmarkViewProps } from './types';
+import { EditProps, EditViewProps } from './types';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 
-class BookmarkViewModel extends StoreViewModel<BookmarkProps>
-  implements BookmarkViewProps {
+class EditViewModel extends StoreViewModel<EditProps> implements EditViewProps {
   @computed
   private get _id() {
     return this.props.id;
   }
 
+  @computed
+  get disabled() {
+    return this.props.disabled;
+  }
+
   @action
-  bookmark = () => {
+  edit = () => {
     const globalStore = storeManager.getGlobalStore();
     const inEditModePostIds = globalStore.get(
       GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS,
@@ -28,4 +32,4 @@ class BookmarkViewModel extends StoreViewModel<BookmarkProps>
   }
 }
 
-export { BookmarkViewModel };
+export { EditViewModel };

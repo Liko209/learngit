@@ -13,6 +13,8 @@ import {
 } from '../EditMessageInput.ViewModel';
 import _ from 'lodash';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 const mockPostEntityData = {
   id: 1,
@@ -69,11 +71,6 @@ describe('EditMessageInputViewModel', () => {
   describe('gid', () => {
     it('should return gid', () => {
       expect(editMessageInputViewModel.gid).toBe(mockPostEntityData.groupId);
-    });
-  });
-  describe('text', () => {
-    it('should return text', () => {
-      expect(editMessageInputViewModel.text).toBe(mockPostEntityData.text);
     });
   });
   describe('text', () => {
@@ -170,6 +167,18 @@ describe('EditMessageInputViewModel', () => {
       editMessageInputViewModel._exitEditMode = jest.fn();
       editMessageInputViewModel._escHandler()();
       expect(editMessageInputViewModel._exitEditMode).toBeCalled();
+    });
+  });
+
+  describe('_exitEditMode()', () => {
+    it('should exit edit mode [JPT-479]', () => {
+      editMessageInputViewModel._exitEditMode();
+      const globalStore = storeManager.getGlobalStore();
+      expect(
+        globalStore
+          .get(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS)
+          .includes(editMessageInputViewModel.id),
+      ).toBeFalsy();
     });
   });
 });

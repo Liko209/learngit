@@ -4,12 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type BookmarkProps = {
+type EditProps = {
   id: number; // post id
+  disabled?: boolean;
 };
 
-type BookmarkViewProps = {
-  bookmark: () => void;
+type EditViewProps = {
+  edit: () => void;
+  disabled?: boolean;
 };
 
-export { BookmarkProps, BookmarkViewProps };
+export { EditProps, EditViewProps };
