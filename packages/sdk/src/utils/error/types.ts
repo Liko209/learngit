@@ -9,8 +9,7 @@ import * as HttpStatus from 'http-status-codes';
 const ErrorTypes = {
   // TODO move API error codes to api/
   API: 1000,
-  API_NETWORK: 5000,
-  API_INVALID_GRANT: 4147,
+  API_NETWORK: 5000, // TODO unified API error codes
   API_ALREADY_TAKEN: 6001,
   API_INVALID_FIELD: 6002,
 
@@ -25,7 +24,10 @@ const ErrorTypes = {
   SERVICE: 3000,
   SERVICE_INVALID_FIELD: 3001,
 
+  // TODO move auth error codes to authenticator/
   OAUTH: 4000,
+  OAUTH_INVALID_GRANT: 4147,
+
   UNDEFINED_ERROR: 0,
 };
 

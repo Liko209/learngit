@@ -96,18 +96,18 @@ class ErrorParser {
   }
 
   static parseDBError(
-    err: DBCriticalError | DBNeedRetryError | DBUnsupportedError,
+    error: DBCriticalError | DBNeedRetryError | DBUnsupportedError,
   ) {
-    if (err instanceof DBCriticalError) {
-      return new BaseError(ErrorTypes.DB_CRITICAL_ERROR, err.message);
+    if (error instanceof DBCriticalError) {
+      return new BaseError(ErrorTypes.DB_CRITICAL_ERROR, error.message);
     }
 
-    if (err instanceof DBNeedRetryError) {
-      return new BaseError(ErrorTypes.DB_NEED_RETRY_ERROR, err.message);
+    if (error instanceof DBNeedRetryError) {
+      return new BaseError(ErrorTypes.DB_NEED_RETRY_ERROR, error.message);
     }
 
-    if (err instanceof DBUnsupportedError) {
-      return new BaseError(ErrorTypes.DB_UNSUPPORTED_ERROR, err.message);
+    if (error instanceof DBUnsupportedError) {
+      return new BaseError(ErrorTypes.DB_UNSUPPORTED_ERROR, error.message);
     }
 
     return null;
