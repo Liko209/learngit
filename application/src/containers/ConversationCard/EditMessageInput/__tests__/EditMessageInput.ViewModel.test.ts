@@ -30,14 +30,14 @@ const mockPersonEntityData = {
   userDisplayName: 'userName',
 };
 
+const mockEntity = {
+  post: mockPostEntityData,
+  group: mockGroupEntityData,
+  person: mockPersonEntityData,
+};
+
 jest.mock('@/store/utils', () => ({
-  getEntity: jest.fn(name =>
-    name === 'post'
-      ? mockPostEntityData
-      : name === 'group'
-      ? mockGroupEntityData
-      : mockPersonEntityData,
-  ),
+  getEntity: jest.fn(name => mockEntity[name]),
 }));
 
 const { PostService } = service;
@@ -47,9 +47,11 @@ const postService = {
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 let editMessageInputViewModel: EditMessageInputViewModel;
+let enterHandler: () => void;
 
 beforeEach(() => {
   editMessageInputViewModel = new EditMessageInputViewModel({ id: 1 });
+  enterHandler = editMessageInputViewModel.keyboardEventHandler.enter.handler;
   jest.clearAllMocks();
 });
 
@@ -112,8 +114,6 @@ describe('EditMessageInputViewModel', () => {
       return that;
     };
 
-    const enterHandler =
-      editMessageInputViewModel.keyboardEventHandler.enter.handler;
     it('should edit post success', () => {
       const content = 'text';
       const that = mockThis(content);
