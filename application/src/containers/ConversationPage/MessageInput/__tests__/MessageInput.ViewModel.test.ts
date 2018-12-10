@@ -131,80 +131,73 @@ describe.skip('ActionsViewModel', () => {
   });
 });
 
-describe('ActionsViewModel send post', () => {
-  const mockThis = (content: string) => {
-    const that = {
-      quill: {
-        getText: jest.fn().mockReturnValue(content),
-        getContents: jest.fn(),
-      },
+describe('MessageInputViewModel', () => {
+  describe('ActionsViewModel send post', () => {
+    const mockThis = (content: string) => {
+      const that = {
+        quill: {
+          getText: jest.fn().mockReturnValue(content),
+          getContents: jest.fn(),
+        },
+      };
+      return that;
     };
-    return that;
-  };
 
-  const enterHandler = messageInputViewModel.keyboardEventHandler.enter.handler;
+    const enterHandler =
+      messageInputViewModel.keyboardEventHandler.enter.handler;
 
-  it.skip('send post should be success', () => {
-    const content = 'text';
-    const that = mockThis(content);
-    // @ts-ignore
-    markdownFromDelta = jest.fn().mockReturnValue(content);
-    const handler = enterHandler.bind(that);
-    handler();
-    expect(messageInputViewModel.draft).toBe('');
-    expect(postService.sendPost).toBeCalled();
+    it.skip('send post should be success', () => {
+      const content = 'text';
+      const that = mockThis(content);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(content);
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(messageInputViewModel.draft).toBe('');
+      expect(postService.sendPost).toBeCalled();
+    });
+
+    it('send post content is empty should be not send', () => {
+      const content = '';
+      const that = mockThis(content);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(content);
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(postService.sendPost).toBeCalledTimes(0);
+    });
+
+    it('send post should be illegal error', () => {
+      const content = CONTENT_ILLEGAL;
+      const that = mockThis(content);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(content);
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
+    });
+
+    it('send post should be over length error', () => {
+      const content = _.pad('test', CONTENT_LENGTH + 1);
+      const that = mockThis(content);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(content);
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
+    });
+
+    it('send post should be service error', () => {
+      postService.sendPost = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('error'));
+      const content = 'text';
+      const that = mockThis(content);
+      const handler = enterHandler.bind(that);
+      const result = handler();
+      expect(result).toBeUndefined();
+    });
   });
-
-  it('send post content is empty should be not send', () => {
-    const content = '';
-    const that = mockThis(content);
-    // @ts-ignore
-    markdownFromDelta = jest.fn().mockReturnValue(content);
-    const handler = enterHandler.bind(that);
-    handler();
-    expect(postService.sendPost).toBeCalledTimes(0);
-  });
-
-  it('send post should be illegal error', () => {
-    const content = CONTENT_ILLEGAL;
-    const that = mockThis(content);
-    // @ts-ignore
-    markdownFromDelta = jest.fn().mockReturnValue(content);
-    const handler = enterHandler.bind(that);
-    handler();
-    expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
-  });
-
-  it('send post should be over length error', () => {
-    const content = _.pad('test', CONTENT_LENGTH + 1);
-    const that = mockThis(content);
-    // @ts-ignore
-    markdownFromDelta = jest.fn().mockReturnValue(content);
-    const handler = enterHandler.bind(that);
-    handler();
-    expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
-  });
-
-  it('send post should be service error', () => {
-    postService.sendPost = jest.fn().mockRejectedValueOnce(new Error('error'));
-    const content = 'text';
-    const that = mockThis(content);
-    const handler = enterHandler.bind(that);
-    const result = handler();
-    expect(result).toBeUndefined();
-  });
-});
-
-describe('Send files with Post', () => {
-  const mockThis = (content: string) => {
-    const that = {
-      quill: {
-        getText: jest.fn().mockReturnValue(content),
-        getContents: jest.fn(),
-      },
-    };
-    return that;
-  };
 
   const file = new File(['foo'], 'foo.txt', {
     type: 'text/plain',
@@ -221,96 +214,120 @@ describe('Send files with Post', () => {
     _uploadingItems = [];
   });
 
-  it('send post content is empty but with files should be send', async () => {
-    const content = '';
-    const that = mockThis(content);
-    await vm.autoUploadFile([file]);
-    // @ts-ignore
-    markdownFromDelta = jest.fn().mockReturnValue(content);
-    const handler = enterHandler.bind(that);
-    handler();
-    expect(postService.sendPost).toBeCalledTimes(1);
-  });
+  describe('_sendPost()', () => {
+    const mockThis = (content: string) => {
+      const that = {
+        quill: {
+          getText: jest.fn().mockReturnValue(content),
+          getContents: jest.fn(),
+        },
+      };
+      return that;
+    };
 
-  it('autoUploadFile() will do nothing if no files', async () => {
-    await vm.autoUploadFile([]);
-    expect(itemService.sendItemFile).toBeCalledTimes(0);
-  });
-
-  it('autoUploadFile() will upload files', async () => {
-    const item = await vm.autoUploadFile([file]);
-    expect(vm.duplicateFiles.length).toBe(0);
-    expect(itemService.sendItemFile).toBeCalledTimes(1);
-    const result = await vm.isFileExists(file);
-    expect(result).toBe(true);
-    // will check duplicate
-    await vm.autoUploadFile([file]);
-    expect(itemService.sendItemFile).toBeCalledTimes(1);
-  });
-
-  it('uploadFile() can upload a file', async () => {
-    await vm.uploadFile(file, false);
-    expect(vm.items.length).toBe(1);
-    expect(itemService.sendItemFile).toBeCalledTimes(1);
-    const exists = await itemService.isFileExists(vm.id, file.name);
-    expect(exists).toBe(true);
-  });
-
-  it('cancelUploadFile() can cancel uploading file', async () => {
-    await vm.autoUploadFile([file]);
-    let exists = await itemService.isFileExists(vm.id, file.name);
-    expect(exists).toBe(true);
-    expect(vm.files.length).toBe(1);
-    expect(vm.items.length).toBe(1);
-
-    await vm.cancelUploadFile(file);
-    expect(itemService.cancelUpload).toBeCalledTimes(1);
-
-    exists = await itemService.isFileExists(vm.id, file.name);
-    expect(exists).toBe(false);
-  });
-
-  it('should cancelDuplicateFiles() when user choose cancel upload duplicate files, clear them',  async () => {
-    await vm.autoUploadFile([file]);
-    await vm.autoUploadFile([file]);
-    expect(vm.duplicateFiles.length).toBe(1);
-    vm.cancelDuplicateFiles();
-    expect(vm.duplicateFiles.length).toBe(0);
-  });
-
-  it('should uploadDuplicateFiles()', async () => {
-    const f2 = new File(['bar'], 'bar.txt', {
-      type: 'text/plain',
+    it('should send post content is empty but with files should be send', async () => {
+      const content = '';
+      const that = mockThis(content);
+      await vm.autoUploadFile([file]);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(content);
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(postService.sendPost).toBeCalledTimes(1);
     });
-    await vm.autoUploadFile([file]);
-    await  vm.autoUploadFile([f2]);
-    expect(vm.duplicateFiles.length).toBe(0);
-    await vm.autoUploadFile([f2]);
-    expect(vm.duplicateFiles.length).toBe(1);
-    await vm.uploadDuplicateFiles();
-    expect(vm.duplicateFiles.length).toBe(0);
-    await vm.autoUploadFile([file, f2]);
-    expect(vm.duplicateFiles.length).toBe(2);
-    await vm.uploadDuplicateFiles();
-    expect(vm.duplicateFiles.length).toBe(0);
   });
 
-  it('should updateDuplicateFiles()', async () => {
-    const f2 = new File(['bar'], 'bar.txt', {
-      type: 'text/plain',
+  describe('autoUploadFile()', () => {
+    it('should do nothing if no files', async () => {
+      await vm.autoUploadFile([]);
+      expect(itemService.sendItemFile).toBeCalledTimes(0);
     });
-    await vm.autoUploadFile([file]);
-    await  vm.autoUploadFile([f2]);
-    expect(vm.duplicateFiles.length).toBe(0);
-    await vm.autoUploadFile([f2]);
-    expect(vm.duplicateFiles.length).toBe(1);
-    await vm.updateDuplicateFiles();
-    expect(itemService.sendItemFile).toBeCalledTimes(3);
-    expect(vm.duplicateFiles.length).toBe(0);
-    await vm.autoUploadFile([file, f2]);
-    expect(vm.duplicateFiles.length).toBe(2);
-    await vm.updateDuplicateFiles();
-    expect(itemService.sendItemFile).toBeCalledTimes(5);
-    expect(vm.duplicateFiles.length).toBe(0);
+
+    it('should upload files', async () => {
+      await vm.autoUploadFile([file]);
+      expect(vm.duplicateFiles.length).toBe(0);
+      expect(itemService.sendItemFile).toBeCalledTimes(1);
+      const result = await vm.isFileExists(file);
+      expect(result).toBe(true);
+      // will check duplicate
+      await vm.autoUploadFile([file]);
+      expect(itemService.sendItemFile).toBeCalledTimes(1);
+    });
+  });
+
+  describe('uploadFile()', () => {
+    it('should upload a file', async () => {
+      await vm.uploadFile(file, false);
+      expect(vm.items.length).toBe(1);
+      expect(itemService.sendItemFile).toBeCalledTimes(1);
+      const exists = await itemService.isFileExists(vm.id, file.name);
+      expect(exists).toBe(true);
+    });
+  });
+
+  describe('cancelUploadFile()', () => {
+    it('should cancel uploading file', async () => {
+      await vm.autoUploadFile([file]);
+      let exists = await itemService.isFileExists(vm.id, file.name);
+      expect(exists).toBe(true);
+      expect(vm.files.length).toBe(1);
+      expect(vm.items.length).toBe(1);
+
+      await vm.cancelUploadFile(file);
+      expect(itemService.cancelUpload).toBeCalledTimes(1);
+
+      exists = await itemService.isFileExists(vm.id, file.name);
+      expect(exists).toBe(false);
+    });
+  });
+
+  describe('cancelDuplicateFiles()', () => {
+    it('should clear duplicate files when user choose cancel upload duplicate files', async () => {
+      await vm.autoUploadFile([file]);
+      await vm.autoUploadFile([file]);
+      expect(vm.duplicateFiles.length).toBe(1);
+      vm.cancelDuplicateFiles();
+      expect(vm.duplicateFiles.length).toBe(0);
+    });
+  });
+
+  describe('uploadDuplicateFiles()', () => {
+    it('should force upload duplicate files as new ones', async () => {
+      const f2 = new File(['bar'], 'bar.txt', {
+        type: 'text/plain',
+      });
+      await vm.autoUploadFile([file]);
+      await vm.autoUploadFile([f2]);
+      expect(vm.duplicateFiles.length).toBe(0);
+      await vm.autoUploadFile([f2]);
+      expect(vm.duplicateFiles.length).toBe(1);
+      await vm.uploadDuplicateFiles();
+      expect(vm.duplicateFiles.length).toBe(0);
+      await vm.autoUploadFile([file, f2]);
+      expect(vm.duplicateFiles.length).toBe(2);
+      await vm.uploadDuplicateFiles();
+      expect(vm.duplicateFiles.length).toBe(0);
+    });
+  });
+
+  describe('updateDuplicateFiles()', () => {
+    it('should update duplicate files', async () => {
+      const f2 = new File(['bar'], 'bar.txt', {
+        type: 'text/plain',
+      });
+      await vm.autoUploadFile([file]);
+      await vm.autoUploadFile([f2]);
+      expect(vm.duplicateFiles.length).toBe(0);
+      await vm.autoUploadFile([f2]);
+      expect(vm.duplicateFiles.length).toBe(1);
+      await vm.updateDuplicateFiles();
+      expect(itemService.sendItemFile).toBeCalledTimes(3);
+      expect(vm.duplicateFiles.length).toBe(0);
+      await vm.autoUploadFile([file, f2]);
+      expect(vm.duplicateFiles.length).toBe(2);
+      await vm.updateDuplicateFiles();
+      expect(itemService.sendItemFile).toBeCalledTimes(5);
+      expect(vm.duplicateFiles.length).toBe(0);
+    });
   });
 });
