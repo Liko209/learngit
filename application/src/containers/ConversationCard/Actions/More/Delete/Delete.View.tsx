@@ -20,7 +20,7 @@ class DeleteViewComponent extends React.Component<Props> {
       title: t('deletePostTitle'),
       content: t('deletePostContent'),
       okText: t('delete'),
-      okType: 'danger',
+      okType: 'negative',
       cancelText: t('Cancel'),
       async onOK() {
         try {

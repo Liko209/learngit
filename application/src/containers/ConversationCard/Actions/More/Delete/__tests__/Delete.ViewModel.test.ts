@@ -16,8 +16,8 @@ jest.mock('sdk/service/post', () => ({
 
 let ViewModel: DeleteViewModel;
 
-describe('DeleteVM', () => {
-  beforeAll(() => {
+describe('DeleteViewModel', () => {
+  beforeEach(() => {
     jest.resetAllMocks();
     ViewModel = new DeleteViewModel({ id: 1 });
   });

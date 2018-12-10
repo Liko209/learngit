@@ -27,6 +27,7 @@ function getKnobs() {
     {
       primary: 'primary',
       secondary: 'secondary',
+      negative: 'negative',
     },
     'primary',
   );
@@ -47,9 +48,6 @@ storiesOf('Components/Buttons', module)
     return (
       <div>
         <JuiButton variant="contained" {...rest}>
-          {content}
-        </JuiButton>
-        <JuiButton variant="contained" customColor="negative" {...rest}>
           {content}
         </JuiButton>
       </div>

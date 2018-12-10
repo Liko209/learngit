@@ -98,7 +98,7 @@
   "started": "started",
   "updated": "updated",
   "created": "created",
-  "delete": "Delete",
+  "Delete": "Delete",
   "deletePostTitle": "Delete message",
   "deletePostContent": "Are you sure to delete this message? It is evitable.",
   "via": "via",
