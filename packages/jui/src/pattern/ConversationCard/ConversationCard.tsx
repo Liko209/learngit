@@ -29,7 +29,7 @@ const StyledNavigationButton = styled<JuiButtonProps>(JuiButton)`
     transform: translate(-50%, 0);
     position: absolute;
     transition: all, 0.2s;
-    z-index: ${({ theme }) => theme.zIndex.snackbar};
+    z-index: ${({ theme }) => theme.zIndex.floatButton};
   }
 `;
 

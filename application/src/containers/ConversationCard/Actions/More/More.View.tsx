@@ -7,24 +7,15 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ViewProps, MENU_LIST_ITEM_TYPE } from './types';
-import { JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiMenuList } from 'jui/components';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { Delete } from './Delete';
 
 type MoreViewProps = ViewProps & WithNamespaces;
 
 const menuItems = {
-  [MENU_LIST_ITEM_TYPE.DELETE]: ({ disabled }: any) => (
-    <JuiMenuItem icon="delete" disabled={disabled}>
-      Delete
-    </JuiMenuItem>
-  ),
-  [MENU_LIST_ITEM_TYPE.QUOTE]: ({ disabled }: any) => (
-    <JuiMenuItem disabled={disabled}>Quote</JuiMenuItem>
-  ),
-  [MENU_LIST_ITEM_TYPE.EDIT]: ({ disabled }: any) => (
-    <JuiMenuItem disabled={disabled}>Edit</JuiMenuItem>
-  ),
+  [MENU_LIST_ITEM_TYPE.DELETE]: Delete,
 }; // add more action item in menuItems
 
 @observer
