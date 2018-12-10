@@ -345,7 +345,7 @@ class ProfileService extends BaseService<Profile> {
   private async _requestUpdateProfile(
     newProfile: Profile,
     handleDataFunc?: (profile: Raw<Profile> | null) => Promise<Profile | null>,
-  ): Promise<ServiceResult<Profile>> {
+  ): Promise<Profile | null> {
     newProfile._id = newProfile.id;
     delete newProfile.id;
 
@@ -359,16 +359,14 @@ class ProfileService extends BaseService<Profile> {
         if (handleDataFunc) {
           const profile = await handleDataFunc(rawProfile);
           if (profile) {
-            return serviceOk(profile);
+            return profile;
           }
-          return serviceErr(ErrorTypes.SERVICE, 'Fail to handle data');
+          return null;
         }
         const latestProfileModel: Profile = transform(rawProfile);
-        return serviceOk(latestProfileModel);
+        return latestProfileModel;
       },
-      Err: () => {
-        return serviceErr(ErrorTypes.SERVICE, 'profile put dat failed');
-      },
+      Err: () => null,
     });
   }
 

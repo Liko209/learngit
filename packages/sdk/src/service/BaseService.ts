@@ -304,9 +304,7 @@ class BaseService<
       partialModel: Partial<Raw<SubModel>>,
       originalModel: SubModel,
     ) => Partial<Raw<SubModel>>,
-    doUpdateModel?: (
-      updatedModel: SubModel,
-    ) => Promise<ServiceResult<SubModel>>,
+    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | null>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
@@ -333,7 +331,7 @@ class BaseService<
         mainLogger.warn('handlePartialUpdate: OriginalModel not found');
         result = serviceErr(
           ErrorTypes.SERVICE,
-          `OriginalModel not found: ${id}`,
+          `OriginalModel not found: modelId: ${id}`,
         );
         break;
       }
@@ -427,7 +425,7 @@ class BaseService<
   private async _handlePartialUpdateWithOriginal(
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
-    doUpdateModel: (updatedModel: SubModel) => Promise<ServiceResult<SubModel>>,
+    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | null>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
@@ -447,8 +445,8 @@ class BaseService<
       );
 
       if (_.isEqual(partialModel, rollbackPartialModel)) {
-        result = serviceOk(originalModel);
         mainLogger.warn('handlePartialUpdate: no changes, no need update');
+        result = serviceOk(originalModel);
         break;
       }
 
@@ -464,9 +462,9 @@ class BaseService<
 
       mainLogger.info('handlePartialUpdate: trigger doUpdateModel');
 
-      result = await doUpdateModel(mergedModel);
+      const updatedModel = await doUpdateModel(mergedModel);
 
-      if (result.isErr()) {
+      if (!updatedModel) {
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
         const fullRollbackModel = this.getMergedModel(
           rollbackPartialModel,
@@ -478,7 +476,11 @@ class BaseService<
           rollbackPartialModel,
           doPartialNotify,
         );
+        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed');
+        break;
       }
+
+      result = serviceOk(updatedModel);
     } while (false);
 
     return result;
