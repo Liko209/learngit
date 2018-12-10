@@ -13,7 +13,6 @@ import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
-import { Notification } from '../Notification';
 
 class LikeViewModel extends StoreViewModel<LikeProps> implements LikeViewProps {
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
@@ -35,25 +34,14 @@ class LikeViewModel extends StoreViewModel<LikeProps> implements LikeViewProps {
   }
 
   @action
-  like = async (toLike: boolean) => {
+  like = async (toLike: boolean): Promise<boolean> => {
     const postService = PostService.getInstance<PostService>();
     const result = await postService.likePost(
       this._id,
       this._currentUserId,
       toLike,
     );
-    if (result.isErr()) {
-      const message = toLike
-        ? 'SorryWeEreNotAbleToLikeTheMessage'
-        : 'SorryWeEreNotAbleToUnlikeTheMessage';
-      Notification.flashToast({
-        message,
-        type: 'error',
-        messageAlign: 'left',
-        fullWidth: false,
-        dismissible: false,
-      });
-    }
+    return result.isErr();
   }
 }
 

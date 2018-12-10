@@ -10,6 +10,7 @@ type ViewProps = {
   isOpen: boolean;
   disabledOkBtn: boolean;
   isOffline: boolean;
+  errorUnknown: boolean;
   emailError: boolean;
   emailErrorMsg: string;
   message: string;

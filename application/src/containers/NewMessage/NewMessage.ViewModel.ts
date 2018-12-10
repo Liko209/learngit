@@ -13,7 +13,6 @@ import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
 import { BaseError, ErrorTypes } from 'sdk/utils';
-import { Notification } from '../Notification';
 
 class NewMessageViewModel extends StoreViewModel {
   @observable
@@ -26,6 +25,8 @@ class NewMessageViewModel extends StoreViewModel {
   members: (number | string)[] = [];
   @observable
   errorEmail: string;
+  @observable
+  errorUnknown: boolean = false;
 
   @computed
   get disabledOkBtn() {
@@ -106,14 +107,7 @@ class NewMessageViewModel extends StoreViewModel {
         this.emailError = true;
       }
     } else {
-      const message = 'SorryWeEreNotAbleToSendTheMessage';
-      Notification.flashToast({
-        message,
-        type: 'error',
-        messageAlign: 'left',
-        fullWidth: false,
-        dismissible: false,
-      });
+      this.errorUnknown = true;
     }
   }
 }

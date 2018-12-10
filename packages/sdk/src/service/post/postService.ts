@@ -21,7 +21,7 @@ import { POST_STATUS } from '../constants';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
-import { mainLogger, err, ok, Result } from 'foundation';
+import { mainLogger, err, Result } from 'foundation';
 import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
 
