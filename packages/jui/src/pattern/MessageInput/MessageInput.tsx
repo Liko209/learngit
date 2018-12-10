@@ -104,7 +104,7 @@ class JuiMessageInput extends React.Component<Props, State> {
 
     if (this._inputRef.current) {
       const quill = this._inputRef.current.getEditor();
-      requestAnimationFrame(() => quill.setSelection(quill.getLength(), 0));
+      setTimeout(() => quill.setSelection(quill.getLength(), 0), 200);
     }
   }
 
