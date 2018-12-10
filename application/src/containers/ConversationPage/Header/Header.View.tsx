@@ -70,11 +70,12 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
         );
       })(name),
     );
-    actionButtons.push(
-      <JuiIconButton key="fold" tooltipTitle={toTitleCase(t('foldShelf'))}>
-        info
-      </JuiIconButton>,
-    );
+    // hide unimplemented button
+    // actionButtons.push(
+    //   <JuiIconButton key="info" tooltipTitle={toTitleCase(t(''))}>
+    //     info
+    //   </JuiIconButton>,
+    // );
     return (
       <JuiButtonBar size="medium" overlapSize={1} awake={this.state.awake}>
         {actionButtons}

@@ -61,7 +61,8 @@
     "ripple": 1,
     "elementOnRipple": 2,
     "loading": 1000,
-    "dragging": 2000
+    "dragging": 2000,
+    "floatButton": 10
   },
   "size": {
     "width": 4,
