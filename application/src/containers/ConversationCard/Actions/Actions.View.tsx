@@ -10,7 +10,7 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { JuiConversationActionBar } from 'jui/pattern/ConversationActionBar';
 import { Like } from '@/containers/ConversationCard/Actions/Like';
 import { Bookmark } from '@/containers/ConversationCard/Actions/Bookmark';
-import { Edit } from '@/containers/ConversationCard/Actions/Edit';
+import { More } from '@/containers/ConversationCard/Actions/More';
 import { ActionsViewProps } from './types';
 
 type Props = ActionsViewProps & WithNamespaces;
@@ -18,13 +18,12 @@ type Props = ActionsViewProps & WithNamespaces;
 @observer
 class ActionsViewComponent extends Component<Props> {
   render() {
-    const { t, id } = this.props;
+    const { id } = this.props;
 
     const props = {
       Like: <Like id={id} />,
       Bookmark: <Bookmark id={id} />,
-      Edit: <Edit id={id} />,
-      moreTooltipTitle: t('More'),
+      More: <More id={id} />,
     };
     return <JuiConversationActionBar {...props} />;
   }

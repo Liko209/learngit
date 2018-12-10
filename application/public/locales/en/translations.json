@@ -98,6 +98,9 @@
   "started": "started",
   "updated": "updated",
   "created": "created",
+  "delete": "Delete",
+  "deletePostTitle": "Delete message",
+  "deletePostContent": "Are you sure to delete this message? It is evitable.",
   "via": "via",
   "marked": "marked",
   "completed": "completed",
@@ -128,6 +131,8 @@
   "Message": "Message",
   "more": "more",
   "close": "close",
-  "NoInternetConnection": "No Internet Connection",
-  "edit": "Edit post"
+  "edit": "Edit post",
+  "AboutRingCentral": "About RingCentral",
+  "NewActions": "New Actions",
+  "NoInternetConnection": "No Internet Connection"
 }

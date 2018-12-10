@@ -5,15 +5,13 @@
  */
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
-import { JuiIconButton } from '../../components/Buttons';
 
 import { spacing, palette, height, width } from '../../foundation/utils/styles';
 
 type Props = {
-  moreTooltipTitle: string;
+  More: React.ReactNode;
   Like: React.ReactNode;
   Bookmark: React.ReactNode;
-  Edit: React.ReactNode;
 };
 
 const StyledWrapper = styled('div')`
@@ -30,8 +28,9 @@ const StyledWrapper = styled('div')`
     &:hover {
       box-shadow: ${props => props.theme.shadows[5]};
     }
-    & > button {
+    & button {
       width: ${width(7)};
+      height: ${height(7)};
       justify-content: center;
     }
     display: flex;
@@ -50,20 +49,12 @@ class JuiConversationActionBar extends PureComponent<Props> {
   }
 
   render() {
-    const { moreTooltipTitle, Like, Bookmark, Edit } = this.props;
+    const { More, Like, Bookmark } = this.props;
     return (
       <StyledWrapper onClick={this.clickHandler}>
         {Like}
         {Bookmark}
-        {Edit}
-        <JuiIconButton
-          size="small"
-          tooltipTitle={moreTooltipTitle}
-          variant="plain"
-          data-name="actionBarMore"
-        >
-          more_horiz
-        </JuiIconButton>
+        {More}
       </StyledWrapper>
     );
   }
