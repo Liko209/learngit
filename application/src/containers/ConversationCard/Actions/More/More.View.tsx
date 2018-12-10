@@ -35,7 +35,11 @@ class More extends React.Component<MoreViewProps> {
   }
 
   render() {
-    const { id, permissionsMap } = this.props;
+    const { id, permissionsMap, showMoreAction } = this.props;
+
+    if (!showMoreAction) {
+      return null;
+    }
 
     return (
       <JuiPopoverMenu
@@ -49,18 +53,13 @@ class More extends React.Component<MoreViewProps> {
           horizontal: 'left',
         }}
       >
-        {Object.keys(menuItems).length > 0 && (
-          <JuiMenuList>
-            {Object.keys(menuItems).map((key: string) => {
-              const hasPermission = permissionsMap[key];
-              if (hasPermission) {
-                const Component = menuItems[key];
-                return <Component id={id} key={key} />;
-              }
-              return null;
-            })}
-          </JuiMenuList>
-        )}
+        <JuiMenuList>
+          {Object.keys(menuItems).map((key: string) => {
+            const { permission } = permissionsMap[key];
+            const Component = menuItems[key];
+            return <Component id={id} key={key} disabled={!permission} />;
+          })}
+        </JuiMenuList>
       </JuiPopoverMenu>
     );
   }
