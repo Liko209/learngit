@@ -18,6 +18,7 @@ import GroupService from '../../group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 import notificationCenter from '../../notificationCenter';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
+import { serviceErr, serviceOk } from '../../ServiceResult';
 import { BaseError } from '../../../utils';
 import { err, ok } from 'foundation';
 import { ENTITY } from '../../eventKey';
@@ -773,10 +774,15 @@ describe('PostService', () => {
   });
 
   describe('bookMark Post', () => {
-    it('book post should return null', async () => {
-      profileService.putFavoritePost.mockResolvedValueOnce(null);
+    it('book post should return serviceErr', async () => {
+      profileService.putFavoritePost.mockResolvedValueOnce(serviceErr(500, ''));
       const result = await postService.bookmarkPost(1, true);
-      expect(result).toBeUndefined();
+      expect(result.isErr()).toBe(true);
+    });
+    it('book post should return serviceOk', async () => {
+      profileService.putFavoritePost.mockResolvedValueOnce(serviceOk({}));
+      const result = await postService.bookmarkPost(1, true);
+      expect(result.isOk()).toBe(true);
     });
   });
 

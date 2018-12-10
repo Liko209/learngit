@@ -506,13 +506,9 @@ class PostService extends BaseService<Post> {
   }
 
   async bookmarkPost(postId: number, toBook: boolean) {
-    try {
-      // favorite_post_ids in profile
-      const profileService: ProfileService = ProfileService.getInstance();
-      await profileService.putFavoritePost(postId, toBook);
-    } catch (e) {
-      throw ErrorParser.parse(e);
-    }
+    // favorite_post_ids in profile
+    const profileService: ProfileService = ProfileService.getInstance();
+    return await profileService.putFavoritePost(postId, toBook);
   }
 
   getLastPostOfGroup(groupId: number): Promise<Post | null> {

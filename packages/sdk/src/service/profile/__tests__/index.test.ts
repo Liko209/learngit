@@ -6,9 +6,6 @@
 import { BaseResponse } from 'foundation';
 import ProfileService from '../../../service/profile';
 import ProfileAPI from '../../../api/glip/profile';
-import handleData, {
-  handlePartialProfileUpdate,
-} from '../../profile/handleData';
 import { BaseError } from '../../../utils';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { ServiceResultOk } from '../../ServiceResult';
@@ -75,7 +72,7 @@ describe('ProfileService', () => {
     it('profile not exist in local should return null', async () => {
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(null);
       const result = await profileService.putFavoritePost(100, true);
-      expect(result).toBeNull();
+      expect(result.isErr()).toBeTruthy();
     });
     it('favorite post ids in local to like, ', async () => {
       const profile = {
@@ -84,7 +81,11 @@ describe('ProfileService', () => {
       };
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       const result = await profileService.putFavoritePost(100, true);
-      expect(result.favorite_post_ids).toEqual([100, 101, 102]);
+      if (result.isOk()) {
+        expect(result.data.favorite_post_ids).toEqual([100, 101, 102]);
+      } else {
+        expect(true).toBe(false);
+      }
     });
     it('should do nothing because post id is not in favorite post ids', async () => {
       const profile = {
@@ -93,7 +94,11 @@ describe('ProfileService', () => {
       };
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       const result = await profileService.putFavoritePost(103, false);
-      expect(result.favorite_post_ids).toEqual([100, 101, 102]);
+      if (result.isOk()) {
+        expect(result.data.favorite_post_ids).toEqual([100, 101, 102]);
+      } else {
+        expect(true).toBe(false);
+      }
     });
 
     it('favorite post ids not in local to like', async () => {
@@ -102,7 +107,7 @@ describe('ProfileService', () => {
         favorite_post_ids: [100, 101, 102],
       };
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
-      ProfileAPI.putDataById.mockResolvedValueOnce(
+      ProfileAPI.putDataById.mockResolvedValue(
         new ApiResultOk(
           {
             _id: 2,
@@ -111,13 +116,20 @@ describe('ProfileService', () => {
           { status: 200, headers: {} } as BaseResponse,
         ),
       );
-      handlePartialProfileUpdate.mockResolvedValueOnce({
+      const returnValue = {
         id: 2,
         favorite_post_ids: [100, 101, 102, 103],
-      });
+      };
+      jest
+        .spyOn(profileService, 'handlePartialUpdate')
+        .mockResolvedValueOnce(new ServiceResultOk(returnValue));
 
       const result = await profileService.putFavoritePost(103, true);
-      expect(result.favorite_post_ids).toEqual([100, 101, 102, 103]);
+      if (result.isOk()) {
+        expect(result.data.favorite_post_ids).toEqual([100, 101, 102, 103]);
+      } else {
+        expect(true).toBe(false);
+      }
     });
 
     it('favorite post ids not in local to unlike', async () => {
@@ -125,24 +137,20 @@ describe('ProfileService', () => {
         id: 2,
         favorite_post_ids: [100, 101, 102],
       };
-      jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
-      ProfileAPI.putDataById.mockResolvedValueOnce(
-        new ApiResultOk(
-          {
-            _id: 2,
-            favorite_post_ids: [100, 101],
-          },
-          { status: 200, headers: {} } as BaseResponse,
-        ),
-      );
-      handlePartialProfileUpdate.mockResolvedValueOnce({
+      jest.spyOn(profileService, 'getProfile').mockResolvedValue(profile);
+      const returnValue = {
         id: 2,
         favorite_post_ids: [100, 101],
-      });
-      const result = (await profileService.putFavoritePost(102, false)) || {
-        favorite_post_ids: [],
       };
-      expect(result.favorite_post_ids).toEqual([100, 101]);
+      jest
+        .spyOn(profileService, 'handlePartialUpdate')
+        .mockResolvedValueOnce(new ServiceResultOk(returnValue));
+      const result = await profileService.putFavoritePost(102, false);
+      if (result.isOk()) {
+        expect(result.data.favorite_post_ids).toEqual([100, 101]);
+      } else {
+        expect(true).toBe(false);
+      }
     });
   });
 
