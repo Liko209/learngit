@@ -10,7 +10,7 @@ import handleData, {
 } from '../../profile/handleData';
 import { BaseError } from '../../../utils';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
-import BaseService from '../../BaseService';
+import { BaseResponse } from 'foundation/src';
 
 const mockAccountService = {
   getCurrentUserProfileId: jest.fn(),
@@ -116,8 +116,7 @@ describe('ProfileService', () => {
             _id: 2,
             favorite_post_ids: [100, 101, 102, 103],
           },
-          200,
-          {},
+          { status: 200, headers: {} } as BaseResponse,
         ),
       );
       handlePartialProfileUpdate.mockResolvedValueOnce({
@@ -141,8 +140,7 @@ describe('ProfileService', () => {
             _id: 2,
             favorite_post_ids: [100, 101],
           },
-          200,
-          {},
+          { status: 200, headers: {} } as BaseResponse,
         ),
       );
       handlePartialProfileUpdate.mockResolvedValueOnce({
@@ -168,7 +166,10 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
       jest.spyOn(profileService, 'getById').mockReturnValue(profile);
       ProfileAPI.putDataById.mockResolvedValueOnce(
-        new ApiResultOk(returnValue, 200, {}),
+        new ApiResultOk(returnValue, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       handleData.mockResolvedValueOnce(returnValue);
     }
@@ -273,11 +274,17 @@ describe('ProfileService', () => {
 
       if (ok) {
         ProfileAPI.putDataById.mockResolvedValueOnce(
-          new ApiResultOk(returnValue, 200, {}),
+          new ApiResultOk(returnValue, {
+            status: 200,
+            headers: {},
+          } as BaseResponse),
         );
       } else {
         ProfileAPI.putDataById.mockResolvedValueOnce(
-          new ApiResultErr(returnValue, 403, {}),
+          new ApiResultErr(returnValue, {
+            status: 200,
+            headers: {},
+          } as BaseResponse),
         );
       }
 
@@ -345,7 +352,10 @@ describe('ProfileService', () => {
       };
 
       ProfileAPI.putDataById.mockResolvedValueOnce(
-        new ApiResultOk(returnValue, 200, {}),
+        new ApiResultOk(returnValue, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
 
       const result = await profileService.handleGroupIncomesNewPost([
