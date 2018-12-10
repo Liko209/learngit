@@ -47,8 +47,10 @@ class NewMessage extends React.Component<NewMessageProps, State> {
     const { message } = this.state;
     const { history, newMessage, members } = this.props;
     const result = await newMessage(members, message);
-    history.push(`/messages/${result.id}`);
-    this.onClose();
+    if (result) {
+      history.push(`/messages/${result.id}`);
+      this.onClose();
+    }
   }
 
   onClose = () => {

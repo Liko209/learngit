@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { service } from 'sdk';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import { GlipTypeUtil, TypeDictionary, BaseError } from 'sdk/utils';
 import { goToConversation } from '@/common/goToConversation';
-
+import { ok, err } from 'foundation';
 jest.mock('sdk/service/group');
 jest.mock('sdk/utils');
 
@@ -44,27 +44,18 @@ describe('goToConversation()', () => {
       );
     });
 
-    it('groupService return value', async () => {
+    it('groupService should return ok', async () => {
       (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-        {
+        ok({
           id: 2,
-        },
+        }),
       );
       expect(await goToConversation(1)).toEqual(true);
     });
 
-    it('groupService reject value', async () => {
-      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValue(
-        {
-          id: 2,
-        },
-      );
-      expect(await goToConversation(1)).toEqual(false);
-    });
-
-    it('groupService return null', async () => {
-      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-        null,
+    it('groupService should return err', async () => {
+      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
+        err(new BaseError(500, '')),
       );
       expect(await goToConversation(1)).toEqual(false);
     });

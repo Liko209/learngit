@@ -12,8 +12,8 @@ import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
-import { BaseError } from 'sdk/src/utils';
-import { GroupErrorTypes } from 'sdk/service/group';
+import { BaseError, ErrorTypes } from 'sdk/utils';
+import { Notification } from '../Notification';
 
 class NewMessageViewModel extends StoreViewModel {
   @observable
@@ -84,31 +84,36 @@ class NewMessageViewModel extends StoreViewModel {
   newMessage = async (memberIds: number[], message: string) => {
     const postService: PostService = PostService.getInstance();
     // const groupService: GroupService = GroupService.getInstance();
-    let result;
-    try {
-      result = await postService.newMessageWithPeopleIds(memberIds, message);
-      // result = await groupService.getGroupByMemberList(memberIds);
-    } catch (error) {
-      if (error) {
-        throw this.newMessageErrorHandler(error);
-      } else {
-        this.serverError = true;
-      }
-      return;
-    }
 
-    return result;
+    const result = await postService.newMessageWithPeopleIds(
+      memberIds,
+      message,
+    );
+    if (result.isOk()) {
+      return result.data;
+    }
+    result.isErr() && this.newMessageErrorHandler(result.error);
+    return null;
   }
 
   newMessageErrorHandler(error: BaseError) {
     const code = error.code;
-    if (code === GroupErrorTypes.INVALID_FIELD) {
+    if (code === ErrorTypes.API_INVALID_FIELD) {
       const message = error.message;
       if (matchInvalidEmail(message).length > 0) {
         this.errorEmail = matchInvalidEmail(message);
         this.emailErrorMsg = 'Invalid Email';
         this.emailError = true;
       }
+    } else {
+      const message = 'SorryWeEreNotAbleToSendTheMessage';
+      Notification.flashToast({
+        message,
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
+      });
     }
   }
 }
