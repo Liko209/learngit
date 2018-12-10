@@ -8,8 +8,8 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { ServiceResult } from 'sdk/service/ServiceResult';
 import { Profile } from 'sdk/models';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { Notification } from '@/containers/Notification';
 import { FavoriteViewProps } from './types';
-import { JuiModal } from '@/containers/Dialog';
 
 type Props = FavoriteViewProps & WithNamespaces;
 
@@ -23,7 +23,7 @@ class FavoriteViewComponent extends Component<Props> {
   }
 
   onClickFavorite = async () => {
-    const { isAction, handlerFavorite, isFavorite, t } = this.props;
+    const { isAction, handlerFavorite, isFavorite } = this.props;
     if (!isAction) {
       return;
     }
@@ -31,16 +31,16 @@ class FavoriteViewComponent extends Component<Props> {
     const result: ServiceResult<Profile> = await handlerFavorite();
 
     if (result.isErr()) {
-      const content = isFavorite
-        ? t('markUnFavoriteServerErrorContent')
-        : t('markFavoriteServerErrorContent');
+      const message = isFavorite
+        ? 'markUnFavoriteServerErrorContent'
+        : 'markFavoriteServerErrorContent';
 
-      JuiModal.alert({
-        content,
-        title: '',
-        okText: t('OK'),
-        okBtnType: 'text',
-        onOK: () => {},
+      Notification.flashToast({
+        message,
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
       });
     }
   }

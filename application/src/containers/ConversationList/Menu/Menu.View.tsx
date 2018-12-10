@@ -8,12 +8,12 @@ import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
 import { JuiMenu, JuiMenuItem } from 'jui/components';
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { JuiModal } from '@/containers/Dialog';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { MenuViewProps } from './types';
 import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
+import { Notification } from '@/containers/Notification';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -45,16 +45,20 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
-    const { t } = this.props;
+    const { isFavorite } = this.props;
     this.props.onClose(event);
     const result = await this.props.toggleFavorite();
     if (result.isErr()) {
-      JuiModal.alert({
-        title: '',
-        content: t('conversationMenuItem:markFavoriteServerErrorContent'),
-        okText: t('conversationMenuItem:OK'),
-        okBtnType: 'text',
-        onOK: () => {},
+      const message = isFavorite
+        ? 'markUnFavoriteServerErrorContent'
+        : 'markFavoriteServerErrorContent';
+
+      Notification.flashToast({
+        message,
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
       });
     }
   }
@@ -119,7 +123,15 @@ class MenuViewComponent extends Component<Props, State> {
           history.replace('/messages');
         }
       },
-      Err: () => null,
+      Err: () => {
+        Notification.flashToast({
+          message: 'SorryWeWereNotAbleToCloseTheConversation',
+          type: 'error',
+          messageAlign: 'left',
+          fullWidth: false,
+          dismissible: false,
+        });
+      },
     });
   }
   private _handleGroupDialog = (event: MouseEvent<HTMLElement>) => {

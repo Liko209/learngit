@@ -132,6 +132,7 @@
   "SorryWeEreNotAbleToSendTheMessage": "Sorry, we weren't able to send the message. Try again.",
   "SorryWeEreNotAbleToLikeTheMessage": "Sorry, we weren't able to like this message. Try again.",
   "SorryWeEreNotAbleToUnlikeTheMessage": "Sorry, we weren't able to unlike this message. Try again.",
+  "SorryWeWereNotAbleToCloseTheConversation": "Sorry, we weren't able to close the conversation. Try again.",
   "AboutRingCentral": "About RingCentral",
   "NewActions": "New Actions"
 }
