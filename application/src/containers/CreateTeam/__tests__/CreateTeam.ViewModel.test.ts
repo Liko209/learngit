@@ -5,8 +5,7 @@
  */
 import { err, ok } from 'foundation';
 import { service } from 'sdk';
-import { GroupErrorTypes } from 'sdk/service/group';
-import { BaseError } from 'sdk/utils';
+import { BaseError, ErrorTypes } from 'sdk/utils';
 
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
@@ -28,7 +27,7 @@ const accountService = {
 // AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 
 const createTeamVM = new CreateTeamViewModel();
-function getNewBaseError(type: GroupErrorTypes, message: string) {
+function getNewBaseError(type: ErrorTypes, message: string = '') {
   return new BaseError(type, message);
 }
 describe('CreateTeamVM', () => {
@@ -74,7 +73,7 @@ describe('CreateTeamVM', () => {
       .mockImplementation(() => creatorId);
     groupService.createTeam = jest
       .fn()
-      .mockResolvedValue(err(getNewBaseError(GroupErrorTypes.ALREADY_TAKEN)));
+      .mockResolvedValue(err(getNewBaseError(ErrorTypes.API_ALREADY_TAKEN)));
 
     jest.spyOn(createTeamVM, 'createErrorHandler');
     const name = 'name';
@@ -91,7 +90,7 @@ describe('CreateTeamVM', () => {
       options,
     );
     if (result.isErr()) {
-      expect(result.error.code).toBe(GroupErrorTypes.ALREADY_TAKEN);
+      expect(result.error.code).toBe(ErrorTypes.API_ALREADY_TAKEN);
     } else {
       expect(result).toBe(false);
     }
@@ -177,13 +176,13 @@ describe('CreateTeamVM', () => {
   });
 
   it('createErrorHandle()', () => {
-    let error = getNewBaseError(GroupErrorTypes.ALREADY_TAKEN);
+    let error = getNewBaseError(ErrorTypes.API_ALREADY_TAKEN);
     createTeamVM.createErrorHandler(error);
     expect(createTeamVM.errorMsg).toBe('alreadyTaken');
     expect(createTeamVM.nameError).toBe(true);
 
     error = getNewBaseError(
-      GroupErrorTypes.INVALID_FIELD,
+      ErrorTypes.API_INVALID_FIELD,
       'This is not a valid email address: q@qq.com.',
     );
     createTeamVM.createErrorHandler(error);
