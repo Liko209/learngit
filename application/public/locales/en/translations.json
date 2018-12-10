@@ -130,5 +130,7 @@
   "close": "close",
   "messageLoadingErrorTip": "We weren't able to open this conversation.",
   "tryAgain": "Try again.",
+  "AboutRingCentral": "About RingCentral",
+  "NewActions": "New Actions",
   "NoInternetConnection": "No Internet Connection"
 }
