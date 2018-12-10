@@ -64,7 +64,7 @@ describe('Notification', () => {
       expect(Notification._buffer).toHaveLength(1);
     });
 
-    it('should show buffered one when exists and array decreased', () => {
+    it('should show buffered one when exists and array decreased [JPT-509]', () => {
       const toastData: NotificationProps = {
         message: 'aaa',
         type: 'error',
