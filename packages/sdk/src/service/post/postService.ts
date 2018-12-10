@@ -21,8 +21,8 @@ import { POST_STATUS } from '../constants';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
-import { mainLogger, Result } from 'foundation';
-import { ErrorParser, BaseError } from '../../utils/error';
+import { mainLogger, err, ok, Result } from 'foundation';
+import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
 
 interface IPostResult {
@@ -450,61 +450,59 @@ class PostService extends BaseService<Post> {
   private async _requestUpdatePost(
     newPost: Post,
     handleDataFunc?: (profile: Raw<Post> | null) => Promise<Post | null>,
-  ): Promise<Post | BaseError> {
-    try {
-      newPost._id = newPost.id;
-      delete newPost.id;
-      const response = await PostAPI.putDataById<Post>(newPost._id, newPost);
-      const data = response.expect('update post failed');
+  ): Promise<Post | null> {
+    newPost._id = newPost.id;
+    delete newPost.id;
+    const result = await PostAPI.putDataById<Post>(newPost._id, newPost);
+    if (result.isOk()) {
       if (handleDataFunc) {
-        const result = await handleDataFunc(data);
-        if (result) {
-          return result;
-        }
-      } else {
-        const latestPostModel: Post = transform(data);
-        return latestPostModel;
+        return await handleDataFunc(result.data);
       }
-      return ErrorParser.parse(response);
-    } catch (e) {
-      return ErrorParser.parse(e);
+      return transform<Post>(result.data);
     }
+    return null;
   }
 
   private async _doUpdateModel(updatedModel: Post) {
-    return await this._requestUpdatePost(updatedModel);
+    return this._requestUpdatePost(updatedModel);
   }
 
-  async likePost(postId: number, personId: number, toLike: boolean) {
-    try {
-      const post = await this.getById(postId);
-      if (post) {
-        const likes = post.likes || [];
-        const index = likes.indexOf(personId);
-        if (toLike) {
-          if (index === -1) {
-            likes.push(personId);
-          }
-        } else {
-          if (index > -1) {
-            likes.splice(index, 1);
-          }
+  async likePost(
+    postId: number,
+    personId: number,
+    toLike: boolean,
+  ): Promise<Result<Post>> {
+    const post = await this.getById(postId);
+    if (post) {
+      const likes = post.likes || [];
+      const index = likes.indexOf(personId);
+      if (toLike) {
+        if (index === -1) {
+          likes.push(personId);
         }
-
-        const partialModel = {
-          ...post,
-          likes,
-        };
-
-        this.handlePartialUpdate(
-          partialModel,
-          undefined,
-          this._doUpdateModel.bind(this),
-        );
+      } else {
+        if (index > -1) {
+          likes.splice(index, 1);
+        }
       }
-    } catch (e) {
-      throw ErrorParser.parse(e);
+
+      const partialModel = {
+        ...post,
+        likes,
+      };
+
+      return this.handlePartialUpdate(
+        partialModel,
+        undefined,
+        this._doUpdateModel.bind(this),
+      );
     }
+    return err(
+      new BaseError(
+        ErrorTypes.UNDEFINED_ERROR,
+        `Post can not find with id ${postId}`,
+      ),
+    );
   }
 
   async bookmarkPost(postId: number, toBook: boolean) {

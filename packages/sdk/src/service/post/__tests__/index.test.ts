@@ -657,55 +657,57 @@ describe('PostService', () => {
     it('should return null when post id is negative', async () => {
       postService.getById.mockResolvedValueOnce(null);
       const result = await postService.likePost(-1, 101, true);
-      expect(result).toBe(undefined);
+      expect(result.isErr()).toBe(true);
     });
     it('should return null when post is not exist', async () => {
       postService.getById.mockResolvedValueOnce(null);
       const result = await postService.likePost(100, 101, true);
-      expect(result).toBe(undefined);
+      expect(result.isErr()).toBe(true);
     });
     it('should return post with likes', async () => {
       const post = { id: 100, likes: [] };
-      postService.getById.mockResolvedValueOnce(post);
+      postService.getById.mockResolvedValue(post);
       const data = { _id: 100, likes: [101] };
       PostAPI.putDataById.mockResolvedValueOnce(new ApiResultOk(data, 200, {}));
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
-      expect(post.likes).toEqual([101]);
+      expect(result.isOk()).toBe(true);
+      expect(result.data.likes).toEqual([101]);
+      // expect(post.likes).toEqual([101]);
     });
     it('should return old post if person id is not in post likes when to unlike', async () => {
       const post = { id: 100, likes: [] };
-      postService.getById.mockResolvedValueOnce(post);
-      await postService.likePost(100, 102, false);
-      expect(post.likes).toEqual([]);
+      postService.getById.mockResolvedValue(post);
+      const result = await postService.likePost(100, 102, false);
+      expect(result.data.likes).toEqual([]);
     });
     it('should return old post if person id is in post likes when to like', async () => {
       const post = { id: 100, likes: [] };
-      postService.getById.mockResolvedValueOnce(post);
+      postService.getById.mockResolvedValue(post);
       const result = await postService.likePost(100, 101, true);
-      expect(post.likes).toEqual([101]);
+      expect(result.data.likes).toEqual([101]);
     });
 
     it('should return new post if person id is in post likes when to unlike', async () => {
       const postInDao = { id: 100, likes: [101, 102] };
       const postInApi = { _id: 100, likes: [102] };
-      postService.getById.mockResolvedValueOnce(postInDao);
+      postService.getById.mockResolvedValue(postInDao);
       PostAPI.putDataById.mockResolvedValueOnce({
         data: postInApi,
       });
 
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [102] }]);
       const result = await postService.likePost(100, 101, false);
-      expect(postInDao.likes).toEqual([102]);
+      expect(result.data.likes).toEqual([102]);
     });
 
-    it('should return new post if person id is in post likes when to unlike', async () => {
+    it('should return error when server error', async () => {
       postService.getById.mockResolvedValueOnce({ id: 100, likes: [101, 102] });
       PostAPI.putDataById.mockResolvedValueOnce({
         error: { _id: 100, likes: [102] },
       });
       const result = await postService.likePost(100, 101, false);
-      expect(result).toBeUndefined();
+      expect(result.isErr()).toBe(true);
     });
   });
 

@@ -9,9 +9,8 @@ import { POST_LIST_TYPE, PostListPageProps } from './types';
 import { computed, observable } from 'mobx';
 import { getSingleEntity } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { MyState } from 'sdk/src/models';
+import { MyState, Profile } from 'sdk/models';
 import MyStateModel from '../../store/models/MyState';
-import { Profile } from '../../../../packages/sdk/src/models';
 import ProfileModel from '@/store/models/Profile';
 import storeManager from '@/store';
 
