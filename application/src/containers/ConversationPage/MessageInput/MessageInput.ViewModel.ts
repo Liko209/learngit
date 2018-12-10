@@ -14,6 +14,7 @@ import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
+import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { isAtMentions } from './handler';
 import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
 import { ItemFile } from 'sdk/models';
@@ -46,11 +47,11 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   @observable
   items: ItemFile[] = [];
   @observable
-  files: File[] = [];
+  files: ItemInfo[] = [];
   @observable
-  duplicateFiles: File[] = [];
+  duplicateFiles: ItemInfo[] = [];
   @observable
-  uniqueFiles: File[] = [];
+  uniqueFiles: ItemInfo[] = [];
 
   keyboardEventHandler = {
     enter: {
@@ -180,15 +181,15 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   autoUploadFile = async (files: File[]) => {
     if (files.length > 0) {
-      const uniques: File[] = [];
-      const duplicateFiles: File[] = [];
+      const uniques: ItemInfo[] = [];
+      const duplicateFiles: ItemInfo[] = [];
       for (let i = 0; i < files.length; ++i) {
         const file = files[i];
         const exists = await this.isFileExists(file);
         if (exists) {
-          duplicateFiles.push(file);
+          duplicateFiles.push({ file, status: 'normal' });
         } else {
-          uniques.push(file);
+          uniques.push({ file, status: 'normal' });
         }
       }
 
@@ -205,14 +206,15 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     }
   }
 
-  private _uploadFiles = async (files: File[], isUpdate: boolean) => {
+  private _uploadFiles = async (files: ItemInfo[], isUpdate: boolean) => {
     for (let i = 0; i < files.length; ++i) {
       await this.uploadFile(files[i], isUpdate);
     }
   }
 
-  uploadFile = async (file: File, isUpdate: boolean) => {
+  uploadFile = async (info: ItemInfo, isUpdate: boolean) => {
     try {
+      const { file } = info;
       const form = new FormData();
       form.append(FILE_FORM_DATA_KEYS.FILE_NAME, file.name);
       form.append(FILE_FORM_DATA_KEYS.FILE, file);
@@ -235,12 +237,16 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return await this._itemService.isFileExists(this.id, file.name);
   }
 
-  cancelUploadFile = async (file: File) => {
-    const index = this.files.findIndex(looper => looper === file);
+  cancelUploadFile = async (info: ItemInfo) => {
+    const { file } = info;
+    const index = this.files.findIndex(looper => looper.file === file);
     if (index >= 0) {
-      const item = this.items[index];
-      await this._itemService.cancelUpload(item.id);
+      try {
+        const item = this.items[index];
+        await this._itemService.cancelUpload(item.id);
+      } catch (e) {}
       this.files.splice(index, 1);
+      this.files = this.files.slice(0);
     }
   }
 

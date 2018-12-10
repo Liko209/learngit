@@ -3,6 +3,7 @@
  * @Date: 2018-10-09 14:08:18
  * Copyright © RingCentral. All rights reserved.
  */
+import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 
 type MessageInputProps = {
   id: number; // group id
@@ -16,13 +17,13 @@ type MessageInputViewProps = {
   forceSaveDraft(): void;
   autoUploadFile(files: File[]): void;
   isFileExists(file: File): Promise<boolean>;
-  cancelUploadFile(file: File): void;
+  cancelUploadFile(file: ItemInfo): void;
   changeDraft(value: any): void;
   uploadDuplicateFiles(): void;
   cancelDuplicateFiles(): void;
   updateDuplicateFiles(): void;
-  files: File[];
-  duplicateFiles: File[];
+  files: ItemInfo[];
+  duplicateFiles: ItemInfo[];
   keyboardEventHandler: {
     enter: {
       key: number;

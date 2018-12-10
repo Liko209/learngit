@@ -57,7 +57,7 @@ class MessageInputViewComponent extends Component<
     if (showDuplicateFiles) {
       return (
         <DuplicateAlert
-          duplicateFiles={duplicateFiles}
+          duplicateFiles={duplicateFiles.map(({ file }) => file)}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
           onUpdate={this.props.updateDuplicateFiles}
@@ -86,7 +86,7 @@ class MessageInputViewComponent extends Component<
     const attachmentsNode = (
       <AttachmentList
         files={files}
-        cancelUploadFile={this.props.cancelUploadFile}
+        removeAttachment={this.props.cancelUploadFile}
       />
     );
 

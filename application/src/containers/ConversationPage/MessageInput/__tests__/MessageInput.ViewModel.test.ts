@@ -15,6 +15,7 @@ import {
 } from '../MessageInput.ViewModel';
 import _ from 'lodash';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
+import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 
 const mockGroupEntityData = {
   draft: 'draft',
@@ -257,7 +258,8 @@ describe('MessageInputViewModel', () => {
 
   describe('uploadFile()', () => {
     it('should upload a file', async () => {
-      await vm.uploadFile(file, false);
+      const info: ItemInfo = { file, status: 'normal' };
+      await vm.uploadFile(info, false);
       expect(vm.items.length).toBe(1);
       expect(itemService.sendItemFile).toBeCalledTimes(1);
       const exists = await itemService.isFileExists(vm.id, file.name);
@@ -273,7 +275,7 @@ describe('MessageInputViewModel', () => {
       expect(vm.files.length).toBe(1);
       expect(vm.items.length).toBe(1);
 
-      await vm.cancelUploadFile(file);
+      await vm.cancelUploadFile({ file, status: 'normal' } as ItemInfo);
       expect(itemService.cancelUpload).toBeCalledTimes(1);
 
       exists = await itemService.isFileExists(vm.id, file.name);
