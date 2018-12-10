@@ -64,13 +64,9 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   private get _canPost() {
     if (this._group.isTeam) {
-      if (!this._group.isThePersonAdmin(this._post.creatorId)) {
-        if (
-          this._group.permissions &&
-          this._group.permissions.user &&
-          this._group.permissions.user.level
-        ) {
-          const { level } = this._group.permissions.user;
+      if (!this._group.isThePersonAdmin(this._currentUserId)) {
+        if (this._group.permissions && this._group.permissions.user) {
+          const { level = 0 } = this._group.permissions.user;
           return !!(level & (1 << PERMISSION_ENUM.TEAM_POST));
         }
       }
