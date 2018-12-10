@@ -85,7 +85,7 @@ module.exports = {
     // We inferred the "public path" (such as / or /my-project) from homepage.
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
+    devtoolModuleFilenameTemplate: (info) =>
       path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, "/")
   },
   optimization: {
@@ -255,7 +255,8 @@ module.exports = {
                   // plugin-proposal-decorators is only needed if you're using experimental decorators in TypeScript
                   ["@babel/plugin-proposal-decorators", { legacy: true }],
                   ["@babel/plugin-proposal-class-properties", { loose: true }],
-                  "react-hot-loader/babel"
+                  "react-hot-loader/babel",
+                  "@babel/plugin-syntax-dynamic-import"
                 ]
               }
             }
