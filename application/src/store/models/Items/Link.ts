@@ -22,7 +22,7 @@ function setLinkData(this: LinkItem, data: any) {
   this.image = image || '';
   this.deactivated = deactivated;
   this.doNotRender = do_not_render || false;
-  this.providerName = detail.provider_name;
+  this.providerName = detail && detail.provider_name;
   this.favicon = favicon;
 }
 

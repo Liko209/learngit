@@ -13,13 +13,12 @@ type FileNameProps = {
 };
 
 const FileNameWrapper = styled.div`
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: flex;
+  min-width: 0;
   align-items: center;
   font-weight: 400;
   color: ${palette('grey', '700')};
+  ${ellipsis};
 `;
 
 const LeftName = styled.span`
