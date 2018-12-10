@@ -106,7 +106,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
   onClose = () => {
     const { updateCreateTeamDialogState } = this.props;
     updateCreateTeamDialogState();
-    // inputReset();
   }
 
   render() {
