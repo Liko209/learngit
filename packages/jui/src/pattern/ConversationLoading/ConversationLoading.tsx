@@ -38,7 +38,6 @@ const Progress = styled(JuiCircularProgress)`
 
 const Loading = styled.div`
   position: relative;
-  z-index: ${({ theme }) => theme.zIndex.dragging + 1};
   background: ${palette('common', 'white')};
   display: flex;
   height: 100%;
