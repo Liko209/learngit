@@ -15,7 +15,7 @@ import {
 } from 'foundation';
 
 // import logger from './logger';
-import { serializeUrlParams } from '../utils';
+import { serializeUrlParams, omitLocalProperties } from '../utils';
 import { NetworkResult, networkOk, networkErr } from './NetworkResult';
 
 export interface IQuery {
@@ -191,8 +191,8 @@ export default class NetworkClient {
   post<T>(path: string, data = {}, headers = {}) {
     return this.request<T>({
       path,
-      data,
       headers,
+      data: omitLocalProperties(data),
       method: NETWORK_METHOD.POST,
     });
   }
@@ -207,8 +207,8 @@ export default class NetworkClient {
   put<T>(path: string, data = {}, headers = {}) {
     return this.http<T>({
       path,
-      data,
       headers,
+      data: omitLocalProperties(data),
       method: NETWORK_METHOD.PUT,
     });
   }

@@ -89,7 +89,7 @@ class ConversationListItemViewModel extends StoreViewModel<
         GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
       );
       if (this.groupId === currentGroupId) {
-        hint = getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI);
+        hint = getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI) && hint;
       }
     });
     return hint;

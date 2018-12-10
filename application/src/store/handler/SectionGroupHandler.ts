@@ -279,7 +279,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const currentGroupId = storeManager
         .getGlobalStore()
         .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-      if (_.findIndex(ids, currentGroupId) !== -1) {
+      if (ids.includes(currentGroupId)) {
         history.replace('/messages');
       }
     }
