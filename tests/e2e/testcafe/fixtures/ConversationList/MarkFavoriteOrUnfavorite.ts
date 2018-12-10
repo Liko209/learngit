@@ -39,11 +39,13 @@ test(formalName('Display Favorite button when user tap more button of a conversa
     });
 
     await h(t).withLog('And the conversations should not be hidden and unfavorited before login', async () => {
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${groupId}`]: false,
-        [`hide_group_${teamId}`]: false,
-        favorite_group_ids: [],
-      });
+      await user.sdk.glip.showGroups(user.rcId, [groupId, teamId]);
+      // await user.sdk.glip.updateProfile(user.rcId, {
+      //   [`hide_group_${groupId}`]: false,
+      //   [`hide_group_${teamId}`]: false,
+      //   // favorite_group_ids: [],
+      // });
+      await user.sdk.glip.clearFavoriteGroups();
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
@@ -120,11 +122,15 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          [`hide_group_${groupId}`]: false,
-          [`hide_group_${teamId}`]: false,
-          favorite_group_ids: [+groupId, +teamId],
-        });
+        await user.sdk.glip.showGroups(user.rcId, [groupId, teamId]);
+
+        // await user.sdk.glip.updateProfile(user.rcId, {
+        //   [`hide_group_${groupId}`]: false,
+        //   [`hide_group_${teamId}`]: false,
+        //   // favorite_group_ids: [+groupId, +teamId],
+        // });
+        await user.sdk.glip.favoriteGroups(user.rcId, [+groupId, +teamId]);
+
       },
     );
 
@@ -193,10 +199,14 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          [`hide_group_${meChatId}`]: false,
-          favorite_group_ids: [+meChatId],
-        });
+        await user.sdk.glip.showGroups(user.rcId, [meChatId]);
+
+        // await user.sdk.glip.updateProfile(user.rcId, {
+        //   [`hide_group_${meChatId}`]: false,
+        //   // favorite_group_ids: [+meChatId],
+        // });
+        await user.sdk.glip.favoriteGroups(user.rcId, [+meChatId]);
+ 
       },
     );
 

@@ -389,7 +389,7 @@ export class GlipSdk {
     });
   }
 
-  async showAllGroup(rcId?: string) {
+  async showAllGroups(rcId?: string) {
     const groupList = await this.getTeamsIds();
     const data = _.assign(
       {},
@@ -400,10 +400,9 @@ export class GlipSdk {
     await this.updateProfile(rcId, data);
   }
   
-  async showSomeGroup(rcId: string, groupIds: string[] | number[] | string | number) {
+  async showGroups(rcId: string, groupIds: string[] | number[] | string | number) {
     let data;
-    if (Array.isArray(groupIds)) {
-      
+    if (Object.prototype.toString.call(groupIds) === '[object Array]') {
       data = _.assign(
         {},
         ...(groupIds as string[]).map(id => {
@@ -416,17 +415,31 @@ export class GlipSdk {
     await this.updateProfile(rcId, data);
   }
 
-  async hideSomeGroup(rcId: string, groupIds: string[] | number[] | string | number) {
+  async hideGroups(rcId: string, groupIds: string[] | number[]) {
     let data;
-    if (Array.isArray(groupIds)) {
+    if (Object.prototype.toString.call(groupIds) === '[object Array]') {
       data = _.assign(
         {},
         ...(groupIds as string[]).map(id => {
-          return { [`hide_group_${id}`]: true }
+          return { [`hde_group_${id}`]: true }
         }) 
       )
     } else {
       data = { [`hide_group_${groupIds}`]: true }
+    }
+    await this.updateProfile(rcId, data);
+  }
+
+  async favoriteGroups(rcId: string, groupIds: number[]) {
+    const data = {
+      favorite_group_ids: groupIds
+    }
+    await this.updateProfile(rcId, data); 
+  }
+  
+  async clearFavoriteGroups(rcId?: string) {
+    const data = {
+      favorite_group_ids: [],
     }
     await this.updateProfile(rcId, data);
   }

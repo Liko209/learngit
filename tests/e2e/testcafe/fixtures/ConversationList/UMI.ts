@@ -42,19 +42,23 @@ test(formalName('UMI should be added received messages count in conversations', 
     });
 
     await h(t).withLog('And the conversations should not be hidden before login', async () => {
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${pvtChat.data.id}`]: false,
-        [`hide_group_${group.data.id}`]: false,
-        [`hide_group_${team.data.id}`]: false,
-        favorite_group_ids: [],
-      });
+      await user.sdk.glip.showGroups(user.rcId, [pvtChat.data.id, group.data.id, team.data.id]);
+      // await user.sdk.glip.updateProfile(user.rcId, {
+      //   [`hide_group_${pvtChat.data.id}`]: false,
+      //   [`hide_group_${group.data.id}`]: false,
+      //   [`hide_group_${team.data.id}`]: false,
+      //   // favorite_group_ids: [],
+      // });
+      await user.sdk.glip.clearFavoriteGroups();
+
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
-        user.rcId,
-      );
-      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+      await user.sdk.glip.clearAllUmi();
+      // const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
+      //   user.rcId,
+      // );
+      // await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -167,15 +171,19 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
     );
 
     await h(t).withLog('And the conversations should not be hidden before login', async () => {
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${pvtChat.data.id}`]: false,
-        favorite_group_ids: [],
-      });
+      await user.sdk.glip.showGroups(user.rcId, pvtChat.data.id);
+      // await user.sdk.glip.updateProfile(user.rcId, {
+      //   [`hide_group_${pvtChat.data.id}`]: false,
+      //   // favorite_group_ids: [],
+      // });
+      await user.sdk.glip.clearFavoriteGroups();
+
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
-      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+      await user.sdk.glip.clearAllUmi();
+      // const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
+      // await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
     });
 
     const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
@@ -259,10 +267,13 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
 
     await h(t).withLog('And the conversations should not be hidden and not favorite before login',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          [`hide_group_${pvtChatId}`]: false,
-          favorite_group_ids: [],
-        });
+        await user.sdk.glip.showGroups(user.rcId, pvtChatId);
+        // await user.sdk.glip.updateProfile(user.rcId, {
+        //   [`hide_group_${pvtChatId}`]: false,
+        //   // favorite_group_ids: [],
+        // });
+        await user.sdk.glip.clearFavoriteGroups();
+
       },
     );
 
@@ -353,24 +364,37 @@ test(formalName('Should not display UMI when section is expended & Should displa
     );
 
     await h(t).withLog('And the conversations should not be hidden before login', async () => {
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${favPrivateChat.data.id}`]: false,
-        [`hide_group_${favTeam.data.id}`]: false,
-        [`hide_group_${group1.data.id}`]: false,
-        [`hide_group_${group2.data.id}`]: false,
-        [`hide_group_${group3.data.id}`]: false,
-        [`hide_group_${team1.data.id}`]: false,
-        [`hide_group_${team2.data.id}`]: false,
-        favorite_group_ids: [+favPrivateChat.data.id, +favTeam.data.id],
-      });
+      const groups = [ 
+        favPrivateChat.data.id, 
+        favTeam.data.id, 
+        group1.data.id, 
+        group2.data.id, 
+        group3.data.id, 
+        team1.data.id,
+        team2.data.id
+      ]
+      await user.sdk.glip.showGroups(user.rcId, groups);
+      // await user.sdk.glip.updateProfile(user.rcId, {
+      //   [`hide_group_${favPrivateChat.data.id}`]: false,
+      //   [`hide_group_${favTeam.data.id}`]: false,
+      //   [`hide_group_${group1.data.id}`]: false,
+      //   [`hide_group_${group2.data.id}`]: false,
+      //   [`hide_group_${group3.data.id}`]: false,
+      //   [`hide_group_${team1.data.id}`]: false,
+      //   [`hide_group_${team2.data.id}`]: false,
+      //   // favorite_group_ids: [+favPrivateChat.data.id, +favTeam.data.id],
+      // });
+      await user.sdk.glip.favoriteGroups(user.rcId, [+favPrivateChat.data.id, +favTeam.data.id]);
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
-        user.rcId,
-      );
+      await user.sdk.glip.clearAllUmi();
 
-      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+      // const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
+      //   user.rcId,
+      // );
+
+      // await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -543,21 +567,33 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     });
 
     await h(t).withLog('And the conversations should not be hidden before login', async () => {
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${group1.data.id}`]: false,
-        [`hide_group_${group2.data.id}`]: false,
-        [`hide_group_${group3.data.id}`]: false,
-        [`hide_group_${team1.data.id}`]: false,
-        [`hide_group_${team2.data.id}`]: false,
-        favorite_group_ids: [],
-      });
+      const groups = [
+        group1.data.id,
+        group2.data.id,
+        group3.data.id,
+        team1.data.id,
+        team2.data.id,
+      ]
+      await user.sdk.glip.showGroups(user.rcId, groups);
+      // await user.sdk.glip.updateProfile(user.rcId, {
+      //   [`hide_group_${group1.data.id}`]: false,
+      //   [`hide_group_${group2.data.id}`]: false,
+      //   [`hide_group_${group3.data.id}`]: false,
+      //   [`hide_group_${team1.data.id}`]: false,
+      //   [`hide_group_${team2.data.id}`]: false,
+      //   // favorite_group_ids: [],
+      // });
+      await user.sdk.glip.clearFavoriteGroups();
+
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
-        user.rcId,
-      );
-      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+      await user.sdk.glip.clearAllUmi();
+
+      // const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
+      //   user.rcId,
+      // );
+      // await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -681,16 +717,19 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
           pvtChat.data.id,
         );
       };
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${pvtChat.data.id}`]: false,
-      });
+      await user.sdk.glip.showGroups(user.rcId, pvtChat.data.id);
+      // await user.sdk.glip.updateProfile(user.rcId, {
+      //   [`hide_group_${pvtChat.data.id}`]: false,
+      // });
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
-        user.rcId,
-      );
-      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+      await user.sdk.glip.clearAllUmi();
+
+      // const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
+      //   user.rcId,
+      // );
+      // await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => { 
@@ -748,16 +787,20 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
         { text: 'test' }, 
         pvtChat.data.id
       );
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${pvtChat.data.id}`]: false,
-      });
+      await user.sdk.glip.showGroups(user.rcId, pvtChat.data.id);
+
+      // await user.sdk.glip.updateProfile(user.rcId, {
+      //   [`hide_group_${pvtChat.data.id}`]: false,
+      // });
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
-        user.rcId,
-      );
-      await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
+      await user.sdk.glip.clearAllUmi();
+
+      // const unreadGroupIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(
+      //   user.rcId,
+      // );
+      // await user.sdk.glip.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(`Given I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
