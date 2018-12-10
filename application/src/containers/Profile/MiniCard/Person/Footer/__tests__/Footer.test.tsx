@@ -4,22 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-// import React from 'react';
-// import { shallow } from 'enzyme';
-// import { ProfileMiniCardPersonFooter } from '../Footer';
-// import {
-//   JuiProfileMiniCardFooterLeft,
-//   JuiProfileMiniCardFooterRight,
-// } from 'jui/pattern/ProfileMiniCard';
-// import { ProfileButton } from '@/containers/common/ProfileButton';
-// import { JuiIconButton } from 'jui/components/Buttons';
+import React from 'react';
+import { shallow } from 'enzyme';
+import { ProfileMiniCardPersonFooter } from '../Footer';
+import {
+  JuiProfileMiniCardFooterLeft,
+  JuiProfileMiniCardFooterRight,
+} from 'jui/pattern/ProfileMiniCard';
+import { ProfileButton } from '@/containers/common/ProfileButton';
+import { JuiIconButton } from 'jui/components/Buttons';
 
 describe('Profile mini card person component', () => {
   it('should be display a person profile mini card', () => {
-    // const Wrapper = shallow(<ProfileMiniCardPersonFooter id={1} />);
-    // expect(Wrapper.find(JuiProfileMiniCardFooterLeft)).toHaveLength(1);
-    // expect(Wrapper.find(JuiProfileMiniCardFooterRight)).toHaveLength(1);
-    // expect(Wrapper.find(ProfileButton)).toHaveLength(1);
-    // expect(Wrapper.find(JuiIconButton)).toHaveLength(1);
+    const Wrapper = shallow(<ProfileMiniCardPersonFooter id={1} />);
+    expect(Wrapper.find(JuiProfileMiniCardFooterLeft)).toHaveLength(1);
+    expect(Wrapper.find(JuiProfileMiniCardFooterRight)).toHaveLength(1);
+    expect(Wrapper.find(ProfileButton)).toHaveLength(1);
+    expect(Wrapper.find(JuiIconButton)).toHaveLength(1);
   });
 });

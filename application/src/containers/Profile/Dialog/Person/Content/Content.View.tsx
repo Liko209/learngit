@@ -39,7 +39,7 @@ import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/service/person';
-import { JuiIconButton } from 'jui/src/components/Buttons';
+import { JuiIconButton } from 'jui/components/Buttons';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
