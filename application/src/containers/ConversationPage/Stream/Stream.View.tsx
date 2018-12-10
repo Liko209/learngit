@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { observable, action, autorun } from 'mobx';
+import { observable, action } from 'mobx';
 import { observer, Disposer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ConversationPost } from '@/containers/ConversationPost';
@@ -17,17 +17,10 @@ import { toTitleCase } from '@/utils/string';
 import { scrollToComponent, nextTick } from './helper';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
-import {
-  StreamViewProps,
-  StreamItem,
-  StreamItemType,
-  StreamSnapshot,
-} from './types';
+import { StreamViewProps, StreamItem, StreamItemType } from './types';
 import storeManager from '@/store/base/StoreManager';
-import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
+import { GLOBAL_KEYS } from '@/store/constants';
 import { extractView } from 'jui/hoc/extractView';
-import { getEntity } from '@/store/utils';
-import PostModel from '@/store/models/Post';
 import { mainLogger } from 'sdk';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
@@ -49,26 +42,6 @@ class StreamViewComponent extends Component<Props> {
   @observable
   private _firstHistoryUnreadPostViewed: boolean | null = null;
 
-  private _stickToBottom() {
-    if (this._stickToDisposer) {
-      this._stickToDisposer();
-    }
-
-    this._stickToDisposer = autorun(() => {
-      let item: StreamItem | undefined;
-      let post: PostModel;
-      item = _(this.props.items).nth(-1);
-      if (!item || !item.value) {
-        return;
-      }
-      post = getEntity(ENTITY_NAME.POST, item.value);
-      const likes = post.likes || [];
-      if (likes.length === 1) {
-        this.scrollToPost(this.props.mostRecentPostId);
-      }
-    });
-  }
-
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
@@ -76,10 +49,11 @@ class StreamViewComponent extends Component<Props> {
     await this.scrollToPost(
       this.props.jumpToPostId || this.props.mostRecentPostId,
     );
-    this._stickToBottom();
     this._visibilitySensorEnabled = true;
     this.props.updateHistoryHandler();
     this.props.markAsRead();
+    this.scrollToPost(this.props.jumpToPostId || this.props.mostRecentPostId);
+    this._subscribeHeightChange();
   }
 
   componentWillUnmount() {
@@ -89,34 +63,22 @@ class StreamViewComponent extends Component<Props> {
     this._stickToDisposer && this._stickToDisposer();
   }
 
-  getSnapshotBeforeUpdate(): StreamSnapshot {
-    const { atBottom, atTop } = this.props;
-    return { atBottom: atBottom(), atTop: atTop() };
-  }
-
-  async componentDidUpdate(
-    prevProps: Props,
-    state: Props,
-    snapshot: StreamSnapshot,
-  ): Promise<void> {
-    const { postIds } = this.props;
-    const { postIds: prevPostIds } = prevProps;
-    const { atTop, atBottom } = snapshot;
-
-    // One new message came in
-    if (this.props.postIds.length === prevProps.postIds.length + 1) {
-      if (atBottom && !prevProps.hasMoreDown) {
-        this.scrollToBottom();
-        return;
+  private async _subscribeHeightChange() {
+    const win = window as any;
+    let RO = win.ResizeObserver;
+    if (typeof win.ResizeObserver === 'undefined') {
+      RO = await import(/* webpackMode: "lazy" */
+      'resize-observer-polyfill');
+    }
+    const ro = new RO((entries: any, observer: any) => {
+      for (const entry of entries) {
+        const { left, top, width, height } = entry.contentRect;
+        console.log('Element:', entry.target);
+        console.log(`Element's size: ${width}px x ${height}px`);
+        console.log(`Element's paddings: ${top}px ; ${left}px`);
       }
-    }
-
-    // User scroll up and load more posts
-    const MorePostsInserted = postIds.length > prevPostIds.length;
-    if (atTop && MorePostsInserted) {
-      this.scrollToPost(prevProps.postIds[0]);
-      return;
-    }
+    });
+    ro.observe(this._listRef.current);
   }
 
   private _renderConversationCard(streamItem: StreamItem) {
