@@ -71,8 +71,21 @@ class ItemFileUploadHandler {
       this._progressCaches.delete(itemId);
     }
 
+    this._uploadingFiles.forEach((itemFiles: ItemFile[], id: number) => {
+      if (itemFiles) {
+        this._uploadingFiles.set(
+          id,
+          itemFiles.filter((itemFile: ItemFile) => {
+            const id = itemFile._id ? itemFile._id : itemFile.id;
+            return id !== itemId;
+          }),
+        );
+      }
+    });
+
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.delete(itemId);
+    notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
   }
 
   getUploadItems(groupId: number): ItemFile[] {

@@ -881,9 +881,14 @@ describe('PostService', () => {
   });
 
   describe('cancelUpload', async () => {
-    it('cancel Upload invalid paramter ', async () => {
-      const result = await postService.cancelUpload(0, 0);
-      expect(result).toBe(false);
+    it('should call partial update once ', async () => {
+      jest
+        .spyOn(postService, 'handlePartialUpdate')
+        .mockImplementation(() => {});
+
+      await postService.cancelUpload(1, 1);
+
+      expect(postService.handlePartialUpdate).toBeCalledTimes(1);
     });
   });
 });

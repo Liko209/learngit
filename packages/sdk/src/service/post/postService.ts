@@ -450,8 +450,31 @@ class PostService extends BaseService<Post> {
     return [];
   }
 
-  async cancelUpload(postId: number, itemId: number): Promise<boolean> {
-    return false;
+  async cancelUpload(postId: number, itemId: number) {
+    const preHandlePartialPost = (
+      partialModel: Partial<Raw<Post>>,
+      originalModel: Post,
+    ): Partial<Raw<Post>> => {
+      const itemIds = originalModel.item_ids.filter((value: number) => {
+        return value !== itemId;
+      });
+      const partialPost = {
+        ...partialModel,
+        item_ids: itemIds,
+      };
+      return partialPost;
+    };
+
+    const partialModel = { id: postId };
+    await this.handlePartialUpdate(
+      partialModel,
+      preHandlePartialPost,
+      async (updatedModel: Post) => {
+        const itemService: ItemService = ItemService.getInstance();
+        await itemService.cancelUpload(itemId);
+        return updatedModel;
+      },
+    );
   }
 
   /**
