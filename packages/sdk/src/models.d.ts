@@ -140,6 +140,7 @@ export type Person = ExtendedBaseModel & {
   pseudo_user_phone_number?: string;
   rc_account_id?: number;
   location?: string;
+  homepage?: string;
   teams_removed_from?: number[];
 };
 

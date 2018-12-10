@@ -44,6 +44,9 @@ export default class PersonModel extends Base<Person> {
   displayName?: string;
   @observable
   location?: string;
+  @observable
+  homepage?: string;
+  @observable
   sanitizedRcExtension?: SanitizedExtensionModel;
 
   constructor(data: Person) {
@@ -65,6 +68,7 @@ export default class PersonModel extends Base<Person> {
       inviter_id,
       display_name,
       location,
+      homepage,
       sanitized_rc_extension,
     } = data;
     this.companyId = company_id;
@@ -83,6 +87,7 @@ export default class PersonModel extends Base<Person> {
     this.inviterId = inviter_id;
     this.displayName = display_name;
     this.location = location;
+    this.homepage = homepage;
     this.sanitizedRcExtension = sanitized_rc_extension;
   }
 

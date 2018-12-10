@@ -16,46 +16,30 @@ import { JuiDivider } from 'jui/components/Divider';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import {
-  JuiProfileDialogContentSummary,
-  JuiProfileDialogContentSummaryLeft,
-  JuiProfileDialogContentSummaryRight,
-  JuiProfileDialogContentSummaryName,
-  JuiProfileDialogContentSummaryButtons,
+  JuiProfileDialogContentSummary as Summary,
+  JuiProfileDialogContentSummaryLeft as Left,
+  JuiProfileDialogContentSummaryRight as Right,
+  JuiProfileDialogContentSummaryName as Name,
+  JuiProfileDialogContentSummaryButtons as Buttons,
   JuiProfileDialogContentSummaryButton,
-  JuiProfileDialogContentSummaryStatus,
-  JuiProfileDialogContentSummaryTitle,
-  JuiProfileDialogContentForm,
-  JuiProfileDialogContentGrid,
-  JuiProfileDialogContentFormGroup,
-  JuiProfileDialogContentFormLeft,
-  JuiProfileDialogContentFormRight,
-  JuiProfileDialogContentFormLabel,
-  JuiProfileDialogContentFormValue,
-  JuiProfileDialogContentFormCopy,
+  JuiProfileDialogContentSummaryStatus as Status,
+  JuiProfileDialogContentSummaryTitle as Title,
+  JuiProfileDialogContentForm as Form,
+  JuiProfileDialogContentGrid as Grid,
+  JuiProfileDialogContentFormGroup as FormGroup,
+  JuiProfileDialogContentFormLeft as FormLeft,
+  JuiProfileDialogContentFormRight as FormRight,
+  JuiProfileDialogContentFormLabel as FormLabel,
+  JuiProfileDialogContentFormValue as FormValue,
+  JuiProfileDialogContentFormCopy as FormCopy,
 } from 'jui/pattern/Profile/Dialog';
-// import { JuiGrid } from 'jui/foundation/Layout/Grid';
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import copy from 'copy-to-clipboard';
-
-const Summary = JuiProfileDialogContentSummary;
-const Left = JuiProfileDialogContentSummaryLeft;
-const Right = JuiProfileDialogContentSummaryRight;
-const Name = JuiProfileDialogContentSummaryName;
-const Status = JuiProfileDialogContentSummaryStatus;
-const Title = JuiProfileDialogContentSummaryTitle;
-const Buttons = JuiProfileDialogContentSummaryButtons;
-
-const Form = JuiProfileDialogContentForm;
-const Grid = JuiProfileDialogContentGrid;
-const FormGroup = JuiProfileDialogContentFormGroup;
-const FormLeft = JuiProfileDialogContentFormLeft;
-const FormRight = JuiProfileDialogContentFormRight;
-const FormLabel = JuiProfileDialogContentFormLabel;
-const FormValue = JuiProfileDialogContentFormValue;
-const FormCopy = JuiProfileDialogContentFormCopy;
+import { PhoneNumberInfo } from 'sdk/service/person';
+import { JuiIconButton } from 'jui/src/components/Buttons';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
@@ -70,7 +54,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     const { t } = this.props;
     return (
       <JuiProfileDialogContentSummaryButton>
-        <JuiIconography fontSize="small">chat_bubble</JuiIconography>
+        {this.renderIcon('chat_bubble')}
         {t('message')}
       </JuiProfileDialogContentSummaryButton>
     );
@@ -78,6 +62,21 @@ class ProfileDialogPersonContentViewComponent extends Component<
 
   renderIcon = (key: string) => {
     return <JuiIconography fontSize="small">{key}</JuiIconography>;
+  }
+
+  renderCopy = (value: string) => {
+    const { t } = this.props;
+    return (
+      <FormCopy>
+        <JuiIconButton
+          size="small"
+          onClick={this.onClickCopy.bind(this, value)}
+          tooltipTitle={t('copy')}
+        >
+          {ICON.COPY}
+        </JuiIconButton>
+      </FormCopy>
+    );
   }
 
   onClickCopy = (value: string) => {
@@ -98,11 +97,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <FormLabel>{label}</FormLabel>
           <FormValue emphasize={valueEmphasize}>{value}</FormValue>
         </FormRight>
-        {copy && (
-          <FormCopy onClick={this.onClickCopy.bind(this, value)}>
-            {this.renderIcon(ICON.COPY)}
-          </FormCopy>
-        )}
+        {copy && this.renderCopy(value)}
       </FormGroup>
     );
   }
@@ -114,7 +109,15 @@ class ProfileDialogPersonContentViewComponent extends Component<
   }
 
   render() {
-    const { t, id, person, company, dismiss } = this.props;
+    const {
+      t,
+      id,
+      person,
+      company,
+      extensionNumbers,
+      directNumbers,
+      dismiss,
+    } = this.props;
     return (
       <>
         <Summary emphasize={this.isMe()}>
@@ -148,20 +151,27 @@ class ProfileDialogPersonContentViewComponent extends Component<
                 })}
             </Grid>
             <Grid item={true} xs={12} sm={6}>
-              <FormGroup>
-                <FormLeft>{this.renderIcon(ICON.EXT)}</FormLeft>
-                <FormRight>
-                  <FormLabel>Ext</FormLabel>
-                  <FormValue emphasize={true}>6574-8544</FormValue>
-                </FormRight>
-              </FormGroup>
-              <FormGroup>
-                <FormLeft />
-                <FormRight>
-                  <FormLabel>Direct Number</FormLabel>
-                  <FormValue emphasize={true}>953-455-5555</FormValue>
-                </FormRight>
-              </FormGroup>
+              {extensionNumbers.map((info: PhoneNumberInfo, index: number) => {
+                return this.renderFormGroup({
+                  icon: index === 0 ? ICON.EXT : undefined,
+                  label: t('ext'),
+                  value: info.phoneNumber,
+                  valueEmphasize: true,
+                  copy: true,
+                });
+              })}
+              {directNumbers.map((info: PhoneNumberInfo, index: number) => {
+                return this.renderFormGroup({
+                  icon:
+                    index === 0 && extensionNumbers.length === 0
+                      ? ICON.EXT
+                      : undefined,
+                  label: t('directNumber'),
+                  value: info.phoneNumber,
+                  valueEmphasize: true,
+                  copy: true,
+                });
+              })}
               {person.email &&
                 this.renderFormGroup({
                   icon: ICON.EMAIL,
@@ -173,24 +183,30 @@ class ProfileDialogPersonContentViewComponent extends Component<
             </Grid>
           </Grid>
         </Form>
-        {/* <JuiDivider />
-        <Form>
-          <Grid container={true}>
-            <Grid item={true} xs={12}>
-              {person.linkedIn &&
+        {person.homepage && (
+          <>
+            <JuiDivider />
+            <Form>
+              <Grid container={true}>
+                <Grid item={true} xs={12}>
+                  {/* {person.linkedIn &&
                 this.renderFormGroup({
                   icon: ICON.LINKED_IN,
                   label: t('location'),
                   value: person.linkedIn,
-                })}
-              {person.webpage &&
-                this.renderFormGroup({
-                  label: t('location'),
-                  value: person.webpage,
-                })}
-            </Grid>
-          </Grid>
-        </Form> */}
+                })} */}
+                  {person.homepage &&
+                    this.renderFormGroup({
+                      icon: ICON.LINKED_IN,
+                      label: t('webpage'),
+                      value: person.homepage,
+                      copy: true,
+                    })}
+                </Grid>
+              </Grid>
+            </Form>
+          </>
+        )}
       </>
     );
   }

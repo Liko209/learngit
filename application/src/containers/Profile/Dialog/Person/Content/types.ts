@@ -9,11 +9,14 @@ import {
   ProfileDialogPersonViewProps,
 } from '../types';
 import CompanyModel from '@/store/models/Company';
+import { PhoneNumberInfo } from 'sdk/service/person';
 
 type ProfileDialogPersonContentProps = ProfileDialogPersonProps;
 
 type ProfileDialogPersonContentViewProps = ProfileDialogPersonViewProps & {
   company: CompanyModel;
+  extensionNumbers: PhoneNumberInfo[];
+  directNumbers: PhoneNumberInfo[];
 };
 
 enum ICON {

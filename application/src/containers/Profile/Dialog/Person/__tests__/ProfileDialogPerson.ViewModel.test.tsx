@@ -38,11 +38,11 @@ describe('ProfileDialogPersonViewModel', () => {
   });
 
   describe('person', () => {
-    it('should be get person entity when invoke class instance property person [JPT-405]', () => {
+    it('should be get person entity when invoke class instance property person [JPT-441]', () => {
       expect(vm.person).toEqual(mockData);
     });
 
-    it('should be get changed person entity when change person entity data [JPT-405]', () => {
+    it('should be get changed person entity when change person entity data [JPT-441]', () => {
       mockData.userDisplayName = 'Name 2';
       mockData.awayStatus = 'Status 2';
       mockData.jobTitle = 'Title 2';

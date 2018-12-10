@@ -27,7 +27,7 @@ const JuiProfileDialogContentFormCopy = styled('div')`
   color: ${grey('500')};
   position: absolute;
   right: ${width(3)};
-  top: ${width(4.5)};
+  top: ${width(3)};
   cursor: pointer;
 `;
 

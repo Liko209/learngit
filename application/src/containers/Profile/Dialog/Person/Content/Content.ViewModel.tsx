@@ -11,6 +11,7 @@ import { getEntity } from '@/store/utils';
 import CompanyModel from '@/store/models/Company';
 import { Company } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
+import { PhoneNumberInfo, PHONE_NUMBER_TYPE } from 'sdk/service/person';
 
 class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
   implements ProfileDialogPersonContentViewProps {
@@ -20,6 +21,25 @@ class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
       ENTITY_NAME.COMPANY,
       this.person.companyId,
     );
+  }
+
+  @computed
+  get _phoneNumbers() {
+    return this.person.phoneNumbers;
+  }
+
+  @computed
+  get extensionNumbers() {
+    return this._phoneNumbers.filter((info: PhoneNumberInfo) => {
+      return info.type === PHONE_NUMBER_TYPE.EXTENSION_NUMBER;
+    });
+  }
+
+  @computed
+  get directNumbers() {
+    return this._phoneNumbers.filter((info: PhoneNumberInfo) => {
+      return info.type === PHONE_NUMBER_TYPE.DIRECT_NUMBER;
+    });
   }
 }
 
