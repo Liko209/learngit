@@ -32,7 +32,9 @@ describe('MoreVM', () => {
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
-      expect(ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.QUOTE]).toBe(true);
+      expect(
+        ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.QUOTE].permission,
+      ).toBe(true);
     });
 
     it('should display Quote option on more actions in Team with admin permission [JPT-443]', () => {
@@ -47,7 +49,9 @@ describe('MoreVM', () => {
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
-      expect(ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.QUOTE]).toBe(true);
+      expect(
+        ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.QUOTE].permission,
+      ).toBe(true);
     });
 
     it('should display Quote option on more actions in Team with user permission [JPT-443]', () => {
@@ -66,7 +70,9 @@ describe('MoreVM', () => {
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
-      expect(ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.QUOTE]).toBe(true);
+      expect(
+        ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.QUOTE].permission,
+      ).toBe(true);
     });
 
     it('should display Delete option on more actions with post by me condition [JPT-482]', () => {
@@ -84,7 +90,9 @@ describe('MoreVM', () => {
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
-      expect(ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.DELETE]).toBe(true);
+      expect(
+        ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.DELETE].permission,
+      ).toBe(true);
     });
 
     it('should do not display Delete option on more actions with post by me condition [JPT-482]', () => {
@@ -102,7 +110,9 @@ describe('MoreVM', () => {
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
-      expect(ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.DELETE]).toBe(false);
+      expect(
+        ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.DELETE].permission,
+      ).toBe(false);
     });
 
     it('should display Edit post option on more actions with post by me condition in Group', () => {
@@ -120,7 +130,9 @@ describe('MoreVM', () => {
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
-      expect(ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.EDIT]).toBe(true);
+      expect(
+        ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.EDIT].permission,
+      ).toBe(true);
     });
 
     it('should display Edit post option on more actions with post by me condition and admin permission in Team', () => {
@@ -138,7 +150,9 @@ describe('MoreVM', () => {
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
-      expect(ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.EDIT]).toBe(true);
+      expect(
+        ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.EDIT].permission,
+      ).toBe(true);
     });
 
     it('should display Edit post option on more actions with post by me condition and user permission in Team', () => {
@@ -160,7 +174,9 @@ describe('MoreVM', () => {
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
-      expect(ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.EDIT]).toBe(true);
+      expect(
+        ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.EDIT].permission,
+      ).toBe(true);
     });
   });
 });
