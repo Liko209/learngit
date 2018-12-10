@@ -301,7 +301,7 @@ export class GlipSdk {
         { [`hide_group_${id}`]: false })
       )
     );
-    return await this.updateProfile(rcId, data);
+    await this.updateProfile(rcId, data);
   }
 
   /* state */
@@ -397,6 +397,37 @@ export class GlipSdk {
         return { [`hide_group_${id}`]: false }
       }) 
     )
+    await this.updateProfile(rcId, data);
+  }
+  
+  async showSomeGroup(rcId: string, groupIds: string[] | number[] | string | number) {
+    let data;
+    if (Array.isArray(groupIds)) {
+      
+      data = _.assign(
+        {},
+        ...(groupIds as string[]).map(id => {
+          return { [`hide_group_${id}`]: false }
+        }) 
+      )
+    } else {
+      data = { [`hide_group_${groupIds}`]: false }
+    }
+    await this.updateProfile(rcId, data);
+  }
+
+  async hideSomeGroup(rcId: string, groupIds: string[] | number[] | string | number) {
+    let data;
+    if (Array.isArray(groupIds)) {
+      data = _.assign(
+        {},
+        ...(groupIds as string[]).map(id => {
+          return { [`hide_group_${id}`]: true }
+        }) 
+      )
+    } else {
+      data = { [`hide_group_${groupIds}`]: true }
+    }
     await this.updateProfile(rcId, data);
   }
   
