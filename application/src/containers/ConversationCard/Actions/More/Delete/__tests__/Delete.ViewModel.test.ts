@@ -5,15 +5,27 @@
  */
 import { DeleteViewModel } from '../Delete.ViewModel';
 
-let ViewModel: FormViewModel;
+const mockPostService = {
+  deletePost: jest.fn(),
+};
+jest.mock('sdk/service/post', () => ({
+  default: {
+    getInstance: () => mockPostService,
+  },
+}));
+
+let ViewModel: DeleteViewModel;
 
 describe('DeleteVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
-    ViewModel = new DeleteViewModel();
+    ViewModel = new DeleteViewModel({ id: 1 });
   });
 
-  it('Expect to have unit tests specified', () => {
-    expect(true).toEqual(false);
+  describe('deletePost()', () => {
+    it('should call service deletePost [JPT-467]', async () => {
+      await ViewModel.deletePost();
+      expect(mockPostService.deletePost).toBeCalled();
+    });
   });
 });
