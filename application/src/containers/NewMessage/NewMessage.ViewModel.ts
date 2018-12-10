@@ -12,7 +12,7 @@ import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
-import { BaseError, ErrorTypes } from 'sdk/src/utils';
+import { BaseError, ErrorTypes } from 'sdk/utils';
 import { Notification } from '../Notification';
 
 class NewMessageViewModel extends StoreViewModel {
