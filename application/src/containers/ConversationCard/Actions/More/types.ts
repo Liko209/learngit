@@ -17,8 +17,9 @@ type Props = {
 type ViewProps = {
   id: number;
   permissionsMap: {
-    [key: string]: { permission: boolean; shouldDisplay: boolean };
+    [key: string]: { permission: boolean };
   };
+  showMoreAction: boolean;
 };
 
 export { Props, ViewProps, MENU_LIST_ITEM_TYPE };

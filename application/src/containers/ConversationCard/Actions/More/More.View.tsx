@@ -44,42 +44,32 @@ class More extends React.Component<MoreViewProps> {
   }
 
   render() {
-    const { id, permissionsMap } = this.props;
+    const { id, permissionsMap, showMoreAction } = this.props;
+
+    if (!showMoreAction) {
+      return null;
+    }
 
     return (
-      <>
-        {Object.keys(menuItems).every(
-          (key: string) => permissionsMap[key].shouldDisplay,
-        ) && (
-          <JuiPopoverMenu
-            Anchor={this._Anchor}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-          >
-            <JuiMenuList>
-              {Object.keys(menuItems).map((key: string) => {
-                const { permission, shouldDisplay } = permissionsMap[key];
-                if (shouldDisplay) {
-                  const Component = menuItems[key];
-                  if (!permission) {
-                    return (
-                      <Component id={id} key={key} disabled={!permission} />
-                    );
-                  }
-                  return <Component id={id} key={key} />;
-                }
-                return null;
-              })}
-            </JuiMenuList>
-          </JuiPopoverMenu>
-        )}
-      </>
+      <JuiPopoverMenu
+        Anchor={this._Anchor}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+      >
+        <JuiMenuList>
+          {Object.keys(menuItems).map((key: string) => {
+            const { permission } = permissionsMap[key];
+            const Component = menuItems[key];
+            return <Component id={id} key={key} disabled={!permission} />;
+          })}
+        </JuiMenuList>
+      </JuiPopoverMenu>
     );
   }
 }

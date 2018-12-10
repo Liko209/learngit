@@ -31,15 +31,12 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
     return {
       [MENU_LIST_ITEM_TYPE.QUOTE]: {
         permission: this._canPost,
-        shouldDisplay: this._isText,
       },
       [MENU_LIST_ITEM_TYPE.DELETE]: {
         permission: this._isPostByMe,
-        shouldDisplay: this._isText,
       },
       [MENU_LIST_ITEM_TYPE.EDIT]: {
         permission: this._canPost && this._isPostByMe,
-        shouldDisplay: this._isText,
       },
     };
   }
@@ -74,7 +71,7 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
           this._group.permissions.user.level
         ) {
           const { level } = this._group.permissions.user;
-          return Boolean(level & (1 << PERMISSION_ENUM.TEAM_POST));
+          return !!(level & (1 << PERMISSION_ENUM.TEAM_POST));
         }
       }
       return true;
@@ -84,10 +81,12 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   private get _isText() {
-    if (this._post.text) {
-      return this._post.text.length > 0;
-    }
-    return false;
+    return !!this._post.text;
+  }
+
+  @computed
+  get showMoreAction() {
+    return this._isText;
   }
 }
 
