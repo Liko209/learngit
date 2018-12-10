@@ -19,8 +19,9 @@ class DeleteViewComponent extends React.Component<Props> {
     JuiModal.confirm({
       title: t('deletePostTitle'),
       content: t('deletePostContent'),
-      okText: t('deletePostOk'),
-      cancelText: t('deletePostCancel'),
+      okText: t('delete'),
+      okType: 'danger',
+      cancelText: t('Cancel'),
       async onOK() {
         try {
           await deletePost();

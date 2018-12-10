@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import tinycolor from 'tinycolor2';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
+import { Palette } from '../../../foundation/theme/theme';
 import styled, { css } from '../../../foundation/styled-components';
 import {
   typography,
@@ -28,13 +28,20 @@ type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant'> & {
   variant?: Variant;
   disabled?: boolean;
   color?: 'primary' | 'secondary';
+  customColor?: 'danger';
+};
+
+const CustomColorMap: {
+  [x: string]: [keyof Palette, string];
+} = {
+  danger: ['semantic', 'negative'],
 };
 
 const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
 const WrappedMuiButton = (props: JuiButtonProps) => {
-  const { variant, ...restProps } = props;
+  const { variant, customColor, ...restProps } = props;
   let _variant = variant;
   if (_variant === 'round') {
     _variant = 'fab';
@@ -71,11 +78,15 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     &.containedButtonStyle {
       color: ${palette('common', 'white')};
       ${shadow(3)}
+      background-color: ${({ color = 'primary', customColor }) =>
+        customColor
+          ? palette(
+              CustomColorMap[customColor][0],
+              CustomColorMap[customColor][1],
+            )
+          : palette(color, 'main')};
       &:hover {
-        background-color: ${({ theme, color = 'primary' }) =>
-          tinycolor(palette(color, 'main')({ theme }))
-            .setAlpha(1 - theme.palette.action.hoverOpacity)
-            .toRgbString()};
+        opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity}
       }
       &:active {
         ${shadow(1)}

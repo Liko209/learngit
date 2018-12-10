@@ -100,7 +100,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
           title: '',
           content: t('conversationMenuItem:markFavoriteServerErrorContent'),
           okText: t('conversationMenuItem:OK'),
-          okBtnType: 'text',
+          okVariant: 'text',
           onOK: () => {},
         });
       }
