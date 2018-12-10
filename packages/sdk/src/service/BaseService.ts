@@ -87,14 +87,11 @@ class BaseService<
     if (ids.length <= 0) {
       return [];
     }
-
     const dao = daoManager.getDao(this.DaoClass);
     let models = await dao.batchGet(ids);
     if (includeDeactivated && models.length !== ids.length) {
-      let diffIds: number[];
       const modelIds = models.map(model => model.id);
-      diffIds = _.difference(ids, modelIds);
-
+      const diffIds = _.difference(ids, modelIds);
       const deactivateModels = await this._getDeactivatedModelsLocally(diffIds);
       models = _.concat(models, deactivateModels);
     }
