@@ -96,10 +96,10 @@ class GroupService extends BaseService<Group> {
       let favorite_group_ids = profile.favorite_group_ids.filter(
         id => typeof id === 'number' && !isNaN(id),
       );
-      const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
+      const hiddenIds = extractHiddenGroupIds(profile);
       favorite_group_ids = _.difference(favorite_group_ids, hiddenIds);
       const dao = daoManager.getDao(GroupDao);
-      result = (await dao.queryGroupsByIds(favorite_group_ids)) as Group[];
+      result = await dao.queryGroupsByIds(favorite_group_ids);
       result = sortFavoriteGroups(favorite_group_ids, result);
     }
     return result;
@@ -148,7 +148,7 @@ class GroupService extends BaseService<Group> {
     mainLogger.debug(`get last ${n} groups`);
     let result: Group[] = [];
     const dao = daoManager.getDao(GroupDao);
-    result = (await dao.getLastNGroups(n)) as Group[];
+    result = await dao.getLastNGroups(n);
     return result;
   }
 
@@ -348,16 +348,17 @@ class GroupService extends BaseService<Group> {
         },
       },
     };
-    const result = await GroupAPI.createTeam(team);
 
-    const a = result.match({
+    const apiResult = await GroupAPI.createTeam(team);
+
+    const result = apiResult.match({
       Ok: async (rawGroup: Raw<Group>) => {
         const newGroup = await this.handleRawGroup(rawGroup);
         return ok(newGroup);
       },
       Err: (error: BaseError) => err(error),
     });
-    return a;
+    return result;
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
@@ -500,7 +501,7 @@ class GroupService extends BaseService<Group> {
     return actionMap;
   }
 
-  async isFavorited(id: number, type: number): Promise<boolean> {
+  async isFavored(id: number, type: number): Promise<boolean> {
     let groupId: number | undefined = undefined;
     switch (type) {
       case TypeDictionary.TYPE_ID_PERSON: {
@@ -516,18 +517,18 @@ class GroupService extends BaseService<Group> {
         break;
       }
       default: {
-        mainLogger.error('isFavorited : should not run to here');
+        mainLogger.error('isFavored : should not run to here');
       }
     }
 
     if (groupId) {
-      return await this._isGroupFavorited(groupId);
+      return await this._isGroupFavored(groupId);
     }
 
     return false;
   }
 
-  private async _isGroupFavorited(groupId: number): Promise<boolean> {
+  private async _isGroupFavored(groupId: number): Promise<boolean> {
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
     const favoriteGroupIds =
@@ -542,7 +543,7 @@ class GroupService extends BaseService<Group> {
   }
 
   private _isCurrentUserInGroup(group: Group) {
-    const accountService = AccountService.getInstance() as AccountService;
+    const accountService: AccountService = AccountService.getInstance();
     const currentUserId = accountService.getCurrentUserId();
     return group
       ? group.members.some((x: number) => x === currentUserId)
@@ -556,7 +557,7 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const accountService = AccountService.getInstance() as AccountService;
+    const accountService: AccountService = AccountService.getInstance();
     const currentUserId = accountService.getCurrentUserId();
     if (!currentUserId) {
       return null;
@@ -609,7 +610,7 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const accountService = AccountService.getInstance() as AccountService;
+    const accountService: AccountService = AccountService.getInstance();
     const currentUserId = accountService.getCurrentUserId();
     if (!currentUserId) {
       return null;
