@@ -7,6 +7,8 @@ import { CONVERSATION_TYPES } from '@/constants';
 
 type MentionProps = {
   id: number;
+  pid?: number;
+  isEditMode?: boolean;
 };
 
 type MentionViewProps = {
@@ -16,6 +18,7 @@ type MentionViewProps = {
   searchTerm?: string;
   groupType: CONVERSATION_TYPES;
   selectHandler: Function;
+  isEditMode?: boolean;
 };
 
 export { MentionProps, MentionViewProps };
