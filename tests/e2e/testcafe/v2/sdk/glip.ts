@@ -269,6 +269,41 @@ export class GlipSdk {
     });
   }
 
+  async resetProfile(rcId?: string) {
+    const groupList = await this.getTeamsIds();
+    const meChatId = (await this.getPerson(rcId)).data.me_group_id;
+
+    const initData = {
+      model_size: 0,
+      is_new: false,
+      want_email_people: 900000,
+      want_email_team: 0,
+      want_push_team: 0,
+      want_push_people: 1,
+      want_email_mentions: true,
+      want_push_mentions: true,
+      want_push_video_chat: true,
+      want_email_glip_today: true,
+      new_message_badges: 'all',
+      want_push_missed_calls_and_voicemails: 1,
+      send_push_notifications_ignoring_presence: 0,
+      send_email_notifications_ignoring_presence: 0,
+      has_new_notification_defaults: true,
+      deactivated: false,
+      favorite_group_ids: [+meChatId],
+      me_tab: true,
+      skip_close_conversation_confirmation: false,
+      max_leftrail_group_tabs2: 20
+    }
+    const data = _.assign(
+      initData, 
+      ...groupList.map(id => (
+        { [`hide_group_${id}`]: false })
+      )
+    );
+    return await this.updateProfile(undefined, data);
+  }
+
   /* state */
   getState(rcId?: string) {
     const stateId = rcId ? this.toStateId(rcId) : this.myState._id;
