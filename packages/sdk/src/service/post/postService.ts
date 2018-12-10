@@ -275,7 +275,7 @@ class PostService extends BaseService<Post> {
   }
 
   async innerSendPost(buildPost: Post, isResend: boolean): Promise<PostData[]> {
-    await this.handlePreInsertProcess(buildPost);
+    await this._handlePreInsertProcess(buildPost);
 
     this._cleanUploadingFiles(buildPost.group_id);
     const pseudoItems = this._getPseudoItemIdsFromPost(buildPost);
@@ -309,15 +309,10 @@ class PostService extends BaseService<Post> {
         // update post to db
         if (updatedId !== preInsertId) {
           post.item_ids = post.item_ids.map((id: number) => {
-            if (id === preInsertId) {
-              return updatedId;
-            }
-            return id;
+            return id === preInsertId ? updatedId : id;
           });
 
-          const postDao = daoManager.getDao(PostDao);
-          postDao.update(post);
-          notificationCenter.emitEntityUpdate(ENTITY.POST, [post]);
+          this._updatePost(post);
         }
 
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
@@ -334,19 +329,10 @@ class PostService extends BaseService<Post> {
         itemService.getItemsSendingStatus(post.item_ids),
       );
 
-      const hasInProgress = this._hasSpecificStatus(
-        SENDING_STATUS.INPROGRESS,
-        itemStatuses,
-      );
-      const hasFailed = this._hasSpecificStatus(
-        SENDING_STATUS.FAIL,
-        itemStatuses,
-      );
-
       // remove listener if item files are not in progress
-      if (!hasInProgress) {
+      if (!this._hasExpectedStatus(SENDING_STATUS.INPROGRESS, itemStatuses)) {
         // has failed
-        if (hasFailed) {
+        if (this._hasExpectedStatus(SENDING_STATUS.FAIL, itemStatuses)) {
           this.handleSendPostFail(preInsertId);
         }
 
@@ -361,7 +347,13 @@ class PostService extends BaseService<Post> {
     return [];
   }
 
-  private _hasSpecificStatus(
+  private _updatePost(post: Post) {
+    const postDao = daoManager.getDao(PostDao);
+    postDao.update(post);
+    notificationCenter.emitEntityUpdate(ENTITY.POST, [post]);
+  }
+
+  private _hasExpectedStatus(
     targetStatus: SENDING_STATUS,
     statusArr: SENDING_STATUS[],
   ) {
@@ -374,13 +366,11 @@ class PostService extends BaseService<Post> {
     });
   }
 
-  async handlePreInsertProcess(buildPost: Post): Promise<void> {
+  private async _handlePreInsertProcess(buildPost: Post): Promise<void> {
     this._postStatusHandler.setPreInsertId(buildPost.id);
     const dao = daoManager.getDao(PostDao);
     await dao.put(buildPost);
-    try {
-      notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
-    } catch (err) {}
+    notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
   }
 
   private async _sendPost(buildPost: Post): Promise<PostData[]> {

@@ -18,8 +18,7 @@ class ItemStatusHandler {
 
   private _init() {
     const configDao = daoManager.getKVDao(ConfigDao);
-    const preinsertIds = configDao.get(this._configDaoKey);
-    this._preInsertIds = preinsertIds || {};
+    this._preInsertIds = configDao.get(this._configDaoKey) || {};
   }
 
   clear(): void {

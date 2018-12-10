@@ -33,7 +33,7 @@ class ItemFileUploadHandler {
       | string
       | null;
     if (fileFullName) {
-      const itemFile = this._toItemFile(groupId, fileFullName);
+      const itemFile = this._toItemFile(groupId, fileFullName, isUpdate);
       await this._preSaveItemFile(itemFile);
       this._sendItemFile(groupId, itemFile, file, isUpdate);
       return itemFile;
@@ -48,7 +48,7 @@ class ItemFileUploadHandler {
     if (itemInDB) {
       this._updatePreInsertItemStatus(itemInDB.id, SENDING_STATUS.INPROGRESS);
       const groupId = itemInDB.group_ids[0];
-      const isUpdate = !!itemInDB.isUpdate;
+      const isUpdate = itemInDB.is_new;
       if (itemInDB.versions.length > 0) {
         await this._uploadItem(groupId, itemInDB, isUpdate);
       } else {
@@ -201,11 +201,9 @@ class ItemFileUploadHandler {
     const itemDao = daoManager.getDao(ItemDao);
     const fileVersion = this._toFileVersion(storedFile);
     preInsertItem.versions = [fileVersion];
-    preInsertItem.isUpdate = true;
     this._updateUploadingFiles(groupId, preInsertItem);
     itemDao.update(preInsertItem);
 
-    // partial update
     this._partialUpdateItemFile({
       id: preInsertItem.id,
       _id: preInsertItem.id,
@@ -307,7 +305,11 @@ class ItemFileUploadHandler {
     itemService.updatePreInsertItemStatus(itemId, SENDING_STATUS.INPROGRESS);
   }
 
-  private _toItemFile(groupId: number, fileFullName: string): ItemFile {
+  private _toItemFile(
+    groupId: number,
+    fileFullName: string,
+    isNew: boolean,
+  ): ItemFile {
     const nameType = this._extractFileNameAndType(fileFullName);
     const accountService: AccountService = AccountService.getInstance();
     const userId = accountService.getCurrentUserId() as number;
@@ -323,7 +325,7 @@ class ItemFileUploadHandler {
       created_at: now,
       modified_at: now,
       creator_id: userId,
-      is_new: true,
+      is_new: isNew,
       deactivated: false,
       version: versionHash(),
       group_ids: [groupId],

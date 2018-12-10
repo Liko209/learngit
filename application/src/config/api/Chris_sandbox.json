@@ -19,7 +19,7 @@
     "apiPlatform": "/desktop"
   },
   "upload": {
-    "server": "https://aws13-g04-uds02.asialab.glip.net:11904",
+    "server": "https://aws13-g04-uds02.asialab.glip.net:11906",
     "apiPlatform": ""
   },
   "splitio": {
