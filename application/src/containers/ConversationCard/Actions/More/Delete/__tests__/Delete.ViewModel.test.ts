@@ -14,17 +14,17 @@ jest.mock('sdk/service/post', () => ({
   },
 }));
 
-let ViewModel: DeleteViewModel;
+let viewModel: DeleteViewModel;
 
 describe('DeleteViewModel', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    ViewModel = new DeleteViewModel({ id: 1 });
+    viewModel = new DeleteViewModel({ id: 1 });
   });
 
   describe('deletePost()', () => {
     it('should call service deletePost [JPT-467]', async () => {
-      await ViewModel.deletePost();
+      await viewModel.deletePost();
       expect(mockPostService.deletePost).toBeCalled();
     });
   });
