@@ -24,6 +24,7 @@ const ErrorTypes = {
   // TODO move service error codes to service/
   SERVICE: 3000,
   SERVICE_INVALID_FIELD: 3001,
+  SERVICE_INVALID_MODEL_ID: 3002,
 
   // TODO move auth error codes to authenticator/
   OAUTH: 4000,
