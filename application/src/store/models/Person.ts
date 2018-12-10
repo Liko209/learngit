@@ -43,6 +43,8 @@ export default class PersonModel extends Base<Person> {
   inviterId?: number;
   @observable
   displayName?: string;
+  @observable
+  location?: string;
   constructor(data: Person) {
     super(data);
     const {
@@ -61,6 +63,7 @@ export default class PersonModel extends Base<Person> {
       rc_account_id,
       inviter_id,
       display_name,
+      location,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -77,6 +80,7 @@ export default class PersonModel extends Base<Person> {
     this.rcAccountId = rc_account_id;
     this.inviterId = inviter_id;
     this.displayName = display_name;
+    this.location = location;
   }
 
   static fromJS(data: Person) {

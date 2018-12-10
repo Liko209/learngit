@@ -6,3 +6,4 @@
 
 export * from './ContentSummary';
 export * from './ContentMembers';
+export * from './ContentForm';

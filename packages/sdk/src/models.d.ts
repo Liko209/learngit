@@ -132,6 +132,7 @@ export type Person = ExtendedBaseModel & {
   job_title?: string;
   pseudo_user_phone_number?: string;
   rc_account_id?: number;
+  location?: string;
 };
 
 export type UserInfo = {

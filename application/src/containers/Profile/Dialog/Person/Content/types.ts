@@ -8,9 +8,35 @@ import {
   ProfileDialogPersonProps,
   ProfileDialogPersonViewProps,
 } from '../types';
+import CompanyModel from '@/store/models/Company';
 
 type ProfileDialogPersonContentProps = ProfileDialogPersonProps;
 
-type ProfileDialogPersonContentViewProps = ProfileDialogPersonViewProps;
+type ProfileDialogPersonContentViewProps = ProfileDialogPersonViewProps & {
+  company: CompanyModel;
+};
 
-export { ProfileDialogPersonContentProps, ProfileDialogPersonContentViewProps };
+enum ICON {
+  COMPANY = 'work',
+  LOCATION = 'places',
+  DEPARTMENT = 'assignment',
+  EXT = 'call',
+  EMAIL = 'email',
+  LINKED_IN = 'link',
+  COPY = 'file_copy',
+}
+
+type FormGroupType = {
+  icon?: ICON;
+  label: string;
+  value: string;
+  valueEmphasize?: boolean;
+  copy?: boolean;
+};
+
+export {
+  ProfileDialogPersonContentProps,
+  ProfileDialogPersonContentViewProps,
+  FormGroupType,
+  ICON,
+};

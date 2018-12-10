@@ -133,5 +133,13 @@
   "Message": "Message",
   "message": "Message",
   "more": "More",
-  "close": "Close"
+  "close": "Close",
+  "company": "Company",
+  "location": "Location",
+  "department": "Department",
+  "ext": "Ext",
+  "directNumber": "Direct Number",
+  "email": "Email",
+  "linkedIn": "LinkedIn",
+  "webpage": "Webpage"
 }
