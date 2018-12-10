@@ -6,7 +6,7 @@
 import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
 import _ from 'lodash';
 import { AbstractViewModel } from '@/base';
-import { observable, action } from 'mobx';
+import { observable, action, autorun } from 'mobx';
 import { ToastProps } from '../ToastWrapper/Toast/types';
 import { Omit } from 'jui/foundation/utils/typeHelper';
 
@@ -21,18 +21,31 @@ type ShowNotificationOptions = NotificationProps & {
 class Notification extends AbstractViewModel {
   @observable
   static data: ToastProps[] = [];
+  static _buffer: ShowNotificationOptions[] = [];
 
   @action
   private static _showNotification(props: ShowNotificationOptions) {
+    if (Notification.data.length === 3) {
+      Notification._buffer.push(props);
+      return {};
+    }
+    const duplicateIndex = Notification.data.findIndex(
+      ({ message }) => message === props.message,
+    );
     const id = Date.now();
     const dismiss = () => {
       _.remove(Notification.data, item => item.id === id);
     };
-    Notification.data.push({
+    const toast = {
       id,
       dismiss,
       ...props,
-    });
+    };
+    if (duplicateIndex >= 0) {
+      Notification.data.splice(duplicateIndex, 1, toast);
+    } else {
+      Notification.data.push(toast);
+    }
     return {
       dismiss,
     };
@@ -56,6 +69,17 @@ class Notification extends AbstractViewModel {
     };
     return Notification._showNotification(config);
   }
+
+  static checkBufferAvailability() {
+    if (Notification.data.length === 2 && Notification._buffer.length > 0) {
+      const buffered = Notification._buffer.pop();
+      if (buffered) {
+        Notification._showNotification(buffered);
+      }
+    }
+  }
 }
+
+autorun(Notification.checkBufferAvailability);
 
 export { Notification, NotificationProps, ShowNotificationOptions };
