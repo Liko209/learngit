@@ -96,7 +96,7 @@ type Theme = {
     loading: number;
     dragging: number;
     moreMenu: number;
-    memberListHeader: number
+    memberListHeader: number;
   };
   size: {
     width: number;
@@ -127,12 +127,6 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    subheading3: {
-      fontSize: string;
-      fontWeight: number;
-      fontFamily: string;
-      lineHeight: string;
-    };
     caption1: {
       fontSize: string;
       fontWeight: number;
@@ -145,16 +139,12 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    heading1: {
-      lineHeight: string;
-      maxHeight: string;
-    };
     h6: {
       fontSize: string;
       fontWeight: number;
       fontFamily: string;
       lineHeight: string;
-    }
+    };
   };
   boxShadow: {
     val1: string;
@@ -163,7 +153,7 @@ type Theme = {
   };
   maxHeight: {
     dialog: string;
-  }
+  };
 } & MuiTheme;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;

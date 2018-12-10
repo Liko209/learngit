@@ -13,7 +13,7 @@ import {
   spacing,
   grey,
 } from '../../foundation/utils/styles';
-import defaultLinkImage  from './link_img@2x.png';
+import defaultLinkImage from './link_img@2x.png';
 
 const LinkItemsWrapper = styled.div`
   margin-top: ${spacing(3)};
@@ -24,7 +24,7 @@ const LinkItemsWrapper = styled.div`
   border-radius: ${({ theme }) => theme.shape.borderRadius}px;
   height: ${height(26)};
   overflow: hidden;
-  :hover{
+  :hover {
     background-color: ${grey('100')};
   }
 `;
@@ -42,7 +42,7 @@ const LinkItemContents = styled.div`
     margin-top: ${spacing(-1)};
   }
 `;
-const LinkThumbnails = styled<{img: string}, 'div'>('div')`
+const LinkThumbnails = styled<{ img: string }, 'div'>('div')`
   width: ${width(18)};
   height: ${height(18)};
   background: no-repeat center url(${({ img }) => img});
@@ -55,18 +55,26 @@ const TitleNSummaryWrapper = styled.div`
   max-width: 100%;
 `;
 const LinkTitle = styled.p`
+  ${({ theme }) => theme.typography.subheading1}
   margin-top: 0;
   ${ellipsis()};
   margin-right: ${spacing(5)};
   a {
     color: ${grey('900')};
-    &:hover{
+    &:hover {
       text-decoration: underline;
     }
   }
 `;
+
+function getMaxHeight(lineHeight: any, lineNumber: number) {
+  const heightNumber: number = Number(lineHeight.replace(/[^-\d\.]/g, ''));
+  const unit: string = lineHeight.replace(/[-\d\.]/g, '');
+  return `${heightNumber * lineNumber}${unit}`;
+}
+
 const LinkSummary = styled.p`
-  font-size: ${({ theme }) => theme.typography.body2.fontSize};
+  ${({ theme }) => theme.typography.body1};
   color: ${grey('500')};
   word-break: break-word;
   overflow: hidden;
@@ -75,8 +83,8 @@ const LinkSummary = styled.p`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   margin-top: ${spacing(-1)};
-  line-height: ${({ theme }) => theme.typography.heading1.lineHeight};/* firefox */
-  max-height: ${({ theme }) => theme.typography.heading1.maxHeight};       /* firefox */
+  max-height: ${({ theme }) =>
+    getMaxHeight(theme.typography.body1.lineHeight, 2)}; /* firefox */
 `;
 type Props = {
   title: string;
@@ -85,9 +93,7 @@ type Props = {
   onLinkItemClose?: (e: React.MouseEvent<HTMLSpanElement>) => void;
   url: string;
 };
-class JuiConversationCardLinkItems extends PureComponent<
-  Props
-> {
+class JuiConversationCardLinkItems extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
   }
@@ -99,7 +105,9 @@ class JuiConversationCardLinkItems extends PureComponent<
           <LinkThumbnails img={thumbnail ? thumbnail : defaultLinkImage} />
           <TitleNSummaryWrapper>
             <LinkTitle>
-              <a href={url} target="_blank">{title}</a>
+              <a href={url} target="_blank">
+                {title}
+              </a>
             </LinkTitle>
             <LinkSummary>{summary}</LinkSummary>
           </TitleNSummaryWrapper>
