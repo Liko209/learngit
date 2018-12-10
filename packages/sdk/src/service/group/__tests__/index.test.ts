@@ -845,14 +845,15 @@ describe('GroupService', () => {
     it('group not exist in DB already, request from server', async () => {
       jest
         .spyOn(groupService, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(mockNormal); // first call
+        .mockResolvedValueOnce(ok(mockNormal)); // first call
+      daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
       const result2 = await groupService.getOrCreateGroupByMemberList(
         memberIDs,
       );
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
       expect(accountService.getCurrentUserId).toBeCalled();
-      expect(result2).toEqual(mockNormal);
+      expect(result2.data).toEqual(mockNormal);
     });
 
     it('throw error ', async () => {
