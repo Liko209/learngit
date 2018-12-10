@@ -59,6 +59,8 @@ class ItemFileUploadHandler {
           sendFailed = true;
         }
       }
+    } else {
+      sendFailed = true;
     }
     if (sendFailed) {
       this._handleFileItemSendFailed(itemId);
@@ -90,9 +92,7 @@ class ItemFileUploadHandler {
   }
 
   getUploadItems(groupId: number): ItemFile[] {
-    return this._uploadingFiles.has(groupId)
-      ? this._uploadingFiles[groupId]
-      : [];
+    return this._uploadingFiles.get(groupId) || [];
   }
 
   getUploadProgress(itemId: number): Progress | undefined {
@@ -101,7 +101,7 @@ class ItemFileUploadHandler {
   }
 
   cleanUploadingFiles(groupId: number) {
-    this._uploadingFiles.clear();
+    this._uploadingFiles.delete(groupId);
   }
 
   private _updateProgress(progress: Progress) {
@@ -302,7 +302,7 @@ class ItemFileUploadHandler {
 
   private _updatePreInsertItemStatus(itemId: number, status: SENDING_STATUS) {
     const itemService: ItemService = ItemService.getInstance();
-    itemService.updatePreInsertItemStatus(itemId, SENDING_STATUS.INPROGRESS);
+    itemService.updatePreInsertItemStatus(itemId, status);
   }
 
   private _toItemFile(

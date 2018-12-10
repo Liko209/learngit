@@ -18,6 +18,10 @@ import GroupService from '../../group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
 import { BaseError } from '../../../utils';
+import notificationCenter from '../../notificationCenter';
+import { SERVICE } from '../../eventKey';
+import { Listener } from 'eventemitter2';
+
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
 jest.mock('../../serviceManager');
@@ -28,6 +32,7 @@ jest.mock('../postStatusHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
 jest.mock('../../group');
+jest.mock('../../notificationCenter');
 
 PostAPI.putDataById = jest.fn();
 PostAPI.requestByIds = jest.fn();
@@ -56,6 +61,7 @@ describe('PostService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
+    jest.restoreAllMocks();
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
     GroupService.getInstance = jest.fn().mockReturnValue(groupService);
@@ -529,6 +535,11 @@ describe('PostService', () => {
   });
 
   describe('sendPost()', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
+    });
     it('should send', async () => {
       jest.spyOn(postService, 'innerSendPost');
       postService.innerSendPost.mockResolvedValueOnce([
@@ -556,15 +567,21 @@ describe('PostService', () => {
     });
 
     it('should send post success', async () => {
+      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+      groupService.getGroupSendFailurePostIds.mockResolvedValue([]);
+      daoManager.getDao.mockReturnValue(postDao);
+      postDao.put.mockImplementation(() => {});
+
       const info = _.cloneDeep(postMockInfo);
       const responseData = _.cloneDeep(postMockInfo);
       responseData.id = 99999;
+
+      itemService.cleanUploadingFiles = jest.fn();
 
       PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
       PostAPI.sendPost.mockResolvedValueOnce(
         new NetworkResultOk(responseData, 200, {}),
       );
-      groupService.getGroupSendFailurePostIds.mockResolvedValue([]);
 
       const results = await postService.sendPost({ text: 'abc' });
       expect(results[0].id).toEqual(-1);
@@ -577,6 +594,52 @@ describe('PostService', () => {
       PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
       PostAPI.sendPost.mockResolvedValueOnce({ data: { error: {} } });
       await expect(postService.sendPost({ text: 'abc' })).rejects.toThrow();
+    });
+
+    it('should send post after all file items has been send', async (done: jest.DoneCallback) => {
+      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+      itemService.cleanUploadingFiles.mockImplementation(() => {});
+      daoManager.getDao.mockReturnValue(postDao);
+      postDao.update.mockImplementation(() => {});
+
+      const info = _.cloneDeep(postMockInfo);
+      info.item_ids = [-1, 3];
+      PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
+
+      const spyResendFailedItems = jest.spyOn(
+        postService,
+        '_resendFailedItems',
+      );
+      spyResendFailedItems.mockImplementation(() => {});
+
+      const spyHandlePreInsertProcess = jest.spyOn(
+        postService,
+        '_handlePreInsertProcess',
+      );
+      spyHandlePreInsertProcess.mockImplementation(() => {});
+
+      const spySendPost = jest.spyOn(postService, '_sendPost');
+      spySendPost.mockImplementation(() => {});
+
+      notificationCenter.on.mockImplementationOnce(
+        (event: string | string[], listener: Listener) => {
+          listener(true, -1, 1);
+        },
+      );
+      await postService.sendPost(info);
+
+      setTimeout(() => {
+        expect(spySendPost).toBeCalledTimes(1);
+        expect(spyHandlePreInsertProcess).toBeCalledWith(info);
+        expect(notificationCenter.removeListener).toBeCalled();
+        expect(notificationCenter.on).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          expect.anything(),
+        );
+        expect(spyResendFailedItems).not.toBeCalled();
+        expect(itemService.cleanUploadingFiles).toBeCalledWith(info.group_id);
+        done();
+      });
     });
   });
 
@@ -707,7 +770,7 @@ describe('PostService', () => {
     });
   });
 
-  describe('reSendPost', async () => {
+  describe('reSendPost()', async () => {
     it('positive id should not resend', async () => {
       const result = await postService.reSendPost(1);
       expect(result).toBeNull();

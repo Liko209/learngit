@@ -276,14 +276,18 @@ class PostService extends BaseService<Post> {
 
   async innerSendPost(buildPost: Post, isResend: boolean): Promise<PostData[]> {
     await this._handlePreInsertProcess(buildPost);
-
-    this._cleanUploadingFiles(buildPost.group_id);
-    const pseudoItems = this._getPseudoItemIdsFromPost(buildPost);
-    if (pseudoItems.length > 0) {
-      if (isResend) {
-        this._resendFailedItems(pseudoItems);
+    console.log(buildPost);
+    if (buildPost.item_ids.length > 0) {
+      if (!isResend) {
+        this._cleanUploadingFiles(buildPost.group_id);
       }
-      return await this._sendPostWithPreInsertItems(buildPost);
+      const pseudoItems = this._getPseudoItemIdsFromPost(buildPost);
+      if (pseudoItems.length > 0) {
+        if (isResend) {
+          this._resendFailedItems(pseudoItems);
+        }
+        return await this._sendPostWithPreInsertItems(buildPost);
+      }
     }
 
     return await this._sendPost(buildPost);
@@ -361,9 +365,7 @@ class PostService extends BaseService<Post> {
   }
 
   private _getPseudoItemIdsFromPost(post: Post) {
-    return post.item_ids.filter((x: number) => {
-      x < 0;
-    });
+    return post.item_ids.filter(x => x < 0);
   }
 
   private async _handlePreInsertProcess(buildPost: Post): Promise<void> {
