@@ -105,6 +105,29 @@ describe('BaseDao', () => {
     });
   });
 
+  it('should batchGet items', async () => {
+    await dao.bulkPut([
+      {
+        id: 1,
+        name: 'name1',
+        boolean: false,
+      },
+      {
+        id: 2,
+        name: 'name2',
+        boolean: false,
+      },
+      {
+        id: 3,
+        name: 'name3',
+        boolean: false,
+      },
+    ]);
+
+    const result = await dao.batchGet([1, 2, 3]);
+    expect(result.length).toBe(3);
+  });
+
   it('should update item', async () => {
     await dao.update({
       id: 1,
