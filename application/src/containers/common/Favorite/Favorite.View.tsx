@@ -3,13 +3,12 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { FavoriteViewProps } from './types';
+import { ServiceResult } from 'sdk/service/ServiceResult';
+import { Profile } from 'sdk/models';
 import { JuiIconButton } from 'jui/components/Buttons';
-
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
+import { FavoriteViewProps } from './types';
 import { JuiModal } from '@/containers/Dialog';
 
 type Props = FavoriteViewProps & WithNamespaces;
@@ -28,11 +27,14 @@ class FavoriteViewComponent extends Component<Props> {
     if (!isAction) {
       return;
     }
-    const result = await handlerFavorite();
-    if (result === ServiceCommonErrorType.SERVER_ERROR) {
+
+    const result: ServiceResult<Profile> = await handlerFavorite();
+
+    if (result.isErr()) {
       const content = isFavorite
         ? t('markUnFavoriteServerErrorContent')
         : t('markFavoriteServerErrorContent');
+
       JuiModal.alert({
         content,
         title: '',
@@ -52,7 +54,14 @@ class FavoriteViewComponent extends Component<Props> {
   }
 
   render() {
-    const { hideUnFavorite, isFavorite, size, variant, disableToolTip, t } = this.props;
+    const {
+      hideUnFavorite,
+      isFavorite,
+      size,
+      variant,
+      disableToolTip,
+      t,
+    } = this.props;
     if (hideUnFavorite && !isFavorite) {
       return null;
     }

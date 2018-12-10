@@ -7,7 +7,7 @@
 import { daoManager, ConfigDao, GroupConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Group, GroupApiType, Raw, SortableModel } from '../../models';
+import { Group, GroupApiType, Raw, SortableModel, Profile } from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -36,7 +36,6 @@ import Permission from './permission';
 import { mainLogger, err, ok, Result } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
-import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
@@ -48,6 +47,7 @@ import { isValidEmailAddress } from '../../utils/regexUtils';
 import { Api } from '../../api';
 import notificationCenter from '../notificationCenter';
 import PostService from '../post';
+import { ServiceResult } from '../ServiceResult';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -363,14 +363,7 @@ class GroupService extends BaseService<Group> {
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
     const profileService: ProfileService = ProfileService.getInstance();
-    const result = await profileService.markGroupAsFavorite(
-      groupId,
-      markAsFavorite,
-    );
-    if (result instanceof BaseError && result.code >= 5300) {
-      return ServiceCommonErrorType.SERVER_ERROR;
-    }
-    return ServiceCommonErrorType.NONE;
+    return await profileService.markGroupAsFavorite(groupId, markAsFavorite);
   }
 
   async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
@@ -396,24 +389,13 @@ class GroupService extends BaseService<Group> {
     groupId: number,
     hidden: boolean,
     shouldUpdateSkipConfirmation: boolean,
-  ): Promise<ServiceCommonErrorType> {
+  ): Promise<ServiceResult<Profile>> {
     const profileService: ProfileService = ProfileService.getInstance();
-    const result = await profileService.hideConversation(
+    return profileService.hideConversation(
       groupId,
       hidden,
       shouldUpdateSkipConfirmation,
     );
-
-    if (result instanceof BaseError) {
-      if (result.code === 5000) {
-        return ServiceCommonErrorType.NETWORK_NOT_AVAILABLE;
-      }
-      if (result.code > 5300) {
-        return ServiceCommonErrorType.SERVER_ERROR;
-      }
-      return ServiceCommonErrorType.UNKNOWN_ERROR;
-    }
-    return ServiceCommonErrorType.NONE;
   }
 
   /**

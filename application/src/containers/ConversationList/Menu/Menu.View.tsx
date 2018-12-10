@@ -48,7 +48,7 @@ class MenuViewComponent extends Component<Props, State> {
     const { t } = this.props;
     this.props.onClose(event);
     const result = await this.props.toggleFavorite();
-    if (result === ServiceCommonErrorType.SERVER_ERROR) {
+    if (result.isErr()) {
       JuiModal.alert({
         title: '',
         content: t('conversationMenuItem:markFavoriteServerErrorContent'),
@@ -110,15 +110,17 @@ class MenuViewComponent extends Component<Props, State> {
     const result = await this.props.closeConversation(
       shouldSkipCloseConfirmation,
     );
-    if (result === ServiceCommonErrorType.NONE) {
-      // jump to section
-      const match = /messages\/(\d+)/.exec(window.location.href);
-      if (match && this.props.groupId === Number(match[1])) {
-        const { history } = this.props;
-        history.replace('/messages');
-      }
-      return;
-    }
+    result.match({
+      Ok: () => {
+        // jump to section
+        const match = /messages\/(\d+)/.exec(window.location.href);
+        if (match && this.props.groupId === Number(match[1])) {
+          const { history } = this.props;
+          history.replace('/messages');
+        }
+      },
+      Err: () => null,
+    });
   }
   private _handleGroupDialog = (event: MouseEvent<HTMLElement>) => {
     this.props.onClose(event);

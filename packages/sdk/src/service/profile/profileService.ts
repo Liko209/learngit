@@ -182,6 +182,7 @@ class ProfileService extends BaseService<Profile> {
 
     const personService = PersonService.getInstance<PersonService>();
     const result = await personService.getById(currentId);
+
     if (result) {
       const { me_group_id } = result;
       const partialProfile: any = {
@@ -310,7 +311,7 @@ class ProfileService extends BaseService<Profile> {
       return partialProfile;
     };
 
-    return await this._updateProfileGroupStatus(preHandlePartialModel);
+    return this._updateProfileGroupStatus(preHandlePartialModel);
   }
 
   async isConversationHidden(groupId: number) {
