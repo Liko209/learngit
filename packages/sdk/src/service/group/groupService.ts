@@ -183,40 +183,36 @@ class GroupService extends BaseService<Group> {
     }
   }
 
-  async getGroupByPersonId(personId: number): Promise<Group | null> {
-    try {
-      return await this.getOrCreateGroupByMemberList([personId]);
-    } catch (e) {
-      mainLogger.error(`getGroupByPersonId error =>${e}`);
-      throw ErrorParser.parse(e);
-    }
+  async getGroupByPersonId(personId: number): Promise<Result<Group>> {
+    return await this.getOrCreateGroupByMemberList([personId]);
   }
 
-  async getOrCreateGroupByMemberList(members: number[]): Promise<Group | null> {
-    try {
-      const result = await this._queryGroupByMemberList(members);
-      if (result) {
-        return result;
-      }
-      return await this.requestRemoteGroupByMemberList(members);
-    } catch (e) {
-      mainLogger.error(`getOrCreateGroupByMemberList error =>${e}`);
-      throw ErrorParser.parse(e);
+  async getOrCreateGroupByMemberList(
+    members: number[],
+  ): Promise<Result<Group>> {
+    const result = await this._queryGroupByMemberList(members);
+    if (result) {
+      return ok(result);
     }
+    return await this.requestRemoteGroupByMemberList(members);
   }
 
   async requestRemoteGroupByMemberList(
     members: number[],
-  ): Promise<Group | null> {
+  ): Promise<Result<Group>> {
     const memberIds = this._addCurrentUserToMemList(members);
     const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(
       memberIds,
     );
     const result = await GroupAPI.requestNewGroup(info);
-    const data = result.unwrap();
-    const group = transform<Group>(data);
-    await handleData([data]);
-    return group;
+    return result.match({
+      Ok: async (rawGroup: Raw<Group>) => {
+        const group = transform<Group>(rawGroup);
+        await handleData([rawGroup]);
+        return ok(group);
+      },
+      Err: (error: BaseError) => err(error),
+    });
   }
 
   async getLatestGroup(): Promise<Group | null> {
@@ -314,7 +310,7 @@ class GroupService extends BaseService<Group> {
     memberIds: (number | string)[],
     description: string,
     options: CreateTeamOptions = {},
-  ): Promise<Result<Group | Raw<Group>>> {
+  ): Promise<Result<Group>> {
     const {
       isPublic = false,
       canAddMember = false,

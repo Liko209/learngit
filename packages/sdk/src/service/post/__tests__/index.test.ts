@@ -19,6 +19,7 @@ import { postFactory, itemFactory } from '../../../__tests__/factories';
 import notificationCenter from '../../notificationCenter';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { BaseError } from '../../../utils';
+import { err, ok } from 'foundation';
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
 jest.mock('../../serviceManager');
@@ -457,9 +458,7 @@ describe('PostService', () => {
       const remotePosts = [{ id: 1 }, { id: 2 }];
       postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
       const data = { posts: [...remotePosts], items: [] };
-      PostAPI.requestByIds.mockResolvedValue(
-        new ApiResultOk(data, 200, {}),
-      );
+      PostAPI.requestByIds.mockResolvedValue(new ApiResultOk(data, 200, {}));
       baseHandleData.mockImplementationOnce((data: any) => data);
       itemService.getByPosts.mockResolvedValue([]);
       const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
@@ -479,9 +478,7 @@ describe('PostService', () => {
       ];
       const data = { posts: [...remotePosts], items: [] };
       postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
-      PostAPI.requestByIds.mockResolvedValue(
-        new ApiResultOk(data, 200, {}),
-      );
+      PostAPI.requestByIds.mockResolvedValue(new ApiResultOk(data, 200, {}));
       baseHandleData.mockImplementationOnce((data: any) => data);
       itemService.getByPosts.mockResolvedValue([]);
       const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
@@ -515,9 +512,7 @@ describe('PostService', () => {
         posts: [...remotePosts],
         items: [{ id: 103 }, { id: 104 }],
       };
-      PostAPI.requestByIds.mockResolvedValue(
-        new ApiResultOk(data, 200, {}),
-      );
+      PostAPI.requestByIds.mockResolvedValue(new ApiResultOk(data, 200, {}));
       baseHandleData.mockImplementationOnce((data: any) => data);
       itemHandleData.mockImplementationOnce((data: any) => data);
       const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
@@ -659,9 +654,7 @@ describe('PostService', () => {
       const post = { id: 100, likes: [] };
       postService.getById.mockResolvedValueOnce(post);
       const data = { _id: 100, likes: [101] };
-      PostAPI.putDataById.mockResolvedValueOnce(
-        new ApiResultOk(data, 200, {}),
-      );
+      PostAPI.putDataById.mockResolvedValueOnce(new ApiResultOk(data, 200, {}));
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
       expect(post.likes).toEqual([101]);
@@ -789,9 +782,7 @@ describe('PostService', () => {
   describe('getNewestPostIdOfGroup', async () => {
     it('should return api result if success', async () => {
       const data = { posts: [{ _id: 123 }] };
-      PostAPI.requestPosts.mockResolvedValue(
-        new ApiResultOk(data, 200, {}),
-      );
+      PostAPI.requestPosts.mockResolvedValue(new ApiResultOk(data, 200, {}));
 
       await expect(postService.getNewestPostIdOfGroup(1)).resolves.toBe(123);
     });
@@ -898,24 +889,26 @@ describe('PostService', () => {
 
     it('should not call send post when get group failed', async () => {
       const spy = jest.spyOn(postService, 'sendPost');
-      groupService.getOrCreateGroupByMemberList.mockResolvedValue(null);
+      groupService.getOrCreateGroupByMemberList.mockResolvedValue(
+        err(new BaseError(500, '')),
+      );
       const result = await postService.newMessageWithPeopleIds(
         [1, 2, 3],
         'text message',
       );
       expect(spy).not.toBeCalled();
-      expect(result).toBeUndefined;
+      expect(result.isOk()).toBe(false);
     });
 
     it('should not call send post when send empty message ', async () => {
       const g = { id: 44 };
-      groupService.getOrCreateGroupByMemberList.mockResolvedValue(g);
+      groupService.getOrCreateGroupByMemberList.mockResolvedValue(ok(g));
       jest.spyOn(postService, 'sendPost');
 
       let result = await postService.newMessageWithPeopleIds([1, 2, 3], '   ');
-      expect(result).toEqual({ id: 44 });
+      expect(result.data).toEqual({ id: 44 });
       result = await postService.newMessageWithPeopleIds([1, 2, 3], '');
-      expect(result).toEqual({ id: 44 });
+      expect(result.data).toEqual({ id: 44 });
 
       expect(postService.sendPost).not.toBeCalled();
     });

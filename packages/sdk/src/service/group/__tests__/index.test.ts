@@ -1,6 +1,6 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import _ from 'lodash';
-import { BaseResponse } from 'foundation';
+import { BaseResponse, ok, err } from 'foundation';
 import PersonService from '../../person';
 import ProfileService from '../../profile';
 import AccountService from '../../account';
@@ -135,31 +135,40 @@ describe('GroupService', () => {
     expect(result).toEqual(mock);
   });
 
-  it('getGroupByMemberList()', async () => {
-    const mockNormal = { id: 1 };
-    const memberIDs = [1, 2];
-    // group exist in DB already
-    daoManager.getDao.mockReturnValue(groupDao);
-    groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
+  describe('getGroupByMemberList()', async () => {
+    it('should return result with group if it already existed in local', async () => {
+      const mockNormal = { id: 1 };
+      const memberIDs = [1, 2];
+      // group exist in DB already
+      daoManager.getDao.mockReturnValue(groupDao);
+      groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
 
-    const result1 = await groupService.getOrCreateGroupByMemberList(memberIDs);
-    expect(result1).toEqual(mockNormal);
+      const result1 = await groupService.getOrCreateGroupByMemberList(
+        memberIDs,
+      );
+      expect(result1.data).toEqual(mockNormal);
+    });
+    it('should return result with group if it can get from remote', async () => {
+      const mockNormal = { id: 1 };
+      const memberIDs = [1, 2];
+      jest
+        .spyOn(groupService, 'requestRemoteGroupByMemberList')
+        .mockResolvedValueOnce(ok(mockNormal));
+      groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
+      const result = await groupService.getOrCreateGroupByMemberList(memberIDs);
+      expect(result.data).toEqual(mockNormal);
+    });
 
-    jest
-      .spyOn(groupService, 'requestRemoteGroupByMemberList')
-      .mockResolvedValueOnce(mockNormal) // first call
-      .mockResolvedValueOnce(null); // second call
-
-    // group not in db, request from server
-    const nullGroup: Group = null;
-    groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
-    const result2 = await groupService.getOrCreateGroupByMemberList(memberIDs);
-    expect(result2).toEqual(mockNormal);
-
-    // group not in db and server return null
-    groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
-    const result3 = await groupService.getOrCreateGroupByMemberList(memberIDs);
-    expect(result3).toBeNull;
+    it('should return result with error if it can not get from remote', async () => {
+      const mockNormal = { id: 1 };
+      const memberIDs = [1, 2];
+      jest
+        .spyOn(groupService, 'requestRemoteGroupByMemberList')
+        .mockResolvedValueOnce(err(new BaseError(500, '')));
+      groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
+      const result = await groupService.getOrCreateGroupByMemberList(memberIDs);
+      expect(result.isErr()).toBe(true);
+    });
   });
 
   it('requestRemoteGroupByMemberList()', async () => {
@@ -173,7 +182,7 @@ describe('GroupService', () => {
     } as BaseResponse);
     GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
     const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result1).toEqual({ id: 1 });
+    expect(result1.data).toEqual({ id: 1 });
 
     const mockEmpty = new ApiResultOk(null, {
       status: 200,
@@ -181,16 +190,15 @@ describe('GroupService', () => {
     } as BaseResponse);
     GroupAPI.requestNewGroup.mockResolvedValue(mockEmpty);
     const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-    expect(result2).toBeNull();
+    expect(result2.data).toBeNull();
 
     const mockError = new ApiResultErr(new BaseError(403, ''), {
       status: 403,
       headers: {},
     } as BaseResponse);
     GroupAPI.requestNewGroup.mockResolvedValue(mockError);
-    await expect(
-      groupService.requestRemoteGroupByMemberList([1, 2]),
-    ).rejects.toThrow();
+    const result3 = await groupService.requestRemoteGroupByMemberList([1, 2]);
+    expect(result3.isOk()).toBe(false);
   });
 
   it('getGroupByPersonId()', async () => {
@@ -201,7 +209,7 @@ describe('GroupService', () => {
     accountDao.get.mockReturnValue(1); // userId
     groupDao.queryGroupByMemberList.mockResolvedValue(mock);
     const result1 = await groupService.getGroupByPersonId(2);
-    expect(result1).toEqual(mock);
+    expect(result1.data).toEqual(mock);
   });
 
   it('getLatestGroup()', async () => {
@@ -825,7 +833,7 @@ describe('GroupService', () => {
       );
       expect(accountService.getCurrentUserId).toBeCalled();
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(result1).toEqual(mockNormal);
+      expect(result1.data).toEqual(mockNormal);
     });
 
     it('group not exist in DB already, request from server', async () => {
@@ -844,12 +852,11 @@ describe('GroupService', () => {
     it('throw error ', async () => {
       jest
         .spyOn(groupService, 'requestRemoteGroupByMemberList')
-        .mockRejectedValueOnce(new Error('error'));
+        .mockResolvedValueOnce(err(new BaseError(500, '')));
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(null);
-      await expect(
-        groupService.getOrCreateGroupByMemberList(memberIDs),
-      ).rejects.toThrow();
+      const result = await groupService.getOrCreateGroupByMemberList(memberIDs);
+      expect(result.isOk()).toBe(false);
     });
   });
 
@@ -873,7 +880,7 @@ describe('GroupService', () => {
         } as BaseResponse),
       );
       const result = await groupService.requestRemoteGroupByMemberList([1, 2]);
-      expect(result).toMatchObject({ id: 1 });
+      expect(result.data).toMatchObject({ id: 1 });
       expect(GroupAPI.requestNewGroup).toBeCalledWith(
         expect.objectContaining({
           members: [1, 2, 3],
@@ -891,9 +898,8 @@ describe('GroupService', () => {
           headers: {},
         } as BaseResponse),
       );
-      await expect(
-        groupService.requestRemoteGroupByMemberList([1, 2]),
-      ).rejects.toThrow();
+      const result = await groupService.requestRemoteGroupByMemberList([1, 2]);
+      expect(result.isErr()).toBe(true);
     });
   });
 

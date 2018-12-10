@@ -15,13 +15,13 @@ import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
-import { Post, Item, Raw } from '../../models';
+import { Post, Item, Raw, Group } from '../../models';
 import { PostStatusHandler } from './postStatusHandler';
 import { POST_STATUS } from '../constants';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
-import { mainLogger } from 'foundation';
+import { mainLogger, Result } from 'foundation';
 import { ErrorParser, BaseError } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
 
@@ -581,22 +581,18 @@ class PostService extends BaseService<Post> {
   async newMessageWithPeopleIds(
     ids: number[],
     message: string,
-  ): Promise<{ id?: number }> {
-    try {
-      const groupService: GroupService = GroupService.getInstance();
-      const group = await groupService.getOrCreateGroupByMemberList(ids);
-      const id = group ? group.id : undefined;
+  ): Promise<Result<Group>> {
+    const groupService: GroupService = GroupService.getInstance();
+    const result = await groupService.getOrCreateGroupByMemberList(ids);
+    if (result.isOk()) {
+      const id = result.data.id;
       if (id && this._isValidTextMessage(message)) {
         setTimeout(() => {
           this.sendPost({ groupId: id, text: message });
         },         2000);
       }
-
-      return { id };
-    } catch (e) {
-      mainLogger.error(`newMessageWithPeopleIds: ${JSON.stringify(e)}`);
-      throw ErrorParser.parse(e);
     }
+    return result;
   }
 
   private _isValidTextMessage(message: string) {
