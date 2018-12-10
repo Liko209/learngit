@@ -8,8 +8,8 @@ import ModelProvider from './ModelProvider';
 import visibilityChangeEvent from './visibilityChangeEvent';
 import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
-import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
-import { Raw } from 'sdk/src/models';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
+import { Raw } from 'sdk/models';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;

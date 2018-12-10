@@ -23,7 +23,7 @@ import ProfileModel from '@/store/models/Profile';
 import _ from 'lodash';
 import storeManager from '@/store';
 import history from '@/history';
-import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 
 const { GroupService, StateService, ProfileService } = service;

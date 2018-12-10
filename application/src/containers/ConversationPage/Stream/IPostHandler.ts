@@ -3,7 +3,7 @@
  * @Date: 2018-10-23 18:25:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { Post } from 'sdk/src/models';
+import { Post } from 'sdk/models';
 import { ISortableModel } from '@/store/base';
 import { QUERY_DIRECTION } from 'sdk/dao';
 

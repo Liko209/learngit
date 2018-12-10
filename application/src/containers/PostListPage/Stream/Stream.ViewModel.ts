@@ -12,11 +12,11 @@ import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDa
 import { ENTITY_NAME } from '@/store/constants';
 import { ISortableModel } from '@/store/base/fetch/types';
 import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
-import { Post } from 'sdk/src/models';
+import { Post } from 'sdk/models';
 import { service } from 'sdk';
 import { EVENT_TYPES, ENTITY } from 'sdk/service';
 import { transform2Map, getEntity } from '@/store/utils';
-import { PostService as IPostService } from 'sdk/src/service';
+import { PostService as IPostService } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager from '@/store/base/StoreManager';
 import MultiEntityMapStore from '../../../store/base/MultiEntityMapStore';
