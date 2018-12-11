@@ -62,7 +62,7 @@ class StreamViewComponent extends Component<Props> {
     window.removeEventListener('focus', this._focusHandler);
     window.removeEventListener('blur', this._blurHandler);
     storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
-    this._ro.disconnect();
+    this._ro && this._ro.disconnect();
   }
 
   getSnapshotBeforeUpdate() {
@@ -94,10 +94,11 @@ class StreamViewComponent extends Component<Props> {
       // scroll TOP and load posts
       if (this._isAtTop && hasMoreUp) {
         await nextTick();
-        const parent = getScrollParent(this._listRef.current!);
-        parent.scrollTop =
-          this._scrollTop + parent.scrollHeight - this._scrollHeight;
-        return;
+        console.log(this._scrollHeight, this._scrollTop);
+        // const parent = getScrollParent(this._listRef.current!);
+        // parent.scrollTop =
+        //   this._scrollTop + parent.scrollHeight - this._scrollHeight;
+        // return;
       }
     }
     return;
@@ -107,10 +108,12 @@ class StreamViewComponent extends Component<Props> {
     const win = window as any;
     let RO = win.ResizeObserver;
     if (typeof win.ResizeObserver === 'undefined') {
-      RO = await import(/* webpackMode: "lazy" */
-      'resize-observer-polyfill');
+      RO = (await import(/* webpackMode: "eager" */
+      /*  webpackChunkName: "ro" */
+      'resize-observer-polyfill')).default;
     }
     this._ro = new RO(this._heightChangedHandler);
+
     this._ro.observe(this._listRef.current!);
   }
 
