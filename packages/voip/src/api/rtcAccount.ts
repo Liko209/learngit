@@ -20,13 +20,9 @@ class RTCAccount {
     this._accountManager = new RTCAccountManager(listener);
   }
 
-  public handleProvisioning(sipData: any, params: any) {
-    this._accountManager.handleProvisioning(sipData, params);
+  public deRegister() {
+    this._accountManager.deRegister();
   }
-
-  // public deRegister() {
-  //   this._accountManager.deRegister();
-  // }
 }
 
 export { AccountState, IRTCAccountListener, RTCAccount };

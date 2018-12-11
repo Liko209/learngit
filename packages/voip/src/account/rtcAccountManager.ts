@@ -1,11 +1,11 @@
 import { RTCAccountFSM, IConditionalHandler } from './rtcAccountFSM';
 import { IRTCAccountListener, AccountState } from '../api/rtcAccount';
 
-const WebPhone = require('ringcentral-web-phone');
+// const WebPhone = require('ringcentral-web-phone');
 
 class RTCAccountManager implements IConditionalHandler {
   private _fsm: RTCAccountFSM;
-  private _webPhone: any;
+  // private _webPhone: any;
   private _listener: IRTCAccountListener;
 
   processReadyOnRegSucceed(): string {
@@ -36,6 +36,11 @@ class RTCAccountManager implements IConditionalHandler {
     });
   }
 
+  public deRegister() {
+    this._fsm.deRegister();
+    // this._webPhone.userAgent.unregister();
+  }
+  /*
   private _onRegistered() {
     this._fsm.regSucceed();
   }
@@ -57,11 +62,6 @@ class RTCAccountManager implements IConditionalHandler {
   private _onRegistrationAccepted() {
     console.log('_onRegistrationAccepted');
   }
-
-  // public deRegister() {
-  //   this._fsm.deRegister();
-  //   this._webPhone.userAgent.unregister();
-  // }
 
   public handleProvisioning(sipData: any, params: any) {
     const info = {
@@ -95,7 +95,7 @@ class RTCAccountManager implements IConditionalHandler {
       'accepted',
       this._onRegistrationAccepted.bind(this),
     );
-  }
+  }*/
 }
 
 export { RTCAccountManager };
