@@ -133,6 +133,8 @@
   "close": "close",
   "messageLoadingErrorTip": "We weren't able to open this conversation.",
   "tryAgain": "Try again.",
+  "assignee": "Assignee",
+  "due": "Due",
   "edit": "Edit post",
   "AboutRingCentral": "About RingCentral",
   "NewActions": "New Actions",
