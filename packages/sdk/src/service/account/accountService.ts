@@ -34,6 +34,10 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
     this.accountDao = daoManager.getKVDao(AccountDao);
   }
 
+  isAccountReady(): boolean {
+    return !!this.accountDao.get(ACCOUNT_USER_ID);
+  }
+
   getCurrentUserId(): number {
     const userId: string = this.accountDao.get(ACCOUNT_USER_ID);
     if (!userId) {

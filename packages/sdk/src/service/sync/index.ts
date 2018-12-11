@@ -25,7 +25,6 @@ import { ErrorParser, HttpError } from '../../utils';
 
 export default class SyncService extends BaseService {
   private isLoading: boolean;
-  private onDataLoaded?: () => Promise<void>;
   constructor() {
     const subscriptions = {
       [SERVICE.SOCKET_STATE_CHANGE]: ({ state }: { state: any }) => {
@@ -38,8 +37,7 @@ export default class SyncService extends BaseService {
     this.isLoading = false;
   }
 
-  async syncData(onDataLoaded?: () => Promise<void>) {
-    this.onDataLoaded = onDataLoaded || this.onDataLoaded;
+  async syncData() {
     if (this.isLoading) {
       return;
     }
@@ -64,12 +62,10 @@ export default class SyncService extends BaseService {
     try {
       const currentTime = Date.now();
       const initialResult = await fetchInitialData(currentTime);
-      this.onDataLoaded && (await this.onDataLoaded());
 
       if (initialResult.isOk()) {
         await handleData(initialResult.data);
         const remainingResult = await fetchRemainingData(currentTime);
-        this.onDataLoaded && (await this.onDataLoaded());
 
         if (remainingResult.isOk()) {
           await handleData(remainingResult.data);
@@ -89,7 +85,6 @@ export default class SyncService extends BaseService {
   private async _syncIndexData(timeStamp: number) {
     // 5 minutes ago to ensure data is correct
     const result = await fetchIndexData(String(timeStamp - 300000));
-    this.onDataLoaded && (await this.onDataLoaded());
     if (result.isOk()) {
       await handleData(result.data);
     } else {
