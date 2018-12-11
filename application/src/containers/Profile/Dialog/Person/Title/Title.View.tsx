@@ -27,7 +27,7 @@ class ProfileDialogPersonTitleViewComponent extends Component<
           {t('profile')}
         </JuiDialogTitleWithActionLeft>
         <JuiDialogTitleWithActionRight>
-          <Favorite id={id} />
+          <Favorite id={id} size="medium" />
           <JuiIconButton onClick={dismiss} tooltipTitle={t('close')}>
             close
           </JuiIconButton>

@@ -24,7 +24,7 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps> {
     return (
       <JuiProfileDialogContentMemberList>
         {memberIds.map((pid: number) => {
-          return <MemberListItem key={id} cid={id} pid={pid} />;
+          return <MemberListItem key={pid} cid={id} pid={pid} />;
         })}
       </JuiProfileDialogContentMemberList>
     );

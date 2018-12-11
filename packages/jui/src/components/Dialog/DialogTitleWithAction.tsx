@@ -32,12 +32,11 @@ const JuiDialogTitleWithActionLeft = styled('div')`
 `;
 const JuiDialogTitleWithActionRight = styled('div')`
   flex: 1;
-  text-align: right;
-  && > button[variant="round"] {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  && > * {
     margin-right: -${spacing(2.5)};
-  }
-  && > button[variant="plain"] {
-    margin-left: ${spacing(3)};
   }
 `;
 

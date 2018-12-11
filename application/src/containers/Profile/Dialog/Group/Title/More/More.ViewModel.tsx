@@ -3,8 +3,9 @@
  * @Date: 2018-11-23 11:07:02
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { StoreViewModel } from '@/store/ViewModel';
-import { computed, action } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { MoreProps } from './types';
 import { GroupService } from 'sdk/service';
 // import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
@@ -12,25 +13,34 @@ import { GroupService } from 'sdk/service';
 class MoreViewModel extends StoreViewModel<MoreProps> {
   private _groupService: GroupService = GroupService.getInstance();
 
+  @observable
+  private _email = '';
+
   @computed
-  private get _id() {
+  get id() {
     return this.props.id;
   }
 
   @computed
+  get size() {
+    return this.props.size || 'small';
+  }
+
+  @computed
   get url() {
-    return `${window.location.origin}/messages/${this._id}`;
+    return `${window.location.origin}/messages/${this.id}`;
   }
 
   @action
   getEmail = async () => {
-    const email = await this._groupService.getGroupEmail(this._id);
-    return email;
+    this._email = await this._groupService.getGroupEmail(this.id);
+    return this._email;
   }
 
-  // @computed
-  // get isTeam() {
-  //   return GlipTypeUtil.extractTypeId(this._id) === TypeDictionary.TYPE_ID_TEAM;
-  // }
+  @computed
+  get email() {
+    this.getEmail();
+    return this._email;
+  }
 }
 export { MoreViewModel };

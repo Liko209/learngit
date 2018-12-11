@@ -43,7 +43,7 @@ class ProfileMiniCardPersonHeaderView extends Component<
           </JuiProfileMiniCardPersonTitle>
         </JuiProfileMiniCardHeaderMiddle>
         <JuiProfileMiniCardHeaderRight>
-          <Favorite id={id} />
+          <Favorite id={id} size="small" />
         </JuiProfileMiniCardHeaderRight>
       </JuiProfileMiniCardHeader>
     );

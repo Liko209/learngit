@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { FavoriteViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
@@ -14,20 +15,18 @@ import { JuiModal } from '@/containers/Dialog';
 
 type Props = FavoriteViewProps & WithNamespaces;
 
+@observer
 class FavoriteViewComponent extends Component<Props> {
   constructor(props: Props) {
     super(props);
   }
 
   componentDidMount() {
-    this.props.getFavorite();
+    this.props.getConversationId();
   }
 
   onClickFavorite = async () => {
-    const { isAction, handlerFavorite, isFavorite, t } = this.props;
-    if (!isAction) {
-      return;
-    }
+    const { handlerFavorite, isFavorite, t } = this.props;
     const result = await handlerFavorite();
     if (result === ServiceCommonErrorType.SERVER_ERROR) {
       const content = isFavorite
@@ -43,28 +42,19 @@ class FavoriteViewComponent extends Component<Props> {
     }
   }
 
-  getTooltipKey = () => {
-    const { isAction, isFavorite } = this.props;
-    if (isAction) {
-      return isFavorite ? 'setStateUnFavorites' : 'setStateFavorites';
-    }
-    return isFavorite ? 'currentStateFavorite' : 'currentStateUnFavorite';
-  }
-
   render() {
-    const { hideUnFavorite, isFavorite, size, variant, disableToolTip, t } = this.props;
-    if (hideUnFavorite && !isFavorite) {
+    const { conversationId, isFavorite, size, t } = this.props;
+    if (!conversationId) {
       return null;
     }
+    const tooltipKey = isFavorite ? 'setStateUnFavorites' : 'setStateFavorites';
     return (
       <JuiIconButton
         size={size}
-        variant={variant}
         className="favorite"
         color="accent.gold"
         onClick={this.onClickFavorite}
-        disableToolTip={disableToolTip}
-        tooltipTitle={t(this.getTooltipKey())}
+        tooltipTitle={t(tooltipKey)}
       >
         {isFavorite ? 'star' : 'star_border'}
       </JuiIconButton>

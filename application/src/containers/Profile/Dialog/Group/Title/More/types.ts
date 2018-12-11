@@ -4,14 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { IconButtonSize } from 'jui/components/Buttons';
+
 type MoreProps = {
   id: number;
+  size?: IconButtonSize;
 };
 
-type MoreViewProps = {
-  // isTeam: boolean;
+type MoreViewProps = MoreProps & {
   url: string;
-  getEmail: () => string;
+  email: string;
 };
 
 export { MoreProps, MoreViewProps };
