@@ -168,6 +168,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         <JuiTextarea
           inputProps={{
             'data-test-automation-id': 'CreateTeamDescription',
+            maxLength: 1000,
           }}
           placeholder={t('Team Description')}
           fullWidth={true}
