@@ -34,7 +34,7 @@ class PrivacyViewComponent extends Component<Props> {
 
   render() {
     const { isPublic, size, t } = this.props;
-    const tooltipKey = isPublic ? 'setPrivateStatus' : 'setPublicStatus';
+    const tooltipKey = isPublic ? 'setStatePrivate' : 'setStatePublic';
     return (
       <JuiIconButton
         size={size}
