@@ -59,7 +59,7 @@ const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTU
 const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : configLoader.browsers;
 const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : configLoader.includeTags;
 const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : configLoader.excludeTags;
-const STOP_ON_FIRST_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
+const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
 
 const RUNNER_OPTS = {
   REPORTER,
