@@ -169,6 +169,9 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           isExcludeMe={true}
         />
         <JuiTextarea
+          inputProps={{
+            maxLength: 1000,
+          }}
           placeholder={t('Team Description')}
           fullWidth={true}
           onChange={handleDescChange}
