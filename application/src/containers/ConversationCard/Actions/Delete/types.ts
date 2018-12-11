@@ -6,6 +6,6 @@
 
 type Props = { id: number };
 
-type ViewProps = { deletePost: () => void };
+type ViewProps = { deletePost: () => Promise<any> };
 
 export { Props, ViewProps };

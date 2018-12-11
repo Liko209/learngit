@@ -26,6 +26,11 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  get disabled() {
+    return this.props.disabled;
+  }
+
+  @computed
   private get _creatorId() {
     return this._post.creatorId;
   }

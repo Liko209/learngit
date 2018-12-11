@@ -158,11 +158,11 @@ export default class MultiEntityMapStore<
       if (res instanceof Promise) {
         res.then((res: T & { error?: {} }) => {
           if (res && !res.error) {
-            this.set(res);
+            this._partialUpdate(res as T, id);
           }
         });
       } else {
-        this.set(res as T);
+        this._partialUpdate(res as T, id);
         model = this._data[id] as K;
       }
     }

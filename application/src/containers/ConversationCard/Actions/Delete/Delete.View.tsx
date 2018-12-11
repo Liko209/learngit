@@ -22,12 +22,10 @@ class DeleteViewComponent extends React.Component<Props> {
       okText: t('delete'),
       okType: 'negative',
       cancelText: t('Cancel'),
-      async onOK() {
-        try {
-          await deletePost();
-        } catch (e) {
+      onOK() {
+        deletePost().catch((e: any) => {
           console.log(e);
-        }
+        });
       },
     });
   }

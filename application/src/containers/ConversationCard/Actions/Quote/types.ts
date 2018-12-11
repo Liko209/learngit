@@ -6,10 +6,12 @@
 
 type Props = {
   id: number;
+  disabled?: boolean;
 };
 
 type ViewProps = {
   quote: () => void;
+  disabled?: boolean;
 };
 
 export { Props, ViewProps };
