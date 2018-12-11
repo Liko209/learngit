@@ -244,6 +244,8 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       try {
         const item = this.items[index];
         await this._itemService.cancelUpload(item.id);
+        this.items.splice(index);
+        this.items = this.items.slice(0);
       } catch (e) {}
       this.files.splice(index, 1);
       this.files = this.files.slice(0);
