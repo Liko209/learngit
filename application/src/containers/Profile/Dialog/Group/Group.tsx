@@ -12,6 +12,7 @@ import {
 } from 'jui/components/Dialog';
 import { ProfileDialogGroupTitle } from './Title';
 import { ProfileDialogGroupContent } from './Content';
+import { JuiProfileDialogContentMemberShadow } from 'jui/pattern/Profile/Dialog';
 
 type Props = {
   id: number;
@@ -34,6 +35,7 @@ class ProfileDialogGroup extends Component<Props> {
         <JuiDialogContentWithFill>
           <ProfileDialogGroupContent id={id} dismiss={dismiss} />
         </JuiDialogContentWithFill>
+        <JuiProfileDialogContentMemberShadow />
       </>
     );
   }
