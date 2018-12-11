@@ -48,8 +48,6 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   private get _renderedText() {
     let quoteText = this._text;
 
-    console.log(quoteText, 'quoteText');
-
     quoteText = quoteText.split('\n').reduce((qt, t) => {
       // filter empty line
       if (t.length) {
