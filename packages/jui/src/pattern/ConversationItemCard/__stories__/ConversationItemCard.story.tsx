@@ -44,15 +44,15 @@ storiesOf('Pattern/ConversationItemCard', module)
 
         return (
           <Wrapper>
-            <JuiConversationItemCard title={'Event Name'} icon={<EventIcon />}>
+            <JuiConversationItemCard title={'Event Name'} Icon={'event'}>
               content
             </JuiConversationItemCard>
             <JuiConversationItemCard
               complete={checked}
               title={'Event Name'}
               titleClick={this.onClick}
-              icon={<CheckboxTest checked={checked} disableRipple={true} />}
-              footer={<div>footer</div>}
+              Icon={<CheckboxTest checked={checked} disableRipple={true} />}
+              Footer={<div>footer</div>}
             >
               content
             </JuiConversationItemCard>

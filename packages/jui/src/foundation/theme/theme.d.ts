@@ -129,12 +129,6 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    subheading3: {
-      fontSize: string;
-      fontWeight: number;
-      fontFamily: string;
-      lineHeight: string;
-    };
     caption1: {
       fontSize: string;
       fontWeight: number;
@@ -146,10 +140,6 @@ type Theme = {
       fontWeight: number;
       fontFamily: string;
       lineHeight: string;
-    };
-    heading1: {
-      lineHeight: string;
-      maxHeight: string;
     };
     h6: {
       fontSize: string;
