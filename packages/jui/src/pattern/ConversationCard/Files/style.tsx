@@ -171,8 +171,8 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
   && {
     display: inline-block;
     margin: ${spacing(0, 3, 3, 0)};
-    width: ${({ ratio }) => (ratio >= 1 ? width(64) : width(90))};
-    height: ${({ ratio }) => (ratio >= 1 ? height(64) : height(64))};
+    width: ${({ ratio }) => (ratio >= 1 ? width(40) : width(70))};
+    height: ${({ ratio }) => (ratio >= 1 ? height(40) : height(50))};
     position: relative;
     border-radius: 0;
     box-shadow: none;
@@ -182,11 +182,7 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
   }
 `;
 
-const ImageMedia = styled(FileCardMedia)`
-  && {
-    height: ${height(64)};
-  }
-`;
+const ImageMedia = styled(FileCardMedia)``;
 
 const FileExpandItemWrapper = styled.div`
   margin-bottom: ${spacing(3)};
