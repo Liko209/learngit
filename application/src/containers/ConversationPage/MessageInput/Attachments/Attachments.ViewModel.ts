@@ -48,13 +48,15 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     if (files.length > 0) {
       const uniques: ItemInfo[] = [];
       const duplicateFiles: ItemInfo[] = [];
-      for (let i = 0; i < files.length; ++i) {
-        const file = files[i];
-        const exists = await this.isFileExists(file);
-        if (exists) {
-          duplicateFiles.push({ file, status: 'normal' });
+      const exists = await Promise.all(
+        files.map(file => this.isFileExists(file)),
+      );
+
+      for (let i = 0; i < exists.length; ++i) {
+        if (exists[i]) {
+          duplicateFiles.push({ file: files[i], status: 'normal' });
         } else {
-          uniques.push({ file, status: 'normal' });
+          uniques.push({ file: files[i], status: 'normal' });
         }
       }
 

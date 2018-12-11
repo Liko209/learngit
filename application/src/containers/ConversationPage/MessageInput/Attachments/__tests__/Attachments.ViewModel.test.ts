@@ -105,13 +105,10 @@ describe('AttachmentsViewModel', () => {
     type: 'text/plain',
   });
 
-  const vm = new AttachmentsViewModel({ attachmentsObserver, id: 456 });
+  let vm: AttachmentsViewModel;
 
   beforeEach(() => {
-    vm.items = [];
-    vm.files = [];
-    vm.duplicateFiles = [];
-    vm.uniqueFiles = [];
+    vm = new AttachmentsViewModel({ attachmentsObserver, id: 456 });
     _uploadedItems = [];
     _uploadingItems = [];
   });
@@ -127,47 +124,29 @@ describe('AttachmentsViewModel', () => {
       return that;
     };
 
-    it('should send post content is empty but with files', async () => {
-      const messageInputViewModel = new MessageInputViewModel({ id: 456 });
-      const vm1 = new AttachmentsViewModel({
-        attachmentsObserver: (items: Item[]) => {
-          messageInputViewModel.updateAttachmentItems(items);
-        },
-        id: messageInputViewModel.id,
-      });
+    test.each(['', 'abc'])(
+      'should send post with content `%s`',
+      async (content: string) => {
+        const messageInputViewModel = new MessageInputViewModel({ id: 456 });
+        const vm1 = new AttachmentsViewModel({
+          attachmentsObserver: (items: Item[]) => {
+            messageInputViewModel.updateAttachmentItems(items);
+          },
+          id: messageInputViewModel.id,
+        });
 
-      const enterHandler =
-        messageInputViewModel.keyboardEventHandler.enter.handler;
-      const content = '';
-      const that = mockThis(content);
-      // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
-      await vm1.autoUploadFiles([file]);
-      const handler = enterHandler.bind(that);
-      handler();
-      expect(postService.sendPost).toBeCalled();
-    });
+        const enterHandler =
+          messageInputViewModel.keyboardEventHandler.enter.handler;
 
-    it('should send post with content && files', async () => {
-      const messageInputViewModel = new MessageInputViewModel({ id: 456 });
-      const vm1 = new AttachmentsViewModel({
-        attachmentsObserver: (items: Item[]) => {
-          messageInputViewModel.updateAttachmentItems(items);
-        },
-        id: messageInputViewModel.id,
-      });
-
-      const enterHandler =
-        messageInputViewModel.keyboardEventHandler.enter.handler;
-      const content = 'abc';
-      const that = mockThis(content);
-      // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
-      await vm1.autoUploadFiles([file]);
-      const handler = enterHandler.bind(that);
-      handler();
-      expect(postService.sendPost).toBeCalled();
-    });
+        const that = mockThis(content);
+        // @ts-ignore
+        markdownFromDelta = jest.fn().mockReturnValue(content);
+        await vm1.autoUploadFiles([file]);
+        const handler = enterHandler.bind(that);
+        handler();
+        expect(postService.sendPost).toBeCalled();
+      },
+    );
   });
 
   describe('autoUploadFiles()', () => {
