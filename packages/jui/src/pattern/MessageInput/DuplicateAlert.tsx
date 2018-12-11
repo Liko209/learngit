@@ -34,9 +34,13 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
     const content = (
       <Content>
         The following files already exist.
-        {duplicateFiles.map((file: File, index: number) => (
-          <div key={index}>{file.name}</div>
-        ))}
+        <br />
+        <ul>
+          {duplicateFiles.map((file: File, index: number) => (
+            <li key={index}>{file.name}</li>
+          ))}
+        </ul>
+        <br />
         Do you want to update the existing files or do you wish to create new
         files?
       </Content>
