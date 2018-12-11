@@ -1,10 +1,10 @@
-import { RTCAccountFSM, IConditionalHandler } from './rtcAccountFSM';
+import { RTCRegistrationFSM, IConditionalHandler } from './rtcRegistrationFSM';
 import { IRTCAccountListener, AccountState } from '../api/rtcAccount';
 
 // const WebPhone = require('ringcentral-web-phone');
 
-class RTCAccountManager implements IConditionalHandler {
-  private _fsm: RTCAccountFSM;
+class RTCRegistrationManager implements IConditionalHandler {
+  private _fsm: RTCRegistrationFSM;
   // private _webPhone: any;
   private _listener: IRTCAccountListener;
 
@@ -18,7 +18,7 @@ class RTCAccountManager implements IConditionalHandler {
 
   constructor(listener: IRTCAccountListener) {
     this._listener = listener;
-    this._fsm = new RTCAccountFSM(this);
+    this._fsm = new RTCRegistrationFSM(this);
     this._fsm.observe('onReady', () => {
       this._listener.onAccountStateChanged(AccountState.REGISTERED);
     });
@@ -98,4 +98,4 @@ class RTCAccountManager implements IConditionalHandler {
   }*/
 }
 
-export { RTCAccountManager };
+export { RTCRegistrationManager };

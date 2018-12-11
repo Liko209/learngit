@@ -1,13 +1,13 @@
 /// <reference path="../../__tests__/types.d.ts" />
 
-import { RTCAccountFSM } from '../rtcAccountFSM';
-import { RTCAccountManager } from '../rtcAccountManager';
+import { RTCRegistrationFSM } from '../rtcRegistrationFSM';
+import { RTCRegistrationManager } from '../rtcRegistrationManager';
 
 describe('Account manager', async () => {
   it('state transition: network change in ready', async () => {
-    const am = new RTCAccountManager(null);
+    const am = new RTCRegistrationManager(null);
     jest.spyOn(am, 'processReadyOnNetworkChanged');
-    const fsm = new RTCAccountFSM(am);
+    const fsm = new RTCRegistrationFSM(am);
     fsm.doRegister();
     fsm.regSucceed();
     fsm.networkChanged();
@@ -17,9 +17,9 @@ describe('Account manager', async () => {
   });
 
   it('SIP refresh while state is in ready', async () => {
-    const am = new RTCAccountManager(null);
+    const am = new RTCRegistrationManager(null);
     jest.spyOn(am, 'processReadyOnRegSucceed');
-    const fsm = new RTCAccountFSM(am);
+    const fsm = new RTCRegistrationFSM(am);
     fsm.doRegister();
     fsm.regSucceed();
     fsm.regSucceed();

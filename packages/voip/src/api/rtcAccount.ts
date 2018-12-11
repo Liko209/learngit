@@ -1,4 +1,4 @@
-import { RTCAccountManager } from '../account/rtcAccountManager';
+import { RTCRegistrationManager } from '../account/rtcRegistrationManager';
 
 enum AccountState {
   IDEL,
@@ -13,15 +13,15 @@ interface IRTCAccountListener {
 }
 
 class RTCAccount {
-  private _accountManager: RTCAccountManager;
+  private _registrationManager: RTCRegistrationManager;
 
   constructor(listener: IRTCAccountListener) {
     console.log('RTCAccout created');
-    this._accountManager = new RTCAccountManager(listener);
+    this._registrationManager = new RTCRegistrationManager(listener);
   }
 
   public deRegister() {
-    this._accountManager.deRegister();
+    this._registrationManager.deRegister();
   }
 }
 

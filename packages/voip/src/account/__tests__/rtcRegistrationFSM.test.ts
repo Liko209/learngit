@@ -1,13 +1,13 @@
 /// <reference path="../../__tests__/types.d.ts" />
-import { RTCAccountFSM } from '../rtcAccountFSM';
-import { RTCAccountManager } from '../rtcAccountManager';
+import { RTCRegistrationFSM } from '../rtcRegistrationFSM';
+import { RTCRegistrationManager } from '../rtcRegistrationManager';
 
 // jest.mock('../rtcAccountManager');
 
 describe('Account FSM', async () => {
   function fsmCreate() {
-    const am = new RTCAccountManager(null);
-    const fsm = new RTCAccountFSM(am);
+    const am = new RTCRegistrationManager(null);
+    const fsm = new RTCRegistrationFSM(am);
     return fsm;
   }
 
