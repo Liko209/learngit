@@ -41,7 +41,7 @@ class ProfileButton extends Component<WithNamespaces & ProfileButtonViewProps> {
         variant="text"
         color="primary"
       >
-        {t('Profile')}
+        {t('profile')}
       </JuiButton>
     );
   }

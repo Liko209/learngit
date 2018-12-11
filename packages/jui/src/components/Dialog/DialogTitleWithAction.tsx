@@ -28,7 +28,7 @@ const JuiDialogTitleWithAction = (props: JuiDialogTitleWithActionProps) => {
 
 const JuiDialogTitleWithActionLeft = styled('div')`
   display: inline-flex;
-  ${typography('h6')};
+  ${typography('subheading2')};
 `;
 const JuiDialogTitleWithActionRight = styled('div')`
   flex: 1;
