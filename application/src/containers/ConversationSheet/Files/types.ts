@@ -5,7 +5,7 @@
  */
 // import { RouteComponentProps } from 'react-router-dom';
 // import { TranslationFunction, i18n } from 'i18next';
-import { FileType, ExtendFileItem } from '@/store/models/Items';
+import { FileType, ExtendFileItem } from '@/store/models/FileItem';
 
 type FilesProps = {
   ids: number[];

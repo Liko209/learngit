@@ -4,6 +4,7 @@ enum ENTITY_NAME {
   'GROUP_STATE' = 'groupState',
   'MY_STATE' = 'myState',
   'ITEM' = 'item',
+  'FILE_ITEM' = 'fileItem',
   'POST' = 'post',
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',

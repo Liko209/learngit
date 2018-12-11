@@ -9,7 +9,8 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
-import { FileItem, TaskItem } from '@/store/models/Items';
+import { TaskItem } from '@/store/models/Items';
+import { FileItem } from '@/store/models/FileItem';
 import { Item } from 'sdk/models';
 import { getFileType } from '../helper';
 

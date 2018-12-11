@@ -5,7 +5,7 @@
  */
 import moment from 'moment';
 import { t } from 'i18next';
-import { FileItem, ExtendFileItem, FileType } from '@/store/models/Items';
+import { FileItem, ExtendFileItem, FileType } from '@/store/models/FileItem';
 
 import { getDateMessage } from '@/utils/date';
 
@@ -117,7 +117,7 @@ function getFileType(item: FileItem): ExtendFileItem {
 }
 
 function image(item: FileItem) {
-  const { thumbs, type, url } = item;
+  const { thumbs, type, versionUrl } = item;
   const image = {
     isImage: false,
     previewUrl: '',
@@ -125,7 +125,7 @@ function image(item: FileItem) {
 
   if (type === 'gif') {
     image.isImage = true;
-    image.previewUrl = url;
+    image.previewUrl = versionUrl;
     return image;
   }
 
@@ -142,7 +142,7 @@ function image(item: FileItem) {
 }
 
 function document(item: FileItem) {
-  const pages = item.pages;
+  const { pages } = item;
   const doc = {
     isDocument: false,
     previewUrl: '',

@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { observer } from 'mobx-react';
 import {
   JuiFileWithoutPreview,
   JuiFileWithPreview,
@@ -26,6 +27,7 @@ const downloadBtn = (downloadUrl: string) => (
   </JuiIconButton>
 );
 
+@observer
 class FilesView extends React.Component<FilesViewProps> {
   render() {
     const { files } = this.props;
