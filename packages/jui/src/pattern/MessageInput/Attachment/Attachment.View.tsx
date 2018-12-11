@@ -61,7 +61,7 @@ class AttachmentViewComponent extends Component<Props> {
     return (
       <Fragment>
         <JuiIconButton
-          id="conversation-chatbar-attachment-button"
+          data-test-automation-id="conversation-chatbar-attachment-button"
           tooltipTitle={t('attachment')}
           onClick={this._handleClickEvent}
           size="medium"
@@ -71,7 +71,7 @@ class AttachmentViewComponent extends Component<Props> {
         <UploadArea onFileChanged={onFileChanged} ref={this._uploadRef} />
         {open && (
           <JuiMenu
-            id="conversation-chatbar-attachment-menu"
+            data-test-automation-id="conversation-chatbar-attachment-menu"
             anchorEl={anchorEl}
             open={open}
           >
