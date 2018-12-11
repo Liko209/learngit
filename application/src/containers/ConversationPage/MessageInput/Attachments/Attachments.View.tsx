@@ -16,8 +16,7 @@ class AttachmentsViewComponent extends Component<
   AttachmentsViewProps & WithNamespaces
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
-    const { duplicateFiles } = this.props;
-    const showDuplicateFiles = duplicateFiles.length > 0;
+    const { duplicateFiles, showDuplicateFiles } = this.props;
     if (showDuplicateFiles) {
       return (
         <DuplicateAlert

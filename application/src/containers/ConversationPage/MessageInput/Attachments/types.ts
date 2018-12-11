@@ -16,6 +16,7 @@ type AttachmentsProps = {
 type AttachmentsViewProps = {
   files: ItemInfo[];
   duplicateFiles: ItemInfo[];
+  showDuplicateFiles: boolean;
   items: Item[];
   autoUploadFiles: (files: File[]) => void;
   cancelUploadFile: (info: ItemInfo) => void;

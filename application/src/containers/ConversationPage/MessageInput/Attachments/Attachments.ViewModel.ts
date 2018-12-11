@@ -5,11 +5,7 @@
  */
 
 import { observable, computed } from 'mobx';
-import {
-  AttachmentsProps,
-  AttachmentsViewProps,
-  AttachmentsObserverFunc,
-} from './types';
+import { AttachmentsProps, AttachmentsViewProps } from './types';
 import { ItemService } from 'sdk/service';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
@@ -19,7 +15,6 @@ import { ItemFile } from 'sdk/models';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
-  private _attachmentsObserver: AttachmentsObserverFunc;
   @observable
   items: ItemFile[] = [];
   @observable
@@ -32,7 +27,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   constructor(props: AttachmentsProps) {
     super(props);
     this._itemService = ItemService.getInstance();
-    this._attachmentsObserver = props.attachmentsObserver;
     this.reaction(
       () => this.items,
       () => this._attachmentsObserver(this.items),
@@ -40,8 +34,18 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   @computed
+  get _attachmentsObserver() {
+    return this.props.attachmentsObserver;
+  }
+
+  @computed
   get id() {
     return this.props.id;
+  }
+
+  @computed
+  get showDuplicateFiles() {
+    return this.duplicateFiles.length > 0;
   }
 
   autoUploadFiles = async (files: File[]) => {
