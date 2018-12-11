@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
+import { t } from 'i18next';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
 import { ViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
@@ -13,11 +13,9 @@ import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import isElectron from '@/common/isElectron';
 
-type AvatarActionsProps = WithNamespaces & ViewProps;
-
 @observer
-class AvatarActions extends React.Component<AvatarActionsProps> {
-  constructor(props: AvatarActionsProps) {
+class AvatarActionsView extends React.Component<ViewProps> {
+  constructor(props: ViewProps) {
     super(props);
     window.jupiterElectron = {
       ...window.jupiterElectron,
@@ -46,8 +44,10 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
 
   handleAboutPage = () => this.props.toggleAboutPage();
 
+  handleViewYourProfile = () => {};
+
   render() {
-    const { t, handleSignOut } = this.props;
+    const { handleSignOut } = this.props;
 
     return (
       <JuiPopoverMenu
@@ -62,6 +62,12 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
         }}
       >
         <JuiMenuList data-test-automation-id="avatarMenu">
+          <JuiMenuItem
+            onClick={this.handleViewYourProfile}
+            data-test-automation-id="viewYourProfile"
+          >
+            {t('viewYourProfile')}
+          </JuiMenuItem>
           {!isElectron && (
             <JuiMenuItem
               onClick={this.handleAboutPage}
@@ -70,12 +76,6 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
               {t('aboutRingCentral')}
             </JuiMenuItem>
           )}
-          <JuiMenuItem
-            onClick={() => {}}
-            data-test-automation-id="viewYourProfile"
-          >
-            {t('viewYourProfile')}
-          </JuiMenuItem>
           <JuiMenuItem
             onClick={handleSignOut}
             data-test-automation-id="signOut"
@@ -87,7 +87,5 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
     );
   }
 }
-
-const AvatarActionsView = translate('translations')(AvatarActions);
 
 export { AvatarActionsView };
