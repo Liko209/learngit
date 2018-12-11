@@ -88,10 +88,10 @@ const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-dsb02.lab.r
 const ENABLE_REMOTE_DASHBOARD = (process.env.ENABLE_REMOTE_DASHBOARD === 'true');
 const RUN_NAME = process.env.RUN_NAME || uuid();
 
-const ACCOUNT_TYPE_LIST = {
-  "RCOFFICE": "kamino(Fiji,Jupiter,1210,4488)",
-  "RC_PROFESSIONAL_TIER": "kamino(Fiji,Jupiter,1210,4442)"
-}
+enum ACCOUNT_TYPE_LIST {
+  "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",
+  "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)"
+};
 
 export {
   APP_ROOT,

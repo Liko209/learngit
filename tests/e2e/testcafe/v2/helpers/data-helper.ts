@@ -18,7 +18,7 @@ class DataHelper {
       domain: data.companyEmailDomain,
     }
     // first_user of system user is true
-    const glipUsers = _.partition(data.glipUsers, {first_user:true});
+    const glipUsers = _.partition(data.glipUsers, { first_user: true });
     const buildUsers = function (user) {
       return <IUser>{
         company: mainCompany,
@@ -28,9 +28,9 @@ class DataHelper {
         extension: user.sanitized_rc_extension.extensionNumber,
       }
     };
-    const admins = glipUsers[0].map(user=>buildUsers(user));
+    const admins = glipUsers[0].map(user => buildUsers(user));
     // exclude glip service user with 0 as rc_extension_id
-    const users = glipUsers[1].filter((user) => { return user['rc_extension_id']}).map(user=>buildUsers(user));
+    const users = glipUsers[1].filter((user) => { return user['rc_extension_id'] }).map(user => buildUsers(user));
     mainCompany.admin = admins[0];
     mainCompany.users = users;
     const groups = data.teams.map((team) => {

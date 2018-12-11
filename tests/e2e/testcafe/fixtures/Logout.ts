@@ -8,10 +8,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
 import { SITE_URL, ACCOUNT_TYPE_LIST } from '../config';
 
-// const accountTypeList = Object.keys(ACCOUNT_TYPE_LIST);
-const accountTypeList = [ACCOUNT_TYPE_LIST['RCOFFICE'], ACCOUNT_TYPE_LIST['RC_PROFESSIONAL_TIER']];
-
-accountTypeList.map(function (accountType) {
+Object.keys(ACCOUNT_TYPE_LIST).map((accountType) => ACCOUNT_TYPE_LIST[accountType]).forEach(accountType => {
   fixture('Logout')
     .beforeEach(setupCase(accountType))
     .afterEach(teardownCase());
