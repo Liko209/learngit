@@ -26,7 +26,7 @@ const Wrapper = styled.div`
 `;
 
 const DisplayName = styled.span`
-  ${typography('subheading3')};
+  ${typography('body1')};
   margin-left: ${spacing(3)};
 `;
 
