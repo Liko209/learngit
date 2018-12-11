@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { MessageInputViewProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
@@ -13,8 +13,7 @@ import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventD
 import { observer } from 'mobx-react';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
-import { AttachmentList } from 'jui/pattern/MessageInput/AttachmentList';
-import { DuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
+import { Attachments } from './Attachments';
 
 @observer
 class MessageInputViewComponent extends Component<
@@ -23,7 +22,8 @@ class MessageInputViewComponent extends Component<
     modules: object;
   }
 > {
-  private _mentionRef: React.RefObject<any> = React.createRef();
+  private _mentionRef: RefObject<any> = createRef();
+  private _attachmentsRef: RefObject<any> = createRef();
 
   state = {
     modules: {},
@@ -51,32 +51,19 @@ class MessageInputViewComponent extends Component<
     });
   }
 
-  private _showDuplicateFilesDialogIfNeeded = () => {
-    const { duplicateFiles } = this.props;
-    const showDuplicateFiles = duplicateFiles.length > 0;
-    if (showDuplicateFiles) {
-      return (
-        <DuplicateAlert
-          duplicateFiles={duplicateFiles.map(({ file }) => file)}
-          onCancel={this.props.cancelDuplicateFiles}
-          onCreate={this.props.uploadDuplicateFiles}
-          onUpdate={this.props.updateDuplicateFiles}
-        />
-      );
-    }
-    return null;
-  }
-
   private _autoUploadFile = (files: FileList) => {
     const array: File[] = [];
     for (let i = 0; i < files.length; ++i) {
       array.push(files[i]);
     }
-    this.props.autoUploadFile(array);
+    const { current } = this._attachmentsRef;
+    if (current) {
+      current.vm.autoUploadFiles(array);
+    }
   }
 
   render() {
-    const { draft, changeDraft, error, id, t, files } = this.props;
+    const { draft, changeDraft, error, id, t } = this.props;
     const { modules } = this.state;
     const toolbarNode = (
       <MessageActionBar>
@@ -87,10 +74,10 @@ class MessageInputViewComponent extends Component<
       </MessageActionBar>
     );
     const attachmentsNode = (
-      <AttachmentList
-        files={files}
-        removeAttachment={this.props.cancelUploadFile}
-        data-test-automation-id="message-attachment-node"
+      <Attachments
+        ref={this._attachmentsRef}
+        id={id}
+        attachmentsObserver={this.props.updateAttachmentItems}
       />
     );
 
@@ -106,7 +93,6 @@ class MessageInputViewComponent extends Component<
         >
           <Mention id={id} ref={this._mentionRef} />
         </JuiMessageInput>
-        {this._showDuplicateFilesDialogIfNeeded()}
       </>
     );
   }

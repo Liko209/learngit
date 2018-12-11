@@ -7,17 +7,15 @@
 import { action, observable, computed } from 'mobx';
 import { debounce, Cancelable } from 'lodash';
 import { MessageInputProps, MessageInputViewProps } from './types';
-import { GroupService, PostService, ItemService } from 'sdk/service';
+import { GroupService, PostService } from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
+import { Item } from 'sdk/models';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { isAtMentions } from './handler';
-import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
-import { ItemFile } from 'sdk/models';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -34,8 +32,8 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
-  private _itemService: ItemService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
+  private _items: Item[] = [];
   @computed
   get id() {
     return this.props.id;
@@ -44,14 +42,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   draft: string = '';
   @observable
   error: string = '';
-  @observable
-  items: ItemFile[] = [];
-  @observable
-  files: ItemInfo[] = [];
-  @observable
-  duplicateFiles: ItemInfo[] = [];
-  @observable
-  uniqueFiles: ItemInfo[] = [];
 
   keyboardEventHandler = {
     enter: {
@@ -64,7 +54,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     super(props);
     this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
-    this._itemService = ItemService.getInstance();
     this._debounceUpdateGroupDraft = debounce<DebounceFunction>(
       this._groupService.updateGroupDraft.bind(this._groupService),
       500,
@@ -152,7 +141,8 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         return;
       }
       vm.error = '';
-      if (content.trim() || vm.items.length > 0) {
+      const items = vm._items;
+      if (content.trim() || items.length > 0) {
         vm._sendPost(content);
         const onPostHandler = vm.props.onPost;
         onPostHandler && onPostHandler();
@@ -163,122 +153,24 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   private async _sendPost(content: string) {
     this.changeDraft('');
     const atMentions = isAtMentions(content);
+    const items = this._items;
     try {
       await this._postService.sendPost({
         atMentions,
         text: content,
         groupId: this.id,
         users: atMentions ? this._users : undefined,
-        itemIds: this.items.map(item => item.id),
+        itemIds: items.map(item => item.id),
       });
-      // clear files after post
-      this.files = [];
-      this.items = [];
+      // clear context (attachments) after post
+      //
     } catch (e) {
       // You do not need to handle the error because the message will display a resend
     }
   }
 
-  autoUploadFile = async (files: File[]) => {
-    if (files.length > 0) {
-      const uniques: ItemInfo[] = [];
-      const duplicateFiles: ItemInfo[] = [];
-      for (let i = 0; i < files.length; ++i) {
-        const file = files[i];
-        const exists = await this.isFileExists(file);
-        if (exists) {
-          duplicateFiles.push({ file, status: 'normal' });
-        } else {
-          uniques.push({ file, status: 'normal' });
-        }
-      }
-
-      this.uniqueFiles = uniques;
-      // has duplicate files? will prompt user
-      if (duplicateFiles.length > 0) {
-        this.duplicateFiles = duplicateFiles;
-      } else {
-        // all files are unique, just upload them
-        await this._uploadFiles(uniques, false);
-        this.files = this.files.concat(uniques);
-        this._clearUpSelectedFiles();
-      }
-    }
-  }
-
-  private _uploadFiles = async (files: ItemInfo[], isUpdate: boolean) => {
-    for (let i = 0; i < files.length; ++i) {
-      await this.uploadFile(files[i], isUpdate);
-    }
-  }
-
-  uploadFile = async (info: ItemInfo, isUpdate: boolean) => {
-    try {
-      const { file } = info;
-      const form = new FormData();
-      form.append(FILE_FORM_DATA_KEYS.FILE_NAME, file.name);
-      form.append(FILE_FORM_DATA_KEYS.FILE, file);
-      const item = await this._itemService.sendItemFile(
-        this.id,
-        form,
-        isUpdate,
-      );
-      if (item) {
-        this.items.push(item);
-      }
-      return item;
-    } catch (e) {
-      // TODO
-      return null;
-    }
-  }
-
-  isFileExists = async (file: File) => {
-    return await this._itemService.isFileExists(this.id, file.name);
-  }
-
-  cancelUploadFile = async (info: ItemInfo) => {
-    const { file } = info;
-    const index = this.files.findIndex(looper => looper.file === file);
-    if (index >= 0) {
-      try {
-        const item = this.items[index];
-        await this._itemService.cancelUpload(item.id);
-        this.items.splice(index);
-        this.items = this.items.slice(0);
-      } catch (e) {}
-      this.files.splice(index, 1);
-      this.files = this.files.slice(0);
-    }
-  }
-
-  private _clearUpSelectedFiles = () => {
-    this.duplicateFiles = [];
-    this.uniqueFiles = [];
-  }
-
-  cancelDuplicateFiles = () => {
-    this._clearUpSelectedFiles();
-  }
-
-  // as new files
-  uploadDuplicateFiles = async () => {
-    await this._uploadFiles(this.duplicateFiles, false);
-    await this._uploadFiles(this.uniqueFiles, false);
-    // finally, update files
-    this.files = this.files
-      .concat(this.duplicateFiles)
-      .concat(this.uniqueFiles);
-    this._clearUpSelectedFiles();
-  }
-
-  updateDuplicateFiles = async () => {
-    // TODO
-    await this._uploadFiles(this.duplicateFiles, true);
-    await this._uploadFiles(this.uniqueFiles, false);
-    // finally, update files
-    this.files = this.files.concat(this.uniqueFiles);
-    this._clearUpSelectedFiles();
+  updateAttachmentItems = (items: Item[]) => {
+    this._items = items;
   }
 }
 
